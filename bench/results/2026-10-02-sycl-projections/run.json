@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-02",
+  "base_commit": "b24c8bc",
+  "command": "sycl_projection_bench SHARD1 50 1",
+  "measurement": "Median of three device-event intervals; one graph repeats one matrix 50 times after warm-up. Weights are warm and reused. Quantization and copies excluded. Sum of isolated timings is not generation time.",
+  "matrices": 300,
+  "isolated_device_ms_sum": 20.6883512,
+  "model": "Qwen3.8-Flash-Next GSQ-RCO Q2_0, ed59f92082b1e93c0e96d60a8b11aab089b52f09",
+  "hardware": "Intel Arc B570, Ryzen 5 5600X, 125 GiB RAM",
+  "ordinary_generation_no_profile": {
+    "flags": "Same as shared-overlap 128-token runs, with --expert-profile omitted",
+    "decode_tok_s": 15.36,
+    "cpu_ms_per_token": 12.099,
+    "cache_hit_rate": 0.4953,
+    "cache_admissions": 2048,
+    "limitation": "One diagnostic run; cache placement and output text differ from static-profile runs, so this is not a controlled kernel speed comparison."
+  }
+}
