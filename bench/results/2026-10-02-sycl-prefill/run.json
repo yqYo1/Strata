@@ -1,0 +1,182 @@
+{
+  "date": "2026-10-02",
+  "device": "Intel Arc B570 10 GiB",
+  "cpu": "AMD Ryzen 5 5600X",
+  "toolkit": "oneAPI 2026.1",
+  "base_revision": "d99f682",
+  "changes": "actual logits dump row count and explicit comparison offsets",
+  "model": "Qwen3.8-Flash-Next-GSQ-RCO-Q2_0",
+  "tokens": [
+    248045,
+    846,
+    198,
+    3710,
+    369,
+    220,
+    17,
+    10,
+    17,
+    30,
+    17308,
+    440,
+    1066,
+    279,
+    1324,
+    13,
+    248046,
+    198,
+    248045,
+    74455,
+    198,
+    248068,
+    198,
+    248069,
+    271
+  ],
+  "common_arguments": [
+    "--native SHARD1",
+    "--pack PACK",
+    "--spec 0",
+    "--expert-cache 0",
+    "--mmap-experts",
+    "--pool-workers 4",
+    "--max-context 128",
+    "--check-logits"
+  ],
+  "batched_arguments": [
+    "--prefill 32",
+    "--max-new 8",
+    "--stats"
+  ],
+  "eos_arguments": [
+    "--prefill 32",
+    "--max-new 8",
+    "--stop-eos"
+  ],
+  "stride_arguments": [
+    "--prefill 32",
+    "--prefill-until 10",
+    "--max-new 1",
+    "--logits-stride 7"
+  ],
+  "stride_positions": [
+    14,
+    21,
+    24
+  ],
+  "dumps": {
+    "sequential": {
+      "vocabulary": 248320,
+      "rows": 32,
+      "bytes": 31784968,
+      "sha256": "f2f279b63b4280878c2909cb65a82d71a0c65bee4e55246e47107e8ad546072e"
+    },
+    "batched": {
+      "vocabulary": 248320,
+      "rows": 8,
+      "bytes": 7946248,
+      "sha256": "87f55129ee0f6ed0f4f3144ab3d0bae33575aaf8174d5bbc82cd306761a60d23"
+    },
+    "batched_eos": {
+      "vocabulary": 248320,
+      "rows": 2,
+      "bytes": 1986568,
+      "sha256": "19e5474986f38413b11704f8cf593b083a32a34647d228218b48614de50873dd"
+    },
+    "batched_stride": {
+      "vocabulary": 248320,
+      "rows": 3,
+      "bytes": 2979848,
+      "sha256": "73cbf273406ed682f1479aa71e2cfcee11e41188324c7d8cdbb71c64002160f8"
+    },
+    "cpu_reference": {
+      "vocabulary": 248320,
+      "rows": 25,
+      "bytes": 24832008,
+      "sha256": "9773ead7b2c5175677d1df290c80c7603654df2533f80f310657033a2aaa90e6"
+    }
+  },
+  "comparisons": {
+    "sequential_vs_batched": {
+      "reference_start": 24,
+      "candidate_start": 0,
+      "rows": 8,
+      "vocabulary": 248320,
+      "bitwise_equal": false,
+      "top1_matches": 8,
+      "top1_mismatch_positions": [],
+      "cosine_min": 0.9645180471139587,
+      "cosine_mean": 0.9914315305019936,
+      "rmse_max": 0.500222510202562,
+      "absolute_error_max": 2.77103990316391,
+      "reference_top1": [
+        19,
+        248046,
+        198,
+        248044,
+        248045,
+        846,
+        248046,
+        198
+      ],
+      "candidate_top1": [
+        19,
+        248046,
+        198,
+        248044,
+        248045,
+        846,
+        248046,
+        198
+      ]
+    },
+    "cpu_vs_batched_first_answer": {
+      "reference_start": 24,
+      "candidate_start": 0,
+      "rows": 1,
+      "vocabulary": 248320,
+      "bitwise_equal": false,
+      "top1_matches": 1,
+      "top1_mismatch_positions": [],
+      "cosine_min": 0.9948258206424698,
+      "cosine_mean": 0.9948258206424698,
+      "rmse_max": 0.19660978178950947,
+      "absolute_error_max": 1.1540346145629883,
+      "reference_top1": [
+        19
+      ],
+      "candidate_top1": [
+        19
+      ]
+    },
+    "batched_vs_eos": {
+      "reference_start": 0,
+      "candidate_start": 0,
+      "rows": 2,
+      "vocabulary": 248320,
+      "bitwise_equal": true,
+      "top1_matches": 2,
+      "top1_mismatch_positions": [],
+      "cosine_min": 1.0,
+      "cosine_mean": 1.0,
+      "rmse_max": 0.0,
+      "absolute_error_max": 0.0,
+      "reference_top1": [
+        19,
+        248046
+      ],
+      "candidate_top1": [
+        19,
+        248046
+      ]
+    }
+  },
+  "measurement": {
+    "conditioning_tokens": 24,
+    "prefill_ms": 3210.5,
+    "generated_tokens": 8,
+    "decode_ms": 1260.3,
+    "filesystem_cache": "uncontrolled; previous runs read the same model",
+    "interpretation": "short correctness run, not a steady-state throughput benchmark"
+  }
+}
