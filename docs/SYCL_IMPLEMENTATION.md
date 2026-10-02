@@ -1297,6 +1297,32 @@ HTTP endpoints have not been tested by this probe. Flags, outputs, source and
 runtime artifact hashes are in
 [`bench/results/2026-10-02-sycl-mtp/run.json`](../bench/results/2026-10-02-sycl-mtp/run.json).
 
+On 2026-10-03, the Python server also passed real-model HTTP checks on
+`127.0.0.1:18085`, with the B570/5600X, context 512, native Q2_0, 2,048
+profiled expert slots and MTP width four. `/v1/models`, the web page,
+OpenAI non-streaming and streaming chat, and Anthropic messages returned
+success. Two identical eight-token requests returned the same text. Closing
+a 128-token stream after its first content chunk cancelled generation; the
+next eight-token request returned the preceding text. A complete stream
+also matched the non-streaming response. The server stopped cleanly after
+the checks. This is functional validation, without an HTTP speed comparison.
+Responses and engine logs are in
+[`bench/results/2026-10-03-sycl-http/run.json`](../bench/results/2026-10-03-sycl-http/run.json).
+
+The local config is `~/.local/share/strata-sycl/serve-config.json`. From this
+checkout, start it with the installed environment:
+
+```sh
+source /opt/intel/oneapi/setvars.sh
+PYTHONPATH=tools ~/.local/share/strata-sycl/venv/bin/python -m serve.server \
+  --engine strata --config ~/.local/share/strata-sycl/serve-config.json \
+  --host 127.0.0.1 --port 18085
+```
+
+Its OpenAI base URL is `http://127.0.0.1:18085/v1`; the config names the model
+`qwen3.8-flash-next-sycl`. The persistent engine currently requires MTP and
+prefill. The local config and model assets are outside the checkout.
+
 ### Native Q2 CPU-order diagnostic
 
 `--expert-cache-cpu-order` now accepts native Q2_0/Q2_0 experts on SYCL with
