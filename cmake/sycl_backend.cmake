@@ -17,7 +17,8 @@ add_executable(strata-device src/core/device_main.cpp)
 target_link_libraries(strata-device PRIVATE strata_core)
 
 add_library(strata_kernels STATIC src/kernels/sycl/elementwise.cpp src/kernels/sycl/router.cpp
-                                 src/kernels/sycl/native_router.cpp src/kernels/sycl/gdn.cpp)
+                                 src/kernels/sycl/native_router.cpp src/kernels/sycl/gdn.cpp
+                                 src/kernels/sycl/quantize_act.cpp)
 target_link_libraries(strata_kernels PUBLIC strata_core strata_artifact)
 target_compile_options(strata_kernels PRIVATE -ffp-contract=off)
 
@@ -40,4 +41,9 @@ if(STRATA_SYCL_TESTS)
   target_compile_options(sycl_gdn_test PRIVATE -fno-fast-math -ffp-contract=off)
   add_test(NAME sycl_gdn COMMAND sycl_gdn_test)
   set_tests_properties(sycl_gdn PROPERTIES TIMEOUT 90)
+  add_executable(sycl_quantize_test tests/sycl/quantize.cpp)
+  target_link_libraries(sycl_quantize_test PRIVATE strata_kernels)
+  target_compile_options(sycl_quantize_test PRIVATE -fno-fast-math -ffp-contract=off)
+  add_test(NAME sycl_quantize COMMAND sycl_quantize_test)
+  set_tests_properties(sycl_quantize PROPERTIES TIMEOUT 90)
 endif()
