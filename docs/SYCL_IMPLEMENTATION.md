@@ -456,3 +456,29 @@ unresolved, so GPU cache model-level numerical validation is not complete.
 include prompt ids, configuration, dump hashes and comparison reports. The
 handoff test passed separately for synthetic Q8_0 and Q2_0 experts, including
 nonzero references; maximum CPU differences were 0 and 8.81701e-7 respectively.
+
+### Prefill queue ordering on B570
+
+With oneAPI 2026.1 on the Arc B570, a two-queue host/device ring stalled
+when GEMMs used expert-sized matrices. A standalone reproduction uses 200
+products, 32 host staging threads, 128 host slots, eight device slots, and
+FP16 matrices with `T=3, N=1280, K=2560`. The main thread waited for a host
+slot whose transfer event did not complete. The same test completed with a
+single in-order queue; a smaller two-queue case (`N=32, K=640`) also completed.
+Changing event markers to empty kernels did not resolve the large case.
+This isolates the observed failure to this execution pattern, without
+establishing a driver or runtime root cause.
+
+SYCL prefill therefore uses its caller's compute queue for transfers too.
+CPU staging remains parallel, but transfer/compute overlap is not enabled in
+this path. The queue is borrowed and is not destroyed by prefill. The GEMM
+test covers the small two-queue case and the large single-queue case, including
+all 200 output matrices and host-buffer reuse.
+
+The 25-token arithmetic chat above completed with `--prefill 32 --spec 0
+--expert-cache 0 --mmap-experts --pool-workers 4 --max-new 8 --max-context 128
+--check-logits --stats`. The 24 conditioning tokens took 3171.4 ms (7.57 tok/s),
+streaming 4,248 experts; eight output tokens took 1250.2 ms (6.40 tok/s).
+Their ids matched the sequential run, starting with 19 (`4`). These are one
+short-run measurements on the B570, with filesystem cache state uncontrolled;
+they are not a steady-state throughput result or a broad quality evaluation.

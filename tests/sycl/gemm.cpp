@@ -1,5 +1,7 @@
 #include "strata/prefill/gemm.hpp"
 #include "strata/kernels/f16_bits.hpp"
+#include <atomic>
+#include <thread>
 #include <cmath>
 #include <cstring>
 #include <cuda_runtime.h>
@@ -52,13 +54,15 @@ void verify(const std::vector<uint16_t> &x, const std::vector<uint16_t> &w,
            "GEMM CPU parity");
     }
 }
-// Re-recorded events protect both host and device rings without a queue-wide
-// wait after every GEMM. This is the expert-transfer pattern used by prefill.
-void pipeline(cudaStream_t compute) {
-  constexpr int jobs = 40, host_slots = 16, slots = 8;
-  constexpr int T = 3, N = 32, K = 640, elements = N * K;
-  cudaStream_t copy;
-  CHECK(cudaStreamCreate(&copy));
+// Re-recorded events protect host and device rings. Keep a small two-queue
+// case for adapter coverage and realistic expert matrices on the single queue
+// used by SYCL prefill. The latter stalled with separate queues on B570/2026.1.
+void pipeline(cudaStream_t compute, bool separate) {
+  constexpr int jobs = 200, host_slots = 128, slots = 8;
+  constexpr int T = 3;
+  const int N = separate ? 32 : 1280, K = separate ? 640 : 2560, elements = N * K;
+  cudaStream_t copy = compute;
+  if (separate) CHECK(cudaStreamCreate(&copy));
   uint16_t *host, *weights, *x;
   float *y;
   CHECK(cudaMallocHost(&host, host_slots * elements * 2));
@@ -77,17 +81,35 @@ void pipeline(cudaStream_t compute) {
   strata::prefill::Gemm gemm;
   std::string err;
   need(gemm.init_external(compute, nullptr, 0, nullptr, 0, err), err.c_str());
+  std::atomic<int> next{0}, issued{0};
+  std::atomic<bool> ready[jobs]{};
+  std::vector<std::thread> workers;
+  for (int t = 0; t < 32; ++t) workers.emplace_back([&] {
+    for (;;) {
+      const int j = next.fetch_add(1);
+      if (j >= jobs) break;
+      const int h = j % host_slots;
+      if (j >= host_slots) {
+        while (issued.load(std::memory_order_acquire) <= j - host_slots)
+          std::this_thread::yield();
+        CHECK(cudaEventSynchronize(host_done[h]));
+      }
+      std::fill(host + h * elements, host + (h + 1) * elements,
+                encode(float(j + 1) / 64, false));
+      ready[j].store(true, std::memory_order_release);
+    }
+  });
   int staged = 0;
   for (int job = 0; job < jobs; ++job) {
     while (staged < jobs && staged < job + slots) {
       int h = staged % host_slots, d = staged % slots;
-      if (staged >= host_slots) CHECK(cudaEventSynchronize(host_done[h]));
-      std::fill(host + h * elements, host + (h + 1) * elements,
-                encode(float(staged + 1) / 64, false));
+      while (!ready[staged].load(std::memory_order_acquire))
+        std::this_thread::yield();
       if (staged >= slots) CHECK(cudaStreamWaitEvent(copy, used[d]));
       CHECK(cudaMemcpyAsync(weights + d * elements, host + h * elements,
                             elements * 2, cudaMemcpyHostToDevice, copy));
       CHECK(cudaEventRecord(host_done[h], copy));
+      issued.store(staged + 1, std::memory_order_release);
       CHECK(cudaEventRecord(copied[d], copy));
       ++staged;
     }
@@ -96,6 +118,7 @@ void pipeline(cudaStream_t compute) {
     gemm.f16(x, weights + d * elements, y + job * T * N, T, N, K);
     CHECK(cudaEventRecord(used[d], compute));
   }
+  for (auto &worker : workers) worker.join();
   CHECK(cudaStreamSynchronize(compute));
   std::vector<float> output(jobs * T * N);
   CHECK(cudaMemcpy(output.data(), y, output.size() * 4, cudaMemcpyDeviceToHost));
@@ -108,7 +131,7 @@ void pipeline(cudaStream_t compute) {
   CHECK(cudaFree(weights));
   CHECK(cudaFree(x));
   CHECK(cudaFree(y));
-  CHECK(cudaStreamDestroy(copy));
+
 }
 
 int main() {
@@ -192,7 +215,8 @@ int main() {
       CHECK(cudaFree(dx));
       CHECK(cudaFree(dy));
     }
-    pipeline(q);
+    pipeline(q, true);
+    pipeline(q, false);
     CHECK(cudaStreamDestroy(q));
     std::cout << "SYCL oneMKL GEMM: " << cases << " CPU parity cases passed\n";
   } catch (const std::exception &e) {

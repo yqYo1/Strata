@@ -557,7 +557,7 @@ void Prefill::release() {
         if (impl_->ple_copied[b]) cudaEventDestroy(impl_->ple_copied[b]);
         if (impl_->ple_emb_host[b] && impl_->ple_pageable[b].empty()) cudaFreeHost(impl_->ple_emb_host[b]);
     }
-    if (impl_->copy) cudaStreamDestroy(impl_->copy);
+    if (impl_->copy && impl_->copy != impl_->cs) cudaStreamDestroy(impl_->copy);
     if (impl_->grp_host) cudaFreeHost(impl_->grp_host);
     for (void* p : impl_->owned) cudaFree(p);
 }
@@ -690,7 +690,14 @@ bool Prefill::init(const core::WeightTable& wt, const core::ModelGeometry& g, co
         m.owned.push_back(m.tok_dev);
         m.tok_host.resize((size_t) chunk);
     }
+#if defined(STRATA_ENABLE_SYCL)
+    // Keep prefill transfers and GEMMs on one in-order queue. On the B570 with
+    // oneAPI 2026.1, the two-queue ring stalls at realistic expert matrix sizes.
+    // Host staging remains parallel; the compute queue belongs to the caller.
+    m.copy = m.cs;
+#else
     if (cudaStreamCreateWithFlags(&m.copy, cudaStreamNonBlocking) != cudaSuccess) { err = "prefill: copy stream"; return false; }
+#endif
     const size_t T = (size_t) chunk;
     m.T_max = chunk;
     m.borrowed = borrow != nullptr;
