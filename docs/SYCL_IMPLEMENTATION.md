@@ -1,7 +1,8 @@
 # SYCL backend implementation
 
 The backend is under development. The runtime and device arena run on Intel Arc
-B570; the SYCL build does not yet provide the `strata` inference executable.
+B570; the SYCL build links the `strata` inference executable. End-to-end
+inference and performance have not yet been validated.
 The implementation follows [the port research](SYCL_RESEARCH.md) and
 [the operation inventory](SYCL_BATTLEMAGE_OPERATIONS.md).
 
@@ -23,7 +24,8 @@ build-sycl/strata-device --list-devices
 library is disabled in this command to avoid fetching ggml. Enable it with
 `-DSTRATA_NATIVE_EXPERTS=ON`; `STRATA_GGML_DIR` can point to a checkout at the
 commit pinned in the root CMake file. The shared `strata_engine` static library
-compiles with that configuration, but the inference executable is not yet linked. CUDA, HIP and SYCL are mutually exclusive.
+and inference executable compile with that configuration. CUDA, HIP and SYCL
+are mutually exclusive.
 
 For the separate large-address check, with at least 5 GiB of free VRAM:
 
@@ -308,9 +310,9 @@ outside the repository, under `$XDG_DATA_HOME/strata-sycl` (or
 its tokenizer passed all 16 strings in `strata_tokenizer.py --check`.
 
 These checks establish runtime and kernel behavior, not model correctness or inference
-performance. Remaining work includes the model kernels, CPU expert scheduling,
-prefill, cache/sequence state, verification and launch integration, followed by
-layer/logit comparisons and real-model inference validation.
+performance. Remaining work includes event-completed speculative verification
+and end-to-end launch integration, followed by layer/logit comparisons and
+real-model inference validation.
 
 ### Canonical expert routing
 
@@ -325,5 +327,12 @@ leave the output untouched. Positive destination extents remain caller-owned.
 
 `sycl_expert_routing_test` checks selection, group pointers and starts, token
 indices, untouched rows, invalid counts, and graph replay with changing resident
-hits against CPU expectations. This covers routing helpers; the canonical S2
-expert projections are not yet connected.
+hits against CPU expectations. Canonical S2 projections now implement per-hit,
+device-count, multi-token and grouped routing. Each subgroup computes a row
+and reuses its weights across up to eight tokens. The existing parity test
+checks single-entry versus tiled paths bitwise, including intermediate storage,
+and checks projections against a double-precision CPU reference. It covers
+FP16/FP32 activation scales, partial counts, grouped host-USM blobs and
+misaligned inputs. The separate CPU-order diagnostic also passed the
+double-precision projection reference. These checks passed on the B570; they do not establish
+end-to-end expert throughput.
