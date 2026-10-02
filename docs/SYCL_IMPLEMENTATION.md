@@ -7,7 +7,7 @@ The implementation follows [the port research](SYCL_RESEARCH.md) and
 
 ## Build and validate
 
-On Linux with Intel oneAPI DPC++ installed:
+On Linux with Intel oneAPI DPC++ and oneMKL installed:
 
 ```sh
 source /opt/intel/oneapi/setvars.sh
@@ -66,6 +66,17 @@ verifier explicitly reject SYCL use. The ordinary expert arena skips host
 registration, and blocking cache fills reuse a host-USM staging buffer sized to
 one largest expert.
 
+Prefill projections use oneMKL's SYCL BLAS with FP16 or BF16 inputs and FP32
+accumulation. Native weights are expanded into reusable FP16 scratch in row
+slices when a matrix does not fit at once. The caller's output row stride and
+accumulation coefficient are preserved. oneMKL manages its own internal
+workspace; the engine's CUDA workspace argument is not used by this path.
+Prefill normalization, residual updates, mixing, gates, conversions and MoE
+output combination are also implemented. Stateful prompt kernels and the full
+prompt path are still being connected. These post-operations disable relaxed
+floating-point transformations: with the compiler's default device settings,
+the two normalization paths disagreed in their BF16 correction component.
+
 ## Validation recorded on 2026-10-02
 
 Intel Arc B570, DPC++ 2026.1.1, Level Zero driver `1.17.39395+14`, normal driver
@@ -78,6 +89,14 @@ settings; see the research document for the machine configuration:
 - A deliberately throwing host task: the asynchronous error reached the caller
   and remained observable on subsequent checks.
 - Bounded completion wait and the existing `strata-device --selftest`: passed.
+- oneMKL GEMM: 19 CPU-reference cases passed, including FP16 and BF16,
+  T/N/K of 1/17/32, 17/259/320 and 8/640/2560, beta 0/0.5/1, output row
+  padding, and Q8_0 weights split across six dequantization slices. The error
+  bound was `4e-6 * (1 + sum(abs(reference terms)))`.
+- Prefill post-operations: three-token normalization and recomputation paths
+  produced identical BF16 high/correction images and mixed FP32 values.
+  Residual updates, strided RMS normalization, FP16 SwiGLU saturation,
+  GDN gates, attention splitting/gating and MoE combination passed CPU checks.
 - Host engine adapter: twelve changing-input graph replays alternating two
   queues, event-completed D2H handoff, cross-queue dependencies, event timing,
   graph node inspection, pitched-copy padding, host callbacks and freeing with
