@@ -32,6 +32,7 @@
 #include <memory>
 #include <mutex>
 #include <thread>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -2119,6 +2120,81 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
     d.experts += n_tok * k;
 }
 
+#ifdef STRATA_ENABLE_SYCL
+struct NativeHitGraphs {
+    std::vector<cudaGraphExec_t> layers;
+    std::vector<cudaGraphExec_t> owned;
+    ~NativeHitGraphs() {
+        for (auto exec : owned) cudaGraphExecDestroy(exec);
+    }
+};
+
+bool expert_hit_prepare_graphs(ExpertDispatch& d, void* stream, std::string& err) {
+    if (!d.hit_native || d.hit_cpu_order) return true;
+    if (d.native_hit_graphs || !d.hits_ready() || stream == nullptr ||
+        d.parts_elems <= 0 || d.parts_elems % strata::kernels::cpu::H != 0) {
+        err = "native hit graph capture requires new, complete session buffers and an owned stream";
+        return false;
+    }
+    const auto& layout = strata::kernels::cpu::expert_layout();
+    if (!layout.native || layout.fmt.empty()) {
+        err = "native hit graph capture requires a native expert layout";
+        return false;
+    }
+    const int64_t cap = d.parts_elems / strata::kernels::cpu::H;
+    if (cap > INT32_MAX || d.h_native_hit_ptr.size() != size_t(cap) ||
+        d.h_native_hit_meta.size() != size_t(2 * cap + 2) ||
+        d.h_slot.size() < size_t(cap) || d.h_dst.size() < size_t(cap)) {
+        err = "native hit graph capture requires complete host staging lists";
+        return false;
+    }
+    d.is_hit.resize(size_t(cap));
+    auto graphs = std::make_shared<NativeHitGraphs>();
+    std::map<std::tuple<int, int, int64_t, int64_t>, cudaGraphExec_t> kinds;
+    const auto cs = (cudaStream_t) stream;
+    for (const auto& f : layout.fmt) {
+        const auto key = std::make_tuple(f.gu_type, f.d_type, f.n_embd, f.n_ff);
+        if (auto found = kinds.find(key); found != kinds.end()) {
+            graphs->layers.push_back(found->second);
+            continue;
+        }
+        if (cudaStreamBeginCapture(cs, cudaStreamCaptureModeThreadLocal) != cudaSuccess) {
+            err = "native hit graph begin capture failed";
+            return false;
+        }
+        bool ok = cudaMemsetAsync(d.hit_out, 0, size_t(d.parts_elems) * sizeof(float), cs) == cudaSuccess;
+        try {
+            if (ok) {
+                const auto L = strata::kernels::native_expert_layout(
+                    f.gu_type, f.d_type, f.n_embd, f.n_ff);
+                strata::kernels::quantize_q8_1_rows(d.mixed, 1, f.n_embd, d.x_q8_0_hit, cs);
+                strata::kernels::native_expert_grouped(L, d.native_hit_ptr, d.native_hit_meta,
+                    d.native_hit_meta + 2 * cap + 1, d.d_dst, d.native_hit_meta + cap + 1,
+                    cap, cap, d.x_q8_0_hit, d.hit_scratch, d.hit_out, cs);
+            }
+        } catch (const std::exception& ex) {
+            err = std::string("native hit graph kernels: ") + ex.what();
+            ok = false;
+        }
+        cudaGraph_t graph = nullptr;
+        const auto ended = cudaStreamEndCapture(cs, &graph);
+        cudaGraphExec_t exec = nullptr;
+        if (!ok || ended != cudaSuccess ||
+            cudaGraphInstantiate(&exec, graph, 0ull) != cudaSuccess) {
+            if (graph) cudaGraphDestroy(graph);
+            if (err.empty()) err = "native hit graph capture/instantiate failed";
+            return false;
+        }
+        cudaGraphDestroy(graph);
+        graphs->owned.push_back(exec);
+        graphs->layers.push_back(exec);
+        kinds.emplace(key, exec);
+    }
+    d.native_hit_graphs = std::move(graphs);
+    return true;
+}
+#endif
+
 void expert_hit_run(void* user, void* stream, HitPhase phase, const int32_t* ids, int64_t k) {
     ExpertDispatch& d = *(ExpertDispatch*) user;
     if (d.failed) return;
@@ -2178,12 +2254,19 @@ void expert_hit_run(void* user, void* stream, HitPhase phase, const int32_t* ids
         d.decided = true;
         if (d.n_hits <= 0) return;   // nothing resident yet: no GPU work, and nothing for `Combine` to add
 
+        bool captured_native = false;
+#ifdef STRATA_ENABLE_SYCL
+        captured_native = d.hit_native && !d.hit_cpu_order && d.native_hit_graphs != nullptr;
+#endif
+
         const size_t list_bytes = (size_t) d.n_hits * sizeof(int32_t);
         // `hit_out` is ZEROED rather than overwritten: the kernel writes only the rows this layer's hits own,
         // so a row that was a hit last layer and a miss this one would still hold last layer's expert and
         // `add_inplace` would sum it in.  Finite, plausible, wrong.
-        if (cudaMemsetAsync(d.hit_out, 0, (size_t) d.parts_elems * sizeof(float), cs) != cudaSuccess ||
-            cudaMemcpyAsync(d.d_slot, d.h_slot.data(), list_bytes, cudaMemcpyHostToDevice, cs) != cudaSuccess ||
+        if ((!captured_native &&
+             cudaMemsetAsync(d.hit_out, 0, (size_t) d.parts_elems * sizeof(float), cs) != cudaSuccess) ||
+            (!d.hit_native &&
+             cudaMemcpyAsync(d.d_slot, d.h_slot.data(), list_bytes, cudaMemcpyHostToDevice, cs) != cudaSuccess) ||
             cudaMemcpyAsync(d.d_dst, d.h_dst.data(), list_bytes, cudaMemcpyHostToDevice, cs) != cudaSuccess) {
             d.hit_fail = "the hit list could not be staged";
             d.failed = true;
@@ -2217,6 +2300,16 @@ void expert_hit_run(void* user, void* stream, HitPhase phase, const int32_t* ids
             }
             const auto& f = layout.fmt[(size_t) d.layers];
             const auto L = strata::kernels::native_expert_layout(f.gu_type, f.d_type, f.n_embd, f.n_ff);
+#ifdef STRATA_ENABLE_SYCL
+            if (captured_native) {
+                if (size_t(d.layers) >= d.native_hit_graphs->layers.size() ||
+                    cudaGraphLaunch(d.native_hit_graphs->layers[size_t(d.layers)], cs) != cudaSuccess) {
+                    d.failed = true;
+                    d.fail = "native hit graph launch failed";
+                    return;
+                }
+            } else
+#endif
             if (d.hit_cpu_order) {
 #ifdef STRATA_ENABLE_SYCL
                 if (f.gu_type != 42 || f.d_type != 42 || f.n_embd != 2560 || f.n_ff != 640 ||

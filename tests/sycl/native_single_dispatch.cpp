@@ -104,7 +104,8 @@ void quantize_contract() {
   }
   check(cudaStreamDestroy(stream));
 }
-void gpu_hits(Fixture &f, ExpertPool &pool, bool cpu_order = false) {
+std::vector<float> gpu_hits(Fixture &f, ExpertPool &pool,
+                            bool cpu_order = false, bool capture = true) {
   constexpr int K = 3;
   cudaStream_t stream{};
   check(cudaStreamCreate(&stream));
@@ -142,6 +143,14 @@ void gpu_hits(Fixture &f, ExpertPool &pool, bool cpu_order = false) {
   d.native_hit_meta = meta.p;
   d.h_native_hit_ptr.resize(K);
   d.h_native_hit_meta.resize(2 * K + 2);
+  if (capture) {
+    require(expert_hit_prepare_graphs(d, stream, error), error);
+    require(bool(d.native_hit_graphs) == !cpu_order, "native hit graph mode");
+    if (!cpu_order)
+      require(!expert_hit_prepare_graphs(d, stream, error),
+              "duplicate native hit setup must be refused");
+  }
+  std::vector<float> snapshots;
   float max_error = 0;
   for (int iteration = 0; iteration < 4; ++iteration) {
     const int layer = iteration == 2 ? 1 : 0;
@@ -194,6 +203,7 @@ void gpu_hits(Fixture &f, ExpertPool &pool, bool cpu_order = false) {
     check(cudaMemcpy(hit.data(), parts.p, hit.size() * 4,
                      cudaMemcpyDeviceToHost));
     require(hit == actual, "duplicate hit combination");
+    snapshots.insert(snapshots.end(), actual.begin(), actual.end());
   }
   require(d.cache_admitted == 2 && d.cache_hits == 4 && d.cache_refused == 6,
           "cache ownership counters");
@@ -201,6 +211,7 @@ void gpu_hits(Fixture &f, ExpertPool &pool, bool cpu_order = false) {
   std::cout << "Native GPU hit handoff: mixed/miss-only layers, sized slots, "
                "reordered hits; max CPU difference "
             << max_error << "\n";
+  return snapshots;
 }
 int main() {
   try {
@@ -247,9 +258,16 @@ int main() {
                 std::string(d.fail).find("matching native GPU hit decisions") !=
                     std::string::npos,
             "native per-layer GPU residency must be rejected");
-    gpu_hits(f, pool);
+    auto graph_bits = [&](Fixture& fixture) {
+      const auto plain = gpu_hits(fixture, pool, false, false);
+      const auto replay = gpu_hits(fixture, pool);
+      require(plain.size() == replay.size() &&
+                  std::memcmp(plain.data(), replay.data(), plain.size() * 4) == 0,
+              "native hit graph/uncaptured output bits");
+    };
+    graph_bits(f);
     Fixture q2(42);
-    gpu_hits(q2, pool);
+    graph_bits(q2);
     quantize_contract();
     gpu_hits(q2, pool, true);
     std::cout << "Native single dispatch: changed activations/layers, routing "

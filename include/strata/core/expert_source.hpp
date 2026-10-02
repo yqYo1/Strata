@@ -211,6 +211,9 @@ struct GpuPlanSink {
 };
 
 /// The adapter's own state.  One per session, reused every layer so the token path allocates nothing (P2.T10).
+#ifdef STRATA_ENABLE_SYCL
+struct NativeHitGraphs;
+#endif
 struct ExpertDispatch {
     strata::kernels::cpu::ExpertPool* pool = nullptr;
     ExpertSource* src = nullptr;
@@ -280,6 +283,10 @@ struct ExpertDispatch {
     int32_t* native_hit_meta = nullptr;  ///< [start(cap+1), tok(cap), count]
     std::vector<unsigned long long> h_native_hit_ptr;
     std::vector<int32_t> h_native_hit_meta;
+#ifdef STRATA_ENABLE_SYCL
+    /// Captured at setup for the session's fixed buffers and expert layouts.
+    std::shared_ptr<NativeHitGraphs> native_hit_graphs;
+#endif
     /// **PER ROUTER INDEX, DECIDED IN `Launch` AND CONSUMED BY THE POOL.**  The two callbacks share it
     /// so the decision is made exactly once, on this layer's ids, and neither side can re-decide it.
     std::vector<uint8_t> is_hit;
@@ -381,6 +388,12 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
 /// It must run AFTER the host has copied the misses into `parts_dev` (it writes into the same buffer, on rows
 /// the CPU zeroed) and BEFORE `post[l]` (which reads it).  Both are stream-ordered on the loop's own stream.
 void expert_hit_run(void* user, void* stream, HitPhase phase, const int32_t* ids, int64_t k);
+#ifdef STRATA_ENABLE_SYCL
+/// Capture native Q8_1 hit work once per expert layout at session setup.
+/// Buffer addresses and layouts must remain fixed until the graphs are released.
+/// CPU-order diagnostic hits keep their existing path. No token-path capture.
+bool expert_hit_prepare_graphs(ExpertDispatch& d, void* stream, std::string& err);
+#endif
 /// The pool half of the same decision; see `ExpertDispatch::is_hit`.
 
 /// **PHASE 2'S ONLY SOURCE: `experts.bin`, memory-mapped, no cache.**

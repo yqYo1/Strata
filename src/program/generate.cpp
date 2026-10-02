@@ -3421,6 +3421,16 @@ int main(int argc, char** argv) {
         drive.d.hit_done = (void*) hit_done;
         drive.d.hit_poke = !o.no_hit_poke;
         drive.d.h_dst.resize((size_t) K);
+#ifdef STRATA_ENABLE_SYCL
+        const char* hit_graph = std::getenv("STRATA_SYCL_NATIVE_HIT_GRAPH");
+        if (!o.no_capture && (hit_graph == nullptr || std::strcmp(hit_graph, "0") != 0) &&
+            !strata::core::expert_hit_prepare_graphs(drive.d, main_cs, err)) {
+            std::fprintf(stderr, "strata generate: %s\n", err.c_str());
+            return 1;
+        }
+        if (drive.d.native_hit_graphs)
+            std::fprintf(stderr, "strata generate: native GPU hit kernels captured at session setup\n");
+#endif
         mem_mark("the R4 hit path");
         std::fprintf(stderr, "strata generate: R4 hit path ON - resident experts are computed on the GPU\n");
     }
@@ -7006,6 +7016,9 @@ int main(int argc, char** argv) {
 
     strata::core::session_graphs_free(gr);
     strata::core::doorbell_free(db);
+#ifdef STRATA_ENABLE_SYCL
+    drive.d.native_hit_graphs.reset();
+#endif
     cudaFree(drive.d.native_hit_ptr);
     cudaFree(drive.d.native_hit_meta);
     cudaFree(d_next);

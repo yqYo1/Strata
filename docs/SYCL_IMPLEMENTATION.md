@@ -659,6 +659,38 @@ tokens. These results do not establish MTP throughput; its multiple-entry
 weight reuse remains a separate measurement. The approximately `29 tok/s`
 reference target is still open.
 
+### Captured native cache-hit work
+
+The ordinary native Q8_1 hit path now captures its output clear, input
+quantization and grouped expert kernels at session setup. One graph is shared
+by layers with the same expert types and dimensions. The fixed device buffers
+keep their addresses; the routed hit pointers, count and destinations are
+still uploaded before each graph launch. The native path also omits the slot
+list upload that only the canonical S2 path consumes. Capturing and allocating
+these graphs happens before token processing. CPU-order diagnostic hits retain
+their existing kernels. `STRATA_SYCL_NATIVE_HIT_GRAPH=0` or `--no-capture`
+selects the uncaptured hit path.
+
+Three alternating before/after pairs on B570 and Ryzen 5 5600X used the same
+empty 2,048-slot per-layer cache, ordinary RAM, four workers, 16-token prefill
+chunks, 37-token writing prompt and 128-token output budget. Before measured
+`19.01 / 18.93 / 18.92 tok/s`; after measured `19.60 / 19.51 / 19.02 tok/s`.
+The median increased from `18.93` to `19.51 tok/s` (3.1%). Every process had
+`30429 / 61440` cache hits, and all 128 output IDs matched. A separate 32-row
+comparison was bitwise equal across all 248,320 logits.
+
+`sycl_native_single_dispatch` passed captured/uncaptured bit comparisons with
+Q8_0 and Q2_0 fixtures, changing activations, reordered hits, padded slot sizes,
+a miss-only layer and a duplicate result-combine call. Duplicate graph setup
+is rejected, and CPU-order mode bypasses the graphs. Resources are owned by
+the dispatch session and released before its device buffers at normal teardown.
+
+The machine's background load was not isolated; these short runs are not a
+completed 300-word story. Results are in
+`bench/results/2026-10-03-sycl-native-hit-graphs/run.json`. The MTP verifier uses
+its separate graphs, and the approximately `29 tok/s` generation target
+remains open.
+
 ### Event-completed speculative windows
 
 SYCL verification captures the window in segments. The first segment embeds
