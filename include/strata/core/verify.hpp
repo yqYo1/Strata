@@ -164,6 +164,9 @@ public:
     /// the pool never plans a PCIe share (--pcie-frac 0): the window skips that path.  Before the first run.
 
     double ms_wait = 0, ms_pool = 0, ms_host = 0, ms_commit = 0;
+#ifdef STRATA_ENABLE_SYCL
+    int64_t work_ready_at_pool_return = 0, work_pending_at_pool_return = 0;
+#endif
     int64_t windows = 0;
     /// STRATA_VERIFY_PROFILE=1 - GPU stage times of the windows since the last call (ms per
     /// window), as one line; empty when off.
@@ -214,12 +217,19 @@ private:
     cudaStream_t cs_ = nullptr;
     cudaGraphExec_t exec_[9] = {};
 #ifdef STRATA_ENABLE_SYCL
-    // Segment k ends after the router/shared work that prepares host step k;
-    // segment k+1 consumes that step's completed CPU results and GPU plan.
+    // Segment k completes the routed host payload for step k. Segment k+1
+    // consumes its completed CPU results, after the queued shared/hit work.
     std::vector<cudaGraphExec_t> segments_[9];
+    // Shared experts, activation quantization and VRAM hits are submitted when
+    // the CPU publishes its plan, before it computes the missed experts.
+    std::vector<cudaGraphExec_t> work_[9];
     cudaEvent_t layer_done_ = nullptr;
+    cudaEvent_t work_done_ = nullptr;
+    bool overlap_gpu_ = true, work_launched_ = false;
+    cudaError_t work_status_ = cudaSuccess;
     std::atomic<uint32_t> reached_{0};
-    bool end_segment(int T, std::string& err);
+    bool end_segment(int T, std::string& err, bool work = false);
+    void launch_work();
 #endif
     cudaGraphExec_t commit_exec_ = nullptr;
 

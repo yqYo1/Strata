@@ -1085,16 +1085,20 @@ in
 ### Event-completed speculative windows
 
 SYCL verification captures the window in segments. The first segment embeds
-the tokens and runs the first layer's mixer, router and shared expert. Each
-following segment consumes the preceding CPU expert results and GPU plan,
-combines them, then prepares the next layer. A completion event outside capture
-must finish before the host reads routed activations or writes results. Expert
-DMA completes before the next segment starts. No device kernel waits for a
-host flag. The last segment finishes the final layer and output head.
+the tokens and runs the first layer's mixer and router. Its completion event
+must finish before the host reads routed activations. The CPU publishes its
+expert plan, then a separate graph runs the shared expert, activation
+quantization and resident expert projections while the CPU computes missed
+experts. After the CPU and expert DMA finish, the next segment consumes their
+results, combines them with the GPU results, and prepares the next layer. All
+graphs use the same ordered queue. The next routing event completes the prior
+plan reads before the CPU reuses its host plan or results. No device kernel
+waits for a host flag. The last segment finishes the final layer and output head.
 
 On the 48-layer model, an unsplit window has 49 segments; `--spec-split` uses
-97 for two token groups. This first implementation serializes each CPU boundary
-with its GPU segment. CUDA's device-plan shortcut and global-timer profiler are
+97 for two token groups, with respectively 48 or 96 shared/hit graphs.
+`STRATA_SYCL_VERIFY_OVERLAP=0` retains the previous serialized graph order for
+comparison. CUDA's device-plan shortcut and global-timer profiler are
 disabled on SYCL. PCIe mode selects explicit DMA, since ordinary host expert
 storage has no mapped device alias. GPU-resident expert arithmetic remains the
 native Q8_1 path. Verification requires an initially profile-filled expert cache,
@@ -1128,6 +1132,35 @@ rounds on alternating queues with external completion events.
 
 Flags, ids and results are in
 [`bench/results/2026-10-02-sycl-verify/run.json`](../bench/results/2026-10-02-sycl-verify/run.json).
+
+On 2026-10-03, three alternating serialized/overlapped MTP runs on B570/5600X
+used the same story, 128 generated tokens, context 512, FP16 KV, four CPU
+workers, 2,048 fixed per-layer slots from the shipped profile, resident RAM
+experts, 16-token prefill, T=4, minimum draft probability 0.5 and PCIe share 0.
+Before measured `15.67 / 15.98 / 15.43 tok/s`; after measured
+`16.82 / 16.31 / 16.44 tok/s`. The medians were `15.67` and `16.44 tok/s`,
+a `4.9%` increase. All six runs retained the same 128 ids, 63 rounds,
+66/109 accepted drafts and 8,705/82,560 expert-cache hits. Afterward,
+`3019..3021` of `3024` shared/hit graphs were complete when the CPU pool
+returned. GPU-reach wait fell from `52.02..52.17` to `42.32..43.13 ms/round`;
+CPU pool time was `51.18..55.73 ms/round` across both variants. Startup and
+prefill are excluded; background workloads were not isolated. This remains
+below the approximately `29 tok/s` target.
+
+Separate diagnostic runs compared every float32 logit bit, including rejected
+draft rows: 30 windows/90 rows for 64-token MTP; 17 windows/129 rows for
+T=8 split groups with every third oracle draft corrupted; and 7 windows/17
+rows for a prompt starting at position zero. All bits matched the serialized
+order. These diagnostic runs are excluded from the speed comparison.
+`STRATA_SYCL_VERIFY_LOGITS=PATH` appends complete windows; use fresh paths and
+`tools/sycl/compare_verify_logits.py --require-exact` to compare them. The
+withheld-result probe still drains GPU work before returning an error.
+Both graph orders also passed persistent requests: two identical 8-token
+requests, cancellation after the first emitted token, then another 8-token
+request. Each completed request retained the known continuation's ids.
+
+Flags, output ids, full-window comparisons and persistent-request checks are
+in [`bench/results/2026-10-03-sycl-verify-overlap/run.json`](../bench/results/2026-10-03-sycl-verify-overlap/run.json).
 
 ### MTP drafting on SYCL
 
