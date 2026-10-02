@@ -31,6 +31,17 @@ copy back) also reported `UR_RESULT_ERROR_DEVICE_LOST` and timed out after ten
 seconds. Compute recovery was **not** established. Do not repeat the override test on
 a working machine or treat its capability changes as a usable configuration.
 
+## Recovery follow-up (2026-10-02)
+
+The user subsequently rebooted the PC. The running kernel changed to
+`7.0.0-38-generic`. A normal-setting SYCL kernel wrote 42 to device memory and
+copied it back successfully; the boot log inspected after that check contained
+no GPU timeout/reset messages. Host/shared concurrent atomic aspects remained
+false. Further bounded default-setting probes are recorded in the
+[Battlemage operation catalog](SYCL_BATTLEMAGE_OPERATIONS.md).
+The failed override was not repeated. The version table and failure narrative
+below describe the earlier, pre-reboot investigation.
+
 ## Versions and isolation
 
 | Component | Inspected or tested version |

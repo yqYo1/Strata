@@ -2,6 +2,10 @@
 
 Investigated 2026-10-02, Strata `1678de3`, branch `feature/sycl`.
 This is a port design and small device probes, not a working inference backend.
+The broader operation catalog, including unused APIs, is in
+[SYCL_BATTLEMAGE_OPERATIONS.md](SYCL_BATTLEMAGE_OPERATIONS.md). Its capability
+log was refreshed after the reboot into kernel `7.0.0-38-generic`; the initial
+measurements below retain their original kernel/version context.
 The target is this Linux PC and Intel Battlemage or newer. Other vendors,
 Alchemist, Windows packaging and multi-GPU support are outside the initial scope.
 Newer Intel generations still need their own validation; a B570 result does not
