@@ -14,7 +14,7 @@ source /opt/intel/oneapi/setvars.sh
 export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
 cmake -S . -B build-sycl -DCMAKE_CXX_COMPILER=icpx \
   -DSTRATA_ENABLE_SYCL=ON -DSTRATA_NATIVE_EXPERTS=OFF -DSTRATA_BUILD_TESTS=OFF
-cmake --build build-sycl --target strata-device sycl_runtime_test sycl_kernels_test -j2
+cmake --build build-sycl --target strata-device sycl_runtime_test sycl_kernels_test sycl_gdn_test -j2
 ctest --test-dir build-sycl -R '^sycl_' --output-on-failure
 build-sycl/strata-device --list-devices
 ```
@@ -72,6 +72,11 @@ settings; see the research document for the machine configuration:
 - Packed 2/4/8-bit embedding gathers, expert row exclusion and event-completed
   payload publication: passed. GPU polling for CPU-written flags is explicitly
   rejected; the scheduler must use events.
+- Generic and native GDN recurrence: six changing steps checked against a
+  double-precision CPU oracle with a different state layout. This includes the
+  real 128-wide, 16-key-head/48-value-head geometry, modulo head pairing and
+  native readout scaling. Convolution history, canaries, L2 normalization and
+  the sigmoid-gated output norm also passed.
 
 These checks establish runtime behavior, not model correctness or inference
 performance. Remaining work includes the model kernels, CPU expert scheduling,
