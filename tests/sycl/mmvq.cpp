@@ -309,6 +309,19 @@ void run(Format f, int n, int rows, int cols, bool exact,
                   scratch.data() + size_t(col) * n / 32 * 36, single.data(), n,
                   rows, 1, stream);
       const auto one = single.read();
+      if (std::memcmp(one.data(), got.data() + col * rows, rows * 4) != 0) {
+        int different = 0;
+        float largest = 0;
+        for (int r = 0; r < rows; ++r) {
+          const float expected = got[col * rows + r];
+          if (one[r] != expected && different++ < 5)
+            std::cerr << "single/multi type " << f.type << " row " << r
+                      << " single " << one[r] << " multi " << expected << '\n';
+          largest = std::max(largest, std::abs(one[r] - expected));
+        }
+        std::cerr << "different rows " << different << " maximum difference "
+                  << largest << '\n';
+      }
       check(std::memcmp(one.data(), got.data() + col * rows, rows * 4) == 0,
             "native multi/single bits");
       for (int i = rows; i < rows + 4; ++i)
@@ -430,6 +443,19 @@ int main(int argc, char **argv) {
           run(f, n, 7, 3, false, w);
           run(f, n, 7, 8, false, w);
         }
+      }
+      {
+        // The vocabulary path has a row tail and must retain the ordinary
+        // multi-column reduction, including finite FP16 scale edge cases.
+        constexpr int rows = 4097, n = 2560;
+        auto w = weights(formats[5], n, rows);
+        const uint16_t scales[] = {0, 1, 0x3ff, 0x400, 0x8400, 0x8001, 0x7bff};
+        for (int i = 0; i < 7; ++i) {
+          std::memcpy(w.data() + size_t(i) * 10 * 176, &scales[i], 2);
+          std::memcpy(w.data() + size_t(i) * 10 * 176 + 2, &scales[6 - i], 2);
+        }
+        run(formats[5], n, rows, 3, true, w);
+        run(formats[5], n, rows, 8, true, w);
       }
       Buffer<float> x(256), y(256);
       Buffer<uint8_t> w(1024), scratch(1024);

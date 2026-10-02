@@ -31,6 +31,7 @@
 #include <sycl/ext/intel/math.hpp>
 
 namespace strata::kernels {
+void native_q5_head_esimd(const void *, const void *, float *, int, int, void *);
 namespace {
 using namespace sycl_backend;
 // On-disk half values are read through the shared bit converter, including
@@ -870,6 +871,11 @@ void native_mmvq(int type, const void *w, const void *x, float *y, int n_in,
     dispatch<Q4KTraits>(w, x, y, n_in, n_out, ncols, stream);
     break;
   case 13:
+    if (n_in == 2560 && n_out >= 4096 &&
+        (ncols == 1 || multi_exact.load(std::memory_order_relaxed))) {
+      native_q5_head_esimd(w, x, y, n_out, ncols, stream);
+      break;
+    }
     dispatch<Q5KTraits>(w, x, y, n_in, n_out, ncols, stream);
     break;
   case 14:

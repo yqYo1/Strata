@@ -506,6 +506,32 @@ These are limited checks, not numerical equivalence or a broad quality gate.
 [The prefill records](../bench/results/2026-10-02-sycl-prefill/run.json) include
 prompt ids, options, dump sizes and hashes, and the complete comparison reports.
 
+### ESIMD Q5_K output projection
+
+The 2,560-wide Q5_K vocabulary projection uses a 16-lane ESIMD kernel with
+packed integer dots. Eight partial accumulators preserve the ordinary MMVQ
+mapping; FP16 scale decoding includes subnormals. The accumulator is DP4A's
+first source operand, as documented in the
+[Intel instruction specification](https://intel.github.io/pisa/instructions_arithmetic.html).
+Other widths and formats retain their existing kernels.
+
+On B570, three alternating before/after processes, each with 20 GPU-only
+replays, measured the head at `4.011..4.023 ms` before and `1.520..1.523 ms`
+after. Layer time remained about `35.1 ms`. The combined GPU interval fell from
+about `39.2 ms` to `36.6 ms`; it excludes CPU experts and token preparation.
+The 37-token writing prompt generated 128 identical token IDs at `13.57 tok/s`
+before and `13.79 tok/s` after, in one pair on the shared machine. The target
+generation performance remains open. Evidence is in
+`bench/results/2026-10-02-sycl-head/run.json`.
+
+All 170 argmax IDs of the context comparison matched. Maximum logit difference
+was `3.8147e-6`, and maximum row RMSE was `4.60358e-7`; outputs are not bitwise
+equal to the preceding SPMD head. The independent MMVQ test passed with 4,097
+output rows, three/eight columns, finite FP16 scale edge cases and buffer guards.
+Exact multiple-column calls launch this same kernel once per column, retaining
+single/multiple-column bit parity. Their speculative-decoding speed has not
+been established.
+
 ### Native Q2 CPU-order diagnostic
 
 `--expert-cache-cpu-order` now accepts native Q2_0/Q2_0 experts on SYCL with
