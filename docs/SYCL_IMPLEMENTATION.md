@@ -533,6 +533,37 @@ Exact multiple-column calls launch this same kernel once per column, retaining
 single/multiple-column bit parity. Their speculative-decoding speed has not
 been established.
 
+### Shared expert and CPU overlap
+
+The ordinary per-layer SYCL scheduler now completes a route graph before it
+reads the CPU expert inputs. It queues the shared expert in a separate graph
+after that completion event, so shared GPU work can continue while the CPU
+experts run. Both graphs and the later result combination use the same ordered
+queue. The full pre graph remains available for GPU-only replays and for the
+`--no-overlap` comparison. With shared-early disabled, the original post path
+computes the shared expert.
+
+On B570 with the Ryzen 5 5600X, the 37-token writing prompt generated 128 tokens
+in three alternating before/after pairs. Experts used ordinary RAM, 2,048
+profile-filled GPU slots and four CPU workers; prefill used 16-token chunks.
+Decode measured `14.32..14.65 tok/s` before and `15.58..15.62 tok/s` after.
+The median increased from `14.48` to `15.60 tok/s` (7.7%). All 128 output IDs
+matched across the six processes. A separate 32-row comparison of all 248,320
+logits was bitwise equal.
+
+Shared GPU work was still pending at `6110..6131` of `6144` CPU boundaries in
+each after run. This counter establishes unfinished GPU work when the CPU can
+start; it does not measure overlap duration. The existing mid-graph doorbell
+counter remains zero because the route graph has completed.
+`sycl_host_engine_test` passed twelve changing-input replays of three synthetic
+layers, alternating the separated graphs and full-pre fallback. It checked the
+current routed inputs, exact residuals and one shared execution per layer.
+
+These measurements ran on a shared machine, and 128 tokens truncate the
+requested 300-word story. MTP retains its existing event boundaries. The
+approximately `29 tok/s` reference target remains open. Full options and
+results are in `bench/results/2026-10-02-sycl-shared-overlap/run.json`.
+
 ### Event-completed speculative windows
 
 SYCL verification captures the window in segments. The first segment embeds

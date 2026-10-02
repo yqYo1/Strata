@@ -147,6 +147,14 @@ struct SessionGraphs {
     /// `parts`.  **A per-layer CPU pool cannot be hidden behind a strictly serial residual chain**, which is
     /// why the CPU term is answered by Phase 3's VRAM cache and not by this pipeline.
     cudaGraphExec_t* posts = nullptr;
+#ifdef STRATA_ENABLE_SYCL
+    // The event between these graphs publishes routed inputs before the shared
+    // expert finishes. Original execs retain the full pre path for GPU replays.
+    cudaGraphExec_t* routes = nullptr;
+    cudaGraphExec_t* shared = nullptr;
+    int64_t shared_capacity = 0;
+    int64_t shared_pending_at_pool = 0;
+#endif
     bool captured = false;
     /// THE DEVICE ADDRESS THE GRAPHS WERE CAPTURED WITH.  The host loop copies each layer's expert outputs
     /// here before launching the next layer, and a graph bakes the POINTER, so it has to be this one.
@@ -369,6 +377,9 @@ struct SessionLoopScratch {
     float* y_miss = nullptr;        ///< pinned host staging for the pool's answer, `parts_bytes` long
     size_t parts_bytes = 0;
     cudaEvent_t probe = nullptr;
+#ifdef STRATA_ENABLE_SYCL
+    cudaEvent_t shared_done = nullptr;
+#endif
     long long pinned_core = -1;     ///< the affinity to restore, or -1 if the host was never pinned
     bool pinned = false;
 

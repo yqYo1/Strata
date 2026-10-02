@@ -6980,6 +6980,12 @@ int main(int argc, char** argv) {
             std::printf("%-24s %lld of %lld over %lld positions\n", "  rings seen MID-GRAPH",
                         (long long) gr.rings_mid_graph, (long long) (g.n_layers * positions),
                         (long long) positions);
+#ifdef STRATA_ENABLE_SYCL
+            if (gr.routes != nullptr)
+                std::printf("%-24s %lld of %lld layer boundaries pending when the CPU pool could start\n",
+                            "  shared GPU work", (long long) gr.shared_pending_at_pool,
+                            (long long) (g.n_layers * positions));
+#endif
             std::printf("%-24s %.3f ms of a %.3f ms layer\n", "  ring latency",
                         gr.ms_to_ring / (double) (g.n_layers * positions), decode_ms / (double) g.n_layers);
             // **THE ROUND TRIP, SPLIT AT THE RING.**  `ring latency` is the first half and stops when the ring
