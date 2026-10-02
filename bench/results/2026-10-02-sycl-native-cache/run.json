@@ -1,0 +1,95 @@
+{
+  "device": "Intel Arc B570",
+  "cpu": "AMD Ryzen 5 5600X",
+  "date": "2026-10-02",
+  "model": "ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF Q2_0",
+  "model_revision": "ed59f92082b1e93c0e96d60a8b11aab089b52f09",
+  "oracle_revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+  "prompt_ids": [
+    248045,
+    846,
+    198,
+    3710,
+    369,
+    220,
+    17,
+    10,
+    17,
+    30,
+    17308,
+    440,
+    1066,
+    279,
+    1324,
+    13,
+    248046,
+    198,
+    248045,
+    74455,
+    198,
+    248068,
+    198,
+    248069,
+    271
+  ],
+  "engine_args": [
+    "--tokens-file",
+    "tokens.txt",
+    "--max-new",
+    "1",
+    "--max-context",
+    "128",
+    "--mmap-experts",
+    "--pool-workers",
+    "4",
+    "--expert-cache",
+    "96",
+    "--expert-cache-per-layer",
+    "--pcie-frac",
+    "0",
+    "--check-logits",
+    "--stats",
+    "--dump-logits",
+    "logits.bin"
+  ],
+  "engine_required_paths": [
+    "--pack PACK",
+    "--native SHARD1"
+  ],
+  "kv": "fp16",
+  "spec": 0,
+  "prefill": 0,
+  "ple": true,
+  "unfused_variant_args": [
+    "--no-fused-gr"
+  ],
+  "generated_ids": [
+    19
+  ],
+  "cache_entries": {
+    "admitted": 96,
+    "resident_hits_after_admission": 256,
+    "cpu_misses": 11648,
+    "total_routed": 12000
+  },
+  "dumps": {
+    "strata-sycl-arithmetic-oracle.bin": {
+      "bytes": 24832008,
+      "sha256": "9773ead7b2c5175677d1df290c80c7603654df2533f80f310657033a2aaa90e6"
+    },
+    "strata-sycl-arithmetic-logits.bin": {
+      "bytes": 31784968,
+      "sha256": "f2f279b63b4280878c2909cb65a82d71a0c65bee4e55246e47107e8ad546072e"
+    },
+    "strata-sycl-cache-chat-logits.bin": {
+      "bytes": 24832008,
+      "sha256": "2a62cea2e1def9c9c8cfbf9442fbca083b37e191dc59bec3c031ffc5c1b761f9"
+    },
+    "strata-sycl-cache-chat-unfused-logits.bin": {
+      "bytes": 24832008,
+      "sha256": "10584d6462aa324467b6440e406f228d757eb18a81658b15c4dc59445c7e16fb"
+    }
+  },
+  "quality_gate_passed": false,
+  "limitation": "Cache and no-cache/reference disagree strongly at prompt position 18; disabling fused GR retains the same top-1 discrepancy. Kernel/handoff tests pass, but model-level cause is not isolated. No throughput claim."
+}

@@ -445,3 +445,14 @@ in 154 of 192 layer records (ordered lists in 99). The GPU expert uses Q8_1
 activation blocks, whereas the CPU pool follows its native CPU activation
 contract. This run validates the cache execution path, not numerical equivalence
 or a model-quality gate; the observed differences still require oracle analysis.
+
+The 25-position chat above also ran with the 96-slot cache and fused GR.
+The final answer was still token 19 (`4`), but only 24/25 intermediate argmax
+ids matched the CPU oracle. At position 18, the cached run chose 74455 instead
+of 248045; minimum cosine was 0.10695 and maximum absolute logit difference
+15.31690. Disabling fused GR kept this argmax discrepancy. Its cause remains
+unresolved, so GPU cache model-level numerical validation is not complete.
+[The cache comparison records](../bench/results/2026-10-02-sycl-native-cache/run.json)
+include prompt ids, configuration, dump hashes and comparison reports. The
+handoff test passed separately for synthetic Q8_0 and Q2_0 experts, including
+nonzero references; maximum CPU differences were 0 and 8.81701e-7 respectively.
