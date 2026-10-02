@@ -984,6 +984,38 @@ of them against the original SPMD outputs. Full flags, timings and comparisons
 are in
 [`bench/results/2026-10-03-sycl-q4k-batched-esimd/`](../bench/results/2026-10-03-sycl-q4k-batched-esimd/).
 
+### Q5_K head weight reuse across small windows
+
+The native 2,560-wide Q5_K vocabulary head now reads and expands each weight
+block once for 2, 3 or 4 activation columns. Each column retains the original
+single-column ESIMD dot products, accumulator lanes and reduction. One-column
+and 5..8-column execution keep their existing implementation.
+
+On 2026-10-03, B570/5600X, the full 248,320-row head occupies 437 MB of weights.
+Warm weights, 50 captured repeats and the median of three device-event
+intervals gave:
+
+| Input columns | Independent column calls, ms | Shared weight expansion, ms |
+| ---: | ---: | ---: |
+| 2 | 2.562 | 1.554 |
+| 3 | 3.863 | 1.937 |
+| 4 | 5.153 | 2.315 |
+
+Every output row and column was bitwise equal to the original single-column
+ESIMD calls. The unit test covers affine FP16 scale edge cases, exact batch
+parity and the 4,097-row tail. All logits in a 32-output ordinary run were
+bitwise equal with placement fixed at 3,038 slots. These component timings
+exclude transfers and CPU work.
+
+The same fixed-profile MTP configuration as the batched Q4_K experiment gave
+`15.57 / 15.71 / 15.70 token/s` before and `15.30 / 15.47 / 15.76 token/s`
+after. Medians were `15.70` and `15.47 token/s`; these trials establish no
+generation improvement. All six retained the same 128 ids, 63 rounds and
+66/109 accepted drafts. Background workloads were not isolated. All trials,
+flags and comparisons are retained in
+[`bench/results/2026-10-03-sycl-q5-head-batch/`](../bench/results/2026-10-03-sycl-q5-head-batch/).
+`--single-q5head` and `--compare-q5head` select the head-only component checks.
+
 ### Cache experiments retained as measurements
 
 On 2026-10-03, B570/5600X, normal cached L1/L2 gather properties were tested
