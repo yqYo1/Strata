@@ -14,7 +14,7 @@ source /opt/intel/oneapi/setvars.sh
 export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
 cmake -S . -B build-sycl -DCMAKE_CXX_COMPILER=icpx \
   -DSTRATA_ENABLE_SYCL=ON -DSTRATA_NATIVE_EXPERTS=OFF -DSTRATA_BUILD_TESTS=OFF
-cmake --build build-sycl --target strata-device sycl_host_engine_test sycl_compat_test sycl_runtime_test sycl_kernels_test sycl_gdn_test sycl_fused_gdn_test sycl_sampler_test sycl_coupled_sampler_test sycl_sequence_test sycl_quantize_test sycl_bf16_test sycl_mmvq_test sycl_gr_test sycl_rope_test sycl_kv_test sycl_attention_test sycl_qsa_index_test sycl_decode_attention_test sycl_ple_test sycl_moe_test -j2
+cmake --build build-sycl --target strata-device sycl_host_engine_test sycl_compat_test sycl_runtime_test sycl_kernels_test sycl_gdn_test sycl_fused_gdn_test sycl_sampler_test sycl_coupled_sampler_test sycl_sequence_test sycl_native_flash_attn_test sycl_quantize_test sycl_bf16_test sycl_mmvq_test sycl_gr_test sycl_rope_test sycl_kv_test sycl_attention_test sycl_qsa_index_test sycl_decode_attention_test sycl_ple_test sycl_moe_test -j2
 ctest --test-dir build-sycl -R '^sycl_' --output-on-failure
 build-sycl/strata-device --list-devices
 ```
@@ -99,6 +99,13 @@ settings; see the research document for the machine configuration:
 - Packed 2/4/8-bit embedding gathers, expert row exclusion and event-completed
   payload publication: passed. GPU polling for CPU-written flags is explicitly
   rejected; the scheduler must use events.
+- Native short-context attention: 22 masked/unmasked cases at widths 1..256
+  passed a double-precision CPU softmax/weighted-sum reference for Q24x256 and
+  KV2x256. Unused KV/mask padding contained NaNs, F16 inputs had only two-byte
+  alignment, and invalid step records returned the explicit failure status and
+  NaN outputs. Output guards and alias rejection passed. The SYCL kernel
+  translates the pinned CUDA adapter's subgroup/online-softmax arithmetic;
+  this check does not establish cross-device bitwise equality.
 - Sequence helpers: device position/window records, token maps, residual
   selection, broadcasts, conditional copies, unaligned byte-row gathers,
   bounded blob fetches, pointer rebasing, all-resident expert plans, selected

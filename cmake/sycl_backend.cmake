@@ -24,7 +24,7 @@ add_library(strata_kernels STATIC src/kernels/sycl/elementwise.cpp src/kernels/s
                                  src/kernels/sycl/quantize_act.cpp src/kernels/sycl/bf16_gemv.cpp
                                  src/kernels/sycl/native_mmvq.cpp src/kernels/sycl/gr.cpp
                                  src/kernels/sycl/rope.cpp src/kernels/sycl/kv.cpp
-                                 src/kernels/sycl/attention.cpp src/kernels/sycl/qsa_index.cpp
+                                 src/kernels/sycl/attention.cpp src/kernels/sycl/native_flash_attn.cpp src/kernels/sycl/qsa_index.cpp
                                  src/kernels/sycl/native_qsa_indexer.cpp src/kernels/sycl/qsa_select.cpp
                                  src/kernels/sycl/decode_attention.cpp src/kernels/sycl/kv_stream.cpp
                                  src/kernels/sycl/ple.cpp src/kernels/sycl/s2_gemv_q8.cpp src/kernels/sycl/s_gemv.cpp src/kernels/sycl/shared_expert.cpp src/kernels/sycl/iq.cpp
@@ -70,6 +70,11 @@ if(STRATA_SYCL_TESTS)
   target_compile_options(sycl_fused_gdn_test PRIVATE -fno-fast-math -ffp-contract=off)
   add_test(NAME sycl_fused_gdn COMMAND sycl_fused_gdn_test)
   set_tests_properties(sycl_fused_gdn PROPERTIES TIMEOUT 90)
+  add_executable(sycl_native_flash_attn_test tests/sycl/native_flash_attn.cpp)
+  target_link_libraries(sycl_native_flash_attn_test PRIVATE strata_kernels)
+  target_compile_options(sycl_native_flash_attn_test PRIVATE -fno-fast-math -ffp-contract=off)
+  add_test(NAME sycl_native_flash_attn COMMAND sycl_native_flash_attn_test)
+  set_tests_properties(sycl_native_flash_attn PROPERTIES TIMEOUT 90)
   add_executable(sycl_sequence_test tests/sycl/sequence.cpp)
   target_link_libraries(sycl_sequence_test PRIVATE strata_kernels)
   target_compile_options(sycl_sequence_test PRIVATE -fno-fast-math -ffp-contract=off)
