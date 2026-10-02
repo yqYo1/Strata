@@ -99,6 +99,39 @@ int main() {
         require(out[i] == (int(i) + iteration * 1000) * 7 + 2,
                 "graph replay host handoff");
     }
+    // A verifier segment publishes routed inputs, then the CPU writes a plan
+    // and results before another segment may consume them. Exercise the same
+    // external-event boundary with changing payloads and alternating queues.
+    CHECK(cudaStreamBeginCapture(a, cudaStreamCaptureModeThreadLocal));
+    CHECK(cudaMemcpyAsync(device, out, bytes, cudaMemcpyHostToDevice, a));
+    a->parallel_for(sycl::range<1>(n),
+                    [=](sycl::id<1> i) { device[i] = device[i] * 5 - 3; });
+    CHECK(cudaMemcpyAsync(out, device, bytes, cudaMemcpyDeviceToHost, a));
+    cudaGraph_t consume_graph{};
+    cudaGraphExec_t consume{};
+    CHECK(cudaStreamEndCapture(a, &consume_graph));
+    CHECK(cudaGraphInstantiate(&consume, consume_graph, 0ull));
+    CHECK(cudaGraphDestroy(consume_graph));
+    for (int iteration = 0; iteration < 12; ++iteration) {
+      for (size_t i = 0; i < n; ++i)
+        in[i] = int(i) - iteration * 77;
+      auto producer = iteration % 2 ? a : b;
+      auto consumer = iteration % 2 ? b : a;
+      CHECK(cudaGraphLaunch(exec, producer));
+      CHECK(cudaEventRecord(done, producer));
+      CHECK(cudaEventSynchronize(done));
+      for (size_t i = 0; i < n; ++i) {
+        require(out[i] == in[i] * 7 + 2, "segment publication");
+        out[i] += iteration + int(i % 3);
+      }
+      CHECK(cudaGraphLaunch(consume, consumer));
+      CHECK(cudaEventRecord(done, consumer));
+      CHECK(cudaEventSynchronize(done));
+      for (size_t i = 0; i < n; ++i)
+        require(out[i] == (in[i] * 7 + 2 + iteration + int(i % 3)) * 5 - 3,
+                "completed segment consumes current host results");
+    }
+    CHECK(cudaGraphExecDestroy(consume));
     CHECK(cudaEventDestroy(
         captured)); // Executable retains only weak event references.
     CHECK(cudaGraphLaunch(exec, a));

@@ -1,7 +1,9 @@
 // include/strata/core/verify.hpp - plan v0.3 P6: the speculative VERIFY window.
 //
 // T tokens at consecutive positions p0 .. p0+T-1 - the last accepted token and T-1 drafts - go through all 48
-// layers in ONE captured graph, and the head's argmax is produced for every one of them.  Token t's argmax is
+// layers in a captured window, and the head's argmax is produced for every one of them. CUDA/HIP use one graph;
+// SYCL uses event-completed segments so CPU expert work never depends on device-side host-flag polling.
+// Token t's argmax is
 // what plain greedy decode would produce after token t, BIT FOR BIT: every kernel here is either the single-token
 // kernel applied per token, or a multi-token kernel whose per-token arithmetic is the single-token kernel's
 // (multi-column MMVQ in exact mode, the T-token GDN kernels, the per-token hit activation, the multi-token CPU
@@ -151,7 +153,14 @@ public:
     /// beside the CPU; best when the CPU is compute-bound, the i-quants), 1 = the grouped kernel reads the mapped
     /// arena directly, 2 = a copy kernel stages it inside the graph (no API calls on the pool's thread; best when
     /// the CPU is RAM-bound, Q2_0).  Set before the first `run`.
-    void set_pcie_mode(int mode) { sink_.pcie_mode = mode; }
+    void set_pcie_mode(int mode) {
+#ifdef STRATA_ENABLE_SYCL
+        (void) mode;
+        sink_.pcie_mode = 0; // Ordinary host expert storage needs explicit DMA.
+#else
+        sink_.pcie_mode = mode;
+#endif
+    }
     /// the pool never plans a PCIe share (--pcie-frac 0): the window skips that path.  Before the first run.
 
     double ms_wait = 0, ms_pool = 0, ms_host = 0, ms_commit = 0;
@@ -204,6 +213,14 @@ private:
     int64_t n_vocab_ = 0;
     cudaStream_t cs_ = nullptr;
     cudaGraphExec_t exec_[9] = {};
+#ifdef STRATA_ENABLE_SYCL
+    // Segment k ends after the router/shared work that prepares host step k;
+    // segment k+1 consumes that step's completed CPU results and GPU plan.
+    std::vector<cudaGraphExec_t> segments_[9];
+    cudaEvent_t layer_done_ = nullptr;
+    std::atomic<uint32_t> reached_{0};
+    bool end_segment(int T, std::string& err);
+#endif
     cudaGraphExec_t commit_exec_ = nullptr;
 
     // mapped staging (host pointer, device alias)
@@ -230,7 +247,7 @@ private:
     int32_t* h_plan_ = nullptr;  int32_t* m_plan_ = nullptr;     // counts | start | dst | tok | ptr (as int32 pairs)
     int64_t plan_i32_ = 0;                                        // int32 words in the plan block
     GpuPlanSink sink_;
-    uint32_t cur_layer_ = 0;
+    std::atomic<uint32_t> cur_layer_{0};
     static void publish_plan(void* ctx);
     void set_plan_slot(int grp);
     bool split_ = false;   // opt-in (--spec-split): exact but slower, see the overlap study

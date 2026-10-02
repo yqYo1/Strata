@@ -67,8 +67,9 @@ only host-USM allocations have a mapped device alias. This adapter currently
 supports device ordinal zero for engine execution.
 
 The shared per-layer scheduler reads the host doorbell only after its completion
-event succeeds. Whole-token polling graphs and the polling-based speculative
-verifier explicitly reject SYCL use. The ordinary expert arena skips host
+event succeeds. Whole-token polling graphs reject SYCL use. Speculative windows
+use separate graphs with completed events at CPU expert boundaries, as recorded
+below. The ordinary expert arena skips host
 registration, and blocking cache fills reuse a host-USM staging buffer sized to
 one largest expert.
 
@@ -359,7 +360,7 @@ GGUF bytes. Native GPU cache hits use the layer's GGUF format and each slot's
 actual pointer, including variable-size slots. The CPU pool consumes the same
 hit decisions and leaves those routed rows at zero before GPU results are added.
 Remote expert caches and `--expert-cache-cpu-order` remain unsupported on this
-per-layer native path. The polling verifier still needs further integration.
+per-layer native path. Speculative window boundaries are described below.
 `sycl_native_single_dispatch_test` compares two changing activations and layers
 against direct native CPU row calls, including routing order, unweighted outputs,
 invalid ids and rejection of an unsupported GPU residency table. It also checks
@@ -531,6 +532,52 @@ output rows, three/eight columns, finite FP16 scale edge cases and buffer guards
 Exact multiple-column calls launch this same kernel once per column, retaining
 single/multiple-column bit parity. Their speculative-decoding speed has not
 been established.
+
+### Event-completed speculative windows
+
+SYCL verification captures the window in segments. The first segment embeds
+the tokens and runs the first layer's mixer, router and shared expert. Each
+following segment consumes the preceding CPU expert results and GPU plan,
+combines them, then prepares the next layer. A completion event outside capture
+must finish before the host reads routed activations or writes results. Expert
+DMA completes before the next segment starts. No device kernel waits for a
+host flag. The last segment finishes the final layer and output head.
+
+On the 48-layer model, an unsplit window has 49 segments; `--spec-split` uses
+97 for two token groups. This first implementation serializes each CPU boundary
+with its GPU segment. CUDA's device-plan shortcut and global-timer profiler are
+disabled on SYCL. PCIe mode selects explicit DMA, since ordinary host expert
+storage has no mapped device alias. GPU-resident expert arithmetic remains the
+native Q8_1 path. Verification requires a static profile-filled expert cache,
+the default fused native kernels, and `--spec T` with T from 2 through 8. A
+multi-token native prompt also needs `--prefill CHUNK`. A one-token native
+prompt now starts verification at position zero; zero previously collided with
+the CLI's sentinel for an unused speculative loop.
+
+On 2026-10-02, B570/5600X, Q2_0, FP16 KV, context 256, four CPU workers,
+2,048 profile-filled cache slots, resident RAM experts and prefill chunks of
+16, a 37-token story prompt generated the same 32 output ids in all four runs:
+
+| Run | Drafts accepted | Generated token/s |
+| --- | ---: | ---: |
+| Ordinary decode | n/a | 14.41 |
+| T=4, known continuation supplied as drafts | 24/24 | 16.72 |
+| T=4, every draft deliberately corrupted | 0/93 | 5.47 |
+| T=8, two groups, every third draft corrupted | 16/112 | 4.90 |
+
+These single trials ran on a shared machine. The known-continuation run measures
+an artificial drafting case; it includes no MTP prediction cost. The rejection
+runs check GDN commit, indexer-tail restoration and PLE history across changing
+windows. They establish this fixture's output agreement, not bitwise logit
+agreement across all prompts. A separate one-token prompt check and a withheld
+host-result test cover position zero and error cleanup. The latter exits with
+an error after draining submitted GPU work, before any graph consumes withheld
+results. The runtime test also checks twelve changing producer/CPU/consumer
+rounds on alternating queues with external completion events.
+
+Flags, ids and results are in
+[`bench/results/2026-10-02-sycl-verify/run.json`](../bench/results/2026-10-02-sycl-verify/run.json).
+MTP drafting performance still needs a separate measurement.
 
 ### Native Q2 CPU-order diagnostic
 
