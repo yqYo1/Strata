@@ -319,16 +319,21 @@ void run(Format f, int n, int rows, int cols, bool exact,
   for (size_t i = scratch_bytes; i < got_quant.size(); ++i)
     check(got_quant[i] == 0xa5, "Q8_1 canary");
   const auto got = output.read();
-  if ((f.type == 11 || f.type == 42) && exact && cols > 1 && cols <= 4) {
-    // Up to four columns use the original four-warp arithmetic in SPMD.
+  if (exact && ((f.type == 23) ||
+                ((f.type == 11 || f.type == 42) && cols > 1 && cols <= 4))) {
+    // Preserve the original four-warp arithmetic in the SPMD oracle.
     // Small projection errors can change later Q8_1 activations in the model.
-    native_mmvq_set_multi_exact(false);
+    const bool old = iq_old_kernels();
+    if (f.type == 23)
+      iq_set_old_kernels(true);
+    native_mmvq_set_multi_exact(f.type == 23);
     native_mmvq(f.type, weight.data(), scratch.data(), output.data(), n, rows,
                 cols, stream);
     const auto original = output.read();
     check(std::memcmp(original.data(), got.data(), size_t(rows) * cols * 4) == 0,
           "native ESIMD/SPMD bits");
     native_mmvq_set_multi_exact(exact);
+    iq_set_old_kernels(old);
   }
   for (int col = 0; col < cols; ++col) {
     if (exact) {
@@ -483,6 +488,21 @@ int main(int argc, char **argv) {
                       &scales[block % 8], 2);
         for (int cols : {1, 3, 8})
           run(formats[3], n, rows, cols, true, w);
+      }
+      {
+        constexpr int rows = 17;
+        const uint16_t scales[] = {0, 0x8000, 1, 0x3ff, 0x400, 0x8400,
+                                   0x8001, 0x7bff};
+        // IQ4_XS uses 16 virtual blocks per iteration. Exercise the partial
+        // ten-block row and a second iteration, with FP16 scale edge cases.
+        for (int n : {2560, 6144}) {
+          auto w = weights(formats[8], n, rows);
+          for (int block = 0; block < rows * (n / 256); ++block)
+            std::memcpy(w.data() + size_t(block) * 136,
+                        &scales[block % 8], 2);
+          for (int cols : {1, 3, 8})
+            run(formats[8], n, rows, cols, true, w);
+        }
       }
       {
         constexpr int rows = 17;

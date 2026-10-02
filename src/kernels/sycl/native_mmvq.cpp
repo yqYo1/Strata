@@ -34,6 +34,7 @@ namespace strata::kernels {
 void native_q5_head_esimd(const void *, const void *, float *, int, int, void *);
 void native_q3_k_esimd(const void *, const void *, float *, int, int, int, void *);
 void native_q2_0_esimd(const void *, const void *, float *, int, int, int, void *);
+void native_iq4_xs_esimd(const void *, const void *, float *, int, int, int, void *);
 void native_q2_grouped_esimd(bool, const NativeExpertLayout &,
                             const unsigned long long *, const int32_t *,
                             const int32_t *, const int32_t *, const int32_t *,
@@ -903,6 +904,11 @@ void native_mmvq(int type, const void *w, const void *x, float *y, int n_in,
     dispatch<SmallTraits<IQ4NLBlock, 4>>(w, x, y, n_in, n_out, ncols, stream);
     break;
   case 23:
+    // Batched columns reuse decoded weights more efficiently in SPMD.
+    if (!iq_old_kernels() && ncols == 1) {
+      native_iq4_xs_esimd(w, x, y, n_in, n_out, ncols, stream);
+      break;
+    }
     dispatch<IQ4XSTraits>(w, x, y, n_in, n_out, ncols, stream);
     break;
   case 42:
