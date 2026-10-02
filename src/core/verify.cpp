@@ -185,7 +185,10 @@ Verifier::~Verifier() {
 #ifdef STRATA_ENABLE_SYCL
     for (auto& window : segments_)
         for (auto e : window) cudaGraphExecDestroy(e);
+    for (auto& window : work_)
+        for (auto e : window) cudaGraphExecDestroy(e);
     if (layer_done_) cudaEventDestroy(layer_done_);
+    if (work_done_) cudaEventDestroy(work_done_);
 #endif
     if (commit_exec_) cudaGraphExecDestroy(commit_exec_);
     if (cs_) cudaStreamDestroy(cs_);
@@ -372,7 +375,10 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
         return false;
     }
 #ifdef STRATA_ENABLE_SYCL
-    if (cudaEventCreateWithFlags(&layer_done_, cudaEventDisableTiming) != cudaSuccess) {
+    const char* overlap = std::getenv("STRATA_SYCL_VERIFY_OVERLAP");
+    overlap_gpu_ = overlap == nullptr || std::strcmp(overlap, "0") != 0;
+    if (cudaEventCreateWithFlags(&layer_done_, cudaEventDisableTiming) != cudaSuccess ||
+        cudaEventCreateWithFlags(&work_done_, cudaEventDisableTiming) != cudaSuccess) {
         err = "verify: layer completion event create failed";
         return false;
     }
@@ -480,6 +486,42 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
             else gdn_idx[(size_t) l] = gi++;
         }
     }
+
+    // Shared work reads only device activation rows. Host routing payloads
+    // have already been copied by pre(), so the CPU may consume those copies.
+    auto shared = [&](int64_t l, int grp) -> bool {
+        const int tb = tb_[grp], te = te_[grp], n = te - tb;
+        const float* xm = mixed_ + (size_t) tb * N;
+        const LayerView v(wt, l);
+        {
+            const WeightRef *wgi = need(v, "ffn_gate_inp_shexp.weight", err), *wsg = need(v, "ffn_gate_shexp.weight", err),
+                            *wsu = need(v, "ffn_up_shexp.weight", err), *wsd = need(v, "ffn_down_shexp.weight", err);
+            if (!wgi || !wsg || !wsu || !wsd) return false;
+            if (!native_of(wsg, v.name("ffn_gate_shexp.weight"), err) || !native_of(wsu, v.name("ffn_up_shexp.weight"), err) ||
+                !native_of(wsd, v.name("ffn_down_shexp.weight"), err))
+                return false;
+            NativeSharedWeights nsw;
+            nsw.gate_type = wsg->native_type; nsw.gate_data = wsg->native_data;
+            nsw.up_type = wsu->native_type; nsw.up_data = wsu->native_data;
+            nsw.down_type = wsd->native_type; nsw.down_data = wsd->native_data;
+            nsw.q8_1 = xq_;
+            if (dec_batch) f32_to_bf16_bulk(mixed_ + tb * N, sh_bf16_ + tb * N, (int64_t) n * N, cs);   // contiguous rows
+            else for (int t = tb; t < te; ++t) f32_to_bf16_bulk(mixed_ + t * N, sh_bf16_ + t * N, N, cs);
+            try {
+                shared_expert_multi(n, xm, sh_bf16_ + tb * N, nsw, (const uint16_t*) wgi->data, sh_gate_ + (size_t) tb * g.n_ff,
+                                    sh_up_ + (size_t) tb * g.n_ff, sh_g_ + tb, shared_ + tb * N, N, g.n_ff, cs);
+            } catch (const std::exception& e) {
+                err = std::string("verify shared expert: ") + e.what();
+                return false;
+            }
+        }
+        if (strata::kernels::cpu::expert_layout().native)
+            quantize_q8_1_rows(xm, n, N, nat_xq_ + (size_t) tb * (N / 32) * 36, cs);
+        else
+            quantize_q8_0_scaled(xm, hit_xq_ + (size_t) tb * (N / 32) * 34, hit_xs_ + (size_t) tb * (N / 32), (int64_t) n * N, cs);
+        stamp(l, 18, grp);
+        return true;
+    };
 
     // ---------------------------------------------------------------- pre(l, group): up to the ring
     auto pre = [&](int64_t l, int grp) -> bool {
@@ -719,34 +761,30 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
         doorbell_publish(xm, ids_ + tb * K, w_ + tb * K, (int64_t) n * N, (int64_t) n * K, m_x_ + tb * N,
                          m_ids_ + tb * K, m_w_ + tb * K, m_seq_, cs);
         stamp(l, 17, grp);
-        {
-            const WeightRef *wgi = need(v, "ffn_gate_inp_shexp.weight", err), *wsg = need(v, "ffn_gate_shexp.weight", err),
-                            *wsu = need(v, "ffn_up_shexp.weight", err), *wsd = need(v, "ffn_down_shexp.weight", err);
-            if (!wgi || !wsg || !wsu || !wsd) return false;
-            if (!native_of(wsg, v.name("ffn_gate_shexp.weight"), err) || !native_of(wsu, v.name("ffn_up_shexp.weight"), err) ||
-                !native_of(wsd, v.name("ffn_down_shexp.weight"), err))
-                return false;
-            NativeSharedWeights nsw;
-            nsw.gate_type = wsg->native_type; nsw.gate_data = wsg->native_data;
-            nsw.up_type = wsu->native_type; nsw.up_data = wsu->native_data;
-            nsw.down_type = wsd->native_type; nsw.down_data = wsd->native_data;
-            nsw.q8_1 = xq_;
-            if (dec_batch) f32_to_bf16_bulk(mixed_ + tb * N, sh_bf16_ + tb * N, (int64_t) n * N, cs);   // contiguous rows
-            else for (int t = tb; t < te; ++t) f32_to_bf16_bulk(mixed_ + t * N, sh_bf16_ + t * N, N, cs);
-            try {
-                shared_expert_multi(n, xm, sh_bf16_ + tb * N, nsw, (const uint16_t*) wgi->data, sh_gate_ + (size_t) tb * g.n_ff,
-                                    sh_up_ + (size_t) tb * g.n_ff, sh_g_ + tb, shared_ + tb * N, N, g.n_ff, cs);
-            } catch (const std::exception& e) {
-                err = std::string("verify shared expert: ") + e.what();
-                return false;
-            }
+#ifdef STRATA_ENABLE_SYCL
+        if (overlap_gpu_) return true;
+#endif
+        return shared(l, grp);
+    };
+
+    auto project_group = [&](int64_t l, int grp, const unsigned long long* gp,
+                             const int32_t* gs, const int32_t* gn, int64_t gy = 0) {
+        const int tb = tb_[grp], n = te_[grp] - tb;
+        const int64_t cap = (int64_t) n * K, capx = (int64_t) max_t_ * K;
+        const int32_t* pl = plan_ + (size_t) grp * (size_t) (plan_i32_ + 16);
+        const int32_t* p_dst = pl + 4 + capx + 1;
+        const int32_t* p_tok = p_dst + capx;
+        float* hit_out = hit_out_ + (size_t) tb * K * N;
+        const auto& lay = strata::kernels::cpu::expert_layout();
+        if (lay.native) {
+            const auto& f = lay.fmt[(size_t) l];
+            const NativeExpertLayout L = native_expert_layout(f.gu_type, f.d_type, f.n_embd, f.n_ff);
+            native_expert_grouped(L, gp, gs, gn, p_dst, p_tok, cap, cap,
+                                  nat_xq_ + (size_t) tb * (N / 32) * 36, hit_scratch_, hit_out, cs, gy);
+        } else {
+            moe_grouped_s2(gp, gs, gn, p_dst, p_tok, cap, cap, hit_xq_ + (size_t) tb * (N / 32) * 34,
+                           hit_xs_ + (size_t) tb * (N / 32), hit_scratch_, hit_out, cs);
         }
-        if (strata::kernels::cpu::expert_layout().native)
-            quantize_q8_1_rows(xm, n, N, nat_xq_ + (size_t) tb * (N / 32) * 36, cs);
-        else
-            quantize_q8_0_scaled(xm, hit_xq_ + (size_t) tb * (N / 32) * 34, hit_xs_ + (size_t) tb * (N / 32), (int64_t) n * N, cs);
-        stamp(l, 18, grp);
-        return true;
     };
 
     // ---------------------------------------------------------------- post(l, group): experts, combine
@@ -755,6 +793,9 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
         const uint32_t ring = (uint32_t) ((l - lb_) * G + grp + 1);
         const int64_t cap = (int64_t) n * K, capx = (int64_t) max_t_ * K;
         int32_t* pl = plan_ + (size_t) grp * (size_t) (plan_i32_ + 16);
+#ifdef STRATA_ENABLE_SYCL
+        if (!overlap_gpu_) {
+#endif
         if (device_plan_) {   // E-6: skipped when the device planned this group (all its experts resident)
             wait_flag_ge_or(m_flagA_, ring, skip_ + grp, cs);
             copy_i32_from_mapped_unless(pl, m_plan_ + (size_t) grp * (size_t) plan_i32_, plan_i32_, skip_ + grp, ring, cs);
@@ -764,32 +805,27 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
 #endif
             copy_i32_from_mapped(pl, m_plan_ + (size_t) grp * (size_t) plan_i32_, plan_i32_, cs);
         }
+#ifdef STRATA_ENABLE_SYCL
+        }
+#endif
         stamp(l, 19, grp);
         const int32_t* p_counts = pl;
         const int32_t* p_start = pl + 4;
         const int32_t* p_dst = p_start + capx + 1;
-        const int32_t* p_tok = p_dst + capx;
         const int64_t ptr_off = ((4 + (capx + 1) + 2 * capx) + 1) & ~1ll;
         const unsigned long long* p_ptr = (const unsigned long long*) (pl + ptr_off);
         const unsigned long long* p_ptr2 = p_ptr + capx;
         const int32_t* p_start2 = pl + ptr_off + 4 * capx;
         float* hit_out = hit_out_ + (size_t) tb * K * N;
         const auto& lay = strata::kernels::cpu::expert_layout();
-        // plan v0.3 P6: the VRAM groups now; the PCIe groups once the copy engine has landed them in staging.
-        // `gy`: the native launch's groups side by side (0: cap, one block row per possible group).
+        // The VRAM groups now; the PCIe groups once the copy engine has landed them.
         auto grouped = [&](const unsigned long long* gp, const int32_t* gs, const int32_t* gn, int64_t gy) {
-            if (lay.native) {
-                // the layer's GGUF formats (i-quant gate/up, Q2_0 / IQ4_NL down)
-                const auto& f = lay.fmt[(size_t) l];
-                const NativeExpertLayout L = native_expert_layout(f.gu_type, f.d_type, f.n_embd, f.n_ff);
-                native_expert_grouped(L, gp, gs, gn, p_dst, p_tok, cap, cap,
-                                      nat_xq_ + (size_t) tb * (N / 32) * 36, hit_scratch_, hit_out, cs, gy);
-            } else {
-                moe_grouped_s2(gp, gs, gn, p_dst, p_tok, cap, cap, hit_xq_ + (size_t) tb * (N / 32) * 34,
-                               hit_xs_ + (size_t) tb * (N / 32), hit_scratch_, hit_out, cs);
-            }
+            project_group(l, grp, gp, gs, gn, gy);
         };
-        grouped(p_ptr, p_start, p_counts, 0);
+#ifdef STRATA_ENABLE_SYCL
+        if (!overlap_gpu_)
+#endif
+            grouped(p_ptr, p_start, p_counts, 0);
         stamp(l, 20, grp);
         if (device_plan_) wait_flag_ge_or(m_flagB_, ring, skip_ + grp, cs);
         else {
@@ -852,6 +888,19 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
             // Nothing submitted here may read the host plan/results before the
             // caller completes the preceding segment and serves this group.
             if (!end_segment(T, err)) return false;
+            if (overlap_gpu_) {
+                if (cudaStreamBeginCapture(cs, cudaStreamCaptureModeThreadLocal) != cudaSuccess) {
+                    err = "verify: begin shared/hit capture failed";
+                    return false;
+                }
+                if (!shared(l, grp)) return false;
+                int32_t* pl = plan_ + (size_t) grp * (size_t) (plan_i32_ + 16);
+                copy_i32_from_mapped(pl, m_plan_ + (size_t) grp * (size_t) plan_i32_, plan_i32_, cs);
+                const int64_t capx = (int64_t) max_t_ * K;
+                const int64_t ptr_off = ((4 + (capx + 1) + 2 * capx) + 1) & ~1ll;
+                project_group(l, grp, (const unsigned long long*) (pl + ptr_off), pl + 4, pl);
+                if (!end_segment(T, err, true)) return false;
+            }
             if (cudaStreamBeginCapture(cs, cudaStreamCaptureModeThreadLocal) != cudaSuccess) {
                 err = "verify: begin layer segment capture failed";
                 return false;
@@ -933,7 +982,7 @@ std::string Verifier::profile_report() {
 }
 
 #ifdef STRATA_ENABLE_SYCL
-bool Verifier::end_segment(int T, std::string& err) {
+bool Verifier::end_segment(int T, std::string& err, bool work) {
     cudaGraph_t graph = nullptr;
     const cudaError_t ce = cudaStreamEndCapture(cs_, &graph);
     if (ce != cudaSuccess) {
@@ -947,7 +996,7 @@ bool Verifier::end_segment(int T, std::string& err) {
         err = std::string("verify: instantiate segment: ") + cudaGetErrorString(ie);
         return false;
     }
-    segments_[T].push_back(exec);
+    (work ? work_[T] : segments_[T]).push_back(exec);
     return true;
 }
 #endif
@@ -968,10 +1017,14 @@ bool Verifier::capture(int T, std::string& err) {
         cudaGetLastError();
         for (auto e : segments_[T]) cudaGraphExecDestroy(e);
         segments_[T].clear();
+        for (auto e : work_[T]) cudaGraphExecDestroy(e);
+        work_[T].clear();
         return false;
     }
     std::fprintf(stderr, "strata verify: captured the %d-token window in %zu event-completed segments\n",
                  T, segments_[T].size());
+    if (overlap_gpu_)
+        std::fprintf(stderr, "strata verify: %zu shared/hit graphs can overlap CPU experts\n", work_[T].size());
     return true;
 #else
     if (exec_[T] != nullptr) return true;
@@ -1208,11 +1261,23 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         VDBG("layer %lld rang\n", (long long) l);
         cur_layer_ = want - 1;
         set_plan_slot(grp);
+#ifdef STRATA_ENABLE_SYCL
+        work_launched_ = false;
+        work_status_ = cudaSuccess;
+#endif
         const int tb = gtb[grp], n = gte[grp] - gtb[grp];
         progress_at("verify window: the CPU experts of layer", l);
         if (pool != nullptr)
             pool(user, h_x_ + (size_t) tb * g.n_embd, h_ids_ + (size_t) tb * ss.k, n, ss.k,
                  h_ymiss_ + (size_t) tb * ss.k * g.n_embd, l);
+#ifdef STRATA_ENABLE_SYCL
+        if (overlap_gpu_ && work_launched_ && work_status_ == cudaSuccess) {
+            const auto status = cudaEventQuery(work_done_);
+            if (status == cudaSuccess) ++work_ready_at_pool_return;
+            else if (status == cudaErrorNotReady) ++work_pending_at_pool_return;
+            else work_status_ = status;
+        }
+#endif
         VDBG("layer %lld served\n", (long long) l);
         progress_tick();
         std::atomic_thread_fence(std::memory_order_seq_cst);
@@ -1227,6 +1292,16 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
             *(volatile uint32_t*) h_flagA_ = want;
             raise_flag(h_flagB_, want);
         }
+#ifdef STRATA_ENABLE_SYCL
+        // A pool without a publish callback still needs shared work and an
+        // empty GPU plan. Its graph starts here, after the CPU callback.
+        if (overlap_gpu_ && !work_launched_ && work_status_ == cudaSuccess) launch_work();
+        if (work_status_ != cudaSuccess) {
+            err = std::string("verify: shared/hit launch: ") + cudaGetErrorString(work_status_) +
+                  released_note(release_gpu_waits(5000));
+            return false;
+        }
+#endif
         if (!(test_stall && k + 1 == steps)) *flag = want;
         ms_wait += std::chrono::duration<double, std::milli>(b - a).count();
         ms_pool += ms_since(b);
@@ -1311,6 +1386,28 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         }
     }
     for (int t = 0; t < T; ++t) out[t] = ((volatile int32_t*) h_out_)[t];
+#ifdef STRATA_ENABLE_SYCL
+    // Optional complete-window diagnostic. It includes rejected draft rows;
+    // the ordinary emitted-token dump cannot check those. No reads when unset.
+    static const char* window_dump = std::getenv("STRATA_SYCL_VERIFY_LOGITS");
+    if (window_dump != nullptr && *window_dump) {
+        std::vector<float> values((size_t) T * (size_t) n_vocab_);
+        if (cudaMemcpy(values.data(), head_logits_, values.size() * sizeof(float),
+                       cudaMemcpyDeviceToHost) != cudaSuccess) {
+            err = "verify: copying diagnostic window logits failed";
+            return false;
+        }
+        std::FILE* file = std::fopen(window_dump, "ab");
+        if (file == nullptr) { err = "verify: opening diagnostic window logits failed"; return false; }
+        const int32_t shape[2] = {T, (int32_t) n_vocab_};
+        const bool written = std::fwrite(&pos0, sizeof(pos0), 1, file) == 1 &&
+            std::fwrite(shape, sizeof(int32_t), 2, file) == 2 &&
+            std::fwrite(tokens, sizeof(int32_t), T, file) == size_t(T) &&
+            std::fwrite(values.data(), sizeof(float), values.size(), file) == values.size();
+        const bool closed = std::fclose(file) == 0;
+        if (!written || !closed) { err = "verify: writing diagnostic window logits failed"; return false; }
+    }
+#endif
     if (static const bool dbg = std::getenv("STRATA_DBG_NAN") != nullptr; dbg) {   // debug: the first non-finite head
         static bool reported = false;
         if (!reported) {
@@ -1387,7 +1484,30 @@ void Verifier::publish_plan(void* ctx) {
     Verifier* v = (Verifier*) ctx;
     _mm_sfence();
     *(volatile uint32_t*) v->h_flagA_ = v->cur_layer_ + 1;
+#ifdef STRATA_ENABLE_SYCL
+    if (v->overlap_gpu_) v->launch_work();
+#endif
 }
+
+#ifdef STRATA_ENABLE_SYCL
+void Verifier::launch_work() {
+    const size_t index = cur_layer_.load();
+    if (released_.load() || work_launched_ || last_t_ < 1 || last_t_ > max_t_ ||
+        index >= work_[last_t_].size()) {
+        work_status_ = cudaErrorInvalidValue;
+        return;
+    }
+    // pre() completed before the CPU read its payload. The published plan is
+    // now stable until the next completed layer; CPU workers write y_miss only.
+    work_status_ = strata::sycl_backend::compat::graph_launch_with_completion(
+        work_[last_t_][index], cs_, work_done_);
+    if (work_status_ == cudaSuccess) {
+        work_launched_ = true;
+        const auto status = cudaEventQuery(work_done_); // start work before CPU rows
+        if (status != cudaSuccess && status != cudaErrorNotReady) work_status_ = status;
+    }
+}
+#endif
 
 bool Verifier::window_logprobs(const int32_t* targets, int T, int64_t pos0, int32_t extra_id, std::FILE* out,
                                std::string& err) {
