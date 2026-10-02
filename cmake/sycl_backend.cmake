@@ -19,9 +19,11 @@ target_link_libraries(strata-device PRIVATE strata_core)
 add_library(strata_kernels STATIC src/kernels/sycl/elementwise.cpp src/kernels/sycl/router.cpp
                                  src/kernels/sycl/native_router.cpp src/kernels/sycl/gdn.cpp
                                  src/kernels/sycl/quantize_act.cpp src/kernels/sycl/bf16_gemv.cpp
-                                 src/kernels/sycl/native_mmvq.cpp src/kernels/sycl/gr.cpp)
+                                 src/kernels/sycl/native_mmvq.cpp src/kernels/sycl/gr.cpp
+                                 src/kernels/sycl/rope.cpp)
 target_link_libraries(strata_kernels PUBLIC strata_core strata_artifact)
 target_compile_options(strata_kernels PRIVATE -ffp-contract=off)
+set_source_files_properties(src/kernels/sycl/rope.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math")
 
 option(STRATA_SYCL_TESTS "Build GPU parity and runtime tests for SYCL" ON)
 if(STRATA_SYCL_TESTS)
@@ -62,4 +64,10 @@ if(STRATA_SYCL_TESTS)
   target_compile_options(sycl_gr_test PRIVATE -fno-fast-math -ffp-contract=off)
   add_test(NAME sycl_gr COMMAND sycl_gr_test)
   set_tests_properties(sycl_gr PROPERTIES TIMEOUT 90)
+  add_executable(sycl_rope_test tests/sycl/rope.cpp)
+  target_link_libraries(sycl_rope_test PRIVATE strata_kernels)
+  target_compile_options(sycl_rope_test PRIVATE -fno-fast-math -ffp-contract=off)
+  add_test(NAME sycl_rope COMMAND sycl_rope_test)
+  add_test(NAME sycl_rope_table COMMAND sycl_rope_test --table)
+  set_tests_properties(sycl_rope sycl_rope_table PROPERTIES TIMEOUT 90)
 endif()

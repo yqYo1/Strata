@@ -14,7 +14,7 @@ source /opt/intel/oneapi/setvars.sh
 export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
 cmake -S . -B build-sycl -DCMAKE_CXX_COMPILER=icpx \
   -DSTRATA_ENABLE_SYCL=ON -DSTRATA_NATIVE_EXPERTS=OFF -DSTRATA_BUILD_TESTS=OFF
-cmake --build build-sycl --target strata-device sycl_runtime_test sycl_kernels_test sycl_gdn_test sycl_quantize_test sycl_bf16_test sycl_mmvq_test sycl_gr_test -j2
+cmake --build build-sycl --target strata-device sycl_runtime_test sycl_kernels_test sycl_gdn_test sycl_quantize_test sycl_bf16_test sycl_mmvq_test sycl_gr_test sycl_rope_test -j2
 ctest --test-dir build-sycl -R '^sycl_' --output-on-failure
 build-sycl/strata-device --list-devices
 ```
@@ -98,6 +98,14 @@ settings; see the research document for the machine configuration:
   FP32 and native MMVF modes. Checks include per-stream normalization,
   activation rounding, all projections, absent head injection, saturated/zero
   gates, exact in-place writes, workspace sizing and output canaries.
+- NEOX RoPE at positions 0 through 262,144, widths 128/256, unscaled,
+  linear and YaRN scaling, text/image positions and in-place updates: table
+  rotations matched bit for bit. Analytic rotations used 32 host-libm float32
+  frequencies captured by value and strict host floating-point compilation;
+  the maximum absolute difference from the float32 CPU reference was
+  `2.385e-7`. Standard SYCL device `pow` had produced up to `0.02439` on the
+  same inputs. This is a correctness measurement, not a speed comparison.
+  Registered angle tables currently belong to runtime device 0.
 - Native Q8_1 and MMVQ for Q2_0, Q4_0, Q5_0, Q8_0, Q3_K, Q4_K, Q5_K,
   Q6_K, IQ4_NL and IQ4_XS: 150 synthetic cases passed, including small/large
   reduction widths, row tails, 1/3/8 columns and both multi-column layouts.
