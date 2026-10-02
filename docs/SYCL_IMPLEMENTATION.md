@@ -908,6 +908,44 @@ and 19/28 accepted drafts; it does not establish MTP throughput. Background
 workloads were not isolated. Settings and raw measurements are in
 [`bench/results/2026-10-03-sycl-native-half/`](../bench/results/2026-10-03-sycl-native-half/).
 
+### Single-column Q4_K ESIMD projections
+
+Q4_K single-column projections use packed DP4A in a 16-lane ESIMD kernel.
+Eight accumulators preserve the original 128 virtual lanes, ascending
+cross-warp sums and XOR reduction. The affine scale products round before
+subtraction and accumulation. This source uses the same strict floating-point
+compile settings as the other ESIMD projection kernels. Batched columns retain
+the SPMD implementation that reuses decoded weights. The old-kernel setting
+selects the SPMD single-column oracle too.
+
+On 2026-10-03, B570/5600X, all 38 complete dense Q4_K matrices were bitwise equal
+to the original SPMD outputs. Their warm single-column sum was `2.221 ms` before
+and `0.889 ms` after (`2.50x`), using 50 captured repeats and the median of three
+device-event intervals. This excludes CPU expert work and generation.
+
+With the cold 37-token story, 4,135 fixed cache slots, resident RAM, four workers,
+PLE RAM I/O, prefill 16, context 512 and speculation disabled:
+
+| Trial | SPMD Q4_K, token/s | ESIMD Q4_K, token/s |
+| --- | ---: | ---: |
+| 1 | 21.29 | 21.61 |
+| 2 | 21.01 | 21.84 |
+| 3 | 20.21 | 20.89 |
+
+The medians were `21.01` and `21.61 token/s` (`+2.9%`). All six runs produced the
+same 128 ids and cache hit counts. All 32 cold logit rows and 165 fixed-input
+rows were bitwise equal. The test covers both affine FP16 scales, subnormal and
+negative scales, partial block iterations, row tails and 1/3/8 activation
+columns. The real-weight check passed all 448 tensors. A functional MTP probe
+retained its 32 ids and 19/28 accepted drafts.
+
+Background workloads were not isolated. PLE RAM pages were touched at startup;
+locking failed, so later residency is not guaranteed. Loading time is excluded
+from decode timing. Full settings, measurements and complete-row comparisons
+are in
+[`bench/results/2026-10-03-sycl-q4k-esimd/`](../bench/results/2026-10-03-sycl-q4k-esimd/).
+The projection tool provides `--spmd-q4k` and `--compare-q4k` for these checks.
+
 ### Event-completed speculative windows
 
 SYCL verification captures the window in segments. The first segment embeds
