@@ -20,7 +20,7 @@ add_executable(strata-device src/core/device_main.cpp)
 target_link_libraries(strata-device PRIVATE strata_core)
 
 add_library(strata_kernels STATIC src/kernels/sycl/elementwise.cpp src/kernels/sycl/router.cpp
-                                 src/kernels/sycl/native_router.cpp src/kernels/sycl/gdn.cpp src/kernels/sycl/fused_gdn.cpp
+                                 src/kernels/sycl/native_router.cpp src/kernels/sycl/gdn.cpp src/kernels/sycl/fused_gdn.cpp src/kernels/sycl/sampler.cpp
                                  src/kernels/sycl/quantize_act.cpp src/kernels/sycl/bf16_gemv.cpp
                                  src/kernels/sycl/native_mmvq.cpp src/kernels/sycl/gr.cpp
                                  src/kernels/sycl/rope.cpp src/kernels/sycl/kv.cpp
@@ -28,7 +28,7 @@ add_library(strata_kernels STATIC src/kernels/sycl/elementwise.cpp src/kernels/s
                                  src/kernels/sycl/native_qsa_indexer.cpp src/kernels/sycl/qsa_select.cpp
                                  src/kernels/sycl/decode_attention.cpp src/kernels/sycl/kv_stream.cpp
                                  src/kernels/sycl/ple.cpp src/kernels/sycl/s2_gemv_q8.cpp src/kernels/sycl/s_gemv.cpp src/kernels/sycl/shared_expert.cpp src/kernels/sycl/iq.cpp
-                                 src/kernels/ngram.cpp src/ngram/ple_reader.cpp)
+                                 src/kernels/ngram.cpp src/ngram/ple_reader.cpp src/platform/direct_file.cpp)
 target_link_libraries(strata_kernels PUBLIC strata_core strata_artifact)
 target_compile_options(strata_kernels PRIVATE -ffp-contract=off)
 set_source_files_properties(src/kernels/sycl/rope.cpp src/kernels/sycl/native_qsa_indexer.cpp src/kernels/sycl/ple.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math")
@@ -37,6 +37,11 @@ add_library(strata_engine STATIC src/core/layer.cpp src/core/session.cpp src/cor
   src/core/expert_cache.cpp src/core/native_head.cpp src/core/native_dense.cpp src/core/verify.cpp src/core/mtp.cpp
   src/core/conversation_snapshot.cpp src/core/conversation_state.cpp src/core/conversation_memory.cpp)
 target_link_libraries(strata_engine PUBLIC strata_core strata_kernels strata_kernels_cpu)
+
+add_library(strata_prefill STATIC src/prefill/prefill.cpp)
+target_link_libraries(strata_prefill PUBLIC strata_engine)
+add_executable(strata EXCLUDE_FROM_ALL src/program/generate.cpp)
+target_link_libraries(strata PRIVATE strata_prefill strata_spec)
 
 option(STRATA_SYCL_TESTS "Build GPU parity and runtime tests for SYCL" ON)
 if(STRATA_SYCL_TESTS)
@@ -65,6 +70,16 @@ if(STRATA_SYCL_TESTS)
   target_compile_options(sycl_fused_gdn_test PRIVATE -fno-fast-math -ffp-contract=off)
   add_test(NAME sycl_fused_gdn COMMAND sycl_fused_gdn_test)
   set_tests_properties(sycl_fused_gdn PROPERTIES TIMEOUT 90)
+  add_executable(sycl_coupled_sampler_test tests/sycl/coupled_sampler.cpp)
+  target_link_libraries(sycl_coupled_sampler_test PRIVATE strata_kernels)
+  target_compile_options(sycl_coupled_sampler_test PRIVATE -fno-fast-math -ffp-contract=off)
+  add_test(NAME sycl_coupled_sampler COMMAND sycl_coupled_sampler_test)
+  set_tests_properties(sycl_coupled_sampler PROPERTIES TIMEOUT 90)
+  add_executable(sycl_sampler_test src/kernels/sampler_parity.cpp)
+  target_link_libraries(sycl_sampler_test PRIVATE strata_kernels)
+  target_compile_options(sycl_sampler_test PRIVATE -fno-fast-math -ffp-contract=off)
+  add_test(NAME sycl_sampler COMMAND sycl_sampler_test)
+  set_tests_properties(sycl_sampler PROPERTIES TIMEOUT 120)
   add_executable(sycl_gdn_test tests/sycl/gdn.cpp)
   target_link_libraries(sycl_gdn_test PRIVATE strata_kernels)
   target_compile_options(sycl_gdn_test PRIVATE -fno-fast-math -ffp-contract=off)

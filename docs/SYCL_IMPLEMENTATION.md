@@ -14,7 +14,7 @@ source /opt/intel/oneapi/setvars.sh
 export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
 cmake -S . -B build-sycl -DCMAKE_CXX_COMPILER=icpx \
   -DSTRATA_ENABLE_SYCL=ON -DSTRATA_NATIVE_EXPERTS=OFF -DSTRATA_BUILD_TESTS=OFF
-cmake --build build-sycl --target strata-device sycl_host_engine_test sycl_compat_test sycl_runtime_test sycl_kernels_test sycl_gdn_test sycl_fused_gdn_test sycl_quantize_test sycl_bf16_test sycl_mmvq_test sycl_gr_test sycl_rope_test sycl_kv_test sycl_attention_test sycl_qsa_index_test sycl_decode_attention_test sycl_ple_test sycl_moe_test -j2
+cmake --build build-sycl --target strata-device sycl_host_engine_test sycl_compat_test sycl_runtime_test sycl_kernels_test sycl_gdn_test sycl_fused_gdn_test sycl_sampler_test sycl_coupled_sampler_test sycl_quantize_test sycl_bf16_test sycl_mmvq_test sycl_gr_test sycl_rope_test sycl_kv_test sycl_attention_test sycl_qsa_index_test sycl_decode_attention_test sycl_ple_test sycl_moe_test -j2
 ctest --test-dir build-sycl -R '^sycl_' --output-on-failure
 build-sycl/strata-device --list-devices
 ```
@@ -99,6 +99,16 @@ settings; see the research document for the machine configuration:
 - Packed 2/4/8-bit embedding gathers, expert row exclusion and event-completed
   payload publication: passed. GPU polling for CPU-written flags is explicitly
   rejected; the scheduler must use events.
+- Sampling: the existing sampler parity suite passed, including the full
+  248,320-token vocabulary, all 64 shortlist positions under ties, signed
+  zeros/NaNs/infinities, penalties, filter ordering, counter segmentation and
+  graph capture/replay. The SYCL baseline selects in one work-group per row;
+  its ordered FP64 tail preserves the engine's counter-based draw contract.
+  Coupled draft sampling passed 64 captured rounds of three chained draws with
+  changing parameters, full/subset token maps, penalties, probabilities,
+  history updates and buffer guards against a CPU reference. These kernels
+  allocate no memory during capture or replay. Split-vocabulary selection is
+  not yet implemented in this backend.
 - Fused GDN: convolution/SiLU/L2, BF16 alpha/beta projection and recurrent
   update/output normalization passed double-precision CPU checks for 1/3/8
   tokens at 1/1 and 2/6 key/value heads. Batched outputs and committed state
