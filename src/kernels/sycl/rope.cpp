@@ -246,3 +246,56 @@ void native_rope_apply(const float *x, float *out, int rows, int width,
       });
 }
 } // namespace strata::kernels
+
+namespace strata::prefill {
+void rope(float *x, int64_t T, int64_t heads, int64_t dim, int64_t ld,
+          int64_t pos0, const strata::kernels::RopeScaling &sc, void *stream) {
+  using namespace strata::kernels;
+  using namespace strata::sycl_backend;
+  if (T <= 0 || heads <= 0 || dim < 64 ||
+      ld < int64_t(checked_count(heads, dim)) || pos0 < 0 || T > INT32_MAX ||
+      pos0 > INT32_MAX - T || rope_scaling_invalid(sc))
+    throw std::invalid_argument("invalid SYCL prompt RoPE shape or scaling");
+  size_t count = checked_count(T, ld);
+  if (count > SIZE_MAX / 4)
+    throw std::invalid_argument("SYCL prompt RoPE span overflow");
+  validate_spans({{x, count * 4}}, {});
+  const auto m = mrope_table();
+  const auto tab = rope_table_for(sc);
+  auto &q = queue_for(stream);
+  validate_registry_queue(q, m, tab);
+  if (tab.cos)
+    validate_spans({{x, count * 4}}, {{tab.cos, size_t(tab.max_pos) * 128},
+                                      {tab.sin, size_t(tab.max_pos) * 128}});
+  const float theta_scale = std::pow(float(sc.freq_base), -2.f / 64.f);
+  std::array<float, 32> frequencies;
+  for (int i = 0; i < 32; ++i)
+    frequencies[i] = std::pow(theta_scale, float(i));
+  const auto k = sc.kernel_args(64);
+  auto event = q.parallel_for(
+      sycl::range<2>(size_t(T) * heads, 32), [=](sycl::id<2> id) {
+        const size_t t = id[0] / heads, head = id[0] % heads,
+                     start = t * ld + head * dim;
+        const int pair = id[1], p = position(m, int(pos0 + t), pair);
+        float c, s;
+        if (tab.cos && p >= 0 && p < tab.max_pos) {
+          c = tab.cos[size_t(p) * 32 + pair];
+          s = tab.sin[size_t(p) * 32 + pair];
+        } else {
+          float extrap = float(p) * frequencies[pair],
+                angle = k.freq_scale * extrap, magnitude = k.attn_factor;
+          if (k.ext_factor != 0.f) {
+            float ramp =
+                rope_yarn_ramp(k.corr_low, k.corr_high, pair) * k.ext_factor;
+            angle = angle * (1.f - ramp) + extrap * ramp;
+            magnitude *= 1.f + .1f * sycl::log(1.f / k.freq_scale);
+          }
+          c = sycl::cos(angle) * magnitude;
+          s = sycl::sin(angle) * magnitude;
+        }
+        const float a = x[start + pair], b = x[start + pair + 32];
+        rope_neox_pair(a, b, c, s, x[start + pair], x[start + pair + 32]);
+      });
+  finish(stream, event);
+}
+} // namespace strata::prefill

@@ -19,14 +19,14 @@ target_link_libraries(strata_core PUBLIC strata_sycl_runtime strata_plan)
 add_executable(strata-device src/core/device_main.cpp)
 target_link_libraries(strata-device PRIVATE strata_core)
 
-add_library(strata_kernels STATIC src/kernels/sycl/elementwise.cpp src/kernels/sycl/router.cpp
+add_library(strata_kernels STATIC src/kernels/sycl/elementwise.cpp src/kernels/sycl/cvec.cpp src/kernels/sycl/router.cpp
                                  src/kernels/sycl/native_router.cpp src/kernels/sycl/gdn.cpp src/kernels/sycl/fused_gdn.cpp src/kernels/sycl/sampler.cpp src/kernels/sycl/sequence.cpp
                                  src/kernels/sycl/quantize_act.cpp src/kernels/sycl/bf16_gemv.cpp
                                  src/kernels/sycl/native_mmvq.cpp src/kernels/sycl/gr.cpp src/kernels/sycl/fused_gr.cpp
                                  src/kernels/sycl/rope.cpp src/kernels/sycl/kv.cpp
                                  src/kernels/sycl/attention.cpp src/kernels/sycl/native_flash_attn.cpp src/kernels/sycl/qsa_index.cpp
                                  src/kernels/sycl/native_qsa_indexer.cpp src/kernels/sycl/qsa_select.cpp
-                                 src/kernels/sycl/decode_attention.cpp src/kernels/sycl/kv_stream.cpp
+                                 src/kernels/sycl/decode_attention.cpp src/kernels/sycl/prompt_attention.cpp src/kernels/sycl/kv_stream.cpp
                                  src/kernels/sycl/ple.cpp src/kernels/sycl/s2_gemv_q8.cpp src/kernels/sycl/s_gemv.cpp src/kernels/sycl/shared_expert.cpp src/kernels/sycl/iq.cpp
                                  src/kernels/ngram.cpp src/ngram/ple_reader.cpp src/platform/direct_file.cpp)
 target_link_libraries(strata_kernels PUBLIC strata_core strata_artifact)
@@ -41,7 +41,7 @@ target_link_libraries(strata_engine PUBLIC strata_core strata_kernels strata_ker
 set(MKL_LINK dynamic)
 set(MKL_THREADING sequential)
 find_package(MKL CONFIG REQUIRED)
-add_library(strata_prefill STATIC src/prefill/prefill.cpp src/prefill/sycl/gemm.cpp src/prefill/sycl/postops.cpp)
+add_library(strata_prefill STATIC src/prefill/prefill.cpp src/prefill/sycl/gemm.cpp src/prefill/sycl/postops.cpp src/prefill/sycl/blob.cpp)
 target_link_libraries(strata_prefill PUBLIC strata_engine MKL::MKL_SYCL::BLAS)
 target_compile_options(strata_prefill PRIVATE -fno-fast-math -ffp-contract=off)
 add_executable(strata EXCLUDE_FROM_ALL src/program/generate.cpp)
@@ -50,6 +50,16 @@ target_link_libraries(strata PRIVATE strata_prefill strata_spec)
 option(STRATA_SYCL_TESTS "Build GPU parity and runtime tests for SYCL" ON)
 if(STRATA_SYCL_TESTS)
   enable_testing()
+  add_executable(sycl_cvec_parity_test src/kernels/cvec_parity.cpp)
+  target_link_libraries(sycl_cvec_parity_test PRIVATE strata_kernels)
+  target_compile_options(sycl_cvec_parity_test PRIVATE -fno-fast-math -ffp-contract=off)
+  add_test(NAME sycl_cvec_parity COMMAND sycl_cvec_parity_test)
+  set_tests_properties(sycl_cvec_parity PROPERTIES TIMEOUT 90)
+  add_executable(sycl_cvec_graph_test tests/sycl/cvec_graph.cpp)
+  target_link_libraries(sycl_cvec_graph_test PRIVATE strata_kernels)
+  target_compile_options(sycl_cvec_graph_test PRIVATE -fno-fast-math -ffp-contract=off)
+  add_test(NAME sycl_cvec_graph COMMAND sycl_cvec_graph_test)
+  set_tests_properties(sycl_cvec_graph PROPERTIES TIMEOUT 90)
   add_executable(sycl_host_engine_test tests/sycl/host_engine.cpp)
   target_link_libraries(sycl_host_engine_test PRIVATE strata_engine)
   add_test(NAME sycl_host_engine COMMAND sycl_host_engine_test)
@@ -94,6 +104,16 @@ if(STRATA_SYCL_TESTS)
   target_compile_options(sycl_coupled_sampler_test PRIVATE -fno-fast-math -ffp-contract=off)
   add_test(NAME sycl_coupled_sampler COMMAND sycl_coupled_sampler_test)
   set_tests_properties(sycl_coupled_sampler PROPERTIES TIMEOUT 90)
+  add_executable(sycl_prefill_storage_test tests/sycl/prefill_storage.cpp)
+  target_link_libraries(sycl_prefill_storage_test PRIVATE strata_prefill)
+  target_compile_options(sycl_prefill_storage_test PRIVATE -fno-fast-math -ffp-contract=off)
+  add_test(NAME sycl_prefill_storage COMMAND sycl_prefill_storage_test)
+  set_tests_properties(sycl_prefill_storage PROPERTIES TIMEOUT 90)
+  add_executable(sycl_prefill_state_test tests/sycl/prefill_state.cpp)
+  target_link_libraries(sycl_prefill_state_test PRIVATE strata_prefill)
+  target_compile_options(sycl_prefill_state_test PRIVATE -fno-fast-math -ffp-contract=off)
+  add_test(NAME sycl_prefill_state COMMAND sycl_prefill_state_test)
+  set_tests_properties(sycl_prefill_state PROPERTIES TIMEOUT 90)
   add_executable(sycl_prefill_postops_test tests/sycl/prefill_postops.cpp)
   target_link_libraries(sycl_prefill_postops_test PRIVATE strata_prefill)
   target_compile_options(sycl_prefill_postops_test PRIVATE -fno-fast-math -ffp-contract=off)

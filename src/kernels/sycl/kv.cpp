@@ -3,6 +3,7 @@
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/kernels/kv_q4.hpp"
 #include "strata/kernels/kv_q8.hpp"
+#include "strata/prefill/kernels.hpp"
 #include "strata/sycl/launch.hpp"
 #include <climits>
 #include <sycl/ext/intel/math.hpp>
@@ -341,3 +342,25 @@ void fwht256_cuda(const float *src, float *dst, int64_t rows, void *stream) {
   sycl_backend::finish(stream, e);
 }
 } // namespace strata::kernels
+
+namespace strata::prefill {
+void kv_append(const float *K, const float *V, int64_t T, int64_t pos0,
+               const int32_t *table, int64_t page_size, uint16_t *k,
+               uint16_t *v, int8_t *kq, int8_t *vq, uint16_t *ks, uint16_t *vs,
+               void *stream, const strata::kernels::KvHostPools *host,
+               const strata::kernels::KvHostPools *stage) {
+  using namespace strata::kernels;
+  QsaShapes shape{};
+  shape.n_head_kv = 2;
+  shape.head_dim = 256;
+  shape.page_size = page_size;
+  if (k)
+    append<kKvF16>({k, v}, table, nullptr, pos0, T, K, V, shape, stream,
+                   host ? *host : KvHostPools{},
+                   stage ? *stage : KvHostPools{});
+  else
+    append<kKvInt8>({kq, vq, ks, vs}, table, nullptr, pos0, T, K, V, shape,
+                    stream, host ? *host : KvHostPools{},
+                    stage ? *stage : KvHostPools{});
+}
+} // namespace strata::prefill
