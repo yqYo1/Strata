@@ -1,0 +1,165 @@
+strata generate: PCIe probe: 6.5 GB/s host->device -> pcie_frac 0.14 (default 0.55)
+strata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)
+strata generate: native pack: /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-q2_0 experts (largest blob 1.38 MB), token embedding Q3_K in mapped host memory (260 MiB)
+strata generate: 1416 MiB of weights loaded from /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-q2_0 (303 canonical tensors skipped: served natively)
+strata generate: 301 native projection matrices, 1376.20 MiB of weights
+strata: PLE table mlock failed (Cannot allocate memory; raise `ulimit -l`): touching its pages instead
+strata generate: PLE table loaded (not locked) (--ple-io ram) in 1.6 s
+strata generate: PLE on, table 320001536 rows of /home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-q2_0/Q2_0/Qwen3.8-Flash-Next-GSQ-RCO-Q2_0-00002-of-00002.gguf
+strata generate: GPU 0: Intel(R) Arc(TM) B570 Graphics (SYCL)
+strata generate: expert arena: mlock failed (raise ulimit -l); SYCL ordinary host arena; MAP_HUGETLB unavailable (no hugetlb pool configured?); using 4 KB pages
+strata generate: loaded 31.64 GiB at 1.30 GiB/s
+strata generate: experimental native Q5_K head, 437043200 bytes
+strata generate: expert cache 4135 slots, 5.32 GiB of VRAM; policy is
+strata generate: SYCL cached experts use native Q8_1 arithmetic; logits can differ from CPU experts.
+                 R4.2g PER-LAYER: each layer owns 86 slots (0..85).
+strata generate: native GPU hit kernels captured at session setup
+strata generate: R4 hit path ON - resident experts are computed on the GPU
+strata generate: 4 expert-pool workers + the host thread
+strata generate: session is up (engine 0.1.34)
+strata generate: sampling greedy
+strata generate: prompt path allocates its own buffers (no cache slots to borrow)
+strata generate: prefill 36 tokens in 3 chunks, 5308.9 ms (6.8 tok/s); experts streamed 7882 (0 by DMA, host 2452.8 ms), resident 0; PLE 2.8 ms
+strata generate: position 36, token 271 (prompt)
+strata generate: position 37, token 760
+strata generate: position 38, token 10849
+strata generate: position 39, token 88851
+strata generate: position 40, token 2272
+strata generate: position 41, token 279
+strata generate: position 42, token 3136
+strata generate: position 43, token 24520
+strata generate: position 44, token 314
+strata generate: position 45, token 279
+strata generate: position 46, token 2235
+strata generate: position 47, token 6522
+strata generate: position 48, token 11
+strata generate: position 49, token 264
+strata generate: position 50, token 57040
+strata generate: position 51, token 22472
+strata generate: position 52, token 5143
+strata generate: position 53, token 421
+strata generate: position 54, token 17515
+strata generate: position 55, token 279
+strata generate: position 56, token 79496
+strata generate: position 57, token 314
+strata generate: position 58, token 279
+strata generate: position 59, token 36600
+strata generate: position 60, token 8598
+strata generate: position 61, token 303
+strata generate: position 62, token 279
+strata generate: position 63, token 8858
+strata generate: position 64, token 13
+strata generate: position 65, token 82697
+strata generate: position 66, token 11
+strata generate: position 67, token 264
+strata generate: position 68, token 20922
+strata generate: position 69, token 4658
+strata generate: position 70, token 15680
+strata generate: position 71, token 440
+strata generate: position 72, token 5888
+strata generate: position 73, token 421
+strata generate: position 74, token 17621
+strata generate: position 75, token 36412
+strata generate: position 76, token 9781
+strata generate: position 77, token 694
+strata generate: position 78, token 2496
+strata generate: position 79, token 4490
+strata generate: position 80, token 11
+strata generate: position 81, token 7338
+strata generate: position 82, token 304
+strata generate: position 83, token 10338
+strata generate: position 84, token 888
+strata generate: position 85, token 279
+strata generate: position 86, token 54231
+strata generate: position 87, token 16456
+strata generate: position 88, token 13
+strata generate: position 89, token 561
+strata generate: position 90, token 8598
+strata generate: position 91, token 995
+strata generate: position 92, token 10184
+strata generate: position 93, token 506
+strata generate: position 94, token 220
+strata generate: position 95, token 19
+strata generate: position 96, token 25
+strata generate: position 97, token 16
+strata generate: position 98, token 22
+strata generate: position 99, token 5670
+strata generate: position 100, token 11
+strata generate: position 101, token 6681
+strata generate: position 102, token 948
+strata generate: position 103, token 279
+strata generate: position 104, token 13071
+strata generate: position 105, token 14009
+strata generate: position 106, token 11
+strata generate: position 107, token 321
+strata generate: position 108, token 424
+strata generate: position 109, token 995
+strata generate: position 110, token 14195
+strata generate: position 111, token 20413
+strata generate: position 112, token 364
+strata generate: position 113, token 2250
+strata generate: position 114, token 2756
+strata generate: position 115, token 13
+strata generate: position 116, token 271
+strata generate: position 117, token 36
+strata generate: position 118, token 69388
+strata generate: position 119, token 22643
+strata generate: position 120, token 780
+strata generate: position 121, token 8195
+strata generate: position 122, token 7520
+strata generate: position 123, token 27233
+strata generate: position 124, token 11
+strata generate: position 125, token 1016
+strata generate: position 126, token 4519
+strata generate: position 127, token 1083
+strata generate: position 128, token 279
+strata generate: position 129, token 34844
+strata generate: position 130, token 51373
+strata generate: position 131, token 13
+strata generate: position 132, token 1216
+strata generate: position 133, token 5532
+strata generate: position 134, token 1357
+strata generate: position 135, token 1066
+strata generate: position 136, token 34082
+strata generate: position 137, token 264
+strata generate: position 138, token 5484
+strata generate: position 139, token 26
+strata generate: position 140, token 551
+strata generate: position 141, token 557
+strata generate: position 142, token 47455
+strata generate: position 143, token 264
+strata generate: position 144, token 50355
+strata generate: position 145, token 13
+strata generate: position 146, token 561
+strata generate: position 147, token 6522
+strata generate: position 148, token 725
+strata generate: position 149, token 50016
+strata generate: position 150, token 38589
+strata generate: position 151, token 383
+strata generate: position 152, token 411
+strata generate: position 153, token 8598
+strata generate: position 154, token 364
+strata generate: position 155, token 836
+strata generate: position 156, token 7071
+strata generate: position 157, token 35091
+strata generate: position 158, token 11
+strata generate: position 159, token 321
+strata generate: position 160, token 1141
+strata generate: position 161, token 20513
+strata generate: position 162, token 6273
+strata generate: position 163, token 1040
+prompt  : 248045 846 198 7734 264 220 18 15 15 36093 2716 3255 883 449 22839 64969 264 8598 383 264 60643 11129 13 28763 264 2708 13004 13 248046 198 248045 74455 198 248068 198 248069 271
+output  : 760 10849 88851 2272 279 3136 24520 314 279 2235 6522 11 264 57040 22472 5143 421 17515 279 79496 314 279 36600 8598 303 279 8858 13 82697 11 264 20922 4658 15680 440 5888 421 17621 36412 9781 694 2496 4490 11 7338 304 10338 888 279 54231 16456 13 561 8598 995 10184 506 220 19 25 16 22 5670 11 6681 948 279 13071 14009 11 321 424 995 14195 20413 364 2250 2756 13 271 36 69388 22643 780 8195 7520 27233 11 1016 4519 1083 279 34844 51373 13 1216 5532 1357 1066 34082 264 5484 26 551 557 47455 264 50355 13 561 6522 725 50016 38589 383 411 8598 364 836 7071 35091 11 321 1141 20513 6273 1040 264
+decode                   128 tokens in 5539.6 ms  ->  23.11 tok/s
+prefill                  36 tokens in 5308.9 ms  ->  6.78 tok/s  (time to first token 5464.7 ms)
+  per token              43.278 ms/token (WALL CLOCK: embed, layers, head, sample)
+  token host phases      PLE 0.017  embed 0.037  LAYERS 41.351  head 0.115  readback 1.541  sample 0.219  (sum 43.278 of 43.278 ms)
+  the CPU expert pool    5.693 ms/token over 48 layers (128 positions, 6144 dispatches)
+  pool phases              wait-park 0.000  drain 5.561  re-park 0.000  ms/token
+  expert blobs           25477 blobs read
+  R4 overlap             1957 of 6087 layers the hit work was DONE when the pool returned
+  R4 expert-cache hits   43845 of 61440 = 0.7136      (4135 admitted, 13460 refused, cache 100.0000% full)
+  rings seen MID-GRAPH   0 of 6144 over 128 positions
+  shared GPU work        6134 of 6144 layer boundaries pending when the CPU pool could start
+  ring latency           0.620 ms of a 0.902 ms layer
+  host after ring        11.265 ms/token over 128 positions (0.235 ms/layer, after the ring)

@@ -35,6 +35,15 @@ void scale_inplace(float *x, int64_t n, float scale, void *stream) {
 void add_inplace(float *dst, const float *src, int64_t n, void *stream) {
   for_each(n, stream, [=](size_t i) { dst[i] += src[i]; });
 }
+void copy_hit_miss(float *dst, const float *misses, const float *hits,
+                   const uint32_t *add_hits, int64_t n, void *stream) {
+  const size_t count = checked_count(n, 1);
+  if (!count) return;
+  queue_for(stream).memcpy(dst, misses, count * sizeof(float));
+  for_each(n, stream, [=](size_t i) {
+    if (*add_hits) dst[i] += hits[i];
+  });
+}
 void f32_to_f16_bulk(const float *x, uint16_t *y, int64_t n, void *stream) {
   for_each(n, stream, [=](size_t i) { y[i] = f16_from_f32(x[i]); });
 }

@@ -2432,6 +2432,9 @@ void expert_hit_run(void* user, void* stream, HitPhase phase, const int32_t* ids
         if (cudaEventQuery((cudaEvent_t) d.hit_done) == cudaSuccess) ++d.hit_ready;
         else ++d.hit_late;
     }
+#ifdef STRATA_ENABLE_SYCL
+    if (d.hit_combine_captured) return;
+#endif
     strata::kernels::add_inplace(d.parts_out, d.hit_out, d.parts_elems, cs);
 }
 

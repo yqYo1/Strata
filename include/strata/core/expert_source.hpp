@@ -321,6 +321,9 @@ struct ExpertDispatch {
     /// Set by `Launch` and consumed by `Combine`, so a `Combine` with no `Launch` in front of it cannot
     /// add a stale buffer into `parts`.
     bool hit_pending = false;
+#ifdef STRATA_ENABLE_SYCL
+    bool hit_combine_captured = false; ///< the post graph consumes hit_out
+#endif
     const char* hit_fail = nullptr;
 
     /// Whether the hit path is wired up.  All of it or none of it: a half-configured hit path would compute

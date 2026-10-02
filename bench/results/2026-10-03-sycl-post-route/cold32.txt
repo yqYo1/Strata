@@ -1,0 +1,71 @@
+strata generate: PCIe probe: 6.5 GB/s host->device -> pcie_frac 0.14 (default 0.55)
+strata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)
+strata generate: native pack: /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-q2_0 experts (largest blob 1.38 MB), token embedding Q3_K in mapped host memory (260 MiB)
+strata generate: 1416 MiB of weights loaded from /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-q2_0 (303 canonical tensors skipped: served natively)
+strata generate: 301 native projection matrices, 1376.20 MiB of weights
+strata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)
+strata generate: PLE on, table 320001536 rows of /home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-q2_0/Q2_0/Qwen3.8-Flash-Next-GSQ-RCO-Q2_0-00002-of-00002.gguf
+strata generate: GPU 0: Intel(R) Arc(TM) B570 Graphics (SYCL)
+strata generate: expert arena: mlock failed (raise ulimit -l); SYCL ordinary host arena; MAP_HUGETLB unavailable (no hugetlb pool configured?); using 4 KB pages
+strata generate: loaded 31.64 GiB at 1.31 GiB/s
+strata generate: experimental native Q5_K head, 437043200 bytes
+strata generate: expert cache 3038 slots, 3.91 GiB of VRAM; policy is
+strata generate: SYCL cached experts use native Q8_1 arithmetic; logits can differ from CPU experts.
+                 R4.2g PER-LAYER: each layer owns 63 slots (0..62).
+strata generate: native GPU hit kernels captured at session setup
+strata generate: R4 hit path ON - resident experts are computed on the GPU
+strata generate: 4 expert-pool workers + the host thread
+strata generate: session is up (engine 0.1.34)
+strata generate: sampling greedy
+strata generate: prompt path allocates its own buffers (no cache slots to borrow)
+strata generate: prefill 36 tokens in 3 chunks, 9137.3 ms (3.9 tok/s); experts streamed 7882 (0 by DMA, host 2470.6 ms), resident 0; PLE 3.8 ms
+strata generate: position 36, token 271 (prompt)
+strata generate: position 37, token 760
+strata generate: position 38, token 10849
+strata generate: position 39, token 88851
+strata generate: position 40, token 2272
+strata generate: position 41, token 279
+strata generate: position 42, token 3136
+strata generate: position 43, token 24520
+strata generate: position 44, token 314
+strata generate: position 45, token 279
+strata generate: position 46, token 2235
+strata generate: position 47, token 6522
+strata generate: position 48, token 11
+strata generate: position 49, token 264
+strata generate: position 50, token 57040
+strata generate: position 51, token 22472
+strata generate: position 52, token 5143
+strata generate: position 53, token 421
+strata generate: position 54, token 17515
+strata generate: position 55, token 279
+strata generate: position 56, token 79496
+strata generate: position 57, token 314
+strata generate: position 58, token 279
+strata generate: position 59, token 36600
+strata generate: position 60, token 8598
+strata generate: position 61, token 303
+strata generate: position 62, token 279
+strata generate: position 63, token 8858
+strata generate: position 64, token 13
+strata generate: position 65, token 82697
+strata generate: position 66, token 11
+strata generate: position 67, token 264
+strata generate: logits dump: 32 rows, positions from 36, stride 1
+prompt  : 248045 846 198 7734 264 220 18 15 15 36093 2716 3255 883 449 22839 64969 264 8598 383 264 60643 11129 13 28763 264 2708 13004 13 248046 198 248045 74455 198 248068 198 248069 271
+output  : 760 10849 88851 2272 279 3136 24520 314 279 2235 6522 11 264 57040 22472 5143 421 17515 279 79496 314 279 36600 8598 303 279 8858 13 82697 11 264 20922
+decode                   32 tokens in 1863.4 ms  ->  17.17 tok/s
+prefill                  36 tokens in 9137.3 ms  ->  3.94 tok/s  (time to first token 9352.2 ms)
+  per token              58.231 ms/token (WALL CLOCK: embed, layers, head, sample)
+  token host phases      PLE 0.190  embed 0.052  LAYERS 55.536  head 0.214  readback 1.956  sample 0.284  (sum 58.231 of 58.231 ms)
+  ple io: 1088 rows, 1.5% row-cache hits, 1072 SSD reads (4.5 MB), read p50 149 us p99 935 us, blocked 8.011 ms total (submit 7.468 ms), cache 1072/1048576 rows, SSD kept awake by 56 reads (slowest 0.0 ms)
+  the CPU expert pool    3.505 ms/token over 48 layers (32 positions, 1536 dispatches)
+  pool phases              wait-park 0.000  drain 3.332  re-park 0.000  ms/token
+  expert blobs           12899 blobs read
+  R4 overlap             280 of 1531 layers the hit work was DONE when the pool returned
+  R4 expert-cache hits   10343 of 15360 = 0.6734      (3028 admitted, 1989 refused, cache 99.6708% full)
+  rings seen MID-GRAPH   0 of 1536 over 32 positions
+  shared GPU work        1533 of 1536 layer boundaries pending when the CPU pool could start
+  ring latency           0.790 ms of a 1.213 ms layer
+  host after ring        17.085 ms/token over 32 positions (0.356 ms/layer, after the ring)
+logits dumped            /tmp/strata-sycl-post-route-cold32.bin

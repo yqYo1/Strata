@@ -51,6 +51,14 @@ void scale_inplace(float* x, int64_t n, float s, void* stream);
 /// then ordered behind that copy.  Measured: the drain fell 18.2 -> 10.2 ms and the token did not move.
 void add_inplace(float* dst, const float* src, int64_t n, void* stream);
 
+#ifdef STRATA_ENABLE_SYCL
+/// Copy completed host-USM misses, adding device hits only when the host-USM
+/// flag is nonzero. The flag and misses must remain stable until completion.
+/// A zero flag copies the float bits directly, including negative zero.
+void copy_hit_miss(float* dst, const float* misses, const float* hits,
+                   const uint32_t* add_hits, int64_t n, void* stream);
+#endif
+
 /// `y[i] = f16(x[i])`, round-to-nearest-even, using the shared conversion in `f16_bits.hpp`.
 void f32_to_f16_bulk(const float* x, uint16_t* y, int64_t n, void* stream);
 

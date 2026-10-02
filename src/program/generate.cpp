@@ -3540,17 +3540,48 @@ int main(int argc, char** argv) {
     // 0.514 ms of CPU work per layer.  A per-layer CPU expert pool cannot be hidden behind a strictly serial
     // residual chain; the CPU term is answered by Phase 3's VRAM expert cache, not by this pipeline.
 
+    // Fixed host staging may be read directly by the SYCL post graph.
+    strata::core::SessionLoopScratch loop_scratch;
+    struct ScratchFree {
+        strata::core::SessionLoopScratch* p;
+        ~ScratchFree() { if (p != nullptr) p->free(); }
+    } scratch_free{&loop_scratch};
+    strata::core::SessionPostInputs post_inputs;
+    const strata::core::SessionPostInputs* captured_post = nullptr;
+#ifdef STRATA_ENABLE_SYCL
+    const char* post_handoff = std::getenv("STRATA_SYCL_POST_HANDOFF");
+    // Auto sizing has already captured graphs before allocating its cache.
+    // Keep their original Combine path when no handoff was captured there.
+    if (!gr.captured && native_pack && o.spec == 0 && !o.no_pool && !o.no_capture &&
+        !o.graph_only && !o.gpu_only_full && !o.gpu_stages && !multi_gpu &&
+        (post_handoff == nullptr || std::strcmp(post_handoff, "0") != 0)) {
+        if (!loop_scratch.init((size_t) K * g.n_embd * 4, err)) {
+            std::fprintf(stderr, "strata generate: %s\n", err.c_str());
+            return 1;
+        }
+        loop_scratch.hit_pending = &drive.d.hit_pending;
+        post_inputs = {loop_scratch.y_miss, d_hit_out ? d_hit_out : d_parts,
+                       loop_scratch.add_hits, K * g.n_embd};
+        const char* post_route = std::getenv("STRATA_SYCL_POST_ROUTE");
+        post_inputs.route_next = !o.shared_late && o.dump_layers.empty() && o.dump_halves.empty() &&
+            (post_route == nullptr || std::strcmp(post_route, "0") != 0);
+        captured_post = &post_inputs;
+    }
+#endif
     // ---- the graphs
     if (!o.no_capture && !(native_pack && o.spec >= 2)) {
         // a layer split's CUDA0 session owns only [0, split_at[0]), so its graphs cover that range; the
         // whole-model replay paths (`session_loop`, the plain generate loop) refuse rather than read another
         // stage's state - a split runs its layers on the stages' verifiers (serve) or prefill stage chain
         if (!strata::core::session_capture(wt, g, ss, d_parts, gr, err, /*split=*/o.gpu_stages, 0,
-                                           multi_gpu ? split_at[0] : -1)) {
+                                           multi_gpu ? split_at[0] : -1, captured_post)) {
             std::fprintf(stderr, "strata generate: session_capture: %s\n", err.c_str());
             return 1;
         }
     }
+#ifdef STRATA_ENABLE_SYCL
+    drive.d.hit_combine_captured = captured_post && gr.post_miss_host == loop_scratch.y_miss;
+#endif
 
     // **`--no-capture` AND THE EXPERTS ARE MUTUALLY EXCLUSIVE, AND SILENTLY SO.**
     //
@@ -3950,15 +3981,10 @@ int main(int argc, char** argv) {
     // TOKEN, and `cudaFreeHost` at the end of each call implicitly synchronises the device - so every token
     // finished with a device-wide sync nobody asked for.  The scratch is created once here and reused; it also
     // owns the host pin for the whole session rather than taking and releasing it per token.
-    strata::core::SessionLoopScratch loop_scratch;
-    struct ScratchFree {
-        strata::core::SessionLoopScratch* p;
-        ~ScratchFree() { if (p != nullptr) p->free(); }
-    } scratch_free{&loop_scratch};
     // Initialised unconditionally, including under --no-pool: the loop validates the scratch it is handed, so
     // passing a default-constructed one is an error rather than a fallback.  (It was, and the guard caught it -
     // which is the point of the guard.)  One allocation at setup either way.
-    if (!loop_scratch.init((size_t) K * g.n_embd * 4, err)) {
+    if (!loop_scratch.y_miss && !loop_scratch.init((size_t) K * g.n_embd * 4, err)) {
         std::fprintf(stderr, "strata generate: %s\n", err.c_str());
         return 1;
     }
