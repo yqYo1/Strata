@@ -20,9 +20,9 @@
 #include "strata/kernels/native_flash_attn.hpp"
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/sycl/launch.hpp"
+#include <array>
 #include <cfloat>
 #include <cmath>
-#include <vector>
 namespace strata::kernels {
 namespace {
 float rounded_product(float a, float b) { return a * b; }
@@ -55,15 +55,15 @@ void native_flash_attn_short_step(const float *q, const uint16_t *k,
     const void *p;
     size_t bytes, align;
   };
-  std::vector<S> spans = {{q, 24 * 256 * 4, 4},
-                          {k, size_t(capacity) * 1024, 2},
-                          {v, size_t(capacity) * 1024, 2},
-                          {step, kStepCount * 4, 4},
-                          {out, 24 * 256 * 4, 4},
-                          {status, 4, 4}};
+  std::array<S, 7> spans = {{{q, 24 * 256 * 4, 4},
+                             {k, size_t(capacity) * 1024, 2},
+                             {v, size_t(capacity) * 1024, 2},
+                             {step, kStepCount * 4, 4},
+                             {out, 24 * 256 * 4, 4},
+                             {status, 4, 4}}};
   if (mask)
-    spans.push_back({mask, 256 * 2, 2});
-  for (size_t i = 0; i < spans.size(); ++i) {
+    spans[6] = {mask, 256 * 2, 2};
+  for (size_t i = 0; i < size_t(mask ? 7 : 6); ++i) {
     auto a = spans[i];
     validate_spans({{a.p, a.bytes}}, {}, a.align);
     for (size_t j = 0; j < i; ++j)
