@@ -573,6 +573,47 @@ intervals; the ninety Q3_K matrices accounted for `10.351 ms`. These sums are
 not generation times. The matrix directory and individual timings are in
 `bench/results/2026-10-02-sycl-projections/before.csv`.
 
+### Q3_K dense ESIMD path
+
+Q3_K single-column and exact multiple-column projections now use signed DP4A
+instructions in a 16-lane ESIMD kernel. The kernel keeps eight virtual block
+accumulators and the original four-warp reduction order. Two-byte gathers
+handle Q3_K's 110-byte block stride. Explicit `fma(a, b, 0)` calls round each
+float product before its next accumulation: source `-ffp-contract=off` alone
+did not preserve those boundaries on this installed ESIMD backend. The grouped
+expert and ordinary multiple-column SPMD paths retain their existing arithmetic.
+Exact multiple-column calls launch the new kernel once per column.
+
+On B570, the ninety real dense Q3_K matrices took `3.982 ms` in total isolated
+device intervals, compared with `10.351 ms` before (2.60 times faster). The
+300-matrix sum fell from `20.688` to `14.323 ms`. These are warm-weight graph
+measurements using fifty repeats and three device-event samples per matrix;
+they exclude quantization and transfers and are not generation times.
+`sycl_projection_bench SHARD1 50 1 --compare-q3` also checks the new output
+against the original three-column SPMD arithmetic. All ninety matrices matched
+bitwise for the diagnostic input.
+
+Four alternating before/after pairs generated 128 tokens from the same
+37-token writing prompt, on the B570 and Ryzen 5 5600X with ordinary RAM,
+2,048 profile-filled GPU slots, four CPU workers, 16-token prefill chunks and
+MTP disabled. Before measured `15.81 / 15.46 / 3.45 / 15.10 tok/s`; after
+measured `17.38 / 17.27 / 17.17 / 17.20 tok/s`. The medians were `15.28` and
+`17.235 tok/s` (12.8%). Before-3 spent `28.839 seconds` blocked in PLE SSD
+reads. It remains in the median; the fourth pair was added after this stall.
+The shared machine's background load was not isolated.
+
+All 128 output IDs matched across all eight processes. A 32-row generated
+logit comparison and a 165-row fixed-input comparison were bitwise equal over
+all 248,320 vocabulary entries. `sycl_mmvq_test` passed the ten-format synthetic
+checks, grouped experts, changing columns, FP16 scale edge cases and buffer
+guards. Its real-GGUF check passed the first, middle and last rows of 448
+tensors with three input columns; Q3_K checks also require exact ESIMD/SPMD
+bits with the original four-warp path.
+
+Results and individual projection intervals are recorded in
+`bench/results/2026-10-03-sycl-q3-esimd/`. The approximately `29 tok/s` reference
+target remains open. This change has no measured MTP speed result.
+
 ### Event-completed speculative windows
 
 SYCL verification captures the window in segments. The first segment embeds

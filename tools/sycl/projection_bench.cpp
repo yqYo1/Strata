@@ -7,6 +7,7 @@
 #include <cuda_runtime.h>
 #include <algorithm>
 #include <cmath>
+#include <cstring>
 #include <iostream>
 #include <stdexcept>
 #include <vector>
@@ -28,10 +29,12 @@ bool projection(const std::string &name) {
 }
 int main(int argc, char **argv) {
   try {
-    if (argc != 2 && argc != 3 && argc != 4)
-      throw std::invalid_argument("usage: sycl_projection_bench SHARD1 [REPEATS=50] [COLUMNS=1]");
+    if (argc < 2 || argc > 5 || (argc == 5 && std::string(argv[4]) != "--compare-q3"))
+      throw std::invalid_argument("usage: sycl_projection_bench SHARD1 [REPEATS=50] [COLUMNS=1] [--compare-q3]");
     const int repeats = argc >= 3 ? std::stoi(argv[2]) : 50;
     const int columns = argc >= 4 ? std::stoi(argv[3]) : 1;
+    const bool compare = argc == 5;
+    if (compare && columns != 1) throw std::invalid_argument("--compare-q3 requires one column");
     if (repeats < 1 || repeats > 1000 || columns < 1 || columns > 8)
       throw std::invalid_argument("repeats must be 1..1000 and columns 1..8");
     const auto model = strata::GgufModel::open(argv[1]);
@@ -92,6 +95,30 @@ int main(int argc, char **argv) {
         std::cout << t.name << ',' << t.type << ',' << ni << ',' << no << ','
                   << bytes << ',' << columns << ',' << samples[1] << '\n';
         check(cudaGraphExecDestroy(exec));
+        if (compare && t.type == 11) {
+          // The three-column SPMD path retains the original 128-lane
+          // arithmetic. Its first column has the same inputs as this ESIMD run.
+          Allocation q3(runtime, quant.size() * 3, MemoryKind::Device);
+          Allocation y3(runtime, size_t(no) * 3 * 4, MemoryKind::Device);
+          for (int c = 0; c < 3; ++c)
+            check(cudaMemcpy(q3.as<uint8_t>() + c * quant.size(), quant.data(), quant.size(), cudaMemcpyDeviceToDevice));
+          strata::kernels::native_mmvq_set_multi_exact(false);
+          strata::kernels::native_mmvq(11, weight.data(), q3.data(), y3.as<float>(), ni, no, 3, stream);
+          check(cudaStreamSynchronize(stream));
+          strata::kernels::native_mmvq_set_multi_exact(true);
+          std::vector<float> reference(no), candidate(no);
+          check(cudaMemcpy(reference.data(), y3.data(), no * 4, cudaMemcpyDeviceToHost));
+          check(cudaMemcpy(candidate.data(), output.data(), no * 4, cudaMemcpyDeviceToHost));
+          size_t unequal = 0;
+          float max_error = 0, max_value = 0;
+          for (int row = 0; row < no; ++row) {
+            unequal += std::memcmp(&reference[row], &candidate[row], 4) != 0;
+            max_error = std::max(max_error, std::abs(reference[row] - candidate[row]));
+            max_value = std::max(max_value, std::abs(reference[row]));
+          }
+          std::cerr << t.name << ",unequal=" << unequal << ",rows=" << no
+                    << ",max_abs=" << max_error << ",max_value=" << max_value << '\n';
+        }
         ++count;
       }
     if (!count) throw std::runtime_error("no supported dense projections");
