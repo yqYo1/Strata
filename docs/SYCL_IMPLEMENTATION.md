@@ -14,7 +14,7 @@ source /opt/intel/oneapi/setvars.sh
 export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
 cmake -S . -B build-sycl -DCMAKE_CXX_COMPILER=icpx \
   -DSTRATA_ENABLE_SYCL=ON -DSTRATA_NATIVE_EXPERTS=OFF -DSTRATA_BUILD_TESTS=OFF
-cmake --build build-sycl --target strata-device sycl_runtime_test -j2
+cmake --build build-sycl --target strata-device sycl_runtime_test sycl_kernels_test -j2
 ctest --test-dir build-sycl -R '^sycl_' --output-on-failure
 build-sycl/strata-device --list-devices
 ```
@@ -61,6 +61,17 @@ settings; see the research document for the machine configuration:
   and remained observable on subsequent checks.
 - Bounded completion wait and the existing `strata-device --selftest`: passed.
 - Distinct 64-bit writes below and above 4 GiB: both values matched.
+- FP16/BF16 conversion over 73,748 inputs, including every FP16 encoding,
+  rounding boundaries, random FP32 bit patterns and NaNs: passed against host
+  `_Float16` and oneAPI BF16 conversions (NaN payload identity is not required).
+- Weighted RMS normalization with row tails/canaries, batched GDN gate and
+  elementwise arithmetic: passed against double-precision CPU calculations.
+- Generic and subgroup-32 native routing: batched stable-ID and weight checks
+  passed, including ties and widely separated logits. The CPU reference restores
+  the default floating-point environment so subnormals participate in sorting.
+- Packed 2/4/8-bit embedding gathers, expert row exclusion and event-completed
+  payload publication: passed. GPU polling for CPU-written flags is explicitly
+  rejected; the scheduler must use events.
 
 These checks establish runtime behavior, not model correctness or inference
 performance. Remaining work includes the model kernels, CPU expert scheduling,
