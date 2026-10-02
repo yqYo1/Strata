@@ -68,9 +68,10 @@ void native_expert_grouped(const NativeExpertLayout& L, const unsigned long long
 /// (native_grouped_parity checks it); kept for A/B timing.  Set before graph capture; captured graphs keep theirs.
 void native_grouped_set_v1(bool v1);
 
-/// `iq_mmvq` and `native_expert_grouped` decode each weight part once and apply it to every column / entry;
-/// true selects the older kernels that decode it again per column (STRATA_OLD_IQ_MMVQ=1 at startup).  Both give
-/// bitwise the same results.  Set before graph capture; captured graphs keep the kernels they captured.
+/// Most `iq_mmvq` and `native_expert_grouped` paths decode each weight part once and apply it to every column / entry;
+/// true selects older kernels that decode it again per column (STRATA_OLD_IQ_MMVQ=1 at startup). SYCL native
+/// Q2_0 groups use ESIMD by default and select the original SPMD kernels when true. Both give bitwise the same
+/// results. Set before graph capture; captured graphs keep the kernels they captured.
 void iq_set_old_kernels(bool old);
 bool iq_old_kernels();
 

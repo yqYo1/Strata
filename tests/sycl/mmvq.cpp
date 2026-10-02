@@ -213,6 +213,22 @@ void grouped(Format f, int n, int ff) {
                       [](uint8_t v) { return v == 0x9a; }),
           "group scratch canary");
   }
+  auto invalid = tokens;
+  invalid[1] = -1;
+  invalid[5] = E;
+  token.upload(invalid);
+  auto zeroed = expected;
+  for (int entry : {1, 5})
+    std::fill_n(zeroed.begin() + size_t(destinations[entry]) * n, n, 0.f);
+  for (bool old : {false, true}) {
+    iq_set_old_kernels(old);
+    output.upload(std::vector<float>(size_t(E) * n + 1, -777));
+    native_expert_grouped(L, pointers.data(), starts.data(), count.data(),
+                          dst.data(), token.data(), G, E, xq.data(),
+                          scratch.data(), output.data(), q);
+    check(output.read() == zeroed, "invalid token row must yield zero expert");
+  }
+  iq_set_old_kernels(false);
   count.upload({0});
   output.upload(std::vector<float>(size_t(E) * n + 1, -777));
   native_expert_grouped(L, pointers.data(), starts.data(), count.data(),
@@ -303,15 +319,15 @@ void run(Format f, int n, int rows, int cols, bool exact,
   for (size_t i = scratch_bytes; i < got_quant.size(); ++i)
     check(got_quant[i] == 0xa5, "Q8_1 canary");
   const auto got = output.read();
-  if (f.type == 11 && exact && cols > 1 && cols <= 4) {
-    // Up to four columns use the original four-warp Q3_K arithmetic in SPMD.
+  if ((f.type == 11 || f.type == 42) && exact && cols > 1 && cols <= 4) {
+    // Up to four columns use the original four-warp arithmetic in SPMD.
     // Small projection errors can change later Q8_1 activations in the model.
     native_mmvq_set_multi_exact(false);
     native_mmvq(f.type, weight.data(), scratch.data(), output.data(), n, rows,
                 cols, stream);
     const auto original = output.read();
     check(std::memcmp(original.data(), got.data(), size_t(rows) * cols * 4) == 0,
-          "Q3_K ESIMD/SPMD bits");
+          "native ESIMD/SPMD bits");
     native_mmvq_set_multi_exact(exact);
   }
   for (int col = 0; col < cols; ++col) {
@@ -467,6 +483,19 @@ int main(int argc, char **argv) {
                       &scales[block % 8], 2);
         for (int cols : {1, 3, 8})
           run(formats[3], n, rows, cols, true, w);
+      }
+      {
+        constexpr int rows = 17;
+        const uint16_t scales[] = {0, 0x8000, 1, 0x3ff, 0x400, 0x8400,
+                                   0x8001, 0x7bff};
+        for (int n : {640, 2560, 6144}) {
+          auto w = weights(formats[9], n, rows);
+          for (int block = 0; block < rows * (n / 64); ++block)
+            std::memcpy(w.data() + size_t(block) * 18,
+                        &scales[block % 8], 2);
+          for (int cols : {1, 3, 8})
+            run(formats[9], n, rows, cols, true, w);
+        }
       }
       {
         // The vocabulary path has a row tail and must retain the ordinary

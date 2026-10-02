@@ -86,9 +86,11 @@ void read_exact(std::ifstream &input, void *p, size_t bytes) {
 }
 int main(int argc, char **argv) {
   try {
-    if (argc != 6)
+    if ((argc != 6 && argc != 7) ||
+        (argc == 7 && std::string(argv[6]) != "--bench"))
       throw std::runtime_error(
-          "usage: sycl_expert_contract PACK SHARD1 TRACE FIRST_RECORD COUNT");
+          "usage: sycl_expert_contract PACK SHARD1 TRACE FIRST_RECORD COUNT [--bench]");
+    const bool bench = argc == 7;
     const int first = std::stoi(argv[4]), count = std::stoi(argv[5]);
     require(first >= 0 && count > 0 && first <= INT32_MAX - count,
             "invalid record interval");
@@ -105,7 +107,9 @@ int main(int argc, char **argv) {
     std::cout << "record,layer,experts,gpu_projection_scaled_error,cpu_gpu_max_"
                  "absolute,cpu_gpu_rmse,cpu_order_max_absolute,cpu_order_rmse,"
                  "cpu_order_up_mismatches,cpu_order_hidden_max_absolute,"
-                 "cpu_order_hidden_codes_differ,cpu_order_down_mismatches\n";
+                 "cpu_order_hidden_codes_differ,cpu_order_down_mismatches";
+    if (bench) std::cout << ",spmd_device_ms,esimd_device_ms";
+    std::cout << '\n';
     for (int record = 0; record < first + count; ++record) {
       int32_t header[3];
       read_exact(input, header, sizeof(header));
@@ -176,6 +180,54 @@ int main(int argc, char **argv) {
                        cudaMemcpyDeviceToHost));
       check(cudaMemcpy(gpu.data(), out.p, gpu.size() * 4,
                        cudaMemcpyDeviceToHost));
+      std::array<float, 2> device_ms{};
+      if (bench) {
+        // The input Q8_1 blocks and real expert weights stay resident.
+        // Time full gate/up, activation, hidden quantization and down graphs.
+        // Every recorded expert has one entry, so SPMD tile size is immaterial.
+        cudaEvent_t start{}, stop{};
+        check(cudaEventCreate(&start));
+        check(cudaEventCreate(&stop));
+        for (int mode = 0; mode < 2; ++mode) {
+          iq_set_old_kernels(mode == 0);
+          auto run = [&] {
+            native_expert_grouped(layout, ptr.p, starts.p, groups.p, dst.p,
+                                  tok.p, k, k, qx.p, scratch.p, out.p, stream);
+          };
+          for (int i = 0; i < 5; ++i) run();
+          check(cudaStreamSynchronize(stream));
+          std::vector<float> result(gpu.size());
+          check(cudaMemcpy(result.data(), out.p, result.size() * 4,
+                           cudaMemcpyDeviceToHost));
+          require(std::memcmp(result.data(), gpu.data(), gpu.size() * 4) == 0,
+                  "SPMD/ESIMD real grouped output bits differ");
+          check(cudaStreamBeginCapture(stream, cudaStreamCaptureModeThreadLocal));
+          constexpr int repeats = 50;
+          for (int i = 0; i < repeats; ++i) run();
+          cudaGraph_t graph{};
+          cudaGraphExec_t exec{};
+          check(cudaStreamEndCapture(stream, &graph));
+          check(cudaGraphInstantiate(&exec, graph, 0ull));
+          check(cudaGraphDestroy(graph));
+          check(cudaGraphLaunch(exec, stream));
+          check(cudaStreamSynchronize(stream));
+          std::array<float, 3> samples{};
+          for (float &ms : samples) {
+            check(cudaEventRecord(start, stream));
+            check(cudaGraphLaunch(exec, stream));
+            check(cudaEventRecord(stop, stream));
+            check(cudaEventSynchronize(stop));
+            check(cudaEventElapsedTime(&ms, start, stop));
+            ms /= repeats;
+          }
+          std::sort(samples.begin(), samples.end());
+          device_ms[mode] = samples[1];
+          check(cudaGraphExecDestroy(exec));
+        }
+        iq_set_old_kernels(false);
+        check(cudaEventDestroy(start));
+        check(cudaEventDestroy(stop));
+      }
       require(activation == quant81(x.data(), H),
               "input Q8_1 differs from independent quantization");
       const size_t plane = (size_t(k) * FF * 4 + 255) & ~size_t(255);
@@ -305,7 +357,9 @@ int main(int argc, char **argv) {
                 << ',' << order_error << ','
                 << std::sqrt(order_square / gpu.size()) << ',' << up_mismatches
                 << ',' << hidden_error << ',' << hidden_codes_differ << ','
-                << down_mismatches << '\n';
+                << down_mismatches;
+      if (bench) std::cout << ',' << device_ms[0] << ',' << device_ms[1];
+      std::cout << '\n';
     }
     check(cudaStreamDestroy(stream));
   } catch (const std::exception &e) {
