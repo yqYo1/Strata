@@ -118,7 +118,9 @@ is not a portable CPU/GPU synchronization contract.
 
 This B570 runtime reports `usm_atomic_host_allocations=false` and
 `usm_atomic_shared_allocations=false`. A direct replacement with system-scope
-atomics on USM is therefore not a supported basis for this port. Initial design:
+atomics on `malloc_host` / `malloc_shared` allocations is therefore not a
+supported basis for this port. This does not exclude every system-memory
+allocation path (see the follow-up below). Initial correctness baseline:
 
 1. Compute the router and export the small activation/IDs/weights payload.
 2. Wait for its D2H completion before reading it on the CPU.
@@ -133,6 +135,52 @@ handoffs. The successful 100-replay probe is not validation of the existing
 full-token graph, host tasks, external events or oneMKL/oneDNN graph integration.
 The graph extension permits host tasks, but documents submission/performance
 limits; host tasks are an experiment, not the initial overlap mechanism.
+
+#### Follow-up: what the atomic capability results actually mean
+
+Direct `zeDeviceGetMemoryAccessProperties` queries on the same B570 returned:
+
+| Level Zero allocation category | Read/write | Atomic | Concurrent | Concurrent atomic |
+| --- | --- | --- | --- | --- |
+| Host | yes | yes | no | no |
+| Device | yes | yes | no | no |
+| Shared, single device | yes | yes | no | no |
+| Shared, cross device | no | no | no | no |
+| Shared system (ordinary system allocations) | yes | yes | yes | yes |
+
+A separate SYCL query also reports `usm_system_allocations=true` and includes
+`memory_scope::system` in the atomic scope list. Scope support alone does not
+establish support for every allocation category. These results distinguish
+device-side atomic operations from concurrent host/device atomic operations.
+
+The installed driver's matching source tag, `26.31.39395.14`, has the default
+host capabilities set to access plus atomic access; concurrent support is a
+separate decision. Single-device shared concurrent support also depends on
+kernel-driver migration support. Linux BMG explicitly advertises all four
+shared-system capability bits. Thus the two false SYCL aspects are consistent
+with driver policy, not evidence of a broken oneAPI installation or a missing
+BIOS toggle. No relevant process environment overrides were found. This is not
+proof that the hardware fundamentally cannot perform CPU/GPU atomic sharing.
+
+Ordinary system allocations are a **separate optimization candidate**. Verify
+the applicable SYCL/Level Zero memory-model contract and test bounded two-way
+publication, changing payloads, graph replay and page-fault behavior before
+using that path for the doorbell. It was queried, not execution-tested here.
+Do not force capability bits using driver debug overrides and treat that as
+validation of coherence or forward progress.
+
+The initial event-based baseline may add host submission/completion latency and
+break a full-token graph into smaller sections, particularly affecting decode.
+It does not prohibit concurrent CPU experts and independent GPU work, GPU-local
+atomics or graph execution. Host USM can also be accessed in alternating phases
+with proper completion synchronization, so missing concurrent atomics alone
+does not require copying every shared payload. Compare that option with explicit
+DMA rather than assuming the latter is always faster. There is no measured
+inference slowdown attributable to this limitation yet.
+
+Sources: [driver capability defaults](https://github.com/intel/compute-runtime/blob/26.31.39395.14/shared/source/os_interface/product_helper.inl),
+[Linux BMG system-memory capabilities](https://github.com/intel/compute-runtime/blob/26.31.39395.14/shared/source/xe2_hpg_core/linux/hw_info_extra_bmg.cpp),
+and [SYCL USM access rules](https://github.khronos.org/SYCL_Reference/iface/usm_basic_concept.html).
 
 Large expert RAM arenas also need care. SYCL has no general portable equivalent
 of `cudaHostRegister` for arbitrary existing mappings. Keep bulk CPU data in
@@ -179,6 +227,10 @@ paths and adapt narrowly with MIT notices retained. Do not simply enable
 `GGML_SYCL` and expect Strata's CUDA MMQ adapter or custom QSA/PLE to use it.
 Do not update the global llama.cpp pin without checking CPU expert behavior,
 quantization layouts and existing oracle tests.
+
+Use llama.cpp as a correctness and API reference, not an optimization ceiling
+or a presumed optimal kernel design. Optimize against Strata's measured shapes,
+memory traffic and CPU/GPU scheduling on this B570/5600X machine.
 
 ## Implementation order and completion checks
 
@@ -231,6 +283,14 @@ ONEAPI_DEVICE_SELECTOR=level_zero:gpu timeout 30 /tmp/strata-sycl-research/matri
 The device probe checks replay result 100. The matrix probe checks a single
 constant-input tile against the exact expected result 32. These are standalone
 research programs, outside the engine build, not an inference validation suite.
+
+To inspect the underlying Level Zero memory capabilities using the installed
+system headers and loader (no oneAPI compiler needed):
+
+```sh
+/usr/bin/g++ tools/sycl/level_zero_caps.cpp -lze_loader -o /tmp/strata-sycl-research/ze-caps
+/tmp/strata-sycl-research/ze-caps
+```
 
 ## External primary references
 
