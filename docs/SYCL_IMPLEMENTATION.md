@@ -798,6 +798,44 @@ timings and comparisons are in
 The projection tool's `--compare-iq4xs` checks complete matrix outputs;
 `--spmd-iq4xs` selects the original kernels for timings.
 
+### Automatic cache sizing after ordinary graph preparation
+
+SYCL ordinary decode now finalizes its layer graphs before sizing an automatic
+expert cache. Those graphs read session buffers and expert results without
+cache-slot addresses. On B570, preparing them reduced free VRAM by about
+`1.64 GiB`; the earlier calculation had assigned that room to the cache.
+Standalone CLI generation also resets its prompt workspace after prefill.
+A 16-token chunk reclaimed `136 MiB` in the measured fixed-capacity run.
+The persistent server retains its reusable prompt workspace. Verifier/MTP
+graph preparation order is unchanged.
+
+On 2026-10-03, B570/5600X, the same 37-token story, resident RAM, four workers,
+FP16 KV, context 512, prefill 16 and speculative decoding disabled gave:
+
+| Trial | Before auto token/s | After auto token/s |
+| --- | ---: | ---: |
+| 1 | 15.57 | 21.27 |
+| 2 | 16.01 | 21.13 |
+| 3 | 16.04 | 21.25 |
+
+Auto sizing selected `4,321` slots before and `3,038` after. Medians were
+`16.01` and `21.25 token/s` (`+32.7%`). Each variant repeated its own 128 ids;
+the two variants differed from output index 52 because cache placement changes
+the mix of CPU and GPU arithmetic. This comparison includes that different
+continuation. With placement fixed at 3,038 slots, all 32 logit rows remained
+bitwise equal after graph preparation and prompt workspace changes. A short
+MTP probe retained its 32 ids and 19/28 accepted drafts.
+
+A separate configuration screen, before these changes, measured 3,072 slots
+with direct PLE I/O at `20.78 token/s` and PLE RAM I/O at `21.31 token/s`, with
+the same 128 ids. RAM I/O loaded the 28.8 GB table in `46.1 s`; locking failed,
+so its pages were touched and remained unlocked. PLE host time fell from
+`1.647` to `0.017 ms/token`. This single pair does not establish a sustained
+speedup or guarantee that those pages remain resident. Background workloads
+were not isolated. Settings, output ids, memory traces and individual timings
+are in
+[`bench/results/2026-10-03-sycl-cache-memory/run.json`](../bench/results/2026-10-03-sycl-cache-memory/run.json).
+
 ### Event-completed speculative windows
 
 SYCL verification captures the window in segments. The first segment embeds
