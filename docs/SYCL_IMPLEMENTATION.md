@@ -721,6 +721,51 @@ and Q2_0 fixtures. Full options and results are in
 `bench/results/2026-10-03-sycl-native-hit-plan/run.json`. These truncated writing
 runs do not establish MTP throughput or the approximately `29 tok/s` target.
 
+### GR projections with a normalized workspace
+
+The fused SYCL GR read can use its existing normalized-activation workspace.
+The norm stage writes each normalized residual once; ESIMD down and up
+projections then read it. The read still uses three kernels and allocates no
+additional session workspace. Single-token layers and multi-token verifier
+and MTP callers use this path. A call without the workspace retains the SPMD
+implementation used for comparison.
+
+The projections preserve the original FP32 product boundaries, FMA order and
+subgroup partial sums. The down projection uses eight programs per row and
+64 bytes of local storage per workgroup. The up projection reduces five
+partials through a zero-padded vector tree. Scalar SYCL exponential functions
+retain the activation and gate arithmetic. An optional raw up-dot output
+supports comparison with the independent MMVF kernel.
+
+On 2026-10-03, B570/5600X, the real Q2_0 pack's 96 layer reads and final output
+read had bitwise equal outputs. With warm weights, fixed synthetic FP32
+residuals, 50 captured repeats and the median of three device-event intervals
+per variant, the sum fell from `3.515` to `2.210 ms`. These timings include
+normalization, projections, nonlinear functions and mixing; they omit weight
+uploads and CPU experts.
+
+The same 37-token story prompt, resident RAM, four CPU workers, 2,048 initially
+empty per-layer cache slots, prefill 16, FP16 KV, context 512 and speculative
+decoding disabled gave these alternating 128-token runs:
+
+| Trial | Before token/s | After token/s |
+| --- | ---: | ---: |
+| 1 | 20.09 | 19.98 |
+| 2 | 20.13 | 20.20 |
+| 3 | 20.13 | 19.99 |
+
+Medians were `20.13` and `19.99 token/s`: these runs establish no generation
+speed improvement. All six produced the same 128 ids and cache-hit counts.
+All logits were bitwise equal in a 32-output run and a separate 165-position
+fixed-input run. A short MTP T=4 comparison with a static profile and adaptive
+swaps disabled produced the same 32 ids and accepted 19 of 28 proposals in
+both builds; this single pair does not establish MTP throughput. Background
+workloads were not isolated. The unit test also checks exact single/batch
+outputs, raw MMVF dots, pending residual updates, final mixing and aliases.
+
+Flags, ids and timings are in
+[`bench/results/2026-10-03-sycl-gr-esimd/`](../bench/results/2026-10-03-sycl-gr-esimd/).
+
 ### Event-completed speculative windows
 
 SYCL verification captures the window in segments. The first segment embeds
