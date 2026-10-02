@@ -11,7 +11,8 @@ namespace strata::kernels {
 // Require positive dimensions and finite nonnegative epsilon. Inputs/gamma and
 // intermediate sums must be finite; epsilon=0 additionally requires nonzero rows.
 // Enqueues on the supplied CUDA stream. A null handle explicitly selects CUDA's
-// default stream, preserving gr_read's existing API; this function never syncs.
+// default stream, preserving gr_read's existing API; CUDA never syncs here.
+// SYCL uses an in-order queue pointer; null selects device 0 and waits.
 void native_gr_rms_norm_weighted(const float* input, const float* gamma, float* output,
                                  int n_cols, int n_rows, float epsilon, void* stream);
 
