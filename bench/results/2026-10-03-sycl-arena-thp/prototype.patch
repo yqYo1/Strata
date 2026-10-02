@@ -1,0 +1,16 @@
+--- a/src/core/pinned.cu
++++ b/src/core/pinned.cu
+@@ -307,3 +307,13 @@
+     if (base) {
++#ifdef __linux__
++        const char* thp = std::getenv("STRATA_SYCL_ARENA_THP");
++        if (backing == PageBacking::NormalPages && shared_file.empty() &&
++            thp != nullptr && std::strcmp(thp, "1") == 0) {
++            if (madvise(base, (size_t) capacity, MADV_HUGEPAGE) == 0)
++                note = "anonymous arena; transparent huge pages requested";
++            else
++                note += "; MADV_HUGEPAGE failed: " + std::string(std::strerror(errno));
++        }
++#endif
+         note = "SYCL ordinary host arena; " + note;
+         const char* env = std::getenv("STRATA_ARENA_LOCK");
