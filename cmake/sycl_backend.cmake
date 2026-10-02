@@ -27,11 +27,11 @@ add_library(strata_kernels STATIC src/kernels/sycl/elementwise.cpp src/kernels/s
                                  src/kernels/sycl/attention.cpp src/kernels/sycl/native_flash_attn.cpp src/kernels/sycl/qsa_index.cpp
                                  src/kernels/sycl/native_qsa_indexer.cpp src/kernels/sycl/qsa_select.cpp
                                  src/kernels/sycl/decode_attention.cpp src/kernels/sycl/prompt_attention.cpp src/kernels/sycl/kv_stream.cpp
-                                 src/kernels/sycl/ple.cpp src/kernels/sycl/s2_gemv_q8.cpp src/kernels/sycl/s_gemv.cpp src/kernels/sycl/shared_expert.cpp src/kernels/sycl/iq.cpp
+                                 src/kernels/sycl/ple.cpp src/kernels/sycl/s2_gemv_q8.cpp src/kernels/sycl/s2_experts.cpp src/kernels/sycl/s_gemv.cpp src/kernels/sycl/shared_expert.cpp src/kernels/sycl/iq.cpp
                                  src/kernels/ngram.cpp src/ngram/ple_reader.cpp src/platform/direct_file.cpp)
 target_link_libraries(strata_kernels PUBLIC strata_core strata_artifact)
 target_compile_options(strata_kernels PRIVATE -ffp-contract=off)
-set_source_files_properties(src/kernels/sycl/rope.cpp src/kernels/sycl/native_qsa_indexer.cpp src/kernels/sycl/ple.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math")
+set_source_files_properties(src/kernels/sycl/rope.cpp src/kernels/sycl/native_qsa_indexer.cpp src/kernels/sycl/ple.cpp src/kernels/sycl/s2_experts.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math")
 
 add_library(strata_engine STATIC src/core/layer.cpp src/core/session.cpp src/core/expert_source.cpp src/core/remote_experts.cpp
   src/core/expert_cache.cpp src/core/native_head.cpp src/core/native_dense.cpp src/core/verify.cpp src/core/mtp.cpp
@@ -44,12 +44,17 @@ find_package(MKL CONFIG REQUIRED)
 add_library(strata_prefill STATIC src/prefill/prefill.cpp src/prefill/sycl/gemm.cpp src/prefill/sycl/postops.cpp src/prefill/sycl/blob.cpp)
 target_link_libraries(strata_prefill PUBLIC strata_engine MKL::MKL_SYCL::BLAS)
 target_compile_options(strata_prefill PRIVATE -fno-fast-math -ffp-contract=off)
-add_executable(strata EXCLUDE_FROM_ALL src/program/generate.cpp)
+add_executable(strata src/program/generate.cpp)
 target_link_libraries(strata PRIVATE strata_prefill strata_spec)
 
 option(STRATA_SYCL_TESTS "Build GPU parity and runtime tests for SYCL" ON)
 if(STRATA_SYCL_TESTS)
   enable_testing()
+  add_executable(sycl_s2_experts_test src/kernels/s2_expert_grouped_parity.cpp)
+  target_link_libraries(sycl_s2_experts_test PRIVATE strata_kernels)
+  target_compile_options(sycl_s2_experts_test PRIVATE -fno-fast-math -ffp-contract=off)
+  add_test(NAME sycl_s2_experts COMMAND sycl_s2_experts_test --selftest)
+  set_tests_properties(sycl_s2_experts PROPERTIES TIMEOUT 120)
   add_executable(sycl_cvec_parity_test src/kernels/cvec_parity.cpp)
   target_link_libraries(sycl_cvec_parity_test PRIVATE strata_kernels)
   target_compile_options(sycl_cvec_parity_test PRIVATE -fno-fast-math -ffp-contract=off)
