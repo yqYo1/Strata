@@ -330,7 +330,11 @@ struct Options {
     bool stats = false;
     bool shared_late = false;          ///< plan v0.3 P3 A/B: shared expert inside post[l] (old order)
     bool keep_canonical = false;       ///< plan v0.3 P1 A/B: load canonical copies of natively served tensors
+#ifdef STRATA_ENABLE_SYCL
+    bool no_token_graph = true; // SYCL requires event-completed CPU handoff.
+#else
     bool no_token_graph = false;       ///< plan v0.3 P3 A/B: two graphs per layer instead of one per token
+#endif
     bool no_fused_gr = false;          ///< plan v0.3 P3 A/B: the six-kernel native gr_read + separate gr_write
     bool no_fast_attn = false;         ///< plan v0.3 P3 A/B: gather + one-block-per-head QSA attention
     bool no_publish_kernel = false;    ///< plan v0.3 P3 A/B: memcpy nodes for the doorbell and QSA step

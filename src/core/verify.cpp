@@ -188,6 +188,10 @@ Verifier::~Verifier() {
 
 bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState& ss, const VerifyHits& hits,
                     const NativeHead* head, int max_t, std::string& err) {
+#ifdef STRATA_ENABLE_SYCL
+    err = "SYCL speculative verification needs event-completed layer boundaries; GPU/CPU polling is unsupported";
+    return false;
+#endif
     g_diag_verifier.store(this);
     diag_verify_fn().store(&diag_active_verifier);
     for (auto& slot : g_live) {

@@ -320,6 +320,19 @@ PinnedArena::PinnedArena(uint64_t bytes, const std::vector<uint64_t>& bounds,
         mapping_bytes = bytes;
     }
 
+#ifdef STRATA_ENABLE_SYCL
+    // Keep the large expert arena in ordinary RAM. Transfer staging is bounded
+    // host USM owned by the cache; arbitrary mappings cannot be registered.
+    if (base) {
+        note = "SYCL ordinary host arena; " + note;
+        const char* env = std::getenv("STRATA_ARENA_LOCK");
+        if (env == nullptr || std::string(env) != "0") {
+            const auto lr = strata::platform::lock_resident(base, bytes);
+            locked_bytes = lr.locked_bytes;
+            note = lr.note + "; " + note;
+        }
+    }
+#else
     // Register with CUDA BEFORE any page is touched: cudaHostRegister pins what is resident now, and a region
     // that has already been faulted in page by page is far more expensive to register and may fail outright.
     if (base) {
@@ -406,6 +419,7 @@ PinnedArena::PinnedArena(uint64_t bytes, const std::vector<uint64_t>& bounds,
             }
         }
     }
+#endif
 }
 
 PinnedArena::~PinnedArena() {
@@ -413,7 +427,7 @@ PinnedArena::~PinnedArena() {
         if (locked_bytes) strata::platform::unlock_resident((uint8_t*) base + (slice_bytes ? registered_bytes : 0), locked_bytes);
         if (slice_bytes) {
             for (uint64_t off : slice_starts) cudaHostUnregister((uint8_t*) base + off);
-        } else {
+        } else if (registered_bytes) {
             cudaHostUnregister(base);
         }
         release(mapping_base ? mapping_base : base, mapping_bytes ? mapping_bytes : capacity);

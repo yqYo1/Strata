@@ -70,6 +70,19 @@ Runtime::Runtime(int ordinal)
           },
           sycl::property::queue::in_order{}) {}
 
+sycl::queue Runtime::make_queue(bool profiling) {
+  check();
+  const auto errors = errors_;
+  const sycl::property_list properties =
+      profiling ? sycl::property_list{sycl::property::queue::in_order{},
+                                      sycl::property::queue::enable_profiling{}}
+                : sycl::property_list{sycl::property::queue::in_order{}};
+  return sycl::queue(
+      context_, device_,
+      [errors](sycl::exception_list list) { errors->capture(list); },
+      properties);
+}
+
 void Runtime::check() { errors_->rethrow(); }
 
 void Runtime::wait() {

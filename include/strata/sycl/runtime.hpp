@@ -20,6 +20,8 @@ public:
   static std::vector<sycl::device> devices();
   sycl::queue &compute() { return compute_; }
   sycl::queue &transfer() { return transfer_; }
+  // Additional engine queues share this runtime's context and sticky errors.
+  sycl::queue make_queue(bool profiling = false);
   const sycl::device &device() const { return device_; }
   const sycl::context &context() const { return context_; }
   void check();
