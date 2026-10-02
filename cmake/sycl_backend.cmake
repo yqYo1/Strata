@@ -23,10 +23,11 @@ add_library(strata_kernels STATIC src/kernels/sycl/elementwise.cpp src/kernels/s
                                  src/kernels/sycl/rope.cpp src/kernels/sycl/kv.cpp
                                  src/kernels/sycl/attention.cpp src/kernels/sycl/qsa_index.cpp
                                  src/kernels/sycl/native_qsa_indexer.cpp src/kernels/sycl/qsa_select.cpp
-                                 src/kernels/sycl/decode_attention.cpp src/kernels/sycl/kv_stream.cpp)
+                                 src/kernels/sycl/decode_attention.cpp src/kernels/sycl/kv_stream.cpp
+                                 src/kernels/sycl/ple.cpp src/kernels/sycl/s2_gemv_q8.cpp)
 target_link_libraries(strata_kernels PUBLIC strata_core strata_artifact)
 target_compile_options(strata_kernels PRIVATE -ffp-contract=off)
-set_source_files_properties(src/kernels/sycl/rope.cpp src/kernels/sycl/native_qsa_indexer.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math")
+set_source_files_properties(src/kernels/sycl/rope.cpp src/kernels/sycl/native_qsa_indexer.cpp src/kernels/sycl/ple.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math")
 
 option(STRATA_SYCL_TESTS "Build GPU parity and runtime tests for SYCL" ON)
 if(STRATA_SYCL_TESTS)
@@ -93,4 +94,9 @@ if(STRATA_SYCL_TESTS)
   target_compile_options(sycl_decode_attention_test PRIVATE -fno-fast-math -ffp-contract=off)
   add_test(NAME sycl_decode_attention COMMAND sycl_decode_attention_test)
   set_tests_properties(sycl_decode_attention PROPERTIES TIMEOUT 90)
+  add_executable(sycl_ple_test tests/sycl/ple.cpp)
+  target_link_libraries(sycl_ple_test PRIVATE strata_kernels)
+  target_compile_options(sycl_ple_test PRIVATE -fno-fast-math -ffp-contract=off)
+  add_test(NAME sycl_ple COMMAND sycl_ple_test)
+  set_tests_properties(sycl_ple PROPERTIES TIMEOUT 90)
 endif()
