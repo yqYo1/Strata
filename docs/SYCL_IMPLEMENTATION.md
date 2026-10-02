@@ -14,7 +14,7 @@ source /opt/intel/oneapi/setvars.sh
 export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
 cmake -S . -B build-sycl -DCMAKE_CXX_COMPILER=icpx \
   -DSTRATA_ENABLE_SYCL=ON -DSTRATA_NATIVE_EXPERTS=OFF -DSTRATA_BUILD_TESTS=OFF
-cmake --build build-sycl --target strata-device sycl_runtime_test sycl_kernels_test sycl_gdn_test -j2
+cmake --build build-sycl --target strata-device sycl_runtime_test sycl_kernels_test sycl_gdn_test sycl_quantize_test -j2
 ctest --test-dir build-sycl -R '^sycl_' --output-on-failure
 build-sycl/strata-device --list-devices
 ```
@@ -78,7 +78,14 @@ settings; see the research document for the machine configuration:
   native readout scaling. Convolution history, canaries, L2 normalization and
   the sigmoid-gated output norm also passed.
 
-These checks establish runtime behavior, not model correctness or inference
+- Canonical Q8_0, CPU-expert scaled Q8_0 and Q8_K activation quantization:
+  2,048 blocks per variant matched CPU reference bytes, including zero blocks,
+  halfway rounding cases and opposite-sign maximum ties. FP32 expert scales
+  also matched bit for bit. Inverse conversion, output canaries and invalid
+  shapes/overlaps passed. Quantization uses explicitly rounded division: the
+  ordinary SYCL FP32 division differed by one ULP on the scale of test block 14.
+
+These checks establish runtime and kernel behavior, not model correctness or inference
 performance. Remaining work includes the model kernels, CPU expert scheduling,
 prefill, cache/sequence state, verification and launch integration, followed by
 layer/logit comparisons and real-model inference validation.
