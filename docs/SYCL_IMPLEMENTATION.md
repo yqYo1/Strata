@@ -711,6 +711,50 @@ with 3,038 slots and direct PLE reads retained every float32 logit bit.
 Flags, comparison results and raw intervals are in
 [`bench/results/2026-10-03-sycl-q2-xmx/run.json`](../bench/results/2026-10-03-sycl-q2-xmx/run.json).
 
+### Captured ordinary post and next route
+
+Native ordinary sessions with fixed cache sizes now capture the completed
+host-USM miss copy and a conditional device hit addition inside each post
+graph. A host-USM flag snapshots `hit_pending` before the Combine callback
+clears it; that callback retains its completion counters. Miss-only layers
+skip the addition, preserving their float bits and ignoring stale hit rows.
+With separate early shared work, the post also records the next layer's
+route. Its completion event covers the current post and the next routed
+payload before the CPU reads it. The next shared expert stays outside that
+graph and can overlap the CPU pool. Kernel order, GDN state slices and QSA
+staging addresses retain their preceding behavior.
+
+`STRATA_SYCL_POST_HANDOFF=0` selects the preceding host submissions;
+`STRATA_SYCL_POST_ROUTE=0` keeps next routing separate while retaining the
+captured copy/add. Early auto-cache capture keeps its preceding path. Layer
+dumps and late shared work keep routing separate; GPU-only diagnostic graphs
+and MTP use their existing paths.
+
+On 2026-10-03, B570/5600X, three alternating ordinary 128-token runs used
+4,135 empty per-layer slots, four workers, context 512, prefill 16 and the RAM
+PLE table. Before measured `22.85 / 22.90 / 22.90 tok/s`; after measured
+`23.03 / 23.01 / 23.11 tok/s`. Medians were `22.90` and `23.03 tok/s`
+(`0.6%` higher). Median host-after-ring intervals fell `12.516 -> 11.489
+ms/token`; these intervals include CPU work and submission. The small
+generation difference on this shared machine establishes no large speed gain.
+All six retained identical 128 ids and 43,845/61,440 cache hits.
+
+All logits remained bitwise equal in a 32-token cold-cache run and 165 fixed
+input positions. Auto sizing selected 4,135 slots in both eight-token probes,
+with every logit bit equal. MTP retained its 32 ids and 19/28 accepted drafts
+over 13 rounds. The synthetic three-layer chain covers separate, captured
+and combined-next-route posts, with each shared expert executed once. A
+24-replay handoff fixture changes host inputs and flags, compares with the
+original memcpy/add and a scalar float reference, and checks negative zero,
+subnormal values, miss-only NaN payloads and an output canary.
+
+A preceding scalar kernel read all misses directly from host-USM rather than
+using DMA. Its three-pair median was `22.86 -> 22.74 tok/s`; the direct-read
+kernel was replaced. Its raw measurements and prototype are retained in
+[`bench/results/2026-10-03-sycl-post-direct-read/run.json`](../bench/results/2026-10-03-sycl-post-direct-read/run.json).
+The final copy/routing flags, comparisons and raw logs are in
+[`bench/results/2026-10-03-sycl-post-route/run.json`](../bench/results/2026-10-03-sycl-post-route/run.json).
+
 ### Captured native cache-hit work
 
 The ordinary native Q8_1 hit path now captures its output clear, input

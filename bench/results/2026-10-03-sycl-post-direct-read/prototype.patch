@@ -1,0 +1,448 @@
+diff --git a/cmake/sycl_backend.cmake b/cmake/sycl_backend.cmake
+index 3012e01..580690e 100644
+--- a/cmake/sycl_backend.cmake
++++ b/cmake/sycl_backend.cmake
+@@ -82,6 +82,7 @@ if(STRATA_SYCL_TESTS)
+   set_tests_properties(sycl_cvec_graph PROPERTIES TIMEOUT 90)
+   add_executable(sycl_host_engine_test tests/sycl/host_engine.cpp)
+   target_link_libraries(sycl_host_engine_test PRIVATE strata_engine)
++  target_compile_options(sycl_host_engine_test PRIVATE -fno-fast-math -ffp-contract=off)
+   add_test(NAME sycl_host_engine COMMAND sycl_host_engine_test)
+   set_tests_properties(sycl_host_engine PROPERTIES TIMEOUT 60)
+   add_executable(sycl_compat_test tests/sycl/compat.cpp)
+diff --git a/include/strata/core/expert_source.hpp b/include/strata/core/expert_source.hpp
+index 4d9eca1..6201221 100644
+--- a/include/strata/core/expert_source.hpp
++++ b/include/strata/core/expert_source.hpp
+@@ -320,6 +320,9 @@ struct ExpertDispatch {
+     /// Set by `Launch` and consumed by `Combine`, so a `Combine` with no `Launch` in front of it cannot
+     /// add a stale buffer into `parts`.
+     bool hit_pending = false;
++#ifdef STRATA_ENABLE_SYCL
++    bool hit_combine_captured = false; ///< the post graph consumes hit_out
++#endif
+     const char* hit_fail = nullptr;
+ 
+     /// Whether the hit path is wired up.  All of it or none of it: a half-configured hit path would compute
+diff --git a/include/strata/core/session.hpp b/include/strata/core/session.hpp
+index 35c366a..edafada 100644
+--- a/include/strata/core/session.hpp
++++ b/include/strata/core/session.hpp
+@@ -154,6 +154,8 @@ struct SessionGraphs {
+     cudaGraphExec_t* shared = nullptr;
+     int64_t shared_capacity = 0;
+     int64_t shared_pending_at_pool = 0;
++    const float* post_miss_host = nullptr;
++    uint32_t* post_add_hits_host = nullptr;
+ #endif
+     bool captured = false;
+     /// THE DEVICE ADDRESS THE GRAPHS WERE CAPTURED WITH.  The host loop copies each layer's expert outputs
+@@ -232,14 +234,23 @@ struct SessionGraphs {
+     double ms_host = 0;
+ };
+ 
+-/// Captures all 48 layer graphs.  Idempotent: a second call is a no-op.
+-///
+-/// `pos`/`pos_base` are baked in ONLY through the fixed-address pinned staging in each `QsaState`, which the
+-/// replay re-reads every token - so the position is data, not an argument.  That is the whole reason rounds
+-/// 211-214 moved the per-token counts into device buffers.
++/// Optional SYCL post input addresses. Host-USM misses and the flag are stable
++/// until each post completes; hits are device memory on the same stream.
++/// The matching scratch borrows HitFn's pending flag. Its Combine callback
++/// updates bookkeeping while the captured post performs the addition.
++struct SessionPostInputs {
++    const float* misses = nullptr;
++    const float* hits = nullptr;
++    uint32_t* add_hits = nullptr;
++    int64_t elements = 0;
++};
++
++/// Captures all 48 layer graphs. Idempotent: a second call is a no-op.
++/// Positions are replay data in fixed pinned QSA staging. With post_inputs,
++/// each post first copies misses and conditionally adds hits in one kernel.
+ bool session_capture(const WeightTable& tables, const ModelGeometry& g, SessionState& s, const float* parts,
+                      SessionGraphs& gr, std::string& err, bool split = false, int64_t layer_lo = 0,
+-                     int64_t layer_hi = -1);
++                     int64_t layer_hi = -1, const SessionPostInputs* post_inputs = nullptr);
+ 
+ /// One token by REPLAYING the captured graphs.  Identical arithmetic to `session_token`; the only difference is
+ /// that ~2,000 kernel launches become 48 graph launches.
+@@ -379,6 +390,8 @@ struct SessionLoopScratch {
+     cudaEvent_t probe = nullptr;
+ #ifdef STRATA_ENABLE_SYCL
+     cudaEvent_t shared_done = nullptr;
++    uint32_t* add_hits = nullptr;   ///< fixed host-USM flag, read by a captured post kernel
++    const bool* hit_pending = nullptr; ///< borrowed from the session's expert dispatch
+ #endif
+     long long pinned_core = -1;     ///< the affinity to restore, or -1 if the host was never pinned
+     bool pinned = false;
+diff --git a/include/strata/kernels/elementwise.hpp b/include/strata/kernels/elementwise.hpp
+index 0136176..69aeedb 100644
+--- a/include/strata/kernels/elementwise.hpp
++++ b/include/strata/kernels/elementwise.hpp
+@@ -51,6 +51,14 @@ void scale_inplace(float* x, int64_t n, float s, void* stream);
+ /// then ordered behind that copy.  Measured: the drain fell 18.2 -> 10.2 ms and the token did not move.
+ void add_inplace(float* dst, const float* src, int64_t n, void* stream);
+ 
++#ifdef STRATA_ENABLE_SYCL
++/// Copy completed host-USM misses, adding device hits only when the host-USM
++/// flag is nonzero. The flag and misses must remain stable until completion.
++/// A zero flag copies the float bits directly, including negative zero.
++void copy_hit_miss(float* dst, const float* misses, const float* hits,
++                   const uint32_t* add_hits, int64_t n, void* stream);
++#endif
++
+ /// `y[i] = f16(x[i])`, round-to-nearest-even, using the shared conversion in `f16_bits.hpp`.
+ void f32_to_f16_bulk(const float* x, uint16_t* y, int64_t n, void* stream);
+ 
+diff --git a/src/core/expert_source.cpp b/src/core/expert_source.cpp
+index 829ae54..2899d0f 100644
+--- a/src/core/expert_source.cpp
++++ b/src/core/expert_source.cpp
+@@ -2138,6 +2138,9 @@ void expert_hit_run(void* user, void* stream, HitPhase phase, const int32_t* ids
+         if (cudaEventQuery((cudaEvent_t) d.hit_done) == cudaSuccess) ++d.hit_ready;
+         else ++d.hit_late;
+     }
++#ifdef STRATA_ENABLE_SYCL
++    if (d.hit_combine_captured) return;
++#endif
+     strata::kernels::add_inplace(d.parts_out, d.hit_out, d.parts_elems, cs);
+ }
+ 
+diff --git a/src/core/session.cpp b/src/core/session.cpp
+index 2718943..810b833 100644
+--- a/src/core/session.cpp
++++ b/src/core/session.cpp
+@@ -189,8 +189,20 @@ void stage_token(const ModelGeometry& g, int64_t pos, int32_t pos_base, SessionS
+ }
+ 
+ bool session_capture(const WeightTable& tables, const ModelGeometry& g, SessionState& s, const float* parts,
+-                     SessionGraphs& gr, std::string& err, bool split, int64_t layer_lo, int64_t layer_hi) {
++                     SessionGraphs& gr, std::string& err, bool split, int64_t layer_lo, int64_t layer_hi,
++                     const SessionPostInputs* post_inputs) {
+     if (gr.captured) return true;
++    if (post_inputs && (!parts || !post_inputs->misses || !post_inputs->hits ||
++                        !post_inputs->add_hits || post_inputs->elements != s.k * g.n_embd)) {
++        err = "session_capture: incomplete post inputs";
++        return false;
++    }
++#ifndef STRATA_ENABLE_SYCL
++    if (post_inputs) {
++        err = "session_capture: host-USM post inputs require SYCL";
++        return false;
++    }
++#endif
+     if (layer_hi < 0 || layer_hi > g.n_layers) layer_hi = g.n_layers;
+     if (layer_lo < 0) layer_lo = 0;
+ #ifdef STRATA_ENABLE_SYCL
+@@ -257,6 +269,11 @@ bool session_capture(const WeightTable& tables, const ModelGeometry& g, SessionS
+                 return false;
+             }
+             err.clear();
++#ifdef STRATA_ENABLE_SYCL
++            if (part == Segment::Post && post_inputs)
++                strata::kernels::copy_hit_miss(const_cast<float*>(parts), post_inputs->misses,
++                    post_inputs->hits, post_inputs->add_hits, post_inputs->elements, (void*) cs);
++#endif
+             // R0.9: `half` is 0 for every mode except the split capture, where it selects a prefix of the
+             // stages so the mixer and the FFN-front-plus-router can be timed separately.
+             const bool ok = part == Segment::Shared
+@@ -316,6 +333,12 @@ bool session_capture(const WeightTable& tables, const ModelGeometry& g, SessionS
+     }
+     gr.captured = true;
+     gr.parts_dev = const_cast<float*>(parts);   // the address the graphs baked in; the loop copies here
++#ifdef STRATA_ENABLE_SYCL
++    if (post_inputs) {
++        gr.post_miss_host = post_inputs->misses;
++        gr.post_add_hits_host = post_inputs->add_hits;
++    }
++#endif
+     return true;
+ }
+ 
+@@ -539,6 +562,8 @@ void session_graphs_free(SessionGraphs& gr) {
+     gr.routes = nullptr;
+     gr.shared = nullptr;
+     gr.shared_capacity = 0;
++    gr.post_miss_host = nullptr;
++    gr.post_add_hits_host = nullptr;
+ #endif
+     if (gr.execs) {
+         for (int64_t i = 0; i < gr.n; ++i) cudaGraphExecDestroy(gr.execs[i]);
+@@ -599,6 +624,13 @@ bool SessionLoopScratch::init(size_t parts_bytes_in, std::string& err) {
+         return false;
+     }
+ #ifdef STRATA_ENABLE_SYCL
++    if (cudaHostAlloc((void**) &add_hits, sizeof(uint32_t),
++                      cudaHostAllocMapped | cudaHostAllocPortable) != cudaSuccess) {
++        err = "SessionLoopScratch: post flag allocation failed";
++        free();
++        return false;
++    }
++    *add_hits = 0;
+     if (cudaEventCreateWithFlags(&shared_done, cudaEventDisableTiming) != cudaSuccess) {
+         err = "SessionLoopScratch: shared completion event create failed";
+         free();
+@@ -630,6 +662,8 @@ void SessionLoopScratch::free() {
+     if (probe != nullptr) { cudaEventDestroy(probe); probe = nullptr; }
+ #ifdef STRATA_ENABLE_SYCL
+     if (shared_done != nullptr) { cudaEventDestroy(shared_done); shared_done = nullptr; }
++    if (add_hits != nullptr) { cudaFreeHost(add_hits); add_hits = nullptr; }
++    hit_pending = nullptr;
+ #endif
+     if (y_miss != nullptr) { cudaFreeHost(y_miss); y_miss = nullptr; }
+     parts_bytes = 0;
+@@ -684,6 +718,15 @@ bool session_loop(const ModelGeometry& g, int64_t pos, int32_t pos_base, Session
+         err = "session_loop: the scratch was sized for a different k or n_embd";
+         return false;
+     }
++#ifdef STRATA_ENABLE_SYCL
++    const bool captured_handoff = gr.post_miss_host != nullptr;
++    if (captured_handoff && (gr.post_miss_host != scratch->y_miss ||
++                             gr.post_add_hits_host != scratch->add_hits ||
++                             (hits && !scratch->hit_pending))) {
++        err = "session_loop: post graph inputs do not match the scratch";
++        return false;
++    }
++#endif
+ 
+     // HOST-side staging for the pool's answer.  It is copied to `gr.parts_dev` before the next launch, on the
+     // same stream, so the ordering is the stream's and no captured node is needed for it.
+@@ -829,6 +872,14 @@ bool session_loop(const ModelGeometry& g, int64_t pos, int32_t pos_base, Session
+         // `sum_j w_{l+1}[j] * expert_{ids_l,j}(x_l)` - both the selection and the input one layer stale while
+         // the weights were current.  It produced finite, fluent, deterministic tokens that were not the
+         // model's, and no timing test could see it.
++#ifdef STRATA_ENABLE_SYCL
++        if (captured_handoff) {
++            // The completed route graph includes the preceding post. Its
++            // host-USM reads are over before the pool/flag buffers are reused.
++            // Snapshot the decision before Combine clears hit_pending.
++            *scratch->add_hits = hits && scratch->hit_pending && *scratch->hit_pending ? 1u : 0u;
++        } else
++#endif
+         cudaMemcpyAsync(gr.parts_dev, y_miss, parts_bytes, cudaMemcpyHostToDevice, cs);
+         // ---- **AND THEN THE COMBINE.**  Stream-ordered after the copy above, so `hit_out` is added to misses
+         // that are already in `parts`, and before `post[l]`, whose `moe_combine` reads the sum.  A no-op when
+diff --git a/src/kernels/sycl/elementwise.cpp b/src/kernels/sycl/elementwise.cpp
+index 0c567f6..616145e 100644
+--- a/src/kernels/sycl/elementwise.cpp
++++ b/src/kernels/sycl/elementwise.cpp
+@@ -35,6 +35,13 @@ void scale_inplace(float *x, int64_t n, float scale, void *stream) {
+ void add_inplace(float *dst, const float *src, int64_t n, void *stream) {
+   for_each(n, stream, [=](size_t i) { dst[i] += src[i]; });
+ }
++void copy_hit_miss(float *dst, const float *misses, const float *hits,
++                   const uint32_t *add_hits, int64_t n, void *stream) {
++  for_each(n, stream, [=](size_t i) {
++    const float value = misses[i];
++    dst[i] = *add_hits ? value + hits[i] : value;
++  });
++}
+ void f32_to_f16_bulk(const float *x, uint16_t *y, int64_t n, void *stream) {
+   for_each(n, stream, [=](size_t i) { y[i] = f16_from_f32(x[i]); });
+ }
+diff --git a/src/program/generate.cpp b/src/program/generate.cpp
+index e1ce908..0c037f0 100644
+--- a/src/program/generate.cpp
++++ b/src/program/generate.cpp
+@@ -3283,17 +3283,45 @@ int main(int argc, char** argv) {
+     // 0.514 ms of CPU work per layer.  A per-layer CPU expert pool cannot be hidden behind a strictly serial
+     // residual chain; the CPU term is answered by Phase 3's VRAM expert cache, not by this pipeline.
+ 
++    // Fixed host staging may be read directly by the SYCL post graph.
++    strata::core::SessionLoopScratch loop_scratch;
++    struct ScratchFree {
++        strata::core::SessionLoopScratch* p;
++        ~ScratchFree() { if (p != nullptr) p->free(); }
++    } scratch_free{&loop_scratch};
++    strata::core::SessionPostInputs post_inputs;
++    const strata::core::SessionPostInputs* captured_post = nullptr;
++#ifdef STRATA_ENABLE_SYCL
++    const char* post_handoff = std::getenv("STRATA_SYCL_POST_HANDOFF");
++    // Auto sizing has already captured graphs before allocating its cache.
++    // Keep their original Combine path when no handoff was captured there.
++    if (!gr.captured && native_pack && o.spec == 0 && !o.no_pool && !o.no_capture &&
++        !o.graph_only && !o.gpu_only_full && !o.gpu_stages && !multi_gpu &&
++        (post_handoff == nullptr || std::strcmp(post_handoff, "0") != 0)) {
++        if (!loop_scratch.init((size_t) K * g.n_embd * 4, err)) {
++            std::fprintf(stderr, "strata generate: %s\n", err.c_str());
++            return 1;
++        }
++        loop_scratch.hit_pending = &drive.d.hit_pending;
++        post_inputs = {loop_scratch.y_miss, d_hit_out ? d_hit_out : d_parts,
++                       loop_scratch.add_hits, K * g.n_embd};
++        captured_post = &post_inputs;
++    }
++#endif
+     // ---- the graphs
+     if (!o.no_capture && !(native_pack && o.spec >= 2)) {
+         // a layer split's CUDA0 session owns only [0, split_at[0]), so its graphs cover that range; the
+         // whole-model replay paths (`session_loop`, the plain generate loop) refuse rather than read another
+         // stage's state - a split runs its layers on the stages' verifiers (serve) or prefill stage chain
+         if (!strata::core::session_capture(wt, g, ss, d_parts, gr, err, /*split=*/o.gpu_stages, 0,
+-                                           multi_gpu ? split_at[0] : -1)) {
++                                           multi_gpu ? split_at[0] : -1, captured_post)) {
+             std::fprintf(stderr, "strata generate: session_capture: %s\n", err.c_str());
+             return 1;
+         }
+     }
++#ifdef STRATA_ENABLE_SYCL
++    drive.d.hit_combine_captured = captured_post && gr.post_miss_host == loop_scratch.y_miss;
++#endif
+ 
+     // **`--no-capture` AND THE EXPERTS ARE MUTUALLY EXCLUSIVE, AND SILENTLY SO.**
+     //
+@@ -3695,15 +3723,10 @@ int main(int argc, char** argv) {
+     // TOKEN, and `cudaFreeHost` at the end of each call implicitly synchronises the device - so every token
+     // finished with a device-wide sync nobody asked for.  The scratch is created once here and reused; it also
+     // owns the host pin for the whole session rather than taking and releasing it per token.
+-    strata::core::SessionLoopScratch loop_scratch;
+-    struct ScratchFree {
+-        strata::core::SessionLoopScratch* p;
+-        ~ScratchFree() { if (p != nullptr) p->free(); }
+-    } scratch_free{&loop_scratch};
+     // Initialised unconditionally, including under --no-pool: the loop validates the scratch it is handed, so
+     // passing a default-constructed one is an error rather than a fallback.  (It was, and the guard caught it -
+     // which is the point of the guard.)  One allocation at setup either way.
+-    if (!loop_scratch.init((size_t) K * g.n_embd * 4, err)) {
++    if (!loop_scratch.y_miss && !loop_scratch.init((size_t) K * g.n_embd * 4, err)) {
+         std::fprintf(stderr, "strata generate: %s\n", err.c_str());
+         return 1;
+     }
+diff --git a/tests/sycl/host_engine.cpp b/tests/sycl/host_engine.cpp
+index 77be93c..33d801c 100644
+--- a/tests/sycl/host_engine.cpp
++++ b/tests/sycl/host_engine.cpp
+@@ -2,6 +2,10 @@
+ #include "strata/core/graph.hpp"
+ #include "strata/core/pinned.hpp"
+ #include "strata/core/session.hpp"
++#include "strata/kernels/elementwise.hpp"
++#include <bit>
++#include <cfenv>
++#include <cstring>
+ #include <iostream>
+ #include <stdexcept>
+ #include <vector>
+@@ -9,7 +13,7 @@ void require(bool ok, const std::string &why) {
+   if (!ok)
+     throw std::runtime_error(why);
+ }
+-void shared_session() {
++void shared_session(bool fused = false) {
+   using namespace strata::core;
+   ModelGeometry g;
+   g.n_embd = 19;
+@@ -37,6 +41,13 @@ void shared_session() {
+   graphs.parts_dev = parts;
+   graphs.n = 3;
+   graphs.captured = true;
++  SessionLoopScratch scratch;
++  std::string err;
++  require(scratch.init(38 * 4, err), err);
++  if (fused) {
++    graphs.post_miss_host = scratch.y_miss;
++    graphs.post_add_hits_host = scratch.add_hits;
++  }
+   for (int layer = 0; layer < 3; ++layer) {
+     auto capture = [&](int part, cudaGraphExec_t *exec) {
+       require(cudaStreamBeginCapture(stream, cudaStreamCaptureModeThreadLocal) ==
+@@ -59,10 +70,14 @@ void shared_session() {
+           shared[i] = 2.f * value[i] + layer;
+           if (!i[0]) ++count[layer];
+         });
+-      if (part == 3)
++      if (part == 3) {
++        if (fused)
++          strata::kernels::copy_hit_miss(parts, scratch.y_miss, parts,
++                                        scratch.add_hits, 38, stream);
+         stream->parallel_for(sycl::range<1>(19), [=](sycl::id<1> i) {
+           value[i] = parts[i] + shared[i];
+         });
++      }
+       cudaGraph_t graph{};
+       require(cudaStreamEndCapture(stream, &graph) == cudaSuccess &&
+                   cudaGraphInstantiate(exec, graph, 0ull) == cudaSuccess,
+@@ -74,9 +89,6 @@ void shared_session() {
+     capture(2, &graphs.shared[layer]);
+     capture(3, &graphs.posts[layer]);
+   }
+-  SessionLoopScratch scratch;
+-  std::string err;
+-  require(scratch.init(38 * 4, err), err);
+   struct Pool { int next; } pool;
+   auto compute = [](void *user, const float *x, const int32_t *ids,
+                     const float *weights, int64_t n, int64_t k, float *out) {
+@@ -116,6 +128,63 @@ void shared_session() {
+   cudaFree(value); cudaFree(shared); cudaFree(parts); cudaFree(count);
+   doorbell_free(db);
+ }
++void captured_handoff() {
++  constexpr size_t n = 25603;
++  float *misses{}, *hits{}, *out{};
++  uint32_t* flag{};
++  cudaStream_t stream{};
++  require(cudaStreamCreate(&stream) == cudaSuccess &&
++              cudaMallocHost(&misses, n * sizeof(float)) == cudaSuccess &&
++              cudaMallocHost(&flag, sizeof(uint32_t)) == cudaSuccess &&
++              cudaMalloc(&hits, n * sizeof(float)) == cudaSuccess &&
++              cudaMalloc(&out, (n + 1) * sizeof(float)) == cudaSuccess,
++          "post handoff buffers");
++  std::vector<float> h(n), expected(n), result(n + 1, -777.f);
++  require(cudaMemcpy(out, result.data(), result.size() * sizeof(float),
++                     cudaMemcpyHostToDevice) == cudaSuccess, "post guard");
++  {
++    strata::core::CapturedGraph graph;
++    std::string err;
++    require(graph.begin(stream, err), err);
++    strata::kernels::copy_hit_miss(out, misses, hits, flag, n, stream);
++    require(graph.end(stream, err), err);
++    for (int round = 0; round < 24; ++round) {
++      // Earlier CPU engine initialization may enable flushing subnormals.
++      std::fesetenv(FE_DFL_ENV);
++      *flag = uint32_t(round % 3 != 0);
++      for (size_t i = 0; i < n; ++i) {
++        misses[i] = float(int(i % 101) - 50) * .03125f + round;
++        h[i] = float(int(i % 47) - 23) * .0625f - round;
++      }
++      misses[0] = -0.f; h[0] = 0.f;
++      misses[1] = std::bit_cast<float>(0x80000001u); h[1] = 0.f;
++      if (!*flag) {
++        // Miss-only replay must retain these bits and ignore stale hit rows.
++        misses[2] = std::bit_cast<float>(0x7fc12345u);
++        std::fill(h.begin(), h.end(), 900.f + round);
++      }
++      for (size_t i = 0; i < n; ++i)
++        expected[i] = *flag ? misses[i] + h[i] : misses[i];
++      require(cudaMemcpy(hits, h.data(), n * sizeof(float), cudaMemcpyHostToDevice)
++                  == cudaSuccess, "changing hit rows");
++      require(graph.launch(stream, err) && graph.wait_ms(5000), err);
++      require(cudaMemcpy(result.data(), out, result.size() * sizeof(float),
++                         cudaMemcpyDeviceToHost) == cudaSuccess, "post results");
++      if (std::memcmp(expected.data(), result.data(), n * sizeof(float)) != 0)
++        for (size_t i = 0; i < n; ++i)
++          if (std::bit_cast<uint32_t>(expected[i]) != std::bit_cast<uint32_t>(result[i])) {
++            std::cerr << "post round " << round << " flag " << *flag << " index " << i
++                      << " expected " << std::hex << std::bit_cast<uint32_t>(expected[i])
++                      << " actual " << std::bit_cast<uint32_t>(result[i]) << std::dec << '\n';
++            break;
++          }
++      require(std::memcmp(expected.data(), result.data(), n * sizeof(float)) == 0 &&
++                  result.back() == -777.f, "post handoff bits or buffer guard");
++    }
++  }
++  cudaFree(out); cudaFree(hits); cudaFreeHost(flag); cudaFreeHost(misses);
++  require(cudaStreamDestroy(stream) == cudaSuccess, "post stream release");
++}
+ int main() {
+   try {
+     std::string err;
+@@ -172,6 +241,8 @@ int main() {
+       cache.close();
+     }
+     shared_session();
++    shared_session(true);
++    captured_handoff();
+     std::cout << "SYCL shared engine: ordinary arena, captured graph and "
+                  "bounded cache staging and shared/CPU session ordering passed\n";
+   } catch (const std::exception &e) {

@@ -2,6 +2,10 @@
 #include "strata/core/graph.hpp"
 #include "strata/core/pinned.hpp"
 #include "strata/core/session.hpp"
+#include "strata/kernels/elementwise.hpp"
+#include <bit>
+#include <cfenv>
+#include <cstring>
 #include <iostream>
 #include <stdexcept>
 #include <vector>
@@ -9,7 +13,7 @@ void require(bool ok, const std::string &why) {
   if (!ok)
     throw std::runtime_error(why);
 }
-void shared_session() {
+void shared_session(bool fused = false, bool join_next = false) {
   using namespace strata::core;
   ModelGeometry g;
   g.n_embd = 19;
@@ -37,6 +41,14 @@ void shared_session() {
   graphs.parts_dev = parts;
   graphs.n = 3;
   graphs.captured = true;
+  graphs.post_routes_next = join_next;
+  SessionLoopScratch scratch;
+  std::string err;
+  require(scratch.init(38 * 4, err), err);
+  if (fused) {
+    graphs.post_miss_host = scratch.y_miss;
+    graphs.post_add_hits_host = scratch.add_hits;
+  }
   for (int layer = 0; layer < 3; ++layer) {
     auto capture = [&](int part, cudaGraphExec_t *exec) {
       require(cudaStreamBeginCapture(stream, cudaStreamCaptureModeThreadLocal) ==
@@ -59,10 +71,27 @@ void shared_session() {
           shared[i] = 2.f * value[i] + layer;
           if (!i[0]) ++count[layer];
         });
-      if (part == 3)
+      if (part == 3) {
+        if (fused)
+          strata::kernels::copy_hit_miss(parts, scratch.y_miss, parts,
+                                        scratch.add_hits, 38, stream);
         stream->parallel_for(sycl::range<1>(19), [=](sycl::id<1> i) {
           value[i] = parts[i] + shared[i];
         });
+        if (join_next && layer < 2) {
+          auto payload = db;
+          stream->parallel_for(sycl::range<1>(19), [=](sycl::id<1> i) {
+            payload.d_x_f[i] = value[i];
+            if (!i[0]) {
+              payload.d_ids[0] = layer + 1;
+              payload.d_ids[1] = layer + 101;
+              payload.d_weights[0] = 1.f;
+              payload.d_weights[1] = 0.f;
+              ++*payload.d_seq;
+            }
+          });
+        }
+      }
       cudaGraph_t graph{};
       require(cudaStreamEndCapture(stream, &graph) == cudaSuccess &&
                   cudaGraphInstantiate(exec, graph, 0ull) == cudaSuccess,
@@ -74,9 +103,6 @@ void shared_session() {
     capture(2, &graphs.shared[layer]);
     capture(3, &graphs.posts[layer]);
   }
-  SessionLoopScratch scratch;
-  std::string err;
-  require(scratch.init(38 * 4, err), err);
   struct Pool { int next; } pool;
   auto compute = [](void *user, const float *x, const int32_t *ids,
                     const float *weights, int64_t n, int64_t k, float *out) {
@@ -89,6 +115,16 @@ void shared_session() {
     }
     ++p.next;
   };
+  if (join_next) {
+    require(!session_loop(g, 0, 0, state, graphs, compute, nullptr, &pool,
+                          false, stream, err, nullptr, &scratch), "joined posts accepted serial replay");
+    std::vector<float> dump(4 * 19);
+    require(!session_loop(g, 0, 0, state, graphs, compute, nullptr, &pool,
+                          true, stream, err, dump.data(), &scratch), "joined posts accepted layer dump");
+  }
+  if (fused)
+    require(!session_replay_full(g, 0, 0, state, graphs, stream, err),
+            "host post graphs accepted GPU-only replay");
   for (int round = 0; round < 12; ++round) {
     std::vector<float> input(19), expected(19), result(19);
     for (int i = 0; i < 19; ++i) input[i] = i * .25f + round;
@@ -100,7 +136,7 @@ void shared_session() {
             "session input");
     pool.next = 0;
     require(session_loop(g, round, 0, state, graphs, compute, nullptr, &pool,
-                         round % 2 == 0, stream, err, nullptr, &scratch), err);
+                         join_next || round % 2 == 0, stream, err, nullptr, &scratch), err);
     int executions[3]{};
     require(cudaMemcpy(result.data(), value, 19 * 4, cudaMemcpyDeviceToHost) ==
                 cudaSuccess && cudaMemcpy(executions, count, 3 * 4,
@@ -115,6 +151,72 @@ void shared_session() {
   require(cudaStreamDestroy(stream) == cudaSuccess, "session stream release");
   cudaFree(value); cudaFree(shared); cudaFree(parts); cudaFree(count);
   doorbell_free(db);
+}
+void captured_handoff() {
+  constexpr size_t n = 25603;
+  float *misses{}, *hits{}, *out{}, *original{};
+  uint32_t* flag{};
+  cudaStream_t stream{};
+  require(cudaStreamCreate(&stream) == cudaSuccess &&
+              cudaMallocHost(&misses, n * sizeof(float)) == cudaSuccess &&
+              cudaMallocHost(&flag, sizeof(uint32_t)) == cudaSuccess &&
+              cudaMalloc(&hits, n * sizeof(float)) == cudaSuccess &&
+              cudaMalloc(&original, n * sizeof(float)) == cudaSuccess &&
+              cudaMalloc(&out, (n + 1) * sizeof(float)) == cudaSuccess,
+          "post handoff buffers");
+  std::vector<float> h(n), expected(n), result(n + 1, -777.f);
+  require(cudaMemcpy(out, result.data(), result.size() * sizeof(float),
+                     cudaMemcpyHostToDevice) == cudaSuccess, "post guard");
+  {
+    strata::core::CapturedGraph graph;
+    std::string err;
+    require(graph.begin(stream, err), err);
+    strata::kernels::copy_hit_miss(out, misses, hits, flag, n, stream);
+    require(graph.end(stream, err), err);
+    for (int round = 0; round < 24; ++round) {
+      // Earlier CPU engine initialization may enable flushing subnormals.
+      std::fesetenv(FE_DFL_ENV);
+      *flag = uint32_t(round % 3 != 0);
+      for (size_t i = 0; i < n; ++i) {
+        misses[i] = float(int(i % 101) - 50) * .03125f + round;
+        h[i] = float(int(i % 47) - 23) * .0625f - round;
+      }
+      misses[0] = -0.f; h[0] = 0.f;
+      misses[1] = std::bit_cast<float>(0x80000001u); h[1] = 0.f;
+      if (!*flag) {
+        // Miss-only replay must retain these bits and ignore stale hit rows.
+        misses[2] = std::bit_cast<float>(0x7fc12345u);
+        std::fill(h.begin(), h.end(), 900.f + round);
+      }
+      for (size_t i = 0; i < n; ++i)
+        expected[i] = *flag ? misses[i] + h[i] : misses[i];
+      require(cudaMemcpy(hits, h.data(), n * sizeof(float), cudaMemcpyHostToDevice)
+                  == cudaSuccess, "changing hit rows");
+      require(cudaMemcpyAsync(original, misses, n * sizeof(float), cudaMemcpyHostToDevice,
+                              stream) == cudaSuccess, "original handoff copy");
+      if (*flag) strata::kernels::add_inplace(original, hits, n, stream);
+      require(cudaStreamSynchronize(stream) == cudaSuccess, "original handoff completion");
+      std::vector<float> previous(n);
+      require(cudaMemcpy(previous.data(), original, n * sizeof(float), cudaMemcpyDeviceToHost)
+                  == cudaSuccess && std::memcmp(expected.data(), previous.data(), n * sizeof(float)) == 0,
+              "original handoff differs from scalar float reference");
+      require(graph.launch(stream, err) && graph.wait_ms(5000), err);
+      require(cudaMemcpy(result.data(), out, result.size() * sizeof(float),
+                         cudaMemcpyDeviceToHost) == cudaSuccess, "post results");
+      if (std::memcmp(expected.data(), result.data(), n * sizeof(float)) != 0)
+        for (size_t i = 0; i < n; ++i)
+          if (std::bit_cast<uint32_t>(expected[i]) != std::bit_cast<uint32_t>(result[i])) {
+            std::cerr << "post round " << round << " flag " << *flag << " index " << i
+                      << " expected " << std::hex << std::bit_cast<uint32_t>(expected[i])
+                      << " actual " << std::bit_cast<uint32_t>(result[i]) << std::dec << '\n';
+            break;
+          }
+      require(std::memcmp(expected.data(), result.data(), n * sizeof(float)) == 0 &&
+                  result.back() == -777.f, "post handoff bits or buffer guard");
+    }
+  }
+  cudaFree(out); cudaFree(original); cudaFree(hits); cudaFreeHost(flag); cudaFreeHost(misses);
+  require(cudaStreamDestroy(stream) == cudaSuccess, "post stream release");
 }
 int main() {
   try {
@@ -172,6 +274,9 @@ int main() {
       cache.close();
     }
     shared_session();
+    shared_session(true);
+    shared_session(true, true);
+    captured_handoff();
     std::cout << "SYCL shared engine: ordinary arena, captured graph and "
                  "bounded cache staging and shared/CPU session ordering passed\n";
   } catch (const std::exception &e) {
