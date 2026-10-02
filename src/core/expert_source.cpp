@@ -11,6 +11,9 @@
 #include "strata/kernels/quantize_act.hpp"
 #include "strata/kernels/s2_expert_grouped.hpp"
 #include "strata/kernels/iq_kernels.hpp"
+#ifdef STRATA_ENABLE_SYCL
+#include "strata/sycl/native_q2.hpp"
+#endif
 #include "strata/kernels/cpu/kq_avx2.hpp"
 
 #include <cuda_runtime.h>
@@ -2192,7 +2195,7 @@ void expert_hit_run(void* user, void* stream, HitPhase phase, const int32_t* ids
             const size_t cap = size_t(d.parts_elems / strata::kernels::cpu::H);
             if (!layout.native || d.layers < 0 || size_t(d.layers) >= layout.fmt.size() ||
                 k != (int64_t) cap || d.h_native_hit_ptr.size() != cap ||
-                d.h_native_hit_meta.size() != 2 * cap + 2 || d.hit_cpu_order) {
+                d.h_native_hit_meta.size() != 2 * cap + 2) {
                 d.failed = true;
                 d.fail = "invalid native per-layer hit metadata or CPU-order request";
                 d.fail_layer = d.layers;
@@ -2214,10 +2217,29 @@ void expert_hit_run(void* user, void* stream, HitPhase phase, const int32_t* ids
             }
             const auto& f = layout.fmt[(size_t) d.layers];
             const auto L = strata::kernels::native_expert_layout(f.gu_type, f.d_type, f.n_embd, f.n_ff);
-            strata::kernels::quantize_q8_1_rows(d.mixed, 1, f.n_embd, d.x_q8_0_hit, cs);
-            strata::kernels::native_expert_grouped(L, d.native_hit_ptr, d.native_hit_meta,
-                d.native_hit_meta + 2 * cap + 1, d.d_dst, d.native_hit_meta + cap + 1,
-                cap, cap, d.x_q8_0_hit, d.hit_scratch, d.hit_out, cs);
+            if (d.hit_cpu_order) {
+#ifdef STRATA_ENABLE_SYCL
+                if (f.gu_type != 42 || f.d_type != 42 || f.n_embd != 2560 || f.n_ff != 640 ||
+                    strata::kernels::cpu::cpu_avx512_ok()) {
+                    d.failed = true;
+                    d.fail = "native CPU-order GPU hits require Q2_0/Q2_0 and the AVX2 CPU path";
+                    return;
+                }
+                strata::kernels::native_q2_quantize_cpu_order(d.mixed, d.x_q8_0_hit, d.x_q8_0_hit_scale, f.n_embd, cs);
+                strata::kernels::native_q2_expert_cpu_order(d.native_hit_ptr, d.d_dst,
+                    d.native_hit_meta + 2 * cap + 1, (int) cap, d.x_q8_0_hit, d.x_q8_0_hit_scale,
+                    d.hit_scratch, d.hit_out, cs);
+#else
+                d.failed = true;
+                d.fail = "native per-layer CPU-order GPU hits are only implemented for SYCL";
+                return;
+#endif
+            } else {
+                strata::kernels::quantize_q8_1_rows(d.mixed, 1, f.n_embd, d.x_q8_0_hit, cs);
+                strata::kernels::native_expert_grouped(L, d.native_hit_ptr, d.native_hit_meta,
+                    d.native_hit_meta + 2 * cap + 1, d.d_dst, d.native_hit_meta + cap + 1,
+                    cap, cap, d.x_q8_0_hit, d.hit_scratch, d.hit_out, cs);
+            }
             d.hit_pending = true;
             if (d.hit_done != nullptr) cudaEventRecord((cudaEvent_t) d.hit_done, cs);
             if (d.hit_poke && d.hit_done != nullptr) (void) cudaEventQuery((cudaEvent_t) d.hit_done);

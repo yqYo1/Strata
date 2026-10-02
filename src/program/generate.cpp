@@ -1987,11 +1987,22 @@ int main(int argc, char** argv) {
                                  "--keep-canonical; use --spec 0 or T >= 2, with --prefill CHUNK for multiple prompt tokens in spec mode\n", o.pack.c_str());
             return 2;
         }
-        if (o.spec < 2 && (o.expert_cache_remote[0] || o.expert_cache_remote[1] || o.expert_cache_remote[2] ||
-                          o.expert_cache_cpu_order)) {
-            std::fprintf(stderr, "strata generate: native per-layer decode does not support remote caches "
-                                 "or --expert-cache-cpu-order\n");
+        if (o.spec < 2 && (o.expert_cache_remote[0] || o.expert_cache_remote[1] || o.expert_cache_remote[2])) {
+            std::fprintf(stderr, "strata generate: native per-layer decode does not support remote caches\n");
             return 2;
+        }
+        if (o.expert_cache_cpu_order) {
+            bool supported = false;
+#ifdef STRATA_ENABLE_SYCL
+            supported = o.spec == 0 && !strata::kernels::cpu::cpu_avx512_ok();
+            for (const auto& f : strata::kernels::cpu::expert_layout().fmt)
+                supported = supported && f.gu_type == 42 && f.d_type == 42 && f.n_embd == 2560 && f.n_ff == 640;
+#endif
+            if (!supported) {
+                std::fprintf(stderr, "strata generate: native --expert-cache-cpu-order requires SYCL, "
+                                     "Q2_0/Q2_0 experts, the AVX2 CPU path and --spec 0\n");
+                return 2;
+            }
         }
         const strata::core::ModelGeometry g0;
         if (!native_embed.load(o.embd_gguf.empty() ? o.native_shards : std::vector<std::string>{o.embd_gguf}, g0.n_embd,
@@ -3090,6 +3101,11 @@ int main(int argc, char** argv) {
                      (long long) xcache.slots(), xcache.gib());
         mem_mark("opening the expert cache");
         xcache.set_per_layer_admission(o.expert_cache_per_layer);
+#ifdef STRATA_ENABLE_SYCL
+        std::fprintf(stderr, "strata generate: SYCL cached experts use %s arithmetic; "
+                             "logits can differ from CPU experts.\n",
+                     o.expert_cache_cpu_order ? "AVX2-order Q2 with FP32 scales" : "native Q8_1");
+#else
         // Round 328 warned here that the GPU hit path was wrong (tokens diverged from a cache-off run from
         // token 0). That fault was fixed long since (native_expert_parity, expert_parity, the grouped kernels'
         // tests), and the warning outlived it (issue #23). What remains is rounding: a GPU expert and the CPU's
@@ -3100,6 +3116,7 @@ int main(int argc, char** argv) {
                      "strata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,\n"
                      "                 so a reply can differ slightly from a run without the cache (same quality:\n"
                      "                 bench/results/2026-09-27-cache-parity).\n");
+#endif
         if (o.expert_cache_per_layer) {
             int64_t lo = 0, hi = 0;
             xcache.layer_slot_range(0, lo, hi);

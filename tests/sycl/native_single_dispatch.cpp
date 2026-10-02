@@ -2,8 +2,10 @@
 #include "strata/kernels/cpu/expert_layout.hpp"
 #include "strata/kernels/cpu/native_expert.hpp"
 #include "strata/kernels/iq_kernels.hpp"
+#include "strata/sycl/native_q2.hpp"
 #include <chrono>
 #include <cmath>
+#include <cstring>
 #include <cuda_runtime.h>
 #include <filesystem>
 #include <fstream>
@@ -68,7 +70,38 @@ template <class T> struct DeviceBuffer {
   }
   ~DeviceBuffer() { cudaFree(p); }
 };
-void gpu_hits(Fixture &f, ExpertPool &pool) {
+void quantize_contract() {
+  cudaStream_t stream{};
+  check(cudaStreamCreate(&stream));
+  DeviceBuffer<float> input(H), scales(H / 32);
+  DeviceBuffer<uint8_t> blocks(H / 32 * 34);
+  std::vector<float> values(H), got_scales(H / 32);
+  std::vector<uint8_t> got(H / 32 * 34);
+  for (int i = 0; i < H; ++i)
+    values[i] = float(std::sin(i * .713) * (1 + i % 113));
+  for (int i = 0; i < 32; ++i)
+    values[i] = 0;
+  const float ties[] = {-127.f, -126.5f, -.5f, 0.f, .5f, 126.5f, 127.f};
+  for (int i = 0; i < 32; ++i)
+    values[32 + i] = ties[i % 7];
+  ActQ reference;
+  act_quant_any(values.data(), H, reference);
+  check(cudaMemcpy(input.p, values.data(), H * 4, cudaMemcpyHostToDevice));
+  strata::kernels::native_q2_quantize_cpu_order(input.p, blocks.p, scales.p, H,
+                                                stream);
+  check(cudaStreamSynchronize(stream));
+  check(cudaMemcpy(got.data(), blocks.p, got.size(), cudaMemcpyDeviceToHost));
+  check(cudaMemcpy(got_scales.data(), scales.p, got_scales.size() * 4,
+                   cudaMemcpyDeviceToHost));
+  for (int b = 0; b < H / 32; ++b) {
+    require(got_scales[b] == reference.scale[b],
+            "native Q2 FP32 quantization scale");
+    require(std::memcmp(got.data() + b * 34 + 2, reference.q + b * 32, 32) == 0,
+            "native Q2 activation codes, including ties and zeros");
+  }
+  check(cudaStreamDestroy(stream));
+}
+void gpu_hits(Fixture &f, ExpertPool &pool, bool cpu_order = false) {
   constexpr int K = 3;
   cudaStream_t stream{};
   check(cudaStreamCreate(&stream));
@@ -101,6 +134,7 @@ void gpu_hits(Fixture &f, ExpertPool &pool) {
   d.h_slot.resize(K);
   d.h_dst.resize(K);
   d.hit_native = true;
+  d.hit_cpu_order = cpu_order;
   d.native_hit_ptr = ptr.p;
   d.native_hit_meta = meta.p;
   d.h_native_hit_ptr.resize(K);
@@ -213,6 +247,8 @@ int main() {
     gpu_hits(f, pool);
     Fixture q2(42);
     gpu_hits(q2, pool);
+    quantize_contract();
+    gpu_hits(q2, pool, true);
     std::cout << "Native single dispatch: changed activations/layers, routing "
                  "order, raw outputs and invalid id PASS\n";
   } catch (const std::exception &e) {
