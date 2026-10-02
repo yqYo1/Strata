@@ -1214,6 +1214,56 @@ The measurements do not isolate the cause of the slowdown. The prototype was
 reverted. Its patch and measured mappings are in
 [`bench/results/2026-10-03-sycl-arena-thp/run.json`](../bench/results/2026-10-03-sycl-arena-thp/run.json).
 
+### Small adaptive refills and completed window boundaries
+
+SYCL now completes scheduled adaptive refills before the next verify window
+uses their residency map. Copies still overlap the preceding commit and
+draft. `STRATA_SYCL_ADAPT_SYNC=0` retains the earlier readiness query. Failed
+event creation, synchronization or query stops the request before committing
+an incomplete refill. Tensor kernels and quantization are unchanged.
+
+The earlier readiness query could change which windows computed an expert
+on the CPU or GPU. Two identical fresh-process story runs with auto sizing
+and 64 swaps every four rounds first differed at output index 85, with
+41,287 versus 42,635 cache hits. The completed boundary fixes that timing
+choice; different cache sizes or policies can still produce different ids.
+
+On 2026-10-03, B570/5600X, two 64-token diagnostic runs with the completed
+boundary retained all float32 bits across 32 windows/98 rows, including
+rejected drafts. Three alternating 128-token pairs per prompt used 3,792
+auto-sized slots, the shipped profile, four workers, context 512, FP16 KV,
+prefill 16, MTP T=4, minimum probability 0.5, PCIe share 0 and direct PLE:
+
+| Prompt | Readiness query, median token/s | Completed boundary, median token/s |
+| --- | ---: | ---: |
+| Story | 14.17 | 14.00 |
+| Python merge function | 24.88 | 25.05 |
+
+These runs establish no substantial generation speed gain. CPU workloads
+were not isolated. All three completed-boundary runs per prompt retained
+identical ids, cache counts and draft acceptance.
+
+A preceding single-trial settings screen compared static residency with
+64 refills every four rounds. Story measured `16.07 -> 19.18 token/s`;
+Python measured `23.26 -> 25.32 token/s`. More frequent or larger refills
+did not establish a better setting. These are exploratory configuration
+measurements with different continuations, not repeated speed trials. Their
+CPU intervals differ from the later boundary tests.
+
+Two fresh persistent processes each served three 128-token story requests,
+then three Python requests, cancellation and another eight-token story
+request. Their first six requests retained identical ids and cache counts;
+both resumed the known eight ids after cancellation. The third Python
+request measured `28.88` and `28.77 token/s`; its expert cache was already
+warmed by the preceding requests. The first story request measured `4.95`
+and `11.13 token/s`, including lazy graph preparation. Warm story requests
+measured `21.26..21.59 token/s`. These conditions remain distinct from fresh
+CLI generation and do not establish a general 29 token/s result.
+
+Flags, continuations and all samples are in
+[`bench/results/2026-10-03-sycl-small-adaptive/run.json`](../bench/results/2026-10-03-sycl-small-adaptive/run.json)
+and [`bench/results/2026-10-03-sycl-adapt-boundary/run.json`](../bench/results/2026-10-03-sycl-adapt-boundary/run.json).
+
 ### Graph submission completion events
 
 The SYCL adapter can bind a disabled-timing event directly to a graph
