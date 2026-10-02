@@ -711,6 +711,36 @@ with 3,038 slots and direct PLE reads retained every float32 logit bit.
 Flags, comparison results and raw intervals are in
 [`bench/results/2026-10-03-sycl-q2-xmx/run.json`](../bench/results/2026-10-03-sycl-q2-xmx/run.json).
 
+### Native graph recording probe
+
+The installed DPC++ supports the public
+[`enable_native_recording` graph property](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_oneapi_graph.asciidoc).
+It records through the backend and does not expose SYCL graph nodes. A
+temporary adapter selected this property only with
+`STRATA_SYCL_NATIVE_RECORDING=1`; the prototype is archived and removed from
+the default engine.
+
+On 2026-10-03, B570/5600X, three alternating ordinary 128-token runs used
+4,135 empty per-layer slots, four workers, context 512, prefill 16 and RAM
+PLE. Normal recording measured `23.08 / 22.82 / 22.98 tok/s`; native
+recording measured `22.21 / 18.78 / 21.52 tok/s`. Medians were `22.98` and
+`21.52 tok/s`. CPU pool intervals also varied: `5.631..6.173` versus
+`6.490..8.727 ms/token`. Background workloads were not isolated, so this
+does not establish the cause of the difference. It provides no generation
+speed reason to change the default. All six retained identical 128 ids and
+43,845/61,440 cache hits.
+
+The synthetic allocation probe recorded 192 graphs with 15 small kernels
+each on one shared queue. Normal recording consumed `238 MiB`; native
+recording consumed `38 MiB`. These figures measure that fixture, not the
+full engine's graph footprint. Changing host-USM inputs, graph-internal
+event completion, alternate replay queues and destruction of the recording
+queue before replay passed in both modes. Every logit bit matched in a
+32-token ordinary run and 30 MTP windows/90 rows, including rejected drafts.
+
+The prototype, independent probes, flags, comparisons and all samples are in
+[`bench/results/2026-10-03-sycl-native-recording/run.json`](../bench/results/2026-10-03-sycl-native-recording/run.json).
+
 ### Captured ordinary post and next route
 
 Native ordinary sessions with fixed cache sizes now capture the completed
