@@ -80,6 +80,12 @@ struct Planes {    const uint8_t* codes = nullptr;    const float* scales = null
 ///< null when the form has none
 };
 bool plane_ptrs(const WeightRef& r, const std::string& name, Planes& out, std::string& err) {
+    // Native projections consume the attached GGUF bytes, not canonical planes.
+    // Native-only packs intentionally carry zero bytes for skipped S-forms.
+    if (r.native_data) {
+        out = {};
+        return true;
+    }
 // S2, S4 AND S8 ALL SPLIT THE SAME WAY.  The plane LOCATION does not depend on the code width - the three
 // sizes come from the index and are checked against the tensor below - so the guard is here to catch a
 // tensor that is not quantized at all, not to pick a decoder.  WHICH KERNEL reads the planes is the
