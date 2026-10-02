@@ -14,7 +14,7 @@ source /opt/intel/oneapi/setvars.sh
 export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
 cmake -S . -B build-sycl -DCMAKE_CXX_COMPILER=icpx \
   -DSTRATA_ENABLE_SYCL=ON -DSTRATA_NATIVE_EXPERTS=OFF -DSTRATA_BUILD_TESTS=OFF
-cmake --build build-sycl --target strata-device sycl_runtime_test sycl_kernels_test sycl_gdn_test sycl_quantize_test sycl_bf16_test sycl_mmvq_test sycl_gr_test sycl_rope_test sycl_kv_test sycl_attention_test sycl_qsa_index_test -j2
+cmake --build build-sycl --target strata-device sycl_runtime_test sycl_kernels_test sycl_gdn_test sycl_quantize_test sycl_bf16_test sycl_mmvq_test sycl_gr_test sycl_rope_test sycl_kv_test sycl_attention_test sycl_qsa_index_test sycl_decode_attention_test -j2
 ctest --test-dir build-sycl -R '^sycl_' --output-on-failure
 build-sycl/strata-device --list-devices
 ```
@@ -128,6 +128,13 @@ settings; see the research document for the machine configuration:
   sorted IDs exactly, including ties, signed zero, NaNs and infinities.
   Signed zero is canonicalized by bits because arithmetic `+0` was optimized
   away by the compiler and initially broke the ascending-ID tie rule.
+- Split attention directly over paged FP16, INT8, Q4 and hybrid K8/V4:
+  twelve format/page cases passed the double-precision reference with maximum
+  absolute error `3.541e-7`. Three queries with 13/67/129 selected cells and
+  capacity 133 matched their single-query calls bit for bit. Checks include
+  permuted pages, missing pages, all-masked/empty selections, chunk tails and
+  scratch/output canaries. Quantized direct reads retain FP32 dequantization;
+  they do not insert the FP16 rounding used by the separate gather path.
 - Native Q8_1 and MMVQ for Q2_0, Q4_0, Q5_0, Q8_0, Q3_K, Q4_K, Q5_K,
   Q6_K, IQ4_NL and IQ4_XS: 150 synthetic cases passed, including small/large
   reduction widths, row tails, 1/3/8 columns and both multi-column layouts.

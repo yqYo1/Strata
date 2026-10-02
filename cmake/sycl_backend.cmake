@@ -21,7 +21,8 @@ add_library(strata_kernels STATIC src/kernels/sycl/elementwise.cpp src/kernels/s
                                  src/kernels/sycl/quantize_act.cpp src/kernels/sycl/bf16_gemv.cpp
                                  src/kernels/sycl/native_mmvq.cpp src/kernels/sycl/gr.cpp
                                  src/kernels/sycl/rope.cpp src/kernels/sycl/kv.cpp
-                                 src/kernels/sycl/attention.cpp src/kernels/sycl/qsa_index.cpp)
+                                 src/kernels/sycl/attention.cpp src/kernels/sycl/qsa_index.cpp
+                                 src/kernels/sycl/decode_attention.cpp)
 target_link_libraries(strata_kernels PUBLIC strata_core strata_artifact)
 target_compile_options(strata_kernels PRIVATE -ffp-contract=off)
 set_source_files_properties(src/kernels/sycl/rope.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math")
@@ -86,4 +87,9 @@ if(STRATA_SYCL_TESTS)
   target_compile_options(sycl_qsa_index_test PRIVATE -fno-fast-math -ffp-contract=off)
   add_test(NAME sycl_qsa_index COMMAND sycl_qsa_index_test)
   set_tests_properties(sycl_qsa_index PROPERTIES TIMEOUT 90)
+  add_executable(sycl_decode_attention_test tests/sycl/decode_attention.cpp)
+  target_link_libraries(sycl_decode_attention_test PRIVATE strata_kernels)
+  target_compile_options(sycl_decode_attention_test PRIVATE -fno-fast-math -ffp-contract=off)
+  add_test(NAME sycl_decode_attention COMMAND sycl_decode_attention_test)
+  set_tests_properties(sycl_decode_attention PROPERTIES TIMEOUT 90)
 endif()
