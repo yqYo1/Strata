@@ -32,13 +32,18 @@ int main(int argc, char **argv) {
     if (argc < 2 || argc > 5 ||
         (argc == 5 && std::string(argv[4]) != "--compare-q3" &&
          std::string(argv[4]) != "--compare-iq4xs" &&
+         std::string(argv[4]) != "--compare-q4k" &&
+         std::string(argv[4]) != "--spmd-q4k" &&
          std::string(argv[4]) != "--spmd-iq4xs"))
-      throw std::invalid_argument("usage: sycl_projection_bench SHARD1 [REPEATS=50] [COLUMNS=1] [--compare-q3|--compare-iq4xs|--spmd-iq4xs]");
+      throw std::invalid_argument("usage: sycl_projection_bench SHARD1 [REPEATS=50] [COLUMNS=1] [--compare-q3|--compare-iq4xs|--compare-q4k|--spmd-iq4xs|--spmd-q4k]");
     const int repeats = argc >= 3 ? std::stoi(argv[2]) : 50;
     const int columns = argc >= 4 ? std::stoi(argv[3]) : 1;
-    const bool spmd_iq4xs = argc == 5 && std::string(argv[4]) == "--spmd-iq4xs";
-    const bool compare = argc == 5 && !spmd_iq4xs;
-    const uint32_t compare_type = compare && std::string(argv[4]) == "--compare-iq4xs" ? 23u : 11u;
+    const std::string mode = argc == 5 ? argv[4] : "";
+    const bool spmd = mode == "--spmd-iq4xs" || mode == "--spmd-q4k";
+    const uint32_t spmd_type = mode == "--spmd-q4k" ? 12u : 23u;
+    const bool compare = argc == 5 && !spmd;
+    const uint32_t compare_type = mode == "--compare-q4k" ? 12u :
+                                  mode == "--compare-iq4xs" ? 23u : 11u;
     if (compare && columns != 1) throw std::invalid_argument("projection comparison requires one column");
     if (repeats < 1 || repeats > 1000 || columns < 1 || columns > 8)
       throw std::invalid_argument("repeats must be 1..1000 and columns 1..8");
@@ -72,7 +77,7 @@ int main(int argc, char **argv) {
         check(cudaMemcpy(weight.data(), model.shard(shard).tensor_data(t), bytes, cudaMemcpyHostToDevice));
         check(cudaMemcpy(input.data(), host.data(), host.size() * 4, cudaMemcpyHostToDevice));
         strata::kernels::quantize_q8_1_rows(input.as<float>(), columns, ni, quant.data(), stream);
-        strata::kernels::iq_set_old_kernels(spmd_iq4xs && t.type == 23);
+        strata::kernels::iq_set_old_kernels(spmd && t.type == spmd_type);
         auto run = [&] {
           strata::kernels::native_mmvq(t.type, weight.data(), quant.data(), output.as<float>(), ni, no, columns, stream);
         };

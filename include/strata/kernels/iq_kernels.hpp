@@ -70,7 +70,7 @@ void native_grouped_set_v1(bool v1);
 
 /// Most `iq_mmvq` and `native_expert_grouped` paths decode each weight part once and apply it to every column / entry;
 /// true selects older kernels that decode it again per column (STRATA_OLD_IQ_MMVQ=1 at startup). SYCL native
-/// Q2_0 groups and single-column IQ4_XS projections use ESIMD by default and select the original SPMD kernels when
+/// Q2_0 groups and single-column Q4_K/IQ4_XS projections use ESIMD by default and select the original SPMD kernels when
 /// true. Both give bitwise the same results. Set before graph capture; captured graphs keep the kernels they captured.
 void iq_set_old_kernels(bool old);
 bool iq_old_kernels();

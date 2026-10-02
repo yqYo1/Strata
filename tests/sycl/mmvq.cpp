@@ -349,17 +349,27 @@ void run(Format f, int n, int rows, int cols, bool exact,
   for (size_t i = scratch_bytes; i < got_quant.size(); ++i)
     check(got_quant[i] == 0xa5, "Q8_1 canary");
   const auto got = output.read();
-  if (exact && ((f.type == 23) ||
+  if (exact && ((f.type == 12 || f.type == 23) ||
                 ((f.type == 11 || f.type == 42) && cols > 1 && cols <= 4))) {
     // Preserve the original four-warp arithmetic in the SPMD oracle.
     // Small projection errors can change later Q8_1 activations in the model.
     const bool old = iq_old_kernels();
-    if (f.type == 23)
+    if (f.type == 12 || f.type == 23)
       iq_set_old_kernels(true);
-    native_mmvq_set_multi_exact(f.type == 23);
+    native_mmvq_set_multi_exact(f.type == 12 || f.type == 23);
     native_mmvq(f.type, weight.data(), scratch.data(), output.data(), n, rows,
                 cols, stream);
     const auto original = output.read();
+    if (std::memcmp(original.data(), got.data(), size_t(rows) * cols * 4) != 0) {
+      for (int i = 0; i < rows * cols; ++i)
+        if (std::memcmp(&original[i], &got[i], 4) != 0) {
+          std::cerr << "native oracle type " << f.type << " width " << n
+                    << " columns " << cols << " index " << i << " original "
+                    << std::hexfloat << original[i] << " candidate " << got[i]
+                    << std::defaultfloat << '\n';
+          break;
+        }
+    }
     check(std::memcmp(original.data(), got.data(), size_t(rows) * cols * 4) == 0,
           "native ESIMD/SPMD bits");
     native_mmvq_set_multi_exact(exact);
@@ -519,6 +529,24 @@ int main(int argc, char **argv) {
                       &scales[block % 8], 2);
         for (int cols : {1, 3, 8})
           run(formats[3], n, rows, cols, true, w);
+      }
+      {
+        constexpr int rows = 17;
+        const uint16_t scales[] = {0, 0x8000, 1, 0x3ff, 0x400, 0x8400,
+                                   0x8001, 0x7bff};
+        // Affine Q4_K scales include two FP16 values. Cover a partial
+        // ten-block iteration and a full second iteration with row tails.
+        for (int n : {2560, 6144}) {
+          auto w = weights(formats[4], n, rows);
+          for (int block = 0; block < rows * (n / 256); ++block) {
+            std::memcpy(w.data() + size_t(block) * 144,
+                        &scales[block % 8], 2);
+            std::memcpy(w.data() + size_t(block) * 144 + 2,
+                        &scales[(block + 3) % 8], 2);
+          }
+          for (int cols : {1, 3, 8})
+            run(formats[4], n, rows, cols, true, w);
+        }
       }
       {
         constexpr int rows = 17;
