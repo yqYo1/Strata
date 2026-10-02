@@ -128,6 +128,12 @@ settings; see the research document for the machine configuration:
   sorted IDs exactly, including ties, signed zero, NaNs and infinities.
   Signed zero is canonicalized by bits because arithmetic `+0` was optimized
   away by the compiler and initially broke the ascending-ID tie rule.
+- Native indexer: FP16-rounded input pooling passed a CPU reference at
+  `2e-6 * (1 + abs(reference))` tolerance for none, Linear and YaRN scaling.
+  Twenty-three cells split into six uneven batches left the same tail, spare,
+  pooled keys and block position as single-cell calls, bit for bit. Invalid
+  device positions left pooled keys unchanged. The initial batch path submits
+  one kernel per cell; prompt throughput has not been measured.
 - Split attention directly over paged FP16, INT8, Q4 and hybrid K8/V4:
   twelve format/page cases passed the double-precision reference with maximum
   absolute error `3.541e-7`. Three queries with 13/67/129 selected cells and
