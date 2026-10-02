@@ -55,6 +55,9 @@ the 4 GiB boundary, and reads both back. It does not measure memory bandwidth.
 The shared host engine has a SYCL implementation of its CUDA-named runtime
 API. Stream handles are in-order SYCL queues; event waits cross queues in the
 same context. Graph capture/finalization/replay uses SYCL command graphs.
+The default compute queue, like explicit engine streams, enables device event
+profiling. Startup PCIe calibration previously failed because the default queue
+lacked that property; a regression test now times copies on that queue.
 Events recorded inside a graph report completion of the entire graph, so a CPU
 handoff cannot precede a later copy in that graph. Their elapsed-time queries
 are rejected. Graph execution is serialized across repeated launches, including
@@ -95,6 +98,10 @@ settings; see the research document for the machine configuration:
 - A deliberately throwing host task: the asynchronous error reached the caller
   and remained observable on subsequent checks.
 - Bounded completion wait and the existing `strata-device --selftest`: passed.
+- Engine startup PCIe probe: 6.5 GB/s host-to-device for four 256 MiB copies
+  after warm-up, measured by device events. This selected the existing 0.14
+  PCIe-share heuristic instead of its unmeasured 0.55 fallback; the selected
+  share still needs end-to-end calibration.
 - oneMKL GEMM: 19 CPU-reference cases passed, including FP16 and BF16,
   T/N/K of 1/17/32, 17/259/320 and 8/640/2560, beta 0/0.5/1, output row
   padding, and Q8_0 weights split across six dequantization slices. The error

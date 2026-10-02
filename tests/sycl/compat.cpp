@@ -55,6 +55,15 @@ int main() {
     float ms = -1;
     CHECK(cudaEventElapsedTime(&ms, begin, done));
     require(std::isfinite(ms) && ms >= 0, "profiling");
+    // Startup PCIe calibration uses the default stream, not an explicit one.
+    // Its events must carry device timestamps as well as ordering semantics.
+    CHECK(cudaEventRecord(begin));
+    for (int repeat = 0; repeat < 32; ++repeat)
+      CHECK(cudaMemcpyAsync(device, in, bytes, cudaMemcpyHostToDevice));
+    CHECK(cudaEventRecord(done));
+    CHECK(cudaEventSynchronize(done));
+    CHECK(cudaEventElapsedTime(&ms, begin, done));
+    require(std::isfinite(ms) && ms > 0, "default-stream profiling");
     CHECK(cudaStreamBeginCapture(a, cudaStreamCaptureModeThreadLocal));
     CHECK(cudaMemcpyAsync(device, in, bytes, cudaMemcpyHostToDevice, a));
     a->parallel_for(sycl::range<1>(n),

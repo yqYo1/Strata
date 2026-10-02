@@ -62,7 +62,11 @@ Runtime::Runtime(int ordinal)
                              [errors = errors_](sycl::exception_list list) {
                                errors->capture(list);
                              },
-                             sycl::property::queue::in_order{}),
+                             // This is also the engine's default stream.
+                             // Its ordinary events support elapsed-time queries.
+                             sycl::property_list{
+                                 sycl::property::queue::in_order{},
+                                 sycl::property::queue::enable_profiling{}}),
       transfer_(
           context_, device_,
           [errors = errors_](sycl::exception_list list) {
