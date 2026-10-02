@@ -1,0 +1,290 @@
+#include "strata/kernels/mrope.hpp"
+#include "strata/kernels/qsa.hpp"
+#include "strata/kernels/rope.hpp"
+#include "strata/sycl/runtime.hpp"
+#include <algorithm>
+#include <bit>
+#include <cmath>
+#include <iostream>
+#include <numeric>
+#include <stdexcept>
+#include <vector>
+using namespace strata;
+using namespace strata::kernels;
+namespace {
+std::shared_ptr<sycl_backend::Runtime> runtime;
+template <class T> struct Buffer {
+  sycl_backend::Allocation mem;
+  Buffer(size_t n)
+      : mem(runtime, n * sizeof(T), sycl_backend::MemoryKind::Device) {}
+  T *data() { return mem.as<T>(); }
+  void put(const std::vector<T> &v) {
+    runtime->wait(
+        runtime->compute().memcpy(data(), v.data(), v.size() * sizeof(T)));
+  }
+  std::vector<T> get() {
+    std::vector<T> v(mem.size() / sizeof(T));
+    runtime->wait(runtime->compute().memcpy(v.data(), data(), mem.size()));
+    return v;
+  }
+};
+void check(bool c, const char *what) {
+  if (!c)
+    throw std::runtime_error(what);
+}
+void close(float a, double b, double tol, const char *what) {
+  if (!std::isfinite(a) || std::abs(a - b) > tol * (1 + std::abs(b)))
+    throw std::runtime_error(std::string(what) + ": " + std::to_string(a) +
+                             " vs " + std::to_string(b));
+}
+void selection(int n, int pattern) {
+  QsaShapes s = qsa_real_shapes();
+  const int cap = int(qsa_selection_width(kTopkMaxCells, s)),
+            width = int(qsa_selection_width(n, s));
+  std::vector<float> scores(kTopkMaxCells, 0);
+  for (int i = 0; i < n; ++i) {
+    if (pattern == 0)
+      scores[i] = float(std::sin(i * .137) + std::cos(i * .931));
+    if (pattern == 1)
+      scores[i] = float((i / 4) % 19 - 9);
+    if (pattern == 2)
+      scores[i] = i % 2 ? -0.f : 0.f;
+    if (pattern == 3)
+      scores[i] = i % 13 == 0   ? NAN
+                  : i % 17 == 0 ? INFINITY
+                  : i % 19 == 0 ? -INFINITY
+                                : float(i % 7);
+  }
+  std::vector<int> ref(n);
+  std::iota(ref.begin(), ref.end(), 0);
+  std::sort(ref.begin(), ref.end(), [&](int a, int b) {
+    float x = scores[a], y = scores[b];
+    if (std::isnan(x))
+      return std::isnan(y) && a < b;
+    if (std::isnan(y))
+      return true;
+    return x == y ? a < b : x > y;
+  });
+  ref.resize(width);
+  std::sort(ref.begin(), ref.end());
+  Buffer<float> sc(scores.size());
+  Buffer<int32_t> step(4), ids(cap + 16), scalar(cap + 16);
+  sc.put(scores);
+  step.put({n - 1, n, n / 4, width});
+  ids.put(std::vector<int32_t>(cap + 16, -987));
+  scalar.put(std::vector<int32_t>(cap + 16, -987));
+  topk_512_step(sc.data(), s, cap, step.data(), ids.data(),
+                &runtime->compute());
+  auto a = ids.get();
+  topk_512(sc.data(), n, s, cap, scalar.data(), &runtime->compute());
+  check(a == scalar.get(), "scalar/step selection");
+  for (int i = 0; i < width; ++i)
+    if (a[i] != ref[i])
+      throw std::runtime_error("top-k n=" + std::to_string(n) +
+                               " pattern=" + std::to_string(pattern) +
+                               " index=" + std::to_string(i) +
+                               " actual=" + std::to_string(a[i]) +
+                               " expected=" + std::to_string(ref[i]));
+  for (size_t i = width; i < a.size(); ++i)
+    check(a[i] == -987, "selection guard");
+}
+void scoring(int cells, int dim, int heads) {
+  QsaShapes s = qsa_real_shapes();
+  s.idx_dim = dim;
+  s.idx_n_head = heads;
+  const int blocks = cells / 4 + 3, n = cells / 4;
+  std::vector<float> pooled(blocks * dim), query(heads * dim), bias(blocks);
+  for (size_t i = 0; i < pooled.size(); ++i)
+    pooled[i] = float(std::sin(i * .019));
+  for (int h = 0; h < heads; ++h)
+    for (int d = 0; d < dim; ++d)
+      query[h * dim + d] = float(std::cos(d * .05) * (h % 2 ? -1 : 1));
+  for (int b = 0; b < blocks; ++b)
+    bias[b] = float(std::sin(b * .3));
+  Buffer<float> p(pooled.size()), q(query.size()), b(bias.size()),
+      out(blocks * 4 + 16), scalar(blocks * 4 + 16);
+  Buffer<int32_t> step(4);
+  p.put(pooled);
+  q.put(query);
+  b.put(bias);
+  step.put({cells - 1, cells, n, std::min(cells, 2051)});
+  for (bool biased : {false, true}) {
+    out.put(std::vector<float>(blocks * 4 + 16, 1234.f));
+    scalar.put(std::vector<float>(blocks * 4 + 16, 1234.f));
+    qsa_index_step(p.data(), q.data(), biased ? b.data() : nullptr, s,
+                   step.data(), blocks, out.data(), &runtime->compute());
+    qsa_index(p.data(), n, q.data(), biased ? b.data() : nullptr, s, cells,
+              scalar.data(), &runtime->compute());
+    auto y = out.get();
+    check(y == scalar.get(), "scalar/step scores");
+    for (int block = 0; block <= n; ++block) {
+      double score = biased ? bias[block] : 0.;
+      for (int h = 0; h < heads; ++h) {
+        double dot = 0;
+        for (int d = 0; d < dim; ++d)
+          dot += double(pooled[block * dim + d]) * query[h * dim + d];
+        score += std::max(0., dot);
+      }
+      float ref = float(score);
+      if (block == n && cells % 4)
+        ref += 1e9f;
+      for (int j = block * 4; j < std::min(cells, (block + 1) * 4); ++j)
+        close(y[j], ref, 1e-6, "index score/per-head relu/tail bias");
+    }
+    for (size_t i = cells; i < y.size(); ++i)
+      check(y[i] == 1234.f, "score guard");
+  }
+}
+void pooling(int dim, int block, bool multi, bool scaled) {
+  constexpr int cells = 19, base = 100, maxpos = 200;
+  const int nrot = 64;
+  QsaShapes s = qsa_real_shapes();
+  s.idx_dim = dim;
+  s.idx_block = block;
+  RopeScaling scale;
+  if (scaled) {
+    scale.type = RopeScalingType::YaRN;
+    scale.factor = 8;
+    scale.ext_factor = 1;
+  }
+  std::vector<float> ct(maxpos * 32), st(ct.size()), raw(cells * dim),
+      gamma(dim);
+  build_rope_table(nrot, scale, maxpos, ct.data(), st.data());
+  for (size_t i = 0; i < raw.size(); ++i)
+    raw[i] = float(std::sin(i * .031) + .2 * std::cos(i * .17));
+  for (int d = 0; d < dim; ++d)
+    gamma[d] = .8f + .003f * d;
+  std::vector<int32_t> mt(maxpos * 3);
+  for (int p = 0; p < maxpos; ++p)
+    for (int j = 0; j < 3; ++j)
+      mt[p * 3 + j] = std::max(0, p - j * 3);
+  Buffer<float> dc(ct.size()), ds(st.size()), x(raw.size()), g(gamma.size());
+  Buffer<int32_t> pos(1), bp(1), m(mt.size());
+  dc.put(ct);
+  ds.put(st);
+  x.put(raw);
+  g.put(gamma);
+  m.put(mt);
+  mrope_table_set(multi ? m.data() : nullptr);
+  const int tailcount = std::max(1, (block - 1) * dim),
+            poolcount = (cells / block + 2) * dim;
+  Buffer<float> tail(tailcount + 16), dead(dim + 16), pooled(poolcount + 16);
+  tail.put(std::vector<float>(tailcount + 16, 1234.f));
+  dead.put(std::vector<float>(dim + 16, 1234.f));
+  pooled.put(std::vector<float>(poolcount + 16, 1234.f));
+  bp.put({-1});
+  QsaIndexerBuffers buffers{tail.data(), dead.data(), pooled.data(), bp.data()};
+  std::vector<float> expected(poolcount + 16, 1234.f),
+      expectedtail(tailcount + 16, 1234.f), spare(dim);
+  auto norm = [&](std::vector<double> row) {
+    double ss = 0;
+    for (double a : row)
+      ss += a * a;
+    double inv = 1. / std::sqrt(ss / dim + double(qsa_rms_eps()));
+    std::vector<float> y(dim);
+    for (int d = 0; d < dim; ++d)
+      y[d] = float(row[d] * inv * gamma[d]);
+    return y;
+  };
+  double worst = 0;
+  for (int t = 0; t < cells; ++t) {
+    pos.put({t});
+    indexer_key_append(x.data() + t * dim, pos.data(), base, g.data(),
+                       qsa_rms_eps(), buffers, s, dc.data(), ds.data(),
+                       &runtime->compute());
+    if (t % block < block - 1)
+      std::copy(raw.begin() + t * dim, raw.begin() + (t + 1) * dim,
+                expectedtail.begin() + (t % block) * dim);
+    if (t == 0) {
+      std::vector<double> row(raw.begin(), raw.begin() + dim);
+      spare = norm(row);
+      for (int d = 0; d < nrot; ++d)
+        spare[d] *= ct[d % 32];
+      std::copy(spare.begin(), spare.end(), expected.begin());
+    }
+    if (t % block == block - 1) {
+      int b = t / block;
+      std::vector<double> row(dim, 0);
+      for (int j = 0; j < block; ++j)
+        for (int d = 0; d < dim; ++d)
+          row[d] += raw[(b * block + j) * dim + d];
+      for (auto &a : row)
+        a /= block;
+      auto y = norm(row);
+      for (int d = 0; d < 32; ++d) {
+        int p = multi ? mt[(base + b * block) * 3 + d % 3] : base + b * block;
+        float a = y[d], bval = y[d + 32], c = ct[p * 32 + d],
+              si = st[p * 32 + d];
+        y[d] = a * c - bval * si;
+        y[d + 32] = a * si + bval * c;
+      }
+      std::copy(y.begin(), y.end(), expected.begin() + b * dim);
+      std::copy(spare.begin(), spare.end(), expected.begin() + (b + 1) * dim);
+      check(bp.get()[0] == base + b * block, "pooled first-cell position");
+    }
+    auto actual = pooled.get();
+    for (size_t i = 0; i < actual.size(); ++i) {
+      worst = std::max(worst, double(std::abs(actual[i] - expected[i])));
+      close(actual[i], expected[i], 2e-7, "pooled keys/spare/guards");
+    }
+    check(tail.get() == expectedtail, "raw tail slots/guards");
+    auto dd = dead.get();
+    for (int d = 0; d < dim; ++d)
+      close(dd[d], spare[d], 2e-7, "dead key");
+    for (size_t i = dim; i < dd.size(); ++i)
+      check(dd[i] == 1234.f, "dead guard");
+  }
+  mrope_table_set(nullptr);
+  std::cout << "pool dim=" << dim << " block=" << block << " mrope=" << multi
+            << " scaled=" << scaled << " max_abs=" << worst << "\n";
+}
+} // namespace
+int main() {
+  try {
+    runtime = sycl_backend::runtime_for();
+    for (int n : {0, 1, 2051, 2052, 8193, 32768})
+      for (int pattern = 0; pattern < 4; ++pattern)
+        selection(n, pattern);
+    for (int n : {1, 4, 7, 8193}) {
+      scoring(n, 128, 4);
+      scoring(n, 67, 3);
+    }
+    for (bool m : {false, true})
+      for (bool scale : {false, true}) {
+        pooling(128, 4, m, scale);
+        pooling(67, 1, m, scale);
+      }
+    Buffer<float> scores(kTopkMaxCells), pooled(1024), query(512);
+    Buffer<int32_t> ids(2051), step(4);
+    auto reject = [](auto f) {
+      bool caught = false;
+      try {
+        f();
+      } catch (const std::invalid_argument &) {
+        caught = true;
+      }
+      check(caught, "invalid indexer accepted");
+    };
+    auto shape = qsa_real_shapes();
+    reject([&] {
+      topk_512_step(scores.data(), shape, 2048, step.data(), ids.data(),
+                    nullptr);
+    });
+    reject([&] {
+      topk_512(scores.data(), 32769, shape, 2051, ids.data(), nullptr);
+    });
+    reject([&] {
+      qsa_index(pooled.data(), 0, query.data(), nullptr, shape, 8,
+                scores.data(), nullptr);
+    });
+    reject([&] {
+      qsa_index_step(pooled.data(), query.data(), nullptr, shape, nullptr, 8,
+                     scores.data(), nullptr);
+    });
+    runtime->wait();
+    std::cout << "24 stable selections and 16 score cases passed\n";
+  } catch (const std::exception &e) {
+    std::cerr << e.what() << "\n";
+    return 1;
+  }
+}

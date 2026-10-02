@@ -20,7 +20,8 @@ add_library(strata_kernels STATIC src/kernels/sycl/elementwise.cpp src/kernels/s
                                  src/kernels/sycl/native_router.cpp src/kernels/sycl/gdn.cpp
                                  src/kernels/sycl/quantize_act.cpp src/kernels/sycl/bf16_gemv.cpp
                                  src/kernels/sycl/native_mmvq.cpp src/kernels/sycl/gr.cpp
-                                 src/kernels/sycl/rope.cpp src/kernels/sycl/kv.cpp)
+                                 src/kernels/sycl/rope.cpp src/kernels/sycl/kv.cpp
+                                 src/kernels/sycl/attention.cpp src/kernels/sycl/qsa_index.cpp)
 target_link_libraries(strata_kernels PUBLIC strata_core strata_artifact)
 target_compile_options(strata_kernels PRIVATE -ffp-contract=off)
 set_source_files_properties(src/kernels/sycl/rope.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math")
@@ -75,4 +76,14 @@ if(STRATA_SYCL_TESTS)
   target_compile_options(sycl_kv_test PRIVATE -fno-fast-math -ffp-contract=off)
   add_test(NAME sycl_kv COMMAND sycl_kv_test)
   set_tests_properties(sycl_kv PROPERTIES TIMEOUT 90)
+  add_executable(sycl_attention_test tests/sycl/attention.cpp)
+  target_link_libraries(sycl_attention_test PRIVATE strata_kernels)
+  target_compile_options(sycl_attention_test PRIVATE -fno-fast-math -ffp-contract=off)
+  add_test(NAME sycl_attention COMMAND sycl_attention_test)
+  set_tests_properties(sycl_attention PROPERTIES TIMEOUT 90)
+  add_executable(sycl_qsa_index_test tests/sycl/qsa_index.cpp)
+  target_link_libraries(sycl_qsa_index_test PRIVATE strata_kernels)
+  target_compile_options(sycl_qsa_index_test PRIVATE -fno-fast-math -ffp-contract=off)
+  add_test(NAME sycl_qsa_index COMMAND sycl_qsa_index_test)
+  set_tests_properties(sycl_qsa_index PROPERTIES TIMEOUT 90)
 endif()
