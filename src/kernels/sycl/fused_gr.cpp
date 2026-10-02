@@ -111,44 +111,48 @@ void launch(FusedGrArgs a, void *stream) {
         });
   });
   auto done = q.submit([&](sycl::handler &h) {
-    sycl::local_accessor<float, 1> part(32, h);
-    h.parallel_for(sycl::nd_range<1>(N * 160, 160),
-                   [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(32)]] {
-                     const int tid = it.get_local_linear_id(),
-                               d = it.get_group_linear_id();
-                     auto sg = it.get_sub_group();
-                     float mixed = 0;
-                     for (int c = 0; c < HC; ++c) {
-                       if (tid < 32)
-                         part[tid] = 0;
-                       it.barrier(sycl::access::fence_space::local_space);
-                       const uint16_t *w = a.w_up + size_t(c * N + d) * LR;
-                       float acc = 0;
-                       for (int j = 0; j < 2; ++j)
-                         acc = sycl::fma(f32_from_bf16(w[tid * 2 + j]),
-                                         a.lo[tid * 2 + j], acc);
-                       acc = sum32(sg, acc);
-                       if (tid % 32 == 0)
-                         part[tid / 32] = acc;
-                       it.barrier(sycl::access::fence_space::local_space);
-                       if (tid < 32)
-                         acc = sum32(sg, part[tid]);
-                       if (!tid) {
-                         const float x =
-                             (a.rs[c] * a.R[c * N + d]) * a.w_norm[c * N + d];
-                         const float w = sigmoid(acc);
-                         if (a.w_inject)
-                           mixed = sycl::fma(x, w, mixed);
-                         else {
-                           const float product = x * w;
-                           mixed = c ? mixed + product : product;
-                         }
-                       }
-                       it.barrier(sycl::access::fence_space::local_space);
-                     }
-                     if (!tid)
-                       a.mixed[d] = sycl::fma(.25f, mixed, 0.f);
-                   });
+    sycl::local_accessor<float, 1> gates(HC, h);
+    h.parallel_for(
+        sycl::nd_range<1>(N * 128, 128),
+        [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(32)]] {
+          const int tid = it.get_local_linear_id(), lane = tid % 32,
+                    c = tid / 32, d = it.get_group_linear_id();
+          const auto sg = it.get_sub_group();
+          const uint16_t *w = a.w_up + size_t(c * N + d) * LR;
+          // One subgroup per residual stream. Preserve the original five
+          // 32-lane partial reductions and their zero-padded reduction tree.
+          float partial[5];
+#pragma unroll
+          for (int k = 0; k < 5; ++k) {
+            float acc = 0;
+#pragma unroll
+            for (int j = 0; j < 2; ++j) {
+              const int i = (k * 32 + lane) * 2 + j;
+              acc = sycl::fma(f32_from_bf16(w[i]), a.lo[i], acc);
+            }
+            partial[k] = sum32(sg, acc);
+          }
+          if (!lane) {
+            const float acc = ((partial[0] + partial[4]) + partial[2]) +
+                              (partial[1] + partial[3]);
+            gates[c] = sigmoid(acc);
+          }
+          it.barrier(sycl::access::fence_space::local_space);
+          if (!tid) {
+            float mixed = 0;
+            for (int stream = 0; stream < HC; ++stream) {
+              const int i = stream * N + d;
+              const float x = (a.rs[stream] * a.R[i]) * a.w_norm[i];
+              if (a.w_inject)
+                mixed = sycl::fma(x, gates[stream], mixed);
+              else {
+                const float product = x * gates[stream];
+                mixed = stream ? mixed + product : product;
+              }
+            }
+            a.mixed[d] = sycl::fma(.25f, mixed, 0.f);
+          }
+        });
   });
   finish(stream, done);
 }
