@@ -14,7 +14,7 @@ source /opt/intel/oneapi/setvars.sh
 export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
 cmake -S . -B build-sycl -DCMAKE_CXX_COMPILER=icpx \
   -DSTRATA_ENABLE_SYCL=ON -DSTRATA_NATIVE_EXPERTS=OFF -DSTRATA_BUILD_TESTS=OFF
-cmake --build build-sycl --target strata-device sycl_host_engine_test sycl_compat_test sycl_runtime_test sycl_kernels_test sycl_gdn_test sycl_quantize_test sycl_bf16_test sycl_mmvq_test sycl_gr_test sycl_rope_test sycl_kv_test sycl_attention_test sycl_qsa_index_test sycl_decode_attention_test sycl_ple_test sycl_moe_test -j2
+cmake --build build-sycl --target strata-device sycl_host_engine_test sycl_compat_test sycl_runtime_test sycl_kernels_test sycl_gdn_test sycl_fused_gdn_test sycl_quantize_test sycl_bf16_test sycl_mmvq_test sycl_gr_test sycl_rope_test sycl_kv_test sycl_attention_test sycl_qsa_index_test sycl_decode_attention_test sycl_ple_test sycl_moe_test -j2
 ctest --test-dir build-sycl -R '^sycl_' --output-on-failure
 build-sycl/strata-device --list-devices
 ```
@@ -99,6 +99,13 @@ settings; see the research document for the machine configuration:
 - Packed 2/4/8-bit embedding gathers, expert row exclusion and event-completed
   payload publication: passed. GPU polling for CPU-written flags is explicitly
   rejected; the scheduler must use events.
+- Fused GDN: convolution/SiLU/L2, BF16 alpha/beta projection and recurrent
+  update/output normalization passed double-precision CPU checks for 1/3/8
+  tokens at 1/1 and 2/6 key/value heads. Batched outputs and committed state
+  matched repeated single-token calls bit for bit. Verification leaves history
+  and state untouched; partial commits and skipped output prefixes were checked.
+  This preserves the fused CUDA path's four row partitions and explicit FMA
+  placement, but is not a cross-device bitwise comparison or speed measurement.
 - Generic and native GDN recurrence: six changing steps checked against a
   double-precision CPU oracle with a different state layout. This includes the
   real 128-wide, 16-key-head/48-value-head geometry, modulo head pairing and
