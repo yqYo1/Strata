@@ -138,6 +138,11 @@ limits; host tasks are an experiment, not the initial overlap mechanism.
 
 #### Follow-up: what the atomic capability results actually mean
 
+The deeper [driver/kernel investigation](SYCL_USM_ATOMICS.md) traces the default
+false result, compares a newer driver, measures system-memory and event-based
+handoffs, and records a failed internal-override experiment. Read it before
+selecting a synchronization implementation or changing driver settings.
+
 Direct `zeDeviceGetMemoryAccessProperties` queries on the same B570 returned:
 
 | Level Zero allocation category | Read/write | Atomic | Concurrent | Concurrent atomic |
@@ -165,7 +170,9 @@ proof that the hardware fundamentally cannot perform CPU/GPU atomic sharing.
 Ordinary system allocations are a **separate optimization candidate**. Verify
 the applicable SYCL/Level Zero memory-model contract and test bounded two-way
 publication, changing payloads, graph replay and page-fault behavior before
-using that path for the doorbell. It was queried, not execution-tested here.
+using that path for the doorbell. The later investigation executed a small
+handoff successfully but measured substantially higher latency than the event
+baseline; that is not a validation of a production doorbell.
 Do not force capability bits using driver debug overrides and treat that as
 validation of coherence or forward progress.
 
