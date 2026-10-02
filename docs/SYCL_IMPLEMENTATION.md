@@ -564,6 +564,15 @@ requested 300-word story. MTP retains its existing event boundaries. The
 approximately `29 tok/s` reference target remains open. Full options and
 results are in `bench/results/2026-10-02-sycl-shared-overlap/run.json`.
 
+The optional `sycl_projection_bench` target measures supported dense GGUF
+projections in isolation. `sycl_projection_bench SHARD1 50 1` repeats each
+matrix fifty times in one graph and reports the median of three device-event
+intervals. It excludes quantization and transfers, and repeatedly reuses warm
+weights. On B570, the 300 matrices totalled `20.688 ms` of these isolated
+intervals; the ninety Q3_K matrices accounted for `10.351 ms`. These sums are
+not generation times. The matrix directory and individual timings are in
+`bench/results/2026-10-02-sycl-projections/before.csv`.
+
 ### Event-completed speculative windows
 
 SYCL verification captures the window in segments. The first segment embeds
