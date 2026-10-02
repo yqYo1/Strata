@@ -195,6 +195,13 @@ bool session_capture(const WeightTable& tables, const ModelGeometry& g, SessionS
     if (layer_lo < 0) layer_lo = 0;
     gr.execs = new cudaGraphExec_t[(size_t) g.n_layers]();
     gr.posts = new cudaGraphExec_t[(size_t) g.n_layers]();
+#ifdef STRATA_ENABLE_SYCL
+    if (layer_shared_early()) {
+        gr.routes = new cudaGraphExec_t[(size_t) g.n_layers]();
+        gr.shared = new cudaGraphExec_t[(size_t) g.n_layers]();
+        gr.shared_capacity = g.n_layers;
+    }
+#endif
     for (int64_t i = 0; i < g.n_layers; ++i) gr.posts[i] = nullptr;
     if (split) {
         gr.preA = new cudaGraphExec_t[(size_t) g.n_layers]();
@@ -218,7 +225,8 @@ bool session_capture(const WeightTable& tables, const ModelGeometry& g, SessionS
         // the CPU pool on what it published; `post` combines those experts with THIS layer's weights.  Capturing
         // them together is what the old single graph could not do, and the reason it could not is that
         // `moe_combine` needs the pool's answer and the pool needs the router's.
-        auto capture = [&](bool post, cudaGraphExec_t* out, const char* what, int half = 0,
+        enum class Segment { Pre, Post, Route, Shared };
+        auto capture = [&](Segment part, cudaGraphExec_t* out, const char* what, int half = 0,
                            int stage_prefix = 0) -> bool {
             cudaStream_t cs = nullptr;
             if (cudaStreamCreate(&cs) != cudaSuccess) {
@@ -232,11 +240,13 @@ bool session_capture(const WeightTable& tables, const ModelGeometry& g, SessionS
             err.clear();
             // R0.9: `half` is 0 for every mode except the split capture, where it selects a prefix of the
             // stages so the mixer and the FFN-front-plus-router can be timed separately.
-            const bool ok = post
+            const bool ok = part == Segment::Shared
+                                ? moe_shared(tables, g, l, s.moe, s.block.mixed, (void*) cs, err)
+                                : part == Segment::Post
                                 ? block_layer_post(tables, g, l, s.k, s.moe, s.block, parts, (void*) cs, err)
                                 : block_layer_pre(tables, g, l, 0, 0, s.gdn, qst, s.qsa_bufs, s.moe, s.k,
                                                   s.block, (void*) cs, err, s.db, s.ple.ready() ? &s.ple : nullptr,
-                                                  half, stage_prefix);
+                                                  half, stage_prefix, part == Segment::Route);
             if (!ok) {
                 err = "session_capture: " + std::string(what) + " layer " + std::to_string(l) + ": " + err;
                 return false;
@@ -256,15 +266,21 @@ bool session_capture(const WeightTable& tables, const ModelGeometry& g, SessionS
             cudaGraphDestroy(graph);
             return true;
         };
-        if (!capture(/*post=*/false, &gr.execs[l], "pre")) return false;
-        if (!capture(/*post=*/true, &gr.posts[l], "post")) return false;
+        if (!capture(Segment::Pre, &gr.execs[l], "pre")) return false;
+        if (!capture(Segment::Post, &gr.posts[l], "post")) return false;
+#ifdef STRATA_ENABLE_SYCL
+        if (gr.routes != nullptr) {
+            if (!capture(Segment::Route, &gr.routes[l], "route")) return false;
+            if (!capture(Segment::Shared, &gr.shared[l], "shared")) return false;
+        }
+#endif
         if (split) {
-            if (!capture(/*post=*/false, &gr.preA[l], "preA", /*half=*/1)) return false;
-            if (!capture(/*post=*/false, &gr.preB[l], "preB", /*half=*/2)) return false;
+            if (!capture(Segment::Pre, &gr.preA[l], "preA", /*half=*/1)) return false;
+            if (!capture(Segment::Pre, &gr.preB[l], "preB", /*half=*/2)) return false;
             // Prefixes 1..5, ALL through the new parameter - including the fifth, so that it and the fourth
             // differ only in the one stage between them and not in how many nodes their graphs carry.
             for (int k = 1; k <= 5; ++k)
-                if (!capture(/*post=*/false, &gr.preP[k - 1][l], "preP", /*half=*/0, /*stage_prefix=*/k))
+                if (!capture(Segment::Pre, &gr.preP[k - 1][l], "preP", /*half=*/0, /*stage_prefix=*/k))
                     return false;
         }
         ++gr.n;
@@ -485,6 +501,17 @@ bool session_replay_stage_prefixes(const ModelGeometry& g, int64_t pos, int32_t 
 }
 
 void session_graphs_free(SessionGraphs& gr) {
+#ifdef STRATA_ENABLE_SYCL
+    for (auto graphs : {gr.routes, gr.shared}) {
+        if (!graphs) continue;
+        for (int64_t i = 0; i < gr.shared_capacity; ++i)
+            if (graphs[i]) cudaGraphExecDestroy(graphs[i]);
+        delete[] graphs;
+    }
+    gr.routes = nullptr;
+    gr.shared = nullptr;
+    gr.shared_capacity = 0;
+#endif
     if (gr.execs) {
         for (int64_t i = 0; i < gr.n; ++i) cudaGraphExecDestroy(gr.execs[i]);
         delete[] gr.execs;
@@ -538,6 +565,13 @@ bool SessionLoopScratch::init(size_t parts_bytes_in, std::string& err) {
         free();
         return false;
     }
+#ifdef STRATA_ENABLE_SYCL
+    if (cudaEventCreateWithFlags(&shared_done, cudaEventDisableTiming) != cudaSuccess) {
+        err = "SessionLoopScratch: shared completion event create failed";
+        free();
+        return false;
+    }
+#endif
     // **PIN THE HOST ONCE, NOT ONCE PER TOKEN.**  `ExpertPool` builds its workers from `physical_cores(true)`,
     // which drops the first physical core so the host loop can spin without taking a worker's cycles - and
     // nothing in the pool can pin the host, so if this does not happen the spin is free to land on a worker's
@@ -561,6 +595,9 @@ void SessionLoopScratch::free() {
         pinned_core = -1;
     }
     if (probe != nullptr) { cudaEventDestroy(probe); probe = nullptr; }
+#ifdef STRATA_ENABLE_SYCL
+    if (shared_done != nullptr) { cudaEventDestroy(shared_done); shared_done = nullptr; }
+#endif
     if (y_miss != nullptr) { cudaFreeHost(y_miss); y_miss = nullptr; }
     parts_bytes = 0;
 }
@@ -648,15 +685,33 @@ bool session_loop(const ModelGeometry& g, int64_t pos, int32_t pos_base, Session
             return false;
         }
     }
+    auto launch_pre = [&](int64_t layer) -> cudaError_t {
+        cudaGraphExec_t pre = gr.execs[layer];
+#ifdef STRATA_ENABLE_SYCL
+        const bool separated = overlap && gr.routes != nullptr;
+        if (separated) pre = gr.routes[layer];
+#endif
+        cudaError_t status = cudaGraphLaunch(pre, cs);
+        if (status != cudaSuccess) return status;
+        // This event completes the routed payload, before the separately
+        // queued shared expert. Host reads never require concurrent USM writes.
+        status = cudaEventRecord(probe, cs);
+        if (status != cudaSuccess) return status;
+#ifdef STRATA_ENABLE_SYCL
+        if (separated) {
+            status = cudaGraphLaunch(gr.shared[layer], cs);
+            if (status != cudaSuccess) return status;
+            status = cudaEventRecord(scratch->shared_done, cs);
+        }
+#endif
+        return status;
+    };
     {
-        const auto t0 = std::chrono::steady_clock::now();
-        const cudaError_t le = cudaGraphLaunch(gr.execs[0], cs);
+        const cudaError_t le = launch_pre(0);
         if (le != cudaSuccess) {
             err = "session_loop: launch pre[0]: " + std::string(cudaGetErrorString(le));
             return false;
         }
-        cudaEventRecord(probe, cs);
-        (void) t0;
     }
 
     for (int64_t l = 0; l < g.n_layers; ++l) {
@@ -681,8 +736,8 @@ bool session_loop(const ModelGeometry& g, int64_t pos, int32_t pos_base, Session
             // remove the need for the call, and nothing here should be read as claiming they do.
             const cudaError_t q = cudaEventQuery(probe);
 #ifdef STRATA_ENABLE_SYCL
-            // Host USM has no concurrent CPU/GPU access contract on the target
-            // device. Read the published payload only after graph completion.
+            // Read the published payload only after the route graph completes.
+            // The shared graph uses separate device buffers and may still run.
             if (q == cudaSuccess && !rang && *seq >= want) {
 #else
             if (!rang && *seq >= want) {
@@ -708,6 +763,16 @@ bool session_loop(const ModelGeometry& g, int64_t pos, int32_t pos_base, Session
             err = "session_loop: layer " + std::to_string(l) + " ended without ringing";
             return false;
         }
+#ifdef STRATA_ENABLE_SYCL
+        if (overlap && gr.routes != nullptr) {
+            const cudaError_t shared = cudaEventQuery(scratch->shared_done);
+            if (shared == cudaErrorNotReady) ++gr.shared_pending_at_pool;
+            else if (shared != cudaSuccess) {
+                err = "session_loop: shared completion query: " + std::string(cudaGetErrorString(shared));
+                return false;
+            }
+        }
+#endif
 
         // ---- **THE GPU'S HALF GOES FIRST, SO IT RUNS WHILE THE CPU DOES ITS HALF.**  `Launch` only enqueues:
         // the quantize and the grouped expert kernel land on `main_cs` and the GPU starts on them immediately,
@@ -762,12 +827,11 @@ bool session_loop(const ModelGeometry& g, int64_t pos, int32_t pos_base, Session
         // the two are ordered on one stream and `pre[l+1]`'s first use of `bb.mixed`/`bb.inject` is its own
         // `gr_read`, which comes after `post[l]` has consumed them.
         if (l + 1 < g.n_layers) {
-            const cudaError_t ne = cudaGraphLaunch(gr.execs[l + 1], cs);
+            const cudaError_t ne = launch_pre(l + 1);
             if (ne != cudaSuccess) {
                 err = "session_loop: launch pre[" + std::to_string(l + 1) + "]: " + cudaGetErrorString(ne);
                 return false;
             }
-            cudaEventRecord(probe, cs);
         }
         // ---- **THE SECOND HALF OF THE ROUND TRIP, AND THE HALF NOTHING WAS MEASURING.**
         //
@@ -776,6 +840,8 @@ bool session_loop(const ModelGeometry& g, int64_t pos, int32_t pos_base, Session
         // `post[l]` cannot start until this code launches it.  So this interval is GPU-idle time, and it is
         // the number that decides whether the fix is R2.4 (fewer launches per layer) or a faster kernel.
         //
+        // On SYCL the separate shared graph may run during this interval, so
+        // this host interval is not a measurement of GPU-idle time.
         // It INCLUDES the `!overlap` synchronisation when that arm is selected, which is deliberate: that arm
         // exists to show what the pipeline is worth, and hiding its cost here would defeat the comparison.
         gr.ms_host += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t_ring).count();

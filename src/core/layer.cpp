@@ -1145,7 +1145,7 @@ static void dump_half(const BlockBuffers& bb, const ModelGeometry& g, int64_t la
                       uint64_t off, uint64_t n, void* stream) {
     dump_slot(bb.dump, g, layer, src, off, n, stream);
 }
-bool block_layer_pre(const WeightTable& tables, const ModelGeometry& g, int64_t layer, int64_t pos,                     int32_t pos_base, const GdnBuffers& gb, const QsaState& qst, const QsaBuffers& qb,                     const MoEBuffers& mb, int64_t k, const BlockBuffers& bb, void* stream, std::string& err,                     const Doorbell* db, const PleRun* ple, int half, int stage_prefix) {
+bool block_layer_pre(const WeightTable& tables, const ModelGeometry& g, int64_t layer, int64_t pos,                     int32_t pos_base, const GdnBuffers& gb, const QsaState& qst, const QsaBuffers& qb,                     const MoEBuffers& mb, int64_t k, const BlockBuffers& bb, void* stream, std::string& err,                     const Doorbell* db, const PleRun* ple, int half, int stage_prefix, bool defer_shared) {
     // ================================ THE PLE, AT LAYER 1 ONLY ================================
     //
     // **THIS IS THE CALL WHOSE ABSENCE FAILED GATE C1.**  Layer 1 carries the six `blk.1.ple_*` tensors and no
@@ -1259,7 +1259,7 @@ st_begin(layer, 3, stream);
     if (run4) {
     st_begin(layer, 4, stream);    {        const bool ok = moe_route(tables, g, layer, k, mb, bb.mixed, stream, err, db);        st_end(layer, 4, stream);        if (!ok) return false;    }
     // Plan v0.3 P3: after the ring, so the GPU computes the shared expert while the host runs the pool.
-    if (g_shared_early && !moe_shared(tables, g, layer, mb, bb.mixed, stream, err)) return false;
+    if (g_shared_early && !defer_shared && !moe_shared(tables, g, layer, mb, bb.mixed, stream, err)) return false;
     }
     // Every stage this call was asked to run has run.  There is no other way out: the old `return ok;`
     // lived inside the stage-4 block and restructuring that left the function with no return at all.

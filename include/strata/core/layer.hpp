@@ -611,11 +611,13 @@ bool block_layer(const WeightTable& tables, const ModelGeometry& g, int64_t laye
 /// **A half is not a free-standing call.**  `2` reads what `1` left in `bb.mixed`/`bb.inject`, exactly as
 /// `block_layer_post` does; the two are only meaningful replayed in order on one stream, which is what
 /// `session_replay_stages` does.
+/// With `defer_shared`, the caller must enqueue `moe_shared` after this call
+/// and before `block_layer_post` on the same stream when shared-early is enabled.
 bool block_layer_pre(const WeightTable& tables, const ModelGeometry& g, int64_t layer, int64_t pos,
                      int32_t pos_base, const GdnBuffers& gb, const QsaState& qst, const QsaBuffers& qb,
                      const MoEBuffers& mb, int64_t k, const BlockBuffers& bb, void* stream, std::string& err,
                      const Doorbell* db = nullptr, const PleRun* ple = nullptr, int half = 0,
-                     int stage_prefix = 0);
+                     int stage_prefix = 0, bool defer_shared = false);
 
 bool block_layer_post(const WeightTable& tables, const ModelGeometry& g, int64_t layer, int64_t k,
                       const MoEBuffers& mb, const BlockBuffers& bb, const float* parts, void* stream,
