@@ -14,7 +14,7 @@ source /opt/intel/oneapi/setvars.sh
 export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
 cmake -S . -B build-sycl -DCMAKE_CXX_COMPILER=icpx \
   -DSTRATA_ENABLE_SYCL=ON -DSTRATA_NATIVE_EXPERTS=OFF -DSTRATA_BUILD_TESTS=OFF
-cmake --build build-sycl --target strata-device sycl_runtime_test sycl_kernels_test sycl_gdn_test sycl_quantize_test sycl_bf16_test sycl_mmvq_test sycl_gr_test sycl_rope_test sycl_kv_test -j2
+cmake --build build-sycl --target strata-device sycl_runtime_test sycl_kernels_test sycl_gdn_test sycl_quantize_test sycl_bf16_test sycl_mmvq_test sycl_gr_test sycl_rope_test sycl_kv_test sycl_attention_test sycl_qsa_index_test -j2
 ctest --test-dir build-sycl -R '^sycl_' --output-on-failure
 build-sycl/strata-device --list-devices
 ```
@@ -114,6 +114,20 @@ settings; see the research document for the machine configuration:
   prompt staging. The 256-point Hadamard transform matched the CPU
   butterfly sequence bit for bit and its inverse recovered the input
   within `4e-7` absolute error.
+- Gathered GQA attention with the real 24-query/2-KV-head, 256-wide
+  geometry and a 6-query/3-KV-head, 68-wide fixture: counts 0, 1, 7, 257
+  and 2,051 passed double-precision softmax/value references. Normal-input
+  maximum absolute error was `3.358e-7`; a fixture with query/key magnitudes
+  up to 30/10 had `7.169e-5`. Scalar and device-step entry points matched
+  bit for bit. Empty selections, weight/output canaries, FP16/FP32 gates,
+  in-place native gates and weighted RMS at widths 66 through 2,560 passed.
+- Generic indexer pooling: eight geometry/scaling/image-position cases,
+  each with 19 changing steps, matched CPU pooled/spare keys bit for bit.
+  Sixteen score cases passed double-precision per-head ReLU references.
+  Twenty-four selection cases through 32,768 cells matched independently
+  sorted IDs exactly, including ties, signed zero, NaNs and infinities.
+  Signed zero is canonicalized by bits because arithmetic `+0` was optimized
+  away by the compiler and initially broke the ascending-ID tie rule.
 - Native Q8_1 and MMVQ for Q2_0, Q4_0, Q5_0, Q8_0, Q3_K, Q4_K, Q5_K,
   Q6_K, IQ4_NL and IQ4_XS: 150 synthetic cases passed, including small/large
   reduction widths, row tails, 1/3/8 columns and both multi-column layouts.
