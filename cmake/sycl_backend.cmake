@@ -20,7 +20,7 @@ add_executable(strata-device src/core/device_main.cpp)
 target_link_libraries(strata-device PRIVATE strata_core)
 
 add_library(strata_kernels STATIC src/kernels/sycl/elementwise.cpp src/kernels/sycl/cvec.cpp src/kernels/sycl/router.cpp
-                                 src/kernels/sycl/native_router.cpp src/kernels/sycl/gdn.cpp src/kernels/sycl/fused_gdn.cpp src/kernels/sycl/sampler.cpp src/kernels/sycl/sequence.cpp
+                                 src/kernels/sycl/native_router.cpp src/kernels/sycl/gdn.cpp src/kernels/sycl/fused_gdn.cpp src/kernels/sycl/sampler.cpp src/kernels/sycl/sequence.cpp src/kernels/sycl/expert_routing.cpp
                                  src/kernels/sycl/quantize_act.cpp src/kernels/sycl/bf16_gemv.cpp
                                  src/kernels/sycl/native_mmvq.cpp src/kernels/sycl/gr.cpp src/kernels/sycl/fused_gr.cpp
                                  src/kernels/sycl/rope.cpp src/kernels/sycl/kv.cpp
@@ -94,6 +94,10 @@ if(STRATA_SYCL_TESTS)
   target_compile_options(sycl_native_flash_attn_test PRIVATE -fno-fast-math -ffp-contract=off)
   add_test(NAME sycl_native_flash_attn COMMAND sycl_native_flash_attn_test)
   set_tests_properties(sycl_native_flash_attn PROPERTIES TIMEOUT 90)
+  add_executable(sycl_expert_routing_test tests/sycl/expert_routing.cpp)
+  target_link_libraries(sycl_expert_routing_test PRIVATE strata_kernels)
+  add_test(NAME sycl_expert_routing COMMAND sycl_expert_routing_test)
+  set_tests_properties(sycl_expert_routing PROPERTIES TIMEOUT 90)
   add_executable(sycl_sequence_test tests/sycl/sequence.cpp)
   target_link_libraries(sycl_sequence_test PRIVATE strata_kernels)
   target_compile_options(sycl_sequence_test PRIVATE -fno-fast-math -ffp-contract=off)

@@ -311,3 +311,19 @@ These checks establish runtime and kernel behavior, not model correctness or inf
 performance. Remaining work includes the model kernels, CPU expert scheduling,
 prefill, cache/sequence state, verification and launch integration, followed by
 layer/logit comparisons and real-model inference validation.
+
+### Canonical expert routing
+
+`moe_hit_select` and `moe_hit_select_multi` compact resident entries in routing
+order, for up to 32 and 128 entries respectively. `moe_group_resident` groups
+entries by first occurrence of the expert and preserves entry order inside each
+group. Negative expert ids are skipped. Positive blob extents remain the caller's
+responsibility. These small routing operations use one device work item.
+`moe_hit_add` adds each selected row at its original routing destination; its
+input destinations must be distinct. Nonpositive or over-capacity device counts
+leave the output untouched. Positive destination extents remain caller-owned.
+
+`sycl_expert_routing_test` checks selection, group pointers and starts, token
+indices, untouched rows, invalid counts, and graph replay with changing resident
+hits against CPU expectations. This covers routing helpers; the canonical S2
+expert projections are not yet connected.
