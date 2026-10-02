@@ -1,0 +1,326 @@
+#include "strata/artifact/dequant.hpp"
+#include "strata/kernels/native_mmvq.hpp"
+#include "strata/sycl/runtime.hpp"
+#include <algorithm>
+#include <array>
+#include <cfenv>
+#include <cmath>
+#include <cstring>
+#include <iostream>
+#include <random>
+#include <stdexcept>
+#include <vector>
+using namespace strata;
+using namespace strata::kernels;
+namespace {
+std::shared_ptr<sycl_backend::Runtime> runtime;
+template <typename T> struct Buffer {
+  sycl_backend::Allocation storage;
+  size_t count;
+  explicit Buffer(size_t n)
+      : storage(runtime, n * sizeof(T), sycl_backend::MemoryKind::Device),
+        count(n) {}
+  T *data() { return storage.as<T>(); }
+  void upload(const std::vector<T> &v) {
+    if (v.size() != count)
+      throw std::logic_error("upload size");
+    runtime->wait(runtime->compute().memcpy(data(), v.data(), storage.size()));
+  }
+  std::vector<T> read() {
+    std::vector<T> v(count);
+    runtime->wait(runtime->compute().memcpy(v.data(), data(), storage.size()));
+    return v;
+  }
+};
+uint16_t half(float value) {
+  const _Float16 h = _Float16(value);
+  uint16_t bits;
+  std::memcpy(&bits, &h, 2);
+  return bits;
+}
+float unhalf(const uint8_t *p) {
+  _Float16 h;
+  std::memcpy(&h, p, 2);
+  return float(h);
+}
+void check(bool condition, const char *label) {
+  if (!condition)
+    throw std::runtime_error(label);
+}
+struct Format {
+  int type, width, bytes, scale;
+};
+constexpr Format formats[] = {{2, 32, 18, 0},      {6, 32, 22, 0},
+                              {8, 32, 34, 0},      {11, 256, 110, 108},
+                              {12, 256, 144, 0},   {13, 256, 176, 0},
+                              {14, 256, 210, 208}, {20, 32, 18, 0},
+                              {23, 256, 136, 0},   {42, 64, 18, 0}};
+void decode(int type, const uint8_t *p, float *out) {
+  switch (type) {
+  case 2:
+    dequantize_q4_0(p, out);
+    break;
+  case 6:
+    dequantize_q5_0(p, out);
+    break;
+  case 8:
+    dequantize_q8_0(p, out);
+    break;
+  case 11:
+    dequantize_q3_K(p, out);
+    break;
+  case 12:
+    dequantize_q4_K(p, out);
+    break;
+  case 13:
+    dequantize_q5_K(p, out);
+    break;
+  case 14:
+    dequantize_q6_K(p, out);
+    break;
+  case 20:
+    dequantize_iq4_nl(p, out);
+    break;
+  case 23:
+    dequantize_iq4_xs(p, out);
+    break;
+  case 42:
+    dequantize_q2_0(p, out);
+    break;
+  default:
+    throw std::logic_error("test decode type");
+  }
+}
+std::vector<uint8_t> weights(Format f, int n, int rows) {
+  std::vector<uint8_t> bytes(size_t(n / f.width) * rows * f.bytes);
+  std::mt19937 random(876 + f.type);
+  for (auto &v : bytes)
+    v = uint8_t(random());
+  for (size_t i = 0; i < bytes.size(); i += f.bytes) {
+    const float scale = (int(random() % 1025) - 512) / 131072.f;
+    const uint16_t bits = half(scale);
+    std::memcpy(bytes.data() + i + f.scale, &bits, 2);
+    if (f.type == 12 || f.type == 13) {
+      const uint16_t min_bits = half(float(random() % 512) / 131072.f);
+      std::memcpy(bytes.data() + i + 2, &min_bits, 2);
+    }
+  }
+  // A subnormal block scale exercises two-byte loads and bit conversion.
+  const uint16_t smallest = 1;
+  std::memcpy(bytes.data() + f.scale, &smallest, 2);
+  return bytes;
+}
+std::vector<uint8_t> quantize(const std::vector<float> &x) {
+  std::vector<uint8_t> out(x.size() / 32 * 36);
+  for (size_t b = 0; b < x.size() / 32; ++b) {
+    std::array<float, 32> sum;
+    float maximum = 0;
+    for (int i = 0; i < 32; ++i) {
+      sum[i] = x[b * 32 + i];
+      maximum = std::max(maximum, std::abs(sum[i]));
+    }
+    for (int off = 16; off; off /= 2) {
+      const auto old = sum;
+      for (int i = 0; i < 32; ++i)
+        sum[i] = old[i] + old[i ^ off];
+    }
+    const float d = maximum / 127.f;
+    const auto db = half(d), sb = half(sum[0]);
+    std::memcpy(out.data() + b * 36, &db, 2);
+    std::memcpy(out.data() + b * 36 + 2, &sb, 2);
+    for (int i = 0; i < 32; ++i) {
+      const float quotient = maximum == 0 ? 0 : x[b * 32 + i] / d;
+      out[b * 36 + 4 + i] = uint8_t(int8_t(std::round(quotient)));
+    }
+  }
+  return out;
+}
+size_t tested_cases = 0;
+double max_scaled_error = 0;
+void run(Format f, int n, int rows, int cols, bool exact,
+         const std::vector<uint8_t> &w) {
+  check(native_mmvq_weight_bytes(f.type, n, rows) == w.size(), "weight bytes");
+  const auto scratch_bytes = native_q8_1_bytes(n, cols);
+  check(scratch_bytes == size_t(cols) * n / 32 * 36, "Q8_1 bytes");
+  std::vector<float> x(size_t(n) * cols);
+  for (size_t i = 0; i < x.size(); ++i)
+    x[i] = float(.37 + std::sin(i * .73) * (1. + (i % 3) * .31));
+  std::fill_n(x.begin(), 32, 0.f);
+  if (x.size() >= 64) {
+    for (int i = 32; i < 64; ++i)
+      x[i] = float(i - 47) + .5f;
+    x[32] = 127.f;
+  }
+  const auto q8 = quantize(x);
+  Buffer<float> input(x.size()), output(size_t(rows) * cols + 4),
+      single(rows + 4);
+  Buffer<uint8_t> weight(w.size()), scratch(scratch_bytes + 16);
+  input.upload(x);
+  weight.upload(w);
+  scratch.upload(std::vector<uint8_t>(scratch_bytes + 16, 0xa5));
+  output.upload(std::vector<float>(size_t(rows) * cols + 4, 12345.f));
+  single.upload(std::vector<float>(rows + 4, 12345.f));
+  auto *stream = &runtime->compute();
+  native_mmvq_set_multi_exact(exact);
+  native_quantize_q8_1(input.data(), scratch.data(), n, cols, stream);
+  native_mmvq(f.type, weight.data(), scratch.data(), output.data(), n, rows,
+              cols, stream);
+  const auto got_quant = scratch.read();
+  check(std::equal(q8.begin(), q8.end(), got_quant.begin()),
+        "native Q8_1 bytes");
+  for (size_t i = scratch_bytes; i < got_quant.size(); ++i)
+    check(got_quant[i] == 0xa5, "Q8_1 canary");
+  const auto got = output.read();
+  for (int col = 0; col < cols; ++col) {
+    if (exact) {
+      native_mmvq(f.type, weight.data(),
+                  scratch.data() + size_t(col) * n / 32 * 36, single.data(), n,
+                  rows, 1, stream);
+      const auto one = single.read();
+      check(std::memcmp(one.data(), got.data() + col * rows, rows * 4) == 0,
+            "native multi/single bits");
+      for (int i = rows; i < rows + 4; ++i)
+        check(one[i] == 12345.f, "single canary");
+    }
+    for (int row = 0; row < rows; ++row) {
+      double expected = 0, magnitude = 0;
+      for (int b = 0; b < n / f.width; ++b) {
+        const auto *wb = w.data() + (size_t(row) * (n / f.width) + b) * f.bytes;
+        float decoded[256];
+        decode(f.type, wb, decoded);
+        for (int i = 0; i < f.width; ++i) {
+          const size_t global = size_t(col) * n + b * f.width + i;
+          const auto *qb = q8.data() + global / 32 * 36;
+          const double term =
+              double(decoded[i]) * unhalf(qb) * int8_t(qb[4 + global % 32]);
+          expected += term;
+          magnitude += std::abs(term);
+        }
+        if (f.type == 2 || f.type == 6) {
+          const auto *qb = q8.data() + (size_t(col) * n / 32 + b) * 36;
+          int qsum = 0;
+          for (int i = 0; i < 32; ++i)
+            qsum += int8_t(qb[4 + i]);
+          // Native affine formats use the FP16 original-input sum, not
+          // sum(q)*d.
+          const double correction =
+              (f.type == 2 ? 8. : 16.) * unhalf(wb) *
+              (double(unhalf(qb)) * qsum - unhalf(qb + 2));
+          expected += correction;
+          magnitude += std::abs(correction);
+        }
+      }
+      const double error =
+          std::abs(got[col * rows + row] - expected) / (1 + magnitude);
+      max_scaled_error = std::max(max_scaled_error, error);
+      if (!std::isfinite(got[col * rows + row]) || error > 3e-6)
+        throw std::runtime_error(
+            "MMVQ mismatch type=" + std::to_string(f.type) +
+            " n=" + std::to_string(n) + " row=" + std::to_string(row) +
+            " col=" + std::to_string(col) +
+            " actual=" + std::to_string(got[col * rows + row]) +
+            " expected=" + std::to_string(expected));
+    }
+  }
+  for (size_t i = size_t(rows) * cols; i < got.size(); ++i)
+    check(got[i] == 12345.f, "MMVQ output canary");
+  ++tested_cases;
+}
+void real_model(const char *path) {
+  const auto model = GgufModel::open(path);
+  size_t tensors = 0;
+  std::map<int, size_t> counts;
+  for (size_t shard = 0; shard < model.size(); ++shard)
+    for (const auto &t : model.shard(shard).tensors()) {
+      if (!native_mmvq_supported(t.type))
+        continue;
+      check(model.in_bounds(t, shard), "model tensor bounds");
+      check(!t.shape.empty() && t.shape[0] <= INT32_MAX, "model row width");
+      uint64_t total_rows = 1;
+      for (size_t i = 1; i < t.shape.size(); ++i)
+        total_rows *= t.shape[i];
+      const auto it =
+          std::find_if(std::begin(formats), std::end(formats),
+                       [&](Format f) { return f.type == int(t.type); });
+      const auto f = *it;
+      const int n = int(t.shape[0]);
+      const size_t row_bytes = native_mmvq_weight_bytes(f.type, n, 1);
+      const uint8_t *source = model.shard(shard).tensor_data(t);
+      std::vector<uint8_t> sample(3 * row_bytes);
+      const uint64_t indices[] = {0, total_rows / 2, total_rows - 1};
+      for (int i = 0; i < 3; ++i)
+        std::memcpy(sample.data() + i * row_bytes,
+                    source + indices[i] * row_bytes, row_bytes);
+      try {
+        run(f, n, 3, 3, true, sample);
+      } catch (const std::exception &e) {
+        throw std::runtime_error(t.name + ": " + e.what());
+      }
+      ++tensors;
+      ++counts[f.type];
+    }
+  check(tensors > 0, "no supported model tensors tested");
+  std::cout << "Real GGUF: first/middle/last rows of " << tensors
+            << " tensors, 3 activation columns\n";
+  for (const auto &[type, count] : counts)
+    std::cout << "  " << ggml_type_name(type) << ": " << count << '\n';
+}
+template <typename F> void rejects(F f) {
+  try {
+    f();
+  } catch (const std::invalid_argument &) {
+    return;
+  }
+  throw std::runtime_error("invalid MMVQ input accepted");
+}
+} // namespace
+int main(int argc, char **argv) {
+  try {
+    std::fesetenv(FE_DFL_ENV);
+    runtime = sycl_backend::runtime_for();
+    if (argc == 3 && std::string(argv[1]) == "--gguf")
+      real_model(argv[2]);
+    else if (argc == 1) {
+      for (const auto f : formats) {
+        check(native_mmvq_supported(f.type), "supported type");
+        for (int n : {f.width, 2560, 8192}) {
+          const auto w = weights(f, n, 7);
+          for (int cols : {1, 3, 8})
+            run(f, n, 7, cols, true, w);
+          run(f, n, 7, 3, false, w);
+          run(f, n, 7, 8, false, w);
+        }
+      }
+      Buffer<float> x(256), y(256);
+      Buffer<uint8_t> w(1024), scratch(1024);
+      auto *s = &runtime->compute();
+      rejects([&] { native_q8_1_bytes(31, 1); });
+      rejects([&] { native_q8_1_bytes(32, 9); });
+      rejects([&] { native_mmvq_weight_bytes(42, 32, 1); });
+      rejects([&] { native_mmvq_weight_bytes(99, 32, 1); });
+      check(!native_mmvq_supported(99), "unsupported type");
+      rejects([&] {
+        native_quantize_q8_1(x.data(), scratch.data(), 32, 1, nullptr);
+      });
+      rejects([&] {
+        native_mmvq(42, w.data(), scratch.data(),
+                    reinterpret_cast<float *>(scratch.data()), 64, 1, 1, s);
+      });
+      rejects([&] {
+        native_q2_0_f32(w.data(), x.data(), scratch.data(), x.data(), 64, 1, 1,
+                        s);
+      });
+    } else
+      throw std::invalid_argument(
+          "usage: sycl_mmvq_test [--gguf first-shard.gguf]");
+    native_mmvq_set_multi_exact(true);
+    runtime->wait();
+    std::cout << "SYCL native MMVQ PASS: " << tested_cases
+              << " cases; max |error|/(1+sum|terms|)=" << max_scaled_error
+              << '\n';
+    return 0;
+  } catch (const std::exception &e) {
+    std::cerr << e.what() << '\n';
+    return 1;
+  }
+}

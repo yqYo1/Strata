@@ -8,8 +8,10 @@ namespace strata::kernels {
 // and IQ4_XS / CUDA Q8_1 adapters, pinned to llama.cpp
 // 3cf03257f219afbe7334045ff7c6a06ac68c627d, sm_120 generic MMVQ.
 // All pointers are device pointers, at least 4-byte aligned, with no overlap.
-// All calls enqueue on the explicit non-null CUDA stream; no allocation or wait.
-// The translation unit must use --use_fast_math, as the pinned CUDA oracle does.
+// All calls enqueue on an explicit non-null stream; no allocation or wait.
+// In SYCL builds this is an in-order sycl::queue pointer. The CUDA translation
+// unit uses --use_fast_math; SYCL uses explicitly rounded Q8_1 division and
+// separate FP32 products/adds. Cross-vendor bit identity is not required.
 //
 // Shapes use GGUF order: n_in is the contiguous reduction dimension, n_out is
 // the weight row count, and ncols is the activation column/token count, 1..8
