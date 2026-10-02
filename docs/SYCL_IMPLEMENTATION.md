@@ -379,3 +379,47 @@ A separate one-token run with fused GR enabled produced id 198 from input 1,
 with all logits finite. Layer dumping disables fused GR, so the repeated run
 covers the composed GR path. These checks establish execution and repeatability,
 not agreement with another backend or model quality; no speed claim is made.
+
+### Short chat and CPU reference
+
+On the same B570/5600X machine, a 25-token rendered chat asked
+`What is 2+2? Reply with just the number.` with an empty completed thinking
+block. Native per-layer decode, Q2_0, FP16 KV, context 128, four CPU workers,
+mmap experts, cache disabled and eight generated tokens produced token 19
+(`4`) followed by the turn delimiter. EOS stopping was disabled for this probe.
+All 32 positions contained 248,320 finite logits. Two fresh processes produced
+byte-identical dumps (SHA-256
+`f2f279b63b4280878c2909cb65a82d71a0c65bee4e55246e47107e8ad546072e`).
+The first run measured 1.06 generation tok/s and the subsequent warm-cache run
+7.14 tok/s; eight generated tokens are not a steady-state benchmark.
+
+A separate CPU-only llama.cpp build at the pinned commit
+`3cf03257f219afbe7334045ff7c6a06ac68c627d` read the same GGUF shards and
+teacher-forced the 25 input tokens one at a time, with four threads, FP16 KV
+and Flash Attention disabled. All 25 argmax ids matched, including the answer.
+The logits were not bit-identical: minimum/mean cosine were
+0.989024/0.997810, maximum per-row RMSE 0.271464, and maximum absolute difference
+1.789672. This is one short prompt, not a broad model-quality result.
+
+The optional reference driver lives in `tools/sycl/llama_logits.cpp` and uses
+llama.cpp's public API. Build the pinned dependency in a separate directory:
+
+```sh
+cmake -S "$LLAMA_DIR" -B build-sycl-oracle \
+  -DLLAMA_BUILD_COMMON=OFF -DLLAMA_BUILD_TOOLS=OFF -DLLAMA_BUILD_TESTS=OFF \
+  -DLLAMA_BUILD_EXAMPLES=OFF -DLLAMA_BUILD_MTMD=OFF -DBUILD_SHARED_LIBS=ON \
+  -DGGML_CUDA=OFF -DGGML_SYCL=OFF -DGGML_NATIVE=ON -DGGML_CPU_ALL_VARIANTS=OFF
+cmake --build build-sycl-oracle --target llama -j2
+c++ -std=c++17 -O2 tools/sycl/llama_logits.cpp \
+  -I "$LLAMA_DIR/include" -I "$LLAMA_DIR/ggml/include" \
+  -L build-sycl-oracle/bin -Wl,-rpath,"$PWD/build-sycl-oracle/bin" \
+  -lllama -o build-sycl-oracle/bin/llama_logits
+build-sycl-oracle/bin/llama_logits "$SHARD1" /tmp/tokens.txt /tmp/cpu-logits.bin
+python3 tools/sycl/compare_logits.py /tmp/cpu-logits.bin /tmp/sycl-logits.bin --rows 25
+```
+
+The comparison requires NumPy and validates complete finite dumps before
+reporting differences. `--rows` explicitly selects a common prefix when the
+SYCL dump also includes generated positions. `--require-exact` additionally
+fails on any bit difference, for repeated runs using the same backend. The
+ordinary report does not impose a model-quality threshold.
