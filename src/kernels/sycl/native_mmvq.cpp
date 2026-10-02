@@ -25,6 +25,7 @@
 
 #include "strata/kernels/native_mmvq.hpp"
 #include "strata/kernels/f16_bits.hpp"
+#include "strata/kernels/iq_kernels.hpp"
 #include "strata/sycl/launch.hpp"
 #include <atomic>
 #include <sycl/ext/intel/math.hpp>
@@ -684,6 +685,102 @@ void dispatch(const void *w, const void *x, float *y, int n_in, int n_out,
   else
     launch<F, 1, 4>(w, x, y, n_in, n_out, ncols, stream);
 }
+template <typename F, bool Down>
+void grouped_projection(const NativeExpertLayout &L,
+                        const unsigned long long *pointers,
+                        const int32_t *starts, const int32_t *ng,
+                        const int32_t *dest, const int32_t *tokens, int groups,
+                        int entries, const Q81Block *x, float *gate, float *up,
+                        float *out, int tile, sycl::queue &q) {
+  const int rows = Down ? int(L.n_embd) : int(L.n_ff * 2);
+  const int ni = Down ? int(L.n_ff) : int(L.n_embd);
+  q.submit([&](sycl::handler &h) {
+    sycl::local_accessor<float, 1> partial(3 * 8 * 32, h);
+    h.parallel_for(
+        sycl::nd_range<2>({size_t(groups), size_t(rows) * 128}, {1, 128}),
+        [=](sycl::nd_item<2> it) [[sycl::reqd_sub_group_size(32)]] {
+          const int g = int(it.get_group(0)), row = int(it.get_group(1));
+          const int count = *ng;
+          if (count < 0 || count > groups || g >= count)
+            return;
+          const int begin = starts[g], end = starts[g + 1];
+          if (begin < 0 || end < begin || end > entries || !pointers[g])
+            return;
+          const auto blob = reinterpret_cast<const uint8_t *>(pointers[g]);
+          const auto weights = reinterpret_cast<const typename F::Block *>(
+              blob + (Down ? L.down_off : 0));
+          const int tid = int(it.get_local_linear_id()), lane = tid % 32,
+                    warp = tid / 32;
+          const int blocks = ni / F::DIV;
+          for (int first = begin; first < end; first += tile) {
+            const int used = sycl::min(tile, end - first);
+            float sum[8] = {};
+            for (int b = tid / F::T; b < blocks; b += F::BPI) {
+              const int kqs = F::kqs(tid);
+              const auto weight =
+                  F::load(weights + size_t(row) * blocks + b, kqs);
+              for (int j = 0; j < used; ++j) {
+                const int input = Down ? first + j : tokens[first + j];
+                if (input >= 0 && input < entries)
+                  sum[j] += F::apply(
+                      weight, x + size_t(input) * (ni / 32) + b * F::KBY, kqs);
+              }
+            }
+            if (warp)
+              for (int j = 0; j < used; ++j)
+                partial[((warp - 1) * 8 + j) * 32 + lane] = sum[j];
+            it.barrier(sycl::access::fence_space::local_space);
+            if (!warp)
+              for (int j = 0; j < used; ++j) {
+                for (int w = 0; w < 3; ++w)
+                  sum[j] += partial[(w * 8 + j) * 32 + lane];
+                for (int offset = 16; offset; offset >>= 1)
+                  sum[j] += sycl::permute_group_by_xor(it.get_sub_group(),
+                                                       sum[j], offset);
+                if (!lane) {
+                  if constexpr (Down) {
+                    const int dst = dest[first + j];
+                    if (dst >= 0 && dst < entries)
+                      out[size_t(dst) * L.n_embd + row] = sum[j];
+                  } else {
+                    float *dst = row < L.n_ff ? gate : up;
+                    dst[size_t(first + j) * L.n_ff + row % L.n_ff] = sum[j];
+                  }
+                }
+              }
+            // A later entry tile reuses the cross-subgroup partials.
+            it.barrier(sycl::access::fence_space::local_space);
+          }
+        });
+  });
+}
+template <bool Down>
+void grouped_dispatch(int type, const NativeExpertLayout &L,
+                      const unsigned long long *ptr, const int32_t *start,
+                      const int32_t *count, const int32_t *dst,
+                      const int32_t *tok, int groups, int entries,
+                      const Q81Block *x, float *gate, float *up, float *out,
+                      int tile, sycl::queue &q) {
+#define GROUPED(TYPE, ...)                                                     \
+  case TYPE:                                                                   \
+    grouped_projection<__VA_ARGS__, Down>(L, ptr, start, count, dst, tok,      \
+                                          groups, entries, x, gate, up, out,   \
+                                          tile, q);                            \
+    break
+  switch (type) {
+    GROUPED(2, SmallTraits<Q40Block, 4>);
+    GROUPED(6, SmallTraits<Q50Block, 4>);
+    GROUPED(8, SmallTraits<Q80Block, 8>);
+    GROUPED(11, Q3KTraits);
+    GROUPED(12, Q4KTraits);
+    GROUPED(13, Q5KTraits);
+    GROUPED(14, Q6KTraits);
+    GROUPED(20, SmallTraits<IQ4NLBlock, 4>);
+    GROUPED(23, IQ4XSTraits);
+    GROUPED(42, Q20Traits);
+  }
+#undef GROUPED
+}
 void composition(int type, const void *w, const float *x, void *scratch,
                  float *y, int n_in, int n_out, int ncols, void *stream) {
   const auto wb = native_mmvq_weight_bytes(type, n_in, n_out);
@@ -809,4 +906,91 @@ STRATA_SYCL_MMVQ(iq4_nl, 20)
 STRATA_SYCL_MMVQ(iq4_xs, 23)
 STRATA_SYCL_MMVQ(q2_0, 42)
 #undef STRATA_SYCL_MMVQ
+bool native_expert_supported(int gu, int down, int64_t n, int64_t f) noexcept {
+  if (!native_mmvq_supported(gu) || !native_mmvq_supported(down) || n <= 0 ||
+      f <= 0 || n > INT_MAX || f > INT_MAX / 2)
+    return false;
+  return n % format(gu).width == 0 && f % format(down).width == 0 &&
+         n % 256 == 0;
+}
+NativeExpertLayout native_expert_layout(int gu, int down, int64_t n,
+                                        int64_t f) {
+  if (!native_expert_supported(gu, down, n, f))
+    throw std::invalid_argument("unsupported SYCL native expert layout");
+  NativeExpertLayout L;
+  L.gu_type = gu;
+  L.d_type = down;
+  L.n_embd = n;
+  L.n_ff = f;
+  L.gu_row = native_mmvq_weight_bytes(gu, n, 1);
+  L.d_row = native_mmvq_weight_bytes(down, f, 1);
+  L.up_off = checked_count(f, L.gu_row);
+  L.down_off = 2 * L.up_off;
+  const size_t downbytes = checked_count(n, L.d_row);
+  if (L.up_off > SIZE_MAX / 2 || downbytes > SIZE_MAX - L.down_off)
+    throw std::invalid_argument("native expert blob overflow");
+  L.bytes = L.down_off + downbytes;
+  return L;
+}
+size_t native_expert_scratch_bytes(int64_t cap, int64_t f) {
+  if (cap <= 0 || cap > INT_MAX || f <= 0 || f > INT_MAX || f % 32 ||
+      checked_count(cap, f) > INT_MAX)
+    throw std::invalid_argument("invalid native expert scratch dimensions");
+  const size_t bytes = checked_count(cap, f) * 4;
+  return 3 * ((bytes + 255) & ~size_t(255)) +
+         ((checked_count(cap, f / 32) * 36 + 255) & ~size_t(255));
+}
+void native_expert_grouped(const NativeExpertLayout &L,
+                           const unsigned long long *ptr, const int32_t *start,
+                           const int32_t *count, const int32_t *dst,
+                           const int32_t *tok, int64_t groups, int64_t entries,
+                           const void *x, void *scratch, float *out,
+                           void *stream) {
+  if (groups <= 0 || groups > INT_MAX || entries <= 0 || entries > INT_MAX ||
+      groups > entries)
+    throw std::invalid_argument("invalid native expert group capacities");
+  const auto expected =
+      native_expert_layout(L.gu_type, L.d_type, L.n_embd, L.n_ff);
+  if (expected.gu_row != L.gu_row || expected.d_row != L.d_row ||
+      expected.up_off != L.up_off || expected.down_off != L.down_off ||
+      expected.bytes != L.bytes)
+    throw std::invalid_argument("inconsistent native expert blob layout");
+  const size_t bytes = native_expert_scratch_bytes(entries, L.n_ff),
+               plane =
+                   (checked_count(entries, L.n_ff) * 4 + 255) & ~size_t(255);
+  validate_spans(
+      {{scratch, bytes}, {out, checked_count(entries, L.n_embd) * 4}},
+      {{ptr, size_t(groups) * 8},
+       {start, size_t(groups + 1) * 4},
+       {count, 4},
+       {dst, size_t(entries) * 4},
+       {tok, size_t(entries) * 4},
+       {x, native_q8_1_bytes(L.n_embd)}});
+  if (reinterpret_cast<uintptr_t>(ptr) % 8)
+    throw std::invalid_argument(
+        "native expert pointers require 8-byte alignment");
+  // Blob and activation row extents are owned by the caller; they are reached
+  // through device metadata, never read back or reallocated here.
+  auto &q = queue_for(stream);
+  auto gate = static_cast<float *>(scratch),
+       up = reinterpret_cast<float *>(static_cast<uint8_t *>(scratch) + plane),
+       h = reinterpret_cast<float *>(static_cast<uint8_t *>(scratch) +
+                                     2 * plane);
+  auto hq =
+      reinterpret_cast<Q81Block *>(static_cast<uint8_t *>(scratch) + 3 * plane);
+  q.memset(scratch, 0, 3 * plane);
+  const int tile = iq_old_kernels() ? 1 : 8;
+  grouped_dispatch<false>(
+      L.gu_type, L, ptr, start, count, dst, tok, int(groups), int(entries),
+      static_cast<const Q81Block *>(x), gate, up, nullptr, tile, q);
+  q.parallel_for(sycl::range<1>(size_t(entries) * L.n_ff), [=](sycl::id<1> i) {
+    const float v = gate[i];
+    h[i] = (v / (1.f + sycl::exp(-v))) * up[i];
+  });
+  native_quantize_q8_1(h, hq, int(entries * L.n_ff), 1, &q);
+  grouped_dispatch<true>(L.d_type, L, ptr, start, count, dst, tok, int(groups),
+                         int(entries), hq, nullptr, nullptr, out, tile, q);
+  if (!stream)
+    q.wait_and_throw();
+}
 } // namespace strata::kernels
