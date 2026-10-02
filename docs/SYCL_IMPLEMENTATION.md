@@ -72,8 +72,12 @@ slices when a matrix does not fit at once. The caller's output row stride and
 accumulation coefficient are preserved. oneMKL manages its own internal
 workspace; the engine's CUDA workspace argument is not used by this path.
 Prefill normalization, residual updates, mixing, gates, conversions and MoE
-output combination are also implemented. Stateful prompt kernels and the full
-prompt path are still being connected. These post-operations disable relaxed
+output combination are also implemented. Prompt GDN uses the same recurrence as
+decode over the whole chunk, retaining each state column in registers. Paged KV
+append, scaled RoPE and canonical expert expansion reuse the decode formats.
+Prompt attention currently selects the batched FP32 split-attention fallback;
+a matrix attention kernel and end-to-end prompt validation remain outstanding.
+These post-operations disable relaxed
 floating-point transformations: with the compiler's default device settings,
 the two normalization paths disagreed in their BF16 correction component.
 
@@ -97,6 +101,17 @@ settings; see the research document for the machine configuration:
   produced identical BF16 high/correction images and mixed FP32 values.
   Residual updates, strided RMS normalization, FP16 SwiGLU saturation,
   GDN gates, attention splitting/gating and MoE combination passed CPU checks.
+- Prompt GDN at the real 16 key / 48 value heads and head width 128:
+  17 tokens together, 17 individual decode steps and chunks of 5 + 12 produced
+  identical convolution outputs/history, normalized outputs and recurrent
+  state. The FP16 output image matched conversion of the FP32 result.
+- Prompt storage: FP16/INT8 KV with permuted and nonresident pages matched CPU
+  values in physical, host and staging pools, including untouched guards.
+  Strided RoPE matched decode for none/linear/YaRN scaling. Both FP16 and BF16
+  canonical expert matrices matched scalar expansion of every stored code.
+- Control vectors: 12 graph-replay cases covered add/project modes, pending
+  residual writes and request-time enable/disable. CPU comparisons and row
+  padding checks passed; disabled vectors left unwritten residuals bit-identical.
 - Host engine adapter: twelve changing-input graph replays alternating two
   queues, event-completed D2H handoff, cross-queue dependencies, event timing,
   graph node inspection, pitched-copy padding, host callbacks and freeing with
