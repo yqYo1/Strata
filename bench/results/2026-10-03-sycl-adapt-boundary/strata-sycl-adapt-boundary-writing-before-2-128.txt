@@ -1,0 +1,56 @@
+strata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)
+strata generate: native pack: /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-q2_0 experts (largest blob 1.38 MB), token embedding Q3_K in mapped host memory (260 MiB)
+strata generate: 1416 MiB of weights loaded from /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-q2_0 (303 canonical tensors skipped: served natively)
+strata generate: 301 native projection matrices, 1376.20 MiB of weights
+strata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)
+strata generate: profile data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots
+strata generate: PLE on, table 320001536 rows of /home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-q2_0/Q2_0/Qwen3.8-Flash-Next-GSQ-RCO-Q2_0-00002-of-00002.gguf
+strata mtp: draft layer loaded, 789 MiB of VRAM (experts 675, dense 111), files read in 0.65 s (1208 MiB/s)
+strata generate: GPU 0: Intel(R) Arc(TM) B570 Graphics (SYCL)
+strata generate: expert arena: mlock failed (raise ulimit -l); SYCL ordinary host arena; MAP_HUGETLB unavailable (no hugetlb pool configured?); using 4 KB pages
+strata generate: loaded 31.64 GiB at 1.23 GiB/s
+strata generate: experimental native Q5_K head, 437043200 bytes
+strata generate: expert cache auto: 5.74 GiB free, 700 MiB reserved (+182 MiB for the draft head) -> 3792 slots
+strata generate: expert cache 3792 slots, 4.88 GiB of VRAM; policy is
+strata generate: SYCL cached experts use native Q8_1 arithmetic; logits can differ from CPU experts.
+                 R4.2g PER-LAYER: each layer owns 79 slots (0..78).
+strata generate: pre-filled 3792 of 3792 slots from the profile; slot 0 verified
+strata generate: native GPU hit kernels captured at session setup
+strata generate: R4 hit path ON - resident experts are computed on the GPU
+strata generate: 4 expert-pool workers + the host thread
+strata generate: session is up (engine 0.1.34)
+strata generate: sampling greedy
+strata generate: token graph hit path: 3792 resident experts, decided on the device
+strata generate: prompt path allocates its own buffers (no cache slots to borrow)
+strata mtp: draft head over 106299 tokens (178.4 MiB)
+strata generate: prefill 36 tokens in 3 chunks, 4949.2 ms (7.3 tok/s); experts streamed 6105 (0 by DMA, host 1895.0 ms), resident 1777; PLE 6.9 ms
+strata verify: window up to 4 tokens, 43.3 MiB of device buffers
+strata verify: captured the 1-token window in 49 event-completed segments
+strata verify: 48 shared/hit graphs can overlap CPU experts
+strata verify: captured the 4-token window in 49 event-completed segments
+strata verify: 48 shared/hit graphs can overlap CPU experts
+strata verify: captured the 3-token window in 49 event-completed segments
+strata verify: 48 shared/hit graphs can overlap CPU experts
+strata verify: captured the 2-token window in 49 event-completed segments
+strata verify: 48 shared/hit graphs can overlap CPU experts
+strata generate: position 155, 119 tokens, 64 rounds
+speculation              70 rounds of 4, drafts accepted 58 of 112 (0.518), 1.83 tokens per round
+window sizes             T1:19 T2:13 T3:15 T4:23  (min draft probability 0.50)
+accepted per round       0:33 1:22 2:9 3:6
+verify window            wait for rings 41.136  pool 56.507  host 1.181  commit 0.017 ms/round; CPU experts 10.37 distinct / 13.70 routed per layer
+pool multi               gate/up 32.900  quantize 0.162  down 21.826 ms/round; 12.6 GB/s over the rows phases; CPU pool call 56.120 ms/round
+dispatch                 plan 0.920  activation quantize 0.120  jobs 0.169  run 54.897 ms/round
+verify GPU overlap       2873 of 3360 shared/hit graphs complete when the CPU pool returned
+adaptive tier            1088 experts swapped into the VRAM tier (every 4 rounds, 2.557 ms/round)
+mtp                      16.203 ms/round drafting (69 rounds), MTP prompt 15.0 ms, 968 MiB of VRAM
+prompt  : 248045 846 198 7734 264 220 18 15 15 36093 2716 3255 883 449 22839 64969 264 8598 383 264 60643 11129 13 28763 264 2708 13004 13 248046 198 248045 74455 198 248068 198 248069 271
+output  : 760 10849 88851 2272 279 3136 24520 314 279 2235 6522 11 264 57040 22472 5143 421 17515 279 79496 314 279 36600 8598 303 279 8858 13 82697 11 264 20922 4658 15680 440 5888 430 23271 430 780 3838 11 7338 1518 279 54231 16456 13 561 8598 995 10184 506 220 19 25 16 22 5670 11 6681 948 279 13071 14009 11 321 424 995 14195 20413 364 2250 2756 13 271 36 69388 22643 780 8195 7520 27233 11 46736 303 3160 310 279 34844 51373 13 1216 5532 1357 1066 34082 264 5484 26 551 557 47455 264 50355 13 561 65835 2550 557 25707 9990 11 694 279 85729 1078 995 41065 11 13969 279 40156 16012 310 25430 13 1216
+decode                   128 tokens in 8870.9 ms  ->  14.43 tok/s
+prefill                  36 tokens in 4949.2 ms  ->  7.27 tok/s  (time to first token 5133.2 ms)
+  per token              69.304 ms/token (WALL CLOCK: embed, layers, head, sample)
+  ple io: 3488 rows, 4.4% row-cache hits, 3336 SSD reads (13.9 MB), read p50 161 us p99 4286 us, blocked 84.267 ms total (submit 73.774 ms), cache 3336/1048576 rows, SSD kept awake by 96 reads (slowest 28.0 ms)
+  the CPU expert pool    56.120 ms/token over 48 layers (70 positions, 3360 dispatches)
+  pool phases              wait-park 0.000  drain 54.891  re-park 0.000  ms/token
+  expert blobs           45844 blobs read
+  R4 overlap             0 of 0 layers the hit work was DONE when the pool returned
+  R4 expert-cache hits   41324 of 87360 = 0.4730      (0 admitted, 46036 refused, cache 100.0000% full)

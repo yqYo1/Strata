@@ -4899,7 +4899,10 @@ int main(int argc, char** argv) {
         // plan v0.3 P6: swaps in flight - (residency index, slot) admitted when adapt_ev has completed
         std::vector<std::pair<int32_t, int32_t>> pending;
         cudaEvent_t adapt_ev = nullptr;
-        cudaEventCreateWithFlags(&adapt_ev, cudaEventDisableTiming);
+        if (cudaEventCreateWithFlags(&adapt_ev, cudaEventDisableTiming) != cudaSuccess) {
+            std::fprintf(stderr, "strata serve: cannot create the refill event\n");
+            return 1;
+        }
         // a layer split's later stages keep a copy of the residency table on their devices, and swap on their own
         auto res_upload = [&]() {
             if (d_res != nullptr)
@@ -4909,21 +4912,31 @@ int main(int argc, char** argv) {
                 cudaMemcpy(st->d_res, host_res.data(), host_res.size() * sizeof(int32_t), cudaMemcpyHostToDevice);
             }
         };
-        auto apply_pending = [&](bool wait) {
+        auto apply_pending = [&](bool wait) -> bool {
+#ifdef STRATA_ENABLE_SYCL
+            // Commit scheduled refills at a fixed window boundary. Otherwise
+            // copy timing chooses which windows use CPU or GPU arithmetic.
+            const char* sync = std::getenv("STRATA_SYCL_ADAPT_SYNC");
+            wait = wait || (sync == nullptr || std::strcmp(sync, "0") != 0);
+#endif
             if (peer.valid()) peer.apply_pending(wait);
-            if (pending.empty()) return;
-            if (wait) cudaEventSynchronize(adapt_ev);
-            else if (cudaEventQuery(adapt_ev) != cudaSuccess) return;
+            if (pending.empty()) return true;
+            const cudaError_t status = wait ? cudaEventSynchronize(adapt_ev) : cudaEventQuery(adapt_ev);
+            if (!wait && status == cudaErrorNotReady) return true;
+            if (status != cudaSuccess) return false;
             for (auto& st : stages)
                 if (st->adapt_live) {
-                    if (wait) cudaEventSynchronize(st->adapt_ev);
-                    else if (cudaEventQuery(st->adapt_ev) != cudaSuccess) return;
+                    const cudaError_t stage_status = wait ? cudaEventSynchronize(st->adapt_ev)
+                                                         : cudaEventQuery(st->adapt_ev);
+                    if (!wait && stage_status == cudaErrorNotReady) return true;
+                    if (stage_status != cudaSuccess) return false;
                 }
             for (auto& st : stages) st->adapt_live = false;
             src.commit_exchanges();   // the resident RAM mode: the evicted experts take their places in RAM
             for (const auto& [i, slot] : pending) host_res[(size_t) i] = slot;
             pending.clear();
             res_upload();
+            return true;
         };
         // the VRAM tier follows the conversation (the same rule as the speculative loop below)
         auto adapt = [&]() -> bool {
@@ -5698,7 +5711,10 @@ int main(int argc, char** argv) {
                 }
                 return true;
             };
-            apply_pending(true);
+            if (!apply_pending(true)) {
+                std::printf("ERR adaptive refill event failed\n");
+                return 1;
+            }
             // per-request sampling for the verify window's head (greedy when temperature is absent)
             strata::kernels::SamplerParams req_sp;
             req_sp.greedy = req_temperature <= 0.0f;
@@ -5861,10 +5877,10 @@ int main(int argc, char** argv) {
                 drive.d.layers = 0;
                 drive.d.experts = 0;
                 drive.d.failed = false;
-                // #463: the previous adapt round's copies land first - with a non-blocking query, whether a swapped-in
-                // expert ran on the GPU or the CPU (they round differently) depended on the copy's timing
-                // (STRATA_ADAPT_NOWAIT=1: 0.1.37's non-blocking query, the A/B)
-                apply_pending(!adapt_nowait());
+                if (!apply_pending(!adapt_nowait())) {
+                    std::printf("ERR adaptive refill event failed\n");
+                    return 1;
+                }
                 if (hist_n > 0) {
                     // the tails the penalties count over, ONE PER ROW: the tokens the state has consumed, the
                     // fed-back head `x` (it joins `consumed` only after this window commits), then the drafts
@@ -6576,26 +6592,26 @@ int main(int argc, char** argv) {
         // plan v0.3 P6: swaps in flight - (residency index, slot) admitted when adapt_ev has completed
         std::vector<std::pair<int32_t, int32_t>> pending;
         cudaEvent_t adapt_ev = nullptr;
-        cudaEventCreateWithFlags(&adapt_ev, cudaEventDisableTiming);
-        int64_t adapt_rounds = 0;   // counted here: `rounds` is declared below the adapt lambda
-        auto apply_pending = [&](bool wait) {
-            if (pending.empty()) return;
-            // STRATA_TRACE_ADAPT=1: whether a round's copies had landed when the next window read the table
-            static const bool trace_pending = std::getenv("STRATA_TRACE_ADAPT") != nullptr;
-            if (wait) cudaEventSynchronize(adapt_ev);
-            else if (cudaEventQuery(adapt_ev) != cudaSuccess) {
-                if (trace_pending)
-                    std::fprintf(stderr, "strata: PENDING not landed, %zu stay non-resident this window\n",
-                                 pending.size());
-                return;
-            }
-            if (trace_pending)
-                std::fprintf(stderr, "strata: PENDING landed, %zu experts become resident\n", pending.size());
+        if (cudaEventCreateWithFlags(&adapt_ev, cudaEventDisableTiming) != cudaSuccess) {
+            std::fprintf(stderr, "strata generate: cannot create the refill event\n");
+            return 1;
+        }
+        int64_t adapt_rounds = 0;
+        auto apply_pending = [&](bool wait) -> bool {
+            if (pending.empty()) return true;
+#ifdef STRATA_ENABLE_SYCL
+            const char* sync = std::getenv("STRATA_SYCL_ADAPT_SYNC");
+            wait = wait || (sync == nullptr || std::strcmp(sync, "0") != 0);
+#endif
+            const cudaError_t status = wait ? cudaEventSynchronize(adapt_ev) : cudaEventQuery(adapt_ev);
+            if (!wait && status == cudaErrorNotReady) return true;
+            if (status != cudaSuccess) return false;
             src.commit_exchanges();   // the resident RAM mode: the evicted experts take their places in RAM
             for (const auto& [i, slot] : pending) host_res[(size_t) i] = slot;
             pending.clear();
             if (d_res != nullptr)
                 cudaMemcpy(d_res, host_res.data(), host_res.size() * sizeof(int32_t), cudaMemcpyHostToDevice);
+            return true;
         };
         // Plan v0.3 P6: the VRAM tier follows the conversation.  Candidates are missing experts routed at least
         // twice (decayed); each is paired with its layer's least-routed resident expert and swapped when it was
@@ -6728,10 +6744,10 @@ int main(int argc, char** argv) {
             drive.d.layers = 0;
             drive.d.experts = 0;
             drive.d.failed = false;
-            // #463: the previous adapt round's copies land first - with a non-blocking query, whether a swapped-in
-            // expert ran on the GPU or the CPU (they round differently) depended on the copy's timing
-            // (STRATA_ADAPT_NOWAIT=1: 0.1.37's non-blocking query, the A/B)
-            apply_pending(!adapt_nowait());
+            if (!apply_pending(!adapt_nowait())) {
+                std::fprintf(stderr, "strata generate: adaptive refill event failed\n");
+                return 1;
+            }
             if (!ver.run(T, window.data(), p, &drive_pool_multi, &drive, outv.data(), err)) {
                 std::fprintf(stderr, "strata generate: %s\n", err.c_str());
                 return 1;
