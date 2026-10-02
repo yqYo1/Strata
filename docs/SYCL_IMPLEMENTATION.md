@@ -1,8 +1,9 @@
 # SYCL backend implementation
 
 The backend is under development. The runtime and device arena run on Intel Arc
-B570; the SYCL build links the `strata` inference executable. End-to-end
-inference and performance have not yet been validated.
+B570; the SYCL build runs short native-pack decode with CPU experts.
+Layer/logit agreement with an independent model oracle and inference performance
+have not yet been validated.
 The implementation follows [the port research](SYCL_RESEARCH.md) and
 [the operation inventory](SYCL_BATTLEMAGE_OPERATIONS.md).
 
@@ -343,3 +344,38 @@ FP16/FP32 activation scales, partial counts, grouped host-USM blobs and
 misaligned inputs. The separate CPU-order diagnostic also passed the
 double-precision projection reference. These checks passed on the B570; they do not establish
 end-to-end expert throughput.
+
+### Native per-layer decode
+
+Native packs can use `--spec 0` (the default) with the captured per-layer
+scheduler. Each CPU handoff uses the native row-split expert pool with one token;
+canonical S-form planes are not required for projections served from native
+GGUF bytes. This path currently requires `--expert-cache 0` without remote
+expert caches. GPU hits and the polling verifier still need further integration.
+`sycl_native_single_dispatch_test` compares two changing activations and layers
+against direct native CPU row calls, including routing order, unweighted outputs,
+invalid ids and rejection of an unsupported GPU residency table.
+
+A B570 smoke run on 2026-10-02 used the Q2_0 model/pack identified above, FP16 KV,
+context 64, four CPU workers, mmap experts, no GPU cache or PCIe miss split, and
+PLE enabled. The command starts directly with `strata --pack`, without a
+`generate` subcommand:
+
+```sh
+ONEAPI_DEVICE_SELECTOR=level_zero:gpu build-sycl/strata \
+  --pack "$PACK" --native "$SHARD1" --tokens 1,2 --max-new 3 \
+  --max-context 64 --mmap-experts --pool-workers 4 --expert-cache 0 \
+  --pcie-frac 0 --check-logits --dump-logits /tmp/sycl-logits.bin \
+  --dump-layers /tmp/sycl-layers.bin --dump-routing /tmp/sycl-routing.bin
+```
+
+Two fresh processes produced ids `220 100561 198`. Each dump contained four
+positions: all 248,320 logits per position and all 49 residual records (input
+plus 48 layers) were finite; the 192 routing records each held ten distinct ids
+in 0..511 and finite weights. Logits, residuals and routing were byte-identical
+between those two runs. The logits SHA-256 was
+`19dcf9b7ddeabb4c3a34c91e9574c6bdadbb21a46aaa568965c6a5ea058faa55`.
+A separate one-token run with fused GR enabled produced id 198 from input 1,
+with all logits finite. Layer dumping disables fused GR, so the repeated run
+covers the composed GR path. These checks establish execution and repeatability,
+not agreement with another backend or model quality; no speed claim is made.

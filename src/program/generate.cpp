@@ -1951,10 +1951,16 @@ int main(int argc, char** argv) {
     }
     strata::core::NativeEmbed native_embed;
     if (native_pack) {
-        if (o.native_preset.empty() || o.spec < 2 || o.keep_canonical ||
-            (o.prefill_chunk <= 0 && o.tokens.size() > 1)) {
-            std::fprintf(stderr, "strata generate: %s is a native (IQ) pack: it needs --native SHARD1, --spec T (T >= 2) "
-                                 "and --prefill CHUNK\n", o.pack.c_str());
+        if (o.native_preset.empty() || o.keep_canonical || o.spec < 0 || o.spec == 1 ||
+            (o.spec >= 2 && o.prefill_chunk <= 0 && o.tokens.size() > 1)) {
+            std::fprintf(stderr, "strata generate: %s is a native (IQ) pack: it needs --native SHARD1 without "
+                                 "--keep-canonical; use --spec 0 or T >= 2, with --prefill CHUNK for multiple prompt tokens in spec mode\n", o.pack.c_str());
+            return 2;
+        }
+        if (o.spec < 2 && (o.expert_cache != 0 ||
+                          o.expert_cache_remote[0] || o.expert_cache_remote[1] || o.expert_cache_remote[2])) {
+            std::fprintf(stderr, "strata generate: native per-layer decode currently requires --expert-cache 0; "
+                                 "native GPU hits need the grouped verifier path\n");
             return 2;
         }
         const strata::core::ModelGeometry g0;
@@ -3436,7 +3442,7 @@ int main(int argc, char** argv) {
 
     // ---- the graphs
     strata::core::SessionGraphs gr;
-    if (!o.no_capture && !native_pack) {   // plan v0.3 P6: a native pack runs verify windows only
+    if (!o.no_capture && !(native_pack && o.spec >= 2)) {
         // a layer split's CUDA0 session owns only [0, split_at[0]), so its graphs cover that range; the
         // whole-model replay paths (`session_loop`, the plain generate loop) refuse rather than read another
         // stage's state - a split runs its layers on the stages' verifiers (serve) or prefill stage chain
@@ -6149,7 +6155,7 @@ int main(int argc, char** argv) {
 
     for (int64_t pos = pos_start;; ++pos) {
         // plan v0.3 P6: a native pack's last prompt token is the first verify window (T = 1)
-        if (native_pack) { spec_pos = pos; break; }
+        if (native_pack && o.spec >= 2) { spec_pos = pos; break; }
         if (pos >= o.max_context) {
             std::fprintf(stderr, "strata generate: ran out of context at position %lld\n", (long long) pos);
             return 2;

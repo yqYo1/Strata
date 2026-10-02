@@ -1739,10 +1739,17 @@ void expert_pool_dispatch(void* user, const float* x_f, const int32_t* ids, cons
         return;
     }
     if (expert_layout().native) {
-        // plan v0.3 P6: a native pack runs its experts in verify windows only (the driver guarantees it)
-        d.failed = true;
-        d.fail = "the single-token expert path does not take a native (IQ) pack";
-        d.fail_layer = d.layers;
+        // Reuse the native row-split pool with a one-token batch. Its blob
+        // layout and quantization differ from the canonical S2 single path.
+        // The per-layer GPU hit hook still consumes canonical S2 blobs.
+        if (d.cache != nullptr || d.hits_ready() || d.host_res != nullptr ||
+            d.plan != nullptr || d.remote_count > 0) {
+            d.failed = true;
+            d.fail = "native per-layer experts require CPU dispatch without a GPU hit hook";
+            d.fail_layer = d.layers;
+            return;
+        }
+        expert_pool_dispatch_multi(d, x_f, ids, 1, k, out);
         return;
     }
     if (k > (int64_t) d.jobs.size()) d.jobs.resize((size_t) k);
