@@ -2,6 +2,7 @@
 #include "strata/kernels/bf16_bits.hpp"
 #include "strata/kernels/gr.hpp"
 #include "strata/kernels/native_gr_postops.hpp"
+#include "strata/kernels/bf16_gemv.hpp"
 #include <cmath>
 #include <cstring>
 #include <cuda_runtime.h>
@@ -55,7 +56,7 @@ int main() {
     check(cudaStreamCreate(&stream));
     B<float> R(D * T), reference(D * T), wn(D), lo(LR * T), rs(HC * T),
         mixed(N * T), inject(HC * T), refmix(N * T), refinj(HC * T), bo(N * T),
-        prev(HC * T);
+        prev(HC * T), xn(D * T), gates(D * T), refgates(D * T);
     B<uint16_t> wd(D * LR), wu(D * LR), wi(D * HC);
     std::vector<float> residual(R.n), gamma(D), block(bo.n), ip(prev.n);
     std::vector<uint16_t> down(wd.n), up(wu.n), iw(wi.n);
@@ -148,6 +149,10 @@ int main() {
         exact(mixed.get(), batch, "single/batch GR");
         auto scales = rs.get(), updated = R.get();
         auto gpu_mixed = mixed.get(), gpu_inject = inject.get();
+        auto gpu_lo = lo.get();
+        bf16_gemv_fp32_mmvf_multi(lo.p, LR, wu.p, refgates.p, D,
+                                  LR, D, T, stream);
+        auto raw_gates = refgates.get();
         for (int t = 0; t < T; ++t) {
           std::vector<double> normalized(D), low(LR);
           for (int c = 0; c < HC; ++c) {
@@ -203,7 +208,71 @@ int main() {
             if (std::abs(scales[t * HC + c] - want) > 2e-6)
               throw std::runtime_error("RMS CPU reference");
           }
+        // The workspace path must preserve every bit of the reconstructed
+        // path, for both single calls and the shared multi-token scratch.
+        R.put(residual);
+        for (int t = 0; t < T; ++t) {
+          args[t].xn = xn.p + t * D;
+          fused_gr_read(args[t], stream);
+        }
+        exact(R.get(), updated, "workspace residual");
+        exact(rs.get(), scales, "workspace normalization");
+        exact(lo.get(), gpu_lo, "workspace down");
+        exact(mixed.get(), gpu_mixed, "workspace mix");
+        exact(inject.get(), gpu_inject, "workspace injection");
+        R.put(residual);
+        for (int t = 0; t < T; ++t) {
+          args[t].gates = gates.p + t * D;
+          fused_gr_read(args[t], stream);
+        }
+        exact(R.get(), updated, "up workspace residual");
+        exact(rs.get(), scales, "up workspace normalization");
+        exact(lo.get(), gpu_lo, "up workspace down");
+        exact(mixed.get(), gpu_mixed, "up workspace mix");
+        exact(inject.get(), gpu_inject, "up workspace injection");
+        exact(gates.get(), raw_gates, "up workspace raw dot products");
+        for (auto &a : args)
+          a.xn = nullptr;
+        R.put(residual);
+        fused_gr_read_multi(args, T, xn.p, stream);
+        exact(R.get(), updated, "batch workspace residual");
+        exact(rs.get(), scales, "batch workspace normalization");
+        exact(lo.get(), gpu_lo, "batch workspace down");
+        exact(mixed.get(), gpu_mixed, "batch workspace mix");
+        exact(inject.get(), gpu_inject, "batch workspace injection");
+        exact(gates.get(), raw_gates, "batch workspace raw dot products");
+
         bool rejected = false;
+        try {
+          fused_gr_read_multi(args, T, const_cast<float *>(args[1].R), stream);
+        } catch (const std::invalid_argument &) {
+          rejected = true;
+        }
+        if (!rejected)
+          throw std::runtime_error("GR batch workspace alias accepted");
+        args[0].xn = xn.p;
+        args[0].gates = xn.p;
+        rejected = false;
+        try {
+          fused_gr_read(args[0], stream);
+        } catch (const std::invalid_argument &) {
+          rejected = true;
+        }
+        if (!rejected)
+          throw std::runtime_error("GR projection workspace alias accepted");
+        args[0].xn = nullptr;
+        args[0].gates = gates.p;
+        rejected = false;
+        try {
+          fused_gr_read(args[0], stream);
+        } catch (const std::invalid_argument &) {
+          rejected = true;
+        }
+        if (!rejected)
+          throw std::runtime_error("GR up workspace without normalized input accepted");
+        for (auto &a : args)
+          a.gates = nullptr;
+        rejected = false;
         args[0].lo = const_cast<float *>(args[0].R);
         try {
           fused_gr_read(args[0], stream);

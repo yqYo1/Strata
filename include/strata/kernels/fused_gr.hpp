@@ -36,6 +36,8 @@ struct FusedGrArgs {
     float* rs = nullptr;               ///< workspace, hc floats
     float* inject_out = nullptr;       ///< hc floats (when w_inject)
     float* mixed = nullptr;            ///< n_embd
+    float* xn = nullptr;               ///< optional SYCL workspace, hc * n_embd normalized floats
+    float* gates = nullptr;            ///< optional SYCL raw up-projection output, hc * n_embd; requires xn
 };
 
 bool fused_gr_supported(int64_t n_embd, int64_t hc, int64_t hc_lr);
