@@ -802,8 +802,9 @@ The projection tool's `--compare-iq4xs` checks complete matrix outputs;
 
 SYCL ordinary decode now finalizes its layer graphs before sizing an automatic
 expert cache. Those graphs read session buffers and expert results without
-cache-slot addresses. On B570, preparing them reduced free VRAM by about
-`1.64 GiB`; the earlier calculation had assigned that room to the cache.
+cache-slot addresses. Before recording queues were shared, preparing those
+graphs on B570 reduced free VRAM by about `1.64 GiB`; the earlier calculation
+had assigned that room to the cache.
 Standalone CLI generation also resets its prompt workspace after prefill.
 A 16-token chunk reclaimed `136 MiB` in the measured fixed-capacity run.
 The persistent server retains its reusable prompt workspace. Verifier/MTP
@@ -835,6 +836,42 @@ speedup or guarantee that those pages remain resident. Background workloads
 were not isolated. Settings, output ids, memory traces and individual timings
 are in
 [`bench/results/2026-10-03-sycl-cache-memory/run.json`](../bench/results/2026-10-03-sycl-cache-memory/run.json).
+
+### Shared recording queue for ordinary layer graphs
+
+Ordinary SYCL sessions record all layer graphs on one queue, ending each
+recording before starting the next. They destroy that queue after finalizing
+the graphs. Previously, every graph used a separate recording queue. Finalized
+graphs retained the queues' device resources. Sharing them leaves the same
+graph segments and replay boundaries in place. Capture errors end unfinished
+recordings and discard their graphs before releasing the queue.
+
+On 2026-10-03, B570/5600X, native Q2_0, context 512 and 3,038 fixed cache slots,
+192 ordinary graphs used `238 MiB` instead of `1,684 MiB`. Free VRAM after graph
+preparation increased from `869` to `2,315 MiB`. All 32 vocabulary logit rows
+were bitwise equal with placement fixed. Automatic sizing selected 4,135 slots;
+its 32 logit rows also matched the old implementation fixed to 4,135 slots.
+The runtime regression records two graph topologies on one queue, destroys
+that queue, then replays both with changing host inputs on alternating queues.
+
+The same cold 37-token story, resident RAM, four workers, prefill 16,
+context 512 and speculation disabled gave these automatic-cache runs:
+
+| Trial | Separate queues, 3,038 slots, token/s | Shared queue, 4,135 slots, token/s |
+| --- | ---: | ---: |
+| 1 | 20.97 | 20.54 |
+| 2 | 20.15 | 20.49 |
+| 3 | 21.15 | 20.36 |
+
+The medians were `20.97` and `20.49 token/s` (`-2.3%`); this change establishes
+VRAM savings, with no generation throughput improvement. Each variant repeated
+its own 128 output ids, but the variants differed from index 36. Cache placement
+changes CPU/GPU arithmetic and the generated continuation. A separate single
+pair fixed both implementations to 3,038 slots and measured `21.21` and
+`21.07 token/s`; this pair does not establish a speed difference. Background
+workloads were not isolated. Full settings, output ids, traces and the standalone
+192-graph memory probe are in
+[`bench/results/2026-10-03-sycl-capture-queue/`](../bench/results/2026-10-03-sycl-capture-queue/).
 
 ### Event-completed speculative windows
 

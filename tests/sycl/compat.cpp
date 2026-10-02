@@ -64,15 +64,17 @@ int main() {
     CHECK(cudaEventSynchronize(done));
     CHECK(cudaEventElapsedTime(&ms, begin, done));
     require(std::isfinite(ms) && ms > 0, "default-stream profiling");
-    CHECK(cudaStreamBeginCapture(a, cudaStreamCaptureModeThreadLocal));
-    CHECK(cudaMemcpyAsync(device, in, bytes, cudaMemcpyHostToDevice, a));
-    a->parallel_for(sycl::range<1>(n),
-                    [=](sycl::id<1> i) { device[i] = device[i] * 7 + 2; });
-    CHECK(cudaEventRecord(captured, a));
-    CHECK(cudaMemcpyAsync(out, device, bytes, cudaMemcpyDeviceToHost, a));
+    cudaStream_t recording{};
+    CHECK(cudaStreamCreate(&recording));
+    CHECK(cudaStreamBeginCapture(recording, cudaStreamCaptureModeThreadLocal));
+    CHECK(cudaMemcpyAsync(device, in, bytes, cudaMemcpyHostToDevice, recording));
+    recording->parallel_for(sycl::range<1>(n),
+                            [=](sycl::id<1> i) { device[i] = device[i] * 7 + 2; });
+    CHECK(cudaEventRecord(captured, recording));
+    CHECK(cudaMemcpyAsync(out, device, bytes, cudaMemcpyDeviceToHost, recording));
     cudaGraph_t graph{};
     cudaGraphExec_t exec{};
-    CHECK(cudaStreamEndCapture(a, &graph));
+    CHECK(cudaStreamEndCapture(recording, &graph));
     size_t count = 0;
     CHECK(cudaGraphGetNodes(graph, nullptr, &count));
     require(count >= 3, "graph nodes");
@@ -102,16 +104,19 @@ int main() {
     // A verifier segment publishes routed inputs, then the CPU writes a plan
     // and results before another segment may consume them. Exercise the same
     // external-event boundary with changing payloads and alternating queues.
-    CHECK(cudaStreamBeginCapture(a, cudaStreamCaptureModeThreadLocal));
-    CHECK(cudaMemcpyAsync(device, out, bytes, cudaMemcpyHostToDevice, a));
-    a->parallel_for(sycl::range<1>(n),
-                    [=](sycl::id<1> i) { device[i] = device[i] * 5 - 3; });
-    CHECK(cudaMemcpyAsync(out, device, bytes, cudaMemcpyDeviceToHost, a));
+    CHECK(cudaStreamBeginCapture(recording, cudaStreamCaptureModeThreadLocal));
+    CHECK(cudaMemcpyAsync(device, out, bytes, cudaMemcpyHostToDevice, recording));
+    recording->parallel_for(sycl::range<1>(n),
+                            [=](sycl::id<1> i) { device[i] = device[i] * 5 - 3; });
+    CHECK(cudaMemcpyAsync(out, device, bytes, cudaMemcpyDeviceToHost, recording));
     cudaGraph_t consume_graph{};
     cudaGraphExec_t consume{};
-    CHECK(cudaStreamEndCapture(a, &consume_graph));
+    CHECK(cudaStreamEndCapture(recording, &consume_graph));
     CHECK(cudaGraphInstantiate(&consume, consume_graph, 0ull));
     CHECK(cudaGraphDestroy(consume_graph));
+    // Executables retain resources from the shared recording queue. They must
+    // remain replayable after that queue is destroyed.
+    CHECK(cudaStreamDestroy(recording));
     for (int iteration = 0; iteration < 12; ++iteration) {
       for (size_t i = 0; i < n; ++i)
         in[i] = int(i) - iteration * 77;

@@ -193,6 +193,18 @@ bool session_capture(const WeightTable& tables, const ModelGeometry& g, SessionS
     if (gr.captured) return true;
     if (layer_hi < 0 || layer_hi > g.n_layers) layer_hi = g.n_layers;
     if (layer_lo < 0) layer_lo = 0;
+#ifdef STRATA_ENABLE_SYCL
+    // Finalized graphs retain their recording queue's device resources. Reuse one
+    // queue for this session so those resources are shared by all layer graphs.
+    struct CaptureQueue {
+        cudaStream_t stream = nullptr;
+        ~CaptureQueue() { if (stream) cudaStreamDestroy(stream); }
+    } capture_queue;
+    if (cudaStreamCreate(&capture_queue.stream) != cudaSuccess) {
+        err = "session_capture: stream create failed";
+        return false;
+    }
+#endif
     gr.execs = new cudaGraphExec_t[(size_t) g.n_layers]();
     gr.posts = new cudaGraphExec_t[(size_t) g.n_layers]();
 #ifdef STRATA_ENABLE_SYCL
@@ -228,12 +240,19 @@ bool session_capture(const WeightTable& tables, const ModelGeometry& g, SessionS
         enum class Segment { Pre, Post, Route, Shared };
         auto capture = [&](Segment part, cudaGraphExec_t* out, const char* what, int half = 0,
                            int stage_prefix = 0) -> bool {
+#ifdef STRATA_ENABLE_SYCL
+            cudaStream_t cs = capture_queue.stream;
+#else
             cudaStream_t cs = nullptr;
             if (cudaStreamCreate(&cs) != cudaSuccess) {
                 err = std::string("session_capture: stream create failed");
                 return false;
             }
+#endif
             if (cudaStreamBeginCapture(cs, cudaStreamCaptureModeThreadLocal) != cudaSuccess) {
+#ifndef STRATA_ENABLE_SYCL
+                cudaStreamDestroy(cs);
+#endif
                 err = "session_capture: begin failed at layer " + std::to_string(l);
                 return false;
             }
@@ -248,18 +267,27 @@ bool session_capture(const WeightTable& tables, const ModelGeometry& g, SessionS
                                                   s.block, (void*) cs, err, s.db, s.ple.ready() ? &s.ple : nullptr,
                                                   half, stage_prefix, part == Segment::Route);
             if (!ok) {
+                cudaGraph_t unfinished = nullptr;
+                cudaStreamEndCapture(cs, &unfinished);
+                if (unfinished) cudaGraphDestroy(unfinished);
+#ifndef STRATA_ENABLE_SYCL
+                cudaStreamDestroy(cs);
+#endif
                 err = "session_capture: " + std::string(what) + " layer " + std::to_string(l) + ": " + err;
                 return false;
             }
             cudaGraph_t graph = nullptr;
             const cudaError_t ce = cudaStreamEndCapture(cs, &graph);
+#ifndef STRATA_ENABLE_SYCL
             cudaStreamDestroy(cs);
+#endif
             if (ce != cudaSuccess) {
                 err = "session_capture: " + std::string(what) + " layer " + std::to_string(l) + ": " +
                       cudaGetErrorString(ce) + " (a synchronous call in the layer?)";
                 return false;
             }
             if (cudaGraphInstantiate(out, graph, 0) != cudaSuccess) {
+                cudaGraphDestroy(graph);
                 err = "session_capture: instantiate failed at layer " + std::to_string(l);
                 return false;
             }
