@@ -33,6 +33,7 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 option(STRATA_ENABLE_CUDA "Build the CUDA targets (Phase 2+)" OFF)
+option(STRATA_ENABLE_SYCL "Build the Intel GPU SYCL backend (requires icpx)" OFF)
 option(STRATA_ENABLE_HIP "Build the HIP targets for wave32 AMD GPUs (gfx1100, gfx1201; gfx1030 unvalidated)" OFF)
 option(STRATA_PREFILL_MMQ "Build the optional GGML MMQ prefill path for HIP" OFF)
 # CUDA: MMQ prompt kernels for Q4_K / Q5_K / Q5_1 (Unsloth's UD-Q4_K_XL experts).  Off by default: the engine loads
@@ -45,6 +46,9 @@ if(STRATA_PREFILL_MMQ AND NOT STRATA_ENABLE_HIP)
 endif()
 if(STRATA_ENABLE_CUDA AND STRATA_ENABLE_HIP)
   message(FATAL_ERROR "STRATA_ENABLE_CUDA and STRATA_ENABLE_HIP are separate backends; enable only one")
+endif()
+if(STRATA_ENABLE_SYCL AND (STRATA_ENABLE_CUDA OR STRATA_ENABLE_HIP))
+  message(FATAL_ERROR "SYCL, CUDA and HIP are separate backends; enable only one")
 endif()
 if(STRATA_ENABLE_HIP)
   include(cmake/hip_backend.cmake)
@@ -170,6 +174,9 @@ endif()
 # Also header-only.  A "planner" that hides state would be one whose decision is not inspectable, and the
 # whole point of P1.S9 is that the decision is arithmetic you can check by hand.
 add_library(strata_plan INTERFACE)
+if(STRATA_ENABLE_SYCL)
+  include(cmake/sycl_backend.cmake)
+endif()
 target_include_directories(strata_plan INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(strata_plan INTERFACE strata_warnings)
 

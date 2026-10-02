@@ -16,6 +16,11 @@
 #include <string>
 #include <vector>
 
+#if defined(STRATA_ENABLE_SYCL)
+#include <memory>
+namespace strata::sycl_backend { class Allocation; }
+#endif
+
 namespace strata::core {
 
 struct DeviceInfo {
@@ -90,6 +95,9 @@ private:
     uint64_t capacity_ = 0, used_ = 0;
     int ordinal_ = 0;
     bool poison_ = false;
+#if defined(STRATA_ENABLE_SYCL)
+    std::shared_ptr<strata::sycl_backend::Allocation> sycl_allocation_;
+#endif
 };
 
 }  // namespace strata::core
