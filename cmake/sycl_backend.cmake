@@ -18,7 +18,8 @@ target_link_libraries(strata-device PRIVATE strata_core)
 
 add_library(strata_kernels STATIC src/kernels/sycl/elementwise.cpp src/kernels/sycl/router.cpp
                                  src/kernels/sycl/native_router.cpp src/kernels/sycl/gdn.cpp
-                                 src/kernels/sycl/quantize_act.cpp src/kernels/sycl/bf16_gemv.cpp)
+                                 src/kernels/sycl/quantize_act.cpp src/kernels/sycl/bf16_gemv.cpp
+                                 src/kernels/sycl/native_mmvq.cpp)
 target_link_libraries(strata_kernels PUBLIC strata_core strata_artifact)
 target_compile_options(strata_kernels PRIVATE -ffp-contract=off)
 
@@ -51,4 +52,9 @@ if(STRATA_SYCL_TESTS)
   target_compile_options(sycl_bf16_test PRIVATE -fno-fast-math -ffp-contract=off)
   add_test(NAME sycl_bf16 COMMAND sycl_bf16_test)
   set_tests_properties(sycl_bf16 PROPERTIES TIMEOUT 90)
+  add_executable(sycl_mmvq_test tests/sycl/mmvq.cpp)
+  target_link_libraries(sycl_mmvq_test PRIVATE strata_kernels)
+  target_compile_options(sycl_mmvq_test PRIVATE -fno-fast-math -ffp-contract=off)
+  add_test(NAME sycl_mmvq COMMAND sycl_mmvq_test)
+  set_tests_properties(sycl_mmvq PROPERTIES TIMEOUT 90)
 endif()

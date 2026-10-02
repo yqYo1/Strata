@@ -14,7 +14,7 @@ source /opt/intel/oneapi/setvars.sh
 export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
 cmake -S . -B build-sycl -DCMAKE_CXX_COMPILER=icpx \
   -DSTRATA_ENABLE_SYCL=ON -DSTRATA_NATIVE_EXPERTS=OFF -DSTRATA_BUILD_TESTS=OFF
-cmake --build build-sycl --target strata-device sycl_runtime_test sycl_kernels_test sycl_gdn_test sycl_quantize_test sycl_bf16_test -j2
+cmake --build build-sycl --target strata-device sycl_runtime_test sycl_kernels_test sycl_gdn_test sycl_quantize_test sycl_bf16_test sycl_mmvq_test -j2
 ctest --test-dir build-sycl -R '^sycl_' --output-on-failure
 build-sycl/strata-device --list-devices
 ```
@@ -92,6 +92,31 @@ settings; see the research document for the machine configuration:
   product within the test tolerance. Fourteen legacy BF16-activation shapes,
   including odd reduction widths and split sizes 1 through 256, passed the
   double-precision reference and canary checks.
+
+- Native Q8_1 and MMVQ for Q2_0, Q4_0, Q5_0, Q8_0, Q3_K, Q4_K, Q5_K,
+  Q6_K, IQ4_NL and IQ4_XS: 150 synthetic cases passed, including small/large
+  reduction widths, row tails, 1/3/8 columns and both multi-column layouts.
+  Q8_1 bytes matched the independent host quantizer; the exact layout matched
+  separate single-column calls bit for bit. The largest
+  `abs(error)/(1 + sum(abs(reference terms)))` was `5.099e-8` against scalar
+  dequantization and double-precision dot products. The reference includes the
+  original-input-sum correction required by affine Q4_0/Q5_0.
+- Real Q2_0 GGUF: first/middle/last rows from all 448 tensors of those ten
+  formats passed with three activation columns. The same normalized maximum
+  error was `4.699e-8`. This samples weights, not a forward pass.
+
+The real-weight check is optional and reads the model in place:
+
+```sh
+build-sycl/sycl_mmvq_test --gguf /path/to/model-00001-of-00002.gguf
+```
+
+The recorded model is `ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF`, Q2_0,
+revision `ed59f92082b1e93c0e96d60a8b11aab089b52f09`. Both GGUF shard sizes
+and SHA-256 hashes were checked before use. The model and native pack live
+outside the repository, under `$XDG_DATA_HOME/strata-sycl` (or
+`~/.local/share/strata-sycl` when unset). The pack contains 1,079 index entries;
+its tokenizer passed all 16 strings in `strata_tokenizer.py --check`.
 
 These checks establish runtime and kernel behavior, not model correctness or inference
 performance. Remaining work includes the model kernels, CPU expert scheduling,
