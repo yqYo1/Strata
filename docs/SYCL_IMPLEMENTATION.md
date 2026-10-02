@@ -505,3 +505,36 @@ two rows were bitwise equal to the corresponding prefix of the eight-row run.
 These are limited checks, not numerical equivalence or a broad quality gate.
 [The prefill records](../bench/results/2026-10-02-sycl-prefill/run.json) include
 prompt ids, options, dump sizes and hashes, and the complete comparison reports.
+
+### Longer prompt and parallel GR streams
+
+A 167-token synthetic chat mixed English notes, Japanese text and a Python
+function, then asked for a color mentioned earlier. CPU-reference and SYCL
+cache-off argmax ids matched at 164/167 positions; mean cosine was 0.998259,
+minimum cosine 0.963235. Both answered `blue`. Splitting its 166 conditioning
+positions into chunks of 64 produced the same four generated ids as sequential
+conditioning, with minimum cosine 0.995759 on those four positions.
+
+On this B570/Ryzen 5 5600X/125 GiB machine, keeping the 31.64 GiB expert arena
+in ordinary RAM avoided rebuilding expert blobs from the GGUF mappings on each
+layer. The 170-row mmap and arena dumps were bitwise identical. In these short
+runs, the CPU-pool call averaged 97.87 ms/position with mmap versus 26.70 ms
+with the arena; generation measured 6.80 versus 13.70 tok/s. Auto-sized,
+per-layer GPU caching admitted 2,874 slots and measured 14.72 tok/s, with
+162/167 prompt argmax ids matching the CPU reference (minimum cosine 0.957857).
+These four-output-token timings are not an isolated or steady-state benchmark:
+other host workloads remained active, and filesystem caches were not cleared.
+
+The fused GR up projection now assigns its four residual streams to four
+subgroups of one workgroup. It keeps the five original partial reductions and
+their addition order, then combines the four gates after one local barrier.
+The previous kernel visited streams sequentially with three barriers per
+stream. The fused GR unit test passed, and all 170 real-model logit rows were
+bitwise identical before and after this change.
+
+Three alternating before/after GPU-only runs (`--gpu-only-full`, context 512,
+20 replays per process) measured layers at 36.967/36.954/36.957 ms before and
+35.205/35.152/35.146 ms after. Head time remained about 4 ms. This measurement
+omits expert computation and CPU handoffs and must not be reported as decode
+throughput. [The context records](../bench/results/2026-10-02-sycl-context/run.json)
+contain the prompt, dump hashes, comparisons, settings and individual timings.
