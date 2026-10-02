@@ -22,7 +22,7 @@ add_library(strata_kernels STATIC src/kernels/sycl/elementwise.cpp src/kernels/s
                                  src/kernels/sycl/native_mmvq.cpp src/kernels/sycl/gr.cpp
                                  src/kernels/sycl/rope.cpp src/kernels/sycl/kv.cpp
                                  src/kernels/sycl/attention.cpp src/kernels/sycl/qsa_index.cpp
-                                 src/kernels/sycl/native_qsa_indexer.cpp
+                                 src/kernels/sycl/native_qsa_indexer.cpp src/kernels/sycl/qsa_select.cpp
                                  src/kernels/sycl/decode_attention.cpp)
 target_link_libraries(strata_kernels PUBLIC strata_core strata_artifact)
 target_compile_options(strata_kernels PRIVATE -ffp-contract=off)

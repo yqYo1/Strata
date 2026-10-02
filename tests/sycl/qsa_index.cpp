@@ -1,6 +1,7 @@
 #include "strata/kernels/mrope.hpp"
 #include "strata/kernels/native_qsa_indexer.hpp"
 #include "strata/kernels/qsa.hpp"
+#include "strata/kernels/qsa_select.hpp"
 #include "strata/kernels/rope.hpp"
 #include "strata/sycl/runtime.hpp"
 #include <algorithm>
@@ -125,6 +126,106 @@ void native_pool() {
   }
   std::cout << "Native indexer: 3 scaling modes, chunked/step equality and CPU "
                "oracle passed\n";
+}
+void block_selection() {
+  auto shape = qsa_real_shapes();
+  constexpr int cap = 2051, nq = 6;
+  const int counts[nq] = {0, 1, 2051, 2052, 32769, 262147};
+  const int blocks = counts[nq - 1] / 4 + 1;
+  Buffer<float> scores(nq * blocks);
+  Buffer<int32_t> steps(nq * kStepCount), ids(nq * cap), refids(nq * cap);
+  std::vector<int32_t> st(nq * kStepCount), expected(nq * cap, -77);
+  for (int q = 0; q < nq; ++q) {
+    st[q * kStepCount + kStepPos] = counts[q] - 1;
+    st[q * kStepCount + kStepNKv] = counts[q];
+    st[q * kStepCount + kStepNBid] = counts[q] / 4;
+    st[q * kStepCount + kStepWidth] = std::min(counts[q], cap);
+  }
+  steps.put(st);
+  for (int pattern = 0; pattern < 4; ++pattern) {
+    std::vector<float> sc(nq * blocks);
+    std::fill(expected.begin(), expected.end(), -77);
+    for (int q = 0; q < nq; ++q) {
+      for (int b = 0; b < blocks; ++b) {
+        float v = pattern == 0   ? float(std::sin(b * .79 + q))
+                  : pattern == 1 ? float(b % 13)
+                  : pattern == 2 ? (b % 2 ? -0.f : 0.f)
+                  : b % 13 == 0  ? NAN
+                  : b % 7 == 0   ? INFINITY
+                  : b % 3 == 0   ? -INFINITY
+                                 : float(b % 17);
+        sc[q * blocks + b] = v;
+      }
+      std::vector<int> all(counts[q]);
+      std::iota(all.begin(), all.end(), 0);
+      std::sort(all.begin(), all.end(), [&](int a, int b) {
+        float x = sc[q * blocks + a / 4], y = sc[q * blocks + b / 4];
+        if (std::isnan(x) != std::isnan(y))
+          return !std::isnan(x);
+        if (x > y)
+          return true;
+        if (x < y)
+          return false;
+        return a < b;
+      });
+      all.resize(std::min(counts[q], cap));
+      std::sort(all.begin(), all.end());
+      std::copy(all.begin(), all.end(), expected.begin() + q * cap);
+    }
+    scores.put(sc);
+    ids.put(std::vector<int32_t>(nq * cap, -77));
+    refids.put(std::vector<int32_t>(nq * cap, -77));
+    qsa_block_topk(scores.data(), steps.data(), nq, blocks, cap, shape,
+                   ids.data(), nullptr, blocks);
+    qsa_block_topk_ref(scores.data(), steps.data(), nq, blocks, cap, shape,
+                       refids.data(), nullptr);
+    check(ids.get() == expected && refids.get() == expected,
+          "long block selection oracle");
+  }
+  constexpr int B = 19, Q = 3;
+  Buffer<float> pooled(B * 128), dead(128), queries(Q * 512), result(Q * B);
+  Buffer<int32_t> smallsteps(Q * kStepCount);
+  std::vector<float> p(B * 128), d(128), qu(Q * 512);
+  for (int i = 0; i < B * 128; ++i)
+    p[i] = float(std::sin(i * .134));
+  for (int i = 0; i < 128; ++i)
+    d[i] = float(std::cos(i * .71) * 2);
+  for (int i = 0; i < Q * 512; ++i)
+    qu[i] = float(std::sin(i * .017));
+  std::vector<int32_t> ss(Q * kStepCount);
+  const int ns[Q] = {7, 32, 70};
+  for (int q = 0; q < Q; ++q) {
+    ss[q * kStepCount + kStepNKv] = ns[q];
+    ss[q * kStepCount + kStepNBid] = ns[q] / 4;
+  }
+  pooled.put(p);
+  dead.put(d);
+  queries.put(qu);
+  smallsteps.put(ss);
+  result.put(std::vector<float>(Q * B, -77));
+  qsa_block_scores(pooled.data(), dead.data(), queries.data(),
+                   smallsteps.data(), Q, B, shape, result.data(), nullptr, 18);
+  const auto actual = result.get();
+  for (int q = 0; q < Q; ++q)
+    for (int b = 0; b < B; ++b) {
+      if (b > ns[q] / 4) {
+        check(actual[q * B + b] == -77, "block score canary");
+        continue;
+      }
+      double total = 0;
+      for (int h = 0; h < 4; ++h) {
+        double dot = 0;
+        for (int j = 0; j < 128; ++j)
+          dot += double(b == ns[q] / 4 ? d[j] : p[b * 128 + j]) *
+                 qu[q * 512 + h * 128 + j];
+        total += std::max(0., dot);
+      }
+      if (b == ns[q] / 4 && ns[q] % 4)
+        total += 1e9;
+      close(actual[q * B + b], total, 3e-6, "block scores oracle");
+    }
+  std::cout << "24 long-context selections through 262147 cells and batched "
+               "block scores passed\n";
 }
 void selection(int n, int pattern) {
   QsaShapes s = qsa_real_shapes();
@@ -332,6 +433,7 @@ int main() {
   try {
     runtime = sycl_backend::runtime_for();
     native_pool();
+    block_selection();
     for (int n : {0, 1, 2051, 2052, 8193, 32768})
       for (int pattern = 0; pattern < 4; ++pattern)
         selection(n, pattern);
