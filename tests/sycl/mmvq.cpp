@@ -586,8 +586,8 @@ int main(int argc, char **argv) {
           std::memcpy(w.data() + size_t(i) * 10 * 176, &scales[i], 2);
           std::memcpy(w.data() + size_t(i) * 10 * 176 + 2, &scales[6 - i], 2);
         }
-        run(formats[5], n, rows, 3, true, w);
-        run(formats[5], n, rows, 8, true, w);
+        for (int cols : {1, 2, 3, 4, 8})
+          run(formats[5], n, rows, cols, true, w);
       }
       Buffer<float> x(256), y(256);
       Buffer<uint8_t> w(1024), scratch(1024);
