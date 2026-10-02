@@ -303,6 +303,17 @@ void run(Format f, int n, int rows, int cols, bool exact,
   for (size_t i = scratch_bytes; i < got_quant.size(); ++i)
     check(got_quant[i] == 0xa5, "Q8_1 canary");
   const auto got = output.read();
+  if (f.type == 11 && exact && cols > 1 && cols <= 4) {
+    // Up to four columns use the original four-warp Q3_K arithmetic in SPMD.
+    // Small projection errors can change later Q8_1 activations in the model.
+    native_mmvq_set_multi_exact(false);
+    native_mmvq(f.type, weight.data(), scratch.data(), output.data(), n, rows,
+                cols, stream);
+    const auto original = output.read();
+    check(std::memcmp(original.data(), got.data(), size_t(rows) * cols * 4) == 0,
+          "Q3_K ESIMD/SPMD bits");
+    native_mmvq_set_multi_exact(exact);
+  }
   for (int col = 0; col < cols; ++col) {
     if (exact) {
       native_mmvq(f.type, weight.data(),
@@ -443,6 +454,19 @@ int main(int argc, char **argv) {
           run(f, n, 7, 3, false, w);
           run(f, n, 7, 8, false, w);
         }
+      }
+      {
+        constexpr int rows = 17, n = 6144;
+        auto w = weights(formats[3], n, rows);
+        // Q3_K alternate 110-byte blocks are only two-byte aligned. Include
+        // signed zero, subnormal and negative FP16 scales in changing columns.
+        const uint16_t scales[] = {0, 0x8000, 1, 0x3ff, 0x400, 0x8400,
+                                   0x8001, 0x7bff};
+        for (int block = 0; block < rows * (n / 256); ++block)
+          std::memcpy(w.data() + size_t(block) * 110 + 108,
+                      &scales[block % 8], 2);
+        for (int cols : {1, 3, 8})
+          run(formats[3], n, rows, cols, true, w);
       }
       {
         // The vocabulary path has a row tail and must retain the ordinary

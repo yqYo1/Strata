@@ -32,6 +32,7 @@
 
 namespace strata::kernels {
 void native_q5_head_esimd(const void *, const void *, float *, int, int, void *);
+void native_q3_k_esimd(const void *, const void *, float *, int, int, int, void *);
 namespace {
 using namespace sycl_backend;
 // On-disk half values are read through the shared bit converter, including
@@ -865,6 +866,10 @@ void native_mmvq(int type, const void *w, const void *x, float *y, int n_in,
     dispatch<SmallTraits<Q80Block, 8>>(w, x, y, n_in, n_out, ncols, stream);
     break;
   case 11:
+    if (ncols == 1 || multi_exact.load(std::memory_order_relaxed)) {
+      native_q3_k_esimd(w, x, y, n_in, n_out, ncols, stream);
+      break;
+    }
     dispatch<Q3KTraits>(w, x, y, n_in, n_out, ncols, stream);
     break;
   case 12:

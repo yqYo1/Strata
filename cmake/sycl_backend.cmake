@@ -22,7 +22,7 @@ target_link_libraries(strata-device PRIVATE strata_core)
 add_library(strata_kernels STATIC src/kernels/sycl/elementwise.cpp src/kernels/sycl/cvec.cpp src/kernels/sycl/router.cpp
                                  src/kernels/sycl/native_router.cpp src/kernels/sycl/gdn.cpp src/kernels/sycl/fused_gdn.cpp src/kernels/sycl/sampler.cpp src/kernels/sycl/sequence.cpp src/kernels/sycl/expert_routing.cpp
                                  src/kernels/sycl/quantize_act.cpp src/kernels/sycl/bf16_gemv.cpp
-                                 src/kernels/sycl/native_mmvq.cpp src/kernels/sycl/native_q5_head.cpp src/kernels/sycl/native_q2.cpp src/kernels/sycl/gr.cpp src/kernels/sycl/fused_gr.cpp
+                                 src/kernels/sycl/native_mmvq.cpp src/kernels/sycl/native_q5_head.cpp src/kernels/sycl/native_q3_esimd.cpp src/kernels/sycl/native_q2.cpp src/kernels/sycl/gr.cpp src/kernels/sycl/fused_gr.cpp
                                  src/kernels/sycl/rope.cpp src/kernels/sycl/kv.cpp
                                  src/kernels/sycl/attention.cpp src/kernels/sycl/native_flash_attn.cpp src/kernels/sycl/qsa_index.cpp
                                  src/kernels/sycl/native_qsa_indexer.cpp src/kernels/sycl/qsa_select.cpp
@@ -31,7 +31,7 @@ add_library(strata_kernels STATIC src/kernels/sycl/elementwise.cpp src/kernels/s
                                  src/kernels/ngram.cpp src/ngram/ple_reader.cpp src/platform/direct_file.cpp)
 target_link_libraries(strata_kernels PUBLIC strata_core strata_artifact)
 target_compile_options(strata_kernels PRIVATE -ffp-contract=off)
-set_source_files_properties(src/kernels/sycl/native_q5_head.cpp src/kernels/sycl/native_q2.cpp src/kernels/sycl/rope.cpp src/kernels/sycl/native_qsa_indexer.cpp src/kernels/sycl/ple.cpp src/kernels/sycl/s2_experts.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math")
+set_source_files_properties(src/kernels/sycl/native_q5_head.cpp src/kernels/sycl/native_q3_esimd.cpp src/kernels/sycl/native_q2.cpp src/kernels/sycl/rope.cpp src/kernels/sycl/native_qsa_indexer.cpp src/kernels/sycl/ple.cpp src/kernels/sycl/s2_experts.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math")
 
 add_library(strata_engine STATIC src/core/layer.cpp src/core/session.cpp src/core/expert_source.cpp src/core/remote_experts.cpp
   src/core/expert_cache.cpp src/core/native_head.cpp src/core/native_dense.cpp src/core/verify.cpp src/core/mtp.cpp
