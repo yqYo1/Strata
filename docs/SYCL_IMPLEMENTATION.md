@@ -616,7 +616,7 @@ target remains open. This change has no measured MTP speed result.
 
 ### Q2_0 resident expert ESIMD path
 
-Native Q2_0 projections now unpack signed codes `-1, 0, 1, 2` into DP4A
+The one-row native Q2_0 ESIMD path unpacks signed codes `-1, 0, 1, 2` into DP4A
 operands in a 16-lane ESIMD kernel. Masked gathers handle partial virtual block
 groups and the 18-byte block stride. The products and original 128 virtual
 lanes retain the SPMD accumulation order. The grouped expert path reads group
@@ -658,6 +658,58 @@ The options, trace hash and per-layer/matrix results are in
 tokens. These results do not establish MTP throughput; its multiple-entry
 weight reuse remains a separate measurement. The approximately `29 tok/s`
 reference target is still open.
+
+### Packed Q2_0 experts on XMX
+
+For grouped Q2_0 experts with embedding width 2,560 and FF width 640, each
+ESIMD work-item now computes sixteen weight rows. Integer DPAS uses those rows
+as sixteen columns, with one activation row and depth 32. The existing 18-byte
+Q2_0 blocks supply unsigned two-bit weights; activations remain signed Q8_1.
+Starting the integer accumulator at minus the activation code sum implements
+the weights' `-1` offset exactly. FP16 scale decoding, both float product
+boundaries and the original 128 virtual-lane additions retain their preceding
+order. Other dimensions and dense Q2_0 projections use the preceding DP4A
+kernel. `STRATA_SYCL_Q2_XMX=0` selects that kernel for comparison; the SPMD
+diagnostic switch still applies.
+
+On 2026-10-03, B570/5600X, twelve recorded sets of ten real experts used
+warm resident weights and Q8_1 inputs. The sum of their device-event intervals
+was `1.869820 / 1.869753 / 1.869940 ms` before and
+`0.960162 / 0.960415 / 0.960467 ms` after. Each interval is the median of
+three samples of fifty captured repetitions after warm-up. The medians are
+`1.869820` and `0.960415 ms`, a `1.95x` improvement in this isolated workload.
+All grouped output bits matched SPMD, alongside independent Q8_1 numeric
+references. These intervals exclude CPU experts, input quantization and copies.
+
+The integer packing probe checked 2,560 varying DPAS results at M=1/4,
+N=16, K=32, including inputs -128, 127 and zero and both Q2_0 block halves.
+All matched its integer reference. Grouped tests cover host-USM/device weight
+pointers, multiple entries, invalid tokens, empty plans and buffer guards;
+a separate canonical fixture compares all output bits with zero, signed-zero,
+subnormal, negative and maximum finite FP16 scales. A 64-token MTP diagnostic
+retained all 30 windows/90 rows of float32 logits bit for bit, including
+rejected draft rows.
+
+Three alternating 128-token MTP runs used the preceding overlap experiment's
+fixed 2,048-slot profile and flags. Before measured
+`15.43 / 16.94 / 16.78 tok/s`; after measured
+`16.84 / 16.86 / 16.85 tok/s`. The medians differ by only `0.4%`;
+these shared-machine samples do not establish a generation speed improvement.
+All six retained the same ids, 63 rounds, 66/109 accepted drafts and
+8,705/82,560 cache hits. The isolated kernel gain therefore remains separate
+from decode performance.
+
+Three alternating ordinary 128-token runs used 4,135 empty per-layer cache
+slots, four CPU workers, prefill 16, context 512 and the RAM PLE table.
+Before measured `21.25 / 19.84 / 22.12 tok/s`; after measured
+`21.44 / 22.86 / 22.87 tok/s`. The medians were `21.25` and `22.86 tok/s`
+(`7.6%` higher). All six retained the same 128 ids and 43,845/61,440 cache
+hits. The variation between runs on this shared machine limits the speed
+conclusion; all samples are retained. A separate 32-token cold-cache run
+with 3,038 slots and direct PLE reads retained every float32 logit bit.
+
+Flags, comparison results and raw intervals are in
+[`bench/results/2026-10-03-sycl-q2-xmx/run.json`](../bench/results/2026-10-03-sycl-q2-xmx/run.json).
 
 ### Captured native cache-hit work
 
@@ -1050,6 +1102,43 @@ Background workloads were not isolated.
 Options, calibration prompts, continuations, an experimental profile and
 individual cache-hint measurements are in
 [`bench/results/2026-10-03-sycl-cache-experiments/`](../bench/results/2026-10-03-sycl-cache-experiments/).
+
+### Cache, worker and large-page screens
+
+After the verifier overlap change and before Q2_0 XMX, one 128-token run per
+configuration used B570/5600X, Q2_0, FP16 KV, resident RAM, context 512,
+prefill 16, the shipped profile, MTP T=4, probability threshold 0.5 and direct
+PLE I/O. Auto sizing selected 3,792 expert slots. Workers below exclude the
+host thread.
+
+| Cache and workers | Story, token/s | Python merge function, token/s |
+| --- | ---: | ---: |
+| Fixed 2,048 slots, 4 workers | 14.61 | 16.54 |
+| Auto, 4 workers | 13.77 | 21.17 |
+| Auto, 5 workers | 17.25 | 19.11 |
+| Auto, 4 workers, up to 512 swaps every 4 rounds | 15.73 | 16.55 |
+
+Dynamic placement reached 67.33% story cache hits and 56.00% coding hits,
+but refill time was respectively `12.88` and `21.03 ms/round`. Continuations
+first differed from the fixed-cache run at index 32 for the story, 46 for
+static auto coding and 96 for dynamic coding. These settings therefore include
+different output text and acceptance counts. Shared background load was not
+isolated; single samples do not select a worker count or justify a default
+change. Flags, counters and outputs are in
+[`bench/results/2026-10-03-sycl-config-screen/run.json`](../bench/results/2026-10-03-sycl-config-screen/run.json).
+
+A separate allocation prototype requested `MADV_HUGEPAGE` on just the
+anonymous expert arena, following the [kernel's per-region THP interface](https://www.kernel.org/doc/html/latest/admin-guide/mm/transhuge.html).
+The system's existing THP policies were `madvise`; the prototype changed no
+global setting. At session readiness, `/proc/PID/smaps` reported zero arena
+`AnonHugePages` before and `32,006,144 / 32,563,200 KiB` after in the story
+and coding processes. Advice succeeded, but their single paired runs slowed:
+`16.66 → 15.23` and `17.34 → 16.32 tok/s`. Arena loading also slowed from
+`0.88 → 0.55` and `1.28 → 0.53 GiB/s`. Both pairs retained identical ids,
+acceptance and cache counts, with Q2_0 XMX disabled and 2,048 fixed slots.
+The measurements do not isolate the cause of the slowdown. The prototype was
+reverted. Its patch and measured mappings are in
+[`bench/results/2026-10-03-sycl-arena-thp/run.json`](../bench/results/2026-10-03-sycl-arena-thp/run.json).
 
 ### Graph submission completion events
 

@@ -169,10 +169,27 @@ std::vector<uint8_t> quantize(const std::vector<float> &x) {
   }
   return out;
 }
-void grouped(Format f, int n, int ff) {
+void grouped(Format f, int n, int ff, bool scale_edges = false) {
   constexpr int G = 3, E = 15, T = 3;
   const auto L = native_expert_layout(f.type, f.type, n, ff);
-  const auto gw = weights(f, n, ff), dw = weights(f, ff, n);
+  auto gw = weights(f, n, ff), dw = weights(f, ff, n);
+  if (scale_edges) {
+    check(f.type == 42, "scale-edge fixture requires Q2_0");
+    constexpr uint16_t edges[] = {0x0000, 0x8000, 0x0001, 0x8001, 0x0400,
+                                  0x8400, 0x3c00, 0xbc00, 0x7bff, 0xfbff};
+    // One edge scale per row; small inputs keep hidden Q8_1 scales finite
+    // even for the maximum finite FP16 weight scale.
+    for (int row = 0; row < ff; ++row) {
+      const auto bits = edges[row % 10];
+      gw[size_t(row) * L.gu_row] = uint8_t(bits);
+      gw[size_t(row) * L.gu_row + 1] = uint8_t(bits >> 8);
+    }
+    for (int row = 0; row < n; ++row) {
+      const auto bits = edges[(row + 3) % 10];
+      dw[size_t(row) * L.d_row] = uint8_t(bits);
+      dw[size_t(row) * L.d_row + 1] = uint8_t(bits >> 8);
+    }
+  }
   std::vector<uint8_t> blob(L.bytes), other(L.bytes);
   std::copy(gw.begin(), gw.end(), blob.begin());
   for (int row = 0; row < ff; ++row)
@@ -203,7 +220,8 @@ void grouped(Format f, int n, int ff) {
   token.upload(tokens);
   std::vector<float> inputs(T * n);
   for (size_t i = 0; i < inputs.size(); ++i)
-    inputs[i] = float(std::sin(i * .139) + .03 * std::cos(i * .071));
+    inputs[i] = float(std::sin(i * .139) + .03 * std::cos(i * .071)) *
+                (scale_edges ? 1e-4f : 1.f);
   Buffer<float> input(inputs.size());
   input.upload(inputs);
   Buffer<uint8_t> xq(native_q8_1_bytes(n, T)),
@@ -236,7 +254,10 @@ void grouped(Format f, int n, int ff) {
     native_expert_grouped(L, pointers.data(), starts.data(), count.data(),
                           dst.data(), token.data(), G, E, xq.data(),
                           scratch.data(), output.data(), q);
-    check(output.read() == expected,
+    const auto result = output.read();
+    check(scale_edges ? std::memcmp(result.data(), expected.data(),
+                                    expected.size() * sizeof(float)) == 0
+                      : result == expected,
           "native grouped expert differs from separate projections");
     const auto guard = scratch.read();
     check(std::all_of(guard.end() - 16, guard.end(),
@@ -256,7 +277,11 @@ void grouped(Format f, int n, int ff) {
     native_expert_grouped(L, pointers.data(), starts.data(), count.data(),
                           dst.data(), token.data(), G, E, xq.data(),
                           scratch.data(), output.data(), q);
-    check(output.read() == zeroed, "invalid token row must yield zero expert");
+    const auto result = output.read();
+    check(scale_edges ? std::memcmp(result.data(), zeroed.data(),
+                                    zeroed.size() * sizeof(float)) == 0
+                      : result == zeroed,
+          "invalid token row must yield zero expert");
   }
   iq_set_old_kernels(false);
   count.upload({0});
@@ -270,6 +295,7 @@ void grouped(Format f, int n, int ff) {
         "zero group count wrote output");
   iq_set_old_kernels(false);
   std::cout << "native grouped type " << f.type << " " << n << "x" << ff
+            << (scale_edges ? " FP16 scale edges" : "")
             << " passed both entry tiles\n";
 }
 void transfers(Format f) {
@@ -502,6 +528,7 @@ int main(int argc, char **argv) {
         grouped(f, 256, 256);
       }
       grouped(formats[9], 2560, 640);
+      grouped(formats[9], 2560, 640, true);
       transfers({30, 1, 2, 0});
     }
     if (argc == 3 && std::string(argv[1]) == "--gguf")
