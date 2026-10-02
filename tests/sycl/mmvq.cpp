@@ -2,6 +2,7 @@
 #include "strata/kernels/iq_kernels.hpp"
 #include "strata/kernels/native_mmvq.hpp"
 #include "strata/sycl/runtime.hpp"
+#include "strata/sycl/esimd_half.hpp"
 #include <algorithm>
 #include <array>
 #include <cfenv>
@@ -47,6 +48,35 @@ float unhalf(const uint8_t *p) {
 void check(bool condition, const char *label) {
   if (!condition)
     throw std::runtime_error(label);
+}
+void half_conversion() {
+  namespace e = sycl::ext::intel::esimd;
+  constexpr int count = 65536;
+  Buffer<float> output(count);
+  auto *out = output.data();
+  runtime->compute().parallel_for(
+      sycl::nd_range<1>(count / 16, 16),
+      [=](sycl::nd_item<1> it) SYCL_ESIMD_KERNEL {
+        const uint32_t first = uint32_t(it.get_global_linear_id()) * 16;
+        const e::simd<uint32_t, 16> bits(first, 1);
+        sycl_backend::esimd_half_decode<16>(bits).copy_to(out + first);
+      });
+  const auto values = output.read();
+  for (uint32_t code = 0; code < count; ++code) {
+    const uint16_t bits = uint16_t(code);
+    _Float16 half_value;
+    std::memcpy(&half_value, &bits, 2);
+    float expected = float(half_value);
+    if ((bits & 0x7c00u) == 0x7c00u && (bits & 1023u)) {
+      // Preserve the old decoder's payload, including signaling NaNs.
+      const uint32_t payload = ((code & 0x8000u) << 16) |
+                               0x7f800000u | ((code & 1023u) << 13);
+      std::memcpy(&expected, &payload, 4);
+    }
+    check(std::memcmp(&values[code], &expected, 4) == 0,
+          "ESIMD FP16 conversion bits");
+  }
+  std::cout << "ESIMD FP16 conversion: all 65536 encodings match\n";
 }
 struct Format {
   int type, width, bytes, scale;
@@ -456,6 +486,7 @@ int main(int argc, char **argv) {
     std::fesetenv(FE_DFL_ENV);
     runtime = sycl_backend::runtime_for();
     if (argc == 1) {
+      half_conversion();
       for (auto f : formats) {
         transfers(f);
         grouped(f, 256, 256);

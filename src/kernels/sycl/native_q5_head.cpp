@@ -24,6 +24,7 @@
 // SOFTWARE.
 
 #include "strata/sycl/launch.hpp"
+#include "strata/sycl/esimd_half.hpp"
 #include <sycl/ext/intel/esimd.hpp>
 
 namespace strata::kernels {
@@ -35,20 +36,7 @@ using U = e::simd<uint32_t, V>;
 using I = e::simd<int32_t, V>;
 using F = e::simd<float, V>;
 
-F half_decode(U h) SYCL_ESIMD_FUNCTION {
-  const U sign = (h & 0x8000u) << 16;
-  const U exponent = (h >> 10) & 31u;
-  const U mantissa = h & 1023u;
-  U bits = sign | ((exponent + 112u) << 23) | (mantissa << 13);
-  F result = bits.bit_cast_view<float>();
-  F sub = e::convert<float>(mantissa) * 0x1p-24f;
-  U sub_bits = sub.bit_cast_view<uint32_t>();
-  sub_bits |= sign;
-  result.merge(sub_bits.bit_cast_view<float>(), exponent == 0);
-  U special = sign | 0x7f800000u | (mantissa << 13);
-  result.merge(special.bit_cast_view<float>(), exponent == 31);
-  return result;
-}
+
 
 F block_dot(const uint8_t *w, const uint8_t *x) SYCL_ESIMD_FUNCTION {
   const U lane(0, 1);
@@ -67,7 +55,7 @@ F block_dot(const uint8_t *w, const uint8_t *x) SYCL_ESIMD_FUNCTION {
   sc.merge((s4 & 0x0f0fu) | ((s0 & 0xc0c0u) >> 2), offset >= 4u);
   mn.merge(((s4 >> 4) & 0x0f0fu) | ((s2 & 0xc0c0u) >> 2), offset >= 4u);
   const U dm = e::gather<uint32_t, V>(w32, U(0));
-  const F d = half_decode(dm & 65535u), m = half_decode(dm >> 16);
+  const F d = esimd_half_decode<V>(dm & 65535u), m = esimd_half_decode<V>(dm >> 16);
   F sd = 0.f, sm = 0.f;
 #pragma unroll
   for (int i = 0; i < 2; ++i) {
@@ -78,7 +66,7 @@ F block_dot(const uint8_t *w, const uint8_t *x) SYCL_ESIMD_FUNCTION {
     const I u1 = e::gather<int32_t, V>(reinterpret_cast<const int32_t *>(x),
                                        base + 20u + 4u * part);
     const U qs = e::gather<uint32_t, V>(x32, base);
-    const F dx = half_decode(qs & 65535u);
+    const F dx = esimd_half_decode<V>(qs & 65535u);
     const U v0 =
         ((vl0 >> (4 * i)) & 0x0f0f0f0fu) | (((vh0 >> i) << 4) & 0x10101010u);
     const U v1 =

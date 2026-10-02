@@ -23,6 +23,7 @@
 
 #include "strata/kernels/iq_kernels.hpp"
 #include "strata/sycl/launch.hpp"
+#include "strata/sycl/esimd_half.hpp"
 #include <sycl/ext/intel/esimd.hpp>
 #include <sycl/ext/intel/experimental/esimd/math.hpp>
 
@@ -35,19 +36,7 @@ constexpr int V = 16;
 using U = e::simd<uint32_t, V>;
 using I = e::simd<int32_t, V>;
 using F = e::simd<float, V>;
-F half_decode(U h) SYCL_ESIMD_FUNCTION {
-  const U sign = (h & 0x8000u) << 16;
-  const U exponent = (h >> 10) & 31u, mantissa = h & 1023u;
-  U bits = sign | ((exponent + 112u) << 23) | (mantissa << 13);
-  F result = bits.bit_cast_view<float>();
-  F sub = e::convert<float>(mantissa) * 0x1p-24f;
-  U sub_bits = sub.bit_cast_view<uint32_t>();
-  sub_bits |= sign;
-  result.merge(sub_bits.bit_cast_view<float>(), exponent == 0);
-  U special = sign | 0x7f800000u | (mantissa << 13);
-  result.merge(special.bit_cast_view<float>(), exponent == 31);
-  return result;
-}
+
 I unpack(U code) SYCL_ESIMD_FUNCTION {
   U bytes = (code & 3u) | ((code & 12u) << 6) |
             ((code & 48u) << 12) | ((code & 192u) << 18);
@@ -61,9 +50,9 @@ F block_half(const uint8_t *w, const uint8_t *x, U block, int blocks)
   const U lane(0, 1), half = lane % 2u;
   const e::simd_mask<V> valid = block < uint32_t(blocks);
   const U wo = block * 18u, xo = (block * 2u + half) * 36u;
-  const F d = half_decode(e::gather<uint16_t, V>(
+  const F d = esimd_half_decode<V>(e::gather<uint16_t, V>(
       reinterpret_cast<const uint16_t *>(w), wo, valid));
-  const F dx = half_decode(e::gather<uint16_t, V>(
+  const F dx = esimd_half_decode<V>(e::gather<uint16_t, V>(
       reinterpret_cast<const uint16_t *>(x), xo, valid));
   I dot = 0;
 #pragma unroll
