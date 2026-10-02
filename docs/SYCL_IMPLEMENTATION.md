@@ -946,6 +946,37 @@ are in
 [`bench/results/2026-10-03-sycl-q4k-esimd/`](../bench/results/2026-10-03-sycl-q4k-esimd/).
 The projection tool provides `--spmd-q4k` and `--compare-q4k` for these checks.
 
+### Graph submission completion events
+
+The SYCL adapter can bind a disabled-timing event directly to a graph
+submission. Completion covers every node, including host payload copies,
+without a separate barrier request. Ordinary route, shared-expert and native
+hit graphs use this binding. Verifier segments and asynchronous state commits
+use it too. Profiling events keep the existing barrier path.
+
+The regression test destroys the shared recording queue before replaying two
+graphs on alternating queues. It changes host payloads at completed boundaries,
+checks a cross-queue dependency on graph completion, and rebinds the event after
+that dependency has been submitted. The adapter rejects timing-enabled events
+and elapsed-time queries for these completion bindings.
+
+On 2026-10-03, B570/5600X, the cold 37-token story, 4,135 fixed slots, resident
+RAM, four workers, PLE RAM I/O, prefill 16, context 512 and speculation disabled:
+
+| Trial | Separate event recording, token/s | Direct completion binding, token/s |
+| --- | ---: | ---: |
+| 1 | 21.93 | 22.10 |
+| 2 | 21.90 | 21.88 |
+| 3 | 21.84 | 22.15 |
+
+Medians were `21.90` and `22.10 token/s` (`+0.9%`). All six runs produced the
+same 128 ids and cache hit counts. All 32 cold logit rows were bitwise equal.
+A functional MTP probe retained its 32 ids, 13 rounds and 19/28 accepted drafts;
+it does not establish MTP throughput. Background workloads were not isolated.
+PLE RAM pages remained unlocked. Full settings and individual measurements are
+in
+[`bench/results/2026-10-03-sycl-graph-completion/run.json`](../bench/results/2026-10-03-sycl-graph-completion/run.json).
+
 ### Event-completed speculative windows
 
 SYCL verification captures the window in segments. The first segment embeds

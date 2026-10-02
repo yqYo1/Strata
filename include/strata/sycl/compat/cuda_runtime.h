@@ -103,6 +103,13 @@ cudaError_t cudaGraphInstantiate(cudaGraphExec_t *, cudaGraph_t,
 cudaError_t cudaGraphInstantiate(cudaGraphExec_t *, cudaGraph_t,
                                  cudaGraphNode_t *, char *, size_t);
 cudaError_t cudaGraphLaunch(cudaGraphExec_t, cudaStream_t);
+namespace strata::sycl_backend::compat {
+// Bind a disabled-timing event to the graph submission's completion. Covers
+// every graph node without submitting a separate queue barrier. The stream
+// must be outside capture; reusing the event replaces its previous recording.
+cudaError_t graph_launch_with_completion(cudaGraphExec_t, cudaStream_t,
+                                        cudaEvent_t);
+}
 cudaError_t cudaGraphUpload(cudaGraphExec_t, cudaStream_t);
 cudaError_t cudaGraphDestroy(cudaGraph_t);
 cudaError_t cudaGraphExecDestroy(cudaGraphExec_t);
