@@ -249,7 +249,8 @@
       "decode_token_s": 14.41,
       "metrics": [
         "prefill                  36 tokens in 5337.0 ms  ->  6.75 tok/s  (time to first token 5413.7 ms)"
-      ]
+      ],
+      "adaptive_tier": null
     },
     {
       "name": "oracle-first",
@@ -299,7 +300,8 @@
         "accepted per round       0:1 1:0 2:0 3:8",
         "verify window            wait for rings 91.408  pool 63.753  host 5.512  commit 0.027 ms/round; CPU experts 20.60 distinct / 31.34 routed per layer",
         "prefill                  36 tokens in 5144.2 ms  ->  7.00 tok/s  (time to first token 5545.7 ms)"
-      ]
+      ],
+      "adaptive_tier": "adaptive tier            192 experts swapped into the VRAM tier (every 4 rounds, 3.694 ms/round)"
     },
     {
       "name": "reject-all",
@@ -351,7 +353,8 @@
         "accepted per round       0:32 1:0 2:0 3:0",
         "verify window            wait for rings 101.699  pool 59.567  host 4.949  commit 0.028 ms/round; CPU experts 20.36 distinct / 26.54 routed per layer",
         "prefill                  36 tokens in 5111.4 ms  ->  7.04 tok/s  (time to first token 5274.8 ms)"
-      ]
+      ],
+      "adaptive_tier": "adaptive tier            768 experts swapped into the VRAM tier (every 4 rounds, 3.790 ms/round)"
     },
     {
       "name": "split8-reject",
@@ -404,7 +407,8 @@
         "accepted per round       0:6 1:6 2:5 3:0 4:0 5:0 6:0 7:0",
         "verify window            wait for rings 187.902  pool 131.933  host 26.323  commit 0.032 ms/round; CPU experts 45.44 distinct / 61.45 routed per layer",
         "prefill                  36 tokens in 5482.2 ms  ->  6.57 tok/s  (time to first token 5787.7 ms)"
-      ]
+      ],
+      "adaptive_tier": "adaptive tier            384 experts swapped into the VRAM tier (every 4 rounds, 3.990 ms/round)"
     }
   ],
   "all_output_ids_match_baseline": true,
@@ -460,7 +464,8 @@
     "Oracle drafts omit MTP prediction cost and do not measure real drafting throughput.",
     "Output id agreement on this fixture is not a bitwise-logit contract across arbitrary prompts.",
     "Segment scheduling serializes GPU and CPU boundaries; split groups currently provide no asynchronous CPU overlap.",
-    "Static profile-filled GPU tier required; device-plan shortcut and CUDA global-timer profiling disabled; PCIe mode normalized to DMA.",
-    "The expert source used here has no device alias; PCIe expert-miss offload was not exercised."
+    "Profile-filled GPU tier required; default adaptive swaps update it between windows. Device-plan shortcut and CUDA global-timer profiling disabled; PCIe mode normalized to DMA.",
+    "The expert source used here has no device alias; PCIe expert-miss offload was not exercised.",
+    "Ordinary decode retains the initial profile placement; verifier variants use the default adaptive policy, recorded per run. These correctness probes do not isolate scheduling speed from placement changes."
   ]
 }
