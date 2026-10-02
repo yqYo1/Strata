@@ -114,6 +114,20 @@ void native_q4_k_esimd(const void *weights, const void *activation, float *out,
   const auto *w = static_cast<const uint8_t *>(weights);
   const auto *x = static_cast<const uint8_t *>(activation);
   const size_t padded = (size_t(rows) + 15) & ~size_t(15);
+  if (columns > 1) {
+    // Independent columns retain the original 128 virtual lanes and share one
+    // submission. The row/column grid also keeps the full row-tail guard.
+    queue_for(stream).parallel_for(
+        sycl::nd_range<2>({size_t(columns), padded}, {1, 16}),
+        [=](sycl::nd_item<2> item) SYCL_ESIMD_KERNEL {
+          const size_t row = item.get_global_id(1);
+          const size_t column = item.get_global_id(0);
+          if (row < size_t(rows))
+            out[column * rows + row] = row_dot(
+                w + row * blocks * 144, x + column * (width / 32) * 36, blocks);
+        });
+    return;
+  }
   for (int column = 0; column < columns; ++column) {
     const auto *input = x + size_t(column) * (width / 32) * 36;
     auto *result = out + size_t(column) * rows;

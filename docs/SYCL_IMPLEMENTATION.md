@@ -946,6 +946,79 @@ are in
 [`bench/results/2026-10-03-sycl-q4k-esimd/`](../bench/results/2026-10-03-sycl-q4k-esimd/).
 The projection tool provides `--spmd-q4k` and `--compare-q4k` for these checks.
 
+### Exact batched Q4_K projections
+
+With `multi_exact` enabled, batched Q4_K dense projections now use one ESIMD
+row/column grid. Each column retains the original 128 virtual lanes and
+floating-point operations. Single-column execution and the alternative
+`multi_exact=false` SPMD arithmetic are unchanged. The old-kernel flag also
+selects the original exact batched SPMD path.
+
+On 2026-10-03, B570/5600X, the 38 real Q4_K projection matrices, warm weights,
+50 captured repeats and the median of three device-event intervals gave:
+
+| Input columns | Original exact SPMD sum, ms | Batched ESIMD sum, ms |
+| ---: | ---: | ---: |
+| 2 | 3.108 | 1.705 |
+| 3 | 4.040 | 2.377 |
+| 4 | 4.949 | 3.112 |
+| 8 | 8.650 | 6.043 |
+
+Every output row and column was bitwise equal for fixed distinct Q8_1 inputs.
+The unit test also covers finite affine FP16 scales, partial block iterations,
+row tails, and exact single/batch parity. The independent real-weight check
+passed all 448 tensors. These sums exclude transfers and CPU work.
+
+Three alternating MTP T=4 runs used the 37-token story, 128 generated tokens,
+2,048 fixed per-layer slots filled from the shipped profile, four CPU workers,
+direct PLE I/O, prefill 16, context 512, probability threshold 0.5, and adaptive
+swaps disabled. Before rates were `15.30 / 15.63 / 15.31 token/s`; after rates
+were `15.17 / 15.70 / 15.65 token/s`. Medians were `15.31` and `15.65 token/s`
+(`+2.2%`). All six produced the same 128 ids, 63 rounds and 66/109 accepted
+drafts. This is output agreement, without a full speculative-logit comparison.
+Background workloads were not isolated, startup loading is excluded, and the
+approximately 29 token/s comparison target remains open.
+
+The projection tool's `--compare-q4k` accepts multiple columns and checks all
+of them against the original SPMD outputs. Full flags, timings and comparisons
+are in
+[`bench/results/2026-10-03-sycl-q4k-batched-esimd/`](../bench/results/2026-10-03-sycl-q4k-batched-esimd/).
+
+### Cache experiments retained as measurements
+
+On 2026-10-03, B570/5600X, normal cached L1/L2 gather properties were tested
+on Q2_0 expert kernels. Twelve recorded sets of ten experts used warm weights,
+50 captured repeats and the median of three device-event intervals. Three
+alternating trials gave median sums of `1.870 ms` with default gathers,
+`1.874 ms` with hints on Q8 inputs only, and `1.912 ms` with hints on inputs
+and weights. Every set retained the SPMD/ESIMD output bits. Neither variant
+improved these measurements, so the default gathers were restored.
+
+A separate profile experiment ranked expert pairs from 128 generated tokens
+on each of three prompts: seasons, a community garden, and notebook arithmetic.
+`tools/make_profile.py --no-base` ranked those traces without placing the
+shipped profile first. Story and Python merge-function prompts were withheld.
+With 2,048 fixed per-layer slots, four workers, MTP T=4, probability threshold
+0.5, prefill 16, context 512, direct PLE I/O and adaptive swaps disabled,
+single 128-token trials measured:
+
+| Withheld prompt | Shipped profile, token/s | Trace-ranked profile, token/s |
+| --- | ---: | ---: |
+| Story | 15.50 | 14.31 |
+| Python merge function | 18.78 | 19.79 |
+
+Changing placement changes which experts use GPU Q8_1 arithmetic instead of
+CPU arithmetic. The continuations first differed at output indices 32 and 46;
+these rates therefore include different generated text and MTP acceptance.
+On the story, CPU pool time fell from `52.1` to `43.3 ms/round`, while accepted
+proposals changed from `66/109` to `54/119`. This experiment does not justify a
+default profile change. No output-quality comparison was performed.
+Background workloads were not isolated.
+
+Options, calibration prompts, continuations, an experimental profile and
+individual cache-hint measurements are in
+[`bench/results/2026-10-03-sycl-cache-experiments/`](../bench/results/2026-10-03-sycl-cache-experiments/).
+
 ### Graph submission completion events
 
 The SYCL adapter can bind a disabled-timing event directly to a graph

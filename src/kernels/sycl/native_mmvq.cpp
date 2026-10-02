@@ -888,7 +888,8 @@ void native_mmvq(int type, const void *w, const void *x, float *y, int n_in,
     dispatch<Q3KTraits>(w, x, y, n_in, n_out, ncols, stream);
     break;
   case 12:
-    if (!iq_old_kernels() && ncols == 1) {
+    if (!iq_old_kernels() &&
+        (ncols == 1 || multi_exact.load(std::memory_order_relaxed))) {
       native_q4_k_esimd(w, x, y, n_in, n_out, ncols, stream);
       break;
     }
