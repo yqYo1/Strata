@@ -614,6 +614,51 @@ Results and individual projection intervals are recorded in
 `bench/results/2026-10-03-sycl-q3-esimd/`. The approximately `29 tok/s` reference
 target remains open. This change has no measured MTP speed result.
 
+### Q2_0 resident expert ESIMD path
+
+Native Q2_0 projections now unpack signed codes `-1, 0, 1, 2` into DP4A
+operands in a 16-lane ESIMD kernel. Masked gathers handle partial virtual block
+groups and the 18-byte block stride. The products and original 128 virtual
+lanes retain the SPMD accumulation order. The grouped expert path reads group
+counts, entry ranges, token indices and destinations on the GPU. It preserves
+zero outputs for invalid token rows and leaves inactive groups untouched.
+`STRATA_OLD_IQ_MMVQ=1` selects the original Q2_0 SPMD kernels before capture.
+
+On B570, real inputs from position 18 of a saved arithmetic trace replayed ten
+experts in each of the 48 layers. Full gate/up, activation, hidden quantization
+and down graphs took a median `0.44445 ms` per layer with SPMD and `0.15920 ms`
+with ESIMD (2.79 times faster). All grouped output bits matched. These timings
+use fifty graph repeats and the median of three device-event samples, with
+resident warm weights and input Q8_1 blocks; CPU work, input quantization and
+weight copies are excluded. They are not generation times.
+The 57 isolated dense Q2_0 projections fell from `1.755` to `0.553 ms` in total
+warm-weight intervals measured by `sycl_projection_bench`.
+
+For generation, three alternating before/after pairs used the B570 and Ryzen
+5 5600X, ordinary RAM, four CPU workers, a 37-token writing prompt, 16-token
+prefill chunks and MTP disabled. The 2,048-slot per-layer cache started empty
+and admitted experts until full. Before measured `16.82 / 16.80 / 17.05 tok/s`;
+after measured `19.00 / 18.96 / 18.92 tok/s`. The median increased from `16.82`
+to `18.96 tok/s` (12.7%). All six processes generated the same 128 IDs and had
+`30429 / 61440` GPU-cache hits (49.53%). The background load was not isolated.
+
+Separate 32-row comparisons with an empty cache and with the static profile
+were bitwise equal to their respective before runs over all 248,320 logits.
+A 165-row fixed-input comparison with the profile was also bitwise equal.
+`sycl_mmvq_test` passed changing columns, signed-zero/subnormal/negative FP16
+scales, 640/2560/6144-wide row tails, original/new grouped paths, invalid token
+rows, empty groups and buffer guards. Three-column checks of the first, middle
+and last rows of 448 real GGUF tensors also passed. The optional
+`sycl_expert_contract PACK SHARD1 TRACE FIRST COUNT --bench` records the two
+GPU timings and requires exact SPMD/ESIMD grouped output bits in addition to
+its independent Q8_1 and CPU references.
+
+The options, trace hash and per-layer/matrix results are in
+`bench/results/2026-10-03-sycl-q2-esimd/`. The writing run is truncated at 128
+tokens. These results do not establish MTP throughput; its multiple-entry
+weight reuse remains a separate measurement. The approximately `29 tok/s`
+reference target is still open.
+
 ### Event-completed speculative windows
 
 SYCL verification captures the window in segments. The first segment embeds

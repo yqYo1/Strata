@@ -33,6 +33,11 @@
 namespace strata::kernels {
 void native_q5_head_esimd(const void *, const void *, float *, int, int, void *);
 void native_q3_k_esimd(const void *, const void *, float *, int, int, int, void *);
+void native_q2_0_esimd(const void *, const void *, float *, int, int, int, void *);
+void native_q2_grouped_esimd(bool, const NativeExpertLayout &,
+                            const unsigned long long *, const int32_t *,
+                            const int32_t *, const int32_t *, const int32_t *,
+                            int, int, const void *, float *, float *, float *, void *);
 namespace {
 using namespace sycl_backend;
 // On-disk half values are read through the shared bit converter, including
@@ -779,7 +784,15 @@ void grouped_dispatch(int type, const NativeExpertLayout &L,
     GROUPED(14, Q6KTraits);
     GROUPED(20, SmallTraits<IQ4NLBlock, 4>);
     GROUPED(23, IQ4XSTraits);
-    GROUPED(42, Q20Traits);
+    case 42:
+      if (iq_old_kernels())
+        grouped_projection<Q20Traits, Down>(L, ptr, start, count, dst, tok,
+                                              groups, entries, x, gate, up,
+                                              out, tile, q);
+      else
+        native_q2_grouped_esimd(Down, L, ptr, start, count, dst, tok, groups,
+                                entries, x, gate, up, out, &q);
+      break;
   }
 #undef GROUPED
 }
@@ -893,6 +906,11 @@ void native_mmvq(int type, const void *w, const void *x, float *y, int n_in,
     dispatch<IQ4XSTraits>(w, x, y, n_in, n_out, ncols, stream);
     break;
   case 42:
+    if (!iq_old_kernels() &&
+        (ncols == 1 || multi_exact.load(std::memory_order_relaxed))) {
+      native_q2_0_esimd(w, x, y, n_in, n_out, ncols, stream);
+      break;
+    }
     dispatch<Q20Traits>(w, x, y, n_in, n_out, ncols, stream);
     break;
   }
