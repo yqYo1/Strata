@@ -12,10 +12,14 @@ struct Span {
   size_t bytes;
 };
 inline void validate_spans(std::initializer_list<Span> outputs,
-                           std::initializer_list<Span> inputs) {
-  auto valid = [](Span span) {
+                           std::initializer_list<Span> inputs,
+                           size_t alignment = 4) {
+  if (alignment == 0 || (alignment & (alignment - 1)))
+    throw std::invalid_argument("invalid SYCL span alignment");
+  auto valid = [alignment](Span span) {
     const auto address = reinterpret_cast<uintptr_t>(span.pointer);
-    if (!span.pointer || address % 4 || span.bytes > UINTPTR_MAX - address)
+    if (!span.pointer || address % alignment ||
+        span.bytes > UINTPTR_MAX - address)
       throw std::invalid_argument("SYCL kernel requires aligned nonnull spans");
   };
   auto disjoint = [](Span a, Span b) {

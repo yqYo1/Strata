@@ -14,7 +14,7 @@ source /opt/intel/oneapi/setvars.sh
 export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
 cmake -S . -B build-sycl -DCMAKE_CXX_COMPILER=icpx \
   -DSTRATA_ENABLE_SYCL=ON -DSTRATA_NATIVE_EXPERTS=OFF -DSTRATA_BUILD_TESTS=OFF
-cmake --build build-sycl --target strata-device sycl_host_engine_test sycl_compat_test sycl_runtime_test sycl_kernels_test sycl_gdn_test sycl_fused_gdn_test sycl_sampler_test sycl_coupled_sampler_test sycl_quantize_test sycl_bf16_test sycl_mmvq_test sycl_gr_test sycl_rope_test sycl_kv_test sycl_attention_test sycl_qsa_index_test sycl_decode_attention_test sycl_ple_test sycl_moe_test -j2
+cmake --build build-sycl --target strata-device sycl_host_engine_test sycl_compat_test sycl_runtime_test sycl_kernels_test sycl_gdn_test sycl_fused_gdn_test sycl_sampler_test sycl_coupled_sampler_test sycl_sequence_test sycl_quantize_test sycl_bf16_test sycl_mmvq_test sycl_gr_test sycl_rope_test sycl_kv_test sycl_attention_test sycl_qsa_index_test sycl_decode_attention_test sycl_ple_test sycl_moe_test -j2
 ctest --test-dir build-sycl -R '^sycl_' --output-on-failure
 build-sycl/strata-device --list-devices
 ```
@@ -99,6 +99,15 @@ settings; see the research document for the machine configuration:
 - Packed 2/4/8-bit embedding gathers, expert row exclusion and event-completed
   payload publication: passed. GPU polling for CPU-written flags is explicitly
   rejected; the scheduler must use events.
+- Sequence helpers: device position/window records, token maps, residual
+  selection, broadcasts, conditional copies, unaligned byte-row gathers,
+  bounded blob fetches, pointer rebasing, all-resident expert plans, selected
+  token probabilities and 2/4/8-bit embedding gathers passed CPU/layout checks.
+  Tests cover duplicate experts, nonresident fallback, invalid negative indices,
+  uninitialized output tails and buffer guards. APIs without source capacities
+  retain the caller's obligation to provide valid positive indices and extents.
+  Mapped-flag waits and device global-timer stamps explicitly reject use;
+  completion and timing use SYCL events outside captured polling paths.
 - Sampling: the existing sampler parity suite passed, including the full
   248,320-token vocabulary, all 64 shortlist positions under ties, signed
   zeros/NaNs/infinities, penalties, filter ordering, counter segmentation and
