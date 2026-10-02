@@ -26,12 +26,17 @@ def main():
     parser.add_argument('reference')
     parser.add_argument('candidate')
     parser.add_argument('--rows', type=int, help='explicitly compare only this common prefix')
+    parser.add_argument('--reference-start', type=int, default=0, help='skip reference rows explicitly')
+    parser.add_argument('--candidate-start', type=int, default=0, help='skip candidate rows explicitly')
     parser.add_argument('--require-exact', action='store_true')
     args = parser.parse_args()
     try:
         a, b = read(args.reference), read(args.candidate)
         if a.shape[1] != b.shape[1]:
             raise ValueError('vocabulary sizes differ')
+        if not 0 <= args.reference_start < a.shape[0] or not 0 <= args.candidate_start < b.shape[0]:
+            raise ValueError('starting row is outside the dumps')
+        a, b = a[args.reference_start:], b[args.candidate_start:]
         if args.rows is not None:
             if args.rows <= 0 or args.rows > min(a.shape[0], b.shape[0]):
                 raise ValueError('requested prefix is outside the dumps')
@@ -47,6 +52,7 @@ def main():
         cosine = (a * b).sum(axis=1) / norm
         rmse = np.sqrt(((a - b) ** 2).mean(axis=1))
         print(json.dumps({
+            'reference_start': args.reference_start, 'candidate_start': args.candidate_start,
             'rows': a.shape[0], 'vocabulary': a.shape[1], 'bitwise_equal': exact,
             'top1_matches': int((pred_a == pred_b).sum()),
             'top1_mismatch_positions': np.flatnonzero(pred_a != pred_b).tolist(),

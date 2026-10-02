@@ -2,8 +2,8 @@
 
 The backend is under development. The runtime and device arena run on Intel Arc
 B570; the SYCL build runs short native-pack decode with CPU experts.
-Layer/logit agreement with an independent model oracle and inference performance
-have not yet been validated.
+Short-prompt logits have been compared with a CPU model reference, as recorded
+below. Broad quality validation and the target inference performance remain open.
 The implementation follows [the port research](SYCL_RESEARCH.md) and
 [the operation inventory](SYCL_BATTLEMAGE_OPERATIONS.md).
 
@@ -482,3 +482,26 @@ streaming 4,248 experts; eight output tokens took 1250.2 ms (6.40 tok/s).
 Their ids matched the sequential run, starting with 19 (`4`). These are one
 short-run measurements on the B570, with filesystem cache state uncontrolled;
 they are not a steady-state throughput result or a broad quality evaluation.
+
+
+Logits dumps now finalize their row count from rows actually written. Batched
+conditioning positions are omitted; `--stop-eos` can shorten the file further.
+An unfinished file keeps a zero row count and is rejected by the comparison
+tool. On this chat, full batched generation wrote eight rows, EOS stopping wrote
+two, and `--prefill-until 10 --max-new 1 --logits-stride 7` wrote three rows
+(positions 14, 21 and 24). Exact file sizes and finite values were checked.
+
+To compare the eight generated positions with the sequential dump:
+
+```sh
+python tools/sycl/compare_logits.py sequential.bin batched.bin --reference-start 24
+```
+
+All eight argmax ids matched. The minimum cosine was 0.964518, maximum per-row
+RMSE 0.500223, and maximum absolute logit difference 2.771040. The first answer
+position compared with the CPU reference had cosine 0.994826, RMSE 0.196610,
+and maximum absolute difference 1.154035; both predicted `4`. EOS stopping's
+two rows were bitwise equal to the corresponding prefix of the eight-row run.
+These are limited checks, not numerical equivalence or a broad quality gate.
+[The prefill records](../bench/results/2026-10-02-sycl-prefill/run.json) include
+prompt ids, options, dump sizes and hashes, and the complete comparison reports.

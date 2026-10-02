@@ -246,6 +246,7 @@ struct Options {
     /// candidate VRAM expert cache is computed from, and it needs no new kernels - the doorbell already
     /// publishes exactly this much to pinned memory.
     std::string dump_routing;
+    std::string dump_expert_inputs; // per-layer diagnostic: ids, weights and the actual normalized input
     bool no_capture = false;          // run the layers directly instead of replaying graphs
     bool no_pool = false;             // skip the CPU expert pool: the GPU-only floor
     bool sync_every_layer = false;
@@ -510,6 +511,7 @@ void usage() {
                  "  --dump-layers PATH   write R after EVERY layer, per position: the C1 bisection ladder\n"
                  "  --dump-halves PATH   write both halves' block_out and inject per layer: the half bisection\n"
                  "  --dump-routing PATH  write the routed expert ids and weights per layer per position (P0.S8)\n"
+                 "  --dump-expert-inputs PATH  diagnostic per-layer expert inputs (plain captured decode only)\n"
                  "  --no-capture         run the layers directly instead of replaying graphs\n"
                  "  --shared-late        A/B: shared expert after the CPU pool (default: overlapped with it)\n"
                  "  --keep-canonical     A/B: also load canonical copies of natively served tensors (more VRAM)\n"
@@ -640,12 +642,39 @@ struct Drive {
     /// needs no locking.  `d.layers` is the CURRENT layer on entry (the adapter increments it as it walks the
     /// blob), which is why the layer index comes from there rather than from a counter of our own.
     std::FILE* routing = nullptr;
+    std::FILE* expert_inputs = nullptr;
 };
 
 void drive_pool(void* user, const float* x_f, const int32_t* ids, const float* weights, int64_t n_embd, int64_t k,
                 float* out) {
     Drive* t = (Drive*) user;
     const Clock::time_point a = Clock::now();
+    if (t->expert_inputs != nullptr) {
+        // This callback follows graph completion on SYCL. Validate that the
+        // cache and CPU pool see precisely the same activation before tracing.
+        if (t->d.mixed != nullptr) {
+            std::vector<float> gpu_input((size_t) n_embd);
+            if (cudaMemcpy(gpu_input.data(), t->d.mixed, (size_t) n_embd * sizeof(float),
+                           cudaMemcpyDeviceToHost) != cudaSuccess ||
+                std::memcmp(gpu_input.data(), x_f, (size_t) n_embd * sizeof(float)) != 0) {
+                t->d.failed = true;
+                t->d.fail = "expert trace: CPU/GPU normalized inputs differ or readback failed";
+                t->d.fail_layer = t->d.layers;
+                return;
+            }
+        }
+        // Little-endian host records: int32 layer,width,k; ids[k], weights[k], x[width].
+        const int32_t header[3] = {(int32_t) t->d.layers, (int32_t) n_embd, (int32_t) k};
+        if (std::fwrite(header, sizeof(int32_t), 3, t->expert_inputs) != 3 ||
+            std::fwrite(ids, sizeof(int32_t), (size_t) k, t->expert_inputs) != (size_t) k ||
+            std::fwrite(weights, sizeof(float), (size_t) k, t->expert_inputs) != (size_t) k ||
+            std::fwrite(x_f, sizeof(float), (size_t) n_embd, t->expert_inputs) != (size_t) n_embd) {
+            t->d.failed = true;
+            t->d.fail = "expert input trace write failed";
+            t->d.fail_layer = t->d.layers;
+            return;
+        }
+    }
     strata::core::expert_pool_dispatch(&t->d, x_f, ids, weights, n_embd, k, out);
     t->cpu_ms += std::chrono::duration<double, std::milli>(Clock::now() - a).count();
     ++t->calls;
@@ -1139,6 +1168,7 @@ int main(int argc, char** argv) {
         else if (a == "--dump-layers") o.dump_layers = next("--dump-layers");
         else if (a == "--dump-halves") o.dump_halves = next("--dump-halves");
         else if (a == "--dump-routing") o.dump_routing = next("--dump-routing");
+        else if (a == "--dump-expert-inputs") o.dump_expert_inputs = next("--dump-expert-inputs");
         else if (a == "--ple-gguf") o.ple_gguf = next("--ple-gguf");
         else if (a == "--no-ple") o.no_ple = true;
         else if (a == "--ple-io") o.ple_io = next("--ple-io");
@@ -3427,6 +3457,18 @@ int main(int argc, char** argv) {
         }
         drive.routing = routing;
     }
+    if (!o.dump_expert_inputs.empty()) {
+        if (o.no_pool || o.no_capture || o.spec != 0 || o.prefill_chunk != 0 || o.serve || multi_gpu) {
+            std::fprintf(stderr, "strata generate: --dump-expert-inputs requires plain captured per-layer decode "
+                                 "with the CPU pool, without batched prefill or serve mode\n");
+            return 2;
+        }
+        drive.expert_inputs = std::fopen(o.dump_expert_inputs.c_str(), "wb");
+        if (drive.expert_inputs == nullptr) {
+            std::fprintf(stderr, "strata generate: cannot open expert input trace %s\n", o.dump_expert_inputs.c_str());
+            return 1;
+        }
+    }
     strata::core::PoolFn pool_fn = o.no_pool ? nullptr : &drive_pool;
     // The hit hook rides the same switch as the pool: with no pool there is no `parts` staging to
     // write into, and a hit path with nowhere to write is a wrong token rather than an error.
@@ -3564,6 +3606,7 @@ int main(int argc, char** argv) {
     // per-token dump site, and a header promising rows that were never written is worse than no file.
     int32_t hdr[2] = {0, 0};
     bool hdr_written = false;
+    int32_t dump_rows_written = 0;
     const int64_t dump_positions = (int64_t) o.tokens.size() - 1 + o.max_new;
     if (!o.dump_logits.empty()) {
         if (dump_positions > INT32_MAX || n_vocab > INT32_MAX) {
@@ -3575,15 +3618,9 @@ int main(int argc, char** argv) {
             std::fprintf(stderr, "strata generate: cannot write %s\n", o.dump_logits.c_str());
             return 1;
         }
-        // **THE COUNT IS `n_prompt - 1 + max_new`, NOT `n_prompt + max_new`.**  The loop writes one row per
-        // position from 0, and it stops once `produced` holds `max_new` tokens - and `produced` only starts
-        // receiving at position `n_prompt - 1`.  So a 5-token prompt with `--max-new 6` writes 10 rows, and the
-        // header used to claim 11.  A header that describes a different file from the one written is the same
-        // class of defect as a self-check that verifies the wrong invariant: anything reading the count instead
-        // of the size gets a wrong answer that looks authoritative.  `tools/logits_identical.py` caught it by
-        // parsing the header and refusing the file.
-        const int32_t n_rows = (int32_t) strata::program::logits_selection::row_count(dump_positions, o.logits_stride);
-        hdr[0] = n_vocab; hdr[1] = n_rows;
+        // Finalize the actual row count after generation: prefill and EOS can
+        // reduce the number of emitted rows. Write the header with the first row.
+        hdr[0] = n_vocab; hdr[1] = 0;
     }
 
     // ---- THE C1 ORACLE: ONE RESIDUAL SNAPSHOT PER LAYER PER POSITION, so the engine can be bisected against
@@ -6313,6 +6350,7 @@ int main(int argc, char** argv) {
             std::fclose(dump);
             return 1;
         }
+        if (emit_logits) ++dump_rows_written;
         {
             // **993 KB OF SYNCHRONOUS D2H AND A 248,320-FLOAT HOST SCAN, EVERY TOKEN.**  (The review's notes
             // say 151,936 floats; the artifact's `output.weight` is 248,320 rows, so the real figure is 1.6x
@@ -6752,9 +6790,16 @@ int main(int argc, char** argv) {
                         (double) mtp.vram_bytes() / 1048576.0);
     }
 
-    if (dump != nullptr && std::fclose(dump) != 0) {
-        std::fprintf(stderr, "strata generate: cannot finish logits dump\n");
-        return 1;
+    if (dump != nullptr) {
+        const bool header_ok = std::fseek(dump, sizeof(int32_t), SEEK_SET) == 0 &&
+            std::fwrite(&dump_rows_written, sizeof(dump_rows_written), 1, dump) == 1;
+        const bool close_ok = std::fclose(dump) == 0;
+        if (!header_ok || !close_ok) {
+            std::fprintf(stderr, "strata generate: cannot finish logits dump\n");
+            return 1;
+        }
+        std::fprintf(stderr, "strata generate: logits dump: %d rows, positions from %lld, stride %lld\n",
+                     dump_rows_written, (long long) pos_start, (long long) o.logits_stride);
     }
     if (layer_dump != nullptr) {
         std::fclose(layer_dump);
@@ -6773,6 +6818,15 @@ int main(int argc, char** argv) {
         drive.routing = nullptr;
         std::printf("%-24s %s (%lld records of layer, k, ids, weights)\n", "routing dumped",
                     o.dump_routing.c_str(), (long long) drive.calls);
+    }
+    if (drive.expert_inputs != nullptr) {
+        if (std::fclose(drive.expert_inputs) != 0) {
+            std::fprintf(stderr, "strata generate: cannot finish expert input trace\n");
+            return 1;
+        }
+        drive.expert_inputs = nullptr;
+        std::printf("%-24s %s (%lld layer records)\n", "expert inputs dumped",
+                    o.dump_expert_inputs.c_str(), (long long) drive.calls);
     }
     if (o.stage_timing) strata::core::stage_timing_report(g.n_layers);
 
