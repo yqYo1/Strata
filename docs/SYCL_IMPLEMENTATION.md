@@ -14,7 +14,7 @@ source /opt/intel/oneapi/setvars.sh
 export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
 cmake -S . -B build-sycl -DCMAKE_CXX_COMPILER=icpx \
   -DSTRATA_ENABLE_SYCL=ON -DSTRATA_NATIVE_EXPERTS=OFF -DSTRATA_BUILD_TESTS=OFF
-cmake --build build-sycl --target strata-device sycl_runtime_test sycl_kernels_test sycl_gdn_test sycl_quantize_test sycl_bf16_test sycl_mmvq_test -j2
+cmake --build build-sycl --target strata-device sycl_runtime_test sycl_kernels_test sycl_gdn_test sycl_quantize_test sycl_bf16_test sycl_mmvq_test sycl_gr_test -j2
 ctest --test-dir build-sycl -R '^sycl_' --output-on-failure
 build-sycl/strata-device --list-devices
 ```
@@ -93,6 +93,11 @@ settings; see the research document for the machine configuration:
   including odd reduction widths and split sizes 1 through 256, passed the
   double-precision reference and canary checks.
 
+- Composed gated residual: twelve layer/head cases passed CPU references,
+  including the real 2,560-wide, four-stream, rank-320 geometry in BF16,
+  FP32 and native MMVF modes. Checks include per-stream normalization,
+  activation rounding, all projections, absent head injection, saturated/zero
+  gates, exact in-place writes, workspace sizing and output canaries.
 - Native Q8_1 and MMVQ for Q2_0, Q4_0, Q5_0, Q8_0, Q3_K, Q4_K, Q5_K,
   Q6_K, IQ4_NL and IQ4_XS: 150 synthetic cases passed, including small/large
   reduction widths, row tails, 1/3/8 columns and both multi-column layouts.

@@ -7,7 +7,8 @@ namespace strata::kernels {
 // selects the default stream. Positive dimensions with n*hc <= INT_MAX, finite
 // values/intermediates, and four-byte alignment are required.
 // Buffers must not overlap except the explicitly in-place arguments below.
-// Implementation compiles separately with --use_fast_math.
+// CUDA implementation compiles separately with --use_fast_math.
+// SYCL uses an in-order queue pointer; null selects device 0 and waits.
 
 // In-place pinned SCALE(1/hc), then SiLU, applied to the raw down projection.
 void native_gr_down_silu(float* lo, int hc_lr, int hc, void* stream);
