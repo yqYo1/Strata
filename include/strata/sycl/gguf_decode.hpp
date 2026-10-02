@@ -1,0 +1,78 @@
+#pragma once
+#include "strata/artifact/dequant.hpp"
+
+namespace strata::sycl_backend {
+struct BlockFormat {
+  int width, bytes;
+};
+inline BlockFormat block_format(int type) {
+  switch (type) {
+  case 2:
+    return {32, 18};
+  case 6:
+    return {32, 22};
+  case 8:
+    return {32, 34};
+  case 11:
+    return {256, 110};
+  case 12:
+    return {256, 144};
+  case 13:
+    return {256, 176};
+  case 14:
+    return {256, 210};
+  case 20:
+    return {32, 18};
+  case 23:
+    return {256, 136};
+  case 30:
+    return {1, 2};
+  case 42:
+    return {64, 18};
+  default:
+    return {0, 0};
+  }
+}
+// Use the repository's scalar GGUF definitions for transfer-time
+// dequantization. Dot-product kernels keep their separate packed arithmetic and
+// are cross-checked against these definitions. This path has no matrix-multiply
+// performance claim.
+inline void decode_block(int type, const uint8_t *src, float *out) {
+  using namespace strata;
+  switch (type) {
+  case 2:
+    dequantize_q4_0(src, out);
+    break;
+  case 6:
+    dequantize_q5_0(src, out);
+    break;
+  case 8:
+    dequantize_q8_0(src, out);
+    break;
+  case 11:
+    dequantize_q3_K(src, out);
+    break;
+  case 12:
+    dequantize_q4_K(src, out);
+    break;
+  case 13:
+    dequantize_q5_K(src, out);
+    break;
+  case 14:
+    dequantize_q6_K(src, out);
+    break;
+  case 20:
+    dequantize_iq4_nl(src, out);
+    break;
+  case 23:
+    dequantize_iq4_xs(src, out);
+    break;
+  case 30:
+    dequantize_bf16(src, out, 1);
+    break;
+  case 42:
+    dequantize_q2_0(src, out);
+    break;
+  }
+}
+} // namespace strata::sycl_backend

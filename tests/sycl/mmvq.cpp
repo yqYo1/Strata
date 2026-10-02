@@ -1,4 +1,5 @@
 #include "strata/artifact/dequant.hpp"
+#include "strata/kernels/iq_kernels.hpp"
 #include "strata/kernels/native_mmvq.hpp"
 #include "strata/sycl/runtime.hpp"
 #include <algorithm>
@@ -84,6 +85,9 @@ void decode(int type, const uint8_t *p, float *out) {
   case 23:
     dequantize_iq4_xs(p, out);
     break;
+  case 30:
+    dequantize_bf16(p, out, 1);
+    break;
   case 42:
     dequantize_q2_0(p, out);
     break;
@@ -134,6 +138,134 @@ std::vector<uint8_t> quantize(const std::vector<float> &x) {
     }
   }
   return out;
+}
+void grouped(Format f, int n, int ff) {
+  constexpr int G = 3, E = 15, T = 3;
+  const auto L = native_expert_layout(f.type, f.type, n, ff);
+  const auto gw = weights(f, n, ff), dw = weights(f, ff, n);
+  std::vector<uint8_t> blob(L.bytes), other(L.bytes);
+  std::copy(gw.begin(), gw.end(), blob.begin());
+  for (int row = 0; row < ff; ++row)
+    std::copy_n(gw.begin() + size_t(ff - 1 - row) * L.gu_row, L.gu_row,
+                blob.begin() + L.up_off + size_t(row) * L.gu_row);
+  std::copy(dw.begin(), dw.end(), blob.begin() + L.down_off);
+  std::copy(blob.begin() + L.up_off, blob.begin() + L.down_off, other.begin());
+  std::copy(blob.begin(), blob.begin() + L.up_off, other.begin() + L.up_off);
+  for (int row = 0; row < n; ++row)
+    std::copy_n(dw.begin() + size_t(n - 1 - row) * L.d_row, L.d_row,
+                other.begin() + L.down_off + size_t(row) * L.d_row);
+  Buffer<uint8_t> b0(L.bytes);
+  sycl_backend::Allocation b1(runtime, L.bytes, sycl_backend::MemoryKind::Host);
+  b0.upload(blob);
+  std::memcpy(b1.data(), other.data(), other.size());
+  Buffer<unsigned long long> pointers(G);
+  pointers.upload({reinterpret_cast<unsigned long long>(b0.data()),
+                   reinterpret_cast<unsigned long long>(b1.data()), 0});
+  Buffer<int32_t> starts(G + 1), count(1), dst(E), token(E);
+  starts.upload({0, 2, 13, 13});
+  count.upload({2});
+  std::vector<int32_t> destinations(E, -1), tokens(E, -1);
+  for (int e = 0; e < 13; ++e) {
+    destinations[e] = (e * 7) % E;
+    tokens[e] = e % T;
+  }
+  dst.upload(destinations);
+  token.upload(tokens);
+  std::vector<float> inputs(T * n);
+  for (size_t i = 0; i < inputs.size(); ++i)
+    inputs[i] = float(std::sin(i * .139) + .03 * std::cos(i * .071));
+  Buffer<float> input(inputs.size());
+  input.upload(inputs);
+  Buffer<uint8_t> xq(native_q8_1_bytes(n, T)),
+      scratch(native_expert_scratch_bytes(E, ff) + 16),
+      hq(native_q8_1_bytes(ff));
+  Buffer<float> output(size_t(E) * n + 1), gate(ff), up(ff), h(ff), one(n);
+  auto *q = &runtime->compute();
+  native_quantize_q8_1(input.data(), xq.data(), n, T, q);
+  std::vector<float> expected(size_t(E) * n + 1, -777);
+  for (int entry = 0; entry < 13; ++entry) {
+    auto p = entry < 2 ? b0.data() : b1.as<uint8_t>();
+    auto x = xq.data() + size_t(tokens[entry]) * native_q8_1_bytes(n);
+    native_mmvq(f.type, p, x, gate.data(), n, ff, 1, q);
+    native_mmvq(f.type, p + L.up_off, x, up.data(), n, ff, 1, q);
+    auto gp = gate.data(), upp = up.data(), hp = h.data();
+    q->parallel_for(sycl::range<1>(ff), [=](sycl::id<1> i) {
+      const float v = gp[i];
+      hp[i] = (v / (1.f + sycl::exp(-v))) * upp[i];
+    });
+    native_quantize_q8_1(h.data(), hq.data(), ff, 1, q);
+    native_mmvq(f.type, p + L.down_off, hq.data(), one.data(), ff, n, 1, q);
+    const auto ref = one.read();
+    std::copy(ref.begin(), ref.end(),
+              expected.begin() + size_t(destinations[entry]) * n);
+  }
+  for (bool old : {false, true}) {
+    iq_set_old_kernels(old);
+    output.upload(std::vector<float>(size_t(E) * n + 1, -777));
+    scratch.upload(std::vector<uint8_t>(scratch.count, 0x9a));
+    native_expert_grouped(L, pointers.data(), starts.data(), count.data(),
+                          dst.data(), token.data(), G, E, xq.data(),
+                          scratch.data(), output.data(), q);
+    check(output.read() == expected,
+          "native grouped expert differs from separate projections");
+    const auto guard = scratch.read();
+    check(std::all_of(guard.end() - 16, guard.end(),
+                      [](uint8_t v) { return v == 0x9a; }),
+          "group scratch canary");
+  }
+  count.upload({0});
+  output.upload(std::vector<float>(size_t(E) * n + 1, -777));
+  native_expert_grouped(L, pointers.data(), starts.data(), count.data(),
+                        dst.data(), token.data(), G, E, xq.data(),
+                        scratch.data(), output.data(), nullptr);
+  const auto empty = output.read();
+  check(std::all_of(empty.begin(), empty.end(),
+                    [](float v) { return v == -777; }),
+        "zero group count wrote output");
+  iq_set_old_kernels(false);
+  std::cout << "native grouped type " << f.type << " " << n << "x" << ff
+            << " passed both entry tiles\n";
+}
+void transfers(Format f) {
+  constexpr int N = 256, R = 4;
+  const auto w = weights(f, N, R);
+  std::vector<float> reference(N * R);
+  for (int i = 0; i < N * R / f.width; ++i)
+    decode(f.type, w.data() + size_t(i) * f.bytes,
+           reference.data() + i * f.width);
+  Buffer<uint8_t> packed(w.size());
+  packed.upload(w);
+  Buffer<float> out(N * R + 1), gathered(N * 3 + 1);
+  Buffer<uint16_t> halfout(N * R + 2), interleaved(N * R * 2 + 2);
+  Buffer<int32_t> ids(3);
+  ids.upload({3, 0, 1});
+  out.upload(std::vector<float>(out.count, -77));
+  halfout.upload(std::vector<uint16_t>(halfout.count, 0x1234));
+  interleaved.upload(std::vector<uint16_t>(interleaved.count, 0x1234));
+  gathered.upload(std::vector<float>(gathered.count, -77));
+  iq_dequant_f32(f.type, packed.data(), N * R, out.data(), nullptr);
+  iq_dequant_f16(f.type, packed.data(), N * R, halfout.data(), nullptr);
+  iq_dequant_gu_f16(f.type, packed.data(), packed.data(), R, N,
+                    interleaved.data(), nullptr);
+  iq_embed_rows(f.type, packed.data(), iq_row_bytes(f.type, N), ids.data(), 3,
+                N, gathered.data(), nullptr);
+  const auto got = out.read(), emb = gathered.read();
+  const auto f16 = halfout.read(), gu = interleaved.read();
+  for (int i = 0; i < N * R; ++i) {
+    check(got[i] == reference[i], "GGUF f32 transfer");
+    check(f16[i] == half(reference[i]), "GGUF f16 transfer");
+    check(gu[(i / N) * 2 * N + i % N] == half(reference[i]) &&
+              gu[(i / N) * 2 * N + N + i % N] == half(reference[i]),
+          "interleaved GU transfer");
+  }
+  const int rows[3] = {3, 0, 1};
+  for (int t = 0; t < 3; ++t)
+    for (int i = 0; i < N; ++i)
+      check(emb[t * N + i] == reference[rows[t] * N + i],
+            "GGUF embedding rows");
+  check(got.back() == -77 && emb.back() == -77 && f16.back() == 0x1234 &&
+            gu.back() == 0x1234,
+        "GGUF transfer canaries");
 }
 size_t tested_cases = 0;
 double max_scaled_error = 0;
@@ -278,6 +410,14 @@ int main(int argc, char **argv) {
   try {
     std::fesetenv(FE_DFL_ENV);
     runtime = sycl_backend::runtime_for();
+    if (argc == 1) {
+      for (auto f : formats) {
+        transfers(f);
+        grouped(f, 256, 256);
+      }
+      grouped(formats[9], 2560, 640);
+      transfers({30, 1, 2, 0});
+    }
     if (argc == 3 && std::string(argv[1]) == "--gguf")
       real_model(argv[2]);
     else if (argc == 1) {

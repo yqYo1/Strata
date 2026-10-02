@@ -177,6 +177,15 @@ settings; see the research document for the machine configuration:
   `abs(error)/(1 + sum(abs(reference terms)))` was `5.099e-8` against scalar
   dequantization and double-precision dot products. The reference includes the
   original-input-sum correction required by affine Q4_0/Q5_0.
+- Native grouped experts: ten format pairs at width 256 and Q2_0 at the
+  real 2,560/640 geometry matched separate quantization/projection/activation
+  calls bit for bit. Tests include repeated tokens, reordered destinations,
+  device and host-USM blobs, groups crossing the eight-entry tile boundary,
+  one-entry tiles, empty counts and scratch/output guards. Transfer-time
+  dequantization, embedding gathers and interleaved gate/up conversion passed
+  layout/rounding checks for these ten formats plus BF16. The dequantizers
+  reuse the repository scalar definitions; this is not an independent check
+  of those definitions. Other IQ1/IQ2/IQ3 formats remain unsupported.
 - Real Q2_0 GGUF: first/middle/last rows from all 448 tensors of those ten
   formats passed with three activation columns. The same normalized maximum
   error was `4.699e-8`. This samples weights, not a forward pass.
