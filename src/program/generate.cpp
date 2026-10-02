@@ -2894,6 +2894,21 @@ int main(int argc, char** argv) {
         std::fprintf(stderr, "strata generate: the logits buffer failed\n");
         return 1;
     }
+    strata::core::SessionGraphs gr;
+#ifdef STRATA_ENABLE_SYCL
+    // Finalizing the ordinary layer graphs consumes device memory on B570.
+    // Include that allocation in the free-memory query used by auto sizing.
+    // These graphs read session buffers and parts, with no cache-slot pointers.
+    if (o.expert_cache < 0 && !o.no_capture && !(native_pack && o.spec >= 2)) {
+        if (!strata::core::session_capture(wt, g, ss, d_parts, gr, err,
+                                          /*split=*/o.gpu_stages, 0,
+                                          multi_gpu ? split_at[0] : -1)) {
+            std::fprintf(stderr, "strata generate: session_capture: %s\n", err.c_str());
+            return 1;
+        }
+        mem_mark("the layer graphs before auto cache sizing");
+    }
+#endif
     const bool auto_cache = o.expert_cache < 0;
     bool reserve_adapted = false;   // #496: the auto sizing lowered the reserve so a small card's cache fits
     if (o.expert_cache < 0) {
@@ -3521,7 +3536,6 @@ int main(int argc, char** argv) {
     // residual chain; the CPU term is answered by Phase 3's VRAM expert cache, not by this pipeline.
 
     // ---- the graphs
-    strata::core::SessionGraphs gr;
     if (!o.no_capture && !(native_pack && o.spec >= 2)) {
         // a layer split's CUDA0 session owns only [0, split_at[0]), so its graphs cover that range; the
         // whole-model replay paths (`session_loop`, the plain generate loop) refuse rather than read another
@@ -6177,6 +6191,7 @@ int main(int argc, char** argv) {
             std::fprintf(stderr, "strata generate: %s\n", err.c_str());
             return 1;
         }
+        mem_mark("the standalone prompt buffers");
         if (!o.mtp.empty()) {
             if (!mtp.bind(wt, &native_head, nullptr, err)) {
                 std::fprintf(stderr, "strata generate: %s\n", err.c_str());
@@ -6195,6 +6210,7 @@ int main(int argc, char** argv) {
             std::fprintf(stderr, "strata generate: %s\n", err.c_str());
             return 1;
         }
+        mem_mark("the standalone prompt execution");
         // refill the lent slots from the arena and give them back to the decode tier
         if (!lent.empty()) {
             const Clock::time_point tr = Clock::now();
@@ -6229,6 +6245,12 @@ int main(int argc, char** argv) {
                      (long long) ps.tokens, (long long) ps.chunks, ps.ms_total,
                      ps.ms_total > 0 ? 1000.0 * (double) ps.tokens / ps.ms_total : 0.0, (long long) ps.experts_streamed,
                      (long long) ps.experts_dma, ps.ms_experts_host, (long long) ps.experts_resident, ps.ms_ple);
+#ifdef STRATA_ENABLE_SYCL
+        // Standalone generation has finished its only prompt. Keep the session
+        // state, and release prompt workspaces before starting token generation.
+        prefill.reset();
+        mem_mark("releasing the standalone prompt buffers");
+#endif
     }
 
     for (int64_t pos = pos_start;; ++pos) {
