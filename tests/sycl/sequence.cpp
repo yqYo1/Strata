@@ -186,6 +186,49 @@ int main() {
     require(tok.get()[0] == 42 && tokout.get()[2] == 42 &&
                 probout.get()[2] == .3f && tokout.get()[3] == -7,
             "draft token selection");
+    check(cudaStreamBeginCapture(st, cudaStreamCaptureModeThreadLocal));
+    mtp_select(r.p, 7, selectids.p, idx.p, r.p, selectids.p, tokout.p, 2, st,
+               selectprobs.p, probout.p);
+    cudaGraph_t select_graph{};
+    cudaGraphExec_t select_exec{};
+    check(cudaStreamEndCapture(st, &select_graph));
+    check(cudaGraphInstantiate(&select_exec, select_graph, 0ull));
+    check(cudaGraphDestroy(select_graph));
+    for (int round = 0; round < 12; ++round) {
+      const int chosen = round % 4 - 1; // negative, self, row one, row two
+      std::vector<float> source(rv);
+      for (auto &v : source) v += round * 3.f;
+      r.put(source);
+      idx.put({chosen});
+      selectids.put({18 + round, 21 + round, 42 + round});
+      tokout.put(std::vector<int>(5, -7));
+      probout.put(std::vector<float>(5, -7));
+      check(cudaGraphLaunch(select_exec, st));
+      check(cudaStreamSynchronize(st));
+      const auto actual = r.get();
+      for (size_t i = 0; i < actual.size(); ++i)
+        require(actual[i] == source[chosen >= 0 && i < 7
+                                        ? size_t(chosen) * 7 + i : i],
+                "captured in-place draft residual, including untouched rows");
+      const auto token_ids = selectids.get(), emitted = tokout.get();
+      const auto probabilities = probout.get();
+      const int expected = chosen < 0 ? -7
+          : std::vector<int>{18, 21, 42}[size_t(chosen)] + round;
+      require(token_ids[0] == (chosen < 0 ? 18 + round : expected) &&
+                  token_ids[1] == 21 + round && token_ids[2] == 42 + round &&
+                  emitted[2] == expected && emitted[1] == -7 && emitted[3] == -7,
+              "captured in-place draft token, including output guards");
+      require(probabilities[2] == (chosen < 0 ? -7.f
+          : std::vector<float>{.1f, .2f, .3f}[size_t(chosen)]) &&
+                  probabilities[1] == -7.f && probabilities[3] == -7.f,
+              "captured draft probability, including output guards");
+    }
+    check(cudaGraphExecDestroy(select_exec));
+    bool partial_rejected = false;
+    try {
+      mtp_select(r.p, 7, selectids.p, idx.p, r.p + 1, tok.p, nullptr, 0, st);
+    } catch (const std::invalid_argument &) { partial_rejected = true; }
+    require(partial_rejected, "partial residual overlap must be rejected");
     B<float> logits(3 * 269), probs(3);
     std::vector<float> l(logits.n);
     for (size_t i = 0; i < l.size(); ++i)

@@ -548,7 +548,7 @@ On the 48-layer model, an unsplit window has 49 segments; `--spec-split` uses
 with its GPU segment. CUDA's device-plan shortcut and global-timer profiler are
 disabled on SYCL. PCIe mode selects explicit DMA, since ordinary host expert
 storage has no mapped device alias. GPU-resident expert arithmetic remains the
-native Q8_1 path. Verification requires a static profile-filled expert cache,
+native Q8_1 path. Verification requires an initially profile-filled expert cache,
 the default fused native kernels, and `--spec T` with T from 2 through 8. A
 multi-token native prompt also needs `--prefill CHUNK`. A one-token native
 prompt now starts verification at position zero; zero previously collided with
@@ -565,7 +565,9 @@ On 2026-10-02, B570/5600X, Q2_0, FP16 KV, context 256, four CPU workers,
 | T=4, every draft deliberately corrupted | 0/93 | 5.47 |
 | T=8, two groups, every third draft corrupted | 16/112 | 4.90 |
 
-These single trials ran on a shared machine. The known-continuation run measures
+These single trials ran on a shared machine. The verifier variants retain the
+default adaptive policy, which updates residency between windows; ordinary
+decode keeps the initial profile placement. The known-continuation run measures
 an artificial drafting case; it includes no MTP prediction cost. The rejection
 runs check GDN commit, indexer-tail restoration and PLE history across changing
 windows. They establish this fixture's output agreement, not bitwise logit
@@ -577,7 +579,52 @@ rounds on alternating queues with external completion events.
 
 Flags, ids and results are in
 [`bench/results/2026-10-02-sycl-verify/run.json`](../bench/results/2026-10-02-sycl-verify/run.json).
-MTP drafting performance still needs a separate measurement.
+
+### MTP drafting on SYCL
+
+MTP catch-up selects an accepted residual and token into the source buffers'
+first row and first id. SYCL's original span validation rejected those exact
+aliases. `mtp_select` now permits them while rejecting partially overlapping
+residual rows. Each lane copies its own residual element, and the sole token
+writer reads the selected token before overwriting the first id. Twelve
+captured replays with changing negative, zero and later row selections passed,
+including untouched-row and output guards.
+
+The MTP assets were fetched as 31 tensor ranges from the pinned checkpoint
+revision `de4b8e4d43b917e7706784d8bb445c9af86a3540`; all 31 passed the fetcher's
+SHA-256 checks. `tools/mtp_pack.py` and `tools/mtp_rt.py` produced the canonical
+Q2_0 expert blobs and Q8_0 draft projections. The CJK-inclusive draft subset
+contains 106,299 ids. On B570, the runtime reported about 968 MiB of MTP VRAM,
+including the 178.4 MiB draft head.
+
+The same 37-token story prompt was measured with 128 generated tokens,
+context 512, FP16 KV, four CPU workers, 2,048 profile-filled cache slots,
+resident RAM experts, prefill chunks of 16 and suffix drafting disabled:
+
+| Run | Drafts accepted | Tokens/round | Generated token/s |
+| --- | ---: | ---: | ---: |
+| Ordinary decode | n/a | n/a | 14.44 |
+| MTP T=4, adaptive swaps | 64/192 | 1.98 | 10.28 |
+| MTP T=4, swaps disabled | 70/177 | 2.17 | 10.69 |
+| MTP T=4, swaps disabled, probability threshold 0.5 | 66/109 | 2.05 | 13.12 |
+
+Both fixed-placement MTP runs produced exactly the ordinary run's 128 ids.
+Threshold 0.5 exercised T=1,2,3,4 windows in 13,14,13,23 rounds respectively.
+The adaptive run moved 1,536 experts and first differed at output index 60;
+output agreement here is limited to fixed placement. These are single trials
+on a shared machine. Generation wall time includes first-use graph preparation;
+the phase timer for MTP drafting starts after round-graph capture. MTP remains
+slower than ordinary decode on this fixture, and the NVIDIA comparison target
+has not been reached.
+
+A persistent `--serve` engine accepted two identical requests, generated the
+same eight ids twice, reused 30 of 37 prompt tokens on the second request and
+exited successfully after `QUIT`. In a separate process, `STOP` after the first
+emitted token cancelled a request for 128 tokens; the next request produced the
+same eight reference ids and the engine exited successfully. This tests the engine stdin protocol; Python
+HTTP endpoints have not been tested by this probe. Flags, outputs, source and
+runtime artifact hashes are in
+[`bench/results/2026-10-02-sycl-mtp/run.json`](../bench/results/2026-10-02-sycl-mtp/run.json).
 
 ### Native Q2 CPU-order diagnostic
 

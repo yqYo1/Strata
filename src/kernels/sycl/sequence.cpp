@@ -160,24 +160,40 @@ void mtp_select(const float *src, int64_t stride, const int32_t *ids,
                 int j, void *stream, const float *probs, float *outp) {
   require(stride > 0 && j >= 0 && j < INT32_MAX);
   const auto bytes = count(stride) * 4;
-  validate_spans({{dst, bytes}, {tok, 4}}, {{src, bytes}, {ids, 4}, {row, 4}});
-  if (out)
-    validate_spans({{dst, bytes}, {tok, 4}, {out, size_t(j + 1) * 4}},
-                   {{src, bytes}, {ids, 4}, {row, 4}});
-  if (probs && outp)
-    validate_spans({{outp, size_t(j + 1) * 4}, {dst, bytes}, {tok, 4}},
-                   {{probs, 4}, {src, bytes}, {ids, 4}, {row, 4}});
+  Span writes[4] = {{dst, bytes}, {tok, 4}};
+  Span reads[4] = {{src, bytes}, {ids, 4}, {row, 4}};
+  int nw = 2, nr = 3;
+  if (out) writes[nw++] = {out, size_t(j + 1) * 4};
+  if (probs && outp) {
+    writes[nw++] = {outp, size_t(j + 1) * 4};
+    reads[nr++] = {probs, 4};
+  }
+  for (int i = 0; i < nr; ++i) validate_spans({}, {reads[i]});
+  for (int i = 0; i < nw; ++i) {
+    validate_spans({writes[i]}, {});
+    for (int k = 0; k < i; ++k) validate_spans({writes[i]}, {writes[k]});
+    for (int k = 0; k < nr; ++k) {
+      // The catch-up graph selects a row into the same buffer's first row.
+      // Row zero is an elementwise self-copy; later rows are disjoint. The
+      // token source may likewise be selected into ids[0] by the sole writer.
+      if ((i == 0 && k == 0 && dst == src) ||
+          (i == 1 && k == 1 && tok == ids)) continue;
+      validate_spans({writes[i]}, {reads[k]});
+    }
+  }
   for_each(stride, stream, [=](size_t i) {
     const int r = *row;
     if (r < 0)
       return;
     dst[i] = src[size_t(r) * stride + i];
     if (!i) {
-      *tok = ids[r];
+      const int32_t token = ids[r];
+      const float probability = probs && outp ? probs[r] : 0.f;
+      *tok = token;
       if (out)
-        out[j] = ids[r];
+        out[j] = token;
       if (probs && outp)
-        outp[j] = probs[r];
+        outp[j] = probability;
     }
   });
 }
