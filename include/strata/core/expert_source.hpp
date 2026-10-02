@@ -263,7 +263,7 @@ struct ExpertDispatch {
     float* hit_out = nullptr;
     int64_t parts_elems = 0;               ///< `K * n_embd`, the length of both buffers
     const float* mixed = nullptr;          ///< the layer's normed activation, for the hit kernel's Q8_0
-    uint8_t* x_q8_0_hit = nullptr;         ///< `(n_embd/32) * 34` bytes, its own buffer
+    uint8_t* x_q8_0_hit = nullptr;         ///< `(n_embd/32) * 34` bytes; native hits use 36-byte Q8_1 blocks
     /// **R4.2h: THE CPU's fp32 ACTIVATION SCALES, `(n_embd/32)` FLOATS.**  Without them the GPU's hits are
     /// computed with the `block_q8_0`'s fp16 `d` while the CPU's misses use the fp32 `ActQ::scale`
     /// (`cpu/expert.cpp:92`) - **4.761e-04 relative on 80 of 80 chunks**, measured with both real
@@ -273,6 +273,13 @@ struct ExpertDispatch {
     int32_t* d_slot = nullptr;             ///< device, K entries
     int32_t* d_dst = nullptr;              ///< device, K entries
     std::vector<int32_t> h_slot, h_dst;    ///< host staging, sized at session setup
+    // Native per-layer hits: one group per routed hit. Metadata owns its
+    // storage for the session; no allocation is needed between layer graphs.
+    bool hit_native = false;
+    unsigned long long* native_hit_ptr = nullptr;
+    int32_t* native_hit_meta = nullptr;  ///< [start(cap+1), tok(cap), count]
+    std::vector<unsigned long long> h_native_hit_ptr;
+    std::vector<int32_t> h_native_hit_meta;
     /// **PER ROUTER INDEX, DECIDED IN `Launch` AND CONSUMED BY THE POOL.**  The two callbacks share it
     /// so the decision is made exactly once, on this layer's ids, and neither side can re-decide it.
     std::vector<uint8_t> is_hit;
@@ -314,7 +321,8 @@ struct ExpertDispatch {
     bool hits_ready() const {
         return cache != nullptr && cache_base != nullptr && parts_out != nullptr && hit_out != nullptr &&
                mixed != nullptr &&
-               hit_scratch != nullptr && x_q8_0_hit != nullptr && x_q8_0_hit_scale != nullptr && d_slot != nullptr && d_dst != nullptr;
+               hit_scratch != nullptr && x_q8_0_hit != nullptr && x_q8_0_hit_scale != nullptr && d_slot != nullptr && d_dst != nullptr &&
+               (!hit_native || (native_hit_ptr != nullptr && native_hit_meta != nullptr));
     }
 
     std::vector<strata::kernels::cpu::ExpertJob> jobs;
@@ -355,15 +363,16 @@ struct ExpertDispatch {
 };
 
 /// `strata::core::PoolFn`, exactly.  Silent on failure BY SIGNATURE - see `ExpertDispatch::fail`.
-/// Native packs use a one-token native row-split batch; GPU hit hooks are not supported on this path.
+/// Native packs use a one-token native row-split batch and consume the native GPU hit hook's decisions.
 void expert_pool_dispatch(void* user, const float* x_f, const int32_t* ids, const float* weights, int64_t n_embd,
                           int64_t k, float* out);
 
 /// Plan v0.3 P6: the pool for a verify window of `n_tok` tokens.  `x_f` is (n_tok, n_embd), `ids` (n_tok, k) and
 /// `out` (n_tok * k, n_embd).  Each distinct missed expert is computed once for all the tokens routed to it;
 /// resident experts' rows are zeroed (the GPU adds them). A null `host_res` means every expert runs on the CPU.
+/// Optional `hit_mask` supplies per-entry decisions already made by the per-layer GPU hit hook.
 void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32_t* ids, int64_t n_tok, int64_t k,
-                                float* out);
+                                float* out, const uint8_t* hit_mask = nullptr);
 
 /// **THE HITS, LAUNCHED AFTER THE MISSES ARE STAGED AND BEFORE `post[l]`.**  Same shape as `PoolFn` and for the
 /// same reason: `session_loop` owns the ORDER and this owns the work, so the loop needs to know nothing about

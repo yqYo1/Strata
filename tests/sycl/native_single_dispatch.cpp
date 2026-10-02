@@ -1,8 +1,10 @@
 #include "strata/core/expert_source.hpp"
 #include "strata/kernels/cpu/expert_layout.hpp"
 #include "strata/kernels/cpu/native_expert.hpp"
+#include "strata/kernels/iq_kernels.hpp"
 #include <chrono>
 #include <cmath>
+#include <cuda_runtime.h>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -18,9 +20,9 @@ struct Fixture : ExpertSource {
   std::filesystem::path path;
   std::vector<std::vector<uint8_t>> blobs;
   NativeFmt fmt;
-  Fixture() {
+  explicit Fixture(int type = 8) {
     std::string err;
-    require(native_fmt(8, 8, H, FF, fmt, err), err); // Q8_0 gate/up/down
+    require(native_fmt(type, type, H, FF, fmt, err), err); // Q8_0 or Q2_0
     path = std::filesystem::temp_directory_path() /
            ("strata-native-single-" +
             std::to_string(
@@ -28,19 +30,23 @@ struct Fixture : ExpertSource {
     std::filesystem::create_directories(path);
     {
       std::ofstream meta(path / "native_experts.txt");
-      meta << "0 8 8 0 " << fmt.bytes << "\n1 8 8 " << 3 * fmt.bytes << " "
-           << fmt.bytes << "\n";
+      meta << "0 " << type << " " << type << " 0 " << fmt.bytes << "\n1 "
+           << type << " " << type << " " << 3 * fmt.bytes << " " << fmt.bytes
+           << "\n";
       require(bool(meta), "write layout");
     }
     require(expert_layout_load(path.string(), 2, 3, err), err);
     blobs.resize(6, std::vector<uint8_t>(fmt.bytes));
+    const size_t block_bytes = type == 8 ? 34 : 18;
     for (int e = 0; e < 6; ++e)
-      for (size_t b = 0; b < fmt.bytes / 34; ++b) {
-        auto *p = blobs[e].data() + b * 34;
+      for (size_t b = 0; b < fmt.bytes / block_bytes; ++b) {
+        auto *p = blobs[e].data() + b * block_bytes;
         p[0] = 0;
         p[1] = 0x18; // binary16 1/512
-        for (int j = 0; j < 32; ++j)
-          p[2 + j] = uint8_t(int((b * 17 + j * 11 + e * 5) % 31) - 15);
+        for (size_t j = 0; j < block_bytes - 2; ++j)
+          p[2 + j] = type == 8
+                         ? uint8_t(int((b * 17 + j * 11 + e * 5) % 31) - 15)
+                         : uint8_t(b * 17 + j * 11 + e * 5);
       }
   }
   ~Fixture() {
@@ -52,6 +58,113 @@ struct Fixture : ExpertSource {
                                               : nullptr;
   }
 };
+void check(cudaError_t status) {
+  require(status == cudaSuccess, cudaGetErrorString(status));
+}
+template <class T> struct DeviceBuffer {
+  T *p = nullptr;
+  explicit DeviceBuffer(size_t count) {
+    check(cudaMalloc(&p, count * sizeof(T)));
+  }
+  ~DeviceBuffer() { cudaFree(p); }
+};
+void gpu_hits(Fixture &f, ExpertPool &pool) {
+  constexpr int K = 3;
+  cudaStream_t stream{};
+  check(cudaStreamCreate(&stream));
+  ExpertCache cache;
+  std::string error;
+  require(cache.open_sized({int64_t(f.fmt.bytes + 256), int64_t(f.fmt.bytes)},
+                           2, 3, error),
+          error);
+  DeviceBuffer<float> mixed(H), parts(K * H), hit_out(K * H), scales(H / 32);
+  DeviceBuffer<uint8_t> xq(H / 32 * 36),
+      scratch(strata::kernels::native_expert_scratch_bytes(K, FF));
+  DeviceBuffer<int32_t> slots(K), dst(K), meta(2 * K + 2);
+  DeviceBuffer<unsigned long long> ptr(K);
+  ExpertDispatch d;
+  d.pool = &pool;
+  d.src = &f;
+  d.n_expert = 3;
+  d.cache = &cache;
+  d.cache_base = cache.device_slot(0);
+  d.cache_blob = f.fmt.bytes;
+  d.hit_scratch = scratch.p;
+  d.parts_out = parts.p;
+  d.hit_out = hit_out.p;
+  d.parts_elems = K * H;
+  d.mixed = mixed.p;
+  d.x_q8_0_hit = xq.p;
+  d.x_q8_0_hit_scale = scales.p;
+  d.d_slot = slots.p;
+  d.d_dst = dst.p;
+  d.h_slot.resize(K);
+  d.h_dst.resize(K);
+  d.hit_native = true;
+  d.native_hit_ptr = ptr.p;
+  d.native_hit_meta = meta.p;
+  d.h_native_hit_ptr.resize(K);
+  d.h_native_hit_meta.resize(2 * K + 2);
+  float max_error = 0;
+  for (int iteration = 0; iteration < 4; ++iteration) {
+    const int layer = iteration == 2 ? 1 : 0;
+    int32_t ids[K] = {iteration % 2 ? 1 : 2, iteration % 2 ? 2 : 0,
+                      iteration % 2 ? 0 : 1};
+    float weights[K] = {.1f, .3f, .6f};
+    std::vector<float> x(H), cpu(K * H), reference(K * H), actual(K * H),
+        hit(K * H);
+    for (int i = 0; i < H; ++i)
+      x[i] = std::sin(float(i) * .03f + iteration) * .7f;
+    ExpertDispatch reference_dispatch;
+    reference_dispatch.pool = &pool;
+    reference_dispatch.src = &f;
+    reference_dispatch.n_expert = 3;
+    reference_dispatch.layers = layer;
+    expert_pool_dispatch(&reference_dispatch, x.data(), ids, weights, H, K,
+                         reference.data());
+    require(!reference_dispatch.failed, "native CPU reference dispatch");
+    float reference_max = 0;
+    for (float value : reference)
+      reference_max = std::max(reference_max, std::abs(value));
+    require(reference_max > 1e-5f, "nonzero expert reference fixture");
+    check(cudaMemcpy(mixed.p, x.data(), H * 4, cudaMemcpyHostToDevice));
+    d.layers = layer;
+    expert_hit_run(&d, stream, HitPhase::Launch, ids, K);
+    require(!d.failed, d.fail ? d.fail : "GPU hit launch");
+    require(d.n_hits == (layer == 0 ? 2 : 0), "expected GPU hit count");
+    expert_pool_dispatch(&d, x.data(), ids, weights, H, K, cpu.data());
+    require(!d.failed, d.fail ? d.fail : "GPU/CPU dispatch");
+    for (int e = 0; e < K; ++e)
+      for (int j = 0; j < H; ++j)
+        require(cpu[e * H + j] == (d.is_hit[e] ? 0 : reference[e * H + j]),
+                "CPU hit/miss ownership");
+    check(cudaMemcpyAsync(parts.p, cpu.data(), cpu.size() * 4,
+                          cudaMemcpyHostToDevice, stream));
+    expert_hit_run(&d, stream, HitPhase::Combine, ids, K);
+    check(cudaStreamSynchronize(stream));
+    check(cudaMemcpy(actual.data(), parts.p, actual.size() * 4,
+                     cudaMemcpyDeviceToHost));
+    for (size_t j = 0; j < actual.size(); ++j) {
+      max_error = std::max(max_error, std::abs(actual[j] - reference[j]));
+      require(std::isfinite(actual[j]) &&
+                  std::abs(actual[j] - reference[j]) <=
+                      1e-4f * (1 + std::abs(reference[j])),
+              "native GPU/CPU expert result tolerance");
+    }
+    // A second Combine must not add the same hits twice.
+    expert_hit_run(&d, stream, HitPhase::Combine, ids, K);
+    check(cudaStreamSynchronize(stream));
+    check(cudaMemcpy(hit.data(), parts.p, hit.size() * 4,
+                     cudaMemcpyDeviceToHost));
+    require(hit == actual, "duplicate hit combination");
+  }
+  require(d.cache_admitted == 2 && d.cache_hits == 4 && d.cache_refused == 6,
+          "cache ownership counters");
+  check(cudaStreamDestroy(stream));
+  std::cout << "Native GPU hit handoff: mixed/miss-only layers, sized slots, "
+               "reordered hits; max CPU difference "
+            << max_error << "\n";
+}
 int main() {
   try {
     Fixture f;
@@ -93,9 +206,13 @@ int main() {
     d.fail = nullptr;
     d.host_res = ids;
     expert_pool_dispatch(&d, x.data(), ids, weights, H, 3, out.data());
-    require(d.failed && std::string(d.fail).find("without a GPU hit hook") !=
-                            std::string::npos,
+    require(d.failed &&
+                std::string(d.fail).find("matching native GPU hit decisions") !=
+                    std::string::npos,
             "native per-layer GPU residency must be rejected");
+    gpu_hits(f, pool);
+    Fixture q2(42);
+    gpu_hits(q2, pool);
     std::cout << "Native single dispatch: changed activations/layers, routing "
                  "order, raw outputs and invalid id PASS\n";
   } catch (const std::exception &e) {

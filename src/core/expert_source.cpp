@@ -10,6 +10,7 @@
 #include "strata/kernels/elementwise.hpp"
 #include "strata/kernels/quantize_act.hpp"
 #include "strata/kernels/s2_expert_grouped.hpp"
+#include "strata/kernels/iq_kernels.hpp"
 #include "strata/kernels/cpu/kq_avx2.hpp"
 
 #include <cuda_runtime.h>
@@ -1741,15 +1742,16 @@ void expert_pool_dispatch(void* user, const float* x_f, const int32_t* ids, cons
     if (expert_layout().native) {
         // Reuse the native row-split pool with a one-token batch. Its blob
         // layout and quantization differ from the canonical S2 single path.
-        // The per-layer GPU hit hook still consumes canonical S2 blobs.
-        if (d.cache != nullptr || d.hits_ready() || d.host_res != nullptr ||
-            d.plan != nullptr || d.remote_count > 0) {
+        const bool use_hits = d.cache != nullptr;
+        if (d.host_res != nullptr || d.plan != nullptr || d.remote_count > 0 ||
+            (use_hits && (!d.hit_native || !d.hits_ready() || !d.decided ||
+                          d.is_hit.size() < (size_t) k))) {
             d.failed = true;
-            d.fail = "native per-layer experts require CPU dispatch without a GPU hit hook";
+            d.fail = "native per-layer experts need matching native GPU hit decisions";
             d.fail_layer = d.layers;
             return;
         }
-        expert_pool_dispatch_multi(d, x_f, ids, 1, k, out);
+        expert_pool_dispatch_multi(d, x_f, ids, 1, k, out, use_hits ? d.is_hit.data() : nullptr);
         return;
     }
     if (k > (int64_t) d.jobs.size()) d.jobs.resize((size_t) k);
@@ -1860,9 +1862,15 @@ static_assert(strata::kernels::cpu::MAXT * 10 <= kMaxWindowEntries, "a verify wi
 }  // namespace
 
 void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32_t* ids, int64_t n_tok, int64_t k,
-                                float* out) {
+                                float* out, const uint8_t* hit_mask) {
     using namespace strata::kernels::cpu;
     if (d.failed) return;
+    if (hit_mask != nullptr && (n_tok != 1 || d.plan != nullptr || d.host_res != nullptr || d.remote_count > 0)) {
+        d.failed = true;
+        d.fail = "per-layer hit decisions cannot be combined with a window GPU plan";
+        d.fail_layer = d.layers;
+        return;
+    }
     if (n_tok < 1 || n_tok > MAXT) {
         d.failed = true;
         d.fail = "a verify window has more tokens than the multi-token expert kernel takes";
@@ -1983,7 +1991,8 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
     } else {
         for (int64_t i = 0; i < n; ++i) {
             const int32_t e = ids[i];
-            kind[i] = (e >= 0 && e < d.n_expert && d.host_res != nullptr &&
+            kind[i] = hit_mask != nullptr ? (hit_mask[i] ? 0 : -1) :
+                    (e >= 0 && e < d.n_expert && d.host_res != nullptr &&
                        d.host_res[(size_t) d.layers * (size_t) d.n_expert + (size_t) e] >= 0) ? 0
                     : (e >= 0 && e < d.n_expert && d.peer != nullptr && d.peer->has(d.layers, e)) ? 2 : -1;
         }
@@ -2039,14 +2048,14 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
                 return;
             }
             if (kind[i] >= 0) {             // CUDA0, PCIe, or a remote/peer result staged into this row below
-                if (kind[i] == 0) ++d.cache_hits;
+                if (kind[i] == 0 && hit_mask == nullptr) ++d.cache_hits;
                 else if (kind[i] == 2 && d.peer != nullptr) ++d.peer_entries;
                 // multi-GPU: a direct peer launch is writing this row right now - zeroing it would race it
                 if (!(kind[i] == 2 && d.peer != nullptr && d.peer->launched_direct()))
                     std::memset(row, 0, (size_t) H * sizeof(float));
                 continue;
             }
-            ++d.cache_refused;
+            if (hit_mask == nullptr) ++d.cache_refused;
             int16_t& jo = d.job_of[(size_t) e];
             if (jo < 0) {
                 const uint8_t* b = d.src->blob(d.layers, e);
@@ -2116,6 +2125,13 @@ void expert_hit_run(void* user, void* stream, HitPhase phase, const int32_t* ids
         d.decided = false;
         d.hit_pending = false;
         if (!d.hits_ready() || ids == nullptr || k <= 0) return;
+        if (d.hit_native != strata::kernels::cpu::expert_layout().native ||
+            d.h_slot.size() < (size_t) k || d.h_dst.size() < (size_t) k) {
+            d.failed = true;
+            d.fail = "GPU hit buffers do not match the expert layout or routing capacity";
+            d.fail_layer = d.layers;
+            return;
+        }
         if ((int64_t) d.is_hit.size() < k) d.is_hit.resize((size_t) k);
 
         // ================================ THE DECISION, ONCE, ON THIS LAYER'S IDS ================================
@@ -2169,6 +2185,42 @@ void expert_hit_run(void* user, void* stream, HitPhase phase, const int32_t* ids
             d.hit_fail = "the hit list could not be staged";
             d.failed = true;
             d.fail = d.hit_fail;
+            return;
+        }
+        if (d.hit_native) {
+            const auto& layout = strata::kernels::cpu::expert_layout();
+            const size_t cap = size_t(d.parts_elems / strata::kernels::cpu::H);
+            if (!layout.native || d.layers < 0 || size_t(d.layers) >= layout.fmt.size() ||
+                k != (int64_t) cap || d.h_native_hit_ptr.size() != cap ||
+                d.h_native_hit_meta.size() != 2 * cap + 2 || d.hit_cpu_order) {
+                d.failed = true;
+                d.fail = "invalid native per-layer hit metadata or CPU-order request";
+                d.fail_layer = d.layers;
+                return;
+            }
+            for (int64_t h = 0; h < d.n_hits; ++h)
+                d.h_native_hit_ptr[(size_t) h] =
+                    (unsigned long long) d.cache->device_slot(d.h_slot[(size_t) h]);
+            for (size_t h = 0; h <= cap; ++h) d.h_native_hit_meta[h] = (int32_t) h;
+            std::fill(d.h_native_hit_meta.begin() + cap + 1, d.h_native_hit_meta.end(), 0);
+            d.h_native_hit_meta[2 * cap + 1] = (int32_t) d.n_hits;
+            if (cudaMemcpyAsync(d.native_hit_ptr, d.h_native_hit_ptr.data(), cap * sizeof(unsigned long long),
+                                cudaMemcpyHostToDevice, cs) != cudaSuccess ||
+                cudaMemcpyAsync(d.native_hit_meta, d.h_native_hit_meta.data(), (2 * cap + 2) * sizeof(int32_t),
+                                cudaMemcpyHostToDevice, cs) != cudaSuccess) {
+                d.failed = true;
+                d.fail = "native per-layer hit metadata could not be staged";
+                return;
+            }
+            const auto& f = layout.fmt[(size_t) d.layers];
+            const auto L = strata::kernels::native_expert_layout(f.gu_type, f.d_type, f.n_embd, f.n_ff);
+            strata::kernels::quantize_q8_1_rows(d.mixed, 1, f.n_embd, d.x_q8_0_hit, cs);
+            strata::kernels::native_expert_grouped(L, d.native_hit_ptr, d.native_hit_meta,
+                d.native_hit_meta + 2 * cap + 1, d.d_dst, d.native_hit_meta + cap + 1,
+                cap, cap, d.x_q8_0_hit, d.hit_scratch, d.hit_out, cs);
+            d.hit_pending = true;
+            if (d.hit_done != nullptr) cudaEventRecord((cudaEvent_t) d.hit_done, cs);
+            if (d.hit_poke && d.hit_done != nullptr) (void) cudaEventQuery((cudaEvent_t) d.hit_done);
             return;
         }
         // The activation is quantized HERE rather than reused from `s.moe.x_q8_0`, which `post[l-1]` wrote from

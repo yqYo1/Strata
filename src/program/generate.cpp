@@ -1957,10 +1957,10 @@ int main(int argc, char** argv) {
                                  "--keep-canonical; use --spec 0 or T >= 2, with --prefill CHUNK for multiple prompt tokens in spec mode\n", o.pack.c_str());
             return 2;
         }
-        if (o.spec < 2 && (o.expert_cache != 0 ||
-                          o.expert_cache_remote[0] || o.expert_cache_remote[1] || o.expert_cache_remote[2])) {
-            std::fprintf(stderr, "strata generate: native per-layer decode currently requires --expert-cache 0; "
-                                 "native GPU hits need the grouped verifier path\n");
+        if (o.spec < 2 && (o.expert_cache_remote[0] || o.expert_cache_remote[1] || o.expert_cache_remote[2] ||
+                          o.expert_cache_cpu_order)) {
+            std::fprintf(stderr, "strata generate: native per-layer decode does not support remote caches "
+                                 "or --expert-cache-cpu-order\n");
             return 2;
         }
         const strata::core::ModelGeometry g0;
@@ -3327,11 +3327,12 @@ int main(int argc, char** argv) {
     float* d_hit_q8_scale = nullptr;   ///< R4.2h: the fp32 activation scales the CPU path also uses
     float* d_hit_out = nullptr;
     if (o.expert_cache > 0 && !o.no_pool) {
-        const uint64_t sb = strata::kernels::moe_hit_grouped_scratch_bytes(K, g.n_embd, strata::kernels::cpu::FF);
+        const uint64_t sb = native_pack ? strata::kernels::native_expert_scratch_bytes(K, g.n_ff) :
+            strata::kernels::moe_hit_grouped_scratch_bytes(K, g.n_embd, strata::kernels::cpu::FF);
         if (cudaMalloc(&hit_scratch, (size_t) sb) != cudaSuccess ||
             cudaMalloc((void**) &d_hit_slot, (size_t) K * sizeof(int32_t)) != cudaSuccess ||
             cudaMalloc((void**) &d_hit_dst, (size_t) K * sizeof(int32_t)) != cudaSuccess ||
-            cudaMalloc((void**) &d_hit_q8, (size_t) (g.n_embd / 32) * 34) != cudaSuccess ||
+            cudaMalloc((void**) &d_hit_q8, (size_t) (g.n_embd / 32) * (native_pack ? 36 : 34)) != cudaSuccess ||
             // R4.2h: the fp32 activation scales.  Without this the GPU's hits use the block's fp16 `d`
             // while the CPU's misses use `ActQ::scale`, which is fp32 - a 4.761e-04 relative disagreement on
             // every chunk, and the reason enabling the cache changed the tokens.
@@ -3339,6 +3340,16 @@ int main(int argc, char** argv) {
             cudaMalloc((void**) &d_hit_out, (size_t) K * g.n_embd * 4) != cudaSuccess) {
             std::fprintf(stderr, "strata generate: the R4 hit path could not allocate its device buffers\n");
             return 1;
+        }
+        if (native_pack) {
+            if (cudaMalloc(&drive.d.native_hit_ptr, (size_t) K * sizeof(unsigned long long)) != cudaSuccess ||
+                cudaMalloc(&drive.d.native_hit_meta, (size_t) (2 * K + 2) * sizeof(int32_t)) != cudaSuccess) {
+                std::fprintf(stderr, "strata generate: native GPU hit metadata allocation failed\n");
+                return 1;
+            }
+            drive.d.hit_native = true;
+            drive.d.h_native_hit_ptr.resize((size_t) K);
+            drive.d.h_native_hit_meta.resize((size_t) (2 * K + 2));
         }
         drive.d.cache = &xcache;
         drive.d.cache_stream = main_cs;
@@ -6915,6 +6926,8 @@ int main(int argc, char** argv) {
 
     strata::core::session_graphs_free(gr);
     strata::core::doorbell_free(db);
+    cudaFree(drive.d.native_hit_ptr);
+    cudaFree(drive.d.native_hit_meta);
     cudaFree(d_next);
     cudaFree(d_logits);
     cudaFree(d_emb);
