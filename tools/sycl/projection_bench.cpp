@@ -44,7 +44,8 @@ int main(int argc, char **argv) {
     const bool compare = argc == 5 && !spmd;
     const uint32_t compare_type = mode == "--compare-q4k" ? 12u :
                                   mode == "--compare-iq4xs" ? 23u : 11u;
-    if (compare && columns != 1) throw std::invalid_argument("projection comparison requires one column");
+    if (compare && columns != 1 && compare_type != 12)
+      throw std::invalid_argument("multi-column comparison is supported for Q4_K only");
     if (repeats < 1 || repeats > 1000 || columns < 1 || columns > 8)
       throw std::invalid_argument("repeats must be 1..1000 and columns 1..8");
     const auto model = strata::GgufModel::open(argv[1]);
@@ -107,22 +108,30 @@ int main(int argc, char **argv) {
                   << bytes << ',' << columns << ',' << samples[1] << '\n';
         check(cudaGraphExecDestroy(exec));
         if (compare && t.type == compare_type) {
-          // The three-column SPMD path retains the original 128-lane
-          // arithmetic. Its first column has the same inputs as this ESIMD run.
-          Allocation oracle_input(runtime, quant.size() * 3, MemoryKind::Device);
-          Allocation oracle_output(runtime, size_t(no) * 3 * 4, MemoryKind::Device);
-          for (int c = 0; c < 3; ++c)
-            check(cudaMemcpy(oracle_input.as<uint8_t>() + c * quant.size(), quant.data(), quant.size(), cudaMemcpyDeviceToDevice));
-          strata::kernels::native_mmvq_set_multi_exact(false);
-          strata::kernels::native_mmvq(t.type, weight.data(), oracle_input.data(), oracle_output.as<float>(), ni, no, 3, stream);
+          // Q4_K compares every distinct input column against the original
+          // SPMD kernel. Other formats keep their three-column SPMD oracle.
+          const int oracle_columns = t.type == 12 ? columns : 3;
+          const size_t stride = quant.size() / columns;
+          Allocation oracle_input(runtime, stride * oracle_columns, MemoryKind::Device);
+          Allocation oracle_output(runtime, size_t(no) * oracle_columns * 4, MemoryKind::Device);
+          for (int c = 0; c < oracle_columns; ++c)
+            check(cudaMemcpy(oracle_input.as<uint8_t>() + c * stride,
+                             quant.as<uint8_t>() + (c % columns) * stride,
+                             stride, cudaMemcpyDeviceToDevice));
+          const bool old = strata::kernels::iq_old_kernels();
+          if (t.type == 12) strata::kernels::iq_set_old_kernels(true);
+          strata::kernels::native_mmvq_set_multi_exact(t.type == 12);
+          strata::kernels::native_mmvq(t.type, weight.data(), oracle_input.data(), oracle_output.as<float>(), ni, no, oracle_columns, stream);
           check(cudaStreamSynchronize(stream));
           strata::kernels::native_mmvq_set_multi_exact(true);
-          std::vector<float> reference(no), candidate(no);
-          check(cudaMemcpy(reference.data(), oracle_output.data(), no * 4, cudaMemcpyDeviceToHost));
-          check(cudaMemcpy(candidate.data(), output.data(), no * 4, cudaMemcpyDeviceToHost));
+          strata::kernels::iq_set_old_kernels(old);
+          const size_t elements = size_t(no) * columns;
+          std::vector<float> reference(elements), candidate(elements);
+          check(cudaMemcpy(reference.data(), oracle_output.data(), elements * 4, cudaMemcpyDeviceToHost));
+          check(cudaMemcpy(candidate.data(), output.data(), elements * 4, cudaMemcpyDeviceToHost));
           size_t unequal = 0;
           float max_error = 0, max_value = 0;
-          for (int row = 0; row < no; ++row) {
+          for (size_t row = 0; row < elements; ++row) {
             unequal += std::memcmp(&reference[row], &candidate[row], 4) != 0;
             max_error = std::max(max_error, std::abs(reference[row] - candidate[row]));
             max_value = std::max(max_value, std::abs(reference[row]));

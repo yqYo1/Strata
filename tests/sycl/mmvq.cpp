@@ -544,7 +544,7 @@ int main(int argc, char **argv) {
             std::memcpy(w.data() + size_t(block) * 144 + 2,
                         &scales[(block + 3) % 8], 2);
           }
-          for (int cols : {1, 3, 8})
+          for (int cols : {1, 2, 3, 4, 8})
             run(formats[4], n, rows, cols, true, w);
         }
       }
