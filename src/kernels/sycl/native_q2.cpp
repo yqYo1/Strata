@@ -52,11 +52,12 @@ void projection(const unsigned long long *pointers, const int32_t *destinations,
           acc = sycl::fma(d * scale[2 * b + 1],
                           float(dot4(w[10 + lane], hi + lane * 4)), acc);
           if (!lane) {
-            int sum0 = 0, sum1 = 0;
-            for (int j = 0; j < 32; ++j) {
-              sum0 += lo[j];
-              sum1 += hi[j];
-            }
+            const auto *q0 = act + size_t(2 * b) * 34;
+            const auto *q1 = q0 + 34;
+            const int sum0 =
+                int(int16_t(uint16_t(q0[0]) | (uint16_t(q0[1]) << 8)));
+            const int sum1 =
+                int(int16_t(uint16_t(q1[0]) | (uint16_t(q1[1]) << 8)));
             const float hx0 = scale[2 * b] * float(sum0),
                         hx1 = scale[2 * b + 1] * float(sum1);
             corr = sycl::fma(d, hx0 + hx1, corr);
@@ -90,14 +91,19 @@ void native_q2_quantize_cpu_order(const float *input, uint8_t *blocks,
     const float inverse =
         scale > 0 ? sycl::ext::intel::math::fdiv_rn(1.f, scale) : 0;
     scales[b] = scale;
-    const uint16_t half = f16_from_f32(scale);
-    block[0] = uint8_t(half);
-    block[1] = uint8_t(half >> 8);
+    int sum = 0;
     for (int i = 0; i < 32; ++i) {
       const float value = row[i] * inverse;
       const float rounded = value + (value >= 0 ? .5f : -.5f);
-      block[2 + i] = uint8_t(int8_t(sycl::clamp(int(rounded), -127, 127)));
+      const int code = sycl::clamp(int(rounded), -127, 127);
+      block[2 + i] = uint8_t(int8_t(code));
+      sum += code;
     }
+    // These private 34-byte blocks reuse the two-byte Q8_0 header for an
+    // exact code sum. Projections use the separate FP32 scales.
+    const uint16_t bits = uint16_t(int16_t(sum));
+    block[0] = uint8_t(bits);
+    block[1] = uint8_t(bits >> 8);
   });
 }
 void native_q2_expert_cpu_order(const unsigned long long *pointers,

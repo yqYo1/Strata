@@ -537,6 +537,14 @@ CPU-order path generated four tokens at `6.67 tok/s`, below the ordinary native
 cache result recorded below. It is a numerical diagnostic, not the default
 performance path; these two prompts do not establish broad quality parity.
 
+The CPU-order activation blocks now retain their signed code sum in the unused
+two-byte header. Projections read it instead of summing the same 32 codes for
+every output row. With cache capacity fixed at 2,893 slots, all 170 logits rows
+of the context run remained bitwise equal to the preceding CPU-order build.
+This run generated four tokens at `8.62 tok/s`; background CPU load differed,
+so it does not establish an isolated kernel speedup. These private activation
+blocks have Q8_0's 34-byte stride but use a code-sum header, not an FP16 scale.
+
 `sycl_native_single_dispatch` also checks the FP32 activation scales and codes
 against the actual AVX2 quantizer, including zeros and rounding ties. For manual
 expert replay, build `sycl_expert_contract` and provide a trace recorded with

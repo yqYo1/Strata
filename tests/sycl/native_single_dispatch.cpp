@@ -98,6 +98,9 @@ void quantize_contract() {
             "native Q2 FP32 quantization scale");
     require(std::memcmp(got.data() + b * 34 + 2, reference.q + b * 32, 32) == 0,
             "native Q2 activation codes, including ties and zeros");
+    const int sum =
+        int(int16_t(uint16_t(got[b * 34]) | (uint16_t(got[b * 34 + 1]) << 8)));
+    require(sum == reference.sum[b], "native Q2 stored activation code sum");
   }
   check(cudaStreamDestroy(stream));
 }
