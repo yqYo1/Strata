@@ -14,7 +14,7 @@ source /opt/intel/oneapi/setvars.sh
 export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
 cmake -S . -B build-sycl -DCMAKE_CXX_COMPILER=icpx \
   -DSTRATA_ENABLE_SYCL=ON -DSTRATA_NATIVE_EXPERTS=OFF -DSTRATA_BUILD_TESTS=OFF
-cmake --build build-sycl --target strata-device sycl_runtime_test sycl_kernels_test sycl_gdn_test sycl_quantize_test sycl_bf16_test sycl_mmvq_test sycl_gr_test sycl_rope_test sycl_kv_test sycl_attention_test sycl_qsa_index_test sycl_decode_attention_test sycl_ple_test -j2
+cmake --build build-sycl --target strata-device sycl_runtime_test sycl_kernels_test sycl_gdn_test sycl_quantize_test sycl_bf16_test sycl_mmvq_test sycl_gr_test sycl_rope_test sycl_kv_test sycl_attention_test sycl_qsa_index_test sycl_decode_attention_test sycl_ple_test sycl_moe_test -j2
 ctest --test-dir build-sycl -R '^sycl_' --output-on-failure
 build-sycl/strata-device --list-devices
 ```
@@ -161,6 +161,14 @@ settings; see the research document for the machine configuration:
   PLE fixtures cover canonical S2/Q8_0, native Q2_0/Q8_1 and BF16 key weights,
   both value activation precisions and both postoperation modes. These use
   synthetic weights; they are not a real PLE-layer comparison.
+- Canonical matrix-vector products passed 24 code/offset/activation cases
+  (S2/S4/S8/IQ4NL weights with FP16, Q8_0 or Q8_K inputs), against independent
+  scalar decoding and double accumulation. The tolerance was
+  `5e-7 * (1 + sum(abs(reference terms)))`; staged and direct S2 reads agreed.
+  Sixteen shared-expert cases covered all partial native-projection overrides
+  and both BF16 gate modes. Native batched shared experts matched separate
+  calls bit for bit. Eight MoE reductions matched ordered CPU FMA exactly,
+  with the shared output added once after the routed sum.
 - Native Q8_1 and MMVQ for Q2_0, Q4_0, Q5_0, Q8_0, Q3_K, Q4_K, Q5_K,
   Q6_K, IQ4_NL and IQ4_XS: 150 synthetic cases passed, including small/large
   reduction widths, row tails, 1/3/8 columns and both multi-column layouts.
