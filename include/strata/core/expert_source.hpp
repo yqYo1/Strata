@@ -391,6 +391,7 @@ void expert_hit_run(void* user, void* stream, HitPhase phase, const int32_t* ids
 #ifdef STRATA_ENABLE_SYCL
 /// Capture native Q8_1 hit work once per expert layout at session setup.
 /// Buffer addresses and layouts must remain fixed until the graphs are released.
+/// Launch callbacks reuse one host-USM plan and require the preceding layer to have completed.
 /// CPU-order diagnostic hits keep their existing path. No token-path capture.
 bool expert_hit_prepare_graphs(ExpertDispatch& d, void* stream, std::string& err);
 #endif

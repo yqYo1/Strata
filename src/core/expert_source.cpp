@@ -13,6 +13,7 @@
 #include "strata/kernels/iq_kernels.hpp"
 #ifdef STRATA_ENABLE_SYCL
 #include "strata/sycl/native_q2.hpp"
+#include "strata/sycl/launch.hpp"
 #endif
 #include "strata/kernels/cpu/kq_avx2.hpp"
 
@@ -2124,8 +2125,13 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
 struct NativeHitGraphs {
     std::vector<cudaGraphExec_t> layers;
     std::vector<cudaGraphExec_t> owned;
+    void* host_plan = nullptr;
+    unsigned long long* ptr = nullptr;
+    int32_t* meta = nullptr;
+    int32_t* dst = nullptr;
     ~NativeHitGraphs() {
         for (auto exec : owned) cudaGraphExecDestroy(exec);
+        if (host_plan) cudaFreeHost(host_plan);
     }
 };
 
@@ -2150,6 +2156,18 @@ bool expert_hit_prepare_graphs(ExpertDispatch& d, void* stream, std::string& err
     }
     d.is_hit.resize(size_t(cap));
     auto graphs = std::make_shared<NativeHitGraphs>();
+    const size_t ptr_bytes = size_t(cap) * sizeof(unsigned long long);
+    const size_t meta_bytes = size_t(2 * cap + 2) * sizeof(int32_t);
+    const size_t plan_bytes = ptr_bytes + meta_bytes + size_t(cap) * sizeof(int32_t);
+    if (cudaHostAlloc(&graphs->host_plan, plan_bytes,
+                      cudaHostAllocMapped | cudaHostAllocPortable) != cudaSuccess) {
+        err = "native hit graph host plan allocation failed";
+        return false;
+    }
+    std::memset(graphs->host_plan, 0, plan_bytes);
+    graphs->ptr = static_cast<unsigned long long*>(graphs->host_plan);
+    graphs->meta = reinterpret_cast<int32_t*>(static_cast<uint8_t*>(graphs->host_plan) + ptr_bytes);
+    graphs->dst = reinterpret_cast<int32_t*>(static_cast<uint8_t*>(graphs->host_plan) + ptr_bytes + meta_bytes);
     std::map<std::tuple<int, int, int64_t, int64_t>, cudaGraphExec_t> kinds;
     const auto cs = (cudaStream_t) stream;
     for (const auto& f : layout.fmt) {
@@ -2162,9 +2180,26 @@ bool expert_hit_prepare_graphs(ExpertDispatch& d, void* stream, std::string& err
             err = "native hit graph begin capture failed";
             return false;
         }
-        bool ok = cudaMemsetAsync(d.hit_out, 0, size_t(d.parts_elems) * sizeof(float), cs) == cudaSuccess;
+        bool ok = true;
         try {
             if (ok) {
+                // Copy the small host-USM plan once into device USM while clearing every output row.
+                // Expert kernels then read their metadata from device memory as before.
+                auto* out = d.hit_out;
+                auto* device_ptr = d.native_hit_ptr;
+                auto* device_meta = d.native_hit_meta;
+                auto* device_dst = d.d_dst;
+                const auto* host_ptr = graphs->ptr;
+                const auto* host_meta = graphs->meta;
+                const auto* host_dst = graphs->dst;
+                strata::sycl_backend::for_each(d.parts_elems, cs, [=](size_t i) {
+                    out[i] = 0.0f;
+                    if (i < size_t(cap)) {
+                        device_ptr[i] = host_ptr[i];
+                        device_dst[i] = host_dst[i];
+                    }
+                    if (i < size_t(2 * cap + 2)) device_meta[i] = host_meta[i];
+                });
                 const auto L = strata::kernels::native_expert_layout(
                     f.gu_type, f.d_type, f.n_embd, f.n_ff);
                 strata::kernels::quantize_q8_1_rows(d.mixed, 1, f.n_embd, d.x_q8_0_hit, cs);
@@ -2267,7 +2302,8 @@ void expert_hit_run(void* user, void* stream, HitPhase phase, const int32_t* ids
              cudaMemsetAsync(d.hit_out, 0, (size_t) d.parts_elems * sizeof(float), cs) != cudaSuccess) ||
             (!d.hit_native &&
              cudaMemcpyAsync(d.d_slot, d.h_slot.data(), list_bytes, cudaMemcpyHostToDevice, cs) != cudaSuccess) ||
-            cudaMemcpyAsync(d.d_dst, d.h_dst.data(), list_bytes, cudaMemcpyHostToDevice, cs) != cudaSuccess) {
+            (!captured_native &&
+             cudaMemcpyAsync(d.d_dst, d.h_dst.data(), list_bytes, cudaMemcpyHostToDevice, cs) != cudaSuccess)) {
             d.hit_fail = "the hit list could not be staged";
             d.failed = true;
             d.fail = d.hit_fail;
@@ -2290,10 +2326,11 @@ void expert_hit_run(void* user, void* stream, HitPhase phase, const int32_t* ids
             for (size_t h = 0; h <= cap; ++h) d.h_native_hit_meta[h] = (int32_t) h;
             std::fill(d.h_native_hit_meta.begin() + cap + 1, d.h_native_hit_meta.end(), 0);
             d.h_native_hit_meta[2 * cap + 1] = (int32_t) d.n_hits;
-            if (cudaMemcpyAsync(d.native_hit_ptr, d.h_native_hit_ptr.data(), cap * sizeof(unsigned long long),
+            if (!captured_native &&
+                (cudaMemcpyAsync(d.native_hit_ptr, d.h_native_hit_ptr.data(), cap * sizeof(unsigned long long),
                                 cudaMemcpyHostToDevice, cs) != cudaSuccess ||
                 cudaMemcpyAsync(d.native_hit_meta, d.h_native_hit_meta.data(), (2 * cap + 2) * sizeof(int32_t),
-                                cudaMemcpyHostToDevice, cs) != cudaSuccess) {
+                                cudaMemcpyHostToDevice, cs) != cudaSuccess)) {
                 d.failed = true;
                 d.fail = "native per-layer hit metadata could not be staged";
                 return;
@@ -2302,6 +2339,13 @@ void expert_hit_run(void* user, void* stream, HitPhase phase, const int32_t* ids
             const auto L = strata::kernels::native_expert_layout(f.gu_type, f.d_type, f.n_embd, f.n_ff);
 #ifdef STRATA_ENABLE_SYCL
             if (captured_native) {
+                // The previous layer's completion precedes this callback. Its graph has finished
+                // reading the plan; publish the new plan before submitting this layer's graph.
+                auto& graphs = *d.native_hit_graphs;
+                std::memcpy(graphs.ptr, d.h_native_hit_ptr.data(), cap * sizeof(unsigned long long));
+                std::memcpy(graphs.meta, d.h_native_hit_meta.data(), (2 * cap + 2) * sizeof(int32_t));
+                std::memcpy(graphs.dst, d.h_dst.data(), list_bytes);
+                std::atomic_thread_fence(std::memory_order_release);
                 if (size_t(d.layers) >= d.native_hit_graphs->layers.size() ||
                     cudaGraphLaunch(d.native_hit_graphs->layers[size_t(d.layers)], cs) != cudaSuccess) {
                     d.failed = true;

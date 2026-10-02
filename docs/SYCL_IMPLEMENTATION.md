@@ -664,8 +664,8 @@ reference target is still open.
 The ordinary native Q8_1 hit path now captures its output clear, input
 quantization and grouped expert kernels at session setup. One graph is shared
 by layers with the same expert types and dimensions. The fixed device buffers
-keep their addresses; the routed hit pointers, count and destinations are
-still uploaded before each graph launch. The native path also omits the slot
+keep their addresses; at this change's introduction the routed hit pointers,
+count and destinations were uploaded before each graph launch. The native path also omits the slot
 list upload that only the canonical S2 path consumes. Capturing and allocating
 these graphs happens before token processing. CPU-order diagnostic hits retain
 their existing kernels. `STRATA_SYCL_NATIVE_HIT_GRAPH=0` or `--no-capture`
@@ -690,6 +690,36 @@ completed 300-word story. Results are in
 `bench/results/2026-10-03-sycl-native-hit-graphs/run.json`. The MTP verifier uses
 its separate graphs, and the approximately `29 tok/s` generation target
 remains open.
+
+### Native hit-plan staging inside capture
+
+The captured hit path now owns one bounded host-USM plan for expert pointers,
+group metadata and destinations. The output-clear kernel copies this plan
+into the existing device buffers, replacing three small transfer submissions
+per layer. Expert kernels keep reading metadata from device memory. Ten routed
+experts need a 208-byte plan, allocated before token processing. The current
+layer's route completion follows the preceding layer's hit graph, so the host
+can update the plan before launching the current hit graph. Graphs are released
+before the plan is freed. Uncaptured and CPU-order paths keep their transfers.
+
+Three alternating before/after pairs on B570 and Ryzen 5 5600X used ordinary
+RAM, an initially empty 2,048-slot per-layer cache, four workers, 16-token
+prefill chunks and the same 37-token writing prompt. Before measured
+`19.43 / 19.42 / 19.65 tok/s`; after measured
+`19.67 / 19.93 / 19.56 tok/s`. The medians were `19.43` and `19.67 tok/s`
+(1.2%). The third pair was slower after the change. Background load was not
+isolated, and the small generation-speed difference needs that context.
+Host time after the route completion fell from `18.714..19.274` to
+`17.757..18.045 ms/token` in these runs; this phase includes CPU work and
+result submission, so it does not isolate metadata-transfer overhead.
+
+All six processes generated the same 128 output IDs and had `30429 / 61440`
+cache hits. A separate 32-row comparison was bitwise equal across all 248,320
+logits. `sycl_native_single_dispatch` passed the captured/uncaptured comparisons
+with changing inputs and hit order, miss-only layers, padded slots and Q8_0
+and Q2_0 fixtures. Full options and results are in
+`bench/results/2026-10-03-sycl-native-hit-plan/run.json`. These truncated writing
+runs do not establish MTP throughput or the approximately `29 tok/s` target.
 
 ### Event-completed speculative windows
 
