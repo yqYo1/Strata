@@ -134,6 +134,12 @@ settings; see the research document for the machine configuration:
   pooled keys and block position as single-cell calls, bit for bit. Invalid
   device positions left pooled keys unchanged. The initial batch path submits
   one kernel per cell; prompt throughput has not been measured.
+- Batched FP32 block scoring passed a CPU double-precision reference at
+  `3e-6 * (1 + abs(reference))` tolerance. Twenty-four weighted block-selection
+  cases through 262,147 cells matched independently sorted cell IDs exactly,
+  including partial blocks, ties, signed zero, NaNs and infinities. The initial
+  selector uses 32 binary threshold passes; its reference entry point uses the
+  same kernel. Tensor-core scoring reports unavailable so callers use FP32.
 - Split attention directly over paged FP16, INT8, Q4 and hybrid K8/V4:
   twelve format/page cases passed the double-precision reference with maximum
   absolute error `3.541e-7`. Three queries with 13/67/129 selected cells and
