@@ -34,6 +34,154 @@ void check(bool ok, const char *msg) {
   if (!ok)
     throw std::runtime_error(msg);
 }
+void streaming(int fmt) {
+  constexpr int blocks = 11, slots = 3, cap = 8;
+  auto s = qsa_real_shapes();
+  s.page_size = 1;
+  s.n_head_kv = 1;
+  s.head_dim = 128;
+  const size_t mainlen = fmt == kKvF16 ? 256 : fmt == kKvInt8 ? 128 : 72;
+  const size_t scalelen = 4;
+  Buffer<uint8_t> hk(blocks * mainlen, true), hv(blocks * mainlen, true),
+      hks(blocks * scalelen, true), hvs(blocks * scalelen, true),
+      dk(blocks * mainlen + 16), dv(blocks * mainlen + 16),
+      dks(blocks * scalelen + 16), dvs(blocks * scalelen + 16);
+  std::vector<uint8_t> k(blocks * mainlen), v(k.size()), ks(blocks * scalelen),
+      vs(ks.size());
+  for (size_t i = 0; i < k.size(); ++i) {
+    k[i] = uint8_t(i * 19 + i / mainlen);
+    v[i] = uint8_t(i * 7 + i / mainlen);
+  }
+  for (size_t i = 0; i < ks.size(); ++i) {
+    ks[i] = uint8_t(i * 13);
+    vs[i] = uint8_t(i * 17);
+  }
+  hk.put(k);
+  hv.put(v);
+  hks.put(ks);
+  hvs.put(vs);
+  dk.put(std::vector<uint8_t>(blocks * mainlen + 16, 0xab));
+  dv.put(std::vector<uint8_t>(blocks * mainlen + 16, 0xab));
+  dks.put(std::vector<uint8_t>(blocks * scalelen + 16, 0xab));
+  dvs.put(std::vector<uint8_t>(blocks * scalelen + 16, 0xab));
+  QsaAttnPools pool;
+  KvHostPools host;
+  if (fmt == kKvF16) {
+    host.k_pool = reinterpret_cast<uint16_t *>(hk.data());
+    host.v_pool = reinterpret_cast<uint16_t *>(hv.data());
+    pool.k_pool = reinterpret_cast<uint16_t *>(dk.data());
+    pool.v_pool = reinterpret_cast<uint16_t *>(dv.data());
+  } else if (fmt == kKvInt8) {
+    host.k_q = reinterpret_cast<int8_t *>(hk.data());
+    host.v_q = reinterpret_cast<int8_t *>(hv.data());
+    pool.k_q = reinterpret_cast<int8_t *>(dk.data());
+    pool.v_q = reinterpret_cast<int8_t *>(dv.data());
+    host.k_scale = reinterpret_cast<uint16_t *>(hks.data());
+    host.v_scale = reinterpret_cast<uint16_t *>(hvs.data());
+    pool.k_scale = reinterpret_cast<uint16_t *>(dks.data());
+    pool.v_scale = reinterpret_cast<uint16_t *>(dvs.data());
+  } else {
+    host.k_q4 = hk.data();
+    host.v_q4 = hv.data();
+    pool.k_q4 = dk.data();
+    pool.v_q4 = dv.data();
+  }
+  Buffer<int32_t> pages(blocks + 1), sb(slots + 1), stamps(slots + 1),
+      refs(slots + 1), ctl(kKvCtlInts + 1), mb(slots + 1), ms(slots + 1),
+      ids(cap * 2), steps(2 * kStepCount);
+  for (auto p : {&pages, &sb, &stamps, &refs, &ctl, &mb, &ms})
+    p->put(std::vector<int32_t>(p->mem.size() / 4, -987));
+  KvStreamMap m{pages.data(), sb.data(), stamps.data(), refs.data(), ctl.data(),
+                mb.data(),    ms.data(), blocks,        slots};
+  kv_stream_reset(m, nullptr);
+  auto invoke = [&](std::vector<int32_t> a, std::vector<int32_t> b = {}) {
+    std::vector<int32_t> iv(cap * 2, -1), st(2 * kStepCount);
+    std::copy(a.begin(), a.end(), iv.begin());
+    std::copy(b.begin(), b.end(), iv.begin() + cap);
+    st[kStepWidth] = int(a.size());
+    st[kStepCount + kStepWidth] = int(b.size());
+    ids.put(iv);
+    steps.put(st);
+    kv_stream_resolve(m, pool, host, fmt, ids.data(), steps.data(), 2, cap, s,
+                      nullptr);
+  };
+  auto verify = [&](std::vector<int> selected) {
+    const auto table = pages.get(), resident = sb.get();
+    const auto kd = dk.get(), vd = dv.get(), ksd = dks.get(), vsd = dvs.get();
+    for (int b : selected) {
+      const int sl = table[b];
+      check(sl >= 0 && sl < slots && resident[sl] == b, "stream residency");
+      for (size_t j = 0; j < mainlen; ++j) {
+        check(kd[sl * mainlen + j] == k[b * mainlen + j], "stream K bytes");
+        check(vd[sl * mainlen + j] == v[b * mainlen + j], "stream V bytes");
+      }
+      if (fmt == kKvInt8)
+        for (size_t j = 0; j < scalelen; ++j) {
+          check(ksd[sl * scalelen + j] == ks[b * scalelen + j],
+                "stream K scales");
+          check(vsd[sl * scalelen + j] == vs[b * scalelen + j],
+                "stream V scales");
+        }
+    }
+    for (int b = 0; b < blocks; ++b)
+      if (table[b] >= 0)
+        check(table[b] < slots && resident[table[b]] == b,
+              "stream map inverse");
+    for (auto p : {&pages, &sb, &stamps, &refs, &ctl, &mb, &ms})
+      check(p->get().back() == -987, "stream metadata canary");
+  };
+  invoke({0, 0, 2}, {2});
+  verify({0, 2});
+  auto c = kv_stream_counters(m);
+  check(c.misses == 2 && c.lookups == 3 && c.calls == 1 && !c.overflow,
+        "stream counters first");
+  invoke({2, 4, 5});
+  verify({2, 4, 5});
+  check(pages.get()[0] == -1, "stream eviction");
+  invoke({2, 4, 5});
+  verify({2, 4, 5});
+  c = kv_stream_counters(m);
+  check(c.misses == 4 && c.calls == 3 && !c.overflow, "stream hit counters");
+  auto control = ctl.get();
+  control[0] = INT32_MAX;
+  ctl.put(control);
+  invoke({2, 4, 5});
+  verify({2, 4, 5});
+  check(ctl.get()[0] == 1, "stream epoch wrap");
+  invoke({0, 1, 2, 3, 4, 5, 6});
+  verify({2, 4, 5});
+  check(kv_stream_counters(m).overflow, "stream overflow flag");
+  kv_stream_reset(m, nullptr);
+  invoke({0, 1, 2, 3, 4, 5, 6});
+  verify({0, 1, 2});
+  check(kv_stream_counters(m).overflow, "bounded miss overflow");
+  kv_ring_table(pages.data(), blocks, slots, nullptr);
+  const auto table = pages.get();
+  for (int b = 0; b < blocks; ++b)
+    check(table[b] == b % slots, "ring table");
+  kv_ring_restore(pool, host, fmt, 2, 10, slots, s, nullptr);
+  const auto restored = dk.get();
+  for (int b = 7; b < 10; ++b)
+    for (size_t j = 0; j < mainlen; ++j)
+      check(restored[(b % slots) * mainlen + j] == k[b * mainlen + j],
+            "ring restore");
+  kv_stage_from_host(pool, host, fmt, blocks, s, nullptr);
+  const auto staged = dk.get(), stagedv = dv.get();
+  check(std::equal(k.begin(), k.end(), staged.begin()) &&
+            std::equal(v.begin(), v.end(), stagedv.begin()),
+        "KV staging");
+  check(staged.back() == 0xab && stagedv.back() == 0xab, "KV staging canary");
+  if (fmt == kKvInt8)
+    check(std::equal(ks.begin(), ks.end(), dks.get().begin()) &&
+              std::equal(vs.begin(), vs.end(), dvs.get().begin()),
+          "KV scale staging");
+  check(kv_block_bytes(s, fmt) ==
+            2 * mainlen + (fmt == kKvInt8 ? 2 * scalelen : 0),
+        "KV block bytes");
+  std::cout
+      << "KV streaming format " << fmt
+      << ": hits, CLOCK eviction, overflow, wrap, ring and stage passed\n";
+}
 uint16_t half(float x) { return std::bit_cast<uint16_t>(_Float16(x)); }
 float decode(uint16_t x) { return float(std::bit_cast<_Float16>(x)); }
 struct Reference {
@@ -307,6 +455,8 @@ int main() {
   try {
     std::fesetround(FE_TONEAREST);
     runtime = sycl_backend::runtime_for();
+    for (int fmt : {kKvF16, kKvInt8, kKvQ4})
+      streaming(fmt);
     hadamard();
     for (int fmt : {kKvF16, kKvInt8, kKvQ4})
       for (int page : {1, 4, 16}) {
