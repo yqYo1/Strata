@@ -157,12 +157,19 @@ bool Verifier::release_gpu_waits(int timeout_ms) {
 
 void Verifier::diag(std::FILE* f) const {
     auto rd = [](const uint32_t* p) { return p ? *(const volatile uint32_t*) p : 0u; };
+#ifdef STRATA_ENABLE_SYCL
+    // h_seq_ can still be written by a running device segment. Report only
+    // the sequence whose producing event the host has already completed.
+    const uint32_t reached = reached_.load();
+#else
+    const uint32_t reached = rd(h_seq_);
+#endif
     // #251: outside a verify stage these are the LAST window's numbers (it finished), not the stalled work's
     const char* where = progress().where.load();
     const bool current = where != nullptr && std::strncmp(where, "verify window", 13) == 0;
     std::fprintf(f, "  verify window%s: %d tokens at position %lld, host at layer step %u; the GPU rang %u; flags: "
                     "served %u, plan (A) %u, copies (B) %u\n", current ? "" : " (last window, not the current stage)",
-                 last_t_, (long long) last_pos0_, cur_layer_ + 1, rd(h_seq_), rd(h_flag_), rd(h_flagA_), rd(h_flagB_));
+                 last_t_, (long long) last_pos0_, cur_layer_.load() + 1, reached, rd(h_flag_), rd(h_flagA_), rd(h_flagB_));
 }
 
 Verifier::~Verifier() {
@@ -175,6 +182,11 @@ Verifier::~Verifier() {
     if (cs_) cudaStreamSynchronize(cs_);
     for (auto& e : exec_)
         if (e) cudaGraphExecDestroy(e);
+#ifdef STRATA_ENABLE_SYCL
+    for (auto& window : segments_)
+        for (auto e : window) cudaGraphExecDestroy(e);
+    if (layer_done_) cudaEventDestroy(layer_done_);
+#endif
     if (commit_exec_) cudaGraphExecDestroy(commit_exec_);
     if (cs_) cudaStreamDestroy(cs_);
     if (copy_) { cudaStreamSynchronize(copy_); cudaStreamDestroy(copy_); }
@@ -188,10 +200,6 @@ Verifier::~Verifier() {
 
 bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState& ss, const VerifyHits& hits,
                     const NativeHead* head, int max_t, std::string& err) {
-#ifdef STRATA_ENABLE_SYCL
-    err = "SYCL speculative verification needs event-completed layer boundaries; GPU/CPU polling is unsupported";
-    return false;
-#endif
     g_diag_verifier.store(this);
     diag_verify_fn().store(&diag_active_verifier);
     for (auto& slot : g_live) {
@@ -336,6 +344,10 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
     }
     cudaMemset(arena_, 0, count.used);
     prof_on_ = std::getenv("STRATA_VERIFY_PROFILE") != nullptr;
+#ifdef STRATA_ENABLE_SYCL
+    // The CUDA global-timer stamps have no SYCL counterpart.
+    prof_on_ = false;
+#endif
     if (prof_on_) {
         const size_t np = (size_t) g.n_layers * kProfPer + 4;
         if (cudaMalloc((void**) &prof_, np * 8) != cudaSuccess) { prof_on_ = false; prof_ = nullptr; cudaGetLastError(); }
@@ -359,11 +371,20 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
         err = "verify: event create failed";
         return false;
     }
+#ifdef STRATA_ENABLE_SYCL
+    if (cudaEventCreateWithFlags(&layer_done_, cudaEventDisableTiming) != cudaSuccess) {
+        err = "verify: layer completion event create failed";
+        return false;
+    }
+#endif
     // E-6: a layer whose routed experts are all resident is planned on the device (STRATA_VERIFY_DEVICE_PLAN=1: on;
     // exact, but neutral on RIBPC 1-2 GPUs: off by default)
     {
         const char* v = std::getenv("STRATA_VERIFY_DEVICE_PLAN");
         device_plan_ = v != nullptr && std::atoi(v) != 0;
+#ifdef STRATA_ENABLE_SYCL
+        device_plan_ = false; // Plans cross completed events; no mapped flag waits.
+#endif
     }
     if (device_plan_) {
         bool ok2 = cudaMalloc((void**) &skip_, 64) == cudaSuccess && cudaMemset(skip_, 0, 64) == cudaSuccess;
@@ -738,7 +759,9 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
             wait_flag_ge_or(m_flagA_, ring, skip_ + grp, cs);
             copy_i32_from_mapped_unless(pl, m_plan_ + (size_t) grp * (size_t) plan_i32_, plan_i32_, skip_ + grp, ring, cs);
         } else {
+#ifndef STRATA_ENABLE_SYCL
             wait_flag_ge(m_flagA_, ring, cs);                  // the pool published this group's GPU plan
+#endif
             copy_i32_from_mapped(pl, m_plan_ + (size_t) grp * (size_t) plan_i32_, plan_i32_, cs);
         }
         stamp(l, 19, grp);
@@ -769,7 +792,11 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
         grouped(p_ptr, p_start, p_counts, 0);
         stamp(l, 20, grp);
         if (device_plan_) wait_flag_ge_or(m_flagB_, ring, skip_ + grp, cs);
-        else wait_flag_ge(m_flagB_, ring, cs);                 // the PCIe share is in staging (DMA) or mapped
+        else {
+#ifndef STRATA_ENABLE_SYCL
+            wait_flag_ge(m_flagB_, ring, cs);                 // the PCIe share is in staging (DMA) or mapped
+#endif
+        }
         if (sink_.pcie_mode == 2) {                            // stage it with a copy kernel, then point at staging
             const int64_t per = G == 2 ? kStagingBlobs / 2 : kStagingBlobs;
             uint8_t* stage = staging_ + (size_t) (grp * per) * lay.max_blob;
@@ -786,7 +813,9 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
             copy_or_zero_from_mapped(parts_ + (size_t) tb * K * N, m_ymiss_ + (size_t) tb * K * N, (long long) n * K * N,
                                      skip_ + grp, ring, cs);
         } else {
+#ifndef STRATA_ENABLE_SYCL
             wait_flag_ge(m_flag_, ring, cs);               // the CPU's share is in the mapped rows
+#endif
             stamp(l, 23, grp);
             if (dec_batch)   // only the CPU rows cross PCIe (p_dst[0, counts[1]) = the GPU's own rows)
                 copy_rows_from_mapped(parts_ + (size_t) tb * K * N, m_ymiss_ + (size_t) tb * K * N, (int64_t) n * K, N,
@@ -819,6 +848,15 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
         if (!pre(lb_, grp)) return false;
     for (int64_t l = lb_; l < le_; ++l)
         for (int grp = 0; grp < G; ++grp) {
+#ifdef STRATA_ENABLE_SYCL
+            // Nothing submitted here may read the host plan/results before the
+            // caller completes the preceding segment and serves this group.
+            if (!end_segment(T, err)) return false;
+            if (cudaStreamBeginCapture(cs, cudaStreamCaptureModeThreadLocal) != cudaSuccess) {
+                err = "verify: begin layer segment capture failed";
+                return false;
+            }
+#endif
             if (!post(l, grp)) return false;
             if (l + 1 < le_ && !pre(l + 1, grp)) return false;
         }
@@ -894,7 +932,48 @@ std::string Verifier::profile_report() {
     return out;
 }
 
+#ifdef STRATA_ENABLE_SYCL
+bool Verifier::end_segment(int T, std::string& err) {
+    cudaGraph_t graph = nullptr;
+    const cudaError_t ce = cudaStreamEndCapture(cs_, &graph);
+    if (ce != cudaSuccess) {
+        err = std::string("verify: end segment capture: ") + cudaGetErrorString(ce);
+        return false;
+    }
+    cudaGraphExec_t exec = nullptr;
+    const cudaError_t ie = cudaGraphInstantiate(&exec, graph, 0);
+    cudaGraphDestroy(graph);
+    if (ie != cudaSuccess) {
+        err = std::string("verify: instantiate segment: ") + cudaGetErrorString(ie);
+        return false;
+    }
+    segments_[T].push_back(exec);
+    return true;
+}
+#endif
+
 bool Verifier::capture(int T, std::string& err) {
+#ifdef STRATA_ENABLE_SYCL
+    if (!segments_[T].empty()) return true;
+    if (cudaStreamBeginCapture(cs_, cudaStreamCaptureModeThreadLocal) != cudaSuccess) {
+        err = "verify: begin capture failed";
+        return false;
+    }
+    if (!record_window(T, cs_, err) || !end_segment(T, err)) {
+        // A failed kernel may leave the current segment recording. Close it
+        // before releasing already finalized segments; a later call can retry.
+        cudaGraph_t unfinished = nullptr;
+        cudaStreamEndCapture(cs_, &unfinished);
+        if (unfinished) cudaGraphDestroy(unfinished);
+        cudaGetLastError();
+        for (auto e : segments_[T]) cudaGraphExecDestroy(e);
+        segments_[T].clear();
+        return false;
+    }
+    std::fprintf(stderr, "strata verify: captured the %d-token window in %zu event-completed segments\n",
+                 T, segments_[T].size());
+    return true;
+#else
     if (exec_[T] != nullptr) return true;
     if (cudaStreamBeginCapture(cs_, cudaStreamCaptureModeThreadLocal) != cudaSuccess) {
         err = "verify: begin capture failed";
@@ -955,6 +1034,7 @@ bool Verifier::capture(int T, std::string& err) {
     std::fprintf(stderr, "strata verify: captured the %d-token window (upload %s, sync %s)\n", T,
                  cudaGetErrorString(ue), cudaGetErrorString(us));
     return true;
+#endif
 }
 
 bool Verifier::capture_commit(std::string& err) {
@@ -1059,17 +1139,26 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     *(volatile uint32_t*) h_flag_ = 0;
     *(volatile uint32_t*) h_flagA_ = 0;
     *(volatile uint32_t*) h_flagB_ = 0;
+#ifdef STRATA_ENABLE_SYCL
+    reached_.store(0);
+#endif
     std::atomic_thread_fence(std::memory_order_seq_cst);
     last_t_ = T;
     last_pos0_ = pos0;
     for (int t = 0; t < T; ++t) last_tokens_[t] = tokens[t];
     ms_host += ms_since(t0);
     VDBG("staged; launching\n");
+#ifdef STRATA_ENABLE_SYCL
+    const cudaError_t le = cudaGraphLaunch(segments_[T][0], cs_);
+#else
     const cudaError_t le = cudaGraphLaunch(exec_[T], cs_);
+#endif
     if (le != cudaSuccess) { err = std::string("verify: launch: ") + cudaGetErrorString(le); return false; }
     (void) cudaStreamQuery(cs_);
     VDBG("launched\n");
+#ifndef STRATA_ENABLE_SYCL
     volatile uint32_t* const seq = h_seq_;
+#endif
     volatile uint32_t* const flag = h_flag_;
     const int G = groups_[T] > 0 ? groups_[T] : 1;
     const int gtb[2] = {0, (T + 1) / 2}, gte[2] = {G == 2 ? (T + 1) / 2 : T, T};
@@ -1080,9 +1169,21 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         const int grp = (int) (k % G);
         const uint32_t want = (uint32_t) (k + 1);
         const Clock::time_point a = Clock::now();
+        progress_at("verify window: waiting for the GPU to reach layer", l);
+#ifdef STRATA_ENABLE_SYCL
+        // The event is outside capture. Its completion covers all payload
+        // stores; the host never races a device-written mapped sequence word.
+        const cudaError_t er = cudaEventRecord(layer_done_, cs_);
+        const cudaError_t es = er == cudaSuccess ? cudaEventSynchronize(layer_done_) : er;
+        if (es != cudaSuccess) {
+            err = std::string("verify: layer completion: ") + cudaGetErrorString(es);
+            return false;
+        }
+        if (released_.load()) { err = "verify: the window was released"; return false; }
+        reached_.store(want);
+#else
         auto last_flush = a;
         uint32_t spins = 0;
-        progress_at("verify window: waiting for the GPU to reach layer", l);
         while (*seq < want) {
             _mm_pause();
             if ((++spins & 1023u) != 0) continue;
@@ -1102,6 +1203,7 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
                 return false;
             }
         }
+#endif
         const Clock::time_point b = Clock::now();
         VDBG("layer %lld rang\n", (long long) l);
         cur_layer_ = want - 1;
@@ -1128,6 +1230,24 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         if (!(test_stall && k + 1 == steps)) *flag = want;
         ms_wait += std::chrono::duration<double, std::milli>(b - a).count();
         ms_pool += ms_since(b);
+#ifdef STRATA_ENABLE_SYCL
+        // DMA callbacks and staging sources must finish before the next graph
+        // consumes them or the next CPU layer can reuse its transient storage.
+        const cudaError_t copies = cudaStreamSynchronize(copy_);
+        if (copies != cudaSuccess) {
+            err = std::string("verify: expert copies: ") + cudaGetErrorString(copies);
+            return false;
+        }
+        if (released_.load() || (test_stall && k + 1 == steps)) {
+            err = "verify: host results withheld" + released_note(release_gpu_waits(5000));
+            return false;
+        }
+        const cudaError_t next = cudaGraphLaunch(segments_[T][size_t(k + 1)], cs_);
+        if (next != cudaSuccess) {
+            err = std::string("verify: next segment launch: ") + cudaGetErrorString(next);
+            return false;
+        }
+#endif
     }
     progress_at("verify window: waiting for the GPU to finish the window (flags A/B/M raised)", (int64_t) T);
     // #267: a window the GPU never finishes (a spin kernel that never sees its flag) holds the host here; the stall
@@ -1233,8 +1353,8 @@ void Verifier::set_plan_slot(int grp) {
 
 // Flag B only rises: a host function of an earlier layer may run after a later layer already raised it directly.
 void Verifier::raise_flag(uint32_t* flag, uint32_t value) {
-    volatile long* f = (volatile long*) flag;
 #if defined(_WIN32)
+    volatile long* f = (volatile long*) flag;
     long cur = *f;
     while ((uint32_t) cur < value) {
         const long prev = _InterlockedCompareExchange(f, (long) value, cur);
