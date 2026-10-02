@@ -27,6 +27,8 @@
 
 namespace strata::kernels {
 
+// SYCL: these pointers may refer to host USM, with CPU access only after the
+// producing queue/event completes. Concurrent CPU/GPU mutation is unsupported.
 /// The host copy of one layer's K/V: device-mapped pointers (UVA) into pinned memory, identity layout
 /// `[block][kv_head][page_size][head_dim]`. All null when the layer is fully resident.
 struct KvHostPools {
