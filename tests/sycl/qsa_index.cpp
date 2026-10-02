@@ -1,4 +1,5 @@
 #include "strata/kernels/mrope.hpp"
+#include "strata/kernels/native_qsa_indexer.hpp"
 #include "strata/kernels/qsa.hpp"
 #include "strata/kernels/rope.hpp"
 #include "strata/sycl/runtime.hpp"
@@ -36,6 +37,94 @@ void close(float a, double b, double tol, const char *what) {
   if (!std::isfinite(a) || std::abs(a - b) > tol * (1 + std::abs(b)))
     throw std::runtime_error(std::string(what) + ": " + std::to_string(a) +
                              " vs " + std::to_string(b));
+}
+void native_pool() {
+  constexpr int N = 23, D = 128, P = (N / 4 + 1) * D;
+  auto shape = qsa_real_shapes();
+  Buffer<float> raw(N * D), gamma(D), tail(3 * D), dead(D), pooled(P),
+      tail2(3 * D), dead2(D), pooled2(P);
+  Buffer<int32_t> position(1), block(1), block2(1);
+  QsaIndexerBuffers a{tail.data(), dead.data(), pooled.data(), block.data()};
+  QsaIndexerBuffers b{tail2.data(), dead2.data(), pooled2.data(),
+                      block2.data()};
+  std::vector<float> input(N * D), weight(D), rounded(N * D);
+  for (int i = 0; i < N * D; ++i) {
+    input[i] = float(std::sin(i * .713) * (1 + (i % 11)));
+    rounded[i] = float(sycl::half(input[i]));
+  }
+  for (int d = 0; d < D; ++d)
+    weight[d] = .5f + float(d % 9) / 13;
+  raw.put(input);
+  gamma.put(weight);
+  auto *q = &runtime->compute();
+  for (int mode = 0; mode < 3; ++mode) {
+    RopeScaling sc;
+    if (mode) {
+      sc.type = mode == 1 ? RopeScalingType::Linear : RopeScalingType::YaRN;
+      sc.factor = 4;
+    }
+    tail.put(std::vector<float>(3 * D));
+    dead.put(std::vector<float>(D));
+    pooled.put(std::vector<float>(P));
+    block.put({-1});
+    tail2.put(std::vector<float>(3 * D));
+    dead2.put(std::vector<float>(D));
+    pooled2.put(std::vector<float>(P));
+    block2.put({-1});
+    for (int i = 0; i < N; ++i) {
+      position.put({i});
+      native_qsa_indexer_append(raw.data() + i * D, position.data(), 100,
+                                gamma.data(), 1e-6f, a, shape, N, sc, q);
+    }
+    int p0 = 0;
+    for (int count : {1, 2, 6, 1, 8, 5}) {
+      native_qsa_indexer_append_batch(raw.data() + p0 * D, count, p0, 100,
+                                      gamma.data(), 1e-6f, b, shape, N, sc, q);
+      p0 += count;
+    }
+    check(tail.get() == tail2.get() && dead.get() == dead2.get() &&
+              pooled.get() == pooled2.get() && block.get() == block2.get(),
+          "native batch state differs");
+    check(block.get()[0] == 116, "native block position");
+    auto out = pooled.get();
+    const auto args = sc.kernel_args(64);
+    const float theta = std::pow(float(sc.freq_base), -2.f / 64);
+    for (int bidx = 0; bidx < 6; ++bidx) {
+      const bool spare = bidx == 5;
+      std::vector<float> means(D), ref(D);
+      double ss = 0;
+      for (int d = 0; d < D; ++d) {
+        float sum = rounded[(spare ? 0 : bidx * 4) * D + d];
+        for (int j = 1; j < 4; ++j)
+          sum += rounded[(spare ? 0 : bidx * 4 + j) * D + d];
+        means[d] = .25f * sum;
+        ss += double(means[d]) * means[d];
+      }
+      for (int d = 0; d < D; ++d)
+        ref[d] = float(means[d] / std::sqrt(ss / D + 1e-6) * weight[d]);
+      for (int pair = 0; pair < 32; ++pair) {
+        float c, s;
+        rope_scaled_angle(float(spare ? 0 : 100 + 4 * bidx) *
+                              std::pow(theta, float(pair)),
+                          args.freq_scale, args.corr_low, args.corr_high,
+                          args.ext_factor, args.attn_factor, pair, c, s);
+        const float x = ref[pair], z = ref[pair + 32];
+        ref[pair] = x * c - z * s;
+        ref[pair + 32] = x * s + z * c;
+      }
+      for (int d = 0; d < D; ++d)
+        close(out[bidx * D + d], ref[d], 2e-6, "native pool oracle");
+    }
+    const auto before = pooled.get();
+    for (int p : {-1, N}) {
+      position.put({p});
+      native_qsa_indexer_append(raw.data(), position.data(), 100, gamma.data(),
+                                1e-6f, a, shape, N, sc, q);
+    }
+    check(before == pooled.get(), "invalid native position modified state");
+  }
+  std::cout << "Native indexer: 3 scaling modes, chunked/step equality and CPU "
+               "oracle passed\n";
 }
 void selection(int n, int pattern) {
   QsaShapes s = qsa_real_shapes();
@@ -242,6 +331,7 @@ void pooling(int dim, int block, bool multi, bool scaled) {
 int main() {
   try {
     runtime = sycl_backend::runtime_for();
+    native_pool();
     for (int n : {0, 1, 2051, 2052, 8193, 32768})
       for (int pattern = 0; pattern < 4; ++pattern)
         selection(n, pattern);
