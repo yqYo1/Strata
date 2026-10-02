@@ -3429,7 +3429,12 @@ int main(int argc, char** argv) {
         drive.d.d_dst = d_hit_dst;
         drive.d.h_slot.resize((size_t) K);
         cudaEvent_t hit_done = nullptr;
-        if (cudaEventCreate(&hit_done) != cudaSuccess) {
+#ifdef STRATA_ENABLE_SYCL
+        const auto hit_event_created = cudaEventCreateWithFlags(&hit_done, cudaEventDisableTiming);
+#else
+        const auto hit_event_created = cudaEventCreate(&hit_done);
+#endif
+        if (hit_event_created != cudaSuccess) {
             std::fprintf(stderr, "strata generate: the hit path could not create its probe event\n");
             return 1;
         }

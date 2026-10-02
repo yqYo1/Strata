@@ -456,10 +456,20 @@ cudaError_t cudaGraphInstantiate(cudaGraphExec_t *out, cudaGraph_t graph,
                                  cudaGraphNode_t *, char *, size_t) {
   return cudaGraphInstantiate(out, graph, 0ull);
 }
-cudaError_t cudaGraphLaunch(cudaGraphExec_t graph, cudaStream_t st) {
+static cudaError_t launch_graph(cudaGraphExec_t graph, cudaStream_t st,
+                               cudaEvent_t completion) {
   return attempt([&] {
     require(graph, "null executable graph");
+    if (completion)
+      require(!completion->state->timing,
+              "graph completion requires a disabled-timing event");
     auto &q = queue(st);
+    if (completion) {
+      std::lock_guard lock(registry_mutex);
+      auto it = streams.find(&q);
+      require(it == streams.end() || !it->second.recording,
+              "graph completion cannot be bound during capture");
+    }
     std::lock_guard lock(graph->mutex);
     auto event = q.submit([&](sycl::handler &h) {
       if (graph->last)
@@ -472,7 +482,21 @@ cudaError_t cudaGraphLaunch(cudaGraphExec_t graph, cudaStream_t st) {
         std::lock_guard elock(state->mutex);
         state->event = event;
       }
+    if (completion) {
+      std::lock_guard elock(completion->state->mutex);
+      completion->state->event = event;
+      completion->state->captured = false;
+    }
   });
+}
+cudaError_t cudaGraphLaunch(cudaGraphExec_t graph, cudaStream_t st) {
+  return launch_graph(graph, st, nullptr);
+}
+cudaError_t strata::sycl_backend::compat::graph_launch_with_completion(
+    cudaGraphExec_t graph, cudaStream_t st, cudaEvent_t completion) {
+  if (!completion)
+    return fail(cudaErrorInvalidValue, "null graph completion event");
+  return launch_graph(graph, st, completion);
 }
 cudaError_t cudaGraphUpload(cudaGraphExec_t graph, cudaStream_t st) {
   return attempt([&] {

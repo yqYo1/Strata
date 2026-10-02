@@ -588,7 +588,12 @@ bool SessionLoopScratch::init(size_t parts_bytes_in, std::string& err) {
         return false;
     }
     std::memset(y_miss, 0, parts_bytes);
-    if (cudaEventCreate(&probe) != cudaSuccess) {
+#ifdef STRATA_ENABLE_SYCL
+    const auto probe_created = cudaEventCreateWithFlags(&probe, cudaEventDisableTiming);
+#else
+    const auto probe_created = cudaEventCreate(&probe);
+#endif
+    if (probe_created != cudaSuccess) {
         err = "SessionLoopScratch: cudaEventCreate failed";
         free();
         return false;
@@ -719,17 +724,23 @@ bool session_loop(const ModelGeometry& g, int64_t pos, int32_t pos_base, Session
         const bool separated = overlap && gr.routes != nullptr;
         if (separated) pre = gr.routes[layer];
 #endif
-        cudaError_t status = cudaGraphLaunch(pre, cs);
+        cudaError_t status;
+#ifdef STRATA_ENABLE_SYCL
+        status = strata::sycl_backend::compat::graph_launch_with_completion(pre, cs, probe);
+#else
+        status = cudaGraphLaunch(pre, cs);
+#endif
         if (status != cudaSuccess) return status;
         // This event completes the routed payload, before the separately
         // queued shared expert. Host reads never require concurrent USM writes.
+#ifndef STRATA_ENABLE_SYCL
         status = cudaEventRecord(probe, cs);
         if (status != cudaSuccess) return status;
+#endif
 #ifdef STRATA_ENABLE_SYCL
         if (separated) {
-            status = cudaGraphLaunch(gr.shared[layer], cs);
-            if (status != cudaSuccess) return status;
-            status = cudaEventRecord(scratch->shared_done, cs);
+            status = strata::sycl_backend::compat::graph_launch_with_completion(
+                gr.shared[layer], cs, scratch->shared_done);
         }
 #endif
         return status;

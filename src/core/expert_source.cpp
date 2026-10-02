@@ -2346,8 +2346,17 @@ void expert_hit_run(void* user, void* stream, HitPhase phase, const int32_t* ids
                 std::memcpy(graphs.meta, d.h_native_hit_meta.data(), (2 * cap + 2) * sizeof(int32_t));
                 std::memcpy(graphs.dst, d.h_dst.data(), list_bytes);
                 std::atomic_thread_fence(std::memory_order_release);
-                if (size_t(d.layers) >= d.native_hit_graphs->layers.size() ||
-                    cudaGraphLaunch(d.native_hit_graphs->layers[size_t(d.layers)], cs) != cudaSuccess) {
+                if (size_t(d.layers) >= d.native_hit_graphs->layers.size()) {
+                    d.failed = true;
+                    d.fail = "native hit graph layer out of range";
+                    return;
+                }
+                auto exec = d.native_hit_graphs->layers[size_t(d.layers)];
+                const auto launched = d.hit_done
+                    ? strata::sycl_backend::compat::graph_launch_with_completion(
+                          exec, cs, (cudaEvent_t) d.hit_done)
+                    : cudaGraphLaunch(exec, cs);
+                if (launched != cudaSuccess) {
                     d.failed = true;
                     d.fail = "native hit graph launch failed";
                     return;
@@ -2378,7 +2387,8 @@ void expert_hit_run(void* user, void* stream, HitPhase phase, const int32_t* ids
                     cap, cap, d.x_q8_0_hit, d.hit_scratch, d.hit_out, cs);
             }
             d.hit_pending = true;
-            if (d.hit_done != nullptr) cudaEventRecord((cudaEvent_t) d.hit_done, cs);
+            if (!captured_native && d.hit_done != nullptr)
+                cudaEventRecord((cudaEvent_t) d.hit_done, cs);
             if (d.hit_poke && d.hit_done != nullptr) (void) cudaEventQuery((cudaEvent_t) d.hit_done);
             return;
         }

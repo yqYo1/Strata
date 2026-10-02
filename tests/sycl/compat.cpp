@@ -117,25 +117,49 @@ int main() {
     // Executables retain resources from the shared recording queue. They must
     // remain replayable after that queue is destroyed.
     CHECK(cudaStreamDestroy(recording));
+    cudaEvent_t graph_done{};
+    CHECK(cudaEventCreateWithFlags(&graph_done, cudaEventDisableTiming));
+    using strata::sycl_backend::compat::graph_launch_with_completion;
+    require(graph_launch_with_completion(exec, a, nullptr) == cudaErrorInvalidValue,
+            "graph completion requires an event");
+    require(graph_launch_with_completion(exec, a, done) == cudaErrorInvalidValue,
+            "graph completion cannot report profiling timestamps");
+    (void)cudaGetLastError();
     for (int iteration = 0; iteration < 12; ++iteration) {
       for (size_t i = 0; i < n; ++i)
         in[i] = int(i) - iteration * 77;
       auto producer = iteration % 2 ? a : b;
       auto consumer = iteration % 2 ? b : a;
-      CHECK(cudaGraphLaunch(exec, producer));
-      CHECK(cudaEventRecord(done, producer));
-      CHECK(cudaEventSynchronize(done));
+      CHECK(graph_launch_with_completion(exec, producer, graph_done));
+      CHECK(cudaEventSynchronize(graph_done));
+      CHECK(cudaEventQuery(graph_done));
       for (size_t i = 0; i < n; ++i) {
         require(out[i] == in[i] * 7 + 2, "segment publication");
         out[i] += iteration + int(i % 3);
       }
-      CHECK(cudaGraphLaunch(consume, consumer));
-      CHECK(cudaEventRecord(done, consumer));
-      CHECK(cudaEventSynchronize(done));
+      CHECK(graph_launch_with_completion(consume, consumer, graph_done));
+      CHECK(cudaEventSynchronize(graph_done));
       for (size_t i = 0; i < n; ++i)
         require(out[i] == (in[i] * 7 + 2 + iteration + int(i % 3)) * 5 - 3,
                 "completed segment consumes current host results");
     }
+    // A graph's completion can also order another queue without a host wait.
+    // Rebinding the event must not change the already submitted dependency.
+    for (int iteration = 0; iteration < 12; ++iteration) {
+      for (size_t i = 0; i < n; ++i)
+        in[i] = int(i) + iteration * 13;
+      CHECK(graph_launch_with_completion(exec, a, graph_done));
+      CHECK(cudaStreamWaitEvent(b, graph_done));
+      CHECK(graph_launch_with_completion(consume, b, graph_done));
+      CHECK(cudaEventSynchronize(graph_done));
+      for (size_t i = 0; i < n; ++i)
+        require(out[i] == (in[i] * 7 + 2) * 5 - 3,
+                "graph completion cross-queue dependency");
+    }
+    require(cudaEventElapsedTime(&ms, begin, graph_done) == cudaErrorInvalidValue,
+            "disabled graph completion rejects elapsed time");
+    (void)cudaGetLastError();
+    CHECK(cudaEventDestroy(graph_done));
     CHECK(cudaGraphExecDestroy(consume));
     CHECK(cudaEventDestroy(
         captured)); // Executable retains only weak event references.

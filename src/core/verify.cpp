@@ -1149,7 +1149,8 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     ms_host += ms_since(t0);
     VDBG("staged; launching\n");
 #ifdef STRATA_ENABLE_SYCL
-    const cudaError_t le = cudaGraphLaunch(segments_[T][0], cs_);
+    const cudaError_t le = strata::sycl_backend::compat::graph_launch_with_completion(
+        segments_[T][0], cs_, layer_done_);
 #else
     const cudaError_t le = cudaGraphLaunch(exec_[T], cs_);
 #endif
@@ -1171,10 +1172,9 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         const Clock::time_point a = Clock::now();
         progress_at("verify window: waiting for the GPU to reach layer", l);
 #ifdef STRATA_ENABLE_SYCL
-        // The event is outside capture. Its completion covers all payload
-        // stores; the host never races a device-written mapped sequence word.
-        const cudaError_t er = cudaEventRecord(layer_done_, cs_);
-        const cudaError_t es = er == cudaSuccess ? cudaEventSynchronize(layer_done_) : er;
+        // The graph submission's event covers all payload stores; the host
+        // never races a device-written mapped sequence word.
+        const cudaError_t es = cudaEventSynchronize(layer_done_);
         if (es != cudaSuccess) {
             err = std::string("verify: layer completion: ") + cudaGetErrorString(es);
             return false;
@@ -1242,7 +1242,8 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
             err = "verify: host results withheld" + released_note(release_gpu_waits(5000));
             return false;
         }
-        const cudaError_t next = cudaGraphLaunch(segments_[T][size_t(k + 1)], cs_);
+        const cudaError_t next = strata::sycl_backend::compat::graph_launch_with_completion(
+            segments_[T][size_t(k + 1)], cs_, layer_done_);
         if (next != cudaSuccess) {
             err = std::string("verify: next segment launch: ") + cudaGetErrorString(next);
             return false;
@@ -1455,7 +1456,12 @@ bool Verifier::commit(int n_keep, std::string& err) {
     h_commit_[1] = n_keep - 1;
     for (int t = 0; t < max_t_; ++t) h_commit_[2 + t] = t < n_keep ? (int32_t) (last_pos0_ + t) : -1;
     std::atomic_thread_fence(std::memory_order_seq_cst);
+#ifdef STRATA_ENABLE_SYCL
+    const cudaError_t le = strata::sycl_backend::compat::graph_launch_with_completion(
+        commit_exec_, cs_, commit_done_);
+#else
     const cudaError_t le = cudaGraphLaunch(commit_exec_, cs_);
+#endif
     if (le != cudaSuccess) { err = std::string("verify: commit launch: ") + cudaGetErrorString(le); return false; }
     // set_commit_async: no wait here - the next window runs on the same stream after it, and the drafter (its own
     // stream) reads only this window's final rows and its own K/V. h_commit_ is next written after the next window's
@@ -1464,8 +1470,10 @@ bool Verifier::commit(int n_keep, std::string& err) {
         const cudaError_t se = cudaStreamSynchronize(cs_);
         if (se != cudaSuccess) { err = std::string("verify: commit: ") + cudaGetErrorString(se); return false; }
     } else {
+#ifndef STRATA_ENABLE_SYCL
         const cudaError_t re = cudaEventRecord(commit_done_, cs_);
         if (re != cudaSuccess) { err = std::string("verify: commit event: ") + cudaGetErrorString(re); return false; }
+#endif
         commit_pending_ = true;
     }
     if (ple_stage())   // stages that share one session must advance it once
