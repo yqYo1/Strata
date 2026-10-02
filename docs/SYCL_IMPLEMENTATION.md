@@ -873,6 +873,41 @@ workloads were not isolated. Full settings, output ids, traces and the standalon
 192-graph memory probe are in
 [`bench/results/2026-10-03-sycl-capture-queue/`](../bench/results/2026-10-03-sycl-capture-queue/).
 
+### Native FP16 scale conversion in ESIMD kernels
+
+Q2_0, Q3_K, IQ4_XS and the Q5_K vocabulary head share a native FP16-to-FP32
+conversion helper. It converts finite scales, including subnormals and signed
+zero, through the hardware instruction. It expands infinities and NaN payloads
+from their original bits to preserve the previous decoder's behavior. The
+accumulation, reduction and explicitly rounded product boundaries stay the same.
+An exhaustive test checks all 65,536 FP16 encodings.
+
+On 2026-10-03, B570/5600X, the warm single-column dense Q3_K projection sum was
+`3.982` before and `3.391 ms` after. Twelve sets of ten real Q2_0 experts measured
+`1.907` and `1.870 ms` with ESIMD; their SPMD control was `5.322 ms` in both runs.
+These are 50-repeat captured graphs, with the median of three device-event
+intervals, excluding CPU expert work and generation. All expert output bits
+matched the SPMD control.
+
+The cold 37-token story with 4,135 fixed slots, resident RAM, four workers,
+prefill 16, context 512 and speculation disabled gave:
+
+| Trial | Manual conversion, token/s | Native conversion, token/s |
+| --- | ---: | ---: |
+| 1 | 20.48 | 20.56 |
+| 2 | 20.37 | 20.79 |
+| 3 | 20.35 | 19.88 |
+
+The medians were `20.37` and `20.56 token/s` (`+0.9%`). In the third after run,
+PLE host time increased to `2.456 ms/token`; the other two after runs measured
+`0.627` and `0.656 ms/token`. All six runs produced the same 128 ids and cache
+hit counts. All 32 cold logit rows and 165 fixed-input rows were bitwise equal.
+The first/middle/last-row real-weight test passed all 448 tensors with three
+activation columns. A functional MTP probe retained the same 32 ids, 13 rounds
+and 19/28 accepted drafts; it does not establish MTP throughput. Background
+workloads were not isolated. Settings and raw measurements are in
+[`bench/results/2026-10-03-sycl-native-half/`](../bench/results/2026-10-03-sycl-native-half/).
+
 ### Event-completed speculative windows
 
 SYCL verification captures the window in segments. The first segment embeds

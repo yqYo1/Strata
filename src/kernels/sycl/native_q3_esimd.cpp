@@ -23,6 +23,7 @@
 
 #include "strata/kernels/iq_kernels.hpp"
 #include "strata/sycl/launch.hpp"
+#include "strata/sycl/esimd_half.hpp"
 #include <sycl/ext/intel/esimd.hpp>
 #include <sycl/ext/intel/experimental/esimd/math.hpp>
 
@@ -35,19 +36,7 @@ constexpr int V = 16;
 using U = e::simd<uint32_t, V>;
 using I = e::simd<int32_t, V>;
 using F = e::simd<float, V>;
-F half_decode(U h) SYCL_ESIMD_FUNCTION {
-  const U sign = (h & 0x8000u) << 16;
-  const U exponent = (h >> 10) & 31u, mantissa = h & 1023u;
-  U bits = sign | ((exponent + 112u) << 23) | (mantissa << 13);
-  F result = bits.bit_cast_view<float>();
-  F sub = e::convert<float>(mantissa) * 0x1p-24f;
-  U sub_bits = sub.bit_cast_view<uint32_t>();
-  sub_bits |= sign;
-  result.merge(sub_bits.bit_cast_view<float>(), exponent == 0);
-  U special = sign | 0x7f800000u | (mantissa << 13);
-  result.merge(special.bit_cast_view<float>(), exponent == 31);
-  return result;
-}
+
 // Q3_K's 110-byte stride aligns alternate blocks to two bytes, not four.
 U load32(const uint8_t *p, U offsets) SYCL_ESIMD_FUNCTION {
   const auto *words = reinterpret_cast<const uint16_t *>(p);
@@ -61,7 +50,7 @@ F block_dot(const uint8_t *w, const uint8_t *x) SYCL_ESIMD_FUNCTION {
   const U scale_offset = lane - part + part / 4u;
   const U vl = load32(w, 32u + 4u * lane);
   const U vh = ~load32(w, 4u * part) >> offset;
-  const F d = half_decode(
+  const F d = esimd_half_decode<V>(
       e::gather<uint16_t, V>(reinterpret_cast<const uint16_t *>(w), U(108u)));
   F sum = 0.f;
 #pragma unroll
@@ -77,7 +66,7 @@ F block_dot(const uint8_t *w, const uint8_t *x) SYCL_ESIMD_FUNCTION {
     const U base = (offset + uint32_t(i)) * 36u;
     const I u = e::gather<int32_t, V>(reinterpret_cast<const int32_t *>(x),
                                       base + 4u + 4u * part);
-    const F dx = half_decode(
+    const F dx = esimd_half_decode<V>(
         e::gather<uint16_t, V>(reinterpret_cast<const uint16_t *>(x), base));
     // low/high bytes are 0..3/0..4. Two signed DP4As implement the
     // per-byte subtraction without carries between packed bytes.
