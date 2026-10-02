@@ -766,6 +766,38 @@ outputs, raw MMVF dots, pending residual updates, final mixing and aliases.
 Flags, ids and timings are in
 [`bench/results/2026-10-03-sycl-gr-esimd/`](../bench/results/2026-10-03-sycl-gr-esimd/).
 
+### Single-token IQ4_XS projections
+
+Single-column IQ4_XS dense projections now use ESIMD DP4A. The nonlinear
+nibble codebook is selected from four packed constants before forming signed
+bytes. Two explicit rounded products and the original 128-lane reduction
+preserve the SPMD arithmetic. `STRATA_OLD_IQ_MMVQ=1` selects the SPMD path.
+
+On 2026-10-03, B570/5600X, all outputs of the real pack's 56 IQ4_XS matrices
+were bitwise equal to SPMD for fixed synthetic Q8_1 inputs. With warm weights,
+50 captured repeats and the median of three device-event intervals, their
+single-column sum fell from `3.524` to `2.565 ms`. A three-column prototype
+increased the sum from `5.542` to `7.697 ms`; multiple columns therefore retain
+the original SPMD weight reuse. These sums exclude uploads and CPU work.
+
+With the same 37-token story, resident RAM, four CPU workers, 2,048 initially
+empty per-layer cache slots, prefill 16, context 512, FP16 KV and speculative
+decoding disabled, three alternating 128-token runs measured
+`20.14 / 19.66 / 19.48 token/s` before and
+`20.51 / 19.83 / 20.59 token/s` after. Medians were `19.66` and `20.51 token/s`
+(`+4.3%`). All six produced the same 128 ids and cache-hit counts. The final
+lookup also preserved every logit in the 165-position fixed-input comparison.
+Background workloads were not isolated, and the approximately 29 token/s
+comparison target remains open.
+
+The MMVQ test covers the original SPMD oracle, finite FP16 scale edge cases,
+partially filled virtual blocks, row tails and 1/3/8 activation columns. The
+first/middle/last-row real-weight check passed all 448 tensors. Full options,
+timings and comparisons are in
+[`bench/results/2026-10-03-sycl-iq4xs-esimd/`](../bench/results/2026-10-03-sycl-iq4xs-esimd/).
+The projection tool's `--compare-iq4xs` checks complete matrix outputs;
+`--spmd-iq4xs` selects the original kernels for timings.
+
 ### Event-completed speculative windows
 
 SYCL verification captures the window in segments. The first segment embeds
