@@ -506,6 +506,50 @@ These are limited checks, not numerical equivalence or a broad quality gate.
 [The prefill records](../bench/results/2026-10-02-sycl-prefill/run.json) include
 prompt ids, options, dump sizes and hashes, and the complete comparison reports.
 
+### Native Q2 CPU-order diagnostic
+
+`--expert-cache-cpu-order` now accepts native Q2_0/Q2_0 experts on SYCL with
+widths 2,560/640, the AVX2 CPU path and `--spec 0`. It remains opt-in. Its
+quantizer uses FP32 scales and the compiled AVX2 quantizer's reciprocal and
+half-away rounding. The projections retain eight independent AVX2 accumulators
+and their reduction order. SwiGLU uses Intel's high-accuracy exponential.
+
+On B570, replaying all 48 layers at position 18 of the 25-token arithmetic
+prompt produced bitwise equal up projections and down projections when given
+the same quantized inputs. Hidden quantization codes also matched. Floating
+point hidden values and scales can still differ. Maximum final expert error
+against the CPU pool was `1.19209e-6` with the high-accuracy exponential;
+the ordinary Q8_1 expert path's maximum was `0.00620055` in this replay.
+The CSV files and full-model comparisons are recorded in
+`bench/results/2026-10-02-sycl-native-q2/`.
+
+With 96 per-layer cache slots, the arithmetic prompt matched all 25 CPU
+reference argmax IDs. Against SYCL with CPU experts, minimum logit cosine was
+`0.961894`. Using the ordinary SYCL exponential in this CPU-order experiment
+instead gave minimum cosine `0.130277` and a mismatch at position 18. The two
+memory sources, mmap and resident RAM, produced identical logits for that
+experiment, so the difference was not explained by mmap staging alone.
+
+With automatic cache sizing and resident RAM, the 167-token context prompt
+matched 165/167 CPU model argmax IDs and generated `blue`. Against SYCL with CPU
+experts it matched 169/170 positions, with minimum cosine `0.985900`. This
+CPU-order path generated four tokens at `6.67 tok/s`, below the ordinary native
+cache result recorded below. It is a numerical diagnostic, not the default
+performance path; these two prompts do not establish broad quality parity.
+
+`sycl_native_single_dispatch` also checks the FP32 activation scales and codes
+against the actual AVX2 quantizer, including zeros and rounding ties. For manual
+expert replay, build `sycl_expert_contract` and provide a trace recorded with
+`--dump-expert-inputs`:
+
+```sh
+cmake --build build-sycl --target sycl_expert_contract -j2
+build-sycl/sycl_expert_contract PACK SHARD1 TRACE FIRST_RECORD COUNT
+```
+
+The tool checks an independent Q8_1 dot interpretation, reports CPU-order
+differences and separates projection errors from hidden quantization differences.
+
 ### Longer prompt and parallel GR streams
 
 A 167-token synthetic chat mixed English notes, Japanese text and a Python

@@ -1,0 +1,197 @@
+{
+  "date": "2026-10-02",
+  "base_commit": "b466cf9",
+  "hardware": {
+    "gpu": "Intel Arc B570 10 GiB",
+    "cpu": "AMD Ryzen 5 5600X, AVX2 without AVX512",
+    "ram_gib": 125
+  },
+  "software": {
+    "dpcpp": "2026.1.1",
+    "level_zero_driver": "1.17.39395+14",
+    "driver_settings": "default"
+  },
+  "model": "ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF Q2_0, ed59f92082b1e93c0e96d60a8b11aab089b52f09",
+  "scope": "Opt-in Q2_0/Q2_0 2560/640 per-layer hits, AVX2 CPU reference, spec 0. Not a speed optimization or bitwise full-model parity.",
+  "expert_replay": {
+    "sycl_exp": {
+      "records": 48,
+      "position": 18,
+      "metrics_max": {
+        "gpu_projection_scaled_error": 2.4611e-07,
+        "cpu_gpu_max_absolute": 0.00620055,
+        "cpu_gpu_rmse": 0.000534153,
+        "cpu_order_max_absolute": 1.43051e-06,
+        "cpu_order_rmse": 1.00886e-07,
+        "cpu_order_up_mismatches": 0.0,
+        "cpu_order_hidden_max_absolute": 4.76837e-07,
+        "cpu_order_hidden_codes_differ": 0.0,
+        "cpu_order_down_mismatches": 0.0
+      },
+      "up_bit_mismatches_total": 0,
+      "down_bit_mismatches_total": 0,
+      "hidden_code_mismatches_total": 0
+    },
+    "intel_ha_exp": {
+      "records": 48,
+      "position": 18,
+      "metrics_max": {
+        "gpu_projection_scaled_error": 2.4611e-07,
+        "cpu_gpu_max_absolute": 0.00620055,
+        "cpu_gpu_rmse": 0.000534153,
+        "cpu_order_max_absolute": 1.19209e-06,
+        "cpu_order_rmse": 1.00582e-07,
+        "cpu_order_up_mismatches": 0.0,
+        "cpu_order_hidden_max_absolute": 2.38419e-07,
+        "cpu_order_hidden_codes_differ": 0.0,
+        "cpu_order_down_mismatches": 0.0
+      },
+      "up_bit_mismatches_total": 0,
+      "down_bit_mismatches_total": 0,
+      "hidden_code_mismatches_total": 0
+    }
+  },
+  "arithmetic_25": {
+    "prompt_tokens": [
+      248045,
+      846,
+      198,
+      3710,
+      369,
+      220,
+      17,
+      10,
+      17,
+      30,
+      17308,
+      440,
+      1066,
+      279,
+      1324,
+      13,
+      248046,
+      198,
+      248045,
+      74455,
+      198,
+      248068,
+      198,
+      248069,
+      271
+    ],
+    "flags": [
+      "--max-new 8",
+      "--max-context 128",
+      "--spec 0",
+      "--expert-cache 96",
+      "--expert-cache-per-layer",
+      "--expert-cache-cpu-order",
+      "--mmap-experts",
+      "--pool-workers 4",
+      "--check-logits",
+      "--dump-logits"
+    ],
+    "cpu_expert_sycl_baseline": {
+      "reference_start": 0,
+      "candidate_start": 0,
+      "rows": 25,
+      "vocabulary": 248320,
+      "bitwise_equal": false,
+      "top1_matches": 25,
+      "top1_mismatch_positions": [],
+      "cosine_min": 0.9618938477212609,
+      "cosine_mean": 0.9976651333298127,
+      "rmse_max": 0.40762285421975847,
+      "absolute_error_max": 3.3197178840637207
+    },
+    "cpu_model_reference": {
+      "reference_start": 0,
+      "candidate_start": 0,
+      "rows": 25,
+      "vocabulary": 248320,
+      "bitwise_equal": false,
+      "top1_matches": 25,
+      "top1_mismatch_positions": [],
+      "cosine_min": 0.9760467945747895,
+      "cosine_mean": 0.9973012631169214,
+      "rmse_max": 0.324335617123007,
+      "absolute_error_max": 1.9049018621444702
+    },
+    "before_high_accuracy_exp": {
+      "reference_start": 0,
+      "candidate_start": 0,
+      "rows": 25,
+      "vocabulary": 248320,
+      "bitwise_equal": false,
+      "top1_matches": 24,
+      "top1_mismatch_positions": [
+        18
+      ],
+      "cosine_min": 0.130277046468872,
+      "cosine_mean": 0.9640482571347851,
+      "rmse_max": 2.756109797735678,
+      "absolute_error_max": 14.951107025146484
+    },
+    "mmap_vs_ram_first25_bitwise_equal": true,
+    "decode_tok_s": 6.77
+  },
+  "context_167": {
+    "prompt_source": "../2026-10-02-sycl-context/run.json",
+    "flags": [
+      "--max-new 4",
+      "--max-context 512",
+      "--spec 0",
+      "--expert-cache auto",
+      "--expert-cache-per-layer",
+      "--expert-cache-cpu-order",
+      "--pool-workers 4",
+      "--check-logits",
+      "--stats",
+      "--dump-logits"
+    ],
+    "arena": "ordinary resident RAM",
+    "cache_slots": 2893,
+    "cache_hits": 30184,
+    "expert_entries": 81600,
+    "cpu_model_reference": {
+      "reference_start": 0,
+      "candidate_start": 0,
+      "rows": 167,
+      "vocabulary": 248320,
+      "bitwise_equal": false,
+      "top1_matches": 165,
+      "top1_mismatch_positions": [
+        45,
+        52
+      ],
+      "cosine_min": 0.9608146570809012,
+      "cosine_mean": 0.9981923164913221,
+      "rmse_max": 0.7074239647099634,
+      "absolute_error_max": 5.054678916931152
+    },
+    "cpu_expert_sycl_baseline": {
+      "reference_start": 0,
+      "candidate_start": 0,
+      "rows": 170,
+      "vocabulary": 248320,
+      "bitwise_equal": false,
+      "top1_matches": 169,
+      "top1_mismatch_positions": [
+        36
+      ],
+      "cosine_min": 0.9859000333766038,
+      "cosine_mean": 0.9988451601626974,
+      "rmse_max": 0.41376618805848725,
+      "absolute_error_max": 2.8943099975585938
+    },
+    "output": [
+      10025,
+      248046,
+      198,
+      248044
+    ],
+    "decode_tok_s": 6.67,
+    "prefill_tok_s": 6.57,
+    "performance_limit": "Only four generated tokens; machine also runs unrelated workloads. Lower throughput than the ordinary native Q8_1 cache run recorded in the context benchmark."
+  }
+}
