@@ -92,6 +92,8 @@ struct KvStreamCounters {
     bool overflow = false;
 };
 /// Synchronous read of the counters (debug and the end-of-request summary).
+/// SYCL: drains runtime device 0 queues; callers using an external queue must
+/// complete that queue first, and the map must belong to runtime device 0 context.
 KvStreamCounters kv_stream_counters(const KvStreamMap& m);
 
 /// Bytes of one block (page) of K and V together.

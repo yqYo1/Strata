@@ -140,6 +140,13 @@ settings; see the research document for the machine configuration:
   including partial blocks, ties, signed zero, NaNs and infinities. The initial
   selector uses 32 binary threshold passes; its reference entry point uses the
   same kernel. Tensor-core scoring reports unavailable so callers use FP32.
+- KV streaming passed byte comparisons for FP16, INT8 (codes and scales)
+  and Q4 transfers. Three-slot tests cover duplicate selections, hits, CLOCK
+  eviction, epoch wrap, bounded miss-list overflow, metadata canaries, ring
+  restore across multiple wraps and full staging. Metadata resolution is a
+  serial GPU task followed by parallel copies; throughput is unmeasured.
+  Counter reads drain runtime device 0 queues; external queue users must
+  complete their work before reading counters.
 - Split attention directly over paged FP16, INT8, Q4 and hybrid K8/V4:
   twelve format/page cases passed the double-precision reference with maximum
   absolute error `3.541e-7`. Three queries with 13/67/129 selected cells and
