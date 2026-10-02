@@ -313,3 +313,53 @@ system headers and loader (no oneAPI compiler needed):
 
 Local background: [engine details](DETAILS.md), [paper](paper/Strata-Paper.pdf),
 [HIP port and parity caveats](AMD_HIP.md), and [native MMVQ contract](native-mmvq.md).
+
+## Performance comparison and specialized-engine references (2026-10-02)
+
+A usable external reference is the RTX 3070 8 GB measurement submitted with
+[upstream PR 441](https://github.com/Niko1221/Strata/pull/441).
+The [pinned report](https://github.com/CC-David-CC/Strata-a5500/blob/12fa2196a5a89c6feb577ce65b18b225de0c50e6/docs/benchmarks/2026-10-01-serving.md)
+and [configuration/measurement JSON](https://github.com/CC-David-CC/Strata-a5500/blob/12fa2196a5a89c6feb577ce65b18b225de0c50e6/docs/benchmarks/2026-10-01-serving.json)
+record Strata 0.1.33, GSQ-RCO IQ3_S, Q8 KV, greedy decoding and automatic
+expert caching. Startup is excluded; file caches were not cleared.
+
+| RTX 3070 task, 8,192 input tokens | MTP | Output tokens | Prefill seconds | Generation tok/s |
+| --- | --- | ---: | ---: | ---: |
+| Coding | off | 2,462 | 8.59 | 28.67 |
+| Writing | off | 1,628 | 8.59 | 29.73 |
+| Coding | four-token window, threshold 0.5 | 2,555 | 20.23 | 37.24 |
+| Writing | four-token window, threshold 0.5 | 1,380 | 20.11 | 29.81 |
+
+This is a contributor's serving branch, not an unmodified upstream release.
+These rows give a concrete comparison target, not a B570 prediction. The local
+Q2_0 fixture differs from IQ3_S, and the report's CPU/RAM/PCIe conditions still
+need to be recovered before claiming a matched comparison. Different output
+lengths also prevent treating generation throughput as total-request speed.
+
+DS4 was inspected at commit `0aaea5a238fb41a35106a551e73c8409dfb751ac`.
+Its [Qwen guide](https://github.com/antirez/ds4/blob/0aaea5a238fb41a35106a551e73c8409dfb751ac/docs/QWEN38_FLASH_NEXT.md)
+describes a different quantization and resident-weight setup; its throughput
+is not a replacement for the 8 GB Strata comparison. Its checkpoint checks
+cover chunk boundaries, replay and recurrent state, useful dimensions for this
+port's next model-level validation.
+
+The [Qwen Metal implementation](https://github.com/antirez/ds4/blob/0aaea5a238fb41a35106a551e73c8409dfb751ac/metal/qwen4.metal#L3623)
+groups routed tokens by expert and computes 32-row tiles with 8/16/32/64-token
+variants. It dequantizes 64-wide weight slices into local memory, then uses
+matrix instructions with FP32 accumulators. Small remainder groups select
+smaller tiles. Its batched Q8 dense path keeps matrix indexing static to retain
+register storage and reuses weights across 8 or 16 tokens.
+
+For B570, the corresponding experiment is a SYCL joint-matrix expert kernel
+selected by actual tokens per expert, with small groups retaining the existing
+quantized vector path. Tile sizes must follow measured occupancy and Intel's
+matrix shapes. This is an optimization candidate, not an implemented or timed
+improvement. Comparing it requires the same routed groups, quantization and
+state checks; matrix accumulation may change rounding.
+
+Follow DS4's [benchmark procedure](https://github.com/antirez/ds4/blob/0aaea5a238fb41a35106a551e73c8409dfb751ac/docs/PERFORMANCE.md):
+alternate repeated runs, keep quantization/context/sampling fixed, and report
+prefill, decode and total latency separately. For this port, also record CPU
+workers, effective PCIe transfer rate, expert-cache occupancy, draft acceptance
+and whether compilation/loading is included. A first-token smoke run is not
+steady-state throughput evidence.
