@@ -106,9 +106,10 @@ void Gemm::native(const uint16_t *x, int type, const void *w, float *y,
   if (ld <= 0)
     ld = N;
   shape(T, N, K, ld, beta);
-  if (!strata::kernels::iq_row_bytes(type, K) || K % 256 || scratch_elems_ < K)
+  if (!strata::kernels::iq_row_bytes(type, K) || scratch_elems_ < K)
     throw std::invalid_argument(
-        "unsupported SYCL native GEMM format or insufficient scratch");
+        "unsupported SYCL native GEMM: type=" + std::to_string(type) +
+        " K=" + std::to_string(K) + " scratch=" + std::to_string(scratch_elems_));
   validate_spans({{y, size_t(T - 1) * ld * 4 + size_t(N) * 4},
                   {scratch_, size_t(scratch_elems_) * 2}},
                  {{x, size_t(T) * K * 2},

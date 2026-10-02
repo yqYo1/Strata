@@ -23,10 +23,14 @@ template <class Out> Out convert(float value) {
 template <class Out>
 void dequant(int type, const void *src, int64_t n, Out *out, void *stream) {
   const auto f = block_format(type);
-  if (!f.width || n <= 0 || n % 256 || n % f.width)
+  if (!f.width || n <= 0 || n % f.width)
     throw std::invalid_argument("invalid SYCL GGUF dequantization type/shape");
+  if (uintptr_t(out) % alignof(Out))
+    throw std::invalid_argument("misaligned SYCL GGUF dequantization output");
+  // Packed rows such as Q8_0 have a 34-byte stride, so a row slice can
+  // begin at a 2-byte-aligned address even when the original tensor is aligned.
   validate_spans({{out, checked_count(n, sizeof(Out))}},
-                 {{src, checked_count(n / f.width, f.bytes)}});
+                 {{src, checked_count(n / f.width, f.bytes)}}, 2);
   auto event = queue_for(stream).parallel_for(
       sycl::range<1>(size_t(n / f.width)), [=](sycl::id<1> id) {
         float values[256];
