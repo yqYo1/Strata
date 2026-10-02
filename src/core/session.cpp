@@ -680,7 +680,13 @@ bool session_loop(const ModelGeometry& g, int64_t pos, int32_t pos_base, Session
             // without them the ring's ordering against `x_f`/`ids`/`weights` is unstated - but they do not
             // remove the need for the call, and nothing here should be read as claiming they do.
             const cudaError_t q = cudaEventQuery(probe);
+#ifdef STRATA_ENABLE_SYCL
+            // Host USM has no concurrent CPU/GPU access contract on the target
+            // device. Read the published payload only after graph completion.
+            if (q == cudaSuccess && !rang && *seq >= want) {
+#else
             if (!rang && *seq >= want) {
+#endif
                 rang = true;
                 mid_graph = (q != cudaSuccess);
             }
@@ -829,6 +835,10 @@ namespace strata::core {
 bool session_capture_token(const WeightTable& tables, const ModelGeometry& g, SessionState& s, float* parts_dev,
                            const float* y_miss_host, size_t parts_bytes, TokenGraph& tg, std::string& err,
                            const TokenHits* hits) {
+#ifdef STRATA_ENABLE_SYCL
+    err = "SYCL uses per-layer graphs with event-completed CPU handoff; token graph polling is unsupported";
+    return false;
+#endif
     if (hits != nullptr && !hits->on()) { err = "session_capture_token: incomplete hit configuration"; return false; }
     if (tg.captured) return true;
     if (s.db == nullptr || s.db->d_flag == nullptr || s.db->d_seq == nullptr) {

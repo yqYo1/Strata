@@ -4,14 +4,17 @@ if(NOT STRATA_COMPILER_HAS_FSYCL)
   message(FATAL_ERROR "SYCL requires a SYCL compiler; configure with -DCMAKE_CXX_COMPILER=icpx")
 endif()
 
-add_library(strata_sycl_runtime STATIC src/sycl/runtime.cpp)
-target_include_directories(strata_sycl_runtime PUBLIC ${PROJECT_SOURCE_DIR}/include)
+add_library(strata_sycl_runtime STATIC src/sycl/runtime.cpp src/sycl/compat.cpp)
+target_include_directories(strata_sycl_runtime PUBLIC ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/include/strata/sycl/compat)
 target_compile_options(strata_sycl_runtime PUBLIC -fsycl)
 target_link_options(strata_sycl_runtime PUBLIC -fsycl)
 target_link_libraries(strata_sycl_runtime PRIVATE strata_warnings)
 target_compile_definitions(strata_sycl_runtime PUBLIC STRATA_ENABLE_SYCL=1)
 
-add_library(strata_core STATIC src/sycl/device.cpp)
+# pinned.cu contains host runtime calls only.
+set_source_files_properties(src/core/pinned.cu PROPERTIES LANGUAGE CXX COMPILE_FLAGS "-x c++")
+add_library(strata_core STATIC src/sycl/device.cpp src/core/pinned.cu
+  src/platform/memory.cpp src/core/graph.cpp src/core/weights.cpp src/core/layout.cpp)
 target_link_libraries(strata_core PUBLIC strata_sycl_runtime strata_plan)
 add_executable(strata-device src/core/device_main.cpp)
 target_link_libraries(strata-device PRIVATE strata_core)
@@ -24,14 +27,28 @@ add_library(strata_kernels STATIC src/kernels/sycl/elementwise.cpp src/kernels/s
                                  src/kernels/sycl/attention.cpp src/kernels/sycl/qsa_index.cpp
                                  src/kernels/sycl/native_qsa_indexer.cpp src/kernels/sycl/qsa_select.cpp
                                  src/kernels/sycl/decode_attention.cpp src/kernels/sycl/kv_stream.cpp
-                                 src/kernels/sycl/ple.cpp src/kernels/sycl/s2_gemv_q8.cpp src/kernels/sycl/s_gemv.cpp src/kernels/sycl/shared_expert.cpp src/kernels/sycl/iq.cpp)
+                                 src/kernels/sycl/ple.cpp src/kernels/sycl/s2_gemv_q8.cpp src/kernels/sycl/s_gemv.cpp src/kernels/sycl/shared_expert.cpp src/kernels/sycl/iq.cpp
+                                 src/kernels/ngram.cpp src/ngram/ple_reader.cpp)
 target_link_libraries(strata_kernels PUBLIC strata_core strata_artifact)
 target_compile_options(strata_kernels PRIVATE -ffp-contract=off)
 set_source_files_properties(src/kernels/sycl/rope.cpp src/kernels/sycl/native_qsa_indexer.cpp src/kernels/sycl/ple.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math")
 
+add_library(strata_engine STATIC src/core/layer.cpp src/core/session.cpp src/core/expert_source.cpp src/core/remote_experts.cpp
+  src/core/expert_cache.cpp src/core/native_head.cpp src/core/native_dense.cpp src/core/verify.cpp src/core/mtp.cpp
+  src/core/conversation_snapshot.cpp src/core/conversation_state.cpp src/core/conversation_memory.cpp)
+target_link_libraries(strata_engine PUBLIC strata_core strata_kernels strata_kernels_cpu)
+
 option(STRATA_SYCL_TESTS "Build GPU parity and runtime tests for SYCL" ON)
 if(STRATA_SYCL_TESTS)
   enable_testing()
+  add_executable(sycl_host_engine_test tests/sycl/host_engine.cpp)
+  target_link_libraries(sycl_host_engine_test PRIVATE strata_engine)
+  add_test(NAME sycl_host_engine COMMAND sycl_host_engine_test)
+  set_tests_properties(sycl_host_engine PROPERTIES TIMEOUT 60)
+  add_executable(sycl_compat_test tests/sycl/compat.cpp)
+  target_link_libraries(sycl_compat_test PRIVATE strata_sycl_runtime)
+  add_test(NAME sycl_compat COMMAND sycl_compat_test)
+  set_tests_properties(sycl_compat PROPERTIES TIMEOUT 60)
   add_executable(sycl_runtime_test tests/sycl/runtime.cpp)
   target_link_libraries(sycl_runtime_test PRIVATE strata_sycl_runtime)
   add_test(NAME sycl_runtime COMMAND sycl_runtime_test)

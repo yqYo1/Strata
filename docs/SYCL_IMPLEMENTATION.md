@@ -14,14 +14,16 @@ source /opt/intel/oneapi/setvars.sh
 export ONEAPI_DEVICE_SELECTOR=level_zero:gpu
 cmake -S . -B build-sycl -DCMAKE_CXX_COMPILER=icpx \
   -DSTRATA_ENABLE_SYCL=ON -DSTRATA_NATIVE_EXPERTS=OFF -DSTRATA_BUILD_TESTS=OFF
-cmake --build build-sycl --target strata-device sycl_runtime_test sycl_kernels_test sycl_gdn_test sycl_quantize_test sycl_bf16_test sycl_mmvq_test sycl_gr_test sycl_rope_test sycl_kv_test sycl_attention_test sycl_qsa_index_test sycl_decode_attention_test sycl_ple_test sycl_moe_test -j2
+cmake --build build-sycl --target strata-device sycl_host_engine_test sycl_compat_test sycl_runtime_test sycl_kernels_test sycl_gdn_test sycl_quantize_test sycl_bf16_test sycl_mmvq_test sycl_gr_test sycl_rope_test sycl_kv_test sycl_attention_test sycl_qsa_index_test sycl_decode_attention_test sycl_ple_test sycl_moe_test -j2
 ctest --test-dir build-sycl -R '^sycl_' --output-on-failure
 build-sycl/strata-device --list-devices
 ```
 
 `STRATA_SYCL_TESTS` controls the independent SYCL tests. The native CPU expert
-library is disabled in this runtime-only command to avoid fetching ggml before
-the inference path is connected. CUDA, HIP and SYCL are mutually exclusive.
+library is disabled in this command to avoid fetching ggml. Enable it with
+`-DSTRATA_NATIVE_EXPERTS=ON`; `STRATA_GGML_DIR` can point to a checkout at the
+commit pinned in the root CMake file. The shared `strata_engine` static library
+compiles with that configuration, but the inference executable is not yet linked. CUDA, HIP and SYCL are mutually exclusive.
 
 For the separate large-address check, with at least 5 GiB of free VRAM:
 
@@ -48,6 +50,22 @@ the 4 GiB boundary, and reads both back. It does not measure memory bandwidth.
   arithmetic and alignment of actual pointers. Memory planning queries free
   VRAM rather than treating total capacity as available memory.
 
+The shared host engine has a SYCL implementation of its CUDA-named runtime
+API. Stream handles are in-order SYCL queues; event waits cross queues in the
+same context. Graph capture/finalization/replay uses SYCL command graphs.
+Events recorded inside a graph report completion of the entire graph, so a CPU
+handoff cannot precede a later copy in that graph. Their elapsed-time queries
+are rejected. Graph execution is serialized across repeated launches, including
+launches on different queues. Arbitrary host-memory registration is unsupported;
+only host-USM allocations have a mapped device alias. This adapter currently
+supports device ordinal zero for engine execution.
+
+The shared per-layer scheduler reads the host doorbell only after its completion
+event succeeds. Whole-token polling graphs and the polling-based speculative
+verifier explicitly reject SYCL use. The ordinary expert arena skips host
+registration, and blocking cache fills reuse a host-USM staging buffer sized to
+one largest expert.
+
 ## Validation recorded on 2026-10-02
 
 Intel Arc B570, DPC++ 2026.1.1, Level Zero driver `1.17.39395+14`, normal driver
@@ -60,6 +78,15 @@ settings; see the research document for the machine configuration:
 - A deliberately throwing host task: the asynchronous error reached the caller
   and remained observable on subsequent checks.
 - Bounded completion wait and the existing `strata-device --selftest`: passed.
+- Host engine adapter: twelve changing-input graph replays alternating two
+  queues, event-completed D2H handoff, cross-queue dependencies, event timing,
+  graph node inspection, pitched-copy padding, host callbacks and freeing with
+  pending transfers passed. Unsupported host registration and last-error
+  behavior were checked.
+- Shared host engine: the existing captured-graph wrapper passed sixteen
+  changing-input replays. An ordinary 64 KiB expert arena was allocated and
+  released without a runtime error. Cache slots of 4/8/16 KiB passed eight
+  changing-payload rounds over two close/reopen cycles through bounded staging.
 - Distinct 64-bit writes below and above 4 GiB: both values matched.
 - FP16/BF16 conversion over 73,748 inputs, including every FP16 encoding,
   rounding boundaries, random FP32 bit patterns and NaNs: passed against host
