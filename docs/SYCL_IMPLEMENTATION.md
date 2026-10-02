@@ -103,10 +103,15 @@ settings; see the research document for the machine configuration:
   after warm-up, measured by device events. This selected the existing 0.14
   PCIe-share heuristic instead of its unmeasured 0.55 fallback; the selected
   share still needs end-to-end calibration.
-- oneMKL GEMM: 19 CPU-reference cases passed, including FP16 and BF16,
+- oneMKL GEMM: 22 CPU-reference cases passed, including FP16 and BF16,
   T/N/K of 1/17/32, 17/259/320 and 8/640/2560, beta 0/0.5/1, output row
-  padding, and Q8_0 weights split across six dequantization slices. The error
-  bound was `4e-6 * (1 + sum(abs(reference terms)))`.
+  padding, and Q8_0 weights split across six dequantization slices at K of
+  32, 64, 256 and 640. Odd row slices include 2-byte-aligned packed inputs.
+  Native dequantization checks the format's block width; a blanket 256-value
+  restriction had rejected valid shared-expert projections. The error bound
+  was `4e-6 * (1 + sum(abs(reference terms)))`. A 40-product pipeline with an
+  eight-slot device ring, sixteen-slot host ring and re-recorded events also
+  preserved every product across asynchronous copies and GEMMs.
 - Prefill post-operations: three-token normalization and recomputation paths
   produced identical BF16 high/correction images and mixed FP32 values.
   Residual updates, strided RMS normalization, FP16 SwiGLU saturation,
@@ -350,11 +355,16 @@ end-to-end expert throughput.
 Native packs can use `--spec 0` (the default) with the captured per-layer
 scheduler. Each CPU handoff uses the native row-split expert pool with one token;
 canonical S-form planes are not required for projections served from native
-GGUF bytes. This path currently requires `--expert-cache 0` without remote
-expert caches. GPU hits and the polling verifier still need further integration.
+GGUF bytes. Native GPU cache hits use the layer's GGUF format and each slot's
+actual pointer, including variable-size slots. The CPU pool consumes the same
+hit decisions and leaves those routed rows at zero before GPU results are added.
+Remote expert caches and `--expert-cache-cpu-order` remain unsupported on this
+per-layer native path. The polling verifier still needs further integration.
 `sycl_native_single_dispatch_test` compares two changing activations and layers
 against direct native CPU row calls, including routing order, unweighted outputs,
-invalid ids and rejection of an unsupported GPU residency table.
+invalid ids and rejection of an unsupported GPU residency table. It also checks
+GPU hit handoff with mixed hit/miss rows, changing hit positions, miss-only
+layers, variable slot offsets, and prevention of duplicate result addition.
 
 A B570 smoke run on 2026-10-02 used the Q2_0 model/pack identified above, FP16 KV,
 context 64, four CPU workers, mmap experts, no GPU cache or PCIe miss split, and
@@ -423,3 +433,15 @@ reporting differences. `--rows` explicitly selects a common prefix when the
 SYCL dump also includes generated positions. `--require-exact` additionally
 fails on any bit difference, for repeated runs using the same backend. The
 ordinary report does not impose a model-quality threshold.
+
+A separate four-position run used the same model, context and CPU workers with
+`--tokens 1,2,220,100561 --max-new 1 --expert-cache 96 --expert-cache-per-layer`
+and the same dump options. The 96 slots were admitted, with 142 later resident
+hits and 1,682 CPU misses across 1,920 routed entries. All logits were finite;
+top-1 ids matched the CPU-only run at all four positions. Maximum absolute logit
+differences per position were 1.104, 0.525, 0.450 and 0.712; CPU-to-cache softmax
+KL divergences were 0.01426, 0.00472, 0.00373 and 0.00240. Routing id sets matched
+in 154 of 192 layer records (ordered lists in 99). The GPU expert uses Q8_1
+activation blocks, whereas the CPU pool follows its native CPU activation
+contract. This run validates the cache execution path, not numerical equivalence
+or a model-quality gate; the observed differences still require oracle analysis.
