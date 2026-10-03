@@ -16,6 +16,9 @@
 
 #include "strata/core/device.hpp"
 #include "strata/core/expert_cache.hpp"
+#ifdef STRATA_ENABLE_SYCL
+#include "strata/core/expert_slot_sizes.hpp"
+#endif
 #include "strata/core/conversation_snapshot.hpp"
 #include "strata/core/conversation_memory.hpp"
 #include "strata/core/coupled_draft.hpp"
@@ -3001,9 +3004,25 @@ int main(int argc, char** argv) {
     }
     // plan v0.3 P6: a native pack's blobs differ per layer, so with a profile its slots are sized per pair: the
     // same VRAM holds ~30% more IQ3_XXS experts than slots of the largest blob would
-    // #369: not with --expert-cache-per-layer - its per-layer slot ranges ignore the profile rank a sized slot was cut
-    // for, so a layer's larger blob could land in a smaller slot: that mode keeps slots of the largest blob
+    // #369: profile-ranked sizes cannot be used with per-layer admission: its slot ranges ignore profile rank.
+    // SYCL instead sizes every slot for its owning layer; other backends retain uniform per-layer slots.
     std::vector<int64_t> sized_slots;
+#ifdef STRATA_ENABLE_SYCL
+    std::vector<int64_t> per_layer_bytes;
+    if (native_pack && o.expert_cache > 0 && o.expert_cache_per_layer) {
+        const auto& lay = strata::kernels::cpu::expert_layout();
+        for (int64_t layer = 0; layer < g.n_layers; ++layer)
+            per_layer_bytes.push_back((int64_t) lay.blob_bytes(layer));
+        // Keep the uniform plan's byte budget and reserve. Slots in each
+        // layer's admission range need only that layer's format, even when
+        // adaptive replacement selects another expert in the same layer.
+        const uint64_t budget = uint64_t(o.expert_cache) * lay.max_blob;
+        if (auto_cache)
+            o.expert_cache = (int) strata::core::per_layer_slots_that_fit(
+                per_layer_bytes, budget, g.n_layers * g.n_expert);
+        sized_slots = strata::core::per_layer_slot_sizes(per_layer_bytes, o.expert_cache);
+    }
+#endif
     if (native_pack && o.expert_cache > 0 && !profile.empty() && !o.expert_cache_per_layer) {
         size_t free_b = 0, total_b = 0;
         cudaMemGetInfo(&free_b, &total_b);
@@ -3023,6 +3042,15 @@ int main(int argc, char** argv) {
     if (o.expert_cache > 0) {
         // keep the first `keep_bytes` of the cache (the profile's hottest experts first); false when nothing is left
         auto shrink_to = [&](int64_t keep_bytes) -> bool {
+#ifdef STRATA_ENABLE_SYCL
+            if (!per_layer_bytes.empty()) {
+                o.expert_cache = (int) strata::core::per_layer_slots_that_fit(
+                    per_layer_bytes, uint64_t(std::max<int64_t>(keep_bytes, 0)),
+                    o.expert_cache);
+                sized_slots = strata::core::per_layer_slot_sizes(per_layer_bytes, o.expert_cache);
+                return o.expert_cache > 0;
+            }
+#endif
             if (keep_bytes <= 0) { o.expert_cache = 0; sized_slots.clear(); return false; }
             if (!sized_slots.empty()) {
                 int64_t used = 0;
