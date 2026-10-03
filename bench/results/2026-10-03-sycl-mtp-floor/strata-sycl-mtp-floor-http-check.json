@@ -1,0 +1,358 @@
+{
+  "base_url": "http://127.0.0.1:18085",
+  "config": "/home/yayoi/.local/share/strata-sycl/serve-config.json",
+  "checks": [
+    {
+      "kind": "openai_nonstream",
+      "request": 1,
+      "seconds": 5.760039738001069,
+      "response": {
+        "id": "chatcmpl-df769cbbd3d144189a4751d6",
+        "object": "chat.completion",
+        "created": 1790990085,
+        "model": "qwen3.8-flash-next-sycl",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The rain hammered against the windowpane of"
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 37,
+          "completion_tokens": 8,
+          "total_tokens": 45,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 37,
+          "prompt_ms": 5127.5,
+          "prompt_per_token_ms": 138.581,
+          "prompt_per_second": 7.2,
+          "predicted_n": 8,
+          "predicted_ms": 629.2,
+          "predicted_per_token_ms": 78.65,
+          "predicted_per_second": 12.7,
+          "draft_n": 3,
+          "draft_n_accepted": 3
+        }
+      }
+    },
+    {
+      "kind": "openai_nonstream",
+      "request": 2,
+      "seconds": 1.4602313479990698,
+      "response": {
+        "id": "chatcmpl-283325cf940345e3a0cf2006",
+        "object": "chat.completion",
+        "created": 1790990090,
+        "model": "qwen3.8-flash-next-sycl",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The rain hammered against the windowpane of"
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 37,
+          "completion_tokens": 8,
+          "total_tokens": 45,
+          "prompt_tokens_details": {
+            "cached_tokens": 30
+          }
+        },
+        "timings": {
+          "cache_n": 30,
+          "prompt_n": 7,
+          "prompt_ms": 1103.4,
+          "prompt_per_token_ms": 157.629,
+          "prompt_per_second": 6.3,
+          "predicted_n": 8,
+          "predicted_ms": 353.5,
+          "predicted_per_token_ms": 44.188,
+          "predicted_per_second": 22.6,
+          "draft_n": 3,
+          "draft_n_accepted": 3
+        }
+      }
+    },
+    {
+      "kind": "cancel_stream_after_content",
+      "first_content": "The"
+    },
+    {
+      "kind": "openai_after_cancel",
+      "seconds": 1.5095998339966172,
+      "response": {
+        "id": "chatcmpl-a4cc70bf85eb4f03ab6a3d68",
+        "object": "chat.completion",
+        "created": 1790990093,
+        "model": "qwen3.8-flash-next-sycl",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The rain hammered against the windowpane of"
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 37,
+          "completion_tokens": 8,
+          "total_tokens": 45,
+          "prompt_tokens_details": {
+            "cached_tokens": 30
+          }
+        },
+        "timings": {
+          "cache_n": 30,
+          "prompt_n": 7,
+          "prompt_ms": 1090.8,
+          "prompt_per_token_ms": 155.829,
+          "prompt_per_second": 6.4,
+          "predicted_n": 8,
+          "predicted_ms": 311.5,
+          "predicted_per_token_ms": 38.938,
+          "predicted_per_second": 25.7,
+          "draft_n": 3,
+          "draft_n_accepted": 3
+        }
+      }
+    },
+    {
+      "kind": "anthropic_nonstream",
+      "response": {
+        "id": "msg_a71d29c932c642e48b468543",
+        "type": "message",
+        "role": "assistant",
+        "model": "qwen3.8-flash-next-sycl",
+        "content": [
+          {
+            "type": "text",
+            "text": "The rain hammered against the windowpane of"
+          }
+        ],
+        "stop_reason": "max_tokens",
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 7,
+          "output_tokens": 8,
+          "cache_read_input_tokens": 30
+        }
+      }
+    },
+    {
+      "kind": "openai_complete_stream",
+      "chunks": [
+        {
+          "id": "chatcmpl-d611a5fa4f504d66a599205e",
+          "object": "chat.completion.chunk",
+          "created": 1790990096,
+          "model": "qwen3.8-flash-next-sycl",
+          "choices": [
+            {
+              "index": 0,
+              "delta": {
+                "role": "assistant",
+                "content": ""
+              },
+              "finish_reason": null
+            }
+          ]
+        },
+        {
+          "id": "chatcmpl-d611a5fa4f504d66a599205e",
+          "object": "chat.completion.chunk",
+          "created": 1790990096,
+          "model": "qwen3.8-flash-next-sycl",
+          "choices": [
+            {
+              "index": 0,
+              "delta": {
+                "content": "The"
+              },
+              "finish_reason": null
+            }
+          ]
+        },
+        {
+          "id": "chatcmpl-d611a5fa4f504d66a599205e",
+          "object": "chat.completion.chunk",
+          "created": 1790990096,
+          "model": "qwen3.8-flash-next-sycl",
+          "choices": [
+            {
+              "index": 0,
+              "delta": {
+                "content": " rain"
+              },
+              "finish_reason": null
+            }
+          ]
+        },
+        {
+          "id": "chatcmpl-d611a5fa4f504d66a599205e",
+          "object": "chat.completion.chunk",
+          "created": 1790990096,
+          "model": "qwen3.8-flash-next-sycl",
+          "choices": [
+            {
+              "index": 0,
+              "delta": {
+                "content": " hammered"
+              },
+              "finish_reason": null
+            }
+          ]
+        },
+        {
+          "id": "chatcmpl-d611a5fa4f504d66a599205e",
+          "object": "chat.completion.chunk",
+          "created": 1790990096,
+          "model": "qwen3.8-flash-next-sycl",
+          "choices": [
+            {
+              "index": 0,
+              "delta": {
+                "content": " against"
+              },
+              "finish_reason": null
+            }
+          ]
+        },
+        {
+          "id": "chatcmpl-d611a5fa4f504d66a599205e",
+          "object": "chat.completion.chunk",
+          "created": 1790990096,
+          "model": "qwen3.8-flash-next-sycl",
+          "choices": [
+            {
+              "index": 0,
+              "delta": {
+                "content": " the"
+              },
+              "finish_reason": null
+            }
+          ]
+        },
+        {
+          "id": "chatcmpl-d611a5fa4f504d66a599205e",
+          "object": "chat.completion.chunk",
+          "created": 1790990096,
+          "model": "qwen3.8-flash-next-sycl",
+          "choices": [
+            {
+              "index": 0,
+              "delta": {
+                "content": " window"
+              },
+              "finish_reason": null
+            }
+          ]
+        },
+        {
+          "id": "chatcmpl-d611a5fa4f504d66a599205e",
+          "object": "chat.completion.chunk",
+          "created": 1790990096,
+          "model": "qwen3.8-flash-next-sycl",
+          "choices": [
+            {
+              "index": 0,
+              "delta": {
+                "content": "pane"
+              },
+              "finish_reason": null
+            }
+          ]
+        },
+        {
+          "id": "chatcmpl-d611a5fa4f504d66a599205e",
+          "object": "chat.completion.chunk",
+          "created": 1790990096,
+          "model": "qwen3.8-flash-next-sycl",
+          "choices": [
+            {
+              "index": 0,
+              "delta": {
+                "content": " of"
+              },
+              "finish_reason": null
+            }
+          ]
+        },
+        {
+          "id": "chatcmpl-d611a5fa4f504d66a599205e",
+          "object": "chat.completion.chunk",
+          "created": 1790990096,
+          "model": "qwen3.8-flash-next-sycl",
+          "choices": [
+            {
+              "index": 0,
+              "delta": {},
+              "finish_reason": "length"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 37,
+            "completion_tokens": 8,
+            "total_tokens": 45,
+            "prompt_tokens_details": {
+              "cached_tokens": 30
+            }
+          },
+          "timings": {
+            "cache_n": 30,
+            "prompt_n": 7,
+            "prompt_ms": 1078.4,
+            "prompt_per_token_ms": 154.057,
+            "prompt_per_second": 6.5,
+            "predicted_n": 8,
+            "predicted_ms": 295.6,
+            "predicted_per_token_ms": 36.95,
+            "predicted_per_second": 27.1,
+            "draft_n": 3,
+            "draft_n_accepted": 3
+          }
+        }
+      ],
+      "done": true,
+      "content_equal": true
+    }
+  ],
+  "models": {
+    "object": "list",
+    "data": [
+      {
+        "id": "qwen3.8-flash-next-sycl",
+        "object": "model",
+        "status": {
+          "value": "loaded"
+        },
+        "meta": {
+          "n_ctx": 512
+        },
+        "architecture": {
+          "input_modalities": [
+            "text"
+          ],
+          "output_modalities": [
+            "text"
+          ]
+        }
+      }
+    ]
+  },
+  "web_ui_status": 200
+}

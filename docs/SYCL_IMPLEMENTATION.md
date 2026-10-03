@@ -1,11 +1,80 @@
 # SYCL backend implementation
 
-The backend is under development. The runtime and device arena run on Intel Arc
-B570; the SYCL build runs short native-pack decode with CPU experts.
-Short-prompt logits have been compared with a CPU model reference, as recorded
-below. Broad quality validation and the target inference performance remain open.
+The SYCL backend runs native Q2_0 inference on this Linux Intel Arc B570 machine,
+with GPU expert caching, CPU experts in resident RAM, prefill, MTP and persistent
+requests through the Python server. The current measured configuration and its
+limits are below. The later dated sections retain the earlier measurements.
+Short-prompt logits have been compared with a CPU model reference; broad quality
+validation and measurements on other machines remain open.
 The implementation follows [the port research](SYCL_RESEARCH.md) and
 [the operation inventory](SYCL_BATTLEMAGE_OPERATIONS.md).
+
+## Current measured server configuration
+
+On 2026-10-03, Intel Arc B570 with 10 GiB VRAM, Ryzen 5 5600X and 125 GiB RAM,
+Qwen3.8-Flash-Next GSQ-RCO Q2_0 ran with DPC++ 2026.1.1, Level Zero driver
+`1.17.39395+14` and default driver settings. The local server config uses
+context 512, FP16 KV, four CPU workers, 16-token prefill, the shipped profile,
+automatic expert-cache sizing (3,792 slots here), 64 adaptive replacements every
+four verification rounds, MTP width four, minimum draft probability 0.9 and
+PCIe share zero. PLE reads use the existing direct-I/O path. Short verification
+windows use the default native SYCL graph recording; adaptive refills complete
+before the next window uses their residency map.
+
+Three fresh persistent processes per probability setting each served a
+37-token story prompt twice, then a 45-token Python merge-function prompt twice.
+Each request generated 128 tokens. Median decode rates were:
+
+| Request in each process | Probability 0.5, token/s | Probability 0.9, token/s |
+| --- | ---: | ---: |
+| First story | 19.26 | 21.27 |
+| Repeated story | 22.05 | 25.46 |
+| First Python merge function | 23.40 | 26.02 |
+| Repeated Python merge function | 26.05 | 29.70 |
+
+The repeated Python request reached the approximately 29 token/s reference
+target on this fixture. First requests and story requests remain slower. The
+timers exclude startup and prompt processing; first requests include lazy graph
+preparation. Repeated story and Python requests reused 30/37 and 38/45 prompt
+tokens respectively, and retained expert-cache contents from preceding requests.
+Background workloads were not isolated. This is a measurement on a 10 GiB B570,
+not a comparison with NVIDIA under matched memory capacity and conditions.
+
+`--spec-min-p` stops further MTP proposals when draft confidence is low; the
+target model still verifies the proposals. At 0.9, the first story accepted
+38/48 drafts rather than 63/116 at 0.5. The repeated Python request accepted
+88/90 rather than 88/115. Less rejected draft work improved these measurements.
+This change affects only the local server config, not tensor arithmetic,
+quantization or the engine's global CLI default.
+
+All three fresh processes with the same setting retained identical output ids,
+cache counts, prompt reuse and cancellation behavior across six requests.
+Different probability settings with adaptive placement can produce different
+continuations: the placement schedule changes which experts run on CPU or GPU.
+No cross-setting output equality or broad quality result is claimed. A separate
+fixed-placement check with 2,048 slots and adaptive changes disabled retained
+the same 64 output ids and all float32 bits in their 64 full-vocabulary heads
+between probabilities 0.5 and 0.9. It compares committed rows with the same input
+history; rejected draft rows differ between proposal windows and are excluded.
+
+An initial four-setting screen retained all samples for 0.5, 0.7, 0.9 and 0.99.
+The first repeated pair comes from that screen; the following two pairs ran 0.5
+then 0.9 in alternating fresh processes. Each process also cancelled a 128-token
+story after its first emitted token, generated the known eight-token continuation
+on the next request and exited successfully. After updating the local config to
+0.9, real HTTP checks passed for the web page, `/v1/models`, OpenAI chat and
+streaming, Anthropic messages, repeated output and cancellation recovery.
+The test server stopped cleanly. This HTTP check measures functionality, not
+the throughput in the table.
+
+All flags, prompts, output ids, decoded screen continuations, raw timings,
+DRM memory records, numeric comparisons and HTTP responses are in
+[`bench/results/2026-10-03-sycl-mtp-floor/run.json`](../bench/results/2026-10-03-sycl-mtp-floor/run.json).
+The server config is `~/.local/share/strata-sycl/serve-config.json`; its preceding
+0.5 configuration is backed up as `serve-config-before-floor-tuning.json` in
+the same directory. [The server instructions](#mtp-drafting-on-sycl) give the
+start command and API URL. Context 512 is the tested local setting; longer
+contexts have not been benchmarked with this configuration.
 
 ## Build and validate
 
@@ -83,7 +152,8 @@ output combination are also implemented. Prompt GDN uses the same recurrence as
 decode over the whole chunk, retaining each state column in registers. Paged KV
 append, scaled RoPE and canonical expert expansion reuse the decode formats.
 Prompt attention currently selects the batched FP32 split-attention fallback;
-a matrix attention kernel and end-to-end prompt validation remain outstanding.
+the real-model prompt checks are recorded below. A matrix attention kernel
+remains a possible optimization.
 These post-operations disable relaxed
 floating-point transformations: with the compiler's default device settings,
 the two normalization paths disagreed in their BF16 correction component.
