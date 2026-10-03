@@ -1,0 +1,188 @@
+{
+  "hardware": {
+    "gpu": "Intel Arc B570",
+    "cpu": "AMD Ryzen 5 5600X"
+  },
+  "software": {
+    "dpcpp": "2026.1.1",
+    "driver_settings": "unmodified"
+  },
+  "source_revision": "63e5604",
+  "synthetic": true,
+  "description": "Single-column IQ4_XS DPAS and register-table decoder prototypes; no production code change",
+  "conditions": {
+    "widths": [
+      2560,
+      6144
+    ],
+    "rows_by_width": {
+      "2560": [
+        32,
+        640,
+        6144,
+        10240
+      ],
+      "6144": [
+        32,
+        2560
+      ]
+    },
+    "seed": "0x937ac654",
+    "weights": "random packed IQ4_XS; ordinary FP16 scales and a second pass with 0/-0/subnormal/min-normal/negative/max-finite FP16 scale cases",
+    "activation": "random signed Q8_1 codes and finite FP16 scales, including edge scales",
+    "comparison": "memcmp every FP32 output against the original single-row ESIMD projection",
+    "driver": "Level Zero, ONEAPI_DEVICE_SELECTOR=level_zero:gpu",
+    "build": "icpx -std=c++20 -fsycl -O2 -DSTRATA_ENABLE_SYCL=1 -Iinclude/strata/sycl/compat -Iinclude CHECK.cpp build-sycl/libstrata_sycl_runtime.a -o CHECK",
+    "timing": "Initial xmx-check: 100 separately submitted graph replays, median of three device-event intervals; later lut-check and small-check: 100 kernels captured inside one graph, median of three device-event intervals per kernel; protocols should not be compared across scripts"
+  },
+  "files": {
+    "/tmp/strata-sycl-iq4-original.cpp": "original.cpp",
+    "/tmp/strata-sycl-iq4-xmx-prototype.cpp": "xmx-prototype.cpp",
+    "/tmp/strata-sycl-iq4-xmx-lut-prototype.cpp": "lut-prototype.cpp",
+    "/tmp/strata-sycl-iq4-xmx-small-prototype.cpp": "small-prototype.cpp",
+    "/tmp/strata-sycl-iq4-xmx-check.cpp": "xmx-check.cpp",
+    "/tmp/strata-sycl-iq4-lut-check.cpp": "lut-check.cpp",
+    "/tmp/strata-sycl-iq4-xmx-small-check.cpp": "small-check.cpp",
+    "/tmp/strata-sycl-iq4-xmx-check.log": "xmx-check.txt",
+    "/tmp/strata-sycl-iq4-lut-check.log": "lut-check.txt",
+    "/tmp/strata-sycl-iq4-xmx-small-check.log": "small-check.txt"
+  },
+  "retained": false,
+  "reason": "Every altered path retained output bits in the fixtures. None improved its own same-binary original-row control in the component timings, so the engine kernels remain unchanged.",
+  "primary_api_sources": [
+    "https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_intel_esimd/examples/dpas.md",
+    "https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_intel_grf_size.asciidoc"
+  ],
+  "measurements": {
+    "lut": [
+      {
+        "mode": "row",
+        "width": 2560,
+        "rows": 6144,
+        "device_ms": 0.0604156
+      },
+      {
+        "mode": "lut",
+        "width": 2560,
+        "rows": 6144,
+        "device_ms": 0.0712583
+      },
+      {
+        "mode": "xmx-lut",
+        "width": 2560,
+        "rows": 6144,
+        "device_ms": 0.0920021
+      },
+      {
+        "mode": "row",
+        "width": 2560,
+        "rows": 10240,
+        "device_ms": 0.073174
+      },
+      {
+        "mode": "lut",
+        "width": 2560,
+        "rows": 10240,
+        "device_ms": 0.112522
+      },
+      {
+        "mode": "xmx-lut",
+        "width": 2560,
+        "rows": 10240,
+        "device_ms": 0.124918
+      },
+      {
+        "mode": "row",
+        "width": 6144,
+        "rows": 2560,
+        "device_ms": 0.0502771
+      },
+      {
+        "mode": "lut",
+        "width": 6144,
+        "rows": 2560,
+        "device_ms": 0.0864021
+      },
+      {
+        "mode": "xmx-lut",
+        "width": 6144,
+        "rows": 2560,
+        "device_ms": 0.21704
+      }
+    ],
+    "small": [
+      {
+        "mode": "row",
+        "width": 2560,
+        "rows": 6144,
+        "device_ms": 0.0686281
+      },
+      {
+        "mode": "xmx8",
+        "width": 2560,
+        "rows": 6144,
+        "device_ms": 0.0949615
+      },
+      {
+        "mode": "xmx16",
+        "width": 2560,
+        "rows": 6144,
+        "device_ms": 0.0772146
+      },
+      {
+        "mode": "xmx-auto",
+        "width": 2560,
+        "rows": 6144,
+        "device_ms": 0.0771771
+      },
+      {
+        "mode": "row",
+        "width": 2560,
+        "rows": 10240,
+        "device_ms": 0.0734146
+      },
+      {
+        "mode": "xmx8",
+        "width": 2560,
+        "rows": 10240,
+        "device_ms": 0.207588
+      },
+      {
+        "mode": "xmx16",
+        "width": 2560,
+        "rows": 10240,
+        "device_ms": 0.0887833
+      },
+      {
+        "mode": "xmx-auto",
+        "width": 2560,
+        "rows": 10240,
+        "device_ms": 0.0887333
+      },
+      {
+        "mode": "row",
+        "width": 6144,
+        "rows": 2560,
+        "device_ms": 0.0500688
+      },
+      {
+        "mode": "xmx8",
+        "width": 6144,
+        "rows": 2560,
+        "device_ms": 0.156381
+      },
+      {
+        "mode": "xmx16",
+        "width": 6144,
+        "rows": 2560,
+        "device_ms": 0.202926
+      },
+      {
+        "mode": "xmx-auto",
+        "width": 6144,
+        "rows": 2560,
+        "device_ms": 0.202919
+      }
+    ]
+  }
+}
