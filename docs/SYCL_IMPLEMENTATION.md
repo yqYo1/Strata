@@ -2237,3 +2237,40 @@ After these checks, the workstation's IQ3_S text and vision configurations use
 are archived. No persistent-cache override was added, and the Q2 configuration
 was not changed. XMX remains opt-in in the source defaults. This becomes the
 local tuning baseline; it does not meet the 1,000-prefill/70-generation targets.
+
+### IQ3_S anonymous-arena THP recheck (2026-10-04)
+
+The earlier Q2_0 THP result was rechecked with the current IQ3_S, Zen 3 and
+128-GRF AOT baseline. The prototype requested `MADV_HUGEPAGE` before first touch
+of the anonymous expert arena, respected `STRATA_NO_LARGEPAGES`, and changed no
+system setting. At engine readiness, its three processes reported 48,928,768–
+49,113,088 KiB of `AnonHugePages`, versus zero without advice, out of an arena
+mapping of about 49,116,200 KiB. The inspection ran before timed requests.
+
+Three alternating persistent-server pairs retained identical completed ids,
+MTP acceptance and cache counts; cancellation and recovery passed. Median
+results on the same B570/5600X were:
+
+| Measurement | Ordinary pages | THP requested |
+| --- | ---: | ---: |
+| Startup | 21.52 s | 19.31 s |
+| First writing decode | 13.43 token/s | 13.49 token/s |
+| Repeated writing decode | 15.69 token/s | 15.94 token/s |
+| First coding decode | 17.73 token/s | 17.52 token/s |
+| Repeated coding decode | 19.80 token/s | 20.06 token/s |
+
+Startup varied from 18.74 to 23.54 s across these runs; the OS file cache and
+existing background workloads were not isolated. Three additional alternating
+pairs on the 827-id long fixture (826 prefetched tokens, context 2,048,
+1,649 cache slots, five workers, chunk 1,024 and adaptive swaps off) measured
+median prefill times of 8.959 s without advice and 9.002 s with it, or 92.20
+versus 91.76 token/s. All eight output ids matched in all six long runs.
+
+Repeated generation improved slightly, but first coding and long prefill
+regressed slightly. The prototype was reverted and serving configurations keep
+the previous allocation behavior. These small mixed differences do not
+establish a uniform improvement or a general conclusion about THP. The
+[full trials and readiness mappings](../bench/results/2026-10-04-sycl-arena-thp-iq3_s/run.json),
+[prototype patch](../bench/results/2026-10-04-sycl-arena-thp-iq3_s/prototype.patch)
+and [benchmark snapshot](../bench/results/2026-10-04-sycl-arena-thp-iq3_s/serve_bench_snapshot.py)
+preserve the experiment.
