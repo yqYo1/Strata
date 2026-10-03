@@ -2337,7 +2337,7 @@ establish a decode-speed improvement.
 The AOT image contains 54 XMX variants using 128 GRFs. The new packed IQ2_S
 exact tile-8 variant has a 192-byte scratch spill; the other 53 have no scratch
 buffers. The mixed IQ3_S model in this experiment has IQ2_S gate/up weights in
-20 layers, IQ3_XXS in17, IQ3_S in10 and IQ4_XS in1, so that spill affects
+20 layers, IQ3_XXS in 17, IQ3_S in 10 and IQ4_XS in 1, so that spill affects
 a substantial part of this workload. The [run record and scripts](../bench/results/2026-10-04-sycl-xmx-packed/run.json)
 preserve the flags, hashes, timings and output ids.
 
@@ -2398,9 +2398,8 @@ repeated-expert component gains do not by themselves justify an engine change.
 The [record](../bench/results/2026-10-04-sycl-cpu-loop-unroll/run.json) preserves
 all candidate patches, raw component samples and complete serving results.
 
-The native expert manifest contains20 IQ2_S gate/up layers,17 IQ3_XXS,10
-IQ3_S and1 IQ4_XS; down uses IQ4_NL in39 layers and Q2_0 in9. The CPU loop
-prototype therefore changes10 of48 layers, and only the rows dispatched to
+The native expert manifest contains 20 IQ2_S gate/up layers, 17 IQ3_XXS, 10
+IQ3_S and 1 IQ4_XS; down uses IQ4_NL in 39 layers and Q2_0 in 9. The CPU loop
+prototype therefore changes 10 of 48 layers, and only the rows dispatched to
 the multi-token AVX2 kernel. The earlier packed-XMX register record also needs
-this distinction: its IQ2_S scratch spill applies to20 layers, not an unused
-format. Further tuning uses this measured model composition.
+this distinction: its IQ2_S scratch spill applies to 20 layers. Further tuning uses this measured model composition.
