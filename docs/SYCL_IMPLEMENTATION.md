@@ -1904,3 +1904,19 @@ from chunks of 256 tokens took 16.53 s with that copy queue, or 16.97 s
 with one queue, both slower than the routed-only 14.48 s run. The copy-queue
 prototype was removed from production code; its patch and measurements are
 retained with the performance summary. System driver settings were unchanged.
+
+
+A second prototype packed sixteen native experts into host GU/down buffers,
+then uploaded each group in two copies. Its initial profiled prompt improved
+from 14.48 to 13.91 s. With profiling unset, a same-binary pair measured
+14.14 and 14.02 s; short-prompt screens showed no improvement. The prototype
+and its extra 42.6 MB of host buffers were removed. Its exact patch and
+correctness checks are retained in the performance summary.
+
+SYCL's routed prompt path now checks cancellation at a completed MoE layer
+boundary, before its host stager starts. At that point the single compute
+queue has finished prior work, so the caller can restore borrowed expert
+slots safely. This keeps larger prompt chunks interruptible. Streamed-all
+and multi-device paths keep their preceding cancellation boundaries.
+`serve_bench.py --cancel-during-prefill` adds a STOP after 50 ms, then tests
+ordinary generation cancellation and eight-token recovery as well.

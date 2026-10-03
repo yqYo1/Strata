@@ -2058,6 +2058,14 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                         else cudaMemcpyAsync(m.ids_host.data(), m.ids, (size_t) T * K * 4, cudaMemcpyDeviceToHost, m.cs);
                         cudaStreamSynchronize(m.cs);
                         pt.fold();
+#if defined(STRATA_ENABLE_SYCL)
+                        // A larger prompt chunk need not delay STOP until its last layer.
+                        // Here all prior work on the single queue is complete and the
+                        // routed stager has not started; borrowed slots can be refilled.
+                        if (!stream_all && !m.pp && !next_ && m.copy == m.cs && should_stop && should_stop()) {
+                            err = "cancelled"; return false;
+                        }
+#endif
                         if (pe.on) {   // the peer's marks so far are done: the primary waited for its last rows
                             int pd = 0; cudaGetDevice(&pd); cudaSetDevice(pe.dev); cudaStreamSynchronize(m.pp->s); pe.fold(); cudaSetDevice(pd);
                         }

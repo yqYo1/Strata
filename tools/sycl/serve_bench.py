@@ -24,6 +24,8 @@ def main():
     parser.add_argument("--prompt", action="append", required=True, metavar="NAME=TOKEN_FILE")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--compare", type=Path, help="require identical completed-request ids")
+    parser.add_argument("--cancel-during-prefill", action="store_true",
+                        help="also send STOP 50 ms into a fresh prompt and test recovery")
     parser.add_argument("--tokens", type=int, default=128)
     parser.add_argument("--repeats", type=int, default=2)
     parser.add_argument("--workers", type=int)
@@ -118,7 +120,19 @@ def main():
             process.stdin.write(f"GEN {count} {','.join(map(str, ids))}\n")
             process.stdin.flush()
             start = time.monotonic()
-            tokens, stopped = [], False
+            tokens, stopped = [], cancel == "prefill"
+            timer = None
+            if stopped:
+                def stop_prefill():
+                    if process.poll() is None:
+                        try:
+                            process.stdin.write("STOP\n")
+                            process.stdin.flush()
+                        except OSError:
+                            pass  # The main reader reports an exited engine.
+                timer = threading.Timer(.05, stop_prefill)
+                timer.daemon = True
+                timer.start()
             while True:
                 line = read()
                 if line.startswith("T "):
@@ -129,6 +143,9 @@ def main():
                         stopped = True
                 if line.startswith("DONE "):
                     break
+            if timer is not None:
+                timer.cancel()
+                timer.join()
             fields = line.split()
             reason = fields[5]
             if int(fields[1]) != len(tokens) or len(tokens) > count:
@@ -140,9 +157,10 @@ def main():
                 raise RuntimeError("incomplete length-limited request")
             row = dict(prompt=name, requested_tokens=count, output_ids=tokens, done=line,
                        wall_seconds=time.monotonic() - start, decode_ms=float(fields[4]),
-                       decode_tok_s=len(tokens) * 1000 / float(fields[4]),
+                       decode_tok_s=len(tokens) * 1000 / float(fields[4]) if float(fields[4]) > 0 else 0.,
                        prompt_ms=float(fields[3]), reused_prompt_tokens=int(fields[8]),
-                       cache_hits=int(fields[9]), cache_lookups=int(fields[10]), cancelled=cancel)
+                       cache_hits=int(fields[9]), cache_lookups=int(fields[10]), cancelled=bool(cancel),
+                       cancel_phase="prefill" if cancel == "prefill" else "decode" if cancel else None)
             result["runs"].append(row)
             save()
             print({k: v for k, v in row.items() if k != "output_ids"}, flush=True)
@@ -158,6 +176,8 @@ def main():
             for prompt in prompts:
                 for _ in range(args.repeats):
                     run(prompt, args.tokens)
+            if args.cancel_during_prefill:
+                run(prompts[0], args.tokens, cancel="prefill")
             run(prompts[0], args.tokens, cancel=True)
             last = run(prompts[0], 8)
             if last["output_ids"] != result["runs"][0]["output_ids"][:8]:
