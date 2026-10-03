@@ -10,7 +10,8 @@
 
 namespace strata::prefill::mmq {
 
-/// This build has the MMQ path (the ggml sources were available to the build).
+/// This build has a quantized prompt product path. CUDA/HIP use ggml MMQ;
+/// SYCL uses its native packed integer dot products with eight routed rows per tile.
 bool built();
 /// MMQ covers this ggml type (the i-quants and Q2_0 the packs use, Q8_0, and in a CUDA build with STRATA_MMQ_KQUANTS
 /// the Q4_K / Q5_K / Q5_1 of Unsloth's UD-Q4_K_XL; IQ1_M is not covered).
@@ -33,6 +34,8 @@ void quantize(const float* x, const int32_t* ids, void* xq, int ggml_type, int64
 /// [bounds[e], bounds[e+1]) of `xq` (bounds on the device, n+1 entries) times its [w_rows, w_cols] matrix into
 /// dst rows of the same indices (`ld_dst` floats apart, via `ids`: dst row = ids[row], an identity table works).
 /// `total_rows`: the rows of xq; `max_rows`: the most rows one expert has (the launch grid).
+/// SYCL's xq is padded row-major Q8_1 (36 bytes per 32 values), rather than ggml's
+/// CUDA MMQ tile layout. The buffers stay inside their backend's quantize/run pair.
 struct Product {
     const void* w = nullptr;
     int type = -1;

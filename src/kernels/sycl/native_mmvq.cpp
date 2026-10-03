@@ -28,6 +28,7 @@
 #include "strata/kernels/iq_kernels.hpp"
 #include "strata/artifact/iq_codebooks.hpp"
 #include "strata/sycl/launch.hpp"
+#include "strata/sycl/native_mmq.hpp"
 #include <atomic>
 #include <sycl/ext/intel/math.hpp>
 
@@ -1087,7 +1088,113 @@ void composition(int type, const void *w, const float *x, void *scratch,
   native_quantize_q8_1(x, scratch, n_in, ncols, stream);
   native_mmvq(type, w, scratch, y, n_in, n_out, ncols, stream);
 }
+
+template <class F>
+void prompt_product(NativeMmq p, sycl::queue &q) {
+  constexpr int TILE = 8;
+  const int blocks = int(p.cols / F::DIV);
+  const size_t x_stride = ((size_t(p.cols) + 511) / 512 * 512) / 32;
+  const size_t tiles = (size_t(p.max_rows) + TILE - 1) / TILE;
+  const size_t groups = size_t(p.experts) * p.rows * tiles;
+  q.submit([&](sycl::handler &cgh) {
+    sycl::local_accessor<float, 1> partial(3 * TILE * 32, cgh);
+    cgh.parallel_for(sycl::nd_range<1>(groups * 128, 128),
+        [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(32)]] {
+          const size_t g = it.get_group_linear_id();
+          const int expert = int(g / (p.rows * tiles));
+          const size_t row = (g / tiles) % p.rows, tile = g % tiles;
+          const int begin = p.bounds[expert], end = p.bounds[expert + 1];
+          if (begin < 0 || end < begin || end > p.total_rows)
+            return;
+          const int64_t first = int64_t(begin) + int64_t(tile * TILE);
+          const int used = int(sycl::clamp(int64_t(end) - first, int64_t(0), int64_t(TILE)));
+          if (!used)
+            return;
+          const int tid = it.get_local_linear_id(), lane = tid % 32, warp = tid / 32;
+          const auto *w = reinterpret_cast<const typename F::Block *>(
+              static_cast<const uint8_t *>(p.weights) + size_t(expert) * p.expert_bytes);
+          const auto *x = static_cast<const Q81Block *>(p.activation);
+          float sum[TILE] = {};
+          const int kqs = F::kqs(tid);
+          for (int b = tid / F::T; b < blocks; b += F::BPI) {
+            const auto weight = F::load(w + row * blocks + b, kqs);
+            for (int j = 0; j < used; ++j)
+              sum[j] += F::apply(weight, x + size_t(first + j) * x_stride + b * F::KBY, kqs);
+          }
+          if (warp)
+            for (int j = 0; j < used; ++j)
+              partial[((warp - 1) * TILE + j) * 32 + lane] = sum[j];
+          it.barrier(sycl::access::fence_space::local_space);
+          if (!warp) {
+            for (int j = 0; j < used; ++j) {
+              for (int widx = 0; widx < 3; ++widx)
+                sum[j] += partial[(widx * TILE + j) * 32 + lane];
+              for (int offset = 16; offset; offset >>= 1)
+                sum[j] += sycl::permute_group_by_xor(it.get_sub_group(), sum[j], offset);
+              if (!lane) {
+                const int64_t dst = p.destinations ? p.destinations[first + j] : first + j;
+                if (dst >= 0 && dst < p.total_rows)
+                  p.output[size_t(dst) * p.ld_output + row] = sum[j];
+              }
+            }
+          }
+        });
+  });
+}
 } // namespace
+
+void native_mmq(const NativeMmq &p, void *stream) {
+  const auto f = format(p.type);
+  if (p.rows <= 0 || p.rows > INT32_MAX || p.cols <= 0 || p.cols > INT32_MAX - 511 ||
+      p.cols % f.width || p.experts < 1 || p.experts > 1024 || p.total_rows < 0 ||
+      p.total_rows > INT32_MAX || p.max_rows < 0 || p.max_rows > p.total_rows ||
+      p.ld_output < p.rows)
+    throw std::invalid_argument("invalid SYCL native prompt product geometry");
+  const size_t matrix_bytes = checked_count(checked_count(p.rows, p.cols / f.width), f.bytes);
+  if (p.expert_bytes < matrix_bytes || p.expert_bytes % 2)
+    throw std::invalid_argument("invalid SYCL native prompt expert stride");
+  if (!p.total_rows || !p.max_rows)
+    return;
+  const size_t padded = (size_t(p.cols) + 511) / 512 * 512;
+  const size_t xbytes = checked_count(checked_count(p.total_rows, padded / 32), sizeof(Q81Block));
+  const size_t ybytes = checked_count(checked_count(p.total_rows, p.ld_output), 4);
+  validate_spans({{p.output, ybytes}},
+                 {{p.weights, checked_count(p.experts - 1, p.expert_bytes) + matrix_bytes},
+                  {p.activation, xbytes}, {p.bounds, size_t(p.experts + 1) * 4}}, 2);
+  if (p.destinations)
+    validate_spans({{p.output, ybytes}}, {{p.destinations, size_t(p.total_rows) * 4}});
+  if (uintptr_t(p.activation) % 4 || uintptr_t(p.output) % 4 || uintptr_t(p.bounds) % 4)
+    throw std::invalid_argument("unaligned SYCL native prompt product");
+  if ((p.type == 12 || p.type == 13) &&
+      ((uintptr_t(p.weights) | p.expert_bytes) & 3))
+    throw std::invalid_argument("unaligned SYCL affine prompt weights");
+  const size_t groups = checked_count(checked_count(p.experts, p.rows), (p.max_rows + 7) / 8);
+  (void)checked_count(groups, 128);
+  auto &q = queue_for(stream);
+#define PROMPT(TYPE, ...) case TYPE: prompt_product<__VA_ARGS__>(p, q); break
+  switch (p.type) {
+    PROMPT(2, SmallTraits<Q40Block, 4>);
+    PROMPT(6, SmallTraits<Q50Block, 4>);
+    PROMPT(7, SmallTraits<Q51Block, 4>);
+    PROMPT(8, SmallTraits<Q80Block, 8>);
+    PROMPT(11, Q3KTraits);
+    PROMPT(12, Q4KTraits);
+    PROMPT(13, Q5KTraits);
+    PROMPT(14, Q6KTraits);
+    PROMPT(16, IQ2Traits<false>);
+    PROMPT(17, IQ2Traits<true>);
+    PROMPT(18, IQ3XXSTraits);
+    PROMPT(20, SmallTraits<IQ4NLBlock, 4>);
+    PROMPT(21, IQ3STraits);
+    PROMPT(22, IQ2STraits);
+    PROMPT(23, IQ4XSTraits);
+    PROMPT(29, IQ1MTraits);
+    PROMPT(42, Q20Traits);
+  }
+#undef PROMPT
+  if (!stream)
+    q.wait_and_throw();
+}
 
 void native_mmvq_set_multi_exact(bool exact) {
   multi_exact.store(exact, std::memory_order_relaxed);
