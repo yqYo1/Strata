@@ -23,6 +23,7 @@
 #include <cmath>
 #include <string>
 #include <vector>
+#include "strata/artifact/iq_codebooks.hpp"
 
 #define STRATA_GGUF_MAIN_DISABLED 1
 #include "strata/artifact/gguf_reader.hpp"

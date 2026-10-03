@@ -21,8 +21,14 @@ inline BlockFormat block_format(int type) {
     return {256, 176};
   case 14:
     return {256, 210};
+  case 18:
+    return {256, 98};
   case 20:
     return {32, 18};
+  case 21:
+    return {256, 110};
+  case 22:
+    return {256, 82};
   case 23:
     return {256, 136};
   case 30:
@@ -61,8 +67,17 @@ inline void decode_block(int type, const uint8_t *src, float *out) {
   case 14:
     dequantize_q6_K(src, out);
     break;
+  case 18:
+    dequantize_iq3_xxs(src, out);
+    break;
   case 20:
     dequantize_iq4_nl(src, out);
+    break;
+  case 21:
+    dequantize_iq3_s(src, out);
+    break;
+  case 22:
+    dequantize_iq2_s(src, out);
     break;
   case 23:
     dequantize_iq4_xs(src, out);
