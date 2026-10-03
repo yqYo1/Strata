@@ -1952,3 +1952,18 @@ to 0.069 s at chunk 16; the selected chunk 1,024 took 0.142 s. These numbers
 include the initial 50 ms and are not direct STOP-to-DONE measurements.
 All nine processes passed prefill cancellation, cancellation after the first
 output token and eight-token recovery, then exited normally.
+
+For the 827-id long prompt, three alternating normal-execution pairs measured
+826 prefetched tokens at a median 46.898 s before and 14.083 s after (3.33 times
+faster). Time to first token was 47.229 versus 14.280 s. This comparison uses
+context 2,048, 1,649 fixed cache slots, four CPU workers and adaptive swaps off;
+it combines kernel changes with chunk 64 to 1,024. All eight generated ids
+matched in all six runs. It does not measure the default context-512 workload.
+The prompt fixture and each trial's timings are stored with the performance
+summary above.
+
+The selected local text configs (`serve-config.json` and
+`serve-config-iq3_s.json` under `~/.local/share/strata-sycl/`) now use
+`--prefill 1024 --pool-workers 5`. Their context limit remains 512. Original
+configs are backed up under
+`~/.local/state/strata-sycl/measurement-archive/2026-10-04-performance/config-before/`.
