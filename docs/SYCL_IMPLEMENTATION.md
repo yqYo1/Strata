@@ -1980,3 +1980,39 @@ validate behavior; they are not a vision-throughput comparison. Raw captures,
 saved binaries and reproduction scripts are archived outside Git beside the
 config backups. The JSON summary records binary hashes, flags, individual
 trials, output ids and API results.
+
+### Continued speed target (2026-10-04)
+
+The ongoing target is 1,000 prompt tokens/s and 70 generated tokens/s on this
+B570/5600X workstation. These targets have not been reached. The measured
+baseline remains the preceding three-run results; aggregate serving throughput
+will not be substituted for one request's generation rate.
+
+`-DSTRATA_CPU_ARCH=znver3` builds the CPU expert library with
+`-march=znver3 -mtune=znver3`. The default empty value retains the preceding
+compiler settings. This option makes the binary specific to the selected CPU;
+it is rejected with `STRATA_PORTABLE` or MSVC. GGML already used `-march=native`
+on this machine, so the new option targets Strata's own CPU expert code.
+
+The first diagnostic screens, using the preceding binary and 826 prefetched
+tokens, measured 13.289 s with FP16 expert expansion and 19.867 s with the
+existing fused native path (stream threshold 256). Both produced the same eight
+output ids. These single, profiled runs identify candidates; they do not establish
+a new default or a repeated throughput improvement.
+
+Reference work extends beyond SYCL: [Marlin](https://github.com/IST-DASLab/marlin)
+for weight layout, activation reuse and double buffering;
+[KTransformers](https://github.com/kvcache-ai/ktransformers/blob/main/doc/en/AMX.md)
+for tiling around the CPU cache and instruction set;
+[Fiddler](https://github.com/efeslab/fiddler) for CPU/GPU expert placement; and
+[AITER](https://github.com/ROCm/aiter) for fused MoE kernels. These guide experiments,
+not speed claims for this machine. In particular, AMX instructions cannot run on
+this Ryzen; the transferable idea is the layout and scheduling method.
+The [ongoing measurements](../bench/results/2026-10-04-sycl-speed-goal/run.json)
+record the target, experimental conditions and reference links.
+
+The first Zen 3 build retained all completed writing/coding output ids against
+the preceding selected preset, passed prefill/decode cancellation and recovery,
+and passed 38/38 CTest cases. Its single-run repeated-request rates were 16.05
+and 20.10 token/s. More repetitions are needed to attribute any change to the
+compiler flags; this is a validated tuning baseline, not a final speed claim.
