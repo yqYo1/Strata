@@ -1,4 +1,4 @@
-# SYCL implementation status, 2026-10-03
+# SYCL implementation status, updated 2026-10-04
 
 This report describes the Linux Intel Arc B570 worktree, rather than every
 feature advertised by the upstream CUDA/HIP engine. Measurements use a B570
@@ -6,6 +6,8 @@ with 10 GiB VRAM, Ryzen 5 5600X, 125 GiB system RAM, oneAPI DPC++ 2026.1.1 and
 Level Zero driver `1.17.39395+14`. Driver defaults were retained. Other workloads
 on the workstation were not isolated. The tuning table predates the upstream
 sync/rebase; post-rebase checks are recorded separately below.
+The final section records the subsequent single-GPU feature ports. Earlier
+performance tables remain measurements of their original builds.
 
 ## Model acquisition and coverage
 
@@ -138,11 +140,11 @@ configs remain outside Git. Local raw captures are preserved under
 | CPU/GPU experts | Profile-filled GPU cache, CPU misses with AVX2, grouped multi-token GPU experts, adaptive replacement | Real persistent text requests; mixed-format row and grouped tests |
 | Dense projections | Native quantized MMVQ, with ESIMD paths for selected existing formats | Unit tests and sampled rows from actual model tensors |
 | Runtime | SYCL queues/events/USM and the engine's CUDA-compatible adapter; native and segmented graph capture | Runtime, graph, ordering and large-allocation checks on B570 |
-| Prompt processing | Chunked prefill, FP16 expert expansion and oneMKL matrix products, split attention fallback | Short prompts, 16-token chunks; longer prompt performance remains open |
+| Prompt processing | Native quantized MMQ, fused INT8 experts, oneMKL dense products and matrix/split attention | Independent operator references and real IQ3_S prompt logits; 16- and 64-token chunks |
 | MTP | Draft, verification, rejection/commit and state rewind; short-window native graph recording | Persistent generation and cancellation recovery |
 | Server | Existing Python server, OpenAI and Anthropic API formats, streaming and web UI | Local HTTP smoke checks; this is not a full application/agent test suite |
 | KV formats | FP16, INT8, Q4 and hybrid K8V4 operator/snapshot paths | Kernel tests; measured model configuration uses FP16 and context 512 |
-| Vision | Existing engine image-position/embedding paths remain in source | No complete image encoder plus SYCL model run validated |
+| Vision | CPU or SYCL image encoder, image embeddings and M-RoPE positions | One B570 ran the SYCL encoder and IQ3_S model through both image APIs, streaming and ordered two-image requests |
 | Other models/platforms | Shared model-family code remains available | Coder/Swift/Unsloth checkpoints, Windows and other Intel GPUs have not been validated here |
 
 An API endpoint working does not establish long-context behavior, image support
@@ -188,7 +190,7 @@ These checks do not assert that whole-model logits equal a CPU-only run, or that
 IQ3_S has better task quality than Q2_0. No broad benchmark of model quality was
 performed. Fixture responses are truncated at their requested token limit.
 
-## Upstream integration and remaining backend gaps
+## Upstream integration snapshot (2026-10-03)
 
 The reference is the independent, read-only `ghq` clone of
 [Niko1221/Strata at `99f3dbd`](https://github.com/Niko1221/Strata/tree/99f3dbd0b21d1401b3769e0c0d963913607f380b),
@@ -206,6 +208,9 @@ rebased onto it. The SYCL build now identifies as 0.1.38. Integration commit
 GPU arithmetic and single-device boundary. The original branch was retained
 locally as `backup/sycl-before-upstream-2026-10-03`.
 
+This table records the state immediately after the rebase, before the
+2026-10-04 ports in the final section.
+
 | Area | After integration | Remaining validation or port work |
 | --- | --- | --- |
 | Quantized expert prefill | Shared staging changes are imported; SYCL retains FP16 expansion and oneMKL | CUDA fused INT8 experts and native MMQ still need a SYCL implementation |
@@ -218,9 +223,10 @@ locally as `backup/sycl-before-upstream-2026-10-03`.
 | Installer/updater | New upstream setup/update code is imported | Intel SYCL discovery, automatic build/model setup and Windows installation remain unimplemented here |
 
 Most web/API/model-family features already existed before the sync. The SYCL
-runtime and B570 kernels are fork additions. Next backend priorities remain
-quantized expert prefill and matrix prompt attention. Multi-GPU, complete vision
-validation and Windows installation require their own devices and test runs.
+runtime and B570 kernels are fork additions. At that checkpoint, quantized
+expert prefill and matrix prompt attention were the next backend priorities.
+The subsequent ports and vision checks are recorded below. Multi-GPU and Intel
+setup automation are excluded from that work.
 
 ## Post-rebase checks
 
@@ -262,12 +268,85 @@ The rebuilt engine and imported server passed real HTTP checks on
 `127.0.0.1:18085`: model listing, web UI, both APIs, streaming, repeat output,
 old model alias and cancellation recovery. The test server stopped cleanly.
 The selected local IQ3_S config and Q2_0 backup remain available at the paths
-above. Context 512 and the earlier platform/vision limits still apply.
+above. Those checks used context 512; the subsequent work adds vision and
+larger-context validation.
 
 Reviewed post-rebase evidence is in
 [`bench/results/2026-10-03-sycl-upstream-rebase/run.json`](../bench/results/2026-10-03-sycl-upstream-rebase/run.json).
 Raw logs, float dumps, per-request outputs and temporary configs remain outside
 Git under `~/.local/state/strata-sycl/measurement-archive/2026-10-03-upstream-rebase/`.
+
+## Single-GPU feature ports (2026-10-04)
+
+The comparison used upstream `99f3dbd0b21d1401b3769e0c0d963913607f380b`,
+also returned by a final remote-main check. The fork's main remains the clean
+mirror at `d988955`; implementation work is on `feature/sycl`. The requested
+scope excludes multi-GPU and the setup script.
+
+| Identified gap | Implementation and validation |
+| --- | --- |
+| Four native expert formats | Added Q5_1, IQ2_XXS, IQ2_XS and IQ1_M to device decoding, single/grouped products and transfer decoding. SYCL now covers the same 17 native MMVQ formats as upstream CUDA. Independent pinned-GGML tests cover codebooks, signs, subscales, finite FP16 edges, affine offsets and IQ1_M's embedded scale. |
+| Native quantized prefill | Added routed MMQ with padded Q8_1 activations, arbitrary row counts, row maps, strides and direct packed products for all 17 formats. Q2_0 plane gathering and native raw-block gathering are covered by independent references and guards. The SYCL path is built in; it needs no GGML CUDA kernels. |
+| Fused MoE prefill | Added GPU routing counts, offsets, placement and 64-row tiles; per-token INT8 inputs; direct expert blobs; fused gate/up, SwiGLU and hidden INT8 rounding; and down output. Tests cover Q2_0 plus all 12 upstream native format pairs, empty experts, partial batches, 65-row experts, table reuse and memory guards. |
+| Matrix prompt attention | Added Intel joint_matrix FP16 products with FP32 per-group scales, query/probability hi+lo parts and online softmax for FP16, INT8, Q4_0 and K8V4. Independent double references cover paging, masks, negative cell ids, empty selections, invalid widths, mixed query magnitudes and output guards. Unsupported devices/shapes retain split attention. |
+| Intel GPU image encoding | Added `STRATA_VISION_SYCL` to the optional encoder build. The pinned CPU and SYCL encoders were checked independently, then the SYCL encoder and IQ3_S model passed real OpenAI/Anthropic image requests on one B570. [Build and image validation details](SYCL_IMPLEMENTATION.md#intel-gpu-image-encoder-2026-10-04). |
+| Hybrid K8V4 storage | Fixed the SYCL validator's rejection of upstream's folded K/V pool arguments. Append assigns one writer to each physical output; gather accepts identical folded sources and outputs. Independent encoded-byte/scale references and memory guards cover batch append, device-step append and gather. Different inputs sharing an output remain rejected. |
+
+The rebuilt engine passed all 38 CTest tests, including the three new MMQ,
+fused-MoE and matrix-attention tests. The shared server passed 139 tests again.
+The production server and setup script remain the imported upstream versions.
+
+For the 25-token arithmetic fixture, the first target logits after prefill
+were compared with the last row of the pinned CPU-only reference. All 248,320
+logits were finite and the top token was `19` (`4`) in each condition:
+
+| Prompt path | Cosine with CPU | RMSE | Maximum absolute difference |
+| --- | ---: | ---: | ---: |
+| Previous FP16 expert expansion and split attention | 0.991999 | 0.26158 | 1.4774 |
+| Native MMQ and split attention | 0.994525 | 0.21223 | 1.2786 |
+| Native MMQ and matrix attention | 0.995078 | 0.21617 | 1.1764 |
+| Fused native experts and matrix attention | 0.990063 | 0.30414 | 1.6587 |
+
+The cache had 1649 slots, adaptation was off, context was 128, prefill was 16,
+and MTP width was four at minimum probability 0.9. The fused check used
+`STRATA_PF_FUSED=1`, `STRATA_PREFILL_STREAM_MIN=16` and
+`STRATA_PREFILL_RING=128`; its log confirmed execution of the fused path.
+These are one prompt's logits, not a broad quality or speed comparison.
+
+At context capacity 2048 and prefill 64, four separate persistent IQ3_S
+processes checked FP16, INT8, Q4_0 and K8V4 KV. Each completed six requests:
+an 827-token color-retrieval prompt, its repeat, a 25-token arithmetic prompt,
+the color prompt again, cancellation after one generated token, and recovery.
+All four returned `blue` and `4` for the corresponding prompts. Repeat and
+recovery reused 820 prompt tokens and preserved output ids; every process
+exited cleanly. K8V4's initial failure led to the folded-buffer fix above.
+The other three completed checks preceded that fix, which changes only folded
+buffer handling. This is one retrieval fixture above 512 tokens, not a maximum
+context or general long-context quality result. Resident KV streaming was off
+in these model checks; the independent KV test covers FP16/INT8/Q4 eviction,
+ring restoration, overflow and staging. K8V4 resident streaming remains
+unsupported by upstream too.
+
+The current text default also completed two 128-token story requests, two
+128-token Python requests, cancellation after one token and an eight-token
+recovery in one persistent process. Recovery matched the initial story's first
+eight ids and the process exited cleanly. This used the automatic 2137-slot
+cache, context 512, prefill 16, four workers, 64 adaptive replacements, and MTP
+width four at minimum probability 0.9. It checks the new prompt paths with the
+existing longer decode/MTP flow; it is not a new throughput median.
+
+MMQ and fused products use portable integer SIMD arithmetic; CUDA's tensor
+instructions and cluster scheduling are not reproduced on Intel. Decode and
+CPU handoff retain the validated SYCL graphs/events. These execution choices
+preserve the corresponding single-GPU operations but do not establish equal
+CUDA/SYCL performance. The historical decode medians above have not been
+remeasured for the newly changed prompt paths.
+
+Reviewed evidence is in
+[`bench/results/2026-10-04-sycl-functional-parity/run.json`](../bench/results/2026-10-04-sycl-functional-parity/run.json).
+Raw logs, per-request outputs, float dumps and unsuccessful development/harness
+attempts remain outside Git at
+`~/.local/state/strata-sycl/measurement-archive/2026-10-04-functional-parity/`.
 
 See [SYCL implementation and build instructions](SYCL_IMPLEMENTATION.md),
 [measurement storage policy](../bench/results/README.md) and the

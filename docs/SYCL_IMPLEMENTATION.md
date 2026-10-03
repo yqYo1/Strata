@@ -10,6 +10,30 @@ validation and measurements on other machines remain open.
 The implementation follows [the port research](SYCL_RESEARCH.md) and
 [the operation inventory](SYCL_BATTLEMAGE_OPERATIONS.md).
 
+## Single-GPU feature ports (2026-10-04)
+
+Against upstream `99f3dbd` (engine 0.1.38), SYCL now supplies all 17 native
+MMVQ formats, routed quantized MMQ, fused Q2_0/native MoE prefill, matrix prompt
+attention and the optional image encoder below. Multi-GPU and Intel setup
+automation remain outside this work. The shared APIs, web app and model
+handling come from the imported upstream code.
+
+Native MMQ is built into the SYCL backend and selected for supported expert
+layouts. `STRATA_PREFILL_MMQ=0` selects the previous FP16 expert path.
+Matrix prompt attention is selected when the device and geometry support it;
+`STRATA_PROMPT_ATTN_OLD=1` selects split attention. Fused native expert prefill
+requires `STRATA_PF_FUSED=1` and the shared streaming threshold. The measured
+native fused fixture used `STRATA_PREFILL_STREAM_MIN=16` and
+`STRATA_PREFILL_RING=128`. Canonical Q2_0 fused prefill follows upstream's
+default selection. These variables are read at process startup.
+
+MMQ and fused expert products use integer SIMD; prompt attention uses Intel
+`joint_matrix` with FP32 scaling and softmax. The ports provide the operations
+without reproducing CUDA-specific instructions or scheduling. Their
+[validation record](../bench/results/2026-10-04-sycl-functional-parity/run.json)
+and [status report](SYCL_STATUS_2026-10-03.md#single-gpu-feature-ports-2026-10-04)
+state the tested fixtures and numerical limits.
+
 ## Intel GPU image encoder (2026-10-04)
 
 `strata-vision` can now be built with the pinned llama.cpp SYCL backend. Use
@@ -69,7 +93,7 @@ default remains the IQ3_S preset described below.
 
 ## Current IQ3_S server configuration
 
-The local default now uses the verified mixed IQ3_S model. On this B570/5600X,
+The local default now uses the verified mixed IQ3_S model. On 2026-10-03, this B570/5600X,
 three fresh-process pairs measured median first/repeated story decode at
 12.94/14.37 token/s and first/repeated Python merge-prompt decode at
 16.43/18.30 token/s. The layer-sized cache holds 2,137 experts in approximately
@@ -84,7 +108,8 @@ The [detailed status report](SYCL_STATUS_2026-10-03.md) explains acquisition,
 all parameter samples, numerical checks and real HTTP validation. Upstream
 0.1.38 at `99f3dbd` has since been merged into the fork's main through PR #1,
 and the SYCL branch rebased and checked again; the report distinguishes
-remaining backend gaps from imported shared changes. The canonical API model name is
+the subsequent single-GPU ports from imported shared changes. Those prompt
+changes have not been measured with new decode medians. The canonical API model name is
 `qwen3.8-flash-next-iq3_s-sycl`, with the tested existing alias
 `qwen3.8-flash-next-sycl`. The preceding Q2_0 config is saved at
 `~/.local/share/strata-sycl/serve-config-q2_0.json`. Models, logs and local configs
