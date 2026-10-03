@@ -17,6 +17,11 @@ uses a separately built CPU encoder and the same pinned projection model.
 Real HTTP checks cover both image APIs, repeat caching, streaming, two-image
 order and subsequent text/image requests.
 
+The final build passed all 38 CTest checks; the shared server passed 139 tests.
+All four KV modes completed the 827-token retrieval/reuse/cancellation fixture
+at context capacity 2048. The current text default also completed four
+128-token generation requests, cancellation and an eight-token recovery.
+
 These are functional fixtures. They do not establish general model quality,
 maximum context support or new performance medians. MMQ and fused experts use
 integer SIMD; matrix prompt attention uses Intel `joint_matrix`. CUDA-specific

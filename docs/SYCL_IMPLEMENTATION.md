@@ -93,8 +93,8 @@ default remains the IQ3_S preset described below.
 
 ## Current IQ3_S server configuration
 
-The local default now uses the verified mixed IQ3_S model. On 2026-10-03, this B570/5600X,
-three fresh-process pairs measured median first/repeated story decode at
+The local default now uses the verified mixed IQ3_S model. On 2026-10-03,
+three fresh-process pairs on this B570/5600X measured median first/repeated story decode at
 12.94/14.37 token/s and first/repeated Python merge-prompt decode at
 16.43/18.30 token/s. The layer-sized cache holds 2,137 experts in approximately
 4.09 GiB; the preceding uniform layout held 1,649 in the same budget. Settings
