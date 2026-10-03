@@ -9,6 +9,14 @@ bench/micro/*.bin
 bench/micro/*.dll
 bench/micro/*.txt
 *.log
+# SYCL measurement captures stay local. Commit curated run summaries and
+# verification sources; do not force-add logs under a different extension.
+/bench/results/*-sycl-*/*.txt
+!/bench/results/*-sycl-*/*-tokens.txt
+/bench/results/*-sycl-*/*.csv
+/bench/results/*-sycl-*/*.bin
+/bench/results/*-sycl-*/*.json
+!/bench/results/*-sycl-*/run.json
 build*/
 pack/
 logs/
