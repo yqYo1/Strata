@@ -1,7 +1,8 @@
 # SYCL backend implementation
 
-The SYCL backend runs native Q2_0 inference on this Linux Intel Arc B570 machine,
-with GPU expert caching, CPU experts in resident RAM, prefill, MTP and persistent
+The SYCL backend runs native Q2_0 and mixed IQ3_S inference on this Linux
+Intel Arc B570 machine, with GPU expert caching, CPU experts in resident RAM,
+prefill, MTP and persistent
 requests through the Python server. The current measured configuration and its
 limits are below. The later dated sections retain the earlier measurements.
 Short-prompt logits have been compared with a CPU model reference; broad quality
@@ -9,11 +10,33 @@ validation and measurements on other machines remain open.
 The implementation follows [the port research](SYCL_RESEARCH.md) and
 [the operation inventory](SYCL_BATTLEMAGE_OPERATIONS.md).
 
-## Current measured server configuration
+## Current IQ3_S server configuration
+
+The local default now uses the verified mixed IQ3_S model. On this B570/5600X,
+three fresh-process pairs measured median first/repeated story decode at
+12.94/14.37 token/s and first/repeated Python merge-prompt decode at
+16.43/18.30 token/s. The layer-sized cache holds 2,137 experts in approximately
+4.09 GiB; the preceding uniform layout held 1,649 in the same budget. Settings
+are context 512, FP16 KV, four workers, 16-token prefill, MTP width four,
+minimum draft probability 0.9 and 64 adaptive replacements every four rounds.
+Startup and prompt processing are excluded; background workloads were active.
+IQ3_S remains slower than the earlier Q2_0 result and has not reached
+approximately 29 token/s on this fixture.
+
+The [detailed status report](SYCL_STATUS_2026-10-03.md) explains acquisition,
+all parameter samples, numerical checks, real HTTP validation and specific gaps
+against upstream 0.1.38 at `99f3dbd`. The canonical API model name is
+`qwen3.8-flash-next-iq3_s-sycl`, with the tested existing alias
+`qwen3.8-flash-next-sycl`. The preceding Q2_0 config is saved at
+`~/.local/share/strata-sycl/serve-config-q2_0.json`. Models, logs and local configs
+remain outside Git; reviewed results are in
+[`bench/results/2026-10-03-sycl-iq3s/run.json`](../bench/results/2026-10-03-sycl-iq3s/run.json).
+
+## Measured Q2_0 server configuration (2026-10-03)
 
 On 2026-10-03, Intel Arc B570 with 10 GiB VRAM, Ryzen 5 5600X and 125 GiB RAM,
 Qwen3.8-Flash-Next GSQ-RCO Q2_0 ran with DPC++ 2026.1.1, Level Zero driver
-`1.17.39395+14` and default driver settings. The local server config uses
+`1.17.39395+14` and default driver settings. The measured Q2_0 server config uses
 context 512, FP16 KV, four CPU workers, 16-token prefill, the shipped profile,
 automatic expert-cache sizing (3,792 slots here), 64 adaptive replacements every
 four verification rounds, MTP width four, minimum draft probability 0.9 and
@@ -72,8 +95,9 @@ HTTP check results are summarized in
 [`bench/results/2026-10-03-sycl-mtp-floor/run.json`](../bench/results/2026-10-03-sycl-mtp-floor/run.json).
 Raw execution logs, generated trial files and workstation configs stay outside
 Git; see the [measurement storage policy](../bench/results/README.md).
-The server config is `~/.local/share/strata-sycl/serve-config.json`; its preceding
-0.5 configuration is backed up as `serve-config-before-floor-tuning.json` in
+The measured Q2_0 config is now saved as
+`~/.local/share/strata-sycl/serve-config-q2_0.json`; its preceding 0.5 configuration
+is backed up as `serve-config-before-floor-tuning.json` in
 the same directory. [The server instructions](#mtp-drafting-on-sycl) give the
 start command and API URL. Context 512 is the tested local setting; longer
 contexts have not been benchmarked with this configuration.
@@ -413,7 +437,9 @@ settings; see the research document for the machine configuration:
   dequantization, embedding gathers and interleaved gate/up conversion passed
   layout/rounding checks for these ten formats plus BF16. The dequantizers
   reuse the repository scalar definitions; this is not an independent check
-  of those definitions. Other IQ1/IQ2/IQ3 formats remain unsupported.
+  of those definitions. The later mixed-IQ3_S section adds IQ2_S, IQ3_XXS
+  and IQ3_S, with an independent ggml transfer oracle. IQ2_XXS, IQ2_XS
+  and IQ1 formats remain unsupported on the native GPU path.
 - Real Q2_0 GGUF: first/middle/last rows from all 448 tensors of those ten
   formats passed with three activation columns. The same normalized maximum
   error was `4.699e-8`. This samples weights, not a forward pass.
@@ -1641,8 +1667,8 @@ PYTHONPATH=tools ~/.local/share/strata-sycl/venv/bin/python -m serve.server \
   --host 127.0.0.1 --port 18085
 ```
 
-Its OpenAI base URL is `http://127.0.0.1:18085/v1`; the config names the model
-`qwen3.8-flash-next-sycl`. The persistent engine currently requires MTP and
+Its OpenAI base URL is `http://127.0.0.1:18085/v1`; the current IQ3_S config names the model
+`qwen3.8-flash-next-iq3_s-sycl` and retains `qwen3.8-flash-next-sycl` as an alias. The persistent engine currently requires MTP and
 prefill. The local config and model assets are outside the checkout.
 
 ### Native Q2 CPU-order diagnostic
