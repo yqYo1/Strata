@@ -6,6 +6,12 @@ measurements and real HTTP validation. Hardware, flags, input fixtures and
 output hashes identify the scope. It includes all 19 persistent-process samples;
 slower parameter settings remain in the record.
 
+These measurements predate the upstream sync/rebase. The CPU-reference label
+`sycl_cache_off` was corrected to `sycl_cache_auto`: `--expert-cache 0` with a
+profile selected automatic sizing and allocated 2,530 slots. The numbers were
+not changed. A true cache-off check and post-rebase validation are recorded in
+the [upstream integration summary](../2026-10-03-sycl-upstream-rebase/README.md).
+
 The implemented formats are IQ2_S, IQ3_XXS and IQ3_S; this model uses all three
 alongside existing Q2_0, IQ4_NL and IQ4_XS expert paths. Source commits are
 `e21c48d` (mixed format support) and `8d3b3f0` (per-layer slot sizing).

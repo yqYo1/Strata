@@ -24,8 +24,10 @@ IQ3_S remains slower than the earlier Q2_0 result and has not reached
 approximately 29 token/s on this fixture.
 
 The [detailed status report](SYCL_STATUS_2026-10-03.md) explains acquisition,
-all parameter samples, numerical checks, real HTTP validation and specific gaps
-against upstream 0.1.38 at `99f3dbd`. The canonical API model name is
+all parameter samples, numerical checks and real HTTP validation. Upstream
+0.1.38 at `99f3dbd` has since been merged into the fork's main through PR #1,
+and the SYCL branch rebased and checked again; the report distinguishes
+remaining backend gaps from imported shared changes. The canonical API model name is
 `qwen3.8-flash-next-iq3_s-sycl`, with the tested existing alias
 `qwen3.8-flash-next-sycl`. The preceding Q2_0 config is saved at
 `~/.local/share/strata-sycl/serve-config-q2_0.json`. Models, logs and local configs

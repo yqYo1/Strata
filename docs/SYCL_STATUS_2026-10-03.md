@@ -4,7 +4,8 @@ This report describes the Linux Intel Arc B570 worktree, rather than every
 feature advertised by the upstream CUDA/HIP engine. Measurements use a B570
 with 10 GiB VRAM, Ryzen 5 5600X, 125 GiB system RAM, oneAPI DPC++ 2026.1.1 and
 Level Zero driver `1.17.39395+14`. Driver defaults were retained. Other workloads
-on the workstation were not isolated.
+on the workstation were not isolated. The tuning table predates the upstream
+sync/rebase; post-rebase checks are recorded separately below.
 
 ## Model acquisition and coverage
 
@@ -166,9 +167,10 @@ product. All 34 existing `sycl_` tests passed after adding the three formats.
 A separate CPU-only llama.cpp reference at pinned commit
 `3cf03257f219afbe7334045ff7c6a06ac68c627d` teacher-forced a 25-token arithmetic
 chat. The target used FP16 KV, context 128 and four CPU workers. All 25 argmax
-ids matched, both without a GPU expert cache and with a fixed 1,649-slot cache.
-Cache-off minimum/mean cosine were 0.976301/0.997614; cached values were
-0.983445/0.997201. Logits were finite but not bit-identical to the reference.
+ids matched with automatic sizing (2,530 slots) and a fixed 1,649-slot cache.
+The first condition was originally labelled cache-off incorrectly: with a
+profile, `--expert-cache 0` selects automatic sizing. Its minimum/mean cosine
+were 0.976301/0.997614; fixed-cache values were 0.983445/0.997201. Logits were finite but not bit-identical to the reference.
 The final position predicted `4` for `What is 2+2?`.
 
 An ordinary 32-token greedy run with MTP disabled also completed with finite
@@ -186,40 +188,86 @@ These checks do not assert that whole-model logits equal a CPU-only run, or that
 IQ3_S has better task quality than Q2_0. No broad benchmark of model quality was
 performed. Fixture responses are truncated at their requested token limit.
 
-## Comparison with the latest upstream
+## Upstream integration and remaining backend gaps
 
-The comparison uses an independent, read-only `ghq` clone of
+The reference is the independent, read-only `ghq` clone of
 [Niko1221/Strata at `99f3dbd`](https://github.com/Niko1221/Strata/tree/99f3dbd0b21d1401b3769e0c0d963913607f380b),
-committed 2026-10-03 00:21:36 UTC. The common base is
-`1678de333d0e0711bc414ad992b640e1a37dd814`. Upstream has 96 commits beyond that
-base and changes 81 files, with 11,050 added and 645 removed lines. These are
-branch-divergence counts, not 96 separately missing features. The local engine
-still identifies as 0.1.34; the upstream engine identifies as 0.1.38.
-The upstream changes were inspected, not merged into this worktree.
+committed 2026-10-03 00:21:36 UTC. Its common base with the original SYCL work
+was `1678de333d0e0711bc414ad992b640e1a37dd814`: 96 upstream commits changed 81
+files, with 11,050 added and 645 removed lines. Those are historical divergence
+counts, not a count of missing features.
 
-| Upstream area | Current SYCL gap | Practical implication |
+[PR #1](https://github.com/yqYo1/Strata/pull/1) imported the remaining 83 commits
+into the fork's main and was merged as
+`d988955e141190bc079b58ab3d3038da637ad070`. The main tree matches upstream
+`99f3dbd` and the clean local main mirrors the remote. All 77 SYCL commits were
+rebased onto it. The SYCL build now identifies as 0.1.38. Integration commit
+`3205987` supplies the newer host interfaces while retaining SYCL's existing
+GPU arithmetic and single-device boundary. The original branch was retained
+locally as `backup/sycl-before-upstream-2026-10-03`.
+
+| Area | After integration | Remaining validation or port work |
 | --- | --- | --- |
-| Quantized expert prefill | CUDA fused INT8 experts, native MMQ and their newer streamed staging are not ported to SYCL | Prompt processing is the largest remaining port/performance gap; the current path expands experts to FP16 |
-| Prompt attention | Newer upstream matrix attention optimizations are not ported; SYCL `qsa_prompt_attn_batch` requests the split fallback | Long-prompt throughput needs separate implementation and measurement |
-| Second GPU expert tier | New `--peer-device`, peer cache and peer prompt work are absent; the SYCL adapter accepts ordinal 0 only | The SYCL engine currently uses one GPU |
-| Adaptive cache controls | New `--adapt-decay` and `--expert-profile-save` persistence are absent | Existing adaptive replacement works, but learned residency is not saved by these newer interfaces |
-| CPU IQ4_XS | New AVX2 multi-token IQ4_XS expert kernel has not been imported | The existing fallback handles this format; the requested model has one IQ4_XS gate/up layer |
-| Memory/startup policy | Newer reserve heuristics, allocation diagnostics and Windows low-RAM changes are not all present | Current settings are measured on this Linux B570, not a general small-card preset |
-| Server recovery/diagnostics | New silent-engine timeout/restart, startup-log diagnostics and mid-prompt cancellation accounting are not imported | Basic API tests pass, but recent upstream failure handling is missing |
-| Server request protections | Latest Host/Origin checks and their new tests are not imported | This fork does not yet include those upstream request checks; the measured server binds to 127.0.0.1 |
-| Server compatibility/metrics | New malformed-message handling, draft-count metrics and thinking-budget notices are not all imported | The standard API paths work, but matching the latest server behavior needs an explicit update |
-| Installer/updater | Setup supports NVIDIA/AMD discovery, not the Intel SYCL build and model setup used here; newer upstream updater/setup changes are also absent | The SYCL installation remains a manual Linux workflow |
+| Quantized expert prefill | Shared staging changes are imported; SYCL retains FP16 expansion and oneMKL | CUDA fused INT8 experts and native MMQ still need a SYCL implementation |
+| Prompt attention and CUDA kernel tuning | Upstream sources are present; SYCL keeps the validated split fallback and its own kernels | Matrix prompt attention, newer CUDA GDN/cluster optimizations are not SYCL paths |
+| Second GPU expert tier | Shared peer code is imported | SYCL still accepts one selected GPU; `--peer-device` is rejected before model loading |
+| Adaptive cache controls | `--adapt-decay` and `--expert-profile-save` are imported | Local preset continues to use the shipped profile; learned-file ranking was checked below |
+| CPU IQ4_XS | New AVX2 multi-token kernel is imported | Real IQ3_S requests exercise this CPU; no broad quality comparison is claimed |
+| Memory/startup policy | New shared reserve, loading and diagnostic changes are imported | Small-card presets and Windows low-RAM paths need their own hardware tests |
+| Server recovery, diagnostics and request checks | New timeout/restart handling, Host/Origin checks, malformed-message handling and metrics are imported | Mock tests and local real-model HTTP checks pass; no full agent reliability test is claimed |
+| Installer/updater | New upstream setup/update code is imported | Intel SYCL discovery, automatic build/model setup and Windows installation remain unimplemented here |
 
-Most upstream web/API/model-family features predate the common base and already
-exist in the fork. The gaps above are specific missing updates or SYCL paths;
-they do not mean the whole upstream server or model loader must be rewritten.
-Conversely, this worktree's SYCL runtime and optimized B570 kernels are its own
-additions, not upstream features available on Intel through the standard setup.
-
-Next port priorities are quantized expert prefill and matrix prompt attention,
-then the newer server fixes and profile persistence. Multi-GPU, complete vision
+Most web/API/model-family features already existed before the sync. The SYCL
+runtime and B570 kernels are fork additions. Next backend priorities remain
+quantized expert prefill and matrix prompt attention. Multi-GPU, complete vision
 validation and Windows installation require their own devices and test runs.
-Measured decode tuning cannot establish those capabilities.
+
+## Post-rebase checks
+
+The rebuilt engine passed all 35 CTest tests: 34 SYCL checks and the imported
+expert-profile serialization test. The new grouped-expert API hints retain the
+same SYCL results; scattered rows were checked on device and host USM with holes
+and a canary, and rejected peer copies leave their destinations untouched.
+The imported server passed 139 mock-engine tests. All 11 setup test scripts
+passed in separate processes after fixing two Linux portability issues in the
+fixtures: Windows archives must be tested with `strata.exe`, and executable
+normalization must leave `strata-*.log` filenames intact. The unmodified upstream
+setup failures are recorded in PR #1; the fixture fixes change no installer code.
+
+Against the same pinned CPU-only reference, the 25-token arithmetic fixture was
+checked again with three actual cache configurations:
+
+| GPU expert cache | Argmax matches | Minimum cosine | Mean cosine |
+| --- | ---: | ---: | ---: |
+| Disabled, no profile | 25/25 | 0.976385 | 0.997371 |
+| Automatic, 2,530 slots | 25/25 | 0.976301 | 0.997614 |
+| Fixed, 1,649 slots | 25/25 | 0.983445 | 0.997201 |
+
+All logits were finite. The automatic and fixed-cache dumps retained every
+float32 bit across all 25 full-vocabulary rows from their pre-rebase runs.
+That check is ordinary teacher-forced decode; it does not establish bitwise
+MTP/ordinary equivalence or broader task quality.
+
+One fresh persistent IQ3_S process completed two story requests, two Python
+requests, cancellation after its first token and an eight-token recovery. Each
+main request produced 128 tokens; recovery retained the first eight ids. The
+cache still held 2,137 experts in approximately 4.09 GiB. Startup was 16.98 s;
+first/repeated decode rates were 12.74/14.74 token/s for the story and
+16.84/18.90 for Python. These are one integration check, not a new median or a
+speedup claim. Original three-pair tuning medians above remain historical.
+`--expert-profile-save` also wrote a 196,632-byte file whose complete 24,576-pair
+ranking and reverse lookup were verified.
+
+The rebuilt engine and imported server passed real HTTP checks on
+`127.0.0.1:18085`: model listing, web UI, both APIs, streaming, repeat output,
+old model alias and cancellation recovery. The test server stopped cleanly.
+The selected local IQ3_S config and Q2_0 backup remain available at the paths
+above. Context 512 and the earlier platform/vision limits still apply.
+
+Reviewed post-rebase evidence is in
+[`bench/results/2026-10-03-sycl-upstream-rebase/run.json`](../bench/results/2026-10-03-sycl-upstream-rebase/run.json).
+Raw logs, float dumps, per-request outputs and temporary configs remain outside
+Git under `~/.local/state/strata-sycl/measurement-archive/2026-10-03-upstream-rebase/`.
 
 See [SYCL implementation and build instructions](SYCL_IMPLEMENTATION.md),
 [measurement storage policy](../bench/results/README.md) and the

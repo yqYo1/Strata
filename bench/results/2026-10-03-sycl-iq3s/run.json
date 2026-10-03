@@ -2631,15 +2631,6 @@
     },
     "cpu_model_reference": {
       "comparisons": {
-        "sycl_cache_off": {
-          "rows": 25,
-          "top1_matches": 25,
-          "top1_mismatch_positions": [],
-          "cosine_min": 0.9763010811428089,
-          "cosine_mean": 0.9976144167013526,
-          "rmse_max": 0.3583025170855921,
-          "absolute_error_max": 2.1325807571411133
-        },
         "sycl_cache_1649": {
           "rows": 25,
           "top1_matches": 25,
@@ -2647,13 +2638,25 @@
           "cosine_min": 0.9834447488062558,
           "cosine_mean": 0.997200555203348,
           "rmse_max": 0.3070138978596163,
-          "absolute_error_max": 1.7029528617858887
+          "absolute_error_max": 1.7029528617858887,
+          "effective_cache_slots": 1649
+        },
+        "sycl_cache_auto": {
+          "rows": 25,
+          "top1_matches": 25,
+          "top1_mismatch_positions": [],
+          "cosine_min": 0.9763010811428089,
+          "cosine_mean": 0.9976144167013526,
+          "rmse_max": 0.3583025170855921,
+          "absolute_error_max": 2.1325807571411133,
+          "effective_cache_slots": 2530
         }
       },
       "scope": "One 25-token rendered arithmetic chat, teacher-forced one token at a time, FP16 KV; pinned llama.cpp CPU-only reference. Not a broad quality gate or bitwise-equivalence assertion.",
       "context": 128,
       "kv": "fp16",
-      "threads": 4
+      "threads": 4,
+      "condition_correction": "The original sycl_cache_off label was incorrect: --expert-cache 0 with --expert-profile selects automatic sizing, which allocated 2530 slots in this run. Original numerical results are retained under sycl_cache_auto; a true cache-off check is recorded in the post-rebase summary."
     },
     "ordinary_decode": {
       "output_tokens": 32,
@@ -2701,7 +2704,8 @@
     "files_changed": 81,
     "lines_added": 11050,
     "lines_removed": 645,
-    "merged": false
+    "merged": false,
+    "phase": "Before upstream synchronization through PR #1 and rebase; historical measurement metadata."
   },
   "limitations": [
     "Short fixed fixtures on this one machine; not a broad quality evaluation or matched NVIDIA benchmark.",
