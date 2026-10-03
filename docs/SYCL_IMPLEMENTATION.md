@@ -78,6 +78,26 @@ the same directory. [The server instructions](#mtp-drafting-on-sycl) give the
 start command and API URL. Context 512 is the tested local setting; longer
 contexts have not been benchmarked with this configuration.
 
+## Mixed IQ3_S model support
+
+The IQ3_S GGUF also contains IQ3_XXS and IQ2_S gate/up experts. SYCL now
+supports all three formats in native single- and multi-column MMVQ, grouped
+GPU experts, FP32/FP16 transfers and interleaved prefill transfers. Codebooks
+and decoders follow the pinned ggml definitions; the model is not requantized.
+Existing Q2_0, IQ4_NL and IQ4_XS paths remain in use for its other expert layers.
+
+On this B570, `sycl_mmvq` passed with an independent ggml decoder oracle,
+all 512/256/1,024 codebook indices, signs, subscales and finite FP16 scale
+edge cases. Mixed grouped experts cover IQ3 gate/up with IQ4_NL or Q2_0 down.
+The IQ3_S GGUF row check passed for the first, middle and last rows of all
+447 supported tensors with three activation columns. Maximum
+`|error| / (1 + sum|terms|)` was `6.59863e-8` against a scalar dequantized dot
+product. This is a kernel check, not a whole-model quality measurement.
+
+```sh
+build-sycl/sycl_mmvq_test --gguf /path/to/IQ3_S-00001-of-00002.gguf
+```
+
 ## Build and validate
 
 On Linux with Intel oneAPI DPC++ and oneMKL installed:

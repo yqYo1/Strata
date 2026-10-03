@@ -26,6 +26,7 @@
 #include "strata/kernels/native_mmvq.hpp"
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/kernels/iq_kernels.hpp"
+#include "strata/artifact/iq_codebooks.hpp"
 #include "strata/sycl/launch.hpp"
 #include <atomic>
 #include <sycl/ext/intel/math.hpp>
@@ -116,6 +117,23 @@ struct IQ4XSBlock {
   uint8_t scales_l[4];
   uint8_t qs[128];
 };
+struct IQ3SBlock {
+  half d;
+  uint8_t qs[64];
+  uint8_t qh[8];
+  uint8_t signs[32];
+  uint8_t scales[4];
+};
+struct IQ3XXSBlock {
+  half d;
+  uint8_t qs[96];
+};
+struct IQ2SBlock {
+  half d;
+  uint8_t qs[64];
+  uint8_t qh[8];
+  uint8_t scales[8];
+};
 struct Q4KBlock {
   half2 dm;
   uint8_t scales[12];
@@ -155,6 +173,17 @@ static_assert(sizeof(IQ4XSBlock) == 136 && alignof(IQ4XSBlock) == 2 &&
               offsetof(IQ4XSBlock, scales_h) == 2 &&
               offsetof(IQ4XSBlock, scales_l) == 4 &&
               offsetof(IQ4XSBlock, qs) == 8);
+static_assert(sizeof(IQ3SBlock) == 110 && alignof(IQ3SBlock) == 2 &&
+              offsetof(IQ3SBlock, qs) == 2 &&
+              offsetof(IQ3SBlock, qh) == 66 &&
+              offsetof(IQ3SBlock, signs) == 74 &&
+              offsetof(IQ3SBlock, scales) == 106);
+static_assert(sizeof(IQ3XXSBlock) == 98 &&
+              offsetof(IQ3XXSBlock, qs) == 2);
+static_assert(sizeof(IQ2SBlock) == 82 &&
+              offsetof(IQ2SBlock, qs) == 2 &&
+              offsetof(IQ2SBlock, qh) == 66 &&
+              offsetof(IQ2SBlock, scales) == 74);
 static_assert(offsetof(Q5KBlock, scales) == 4 && offsetof(Q5KBlock, qh) == 16 &&
               offsetof(Q5KBlock, qs) == 48 && offsetof(Q81Block, qs) == 4);
 static_assert(sizeof(Q4KBlock) == 144 && alignof(Q4KBlock) == 4 &&
@@ -536,6 +565,131 @@ struct Q6KTraits {
     return q6_q8_dot_impl(r.vl, r.vh, u, r.scales, r.d, d8);
   }
 };
+int signed_grid_word(uint32_t positive, unsigned signs) {
+  uint32_t result = 0;
+#pragma unroll
+  for (int j = 0; j < 4; ++j) {
+    const int value = int((positive >> (8 * j)) & 255);
+    result |= uint32_t(uint8_t((signs >> j) & 1 ? -value : value)) << (8 * j);
+  }
+  return int(result);
+}
+struct IQ3XXSTraits {
+  using Block = IQ3XXSBlock;
+  static constexpr int DIV = 256, T = 8, KBY = 8, BPI = 16;
+  static int kqs(int tid) { return 2 * (tid % 8); }
+  struct W {
+    int grid[8], scale;
+    float d;
+  };
+  static W load(const Block *__restrict__ w, int iqs) {
+    W result;
+    const int group = iqs / 2;
+    const uint8_t *scales = w->qs + 64 + 4 * group;
+    const uint32_t aux = uint32_t(scales[0]) | (uint32_t(scales[1]) << 8) |
+                         (uint32_t(scales[2]) << 16) |
+                         (uint32_t(scales[3]) << 24);
+    result.scale = 2 * (aux >> 28) + 1;
+    result.d = w->d;
+#pragma unroll
+    for (int word = 0; word < 8; ++word) {
+      const uint32_t positive = strata::iq3_xxs_grid[w->qs[group * 8 + word]];
+      const unsigned signs = strata::iq_even_parity_signs(aux >>
+                                                 (7 * (word / 2)));
+      result.grid[word] = signed_grid_word(positive,
+                                          signs >> (4 * (word % 2)));
+    }
+    return result;
+  }
+  static float apply(const W &w, const Q81Block *__restrict__ x, int iqs) {
+    const auto &activation = x[iqs / 2];
+    const auto *codes = reinterpret_cast<const int *>(activation.qs);
+    int dot = 0;
+#pragma unroll
+    for (int j = 0; j < 8; ++j)
+      dot = packed_dot(w.grid[j], codes[j], dot);
+    // Retain the canonical quarter-integer term rather than truncating an
+    // integer division. Its numerator fits exactly in float32.
+    const float scaled = float(dot * w.scale) * 0.25f;
+    return (w.d * half_low(activation.ds)) * scaled;
+  }
+};
+struct IQ2STraits {
+  using Block = IQ2SBlock;
+  static constexpr int DIV = 256, T = 8, KBY = 8, BPI = 16;
+  static int kqs(int tid) { return 2 * (tid % 8); }
+  struct W {
+    int grid[8], scale0, scale1;
+    float d;
+  };
+  static W load(const Block *__restrict__ w, int iqs) {
+    W result;
+    const int group = iqs / 2;
+    result.d = w->d;
+    result.scale0 = 2 * (w->scales[group] & 15) + 1;
+    result.scale1 = 2 * (w->scales[group] >> 4) + 1;
+#pragma unroll
+    for (int cell = 0; cell < 4; ++cell) {
+      const int index = w->qs[group * 4 + cell] |
+                        (((w->qh[group] >> (2 * cell)) & 3) << 8);
+      const uint64_t positive = strata::iq2_s_grid[index];
+      const unsigned signs = w->qs[32 + group * 4 + cell];
+      result.grid[2 * cell] = signed_grid_word(uint32_t(positive), signs);
+      result.grid[2 * cell + 1] = signed_grid_word(uint32_t(positive >> 32),
+                                                 signs >> 4);
+    }
+    return result;
+  }
+  static float apply(const W &w, const Q81Block *__restrict__ x, int iqs) {
+    const auto &activation = x[iqs / 2];
+    const auto *codes = reinterpret_cast<const int *>(activation.qs);
+    int dot0 = 0, dot1 = 0;
+#pragma unroll
+    for (int j = 0; j < 4; ++j) {
+      dot0 = packed_dot(w.grid[j], codes[j], dot0);
+      dot1 = packed_dot(w.grid[j + 4], codes[j + 4], dot1);
+    }
+    const float scaled = float(dot0 * w.scale0 + dot1 * w.scale1) * 0.125f;
+    return (w.d * half_low(activation.ds)) * scaled;
+  }
+};
+struct IQ3STraits {
+  using Block = IQ3SBlock;
+  static constexpr int DIV = 256, T = 8, KBY = 8, BPI = 16;
+  static int kqs(int tid) { return 2 * (tid % 8); }
+  struct W {
+    int grid[8], scale;
+    float d;
+  };
+  static W load(const Block *__restrict__ w, int iqs) {
+    W result;
+    const int group = iqs / 2;
+    result.d = w->d;
+    result.scale = 1 + 2 * ((w->scales[group / 2] >>
+                            (4 * (group % 2))) & 15);
+#pragma unroll
+    for (int word = 0; word < 8; ++word) {
+      const int index = w->qs[group * 8 + word] |
+                        (((w->qh[group] >> word) & 1) << 8);
+      const uint32_t positive = strata::iq3_s_grid[index];
+      const int signs = w->signs[group * 4 + word / 2] >>
+                        (4 * (word % 2));
+      result.grid[word] = signed_grid_word(positive, signs);
+    }
+    return result;
+  }
+  static float apply(const W &w, const Q81Block *__restrict__ x, int iqs) {
+    const auto &activation = x[iqs / 2];
+    const auto *codes = reinterpret_cast<const int *>(activation.qs);
+    int dot = 0;
+#pragma unroll
+    for (int j = 0; j < 8; ++j)
+      dot = packed_dot(w.grid[j], codes[j], dot);
+    dot *= w.scale;
+    const float d = w.d * half_low(activation.ds);
+    return d * dot;
+  }
+};
 struct IQ4XSTraits {
   using Block = IQ4XSBlock;
   static constexpr int DIV = 256, T = 8, KBY = 8, BPI = 4 * WARPS * WARP / 32;
@@ -617,8 +771,14 @@ Format format(int type) {
     return {256, 176};
   case 14:
     return {256, 210};
+  case 18:
+    return {256, 98};
   case 20:
     return {32, 18};
+  case 21:
+    return {256, 110};
+  case 22:
+    return {256, 82};
   case 23:
     return {256, 136};
   case 42:
@@ -784,7 +944,10 @@ void grouped_dispatch(int type, const NativeExpertLayout &L,
     GROUPED(12, Q4KTraits);
     GROUPED(13, Q5KTraits);
     GROUPED(14, Q6KTraits);
+    GROUPED(18, IQ3XXSTraits);
     GROUPED(20, SmallTraits<IQ4NLBlock, 4>);
+    GROUPED(21, IQ3STraits);
+    GROUPED(22, IQ2STraits);
     GROUPED(23, IQ4XSTraits);
     case 42:
       if (iq_old_kernels())
@@ -854,7 +1017,8 @@ void native_quantize_q8_1(const float *x, void *scratch, int n_in, int ncols,
 }
 bool native_mmvq_supported(int type) noexcept {
   return type == 2 || type == 6 || type == 8 || type == 11 || type == 12 ||
-         type == 13 || type == 14 || type == 20 || type == 23 || type == 42;
+         type == 13 || type == 14 || type == 18 || type == 20 || type == 21 ||
+         type == 22 || type == 23 || type == 42;
 }
 size_t native_mmvq_weight_bytes(int type, int n_in, int n_out) {
   const auto f = format(type);
@@ -906,8 +1070,17 @@ void native_mmvq(int type, const void *w, const void *x, float *y, int n_in,
   case 14:
     dispatch<Q6KTraits>(w, x, y, n_in, n_out, ncols, stream);
     break;
+  case 18:
+    dispatch<IQ3XXSTraits>(w, x, y, n_in, n_out, ncols, stream);
+    break;
   case 20:
     dispatch<SmallTraits<IQ4NLBlock, 4>>(w, x, y, n_in, n_out, ncols, stream);
+    break;
+  case 21:
+    dispatch<IQ3STraits>(w, x, y, n_in, n_out, ncols, stream);
+    break;
+  case 22:
+    dispatch<IQ2STraits>(w, x, y, n_in, n_out, ncols, stream);
     break;
   case 23:
     // Batched columns reuse decoded weights more efficiently in SPMD.

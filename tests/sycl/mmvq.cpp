@@ -12,6 +12,9 @@
 #include <random>
 #include <stdexcept>
 #include <vector>
+#ifdef STRATA_SYCL_GGML_ORACLE
+#include <ggml.h>
+#endif
 using namespace strata;
 using namespace strata::kernels;
 namespace {
@@ -85,7 +88,9 @@ constexpr Format formats[] = {{2, 32, 18, 0},      {6, 32, 22, 0},
                               {8, 32, 34, 0},      {11, 256, 110, 108},
                               {12, 256, 144, 0},   {13, 256, 176, 0},
                               {14, 256, 210, 208}, {20, 32, 18, 0},
-                              {23, 256, 136, 0},   {42, 64, 18, 0}};
+                              {23, 256, 136, 0},   {42, 64, 18, 0},
+                              {21, 256, 110, 0},   {18, 256, 98, 0},
+                              {22, 256, 82, 0}};
 void decode(int type, const uint8_t *p, float *out) {
   switch (type) {
   case 2:
@@ -111,6 +116,27 @@ void decode(int type, const uint8_t *p, float *out) {
     break;
   case 20:
     dequantize_iq4_nl(p, out);
+    break;
+  case 21:
+#ifdef STRATA_SYCL_GGML_ORACLE
+    ggml_get_type_traits(GGML_TYPE_IQ3_S)->to_float(p, out, 256);
+#else
+    dequantize_iq3_s(p, out);
+#endif
+    break;
+  case 18:
+#ifdef STRATA_SYCL_GGML_ORACLE
+    ggml_get_type_traits(GGML_TYPE_IQ3_XXS)->to_float(p, out, 256);
+#else
+    dequantize_iq3_xxs(p, out);
+#endif
+    break;
+  case 22:
+#ifdef STRATA_SYCL_GGML_ORACLE
+    ggml_get_type_traits(GGML_TYPE_IQ2_S)->to_float(p, out, 256);
+#else
+    dequantize_iq2_s(p, out);
+#endif
     break;
   case 23:
     dequantize_iq4_xs(p, out);
@@ -169,10 +195,12 @@ std::vector<uint8_t> quantize(const std::vector<float> &x) {
   }
   return out;
 }
-void grouped(Format f, int n, int ff, bool scale_edges = false) {
+void grouped(Format f, int n, int ff, bool scale_edges = false,
+             const Format *down_format = nullptr) {
   constexpr int G = 3, E = 15, T = 3;
-  const auto L = native_expert_layout(f.type, f.type, n, ff);
-  auto gw = weights(f, n, ff), dw = weights(f, ff, n);
+  const Format down = down_format ? *down_format : f;
+  const auto L = native_expert_layout(f.type, down.type, n, ff);
+  auto gw = weights(f, n, ff), dw = weights(down, ff, n);
   if (scale_edges) {
     check(f.type == 42, "scale-edge fixture requires Q2_0");
     constexpr uint16_t edges[] = {0x0000, 0x8000, 0x0001, 0x8001, 0x0400,
@@ -242,7 +270,7 @@ void grouped(Format f, int n, int ff, bool scale_edges = false) {
       hp[i] = (v / (1.f + sycl::exp(-v))) * upp[i];
     });
     native_quantize_q8_1(h.data(), hq.data(), ff, 1, q);
-    native_mmvq(f.type, p + L.down_off, hq.data(), one.data(), ff, n, 1, q);
+    native_mmvq(down.type, p + L.down_off, hq.data(), one.data(), ff, n, 1, q);
     const auto ref = one.read();
     std::copy(ref.begin(), ref.end(),
               expected.begin() + size_t(destinations[entry]) * n);
@@ -298,9 +326,11 @@ void grouped(Format f, int n, int ff, bool scale_edges = false) {
             << (scale_edges ? " FP16 scale edges" : "")
             << " passed both entry tiles\n";
 }
-void transfers(Format f) {
-  constexpr int N = 256, R = 4;
-  const auto w = weights(f, N, R);
+void transfers(Format f, int row_count = 4,
+               const std::vector<uint8_t> *fixture = nullptr) {
+  constexpr int N = 256;
+  const int R = row_count;
+  const auto w = fixture ? *fixture : weights(f, N, R);
   std::vector<float> reference(N * R);
   for (int i = 0; i < N * R / f.width; ++i)
     decode(f.type, w.data() + size_t(i) * f.bytes,
@@ -323,6 +353,9 @@ void transfers(Format f) {
                 N, gathered.data(), nullptr);
   const auto got = out.read(), emb = gathered.read();
   const auto f16 = halfout.read(), gu = interleaved.read();
+  if (f.type == 18 || f.type == 21 || f.type == 22)
+    check(std::memcmp(got.data(), reference.data(), N * R * 4) == 0,
+          "IQ expert dequantization bits against ggml");
   for (int i = 0; i < N * R; ++i) {
     check(got[i] == reference[i], "GGUF f32 transfer");
     check(f16[i] == half(reference[i]), "GGUF f16 transfer");
@@ -520,6 +553,13 @@ template <typename F> void rejects(F f) {
 int main(int argc, char **argv) {
   try {
     std::fesetenv(FE_DFL_ENV);
+#ifdef STRATA_SYCL_GGML_ORACLE
+    // Initialize ggml's FP16 lookup table before calling its independent
+    // IQ3_S dequantizer. No tensor or model allocation is needed.
+    auto *context = ggml_init({16384, nullptr, true});
+    check(context != nullptr, "ggml oracle initialization");
+    ggml_free(context);
+#endif
     runtime = sycl_backend::runtime_for();
     if (argc == 1) {
       half_conversion();
@@ -529,6 +569,77 @@ int main(int argc, char **argv) {
       }
       grouped(formats[9], 2560, 640);
       grouped(formats[9], 2560, 640, true);
+      grouped(formats[10], 2560, 640, false, &formats[7]);
+      for (const auto f : {formats[11], formats[12]}) {
+        grouped(f, 2560, 640, false, &formats[7]);
+        grouped(f, 2560, 640, false, &formats[9]);
+      }
+      {
+        const auto f = formats[10];
+        constexpr uint16_t scales[] = {0, 0x8000, 1, 0x8001, 0x3ff,
+                                       0x400, 0x8400, 0x7bff};
+        // Every nine-bit codebook index, low/high subscales, explicit sign
+        // bytes and finite FP16 scale edge go through ggml's independent
+        // decoder and both GPU transfer precisions.
+        auto w = weights(f, 256, 512);
+        for (int row = 0; row < 512; ++row) {
+          auto *block = w.data() + row * 110;
+          std::memcpy(block, &scales[row % 8], 2);
+          for (int group = 0; group < 8; ++group) {
+            for (int word = 0; word < 8; ++word)
+              block[2 + group * 8 + word] = uint8_t(row);
+            block[66 + group] = row >= 256 ? 255 : 0;
+            for (int word = 0; word < 4; ++word)
+              block[74 + group * 4 + word] = uint8_t(row + group * 4 + word);
+          }
+          std::fill_n(block + 106, 4,
+                      uint8_t((row % 16) | ((15 - row % 16) << 4)));
+        }
+        transfers(f, 512, &w);
+        for (int n : {2560, 6144}) {
+          auto projection = weights(f, n, 17);
+          for (int block = 0; block < 17 * (n / 256); ++block)
+            std::memcpy(projection.data() + block * 110,
+                        &scales[block % 8], 2);
+          for (int cols : {1, 3, 8})
+            run(f, n, 17, cols, true, projection);
+        }
+      }
+      for (const auto f : {formats[11], formats[12]}) {
+        constexpr uint16_t scales[] = {0, 0x8000, 1, 0x8001, 0x3ff,
+                                       0x400, 0x8400, 0x7bff};
+        const int rows = f.type == 18 ? 256 : 1024;
+        auto w = weights(f, 256, rows);
+        for (int row = 0; row < rows; ++row) {
+          auto *block = w.data() + row * f.bytes;
+          std::memcpy(block, &scales[row % 8], 2);
+          for (int group = 0; group < 8; ++group) {
+            if (f.type == 18) {
+              std::fill_n(block + 2 + group * 8, 8, uint8_t(row));
+              uint32_t aux = uint32_t(row % 16) << 28;
+              for (int cell = 0; cell < 4; ++cell)
+                aux |= uint32_t((row + group * 4 + cell) & 127) << (7 * cell);
+              std::memcpy(block + 66 + group * 4, &aux, 4);
+            } else {
+              for (int cell = 0; cell < 4; ++cell) {
+                block[2 + group * 4 + cell] = uint8_t(row);
+                block[34 + group * 4 + cell] = uint8_t(row + group * 4 + cell);
+              }
+              block[66 + group] = uint8_t((row >> 8) * 0x55);
+              block[74 + group] = uint8_t((row % 16) | ((15 - row % 16) << 4));
+            }
+          }
+        }
+        transfers(f, rows, &w);
+        for (int n : {2560, 6144}) {
+          auto projection = weights(f, n, 17);
+          for (int block = 0; block < 17 * (n / 256); ++block)
+            std::memcpy(projection.data() + block * f.bytes,
+                        &scales[block % 8], 2);
+          for (int cols : {1, 3, 8})
+            run(f, n, 17, cols, true, projection);
+        }
+      }
       transfers({30, 1, 2, 0});
     }
     if (argc == 3 && std::string(argv[1]) == "--gguf")
