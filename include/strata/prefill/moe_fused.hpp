@@ -13,6 +13,9 @@
 // The 2-bit codes are unpacked in registers and multiplied with mma.sync m16n8k32 (s8 x s8 -> s32); Q2_0's offset
 // (w = d * (q - 1)) is folded into the activation blocks' sums.  The numbers differ from MMQ's (another int8
 // rounding of the activations and of H) by about as much as MMQ differs from FP32 (tests/cuda/prefill_fused_moe_test).
+// SYCL implements the same activation ABI, GPU grouping and two direct-blob
+// launches with portable integer SIMD dots. It does not use CUDA tensor-core
+// instructions or imply their measured speed on Intel GPUs.
 #pragma once
 
 #include <cstddef>
@@ -25,9 +28,9 @@ constexpr int kTileRows = 64;
 /// Experts per launch: their blob pointers travel in the launch's parameters (1 KB).
 constexpr int kMaxBatch = 128;
 
-/// This build has the kernels (a CUDA build; HIP and builds without MMQ do not).
+/// This build has the kernels (CUDA or SYCL; HIP and builds without MMQ do not).
 bool built();
-/// built(), and the current device is sm_80 or newer (mma.sync with s8 operands at m16n8k32).
+/// CUDA: sm_80 or newer. SYCL: FP16, subgroup size 32 and a 256-thread workgroup.
 bool available();
 /// available(), unless STRATA_PF_FUSED=0 (read once): the Q2_0 pack's fused experts, on by default since 0.1.36.
 bool enabled();
