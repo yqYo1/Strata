@@ -1871,3 +1871,36 @@ unsuitable for a throughput claim.
 The benchmark uses five graph replays of ten products after warm-up. Raw
 captures remain outside Git; the reviewed timings and validation scope are
 in [`bench/results/2026-10-04-sycl-performance/run.json`](../bench/results/2026-10-04-sycl-performance/run.json).
+
+
+For persistent engine measurements, `tools/sycl/serve_bench.py` reads a serve
+config and named token files. It records engine-reported prompt/decode times,
+request wall time, ids, acceptance counters in each `DONE` line, binary hash,
+and tuning environment. It runs each prompt twice, cancels another request,
+then verifies eight-token recovery. `--compare PREVIOUS.json` requires every
+completed request to retain its ids. The config's working directory and
+environment are used; explicit process environment values take precedence.
+For example, after initializing oneAPI:
+
+```sh
+python3 tools/sycl/serve_bench.py \
+  --config ~/.local/share/strata-sycl/serve-config-iq3_s.json \
+  --prompt writing=bench/results/2026-10-03-sycl-mtp-floor/strata-sycl-writing-tokens.txt \
+  --prompt coding=bench/results/2026-10-03-sycl-mtp-floor/strata-sycl-profile-coding-tokens.txt \
+  --output /tmp/strata-serve-bench.json --workers 4 --prefill 16 --spec-min-p 0.9
+```
+
+An exploratory 827-id prompt (826 prefetched tokens) with context 2,048,
+1,649 fixed cache slots, adaptive swaps off and eight generated ids took
+49.49 s at chunk 64 before these changes. The updated kernels with chunk
+512 took 18.48 s, and chunk 1,024 took 14.48 s. All eight ids agreed.
+These are single diagnostic runs with phase profiling, not repeated final
+throughput estimates; some early baseline runs overlapped host compilation.
+
+A separate transfer queue stalled while both GPU engines reported busy and
+the main/staging threads waited. Completing ring-slot reuse waits on the
+host allowed it to finish, but chunk 512 took 19.02 s. Streaming all experts
+from chunks of 256 tokens took 16.53 s with that copy queue, or 16.97 s
+with one queue, both slower than the routed-only 14.48 s run. The copy-queue
+prototype was removed from production code; its patch and measurements are
+retained with the performance summary. System driver settings were unchanged.

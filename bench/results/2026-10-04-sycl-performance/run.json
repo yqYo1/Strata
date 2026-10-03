@@ -772,5 +772,170 @@
     "quantized_prefill": "17 formats, routed row maps, stride guards, invalid bounds, aligned vector and unaligned scalar gathers passed",
     "persistent_engine_full_esimd": "two 128-token writing requests, two 128-token coding requests, cancellation and 8-token recovery; output ids equal to baseline; exit 0",
     "note": "Persistent full-ESIMD trial includes first-use compilation and overlapped host compilation; it is a correctness check, not final performance evidence."
+  },
+  "prefill_screen": {
+    "conditions": "One exploratory process per condition; 827 input ids, 826 prefetched, 8 outputs, context 2048, fixed 1649 profile-filled slots, adaptive swaps disabled, MTP4/.9, four workers, PLE direct I/O. Profiling enabled. Some early baseline runs overlap host compilation. These select candidates for repeated timing, not final estimates.",
+    "results": [
+      {
+        "name": "baseline",
+        "prefill_chunk": 64,
+        "copy_queue": false,
+        "stream_all_threshold": 1024,
+        "prompt_tokens": 826,
+        "prompt_ms": 49494.2,
+        "prompt_tok_s": 16.69,
+        "experts_streamed": 85338,
+        "host_staging_ms": 33817.8,
+        "output_ids": [
+          11855,
+          248046,
+          198,
+          248044,
+          248045,
+          846,
+          198,
+          248046
+        ],
+        "log_sha256": "12612e6d052408e92a3b481718cbca34318003136caa9d94e8d359770ae7f3de"
+      },
+      {
+        "name": "baseline-pf512",
+        "prefill_chunk": 512,
+        "copy_queue": false,
+        "stream_all_threshold": 1024,
+        "prompt_tokens": 826,
+        "prompt_ms": 19587.8,
+        "prompt_tok_s": 42.17,
+        "experts_streamed": 24420,
+        "host_staging_ms": 15021.5,
+        "output_ids": [
+          11855,
+          248046,
+          198,
+          248044,
+          248045,
+          846,
+          198,
+          248046
+        ],
+        "log_sha256": "b52fe511c5a8bb34f3225877d10c0111f2d78a6e609dc9e472dd729d660dbd41"
+      },
+      {
+        "name": "vector-pf512",
+        "prefill_chunk": 512,
+        "copy_queue": false,
+        "stream_all_threshold": 1024,
+        "prompt_tokens": 826,
+        "prompt_ms": 18480.3,
+        "prompt_tok_s": 44.7,
+        "experts_streamed": 24420,
+        "host_staging_ms": 14273.6,
+        "output_ids": [
+          11855,
+          248046,
+          198,
+          248044,
+          248045,
+          846,
+          198,
+          248046
+        ],
+        "log_sha256": "8f8ee70641924cd35b3d62e19a84035e4b78e1bce3e888c6bdf928df9380750d"
+      },
+      {
+        "name": "vector-pf1024",
+        "prefill_chunk": 1024,
+        "copy_queue": false,
+        "stream_all_threshold": 1024,
+        "prompt_tokens": 826,
+        "prompt_ms": 14481.0,
+        "prompt_tok_s": 57.04,
+        "experts_streamed": 14714,
+        "host_staging_ms": 11446.4,
+        "output_ids": [
+          11855,
+          248046,
+          198,
+          248044,
+          248045,
+          846,
+          198,
+          248046
+        ],
+        "log_sha256": "2d86da46ba9cd6d455cea0c145cee980941b56b725da166c198fdd23b0a4de08"
+      },
+      {
+        "name": "copy-hostwait-pf512",
+        "prefill_chunk": 512,
+        "copy_queue": true,
+        "stream_all_threshold": 1024,
+        "prompt_tokens": 826,
+        "prompt_ms": 19020.2,
+        "prompt_tok_s": 43.43,
+        "experts_streamed": 24420,
+        "host_staging_ms": 15664.8,
+        "output_ids": [
+          11855,
+          248046,
+          198,
+          248044,
+          248045,
+          846,
+          198,
+          248046
+        ],
+        "log_sha256": "ad29926c7f8748879be610c29f18da13622d22e6951db4160ff77cae36a81c75"
+      },
+      {
+        "name": "copy-stream-pf1024",
+        "prefill_chunk": 1024,
+        "copy_queue": true,
+        "stream_all_threshold": 256,
+        "prompt_tokens": 826,
+        "prompt_ms": 16533.6,
+        "prompt_tok_s": 49.96,
+        "experts_streamed": 23313,
+        "host_staging_ms": 16234.1,
+        "output_ids": [
+          11855,
+          248046,
+          198,
+          248044,
+          248045,
+          846,
+          198,
+          248046
+        ],
+        "log_sha256": "462309a1722e806983e46ca8afc0f535202f332f23891fee113e971b4c287c0e"
+      },
+      {
+        "name": "vector-stream-pf1024",
+        "prefill_chunk": 1024,
+        "copy_queue": false,
+        "stream_all_threshold": 256,
+        "prompt_tokens": 826,
+        "prompt_ms": 16973.6,
+        "prompt_tok_s": 48.66,
+        "experts_streamed": 23313,
+        "host_staging_ms": 16687.6,
+        "output_ids": [
+          11855,
+          248046,
+          198,
+          248044,
+          248045,
+          846,
+          198,
+          248046
+        ],
+        "log_sha256": "839f0fcd8a224466f13f8215477fba1caba48035234af81a4ccd5a0ffaec745e"
+      }
+    ],
+    "rejected_copy_queue": {
+      "ordinary_cross_queue_event_waits": "Both copy and compute engines remained busy while main and host stager threads waited; process terminated by the test operator. GDB trace archived.",
+      "host_wait_at_ring_reuse": "Completed and retained all eight output ids; no advantage against the fastest single-queue setting.",
+      "retained": false,
+      "prototype": "copy-queue-prototype.patch"
+    }
   }
 }

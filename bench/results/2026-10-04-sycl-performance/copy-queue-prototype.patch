@@ -1,0 +1,81 @@
+diff --git a/src/prefill/prefill.cpp b/src/prefill/prefill.cpp
+index 61cdbe4..42f869b 100644
+--- a/src/prefill/prefill.cpp
++++ b/src/prefill/prefill.cpp
+@@ -691,10 +691,17 @@ bool Prefill::init(const core::WeightTable& wt, const core::ModelGeometry& g, co
+         m.tok_host.resize((size_t) chunk);
+     }
+ #if defined(STRATA_ENABLE_SYCL)
+-    // Keep prefill transfers and GEMMs on one in-order queue. On the B570 with
+-    // oneAPI 2026.1, the two-queue ring stalls at realistic expert matrix sizes.
+-    // Host staging remains parallel; the compute queue belongs to the caller.
+-    m.copy = m.cs;
++    // The FP16/oneMKL expert path stalled with two queues on B570. Native
++    // MMQ has its own SYCL products; allow a measured comparison of transfer
++    // overlap while retaining the single queue for any FP16 fallback layer.
++    const char* copy_env = std::getenv("STRATA_SYCL_PREFILL_COPY_QUEUE");
++    const bool copy_queue = copy_env && std::atoi(copy_env) != 0 && !mmq_plan().fallback;
++    if (copy_queue) {
++        if (cudaStreamCreateWithFlags(&m.copy, cudaStreamNonBlocking) != cudaSuccess) {
++            err = "prefill: SYCL copy queue"; return false;
++        }
++        std::fprintf(stderr, "strata prefill: SYCL native MMQ copy queue enabled\n");
++    } else m.copy = m.cs;
+ #else
+     if (cudaStreamCreateWithFlags(&m.copy, cudaStreamNonBlocking) != cudaSuccess) { err = "prefill: copy stream"; return false; }
+ #endif
+@@ -1311,6 +1318,20 @@ struct PeTimer {
+ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) {
+     err.clear();
+     Impl& m = *impl_;
++    auto reuse_slot = [&](int sl) {
++        if (!m.stage_live[sl]) return;
++#if defined(STRATA_ENABLE_SYCL)
++        // Reusing a ring slot must not put a compute-event wait on the copy
++        // queue: the B570 Level Zero v2 adapter can leave both engines waiting.
++        // The host waits only for this slot's last reader; other slots still
++        // permit copies and products to run concurrently.
++        if (m.copy != m.cs) {
++            cudaEventSynchronize(m.used[m.used_of[sl]]);
++            return;
++        }
++#endif
++        cudaStreamWaitEvent(m.copy, m.used[m.used_of[sl]], 0);
++    };
+     const core::OnDevice on_device(m.device);
+     const core::ModelGeometry& g = *m.g;
+     core::SessionState& ss = *m.ss;
+@@ -1565,7 +1586,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                 const int sl = (int) (issued % (size_t) m.ring);
+                 const auto th = Clock::now();
+                 const size_t bytes = (size_t) lay0.blob_bytes(en.l);
+-                if (m.stage_live[sl]) cudaStreamWaitEvent(m.copy, m.used[m.used_of[sl]], 0);
++                reuse_slot(sl);
+                 if (en.job < 0) {
+                     cudaMemcpyAsync(m.stage_dev[sl], en.blob, bytes, cudaMemcpyHostToDevice, m.copy);
+                     ++stats_.experts_dma;
+@@ -1612,7 +1633,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                     const int sl = (int) (idx % (size_t) m.ring);
+                     const auto th = Clock::now();
+                     const size_t bytes = (size_t) lay0.blob_bytes(en.l);
+-                    if (m.stage_live[sl]) cudaStreamWaitEvent(m.copy, m.used[m.used_of[sl]], 0);
++                    reuse_slot(sl);
+                     if (en.job < 0) {
+                         cudaMemcpyAsync(m.stage_dev[sl], en.blob, bytes, cudaMemcpyHostToDevice, m.copy);
+                         ++iss_dma;
+@@ -2359,13 +2380,13 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                             if (pinned && !b) { err = "prefill: expert source has no blob"; return false; }
+                             if (pinned) {
+                                 // DMA straight from the page-locked arena: the copy stream only waits for the slot
+-                                if (m.stage_live[sl]) cudaStreamWaitEvent(m.copy, m.used[m.used_of[sl]], 0);
++                                reuse_slot(sl);
+                                 cudaMemcpyAsync(m.stage_dev[sl], b, (size_t) lay.blob_bytes(l), cudaMemcpyHostToDevice, m.copy);
+                                 ++stats_.experts_dma;
+                             } else {
+                                 // copied to a pinned buffer by the stager (waits only if it is behind), then DMA
+                                 const uint8_t* hb = m.stager->wait(job_of[j]);
+-                                if (m.stage_live[sl]) cudaStreamWaitEvent(m.copy, m.used[m.used_of[sl]], 0);
++                                reuse_slot(sl);
+                                 cudaMemcpyAsync(m.stage_dev[sl], hb, (size_t) lay.blob_bytes(l), cudaMemcpyHostToDevice, m.copy);
+                                 m.stager->issued_one(job_of[j], m.copy);
+                             }
