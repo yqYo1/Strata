@@ -1,5 +1,6 @@
 #include "strata/kernels/kv_q4.hpp"
 #include "strata/kernels/kv_q8.hpp"
+#include "strata/prefill/kernels.hpp"
 #include "strata/sycl/runtime.hpp"
 #include <algorithm>
 #include <bit>
@@ -374,6 +375,41 @@ void storage(int fmt, int page_size, int dim) {
     check(kp.get() == kb && vp.get() == vb, "batch/step equality");
     check(sk.get() == ehk && sv.get() == ehv, "prompt stage bytes");
   }
+  // Hybrid K8V4 uses each ordinary append/gather with both logical halves
+  // pointing at one physical pool. Exercise batch and device-step calls
+  // against the independently encoded reference, including absent pages.
+  KvHostPools folded_host = host, folded_stage = stage;
+  folded_host.v_pool = folded_host.k_pool;
+  folded_host.v_q = folded_host.k_q;
+  folded_host.v_scale = folded_host.k_scale;
+  folded_host.v_q4 = folded_host.k_q4;
+  folded_stage.v_q4 = folded_stage.k_q4;
+  if (fmt == kKvQ4)
+    kv_append_q4(kp.data(), kp.data(), dt.data(), 0, cells, x.data(), x.data(),
+                 s, &runtime->compute(), &folded_host, &folded_stage);
+  if (fmt == kKvInt8 && dim == 256)
+    prefill::kv_append(x.data(), x.data(), cells, 0, dt.data(), page_size,
+                      nullptr, nullptr, reinterpret_cast<int8_t *>(kp.data()),
+                      reinterpret_cast<int8_t *>(kp.data()), ks.data(), ks.data(),
+                      &runtime->compute(), &folded_host, nullptr);
+  for (int t = 0; t < cells; ++t) {
+    std::vector<int32_t> st(kStepCount);
+    qsa_step_fill(st.data(), t, s);
+    step.put(st);
+    const float *a = x.data() + t * heads * dim;
+    if (fmt == kKvInt8)
+      kv_append_q8_step(reinterpret_cast<int8_t *>(kp.data()),
+                        reinterpret_cast<int8_t *>(kp.data()), ks.data(), ks.data(),
+                        dt.data(), step.data(), a, a, s, &runtime->compute(), &folded_host);
+    if (fmt == kKvQ4)
+      kv_append_q4_step(kp.data(), kp.data(), dt.data(), step.data(), a, a, s,
+                        &runtime->compute(), &folded_host);
+  }
+  check(kp.get() == kb && hk.get() == hkb, "folded append bytes/canaries");
+  if (fmt == kKvInt8)
+    check(ks.get() == ksb && hks.get() == hksb, "folded append scales");
+  if (fmt == kKvQ4)
+    check(sk.get() == ehk, "folded batch stage bytes");
   // Gather every cell, including the absent page, and leave excess capacity
   // untouched.
   std::vector<int32_t> ids = {12, 0, 7, 3, 11};
@@ -404,6 +440,28 @@ void storage(int fmt, int page_size, int dim) {
   };
   gather();
   const auto ok = outk.get(), ov = outv.get();
+  if (fmt == kKvInt8)
+    kv_gather_q8_step(reinterpret_cast<int8_t *>(kp.data()),
+                      reinterpret_cast<int8_t *>(kp.data()), ks.data(), ks.data(),
+                      dt.data(), di.data(), step.data(), cap, s,
+                      outk.data(), outk.data(), &runtime->compute());
+  if (fmt == kKvQ4)
+    kv_gather_q4_step(kp.data(), kp.data(), dt.data(), di.data(), step.data(),
+                      cap, s, outk.data(), outk.data(), &runtime->compute());
+  check(outk.get() == ok, "folded gather values/canaries");
+  if (fmt == kKvInt8 || fmt == kKvQ4) {
+    bool rejected = false;
+    try {
+      if (fmt == kKvInt8)
+        kv_append_q8_step(reinterpret_cast<int8_t *>(kp.data()),
+                          reinterpret_cast<int8_t *>(kp.data()), ks.data(), ks.data(),
+                          dt.data(), step.data(), x.data(), y.data(), s, nullptr);
+      else
+        kv_append_q4_step(kp.data(), kp.data(), dt.data(), step.data(),
+                          x.data(), y.data(), s, nullptr);
+    } catch (const std::invalid_argument &) { rejected = true; }
+    check(rejected, "folded append accepted different inputs");
+  }
   for (int i = 0; i < cap * heads * dim + guard; ++i) {
     int cell = i / (heads * dim);
     uint16_t kr = 0xa5a5, vr = 0xa5a5;

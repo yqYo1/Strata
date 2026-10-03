@@ -32,9 +32,21 @@ Pools host_pools(KvHostPools h, int fmt) {
     return {h.k_q4, h.v_q4};
   return {h.k_pool, h.v_pool};
 }
+bool folded(Pools p, int fmt) {
+  return p.k == p.v && (fmt != kKvInt8 || p.ks == p.vs);
+}
 void validate_pool(Pools p, int fmt, bool optional) {
   if (optional && !p.k && !p.v && !p.ks && !p.vs)
     return;
+  // K8V4 callers fold the unused half onto the used pool. Validate each
+  // physical output once; append below assigns it a single writer.
+  if (folded(p, fmt)) {
+    if (fmt == kKvInt8)
+      validate_spans({{p.k, 4}, {p.ks, 4}}, {});
+    else
+      validate_spans({{p.k, 4}}, {});
+    return;
+  }
   validate_spans({{p.k, 4}, {p.v, 4}}, {});
   if (fmt == kKvInt8)
     validate_spans({{p.k, 4}, {p.v, 4}, {p.ks, 4}, {p.vs, 4}}, {});
@@ -55,6 +67,10 @@ void append(Pools dst, const int32_t *table, const int32_t *step, int64_t pos0,
   const Pools hp = host_pools(host, Format), sp = host_pools(stage, Format);
   validate_pool(hp, Format, true);
   validate_pool(sp, Format, true);
+  if (k != v && (folded(dst, Format) ||
+                 (hp.k && folded(hp, Format)) ||
+                 (sp.k && folded(sp, Format))))
+    throw std::invalid_argument("folded SYCL KV append requires identical inputs");
   const size_t elems =
       checked_count(tokens, checked_count(s.n_head_kv, s.head_dim));
   if (elems > SIZE_MAX / 4)
@@ -99,15 +115,13 @@ void append(Pools dst, const int32_t *table, const int32_t *step, int64_t pos0,
             if (d >= size_t(s.head_dim))
               return;
             const uint16_t bits = f16_from_f32(x);
-            if (page >= 0)
-              static_cast<uint16_t *>(
-                  isv ? dst.v : dst.k)[prow * s.head_dim + d] = bits;
-            if (hp.k)
-              static_cast<uint16_t *>(isv ? hp.v : hp.k)[row * s.head_dim + d] =
-                  bits;
-            if (sp.k)
-              static_cast<uint16_t *>(isv ? sp.v : sp.k)[row * s.head_dim + d] =
-                  bits;
+            auto write = [&](Pools p, size_t r) {
+              if (!isv || !folded(p, Format))
+                static_cast<uint16_t *>(isv ? p.v : p.k)[r * s.head_dim + d] = bits;
+            };
+            if (page >= 0) write(dst, prow);
+            if (hp.k) write(hp, row);
+            if (sp.k) write(sp, row);
           } else if constexpr (Format == kKvInt8) {
             float a = sycl::fabs(x);
             for (int off = 16; off; off /= 2)
@@ -124,6 +138,7 @@ void append(Pools dst, const int32_t *table, const int32_t *step, int64_t pos0,
                     : 0;
             code = sycl::clamp(code, -127, 127);
             auto write = [&](Pools p, size_t r) {
+              if (isv && folded(p, Format)) return;
               static_cast<int8_t *>(isv ? p.v : p.k)[r * s.head_dim + d] =
                   int8_t(code);
               if (!lane)
@@ -153,6 +168,7 @@ void append(Pools dst, const int32_t *table, const int32_t *step, int64_t pos0,
             const int high =
                 sycl::select_from_group(sg, code, (lane + 16) % 32);
             auto write = [&](Pools p, size_t r) {
+              if (isv && folded(p, Format)) return;
               auto *block = reinterpret_cast<block_q4_0 *>(isv ? p.v : p.k) +
                             r * groups + g;
               if (!lane)
@@ -185,11 +201,17 @@ void gather(Pools src, const int32_t *table, const int32_t *ids,
       checked_count(capacity, checked_count(s.n_head_kv, s.head_dim));
   if (n > SIZE_MAX / 2)
     throw std::invalid_argument("SYCL KV gather overflow");
-  validate_spans(
-      {{k, n * 2}, {v, n * 2}},
-      {{table, 4}, {ids, size_t(capacity) * 4}, {src.k, 4}, {src.v, 4}});
+  if (k == v) {
+    if (!folded(src, Format))
+      throw std::invalid_argument("folded SYCL KV gather requires identical sources");
+    validate_spans({{k, n * 2}},
+        {{table, 4}, {ids, size_t(capacity) * 4}, {src.k, 4}});
+  } else
+    validate_spans({{k, n * 2}, {v, n * 2}},
+        {{table, 4}, {ids, size_t(capacity) * 4}, {src.k, 4}, {src.v, 4}});
   if (step)
-    validate_spans({{k, n * 2}, {v, n * 2}}, {{step, kStepCount * 4}});
+    if (k == v) validate_spans({{k, n * 2}}, {{step, kStepCount * 4}});
+    else validate_spans({{k, n * 2}, {v, n * 2}}, {{step, kStepCount * 4}});
   auto e =
       queue_for(stream).parallel_for(sycl::range<1>(n), [=](sycl::id<1> tid) {
         const size_t i = tid[0], d = i % s.head_dim,
@@ -202,7 +224,7 @@ void gather(Pools src, const int32_t *table, const int32_t *ids,
         const int64_t page = cell < 0 ? -1 : table[cell / s.page_size];
         if (page < 0) {
           k[i] = 0x7e00;
-          v[i] = 0x7e00;
+          if (v != k) v[i] = 0x7e00;
           return;
         }
         const size_t row =
@@ -223,7 +245,7 @@ void gather(Pools src, const int32_t *table, const int32_t *ids,
           }
         };
         k[i] = read(src.k, src.ks);
-        v[i] = read(src.v, src.vs);
+        if (v != k) v[i] = read(src.v, src.vs);
       });
   finish(stream, e);
 }
