@@ -8,6 +8,29 @@ add_library(strata_sycl_runtime STATIC src/sycl/runtime.cpp src/sycl/compat.cpp)
 target_include_directories(strata_sycl_runtime PUBLIC ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/include/strata/sycl/compat)
 target_compile_options(strata_sycl_runtime PUBLIC -fsycl)
 target_link_options(strata_sycl_runtime PUBLIC -fsycl)
+
+set(STRATA_SYCL_DEVICE_ARCH "" CACHE STRING "Intel GPU AOT target, e.g. bmg_g21 (empty uses JIT)")
+option(STRATA_SYCL_AOT_DOUBLE_GRF "Use 256 GRFs for ESIMD AOT images (no effect for JIT)" ON)
+if(STRATA_SYCL_DEVICE_ARCH)
+  if(STRATA_PORTABLE)
+    message(FATAL_ERROR "STRATA_SYCL_DEVICE_ARCH selects a GPU-specific binary; disable STRATA_PORTABLE")
+  endif()
+  if(NOT STRATA_SYCL_DEVICE_ARCH MATCHES "^[A-Za-z0-9_.-]+$")
+    message(FATAL_ERROR "STRATA_SYCL_DEVICE_ARCH must name one Intel GPU target")
+  endif()
+  # oneAPI 2026.1.1's new offload driver drops isEsimdImage metadata in our
+  # reproducer (both JIT and AOT), causing subgroup-size-1 runtime failures.
+  target_compile_options(strata_sycl_runtime PUBLIC -fsycl-targets=spir64_gen)
+  target_link_options(strata_sycl_runtime PUBLIC -fsycl-targets=spir64_gen)
+  set(_strata_sycl_aot_options "-device ${STRATA_SYCL_DEVICE_ARCH}")
+  if(STRATA_SYCL_AOT_DOUBLE_GRF)
+    # oneAPI 2026.1 AOT does not forward the per-kernel grf_size property.
+    # This workaround applies to every ESIMD image, including decode kernels.
+    string(APPEND _strata_sycl_aot_options " -options -doubleGRF")
+  endif()
+  target_link_options(strata_sycl_runtime PUBLIC
+    "SHELL:-Xsycl-target-backend=spir64_gen \"${_strata_sycl_aot_options}\"")
+endif()
 target_link_libraries(strata_sycl_runtime PRIVATE strata_warnings)
 target_compile_definitions(strata_sycl_runtime PUBLIC STRATA_ENABLE_SYCL=1)
 

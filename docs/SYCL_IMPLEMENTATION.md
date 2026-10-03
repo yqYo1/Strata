@@ -2059,3 +2059,105 @@ faster). All eight output ids matched in all six runs. Profiling was disabled
 and compilation caches had been warmed by the preceding validation. This is a
 long-prompt prefill result; it does not resolve the first-use latency issue or
 establish a generation-speed gain. The target remains unmet.
+
+### Compiler and runtime review (2026-10-04)
+
+This review checks the local oneAPI 2026.1 compiler against Intel's compiler
+manual, design documents and GPU optimization guide. Online design documents
+can describe newer or proposed behavior; the local compiler invocation and
+actual build remain the check for this workstation.
+
+| Area | Finding and consequence for Strata |
+| --- | --- |
+| Host and device compilation | CPU `-march=znver3` affects the CPU expert library. GPU architecture selection is a separate step. Release already uses `-O3`; adding it again is not a new optimization. |
+| AOT target | The new driver accepts `--offload-new-driver --offload-arch=bmg_g21`, but the local runtime probe below fails. `STRATA_SYCL_DEVICE_ARCH` therefore uses the old driver with `-fsycl-targets=spir64_gen` and OCLOC `-device`; empty retains JIT. A GPU-specific build is incompatible with `STRATA_PORTABLE`. |
+| Backend options | `-Xsycl-target-backend` reaches IGC/OCLOC. Frontend options such as `-fgpu-inline-threshold` do not directly tune IGC. Inspecting only the C++ command is insufficient; the generated backend invocation matters. |
+| Optimization levels | The documented JIT mapping sends `-O1`, `-O2` and `-O3` to the same Level Zero backend optimization level. Frontend optimizations can still differ. The design explicitly excludes AOT, so its mapping is not evidence about AOT output. |
+| Code splitting | `auto` is the default; `per_source` and `per_kernel` change which kernels share an image. ESIMD splitting is separately enabled by default. More images can increase module creation and first-use costs. The preceding per-kernel full-inference experiment was reverted. |
+| Device linking | Relocatable device code is enabled by default. Disabling it restricts cross-translation-unit device calls. The NoRDC design document describes the old offload model; its build-time benefits must not be assumed for the new driver. |
+| GRF allocation | The XMX prompt kernel requests 256 GRFs. JIT runtime code converts that property to `-doubleGRF` for ESIMD. The first AOT build omitted it and failed on all six exact tile-8 instantiations. An indirectly addressed 8 KiB vector could not fit in the 128-GRF allocation. Explicit backend `-doubleGRF` passed this compilation stage. It affects other ESIMD images too, so their performance needs rechecking. |
+| Floating point | Local `icpx -###` confirms that `-ffp-contract=off` alone still leaves unsafe-math, reciprocal and signed-zero transformations enabled. The exact IQ/XMX sources also use `-fno-fast-math`. That combination removes those frontend flags, but does not automatically request correctly rounded device division/square root. Preserve the measured numerical contract when testing flags. |
+| Register diagnostics | The AOT log reports spills for Q4_K/Q5_K SPMD kernels, including prompt products. A spill warning is evidence of scratch traffic, not evidence that these kernels dominate this mixed-format model. Profile the executed kernels before changing their register mode. |
+| ESIMD memory access | The optimization guide recommends contiguous block messages, suitable vector widths and avoiding indirect register indexing where practical. Our weight-row gathers are candidates for GPU-side layout changes. Include repacking and transfers in full-inference timing. Kernel-lambda forced inlining does not apply to ESIMD according to the compiler manual. |
+| Caches | SYCL in-memory caching defaults on, its persistent cache defaults off, and the compute runtime has its own persistent compiler cache enabled by default. A fresh process is not a cold compilation measurement. Benchmark records now include explicit SYCL and NEO cache settings. Use separate cache directories for cold/warm comparisons without deleting the user's cache. |
+| Level Zero adapter | Current documentation selects V2 for Xe2/Battlemage. Several `SYCL_PI_LEVEL_ZERO_*` variables apply only to the legacy adapter. Check the installed runtime before using older tuning recipes. `UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD` and `UR_L0_V2_FORCE_BATCHED` are diagnostic candidates, not adopted defaults. |
+| Graphs and queues | Graph capture does not replay ordinary host work in a command-group callback. Host-task nodes can introduce synchronization. Strata already uses explicit contexts, in-order compute/transfer queues and graph replay; adding graph capture alone would not remove CPU expert work or transfer waits. |
+
+Sources: [compiler manual](https://intel.github.io/llvm/UsersManual.html),
+[offload driver](https://intel.github.io/llvm/design/OffloadDesign.html),
+[compiler/runtime architecture](https://intel.github.io/llvm/design/CompilerAndRuntimeDesign.html),
+[optimization-level propagation](https://intel.github.io/llvm/design/PropagateCompilerFlagsToRuntime.html),
+[NoRDC design](https://intel.github.io/llvm/design/NonRelocatableDeviceCode.html),
+[device linking](https://intel.github.io/llvm/design/SharedLibraries.html),
+[GRF property](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_intel_grf_size.asciidoc),
+[JIT option handling](https://github.com/intel/llvm/blob/sycl/sycl/source/detail/program_manager/program_manager.cpp),
+[floating-point settings](https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2026-0/floating-point-optimizations.html),
+[ESIMD optimization](https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2025-2/optimizing-explicit-simd-kernels.html),
+[spill diagnostics](https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2025-2/finding-kernels-with-register-spills.html),
+[SYCL cache design](https://intel.github.io/llvm/design/KernelProgramCache.html),
+[driver cache](https://github.com/intel/compute-runtime/blob/master/programmers-guide/COMPILER_CACHE.md),
+[environment variables](https://intel.github.io/llvm/EnvironmentVariables.html), and
+[graph guide](https://intel.github.io/llvm/syclgraph/SYCLGraphUsageGuide.html).
+
+The new-driver AOT build with explicit `-doubleGRF` completed, but runtime
+validation failed: the ordinary prompt-MMQ test passed and the XMX test failed
+with `Sub-group size 1 is not supported on the device`. The generated properties lack `isEsimdImage`, so the runtime treats the ESIMD
+subgroup requirement as an ordinary unsupported subgroup. The small
+[`aot_esimd_probe.cpp`](../bench/results/2026-10-04-sycl-speed-goal/aot_esimd_probe.cpp)
+reproduces this with the new driver in both JIT and AOT mode. The old driver
+passes in both modes. New-driver split modes `off`, `per_source` and `per_kernel`,
+and its in-process post-link alternative, did not fix it. This is evidence for
+the installed compiler, not a claim that every version of the new driver fails.
+The old-driver AOT build passed ordinary MMQ and exact-XMX MMQ tests
+(2/2 in 1.04 s). The broader AOT suite has not been run for this candidate;
+the full-inference comparison below determines the next experiment. The
+working JIT executable and serving configs remain the baseline.
+
+The AOT configuration under test adds `-DSTRATA_SYCL_DEVICE_ARCH=bmg_g21`
+to the existing Release/Zen 3 configuration. `STRATA_SYCL_AOT_DOUBLE_GRF`
+defaults on and passes `-doubleGRF` only at the AOT device-link stage. Turning it off
+fails to compile the exact tile-8 XMX kernels with this toolchain. It applies
+large registers to all ESIMD images, so validation includes decode kernels.
+The new-driver probe uses separate compile and link commands: passing the
+backend option in a combined source-and-link command duplicated `-options` in
+the OCLOC invocation on this compiler and failed for a separate reason.
+
+To reproduce the small new-driver AOT failure outside the engine, run inside
+an initialized oneAPI environment in a scratch directory:
+
+```sh
+icpx -fsycl -O3 --offload-new-driver --offload-arch=bmg_g21 \
+  -c /path/to/aot_esimd_probe.cpp -o probe.o
+icpx -fsycl -O3 --offload-new-driver --offload-arch=bmg_g21 \
+  -Xsycl-target-backend=spir64_gen '-options -doubleGRF' probe.o -o probe
+ONEAPI_DEVICE_SELECTOR=level_zero:gpu ./probe
+```
+
+For the passing old-driver comparison, replace the two new-driver switches
+with `-fsycl-targets=spir64_gen` in both commands and replace the backend option
+string with `'-device bmg_g21 -options -doubleGRF'`. The source and its expected
+sixteen values of `3.0f` stay the same.
+
+Eight persistent real-model runs then compared JIT and old-driver AOT with
+exact XMX tile 8, the same context-512 text configuration and 128-token writing
+and coding requests. Each executable started with independent empty SYCL and
+NEO compiler-cache directories, with both persistent caches enabled. Three
+alternating warm pairs reused those directories. All completed output ids
+matched the preceding exact-XMX baseline; prefill cancellation, decode
+cancellation and eight-token recovery passed in all eight processes.
+
+| Measurement | JIT | AOT with all ESIMD images at 256 GRFs |
+| --- | ---: | ---: |
+| First writing prompt, empty compiler caches (one run each) | 19.857 s | 3.530 s |
+| First writing prompt, warm-cache median (three runs each) | 3.408 s | 3.408 s |
+| Repeated writing decode, warm-cache median | 15.92 token/s | 15.23 token/s |
+| Repeated coding decode, warm-cache median | 20.16 token/s | 19.26 token/s |
+
+This AOT configuration removes the observed first-use prompt compilation cost,
+but reduces repeated writing/coding generation rates by 4.3%/4.5%. It is not
+adopted in serving configs. The broad ESIMD register override is a possible
+cause, not yet an isolated attribution. Reducing the XMX kernel's register
+requirements is the next experiment. Startup also includes reading 46.84 GiB
+of expert weights; the OS file cache was not cleared and read rates varied, so
+startup differences are not attributed solely to compilation. Full trials,
+flags, binary hashes, cache settings and output ids are in the ongoing JSON.
