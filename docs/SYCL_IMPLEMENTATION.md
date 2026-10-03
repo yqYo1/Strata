@@ -1920,3 +1920,35 @@ slots safely. This keeps larger prompt chunks interruptible. Streamed-all
 and multi-device paths keep their preceding cancellation boundaries.
 `serve_bench.py --cancel-during-prefill` adds a STOP after 50 ms, then tests
 ordinary generation cancellation and eight-token recovery as well.
+
+
+Final whole-model measurements used native IQ3_S on the same B570 (10 GiB),
+Ryzen 5 5600X and 125 GiB RAM, with oneAPI 2026.1.1 and default driver settings.
+The table reports decode token/s medians from three alternating before/after
+pairs, followed by three selected-preset processes. Each process ran two
+128-token writing requests and two 128-token coding requests. All used context
+512, 2,137 automatically sized compact expert slots, 64 adaptive replacements,
+MTP window four and minimum draft probability 0.9. Other host workloads stayed
+active, filesystem caches were not cleared, and phase profiling was unset.
+
+| Request | Before: chunk 16, workers 4 | Updated: chunk 16, workers 5 | Selected: chunk 1,024, workers 5 |
+| --- | ---: | ---: | ---: |
+| Writing, first request | 13.14 | 13.66 | 13.15 |
+| Writing, repeated request | 14.59 | 15.60 | 15.89 |
+| Coding, first request | 16.26 | 17.12 | 17.21 |
+| Coding, repeated request | 18.52 | 19.98 | 19.85 |
+
+At the same chunk size, all completed output ids, expert-cache hit counts and
+MTP acceptance counts matched the baseline in every trial. The repeated
+writing and coding requests gained 6.9% and 7.9% decode throughput. The selected
+larger chunk gained 8.9% and 7.1% on these repeated requests. Its first-request
+prompt time fell from 4.49 to 3.52 s for writing and 5.76 to 3.79 s for coding.
+The first-request outputs differ after changing the chunk size; the repeated
+128-token outputs match. Batched FP16 computation changes rounding, so this
+preset comparison is not a claim of bitwise equivalence or measured task quality.
+
+With STOP scheduled 50 ms after GEN, median GEN-to-DONE time fell from 1.763 s
+to 0.069 s at chunk 16; the selected chunk 1,024 took 0.142 s. These numbers
+include the initial 50 ms and are not direct STOP-to-DONE measurements.
+All nine processes passed prefill cancellation, cancellation after the first
+output token and eight-token recovery, then exited normally.
