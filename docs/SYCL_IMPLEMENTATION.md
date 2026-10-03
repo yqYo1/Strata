@@ -1967,3 +1967,16 @@ The selected local text configs (`serve-config.json` and
 `--prefill 1024 --pool-workers 5`. Their context limit remains 512. Original
 configs are backed up under
 `~/.local/state/strata-sycl/measurement-archive/2026-10-04-performance/config-before/`.
+
+Final validation passed all 38 default CTest cases and the local HTTP checks
+for model discovery, the web UI, OpenAI and Anthropic text requests, complete
+stream equality and cancellation recovery. Seven image checks passed with the
+SYCL encoder: repeat single-image answers, Anthropic image input, streaming,
+text after an image, ordered red/blue images and a single image after two images.
+Both servers exited with code zero and released their ports.
+`serve-config-vision-sycl.json` also uses the selected chunk and worker count,
+with its existing context 1,024 and adaptive swaps off. These image checks
+validate behavior; they are not a vision-throughput comparison. Raw captures,
+saved binaries and reproduction scripts are archived outside Git beside the
+config backups. The JSON summary records binary hashes, flags, individual
+trials, output ids and API results.

@@ -789,6 +789,694 @@
       "before_request_to_cancel_done_ms": 1762.504540005466,
       "after_request_to_cancel_done_ms": 68.60477299778722,
       "scope": "First alternating comparison; same prefill16 and output ids. Remaining trials are recorded separately for final medians."
+    },
+    "final_text_http": {
+      "base_url": "http://127.0.0.1:18085",
+      "config": "/home/yayoi/.local/share/strata-sycl/serve-config.json",
+      "checks": [
+        {
+          "kind": "openai_nonstream",
+          "request": 1,
+          "seconds": 4.627008964976994,
+          "response": {
+            "id": "chatcmpl-2d7a0a7638fe4fc08a969436",
+            "object": "chat.completion",
+            "created": 1791052463,
+            "model": "qwen3.8-flash-next-sycl",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "The rain hammered against the stained-glass"
+                },
+                "finish_reason": "length"
+              }
+            ],
+            "usage": {
+              "prompt_tokens": 37,
+              "completion_tokens": 8,
+              "total_tokens": 45,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              }
+            },
+            "timings": {
+              "cache_n": 0,
+              "prompt_n": 37,
+              "prompt_ms": 3579.8,
+              "prompt_per_token_ms": 96.751,
+              "prompt_per_second": 10.3,
+              "predicted_n": 8,
+              "predicted_ms": 1045.2,
+              "predicted_per_token_ms": 130.65,
+              "predicted_per_second": 7.7,
+              "draft_n": 5,
+              "draft_n_accepted": 5
+            }
+          }
+        },
+        {
+          "kind": "openai_nonstream",
+          "request": 2,
+          "seconds": 1.618578672001604,
+          "response": {
+            "id": "chatcmpl-00756a778ace427e8a67c812",
+            "object": "chat.completion",
+            "created": 1791052468,
+            "model": "qwen3.8-flash-next-sycl",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "The rain hammered against the stained-glass"
+                },
+                "finish_reason": "length"
+              }
+            ],
+            "usage": {
+              "prompt_tokens": 37,
+              "completion_tokens": 8,
+              "total_tokens": 45,
+              "prompt_tokens_details": {
+                "cached_tokens": 30
+              }
+            },
+            "timings": {
+              "cache_n": 30,
+              "prompt_n": 7,
+              "prompt_ms": 1038.7,
+              "prompt_per_token_ms": 148.386,
+              "prompt_per_second": 6.7,
+              "predicted_n": 8,
+              "predicted_ms": 578.1,
+              "predicted_per_token_ms": 72.263,
+              "predicted_per_second": 13.8,
+              "draft_n": 5,
+              "draft_n_accepted": 5
+            }
+          }
+        },
+        {
+          "kind": "cancel_stream_after_content",
+          "first_content": "The"
+        },
+        {
+          "kind": "openai_after_cancel",
+          "seconds": 1.7048384670051746,
+          "response": {
+            "id": "chatcmpl-711f23686fad4263851c346a",
+            "object": "chat.completion",
+            "created": 1791052471,
+            "model": "qwen3.8-flash-next-sycl",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "The rain hammered against the stained-glass"
+                },
+                "finish_reason": "length"
+              }
+            ],
+            "usage": {
+              "prompt_tokens": 37,
+              "completion_tokens": 8,
+              "total_tokens": 45,
+              "prompt_tokens_details": {
+                "cached_tokens": 30
+              }
+            },
+            "timings": {
+              "cache_n": 30,
+              "prompt_n": 7,
+              "prompt_ms": 1026.0,
+              "prompt_per_token_ms": 146.571,
+              "prompt_per_second": 6.8,
+              "predicted_n": 8,
+              "predicted_ms": 524.7,
+              "predicted_per_token_ms": 65.588,
+              "predicted_per_second": 15.2,
+              "draft_n": 5,
+              "draft_n_accepted": 5
+            }
+          }
+        },
+        {
+          "kind": "anthropic_nonstream",
+          "response": {
+            "id": "msg_41a6a83585094b2893a9b72d",
+            "type": "message",
+            "role": "assistant",
+            "model": "qwen3.8-flash-next-sycl",
+            "content": [
+              {
+                "type": "text",
+                "text": "The rain hammered against the stained-glass"
+              }
+            ],
+            "stop_reason": "max_tokens",
+            "stop_sequence": null,
+            "usage": {
+              "input_tokens": 7,
+              "output_tokens": 8,
+              "cache_read_input_tokens": 30
+            }
+          }
+        },
+        {
+          "kind": "openai_complete_stream",
+          "chunks": [
+            {
+              "id": "chatcmpl-846aea7735be4928af44b6e1",
+              "object": "chat.completion.chunk",
+              "created": 1791052474,
+              "model": "qwen3.8-flash-next-sycl",
+              "choices": [
+                {
+                  "index": 0,
+                  "delta": {
+                    "role": "assistant",
+                    "content": ""
+                  },
+                  "finish_reason": null
+                }
+              ]
+            },
+            {
+              "id": "chatcmpl-846aea7735be4928af44b6e1",
+              "object": "chat.completion.chunk",
+              "created": 1791052474,
+              "model": "qwen3.8-flash-next-sycl",
+              "choices": [
+                {
+                  "index": 0,
+                  "delta": {
+                    "content": "The"
+                  },
+                  "finish_reason": null
+                }
+              ]
+            },
+            {
+              "id": "chatcmpl-846aea7735be4928af44b6e1",
+              "object": "chat.completion.chunk",
+              "created": 1791052474,
+              "model": "qwen3.8-flash-next-sycl",
+              "choices": [
+                {
+                  "index": 0,
+                  "delta": {
+                    "content": " rain"
+                  },
+                  "finish_reason": null
+                }
+              ]
+            },
+            {
+              "id": "chatcmpl-846aea7735be4928af44b6e1",
+              "object": "chat.completion.chunk",
+              "created": 1791052474,
+              "model": "qwen3.8-flash-next-sycl",
+              "choices": [
+                {
+                  "index": 0,
+                  "delta": {
+                    "content": " hammered"
+                  },
+                  "finish_reason": null
+                }
+              ]
+            },
+            {
+              "id": "chatcmpl-846aea7735be4928af44b6e1",
+              "object": "chat.completion.chunk",
+              "created": 1791052474,
+              "model": "qwen3.8-flash-next-sycl",
+              "choices": [
+                {
+                  "index": 0,
+                  "delta": {
+                    "content": " against"
+                  },
+                  "finish_reason": null
+                }
+              ]
+            },
+            {
+              "id": "chatcmpl-846aea7735be4928af44b6e1",
+              "object": "chat.completion.chunk",
+              "created": 1791052474,
+              "model": "qwen3.8-flash-next-sycl",
+              "choices": [
+                {
+                  "index": 0,
+                  "delta": {
+                    "content": " the"
+                  },
+                  "finish_reason": null
+                }
+              ]
+            },
+            {
+              "id": "chatcmpl-846aea7735be4928af44b6e1",
+              "object": "chat.completion.chunk",
+              "created": 1791052474,
+              "model": "qwen3.8-flash-next-sycl",
+              "choices": [
+                {
+                  "index": 0,
+                  "delta": {
+                    "content": " stained"
+                  },
+                  "finish_reason": null
+                }
+              ]
+            },
+            {
+              "id": "chatcmpl-846aea7735be4928af44b6e1",
+              "object": "chat.completion.chunk",
+              "created": 1791052474,
+              "model": "qwen3.8-flash-next-sycl",
+              "choices": [
+                {
+                  "index": 0,
+                  "delta": {
+                    "content": "-g"
+                  },
+                  "finish_reason": null
+                }
+              ]
+            },
+            {
+              "id": "chatcmpl-846aea7735be4928af44b6e1",
+              "object": "chat.completion.chunk",
+              "created": 1791052474,
+              "model": "qwen3.8-flash-next-sycl",
+              "choices": [
+                {
+                  "index": 0,
+                  "delta": {
+                    "content": "lass"
+                  },
+                  "finish_reason": null
+                }
+              ]
+            },
+            {
+              "id": "chatcmpl-846aea7735be4928af44b6e1",
+              "object": "chat.completion.chunk",
+              "created": 1791052474,
+              "model": "qwen3.8-flash-next-sycl",
+              "choices": [
+                {
+                  "index": 0,
+                  "delta": {},
+                  "finish_reason": "length"
+                }
+              ],
+              "usage": {
+                "prompt_tokens": 37,
+                "completion_tokens": 8,
+                "total_tokens": 45,
+                "prompt_tokens_details": {
+                  "cached_tokens": 30
+                }
+              },
+              "timings": {
+                "cache_n": 30,
+                "prompt_n": 7,
+                "prompt_ms": 1008.6,
+                "prompt_per_token_ms": 144.086,
+                "prompt_per_second": 6.9,
+                "predicted_n": 8,
+                "predicted_ms": 498.3,
+                "predicted_per_token_ms": 62.288,
+                "predicted_per_second": 16.1,
+                "draft_n": 5,
+                "draft_n_accepted": 5
+              }
+            }
+          ],
+          "done": true,
+          "content_equal": true
+        }
+      ],
+      "models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "qwen3.8-flash-next-iq3_s-sycl",
+            "object": "model",
+            "status": {
+              "value": "loaded"
+            },
+            "meta": {
+              "n_ctx": 512
+            },
+            "architecture": {
+              "input_modalities": [
+                "text"
+              ],
+              "output_modalities": [
+                "text"
+              ]
+            },
+            "aliases": [
+              "qwen3.8-flash-next-sycl"
+            ]
+          },
+          {
+            "id": "qwen3.8-flash-next-sycl",
+            "object": "model",
+            "status": {
+              "value": "loaded"
+            },
+            "meta": {
+              "n_ctx": 512
+            },
+            "architecture": {
+              "input_modalities": [
+                "text"
+              ],
+              "output_modalities": [
+                "text"
+              ]
+            },
+            "aliases": [
+              "qwen3.8-flash-next-sycl"
+            ],
+            "alias_of": "qwen3.8-flash-next-iq3_s-sycl"
+          }
+        ]
+      },
+      "web_ui_status": 200,
+      "server_exit_code": 0,
+      "port_closed": true,
+      "passed": true,
+      "raw_result_sha256": "997f4c1b6c4c086331a42a013bea818f3d5081b7a83c5b992c941e312e990ac5"
+    },
+    "final_vision_http": {
+      "encoder_backend": "sycl",
+      "base_url": "http://127.0.0.1:18086",
+      "config": {
+        "exe": "/home/yayoi/orca/workspaces/Strata/sycl/build-sycl/strata",
+        "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+        "args": [
+          "--serve",
+          "--pack",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "--native",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--tokens",
+          "1",
+          "--max-new",
+          "8",
+          "--max-context",
+          "1024",
+          "--spec",
+          "4",
+          "--spec-min-p",
+          "0.9",
+          "--mtp",
+          "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+          "--suffix-draft",
+          "0",
+          "--prefill",
+          "1024",
+          "--short-read",
+          "0",
+          "--expert-cache",
+          "auto",
+          "--expert-profile",
+          "data/expert-profile.bin",
+          "--expert-cache-per-layer",
+          "--pool-workers",
+          "5",
+          "--adapt-swaps",
+          "0",
+          "--pcie-frac",
+          "0",
+          "--vision",
+          "--check-logits",
+          "--stats"
+        ],
+        "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+        "model_name": "qwen3.8-flash-next-iq3_s-sycl",
+        "host": "127.0.0.1",
+        "env": {
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu"
+        },
+        "log": "/tmp/strata-sycl-perf-final-vision-sycl-http-engine.log",
+        "aliases": [
+          "qwen3.8-flash-next-sycl"
+        ],
+        "vision": {
+          "exe": "/home/yayoi/orca/workspaces/Strata/sycl/build-vision-sycl/bin/strata-vision",
+          "mmproj": "/home/yayoi/.local/share/strata-sycl/vision/mmproj-Qwen3.8-Flash-Next-BF16.gguf",
+          "model": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "gpu": true,
+          "threads": 4,
+          "max_tokens": 256
+        }
+      },
+      "checks": [
+        {
+          "kind": "openai_image_1",
+          "response": {
+            "id": "chatcmpl-195e8b3c9f8c4f71a1062385",
+            "object": "chat.completion",
+            "created": 1791052531,
+            "model": "qwen3.8-flash-next-iq3_s-sycl",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": " red"
+                },
+                "finish_reason": "stop"
+              }
+            ],
+            "usage": {
+              "prompt_tokens": 77,
+              "completion_tokens": 2,
+              "total_tokens": 79,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              }
+            },
+            "timings": {
+              "cache_n": 0,
+              "prompt_n": 77,
+              "prompt_ms": 5273.2,
+              "prompt_per_token_ms": 68.483,
+              "prompt_per_second": 14.6,
+              "predicted_n": 2,
+              "predicted_ms": 519.3,
+              "predicted_per_token_ms": 259.65,
+              "predicted_per_second": 3.9,
+              "draft_n": 3,
+              "draft_n_accepted": 3
+            }
+          }
+        },
+        {
+          "kind": "openai_image_2",
+          "response": {
+            "id": "chatcmpl-4047b7e93af44f8db924ace3",
+            "object": "chat.completion",
+            "created": 1791052537,
+            "model": "qwen3.8-flash-next-iq3_s-sycl",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": " red"
+                },
+                "finish_reason": "stop"
+              }
+            ],
+            "usage": {
+              "prompt_tokens": 77,
+              "completion_tokens": 2,
+              "total_tokens": 79,
+              "prompt_tokens_details": {
+                "cached_tokens": 70
+              }
+            },
+            "timings": {
+              "cache_n": 70,
+              "prompt_n": 7,
+              "prompt_ms": 1025.4,
+              "prompt_per_token_ms": 146.486,
+              "prompt_per_second": 6.8,
+              "predicted_n": 2,
+              "predicted_ms": 327.7,
+              "predicted_per_token_ms": 163.85,
+              "predicted_per_second": 6.1,
+              "draft_n": 3,
+              "draft_n_accepted": 3
+            }
+          }
+        },
+        {
+          "kind": "anthropic_image",
+          "response": {
+            "id": "msg_c73a68ce1fe44b7ca9cb1099",
+            "type": "message",
+            "role": "assistant",
+            "model": "qwen3.8-flash-next-iq3_s-sycl",
+            "content": [
+              {
+                "type": "text",
+                "text": " red"
+              }
+            ],
+            "stop_reason": "end_turn",
+            "stop_sequence": null,
+            "usage": {
+              "input_tokens": 7,
+              "output_tokens": 2,
+              "cache_read_input_tokens": 70
+            }
+          }
+        },
+        {
+          "kind": "openai_image_stream",
+          "response": {
+            "content": " red",
+            "done": true
+          }
+        },
+        {
+          "kind": "text_after_image",
+          "response": {
+            "id": "chatcmpl-b73d8a243d004fb89735ef36",
+            "object": "chat.completion",
+            "created": 1791052541,
+            "model": "qwen3.8-flash-next-iq3_s-sycl",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "4"
+                },
+                "finish_reason": "stop"
+              }
+            ],
+            "usage": {
+              "prompt_tokens": 25,
+              "completion_tokens": 2,
+              "total_tokens": 27,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              }
+            },
+            "timings": {
+              "cache_n": 0,
+              "prompt_n": 25,
+              "prompt_ms": 2969.9,
+              "prompt_per_token_ms": 118.796,
+              "prompt_per_second": 8.4,
+              "predicted_n": 2,
+              "predicted_ms": 313.3,
+              "predicted_per_token_ms": 156.65,
+              "predicted_per_second": 6.4,
+              "draft_n": 3,
+              "draft_n_accepted": 3
+            }
+          }
+        },
+        {
+          "kind": "two_images_order",
+          "response": {
+            "id": "chatcmpl-72da1eebacbf4a95a445b799",
+            "object": "chat.completion",
+            "created": 1791052545,
+            "model": "qwen3.8-flash-next-iq3_s-sycl",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "Red, Blue"
+                },
+                "finish_reason": "stop"
+              }
+            ],
+            "usage": {
+              "prompt_tokens": 132,
+              "completion_tokens": 4,
+              "total_tokens": 136,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              }
+            },
+            "timings": {
+              "cache_n": 0,
+              "prompt_n": 132,
+              "prompt_ms": 6414.0,
+              "prompt_per_token_ms": 48.591,
+              "prompt_per_second": 20.6,
+              "predicted_n": 4,
+              "predicted_ms": 335.9,
+              "predicted_per_token_ms": 83.975,
+              "predicted_per_second": 11.9,
+              "draft_n": 3,
+              "draft_n_accepted": 3
+            }
+          }
+        },
+        {
+          "kind": "single_after_two_images",
+          "response": {
+            "id": "chatcmpl-3d0708c5ce514a1a9c4265ab",
+            "object": "chat.completion",
+            "created": 1791052551,
+            "model": "qwen3.8-flash-next-iq3_s-sycl",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": " red"
+                },
+                "finish_reason": "stop"
+              }
+            ],
+            "usage": {
+              "prompt_tokens": 77,
+              "completion_tokens": 2,
+              "total_tokens": 79,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              }
+            },
+            "timings": {
+              "cache_n": 0,
+              "prompt_n": 77,
+              "prompt_ms": 5187.8,
+              "prompt_per_token_ms": 67.374,
+              "prompt_per_second": 14.8,
+              "predicted_n": 2,
+              "predicted_ms": 314.7,
+              "predicted_per_token_ms": 157.35,
+              "predicted_per_second": 6.4,
+              "draft_n": 3,
+              "draft_n_accepted": 3
+            }
+          }
+        }
+      ],
+      "startup_seconds": 29.055643421015702,
+      "passed": true,
+      "server_exit_code": 0,
+      "port_closed": true,
+      "raw_result_sha256": "2be6eb5b00b69732411b4fc6ca7c73d1f2ffd8da1b811ca01f80b6b43a66a1dd"
     }
   },
   "prefill_screen": {
@@ -10474,6 +11162,15 @@
     "adapt_swaps": 64,
     "spec": 4,
     "spec_min_p": 0.9,
-    "backup_directory": "~/.local/state/strata-sycl/measurement-archive/2026-10-04-performance/config-before"
-  }
+    "backup_directory": "~/.local/state/strata-sycl/measurement-archive/2026-10-04-performance/config-before",
+    "vision_config": {
+      "path": "~/.local/share/strata-sycl/serve-config-vision-sycl.json",
+      "prefill": 1024,
+      "pool_workers": 5,
+      "max_context": 1024,
+      "adapt_swaps": 0,
+      "scope": "Identical engine flags and vision settings to final seven-check HTTP regression; separate vision throughput not benchmarked."
+    }
+  },
+  "raw_capture_archive": "~/.local/state/strata-sycl/measurement-archive/2026-10-04-performance/"
 }
