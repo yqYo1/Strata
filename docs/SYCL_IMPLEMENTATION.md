@@ -10,6 +10,63 @@ validation and measurements on other machines remain open.
 The implementation follows [the port research](SYCL_RESEARCH.md) and
 [the operation inventory](SYCL_BATTLEMAGE_OPERATIONS.md).
 
+## Intel GPU image encoder (2026-10-04)
+
+`strata-vision` can now be built with the pinned llama.cpp SYCL backend. Use
+the same llama.cpp revision as the engine's GGML, `3cf03257f219afbe7334045ff7c6a06ac68c627d`,
+and an activated oneAPI environment:
+
+```sh
+cmake -S tools/vision -B build-vision-sycl -G Ninja \
+  -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx \
+  -DLLAMA_DIR=/path/to/pinned/llama.cpp -DSTRATA_VISION_SYCL=ON
+cmake --build build-vision-sycl --target strata-vision -j2
+```
+
+CUDA and SYCL encoder options are mutually exclusive. For a CPU encoder,
+build the same target with both GPU options off and the ordinary C/C++
+compilers. These manual builds do not require changes to the setup script.
+
+Add a `vision` section to the existing server config, using the encoder
+executable, the model's `mmproj-Qwen3.8-Flash-Next-BF16.gguf`, and its first
+text-model GGUF shard:
+
+```json
+"vision": {
+  "exe": "/path/to/build-vision-sycl/bin/strata-vision",
+  "mmproj": "/path/to/mmproj-Qwen3.8-Flash-Next-BF16.gguf",
+  "model": "/path/to/text-model-00001-of-00002.gguf",
+  "gpu": true,
+  "threads": 4,
+  "max_tokens": 256
+}
+```
+
+The server enables the engine's image path from this section. Retain the
+config's `ONEAPI_DEVICE_SELECTOR=level_zero:gpu` environment and loopback
+host. The encoder starts before the model so automatic expert-cache sizing
+can account for its VRAM. Here `max_tokens` is the encoder's image-token
+limit; the text engine's context must also hold those tokens and the reply.
+
+On the B570/5600X/125 GiB machine, a solid 224-by-224 PNG produced 49 image
+tokens of width 2560. CPU and SYCL encoders each produced finite, bitwise
+repeatable embeddings within their own backend. Between backends, cosine
+was `0.99780219`, RMSE `0.00200989` and maximum absolute difference `0.04712183`.
+This is one encoder fixture, not an image-quality benchmark.
+
+With the SYCL encoder and IQ3_S text model on the same B570, the real
+loopback server passed OpenAI and Anthropic image requests, repeated image
+reuse, OpenAI streaming, text after an image, two images in order, and a
+single image after two. Answers were `red`, `4` and `Red, Blue` for the
+corresponding fixtures. The tested config used context 1024, 16-token prefill,
+automatic cache sizing (1603 slots), adaptation off and MTP width four at
+minimum probability 0.9. The server shut down cleanly. Large images,
+grounding and broad image quality have not been measured here.
+
+The local tested preset is
+`~/.local/share/strata-sycl/serve-config-vision-sycl.json`; the text-only
+default remains the IQ3_S preset described below.
+
 ## Current IQ3_S server configuration
 
 The local default now uses the verified mixed IQ3_S model. On this B570/5600X,
