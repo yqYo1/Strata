@@ -77,6 +77,8 @@ cudaError_t cudaHostGetDevicePointer(void **, void *, unsigned);
 cudaError_t cudaMemcpy(void *, const void *, size_t, cudaMemcpyKind);
 cudaError_t cudaMemcpyAsync(void *, const void *, size_t, cudaMemcpyKind,
                             cudaStream_t = nullptr);
+cudaError_t cudaMemcpyPeerAsync(void *, int, const void *, int, size_t,
+                                cudaStream_t = nullptr);
 cudaError_t cudaMemcpy2DAsync(void *, size_t, const void *, size_t, size_t,
                               size_t, cudaMemcpyKind, cudaStream_t = nullptr);
 cudaError_t cudaMemset(void *, int, size_t);

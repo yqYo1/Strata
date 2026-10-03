@@ -35,7 +35,7 @@ set_source_files_properties(src/kernels/sycl/native_q5_head.cpp src/kernels/sycl
 
 add_library(strata_engine STATIC src/core/layer.cpp src/core/session.cpp src/core/expert_source.cpp src/core/remote_experts.cpp
   src/core/expert_cache.cpp src/core/native_head.cpp src/core/native_dense.cpp src/core/verify.cpp src/core/mtp.cpp
-  src/core/conversation_snapshot.cpp src/core/conversation_state.cpp src/core/conversation_memory.cpp)
+  src/core/conversation_snapshot.cpp src/core/conversation_state.cpp src/core/conversation_memory.cpp src/core/peer_experts.cpp)
 target_link_libraries(strata_engine PUBLIC strata_core strata_kernels strata_kernels_cpu)
 
 set(MKL_LINK dynamic)
@@ -50,6 +50,9 @@ target_link_libraries(strata PRIVATE strata_prefill strata_spec)
 option(STRATA_SYCL_TESTS "Build GPU parity and runtime tests for SYCL" ON)
 if(STRATA_SYCL_TESTS)
   enable_testing()
+  add_executable(expert_profile_save_test tests/core/expert_profile_save_test.cpp)
+  target_link_libraries(expert_profile_save_test PRIVATE strata_engine)
+  add_test(NAME expert_profile_save_test COMMAND expert_profile_save_test)
   add_executable(sycl_projection_bench EXCLUDE_FROM_ALL tools/sycl/projection_bench.cpp)
   target_link_libraries(sycl_projection_bench PRIVATE strata_kernels)
   target_compile_options(sycl_projection_bench PRIVATE -fno-fast-math -ffp-contract=off)

@@ -88,6 +88,13 @@ void copy_from_mapped(float *dst, const float *src, int64_t n, void *stream) {
   // must complete this command before the host modifies the source again.
   for_each(n, stream, [=](size_t i) { dst[i] = src[i]; });
 }
+void scatter_rows_f32(const float *src, float *dst, const int32_t *rows,
+                       int64_t n, int64_t width, void *stream) {
+  // The caller owns the destination extents and supplies distinct valid rows.
+  for_each(checked_count(n, width), stream, [=](size_t i) {
+    dst[size_t(rows[i / width]) * width + i % width] = src[i];
+  });
+}
 void copy_i32_from_mapped(int32_t *dst, const int32_t *src, int64_t n,
                           void *stream) {
   for_each(n, stream, [=](size_t i) { dst[i] = src[i]; });

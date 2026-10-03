@@ -81,6 +81,12 @@ void PeerExperts::close() {
 bool PeerExperts::open(int device, const std::vector<std::pair<int32_t, int32_t>>& ranked, const ExpertCache& primary,
                        ExpertSource& src, int64_t n_layers, int64_t n_expert, int reserve_mib, int64_t max_slots,
                        std::string& err) {
+#ifdef STRATA_ENABLE_SYCL
+    // The SYCL host adapter has one selected device and no peer contexts.
+    // Reject the tier before allocating buffers or attempting a device switch.
+    err = "peer experts: the SYCL engine currently supports one GPU; --peer-device is unavailable";
+    return false;
+#else
     close();
     int count = 0;
     if (!ck(cudaGetDeviceCount(&count), "cudaGetDeviceCount", err)) return false;
@@ -176,6 +182,7 @@ bool PeerExperts::open(int device, const std::vector<std::pair<int32_t, int32_t>
     }
     resident_ = (int64_t) pick.size();
     return true;
+#endif
 }
 
 bool PeerExperts::launch(int64_t layer, const float* x, const int32_t* ids, int64_t n_tok, int64_t k,

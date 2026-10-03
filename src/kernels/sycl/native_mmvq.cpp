@@ -1154,12 +1154,17 @@ size_t native_expert_scratch_bytes(int64_t cap, int64_t f) {
   return 3 * ((bytes + 255) & ~size_t(255)) +
          ((checked_count(cap, f / 32) * 36 + 255) & ~size_t(255));
 }
+void native_grouped_set_v1(bool) {
+  // SYCL uses separate SwiGLU and quantization launches in both modes.
+  // CUDA's launch-geometry/fusion switch does not change this implementation.
+}
 void native_expert_grouped(const NativeExpertLayout &L,
                            const unsigned long long *ptr, const int32_t *start,
                            const int32_t *count, const int32_t *dst,
                            const int32_t *tok, int64_t groups, int64_t entries,
                            const void *x, void *scratch, float *out,
-                           void *stream) {
+                           void *stream, int64_t /*grid_groups*/) {
+  // CUDA's group-grid hint is optional; SYCL keeps its validated entry tiling.
   if (groups <= 0 || groups > INT_MAX || entries <= 0 || entries > INT_MAX ||
       groups > entries)
     throw std::invalid_argument("invalid native expert group capacities");

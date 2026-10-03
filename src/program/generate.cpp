@@ -1752,6 +1752,12 @@ int main(int argc, char** argv) {
     }
     // the peer tier is the second card's only user: a layer split or a remote expert cache would put a second engine
     // part (and a second copy of the same experts) on it
+#ifdef STRATA_ENABLE_SYCL
+    if (o.peer_device >= 1) {
+        std::fprintf(stderr, "strata generate: --peer-device is unavailable on the single-GPU SYCL backend\n");
+        return 2;
+    }
+#endif
     if (o.peer_device >= 1 && (!o.layer_split.empty() || o.expert_cache_remote[0] > 0)) {
         std::fprintf(stderr, "strata generate: --peer-device cannot be combined with %s\n",
                      !o.layer_split.empty() ? "--layer-split (use one or the other)"

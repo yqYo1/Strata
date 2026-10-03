@@ -153,6 +153,34 @@ void elementwise() {
                "arithmetic: PASS\n";
 }
 
+void scatter() {
+  constexpr size_t width = 13, source_rows = 3, target_rows = 7;
+  const std::vector<int32_t> positions{5, 0, 3};
+  std::vector<float> source(source_rows * width), expected(target_rows * width + 1, -777.f);
+  for (size_t i = 0; i < source.size(); ++i) {
+    source[i] = float(i) * .125f - 1.f;
+    expected[size_t(positions[i / width]) * width + i % width] = source[i];
+  }
+  Buffer<float> input(source.size()), output(expected.size());
+  Buffer<int32_t> rows(positions.size());
+  input.upload(source);
+  rows.upload(positions);
+  output.upload(std::vector<float>(expected.size(), -777.f));
+  scatter_rows_f32(input.data(), output.data(), rows.data(), source_rows, width,
+                   &runtime->compute());
+  if (output.read() != expected)
+    throw std::runtime_error("scattered device rows or canary differ");
+  sycl_backend::Allocation host(runtime, expected.size() * sizeof(float),
+                                sycl_backend::MemoryKind::Host);
+  std::fill_n(host.as<float>(), expected.size(), -777.f);
+  scatter_rows_f32(input.data(), host.as<float>(), rows.data(), source_rows,
+                   width, &runtime->compute());
+  runtime->wait();
+  if (!std::equal(expected.begin(), expected.end(), host.as<float>()))
+    throw std::runtime_error("scattered mapped rows or canary differ");
+  std::cout << "scattered device/mapped rows, holes and canary: PASS\n";
+}
+
 void routing() {
   for (int experts : {17, 129, 512, 1000}) {
     constexpr int tokens = 4;
@@ -288,6 +316,7 @@ int main() {
     runtime = sycl_backend::runtime_for();
     conversions();
     elementwise();
+    scatter();
     routing();
     movement();
     return 0;

@@ -170,6 +170,14 @@ cudaError_t cudaSetDevice(int id) {
 cudaError_t cudaInitDevice(int id, unsigned, unsigned) {
   return cudaSetDevice(id);
 }
+cudaError_t cudaMemcpyPeerAsync(void *dst, int dst_device, const void *src,
+                                int src_device, size_t bytes,
+                                cudaStream_t stream) {
+  if (dst_device != 0 || src_device != 0)
+    return fail(cudaErrorNotSupported,
+                "the SYCL engine adapter does not support peer GPU copies");
+  return cudaMemcpyAsync(dst, src, bytes, cudaMemcpyDeviceToDevice, stream);
+}
 cudaError_t cudaGetDeviceProperties(cudaDeviceProp *out, int id) {
   return attempt([&] {
     require(out, "null device properties");

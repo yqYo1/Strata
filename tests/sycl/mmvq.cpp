@@ -277,11 +277,12 @@ void grouped(Format f, int n, int ff, bool scale_edges = false,
   }
   for (bool old : {false, true}) {
     iq_set_old_kernels(old);
+    native_grouped_set_v1(old);
     output.upload(std::vector<float>(size_t(E) * n + 1, -777));
     scratch.upload(std::vector<uint8_t>(scratch.count, 0x9a));
     native_expert_grouped(L, pointers.data(), starts.data(), count.data(),
                           dst.data(), token.data(), G, E, xq.data(),
-                          scratch.data(), output.data(), q);
+                          scratch.data(), output.data(), q, old ? 1 : G);
     const auto result = output.read();
     check(scale_edges ? std::memcmp(result.data(), expected.data(),
                                     expected.size() * sizeof(float)) == 0
@@ -312,6 +313,7 @@ void grouped(Format f, int n, int ff, bool scale_edges = false,
           "invalid token row must yield zero expert");
   }
   iq_set_old_kernels(false);
+  native_grouped_set_v1(false);
   count.upload({0});
   output.upload(std::vector<float>(size_t(E) * n + 1, -777));
   native_expert_grouped(L, pointers.data(), starts.data(), count.data(),

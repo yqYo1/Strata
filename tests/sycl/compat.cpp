@@ -58,6 +58,23 @@ int main(int argc, char** argv) {
     CHECK(cudaStreamSynchronize(b));
     for (size_t i = 0; i < n; ++i)
       require(out[i] == int(i) * 3, "cross stream event");
+    int *same_device{};
+    CHECK(cudaMalloc((void **)&same_device, bytes));
+    CHECK(cudaMemsetAsync(same_device, 0, bytes, b));
+    require(cudaMemcpyPeerAsync(same_device, 1, device, 0, bytes, b) ==
+                cudaErrorNotSupported,
+            "peer GPU copy must fail before submission");
+    (void)cudaGetLastError();
+    CHECK(cudaMemcpyAsync(out, same_device, bytes, cudaMemcpyDeviceToHost, b));
+    CHECK(cudaStreamSynchronize(b));
+    for (size_t i = 0; i < n; ++i)
+      require(out[i] == 0, "rejected peer copy changed its destination");
+    CHECK(cudaMemcpyPeerAsync(same_device, 0, device, 0, bytes, b));
+    CHECK(cudaMemcpyAsync(out, same_device, bytes, cudaMemcpyDeviceToHost, b));
+    CHECK(cudaStreamSynchronize(b));
+    for (size_t i = 0; i < n; ++i)
+      require(out[i] == int(i) * 3, "same-device peer API copy");
+    CHECK(cudaFree(same_device));
     float ms = -1;
     CHECK(cudaEventElapsedTime(&ms, begin, done));
     require(std::isfinite(ms) && ms >= 0, "profiling");
