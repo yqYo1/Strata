@@ -2049,3 +2049,13 @@ decode rates were 15.98 and 20.25 token/s in this single screen. First writing
 prefill took 7.511 s versus 3.571 s in the prior baseline screen, so first-use
 costs need separate evaluation. These results do not establish a throughput gain;
 no serving configuration has adopted the experiment.
+
+Three alternating normal-execution pairs then measured the 827-id long fixture
+(826 prefetched tokens) using the same executable, context 2,048, 1,649 cache
+slots, five CPU workers, chunk 1,024 and adaptive swaps off. With XMX disabled,
+prefill times were 14.084, 14.074 and 14.743 s; with exact XMX tile 8 they were
+9.705, 9.644 and 9.652 s. The medians are 58.65 versus 85.58 token/s (1.46 times
+faster). All eight output ids matched in all six runs. Profiling was disabled
+and compilation caches had been warmed by the preceding validation. This is a
+long-prompt prefill result; it does not resolve the first-use latency issue or
+establish a generation-speed gain. The target remains unmet.

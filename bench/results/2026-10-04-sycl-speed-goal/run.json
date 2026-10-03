@@ -6183,7 +6183,140 @@
       "default_enabled": false,
       "source_sha256": "da9b61183282169186599956c557361018dd217cbfac241c91624b82b96b91de"
     },
-    "exact_persistent_conclusion": "All completed request IDs matched the Zen 3 baseline, including repeat writing; prefill/decode cancellation and eight-token recovery passed. Repeated decode rates 15.98/20.25 tok/s are one screen, not an established gain. First writing prompt 7511.1 ms versus prior baseline 3571.4 ms needs separate first-use evaluation; no serving configuration changed."
+    "exact_persistent_conclusion": "All completed request IDs matched the Zen 3 baseline, including repeat writing; prefill/decode cancellation and eight-token recovery passed. Repeated decode rates 15.98/20.25 tok/s are one screen, not an established gain. First writing prompt 7511.1 ms versus prior baseline 3571.4 ms needs separate first-use evaluation; no serving configuration changed.",
+    "exact_normal_long_comparison": {
+      "binary_sha256": "732d7e2a7eaf01bf7d264f08eed45b1ef5aa187eb4694734cc0b8946446a925b",
+      "kernel_commit": "37bc50d",
+      "prompt_fixture": "../2026-10-04-sycl-performance/long-tokens.txt",
+      "prompt_token_count": 827,
+      "prefetched_tokens": 826,
+      "context": 2048,
+      "expert_cache": 1649,
+      "pool_workers": 5,
+      "prefill_chunk": 1024,
+      "adapt_swaps": 0,
+      "spec": 4,
+      "spec_min_p": 0.9,
+      "profile_timing": false,
+      "order": "off/on8, repeated three times; same executable; compilation caches already warmed by preceding correctness and persistent-request checks",
+      "runs": [
+        {
+          "trial": 1,
+          "xmx": "off",
+          "prefill_ms": 14084.1,
+          "prefill_tok_s": 58.65,
+          "ttft_ms": 14287.6,
+          "output_ids": [
+            11855,
+            248046,
+            198,
+            248044,
+            248045,
+            846,
+            198,
+            248046
+          ],
+          "log_sha256": "ac88b75d286a3b2daeca4444351b4ade8907bcb6f5bba88c738b2e26aa37b8f9"
+        },
+        {
+          "trial": 1,
+          "xmx": "on8",
+          "prefill_ms": 9705.2,
+          "prefill_tok_s": 85.11,
+          "ttft_ms": 9919.2,
+          "output_ids": [
+            11855,
+            248046,
+            198,
+            248044,
+            248045,
+            846,
+            198,
+            248046
+          ],
+          "log_sha256": "75d8ed9ee109fdac11e731d39ff5504a1df54c2bbb0db19f3eb4df36ac88e3fd"
+        },
+        {
+          "trial": 2,
+          "xmx": "off",
+          "prefill_ms": 14074.2,
+          "prefill_tok_s": 58.69,
+          "ttft_ms": 14272.1,
+          "output_ids": [
+            11855,
+            248046,
+            198,
+            248044,
+            248045,
+            846,
+            198,
+            248046
+          ],
+          "log_sha256": "ac7223fd2ce9f9ddca6da18765b06e707b825b51cfc9f86f158daafd449b2bb5"
+        },
+        {
+          "trial": 2,
+          "xmx": "on8",
+          "prefill_ms": 9643.9,
+          "prefill_tok_s": 85.65,
+          "ttft_ms": 9836.1,
+          "output_ids": [
+            11855,
+            248046,
+            198,
+            248044,
+            248045,
+            846,
+            198,
+            248046
+          ],
+          "log_sha256": "4592a95a1c12446df84fc5088070db577c67e7f2d48e351cfd98eb2a042c1a06"
+        },
+        {
+          "trial": 3,
+          "xmx": "off",
+          "prefill_ms": 14742.5,
+          "prefill_tok_s": 56.03,
+          "ttft_ms": 14970.3,
+          "output_ids": [
+            11855,
+            248046,
+            198,
+            248044,
+            248045,
+            846,
+            198,
+            248046
+          ],
+          "log_sha256": "98c0602cd1ac5e477e42103d7369ac2702950259a1b58349544ca5d9332b54cd"
+        },
+        {
+          "trial": 3,
+          "xmx": "on8",
+          "prefill_ms": 9651.7,
+          "prefill_tok_s": 85.58,
+          "ttft_ms": 9855.7,
+          "output_ids": [
+            11855,
+            248046,
+            198,
+            248044,
+            248045,
+            846,
+            198,
+            248046
+          ],
+          "log_sha256": "caab8172053ede835094682e51241a9f6e217af21dc7ee0c8a5a5a5248014a24"
+        }
+      ],
+      "median_prefill_ms": {
+        "off": 14084.1,
+        "on8": 9651.7
+      },
+      "median_speed_ratio": 1.459235160645275,
+      "limitations": "Long-prompt prefill after initialization; does not establish short-prompt first-use latency or decode gains. No placement-policy or serving-config changes.",
+      "prompt_sha256": "a6dc7dca9fd842f4340cc6d0541c60e37f568601413737c1cbfce2e1ad854881"
+    }
   },
   "constraints": [
     "Preserve upstream CPU/GPU responsibilities and fallback policy unless measurements establish a strong reason to depart.",
