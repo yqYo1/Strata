@@ -1,0 +1,332 @@
+{
+  "status": "isolated single-token component screen only; production integration and real-inference comparison pending",
+  "hardware": {
+    "cpu": "Ryzen5 5600X",
+    "ram_gib": 125
+  },
+  "source": "GGML arch/x86/quants.c AVX2 IQ3_XXS18 and IQ2_S22 bodies, cloned into temporary source; upstream dependency untouched",
+  "oracle": "Actual ggml_get_type_traits_cpu(type)->vec_dot from current production libggml-cpu.a; x86 quants.c.o SHA2563ddd98750acafa2e8059f81b139785006189931418d922cc875030a4ba9d8bfa",
+  "change": "Only inner ib32 loop unroll_count(1/2/4); variant0 copies original without pragma. Same FMA and hsum_float_8 tree.",
+  "workload": "Real GGUF gate/up matrices N2560 FF640; 8 or64 distinct experts; random valid Q8_K activation; NT1; three repeats per sample, five alternating samples per candidate; stores gate dot, up dot and SwiGLU output for bitwise finite checks",
+  "cpu_compiler": "icx2026.1 -O3 -DNDEBUG -std=gnu11 -march=znver3 -mtune=znver3 -fno-associative-math",
+  "validation": "All160 samples completed; all gate/up/SwiGLU values bitwise equal and finite. No compilation or GPU tests overlapped performance runs. Existing workstation services active.",
+  "medians": {
+    "8": {
+      "18": {
+        "0": {
+          "original_median_us": 2113.94,
+          "candidate_median_us": 2109.85,
+          "speedup": 1.0019385264355287,
+          "original_samples_us": [
+            2235.74,
+            2113.94,
+            2095.28,
+            2127.18,
+            2099.15
+          ],
+          "candidate_samples_us": [
+            2103.93,
+            2085.3,
+            2119.59,
+            2120.64,
+            2109.85
+          ]
+        },
+        "1": {
+          "original_median_us": 2147.44,
+          "candidate_median_us": 2150.44,
+          "speedup": 0.9986049366641245,
+          "original_samples_us": [
+            2181.55,
+            2103.14,
+            2157.82,
+            2097.06,
+            2147.44
+          ],
+          "candidate_samples_us": [
+            2150.44,
+            2152.29,
+            2083.91,
+            2156.69,
+            2081.57
+          ]
+        },
+        "2": {
+          "original_median_us": 2097.16,
+          "candidate_median_us": 1883.55,
+          "speedup": 1.113408191977914,
+          "original_samples_us": [
+            2098.8,
+            2095.86,
+            2095.23,
+            2097.16,
+            2098.74
+          ],
+          "candidate_samples_us": [
+            1937.52,
+            1883.55,
+            1883.19,
+            1893.0,
+            1882.93
+          ]
+        },
+        "4": {
+          "original_median_us": 2155.68,
+          "candidate_median_us": 2379.73,
+          "speedup": 0.9058506637307593,
+          "original_samples_us": [
+            2104.08,
+            2155.68,
+            2172.13,
+            2115.93,
+            2164.55
+          ],
+          "candidate_samples_us": [
+            2414.53,
+            2349.41,
+            2410.71,
+            2379.73,
+            2342.96
+          ]
+        }
+      },
+      "22": {
+        "0": {
+          "original_median_us": 1413.62,
+          "candidate_median_us": 1448.69,
+          "speedup": 0.9757919223574401,
+          "original_samples_us": [
+            1374.09,
+            1391.69,
+            1418.17,
+            1413.62,
+            1461.86
+          ],
+          "candidate_samples_us": [
+            1416.88,
+            1501.81,
+            1542.68,
+            1448.69,
+            1431.54
+          ]
+        },
+        "1": {
+          "original_median_us": 1383.76,
+          "candidate_median_us": 1437.01,
+          "speedup": 0.9629438904391758,
+          "original_samples_us": [
+            1487.7,
+            1470.93,
+            1377.44,
+            1383.76,
+            1377.85
+          ],
+          "candidate_samples_us": [
+            1395.84,
+            1437.01,
+            1402.03,
+            1489.55,
+            1489.74
+          ]
+        },
+        "2": {
+          "original_median_us": 1389.81,
+          "candidate_median_us": 1529.55,
+          "speedup": 0.9086397960184368,
+          "original_samples_us": [
+            1378.32,
+            1389.81,
+            1469.26,
+            1449.64,
+            1378.08
+          ],
+          "candidate_samples_us": [
+            1594.51,
+            1531.06,
+            1529.55,
+            1520.58,
+            1506.36
+          ]
+        },
+        "4": {
+          "original_median_us": 1396.96,
+          "candidate_median_us": 1344.22,
+          "speedup": 1.0392346490901787,
+          "original_samples_us": [
+            1383.64,
+            1396.96,
+            1489.77,
+            1379.69,
+            1465.23
+          ],
+          "candidate_samples_us": [
+            1344.22,
+            1407.62,
+            1416.47,
+            1335.95,
+            1336.57
+          ]
+        }
+      }
+    },
+    "64": {
+      "18": {
+        "0": {
+          "original_median_us": 17426.8,
+          "candidate_median_us": 17301.0,
+          "speedup": 1.0072712559967631,
+          "original_samples_us": [
+            17426.8,
+            17556.5,
+            17436.3,
+            17054.4,
+            17071.7
+          ],
+          "candidate_samples_us": [
+            16978.6,
+            17599.5,
+            18646.7,
+            17300.3,
+            17301.0
+          ]
+        },
+        "1": {
+          "original_median_us": 17271.3,
+          "candidate_median_us": 17237.2,
+          "speedup": 1.0019782795349592,
+          "original_samples_us": [
+            17271.3,
+            18434.1,
+            17191.9,
+            17348.7,
+            17205.4
+          ],
+          "candidate_samples_us": [
+            17031.1,
+            17000.0,
+            17237.2,
+            18582.0,
+            17755.3
+          ]
+        },
+        "2": {
+          "original_median_us": 17145.5,
+          "candidate_median_us": 15542.4,
+          "speedup": 1.1031436586370187,
+          "original_samples_us": [
+            21985.8,
+            17145.5,
+            17120.1,
+            17133.8,
+            17501.9
+          ],
+          "candidate_samples_us": [
+            16451.5,
+            15542.4,
+            15350.7,
+            15385.4,
+            16054.4
+          ]
+        },
+        "4": {
+          "original_median_us": 17478.1,
+          "candidate_median_us": 19648.4,
+          "speedup": 0.8895431689094276,
+          "original_samples_us": [
+            17456.3,
+            17623.7,
+            17478.1,
+            17187.5,
+            20160.4
+          ],
+          "candidate_samples_us": [
+            18653.2,
+            18907.8,
+            19648.4,
+            19746.6,
+            19662.8
+          ]
+        }
+      },
+      "22": {
+        "0": {
+          "original_median_us": 11684.1,
+          "candidate_median_us": 11527.2,
+          "speedup": 1.013611284613783,
+          "original_samples_us": [
+            11684.1,
+            11939.8,
+            13414.4,
+            11302.6,
+            11327.8
+          ],
+          "candidate_samples_us": [
+            11603.0,
+            11782.7,
+            11425.4,
+            11527.2,
+            11467.1
+          ]
+        },
+        "1": {
+          "original_median_us": 11351.5,
+          "candidate_median_us": 11629.6,
+          "speedup": 0.9760868817500171,
+          "original_samples_us": [
+            11351.5,
+            11289.0,
+            11297.0,
+            11629.0,
+            11654.9
+          ],
+          "candidate_samples_us": [
+            11629.6,
+            11638.6,
+            11574.0,
+            11691.2,
+            11584.0
+          ]
+        },
+        "2": {
+          "original_median_us": 11373.8,
+          "candidate_median_us": 12422.0,
+          "speedup": 0.9156174529061342,
+          "original_samples_us": [
+            11358.7,
+            11825.5,
+            11293.7,
+            11373.8,
+            12134.1
+          ],
+          "candidate_samples_us": [
+            12422.0,
+            12493.7,
+            12262.3,
+            12380.1,
+            12560.7
+          ]
+        },
+        "4": {
+          "original_median_us": 11608.3,
+          "candidate_median_us": 11217.1,
+          "speedup": 1.034875324281677,
+          "original_samples_us": [
+            11425.5,
+            11608.3,
+            11515.7,
+            12011.7,
+            12314.7
+          ],
+          "candidate_samples_us": [
+            11217.1,
+            10969.0,
+            11035.6,
+            12138.6,
+            11263.9
+          ]
+        }
+      }
+    }
+  },
+  "interpretation": "IQ3_XXS loop2 improves11.34% for8 experts and10.31% for64. IQ2_S loop4 improves3.92%/3.49%; other options are flat or slower. These are isolated single-thread rates, not CPU-pool or engine throughput gains. Both candidates require production-object verification and end-to-end tests before adoption."
+}
