@@ -1,5 +1,6 @@
 #include "strata/kernels/kv_q4.hpp"
 #include "strata/kernels/qsa_decode_attn.hpp"
+#include "strata/kernels/qsa_prompt_attn.hpp"
 #include "strata/sycl/runtime.hpp"
 #include <algorithm>
 #include <bit>
@@ -33,7 +34,19 @@ void check(bool c, const char *what) {
 }
 uint16_t half(float x) { return std::bit_cast<uint16_t>(_Float16(x)); }
 float decode(uint16_t x) { return float(std::bit_cast<_Float16>(x)); }
-void run(int format, int page_size, bool masked) {
+void attention(const float *q, const QsaAttnPools &p, const int32_t *ids,
+               const int32_t *steps, int64_t cap, const QsaShapes &s,
+               float *scratch, float *out, int64_t nq) {
+#ifdef STRATA_TEST_PROMPT_MATRIX
+  check(qsa_prompt_attn_batch(q, p, ids, steps, cap, s, out, nq,
+                              &runtime->compute()),
+        "matrix attention unavailable");
+#else
+  qsa_decode_attn_batch(q, p, ids, steps, cap, s, scratch, out, nq,
+                        &runtime->compute());
+#endif
+}
+void run(int format, int page_size, bool masked, bool scaled = false) {
   constexpr int cells = 141, cap = 133, nq = 3, heads = 24, kvheads = 2,
                 dim = 256;
   auto s = qsa_real_shapes();
@@ -85,13 +98,16 @@ void run(int format, int page_size, bool masked) {
   };
   std::vector<float> query(nq * heads * dim);
   for (size_t i = 0; i < query.size(); ++i)
-    query[i] = float(std::sin(i * .019));
+    query[i] = float(std::sin(i * .019)) *
+               (scaled ? (i / (heads * dim) == 0 ? 64.f : 0x1p-20f) : 1.f);
   std::vector<int32_t> ids(nq * cap), steps(nq * kStepCount);
   const int counts[nq] = {13, 67, 129};
   for (int b = 0; b < nq; ++b) {
     steps[b * 4 + 3] = counts[b];
     for (int i = 0; i < cap; ++i)
       ids[b * cap + i] = (i * 17 + b * 3) % cells;
+    if (scaled)
+      ids[b * cap + 5] = -1;
   }
   Buffer<uint16_t> dk16(k16.size()), dv16(v16.size()), dks(ks.size()),
       dvs(vs.size());
@@ -137,13 +153,13 @@ void run(int format, int page_size, bool masked) {
   scratch.put(std::vector<float>(nq * stride + 16, 1234.f));
   out.put(std::vector<float>(query.size() + 16, 1234.f));
   single.put(std::vector<float>(query.size() + 16, 1234.f));
-  qsa_decode_attn_batch(q.data(), p, di.data(), ds.data(), cap, s,
-                        scratch.data(), out.data(), nq, &runtime->compute());
+  attention(q.data(), p, di.data(), ds.data(), cap, s, scratch.data(),
+            out.data(), nq);
   auto y = out.get();
   for (int b = 0; b < nq; ++b)
-    qsa_decode_attn_step(q.data() + b * heads * dim, p, di.data() + b * cap,
-                         ds.data() + b * kStepCount, cap, s, ss.data(),
-                         single.data() + b * heads * dim, &runtime->compute());
+    attention(q.data() + b * heads * dim, p, di.data() + b * cap,
+              ds.data() + b * kStepCount, cap, s, ss.data(),
+              single.data() + b * heads * dim, 1);
   check(y == single.get(), "split attention batch/single exact");
   double worst = 0;
   for (int b = 0; b < nq; ++b)
@@ -151,7 +167,8 @@ void run(int format, int page_size, bool masked) {
       std::vector<double> weights(counts[b]);
       double mx = -INFINITY, sum = 0;
       for (int j = 0; j < counts[b]; ++j) {
-        int cell = ids[b * cap + j], page = table[cell / page_size];
+        int cell = ids[b * cap + j],
+            page = cell < 0 ? -1 : table[cell / page_size];
         if (page < 0) {
           weights[j] = -INFINITY;
           continue;
@@ -170,7 +187,8 @@ void run(int format, int page_size, bool masked) {
       for (int d = 0; d < dim; ++d) {
         double ref = 0;
         for (int j = 0; j < counts[b]; ++j) {
-          int cell = ids[b * cap + j], page = table[cell / page_size];
+          int cell = ids[b * cap + j],
+              page = cell < 0 ? -1 : table[cell / page_size];
           if (page < 0)
             continue;
           int row = (page * kvheads + h / 12) * page_size + cell % page_size;
@@ -181,7 +199,12 @@ void run(int format, int page_size, bool masked) {
         float actual = y[(b * heads + h) * dim + d];
         double err = std::abs(actual - ref);
         worst = std::max(worst, err);
-        check(std::isfinite(actual) && err < 2e-6 * (1 + std::abs(ref)),
+#ifdef STRATA_TEST_PROMPT_MATRIX
+        constexpr double tolerance = 1e-5;
+#else
+        const double tolerance = scaled ? 1e-5 : 2e-6;
+#endif
+        check(std::isfinite(actual) && err < tolerance * (1 + std::abs(ref)),
               "split attention double oracle");
       }
     }
@@ -192,15 +215,23 @@ void run(int format, int page_size, bool masked) {
     check(work[i] == 1234.f, "scratch guard");
   // Reuse the same buffers with all pages missing, then with zero widths.
   dt.put(std::vector<int32_t>(pages, -1));
-  qsa_decode_attn_batch(q.data(), p, di.data(), ds.data(), cap, s,
-                        scratch.data(), out.data(), nq, &runtime->compute());
+  attention(q.data(), p, di.data(), ds.data(), cap, s, scratch.data(),
+            out.data(), nq);
   auto zero = out.get();
   for (size_t i = 0; i < query.size(); ++i)
     check(zero[i] == 0, "all-masked attention");
   ds.put(std::vector<int32_t>(steps.size(), 0));
-  qsa_decode_attn_batch(q.data(), p, di.data(), ds.data(), cap, s,
-                        scratch.data(), out.data(), nq, &runtime->compute());
+  attention(q.data(), p, di.data(), ds.data(), cap, s, scratch.data(),
+            out.data(), nq);
   check(out.get() == zero, "empty attention");
+  for (int invalid : {-1, cap + 1}) {
+    for (int b = 0; b < nq; ++b)
+      steps[b * kStepCount + kStepWidth] = invalid;
+    ds.put(steps);
+    attention(q.data(), p, di.data(), ds.data(), cap, s, scratch.data(),
+              out.data(), nq);
+    check(out.get() == zero, "invalid selected-cell width");
+  }
   std::cout << "split format=" << format << " page=" << page_size
             << " masked=" << masked << " max_abs=" << worst << "\n";
 }
@@ -211,6 +242,8 @@ int main() {
     for (int fmt = 0; fmt < 4; ++fmt)
       for (int page : {1, 4, 16})
         run(fmt, page, page != 1);
+    for (int fmt = 0; fmt < 4; ++fmt)
+      run(fmt, 16, true, true);
     auto s = qsa_real_shapes();
     auto reject = [](auto f) {
       bool caught = false;
@@ -224,6 +257,14 @@ int main() {
     reject([&] { qsa_decode_attn_scratch_floats(0, s); });
     s.head_dim = 128;
     reject([&] { qsa_decode_attn_scratch_floats(10, s); });
+#ifdef STRATA_TEST_PROMPT_MATRIX
+    check(!qsa_prompt_attn_batch(nullptr, {}, nullptr, nullptr, 10, s, nullptr,
+                                 1, nullptr),
+          "unsupported matrix shape");
+    check(qsa_prompt_attn_batch(nullptr, {}, nullptr, nullptr, 0, s, nullptr, 0,
+                                nullptr),
+          "empty matrix batch");
+#endif
     s = qsa_real_shapes();
     Buffer<float> q(24 * 256), out(24 * 256),
         scratch(qsa_decode_attn_scratch_floats(1, s));

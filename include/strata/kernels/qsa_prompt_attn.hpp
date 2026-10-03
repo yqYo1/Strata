@@ -16,6 +16,9 @@
 // Not bitwise equal to `qsa_decode_attn_batch`; `qsa_prompt_attn_parity` bounds the difference and the prompt
 // quality gate (needles, teacher-forced top-1) checks it end to end. Q4_0 KV (mode 4): each block's codes enter
 // exactly as int8 and its scale (one per 32 values) in FP32, as int8 KV's do (STRATA_PROMPT_ATTN_Q4=0: the old kernel).
+// SYCL uses Intel joint_matrix m8n16k16 with the same FP32 scale/hi+lo contract,
+// including K8V4. Devices without those matrix shapes or enough local memory
+// return false before launching, so the caller can use split attention.
 #pragma once
 
 #include "strata/kernels/qsa_decode_attn.hpp"
