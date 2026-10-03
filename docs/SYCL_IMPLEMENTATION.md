@@ -2359,3 +2359,10 @@ and coding requests twice, cancellation during prefill and decode, and
 eight-token recovery. Completed output ids matched the preceding exact-XMX
 fixture. No decode-speed gain is claimed, and local serving configs still
 leave packing disabled while more selective use is measured.
+
+A fixed minimum-column prototype packed the 2,560-column gate/up product and
+left the 640-column down product unchanged. It passed all 50 geometries in
+four MMQ test modes on AOT and JIT. One normal screen improved the 826-token
+prefill from 8,966.2 to 8,865.6 ms, but the 4,007-token screen worsened from
+25,525.1 to 25,685.7 ms. The fixed-column rule was removed; the record preserves
+its patch and timings. Routed-token reuse also matters for the cost tradeoff.

@@ -1,0 +1,54 @@
+diff --git a/cmake/sycl_backend.cmake b/cmake/sycl_backend.cmake
+index 26bd970..c112da0 100644
+--- a/cmake/sycl_backend.cmake
++++ b/cmake/sycl_backend.cmake
+@@ -199,6 +199,9 @@ if(STRATA_SYCL_TESTS)
+   add_test(NAME sycl_prefill_mmq_xmx_packed COMMAND sycl_prefill_mmq_test)
+   set_tests_properties(sycl_prefill_mmq_xmx_packed PROPERTIES TIMEOUT 180
+     ENVIRONMENT "STRATA_SYCL_MMQ_XMX=1;STRATA_SYCL_MMQ_XMX_TILE=8;STRATA_SYCL_MMQ_XMX_EXACT=1;STRATA_SYCL_MMQ_XMX_PACK=1")
++  add_test(NAME sycl_prefill_mmq_xmx_packed_wide COMMAND sycl_prefill_mmq_test)
++  set_tests_properties(sycl_prefill_mmq_xmx_packed_wide PROPERTIES
++    ENVIRONMENT "STRATA_SYCL_MMQ_XMX=1;STRATA_SYCL_MMQ_XMX_TILE=8;STRATA_SYCL_MMQ_XMX_EXACT=1;STRATA_SYCL_MMQ_XMX_PACK=1;STRATA_SYCL_MMQ_XMX_PACK_MIN_COLS=1024")
+   if(STRATA_NATIVE_EXPERTS)
+     add_executable(sycl_prefill_fused_test tests/sycl/prefill_fused.cpp)
+     target_link_libraries(sycl_prefill_fused_test PRIVATE strata_prefill ggml-base)
+diff --git a/src/kernels/sycl/native_mmq_xmx.cpp b/src/kernels/sycl/native_mmq_xmx.cpp
+index 9a50200..1f7c400 100644
+--- a/src/kernels/sycl/native_mmq_xmx.cpp
++++ b/src/kernels/sycl/native_mmq_xmx.cpp
+@@ -435,9 +435,14 @@ bool native_mmq_xmx(const NativeMmq &p, void *stream) {
+     const char *v = std::getenv("STRATA_SYCL_MMQ_XMX_PACK");
+     return v && std::atoi(v) != 0;
+   }();
++  static const int pack_min_cols = [] {
++    const char *v = std::getenv("STRATA_SYCL_MMQ_XMX_PACK_MIN_COLS");
++    return v ? std::atoi(v) : 0;
++  }();
+   // Start with the measured tile-8 exact path. All other settings retain the
+   // original layout, including read-only weights and unsupported row shapes.
+-  if (pack && exact && tile == 8 && repack_scratch(p, size_t(stride), stream)) {
++  if (pack && exact && tile == 8 && p.cols >= pack_min_cols &&
++      repack_scratch(p, size_t(stride), stream)) {
+     dispatch<8, true, true>(p, stream);
+     return true;
+   }
+diff --git a/tests/sycl/prefill_mmq.cpp b/tests/sycl/prefill_mmq.cpp
+index 05adafe..44116d2 100644
+--- a/tests/sycl/prefill_mmq.cpp
++++ b/tests/sycl/prefill_mmq.cpp
+@@ -126,6 +126,7 @@ void product(int type, int cols, int R = 7, bool scratch = false, size_t padding
+   const char *xmx = std::getenv("STRATA_SYCL_MMQ_XMX");
+   const char *exact = std::getenv("STRATA_SYCL_MMQ_XMX_EXACT");
+   const char *pack = std::getenv("STRATA_SYCL_MMQ_XMX_PACK");
++  const char *pack_min_cols = std::getenv("STRATA_SYCL_MMQ_XMX_PACK_MIN_COLS");
+   const char *tile = std::getenv("STRATA_SYCL_MMQ_XMX_TILE");
+   auto expected_weights = uploaded;
+   const size_t row_bytes = matrix_bytes / R, words = row_bytes / 2;
+@@ -136,6 +137,7 @@ void product(int type, int cols, int R = 7, bool scratch = false, size_t padding
+                             device.get_info<sycl::info::device::local_mem_size>() &&
+                         device.get_info<sycl::info::device::max_work_group_size>() >= 256;
+   if (scratch && supported_pack && fits_pack && R % 16 == 0 && pack && std::atoi(pack) &&
++      (!pack_min_cols || cols >= std::atoi(pack_min_cols)) &&
+       xmx && std::atoi(xmx) && (!exact || std::atoi(exact)) && tile && std::atoi(tile) == 8) {
+     for (int expert = 0; expert < E; ++expert)
+       for (int row = 0; row < R; row += 16)
