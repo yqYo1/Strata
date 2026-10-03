@@ -1196,6 +1196,35 @@ flags and comparisons are retained in
 [`bench/results/2026-10-03-sycl-q5-head-batch/`](../bench/results/2026-10-03-sycl-q5-head-batch/).
 `--single-q5head` and `--compare-q5head` select the head-only component checks.
 
+### IQ4_XS integer matrix and table-decoder screen
+
+On 2026-10-03, B570/5600X, standalone prototypes computed sixteen weight rows
+with signed-eight-bit DPAS, or eight useful rows by duplicating DPAS's upper
+columns. Each integer dot covered the same 32 values; subscales, both float
+product boundaries and virtual-lane additions followed the current kernel.
+Another prototype selected nonlinear coefficients from a sixteen-byte register
+table. These prototypes retained every output bit against the existing ESIMD
+kernel on 2,560/6,144-wide matrices, row counts 32..10,240 and finite FP16 scale
+edge cases. The weights and Q8_1 inputs were synthetic, not model traces.
+
+With 100 kernels captured in one graph, warm weights and the median of three
+device-event intervals, the final matrix prototype measured:
+
+| Input width, output rows | Existing ESIMD, ms | DPAS 16 useful rows, ms | DPAS 8 useful rows, ms |
+| --- | ---: | ---: | ---: |
+| 2,560, 6,144 | 0.0686 | 0.0772 | 0.0950 |
+| 2,560, 10,240 | 0.0734 | 0.0888 | 0.2076 |
+| 6,144, 2,560 | 0.0501 | 0.2029 | 0.1564 |
+
+The public `grf_size_automatic` kernel property measured `0.0772 / 0.0887 /
+0.2029 ms` on those shapes. Its selected register count was not inspected.
+The register-table decoder also lost to its own original-kernel control in
+all three timed shapes. None of these component measurements justifies a
+production change. The existing kernels remain in use; no full-model speed
+claim follows from this screen. Sources, all timings, build commands and
+exact-comparison fixtures are in
+[`bench/results/2026-10-03-sycl-iq4-xmx-screen/run.json`](../bench/results/2026-10-03-sycl-iq4-xmx-screen/run.json).
+
 ### Cache experiments retained as measurements
 
 On 2026-10-03, B570/5600X, normal cached L1/L2 gather properties were tested
