@@ -2346,3 +2346,16 @@ They also check the exact rearranged weight bytes, padded expert strides,
 read-only matrices, incomplete row tiles, local-memory limits, unsupported
 types, mapped output rows and guard bytes. After source formatting, all 519 GPU
 text sections in the final AOT binary matched the measured binary.
+
+A separate 827-id screen (826 prefetched, context 2,048, cache 1,649, chunk
+1,024) took 9,143.0 ms without packing and 8,964.7 ms with it. Timing-enabled
+runs were nearly equal, 9,351.3 and 9,347.1 ms. These are individual screens;
+they do not establish a short-prompt gain. The profiled gate/up bucket fell
+by 97 ms and the down bucket grew by 88 ms. These event intervals include
+queue waits and host gaps, so they are not isolated kernel durations.
+
+Normal persistent serving with each layout passed the same 128-token writing
+and coding requests twice, cancellation during prefill and decode, and
+eight-token recovery. Completed output ids matched the preceding exact-XMX
+fixture. No decode-speed gain is claimed, and local serving configs still
+leave packing disabled while more selective use is measured.
