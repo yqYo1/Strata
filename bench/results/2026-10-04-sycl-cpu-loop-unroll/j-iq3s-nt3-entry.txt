@@ -1,0 +1,36 @@
+
+/tmp/strata-sycl-goal-iq-looped-j.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000002cb70 <_ZN13strata_gather7kernels3cpu12_GLOBAL__N_111row_dot_anyILi21ELi3EEEvPKhiPKPK10block_q8_KPf>:
+   2cb70:	55                   	push   %rbp
+   2cb71:	41 57                	push   %r15
+   2cb73:	41 56                	push   %r14
+   2cb75:	41 55                	push   %r13
+   2cb77:	41 54                	push   %r12
+   2cb79:	53                   	push   %rbx
+   2cb7a:	50                   	push   %rax
+   2cb7b:	48 89 4c 24 c8       	mov    %rcx,-0x38(%rsp)
+   2cb80:	85 f6                	test   %esi,%esi
+   2cb82:	0f 8e 72 04 00 00    	jle    2cffa <_ZN13strata_gather7kernels3cpu12_GLOBAL__N_111row_dot_anyILi21ELi3EEEvPKhiPKPK10block_q8_KPf+0x48a>
+   2cb88:	89 f0                	mov    %esi,%eax
+   2cb8a:	48 63 0d 00 00 00 00 	movslq 0x0(%rip),%rcx        # 2cb91 <_ZN13strata_gather7kernels3cpu12_GLOBAL__N_111row_dot_anyILi21ELi3EEEvPKhiPKPK10block_q8_KPf+0x21>
+   2cb91:	4c 8b 0a             	mov    (%rdx),%r9
+   2cb94:	4c 8b 42 08          	mov    0x8(%rdx),%r8
+   2cb98:	48 8b 72 10          	mov    0x10(%rdx),%rsi
+   2cb9c:	48 ff c8             	dec    %rax
+   2cb9f:	48 89 7c 24 c0       	mov    %rdi,-0x40(%rsp)
+   2cba4:	48 89 44 24 b8       	mov    %rax,-0x48(%rsp)
+   2cba9:	48 89 4c 24 90       	mov    %rcx,-0x70(%rsp)
+   2cbae:	48 85 c9             	test   %rcx,%rcx
+   2cbb1:	0f 8e 55 04 00 00    	jle    2d00c <_ZN13strata_gather7kernels3cpu12_GLOBAL__N_111row_dot_anyILi21ELi3EEEvPKhiPKPK10block_q8_KPf+0x49c>
+   2cbb7:	48 8b 02             	mov    (%rdx),%rax
+   2cbba:	c5 fe 6f 05 00 00 00 	vmovdqu 0x0(%rip),%ymm0        # 2cbc2 <_ZN13strata_gather7kernels3cpu12_GLOBAL__N_111row_dot_anyILi21ELi3EEEvPKhiPKPK10block_q8_KPf+0x52>
+   2cbc1:	00 
+   2cbc2:	c4 e2 7d 59 0d 00 00 	vpbroadcastq 0x0(%rip),%ymm1        # 2cbcb <_ZN13strata_gather7kernels3cpu12_GLOBAL__N_111row_dot_anyILi21ELi3EEEvPKhiPKPK10block_q8_KPf+0x5b>
+   2cbc9:	00 00 
+   2cbcb:	c4                   	.byte 0xc4
+   2cbcc:	e2 7d                	loop   2cc4b <_ZN13strata_gather7kernels3cpu12_GLOBAL__N_111row_dot_anyILi21ELi3EEEvPKhiPKPK10block_q8_KPf+0xdb>
+   2cbce:	78 15                	js     2cbe5 <_ZN13strata_gather7kernels3cpu12_GLOBAL__N_111row_dot_anyILi21ELi3EEEvPKhiPKPK10block_q8_KPf+0x75>

@@ -1,0 +1,54 @@
+--- src/kernels/cpu/iq_avx2.cpp
++++ src/kernels/cpu/iq_avx2.cpp
+@@ -226,6 +226,41 @@
+     }
+     for (int t = 0; t < NT; ++t) res[t] = hsum8(accf[t]);
+ }
++
++// Clang's full expansion keeps several IQ3_S codebook decodes live at once.
++// Retain the four-step loop on Zen 3 to limit temporary lifetimes and spills.
++// The integer accumulation and per-block FP32 FMA order stay the same.
++#if defined(__clang__) && defined(__znver3__)
++template <int NT>
++inline void row_dot_iq3s_zen3(const uint8_t* row, int nblocks, const block_q8_K* const* y, float* res) {
++    __m256 accf[NT];
++    for (int t = 0; t < NT; ++t) accf[t] = _mm256_setzero_ps();
++    for (int i = 0; i < nblocks; ++i) {
++        const uint8_t* blk = row + (size_t) i * Fmt32<21>::bytes;
++        rows_ahead(blk + prefetch_ahead);
++        __m256i acci[NT];
++        for (int t = 0; t < NT; ++t) acci[t] = _mm256_setzero_si256();
++#pragma clang loop unroll(disable)
++        for (int j = 0; j < 4; ++j) {
++            for (int half = 0; half < 2; ++half) {
++                __m256i g, sgn, sc;
++                Fmt32<21>::decode(blk, j, half, g, sgn, sc);
++                const int off = 64 * j + 32 * half;
++                for (int t = 0; t < NT; ++t) {
++                    const __m256i yv = _mm256_loadu_si256((const __m256i*) (y[t][i].qs + off));
++                    const __m256i ys = _mm256_sign_epi8(yv, sgn);
++                    acci[t] = _mm256_add_epi32(acci[t], _mm256_madd_epi16(_mm256_maddubs_epi16(g, ys), sc));
++                }
++            }
++        }
++        const float dx = h2f(u16(blk)) * Fmt32<21>::K;
++        for (int t = 0; t < NT; ++t)
++            accf[t] = _mm256_fmadd_ps(_mm256_set1_ps(dx * y[t][i].d), _mm256_cvtepi32_ps(acci[t]), accf[t]);
++    }
++    for (int t = 0; t < NT; ++t) res[t] = hsum8(accf[t]);
++}
++
++#endif
+ 
+ // ---- IQ2_XS (17) with ggml's vectorized sign decode (arch/x86/quants.c, ggml_vec_dot_iq2_xs_q8_K):
+ // the 7-bit sign indices never touch ksigns_iq2xs - the 8th sign bit is reconstructed by parity (two
+@@ -318,6 +353,9 @@
+ template <int TY, int NT>
+ inline void row_dot_any(const uint8_t* row, int nblocks, const block_q8_K* const* y, float* res) {
+     if constexpr (TY == 17) row_dot_iq2xs<NT>(row, nblocks, y, res);
++#if defined(__clang__) && defined(__znver3__)
++    else if constexpr (TY == 21) row_dot_iq3s_zen3<NT>(row, nblocks, y, res);
++#endif
+     else                    row_dot<TY, NT>(row, nblocks, y, res);
+ }
+ 

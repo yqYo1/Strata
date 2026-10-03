@@ -1,5 +1,5 @@
 {
-  "status": "opt-in implementation validated; three 4k pairs improve median rate4.24%; 40 AOT and 40 JIT CTests pass; short and persistent real-inference output/cancellation checks pass; local serving layout flag remains off pending selective-packing measurements",
+  "status": "opt-in packed implementation validated; three4k pairs improve median rate4.24%;40 AOT and40 JIT CTests pass; short and persistent real-inference output/cancellation checks pass; fixed minimum-column policy rejected; local serving layout flag remains off",
   "source_parent_commit": "02e222a",
   "hardware": {
     "gpu": "Intel Arc B570 10 GiB",
@@ -582,7 +582,7 @@
   "speedup": 1.0424221757092575,
   "all_output_ids_equal": true,
   "memory": "No additional global allocation: each workgroup reads all sixteen full scratch rows into local memory before overwriting its own rows. Persistent expert cache bytes and CPU/GPU assignment are unchanged.",
-  "registers": "54 XMX variants use 128 GRFs. Packed IQ2_S exact tile8 spills 192 bytes; the other53 have no scratch buffers. This IQ3_S run uses packed IQ3_XXS/IQ3_S experts. See registers.json.",
+  "registers": "54 XMX variants use128 GRFs. Packed IQ2_S exact tile8 spills192 bytes; the other53 have no scratch buffers. This mixed IQ3_S model uses IQ2_S gate/up in20 of48 layers, IQ3_XXS in17, IQ3_S in10 andIQ4_XS in1; the IQ2_S spill therefore matters for this model. See registers.json.",
   "fixture": "../2026-10-04-sycl-prefill-scale/4k-tokens.txt",
   "validation": {
     "jit_full_ctest": "Internal ctest changing into directory: /home/yayoi/orca/workspaces/Strata/sycl/build-sycl\nTest project /home/yayoi/orca/workspaces/Strata/sycl/build-sycl\n      Start  1: expert_profile_save_test\n 1/40 Test  #1: expert_profile_save_test .........   Passed    0.01 sec\n      Start  2: sycl_native_single_dispatch\n 2/40 Test  #2: sycl_native_single_dispatch ......   Passed   12.29 sec\n      Start  3: sycl_s2_experts\n 3/40 Test  #3: sycl_s2_experts ..................   Passed    0.53 sec\n      Start  4: sycl_cvec_parity\n 4/40 Test  #4: sycl_cvec_parity .................   Passed    0.67 sec\n      Start  5: sycl_cvec_graph\n 5/40 Test  #5: sycl_cvec_graph ..................   Passed    0.12 sec\n      Start  6: sycl_host_engine\n 6/40 Test  #6: sycl_host_engine .................   Passed    0.57 sec\n      Start  7: sycl_compat\n 7/40 Test  #7: sycl_compat ......................   Passed    0.18 sec\n      Start  8: sycl_compat_native\n 8/40 Test  #8: sycl_compat_native ...............   Passed    0.14 sec\n      Start  9: sycl_runtime\n 9/40 Test  #9: sycl_runtime .....................   Passed    0.14 sec\n      Start 10: sycl_device\n10/40 Test #10: sycl_device ......................   Passed    0.12 sec\n      Start 11: sycl_kernels\n11/40 Test #11: sycl_kernels .....................   Passed    0.13 sec\n      Start 12: sycl_fused_gdn\n12/40 Test #12: sycl_fused_gdn ...................   Passed    0.15 sec\n      Start 13: sycl_fused_gr\n13/40 Test #13: sycl_fused_gr ....................   Passed    0.27 sec\n      Start 14: sycl_native_flash_attn\n14/40 Test #14: sycl_native_flash_attn ...........   Passed    0.20 sec\n      Start 15: sycl_expert_routing\n15/40 Test #15: sycl_expert_routing ..............   Passed    0.11 sec\n      Start 16: sycl_sequence\n16/40 Test #16: sycl_sequence ....................   Passed    0.12 sec\n      Start 17: sycl_coupled_sampler\n17/40 Test #17: sycl_coupled_sampler .............   Passed    0.14 sec\n      Start 18: sycl_prefill_storage\n18/40 Test #18: sycl_prefill_storage .............   Passed    0.19 sec\n      Start 19: sycl_prefill_state\n19/40 Test #19: sycl_prefill_state ...............   Passed    0.15 sec\n      Start 20: sycl_prefill_postops\n20/40 Test #20: sycl_prefill_postops .............   Passed    0.13 sec\n      Start 21: sycl_gemm\n21/40 Test #21: sycl_gemm ........................   Passed    0.79 sec\n      Start 22: sycl_prefill_mmq\n22/40 Test #22: sycl_prefill_mmq .................   Passed    1.00 sec\n      Start 23: sycl_prefill_mmq_xmx\n23/40 Test #23: sycl_prefill_mmq_xmx .............   Passed    0.97 sec\n      Start 24: sycl_prefill_mmq_xmx_packed\n24/40 Test #24: sycl_prefill_mmq_xmx_packed ......   Passed    0.96 sec\n      Start 25: sycl_prefill_fused\n25/40 Test #25: sycl_prefill_fused ...............   Passed    1.32 sec\n      Start 26: sycl_sampler\n26/40 Test #26: sycl_sampler .....................   Passed   10.48 sec\n      Start 27: sycl_gdn\n27/40 Test #27: sycl_gdn .........................   Passed    0.19 sec\n      Start 28: sycl_quantize\n28/40 Test #28: sycl_quantize ....................   Passed    0.12 sec\n      Start 29: sycl_bf16\n29/40 Test #29: sycl_bf16 ........................   Passed    0.15 sec\n      Start 30: sycl_mmvq\n30/40 Test #30: sycl_mmvq ........................   Passed   17.37 sec\n      Start 31: sycl_gr\n31/40 Test #31: sycl_gr ..........................   Passed    0.54 sec\n      Start 32: sycl_rope\n32/40 Test #32: sycl_rope ........................   Passed    3.64 sec\n      Start 33: sycl_rope_table\n33/40 Test #33: sycl_rope_table ..................   Passed    7.25 sec\n      Start 34: sycl_kv\n34/40 Test #34: sycl_kv ..........................   Passed    0.15 sec\n      Start 35: sycl_attention\n35/40 Test #35: sycl_attention ...................   Passed    0.37 sec\n      Start 36: sycl_qsa_index\n36/40 Test #36: sycl_qsa_index ...................   Passed    0.28 sec\n      Start 37: sycl_decode_attention\n37/40 Test #37: sycl_decode_attention ............   Passed    0.32 sec\n      Start 38: sycl_prompt_attention\n38/40 Test #38: sycl_prompt_attention ............   Passed    0.37 sec\n      Start 39: sycl_ple\n39/40 Test #39: sycl_ple .........................   Passed   10.85 sec\n      Start 40: sycl_moe\n40/40 Test #40: sycl_moe .........................   Passed   10.78 sec\n\n100% tests passed, 0 tests failed out of 40\n\nTotal Test time (real) =  84.29 sec\n",
@@ -2429,5 +2429,39 @@
       "jit": "Internal ctest changing into directory: /home/yayoi/orca/workspaces/Strata/sycl/build-sycl\nTest project /home/yayoi/orca/workspaces/Strata/sycl/build-sycl\n    Start 22: sycl_prefill_mmq\n1/4 Test #22: sycl_prefill_mmq ...................   Passed    0.84 sec\n    Start 23: sycl_prefill_mmq_xmx\n2/4 Test #23: sycl_prefill_mmq_xmx ...............   Passed    0.92 sec\n    Start 24: sycl_prefill_mmq_xmx_packed\n3/4 Test #24: sycl_prefill_mmq_xmx_packed ........   Passed    0.89 sec\n    Start 25: sycl_prefill_mmq_xmx_packed_wide\n4/4 Test #25: sycl_prefill_mmq_xmx_packed_wide ...   Passed    0.90 sec\n\n100% tests passed, 0 tests failed out of 4\n\nTotal Test time (real) =   3.54 sec\n"
     },
     "interpretation": "Short screen improves8865.6ms vs8966.2ms all-packed, but4007-token prefill regresses25685.7ms vs25525.1ms. Down-side packing tradeoff depends on routed-token reuse, not column count alone. Do not adopt a fixed minimum-column rule."
+  },
+  "model_expert_type_mix": {
+    "source": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt",
+    "gu_layer_counts": {
+      "18": 17,
+      "22": 20,
+      "21": 10,
+      "23": 1
+    },
+    "down_layer_counts": {
+      "20": 39,
+      "42": 9
+    },
+    "pair_counts": {
+      "18/20": 14,
+      "22/42": 5,
+      "22/20": 15,
+      "18/42": 3,
+      "21/20": 9,
+      "21/42": 1,
+      "23/20": 1
+    },
+    "iq3_s_gu_layers": [
+      17,
+      21,
+      25,
+      27,
+      28,
+      29,
+      35,
+      40,
+      44,
+      45
+    ]
   }
 }

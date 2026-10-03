@@ -2336,8 +2336,9 @@ establish a decode-speed improvement.
 
 The AOT image contains 54 XMX variants using 128 GRFs. The new packed IQ2_S
 exact tile-8 variant has a 192-byte scratch spill; the other 53 have no scratch
-buffers. The IQ3_S model in this experiment uses IQ3_XXS/IQ3_S expert gate/up
-weights. The [run record and scripts](../bench/results/2026-10-04-sycl-xmx-packed/run.json)
+buffers. The mixed IQ3_S model in this experiment has IQ2_S gate/up weights in
+20 layers, IQ3_XXS in17, IQ3_S in10 and IQ4_XS in1, so that spill affects
+a substantial part of this workload. The [run record and scripts](../bench/results/2026-10-04-sycl-xmx-packed/run.json)
 preserve the flags, hashes, timings and output ids.
 
 AOT and JIT each passed all 40 CTests. The MMQ tests cover 50 geometries with
@@ -2366,3 +2367,40 @@ four MMQ test modes on AOT and JIT. One normal screen improved the 826-token
 prefill from 8,966.2 to 8,865.6 ms, but the 4,007-token screen worsened from
 25,525.1 to 25,685.7 ms. The fixed-column rule was removed; the record preserves
 its patch and timings. Routed-token reuse also matters for the cost tradeoff.
+
+
+### Zen 3 IQ3_S loop expansion screen (2026-10-04)
+
+Clang's IQ3_S AVX2 code on this Ryzen 5 5600X kept many decoded values live
+across a fully expanded four-step loop. A prototype retained that loop while
+allowing its two halves to expand. Warm component tests improved IQ3_S rates
+for two to four tokens by about 8–17%, with identical output bits. Disabling
+both loops or adding two integer accumulators did not give the same result.
+An explicit unroll count for other formats also slowed IQ3_XXS, so the engine
+prototype used a dedicated IQ3_S helper only for Clang targeting Zen 3.
+
+The actual engine CPU object matched the old code for one through eight
+tokens. AOT and JIT each passed the three MMQ tests. Six alternating normal
+serving runs then compared the old and candidate AOT binaries with the same
+context-512 configuration, five workers, adaptive swaps 64 and XMX packing off.
+Every completed output id matched; cancellation and recovery also passed.
+
+| Median decode rate | Old CPU kernel | Retained IQ3_S loop |
+| --- | ---: | ---: |
+| First writing request | 13.317 token/s | 13.502 token/s |
+| Repeat writing request | 15.910 token/s | 15.825 token/s |
+| First coding request | 17.452 token/s | 17.417 token/s |
+| Repeat coding request | 19.743 token/s | 20.006 token/s |
+
+The change did not establish a uniform engine gain. It was removed, and the
+configured AOT binary was restored. These results illustrate why warm,
+repeated-expert component gains do not by themselves justify an engine change.
+The [record](../bench/results/2026-10-04-sycl-cpu-loop-unroll/run.json) preserves
+all candidate patches, raw component samples and complete serving results.
+
+The native expert manifest contains20 IQ2_S gate/up layers,17 IQ3_XXS,10
+IQ3_S and1 IQ4_XS; down uses IQ4_NL in39 layers and Q2_0 in9. The CPU loop
+prototype therefore changes10 of48 layers, and only the rows dispatched to
+the multi-token AVX2 kernel. The earlier packed-XMX register record also needs
+this distinction: its IQ2_S scratch spill applies to20 layers, not an unused
+format. Further tuning uses this measured model composition.

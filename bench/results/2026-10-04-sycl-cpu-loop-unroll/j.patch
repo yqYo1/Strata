@@ -1,0 +1,19 @@
+--- src/kernels/cpu/iq_avx2.cpp
++++ strata-sycl-goal-iq-looped-j.cpp
+@@ -22,7 +22,7 @@
+ #include <cstdlib>
+ #include <cstring>
+ 
+-namespace strata::kernels::cpu {
++namespace strata_gather::kernels::cpu {
+ namespace {
+ 
+ inline float h2f(uint16_t h) { return _mm_cvtss_f32(_mm_cvtph_ps(_mm_cvtsi32_si128((int) h))); }
+@@ -208,6 +208,7 @@
+         rows_ahead(blk + prefetch_ahead);
+         __m256i acci[NT];
+         for (int t = 0; t < NT; ++t) acci[t] = _mm256_setzero_si256();
++        #pragma clang loop unroll(disable)
+         for (int j = 0; j < 4; ++j) {
+             for (int half = 0; half < 2; ++half) {
+                 __m256i g, sgn, sc;
