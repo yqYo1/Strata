@@ -1,4 +1,5 @@
 #include "strata/core/expert_cache.hpp"
+#include "strata/core/expert_slot_sizes.hpp"
 #include "strata/core/graph.hpp"
 #include "strata/core/pinned.hpp"
 #include "strata/core/session.hpp"
@@ -258,6 +259,60 @@ int main() {
             "free");
     require(cudaStreamDestroy(stream) == cudaSuccess, "destroy");
     strata::core::ExpertCache cache;
+    {
+      using namespace strata::core;
+      const std::vector<int64_t> sizes{5001, 2057, 9000};
+      constexpr int slots = 8;
+      auto plan = per_layer_slot_sizes(sizes, slots);
+      uint64_t budget = 0;
+      for (auto b : plan) budget += expert_slot_aligned_bytes(b);
+      require(per_layer_slots_that_fit(sizes, budget, slots) == slots,
+              "per-layer plan fits its exact byte budget");
+      // Compare the planner with all legal counts, including last-layer
+      // remainders whose sizes can be larger than an entire previous round.
+      for (uint64_t cap = 0; cap <= budget; cap += 256) {
+        int64_t expected = 0;
+        for (int64_t n = 1; n <= slots; ++n) {
+          uint64_t bytes = 0;
+          for (auto b : per_layer_slot_sizes(sizes, n))
+            bytes += expert_slot_aligned_bytes(b);
+          if (bytes <= cap) expected = n;
+        }
+        require(per_layer_slots_that_fit(sizes, cap, slots) == expected,
+                "per-layer plan keeps the largest count within budget");
+      }
+      require(cache.open_sized(plan, 3, 8, err), err);
+      cache.set_per_layer_admission(true);
+      for (int layer = 0; layer < 3; ++layer) {
+        int64_t lo = 0, hi = 0;
+        cache.layer_slot_range(layer, lo, hi);
+        require(hi - lo == (layer == 2 ? 4 : 2), "per-layer remainder range");
+        for (int64_t s = lo; s < hi; ++s) {
+          require(plan[size_t(s)] == sizes[size_t(layer)],
+                  "slot capacity follows actual layer admission range");
+          require(cache.admit(layer, s - lo) == s,
+                  "per-layer expert admission uses planned slot");
+          std::vector<uint8_t> payload(size_t(sizes[size_t(layer)]),
+                                       uint8_t(layer * 37 + s));
+          require(cache.fill_slot_blocking(int32_t(s), payload.data(), err,
+                                           payload.size()), err);
+          require(cache.verify_slot(int32_t(s), payload.data(), err,
+                                     payload.size()), err);
+        }
+      }
+      cache.close();
+      const int64_t shrunk = per_layer_slots_that_fit(sizes, budget * 3 / 4, slots);
+      const auto smaller = per_layer_slot_sizes(sizes, shrunk);
+      require(cache.open_sized(smaller, 3, 8, err), err);
+      for (int layer = 0; layer < 3; ++layer) {
+        int64_t lo = 0, hi = 0;
+        cache.layer_slot_range(layer, lo, hi);
+        for (int64_t s = lo; s < hi; ++s)
+          require(smaller[size_t(s)] == sizes[size_t(layer)],
+                  "shrinking regenerates layer ranges and capacities");
+      }
+      cache.close();
+    }
     for (int reopen = 0; reopen < 2; ++reopen) {
       require(cache.open_sized({4096, 8192, 16384}, 1, 3, err), err);
       for (int round = 0; round < 8; ++round)

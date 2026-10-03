@@ -98,6 +98,22 @@ product. This is a kernel check, not a whole-model quality measurement.
 build-sycl/sycl_mmvq_test --gguf /path/to/IQ3_S-00001-of-00002.gguf
 ```
 
+## Per-layer native cache storage on SYCL
+
+SYCL native packs with `--expert-cache-per-layer` now allocate each slot for
+the format of its owning layer. The existing admission ranges and adaptive
+replacement policy remain in use. Explicit slot counts retain their count;
+automatic sizing fits more slots into the preceding uniform plan's byte budget.
+If allocation retries shrink the count, layer ranges and sizes are regenerated
+together. Profile-ranked sizes remain a separate path for global admission.
+
+On the B570 IQ3_S model, a fixed 1,649-slot cache used 3.15 GiB instead of
+4.09 GiB. A before/after generation check kept the same 64 output ids and all
+float32 bits in 69 full-vocabulary verification rows across 36 windows, including
+rejected draft rows. Adaptive replacement was disabled for that comparison;
+cache placement and the input history stayed fixed. The host-engine test also
+checks mixed slot sizes, nonuniform last-layer ranges, fills and smaller retries.
+
 ## Build and validate
 
 On Linux with Intel oneAPI DPC++ and oneMKL installed:
