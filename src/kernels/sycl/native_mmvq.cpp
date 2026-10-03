@@ -38,6 +38,11 @@ void native_q3_k_esimd(const void *, const void *, float *, int, int, int, void 
 void native_q4_k_esimd(const void *, const void *, float *, int, int, int, void *);
 void native_q2_0_esimd(const void *, const void *, float *, int, int, int, void *);
 void native_iq4_xs_esimd(const void *, const void *, float *, int, int, int, void *);
+bool native_iq_grouped_esimd(int, bool, const NativeExpertLayout &,
+                            const unsigned long long *, const int32_t *,
+                            const int32_t *, const int32_t *, const int32_t *,
+                            int, int, const void *, float *, float *, float *, void *);
+bool native_iq_mmq_esimd(const NativeMmq &, void *);
 void native_q2_grouped_esimd(bool, const NativeExpertLayout &,
                             const unsigned long long *, const int32_t *,
                             const int32_t *, const int32_t *, const int32_t *,
@@ -1042,6 +1047,8 @@ void grouped_dispatch(int type, const NativeExpertLayout &L,
                       const int32_t *tok, int groups, int entries,
                       const Q81Block *x, float *gate, float *up, float *out,
                       int tile, sycl::queue &q) {
+  if (!iq_old_kernels() && native_iq_grouped_esimd(type, Down, L, ptr, start, count,
+      dst, tok, groups, entries, x, gate, up, out, &q)) return;
 #define GROUPED(TYPE, ...)                                                     \
   case TYPE:                                                                   \
     grouped_projection<__VA_ARGS__, Down>(L, ptr, start, count, dst, tok,      \
@@ -1171,6 +1178,10 @@ void native_mmq(const NativeMmq &p, void *stream) {
   const size_t groups = checked_count(checked_count(p.experts, p.rows), (p.max_rows + 7) / 8);
   (void)checked_count(groups, 128);
   auto &q = queue_for(stream);
+  if (!iq_old_kernels() && native_iq_mmq_esimd(p, &q)) {
+    if (!stream) q.wait_and_throw();
+    return;
+  }
 #define PROMPT(TYPE, ...) case TYPE: prompt_product<__VA_ARGS__>(p, q); break
   switch (p.type) {
     PROMPT(2, SmallTraits<Q40Block, 4>);

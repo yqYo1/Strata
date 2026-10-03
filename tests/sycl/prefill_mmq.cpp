@@ -170,6 +170,11 @@ void gather() {
   check(g == eg && d == ed, "group gathered bytes or padding");
   check(!mmq::gather_native_group(group, 49, 16, 96, 16, gu.data(), 48, down.data(), 32, nullptr), "unaligned group accepted");
   check(gu.get() == eg && down.get() == ed, "declined group launched a write");
+  mmq::gather_native(source.data(), source.data() + 48, 16, source.data() + 96, 16, gu.data(), down.data(), nullptr);
+  std::copy_n(input.begin(), 16, eg.begin());
+  std::copy_n(input.begin() + 48, 16, eg.begin() + 16);
+  std::copy_n(input.begin() + 96, 16, ed.begin());
+  check(gu.get() == eg && down.get() == ed, "single aligned gather or untouched padding");
   mmq::gather_native(source.data(), source.data() + 48, 14, source.data() + 96, 14, gu.data(), down.data(), nullptr);
   auto oneg = gu.get(), oned = down.get();
   check(std::equal(input.begin(), input.begin() + 14, oneg.begin()) &&

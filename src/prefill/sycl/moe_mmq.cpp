@@ -90,6 +90,21 @@ void gather_native(const void *gate, const void *up, size_t half_bytes,
   const size_t count = half_bytes * 2 + down_bytes;
   if (count < down_bytes)
     throw std::invalid_argument("SYCL prompt gather overflow");
+  // Copy aligned native blocks a full vector at a time. Expert matrices are
+  // megabytes long; one work-item per byte wastes most of the memory bandwidth.
+  if (((half_bytes | down_bytes | uintptr_t(gate) | uintptr_t(up) |
+        uintptr_t(down) | uintptr_t(gu_dst) | uintptr_t(down_dst)) & 15) == 0) {
+    for_each(count / 16, stream, [=](size_t i) {
+      const size_t byte = i * 16;
+      if (byte < half_bytes * 2)
+        static_cast<sycl::uint4 *>(gu_dst)[i] = static_cast<const sycl::uint4 *>(
+            byte < half_bytes ? gate : up)[(byte % half_bytes) / 16];
+      else
+        static_cast<sycl::uint4 *>(down_dst)[(byte - half_bytes * 2) / 16] =
+            static_cast<const sycl::uint4 *>(down)[(byte - half_bytes * 2) / 16];
+    });
+    return;
+  }
   for_each(count, stream, [=](size_t i) {
     if (i < half_bytes * 2)
       static_cast<uint8_t *>(gu_dst)[i] = static_cast<const uint8_t *>(
@@ -122,14 +137,15 @@ bool gather_native_group(const GatherGroup &g, size_t up_off, size_t half_bytes,
     validate_spans({{gu_dst, gu_extent}, {down_dst, down_extent}},
                    {{g.blob[e], half_bytes}, {g.blob[e] + up_off, half_bytes},
                     {g.blob[e] + down_off, down_bytes}}, 16);
-  for_each(checked_count(g.n - g.first, per), stream, [=](size_t i) {
-    const size_t expert = g.first + i / per, byte = i % per;
+  for_each(checked_count(g.n - g.first, per / 16), stream, [=](size_t i) {
+    const size_t expert = g.first + i / (per / 16), byte = (i % (per / 16)) * 16;
     if (byte < half_bytes * 2) {
       const size_t src = byte < half_bytes ? byte : up_off + byte - half_bytes;
-      static_cast<uint8_t *>(gu_dst)[expert * gu_stride + byte] = g.blob[expert][src];
+      reinterpret_cast<sycl::uint4 *>(static_cast<uint8_t *>(gu_dst) + expert * gu_stride)[byte / 16] =
+          *reinterpret_cast<const sycl::uint4 *>(g.blob[expert] + src);
     } else {
-      static_cast<uint8_t *>(down_dst)[expert * down_stride + byte - half_bytes * 2] =
-          g.blob[expert][down_off + byte - half_bytes * 2];
+      *reinterpret_cast<sycl::uint4 *>(static_cast<uint8_t *>(down_dst) + expert * down_stride + byte - half_bytes * 2) =
+          *reinterpret_cast<const sycl::uint4 *>(g.blob[expert] + down_off + byte - half_bytes * 2);
     }
   });
   return true;

@@ -1839,3 +1839,35 @@ Three alternating before/after GPU-only runs (`--gpu-only-full`, context 512,
 omits expert computation and CPU handoffs and must not be reported as decode
 throughput. [The context records](../bench/results/2026-10-02-sycl-context/run.json)
 contain the prompt, dump hashes, comparisons, settings and individual timings.
+
+
+### IQ expert and prompt performance tuning (2026-10-04)
+
+On the B570/5600X with oneAPI 2026.1.1, native IQ3_XXS, IQ3_S,
+IQ2_S, IQ4_NL and IQ4_XS grouped experts now use explicit SIMD where
+measured faster. The reduction keeps the original 128 virtual lanes and
+FP32 addition order. Wider verification windows keep the existing gate/up
+weight reuse; prompt products with multiple rows keep their eight-row tile.
+`STRATA_SYCL_IQ_ESIMD=0` restores the preceding IQ dispatch for comparison.
+
+`sycl_moe_bench` reads eight real experts from each of the IQ3_S model's
+seven gate/up–down type pairs. Against the preceding default (including
+its eight-row grouped path and Q2 XMX), complete grouped products took
+1.50–2.17 times less time for one row per expert. For four rows, pairs with
+IQ4_NL down weights improved by 1.47–1.51 times; pairs with Q2_0 down
+weights were unchanged within 0.3%. All 56 measured result arrays were
+bitwise identical, including SwiGLU and hidden-activation quantization.
+These GPU timings exclude transfers and CPU misses. They do not measure
+whole-model generation speed.
+
+Aligned native prompt gathers copy 16 bytes per work-item; unaligned sizes
+retain the scalar path. Tests cover both paths and untouched output padding.
+The full explicit-SIMD implementation passed 306 native projection cases;
+17-format prompt tests and real-weight comparisons also passed. Persistent
+writing, coding, cancellation and recovery requests retained the baseline
+output ids. First-use compilation makes that initial integration run
+unsuitable for a throughput claim.
+
+The benchmark uses five graph replays of ten products after warm-up. Raw
+captures remain outside Git; the reviewed timings and validation scope are
+in [`bench/results/2026-10-04-sycl-performance/run.json`](../bench/results/2026-10-04-sycl-performance/run.json).

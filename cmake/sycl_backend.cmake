@@ -30,6 +30,8 @@ add_library(strata_kernels STATIC src/kernels/sycl/elementwise.cpp src/kernels/s
                                  src/kernels/sycl/ple.cpp src/kernels/sycl/s2_gemv_q8.cpp src/kernels/sycl/s2_experts.cpp src/kernels/sycl/s_gemv.cpp src/kernels/sycl/shared_expert.cpp src/kernels/sycl/iq.cpp
                                  src/kernels/ngram.cpp src/ngram/ple_reader.cpp src/platform/direct_file.cpp)
 target_link_libraries(strata_kernels PUBLIC strata_core strata_artifact)
+target_sources(strata_kernels PRIVATE src/kernels/sycl/native_iq_esimd.cpp)
+set_source_files_properties(src/kernels/sycl/native_iq_esimd.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math")
 target_compile_options(strata_kernels PRIVATE -ffp-contract=off)
 set_source_files_properties(src/kernels/sycl/native_q5_head.cpp src/kernels/sycl/native_q3_esimd.cpp src/kernels/sycl/native_q4_esimd.cpp src/kernels/sycl/native_q2_esimd.cpp src/kernels/sycl/native_iq4xs_esimd.cpp src/kernels/sycl/native_q2.cpp src/kernels/sycl/rope.cpp src/kernels/sycl/native_qsa_indexer.cpp src/kernels/sycl/ple.cpp src/kernels/sycl/s2_experts.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math")
 
