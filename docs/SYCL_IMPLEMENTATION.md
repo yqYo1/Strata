@@ -1433,6 +1433,13 @@ the checks. This is functional validation, without an HTTP speed comparison.
 Responses and engine logs are in
 [`bench/results/2026-10-03-sycl-http/run.json`](../bench/results/2026-10-03-sycl-http/run.json).
 
+The same HTTP checks also passed after changing the local config to automatic
+cache sizing (3,792 slots on this run) and 64 adaptive replacements every four
+verification rounds, with the completed SYCL refill boundary. Repeated output,
+complete streaming output and cancellation recovery matched. This check does
+not compare speed. Responses, flags and logs are in
+[`bench/results/2026-10-03-sycl-adaptive-http/run.json`](../bench/results/2026-10-03-sycl-adaptive-http/run.json).
+
 The local config is `~/.local/share/strata-sycl/serve-config.json`. From this
 checkout, start it with the installed environment:
 
