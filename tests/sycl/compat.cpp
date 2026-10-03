@@ -1,4 +1,5 @@
 #include <cmath>
+#include <string>
 #include <cuda_runtime.h>
 #include <iostream>
 #include <stdexcept>
@@ -14,7 +15,12 @@ void require(bool v, const char *s) {
   if (!v)
     throw std::runtime_error(s);
 }
-int main() {
+int main(int argc, char** argv) {
+  const bool native = argc == 2 && std::string(argv[1]) == "--native";
+  auto begin_capture = [native](cudaStream_t stream) {
+    return native ? strata::sycl_backend::compat::stream_begin_capture_native(stream)
+                  : cudaStreamBeginCapture(stream, cudaStreamCaptureModeThreadLocal);
+  };
   try {
     constexpr size_t n = 257, bytes = n * sizeof(int);
     cudaStream_t a{}, b{};
@@ -66,7 +72,7 @@ int main() {
     require(std::isfinite(ms) && ms > 0, "default-stream profiling");
     cudaStream_t recording{};
     CHECK(cudaStreamCreate(&recording));
-    CHECK(cudaStreamBeginCapture(recording, cudaStreamCaptureModeThreadLocal));
+    CHECK(begin_capture(recording));
     CHECK(cudaMemcpyAsync(device, in, bytes, cudaMemcpyHostToDevice, recording));
     recording->parallel_for(sycl::range<1>(n),
                             [=](sycl::id<1> i) { device[i] = device[i] * 7 + 2; });
@@ -76,17 +82,24 @@ int main() {
     cudaGraphExec_t exec{};
     CHECK(cudaStreamEndCapture(recording, &graph));
     size_t count = 0;
-    CHECK(cudaGraphGetNodes(graph, nullptr, &count));
-    require(count >= 3, "graph nodes");
-    std::vector<cudaGraphNode_t> nodes(count);
-    CHECK(cudaGraphGetNodes(graph, nodes.data(), &count));
-    int kernels = 0;
-    for (auto node : nodes) {
-      cudaGraphNodeType type;
-      CHECK(cudaGraphNodeGetType(node, &type));
-      kernels += type == cudaGraphNodeTypeKernel;
+    if (native) {
+      require(cudaGraphGetNodes(graph, nullptr, &count) == cudaErrorNotSupported,
+              "native recording rejects node introspection");
+      require(count == 0, "failed node query leaves count untouched");
+      (void)cudaGetLastError();
+    } else {
+      CHECK(cudaGraphGetNodes(graph, nullptr, &count));
+      require(count >= 3, "graph nodes");
+      std::vector<cudaGraphNode_t> nodes(count);
+      CHECK(cudaGraphGetNodes(graph, nodes.data(), &count));
+      int kernels = 0;
+      for (auto node : nodes) {
+        cudaGraphNodeType type;
+        CHECK(cudaGraphNodeGetType(node, &type));
+        kernels += type == cudaGraphNodeTypeKernel;
+      }
+      require(kernels == 1, "kernel graph node");
     }
-    require(kernels == 1, "kernel graph node");
     CHECK(cudaGraphInstantiate(&exec, graph, 0ull));
     CHECK(cudaGraphDestroy(graph));
     CHECK(cudaGraphUpload(exec, b));
@@ -104,7 +117,7 @@ int main() {
     // A verifier segment publishes routed inputs, then the CPU writes a plan
     // and results before another segment may consume them. Exercise the same
     // external-event boundary with changing payloads and alternating queues.
-    CHECK(cudaStreamBeginCapture(recording, cudaStreamCaptureModeThreadLocal));
+    CHECK(begin_capture(recording));
     CHECK(cudaMemcpyAsync(device, out, bytes, cudaMemcpyHostToDevice, recording));
     recording->parallel_for(sycl::range<1>(n),
                             [=](sycl::id<1> i) { device[i] = device[i] * 5 - 3; });

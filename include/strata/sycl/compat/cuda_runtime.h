@@ -104,6 +104,9 @@ cudaError_t cudaGraphInstantiate(cudaGraphExec_t *, cudaGraph_t,
                                  cudaGraphNode_t *, char *, size_t);
 cudaError_t cudaGraphLaunch(cudaGraphExec_t, cudaStream_t);
 namespace strata::sycl_backend::compat {
+// Explicit native recording for graphs that never query or update nodes.
+// Generic CUDA-compatible capture keeps the SYCL node model.
+cudaError_t stream_begin_capture_native(cudaStream_t);
 // Bind a disabled-timing event to the graph submission's completion. Covers
 // every graph node without submitting a separate queue barrier. The stream
 // must be outside capture; reusing the event replaces its previous recording.
