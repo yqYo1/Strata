@@ -2460,3 +2460,14 @@ are unchanged. Packing remains opt-in.
 
 The [measurement record](../bench/results/2026-10-04-sycl-xmx-rowbase/run.json)
 contains binary hashes, individual measurements, flags and register metadata.
+
+With packing disabled, three further short-prompt pairs had medians of
+8,961.4 and 8,963.8 ms, a 0.027% difference; no speed change is established
+for that setting. Both modes then passed the persistent 128-token writing
+and coding requests twice, prefill/decode cancellation and eight-token
+recovery. All completed output ids matched the preceding exact-XMX fixture.
+The two serving runs are functional checks, not decode throughput medians.
+
+The final JIT and AOT builds each passed all 40 CTests (37.54 and 33.94
+seconds). The AOT executable hash remained the one used in the paired model
+measurements. Local text and vision configs continue to leave packing off.
