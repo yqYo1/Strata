@@ -22,7 +22,8 @@
 // SOFTWARE.
 
 // Experimental routed prompt tiles share sixteen weight rows across 1/2/4/8
-// activations. Weights retain their GGUF layout. The default FP32 sum preserves
+// activations. Weights retain their GGUF layout unless disposable scratch
+// weights opt into row interleaving. The default FP32 sum preserves
 // the preceding virtual-lane tree; an optional linear sum compares its cost.
 #include "strata/artifact/iq_codebooks.hpp"
 #include "strata/sycl/esimd_half.hpp"
@@ -40,11 +41,21 @@ namespace ex = sycl::ext::intel::experimental::esimd;
 using namespace sycl_backend;
 using U = e::simd<uint32_t, 16>;
 using F = e::simd<float, 16>;
+// Packed scratch matrices interleave sixteen rows at half-word granularity.
+// Every field load then spans consecutive rows instead of strided cache lines.
+template <bool Packed> U field(U base, uint32_t byte) SYCL_ESIMD_FUNCTION {
+  if constexpr (Packed)
+    return base + (byte & ~1u) * 16u + (byte & 1u);
+  else
+    return base + byte;
+}
+template <bool Packed>
 U word(const uint8_t *p, U offsets, e::simd_mask<16> mask) SYCL_ESIMD_FUNCTION {
   return e::convert<uint32_t>(e::gather<uint16_t, 16>(
              reinterpret_cast<const uint16_t *>(p), offsets, mask)) |
-         (e::convert<uint32_t>(e::gather<uint16_t, 16>(
-              reinterpret_cast<const uint16_t *>(p), offsets + 2u, mask))
+         (e::convert<uint32_t>(
+              e::gather<uint16_t, 16>(reinterpret_cast<const uint16_t *>(p),
+                                      offsets + (Packed ? 32u : 2u), mask))
           << 16);
 }
 U nonlinear(U packed, int shift) SYCL_ESIMD_FUNCTION {
@@ -78,28 +89,33 @@ constexpr int bytes = Type == 18   ? 98
                       : Type == 22 ? 82
                       : Type == 23 ? 136
                                    : 18;
-template <int Type, int Tile>
+template <int Type, int Tile, bool Packed>
 __attribute__((always_inline)) inline e::simd<float, 16 * Tile>
 unit_product(const uint8_t *w, const uint8_t *x, U rows, e::simd_mask<16> valid,
              size_t stride, size_t xs, int64_t first, int end, int unit,
              int split) SYCL_ESIMD_FUNCTION {
   e::simd<float, 16 * Tile> result;
   const int group = unit % (width<Type> / 32);
-  const U wo = rows * uint32_t(stride) +
-               uint32_t(unit / (width<Type> / 32) * bytes<Type>);
+  const uint32_t block = uint32_t(unit / (width<Type> / 32) * bytes<Type>);
+  const U wo = Packed ? (rows & ~15u) * uint32_t(stride) + (rows & 15u) * 2u +
+                            block * 16u
+                      : rows * uint32_t(stride) + block;
   const F scale = esimd_half_decode<16>(e::gather<uint16_t, 16>(
       reinterpret_cast<const uint16_t *>(w), wo, valid));
   e::simd<uint32_t, Type == 42 ? 32 : 128> weights;
   if constexpr (Type == 42) {
     weights.template select<16, 1>(0) =
-        word(w, wo + uint32_t(2 + (unit % 2) * 8), valid);
+        word<Packed>(w, field<Packed>(wo, uint32_t(2 + (unit % 2) * 8)), valid);
     weights.template select<16, 1>(16) =
-        word(w, wo + uint32_t(6 + (unit % 2) * 8), valid);
+        word<Packed>(w, field<Packed>(wo, uint32_t(6 + (unit % 2) * 8)), valid);
   } else if constexpr (Type == 20 || Type == 23) {
 #pragma unroll
     for (int k = 0; k < 4; ++k) {
-      const U codes = word(
-          w, wo + uint32_t((Type == 20 ? 2 : 8 + group * 16) + k * 4), valid);
+      const U codes = word<Packed>(
+          w,
+          field<Packed>(wo,
+                        uint32_t((Type == 20 ? 2 : 8 + group * 16) + k * 4)),
+          valid);
       weights.template select<16, 1>(k * 16) = nonlinear(codes, 0);
       weights.template select<16, 1>((k + 4) * 16) = nonlinear(codes, 4);
     }
@@ -107,26 +123,29 @@ unit_product(const uint8_t *w, const uint8_t *x, U rows, e::simd_mask<16> valid,
   e::simd<int32_t, 16> factor = 1, factor_hi = 1;
   if constexpr (Type == 23) {
     const U hi = e::gather<uint16_t, 16>(reinterpret_cast<const uint16_t *>(w),
-                                         wo + 2u, valid);
-    const U lo =
-        e::gather<uint8_t, 16>(w, wo + 4u + uint32_t(group / 2), valid);
+                                         field<Packed>(wo, 2u), valid);
+    const U lo = e::gather<uint8_t, 16>(
+        w, field<Packed>(wo, 4u + uint32_t(group / 2)), valid);
     factor = e::convert<int32_t>(((lo >> (4 * (group % 2))) & 15u) |
                                  (((hi >> (2 * group)) & 3u) << 4)) -
              32;
   } else if constexpr (Type == 22) {
-    const U high = e::gather<uint8_t, 16>(w, wo + 66u + uint32_t(group), valid);
-    const U sc = e::gather<uint8_t, 16>(w, wo + 74u + uint32_t(group), valid);
+    const U high = e::gather<uint8_t, 16>(
+        w, field<Packed>(wo, 66u + uint32_t(group)), valid);
+    const U sc = e::gather<uint8_t, 16>(
+        w, field<Packed>(wo, 74u + uint32_t(group)), valid);
     factor = e::convert<int32_t>(2u * (sc & 15u) + 1u);
     factor_hi = e::convert<int32_t>(2u * (sc >> 4) + 1u);
 #pragma unroll
     for (int k = 0; k < 4; ++k) {
-      const U index = e::convert<uint32_t>(e::gather<uint8_t, 16>(
-                          w, wo + uint32_t(2 + group * 4 + k), valid)) |
-                      (((high >> (2 * k)) & 3u) << 8);
+      const U index =
+          e::convert<uint32_t>(e::gather<uint8_t, 16>(
+              w, field<Packed>(wo, uint32_t(2 + group * 4 + k)), valid)) |
+          (((high >> (2 * k)) & 3u) << 8);
       const auto grid =
           e::gather<uint64_t, 16>(strata::iq2_s_grid, index * 8u, valid);
-      const U signs =
-          e::gather<uint8_t, 16>(w, wo + uint32_t(34 + group * 4 + k), valid);
+      const U signs = e::gather<uint8_t, 16>(
+          w, field<Packed>(wo, uint32_t(34 + group * 4 + k)), valid);
       weights.template select<16, 1>(k * 32) =
           signed_word(e::convert<uint32_t>(grid), signs);
       weights.template select<16, 1>(k * 32 + 16) =
@@ -135,18 +154,20 @@ unit_product(const uint8_t *w, const uint8_t *x, U rows, e::simd_mask<16> valid,
   } else if constexpr (Type == 18 || Type == 21) {
     U extra = 0, high = 0;
     if constexpr (Type == 18) {
-      extra = word(w, wo + uint32_t(66 + 4 * group), valid);
+      extra =
+          word<Packed>(w, field<Packed>(wo, uint32_t(66 + 4 * group)), valid);
       factor = e::convert<int32_t>(2u * (extra >> 28) + 1u);
     } else {
-      high = e::gather<uint8_t, 16>(w, wo + uint32_t(66 + group), valid);
-      const U sc =
-          e::gather<uint8_t, 16>(w, wo + uint32_t(106 + group / 2), valid);
+      high = e::gather<uint8_t, 16>(w, field<Packed>(wo, uint32_t(66 + group)),
+                                    valid);
+      const U sc = e::gather<uint8_t, 16>(
+          w, field<Packed>(wo, uint32_t(106 + group / 2)), valid);
       factor = e::convert<int32_t>(2u * ((sc >> (4 * (group % 2))) & 15u) + 1u);
     }
 #pragma unroll
     for (int k = 0; k < 8; ++k) {
-      U index =
-          e::gather<uint8_t, 16>(w, wo + uint32_t(2 + group * 8 + k), valid);
+      U index = e::gather<uint8_t, 16>(
+          w, field<Packed>(wo, uint32_t(2 + group * 8 + k)), valid);
       U signs, grid;
       if constexpr (Type == 18) {
         grid = e::gather<uint32_t, 16>(strata::iq3_xxs_grid, index * 4u, valid);
@@ -155,8 +176,8 @@ unit_product(const uint8_t *w, const uint8_t *x, U rows, e::simd_mask<16> valid,
       } else {
         index |= ((high >> k) & 1u) << 8;
         grid = e::gather<uint32_t, 16>(strata::iq3_s_grid, index * 4u, valid);
-        signs = e::gather<uint8_t, 16>(w, wo + uint32_t(74 + group * 4 + k / 2),
-                                       valid);
+        signs = e::gather<uint8_t, 16>(
+            w, field<Packed>(wo, uint32_t(74 + group * 4 + k / 2)), valid);
       }
       weights.template select<16, 1>(k * 16) =
           signed_word(grid, signs >> (4 * (k % 2)));
@@ -237,7 +258,7 @@ unit_product(const uint8_t *w, const uint8_t *x, U rows, e::simd_mask<16> valid,
   return result;
 }
 
-template <int Type, int Tile>
+template <int Type, int Tile, bool Packed>
 __attribute__((always_inline)) inline e::simd<float, 16 * Tile>
 cell_product(const uint8_t *w, const uint8_t *x, U rows, e::simd_mask<16> valid,
              size_t stride, size_t xs, int64_t first, int end, int units,
@@ -249,9 +270,9 @@ cell_product(const uint8_t *w, const uint8_t *x, U rows, e::simd_mask<16> valid,
     V partial = 0.f;
 #pragma unroll 1
     for (int v = cell + bin * 16; v < units; v += 128)
-      partial += unit_product<Type, Tile>(
-          w, x, rows, valid, stride, xs, first, end,
-          Type == 20 ? v / 2 : v, Type == 20 ? v % 2 : -1);
+      partial += unit_product<Type, Tile, Packed>(
+          w, x, rows, valid, stride, xs, first, end, Type == 20 ? v / 2 : v,
+          Type == 20 ? v % 2 : -1);
     if (bin % 2 == 0)
       even += partial;
     else
@@ -260,24 +281,24 @@ cell_product(const uint8_t *w, const uint8_t *x, U rows, e::simd_mask<16> valid,
   return even + odd;
 }
 
-template <int Type, int Tile, int Step>
+template <int Type, int Tile, int Step, bool Packed>
 __attribute__((always_inline)) inline e::simd<float, 16 * Tile>
 fold_cells(const uint8_t *w, const uint8_t *x, U rows, e::simd_mask<16> valid,
            size_t stride, size_t xs, int64_t first, int end, int units,
            int cell) SYCL_ESIMD_FUNCTION {
   if constexpr (Step == 16) {
-    return cell_product<Type, Tile>(w, x, rows, valid, stride, xs, first, end,
-                                   units, cell);
+    return cell_product<Type, Tile, Packed>(w, x, rows, valid, stride, xs,
+                                            first, end, units, cell);
   } else {
-    const auto lo = fold_cells<Type, Tile, Step * 2>(
+    const auto lo = fold_cells<Type, Tile, Step * 2, Packed>(
         w, x, rows, valid, stride, xs, first, end, units, cell);
-    const auto hi = fold_cells<Type, Tile, Step * 2>(
+    const auto hi = fold_cells<Type, Tile, Step * 2, Packed>(
         w, x, rows, valid, stride, xs, first, end, units, cell + Step);
     return lo + hi;
   }
 }
 
-template <int Type, int Tile, bool Exact>
+template <int Type, int Tile, bool Exact, bool Packed>
 void launch(NativeMmq p, void *stream) {
   const size_t tiles = (p.max_rows + Tile - 1) / Tile;
   const size_t row_tiles = (p.rows + 15) / 16;
@@ -308,15 +329,15 @@ void launch(NativeMmq p, void *stream) {
         if constexpr (!Exact) {
 #pragma unroll 1
           for (int unit = 0; unit < p.cols / 32; ++unit)
-            sum += unit_product<Type, Tile>(w, x, rows, valid, stride, xs,
-                                            first, end, unit, -1);
+            sum += unit_product<Type, Tile, Packed>(w, x, rows, valid, stride,
+                                                    xs, first, end, unit, -1);
         } else {
           // The fixed recursion spells out the original XOR-8/4/2/1 tree.
           // Finish each pair before visiting the next one: only four pending
           // vectors are needed, with no large indirectly indexed array.
           const int units = p.cols / (Type == 20 ? 16 : 32);
-          sum = fold_cells<Type, Tile, 1>(w, x, rows, valid, stride, xs, first,
-                                         end, units, 0);
+          sum = fold_cells<Type, Tile, 1, Packed>(w, x, rows, valid, stride, xs,
+                                                  first, end, units, 0);
         }
 #pragma unroll
         for (int t = 0; t < Tile; ++t) {
@@ -331,11 +352,12 @@ void launch(NativeMmq p, void *stream) {
         }
       });
 }
-template <int Tile, bool Exact> void dispatch(NativeMmq p, void *stream) {
+template <int Tile, bool Exact, bool Packed = false>
+void dispatch(NativeMmq p, void *stream) {
   switch (p.type) {
 #define TYPE(T)                                                                \
   case T:                                                                      \
-    launch<T, Tile, Exact>(p, stream);                                         \
+    launch<T, Tile, Exact, Packed>(p, stream);                                 \
     break
     TYPE(18);
     TYPE(20);
@@ -345,6 +367,41 @@ template <int Tile, bool Exact> void dispatch(NativeMmq p, void *stream) {
     TYPE(42);
 #undef TYPE
   }
+}
+// Each work-group owns sixteen complete rows. Read all of them into local
+// memory before writing, so rearrangement needs no extra global allocation and
+// cannot overwrite another group's unread input. Padding reduces bank
+// conflicts.
+bool repack_scratch(const NativeMmq &p, size_t stride, void *stream) {
+  if (!p.scratch_weights || p.rows % 16 || stride % 2)
+    return false;
+  const size_t words = stride / 2, pitch = (words + 1) | size_t(1);
+  const size_t local_words = pitch * 16;
+  auto &q = queue_for(stream);
+  const auto dev = q.get_device();
+  if (local_words * 2 > dev.get_info<sycl::info::device::local_mem_size>() ||
+      dev.get_info<sycl::info::device::max_work_group_size>() < 256)
+    return false;
+  const size_t row_tiles = size_t(p.rows) / 16;
+  auto *weights = static_cast<uint16_t *>(const_cast<void *>(p.weights));
+  q.submit([&](sycl::handler &h) {
+    sycl::local_accessor<uint16_t, 1> local(sycl::range<1>(local_words), h);
+    h.parallel_for(sycl::nd_range<1>(size_t(p.experts) * row_tiles * 256, 256),
+                   [=](sycl::nd_item<1> it) {
+                     const size_t group = it.get_group_linear_id(),
+                                  lane = it.get_local_linear_id();
+                     const size_t expert = group / row_tiles,
+                                  tile = group % row_tiles;
+                     auto *matrix = weights + expert * (p.expert_bytes / 2) +
+                                    tile * 16 * words;
+                     for (size_t k = lane; k < 16 * words; k += 256)
+                       local[(k / words) * pitch + k % words] = matrix[k];
+                     it.barrier(sycl::access::fence_space::local_space);
+                     for (size_t k = lane; k < 16 * words; k += 256)
+                       matrix[k] = local[(k % 16) * pitch + k / 16];
+                   });
+  });
+  return true;
 }
 } // namespace
 bool native_mmq_xmx(const NativeMmq &p, void *stream) {
@@ -374,6 +431,16 @@ bool native_mmq_xmx(const NativeMmq &p, void *stream) {
     const char *v = std::getenv("STRATA_SYCL_MMQ_XMX_EXACT");
     return !v || std::atoi(v) != 0;
   }();
+  static const bool pack = [] {
+    const char *v = std::getenv("STRATA_SYCL_MMQ_XMX_PACK");
+    return v && std::atoi(v) != 0;
+  }();
+  // Start with the measured tile-8 exact path. All other settings retain the
+  // original layout, including read-only weights and unsupported row shapes.
+  if (pack && exact && tile == 8 && repack_scratch(p, size_t(stride), stream)) {
+    dispatch<8, true, true>(p, stream);
+    return true;
+  }
   switch (tile) {
   case 1:
     if (exact)

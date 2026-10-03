@@ -65,11 +65,18 @@ std::vector<uint8_t> weights(int type, int cols, int rows, int experts) {
   }
   return w;
 }
-void product(int type, int cols, int R = 7) {
+void product(int type, int cols, int R = 7, bool scratch = false, size_t padding = 0) {
   constexpr int E = 3, T = 37, XS = 49;
   const int LD = R + 4;
   const int xld = cols + 5, padded = (cols + 511) / 512 * 512;
-  auto w = weights(type, cols, R, E);
+  const auto compact = weights(type, cols, R, E);
+  const size_t matrix_bytes = compact.size() / E, expert_bytes = matrix_bytes + padding;
+  std::vector<uint8_t> w(E * expert_bytes, 0xa5);
+  for (int expert = 0; expert < E; ++expert)
+    std::copy_n(compact.begin() + expert * matrix_bytes, matrix_bytes,
+                w.begin() + expert * expert_bytes);
+  auto uploaded = w;
+  uploaded.resize(w.size() + 16, 0xa5);
   std::vector<float> x(size_t(XS) * xld, 777.f);
   for (int r = 0; r < XS; ++r)
     for (int k = 0; k < cols; ++k)
@@ -77,10 +84,10 @@ void product(int type, int cols, int R = 7) {
   std::vector<int32_t> source(T), map(T);
   for (int r = 0; r < T; ++r) { source[r] = (r * 13) % XS; map[r] = (r * 7) % T; }
   source[7] = -1; map[11] = -1;
-  Buffer<uint8_t> dw(w.size()), xq(mmq::q8_bytes(T, cols) + 16);
+  Buffer<uint8_t> dw(uploaded.size()), xq(mmq::q8_bytes(T, cols) + 16);
   Buffer<float> dx(x.size()), dy(T * LD + 4);
   Buffer<int32_t> ds(T), dm(T), bounds(4);
-  dw.put(w); dx.put(x); ds.put(source); dm.put(map); bounds.put({2, 5, 5, 36});
+  dw.put(uploaded); dx.put(x); ds.put(source); dm.put(map); bounds.put({2, 5, 5, 36});
   xq.put(std::vector<uint8_t>(xq.n, 0xa5)); dy.put(std::vector<float>(dy.n, -123.f));
   auto *stream = &runtime->compute();
   mmq::quantize(dx.data(), ds.data(), xq.data(), type, cols, xld, T, stream);
@@ -113,11 +120,36 @@ void product(int type, int cols, int R = 7) {
   p.expert_bytes = w.size() / E; p.n = E; p.xq = xq.data();
   p.bounds = bounds.data(); p.ids = dm.data(); p.total_rows = T; p.max_rows = 31;
   p.dst = dy.data(); p.ld_dst = LD;
+  p.scratch_weights = scratch;
   context.run(p, stream);
   const auto got = dy.get();
   const char *xmx = std::getenv("STRATA_SYCL_MMQ_XMX");
   const char *exact = std::getenv("STRATA_SYCL_MMQ_XMX_EXACT");
+  const char *pack = std::getenv("STRATA_SYCL_MMQ_XMX_PACK");
+  const char *tile = std::getenv("STRATA_SYCL_MMQ_XMX_TILE");
+  auto expected_weights = uploaded;
+  const size_t row_bytes = matrix_bytes / R, words = row_bytes / 2;
+  const auto device = runtime->compute().get_device();
+  const bool supported_pack = type == 18 || type == 20 || type == 21 ||
+                              type == 22 || type == 23 || type == 42;
+  const bool fits_pack = 16 * ((words + 1) | size_t(1)) * 2 <=
+                            device.get_info<sycl::info::device::local_mem_size>() &&
+                        device.get_info<sycl::info::device::max_work_group_size>() >= 256;
+  if (scratch && supported_pack && fits_pack && R % 16 == 0 && pack && std::atoi(pack) &&
+      xmx && std::atoi(xmx) && (!exact || std::atoi(exact)) && tile && std::atoi(tile) == 8) {
+    for (int expert = 0; expert < E; ++expert)
+      for (int row = 0; row < R; row += 16)
+        for (size_t word = 0; word < words; ++word)
+          for (int lane = 0; lane < 16; ++lane) {
+            const size_t base = expert * p.expert_bytes + row * row_bytes;
+            const size_t dst = base + (word * 16 + lane) * 2;
+            const size_t src = base + lane * row_bytes + word * 2;
+            expected_weights[dst] = w[src]; expected_weights[dst + 1] = w[src + 1];
+          }
+  }
+  check(dw.get() == expected_weights, "scratch weight layout, read-only weights or weight canary");
   if (xmx && std::atoi(xmx) && (!exact || std::atoi(exact))) {
+    dw.put(uploaded);   // disposable weights are refilled before every run
     dy.put(std::vector<float>(dy.n, -123.f));
     kernels::iq_set_old_kernels(true);
     context.run(p, stream);
@@ -161,6 +193,7 @@ void product(int type, int cols, int R = 7) {
   }
   check(got == expected, "routed row map, untouched rows, stride or output canary");
   bounds.put({37, 2, 2, 2}); dy.put(std::vector<float>(dy.n, -123.f));
+  dw.put(uploaded);
   context.run(p, nullptr);
   check(dy.get() == std::vector<float>(dy.n, -123.f), "invalid or empty bounds wrote output");
   std::cout << "MMQ type=" << type << " K=" << cols << " routed rows=37 max_scaled=" << worst << '\n';
@@ -239,6 +272,16 @@ int main() {
     for (int type : {18, 21, 22, 23}) product(type, 2560, 33);
     for (int type : {18, 20, 21, 22, 23, 42})
       product(type, type == 20 ? 4096 : 8192, 17);
+    for (int type : {18, 20, 21, 22, 23, 42}) {
+      product(type, 2560, 16, true);
+      product(type, 2560, 32, true);
+    }
+    product(20, 32, 16, true); product(42, 64, 16, true);
+    product(21, 2560, 16);   // read-only matrices must retain their GGUF layout
+    product(21, 2560, 32, true, 34); // expert padding stays untouched
+    product(21, 2560, 17, true);     // incomplete row tile retains its GGUF layout
+    product(21, 16384, 16, true);    // local-memory limit can require the raw path
+    product(12, 2560, 16, true);     // unsupported packed type uses its original path
     gather(); postops(); runtime->wait(); std::cout << "SYCL quantized prefill PASS\n";
     return 0;
   } catch (const std::exception &e) { std::cerr << e.what() << '\n'; return 1; }

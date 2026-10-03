@@ -3,7 +3,7 @@
 #include <cstdint>
 
 namespace strata::kernels {
-// Arbitrary routed prompt rows. Weights keep their GGUF blocks; activation
+// Arbitrary routed prompt rows. Input weights use GGUF blocks; activation
 // rows use Q8_1 with the reduction dimension padded to 512 values. Bounds are
 // device-resident and may change between launches. No allocation or host wait.
 struct NativeMmq {
@@ -13,6 +13,8 @@ struct NativeMmq {
   size_t expert_bytes = 0;
   const int32_t *bounds = nullptr, *destinations = nullptr;
   float *output = nullptr;
+  // The caller permits in-place rearrangement and refills before the next run.
+  bool scratch_weights = false;
 };
 void native_mmq(const NativeMmq &p, void *stream);
 } // namespace strata::kernels

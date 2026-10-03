@@ -2298,5 +2298,51 @@ including the expected first color token. This is one trial per setting, and
 its longer input and smaller cache distinguish it from the preceding 827-id
 baseline. No serving configuration changed. The
 [fixture, flags, logs and scripts](../bench/results/2026-10-04-sycl-prefill-scale/run.json)
-support further kernel work; the next candidate changes the GPU scratch-weight
-layout to improve coalescing while retaining the same arithmetic.
+support further kernel work. The following experiment changes the GPU
+scratch-weight layout while retaining the same arithmetic.
+
+
+### Interleaved XMX scratch weights (2026-10-04)
+
+`STRATA_SYCL_MMQ_XMX_PACK=1` enables an in-place rearrangement of disposable
+prompt weights for exact XMX tile 8. A work-group reads sixteen complete rows
+into local memory before overwriting them with interleaved half-words. Field
+loads then read adjacent rows from neighboring addresses. The arrangement
+keeps the compressed codes and the original floating-point reduction order;
+it creates no additional global weight buffer. Persistent expert-cache storage
+and CPU/GPU assignment are unchanged.
+
+The caller must explicitly mark the weights writable and disposable and refill
+them before the next product. The main prefill path does this only for freshly
+gathered gate/up and down groups. Read-only weights, incomplete sixteen-row
+tiles, unsupported types, and rows that exceed device local-memory limits keep
+the original path. The flag is off by default.
+
+Three alternating pairs on the Arc B570 10 GiB and Ryzen 5 5600X compared the
+same AOT binary with the flag off and on. They used the preceding 4,008-id
+fixture, 4,007 prefetched tokens, context 8,192, chunk 4,096, 512 fixed cache
+slots, five CPU workers and adaptive swaps off. No profiling, compilation or
+other GPU test overlapped these measurements.
+
+| Median measurement | Original layout | Interleaved scratch |
+| --- | ---: | ---: |
+| Prefill time | 26,594.9 ms | 25,512.6 ms |
+| Prefill rate | 150.67 token/s | 157.06 token/s |
+
+The measured rate improved by 4.24%, including the rearrangement cost. All
+six runs produced identical eight-token outputs with the expected first color
+token. This result applies to this prompt and configuration; it does not
+establish a decode-speed improvement.
+
+The AOT image contains 54 XMX variants using 128 GRFs. The new packed IQ2_S
+exact tile-8 variant has a 192-byte scratch spill; the other 53 have no scratch
+buffers. The IQ3_S model in this experiment uses IQ3_XXS/IQ3_S expert gate/up
+weights. The [run record and scripts](../bench/results/2026-10-04-sycl-xmx-packed/run.json)
+preserve the flags, hashes, timings and output ids.
+
+AOT and JIT each passed all 40 CTests. The MMQ tests cover 50 geometries with
+an independent GGML oracle and bitwise comparison against the old SPMD path.
+They also check the exact rearranged weight bytes, padded expert strides,
+read-only matrices, incomplete row tiles, local-memory limits, unsupported
+types, mapped output rows and guard bytes. After source formatting, all 519 GPU
+text sections in the final AOT binary matched the measured binary.

@@ -48,6 +48,9 @@ struct Product {
     int64_t total_rows = 0, max_rows = 0;
     float* dst = nullptr;
     int64_t ld_dst = 0;
+    // Writable temporary weights, refilled before every run. SYCL may rearrange
+    // their contents in place; false preserves the ordinary read-only contract.
+    bool scratch_weights = false;
 };
 
 /// The launch context (llama.cpp's MMQ keeps a small scratch pool for its stream-k fixup).  One per prompt path.
