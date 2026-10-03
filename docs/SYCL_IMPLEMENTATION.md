@@ -2334,9 +2334,9 @@ six runs produced identical eight-token outputs with the expected first color
 token. This result applies to this prompt and configuration; it does not
 establish a decode-speed improvement.
 
-The AOT image contains 54 XMX variants using 128 GRFs. The new packed IQ2_S
-exact tile-8 variant has a 192-byte scratch spill; the other 53 have no scratch
-buffers. The mixed IQ3_S model in this experiment has IQ2_S gate/up weights in
+That measured AOT image contains 54 XMX variants using 128 GRFs. Its packed
+IQ2_S exact tile-8 variant has a 192-byte scratch spill; the other 53 have no
+scratch buffers. The later row-offset change below removes that spill. The mixed IQ3_S model in this experiment has IQ2_S gate/up weights in
 20 layers, IQ3_XXS in 17, IQ3_S in 10 and IQ4_XS in 1, so that spill affects
 a substantial part of this workload. The [run record and scripts](../bench/results/2026-10-04-sycl-xmx-packed/run.json)
 preserve the flags, hashes, timings and output ids.
@@ -2428,3 +2428,35 @@ byte fraction. It explains the limited scope of changes confined to multi-token
 IQ3_S and motivates examining the existing single-token CPU paths. Full flags,
 output ids and phase counters are in the
 [diagnostic record](../bench/results/2026-10-04-sycl-decode-phases/run.json).
+
+
+### XMX weight-row offsets (2026-10-04)
+
+Computing the sixteen weight-row byte offsets once per work-item, before the
+block reduction, removed the packed IQ2_S exact tile-8 kernel's 192-byte
+scratch spill. The resulting B570 AOT image has 54 XMX variants, all at 128
+GRFs and none declaring a per-thread scratch buffer. Quantized values, output
+rows and the FP32 reduction tree are unchanged. AOT and JIT each passed the
+three MMQ tests covering 50 geometries, including bitwise old-path comparisons
+and packed-buffer canaries.
+
+Three alternating old/new pairs on the Arc B570 10 GiB and Ryzen 5 5600X used
+exact tile-8 XMX with scratch packing enabled. Both binaries used the identical
+original CPU object. Each process ran without profiling, and no compilation
+or other GPU test overlapped. Existing workstation services remained active.
+
+| Median prefill | Before | Row offsets outside the block loop |
+| --- | ---: | ---: |
+| 826 tokens, context 2,048, chunk 1,024, cache 1,649 | 8,958.1 ms | 8,902.6 ms |
+| 4,007 tokens, context 8,192, chunk 4,096, cache 512 | 25,509.8 ms | 25,271.3 ms |
+| 4,007-token rate | 157.08 token/s | 158.56 token/s |
+
+The rate gains were 0.62% and 0.94%, respectively. All twelve runs returned
+the same expected eight-token color-retrieval output. The separate initial
+screen is excluded from these medians; background Java activity was observed
+during that screen. These are small measured prefill improvements for these
+fixtures, not a decode-speed claim. CPU/GPU assignment and fallback selection
+are unchanged. Packing remains opt-in.
+
+The [measurement record](../bench/results/2026-10-04-sycl-xmx-rowbase/run.json)
+contains binary hashes, individual measurements, flags and register metadata.

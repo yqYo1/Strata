@@ -1,0 +1,1179 @@
+{
+  "status": "three real-inference pairs improve prefill; default-layout and persistent-serving follow-up checks in progress",
+  "source_parent_commit": "2caa41a",
+  "hardware": {
+    "gpu": "Intel Arc B570 10 GiB",
+    "cpu": "Ryzen 5 5600X",
+    "ram_gib": 125
+  },
+  "change": "Hoist the sixteen weight-row byte offsets out of the quantization-block loop. Logical output rows, quantized values and FP32 reduction tree remain unchanged.",
+  "method": {
+    "order": [
+      "old1",
+      "new1",
+      "new2",
+      "old2",
+      "old3",
+      "new3"
+    ],
+    "packing": true,
+    "profiling": false,
+    "concurrent_compilation_or_gpu_tests": false,
+    "background_load": "Unrelated services remain active. A Java helper was observed during the first screen; the screen is not included in the three-pair medians. Repeated comparisons are still workstation wall-clock measurements, not controlled laboratory isolation.",
+    "long": "4008 input IDs, 4007 prefilled, context8192, chunk4096, cache512, workers5, adapt0",
+    "short": "827 input IDs, 826 prefilled, context2048, chunk1024, cache1649, workers5, adapt0"
+  },
+  "screen": {
+    "old": {
+      "long": {
+        "label": "4k",
+        "requested_chunk": 4096,
+        "executable": "/home/yayoi/.local/state/strata-sycl/measurement-archive/2026-10-04-speed-goal/strata-xmx-pack-validated-aot",
+        "binary_sha256": "1996f6a4d3c7cf714905a145753e3a3d3996b5ca70c5ec30edfe1fe6eb64c82d",
+        "flags": [
+          "--pack",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "--native",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--max-new",
+          "8",
+          "--max-context",
+          "8192",
+          "--spec",
+          "4",
+          "--spec-min-p",
+          "0.9",
+          "--mtp",
+          "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+          "--suffix-draft",
+          "0",
+          "--prefill",
+          "4096",
+          "--short-read",
+          "0",
+          "--expert-cache",
+          "512",
+          "--expert-profile",
+          "data/expert-profile.bin",
+          "--expert-cache-per-layer",
+          "--pool-workers",
+          "5",
+          "--adapt-swaps",
+          "0",
+          "--pcie-frac",
+          "0",
+          "--tokens-file",
+          "/tmp/strata-sycl-goal-prefill-scale-4k-tokens.txt",
+          "--check-logits",
+          "--stats"
+        ],
+        "environment": {
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "STRATA_SYCL_MMQ_XMX": "1",
+          "STRATA_SYCL_MMQ_XMX_TILE": "8",
+          "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+          "ONEAPI_ROOT": "/opt/intel/oneapi",
+          "NEO_CACHE_PERSISTENT": "1",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "STRATA_SYCL_MMQ_XMX_PACK": "1"
+        },
+        "exit_code": 0,
+        "total_seconds": 50.056801800004905,
+        "prefetched_tokens": 4007,
+        "prefill_ms": 25508.2,
+        "prefill_tok_s": 157.08674073435208,
+        "output_ids": [
+          11855,
+          248046,
+          198,
+          248044,
+          248045,
+          846,
+          198,
+          248046
+        ],
+        "first_token_is_blue": true
+      },
+      "short": {
+        "prefetched_tokens": 826,
+        "prefill_ms": 9585.9,
+        "output_ids": [
+          11855,
+          248046,
+          198,
+          248044,
+          248045,
+          846,
+          198,
+          248046
+        ],
+        "raw_log": "/home/yayoi/.local/state/strata-sycl/measurement-archive/2026-10-04-speed-goal/strata-sycl-perf-goal-xmx-rowbase-short-old-profile.log"
+      }
+    },
+    "new": {
+      "long": {
+        "label": "4k",
+        "requested_chunk": 4096,
+        "executable": "/home/yayoi/orca/workspaces/Strata/sycl/build-sycl-aot/strata",
+        "binary_sha256": "b3baf71e640c8c0b5d442eca959fc7e92087724b11861784afac7d0e5f510b58",
+        "flags": [
+          "--pack",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "--native",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--max-new",
+          "8",
+          "--max-context",
+          "8192",
+          "--spec",
+          "4",
+          "--spec-min-p",
+          "0.9",
+          "--mtp",
+          "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+          "--suffix-draft",
+          "0",
+          "--prefill",
+          "4096",
+          "--short-read",
+          "0",
+          "--expert-cache",
+          "512",
+          "--expert-profile",
+          "data/expert-profile.bin",
+          "--expert-cache-per-layer",
+          "--pool-workers",
+          "5",
+          "--adapt-swaps",
+          "0",
+          "--pcie-frac",
+          "0",
+          "--tokens-file",
+          "/tmp/strata-sycl-goal-prefill-scale-4k-tokens.txt",
+          "--check-logits",
+          "--stats"
+        ],
+        "environment": {
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "STRATA_SYCL_MMQ_XMX": "1",
+          "STRATA_SYCL_MMQ_XMX_TILE": "8",
+          "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+          "ONEAPI_ROOT": "/opt/intel/oneapi",
+          "NEO_CACHE_PERSISTENT": "1",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "STRATA_SYCL_MMQ_XMX_PACK": "1"
+        },
+        "exit_code": 0,
+        "total_seconds": 50.42877380299615,
+        "prefetched_tokens": 4007,
+        "prefill_ms": 25269.1,
+        "prefill_tok_s": 158.57311894764754,
+        "output_ids": [
+          11855,
+          248046,
+          198,
+          248044,
+          248045,
+          846,
+          198,
+          248046
+        ],
+        "first_token_is_blue": true
+      },
+      "short": {
+        "prefetched_tokens": 826,
+        "prefill_ms": 9099.4,
+        "output_ids": [
+          11855,
+          248046,
+          198,
+          248044,
+          248045,
+          846,
+          198,
+          248046
+        ],
+        "raw_log": "/home/yayoi/.local/state/strata-sycl/measurement-archive/2026-10-04-speed-goal/strata-sycl-perf-goal-xmx-rowbase-short-new-profile.log"
+      }
+    }
+  },
+  "pairs": {
+    "old": [
+      {
+        "long": {
+          "label": "4k",
+          "requested_chunk": 4096,
+          "executable": "/home/yayoi/.local/state/strata-sycl/measurement-archive/2026-10-04-speed-goal/strata-xmx-pack-validated-aot",
+          "binary_sha256": "1996f6a4d3c7cf714905a145753e3a3d3996b5ca70c5ec30edfe1fe6eb64c82d",
+          "flags": [
+            "--pack",
+            "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+            "--native",
+            "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+            "--max-new",
+            "8",
+            "--max-context",
+            "8192",
+            "--spec",
+            "4",
+            "--spec-min-p",
+            "0.9",
+            "--mtp",
+            "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+            "--suffix-draft",
+            "0",
+            "--prefill",
+            "4096",
+            "--short-read",
+            "0",
+            "--expert-cache",
+            "512",
+            "--expert-profile",
+            "data/expert-profile.bin",
+            "--expert-cache-per-layer",
+            "--pool-workers",
+            "5",
+            "--adapt-swaps",
+            "0",
+            "--pcie-frac",
+            "0",
+            "--tokens-file",
+            "/tmp/strata-sycl-goal-prefill-scale-4k-tokens.txt",
+            "--check-logits",
+            "--stats"
+          ],
+          "environment": {
+            "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+            "STRATA_SYCL_MMQ_XMX": "1",
+            "STRATA_SYCL_MMQ_XMX_TILE": "8",
+            "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+            "ONEAPI_ROOT": "/opt/intel/oneapi",
+            "NEO_CACHE_PERSISTENT": "1",
+            "SYCL_CACHE_PERSISTENT": "0",
+            "STRATA_SYCL_MMQ_XMX_PACK": "1"
+          },
+          "exit_code": 0,
+          "total_seconds": 51.064599431992974,
+          "prefetched_tokens": 4007,
+          "prefill_ms": 25954.6,
+          "prefill_tok_s": 154.38496451496076,
+          "output_ids": [
+            11855,
+            248046,
+            198,
+            248044,
+            248045,
+            846,
+            198,
+            248046
+          ],
+          "first_token_is_blue": true
+        },
+        "short": {
+          "prefetched_tokens": 826,
+          "prefill_ms": 8958.1,
+          "output_ids": [
+            11855,
+            248046,
+            198,
+            248044,
+            248045,
+            846,
+            198,
+            248046
+          ],
+          "raw_log": "/home/yayoi/.local/state/strata-sycl/measurement-archive/2026-10-04-speed-goal/strata-sycl-perf-goal-xmx-rowbase-pair-short-old1-profile.log"
+        }
+      },
+      {
+        "long": {
+          "label": "4k",
+          "requested_chunk": 4096,
+          "executable": "/home/yayoi/.local/state/strata-sycl/measurement-archive/2026-10-04-speed-goal/strata-xmx-pack-validated-aot",
+          "binary_sha256": "1996f6a4d3c7cf714905a145753e3a3d3996b5ca70c5ec30edfe1fe6eb64c82d",
+          "flags": [
+            "--pack",
+            "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+            "--native",
+            "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+            "--max-new",
+            "8",
+            "--max-context",
+            "8192",
+            "--spec",
+            "4",
+            "--spec-min-p",
+            "0.9",
+            "--mtp",
+            "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+            "--suffix-draft",
+            "0",
+            "--prefill",
+            "4096",
+            "--short-read",
+            "0",
+            "--expert-cache",
+            "512",
+            "--expert-profile",
+            "data/expert-profile.bin",
+            "--expert-cache-per-layer",
+            "--pool-workers",
+            "5",
+            "--adapt-swaps",
+            "0",
+            "--pcie-frac",
+            "0",
+            "--tokens-file",
+            "/tmp/strata-sycl-goal-prefill-scale-4k-tokens.txt",
+            "--check-logits",
+            "--stats"
+          ],
+          "environment": {
+            "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+            "STRATA_SYCL_MMQ_XMX": "1",
+            "STRATA_SYCL_MMQ_XMX_TILE": "8",
+            "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+            "ONEAPI_ROOT": "/opt/intel/oneapi",
+            "NEO_CACHE_PERSISTENT": "1",
+            "SYCL_CACHE_PERSISTENT": "0",
+            "STRATA_SYCL_MMQ_XMX_PACK": "1"
+          },
+          "exit_code": 0,
+          "total_seconds": 49.323184462002246,
+          "prefetched_tokens": 4007,
+          "prefill_ms": 25509.8,
+          "prefill_tok_s": 157.07688809790747,
+          "output_ids": [
+            11855,
+            248046,
+            198,
+            248044,
+            248045,
+            846,
+            198,
+            248046
+          ],
+          "first_token_is_blue": true
+        },
+        "short": {
+          "prefetched_tokens": 826,
+          "prefill_ms": 8954.2,
+          "output_ids": [
+            11855,
+            248046,
+            198,
+            248044,
+            248045,
+            846,
+            198,
+            248046
+          ],
+          "raw_log": "/home/yayoi/.local/state/strata-sycl/measurement-archive/2026-10-04-speed-goal/strata-sycl-perf-goal-xmx-rowbase-pair-short-old2-profile.log"
+        }
+      },
+      {
+        "long": {
+          "label": "4k",
+          "requested_chunk": 4096,
+          "executable": "/home/yayoi/.local/state/strata-sycl/measurement-archive/2026-10-04-speed-goal/strata-xmx-pack-validated-aot",
+          "binary_sha256": "1996f6a4d3c7cf714905a145753e3a3d3996b5ca70c5ec30edfe1fe6eb64c82d",
+          "flags": [
+            "--pack",
+            "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+            "--native",
+            "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+            "--max-new",
+            "8",
+            "--max-context",
+            "8192",
+            "--spec",
+            "4",
+            "--spec-min-p",
+            "0.9",
+            "--mtp",
+            "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+            "--suffix-draft",
+            "0",
+            "--prefill",
+            "4096",
+            "--short-read",
+            "0",
+            "--expert-cache",
+            "512",
+            "--expert-profile",
+            "data/expert-profile.bin",
+            "--expert-cache-per-layer",
+            "--pool-workers",
+            "5",
+            "--adapt-swaps",
+            "0",
+            "--pcie-frac",
+            "0",
+            "--tokens-file",
+            "/tmp/strata-sycl-goal-prefill-scale-4k-tokens.txt",
+            "--check-logits",
+            "--stats"
+          ],
+          "environment": {
+            "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+            "STRATA_SYCL_MMQ_XMX": "1",
+            "STRATA_SYCL_MMQ_XMX_TILE": "8",
+            "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+            "ONEAPI_ROOT": "/opt/intel/oneapi",
+            "NEO_CACHE_PERSISTENT": "1",
+            "SYCL_CACHE_PERSISTENT": "0",
+            "STRATA_SYCL_MMQ_XMX_PACK": "1"
+          },
+          "exit_code": 0,
+          "total_seconds": 49.21195321698906,
+          "prefetched_tokens": 4007,
+          "prefill_ms": 25509.2,
+          "prefill_tok_s": 157.08058269173475,
+          "output_ids": [
+            11855,
+            248046,
+            198,
+            248044,
+            248045,
+            846,
+            198,
+            248046
+          ],
+          "first_token_is_blue": true
+        },
+        "short": {
+          "prefetched_tokens": 826,
+          "prefill_ms": 8975.3,
+          "output_ids": [
+            11855,
+            248046,
+            198,
+            248044,
+            248045,
+            846,
+            198,
+            248046
+          ],
+          "raw_log": "/home/yayoi/.local/state/strata-sycl/measurement-archive/2026-10-04-speed-goal/strata-sycl-perf-goal-xmx-rowbase-pair-short-old3-profile.log"
+        }
+      }
+    ],
+    "new": [
+      {
+        "long": {
+          "label": "4k",
+          "requested_chunk": 4096,
+          "executable": "/home/yayoi/orca/workspaces/Strata/sycl/build-sycl-aot/strata",
+          "binary_sha256": "b3baf71e640c8c0b5d442eca959fc7e92087724b11861784afac7d0e5f510b58",
+          "flags": [
+            "--pack",
+            "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+            "--native",
+            "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+            "--max-new",
+            "8",
+            "--max-context",
+            "8192",
+            "--spec",
+            "4",
+            "--spec-min-p",
+            "0.9",
+            "--mtp",
+            "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+            "--suffix-draft",
+            "0",
+            "--prefill",
+            "4096",
+            "--short-read",
+            "0",
+            "--expert-cache",
+            "512",
+            "--expert-profile",
+            "data/expert-profile.bin",
+            "--expert-cache-per-layer",
+            "--pool-workers",
+            "5",
+            "--adapt-swaps",
+            "0",
+            "--pcie-frac",
+            "0",
+            "--tokens-file",
+            "/tmp/strata-sycl-goal-prefill-scale-4k-tokens.txt",
+            "--check-logits",
+            "--stats"
+          ],
+          "environment": {
+            "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+            "STRATA_SYCL_MMQ_XMX": "1",
+            "STRATA_SYCL_MMQ_XMX_TILE": "8",
+            "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+            "ONEAPI_ROOT": "/opt/intel/oneapi",
+            "NEO_CACHE_PERSISTENT": "1",
+            "SYCL_CACHE_PERSISTENT": "0",
+            "STRATA_SYCL_MMQ_XMX_PACK": "1"
+          },
+          "exit_code": 0,
+          "total_seconds": 51.3610376319848,
+          "prefetched_tokens": 4007,
+          "prefill_ms": 25231.1,
+          "prefill_tok_s": 158.8119424044136,
+          "output_ids": [
+            11855,
+            248046,
+            198,
+            248044,
+            248045,
+            846,
+            198,
+            248046
+          ],
+          "first_token_is_blue": true
+        },
+        "short": {
+          "prefetched_tokens": 826,
+          "prefill_ms": 8890.5,
+          "output_ids": [
+            11855,
+            248046,
+            198,
+            248044,
+            248045,
+            846,
+            198,
+            248046
+          ],
+          "raw_log": "/home/yayoi/.local/state/strata-sycl/measurement-archive/2026-10-04-speed-goal/strata-sycl-perf-goal-xmx-rowbase-pair-short-new1-profile.log"
+        }
+      },
+      {
+        "long": {
+          "label": "4k",
+          "requested_chunk": 4096,
+          "executable": "/home/yayoi/orca/workspaces/Strata/sycl/build-sycl-aot/strata",
+          "binary_sha256": "b3baf71e640c8c0b5d442eca959fc7e92087724b11861784afac7d0e5f510b58",
+          "flags": [
+            "--pack",
+            "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+            "--native",
+            "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+            "--max-new",
+            "8",
+            "--max-context",
+            "8192",
+            "--spec",
+            "4",
+            "--spec-min-p",
+            "0.9",
+            "--mtp",
+            "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+            "--suffix-draft",
+            "0",
+            "--prefill",
+            "4096",
+            "--short-read",
+            "0",
+            "--expert-cache",
+            "512",
+            "--expert-profile",
+            "data/expert-profile.bin",
+            "--expert-cache-per-layer",
+            "--pool-workers",
+            "5",
+            "--adapt-swaps",
+            "0",
+            "--pcie-frac",
+            "0",
+            "--tokens-file",
+            "/tmp/strata-sycl-goal-prefill-scale-4k-tokens.txt",
+            "--check-logits",
+            "--stats"
+          ],
+          "environment": {
+            "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+            "STRATA_SYCL_MMQ_XMX": "1",
+            "STRATA_SYCL_MMQ_XMX_TILE": "8",
+            "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+            "ONEAPI_ROOT": "/opt/intel/oneapi",
+            "NEO_CACHE_PERSISTENT": "1",
+            "SYCL_CACHE_PERSISTENT": "0",
+            "STRATA_SYCL_MMQ_XMX_PACK": "1"
+          },
+          "exit_code": 0,
+          "total_seconds": 50.614260645990726,
+          "prefetched_tokens": 4007,
+          "prefill_ms": 25271.3,
+          "prefill_tok_s": 158.55931432098865,
+          "output_ids": [
+            11855,
+            248046,
+            198,
+            248044,
+            248045,
+            846,
+            198,
+            248046
+          ],
+          "first_token_is_blue": true
+        },
+        "short": {
+          "prefetched_tokens": 826,
+          "prefill_ms": 8903.2,
+          "output_ids": [
+            11855,
+            248046,
+            198,
+            248044,
+            248045,
+            846,
+            198,
+            248046
+          ],
+          "raw_log": "/home/yayoi/.local/state/strata-sycl/measurement-archive/2026-10-04-speed-goal/strata-sycl-perf-goal-xmx-rowbase-pair-short-new2-profile.log"
+        }
+      },
+      {
+        "long": {
+          "label": "4k",
+          "requested_chunk": 4096,
+          "executable": "/home/yayoi/orca/workspaces/Strata/sycl/build-sycl-aot/strata",
+          "binary_sha256": "b3baf71e640c8c0b5d442eca959fc7e92087724b11861784afac7d0e5f510b58",
+          "flags": [
+            "--pack",
+            "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+            "--native",
+            "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+            "--max-new",
+            "8",
+            "--max-context",
+            "8192",
+            "--spec",
+            "4",
+            "--spec-min-p",
+            "0.9",
+            "--mtp",
+            "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+            "--suffix-draft",
+            "0",
+            "--prefill",
+            "4096",
+            "--short-read",
+            "0",
+            "--expert-cache",
+            "512",
+            "--expert-profile",
+            "data/expert-profile.bin",
+            "--expert-cache-per-layer",
+            "--pool-workers",
+            "5",
+            "--adapt-swaps",
+            "0",
+            "--pcie-frac",
+            "0",
+            "--tokens-file",
+            "/tmp/strata-sycl-goal-prefill-scale-4k-tokens.txt",
+            "--check-logits",
+            "--stats"
+          ],
+          "environment": {
+            "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+            "STRATA_SYCL_MMQ_XMX": "1",
+            "STRATA_SYCL_MMQ_XMX_TILE": "8",
+            "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+            "ONEAPI_ROOT": "/opt/intel/oneapi",
+            "NEO_CACHE_PERSISTENT": "1",
+            "SYCL_CACHE_PERSISTENT": "0",
+            "STRATA_SYCL_MMQ_XMX_PACK": "1"
+          },
+          "exit_code": 0,
+          "total_seconds": 51.764496443007374,
+          "prefetched_tokens": 4007,
+          "prefill_ms": 25274.5,
+          "prefill_tok_s": 158.5392391540881,
+          "output_ids": [
+            11855,
+            248046,
+            198,
+            248044,
+            248045,
+            846,
+            198,
+            248046
+          ],
+          "first_token_is_blue": true
+        },
+        "short": {
+          "prefetched_tokens": 826,
+          "prefill_ms": 8902.6,
+          "output_ids": [
+            11855,
+            248046,
+            198,
+            248044,
+            248045,
+            846,
+            198,
+            248046
+          ],
+          "raw_log": "/home/yayoi/.local/state/strata-sycl/measurement-archive/2026-10-04-speed-goal/strata-sycl-perf-goal-xmx-rowbase-pair-short-new3-profile.log"
+        }
+      }
+    ]
+  },
+  "medians": {
+    "short": {
+      "old_ms": 8958.1,
+      "new_ms": 8902.6,
+      "old_tok_s": 92.20705283486453,
+      "new_tok_s": 92.78188394401636,
+      "rate_gain_percent": 0.6234133848538548
+    },
+    "long": {
+      "old_ms": 25509.8,
+      "new_ms": 25271.3,
+      "old_tok_s": 157.07688809790747,
+      "new_tok_s": 158.55931432098865,
+      "rate_gain_percent": 0.943758334553424
+    }
+  },
+  "registers": [
+    {
+      "type": 20,
+      "tile": 8,
+      "exact": true,
+      "packed": true,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 21,
+      "tile": 8,
+      "exact": false,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 18,
+      "tile": 4,
+      "exact": false,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 22,
+      "tile": 4,
+      "exact": false,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 42,
+      "tile": 1,
+      "exact": false,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 22,
+      "tile": 2,
+      "exact": false,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 23,
+      "tile": 4,
+      "exact": true,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 20,
+      "tile": 8,
+      "exact": true,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 21,
+      "tile": 4,
+      "exact": true,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 23,
+      "tile": 2,
+      "exact": true,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 20,
+      "tile": 1,
+      "exact": false,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 20,
+      "tile": 8,
+      "exact": false,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 22,
+      "tile": 8,
+      "exact": true,
+      "packed": true,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 23,
+      "tile": 2,
+      "exact": false,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 21,
+      "tile": 8,
+      "exact": true,
+      "packed": true,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 22,
+      "tile": 4,
+      "exact": true,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 18,
+      "tile": 1,
+      "exact": true,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 21,
+      "tile": 1,
+      "exact": false,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 42,
+      "tile": 8,
+      "exact": true,
+      "packed": true,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 21,
+      "tile": 1,
+      "exact": true,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 20,
+      "tile": 1,
+      "exact": true,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 20,
+      "tile": 4,
+      "exact": true,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 20,
+      "tile": 2,
+      "exact": false,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 42,
+      "tile": 1,
+      "exact": true,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 42,
+      "tile": 4,
+      "exact": false,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 22,
+      "tile": 2,
+      "exact": true,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 22,
+      "tile": 8,
+      "exact": true,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 22,
+      "tile": 1,
+      "exact": false,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 42,
+      "tile": 8,
+      "exact": true,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 18,
+      "tile": 2,
+      "exact": true,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 21,
+      "tile": 2,
+      "exact": true,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 21,
+      "tile": 2,
+      "exact": false,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 23,
+      "tile": 8,
+      "exact": true,
+      "packed": true,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 42,
+      "tile": 2,
+      "exact": true,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 23,
+      "tile": 1,
+      "exact": true,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 21,
+      "tile": 4,
+      "exact": false,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 23,
+      "tile": 1,
+      "exact": false,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 23,
+      "tile": 8,
+      "exact": false,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 23,
+      "tile": 4,
+      "exact": false,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 18,
+      "tile": 2,
+      "exact": false,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 21,
+      "tile": 8,
+      "exact": true,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 22,
+      "tile": 1,
+      "exact": true,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 20,
+      "tile": 2,
+      "exact": true,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 18,
+      "tile": 8,
+      "exact": false,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 42,
+      "tile": 4,
+      "exact": true,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 18,
+      "tile": 4,
+      "exact": true,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 18,
+      "tile": 8,
+      "exact": true,
+      "packed": true,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 42,
+      "tile": 8,
+      "exact": false,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 22,
+      "tile": 8,
+      "exact": false,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 18,
+      "tile": 8,
+      "exact": true,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 23,
+      "tile": 8,
+      "exact": true,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 18,
+      "tile": 1,
+      "exact": false,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 42,
+      "tile": 2,
+      "exact": false,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    },
+    {
+      "type": 20,
+      "tile": 4,
+      "exact": false,
+      "packed": false,
+      "grf": 128,
+      "has_scratch": false
+    }
+  ],
+  "cpu_object_sha256": "054dc0c47828da70522a8e3c4ce41b57e6702b7f36bc6eadcb12d1d0ae5a1ce6",
+  "cpu_object_verification": "Both JIT and AOT IQ AVX2 objects match the archived original. Restored source mtime initially left a stale trial object; it was explicitly rebuilt before every measurement in this record. Final GPU metadata matches the earlier validated MMQ test image.",
+  "validation": {
+    "jit_mmq": "3 tests, 50 geometries, passed in39.41s",
+    "aot_mmq": "3 tests, 50 geometries, passed in2.56s"
+  },
+  "raw_archive": "/home/yayoi/.local/state/strata-sycl/measurement-archive/2026-10-04-speed-goal"
+}

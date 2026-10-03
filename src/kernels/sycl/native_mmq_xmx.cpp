@@ -91,15 +91,13 @@ constexpr int bytes = Type == 18   ? 98
                                    : 18;
 template <int Type, int Tile, bool Packed>
 __attribute__((always_inline)) inline e::simd<float, 16 * Tile>
-unit_product(const uint8_t *w, const uint8_t *x, U rows, e::simd_mask<16> valid,
-             size_t stride, size_t xs, int64_t first, int end, int unit,
-             int split) SYCL_ESIMD_FUNCTION {
+unit_product(const uint8_t *w, const uint8_t *x, U weight_rows,
+             e::simd_mask<16> valid, size_t xs, int64_t first, int end,
+             int unit, int split) SYCL_ESIMD_FUNCTION {
   e::simd<float, 16 * Tile> result;
   const int group = unit % (width<Type> / 32);
   const uint32_t block = uint32_t(unit / (width<Type> / 32) * bytes<Type>);
-  const U wo = Packed ? (rows & ~15u) * uint32_t(stride) + (rows & 15u) * 2u +
-                            block * 16u
-                      : rows * uint32_t(stride) + block;
+  const U wo = weight_rows + block * uint32_t(Packed ? 16 : 1);
   const F scale = esimd_half_decode<16>(e::gather<uint16_t, 16>(
       reinterpret_cast<const uint16_t *>(w), wo, valid));
   e::simd<uint32_t, Type == 42 ? 32 : 128> weights;
@@ -260,9 +258,9 @@ unit_product(const uint8_t *w, const uint8_t *x, U rows, e::simd_mask<16> valid,
 
 template <int Type, int Tile, bool Packed>
 __attribute__((always_inline)) inline e::simd<float, 16 * Tile>
-cell_product(const uint8_t *w, const uint8_t *x, U rows, e::simd_mask<16> valid,
-             size_t stride, size_t xs, int64_t first, int end, int units,
-             int cell) SYCL_ESIMD_FUNCTION {
+cell_product(const uint8_t *w, const uint8_t *x, U weight_rows,
+             e::simd_mask<16> valid, size_t xs, int64_t first, int end,
+             int units, int cell) SYCL_ESIMD_FUNCTION {
   using V = e::simd<float, 16 * Tile>;
   V even = 0.f, odd = 0.f;
 #pragma unroll 1
@@ -271,7 +269,7 @@ cell_product(const uint8_t *w, const uint8_t *x, U rows, e::simd_mask<16> valid,
 #pragma unroll 1
     for (int v = cell + bin * 16; v < units; v += 128)
       partial += unit_product<Type, Tile, Packed>(
-          w, x, rows, valid, stride, xs, first, end, Type == 20 ? v / 2 : v,
+          w, x, weight_rows, valid, xs, first, end, Type == 20 ? v / 2 : v,
           Type == 20 ? v % 2 : -1);
     if (bin % 2 == 0)
       even += partial;
@@ -283,17 +281,17 @@ cell_product(const uint8_t *w, const uint8_t *x, U rows, e::simd_mask<16> valid,
 
 template <int Type, int Tile, int Step, bool Packed>
 __attribute__((always_inline)) inline e::simd<float, 16 * Tile>
-fold_cells(const uint8_t *w, const uint8_t *x, U rows, e::simd_mask<16> valid,
-           size_t stride, size_t xs, int64_t first, int end, int units,
+fold_cells(const uint8_t *w, const uint8_t *x, U weight_rows,
+           e::simd_mask<16> valid, size_t xs, int64_t first, int end, int units,
            int cell) SYCL_ESIMD_FUNCTION {
   if constexpr (Step == 16) {
-    return cell_product<Type, Tile, Packed>(w, x, rows, valid, stride, xs,
-                                            first, end, units, cell);
+    return cell_product<Type, Tile, Packed>(w, x, weight_rows, valid, xs, first,
+                                            end, units, cell);
   } else {
     const auto lo = fold_cells<Type, Tile, Step * 2, Packed>(
-        w, x, rows, valid, stride, xs, first, end, units, cell);
+        w, x, weight_rows, valid, xs, first, end, units, cell);
     const auto hi = fold_cells<Type, Tile, Step * 2, Packed>(
-        w, x, rows, valid, stride, xs, first, end, units, cell + Step);
+        w, x, weight_rows, valid, xs, first, end, units, cell + Step);
     return lo + hi;
   }
 }
@@ -322,6 +320,9 @@ void launch(NativeMmq p, void *stream) {
           return;
         const U rows = U(uint32_t(row), 1);
         const e::simd_mask<16> valid = rows < uint32_t(p.rows);
+        const U weight_rows =
+            Packed ? (rows & ~15u) * uint32_t(stride) + (rows & 15u) * 2u
+                   : rows * uint32_t(stride);
         const auto *w =
             static_cast<const uint8_t *>(p.weights) + expert * p.expert_bytes;
         const auto *x = static_cast<const uint8_t *>(p.activation);
@@ -329,14 +330,14 @@ void launch(NativeMmq p, void *stream) {
         if constexpr (!Exact) {
 #pragma unroll 1
           for (int unit = 0; unit < p.cols / 32; ++unit)
-            sum += unit_product<Type, Tile, Packed>(w, x, rows, valid, stride,
+            sum += unit_product<Type, Tile, Packed>(w, x, weight_rows, valid,
                                                     xs, first, end, unit, -1);
         } else {
           // The fixed recursion spells out the original XOR-8/4/2/1 tree.
           // Finish each pair before visiting the next one: only four pending
           // vectors are needed, with no large indirectly indexed array.
           const int units = p.cols / (Type == 20 ? 16 : 32);
-          sum = fold_cells<Type, Tile, 1, Packed>(w, x, rows, valid, stride, xs,
+          sum = fold_cells<Type, Tile, 1, Packed>(w, x, weight_rows, valid, xs,
                                                   first, end, units, 0);
         }
 #pragma unroll
