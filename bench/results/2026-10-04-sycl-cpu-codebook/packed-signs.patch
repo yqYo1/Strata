@@ -1,0 +1,38 @@
+--- a/src/kernels/cpu/iq_avx2.cpp
++++ b/src/kernels/cpu/iq_avx2.cpp
+@@ -22,7 +22,7 @@
+ #include <cstdlib>
+ #include <cstring>
+ 
+-namespace strata::kernels::cpu {
++namespace strata_gather::kernels::cpu {
+ namespace {
+ 
+ inline float h2f(uint16_t h) { return _mm_cvtss_f32(_mm_cvtph_ps(_mm_cvtsi32_si128((int) h))); }
+@@ -32,10 +32,9 @@
+ 
+ // 32 sign bits -> 32 bytes of -1 (bit set) / +1: ggml's bit_selector pattern, shared by all tokens.
+ inline __m256i sgn_vec(uint32_t m) {
+-    const __m128i bm = _mm_set1_epi32((int) m);
+-    const __m128i lo = _mm_shuffle_epi8(bm, _mm_setr_epi8(0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1));
+-    const __m128i hi = _mm_shuffle_epi8(bm, _mm_setr_epi8(2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3));
+-    const __m256i bits = _mm256_inserti128_si256(_mm256_castsi128_si256(lo), hi, 1);
++    const __m256i bits = _mm256_shuffle_epi8(_mm256_set1_epi32((int) m),
++        _mm256_setr_epi8(0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,
++                        2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3));
+     const __m256i sel = _mm256_setr_epi8(1, 2, 4, 8, 16, 32, 64, (char) 0x80,
+                                          1, 2, 4, 8, 16, 32, 64, (char) 0x80,
+                                          1, 2, 4, 8, 16, 32, 64, (char) 0x80,
+@@ -167,7 +166,11 @@
+     static inline void decode(const uint8_t* b, int j, int half, __m256i& g, __m256i& sgn, __m256i& sc) {
+         const uint8_t* q = b + 2 + 16 * j + 8 * half;
+         const uint32_t h = b[66 + 2 * j + half];
+-#define G3(k) (int) iq3s_grid[q[k] | (((h >> k) & 1u) << 8)]
++        const __m128i lo = _mm_cvtepu8_epi16(_mm_loadl_epi64((const __m128i*) q));
++        const __m128i mask = _mm_setr_epi16(1, 2, 4, 8, 16, 32, 64, 128);
++        const __m128i high = _mm_cmpeq_epi16(_mm_and_si128(_mm_set1_epi16(h), mask), mask);
++        const __m128i idx = _mm_or_si128(lo, _mm_and_si128(high, _mm_set1_epi16(256)));
++#define G3(k) (int) iq3s_grid[_mm_extract_epi16(idx, k)]
+         g = _mm256_set_epi32(G3(7), G3(6), G3(5), G3(4), G3(3), G3(2), G3(1), G3(0));
+ #undef G3
+         const uint64_t m = u64(b + 74 + 8 * j);

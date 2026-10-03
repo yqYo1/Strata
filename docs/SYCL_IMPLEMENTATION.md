@@ -2274,3 +2274,29 @@ establish a uniform improvement or a general conclusion about THP. The
 [prototype patch](../bench/results/2026-10-04-sycl-arena-thp-iq3_s/prototype.patch)
 and [benchmark snapshot](../bench/results/2026-10-04-sycl-arena-thp-iq3_s/serve_bench_snapshot.py)
 preserve the experiment.
+
+### CPU codebook and larger-prompt screens (2026-10-04)
+
+Three CPU-only prototypes compared codebook access on real IQ3_XXS/IQ3_S gate
+and up weights against the current Zen 3 build: AVX2 gather loads, packed SIMD
+index calculation with scalar table loads, and that calculation combined with
+a single-vector sign expansion. Each used eight experts, 640 rows, 2,560 columns
+and 1/2/3/4/8-token groups, with five alternating paired timing samples. Every
+output bit matched. None consistently improved the 2–4-token groups used by
+the current speculative configuration. Some eight-token IQ3_S groups improved,
+but that does not establish an engine gain. No prototype was integrated;
+[raw timings, code patches and the CPU harness](../bench/results/2026-10-04-sycl-cpu-codebook/run.json)
+are preserved. These warm component timings exclude host scheduling and data
+transfers.
+
+A separate real-model screen used a 4,008-id color-retrieval prompt with
+context 8,192, 512 fixed cache slots, five workers, adaptive swaps off and exact
+XMX tile 8. Chunk 1,024 prefetched 4,007 tokens in four chunks in 49.866 s
+(80.36 token/s); chunk 4,096 took one chunk and 26.637 s (150.43 token/s).
+Streamed expert counts fell from 86,957 to 24,064. All eight output ids matched,
+including the expected first color token. This is one trial per setting, and
+its longer input and smaller cache distinguish it from the preceding 827-id
+baseline. No serving configuration changed. The
+[fixture, flags, logs and scripts](../bench/results/2026-10-04-sycl-prefill-scale/run.json)
+support further kernel work; the next candidate changes the GPU scratch-weight
+layout to improve coalescing while retaining the same arithmetic.

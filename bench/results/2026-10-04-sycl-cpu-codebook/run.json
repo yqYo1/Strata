@@ -1,0 +1,216 @@
+{
+  "status": "rejected before engine integration",
+  "source_parent_commit": "42d2700",
+  "cpu_source_sha256": "80efab0bed11ddf3980c0d146101218efa061cf5304e39fc88d93e5e94a99136",
+  "hardware": {
+    "gpu": "Intel Arc B570 10 GiB",
+    "cpu": "Ryzen 5 5600X",
+    "ram_gib": 125
+  },
+  "compiler_flags": "icpx 2026.1.1 -O3 -DNDEBUG -std=c++20 -march=znver3 -mtune=znver3 -mavx2 -mfma -mf16c",
+  "baseline_object": "build-sycl-aot/CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/iq_avx2.cpp.o",
+  "baseline_object_sha256": "054dc0c47828da70522a8e3c4ce41b57e6702b7f36bc6eadcb12d1d0ae5a1ce6",
+  "method": "CPU only; first IQ3_XXS and IQ3_S layers in the real IQ3_S GGUF; expert ids 0,7,14,21,28,35,42,49; complete gate/up and SiLU for 640 rows x 2560 columns; synthetic Q8_K activations; baseline and candidate in separate namespaces in one binary; five alternating paired trials with five eight-expert passes each; warm weights; finite and bitwise output checks before timing. Component screen, excluding transfers, paging, scheduling and full-model effects. No compilation or inference overlapped.",
+  "raw_csv_note": "gather=0 is the unchanged baseline, gather=1 is the named candidate (including the two candidates that use scalar table loads).",
+  "variants": {
+    "gather": {
+      "summary": {
+        "18/nt1": {
+          "baseline_us": 2095.4,
+          "candidate_us": 2767.09,
+          "speedup": 0.757257624435779,
+          "all_bits_equal": true
+        },
+        "18/nt2": {
+          "baseline_us": 2262.08,
+          "candidate_us": 2951.39,
+          "speedup": 0.7664456408675234,
+          "all_bits_equal": true
+        },
+        "18/nt3": {
+          "baseline_us": 2515.46,
+          "candidate_us": 3117.77,
+          "speedup": 0.8068138445106598,
+          "all_bits_equal": true
+        },
+        "18/nt4": {
+          "baseline_us": 2923.16,
+          "candidate_us": 3481.71,
+          "speedup": 0.839575955493134,
+          "all_bits_equal": true
+        },
+        "18/nt8": {
+          "baseline_us": 4547.73,
+          "candidate_us": 5057.1,
+          "speedup": 0.8992762650530935,
+          "all_bits_equal": true
+        },
+        "21/nt1": {
+          "baseline_us": 2698.22,
+          "candidate_us": 2851.96,
+          "speedup": 0.9460932130885426,
+          "all_bits_equal": true
+        },
+        "21/nt2": {
+          "baseline_us": 3024.12,
+          "candidate_us": 3332.59,
+          "speedup": 0.907438358754002,
+          "all_bits_equal": true
+        },
+        "21/nt3": {
+          "baseline_us": 3595.41,
+          "candidate_us": 3521.03,
+          "speedup": 1.0211245005012737,
+          "all_bits_equal": true
+        },
+        "21/nt4": {
+          "baseline_us": 3797.23,
+          "candidate_us": 4076.76,
+          "speedup": 0.9314332950676517,
+          "all_bits_equal": true
+        },
+        "21/nt8": {
+          "baseline_us": 6327.22,
+          "candidate_us": 5560.23,
+          "speedup": 1.1379421354872012,
+          "all_bits_equal": true
+        }
+      },
+      "binary_sha256": "6d1fd4d9bd0f831af6ab8ea3ffabebc042b00ba180649fdbcfe84b4899262b5c",
+      "samples": 100
+    },
+    "packed-indices": {
+      "summary": {
+        "18/nt1": {
+          "baseline_us": 2108.19,
+          "candidate_us": 2174.7,
+          "speedup": 0.9694164712374121,
+          "all_bits_equal": true
+        },
+        "18/nt2": {
+          "baseline_us": 2184.18,
+          "candidate_us": 2234.72,
+          "speedup": 0.9773841913080834,
+          "all_bits_equal": true
+        },
+        "18/nt3": {
+          "baseline_us": 2565.23,
+          "candidate_us": 2571.2,
+          "speedup": 0.9976781269446173,
+          "all_bits_equal": true
+        },
+        "18/nt4": {
+          "baseline_us": 3072.56,
+          "candidate_us": 3156.25,
+          "speedup": 0.9734843564356436,
+          "all_bits_equal": true
+        },
+        "18/nt8": {
+          "baseline_us": 4574.12,
+          "candidate_us": 4594.55,
+          "speedup": 0.995553427430325,
+          "all_bits_equal": true
+        },
+        "21/nt1": {
+          "baseline_us": 2675.63,
+          "candidate_us": 2659.24,
+          "speedup": 1.0061634151110845,
+          "all_bits_equal": true
+        },
+        "21/nt2": {
+          "baseline_us": 3009.49,
+          "candidate_us": 3067.44,
+          "speedup": 0.9811080249328429,
+          "all_bits_equal": true
+        },
+        "21/nt3": {
+          "baseline_us": 3499.15,
+          "candidate_us": 3463.98,
+          "speedup": 1.010153060929913,
+          "all_bits_equal": true
+        },
+        "21/nt4": {
+          "baseline_us": 3773.75,
+          "candidate_us": 3900.32,
+          "speedup": 0.9675488165073635,
+          "all_bits_equal": true
+        },
+        "21/nt8": {
+          "baseline_us": 5962.06,
+          "candidate_us": 6043.36,
+          "speedup": 0.9865472187657198,
+          "all_bits_equal": true
+        }
+      },
+      "binary_sha256": "fed591d6ff3c3c0aa98899e16f29cdab6e51e3935173c7e410e8d24b891b6afe",
+      "samples": 100
+    },
+    "packed-signs": {
+      "summary": {
+        "18/nt1": {
+          "baseline_us": 2013.1,
+          "candidate_us": 2002.86,
+          "speedup": 1.0051126888549375,
+          "all_bits_equal": true
+        },
+        "18/nt2": {
+          "baseline_us": 2178.6,
+          "candidate_us": 2223.45,
+          "speedup": 0.9798286446738178,
+          "all_bits_equal": true
+        },
+        "18/nt3": {
+          "baseline_us": 2577.64,
+          "candidate_us": 2581.84,
+          "speedup": 0.9983732531837758,
+          "all_bits_equal": true
+        },
+        "18/nt4": {
+          "baseline_us": 2955.53,
+          "candidate_us": 2949.57,
+          "speedup": 1.002020633516072,
+          "all_bits_equal": true
+        },
+        "18/nt8": {
+          "baseline_us": 4626.48,
+          "candidate_us": 4617.23,
+          "speedup": 1.0020033656542993,
+          "all_bits_equal": true
+        },
+        "21/nt1": {
+          "baseline_us": 2840.25,
+          "candidate_us": 2772.51,
+          "speedup": 1.0244327342372073,
+          "all_bits_equal": true
+        },
+        "21/nt2": {
+          "baseline_us": 3124.45,
+          "candidate_us": 3172.36,
+          "speedup": 0.9848976786997692,
+          "all_bits_equal": true
+        },
+        "21/nt3": {
+          "baseline_us": 3661.45,
+          "candidate_us": 3720.02,
+          "speedup": 0.9842554609921451,
+          "all_bits_equal": true
+        },
+        "21/nt4": {
+          "baseline_us": 3738.61,
+          "candidate_us": 3869.68,
+          "speedup": 0.9661289822414257,
+          "all_bits_equal": true
+        },
+        "21/nt8": {
+          "baseline_us": 6276.45,
+          "candidate_us": 5580.12,
+          "speedup": 1.1247876389755058,
+          "all_bits_equal": true
+        }
+      },
+      "binary_sha256": "529557e5f2b0295e6ab57ab76aecbd9f836080602d2573c28bfc009908825dba",
+      "samples": 100
+    }
+  },
+  "decision": "No consistent improvement for NT=2..4 used by the current speculative configuration. Wider NT=8 improved in some IQ3_S screens but does not justify changing the kernel for the current engine workload. No production source or configuration changed."
+}
