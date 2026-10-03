@@ -1,12 +1,14 @@
 #include "strata/prefill/moe_mmq.hpp"
 #include "strata/sycl/runtime.hpp"
 #include "strata/kernels/f16_bits.hpp"
+#include "strata/kernels/iq_kernels.hpp"
 #include "strata/artifact/dequant.hpp"
 #include "strata/sycl/gguf_decode.hpp"
 #include <algorithm>
 #include <array>
 #include <cmath>
 #include <cstring>
+#include <cstdlib>
 #include <iostream>
 #include <random>
 #include <stdexcept>
@@ -63,8 +65,9 @@ std::vector<uint8_t> weights(int type, int cols, int rows, int experts) {
   }
   return w;
 }
-void product(int type, int cols) {
-  constexpr int R = 7, E = 3, T = 37, LD = 11, XS = 49;
+void product(int type, int cols, int R = 7) {
+  constexpr int E = 3, T = 37, XS = 49;
+  const int LD = R + 4;
   const int xld = cols + 5, padded = (cols + 511) / 512 * 512;
   auto w = weights(type, cols, R, E);
   std::vector<float> x(size_t(XS) * xld, 777.f);
@@ -112,6 +115,17 @@ void product(int type, int cols) {
   p.dst = dy.data(); p.ld_dst = LD;
   context.run(p, stream);
   const auto got = dy.get();
+  const char *xmx = std::getenv("STRATA_SYCL_MMQ_XMX");
+  const char *exact = std::getenv("STRATA_SYCL_MMQ_XMX_EXACT");
+  if (xmx && std::atoi(xmx) && (!exact || std::atoi(exact))) {
+    dy.put(std::vector<float>(dy.n, -123.f));
+    kernels::iq_set_old_kernels(true);
+    context.run(p, stream);
+    const auto reference = dy.get();
+    kernels::iq_set_old_kernels(false);
+    check(std::memcmp(got.data(), reference.data(), got.size() * sizeof(float)) == 0,
+          "XMX changed the native prompt reduction result");
+  }
   std::vector<float> expected(dy.n, -123.f);
   const auto f = sycl_backend::block_format(type);
   double worst = 0;
@@ -220,6 +234,11 @@ int main() {
     runtime = sycl_backend::runtime_for(); check(mmq::built(), "quantized prefill unavailable");
     for (int type : {2, 6, 7, 8, 11, 12, 13, 14, 16, 17, 18, 20, 21, 22, 23, 29, 42})
       product(type, type == 20 || type == 42 || type == 7 ? 640 : 2560);
+    product(20, 32, 17); product(20, 640, 33);
+    product(42, 64, 17); product(42, 2560, 33);
+    for (int type : {18, 21, 22, 23}) product(type, 2560, 33);
+    for (int type : {18, 20, 21, 22, 23, 42})
+      product(type, type == 20 ? 4096 : 8192, 17);
     gather(); postops(); runtime->wait(); std::cout << "SYCL quantized prefill PASS\n";
     return 0;
   } catch (const std::exception &e) { std::cerr << e.what() << '\n'; return 1; }

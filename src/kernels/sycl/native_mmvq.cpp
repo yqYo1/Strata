@@ -43,6 +43,7 @@ bool native_iq_grouped_esimd(int, bool, const NativeExpertLayout &,
                             const int32_t *, const int32_t *, const int32_t *,
                             int, int, const void *, float *, float *, float *, void *);
 bool native_iq_mmq_esimd(const NativeMmq &, void *);
+bool native_mmq_xmx(const NativeMmq &, void *);
 void native_q2_grouped_esimd(bool, const NativeExpertLayout &,
                             const unsigned long long *, const int32_t *,
                             const int32_t *, const int32_t *, const int32_t *,
@@ -1178,7 +1179,7 @@ void native_mmq(const NativeMmq &p, void *stream) {
   const size_t groups = checked_count(checked_count(p.experts, p.rows), (p.max_rows + 7) / 8);
   (void)checked_count(groups, 128);
   auto &q = queue_for(stream);
-  if (!iq_old_kernels() && native_iq_mmq_esimd(p, &q)) {
+  if (!iq_old_kernels() && (native_mmq_xmx(p, &q) || native_iq_mmq_esimd(p, &q))) {
     if (!stream) q.wait_and_throw();
     return;
   }

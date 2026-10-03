@@ -2016,3 +2016,36 @@ the preceding selected preset, passed prefill/decode cancellation and recovery,
 and passed 38/38 CTest cases. Its single-run repeated-request rates were 16.05
 and 20.10 token/s. More repetitions are needed to attribute any change to the
 compiler flags; this is a validated tuning baseline, not a final speed claim.
+
+The CPU/GPU responsibilities and CPU fallback policy remain based on upstream.
+Kernel and data-layout experiments operate inside those existing paths. A
+placement-policy change needs a measured reason. Microbenchmarks check numerical
+agreement and screen candidates; adoption depends on repeated full inference
+runs, including transfers, synchronization and memory use.
+
+An opt-in prompt experiment, `STRATA_SYCL_MMQ_XMX=1`, uses Intel XMX integer
+products for Q2_0, IQ3_XXS, IQ3_S, IQ2_S, IQ4_NL and IQ4_XS. It shares sixteen
+weight rows across activation tiles while retaining GGUF weights and Q8_1
+activations. `STRATA_SYCL_MMQ_XMX_TILE` accepts 1, 2, 4 or 8, with 4 as the
+experimental default. The default reduction preserves the original virtual-lane
+FP32 addition order. Boundary tests compare its output bits with the preceding
+kernel, including partial tiles, routed row maps and multiple contributions per
+virtual lane, as well as checking a separate dequantized reference.
+
+`STRATA_SYCL_MMQ_XMX_EXACT=0` selects a diagnostic linear reduction. This earlier
+variant passed numerical-tolerance checks, but a repeated writing request
+changed generated ids starting at index 11. It is not an equivalent-output
+throughput result and is not selected in local serving configurations. A
+larger-state exact variant matched output bits but was slower in the component
+screen; it was rejected. Kernel-by-kernel device linking was also tested and
+reverted after first-use compilation affected full inference timings. The
+experiment keeps the existing linker settings and remains disabled by default.
+
+The exact XMX variant passed 39/39 CTest cases, including 31 prompt geometries
+with the experiment enabled. A persistent real-model screen with tile 8 matched
+all completed writing/coding token sequences against the Zen 3 baseline and
+passed prefill/decode cancellation and eight-token recovery. Repeated-request
+decode rates were 15.98 and 20.25 token/s in this single screen. First writing
+prefill took 7.511 s versus 3.571 s in the prior baseline screen, so first-use
+costs need separate evaluation. These results do not establish a throughput gain;
+no serving configuration has adopted the experiment.
