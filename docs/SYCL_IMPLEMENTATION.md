@@ -741,6 +741,60 @@ queue before replay passed in both modes. Every logit bit matched in a
 The prototype, independent probes, flags, comparisons and all samples are in
 [`bench/results/2026-10-03-sycl-native-recording/run.json`](../bench/results/2026-10-03-sycl-native-recording/run.json).
 
+### Short verifier windows use native recording
+
+SYCL verification now records one-, two- and three-token windows with Intel's
+`enable_native_recording` graph property. Four-token and larger windows, the
+commit graph and generic CUDA-compatible capture retain normal recording.
+The adapter exposes an explicit native-capture entry point; it rejects node
+queries for those graphs. Normal graphs retain node queries. Replay completion
+still covers the entire graph, including host-USM copies and captured events.
+`STRATA_SYCL_VERIFY_NATIVE_CAPTURE=0` selects normal recording for all verifier
+graphs; `1` selects native recording for all; `small` selects the default.
+
+On 2026-10-03, B570/5600X, three alternating pairs compared normal recording
+with native recording of every verifier graph. Each fresh server generated
+128 tokens twice from the story prompt, then twice from the code prompt. It
+used context 512, prefill 16, MTP T=4, probability floor 0.5, 3,792 automatic
+expert slots, the shipped profile, four workers and 64 adaptive replacements
+every four rounds. Three later processes measured the short-window selection
+with the same flags and GPU kernels. These later runs were not alternating
+with the controls. Median decode rates, excluding prefill and startup, were:
+
+| Request in each fresh process | Normal, tok/s | All native, tok/s | Short windows native, tok/s |
+| --- | ---: | ---: | ---: |
+| First story | 10.51 | 18.42 | 19.13 |
+| Repeated story | 19.57 | 20.29 | 21.95 |
+| First code after the story requests | 16.23 | 20.06 | 23.65 |
+| Repeated code | 25.98 | 24.18 | 25.74 |
+
+All nine processes retained the same ids, cache-hit counts and reused prompt
+lengths for each request. Cancellation after one emitted token and the next
+eight-token request also matched. Background CPU workloads were not isolated;
+the table does not establish the cause of each speed difference. Recording
+every graph natively did not improve repeated-code generation, so that mode
+is a diagnostic option.
+
+After the four window shapes were recorded, the device free-memory query
+reported about `3 / 241 / 147 MiB` for normal, all-native and short-window
+recording. DRM fdinfo after the first story reported `10,136 / 9,907 / 10,001 MiB`
+of allocated and resident VRAM. These are backing-storage measurements;
+they do not prove GPU paging. Summed shape-capture times were less than one
+second in every run, so capture time alone does not explain the first-request
+speed differences.
+
+Native recording retained every logit bit in 30 MTP windows/90 rows,
+17 split-eight windows/129 rows with corrupted oracle drafts, and seven
+position-zero windows/17 rows. The default short-window mode with adaptive
+refills retained all bits in 32 windows/98 rows. Rejected draft rows are
+included. Withheld host results failed after GPU work had drained. Adapter
+tests check both recording modes, changing host inputs, cross-queue completion
+and replay after destruction of the recording queue. The default also passed
+the real-model OpenAI/Anthropic HTTP checks, complete streaming, repeated
+requests and cancellation recovery. The HTTP server stopped cleanly.
+Flags, raw logs, fdinfo, comparison reports and scripts are in
+[`bench/results/2026-10-03-sycl-verifier-native-recording/run.json`](../bench/results/2026-10-03-sycl-verifier-native-recording/run.json).
+
 ### Captured ordinary post and next route
 
 Native ordinary sessions with fixed cache sizes now capture the completed

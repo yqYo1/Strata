@@ -55,6 +55,22 @@ namespace {
 constexpr float EPS = 1e-6f;
 using Clock = std::chrono::steady_clock;
 double ms_since(Clock::time_point t) { return std::chrono::duration<double, std::milli>(Clock::now() - t).count(); }
+cudaError_t begin_verify_capture(cudaStream_t stream, int window_size) {
+#ifdef STRATA_ENABLE_SYCL
+    // Short windows save recording storage. Keep larger windows and the
+    // commit graph on the normal path; native recording of every verifier
+    // graph did not improve the repeated code-generation measurements.
+    const char* native = std::getenv("STRATA_SYCL_VERIFY_NATIVE_CAPTURE");
+    if (!native) native = "small";
+    if (std::strcmp(native, "1") == 0 ||
+        (std::strcmp(native, "small") == 0 && window_size > 0 && window_size < 4))
+        return strata::sycl_backend::compat::stream_begin_capture_native(stream);
+#else
+    (void) window_size;
+#endif
+    return cudaStreamBeginCapture(stream, cudaStreamCaptureModeThreadLocal);
+}
+
 const bool g_dbg = std::getenv("STRATA_VERIFY_DEBUG") != nullptr;
 #define VDBG(...) do { if (g_dbg) { std::fprintf(stderr, "verify dbg: " __VA_ARGS__); std::fflush(stderr); } } while (0)
 
@@ -884,7 +900,7 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
             // caller completes the preceding segment and serves this group.
             if (!end_segment(T, err)) return false;
             if (overlap_gpu_) {
-                if (cudaStreamBeginCapture(cs, cudaStreamCaptureModeThreadLocal) != cudaSuccess) {
+                if (begin_verify_capture(cs, T) != cudaSuccess) {
                     err = "verify: begin shared/hit capture failed";
                     return false;
                 }
@@ -896,7 +912,7 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
                 project_group(l, grp, (const unsigned long long*) (pl + ptr_off), pl + 4, pl);
                 if (!end_segment(T, err, true)) return false;
             }
-            if (cudaStreamBeginCapture(cs, cudaStreamCaptureModeThreadLocal) != cudaSuccess) {
+            if (begin_verify_capture(cs, T) != cudaSuccess) {
                 err = "verify: begin layer segment capture failed";
                 return false;
             }
@@ -999,7 +1015,8 @@ bool Verifier::end_segment(int T, std::string& err, bool work) {
 bool Verifier::capture(int T, std::string& err) {
 #ifdef STRATA_ENABLE_SYCL
     if (!segments_[T].empty()) return true;
-    if (cudaStreamBeginCapture(cs_, cudaStreamCaptureModeThreadLocal) != cudaSuccess) {
+    const auto capture_start = Clock::now();
+    if (begin_verify_capture(cs_, T) != cudaSuccess) {
         err = "verify: begin capture failed";
         return false;
     }
@@ -1018,12 +1035,16 @@ bool Verifier::capture(int T, std::string& err) {
     }
     std::fprintf(stderr, "strata verify: captured the %d-token window in %zu event-completed segments\n",
                  T, segments_[T].size());
+    size_t free_bytes = 0, total_bytes = 0;
+    if (cudaMemGetInfo(&free_bytes, &total_bytes) == cudaSuccess)
+        std::fprintf(stderr, "strata verify: capture %d tokens %.3f ms, free VRAM %.1f MiB\n",
+                     T, ms_since(capture_start), double(free_bytes) / (1024 * 1024));
     if (overlap_gpu_)
         std::fprintf(stderr, "strata verify: %zu shared/hit graphs can overlap CPU experts\n", work_[T].size());
     return true;
 #else
     if (exec_[T] != nullptr) return true;
-    if (cudaStreamBeginCapture(cs_, cudaStreamCaptureModeThreadLocal) != cudaSuccess) {
+    if (begin_verify_capture(cs_, T) != cudaSuccess) {
         err = "verify: begin capture failed";
         return false;
     }
@@ -1096,7 +1117,7 @@ bool Verifier::capture_commit(std::string& err) {
                                 (uint64_t) g.ssm_conv_channels * (g.ssm_d_conv - 1);
     const int64_t TS = (s.idx_block - 1) * ID;
     const int64_t HS = (int64_t) NG_HIST * NG_HC_DIM;
-    if (cudaStreamBeginCapture(cs_, cudaStreamCaptureModeThreadLocal) != cudaSuccess) {
+    if (begin_verify_capture(cs_, 0) != cudaSuccess) {
         err = "verify: begin commit capture failed";
         return false;
     }

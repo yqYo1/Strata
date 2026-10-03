@@ -28,9 +28,13 @@ struct Node {
 };
 struct Graph {
   ModGraph value;
+  bool native;
   std::vector<Node> nodes;
   std::vector<std::weak_ptr<EventState>> events;
-  Graph(const sycl::context &c, const sycl::device &d) : value(c, d) {}
+  Graph(const sycl::context &c, const sycl::device &d, bool use_native)
+      : value(c, d, use_native
+                        ? sycl::property_list{ex::property::graph::enable_native_recording{}}
+                        : sycl::property_list{}), native(use_native) {}
 };
 struct GraphExec {
   ExecGraph value;
@@ -418,7 +422,7 @@ cudaError_t cudaLaunchHostFunc(cudaStream_t st, void (*fn)(void *),
     queue(st).submit([&](sycl::handler &h) { h.host_task([=] { fn(data); }); });
   });
 }
-cudaError_t cudaStreamBeginCapture(cudaStream_t st, cudaStreamCaptureMode) {
+static cudaError_t begin_capture(cudaStream_t st, bool native) {
   return attempt([&] {
     require(st, "capture requires an explicit stream");
     auto &q = queue(st);
@@ -426,10 +430,16 @@ cudaError_t cudaStreamBeginCapture(cudaStream_t st, cudaStreamCaptureMode) {
     auto it = streams.find(st);
     require(it != streams.end() && !it->second.recording,
             "capture requires an owned idle stream");
-    auto graph = std::make_unique<Graph>(q.get_context(), q.get_device());
+    auto graph = std::make_unique<Graph>(q.get_context(), q.get_device(), native);
     graph->value.begin_recording(q);
     it->second.recording = std::move(graph);
   });
+}
+cudaError_t cudaStreamBeginCapture(cudaStream_t st, cudaStreamCaptureMode) {
+  return begin_capture(st, false);
+}
+cudaError_t strata::sycl_backend::compat::stream_begin_capture_native(cudaStream_t st) {
+  return begin_capture(st, true);
 }
 cudaError_t cudaStreamEndCapture(cudaStream_t st, cudaGraph_t *out) {
   return attempt([&] {
@@ -440,8 +450,9 @@ cudaError_t cudaStreamEndCapture(cudaStream_t st, cudaGraph_t *out) {
             "stream is not recording");
     auto &g = it->second.recording;
     g->value.end_recording(*st);
-    for (auto n : g->value.get_nodes())
-      g->nodes.push_back(Node{n});
+    if (!g->native)
+      for (auto n : g->value.get_nodes())
+        g->nodes.push_back(Node{n});
     *out = g.release();
   });
 }
@@ -520,6 +531,9 @@ cudaError_t cudaGraphExecDestroy(cudaGraphExec_t graph) {
 }
 cudaError_t cudaGraphGetNodes(cudaGraph_t graph, cudaGraphNode_t *nodes,
                               size_t *count) {
+  if (graph && graph->native)
+    return fail(cudaErrorNotSupported,
+                "native SYCL recording does not expose graph nodes");
   return attempt([&] {
     require(graph && count, "invalid graph node query");
     if (nodes)
