@@ -67,9 +67,11 @@ streaming, Anthropic messages, repeated output and cancellation recovery.
 The test server stopped cleanly. This HTTP check measures functionality, not
 the throughput in the table.
 
-All flags, prompts, output ids, decoded screen continuations, raw timings,
-DRM memory records, numeric comparisons and HTTP responses are in
+Flags, prompts, per-request timings, output hashes, numeric comparisons and
+HTTP check results are summarized in
 [`bench/results/2026-10-03-sycl-mtp-floor/run.json`](../bench/results/2026-10-03-sycl-mtp-floor/run.json).
+Raw execution logs, generated trial files and workstation configs stay outside
+Git; see the [measurement storage policy](../bench/results/README.md).
 The server config is `~/.local/share/strata-sycl/serve-config.json`; its preceding
 0.5 configuration is backed up as `serve-config-before-floor-tuning.json` in
 the same directory. [The server instructions](#mtp-drafting-on-sycl) give the
@@ -862,7 +864,7 @@ tests check both recording modes, changing host inputs, cross-queue completion
 and replay after destruction of the recording queue. The default also passed
 the real-model OpenAI/Anthropic HTTP checks, complete streaming, repeated
 requests and cancellation recovery. The HTTP server stopped cleanly.
-Flags, raw logs, fdinfo, comparison reports and scripts are in
+Flags, memory measurements, comparison summaries and scripts are in
 [`bench/results/2026-10-03-sycl-verifier-native-recording/run.json`](../bench/results/2026-10-03-sycl-verifier-native-recording/run.json).
 
 ### Captured ordinary post and next route
@@ -906,7 +908,7 @@ A preceding scalar kernel read all misses directly from host-USM rather than
 using DMA. Its three-pair median was `22.86 -> 22.74 tok/s`; the direct-read
 kernel was replaced. Its raw measurements and prototype are retained in
 [`bench/results/2026-10-03-sycl-post-direct-read/run.json`](../bench/results/2026-10-03-sycl-post-direct-read/run.json).
-The final copy/routing flags, comparisons and raw logs are in
+The final copy/routing flags and comparison summaries are in
 [`bench/results/2026-10-03-sycl-post-route/run.json`](../bench/results/2026-10-03-sycl-post-route/run.json).
 
 ### Captured native cache-hit work
@@ -1583,14 +1585,14 @@ a 128-token stream after its first content chunk cancelled generation; the
 next eight-token request returned the preceding text. A complete stream
 also matched the non-streaming response. The server stopped cleanly after
 the checks. This is functional validation, without an HTTP speed comparison.
-Responses and engine logs are in
+Response and validation summaries are in
 [`bench/results/2026-10-03-sycl-http/run.json`](../bench/results/2026-10-03-sycl-http/run.json).
 
 The same HTTP checks also passed after changing the local config to automatic
 cache sizing (3,792 slots on this run) and 64 adaptive replacements every four
 verification rounds, with the completed SYCL refill boundary. Repeated output,
 complete streaming output and cancellation recovery matched. This check does
-not compare speed. Responses, flags and logs are in
+not compare speed. Response summaries, flags and validation results are in
 [`bench/results/2026-10-03-sycl-adaptive-http/run.json`](../bench/results/2026-10-03-sycl-adaptive-http/run.json).
 
 The local config is `~/.local/share/strata-sycl/serve-config.json`. From this
@@ -1621,7 +1623,7 @@ the same quantized inputs. Hidden quantization codes also matched. Floating
 point hidden values and scales can still differ. Maximum final expert error
 against the CPU pool was `1.19209e-6` with the high-accuracy exponential;
 the ordinary Q8_1 expert path's maximum was `0.00620055` in this replay.
-The CSV files and full-model comparisons are recorded in
+The expert and full-model comparison summaries are recorded in
 `bench/results/2026-10-02-sycl-native-q2/`.
 
 With 96 per-layer cache slots, the arithmetic prompt matched all 25 CPU
