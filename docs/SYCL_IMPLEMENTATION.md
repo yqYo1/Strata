@@ -2403,3 +2403,28 @@ IQ3_S and 1 IQ4_XS; down uses IQ4_NL in 39 layers and Q2_0 in 9. The CPU loop
 prototype therefore changes 10 of 48 layers, and only the rows dispatched to
 the multi-token AVX2 kernel. The earlier packed-XMX register record also needs
 this distinction: its IQ2_S scratch spill applies to 20 layers. Further tuning uses this measured model composition.
+
+
+### CPU expert reuse in real decode (2026-10-04)
+
+Two separate CLI runs used the restored AOT binary, 128 generated tokens,
+context 512, 2137 fixed cache slots, five workers, adaptive swaps 64 and speculation
+four with probability floor 0.9. They enabled the existing stats and finite
+logit checks, with no overlapping build or benchmark. These are diagnostic
+CLI runs, separate from the preceding persistent-serving measurements.
+
+| Per-layer average | Writing | Coding |
+| --- | ---: | ---: |
+| Distinct CPU expert jobs | 9.57 | 15.55 |
+| Token applications to those experts | 11.45 | 19.80 |
+| Lower bound on single-token job share | about 80% | about 73% |
+| Gate/up time per speculative round | 26.762 ms | 46.624 ms |
+| Down time per speculative round | 11.056 ms | 18.296 ms |
+
+Each multi-token job adds at least one application beyond the distinct-job
+count. Therefore at least `2 - applications / distinct jobs` of the jobs are
+single-token. This is a bound from rounded counters, not a measured time or
+byte fraction. It explains the limited scope of changes confined to multi-token
+IQ3_S and motivates examining the existing single-token CPU paths. Full flags,
+output ids and phase counters are in the
+[diagnostic record](../bench/results/2026-10-04-sycl-decode-phases/run.json).
