@@ -236,6 +236,47 @@ unit_product(const uint8_t *w, const uint8_t *x, U rows, e::simd_mask<16> valid,
   }
   return result;
 }
+
+template <int Type, int Tile>
+__attribute__((always_inline)) inline e::simd<float, 16 * Tile>
+cell_product(const uint8_t *w, const uint8_t *x, U rows, e::simd_mask<16> valid,
+             size_t stride, size_t xs, int64_t first, int end, int units,
+             int cell) SYCL_ESIMD_FUNCTION {
+  using V = e::simd<float, 16 * Tile>;
+  V even = 0.f, odd = 0.f;
+#pragma unroll 1
+  for (int bin = 0; bin < 8; ++bin) {
+    V partial = 0.f;
+#pragma unroll 1
+    for (int v = cell + bin * 16; v < units; v += 128)
+      partial += unit_product<Type, Tile>(
+          w, x, rows, valid, stride, xs, first, end,
+          Type == 20 ? v / 2 : v, Type == 20 ? v % 2 : -1);
+    if (bin % 2 == 0)
+      even += partial;
+    else
+      odd += partial;
+  }
+  return even + odd;
+}
+
+template <int Type, int Tile, int Step>
+__attribute__((always_inline)) inline e::simd<float, 16 * Tile>
+fold_cells(const uint8_t *w, const uint8_t *x, U rows, e::simd_mask<16> valid,
+           size_t stride, size_t xs, int64_t first, int end, int units,
+           int cell) SYCL_ESIMD_FUNCTION {
+  if constexpr (Step == 16) {
+    return cell_product<Type, Tile>(w, x, rows, valid, stride, xs, first, end,
+                                   units, cell);
+  } else {
+    const auto lo = fold_cells<Type, Tile, Step * 2>(
+        w, x, rows, valid, stride, xs, first, end, units, cell);
+    const auto hi = fold_cells<Type, Tile, Step * 2>(
+        w, x, rows, valid, stride, xs, first, end, units, cell + Step);
+    return lo + hi;
+  }
+}
+
 template <int Type, int Tile, bool Exact>
 void launch(NativeMmq p, void *stream) {
   const size_t tiles = (p.max_rows + Tile - 1) / Tile;
@@ -246,7 +287,7 @@ void launch(NativeMmq p, void *stream) {
   queue_for(stream).parallel_for(
       sycl::nd_range<2>({size_t(p.experts) * tiles, padded}, {1, 16}),
       sycl::ext::oneapi::experimental::properties{
-          sycl::ext::intel::experimental::grf_size<256>},
+          sycl::ext::intel::experimental::grf_size<128>},
       [=](sycl::nd_item<2> it) SYCL_ESIMD_KERNEL {
         const size_t tile = it.get_global_id(0), row = it.get_global_id(1) * 16;
         if (row >= size_t(p.rows))
@@ -270,37 +311,12 @@ void launch(NativeMmq p, void *stream) {
             sum += unit_product<Type, Tile>(w, x, rows, valid, stride, xs,
                                             first, end, unit, -1);
         } else {
-          // Fold warps for each of sixteen lanes first, retaining just one
-          // lane vector before the original subgroup XOR tree.
-          constexpr int N = 16 * Tile;
-          using V = e::simd<float, N>;
-          e::simd<float, 16 * N> total = 0.f;
+          // The fixed recursion spells out the original XOR-8/4/2/1 tree.
+          // Finish each pair before visiting the next one: only four pending
+          // vectors are needed, with no large indirectly indexed array.
           const int units = p.cols / (Type == 20 ? 16 : 32);
-#pragma unroll 1
-          for (int cell = 0; cell < 16; ++cell) {
-            V even = 0.f, odd = 0.f;
-#pragma unroll 1
-            for (int bin = 0; bin < 8; ++bin) {
-              V partial = 0.f;
-#pragma unroll 1
-              for (int v = cell + bin * 16; v < units; v += 128)
-                partial += unit_product<Type, Tile>(
-                    w, x, rows, valid, stride, xs, first, end,
-                    Type == 20 ? v / 2 : v, Type == 20 ? v % 2 : -1);
-              if (bin % 2 == 0)
-                even += partial;
-              else
-                odd += partial;
-            }
-            total.template select<N, 1>(cell * N) = even + odd;
-          }
-          e::simd<float, 8 * N> s8 = total.template select<8 * N, 1>(0) +
-                                     total.template select<8 * N, 1>(8 * N);
-          e::simd<float, 4 * N> s4 = s8.template select<4 * N, 1>(0) +
-                                     s8.template select<4 * N, 1>(4 * N);
-          e::simd<float, 2 * N> s2 = s4.template select<2 * N, 1>(0) +
-                                     s4.template select<2 * N, 1>(2 * N);
-          sum = s2.template select<N, 1>(0) + s2.template select<N, 1>(N);
+          sum = fold_cells<Type, Tile, 1>(w, x, rows, valid, stride, xs, first,
+                                         end, units, 0);
         }
 #pragma unroll
         for (int t = 0; t < Tile; ++t) {

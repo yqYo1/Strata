@@ -2075,7 +2075,7 @@ actual build remain the check for this workstation.
 | Optimization levels | The documented JIT mapping sends `-O1`, `-O2` and `-O3` to the same Level Zero backend optimization level. Frontend optimizations can still differ. The design explicitly excludes AOT, so its mapping is not evidence about AOT output. |
 | Code splitting | `auto` is the default; `per_source` and `per_kernel` change which kernels share an image. ESIMD splitting is separately enabled by default. More images can increase module creation and first-use costs. The preceding per-kernel full-inference experiment was reverted. |
 | Device linking | Relocatable device code is enabled by default. Disabling it restricts cross-translation-unit device calls. The NoRDC design document describes the old offload model; its build-time benefits must not be assumed for the new driver. |
-| GRF allocation | The XMX prompt kernel requests 256 GRFs. JIT runtime code converts that property to `-doubleGRF` for ESIMD. The first AOT build omitted it and failed on all six exact tile-8 instantiations. An indirectly addressed 8 KiB vector could not fit in the 128-GRF allocation. Explicit backend `-doubleGRF` passed this compilation stage. It affects other ESIMD images too, so their performance needs rechecking. |
+| GRF allocation | The initial XMX prompt kernel requested 256 GRFs. JIT runtime code converts that property to `-doubleGRF` for ESIMD. The first AOT build omitted it and failed on all six exact tile-8 instantiations. An indirectly addressed 8 KiB vector could not fit in the 128-GRF allocation. Explicit backend `-doubleGRF` passed this compilation stage. It affects other ESIMD images too, so their performance needs rechecking. |
 | Floating point | Local `icpx -###` confirms that `-ffp-contract=off` alone still leaves unsafe-math, reciprocal and signed-zero transformations enabled. The exact IQ/XMX sources also use `-fno-fast-math`. That combination removes those frontend flags, but does not automatically request correctly rounded device division/square root. Preserve the measured numerical contract when testing flags. |
 | Register diagnostics | The AOT log reports spills for Q4_K/Q5_K SPMD kernels, including prompt products. A spill warning is evidence of scratch traffic, not evidence that these kernels dominate this mixed-format model. Profile the executed kernels before changing their register mode. |
 | ESIMD memory access | The optimization guide recommends contiguous block messages, suitable vector widths and avoiding indirect register indexing where practical. Our weight-row gathers are candidates for GPU-side layout changes. Include repacking and transfers in full-inference timing. Kernel-lambda forced inlining does not apply to ESIMD according to the compiler manual. |
@@ -2113,11 +2113,13 @@ The old-driver AOT build passed ordinary MMQ and exact-XMX MMQ tests
 the full-inference comparison below determines the next experiment. The
 working JIT executable and serving configs remain the baseline.
 
-The AOT configuration under test adds `-DSTRATA_SYCL_DEVICE_ARCH=bmg_g21`
-to the existing Release/Zen 3 configuration. `STRATA_SYCL_AOT_DOUBLE_GRF`
-defaults on and passes `-doubleGRF` only at the AOT device-link stage. Turning it off
-fails to compile the exact tile-8 XMX kernels with this toolchain. It applies
-large registers to all ESIMD images, so validation includes decode kernels.
+The initial AOT configuration added `-DSTRATA_SYCL_DEVICE_ARCH=bmg_g21`
+to the existing Release/Zen 3 configuration, with
+`-DSTRATA_SYCL_AOT_DOUBLE_GRF=ON` passing `-doubleGRF` at device link.
+Without it, that version of the exact tile-8 XMX kernel failed to compile.
+It applies large registers to all ESIMD images, so validation includes decode
+kernels. The subsequent reduction rewrite below removes this requirement;
+the option now defaults off and remains available for diagnostics.
 The new-driver probe uses separate compile and link commands: passing the
 backend option in a combined source-and-link command duplicated `-options` in
 the OCLOC invocation on this compiler and failed for a separate reason.
@@ -2161,3 +2163,77 @@ requirements is the next experiment. Startup also includes reading 46.84 GiB
 of expert weights; the OS file cache was not cleared and read rates varied, so
 startup differences are not attributed solely to compilation. Full trials,
 flags, binary hashes, cache settings and output ids are in the ongoing JSON.
+
+### Exact XMX reduction with 128 GRFs (2026-10-04)
+
+The next kernel computes the same XOR-8/4/2/1 reduction in a statically expanded
+tree. It completes each subtree before visiting the next, keeping four pending
+vectors instead of an indirectly indexed 8 KiB array. Each cell's accumulation
+order is preserved. An intermediate 4 KiB-array version passed output checks
+but still spilled 1,536–2,688 bytes in the tile-8 AOT variants and was rejected
+before performance adoption.
+
+With the tree version, AOT device metadata reports 128 GRFs and no scratch
+buffers for all 48 XMX instantiations. All 72 ESIMD kernels in the full engine
+also use 128 GRFs without scratch buffers. The broad `-doubleGRF` override is
+no longer required, and `STRATA_SYCL_AOT_DOUBLE_GRF` now defaults off.
+
+Three alternating normal-execution pairs compared the preceding exact-XMX JIT
+binary against the tree AOT binary on the same Arc B570/Ryzen 5600X workstation.
+The 827-id fixture prefetched 826 tokens with context 2,048, 1,649 cache slots,
+five CPU workers, chunk 1,024 and adaptive swaps off. Both used exact XMX tile 8
+and reused the preceding experiment's compiler caches. Profiling was disabled;
+no build or other benchmark ran concurrently.
+
+| Long-prompt measurement | Previous exact-XMX JIT | Tree AOT, 128 GRFs |
+| --- | ---: | ---: |
+| Prefill times, three runs | 9.720, 9.615, 9.613 s | 8.971, 8.979, 8.978 s |
+| Median prefill throughput | 85.90 token/s | 92.00 token/s |
+
+All eight generated ids matched in all six runs. This comparison measures the
+combined kernel and AOT change, not the contribution of either in isolation.
+
+Three further alternating pairs used the persistent context-512 text
+configuration, two 128-token writing requests and two coding requests per
+process, with the same warmed compiler-cache directories. All completed ids,
+prefill/decode cancellation and eight-token recovery passed in all six runs.
+
+| Median measurement | Previous exact-XMX JIT | Tree AOT, 128 GRFs |
+| --- | ---: | ---: |
+| First writing prompt | 3.415 s | 3.485 s |
+| Repeated writing prompt | 0.972 s | 0.992 s |
+| First coding prompt | 3.674 s | 3.706 s |
+| Repeated coding prompt | 0.948 s | 0.969 s |
+| First writing decode | 13.43 token/s | 13.25 token/s |
+| Repeated writing decode | 15.81 token/s | 15.89 token/s |
+| First coding decode | 17.35 token/s | 17.37 token/s |
+| Repeated coding decode | 19.73 token/s | 19.99 token/s |
+
+The preceding broad-256-GRF AOT generation slowdown is absent in these paired
+measurements. Short-prompt times are slightly higher, and these small decode
+differences do not establish a general generation-speed gain. The measured
+improvement is long-prompt prefill. Both speed targets remain unmet.
+
+The final JIT and old-driver AOT builds both passed all 39 CTest cases (33.75 s
+and 32.80 s respectively). Exact tiles 1, 2 and 4 also passed all 31 prompt
+geometries in each build, in addition to the suite's tile-8 checks. These compare
+bits with the preceding SPMD implementation and check an independent GGML
+reference. The final AOT engine hash matches the executable used for the
+performance comparisons.
+
+An HTTP run also passed seven checks with the SYCL image encoder: repeated
+single-image input, OpenAI and Anthropic responses, OpenAI streaming, text after
+an image, two-image ordering and returning to a single image. The server exited
+cleanly and closed its localhost port. This run used the normal
+`SYCL_CACHE_PERSISTENT=0` setting. Explicitly enabling that setting for the
+unchanged image encoder caused a startup segmentation fault; a standalone
+comparison also passed with `0` and failed with `1`, before the Strata engine
+started. The engine-only cache benchmarks above passed with it enabled. This
+encoder limitation is recorded separately from the XMX results.
+
+After these checks, the workstation's IQ3_S text and vision configurations use
+`build-sycl-aot/strata` with `STRATA_SYCL_MMQ_XMX=1`,
+`STRATA_SYCL_MMQ_XMX_TILE=8` and `STRATA_SYCL_MMQ_XMX_EXACT=1`. Previous configs
+are archived. No persistent-cache override was added, and the Q2 configuration
+was not changed. XMX remains opt-in in the source defaults. This becomes the
+local tuning baseline; it does not meet the 1,000-prefill/70-generation targets.

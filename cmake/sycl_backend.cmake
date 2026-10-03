@@ -10,7 +10,7 @@ target_compile_options(strata_sycl_runtime PUBLIC -fsycl)
 target_link_options(strata_sycl_runtime PUBLIC -fsycl)
 
 set(STRATA_SYCL_DEVICE_ARCH "" CACHE STRING "Intel GPU AOT target, e.g. bmg_g21 (empty uses JIT)")
-option(STRATA_SYCL_AOT_DOUBLE_GRF "Use 256 GRFs for ESIMD AOT images (no effect for JIT)" ON)
+option(STRATA_SYCL_AOT_DOUBLE_GRF "Use 256 GRFs for ESIMD AOT images (no effect for JIT)" OFF)
 if(STRATA_SYCL_DEVICE_ARCH)
   if(STRATA_PORTABLE)
     message(FATAL_ERROR "STRATA_SYCL_DEVICE_ARCH selects a GPU-specific binary; disable STRATA_PORTABLE")
@@ -25,7 +25,7 @@ if(STRATA_SYCL_DEVICE_ARCH)
   set(_strata_sycl_aot_options "-device ${STRATA_SYCL_DEVICE_ARCH}")
   if(STRATA_SYCL_AOT_DOUBLE_GRF)
     # oneAPI 2026.1 AOT does not forward the per-kernel grf_size property.
-    # This workaround applies to every ESIMD image, including decode kernels.
+    # Keep this diagnostic override optional: it also changes decode kernels.
     string(APPEND _strata_sycl_aot_options " -options -doubleGRF")
   endif()
   target_link_options(strata_sycl_runtime PUBLIC
