@@ -1,0 +1,397 @@
+{
+  "base_url": "http://127.0.0.1:18085",
+  "config": "/home/yayoi/.local/share/strata-sycl/serve-config.json",
+  "checks": [
+    {
+      "kind": "openai_nonstream",
+      "request": 1,
+      "seconds": 6.486996423001983,
+      "response": {
+        "id": "chatcmpl-0994bcc3498343d183cc6ce8",
+        "object": "chat.completion",
+        "created": 1790985514,
+        "model": "qwen3.8-flash-next-sycl",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The rain hammered against the windowpane of"
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 37,
+          "completion_tokens": 8,
+          "total_tokens": 45,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 37,
+          "prompt_ms": 5092.6,
+          "prompt_per_token_ms": 137.638,
+          "prompt_per_second": 7.3,
+          "predicted_n": 8,
+          "predicted_ms": 1388.4,
+          "predicted_per_token_ms": 173.55,
+          "predicted_per_second": 5.8,
+          "draft_n": 7,
+          "draft_n_accepted": 7
+        }
+      }
+    },
+    {
+      "kind": "openai_nonstream",
+      "request": 2,
+      "seconds": 1.8277181409939658,
+      "response": {
+        "id": "chatcmpl-2990660961194d158a9d33dc",
+        "object": "chat.completion",
+        "created": 1790985520,
+        "model": "qwen3.8-flash-next-sycl",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The rain hammered against the windowpane of"
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 37,
+          "completion_tokens": 8,
+          "total_tokens": 45,
+          "prompt_tokens_details": {
+            "cached_tokens": 30
+          }
+        },
+        "timings": {
+          "cache_n": 30,
+          "prompt_n": 7,
+          "prompt_ms": 1135.2,
+          "prompt_per_token_ms": 162.171,
+          "prompt_per_second": 6.2,
+          "predicted_n": 8,
+          "predicted_ms": 690.9,
+          "predicted_per_token_ms": 86.362,
+          "predicted_per_second": 11.6,
+          "draft_n": 7,
+          "draft_n_accepted": 7
+        }
+      }
+    },
+    {
+      "kind": "cancel_stream_after_content",
+      "first_content": "The"
+    },
+    {
+      "kind": "openai_after_cancel",
+      "seconds": 1.9463963510061149,
+      "response": {
+        "id": "chatcmpl-7e967892b94f41b3a96cdd86",
+        "object": "chat.completion",
+        "created": 1790985523,
+        "model": "qwen3.8-flash-next-sycl",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The rain hammered against the windowpane of"
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 37,
+          "completion_tokens": 8,
+          "total_tokens": 45,
+          "prompt_tokens_details": {
+            "cached_tokens": 30
+          }
+        },
+        "timings": {
+          "cache_n": 30,
+          "prompt_n": 7,
+          "prompt_ms": 1118.8,
+          "prompt_per_token_ms": 159.829,
+          "prompt_per_second": 6.3,
+          "predicted_n": 8,
+          "predicted_ms": 670.9,
+          "predicted_per_token_ms": 83.862,
+          "predicted_per_second": 11.9,
+          "draft_n": 7,
+          "draft_n_accepted": 7
+        }
+      }
+    },
+    {
+      "kind": "anthropic_nonstream",
+      "response": {
+        "id": "msg_351b29f0badf4f0c8252ef0a",
+        "type": "message",
+        "role": "assistant",
+        "model": "qwen3.8-flash-next-sycl",
+        "content": [
+          {
+            "type": "text",
+            "text": "The rain hammered against the windowpane of"
+          }
+        ],
+        "stop_reason": "max_tokens",
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 7,
+          "output_tokens": 8,
+          "cache_read_input_tokens": 30
+        }
+      }
+    },
+    {
+      "kind": "openai_complete_stream",
+      "chunks": [
+        {
+          "id": "chatcmpl-652bd38b6e164095880098a2",
+          "object": "chat.completion.chunk",
+          "created": 1790985527,
+          "model": "qwen3.8-flash-next-sycl",
+          "choices": [
+            {
+              "index": 0,
+              "delta": {
+                "role": "assistant",
+                "content": ""
+              },
+              "finish_reason": null
+            }
+          ]
+        },
+        {
+          "id": "chatcmpl-652bd38b6e164095880098a2",
+          "object": "chat.completion.chunk",
+          "created": 1790985527,
+          "model": "qwen3.8-flash-next-sycl",
+          "choices": [
+            {
+              "index": 0,
+              "delta": {
+                "content": "The"
+              },
+              "finish_reason": null
+            }
+          ]
+        },
+        {
+          "id": "chatcmpl-652bd38b6e164095880098a2",
+          "object": "chat.completion.chunk",
+          "created": 1790985527,
+          "model": "qwen3.8-flash-next-sycl",
+          "choices": [
+            {
+              "index": 0,
+              "delta": {
+                "content": " rain"
+              },
+              "finish_reason": null
+            }
+          ]
+        },
+        {
+          "id": "chatcmpl-652bd38b6e164095880098a2",
+          "object": "chat.completion.chunk",
+          "created": 1790985527,
+          "model": "qwen3.8-flash-next-sycl",
+          "choices": [
+            {
+              "index": 0,
+              "delta": {
+                "content": " hammered"
+              },
+              "finish_reason": null
+            }
+          ]
+        },
+        {
+          "id": "chatcmpl-652bd38b6e164095880098a2",
+          "object": "chat.completion.chunk",
+          "created": 1790985527,
+          "model": "qwen3.8-flash-next-sycl",
+          "choices": [
+            {
+              "index": 0,
+              "delta": {
+                "content": " against"
+              },
+              "finish_reason": null
+            }
+          ]
+        },
+        {
+          "id": "chatcmpl-652bd38b6e164095880098a2",
+          "object": "chat.completion.chunk",
+          "created": 1790985527,
+          "model": "qwen3.8-flash-next-sycl",
+          "choices": [
+            {
+              "index": 0,
+              "delta": {
+                "content": " the"
+              },
+              "finish_reason": null
+            }
+          ]
+        },
+        {
+          "id": "chatcmpl-652bd38b6e164095880098a2",
+          "object": "chat.completion.chunk",
+          "created": 1790985527,
+          "model": "qwen3.8-flash-next-sycl",
+          "choices": [
+            {
+              "index": 0,
+              "delta": {
+                "content": " window"
+              },
+              "finish_reason": null
+            }
+          ]
+        },
+        {
+          "id": "chatcmpl-652bd38b6e164095880098a2",
+          "object": "chat.completion.chunk",
+          "created": 1790985527,
+          "model": "qwen3.8-flash-next-sycl",
+          "choices": [
+            {
+              "index": 0,
+              "delta": {
+                "content": "pane"
+              },
+              "finish_reason": null
+            }
+          ]
+        },
+        {
+          "id": "chatcmpl-652bd38b6e164095880098a2",
+          "object": "chat.completion.chunk",
+          "created": 1790985527,
+          "model": "qwen3.8-flash-next-sycl",
+          "choices": [
+            {
+              "index": 0,
+              "delta": {
+                "content": " of"
+              },
+              "finish_reason": null
+            }
+          ]
+        },
+        {
+          "id": "chatcmpl-652bd38b6e164095880098a2",
+          "object": "chat.completion.chunk",
+          "created": 1790985527,
+          "model": "qwen3.8-flash-next-sycl",
+          "choices": [
+            {
+              "index": 0,
+              "delta": {},
+              "finish_reason": "length"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 37,
+            "completion_tokens": 8,
+            "total_tokens": 45,
+            "prompt_tokens_details": {
+              "cached_tokens": 30
+            }
+          },
+          "timings": {
+            "cache_n": 30,
+            "prompt_n": 7,
+            "prompt_ms": 1084.2,
+            "prompt_per_token_ms": 154.886,
+            "prompt_per_second": 6.5,
+            "predicted_n": 8,
+            "predicted_ms": 350.0,
+            "predicted_per_token_ms": 43.75,
+            "predicted_per_second": 22.9,
+            "draft_n": 7,
+            "draft_n_accepted": 7
+          }
+        }
+      ],
+      "done": true,
+      "content_equal": true
+    }
+  ],
+  "models": {
+    "object": "list",
+    "data": [
+      {
+        "id": "qwen3.8-flash-next-sycl",
+        "object": "model",
+        "status": {
+          "value": "loaded"
+        },
+        "meta": {
+          "n_ctx": 512
+        },
+        "architecture": {
+          "input_modalities": [
+            "text"
+          ],
+          "output_modalities": [
+            "text"
+          ]
+        }
+      }
+    ]
+  },
+  "web_ui_status": 200,
+  "source_revision": "37ca723",
+  "engine_flags": [
+    "--serve",
+    "--pack",
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-q2_0",
+    "--native",
+    "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-q2_0/Q2_0/Qwen3.8-Flash-Next-GSQ-RCO-Q2_0-00001-of-00002.gguf",
+    "--tokens",
+    "1",
+    "--max-new",
+    "8",
+    "--max-context",
+    "512",
+    "--spec",
+    "4",
+    "--spec-min-p",
+    "0.5",
+    "--mtp",
+    "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+    "--suffix-draft",
+    "0",
+    "--prefill",
+    "16",
+    "--short-read",
+    "0",
+    "--expert-cache",
+    "auto",
+    "--expert-profile",
+    "data/expert-profile.bin",
+    "--expert-cache-per-layer",
+    "--pool-workers",
+    "4",
+    "--adapt-swaps",
+    "64",
+    "--pcie-frac",
+    "0"
+  ],
+  "host": "127.0.0.1",
+  "description": "Real-model HTTP check after auto cache and 64-slot completed adaptive refill settings; no speed comparison"
+}
