@@ -90,7 +90,9 @@ constexpr Format formats[] = {{2, 32, 18, 0},      {6, 32, 22, 0},
                               {14, 256, 210, 208}, {20, 32, 18, 0},
                               {23, 256, 136, 0},   {42, 64, 18, 0},
                               {21, 256, 110, 0},   {18, 256, 98, 0},
-                              {22, 256, 82, 0}};
+                              {22, 256, 82, 0},    {16, 256, 66, 0},
+                              {17, 256, 74, 0},    {29, 256, 56, 48},
+                              {7, 32, 24, 0}};
 void decode(int type, const uint8_t *p, float *out) {
   switch (type) {
   case 2:
@@ -98,6 +100,24 @@ void decode(int type, const uint8_t *p, float *out) {
     break;
   case 6:
     dequantize_q5_0(p, out);
+    break;
+  case 7:
+#ifdef STRATA_SYCL_GGML_ORACLE
+    ggml_get_type_traits(GGML_TYPE_Q5_1)->to_float(p, out, 32);
+#else
+    dequantize_q5_1(p, out);
+#endif
+    break;
+  case 16:
+  case 17:
+  case 29:
+#ifdef STRATA_SYCL_GGML_ORACLE
+    ggml_get_type_traits(ggml_type(type))->to_float(p, out, 256);
+#else
+    if (type == 16) dequantize_iq2_xxs(p, out);
+    if (type == 17) dequantize_iq2_xs(p, out);
+    if (type == 29) dequantize_iq1_m(p, out);
+#endif
     break;
   case 8:
     dequantize_q8_0(p, out);
@@ -160,14 +180,28 @@ std::vector<uint8_t> weights(Format f, int n, int rows) {
     const float scale = (int(random() % 1025) - 512) / 131072.f;
     const uint16_t bits = half(scale);
     std::memcpy(bytes.data() + i + f.scale, &bits, 2);
-    if (f.type == 12 || f.type == 13) {
+    if (f.type == 29) {
+      for (int j = 0; j < 4; ++j) {
+        auto *sc = bytes.data() + i + 48 + 2 * j;
+        const auto low = uint16_t(sc[0]) | (uint16_t(sc[1] & 15) << 8);
+        const auto full = uint16_t(low | (((bits >> (4 * j)) & 15) << 12));
+        std::memcpy(sc, &full, 2);
+      }
+    }
+    if (f.type == 12 || f.type == 13 || f.type == 7) {
       const uint16_t min_bits = half(float(random() % 512) / 131072.f);
       std::memcpy(bytes.data() + i + 2, &min_bits, 2);
     }
   }
   // A subnormal block scale exercises two-byte loads and bit conversion.
   const uint16_t smallest = 1;
-  std::memcpy(bytes.data() + f.scale, &smallest, 2);
+  if (f.type == 29) {
+    for (int j = 0; j < 4; ++j) {
+      auto *sc = bytes.data() + 48 + 2 * j;
+      sc[1] = uint8_t((sc[1] & 15) | (j == 0 ? 16 : 0));
+    }
+  } else
+    std::memcpy(bytes.data() + f.scale, &smallest, 2);
   return bytes;
 }
 std::vector<uint8_t> quantize(const std::vector<float> &x) {
@@ -355,7 +389,8 @@ void transfers(Format f, int row_count = 4,
                 N, gathered.data(), nullptr);
   const auto got = out.read(), emb = gathered.read();
   const auto f16 = halfout.read(), gu = interleaved.read();
-  if (f.type == 18 || f.type == 21 || f.type == 22)
+  if (f.type == 16 || f.type == 17 || f.type == 18 || f.type == 21 ||
+      f.type == 22 || f.type == 29)
     check(std::memcmp(got.data(), reference.data(), N * R * 4) == 0,
           "IQ expert dequantization bits against ggml");
   for (int i = 0; i < N * R; ++i) {
@@ -474,7 +509,7 @@ void run(Format f, int n, int rows, int cols, bool exact,
           expected += term;
           magnitude += std::abs(term);
         }
-        if (f.type == 2 || f.type == 6) {
+        if (f.type == 2 || f.type == 6 || f.type == 7) {
           const auto *qb = q8.data() + (size_t(col) * n / 32 + b) * 36;
           int qsum = 0;
           for (int i = 0; i < 32; ++i)
@@ -482,7 +517,8 @@ void run(Format f, int n, int rows, int cols, bool exact,
           // Native affine formats use the FP16 original-input sum, not
           // sum(q)*d.
           const double correction =
-              (f.type == 2 ? 8. : 16.) * unhalf(wb) *
+              (f.type == 7 ? -double(unhalf(wb + 2))
+                           : (f.type == 2 ? 8. : 16.) * unhalf(wb)) *
               (double(unhalf(qb)) * qsum - unhalf(qb + 2));
           expected += correction;
           magnitude += std::abs(correction);
@@ -572,7 +608,8 @@ int main(int argc, char **argv) {
       grouped(formats[9], 2560, 640);
       grouped(formats[9], 2560, 640, true);
       grouped(formats[10], 2560, 640, false, &formats[7]);
-      for (const auto f : {formats[11], formats[12]}) {
+      for (const auto f : {formats[11], formats[12], formats[13],
+                            formats[14], formats[15]}) {
         grouped(f, 2560, 640, false, &formats[7]);
         grouped(f, 2560, 640, false, &formats[9]);
       }
@@ -643,6 +680,41 @@ int main(int argc, char **argv) {
         }
       }
       transfers({30, 1, 2, 0});
+      for (const auto f : {formats[13], formats[14], formats[15]}) {
+        const int rows = f.type == 16 ? 256 : f.type == 17 ? 512 : 2048;
+        auto w = weights(f, 256, rows);
+        const uint16_t edges[] = {0, 0x8000, 1, 0x8001, 0x3ff,
+                                  0x400, 0x8400, 0x7bff};
+        for (int row = 0; row < rows; ++row) {
+          auto *b = w.data() + row * f.bytes;
+          if (f.type == 29) {
+            for (int sc = 0; sc < 4; ++sc)
+              b[49 + 2 * sc] = uint8_t((b[49 + 2 * sc] & 15) |
+                                (((edges[row % 8] >> (4 * sc)) & 15) << 4));
+          } else
+            std::memcpy(b, &edges[row % 8], 2);
+          for (int group = 0; group < 8; ++group) {
+            if (f.type == 16) {
+              std::fill_n(b + 2 + 8 * group, 4, uint8_t(row));
+              uint32_t aux = uint32_t(row % 16) << 28;
+              for (int cell = 0; cell < 4; ++cell)
+                aux |= uint32_t((row + group * 4 + cell) & 127) << (7 * cell);
+              std::memcpy(b + 6 + 8 * group, &aux, 4);
+            } else if (f.type == 17) {
+              for (int cell = 0; cell < 4; ++cell) {
+                const uint16_t qs = uint16_t(row | (((row + group + cell) & 127) << 9));
+                std::memcpy(b + 2 + 8 * group + 2 * cell, &qs, 2);
+              }
+            } else {
+              for (int cell = 0; cell < 4; ++cell)
+                b[4 * group + cell] = uint8_t(row);
+              const int high = (row >> 8) | (row % 2 ? 8 : 0);
+              b[32 + 2 * group] = b[33 + 2 * group] = uint8_t(high | (high << 4));
+            }
+          }
+        }
+        transfers(f, rows, &w);
+      }
     }
     if (argc == 3 && std::string(argv[1]) == "--gguf")
       real_model(argv[2]);

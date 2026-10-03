@@ -117,6 +117,19 @@ inline void dequantize_q5_0(const uint8_t* block, float* out) {
 static const int8_t kvalues_iq4nl[16] = {-127, -104, -83, -65, -49, -35, -22, -10,
                                          1,    13,   25,  38,  53,  69,  89,  113};
 
+// Q5_1 has the Q5_0 codes without the -16 offset, plus a second FP16 minimum.
+inline void dequantize_q5_1(const uint8_t* block, float* out) {
+    const float d = fp16_to_fp32(read_u16(block));
+    const float m = fp16_to_fp32(read_u16(block + 2));
+    const uint32_t h = uint32_t(block[4]) | (uint32_t(block[5]) << 8) |
+                       (uint32_t(block[6]) << 16) | (uint32_t(block[7]) << 24);
+    for (int j = 0; j < 32; ++j) {
+        const int q = ((block[8 + j % 16] >> (j < 16 ? 0 : 4)) & 15) |
+                      (((h >> j) & 1) << 4);
+        out[j] = d * q + m;
+    }
+}
+
 inline void dequantize_iq4_nl(const uint8_t* block, float* out) {
     const float d = fp16_to_fp32(read_u16(block));
     const uint8_t* qs = block + 2;

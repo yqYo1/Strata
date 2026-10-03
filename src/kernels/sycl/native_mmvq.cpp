@@ -154,6 +154,17 @@ struct Q50Block {
   uint8_t qh[4];
   uint8_t qs[16];
 };
+struct Q51Block {
+  half d, m;
+  uint8_t qh[4];
+  uint8_t qs[16];
+};
+struct IQ2XXSBlock { half d; uint8_t qs[64]; };
+struct IQ2XSBlock { half d; uint8_t qs[64], scales[8]; };
+struct alignas(2) IQ1MBlock { uint8_t bytes[56]; };
+static_assert(sizeof(Q51Block) == 24 && offsetof(Q51Block, qs) == 8);
+static_assert(sizeof(IQ2XXSBlock) == 66 && sizeof(IQ2XSBlock) == 74 &&
+              sizeof(IQ1MBlock) == 56);
 struct Q80Block {
   half d;
   int8_t qs[32];
@@ -355,6 +366,18 @@ inline float small_q8_dot(const Q80Block *__restrict__ w,
   const float d0 = w->d;
   const float d1 = half_low(x->ds);
   return d0 * d1 * float(sumi);
+}
+inline float small_q8_dot(const Q51Block *__restrict__ w,
+                          const Q81Block *__restrict__ x, int iqs) {
+  const uint32_t high = strata::iq_read_u32(w->qh);
+  int dot = 0;
+  for (int j = 4 * iqs; j < 4 * iqs + 8; ++j) {
+    const int low = (w->qs[j] & 15) | (((high >> j) & 1) << 4);
+    const int hi = (w->qs[j] >> 4) | (((high >> (j + 16)) & 1) << 4);
+    dot += low * x->qs[j] + hi * x->qs[j + 16];
+  }
+  const auto ds = half_pair_float(x->ds);
+  return (float(w->d) * ds.x) * float(dot) + float(w->m) * ds.y * 0.5f;
 }
 inline float small_q8_dot(const IQ4NLBlock *__restrict__ w,
                           const Q81Block *__restrict__ x, int iqs) {
@@ -614,6 +637,86 @@ struct IQ3XXSTraits {
     return (w.d * half_low(activation.ds)) * scaled;
   }
 };
+template <bool XS> struct IQ2Traits {
+  using Block = std::conditional_t<XS, IQ2XSBlock, IQ2XXSBlock>;
+  static constexpr int DIV = 256, T = 8, KBY = 8, BPI = 16;
+  static int kqs(int tid) { return 2 * (tid % 8); }
+  struct W { int grid[8], scale[2]; float d; };
+  static W load(const Block *__restrict__ w, int iqs) {
+    W result;
+    const int group = iqs / 2;
+    result.d = w->d;
+    const uint32_t aux = strata::iq_read_u32(w->qs + 8 * group + 4);
+    if constexpr (XS) {
+      result.scale[0] = 2 * (w->scales[group] & 15) + 1;
+      result.scale[1] = 2 * (w->scales[group] >> 4) + 1;
+    } else {
+      result.scale[0] = result.scale[1] = 2 * (aux >> 28) + 1;
+    }
+    for (int cell = 0; cell < 4; ++cell) {
+      uint64_t grid;
+      unsigned signs;
+      if constexpr (XS) {
+        const auto qs = strata::iq_read_u16(w->qs + 8 * group + 2 * cell);
+        grid = strata::iq2_xs_grid[qs & 511];
+        signs = strata::iq_even_parity_signs(qs >> 9);
+      } else {
+        grid = strata::iq2_xxs_grid[w->qs[8 * group + cell]];
+        signs = strata::iq_even_parity_signs(aux >> (7 * cell));
+      }
+      result.grid[2 * cell] = signed_grid_word(uint32_t(grid), signs);
+      result.grid[2 * cell + 1] = signed_grid_word(uint32_t(grid >> 32), signs >> 4);
+    }
+    return result;
+  }
+  static float apply(const W &w, const Q81Block *__restrict__ x, int iqs) {
+    const auto &a = x[iqs / 2];
+    const auto *codes = reinterpret_cast<const int *>(a.qs);
+    int dot[2] = {};
+    for (int j = 0; j < 8; ++j)
+      dot[j / 4] = packed_dot(w.grid[j], codes[j], dot[j / 4]);
+    const float scaled = float(dot[0] * w.scale[0] + dot[1] * w.scale[1]) * 0.125f;
+    return (w.d * half_low(a.ds)) * scaled;
+  }
+};
+struct IQ1MTraits {
+  using Block = IQ1MBlock;
+  static constexpr int DIV = 256, T = 8, KBY = 8, BPI = 16;
+  static int kqs(int tid) { return 2 * (tid % 8); }
+  struct W { int grid[8], scale[2]; float d; };
+  static W load(const Block *__restrict__ w, int iqs) {
+    W result;
+    const auto *b = w->bytes;
+    const int group = iqs / 2;
+    const auto sc = strata::iq_read_u16(b + 48 + 2 * (group / 2));
+    result.d = f32_from_f16(strata::iq1_m_scale_bits(b));
+    for (int h = 0; h < 2; ++h)
+      result.scale[h] = 2 * ((sc >> (6 * (group % 2) + 3 * h)) & 7) + 1;
+    for (int cell = 0; cell < 4; ++cell) {
+      const int high = b[32 + 2 * group + cell / 2] >> (4 * (cell % 2));
+      const auto grid = strata::iq1_s_grid[b[4 * group + cell] | ((high & 7) << 8)];
+      const int delta = high & 8 ? -1 : 1;
+      for (int word = 0; word < 2; ++word) {
+        uint32_t codes = 0;
+        for (int j = 0; j < 4; ++j) {
+          const int v = 8 * int8_t(grid >> (8 * (4 * word + j))) + delta;
+          codes |= uint32_t(uint8_t(v)) << (8 * j);
+        }
+        result.grid[2 * cell + word] = int(codes);
+      }
+    }
+    return result;
+  }
+  static float apply(const W &w, const Q81Block *__restrict__ x, int iqs) {
+    const auto &a = x[iqs / 2];
+    const auto *codes = reinterpret_cast<const int *>(a.qs);
+    int dot[2] = {};
+    for (int j = 0; j < 8; ++j)
+      dot[j / 4] = packed_dot(w.grid[j], codes[j], dot[j / 4]);
+    const float scaled = float(dot[0] * w.scale[0] + dot[1] * w.scale[1]) * 0.125f;
+    return (w.d * half_low(a.ds)) * scaled;
+  }
+};
 struct IQ2STraits {
   using Block = IQ2SBlock;
   static constexpr int DIV = 256, T = 8, KBY = 8, BPI = 16;
@@ -761,6 +864,8 @@ Format format(int type) {
     return {32, 18};
   case 6:
     return {32, 22};
+  case 7:
+    return {32, 24};
   case 8:
     return {32, 34};
   case 11:
@@ -773,6 +878,12 @@ Format format(int type) {
     return {256, 210};
   case 18:
     return {256, 98};
+  case 16:
+    return {256, 66};
+  case 17:
+    return {256, 74};
+  case 29:
+    return {256, 56};
   case 20:
     return {32, 18};
   case 21:
@@ -939,12 +1050,16 @@ void grouped_dispatch(int type, const NativeExpertLayout &L,
   switch (type) {
     GROUPED(2, SmallTraits<Q40Block, 4>);
     GROUPED(6, SmallTraits<Q50Block, 4>);
+    GROUPED(7, SmallTraits<Q51Block, 4>);
     GROUPED(8, SmallTraits<Q80Block, 8>);
     GROUPED(11, Q3KTraits);
     GROUPED(12, Q4KTraits);
     GROUPED(13, Q5KTraits);
     GROUPED(14, Q6KTraits);
     GROUPED(18, IQ3XXSTraits);
+    GROUPED(16, IQ2Traits<false>);
+    GROUPED(17, IQ2Traits<true>);
+    GROUPED(29, IQ1MTraits);
     GROUPED(20, SmallTraits<IQ4NLBlock, 4>);
     GROUPED(21, IQ3STraits);
     GROUPED(22, IQ2STraits);
@@ -1016,9 +1131,9 @@ void native_quantize_q8_1(const float *x, void *scratch, int n_in, int ncols,
       });
 }
 bool native_mmvq_supported(int type) noexcept {
-  return type == 2 || type == 6 || type == 8 || type == 11 || type == 12 ||
+  return type == 2 || type == 6 || type == 7 || type == 8 || type == 11 || type == 12 ||
          type == 13 || type == 14 || type == 18 || type == 20 || type == 21 ||
-         type == 22 || type == 23 || type == 42;
+         type == 22 || type == 23 || type == 42 || type == 16 || type == 17 || type == 29;
 }
 size_t native_mmvq_weight_bytes(int type, int n_in, int n_out) {
   const auto f = format(type);
@@ -1040,6 +1155,9 @@ void native_mmvq(int type, const void *w, const void *x, float *y, int n_in,
     break;
   case 6:
     dispatch<SmallTraits<Q50Block, 4>>(w, x, y, n_in, n_out, ncols, stream);
+    break;
+  case 7:
+    dispatch<SmallTraits<Q51Block, 4>>(w, x, y, n_in, n_out, ncols, stream);
     break;
   case 8:
     dispatch<SmallTraits<Q80Block, 8>>(w, x, y, n_in, n_out, ncols, stream);
@@ -1072,6 +1190,15 @@ void native_mmvq(int type, const void *w, const void *x, float *y, int n_in,
     break;
   case 18:
     dispatch<IQ3XXSTraits>(w, x, y, n_in, n_out, ncols, stream);
+    break;
+  case 16:
+    dispatch<IQ2Traits<false>>(w, x, y, n_in, n_out, ncols, stream);
+    break;
+  case 17:
+    dispatch<IQ2Traits<true>>(w, x, y, n_in, n_out, ncols, stream);
+    break;
+  case 29:
+    dispatch<IQ1MTraits>(w, x, y, n_in, n_out, ncols, stream);
     break;
   case 20:
     dispatch<SmallTraits<IQ4NLBlock, 4>>(w, x, y, n_in, n_out, ncols, stream);
