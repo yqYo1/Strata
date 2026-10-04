@@ -82,7 +82,7 @@ def main():
                                if k in ("ONEAPI_DEVICE_SELECTOR", "SYCL_EAGER_INIT",
                                         "SYCL_UR_USE_LEVEL_ZERO_V2") or k.startswith(
                                    ("STRATA_SYCL_", "STRATA_PREFILL_", "STRATA_STAGER_",
-                                    "STRATA_NO_IQ", "STRATA_IQ_MT_MIN", "STRATA_POOL_SPIN_US", "UR_L0_",
+                                    "STRATA_NO_IQ", "STRATA_IQ_MT_MIN", "STRATA_IQ_SINGLE_", "STRATA_POOL_SPIN_US", "UR_L0_",
                                     "SYCL_CACHE_", "NEO_CACHE_"))})
     args.output.parent.mkdir(parents=True, exist_ok=True)
 

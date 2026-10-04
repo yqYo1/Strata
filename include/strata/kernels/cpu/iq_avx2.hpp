@@ -10,6 +10,11 @@
 
 namespace strata::kernels::cpu {
 
+// Experimental single-token IQ3_XXS/IQ2_S gate/up, matching GGML's float tree.
+// Returns false without writing for other formats or compiler/CPU targets.
+bool iq256_single_gu_rows(int ggml_type, const uint8_t* blob, size_t gu_row, size_t up_off,
+                          int n, const void* act, float* ff, int r0, int r1);
+
 bool iq256_supported(int ggml_type) noexcept;
 /// ff[t][r] = silu(gate_r . a[t]) * (up_r . a[t]), rows [r0, r1); gate rows at blob, up rows at blob + up_off.
 void iq256_gu_rows(int ggml_type, const uint8_t* blob, size_t gu_row, size_t up_off, int n, const void* const* act,

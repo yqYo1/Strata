@@ -112,6 +112,15 @@ void native_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* const* 
             return;
         }
     }
+    // Opt-in Zen 3 single-token kernels retain GGML's float reduction order.
+    // Multi-token selection above and STRATA_NO_IQ256 keep their existing roles.
+    static const bool single_exact = [] {
+        const char* v = std::getenv("STRATA_IQ_SINGLE_EXACT");
+        return v && std::atoi(v) != 0;
+    }();
+    if (single_exact && avx2 && !cpu512 && nt == 1 &&
+        iq256_single_gu_rows(f.gu_type, blob, f.gu_row, f.up_off, (int) f.n_embd, act[0], ff[0], r0, r1))
+        return;
     const ggml_vec_dot_t dot = traits(f.gu_type)->vec_dot;
     const int n = (int) f.n_embd;
     for (int r = r0; r < r1; ++r) {

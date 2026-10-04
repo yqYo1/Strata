@@ -2471,3 +2471,46 @@ The two serving runs are functional checks, not decode throughput medians.
 The final JIT and AOT builds each passed all 40 CTests (37.54 and 33.94
 seconds). The AOT executable hash remained the one used in the paired model
 measurements. Local text and vision configs continue to leave packing off.
+
+### Zen 3 single-token CPU dot products (2026-10-04)
+
+`STRATA_IQ_SINGLE_EXACT=1` selects tuned IQ3_XXS and IQ2_S single-token
+gate/up loops on a Clang `znver3` build. The inner loop is expanded twice
+for IQ3_XXS and four times for IQ2_S. Integer lanes, FMA order and GGML's
+horizontal float reduction are preserved. This selection follows the existing
+multi-token dispatch, respects `STRATA_NO_IQ256`, and leaves other formats,
+AVX-512 CPUs and compiler targets on their existing paths. It is off by default.
+
+On the Ryzen 5 5600X, the production CPU object processed 64 distinct real
+experts 13.39% faster for IQ3_XXS and 5.22% faster for IQ2_S in an isolated
+single-thread gate/up test. These component rates do not describe whole-model
+throughput. All results matched the linked GGML implementation bit for bit.
+
+Three alternating off/on pairs used the same B570 AOT executable and IQ3_S
+model, context 512, 2,137 automatic cache slots, five workers, prefill chunk
+1,024, adaptation 64, and four draft tokens with probability floor 0.9.
+Each process generated 128 tokens twice for each prompt. Exact tile-8 XMX
+was enabled and scratch packing was disabled.
+
+| Median decode rate, token/s | Flag off | Flag on |
+| --- | ---: | ---: |
+| Writing, first request | 13.351 | 13.534 |
+| Writing, repeated request | 15.778 | 15.969 |
+| Coding, first request | 17.534 | 17.731 |
+| Coding, repeated request | 19.659 | 20.092 |
+
+The measured median gains were 1.13–2.20%. All completed output ids matched;
+prefill/decode cancellation and eight-token recovery passed in every process.
+No compilation, other GPU tests or CPU microbenchmarks overlapped measurement.
+Existing workstation services remained active, so these small gains should
+be read as measurements of these fixtures on this machine.
+
+Both JIT and AOT builds passed the new 256-case CPU test, checking GGML bitwise
+parity, finite results, padded row strides, full/partial/empty row ranges and
+output canaries. A generic x86-64 compilation also checked the fallback stub.
+The local IQ3_S text configs now enable the flag; the repository default
+remains off. The [measurement record](../bench/results/2026-10-04-sycl-cpu-single-exact/run.json)
+contains all samples, hashes, flags and component measurements. The earlier
+[loop-expansion screen](../bench/results/2026-10-04-sycl-cpu-single-unroll/run.json)
+also records the slower alternatives. The 1,000 token/s prefill and 70 token/s
+decode targets remain unmet.
