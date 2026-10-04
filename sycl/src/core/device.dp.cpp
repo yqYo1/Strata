@@ -4,10 +4,13 @@
 #include <dpct/dpct.hpp>
 #include "strata/core/device.hpp"
 
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
 
 namespace strata::core {
+
+class PoisonKernel;
 
 namespace {
 
@@ -123,12 +126,8 @@ bool device_summary(int ordinal, std::string &name, std::string &detail) try {
     std::snprintf(buf, sizeof(buf), "arch %s, %.1f GiB, wave%d", base_arch(p.gcnArchName).c_str(),
                   (double) p.totalGlobalMem / (1024.0 * 1024 * 1024), p.warpSize);
 #else
-    /*
-    DPCT1005: The SYCL device version is different from CUDA Compute
-    Compatibility. You may need to rewrite this code.
-    */
-    std::snprintf(buf, sizeof(buf), "compute capability %d.%d, %.1f GiB",
-                  p.get_major_version(), p.get_minor_version(),
+    std::snprintf(buf, sizeof(buf), "SYCL driver %s, %.1f GiB",
+                  dpct::get_device(ordinal).get_info<sycl::info::device::driver_version>().c_str(),
                   (double)p.get_global_mem_size() / (1024.0 * 1024 * 1024));
 #endif
     name = p.get_name();
@@ -255,21 +254,12 @@ std::string device_code_error() try {
 #if defined(STRATA_USE_HIP)
     return "";   // gpu_arch_problem() checks the HIP architectures against STRATA_HIP_ARCHS, before this point
 #else
-    // every .cu of the engine is compiled for the same CMAKE_CUDA_ARCHITECTURES, so this kernel stands for all
-    dpct::kernel_function_info a{};
-    const dpct::err0 e = DPCT_CHECK_ERROR(
-        dpct::get_kernel_function_info(&a, (const void *)poison_kernel));
-    if (e == 0) return {};
-    /*
-    DPCT1026: The call to cudaGetLastError was removed because this
-    functionality is redundant in SYCL.
-    */
-    /*
-    DPCT1009: SYCL reports errors using exceptions and does not use error
-    codes. Please replace the "get_error_string_dummy(...)" with a real
-    error-handling function.
-    */
-    return dpct::get_error_string_dummy(e);
+    const auto& q = dpct::get_in_order_queue();
+    const auto id = sycl::get_kernel_id<dpct_kernel_name<PoisonKernel>>();
+    const auto bundle = sycl::get_kernel_bundle<sycl::bundle_state::executable>(
+        q.get_context(), {q.get_device()}, {id});
+    return bundle.has_kernel(id, q.get_device()) ? std::string{}
+           : "SYCL device has no executable engine kernel image";
 #endif
 }
 catch (sycl::exception const &exc) {
@@ -285,7 +275,7 @@ DeviceInfo device_info(int ordinal) {
 #if defined(STRATA_USE_HIP)
         throw CudaError(std::string("no HIP device is present; this engine was compiled for ") + STRATA_HIP_ARCHS, -1);
 #else
-        throw CudaError("no CUDA device is present; Strata needs an NVIDIA GPU (RTX 20 series or newer)", -1);
+        throw CudaError("no SYCL device is present; select the Intel GPU with ONEAPI_DEVICE_SELECTOR=level_zero:gpu", -1);
 #endif
     }
     if (ordinal < 0 || ordinal >= count) {
@@ -305,16 +295,9 @@ DeviceInfo device_info(int ordinal) {
     check(DPCT_CHECK_ERROR(dpct::get_device(ordinal).get_device_info(p)),
           "cudaGetDeviceProperties");
     d.name = p.get_name();
-    /*
-    DPCT1005: The SYCL device version is different from CUDA Compute
-    Compatibility. You may need to rewrite this code.
-    */
-    d.cc_major = p.get_major_version();
-    /*
-    DPCT1005: The SYCL device version is different from CUDA Compute
-    Compatibility. You may need to rewrite this code.
-    */
-    d.cc_minor = p.get_minor_version();
+    // CUDA compute capability and numeric runtime versions do not describe a SYCL device.
+    d.cc_major = d.cc_minor = 0;
+    d.arch = "SYCL";
     d.multi_processor_count = p.get_max_compute_units();
 
     size_t free_b = 0, total_b = 0;
@@ -329,45 +312,12 @@ DeviceInfo device_info(int ordinal) {
     d.free_bytes = free_b;
     d.total_bytes = total_b;
 
-    /*
-    DPCT1043: The version-related API is different in SYCL. An initial code
-    was generated, but you need to adjust it.
-    */
-    check(DPCT_CHECK_ERROR(d.driver_version = dpct::get_major_version(
-                               dpct::get_current_device())),
-          "cudaDriverGetVersion");
-    /*
-    DPCT1043: The version-related API is different in SYCL. An initial code
-    was generated, but you need to adjust it.
-    */
-    check(DPCT_CHECK_ERROR(d.runtime_version = dpct::get_major_version(
-                               dpct::get_current_device())),
-          "cudaRuntimeGetVersion");
-
-    // The engine supports compute capability 7.5 and newer (Turing: the QSA scorer's tf32 mma has a portable
-    // fp32-FMA fallback below sm_80, the tensor-core prompt kernels refuse and fall back).  Compiling for a
-    // supported arch is enforced by CMake; RUNNING on an older card is caught here, because a binary can be carried
-    // to a machine with an older card and would otherwise silently take whatever path the driver chose.  The HIP
-    // backend checks the card against the architectures the binary was compiled for (and wave32).
-#if defined(STRATA_USE_HIP)
-    d.arch = base_arch(p.gcnArchName);
-    if (const std::string why = arch_problem(p, ordinal); !why.empty()) throw CudaError(why, -1);
-#else
-    // #236: the experimental build (-DSTRATA_EXPERIMENTAL_SM60=ON: Pascal sm_60, Volta sm_70) runs on the cards it
-    // was built for - refusing them below 7.5 there made the flag useless; the release engine keeps 7.5
-#if defined(STRATA_EXPERIMENTAL_SM60)
-    constexpr int kMinCc = 60;
-    const char* const kNeed = "6.0 or newer (this is the experimental Pascal / Volta build)";
-#else
-    constexpr int kMinCc = 75;
-    const char* const kNeed = "7.5 or newer (RTX 20 / 30 / 40 / 50 series)";
-#endif
-    if (d.cc_major * 10 + d.cc_minor < kMinCc) {
-        throw CudaError("device " + d.name + " reports compute capability " + std::to_string(d.cc_major) +
-                            "." + std::to_string(d.cc_minor) + "; Strata needs compute capability " + kNeed,
-                        -1);
-    }
-#endif
+    const auto& device = dpct::get_device(ordinal);
+    const auto subgroups = device.get_info<sycl::info::device::sub_group_sizes>();
+    if (!device.has(sycl::aspect::fp16) || !device.has(sycl::aspect::usm_device_allocations) ||
+        !device.has(sycl::aspect::usm_host_allocations) ||
+        std::find(subgroups.begin(), subgroups.end(), 32) == subgroups.end())
+        throw CudaError("SYCL engine requires FP16, device/host USM and 32-lane subgroups on " + d.name, -1);
     return d;
 }
 
@@ -403,7 +353,7 @@ DeviceArena::DeviceArena(uint64_t bytes, int ordinal, bool poison)
                     auto n_b_threads_ct1 = n - b * threads;
 
                     cgh.parallel_for<
-                        dpct_kernel_name<class poison_kernel_58fc0a>>(
+                        dpct_kernel_name<PoisonKernel>>(
                         sycl::nd_range<3>(sycl::range(1, 1, (unsigned)chunk) *
                                               sycl::range(1, 1, threads),
                                           sycl::range(1, 1, threads)),

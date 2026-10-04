@@ -3245,41 +3245,9 @@ int main(int argc, char **argv) try {
         }
 #endif
 #else
-        std::fprintf(
-            stderr, "strata generate: GPU %d: %s, compute capability %d.%d%s\n",
-            dev, name,
-            /*
-            DPCT1005: The SYCL device version is different from CUDA
-            Compute Compatibility. You may need to rewrite this code.
-            */
-            strata::cc_major_of(p.get_major_version()),
-            strata::cc_minor_of(p.get_minor_version()),
-            strata::emulated_cc()
-                ? " (STRATA_EMULATE_CC: a test mode, the card is emulated)"
-                : "");
-        {   // #542: a build whose libcudart is older than its headers (a CUDA 13 kit with a dangling libcudart.so that
-            // CMake resolved to the system's CUDA 12 one) reads cudaDeviceProp shifted - silently, and slowly
-            int rt = 0;
-            /*
-            DPCT1043: The version-related API is different in SYCL. An
-            initial code was generated, but you need to adjust it.
-            */
-            if (DPCT_CHECK_ERROR(rt = dpct::get_major_version(
-                                     dpct::get_current_device())) == 0 &&
-                rt / 1000 != DPCT_COMPAT_RT_VERSION / 1000)
-                std::fprintf(
-                    stderr,
-                    "strata generate: WARNING: this engine was compiled with "
-                    "CUDA %d.%d headers but "
-                    "loaded a CUDA %d.%d runtime (libcudart): GPU properties "
-                    "can read wrong and some "
-                    "kernels go unused. Rebuild it against one toolkit (cmake "
-                    "-DCUDAToolkit_ROOT=<the "
-                    "toolkit>, with its libcudart.so present) (#542)\n",
-                    DPCT_COMPAT_RT_VERSION / 1000,
-                    DPCT_COMPAT_RT_VERSION % 1000 / 10, rt / 1000,
-                    rt % 1000 / 10);
-        }
+        const auto& sycl_device = dpct::get_current_device();
+        std::fprintf(stderr, "strata generate: GPU %d: %s, SYCL driver %s\n", dev, name,
+                     sycl_device.get_info<sycl::info::device::driver_version>().c_str());
 #endif
         const std::string e = strata::core::device_code_error();
         if (!e.empty()) {
@@ -7370,7 +7338,7 @@ int main(int argc, char **argv) try {
     // ---- plan v0.3 P5: the prompt's conditioning positions [0, n_prompt - 1) in batched chunks.  The token loop
     // then starts at the last prompt position, whose prediction is the first generated token.
     int64_t pos_start = 0;
-    int64_t spec_pos = 0;   // plan v0.3 P6: where the speculative loop starts (0 = not used)
+    int64_t spec_pos = -1;   // plan v0.3 P6: where the speculative loop starts (-1 = not used)
     strata::prefill::Prefill prefill;
     double prefill_batched_ms = 0;
     std::FILE* final_r = o.dump_final_r.empty() ? nullptr : std::fopen(o.dump_final_r.c_str(), "wb");
@@ -7762,7 +7730,7 @@ int main(int argc, char **argv) try {
     // round emits (accepted drafts + 1) tokens.  `commit` keeps the state of the tokens that were emitted.
     const bool ended = o.stop_eos && !produced.empty() &&
                        std::find(o.eos_ids.begin(), o.eos_ids.end(), (int64_t) produced.back()) != o.eos_ids.end();
-    if (spec_pos > 0 && (int64_t) produced.size() < o.max_new && !ended) {
+    if (spec_pos >= 0 && (int64_t) produced.size() < o.max_new && !ended) {
         std::vector<int64_t> oracle;
         if (!o.spec_oracle.empty()) {
             std::ifstream in(o.spec_oracle);
