@@ -2605,3 +2605,24 @@ all 50 MMQ geometries. One raw screening pair still slowed from
 8,941.3→9,216.5 ms (826 tokens) and 26,555.5→26,846.1 ms (4,007 tokens),
 with matching output ids. The [two-part record and rejected patch](../bench/results/2026-10-04-sycl-xmx-half2/run.json)
 retain this follow-up. Neither array-based reduction was adopted.
+
+### Rejected sixteen-row XMX tile (2026-10-04)
+
+A tile-16 prototype decoded each set of weights once for two eight-row DPAS
+groups, retaining the original FP32 tree. JIT and B570 AOT each passed five
+MMQ test modes, including raw and packed tile-16 (50 geometries per mode).
+Cached JIT device images confirmed 256 GRFs and no scratch for all 18 tile-16
+variants; the preceding 54 tile-8-and-smaller variants used 128 GRFs without
+scratch. AOT did not forward the per-kernel 256-GRF property, so its twelve
+exact tile-16 variants used 5,184–7,552 bytes of scratch at 128 GRFs.
+
+Performance comparisons therefore used one JIT executable on the B570/5600X,
+switching only tile-8/tile-16 with packing off. Both first short runs incurred
+JIT compilation (39,405.4/35,242.3 ms) and were retained separately. Warm
+826-token pairs measured 8,991.7/8,995.1 ms for tile-8 and
+9,206.4/9,276.0 ms for tile-16. One warm 4,007-token pair measured
+26,567.1→26,935.6 ms. All eight completed outputs matched. No owned build or
+other GPU test overlapped measurement; existing workstation services remained
+active. Tile-16 was rejected, and the accepted tile-8 implementation restored.
+The [record and rejected patch](../bench/results/2026-10-04-sycl-xmx16/run.json)
+retain timings, compiler behavior and device metadata.

@@ -1,0 +1,441 @@
+{
+  "status": "rejected: warm JIT prefill regressed; accepted tile-8 source and exact JIT/AOT binaries restored; restoration tests passed",
+  "source_parent_commit": "cb2b3c7",
+  "hardware": {
+    "gpu": "Intel Arc B570 10 GiB",
+    "cpu": "Ryzen 5 5600X"
+  },
+  "change": "Decode weights once for two eight-row DPAS groups in a tile-16 exact kernel. Preserve original XOR FP32 tree; request 256 GRFs for tile16. Tile8 unchanged.",
+  "binary_sha256": {
+    "candidate_JIT": "14bc0b57ac21eb476eeb223012767f21bb5d8e672e8c2a7eb3dbeb60eec26b2f",
+    "candidate_AOT": "44877143b39f3e2f7f294978c3a85cab186b2e9bab59ed6e0a86f5d4f86a2f3c",
+    "accepted_AOT": "022f86ab49ed4aab2ea527e4c8651990942e630d7839ea4a2894e8ddac423a94"
+  },
+  "validation": {
+    "JIT_MMQ": {
+      "tests": 5,
+      "geometries_per_test": 50,
+      "seconds": 63.62,
+      "passed": true
+    },
+    "AOT_MMQ": {
+      "tests": 5,
+      "geometries_per_test": 50,
+      "seconds": 4.17,
+      "passed": true
+    },
+    "all_eight_outputs_equal": true,
+    "restoration": {
+      "jit": {
+        "passed_tests": 4,
+        "test_scope": "three MMQ modes and 384-case CPU single exact test",
+        "seconds": 2.67,
+        "sha256": "743134e1c8006fca1f57cc1b0dee9391094268cdaa1e7567b66f31f24e148455",
+        "matches_pre_experiment_binary": true
+      },
+      "aot": {
+        "passed_tests": 4,
+        "test_scope": "three MMQ modes and 384-case CPU single exact test",
+        "seconds": 2.53,
+        "sha256": "022f86ab49ed4aab2ea527e4c8651990942e630d7839ea4a2894e8ddac423a94",
+        "matches_pre_experiment_binary": true
+      }
+    }
+  },
+  "mode": "All performance samples use the same JIT executable with TILE8 (old) or TILE16 (new); packing0, exact1, CPU single1, five workers.",
+  "first_short_runs": {
+    "old1": {
+      "tokens": 826,
+      "prefill_ms": 39405.4,
+      "output_ids": [
+        11855,
+        248046,
+        198,
+        248044,
+        248045,
+        846,
+        198,
+        248046
+      ]
+    },
+    "new1": {
+      "tokens": 826,
+      "prefill_ms": 35242.3,
+      "output_ids": [
+        11855,
+        248046,
+        198,
+        248044,
+        248045,
+        846,
+        198,
+        248046
+      ]
+    }
+  },
+  "warm_short_order": [
+    "new2",
+    "old2",
+    "old3",
+    "new3"
+  ],
+  "warm_short": {
+    "new2": {
+      "tokens": 826,
+      "prefill_ms": 9206.4,
+      "output_ids": [
+        11855,
+        248046,
+        198,
+        248044,
+        248045,
+        846,
+        198,
+        248046
+      ]
+    },
+    "old2": {
+      "tokens": 826,
+      "prefill_ms": 8991.7,
+      "output_ids": [
+        11855,
+        248046,
+        198,
+        248044,
+        248045,
+        846,
+        198,
+        248046
+      ]
+    },
+    "old3": {
+      "tokens": 826,
+      "prefill_ms": 8995.1,
+      "output_ids": [
+        11855,
+        248046,
+        198,
+        248044,
+        248045,
+        846,
+        198,
+        248046
+      ]
+    },
+    "new3": {
+      "tokens": 826,
+      "prefill_ms": 9276.0,
+      "output_ids": [
+        11855,
+        248046,
+        198,
+        248044,
+        248045,
+        846,
+        198,
+        248046
+      ]
+    }
+  },
+  "long_order": [
+    "old1",
+    "new1"
+  ],
+  "long": {
+    "old1": {
+      "prefetched_tokens": 4007,
+      "prefill_ms": 26567.1,
+      "output_ids": [
+        11855,
+        248046,
+        198,
+        248044,
+        248045,
+        846,
+        198,
+        248046
+      ],
+      "flags": [
+        "--pack",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "--native",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--max-new",
+        "8",
+        "--max-context",
+        "8192",
+        "--spec",
+        "4",
+        "--spec-min-p",
+        "0.9",
+        "--mtp",
+        "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+        "--suffix-draft",
+        "0",
+        "--prefill",
+        "4096",
+        "--short-read",
+        "0",
+        "--expert-cache",
+        "512",
+        "--expert-profile",
+        "data/expert-profile.bin",
+        "--expert-cache-per-layer",
+        "--pool-workers",
+        "5",
+        "--adapt-swaps",
+        "0",
+        "--pcie-frac",
+        "0",
+        "--tokens-file",
+        "/tmp/strata-sycl-goal-prefill-scale-4k-tokens.txt",
+        "--check-logits",
+        "--stats"
+      ],
+      "environment": {
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "STRATA_SYCL_MMQ_XMX": "1",
+        "STRATA_SYCL_MMQ_XMX_TILE": "8",
+        "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+        "STRATA_IQ_SINGLE_EXACT": "1",
+        "ONEAPI_ROOT": "/opt/intel/oneapi",
+        "NEO_CACHE_PERSISTENT": "1",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "STRATA_SYCL_MMQ_XMX_PACK": "0"
+      }
+    },
+    "new1": {
+      "prefetched_tokens": 4007,
+      "prefill_ms": 26935.6,
+      "output_ids": [
+        11855,
+        248046,
+        198,
+        248044,
+        248045,
+        846,
+        198,
+        248046
+      ],
+      "flags": [
+        "--pack",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "--native",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--max-new",
+        "8",
+        "--max-context",
+        "8192",
+        "--spec",
+        "4",
+        "--spec-min-p",
+        "0.9",
+        "--mtp",
+        "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+        "--suffix-draft",
+        "0",
+        "--prefill",
+        "4096",
+        "--short-read",
+        "0",
+        "--expert-cache",
+        "512",
+        "--expert-profile",
+        "data/expert-profile.bin",
+        "--expert-cache-per-layer",
+        "--pool-workers",
+        "5",
+        "--adapt-swaps",
+        "0",
+        "--pcie-frac",
+        "0",
+        "--tokens-file",
+        "/tmp/strata-sycl-goal-prefill-scale-4k-tokens.txt",
+        "--check-logits",
+        "--stats"
+      ],
+      "environment": {
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "STRATA_SYCL_MMQ_XMX": "1",
+        "STRATA_SYCL_MMQ_XMX_TILE": "16",
+        "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+        "STRATA_IQ_SINGLE_EXACT": "1",
+        "ONEAPI_ROOT": "/opt/intel/oneapi",
+        "NEO_CACHE_PERSISTENT": "1",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "STRATA_SYCL_MMQ_XMX_PACK": "0"
+      }
+    }
+  },
+  "measurement_conditions": "No owned builds or other GPU tests overlapped timings. Workstation services remained active. Initial short runs incurred JIT compilation and were retained separately; both modes were rerun warm.",
+  "metadata": {
+    "AOT": {
+      "images_inspected": 73,
+      "xmx_variants": 72,
+      "grfs": [
+        128
+      ],
+      "scratch_variants": 12
+    },
+    "JIT_tile8": {
+      "images_inspected": 1,
+      "xmx_variants": 54,
+      "grfs": [
+        128
+      ],
+      "scratch_variants": 0
+    },
+    "JIT_tile16": {
+      "images_inspected": 1,
+      "xmx_variants": 18,
+      "grfs": [
+        256
+      ],
+      "scratch_variants": 0
+    },
+    "AOT_tile16_exact_scratch_bytes_by_type": {
+      "18": 5632,
+      "20": 5184,
+      "21": 5632,
+      "22": 7552,
+      "23": 5696,
+      "42": 5312
+    },
+    "AOT_note": "Per-kernel grf_size<256> was not forwarded by oneAPI 2026.1 AOT. All 72 XMX bodies used128 GRFs; only12 exact tile16 bodies spilled. Original54 XMX code hashes were unchanged. No AOT performance gain claimed.",
+    "JIT_note": "Cached native device images were inspected after first four real-model runs, before warm repeats. Tile8 image:54 kernels,128GRF,no scratch. Tile16 image:18 kernels,256GRF,no scratch.",
+    "code_bytes_type_tile_exact_packed": {
+      "/tmp/strata-sycl-goal-quarter-baseline-aot": {
+        "20/8/1/1": 184000,
+        "21/8/0/0": 16512,
+        "18/4/0/0": 10880,
+        "22/4/0/0": 10944,
+        "42/1/0/0": 4224,
+        "22/2/0/0": 8320,
+        "23/4/1/0": 160256,
+        "20/8/1/0": 184000,
+        "21/4/1/0": 92544,
+        "23/2/1/0": 147776,
+        "20/1/0/0": 11008,
+        "20/8/0/0": 19904,
+        "22/8/1/1": 121920,
+        "23/2/0/0": 12864,
+        "21/8/1/1": 118720,
+        "22/4/1/0": 88768,
+        "18/1/1/0": 68800,
+        "21/1/0/0": 7360,
+        "42/8/1/1": 82624,
+        "21/1/1/0": 72064,
+        "20/1/1/0": 134848,
+        "20/4/1/0": 156032,
+        "20/2/0/0": 12480,
+        "42/1/1/0": 26880,
+        "42/4/0/0": 8256,
+        "22/2/1/0": 72512,
+        "22/8/1/0": 121856,
+        "22/1/0/0": 6784,
+        "42/8/1/0": 82560,
+        "18/2/1/0": 75520,
+        "21/2/1/0": 79296,
+        "21/2/0/0": 8768,
+        "23/8/1/1": 187520,
+        "42/2/1/0": 36416,
+        "23/1/1/0": 139008,
+        "21/4/0/0": 11136,
+        "23/1/0/0": 11456,
+        "23/8/0/0": 20672,
+        "23/4/0/0": 15424,
+        "18/2/0/0": 8512,
+        "21/8/1/0": 118720,
+        "22/1/1/0": 63616,
+        "20/2/1/0": 144384,
+        "18/8/0/0": 16192,
+        "42/4/1/0": 51328,
+        "18/4/1/0": 89088,
+        "18/8/1/1": 116480,
+        "42/8/0/0": 13824,
+        "22/8/0/0": 16384,
+        "18/8/1/0": 116480,
+        "23/8/1/0": 187520,
+        "18/1/0/0": 7040,
+        "42/2/0/0": 5760,
+        "20/4/0/0": 14848
+      },
+      "build-sycl-aot/strata": {
+        "42/16/1/0": 187776,
+        "20/16/1/1": 281472,
+        "18/16/1/0": 210368,
+        "42/16/1/1": 187520,
+        "23/16/1/0": 292032,
+        "22/16/0/0": 27840,
+        "18/16/0/0": 27072,
+        "21/16/1/1": 227392,
+        "21/16/1/0": 227520,
+        "23/16/1/1": 292288,
+        "22/16/1/1": 252992,
+        "23/16/0/0": 31168,
+        "21/16/0/0": 27072,
+        "22/16/1/0": 252864,
+        "42/16/0/0": 24896,
+        "18/16/1/1": 210432,
+        "20/16/1/0": 281472,
+        "20/16/0/0": 30272,
+        "20/8/1/1": 184000,
+        "21/8/0/0": 16512,
+        "18/4/0/0": 10880,
+        "22/4/0/0": 10944,
+        "42/1/0/0": 4224,
+        "22/2/0/0": 8320,
+        "23/4/1/0": 160256,
+        "20/8/1/0": 184000,
+        "21/4/1/0": 92544,
+        "23/2/1/0": 147776,
+        "20/1/0/0": 11008,
+        "20/8/0/0": 19904,
+        "22/8/1/1": 121920,
+        "23/2/0/0": 12864,
+        "21/8/1/1": 118720,
+        "22/4/1/0": 88768,
+        "18/1/1/0": 68800,
+        "21/1/0/0": 7360,
+        "42/8/1/1": 82624,
+        "21/1/1/0": 72064,
+        "20/1/1/0": 134848,
+        "20/4/1/0": 156032,
+        "20/2/0/0": 12480,
+        "42/1/1/0": 26880,
+        "42/4/0/0": 8256,
+        "22/2/1/0": 72512,
+        "22/8/1/0": 121856,
+        "22/1/0/0": 6784,
+        "42/8/1/0": 82560,
+        "18/2/1/0": 75520,
+        "21/2/1/0": 79296,
+        "21/2/0/0": 8768,
+        "23/8/1/1": 187520,
+        "42/2/1/0": 36416,
+        "23/1/1/0": 139008,
+        "21/4/0/0": 11136,
+        "23/1/0/0": 11456,
+        "23/8/0/0": 20672,
+        "23/4/0/0": 15424,
+        "18/2/0/0": 8512,
+        "21/8/1/0": 118720,
+        "22/1/1/0": 63616,
+        "20/2/1/0": 144384,
+        "18/8/0/0": 16192,
+        "42/4/1/0": 51328,
+        "18/4/1/0": 89088,
+        "18/8/1/1": 116480,
+        "42/8/0/0": 13824,
+        "22/8/0/0": 16384,
+        "18/8/1/0": 116480,
+        "23/8/1/0": 187520,
+        "18/1/0/0": 7040,
+        "42/2/0/0": 5760,
+        "20/4/0/0": 14848
+      }
+    }
+  },
+  "interpretation": "Tile16 lost both warm short pairs and one warm long pair despite 256 GRFs and zero scratch in JIT. No global AOT GRF override adopted; tile16 implementation removed.",
+  "reference": "https://github.com/intel/llvm/blob/sycl/sycl/source/detail/program_manager/program_manager.cpp"
+}
