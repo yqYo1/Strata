@@ -1,0 +1,4 @@
+strata: prompt attention on XMX, 64-cell chunks (122880 of 131072 bytes of local memory)
+PASS int8 ctx 8192, 256 queries: vs FP64 old 2.09e-06 new 2.42e-06 (output scale 3.28); new vs old 4.35e-06 (1.2e-06 of scale); 10.524 -> 21.359 ms per chunk (0.49x)
+PASS fp16 ctx 8192, 256 queries: vs FP64 old 1.53e-06 new 1.75e-06 (output scale 2.89); new vs old 2.86e-06 (7.3e-07 of scale); 9.010 -> 15.442 ms per chunk (0.58x)
+qsa_prompt_attn_batch refused the pools

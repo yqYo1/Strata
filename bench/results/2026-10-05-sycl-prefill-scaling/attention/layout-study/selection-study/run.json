@@ -1,0 +1,48 @@
+{
+  "baseline_kernel_source_revision": "af9349c",
+  "device": "Intel Arc B570 10 GB",
+  "cpu": "Ryzen 5 5600X",
+  "installed_ram_gb": 128,
+  "compute_runtime": "26.35.39758.10",
+  "compiler": "oneAPI 2026.1.1",
+  "binary_sha256": "b6691d2e33b5c34b5eeb6af2aaec4a0b362e0aedf4ff5237a14df18ec275021b",
+  "source_sha256": {
+    "kernel.cpp": "b39bd6ac8eaeb7ba2a2fbcbff7d97011a2ee839489b11a83845b285947adcbd3",
+    "parity.cpp": "7bb9cda229128380fe1b35bf2556e85bed318bcd89c0e26c4d0a54586df319bf"
+  },
+  "args": [
+    "/tmp/strata-upstream-arc-topk-tuned-parity",
+    "8192",
+    "129",
+    "3"
+  ],
+  "timing": "median of three warmed rounds; old/new order alternates; elapsed wall time with queue waits; not an overall model benchmark",
+  "result": {
+    "exit_code": 0,
+    "selected_ids_match_original_gpu_and_independent_cpu_sort": true,
+    "cases": 48,
+    "production_adopted": false
+  },
+  "compiler_flags": [
+    "-O3",
+    "-DNDEBUG",
+    "-std=c++20",
+    "-fsycl",
+    "-fsycl-default-sub-group-size=32",
+    "-fsycl-device-code-split=per_kernel",
+    "-fp-model=precise",
+    "-Xsycl-target-backend=spir64",
+    "-cl-fp32-correctly-rounded-divide-sqrt"
+  ],
+  "notes": [
+    "Tests cover continuous and tied scores, signed zero, NaN, infinities, denormals, identity selection, tails and live/capacity combinations.",
+    "Variants compare 256/512/1024 threads and serial/parallel integer digit search; floating score generation is unchanged.",
+    "Kernel resource queries report declared histogram bytes and runtime private/spill memory; histogram bytes are not total local allocation.",
+    "The 256-thread, nine-key parallel variant has zero reported spill bytes in this probe; its 33-key version reports 17216 spill bytes, so the proposed production path limits its live reach.",
+    "The archived kernel removes trailing whitespace; source_sha256 records the exact compiled input and archived_source_sha256 records the normalized copy."
+  ],
+  "archived_source_sha256": {
+    "kernel.cpp": "228cf0aa6ae7c2349187cc3c67b695aa26fe07cf61b0e42baac48ba91129372f",
+    "parity.cpp": "7bb9cda229128380fe1b35bf2556e85bed318bcd89c0e26c4d0a54586df319bf"
+  }
+}

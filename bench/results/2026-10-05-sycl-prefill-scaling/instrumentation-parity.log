@@ -1,0 +1,69 @@
+strata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)
+strata generate: native pack: /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s experts (largest blob 2.66 MB), token embedding IQ4_XS in mapped host memory (322 MiB)
+strata generate: 1466 MiB of weights loaded from /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s (302 canonical tensors skipped: served natively)
+strata generate: 300 native projection matrices, 2018.88 MiB of weights
+strata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)
+strata generate: profile data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots
+strata generate: PLE on, table 320001536 rows of /home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf
+strata mtp: draft layer loaded, 793 MiB of VRAM (experts 675, dense 111), files read in 0.73 s (1070 MiB/s)
+strata generate: experimental native Q5_K head, 521472000 bytes
+strata generate: GPU 0: Intel(R) Arc(TM) B570 Graphics, SYCL driver 1.17.39758+10
+strata generate: expert arena read through the file cache (buffered (not Windows))
+strata generate: expert arena: SYCL pageable host arena (queue copies); MAP_HUGETLB unavailable (needed 23983 2 MiB pages, vm.nr_hugepages=0); using 4 KB pages
+strata generate: loaded 46.84 GiB at 1.63 GiB/s
+strata generate: expert cache 512 slots, 1.27 GiB of VRAM; policy is
+strata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,
+                 so a reply can differ slightly from a run without the cache (same quality:
+                 bench/results/2026-09-27-cache-parity).
+                 R4.2g PER-LAYER: each layer owns 10 slots (0..9).
+strata generate: profile fill: 0.99 GiB in 0.3 s (4.16 GB/s, serial)
+strata generate: pre-filled 512 of 512 slots from the profile; slot 0 verified
+strata generate: R4 hit path ON - resident experts are computed on the GPU
+strata generate: 5 expert-pool workers + the host thread
+strata generate: session is up (engine 0.1.39-sycl)
+strata generate: sampling greedy
+strata generate: token graph hit path: 512 resident experts, decided on the device
+strata generate: prompt path allocates its own buffers (no cache slots to borrow)
+strata mtp: draft head over 106299 tokens (212.9 MiB)
+strata prefill timing: setup work queued before the chunk 0.0 ms
+strata prefill timing: setup token ids uploaded 0.0 ms
+strata prefill timing: setup embedding gather (waited) 2.1 ms
+strata prefill timing: setup embeddings 0.5 ms
+strata prefill timing: setup PLE rows 0.1 ms
+strata prefill timing: setup step records 0.1 ms
+strata prefill timing: setup expert stream plan 0.0 ms
+strata prefill timing: setup work queued before the chunk 0.0 ms
+strata prefill timing: setup token ids uploaded 0.0 ms
+strata prefill timing: setup embedding gather (waited) 0.1 ms
+strata prefill timing: setup embeddings 0.0 ms
+strata prefill timing: setup PLE rows 0.0 ms
+strata prefill timing: setup step records 0.0 ms
+strata prefill timing: setup expert stream plan 0.0 ms
+strata prefill transfer: {"tokens":826,"chunks":2,"expert_copies":24468,"expert_bytes":50434304000,"dma_active_ms":7926.145765,"copy_span_ms":13626.878854,"host_copy_worker_ms":2619.904195,"wall_ms":13830.732349,"layers":[{"layer":0,"copies":442,"bytes":961792000,"dma_active_ms":151.936994},{"layer":1,"copies":367,"bytes":554316800,"dma_active_ms":87.589792},{"layer":2,"copies":393,"bytes":774681600,"dma_active_ms":121.745097},{"layer":3,"copies":282,"bytes":555878400,"dma_active_ms":87.720062},{"layer":4,"copies":321,"bytes":632755200,"dma_active_ms":99.472500},{"layer":5,"copies":385,"bytes":758912000,"dma_active_ms":119.328748},{"layer":6,"copies":420,"bytes":827904000,"dma_active_ms":130.114209},{"layer":7,"copies":412,"bytes":896512000,"dma_active_ms":140.592348},{"layer":8,"copies":373,"bytes":563379200,"dma_active_ms":89.020208},{"layer":9,"copies":401,"bytes":790451200,"dma_active_ms":124.201054},{"layer":10,"copies":403,"bytes":608691200,"dma_active_ms":96.295689},{"layer":11,"copies":417,"bytes":821990400,"dma_active_ms":129.155366},{"layer":12,"copies":424,"bytes":727244800,"dma_active_ms":114.684425},{"layer":13,"copies":398,"bytes":601139200,"dma_active_ms":95.067101},{"layer":14,"copies":480,"bytes":1044480000,"dma_active_ms":163.842021},{"layer":15,"copies":465,"bytes":916608000,"dma_active_ms":144.013353},{"layer":16,"copies":505,"bytes":1098880000,"dma_active_ms":172.324682},{"layer":17,"copies":590,"bytes":1374464000,"dma_active_ms":215.811405},{"layer":18,"copies":536,"bytes":1166336000,"dma_active_ms":183.062819},{"layer":19,"copies":547,"bytes":1078246400,"dma_active_ms":169.529221},{"layer":20,"copies":576,"bytes":987955200,"dma_active_ms":155.628578},{"layer":21,"copies":557,"bytes":1040921600,"dma_active_ms":163.983640},{"layer":22,"copies":563,"bytes":1225088000,"dma_active_ms":192.141679},{"layer":23,"copies":598,"bytes":1178777600,"dma_active_ms":185.170796},{"layer":24,"copies":558,"bytes":1099929600,"dma_active_ms":172.844790},{"layer":25,"copies":604,"bytes":1407078400,"dma_active_ms":220.756467},{"layer":26,"copies":586,"bytes":1155123200,"dma_active_ms":181.555938},{"layer":27,"copies":586,"bytes":1365145600,"dma_active_ms":214.254014},{"layer":28,"copies":562,"bytes":1309235200,"dma_active_ms":205.497136},{"layer":29,"copies":587,"bytes":1367475200,"dma_active_ms":214.887498},{"layer":30,"copies":673,"bytes":1154329600,"dma_active_ms":181.764171},{"layer":31,"copies":534,"bytes":1161984000,"dma_active_ms":182.383755},{"layer":32,"copies":564,"bytes":1111756800,"dma_active_ms":174.762138},{"layer":33,"copies":614,"bytes":1336064000,"dma_active_ms":209.751608},{"layer":34,"copies":598,"bytes":1178777600,"dma_active_ms":185.307771},{"layer":35,"copies":556,"bytes":1295257600,"dma_active_ms":203.316865},{"layer":36,"copies":545,"bytes":823168000,"dma_active_ms":130.199376},{"layer":37,"copies":588,"bytes":1279488000,"dma_active_ms":200.903962},{"layer":38,"copies":559,"bytes":1216384000,"dma_active_ms":190.879420},{"layer":39,"copies":540,"bytes":1064448000,"dma_active_ms":167.286656},{"layer":40,"copies":590,"bytes":1374464000,"dma_active_ms":216.447933},{"layer":41,"copies":608,"bytes":1323008000,"dma_active_ms":207.768065},{"layer":42,"copies":604,"bytes":1314304000,"dma_active_ms":206.140678},{"layer":43,"copies":625,"bytes":1360000000,"dma_active_ms":213.358461},{"layer":44,"copies":573,"bytes":1334860800,"dma_active_ms":209.582502},{"layer":45,"copies":536,"bytes":1248665600,"dma_active_ms":195.980987},{"layer":46,"copies":463,"bytes":1007488000,"dma_active_ms":158.127342},{"layer":47,"copies":360,"bytes":958464000,"dma_active_ms":149.956445}]}
+strata prefill timing: 826 tokens, GPU timeline 13823 ms, wall 14060 ms, host staging 9103 ms: embed+steps 5 (0.0%) hc read 160 (1.2%) gdn 211 (1.5%) qsa proj 84 (0.6%) qsa indexer 97 (0.7%) qsa select 5 (0.0%) qsa attn 71 (0.5%) router+shared 59 (0.4%) host grouping 899 (6.5%) gather 424 (3.1%) wait copy 146 (1.1%) dequant 2510 (18.2%) gemm gate/up 583 (4.2%) gemm down 8224 (59.5%) combine 32 (0.2%) ple 87 (0.6%) gdn conv+gates 69 (0.5%) gdn recurrence 54 (0.4%) gdn out proj 102 (0.7%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 3 ms, waiting for each chunk 22 ms, after each chunk (the draft layer, progress) 5 ms, PLE 100 ms
+strata prefill phases: {"gpu_timeline_ms":13823.016048,"host_setup_ms":2.878989,"host_chunk_wait_ms":21.691033,"host_after_chunk_ms":5.212551,"phase_ms":{"embed+steps":5.450626,"hc read":159.967391,"gdn":210.713127,"qsa proj":83.648542,"qsa indexer":97.207605,"qsa select":5.085105,"qsa attn":70.735832,"router+shared":59.210214,"host grouping":898.675623,"gather":424.481565,"wait copy":146.298084,"dequant":2510.485671,"gemm gate/up":583.053443,"gemm down":8224.171857,"combine":32.213233,"ple":86.957296,"kv stage":0.000000,"gdn conv+gates":69.217914,"gdn recurrence":53.643026,"gdn out proj":101.799893}}
+strata generate: prefill 826 tokens in 2 chunks, 13830.7 ms (59.7 tok/s); experts streamed 24468 (0 by DMA, host 9103.3 ms), resident 628; PLE 100.3 ms
+strata verify: window up to 4 tokens, 63.2 MiB of device buffers
+strata verify: captured 1-token window with 48 host expert boundaries
+strata verify: captured 2-token window with 48 host expert boundaries
+strata verify: captured 3-token window with 48 host expert boundaries
+strata verify: captured 4-token window with 48 host expert boundaries
+strata generate: window and draft graphs captured in 368 ms
+speculation              3 rounds of 4, drafts accepted 5 of 5 (1.000), 2.67 tokens per round
+window sizes             T1:1 T2:0 T3:1 T4:1  (min draft probability 0.90)
+accepted per round       0:1 1:0 2:1 3:1
+verify window            wait for rings 32.119  pool 82.066  host 2.911  commit 5.512 ms/round; CPU experts 18.71 distinct / 25.83 routed per layer
+pool multi               gate/up 58.473  quantize 0.221  down 22.790 ms/round; 22.6 GB/s over the rows phases; CPU pool call 81.928 ms/round
+dispatch                 plan 0.083  activation quantize 0.267  jobs 0.053  run 81.493 ms/round
+mtp                      7.199 ms/round drafting (2 rounds), MTP prompt 5.2 ms, 1006 MiB of VRAM
+output  : 11855 248046 198 248044 248045 846 198 248046
+decode                   8 tokens in 390.3 ms  ->  20.50 tok/s
+prefill                  826 tokens in 14065.0 ms  ->  58.73 tok/s  (time to first token 14541.4 ms)
+  per token              48.792 ms/token (WALL CLOCK: embed, layers, head, sample)
+  ple io: 13344 rows, 60.2% row-cache hits, 2168 SSD reads (9.1 MB), read p50 19662 us p99 21062 us, blocked 171.785 ms total (submit 7.698 ms), cache 2168/1048576 rows, SSD kept awake by 145 reads (slowest 4.2 ms)
+  the CPU expert pool    81.928 ms/token over 48 layers (3 positions, 144 dispatches)
+  pool phases              wait-park 0.000  drain 81.487  re-park 0.000  ms/token
+  expert blobs           27675 blobs read
+  R4 overlap             0 of 0 layers the hit work was DONE when the pool returned
+  R4 expert-cache hits   120 of 3840 = 0.0312      (0 admitted, 3720 refused, cache 100.0000% full)

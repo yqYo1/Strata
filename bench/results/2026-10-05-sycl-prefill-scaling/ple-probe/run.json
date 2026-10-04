@@ -1,0 +1,257 @@
+{
+  "runs": [
+    {
+      "label": "direct-16",
+      "args": [
+        "/tmp/strata-upstream-arc-ple-read-probe",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/coding-context-tokens.txt",
+        "2048,4096,8087",
+        "direct",
+        "2"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 27.36677771099494,
+      "rows": [
+        {
+          "mode": "direct",
+          "io_threads": 16,
+          "tokens": 2048,
+          "repeat": 1,
+          "open_ms": 50.894076,
+          "gather_ms": 1860.367096,
+          "embedding_floats": 5242880,
+          "fnv1a64": "f7f0d72022a15af4",
+          "row_bytes_read": 2949120
+        },
+        {
+          "mode": "direct",
+          "io_threads": 16,
+          "tokens": 4096,
+          "repeat": 1,
+          "open_ms": 52.316705,
+          "gather_ms": 3516.683323,
+          "embedding_floats": 10485760,
+          "fnv1a64": "d242737ec9e59058",
+          "row_bytes_read": 5898240
+        },
+        {
+          "mode": "direct",
+          "io_threads": 16,
+          "tokens": 8087,
+          "repeat": 1,
+          "open_ms": 48.504048,
+          "gather_ms": 7876.353392,
+          "embedding_floats": 20702720,
+          "fnv1a64": "1235a552285a8a54",
+          "row_bytes_read": 11645280
+        },
+        {
+          "mode": "direct",
+          "io_threads": 16,
+          "tokens": 8087,
+          "repeat": 2,
+          "open_ms": 46.028187,
+          "gather_ms": 7243.000407,
+          "embedding_floats": 20702720,
+          "fnv1a64": "1235a552285a8a54",
+          "row_bytes_read": 11645280
+        },
+        {
+          "mode": "direct",
+          "io_threads": 16,
+          "tokens": 4096,
+          "repeat": 2,
+          "open_ms": 47.593343,
+          "gather_ms": 4228.54943,
+          "embedding_floats": 10485760,
+          "fnv1a64": "d242737ec9e59058",
+          "row_bytes_read": 5898240
+        },
+        {
+          "mode": "direct",
+          "io_threads": 16,
+          "tokens": 2048,
+          "repeat": 2,
+          "open_ms": 46.233583,
+          "gather_ms": 1818.838205,
+          "embedding_floats": 5242880,
+          "fnv1a64": "f7f0d72022a15af4",
+          "row_bytes_read": 2949120
+        }
+      ],
+      "log": "direct-16.log"
+    },
+    {
+      "label": "mmap-16",
+      "args": [
+        "/tmp/strata-upstream-arc-ple-read-probe",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/coding-context-tokens.txt",
+        "2048,4096,8087",
+        "mmap",
+        "2"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 41.88283470697934,
+      "rows": [
+        {
+          "mode": "mmap",
+          "io_threads": 16,
+          "tokens": 2048,
+          "repeat": 1,
+          "open_ms": 0.029225,
+          "gather_ms": 10517.070853,
+          "embedding_floats": 5242880,
+          "fnv1a64": "f7f0d72022a15af4",
+          "row_bytes_read": 2949120
+        },
+        {
+          "mode": "mmap",
+          "io_threads": 16,
+          "tokens": 4096,
+          "repeat": 1,
+          "open_ms": 0.034525,
+          "gather_ms": 9376.282378,
+          "embedding_floats": 10485760,
+          "fnv1a64": "d242737ec9e59058",
+          "row_bytes_read": 5898240
+        },
+        {
+          "mode": "mmap",
+          "io_threads": 16,
+          "tokens": 8087,
+          "repeat": 1,
+          "open_ms": 0.034054,
+          "gather_ms": 21097.77527,
+          "embedding_floats": 20702720,
+          "fnv1a64": "1235a552285a8a54",
+          "row_bytes_read": 11645280
+        },
+        {
+          "mode": "mmap",
+          "io_threads": 16,
+          "tokens": 8087,
+          "repeat": 2,
+          "open_ms": 0.033302,
+          "gather_ms": 157.495462,
+          "embedding_floats": 20702720,
+          "fnv1a64": "1235a552285a8a54",
+          "row_bytes_read": 11645280
+        },
+        {
+          "mode": "mmap",
+          "io_threads": 16,
+          "tokens": 4096,
+          "repeat": 2,
+          "open_ms": 0.028023,
+          "gather_ms": 85.139033,
+          "embedding_floats": 10485760,
+          "fnv1a64": "d242737ec9e59058",
+          "row_bytes_read": 5898240
+        },
+        {
+          "mode": "mmap",
+          "io_threads": 16,
+          "tokens": 2048,
+          "repeat": 2,
+          "open_ms": 0.031219,
+          "gather_ms": 44.695889,
+          "embedding_floats": 5242880,
+          "fnv1a64": "f7f0d72022a15af4",
+          "row_bytes_read": 2949120
+        }
+      ],
+      "log": "mmap-16.log"
+    },
+    {
+      "label": "direct-64",
+      "args": [
+        "/tmp/strata-upstream-arc-ple-read-probe",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/coding-context-tokens.txt",
+        "2048,4096,8087",
+        "direct",
+        "2"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 1.6667124689847697,
+      "rows": [
+        {
+          "mode": "direct",
+          "io_threads": 64,
+          "tokens": 2048,
+          "repeat": 1,
+          "open_ms": 52.629144,
+          "gather_ms": 70.897633,
+          "embedding_floats": 5242880,
+          "fnv1a64": "f7f0d72022a15af4",
+          "row_bytes_read": 2949120
+        },
+        {
+          "mode": "direct",
+          "io_threads": 64,
+          "tokens": 4096,
+          "repeat": 1,
+          "open_ms": 51.214891,
+          "gather_ms": 157.307107,
+          "embedding_floats": 10485760,
+          "fnv1a64": "d242737ec9e59058",
+          "row_bytes_read": 5898240
+        },
+        {
+          "mode": "direct",
+          "io_threads": 64,
+          "tokens": 8087,
+          "repeat": 1,
+          "open_ms": 50.41186,
+          "gather_ms": 215.312681,
+          "embedding_floats": 20702720,
+          "fnv1a64": "1235a552285a8a54",
+          "row_bytes_read": 11645280
+        },
+        {
+          "mode": "direct",
+          "io_threads": 64,
+          "tokens": 8087,
+          "repeat": 2,
+          "open_ms": 47.732846,
+          "gather_ms": 232.87375,
+          "embedding_floats": 20702720,
+          "fnv1a64": "1235a552285a8a54",
+          "row_bytes_read": 11645280
+        },
+        {
+          "mode": "direct",
+          "io_threads": 64,
+          "tokens": 4096,
+          "repeat": 2,
+          "open_ms": 47.241811,
+          "gather_ms": 102.093529,
+          "embedding_floats": 10485760,
+          "fnv1a64": "d242737ec9e59058",
+          "row_bytes_read": 5898240
+        },
+        {
+          "mode": "direct",
+          "io_threads": 64,
+          "tokens": 2048,
+          "repeat": 2,
+          "open_ms": 49.364959,
+          "gather_ms": 68.876869,
+          "embedding_floats": 5242880,
+          "fnv1a64": "f7f0d72022a15af4",
+          "row_bytes_read": 2949120
+        }
+      ],
+      "log": "direct-64.log"
+    }
+  ],
+  "binary_sha256": "c1e067fad77a91cd8f5e2f943fc8c2abc6725a97f4d5d3e53fed7810f3d89a42",
+  "build": "g++ -O3 -std=c++17 -march=native -Iinclude sycl/tools/ple_read_probe.cpp src/kernels/ngram.cpp src/ngram/ple_reader.cpp src/platform/direct_file.cpp -pthread",
+  "notes": [
+    "CPU-only original row hashing, table read, and decoder; no expert arena or GPU work",
+    "mmap cold timings must be distinguished from later page-cache hits",
+    "direct-64 followed mmap; its warmed-cache result is not a reader-concurrency comparison"
+  ]
+}

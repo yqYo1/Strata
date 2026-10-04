@@ -1,0 +1,18 @@
+strata: prompt attention on XMX, 32-cell chunks (86784 of 131072 bytes of local memory)
+strata: compact 32-cell XMX attention (62208 of 131072 local-memory bytes)
+XMX CH32 memory experiment (batch argument 128, layout argument 0 unused); require bit identity with original XMX and original FP32/FP64 accuracy
+PASS int8 ctx 8192, 129 queries: vs FP64 old 2.38e-06 new 2.71e-06 (output scale 3.38); compact vs FP32 4.23e-06 (1.1e-06 of scale); original XMX CH32 -> compact 11.825 -> 7.979 ms per chunk (1.48x)
+Compact vs original XMX CH32: 0 of 792576 float bits differ; max 0
+FAIL k8v4 ctx 8192, 129 queries: vs FP64 old 4.93e-06 new 0.00191 (output scale 6.96); compact vs FP32 0.00191 (0.00026 of scale); original XMX CH32 -> compact 15.985 -> 11.314 ms per chunk (1.41x)
+Compact vs original XMX CH32: 0 of 792576 float bits differ; max 0
+FAIL k8v4 ctx 1500, 129 queries: vs FP64 old 4.01e-06 new 0.00169 (output scale 6.7); compact vs FP32 0.00194 (0.00027 of scale); original XMX CH32 -> compact 11.201 -> 7.869 ms per chunk (1.42x)
+Compact vs original XMX CH32: 0 of 792576 float bits differ; max 0
+PASS fp16 ctx 8192, 129 queries: vs FP64 old 2.1e-06 new 1.69e-06 (output scale 3.34); compact vs FP32 2.86e-06 (8.5e-07 of scale); original XMX CH32 -> compact 8.029 -> 6.023 ms per chunk (1.33x)
+Compact vs original XMX CH32: 0 of 792576 float bits differ; max 0
+PASS Q4_0 K refusal by both XMX kernels, ctx 8192, 129 queries
+PASS Q4_0 K refusal by both XMX kernels, ctx 1500, 129 queries
+PASS int8 ctx 1500, 129 queries: vs FP64 old 1.97e-06 new 2.52e-06 (output scale 3.75); compact vs FP32 3.22e-06 (8.6e-07 of scale); original XMX CH32 -> compact 8.246 -> 5.651 ms per chunk (1.46x)
+Compact vs original XMX CH32: 0 of 792576 float bits differ; max 0
+PASS int8 ctx 2100, 129 queries: vs FP64 old 1.89e-06 new 2.34e-06 (output scale 3.61); compact vs FP32 3.46e-06 (9.6e-07 of scale); original XMX CH32 -> compact 11.582 -> 7.895 ms per chunk (1.47x)
+Compact vs original XMX CH32: 0 of 792576 float bits differ; max 0
+FAILURES: 2

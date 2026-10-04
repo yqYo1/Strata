@@ -1,0 +1,127 @@
+{
+  "source_revision": "af9349cf7b63d9a6453cb059f2a717023dbfec7f",
+  "measurement": "Normal CLI elapsed prefill time; no phase/transfer instrumentation or PLE preload",
+  "measured_runs_per_length_and_configuration": 3,
+  "excluded_warmup_runs": 4,
+  "input_lengths": [
+    4096,
+    8087
+  ],
+  "order": "base/fast, fast/base, base/fast; second pair uses descending input lengths",
+  "conditions": "Arc B570 10 GB; Ryzen 5 5600X; 128 GB installed RAM; IQ3_S; context/chunk 8192; cache 128; MTP off; direct PLE with 16 reader threads; warmed OS row cache",
+  "first_logits": {
+    "count": 248320,
+    "finite": true,
+    "all_runs_bit_identical_to_baseline": true
+  },
+  "configurations": {
+    "base": {
+      "attention_batch": 32,
+      "attention_layout": 0,
+      "medians": [
+        {
+          "tokens": 4096,
+          "wall_ms": 13736.7,
+          "wall_range_ms": [
+            13733.9,
+            13738.6
+          ],
+          "overall_tokens_per_second": 298.17932982448474
+        },
+        {
+          "tokens": 8087,
+          "wall_ms": 17560.3,
+          "wall_range_ms": [
+            17554.4,
+            17562.7
+          ],
+          "overall_tokens_per_second": 460.5274397362232
+        }
+      ],
+      "longest_pair": {
+        "marginal_ms_per_token": 0.958055625156602,
+        "marginal_tokens_per_second": 1043.7807302019044
+      },
+      "paired_slopes": [
+        {
+          "lengths": [
+            4096,
+            8087
+          ],
+          "marginal_ms_per_token": 0.9561012277624659,
+          "marginal_tokens_per_second": 1045.9143560983277
+        },
+        {
+          "lengths": [
+            4096,
+            8087
+          ],
+          "marginal_ms_per_token": 0.9587572037083437,
+          "marginal_tokens_per_second": 1043.0169349780474
+        },
+        {
+          "lengths": [
+            4096,
+            8087
+          ],
+          "marginal_ms_per_token": 0.9586569782009522,
+          "marginal_tokens_per_second": 1043.1259801359122
+        }
+      ]
+    },
+    "fast": {
+      "attention_batch": 128,
+      "attention_layout": 3,
+      "medians": [
+        {
+          "tokens": 4096,
+          "wall_ms": 13647.8,
+          "wall_range_ms": [
+            13597.1,
+            13718.6
+          ],
+          "overall_tokens_per_second": 300.12163132519527
+        },
+        {
+          "tokens": 8087,
+          "wall_ms": 17282.5,
+          "wall_range_ms": [
+            17280.1,
+            17302.2
+          ],
+          "overall_tokens_per_second": 467.9299869810502
+        }
+      ],
+      "longest_pair": {
+        "marginal_ms_per_token": 0.9107241292909047,
+        "marginal_tokens_per_second": 1098.0273475114864
+      },
+      "paired_slopes": [
+        {
+          "lengths": [
+            4096,
+            8087
+          ],
+          "marginal_ms_per_token": 0.9156602355299427,
+          "marginal_tokens_per_second": 1092.1081436077054
+        },
+        {
+          "lengths": [
+            4096,
+            8087
+          ],
+          "marginal_ms_per_token": 0.8929842144825857,
+          "marginal_tokens_per_second": 1119.8406240354668
+        },
+        {
+          "lengths": [
+            4096,
+            8087
+          ],
+          "marginal_ms_per_token": 0.9228263593084436,
+          "marginal_tokens_per_second": 1083.6274775997833
+        }
+      ]
+    }
+  }
+}

@@ -4,6 +4,7 @@
 #include <dpct/dpct.hpp>
 #include "strata/sycl_queue.hpp"
 #include "strata/kernels/qsa_decode_attn.hpp"
+#include "strata/kernels/qsa_decode_attn_variant.hpp"
 #include "strata/kernels/kv_q8.hpp"
 #include "strata/kernels/kv_q4.hpp"
 
@@ -19,8 +20,8 @@ constexpr int HD = 256;          // head_dim
 constexpr int G = 12;            // query heads per KV head (24 / 2)
 constexpr int CHUNK = 64;        // cells per block
 constexpr int THREADS = 256;
-constexpr int WARPS = THREADS / 32;
 
+template <int SG = 32>
 __dpct_inline__ float warp_sum(float v) {
 #pragma unroll
     /*
@@ -28,12 +29,13 @@ __dpct_inline__ float warp_sum(float v) {
     masked sub_group function which may not be supported by all compilers or
     runtimes. You may need to adjust the code.
     */
-    for (int o = 16; o > 0; o >>= 1) v +=
+    for (int o = SG / 2; o > 0; o >>= 1) v +=
         dpct::experimental::permute_sub_group_by_xor(
             0xffffffffu, sycl::ext::oneapi::this_work_item::get_sub_group(), v,
             o);
     return v;
 }
+template <int SG = 32>
 __dpct_inline__ float warp_max(float v) {
 #pragma unroll
     /*
@@ -41,7 +43,7 @@ __dpct_inline__ float warp_max(float v) {
     masked sub_group function which may not be supported by all compilers or
     runtimes. You may need to adjust the code.
     */
-    for (int o = 16; o > 0; o >>= 1) v = sycl::fmax(
+    for (int o = SG / 2; o > 0; o >>= 1) v = sycl::fmax(
         v, dpct::experimental::permute_sub_group_by_xor(
                0xffffffffu, sycl::ext::oneapi::this_work_item::get_sub_group(),
                v, o));
@@ -107,7 +109,7 @@ __dpct_inline__ void load8(const QsaAttnPools &p, bool value, long long row,
     } else load8_q4(p, value, row, d0, out);
 }
 
-template <int KV_MODE>
+template <int KV_MODE, int SG = 32, bool TRANSPOSE_Q = false>
 /*
 DPCT1110: The total declared local variable size in device function
 attn_chunk_kernel exceeds 128 bytes and may cause high register pressure.
@@ -121,6 +123,8 @@ attn_chunk_kernel(const float *__restrict__ q, QsaAttnPools p,
                   int page_size, float scale, float *__restrict__ part_acc,
                   float *__restrict__ part_m, float *__restrict__ part_l,
                   int n_chunks, int cap = 0, long long scratch_stride = 0) {
+    constexpr int LOCAL_THREADS = 8 * SG;
+    constexpr int LOCAL_WARPS = 8;
     // batched form: query blockIdx.z, with its own q row, selection, step and scratch
     auto item_ct1 = sycl::ext::oneapi::this_work_item::get_nd_item<3>();
     q += (size_t)item_ct1.get_group(0) * (size_t)(n_kv_heads * G) * HD;
@@ -148,7 +152,7 @@ attn_chunk_kernel(const float *__restrict__ q, QsaAttnPools p,
     */
     const int n_ids = *(step + kStepWidth);
     const int chunk = item_ct1.get_group(2), kvh = item_ct1.get_group(1);
-    const int t = item_ct1.get_local_id(2), lane = t & 31, warp = t >> 5;
+    const int t = item_ct1.get_local_id(2), lane = t % SG, warp = t / SG;
     const int c0 = chunk * CHUNK;
     const int n_here = sycl::min(CHUNK, n_ids - c0);
     const int slot = kvh * n_chunks + chunk;
@@ -157,8 +161,8 @@ attn_chunk_kernel(const float *__restrict__ q, QsaAttnPools p,
         return;
     }
 #pragma unroll
-    for (int i = t; i < G * HD; i += THREADS)
-        sq[i / HD][i % HD] = q[(size_t)(kvh * G) * HD + i];
+    for (int i = t; i < G * HD; i += LOCAL_THREADS)
+        sq[i / HD][TRANSPOSE_Q ? (i % 8) * 32 + (i % HD) / 8 : i % HD] = q[(size_t)(kvh * G) * HD + i];
     if (t < CHUNK) {
         long long r = -1;
         if (t < n_here) {
@@ -177,23 +181,46 @@ attn_chunk_kernel(const float *__restrict__ q, QsaAttnPools p,
     */
     item_ct1.barrier();
     // scores: each warp takes cells warp, warp+8, ...; each lane holds 8 of the 256 dimensions.
-    for (int c = warp; c < CHUNK; c += WARPS) {
+    for (int c = warp; c < CHUNK; c += LOCAL_WARPS) {
         if (c >= n_here || srow[c] < 0) {
             if (lane < G) sp[lane][c] = -FLT_MAX;
             continue;
         }
         float k8[8];
         load8<KV_MODE>(p, false, srow[c], lane * 8, k8);
+        float upper_k[8];
+        if constexpr (SG == 16) load8<KV_MODE>(p, false, srow[c], (lane + 16) * 8, upper_k);
 #pragma unroll
         for (int h = 0; h < G; ++h) {
-            const sycl::float4 qa =
-                *reinterpret_cast<const sycl::float4 *>(&sq[h][lane * 8]);
-            const sycl::float4 qb =
-                *reinterpret_cast<const sycl::float4 *>(&sq[h][lane * 8 + 4]);
+            sycl::float4 qa, qb;
+            if constexpr (TRANSPOSE_Q) {
+                qa = sycl::float4(sq[h][lane], sq[h][32 + lane], sq[h][64 + lane], sq[h][96 + lane]);
+                qb = sycl::float4(sq[h][128 + lane], sq[h][160 + lane], sq[h][192 + lane], sq[h][224 + lane]);
+            } else {
+                qa = *reinterpret_cast<const sycl::float4 *>(&sq[h][lane * 8]);
+                qb = *reinterpret_cast<const sycl::float4 *>(&sq[h][lane * 8 + 4]);
+            }
             float s = k8[0] * qa.x() + k8[1] * qa.y() + k8[2] * qa.z() +
                       k8[3] * qa.w() + k8[4] * qb.x() + k8[5] * qb.y() +
                       k8[6] * qb.z() + k8[7] * qb.w();
-            s = warp_sum(s);
+            if constexpr (SG == 16) {
+                // The same 8-term dot of original lane + 16, followed by the first XOR-16 sum.
+                // Preserve the 8-term expression and the following XOR-8/4/2/1 tree.
+                sycl::float4 upper_qa, upper_qb;
+                if constexpr (TRANSPOSE_Q) {
+                    upper_qa = sycl::float4(sq[h][16 + lane], sq[h][48 + lane], sq[h][80 + lane], sq[h][112 + lane]);
+                    upper_qb = sycl::float4(sq[h][144 + lane], sq[h][176 + lane], sq[h][208 + lane], sq[h][240 + lane]);
+                } else {
+                    upper_qa = *reinterpret_cast<const sycl::float4 *>(&sq[h][(lane + 16) * 8]);
+                    upper_qb = *reinterpret_cast<const sycl::float4 *>(&sq[h][(lane + 16) * 8 + 4]);
+                }
+                const float upper_s = upper_k[0] * upper_qa.x() + upper_k[1] * upper_qa.y() +
+                                      upper_k[2] * upper_qa.z() + upper_k[3] * upper_qa.w() +
+                                      upper_k[4] * upper_qb.x() + upper_k[5] * upper_qb.y() +
+                                      upper_k[6] * upper_qb.z() + upper_k[7] * upper_qb.w();
+                s += upper_s;
+            }
+            s = warp_sum<SG>(s);
             if (lane == 0) sp[h][c] = s * scale;
         }
     }
@@ -204,9 +231,12 @@ attn_chunk_kernel(const float *__restrict__ q, QsaAttnPools p,
     */
     item_ct1.barrier();
     // per-head chunk max and exp-sum: warp w handles heads w and w+8.
-    for (int h = warp; h < G; h += WARPS) {
+    for (int h = warp; h < G; h += LOCAL_WARPS) {
         const float a = sp[h][lane], b = sp[h][lane + 32];
-        const float m = warp_max(sycl::fmax(a, b));
+        float lane_max = sycl::fmax(a, b);
+        if constexpr (SG == 16)
+            lane_max = sycl::fmax(lane_max, sycl::fmax(sp[h][lane + 16], sp[h][lane + 48]));
+        const float m = warp_max<SG>(lane_max);
         const float ea = (lane < n_here && srow[lane] >= 0)
                              ? sycl::native::exp(a - m)
                              : 0.0f;
@@ -215,7 +245,18 @@ attn_chunk_kernel(const float *__restrict__ q, QsaAttnPools p,
                              : 0.0f;
         sp[h][lane] = ea;
         sp[h][lane + 32] = eb;
-        const float l = warp_sum(ea + eb);
+        float lane_sum = ea + eb;
+        if constexpr (SG == 16) {
+            const float upper_a = sp[h][lane + 16], upper_b = sp[h][lane + 48];
+            const float upper_ea = (lane + 16 < n_here && srow[lane + 16] >= 0)
+                                      ? sycl::native::exp(upper_a - m) : 0.0f;
+            const float upper_eb = (lane + 48 < n_here && srow[lane + 48] >= 0)
+                                      ? sycl::native::exp(upper_b - m) : 0.0f;
+            sp[h][lane + 16] = upper_ea;
+            sp[h][lane + 48] = upper_eb;
+            lane_sum += upper_ea + upper_eb;
+        }
+        const float l = warp_sum<SG>(lane_sum);
         if (lane == 0) { part_m[slot * G + h] = m; part_l[slot * G + h] = l; }
     }
     /*
@@ -224,45 +265,48 @@ attn_chunk_kernel(const float *__restrict__ q, QsaAttnPools p,
     performance if there is no access to global memory.
     */
     item_ct1.barrier();
-    // values: thread t owns dimension t for all 12 heads.
-    float acc[G];
+    // The same per-dimension accumulation; subgroup 16 assigns two dimensions per item.
 #pragma unroll
-    for (int h = 0; h < G; ++h) acc[h] = 0.0f;
-    for (int c = 0; c < n_here; ++c) {
-        if (srow[c] < 0) continue;   // masked above, weight 0
-        float v;
-        if constexpr (KV_MODE == 0) {
-            v = sycl::vec<sycl::half, 1>(
-                    sycl::bit_cast<sycl::half, unsigned short>(
-                        p.v_pool[srow[c] * HD + t]))
-                    .convert<float, sycl::rounding_mode::automatic>()[0];
-        } else if constexpr (KV_MODE == 1) {
-            const float sc =
-                sycl::vec<sycl::half, 1>(
-                    sycl::bit_cast<sycl::half, unsigned short>(
-                        p.v_scale[srow[c] * (HD / KV_Q8_GROUP) +
-                                  t / KV_Q8_GROUP]))
-                    .convert<float, sycl::rounding_mode::automatic>()[0];
-            v = (float) p.v_q[srow[c] * HD + t] * sc;
-        } else {   // modes 2 and 3: V is rotated Q4_0 (kv_q4.hpp); the caller rotates the output back
-            constexpr int bytes_per_head = (HD / QK4_0) * sizeof(block_q4_0);
-            const int b = t / QK4_0;
-            const int rem = t % QK4_0;
-            const block_q4_0* blk = reinterpret_cast<const block_q4_0*>(p.v_q4 + srow[c] * bytes_per_head) + b;
-            const float d =
-                sycl::vec<sycl::half, 1>(
-                    sycl::bit_cast<sycl::half, unsigned short>(blk->d))
-                    .convert<float, sycl::rounding_mode::automatic>()[0];
-            const int j = rem < 16 ? rem : (rem - 16);
-            const uint8_t byte = blk->qs[j];
-            const int nibble = (rem < 16) ? ((byte & 0x0F) - 8) : ((byte >> 4) - 8);
-            v = (float) nibble * d;
+    for (int dim = t; dim < HD; dim += LOCAL_THREADS) {
+        float acc[G];
+#pragma unroll
+        for (int h = 0; h < G; ++h) acc[h] = 0.0f;
+        for (int c = 0; c < n_here; ++c) {
+            if (srow[c] < 0) continue;   // masked above, weight 0
+            float v;
+            if constexpr (KV_MODE == 0) {
+                v = sycl::vec<sycl::half, 1>(
+                        sycl::bit_cast<sycl::half, unsigned short>(
+                            p.v_pool[srow[c] * HD + dim]))
+                        .convert<float, sycl::rounding_mode::automatic>()[0];
+            } else if constexpr (KV_MODE == 1) {
+                const float sc =
+                    sycl::vec<sycl::half, 1>(
+                        sycl::bit_cast<sycl::half, unsigned short>(
+                            p.v_scale[srow[c] * (HD / KV_Q8_GROUP) +
+                                      dim / KV_Q8_GROUP]))
+                        .convert<float, sycl::rounding_mode::automatic>()[0];
+                v = (float) p.v_q[srow[c] * HD + dim] * sc;
+            } else {   // modes 2 and 3: V is rotated Q4_0 (kv_q4.hpp); the caller rotates the output back
+                constexpr int bytes_per_head = (HD / QK4_0) * sizeof(block_q4_0);
+                const int b = dim / QK4_0;
+                const int rem = dim % QK4_0;
+                const block_q4_0* blk = reinterpret_cast<const block_q4_0*>(p.v_q4 + srow[c] * bytes_per_head) + b;
+                const float d =
+                    sycl::vec<sycl::half, 1>(
+                        sycl::bit_cast<sycl::half, unsigned short>(blk->d))
+                        .convert<float, sycl::rounding_mode::automatic>()[0];
+                const int j = rem < 16 ? rem : (rem - 16);
+                const uint8_t byte = blk->qs[j];
+                const int nibble = (rem < 16) ? ((byte & 0x0F) - 8) : ((byte >> 4) - 8);
+                v = (float) nibble * d;
+            }
+#pragma unroll
+            for (int h = 0; h < G; ++h) acc[h] = sycl::fma(sp[h][c], v, acc[h]);
         }
 #pragma unroll
-        for (int h = 0; h < G; ++h) acc[h] = sycl::fma(sp[h][c], v, acc[h]);
+        for (int h = 0; h < G; ++h) part_acc[((size_t) slot * G + h) * HD + dim] = acc[h];
     }
-#pragma unroll
-    for (int h = 0; h < G; ++h) part_acc[((size_t) slot * G + h) * HD + t] = acc[h];
 }
 
 __dpct_inline__ void attn_merge_kernel(const float *__restrict__ part_acc,
@@ -294,6 +338,40 @@ __dpct_inline__ void attn_merge_kernel(const float *__restrict__ part_acc,
                         (float)w, acc);
     }
     attn[(size_t) h * HD + d] = L > 0.0f ? acc / L : 0.0f;
+}
+
+// Keep the original 64-cell split and merge, with only lane/query layout varied.
+template <int KV_MODE, int SG, bool TRANSPOSE_Q>
+void launch_chunk_variant(const float* q, QsaAttnPools pools, const int32_t* ids, const int32_t* steps,
+                          int64_t cap, const QsaShapes& s, float* scratch, int64_t n_q,
+                          dpct::queue_ptr st) {
+    const int n_chunks = (int) ((cap + CHUNK - 1) / CHUNK);
+    const long long stride = (long long) qsa_decode_attn_scratch_floats(cap, s);
+    float* part_m = scratch + (size_t) n_chunks * s.n_head * HD;
+    float* part_l = part_m + (size_t) n_chunks * s.n_head;
+    const float scale = 1.0f / sqrtf((float) HD);
+    const int n_kv_heads = (int) s.n_head_kv, page_size = (int) s.page_size;
+    const auto properties = sycl::ext::oneapi::experimental::properties{
+        sycl::ext::oneapi::experimental::use_root_sync};
+    st->parallel_for<dpct_kernel_name<class qsa_attn_chunk_variant,
+                                     dpct_kernel_scalar<KV_MODE>, dpct_kernel_scalar<SG>,
+                                     dpct_kernel_scalar<TRANSPOSE_Q>>>(
+        sycl::nd_range<3>(sycl::range<3>((size_t) n_q, (size_t) n_kv_heads, (size_t) n_chunks * 8 * SG),
+                          sycl::range<3>(1, 1, 8 * SG)), properties,
+        [=](sycl::nd_item<3>) [[sycl::reqd_sub_group_size(SG)]] {
+            attn_chunk_kernel<KV_MODE, SG, TRANSPOSE_Q>(q, pools, ids, steps, n_kv_heads,
+                                                       page_size, scale, scratch, part_m, part_l,
+                                                       n_chunks, (int) cap, stride);
+        });
+}
+
+template <int KV_MODE>
+void dispatch_chunk_variant(const float* q, QsaAttnPools pools, const int32_t* ids, const int32_t* steps,
+                            int64_t cap, const QsaShapes& s, float* scratch, int64_t n_q,
+                            int variant, dpct::queue_ptr st) {
+    if (variant == 1) launch_chunk_variant<KV_MODE, 32, true>(q, pools, ids, steps, cap, s, scratch, n_q, st);
+    else if (variant == 2) launch_chunk_variant<KV_MODE, 16, false>(q, pools, ids, steps, cap, s, scratch, n_q, st);
+    else launch_chunk_variant<KV_MODE, 16, true>(q, pools, ids, steps, cap, s, scratch, n_q, st);
 }
 
 }  // namespace
@@ -402,6 +480,38 @@ void qsa_decode_attn_batch(const float* q, const QsaAttnPools& pools, const int3
     need to rewrite this code.
     */
     const dpct::err0 e = 0;
+}
+
+void qsa_decode_attn_batch_variant(const float* q, const QsaAttnPools& pools, const int32_t* ids,
+                                   const int32_t* steps, int64_t cap, const QsaShapes& s,
+                                   float* scratch, float* attn, int64_t n_q, int variant, void* stream) {
+    if (n_q <= 0) return;
+    if (s.head_dim != HD || s.n_head != (int64_t) G * s.n_head_kv || cap <= 0 || !scratch || !ids || !steps ||
+        !pools.page_table || n_q > 65535 || variant < 1 || variant > 3) {
+        std::fprintf(stderr, "qsa_decode_attn_batch_variant: unsupported geometry, variant, or missing buffers\n");
+        std::exit(1);
+    }
+    dpct::queue_ptr st = strata::q_of(stream);
+    dpct::has_capability_or_fail(st->get_device(), {sycl::aspect::fp16});
+    const int kv_mode = pools.k_q4 != nullptr ? 2 : (pools.k_q != nullptr && pools.v_q4 != nullptr ? 3
+                                                   : (pools.k_q != nullptr ? 1 : 0));
+    if (kv_mode == 3) dispatch_chunk_variant<3>(q, pools, ids, steps, cap, s, scratch, n_q, variant, st);
+    else if (kv_mode == 2) dispatch_chunk_variant<2>(q, pools, ids, steps, cap, s, scratch, n_q, variant, st);
+    else if (kv_mode == 1) dispatch_chunk_variant<1>(q, pools, ids, steps, cap, s, scratch, n_q, variant, st);
+    else dispatch_chunk_variant<0>(q, pools, ids, steps, cap, s, scratch, n_q, variant, st);
+    const int n_chunks = (int) ((cap + CHUNK - 1) / CHUNK);
+    const long long stride = (long long) qsa_decode_attn_scratch_floats(cap, s);
+    const float* part_m = scratch + (size_t) n_chunks * s.n_head * HD;
+    const float* part_l = part_m + (size_t) n_chunks * s.n_head;
+    const int n_head = (int) s.n_head;
+    const auto properties = sycl::ext::oneapi::experimental::properties{
+        sycl::ext::oneapi::experimental::use_root_sync};
+    st->parallel_for<dpct_kernel_name<class qsa_attn_merge_variant>>(
+        sycl::nd_range<3>(sycl::range<3>(1, (size_t) n_q, (size_t) n_head * HD),
+                          sycl::range<3>(1, 1, HD)), properties,
+        [=](sycl::nd_item<3>) {
+            attn_merge_kernel(scratch, part_m, part_l, n_chunks, attn, stride);
+        });
 }
 
 uint64_t qsa_decode_attn_scratch_floats(int64_t cap, const QsaShapes& s) {

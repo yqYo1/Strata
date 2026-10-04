@@ -1,0 +1,49 @@
+{
+  "baseline_kernel_source_revision": "af9349c",
+  "device": "Intel Arc B570 10 GB",
+  "cpu": "Ryzen 5 5600X",
+  "installed_ram_gb": 128,
+  "compute_runtime": "26.35.39758.10",
+  "compiler": "oneAPI 2026.1.1",
+  "binary_sha256": "bc22a2333767e83e9969a56526220ee9f57a9ec5137f2b01d59a1f0eff6c914d",
+  "source_sha256": {
+    "kernel.cpp": "a94f3e6bb70a477d61d91fd86ec2e9665cb53a1b50465f36df9033ac655e25ff",
+    "parity.cpp": "40753b636c87e85e372c51944d26fc4ac1e383f98dfeada047ce16d3f29139ed"
+  },
+  "args": [
+    "/tmp/strata-upstream-arc-xmx-compact-parity",
+    "8192",
+    "129",
+    "1",
+    "128"
+  ],
+  "timing": "median of three warmed rounds; old/new order alternates; elapsed wall time with queue waits; not an overall model benchmark",
+  "result": {
+    "exit_code": 2,
+    "all_six_supported_case_outputs_bit_identical_to_original_xmx_ch32": true,
+    "accuracy_failures": [
+      "K8V4 context 8192",
+      "K8V4 context 1500"
+    ],
+    "existing_fp64_and_fp32_bounds_unchanged": true,
+    "production_adopted": false
+  },
+  "compiler_flags": [
+    "-O3",
+    "-DNDEBUG",
+    "-std=c++20",
+    "-fsycl",
+    "-fsycl-default-sub-group-size=32",
+    "-fsycl-device-code-split=per_kernel",
+    "-fp-model=precise",
+    "-Xsycl-target-backend=spir64",
+    "-cl-fp32-correctly-rounded-divide-sqrt"
+  ],
+  "notes": [
+    "The initial event-timer run aborted because its queue lacked enable_profiling; that abort is retained.",
+    "Only the timing harness was changed to queue-synchronized wall time; precision bounds and math were not changed.",
+    "Both XMX versions refuse Q4_0 K with valid pools; this is an eligibility check, not a numerical pass.",
+    "K8V4 outputs match the original XMX but fail the existing comparison with FP64 and the original FP32 fallback.",
+    "The source aliases query/P and K/V lifetime regions and processes one output tile per subgroup at a time; requested SLM falls from 86784 to 62208 bytes."
+  ]
+}
