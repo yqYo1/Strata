@@ -42,7 +42,7 @@ def closing(text, at):
     raise ValueError('unclosed launch arguments')
 
 
-def lower(source):
+def lower(source, namespace="strata::kernels"):
     text = source
     # Q8_1 integer rounding depends on correctly rounded division. On B570 a
     # plain SYCL divide changed a 63.5 tie despite -foffload-fp32-prec-div.
@@ -140,9 +140,10 @@ def lower(source):
     text = text.replace('#include "strata/kernels/dp4a.hpp"','#define STRATA_DP4A(a,b,c) __dp4a((a),(b),(c))')
     text = text.replace('#include <cuda_fp16.h>','')
     text = text.replace('#define GGML_COMMON_DECL_CUDA','').replace('#define GGML_COMMON_IMPL_CUDA','').replace('#include "ggml-common.h"','')
-    needle = 'namespace strata::kernels {\nnamespace {'
-    assert text.count(needle)==1
-    text = text.replace(needle,'namespace strata::kernels {\nnamespace {\nusing namespace sycl_upstream::cuda_kernel;')
+    matches = list(re.finditer(r'namespace '+re.escape(namespace)+r' \{\s*namespace \{',text))
+    assert len(matches)==1, namespace
+    needle = matches[0].group(0)
+    text = text.replace(needle,needle+'\nusing namespace sycl_upstream::cuda_kernel;')
     text = '#include "strata/sycl_upstream/cuda_kernel.hpp"\n'+text+'\n#undef STRATA_DP4A\n'
     return text, {'kernels':sorted(kernels), 'launch_sites':len(launches),
                   'q8_1_explicit_rn_divisions':2*quant_divisions}

@@ -135,7 +135,11 @@ The final suites took 61.94 seconds JIT and 10.52 seconds AOT. Those durations
 include compilation/startup and correctness checks; they are not inference
 benchmarks. AOT warnings still report spills in some original product kernels.
 
-Remaining work includes native program/device metadata, the other original
+The later [native device/arena checkpoint](native-device.md) adds explicit native
+program/device metadata and repeats the related tests with that frontend change.
+The hashes and 21-test results here describe this earlier checkpoint.
+
+Remaining work includes the other original
 kernel families, the NVIDIA tensor score algorithm's native binding, fixed BLAS
 workspace binding, CPU ISA bindings, full engine linking and whole-model state
 validation. The host syntax census remains the earlier 19/20 checkpoint; these

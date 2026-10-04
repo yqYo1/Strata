@@ -147,5 +147,11 @@ explicit rounding operation; CUDA device bit identity remains unverified.
 single/batch state, RoPE/indexer, short attention and QSA gates. Both builds pass
 21 related CTest programs. The new test covers 944 cases and 649 graph replays;
 precision differences in analytic power and PLE normalization are recorded.
+[Original device admission and arena](native-device.md) now run the original
+device/arena CLI, query an actual native executable image, and compile the whole
+generation driver with explicit native metadata bindings. Both builds pass 25
+related CTest programs. The driver is still an object, with engine symbols left
+for real bindings. The automatic split timing formula remains CUDA-calibrated
+and unvalidated for native compute units.
 Fixed BLAS workspace binding, remaining kernel families, full engine linking
 and execution remain open. No new PP/TG measurement has been established.

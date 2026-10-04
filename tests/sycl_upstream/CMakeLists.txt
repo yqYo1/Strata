@@ -474,3 +474,67 @@ if(STRATA_SYCL_DEVICE_ARCH)
 endif()
 add_test(NAME original_native_primitives COMMAND original_primitives_test)
 set_tests_properties(original_native_primitives PROPERTIES TIMEOUT 300)
+
+# Whole original core device/arena logic, with explicit native metadata.
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+    ${STRATA_ROOT}/tools/sycl/lower_cuda_device.py)
+execute_process(COMMAND ${Python3_EXECUTABLE} ${STRATA_ROOT}/tools/sycl/lower_cuda_device.py
+    --output ${CMAKE_CURRENT_BINARY_DIR} COMMAND_ERROR_IS_FATAL ANY)
+add_library(strata_sycl_original_device STATIC
+    ${CMAKE_CURRENT_BINARY_DIR}/original_core_device.cpp
+    ${STRATA_ROOT}/src/sycl_upstream/device_metadata.cpp)
+target_include_directories(strata_sycl_original_device PRIVATE
+    ${STRATA_GGML_DIR}/ggml/include ${STRATA_GGML_DIR}/ggml/src)
+target_compile_definitions(strata_sycl_original_device PUBLIC STRATA_USE_SYCL=1)
+target_compile_options(strata_sycl_original_device PRIVATE -fsycl -fno-fast-math -ffp-contract=off)
+target_link_libraries(strata_sycl_original_device PUBLIC strata_sycl_cuda_frontend)
+add_executable(strata_device_sycl ${CMAKE_CURRENT_BINARY_DIR}/original_core_device_main.cpp)
+target_compile_options(strata_device_sycl PRIVATE -fsycl)
+target_link_libraries(strata_device_sycl PRIVATE strata_sycl_original_device)
+add_executable(original_device_test native_device.cpp)
+target_compile_options(original_device_test PRIVATE -fsycl)
+target_link_libraries(original_device_test PRIVATE strata_sycl_original_device)
+add_test(NAME original_native_device COMMAND original_device_test)
+add_test(NAME original_device_cli_list COMMAND strata_device_sycl --list-devices)
+add_test(NAME original_device_cli_selftest COMMAND strata_device_sycl --selftest)
+set_tests_properties(original_native_device original_device_cli_list original_device_cli_selftest
+    PROPERTIES TIMEOUT 120)
+# Exercise the admission rejection with a real different architecture enum.
+# This fixture compiles metadata only; it contains no PVC device image.
+add_executable(original_device_mismatch_test native_device_mismatch.cpp
+    ${STRATA_ROOT}/src/sycl_upstream/device_metadata.cpp)
+target_compile_definitions(original_device_mismatch_test PRIVATE
+    STRATA_SYCL_DEVICE_ARCH_NAME="intel_gpu_pvc"
+    STRATA_SYCL_DEVICE_ARCH_ID=sycl::ext::oneapi::experimental::architecture::intel_gpu_pvc)
+target_compile_options(original_device_mismatch_test PRIVATE -fsycl)
+target_link_libraries(original_device_mismatch_test PRIVATE strata_sycl_cuda_frontend)
+add_test(NAME original_native_arch_mismatch COMMAND original_device_mismatch_test)
+set_tests_properties(original_native_arch_mismatch PROPERTIES TIMEOUT 60)
+if(STRATA_SYCL_DEVICE_ARCH)
+    target_compile_definitions(strata_sycl_original_device PRIVATE
+        STRATA_SYCL_DEVICE_ARCH_NAME="intel_gpu_${STRATA_SYCL_DEVICE_ARCH}"
+        STRATA_SYCL_DEVICE_ARCH_ID=sycl::ext::oneapi::experimental::architecture::intel_gpu_${STRATA_SYCL_DEVICE_ARCH})
+    target_compile_options(strata_sycl_original_device PRIVATE -fsycl-targets=spir64_gen)
+    target_compile_options(strata_device_sycl PRIVATE -fsycl-targets=spir64_gen)
+    target_compile_options(original_device_test PRIVATE -fsycl-targets=spir64_gen)
+    target_compile_options(original_device_mismatch_test PRIVATE -fsycl-targets=spir64_gen)
+endif()
+
+# Compile the whole original driver after native metadata binding. Keep an
+# object target until all original engine/kernel symbols have real bindings.
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+    ${STRATA_ROOT}/tools/sycl/lower_cuda_program.py)
+execute_process(COMMAND ${Python3_EXECUTABLE} ${STRATA_ROOT}/tools/sycl/lower_cuda_program.py
+    --output ${CMAKE_CURRENT_BINARY_DIR} COMMAND_ERROR_IS_FATAL ANY)
+file(STRINGS ${STRATA_ROOT}/CMakeLists.txt _strata_version_line REGEX "^project\\(strata VERSION ")
+string(REGEX MATCH "VERSION ([0-9.]+)" _strata_version_match "${_strata_version_line}")
+add_library(strata_sycl_original_program OBJECT ${CMAKE_CURRENT_BINARY_DIR}/original_program_generate.cpp)
+target_include_directories(strata_sycl_original_program PRIVATE
+    ${STRATA_GGML_DIR}/ggml/include ${STRATA_GGML_DIR}/ggml/src)
+target_compile_definitions(strata_sycl_original_program PRIVATE STRATA_NATIVE_EXPERTS=1
+    STRATA_PREFILL_MMQ=1 STRATA_PREFILL_FUSED=1 STRATA_VERSION="${CMAKE_MATCH_1}")
+target_compile_options(strata_sycl_original_program PRIVATE -fsycl -fno-fast-math -ffp-contract=off)
+target_link_libraries(strata_sycl_original_program PRIVATE strata_sycl_original_device)
+if(STRATA_SYCL_DEVICE_ARCH)
+    target_compile_options(strata_sycl_original_program PRIVATE -fsycl-targets=spir64_gen)
+endif()

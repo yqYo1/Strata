@@ -155,9 +155,9 @@ build-upstream-sycl/graph_copy2d_probe
 timeout 5 build-upstream-sycl/graph_copy2d_probe native
 ```
 
-Still open: program device/runtime metadata, remaining kernel entry-point bindings,
+Still open: remaining kernel entry-point bindings,
 interprocess events, graph update/full kernel parameter introspection, capture
-modes beyond ThreadLocal, per-thread default streams, device capability metadata,
+modes beyond ThreadLocal, per-thread default streams,
 write-combined/I/O registration, asynchronous allocators, complete
 CUDA error behavior, Windows and multi-device execution. Unsupported flags and
 kernel parameter inspection return explicit errors. Full-model state parity and PP/TG
@@ -177,8 +177,15 @@ and CUDA device arithmetic identity remain open.
 [Original native state and attention primitives](native-primitives.md) now also
 bind 12 whole original files, including connected GDN state/history, PLE
 single/batch state and attention/indexer graphs. Both final builds pass 21
-related CTest programs. Native program admission, remaining kernel families,
+related CTest programs at that checkpoint. Remaining kernel families,
 tensor score binding and whole-model execution remain open.
+
+[Original device admission and arena](native-device.md) now add native ordinal
+inspection, explicit device facts and an executable-image query for the original
+poison kernel. The original device CLI runs, and the whole generation driver
+compiles after native metadata binding. Both builds pass 25 related CTest
+programs at this newer checkpoint. That one kernel's image availability does
+not establish full engine linkage or execution.
 
 The [MMQ stream binding](mmq-frontend.md) now connects the original public MMQ
 API to this frontend. It also fixes process-exit cleanup of an unfinished capture,

@@ -436,6 +436,12 @@ cudaError_t cudaGraphExecDestroy(cudaGraphExec_t e) noexcept {return api([&]{dev
 namespace strata::sycl_upstream::cuda {
 cudaError_t submit(cudaStream_t s,const Runtime::Submit& fn) noexcept {return api([&]{auto& d=stream_domain(s);d.runtime.enqueue(stream_id(s),fn);});}
 cudaError_t stream_device(cudaStream_t s,sycl::device* output) noexcept {return api([&]{require(output);*output=stream_domain(s).runtime.device();});}
+cudaError_t inspect_device(int ordinal,const std::function<void(const sycl::device&)>& fn) noexcept {
+    return api([&]{devices().validate(ordinal);require(bool(fn));fn(devices().visible[ordinal]);});
+}
+cudaError_t device_context(int ordinal,sycl::context* output) noexcept {
+    return api([&]{require(output);*output=devices().get(ordinal).runtime.context();});
+}
 cudaError_t validate_device_buffer(cudaStream_t s,const void* p,size_t bytes) noexcept {return api([&]{
     auto& d=stream_domain(s);stream_id(s);auto info=range(p,bytes);
     if(bytes){require(info && info->kind==Memory::Kind::device);accessible(d,p);}
