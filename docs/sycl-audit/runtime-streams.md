@@ -25,7 +25,7 @@ Call sites that drive this component's requirements include:
 | `src/core/session.cpp` capture setup | Temporary capture streams also use ordinary stream creation. They cannot be treated as nonblocking by default. |
 | `src/prefill/prefill.cpp` `copied`/`used` ring events | A slot's next copy waits for its previous consumer; a consumer waits for the corresponding copy. Reusing an event object must preserve already-issued waits. |
 | `src/core/verify.cpp` `fetch_dma` | A host function publishes the flag after asynchronous expert transfers complete. |
-| `src/core/graph.cpp` and session/verify/MTP capture | Graph capture/replay and its completion events are required next; this component does not yet implement them. |
+| `src/core/graph.cpp` and session/verify/MTP capture | Capture/replay and reusable completion events are covered by the subsequent [graph component](runtime-graphs.md). |
 
 There is no `--default-stream per-thread` option or
 `CUDA_API_PER_THREAD_DEFAULT_STREAM` definition in the pinned source/build scan.
@@ -108,7 +108,8 @@ JIT/AOT logs and the original barrier-stall diagnostic. Test elapsed time is not
 an inference benchmark. All 256 files in the original shared-source manifest
 remain byte-identical.
 
-Graph capture/replay, graph update and introspection, timing events, per-thread
+[Native capture/replay](runtime-graphs.md) extends this component. Graph update,
+full introspection, timing events, per-thread
 implicit streams, device selection, multi-device/cross-context waits, allocation
 and mapped-host registration, CUDA-compatible error codes and thread-local error
 state remain open. The new runtime uses SYCL exceptions and explicit USM pointers;

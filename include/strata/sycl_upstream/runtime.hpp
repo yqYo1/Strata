@@ -9,6 +9,7 @@ namespace strata::sycl_upstream {
 // named streams are blocking unless explicitly created nonblocking.
 // This is the runtime core, not a drop-in cuda_runtime.h implementation.
 class Runtime {
+    struct Capture;
 public:
     using Stream = uint64_t;
     using Submit = std::function<sycl::event(sycl::queue&)>;
@@ -16,6 +17,24 @@ public:
         friend class Runtime;
         std::optional<sycl::event> completion_;
         std::optional<sycl::context> context_;
+        std::weak_ptr<Capture> capture_;
+        bool captured_ = false;
+    };
+    class Graph {
+        friend class Runtime;
+        struct State;
+        std::shared_ptr<State> state_;
+        explicit Graph(std::shared_ptr<State> state): state_(std::move(state)) {}
+    public:
+        Graph() = default;
+        Graph(Graph&&) = default;
+        Graph& operator=(Graph&&) = default;
+        Graph(const Graph&) = delete;
+        Graph& operator=(const Graph&) = delete;
+        size_t node_count() const;
+        // Releasing Graph returns without waiting for pending replays. The
+        // runtime retains the executable until completion; buffers referenced
+        // by recorded commands remain caller-owned.
     };
     explicit Runtime(const sycl::device&);
     ~Runtime();
@@ -39,6 +58,14 @@ public:
     void synchronize(Stream);
     void synchronize(const Event&);
     void synchronize_device();
+    // Thread-local capture: end on the originating stream and host thread.
+    // Waiting on a captured event enrolls another stream; all branches must
+    // join the origin before end_capture. Empty or invalid captures fail.
+    void begin_capture(Stream);
+    bool capturing(Stream);
+    Graph end_capture(Stream);
+    void abort_capture(Stream);
+    sycl::event launch(Graph&, Stream);
 private:
     struct Impl;
     std::unique_ptr<Impl> impl_;

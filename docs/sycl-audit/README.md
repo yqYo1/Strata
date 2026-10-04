@@ -107,5 +107,7 @@ translation-unit parity verdict.
 [Stream/event ordering](runtime-streams.md) now has an implementation and B570
 validation, including a reproduced host-blocking barrier and a dependent-command
 replacement. Its [pinned call inventory](runtime-inventory.json) keeps the remaining
-CUDA API scope visible. Graphs, mapped-memory handoff and full engine integration
-remain open.
+CUDA API scope visible. [Native graph capture and replay](runtime-graphs.md) now
+cover changed inputs, event fork/join, asynchronous release and the ported MMQ
+chain in JIT/AOT tests. Mapped-memory handoff and full engine integration remain
+open.

@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-04",
+  "device": "Intel(R) Arc(TM) B570 Graphics",
+  "compiler": "IntelLLVM 2026.1.1",
+  "backend": "Level Zero",
+  "upstream": "99f3dbd0b21d1401b3769e0c0d963913607f380b",
+  "cuda_device_reference_executed": false,
+  "engine_integrated": false,
+  "runtime_scenarios": 7,
+  "prefill_ring_batches": 40,
+  "graph_scenarios": 6,
+  "graph_replays": 32,
+  "exact_graph_vs_direct_mmq_outputs": 6144,
+  "graph_mmq_dimensions": {
+    "input_cols": 512,
+    "hidden": 512,
+    "rows": 3,
+    "experts": 1,
+    "format": "Q8_0",
+    "native_nodes": 8,
+    "changed_inputs": 4
+  },
+  "unchanged_upstream_manifest_files": 256,
+  "source_sha256": {
+    "include/strata/sycl_upstream/runtime.hpp": "a6f3e9295fcd5e39a4e863eab3452af379e3ef5142f69e41b15086593328cdf4",
+    "src/sycl_upstream/runtime.cpp": "6c74c1763138163e4328dfa2a3f398692e248f5380195c1f53928d7c3ecbaa63",
+    "tests/sycl_upstream/runtime.cpp": "2a8c84aaaded0edbdc075317fc5d646ec9998197beb4b3fbc7d4b017cd4b194a",
+    "tests/sycl_upstream/graph.cpp": "f3fd512a6ce129b796ab817e21ecc946d1d1e0acc34c96aa608098f825ea8abb",
+    "tests/sycl_upstream/CMakeLists.txt": "5302d9bac072dd8a60023ed02b31933a5970df6f322b73d783962f9ca739a1bc",
+    "src/sycl_upstream/mmq_product.cpp": "de4624e13f366e960f2a41e94daebe34664e134826755e9a04de4f59fdf16bc8",
+    "src/sycl_upstream/mmq_stages.cpp": "76824eb92abbdabab59f1cbf71c921456fedfdcf3267b5b7f9afc7dd0bc1cf30",
+    "src/sycl_upstream/mmq_quantize.cpp": "33ea761f38e1eb3643d2f28a9a2ff2fd3109e29ea0827eb027828b47da1a95cd"
+  },
+  "builds": {
+    "jit": {
+      "aot_arch": null,
+      "command": "source /opt/intel/oneapi/setvars.sh; ONEAPI_DEVICE_SELECTOR=level_zero:gpu ctest --test-dir build-upstream-sycl -R ^runtime_ -V",
+      "binaries": {
+        "runtime_test": "b23d22d4ff46e3e5a5c3bb4ba31a8efc6ca8a13803dae640a7cad20af96bbb1f",
+        "graph_test": "1190255fa126c3f01da49c82e37108746366a22625b3a01d4961e94dd07db59e",
+        "libstrata_sycl_runtime.a": "07b3d017a1a0f2e3285e5ea239aa5e0cdd7d7112e583f8333971b63f043dcf49"
+      },
+      "log": "Internal ctest changing into directory: <worktree>/build-upstream-sycl\nUpdateCTestConfiguration  from :<worktree>/build-upstream-sycl/DartConfiguration.tcl\nUpdateCTestConfiguration  from :<worktree>/build-upstream-sycl/DartConfiguration.tcl\nTest project <worktree>/build-upstream-sycl\nConstructing a list of tests\nDone constructing a list of tests\nUpdating test list for fixtures\nAdded 0 tests to meet fixture requirements\nChecking test dependency graph...\nChecking test dependency graph end\ntest 6\n    Start 6: runtime_stream_event_ordering\n\n6: Test command: <worktree>/build-upstream-sycl/runtime_test\n6: Working Directory: <worktree>/build-upstream-sycl\n6: Test timeout computed to be: 45\n6: device=Intel(R) Arc(TM) B570 Graphics\n6: PASS runtime_cases=7 prefill_ring_batches=40 legacy_and_event_ordering=1 async_destroy=1\n1/2 Test #6: runtime_stream_event_ordering ....   Passed    0.23 sec\ntest 7\n    Start 7: runtime_graph_capture_replay\n\n7: Test command: <worktree>/build-upstream-sycl/graph_test\n7: Working Directory: <worktree>/build-upstream-sycl\n7: Test timeout computed to be: 90\n7: device=Intel(R) Arc(TM) B570 Graphics\n7: PASS graph_scenarios=6 replays=32 exact_mmq_graph_outputs=6144 fork_join=1 invalidation=1 async_launch_and_teardown=1\n2/2 Test #7: runtime_graph_capture_replay .....   Passed    0.19 sec\n\nThe following tests passed:\n\truntime_stream_event_ordering\n\truntime_graph_capture_replay\n\n100% tests passed, 0 tests failed out of 2\n\nTotal Test time (real) =   0.43 sec\n"
+    },
+    "aot": {
+      "aot_arch": "bmg_g21",
+      "command": "source /opt/intel/oneapi/setvars.sh; ONEAPI_DEVICE_SELECTOR=level_zero:gpu ctest --test-dir build-upstream-sycl-aot -R ^runtime_ -V",
+      "binaries": {
+        "runtime_test": "709ae16caf27383f4d3722efd5971c8b0bcf2d34ab59685d468425e207db8744",
+        "graph_test": "e4fbb8a31b2b10b2e84b060ed71e70a89eb46678ff55e5ae2568bcf660c94af5",
+        "libstrata_sycl_runtime.a": "bb27884636e16c0046b30b1d141ae46b3c92a6d21d149b5c04bb421bcba16bcb"
+      },
+      "log": "Internal ctest changing into directory: <worktree>/build-upstream-sycl-aot\nUpdateCTestConfiguration  from :<worktree>/build-upstream-sycl-aot/DartConfiguration.tcl\nUpdateCTestConfiguration  from :<worktree>/build-upstream-sycl-aot/DartConfiguration.tcl\nTest project <worktree>/build-upstream-sycl-aot\nConstructing a list of tests\nDone constructing a list of tests\nUpdating test list for fixtures\nAdded 0 tests to meet fixture requirements\nChecking test dependency graph...\nChecking test dependency graph end\ntest 6\n    Start 6: runtime_stream_event_ordering\n\n6: Test command: <worktree>/build-upstream-sycl-aot/runtime_test\n6: Working Directory: <worktree>/build-upstream-sycl-aot\n6: Test timeout computed to be: 45\n6: device=Intel(R) Arc(TM) B570 Graphics\n6: PASS runtime_cases=7 prefill_ring_batches=40 legacy_and_event_ordering=1 async_destroy=1\n1/2 Test #6: runtime_stream_event_ordering ....   Passed    0.23 sec\ntest 7\n    Start 7: runtime_graph_capture_replay\n\n7: Test command: <worktree>/build-upstream-sycl-aot/graph_test\n7: Working Directory: <worktree>/build-upstream-sycl-aot\n7: Test timeout computed to be: 90\n7: device=Intel(R) Arc(TM) B570 Graphics\n7: PASS graph_scenarios=6 replays=32 exact_mmq_graph_outputs=6144 fork_join=1 invalidation=1 async_launch_and_teardown=1\n2/2 Test #7: runtime_graph_capture_replay .....   Passed    0.16 sec\n\nThe following tests passed:\n\truntime_stream_event_ordering\n\truntime_graph_capture_replay\n\n100% tests passed, 0 tests failed out of 2\n\nTotal Test time (real) =   0.39 sec\n"
+    }
+  },
+  "environment_selection_failure": "Initial invocation without oneAPI setvars reported no GPU before running either scenario suite. Both suites passed after loading setvars and selecting level_zero:gpu.",
+  "interpretation": "Correctness and lifetime evidence for isolated native capture/replay. The MMQ comparison is graph versus the same direct chain, not a new independent CPU oracle. No inference throughput measurement or complete CUDA parity claim.",
+  "sources": [
+    "https://docs.nvidia.com/cuda/cuda-programming-guide/04-special-topics/cuda-graphs.html",
+    "https://docs.nvidia.com/cuda/cuda-runtime-api/cuda_runtime_api/group__CUDART__STREAM.html",
+    "https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_oneapi_graph.asciidoc"
+  ]
+}
