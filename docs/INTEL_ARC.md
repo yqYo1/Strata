@@ -108,9 +108,15 @@ Things that matter on an Arc (details in INTEL.md):
 - `SYCL_CACHE_PERSISTENT=0`: the persistent JIT cache crashed on Xe2 during the first compile.
 - Two cards: `ONEAPI_DEVICE_SELECTOR=level_zero:*` (the image pins `level_zero:0`; `strata-sycl.sh` now passes the
   variable through) and `--layer-split`.
-- `STRATA_VERIFY_NO_HOST=1` (set by `strata-sycl.sh`) is only valid when every expert is in VRAM. On smaller cards
-  that path is the one that has hung, and #667 found the likely reason: the GPU does not see the CPU's flag
-  stores without a system fence.
+- `STRATA_VERIFY_NO_HOST=1` is only valid when every expert is in VRAM. `strata-sycl.sh` forwards it only when
+  explicitly set to `1`. The default verifier uses host event boundaries for CPU expert misses, with the
+  original mixer and MoE phases captured separately. CPU plans and results cross by queue copies. A small
+  host USM buffer stages the PCIe share of the resident RAM arena; the arena itself is pageable. This replaces
+  the earlier in-kernel flag path, which hung on a B570 when a CPU miss reached layer 1.
+
+The B570 checks in this fork are recorded in
+[the 2026-10-05 validation](../bench/results/2026-10-05-sycl-upstream-arc/README.md).
+Fixture generation for all 25 kernel tests is described in [PARITY.md](../sycl/tools/PARITY.md).
 
 ## Windows
 

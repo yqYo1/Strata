@@ -18,10 +18,12 @@ args=""
 for a in "$@"; do args+=" $(printf '%q' "$a")"; done
 sel=()
 [ -n "${ONEAPI_DEVICE_SELECTOR:-}" ] && sel=(-e "ONEAPI_DEVICE_SELECTOR=$ONEAPI_DEVICE_SELECTOR")
-# the port's run-time switches: the device-built verify plan without host handshakes (docs/INTEL.md)
+# Only a fully resident expert tier can omit CPU expert work. Keep host boundaries on smaller cards.
+[ "${STRATA_VERIFY_NO_HOST:-}" = "1" ] && sel+=(-e STRATA_VERIFY_NO_HOST=1)
+# the port's run-time switches: the device-built verify plan (docs/INTEL.md)
 exec docker run --rm -i --name "$name" --device /dev/dri --oom-score-adj 1000 --stop-timeout 30 --no-healthcheck \
     -v "$root:/work" \
-    -e STRATA_VERIFY_DEVICE_PLAN=1 -e STRATA_VERIFY_NO_HOST=1 -e STRATA_STAGER_THREADS=12 \
+    -e STRATA_VERIFY_DEVICE_PLAN=1 -e STRATA_STAGER_THREADS=12 \
     "${sel[@]}" \
     "${STRATA_SYCL_IMAGE:-strata-sycl-dev}" \
     "cd $repo_in && exec ${STRATA_SYCL_BIN:-build-sycl-aot/strata}$args"
