@@ -1,0 +1,16 @@
+Fallback batch 32 vs 32 queries; require finite, bit-identical outputs
+PASS int8 ctx 8192, 1025 queries: vs FP64 old 2.15e-06 new 2.15e-06 (output scale 3.5); new vs old 0 (0 of scale); 29.397 -> 29.404 ms per chunk (1.00x)
+PASS fp16 ctx 8192, 1025 queries: vs FP64 old 2.05e-06 new 2.05e-06 (output scale 2.97); new vs old 0 (0 of scale); 27.230 -> 27.223 ms per chunk (1.00x)
+PASS q4_0 ctx 8192, 1025 queries: vs FP64 old 5.24e-06 new 5.24e-06 (output scale 7.86); new vs old 0 (0 of scale); 31.181 -> 31.181 ms per chunk (1.00x)
+PASS q4_0 ctx 1500, 1025 queries: vs FP64 old 3.62e-06 new 3.62e-06 (output scale 7.13); new vs old 0 (0 of scale); 16.582 -> 16.569 ms per chunk (1.00x)
+PASS int8 ctx 1500, 1025 queries: vs FP64 old 1.87e-06 new 1.87e-06 (output scale 3.55); new vs old 0 (0 of scale); 15.689 -> 15.667 ms per chunk (1.00x)
+PASS int8 ctx 2100, 256 queries: vs FP64 old 2.03e-06 new 2.03e-06 (output scale 3.61); new vs old 0 (0 of scale); 7.212 -> 7.209 ms per chunk (1.00x)
+FAILURES: 0
+Fallback batch 32 vs 32 queries; require finite, bit-identical outputs
+PASS int8 ctx 8192, 1025 queries: vs FP64 old 2.15e-06 new 2.15e-06 (output scale 3.5); new vs old 0 (0 of scale); 29.411 -> 29.413 ms per chunk (1.00x)
+PASS fp16 ctx 8192, 1025 queries: vs FP64 old 2.05e-06 new 2.05e-06 (output scale 2.97); new vs old 0 (0 of scale); 27.212 -> 27.207 ms per chunk (1.00x)
+PASS q4_0 ctx 8192, 1025 queries: vs FP64 old 5.24e-06 new 5.24e-06 (output scale 7.86); new vs old 0 (0 of scale); 31.181 -> 31.188 ms per chunk (1.00x)
+PASS q4_0 ctx 1500, 1025 queries: vs FP64 old 3.62e-06 new 3.62e-06 (output scale 7.13); new vs old 0 (0 of scale); 16.580 -> 16.567 ms per chunk (1.00x)
+PASS int8 ctx 1500, 1025 queries: vs FP64 old 1.87e-06 new 1.87e-06 (output scale 3.55); new vs old 0 (0 of scale); 15.668 -> 15.670 ms per chunk (1.00x)
+PASS int8 ctx 2100, 256 queries: vs FP64 old 2.03e-06 new 2.03e-06 (output scale 3.61); new vs old 0 (0 of scale); 7.222 -> 7.215 ms per chunk (1.00x)
+FAILURES: 0

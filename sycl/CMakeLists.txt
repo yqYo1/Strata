@@ -219,13 +219,16 @@ if(STRATA_SYCL_PARITY)
   target_link_libraries(conversation_snapshot_test PRIVATE strata_engine)
   add_test(NAME conversation_snapshot_test COMMAND conversation_snapshot_test)
   set_tests_properties(conversation_snapshot_test PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 120)
-  # the prompt-attention parity takes a context length, not --selftest, and needs the tensor-core kernel (not
-  # ported yet: it reports "refused the pools" here). Built, not registered.
+  # The prompt-attention parity takes context/query counts. Its XMX mode passes INT8/FP16 on B570,
+  # then refuses Q4_0 K (which uses the fallback). That complete XMX test remains unregistered.
   strata_resolve(_src src/kernels/qsa_prompt_attn_parity.cpp)
   add_executable(qsa_prompt_attn_parity ${_src})
   target_link_libraries(qsa_prompt_attn_parity PRIVATE strata_kernels)
+  # Positive fourth argument tests the existing fallback with a larger query batch, bitwise;
+  # unlike the XMX path it accepts all three KV formats above.
+  add_test(NAME qsa_decode_attn_batch_parity COMMAND qsa_prompt_attn_parity 8192 129 1 128)
   # the hybrid K8V4 KV test (upstream 0.1.27) passes its appends, gathers and attention here and fails only its
-  # last step, the same tensor-core prompt kernel. Built, not registered, until that kernel is ported.
+  # last step, the opt-in XMX prompt kernel. Built, not registered pending complete GPU validation.
   strata_resolve(_src src/kernels/kv_hybrid_parity.cpp)
   add_executable(kv_hybrid_parity ${_src})
   target_include_directories(kv_hybrid_parity PRIVATE ${STRATA_ROOT}/src/kernels)

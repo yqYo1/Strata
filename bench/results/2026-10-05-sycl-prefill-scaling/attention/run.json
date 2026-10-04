@@ -1,0 +1,111 @@
+{
+  "hardware": {
+    "gpu": "Intel Arc B570 10 GB",
+    "cpu": "AMD Ryzen 5 5600X",
+    "installed_ram_gb": 128
+  },
+  "driver": "26.35.39758.10",
+  "source_revision_before_changes": "ad6de31",
+  "source_sha256": {
+    "sycl/src/kernels/qsa_prompt_attn_parity.cpp": "420ba51a14d40a7020a62dd9c16350468be0668e5b9f73ddd15634f57c49a646",
+    "sycl/src/kernels/cuda/qsa_decode_attn.dp.cpp": "370463ce8a7b02637e519868c3cddb8c64ffe36cca2ff29b6870631f38d20ac3",
+    "sycl/src/prefill/prefill.cpp": "ed853afa192c94daa1cd8ba8cf1b8a1ce18383b08d29c2a802b2c830db518aec"
+  },
+  "runs": [
+    {
+      "kind": "initial-xmx",
+      "mode": 64,
+      "args": [
+        "8192",
+        "256",
+        "3"
+      ],
+      "exit_code": 2,
+      "log": "xmx64-initial.log"
+    },
+    {
+      "kind": "initial-xmx",
+      "mode": 32,
+      "args": [
+        "8192",
+        "256",
+        "3"
+      ],
+      "exit_code": 2,
+      "log": "xmx32-initial.log"
+    },
+    {
+      "kind": "warm-fallback-batch",
+      "batch": 32,
+      "args": [
+        "8192",
+        "1025",
+        "5",
+        "32"
+      ],
+      "exit_code": 0,
+      "log": "batch32-warm.log",
+      "checks": 12,
+      "failures": [
+        0,
+        0
+      ]
+    },
+    {
+      "kind": "warm-fallback-batch",
+      "batch": 128,
+      "args": [
+        "8192",
+        "1025",
+        "5",
+        "128"
+      ],
+      "exit_code": 0,
+      "log": "batch128-warm.log",
+      "checks": 6,
+      "failures": [
+        0
+      ]
+    },
+    {
+      "kind": "warm-fallback-batch",
+      "batch": 256,
+      "args": [
+        "8192",
+        "1025",
+        "5",
+        "256"
+      ],
+      "exit_code": 0,
+      "log": "batch256-warm.log",
+      "checks": 6,
+      "failures": [
+        0
+      ]
+    },
+    {
+      "kind": "warm-fallback-batch",
+      "batch": 512,
+      "args": [
+        "8192",
+        "1025",
+        "5",
+        "512"
+      ],
+      "exit_code": 0,
+      "log": "batch512-warm.log",
+      "checks": 6,
+      "failures": [
+        0
+      ]
+    }
+  ],
+  "notes": [
+    "Synthetic attention timings exclude model loading, other layers, and CPU FP64 oracle time.",
+    "Warm measurements alternate old/new timing order across three rounds and report the median.",
+    "A fourth positional argument selects fallback launch batching; all outputs must be finite and bit-identical.",
+    "Initial XMX tests are unmodified upstream tests: INT8 and FP16 pass, then Q4_0 K is refused (exit 2). They are not complete passing tests.",
+    "Initial un-warmed tests show order/cache bias; use the warm batch=32 control for timing comparisons."
+  ],
+  "binary_sha256": "526a0b63527468988a7c934ca5c9e0dd1c47a28c1160c39f825734fdc85adb8b"
+}

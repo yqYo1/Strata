@@ -8,7 +8,9 @@
 //   2. the new and old outputs agree to a relative 1e-4 of the output scale;
 // then times both over a prompt chunk (the old one in batches of 32, as prefill.cpp calls it).
 // HIP builds (S6): the same checks for the RDNA4 matrix-core kernel (STRATA_HIP_WMMA), skipped (77) off gfx12.
-// Usage: qsa_prompt_attn_parity [context=32768] [queries=2048] [reps=5]
+// Usage: qsa_prompt_attn_parity [context=32768] [queries=2048] [reps=5] [fallback_batch=0]
+// A positive fallback_batch compares that launch batch against the original 32-query batch, bitwise.
+// Zero tests the opt-in XMX implementation (which does not accept Q4_0 K).
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
 #include <dpct/dpct.hpp>
@@ -29,11 +31,10 @@ namespace k = strata::kernels;
 
 namespace {
 void ck(dpct::err0 e, const char *w) {
-    /*
-    DPCT1009: SYCL reports errors using exceptions and does not use error
-    codes. Please replace the "get_error_string_dummy(...)" with a real
-    error-handling function.
-    */
+    if (e != 0) {
+        std::fprintf(stderr, "%s failed: SYCL migration error %d\n", w, (int) e);
+        std::exit(2);
+    }
 }
 template <typename T> T* up(const std::vector<T>& h) {
     T* d = nullptr;
@@ -64,7 +65,7 @@ uint16_t f2h(float f) {
     return *reinterpret_cast<uint16_t *>(&h);
 }
 
-int run(int fmt, int64_t ctx, int64_t nq, int reps) {   // fmt 1 int8, 0 fp16, 2 q4_0
+int run(int fmt, int64_t ctx, int64_t nq, int reps, int64_t candidate_batch) {   // fmt 1 int8, 0 fp16, 2 q4_0
     const k::QsaShapes s = k::qsa_real_shapes();
     const int64_t HD = s.head_dim, NKV = s.n_head_kv, NH = s.n_head, PS = s.page_size;
     const int64_t pages = (ctx + PS - 1) / PS, rows = pages * NKV * PS;
@@ -165,7 +166,7 @@ int run(int fmt, int64_t ctx, int64_t nq, int reps) {   // fmt 1 int8, 0 fp16, 2
        "malloc");
     ck(DPCT_CHECK_ERROR(
            scratch = (float *)sycl::malloc_device(
-               batch * k::qsa_decode_attn_scratch_floats(cap, s) * 4,
+               std::max(batch, candidate_batch) * k::qsa_decode_attn_scratch_floats(cap, s) * 4,
                dpct::get_in_order_queue())),
        "malloc");
     auto old_run = [&]() {
@@ -174,6 +175,13 @@ int run(int fmt, int64_t ctx, int64_t nq, int reps) {   // fmt 1 int8, 0 fp16, 2
                                      scratch, d_old + t0 * NH * HD, std::min(batch, nq - t0), nullptr);
     };
     auto new_run = [&]() {
+        if (candidate_batch > 0) {
+            for (int64_t t0 = 0; t0 < nq; t0 += candidate_batch)
+                k::qsa_decode_attn_batch(d_q + t0 * NH * HD, pl, d_ids + t0 * cap,
+                                         d_steps + t0 * k::kStepCount, cap, s, scratch,
+                                         d_new + t0 * NH * HD, std::min(candidate_batch, nq - t0), nullptr);
+            return;
+        }
         if (!k::qsa_prompt_attn_batch(d_q, pl, d_ids, d_steps, cap, s, d_new, nq, nullptr)) {
             std::fprintf(stderr, "qsa_prompt_attn_batch refused the pools\n");
             std::exit(2);
@@ -232,36 +240,46 @@ int run(int fmt, int64_t ctx, int64_t nq, int reps) {   // fmt 1 int8, 0 fp16, 2
     }
     // 2. new vs old everywhere
     double diff = 0, scale = 0;
+    bool finite = true;
     for (size_t i = 0; i < o.size(); ++i) {
+        finite = finite && std::isfinite(o[i]) && std::isfinite(nw[i]);
         diff = std::max(diff, (double) std::fabs(o[i] - nw[i]));
         scale = std::max(scale, (double) std::fabs(o[i]));
     }
-    // 3. speed
-    dpct::event_ptr e0, e1;
-    e0 = new sycl::event();
-    e1 = new sycl::event();
-    float ms_old = 0, ms_new = 0;
-    dpct::sync_barrier(e0);
-    for (int r = 0; r < reps; ++r) old_run();
-    dpct::sync_barrier(e1);
-    ck(DPCT_CHECK_ERROR(e1->wait_and_throw()), "time");
-    ms_old =
-        (e1->get_profiling_info<sycl::info::event_profiling::command_end>() -
-         e0->get_profiling_info<sycl::info::event_profiling::command_start>()) /
-        1000000.0f;
-    dpct::sync_barrier(e0);
-    for (int r = 0; r < reps; ++r) new_run();
-    dpct::sync_barrier(e1);
-    ck(DPCT_CHECK_ERROR(e1->wait_and_throw()), "time");
-    ms_new =
-        (e1->get_profiling_info<sycl::info::event_profiling::command_end>() -
-         e0->get_profiling_info<sycl::info::event_profiling::command_start>()) /
-        1000000.0f;
+    // 3. Warm both paths after the CPU oracle, then alternate measurement order.
+    // Report the median of three rounds; the batch=32 control measures order/cache bias.
+    old_run();
+    new_run();
+    dpct::get_current_device().queues_wait_and_throw();
+    sycl::event begin, end;
+    auto time_run = [&](auto& launch) {
+        dpct::sync_barrier(&begin);
+        for (int r = 0; r < reps; ++r) launch();
+        dpct::sync_barrier(&end);
+        end.wait_and_throw();
+        return (float) ((end.get_profiling_info<sycl::info::event_profiling::command_end>() -
+                         begin.get_profiling_info<sycl::info::event_profiling::command_end>()) / 1000000.0);
+    };
+    std::vector<float> old_times, new_times;
+    for (int round = 0; round < 3; ++round) {
+        if (round % 2 == 0) {
+            old_times.push_back(time_run(old_run));
+            new_times.push_back(time_run(new_run));
+        } else {
+            new_times.push_back(time_run(new_run));
+            old_times.push_back(time_run(old_run));
+        }
+    }
+    std::sort(old_times.begin(), old_times.end());
+    std::sort(new_times.begin(), new_times.end());
+    const float ms_old = old_times[1], ms_new = new_times[1];
     const bool ok1 = err_new <= std::max(4.0 * err_old, 1e-6 * ref_scale);
-    const bool ok2 = diff <= 1e-4 * scale;
+    const bool ok2 = candidate_batch > 0 ? std::memcmp(o.data(), nw.data(), o.size() * sizeof(float)) == 0
+                                         : diff <= 1e-4 * scale;
+    const bool ok = finite && ok1 && ok2;
     std::printf("%s %s ctx %lld, %lld queries: vs FP64 old %.3g new %.3g (output scale %.3g); new vs old %.3g (%.2g of "
                 "scale); %.3f -> %.3f ms per chunk (%.2fx)\n",
-                ok1 && ok2 ? "PASS" : "FAIL", fmt == 2 ? "q4_0" : fmt == 1 ? "int8" : "fp16", (long long) ctx, (long long) nq, err_old,
+                ok ? "PASS" : "FAIL", fmt == 2 ? "q4_0" : fmt == 1 ? "int8" : "fp16", (long long) ctx, (long long) nq, err_old,
                 err_new, ref_scale, diff, diff / scale, ms_old / reps, ms_new / reps, ms_old / ms_new);
     sycl::free((void *)d_ids, dpct::get_in_order_queue());
         sycl::free((void *)d_steps, dpct::get_in_order_queue());
@@ -278,7 +296,7 @@ int run(int fmt, int64_t ctx, int64_t nq, int reps) {   // fmt 1 int8, 0 fp16, 2
         sycl::free((void *)pl.page_table, dpct::get_in_order_queue());
     sycl::free((void *)pl.k_q4, dpct::get_in_order_queue());
         sycl::free((void *)pl.v_q4, dpct::get_in_order_queue());
-    return ok1 && ok2 ? 0 : 1;
+    return ok ? 0 : 1;
 }
 }  // namespace
 
@@ -304,15 +322,23 @@ int main(int argc, char** argv) {
     const int64_t ctx = argc > 1 ? std::atoll(argv[1]) : 32768;
     const int64_t nq = argc > 2 ? std::atoll(argv[2]) : 2048;
     const int reps = argc > 3 ? std::atoi(argv[3]) : 5;
+    const int64_t candidate_batch = argc > 4 ? std::atoll(argv[4]) : 0;
+    if (ctx < 1 || nq < 1 || nq > ctx || reps < 1 || candidate_batch < 0 || candidate_batch > 1024) {
+        std::fprintf(stderr, "Invalid context, queries, repetitions, or fallback batch (0..1024)\n");
+        return 2;
+    }
+    if (candidate_batch > 0)
+        std::printf("Fallback batch %lld vs 32 queries; require finite, bit-identical outputs\n",
+                    (long long) candidate_batch);
     int fails = 0;
-    fails += run(1, ctx, nq, reps);
+    fails += run(1, ctx, nq, reps, candidate_batch);
 #if !defined(__HIP_PLATFORM_AMD__)
-    fails += run(0, ctx, nq, reps);   // FP16 KV: the RDNA4 kernel takes int8 KV only
-    fails += run(2, ctx, nq, reps);   // Q4_0 KV (mode 4)
-    fails += run(2, 1500, std::min<int64_t>(nq, 1500), reps);
+    fails += run(0, ctx, nq, reps, candidate_batch);   // FP16 KV: the RDNA4 kernel takes int8 KV only
+    fails += run(2, ctx, nq, reps, candidate_batch);   // Q4_0 KV (mode 4)
+    fails += run(2, 1500, std::min<int64_t>(nq, 1500), reps, candidate_batch);
 #endif
-    fails += run(1, 1500, std::min<int64_t>(nq, 1500), reps);   // short context: the selection is every cell
-    fails += run(1, 2100, std::min<int64_t>(nq, 256), reps);    // the identity-to-sparse edge
+    fails += run(1, 1500, std::min<int64_t>(nq, 1500), reps, candidate_batch);   // short context: the selection is every cell
+    fails += run(1, 2100, std::min<int64_t>(nq, 256), reps, candidate_batch);    // the identity-to-sparse edge
     std::printf("FAILURES: %d\n", fails);
     return fails;
 }

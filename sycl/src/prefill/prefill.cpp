@@ -686,6 +686,15 @@ uint64_t qsa_set_bytes(size_t T, int64_t cap, int64_t max_blocks, int64_t sel_ba
     a.take<float>((size_t) attn_batch * strata::kernels::qsa_decode_attn_scratch_floats(cap, s), ok);
     return a.used;
 }
+// Launch batching only: each query keeps the original scratch layout and arithmetic.
+// Keep the allocation estimate and each relayout in agreement, including short tails.
+int64_t prompt_attn_batch(size_t T) {
+    static const int64_t requested = [] {
+        const char* value = std::getenv("STRATA_PREFILL_ATTN_BATCH");
+        return value ? std::clamp<int64_t>(std::atoll(value), 1, 1024) : 32;
+    }();
+    return std::min<int64_t>(requested, (int64_t) T);
+}
 // Step 2b: which layers' experts go through MMQ (both weight types covered; the Strata Q2_0 pack always - its blob
 // is converted to GGUF Q2_0 blocks on the gather), whether any layer keeps the FP16 path (IQ1_M), and the largest
 // gate/up and down matrices a group buffer slot holds.  STRATA_PREFILL_MMQ=0: the FP16 path everywhere (the A/B).
@@ -957,6 +966,7 @@ catch (sycl::exception const &exc) {
 // once, and `relayout` for a request's own chunk.  The order is `bytes_needed`'s.
 bool Prefill::carve(size_t T, void* alloc) {
     Impl& m = *impl_;
+    m.attn_batch = prompt_attn_batch(T);
     Alloc& o = *static_cast<Alloc*>(alloc);
     const core::ModelGeometry& g = *m.g;
     core::SessionState& ss = *m.ss;
@@ -1445,7 +1455,7 @@ uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::Session
     s.idx_dim = g.idx_key_dim;
     const int64_t cap = strata::kernels::qsa_selection_width(strata::kernels::kTopkMaxCells, s);
     const int64_t max_blocks = ss.qsa_states[ss.qsa_primary()].max_cells / s.idx_block + 2;
-    o.take<uint8_t>((size_t) std::max({gdn_set_bytes(T), qsa_set_bytes(T, cap, max_blocks, 256, 32, s),
+    o.take<uint8_t>((size_t) std::max({gdn_set_bytes(T), qsa_set_bytes(T, cap, max_blocks, 256, prompt_attn_batch(T), s),
                                        moe_set_bytes(T, g.n_expert, fused_layout(T, true))}), ok);
     for (int i = 0; i < DQ; ++i) { o.take<uint16_t>(1280 * 2560, ok); o.take<uint16_t>(2560 * 640, ok); }
     if (mmq_plan().any) {

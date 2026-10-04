@@ -110,3 +110,39 @@ This diagnostic slope is not overall prefill throughput or a measured speed
 improvement. All three first-logit arrays match the unmodified baseline bit
 for bit. The extra phase markers separate PLE read waits from combine and
 hyper-connection write/normalization time.
+
+[The measurement plot](prefill-scaling.png) shows elapsed time and transfer
+work on separate axes. Normal prefill points are medians with the observed
+three-run range; the preloaded diagnostic and transfer points each have only
+one profiled run per length. Reproduce the PNG and [SVG](prefill-scaling.svg)
+with `python plot.py` in an environment containing Matplotlib.
+
+The [attention experiments](attention/run.json) test the existing XMX kernel
+and larger launch batches of the original fallback. On this B570, both XMX
+chunk sizes are slower than the fallback in the synthetic INT8 and FP16
+cases. Those precision checks pass, but the unchanged upstream test then
+refuses Q4_0 K and exits 2; it is not a complete passing XMX test.
+
+`STRATA_PREFILL_ATTN_BATCH` selects 1 to 1,024 queries per fallback launch
+(default 32), capped at the current chunk length. The buffer estimate and
+relayout use the same count. Each query keeps the same scratch layout,
+selected cells, and arithmetic. The parity test's fourth argument compares
+that batch with 32 and requires finite, bit-identical outputs. Warmed timings
+alternate order across three rounds; the 32-versus-32 control measures the
+timing bias. INT8, FP16, and Q4_0 pass across the tested batch sizes.
+
+One matched profiled model run per length and batch gives the following
+diagnostic result. These runs preload the same PLE input, with its time
+reported separately, and do not establish an end-to-end speed improvement.
+
+| Input tokens | Batch 32 attention | Batch 128 attention | Batch 32 GPU/transfer stage | Batch 128 GPU/transfer stage |
+| ---: | ---: | ---: | ---: | ---: |
+| 4,096 | 1.001 s | 0.955 s | 14.821 s | 14.694 s |
+| 8,087 | 2.270 s | 2.165 s | 18.758 s | 18.501 s |
+
+The stage's longest-pair slope is 0.986 versus 0.954 ms/additional token.
+All four first-logit arrays match the accepted baseline across all 248,320
+float values, bit for bit, and the generated IDs match. See the
+[batch 32 record](attention/model-batch32/run.json) and
+[batch 128 record](attention/model-batch128/run.json). This is a small pilot
+comparison; 128 is available for measurement rather than a new default.
