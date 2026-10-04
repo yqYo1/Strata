@@ -39,7 +39,15 @@ struct Event {
     Runtime::Event event;
     Event(Domain& d,bool timing): owner(&d), event(timing) {}
 };
-struct Definition { Domain* owner; Runtime::GraphDefinition graph; };
+struct Definition {
+    Domain* owner;
+    Runtime::GraphDefinition graph;
+    std::vector<Runtime::NodeType> types;
+    std::mutex mutex;
+    std::vector<cudaGraphNode_t> nodes;
+    bool alive = true;
+};
+struct Node { std::weak_ptr<Definition> definition; size_t index; };
 struct Executable { Domain* owner; Runtime::Graph graph; };
 // Monotonic opaque tokens avoid reusing a destroyed handle's address. Tokens
 // are keys only, never dereferenced. Runtime/Memory own native resource lifetime.
@@ -111,6 +119,7 @@ struct Devices {
     Handles<cudaEvent_t,Event> events;
     Handles<cudaGraph_t,Definition> definitions;
     Handles<cudaGraphExec_t,Executable> executables;
+    Handles<cudaGraphNode_t,Node> nodes;
     Devices() {
         for(const auto& d:sycl::device::get_devices(sycl::info::device_type::gpu))
             if(d.get_backend()==sycl::backend::ext_oneapi_level_zero) visible.push_back(d);
@@ -209,7 +218,7 @@ void copy(void* dst,const void* src,size_t bytes,cudaMemcpyKind kind,cudaStream_
         d.pageable_to_device(dst,src,bytes);return;
     }
     auto event=d.runtime.copy(s,dst,src,bytes);
-    if(!async && kind!=cudaMemcpyDeviceToDevice) event.wait_and_throw();
+    if(!async && kind!=cudaMemcpyDeviceToDevice) Runtime::synchronize_native(event);
 }
 }
 const char* cudaGetErrorName(cudaError_t e) noexcept {
@@ -364,16 +373,53 @@ cudaError_t cudaMemcpy2DAsync(void* dst,size_t dp,const void* src,size_t sp,size
 });}
 cudaError_t cudaMemsetAsync(void* p,int byte,size_t n,cudaStream_t s) noexcept {return api([&]{range(p,n);auto& d=stream_domain(s);accessible(d,p);auto id=stream_id(s);if(n)d.runtime.memset(id,p,byte,n);});}
 cudaError_t cudaMemset(void* p,int byte,size_t n) noexcept {return api([&]{auto info=range(p,n);if(!n)return;
-    auto& d=domain();accessible(d,p);auto event=d.runtime.memset(0,p,byte,n);if(info && info->kind!=Memory::Kind::device)event.wait_and_throw();});}
+    auto& d=domain();accessible(d,p);auto event=d.runtime.memset(0,p,byte,n);if(info && info->kind!=Memory::Kind::device)Runtime::synchronize_native(event);});}
 cudaError_t cudaStreamBeginCapture(cudaStream_t s,cudaStreamCaptureMode mode) noexcept {return api([&]{
     require(mode==cudaStreamCaptureModeThreadLocal,cudaErrorNotSupported);auto& d=stream_domain(s);d.runtime.begin_capture(stream_id(s));});}
 cudaError_t cudaStreamEndCapture(cudaStream_t s,cudaGraph_t* g) noexcept {return api([&]{require(g);*g=nullptr;auto& d=stream_domain(s);
-    auto value=std::make_shared<Definition>();value->owner=&d;value->graph=d.runtime.end_capture_definition(stream_id(s));*g=devices().definitions.insert(std::move(value));});}
+    auto value=std::make_shared<Definition>();value->owner=&d;value->graph=d.runtime.end_capture_definition(stream_id(s));
+    value->types=value->graph.node_types();*g=devices().definitions.insert(std::move(value));});}
 cudaError_t cudaStreamIsCapturing(cudaStream_t s,cudaStreamCaptureStatus* status) noexcept {return api([&]{require(status);auto& d=stream_domain(s);
     const auto state=d.runtime.capture_status(stream_id(s));
     *status=state==Runtime::CaptureStatus::none?cudaStreamCaptureStatusNone:
         state==Runtime::CaptureStatus::invalidated?cudaStreamCaptureStatusInvalidated:cudaStreamCaptureStatusActive;});}
-cudaError_t cudaGraphGetNodes(cudaGraph_t g,cudaGraphNode_t* nodes,size_t* n) noexcept {return api([&]{require(n);require(!nodes,cudaErrorNotSupported);*n=devices().definitions.get(g)->graph.node_count();});}
+cudaError_t cudaGraphGetNodes(cudaGraph_t g,cudaGraphNode_t* nodes,size_t* n) noexcept {return api([&]{
+    require(n);auto definition=devices().definitions.get(g);std::lock_guard lock(definition->mutex);
+    require(definition->alive,cudaErrorInvalidResourceHandle);
+    const size_t count=definition->types.size();
+    if(!nodes){*n=count;return;}
+    if(definition->nodes.empty() && count) {
+        definition->nodes.reserve(count);
+        try {for(size_t index=0;index<count;++index)definition->nodes.push_back(devices().nodes.insert(std::make_shared<Node>(Node{definition,index})));}
+        catch(...) {for(auto handle:definition->nodes)devices().nodes.erase(handle);definition->nodes.clear();throw;}
+    }
+    const size_t capacity=*n,obtained=std::min(capacity,count);
+    std::copy_n(definition->nodes.begin(),obtained,nodes);
+    if(capacity>obtained)std::fill(nodes+obtained,nodes+capacity,nullptr);
+    *n=obtained;
+});}
+cudaError_t cudaGraphNodeGetType(cudaGraphNode_t node,cudaGraphNodeType* type) noexcept {return api([&]{
+    require(type);auto value=devices().nodes.get(node);auto definition=value->definition.lock();require(bool(definition),cudaErrorInvalidResourceHandle);
+    std::lock_guard lock(definition->mutex);require(definition->alive,cudaErrorInvalidResourceHandle);
+    switch(definition->types.at(value->index)) {
+        case Runtime::NodeType::kernel:*type=cudaGraphNodeTypeKernel;break;
+        case Runtime::NodeType::memcpy:*type=cudaGraphNodeTypeMemcpy;break;
+        case Runtime::NodeType::memset:*type=cudaGraphNodeTypeMemset;break;
+        case Runtime::NodeType::host:*type=cudaGraphNodeTypeHost;break;
+        case Runtime::NodeType::subgraph:*type=cudaGraphNodeTypeGraph;break;
+        case Runtime::NodeType::empty:*type=cudaGraphNodeTypeEmpty;break;
+        default:throw Error{cudaErrorNotSupported};
+    }
+});}
+cudaError_t cudaGraphKernelNodeGetParams(cudaGraphNode_t node,cudaKernelNodeParams* params) noexcept {
+    if(!params)return remember(cudaErrorInvalidValue);
+    cudaGraphNodeType type;const auto status=cudaGraphNodeGetType(node,&type);if(status!=cudaSuccess)return status;
+    if(type!=cudaGraphNodeTypeKernel)return remember(cudaErrorInvalidValue);
+    // SYCL's public node interface exposes no CUDA function pointer or
+    // argument array. Keep this optional diagnostic unsupported; do not return
+    // fabricated parameters. The original verify listing handles this error.
+    return remember(cudaErrorNotSupported);
+}
 cudaError_t cudaGraphInstantiate(cudaGraphExec_t* e,cudaGraph_t g,cudaGraphNode_t* bad,char* log,size_t bytes) noexcept {return api([&]{
     require(e);*e=nullptr;if(bad)*bad=nullptr;if(log && bytes)log[0]='\0';auto definition=devices().definitions.get(g);auto& d=*definition->owner;auto value=std::make_shared<Executable>();value->owner=&d;
     value->graph=d.runtime.instantiate(definition->graph);*e=devices().executables.insert(std::move(value));});}
@@ -381,7 +427,11 @@ cudaError_t cudaGraphInstantiate(cudaGraphExec_t* e,cudaGraph_t g,unsigned long 
     if(flags) {if(e)*e=nullptr;return remember(cudaErrorNotSupported);}return cudaGraphInstantiate(e,g,nullptr,nullptr,0);
 }
 cudaError_t cudaGraphLaunch(cudaGraphExec_t e,cudaStream_t s) noexcept {return api([&]{auto& d=stream_domain(s);auto value=devices().executables.get(e);require(value->owner==&d,cudaErrorInvalidResourceHandle);d.runtime.launch(value->graph,stream_id(s));});}
-cudaError_t cudaGraphDestroy(cudaGraph_t g) noexcept {return api([&]{devices().definitions.erase(g);});}
+cudaError_t cudaGraphUpload(cudaGraphExec_t e,cudaStream_t s) noexcept {return api([&]{auto& d=stream_domain(s);auto value=devices().executables.get(e);require(value->owner==&d,cudaErrorInvalidResourceHandle);d.runtime.upload(value->graph,stream_id(s));});}
+cudaError_t cudaGraphDestroy(cudaGraph_t g) noexcept {return api([&]{auto definition=devices().definitions.get(g);std::lock_guard lock(definition->mutex);
+    require(definition->alive,cudaErrorInvalidResourceHandle);definition->alive=false;
+    for(auto node:definition->nodes)devices().nodes.erase(node);
+    devices().definitions.erase(g);});}
 cudaError_t cudaGraphExecDestroy(cudaGraphExec_t e) noexcept {return api([&]{devices().executables.erase(e);});}
 namespace strata::sycl_upstream::cuda {
 cudaError_t submit(cudaStream_t s,const Runtime::Submit& fn) noexcept {return api([&]{auto& d=stream_domain(s);d.runtime.enqueue(stream_id(s),fn);});}

@@ -111,14 +111,21 @@ remain byte-identical.
 
 [Native capture/replay](runtime-graphs.md) extends this component. Graph update,
 full introspection, per-thread
-implicit streams, device selection, multi-device/cross-context waits,
+implicit streams, multi-device/cross-context execution,
 complete CUDA error compatibility remain open.
 [Allocation and mapped-host registration](runtime-memory.md) now have separate
 component tests. The first [source frontend](runtime-frontend.md) also covers
 thread-local error state and the original arena/graph callers; remaining engine
 bindings are open. The new runtime uses SYCL exceptions and explicit USM pointers;
-asynchronous failure injection and teardown recovery have not been established.
+an injected host-task error is now delivered in the subsequent
+[graph/wait integration](runtime-graph-api.md). GPU-fault and teardown recovery
+have not been established.
 It is not yet a complete runtime parity verdict or an end-to-end speed result.
 
 [GPU event timing](runtime-timing.md) now uses native profiling tags without
 enabling profiling on every queue command.
+
+[Native graph preparation and inspection](runtime-graph-api.md) now expose
+native node types and ordered upload. They also avoid a reproduced scheduler
+read-lock stall when an event waiter runs concurrently with new submissions.
+[Device selection](runtime-devices.md) has separate resource-owner evidence.

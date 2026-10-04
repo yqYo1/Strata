@@ -116,3 +116,9 @@ now have connected tests, including independent executable instances of a graph.
 Whole-model graph capture, remaining frontend bindings, asynchronous device-error
 recovery and complete engine integration remain open. These component
 results do not establish full upstream parity or a new prefill/decode speed.
+
+The subsequent [graph API integration](runtime-graph-api.md) exposes native
+node enumeration/types, orders upload without executing the graph, and runs the
+original MTP capture finisher. It also reproduces and fixes a concurrent-wait
+scheduler stall and tests host-task error delivery. Full kernel-parameter
+inspection and device-fault recovery remain open.

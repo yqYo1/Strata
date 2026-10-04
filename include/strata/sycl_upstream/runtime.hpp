@@ -3,6 +3,7 @@
 #include <functional>
 #include <memory>
 #include <optional>
+#include <vector>
 
 namespace strata::sycl_upstream {
 // Per-device execution domain. Stream 0 has CUDA legacy-default ordering;
@@ -13,6 +14,7 @@ class Runtime {
 public:
     using Stream = uint64_t;
     using Submit = std::function<sycl::event(sycl::queue&)>;
+    enum class NodeType { empty, kernel, memcpy, memset, host, subgraph, unsupported };
     class Event {
         friend class Runtime;
         bool timing_;
@@ -34,6 +36,7 @@ public:
         GraphDefinition(const GraphDefinition&) = delete;
         GraphDefinition& operator=(const GraphDefinition&) = delete;
         size_t node_count() const;
+        std::vector<NodeType> node_types() const;
     };
     class Graph {
         friend class Runtime;
@@ -79,6 +82,10 @@ public:
     Event snapshot_event(const Event&);
     bool query(Stream);
     bool query(const Event&);
+    // Wait without holding SYCL's scheduler read lock across an unfinished
+    // host task. Direct native waits can otherwise block unrelated submissions.
+    // The final wait_and_throw still delivers asynchronous queue errors.
+    static void synchronize_native(sycl::event);
     void synchronize(Stream);
     void synchronize(const Event&);
     void synchronize_device();
@@ -104,6 +111,10 @@ public:
     Graph end_capture(Stream);
     void abort_capture(Stream);
     sycl::event launch(Graph&, Stream);
+    // finalize() already prepares native command buffers and graph kernels.
+    // Upload orders a completion marker without executing recorded commands.
+    // Uploads and launches of one executable share a serialization chain.
+    sycl::event upload(Graph&, Stream);
 private:
     struct Impl;
     std::unique_ptr<Impl> impl_;

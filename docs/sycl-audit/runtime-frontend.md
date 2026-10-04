@@ -19,7 +19,7 @@ compiled as C++ for this target.
 | Allocations | Device and mapped-host ownership, native host registration, interior aliases, matching free/unregister |
 | Streams | Null legacy stream, blocking/nonblocking creation, asynchronous destruction, query/synchronize and event waits |
 | Events | Record/query/synchronize and destruction without waiting; stale handles rejected; [timed records and elapsed time](runtime-timing.md) now also supported |
-| Graphs | ThreadLocal capture, separate definition/executable handles, node count, instantiation, replay and asynchronous release |
+| Graphs | ThreadLocal capture, separate definition/executable handles, node enumeration/types, instantiation, upload, replay and asynchronous release; [new validation](runtime-graph-api.md) |
 | Errors | Per-thread last error; successful calls preserve it; peek preserves it; get consumes it; NotReady does not set it |
 | Copies | H2D/D2H/D2D/H2H and default direction inference; 1D and pitched 2D; byte-valued memset |
 | Host functions | Enqueued after preceding stream work through the Runtime host-task implementation |
@@ -32,10 +32,11 @@ tests. Full prefill binding remains open.
 
 A graph definition now retains a completed recording separately from executable
 state. Each instantiation finalizes its own SYCL executable and tracks its own
-last launch. Two instances of the same definition can run independently; repeated
-launches of one instance retain the existing serialization rule. Destroying the
-definition does not invalidate either executable. Destroying an executable returns
-while its pending launch is retained by Runtime. Original comments claiming that
+last submission. Two instances of the same definition can run independently;
+uploads and launches of one instance retain the serialization rule. Destroying
+the definition invalidates its node tokens without invalidating either executable.
+Destroying an executable returns while its pending work is retained by Runtime.
+Original comments claiming that
 CUDA executable destruction always blocks remain unchanged; the prior
 [graph audit](runtime-graphs.md) explains that discrepancy with CUDA's contract.
 
@@ -154,12 +155,12 @@ build-upstream-sycl/graph_copy2d_probe
 timeout 5 build-upstream-sycl/graph_copy2d_probe native
 ```
 
-Still open: the other original host translation units, kernel entry-point bindings,
-interprocess events, graph upload/update/full node introspection, capture
+Still open: program device/runtime metadata, remaining kernel entry-point bindings,
+interprocess events, graph update/full kernel parameter introspection, capture
 modes beyond ThreadLocal, per-thread default streams, device capability metadata,
 write-combined/I/O registration, asynchronous allocators, complete
 CUDA error behavior, Windows and multi-device execution. Unsupported flags and
-node enumeration return explicit errors. Full-model state parity and PP/TG
+kernel parameter inspection return explicit errors. Full-model state parity and PP/TG
 measurements remain unestablished.
 
 The [MMQ stream binding](mmq-frontend.md) now connects the original public MMQ
@@ -176,3 +177,7 @@ registry supports separate device domains; only the single B570 has been tested.
 [Peer APIs and the original prefill stager](runtime-peer.md) now bind native
 directed peer access and run the unchanged stager with separate streams and
 original-size blob slots. Physical multi-GPU peer transfers remain untested.
+
+[Native graph preparation and inspection](runtime-graph-api.md) now compile
+original MTP/verify host files, run the original MTP capture finisher and fix a
+reproduced SYCL scheduler-lock stall during concurrent completion waits.

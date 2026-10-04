@@ -39,7 +39,7 @@ struct Runtime::Graph::State {
     sycl::context context;
     graph_api::command_graph<graph_api::graph_state::executable> executable;
     size_t nodes;
-    std::optional<sycl::event> last_launch;
+    std::optional<sycl::event> last_submission;
     bool retained = false;
     State(const sycl::context& context, const Capture& capture):
         context(context), executable(capture.graph.finalize()), nodes(capture.graph.get_nodes().size()) {}
@@ -47,6 +47,25 @@ struct Runtime::Graph::State {
 };
 size_t Runtime::Graph::node_count() const { return state_ ? state_->nodes : 0; }
 size_t Runtime::GraphDefinition::node_count() const { return capture_ ? capture_->graph.get_nodes().size() : 0; }
+std::vector<Runtime::NodeType> Runtime::GraphDefinition::node_types() const {
+    std::vector<NodeType> types;
+    if (!capture_) return types;
+    const auto nodes = capture_->graph.get_nodes();
+    types.reserve(nodes.size());
+    for (const auto& node : nodes) {
+        using Native = graph_api::node_type;
+        switch (node.get_type()) {
+            case Native::empty: case Native::ext_oneapi_barrier: types.push_back(NodeType::empty); break;
+            case Native::kernel: types.push_back(NodeType::kernel); break;
+            case Native::memcpy: types.push_back(NodeType::memcpy); break;
+            case Native::memset: types.push_back(NodeType::memset); break;
+            case Native::host_task: types.push_back(NodeType::host); break;
+            case Native::subgraph: types.push_back(NodeType::subgraph); break;
+            default: types.push_back(NodeType::unsupported); break;
+        }
+    }
+    return types;
+}
 struct Runtime::Impl {
     struct Queue {
         sycl::queue q;
@@ -67,7 +86,7 @@ struct Runtime::Impl {
     std::vector<std::shared_ptr<Graph::State>> launched_graphs;
     void reclaim_graphs() {
         std::erase_if(launched_graphs, [](const auto& state) {
-            return state.use_count() == 1 && (!state->last_launch || complete(*state->last_launch));
+            return state.use_count() == 1 && (!state->last_submission || complete(*state->last_submission));
         });
     }
     Impl(const sycl::device& d, const sycl::context& c): device(d), context(c) {
@@ -283,15 +302,24 @@ bool Runtime::query(const Event& event) {
     impl_->require_executed_event(event);
     return !event.completion_ || complete(*event.completion_);
 }
+void Runtime::synchronize_native(sycl::event event) {
+    // On the installed SYCL runtime, waiting on an unenqueued command behind
+    // a host task holds Scheduler's read lock while it waits. A concurrent
+    // addCG() needs its write lock, so a CPU event waiter can prevent the next
+    // DMA/kernel from being submitted. Nonblocking status queries avoid this
+    // lock retention; the final completed-event wait preserves async errors.
+    while (!complete(event)) std::this_thread::yield();
+    event.wait_and_throw();
+}
 void Runtime::synchronize(Stream stream) {
     std::vector<sycl::event> events;
     { std::lock_guard lock(impl_->mutex); events = impl_->snapshot(stream); }
-    sycl::event::wait_and_throw(events);
+    for (const auto& event : events) synchronize_native(event);
 }
 void Runtime::synchronize(const Event& event) {
     std::optional<sycl::event> snapshot;
     { std::lock_guard lock(impl_->mutex); impl_->require_executed_event(event); snapshot = event.completion_; }
-    if (snapshot) snapshot->wait_and_throw();
+    if (snapshot) synchronize_native(*snapshot);
 }
 void Runtime::synchronize_device() {
     std::vector<sycl::event> events;
@@ -300,7 +328,7 @@ void Runtime::synchronize_device() {
           throw std::invalid_argument("cannot synchronize a device with active captures");
       for (const auto& [id, entry] : impl_->streams) if (entry->tail) events.push_back(*entry->tail);
       for (const auto& entry : impl_->retired) if (entry->tail) events.push_back(*entry->tail); }
-    sycl::event::wait_and_throw(events);
+    for (const auto& event : events) synchronize_native(event);
     std::lock_guard lock(impl_->mutex);
     impl_->reclaim_graphs();
 }
@@ -394,7 +422,7 @@ sycl::event Runtime::launch(Graph& graph, Stream stream) {
         impl_->launched_graphs.push_back(graph.state_);
         state.retained = true;
     }
-    const auto previous = state.last_launch;
+    const auto previous = state.last_submission;
     auto event = impl_->enqueue(stream, [&](sycl::queue& q) {
         return q.submit([&](sycl::handler& h) {
             // Replays of one executable graph cannot overlap, even when they
@@ -403,7 +431,30 @@ sycl::event Runtime::launch(Graph& graph, Stream stream) {
             h.ext_oneapi_graph(state.executable);
         });
     });
-    state.last_launch = event;
+    state.last_submission = event;
+    return event;
+}
+sycl::event Runtime::upload(Graph& graph, Stream stream) {
+    std::lock_guard lock(impl_->mutex);
+    if (!graph.state_ || graph.state_->context != impl_->context)
+        throw std::invalid_argument("invalid graph or graph context");
+    if (impl_->get(stream).capture) {
+        impl_->get(stream).capture->invalid = true;
+        throw std::invalid_argument("graph upload during capture is not implemented");
+    }
+    auto& state = *graph.state_;
+    if (!state.retained) {
+        impl_->launched_graphs.push_back(graph.state_);
+        state.retained = true;
+    }
+    // Native command buffers and graph kernels were prepared by finalize()
+    // during instantiate(), before any queued commands can execute. Keep the
+    // upload's stream and executable ordering without replaying the graph.
+    const auto previous = state.last_submission;
+    auto event = impl_->enqueue(stream, [previous](sycl::queue& q) {
+        return previous ? fence(q, {*previous}) : fence(q);
+    });
+    state.last_submission = event;
     return event;
 }
 } // namespace strata::sycl_upstream

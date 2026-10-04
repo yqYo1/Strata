@@ -85,9 +85,10 @@ At that checkpoint, prefill's compile blockers were device get/set, free-memory
 query and peer copies. [Device selection and free VRAM](runtime-devices.md) now
 resolve the first three API families and run the original expert cache.
 [Peer APIs and the original stager](runtime-peer.md) subsequently resolve
-prefill's syntax blockers and verify pinned-ring reuse. Device metadata, graph
-upload/inspection and remaining kernel/GEMM bindings are open, as are complete
-engine linking and model results.
+prefill's syntax blockers and verify pinned-ring reuse. The subsequent
+[graph API integration](runtime-graph-api.md) connects upload and native node
+types. Device metadata, full kernel-parameter inspection and remaining kernel/GEMM
+bindings are open, as are complete engine linking and model results.
 
 ```sh
 # Use the driver environment from runtime-memory.md first.

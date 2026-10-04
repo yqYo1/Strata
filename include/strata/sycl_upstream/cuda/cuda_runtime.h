@@ -33,6 +33,21 @@ enum cudaStreamCaptureStatus {
     cudaStreamCaptureStatusNone=0, cudaStreamCaptureStatusActive=1,
     cudaStreamCaptureStatusInvalidated=2
 };
+enum cudaGraphNodeType {
+    cudaGraphNodeTypeKernel=0, cudaGraphNodeTypeMemcpy=1, cudaGraphNodeTypeMemset=2,
+    cudaGraphNodeTypeHost=3, cudaGraphNodeTypeGraph=4, cudaGraphNodeTypeEmpty=5
+};
+struct dim3 {
+    unsigned x, y, z;
+    constexpr dim3(unsigned x=1, unsigned y=1, unsigned z=1): x(x), y(y), z(z) {}
+};
+struct cudaKernelNodeParams {
+    void* func;
+    dim3 gridDim, blockDim;
+    unsigned sharedMemBytes;
+    void** kernelParams;
+    void** extra;
+};
 inline constexpr unsigned cudaStreamDefault=0, cudaStreamNonBlocking=1;
 inline constexpr unsigned cudaDeviceScheduleSpin=1, cudaDeviceMapHost=8;
 inline constexpr unsigned cudaEventDefault=0, cudaEventBlockingSync=1,
@@ -88,8 +103,11 @@ cudaError_t cudaStreamBeginCapture(cudaStream_t, cudaStreamCaptureMode) noexcept
 cudaError_t cudaStreamEndCapture(cudaStream_t, cudaGraph_t*) noexcept;
 cudaError_t cudaStreamIsCapturing(cudaStream_t, cudaStreamCaptureStatus*) noexcept;
 cudaError_t cudaGraphGetNodes(cudaGraph_t, cudaGraphNode_t*, size_t*) noexcept;
+cudaError_t cudaGraphNodeGetType(cudaGraphNode_t, cudaGraphNodeType*) noexcept;
+cudaError_t cudaGraphKernelNodeGetParams(cudaGraphNode_t, cudaKernelNodeParams*) noexcept;
 cudaError_t cudaGraphInstantiate(cudaGraphExec_t*, cudaGraph_t, cudaGraphNode_t*, char*, size_t) noexcept;
 cudaError_t cudaGraphInstantiate(cudaGraphExec_t*, cudaGraph_t, unsigned long long = 0) noexcept;
 cudaError_t cudaGraphLaunch(cudaGraphExec_t, cudaStream_t) noexcept;
+cudaError_t cudaGraphUpload(cudaGraphExec_t, cudaStream_t) noexcept;
 cudaError_t cudaGraphDestroy(cudaGraph_t) noexcept;
 cudaError_t cudaGraphExecDestroy(cudaGraphExec_t) noexcept;

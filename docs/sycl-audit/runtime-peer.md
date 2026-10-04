@@ -91,13 +91,16 @@ byte verification time is not inference throughput. These tests establish
 dependency and reuse behavior; a transfer/compute overlap trace and full-model
 prefill parity remain open.
 
-The [host syntax inventory](host-peer-compile-results.json) now reports seventeen
+The [host syntax inventory](host-peer-compile-results.json) at this checkpoint reports seventeen
 passes and three failures among twenty original host files. Remaining syntax
 blockers are graph upload/inspection in `mtp.cpp` and `verify.cpp`, and device/
 runtime metadata in `generate.cpp`. Compiler recovery can hide additional calls
 behind unknown types or constants. Remaining device/GEMM families, full linking,
 model-state comparisons, optional formats, multi-GPU execution and measured
-PP/TG remain open. The unchanged large standalone MMQ arithmetic suites were
+PP/TG remain open. The subsequent [graph/wait integration](runtime-graph-api.md)
+compiles original MTP/verify host files and fixes a reproduced SYCL wait-lock
+stall, bringing the [latest syntax inventory](host-graph-compile-results.json)
+to nineteen passes and one failure. The unchanged large standalone MMQ arithmetic suites were
 not repeated; all fourteen previous related regression programs were run.
 
 [Results](runtime-peer-results.json) contain complete build/test logs and hashes

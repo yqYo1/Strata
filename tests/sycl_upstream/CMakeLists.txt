@@ -336,3 +336,31 @@ target_link_libraries(original_prefill_stager_test PRIVATE strata_sycl_original_
 
 add_test(NAME original_prefill_stager_model_size COMMAND original_prefill_stager_test --model-sized)
 set_tests_properties(original_prefill_stager_model_size PROPERTIES TIMEOUT 60)
+
+add_library(strata_sycl_original_graph_host STATIC ${STRATA_ROOT}/src/core/mtp.cpp
+    ${STRATA_ROOT}/src/core/verify.cpp)
+target_compile_definitions(strata_sycl_original_graph_host PRIVATE
+    STRATA_NATIVE_EXPERTS=1 STRATA_PREFILL_MMQ=1 STRATA_PREFILL_FUSED=1)
+target_compile_options(strata_sycl_original_graph_host PRIVATE -ffunction-sections -fdata-sections)
+target_link_libraries(strata_sycl_original_graph_host PUBLIC strata_sycl_mmq_frontend)
+
+add_executable(runtime_graph_api_test runtime_graph_api.cpp)
+target_compile_definitions(runtime_graph_api_test PRIVATE
+    STRATA_NATIVE_EXPERTS=1 STRATA_PREFILL_MMQ=1 STRATA_PREFILL_FUSED=1)
+target_compile_options(runtime_graph_api_test PRIVATE -fsycl -ffunction-sections -fdata-sections)
+target_link_options(runtime_graph_api_test PRIVATE -Wl,--gc-sections)
+target_link_libraries(runtime_graph_api_test PRIVATE strata_sycl_original_graph_host)
+if(STRATA_SYCL_DEVICE_ARCH)
+    target_compile_options(runtime_graph_api_test PRIVATE -fsycl-targets=spir64_gen)
+endif()
+add_test(NAME original_graph_upload_inspection COMMAND runtime_graph_api_test)
+set_tests_properties(original_graph_upload_inspection PROPERTIES TIMEOUT 60)
+
+add_executable(graph_prepare_probe EXCLUDE_FROM_ALL graph_prepare_probe.cpp)
+target_compile_options(graph_prepare_probe PRIVATE -fsycl)
+target_link_options(graph_prepare_probe PRIVATE -fsycl)
+if(STRATA_SYCL_DEVICE_ARCH)
+    target_compile_options(graph_prepare_probe PRIVATE -fsycl-targets=spir64_gen)
+    target_link_options(graph_prepare_probe PRIVATE -fsycl-targets=spir64_gen
+        "SHELL:-Xsycl-target-backend=spir64_gen \"-device ${STRATA_SYCL_DEVICE_ARCH}\"")
+endif()

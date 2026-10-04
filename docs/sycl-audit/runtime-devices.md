@@ -103,8 +103,10 @@ at this checkpoint has 14 passes and six failures; prefill's four syntax errors
 are `cudaMemcpyPeerAsync` calls. The subsequent [peer/stager validation](runtime-peer.md)
 resolves those errors and compiles original peer/remote host files, bringing the
 [latest inventory](host-peer-compile-results.json) to 17 passes and three failures.
-Graph upload/inspection, device metadata, remaining device/GEMM bindings, full
-linking, model-state parity and PP/TG results remain open.
+The subsequent [graph API integration](runtime-graph-api.md) binds upload and
+native node types and compiles original MTP/verify host files. Device metadata,
+full kernel-parameter inspection, remaining device/GEMM bindings, full linking,
+model-state parity and PP/TG results remain open.
 
 ```sh
 # Select the isolated driver libraries as in runtime-memory.md first.

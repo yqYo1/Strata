@@ -100,8 +100,11 @@ remain authoritative; the table is a work list, not a complete API census.
 No CUDA compute capability or runtime version is fabricated to admit this GPU.
 The frontend now has [device-owned domains and native memory queries](runtime-devices.md).
 [Peer APIs and the unchanged prefill stager](runtime-peer.md) bring the
-[latest host syntax inventory](host-peer-compile-results.json) to 17 passes and
+[host syntax checkpoint](host-peer-compile-results.json) to 17 passes and
 three failures, including a passing original `prefill.cpp`.
+[Graph API and concurrent-wait integration](runtime-graph-api.md) then compile
+original MTP/verify host files, bringing the [latest syntax inventory](host-graph-compile-results.json)
+to 19 passes and one failure.
 Multi-device execution is untested. Optional formats, remaining prefill/decode kernel families,
 full scheduling traces, layer/session tensors and actual model PP/TG are open.
 

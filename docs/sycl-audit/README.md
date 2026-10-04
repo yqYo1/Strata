@@ -127,5 +127,9 @@ records 13 passes and seven failures. [Device selection and free VRAM](runtime-d
 now run the original expert cache, bringing that [host syntax checkpoint](host-device-compile-results.json)
 to 14 passes and six failures. [Peer APIs and the original prefill stager](runtime-peer.md)
 now compile the original prefill/peer/remote host files and verify stager reuse
-with small and original-size expert blobs. The [latest host syntax inventory](host-peer-compile-results.json)
-has 17 passes and three failures. Full engine linking and execution remain open.
+with small and original-size expert blobs. That [host syntax checkpoint](host-peer-compile-results.json)
+has 17 passes and three failures. [Graph preparation and inspection](runtime-graph-api.md)
+now compile original MTP/verify host files and execute the original MTP capture
+finisher. They also fix a reproduced scheduler-lock stall during concurrent
+event waits. The [latest host syntax inventory](host-graph-compile-results.json)
+has 19 passes and one failure. Full engine linking and execution remain open.
