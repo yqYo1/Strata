@@ -146,3 +146,32 @@ float values, bit for bit, and the generated IDs match. See the
 [batch 32 record](attention/model-batch32/run.json) and
 [batch 128 record](attention/model-batch128/run.json). This is a small pilot
 comparison; 128 is available for measurement rather than a new default.
+
+The next [layout study](attention/layout-study/run.json) changes how the
+original attention reads its shared query tile and assigns its work to
+subgroups. `STRATA_PREFILL_ATTN_LAYOUT=1` transposes the query tile on subgroup
+32; `=2` pairs the original lanes on subgroup 16; `=3` does both. Unset or
+zero keeps the original layout. The 16-lane version computes the original
+lane and lane+16 dots independently, then performs the original XOR-16
+addition before the XOR-8/4/2/1 reduction. It keeps 64-cell partials, the
+merge, softmax, per-dimension value accumulation, and scratch size.
+
+In the synthetic 8,192-cell, 2,049-query test, layout 3 with 128 queries per
+launch takes 51.685 ms for INT8, versus 58.769 ms for the original 32-query
+launches. The corresponding FP16 times are 47.196 and 54.419 ms. A larger
+batch alone takes 55.884 and 51.906 ms. Two runs per layout use reversed
+layout order; each timing is the median of three warmed rounds of ten
+launches, with old/new order alternated. All 64 checks, including K8V4 with
+signed Q4_0 value scales, give finite, bit-identical outputs and pass the
+existing FP64 reference bounds. Transposing alone gives no improvement here.
+
+The [initial model runs](attention/layout-study/model-initial-0/run.json)
+are archived as warm-up evidence. The first 4,096-token run spends 3.677
+seconds in the selection interval rather than about 0.094 seconds, consistent
+with newly compiled GPU modules. Its automatically computed length slope
+must not be used as steady performance. At 8,087 tokens, after the shorter
+run, attention takes 2.167 seconds for layout 0 and 1.989 seconds for
+[layout 3](attention/layout-study/model-initial-3/run.json). These are single
+profiled observations. All four model runs match the accepted first-logit
+arrays and output IDs; a warmed, matched comparison is still required before
+changing the default. Both attention tests pass through CTest on the B570.

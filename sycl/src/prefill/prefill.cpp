@@ -25,6 +25,7 @@
 #include "strata/core/native_head.hpp"
 #include "strata/kernels/verify_kernels.hpp"
 #include "strata/kernels/qsa_decode_attn.hpp"
+#include "strata/kernels/qsa_decode_attn_variant.hpp"
 #include "strata/kernels/qsa_prompt_attn.hpp"
 #include "strata/kernels/qsa_select.hpp"
 #include "strata/prefill/gemm.hpp"
@@ -694,6 +695,14 @@ int64_t prompt_attn_batch(size_t T) {
         return value ? std::clamp<int64_t>(std::atoll(value), 1, 1024) : 32;
     }();
     return std::min<int64_t>(requested, (int64_t) T);
+}
+int prompt_attn_variant() {
+    static const int variant = [] {
+        const char* value = std::getenv("STRATA_PREFILL_ATTN_LAYOUT");
+        const int requested = value ? std::atoi(value) : 0;
+        return requested >= 1 && requested <= 3 ? requested : 0;
+    }();
+    return variant;
 }
 // Step 2b: which layers' experts go through MMQ (both weight types covered; the Strata Q2_0 pack always - its blob
 // is converted to GGUF Q2_0 blocks on the gather), whether any layer keeps the FP16 path (IQ1_M), and the largest
@@ -2600,9 +2609,14 @@ bool Prefill::run(const int64_t *tokens, int64_t n, int64_t pos0,
                                                                             m.attn, T, m.cs))
                         for (int64_t t0 = 0; t0 < T; t0 += m.attn_batch) {
                             const int64_t nb = std::min(m.attn_batch, T - t0);
-                            strata::kernels::qsa_decode_attn_batch(m.q + t0 * ZV, pools, m.sel_ids + t0 * m.cap,
-                                                                   m.steps_dev + t0 * strata::kernels::kStepCount, m.cap,
-                                                                   s, m.attn_scratch, m.attn + t0 * ZV, nb, m.cs);
+                            if (const int variant = prompt_attn_variant(); variant != 0)
+                                strata::kernels::qsa_decode_attn_batch_variant(m.q + t0 * ZV, pools,
+                                    m.sel_ids + t0 * m.cap, m.steps_dev + t0 * strata::kernels::kStepCount,
+                                    m.cap, s, m.attn_scratch, m.attn + t0 * ZV, nb, variant, m.cs);
+                            else
+                                strata::kernels::qsa_decode_attn_batch(m.q + t0 * ZV, pools, m.sel_ids + t0 * m.cap,
+                                                                       m.steps_dev + t0 * strata::kernels::kStepCount, m.cap,
+                                                                       s, m.attn_scratch, m.attn + t0 * ZV, nb, m.cs);
                         }
                     if (st.kv_rot || st.kv_hybrid) strata::kernels::fwht256_inplace_cuda(m.attn, T * 24, m.cs);
                     pt.mark(kPfQsa, cs);

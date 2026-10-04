@@ -227,6 +227,7 @@ if(STRATA_SYCL_PARITY)
   # Positive fourth argument tests the existing fallback with a larger query batch, bitwise;
   # unlike the XMX path it accepts all three KV formats above.
   add_test(NAME qsa_decode_attn_batch_parity COMMAND qsa_prompt_attn_parity 8192 129 1 128)
+  add_test(NAME qsa_decode_attn_layout_parity COMMAND qsa_prompt_attn_parity 8192 129 1 128 3)
   # the hybrid K8V4 KV test (upstream 0.1.27) passes its appends, gathers and attention here and fails only its
   # last step, the opt-in XMX prompt kernel. Built, not registered pending complete GPU validation.
   strata_resolve(_src src/kernels/kv_hybrid_parity.cpp)
