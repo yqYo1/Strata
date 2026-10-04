@@ -50,3 +50,17 @@ if(STRATA_SYCL_DEVICE_ARCH)
 endif()
 add_test(NAME mmq_product_upstream_cpu COMMAND mmq_product_test)
 set_tests_properties(mmq_product_upstream_cpu PROPERTIES TIMEOUT 120)
+
+add_executable(mmq_stages_test mmq_stages.cpp
+    ${STRATA_ROOT}/src/sycl_upstream/mmq_stages.cpp
+    ${STRATA_ROOT}/src/sycl_upstream/mmq_quantize.cpp)
+target_link_libraries(mmq_stages_test PRIVATE mmq_product)
+target_compile_options(mmq_stages_test PRIVATE -fsycl -fno-fast-math -ffp-contract=off -fno-strict-aliasing)
+target_link_options(mmq_stages_test PRIVATE -fsycl)
+if(STRATA_SYCL_DEVICE_ARCH)
+    target_compile_options(mmq_stages_test PRIVATE -fsycl-targets=spir64_gen)
+    target_link_options(mmq_stages_test PRIVATE -fsycl-targets=spir64_gen
+        "SHELL:-Xsycl-target-backend=spir64_gen \"-device ${STRATA_SYCL_DEVICE_ARCH}\"")
+endif()
+add_test(NAME mmq_surrounding_stages COMMAND mmq_stages_test)
+set_tests_properties(mmq_surrounding_stages PROPERTIES TIMEOUT 120)

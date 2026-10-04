@@ -73,7 +73,7 @@ validation, not a PP/TG benchmark.
 
 The automatic CUDA tile-size/configuration choice has not been mapped to Intel;
 this port retains its explicitly documented Intel tile. The full adapter/scratch
-pool, gather/SwiGLU operations, optional MMQ formats, and engine runtime are still
-being ported/audited. No CUDA device execution, CUDA fast-math/FTZ comparison, or
+pool, optional MMQ formats, and engine runtime are still being ported/audited.
+[Gather/SwiGLU and connected products](mmq-stages.md) now have separate component evidence. No CUDA device execution, CUDA fast-math/FTZ comparison, or
 full-model benchmark has been performed for this new baseline. The original
 upstream host/CPU source files and root build remain unchanged.
