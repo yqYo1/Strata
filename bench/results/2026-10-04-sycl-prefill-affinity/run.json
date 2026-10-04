@@ -460,7 +460,8 @@
   "reproduction": {
     "temporary_paths": "Helpers use the original /tmp/strata-sycl-goal-prefill-* names. Copy the trace header to /tmp/strata-sycl-goal-prefill-device-trace.hpp before applying the generated diagnostic sources. Run the preparer with 1f98f6a, and restore all three traced files before normal timing.",
     "affinity_prototype": "Apply affinity_prototype.patch to source commit 1f98f6a and build strata in the existing AOT tree. This is an experimental patch, not a production option. The screen/repeat scripts use profile.py from the preceding prefill-events record at /tmp/strata-sycl-goal-prefill-event-profile.py.",
-    "diagnostic_output_archive": "~/.local/state/strata-sycl/measurement-archive/2026-10-04-speed-goal"
+    "diagnostic_output_archive": "~/.local/state/strata-sycl/measurement-archive/2026-10-04-speed-goal",
+    "ring_after_preset_update": "Set STRATA_PREFILL_RING=96 explicitly when reproducing the device trace and affinity screen: the local presets now select ring 8, whereas the original diagnostic and affinity runs used the default ring 96."
   },
   "affinity_screen": {
     "status": "Rejected: no repeatable normal prefill improvement. Production source and binary restored.",

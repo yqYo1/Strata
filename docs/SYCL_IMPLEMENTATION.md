@@ -2753,3 +2753,35 @@ returned the same eight output ids. The change gave no repeatable improvement
 and was removed. The accepted source and AOT binary were restored; no local
 CPU-placement setting was enabled. The [diagnostic and screen record](../bench/results/2026-10-04-sycl-prefill-affinity/run.json)
 includes the experimental patch and all samples.
+
+### Routed staging for the measured long prompt (2026-10-04)
+
+The existing `STRATA_PREFILL_RING=8` selects routed staging: copy only the
+nonresident experts used by the current layer. With the larger ring, chunks
+of at least 1,024 tokens stream all nonresident experts ahead of execution.
+On this B570/5600X, routed staging was faster for the measured 4,007-token
+prompt, despite losing grouped gather and cross-layer transfer scheduling.
+
+Three alternating pairs used the same accepted AOT binary, context 8,192,
+chunk 4,096, 512 expert-cache slots, five CPU workers, adaptive swaps off,
+exact XMX tile 8, packing off and same-queue event omission. Normal prefill
+medians were **26,451.5→24,788.0 ms**, or **151.48→161.65 token/s (+6.71%)**.
+All three pairs improved; every run produced the same eight output ids.
+There were no concurrent owned builds or GPU tests. No decode-speed
+improvement is claimed.
+
+Persistent serving additionally compared a 4,035-token writing prompt with
+128 output tokens twice, prefill/decode cancellation and eight-token recovery.
+Both rings passed and all completed outputs matched. This test used
+`--no-prefill-borrow --prompt-cache 0` so each request exercised a full prompt
+chunk. The first test with normal borrowing reduced the chunk to 512 because
+its 512-slot cache could not lend larger buffers; that passed too, but does
+not validate the changed long-chunk path. The serving benchmark now accepts
+`stop`, the engine's normal EOS completion reason.
+
+The two local text presets select ring 8, with prior configs backed up. Their
+usual context is 512: chunks below 1,024 already use routed staging, so this
+flag alone does not accelerate that configuration. The measured gain applies
+to the large chunk above; larger prompts and other devices need their own
+comparison. The [measurement record](../bench/results/2026-10-04-sycl-prefill-routed/run.json)
+contains all six timings, serving checks, settings and reproduction helpers.
