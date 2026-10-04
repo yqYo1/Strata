@@ -51,7 +51,7 @@ float scale(QsaAttnPools p, int64_t row, int group) {
     return f32_from_f16((Value ? p.v_scale : p.k_scale)[row * 4 + group]);
   return 0;
 }
-template <int Mode>
+template <int Mode, bool Direct>
 void launch(const float *query, QsaAttnPools pools, const int32_t *ids,
             const int32_t *steps, int64_t cap, QsaShapes shapes, float *output,
             int64_t queries, void *stream) {
@@ -65,7 +65,7 @@ void launch(const float *query, QsaAttnPools pools, const int32_t *ids,
     sycl::local_accessor<float, 1> scores(16 * CH, h), ks(CH * KG, h),
         vs(CH * VG, h);
     sycl::local_accessor<float, 1> maxima(16, h), sums(16, h), alpha(16, h),
-        factors(VG, h), final(16 * HD, h);
+        factors(VG, h), final(Direct ? 1 : 16 * HD, h);
     sycl::local_accessor<int64_t, 1> rows(CH, h);
     h.parallel_for(
         sycl::nd_range<1>(size_t(queries) * shapes.n_head_kv * WG, WG),
@@ -253,23 +253,41 @@ void launch(const float *query, QsaAttnPools pools, const int32_t *ids,
             it.barrier(sycl::access::fence_space::local_space);
           }
           for (int j = 0; j < 4; ++j) {
-            mi::joint_matrix_apply(sg, acc[j], [=](float &v, size_t r, size_t) {
+            mi::joint_matrix_apply(sg, acc[j], [=](float &v, size_t r, size_t c) {
               const float sum = sums[hb * 8 + r];
               v = sum > 0 ? v / sum : 0.f;
+              if constexpr (Direct) {
+                if (hb * 8 + r < HEADS)
+                  output[(batch * shapes.n_head + kvhead * HEADS + hb * 8 + r) *
+                             HD + (db * 4 + j) * 16 + c] = v;
+              }
             });
-            mx::joint_matrix_store(
-                sg, acc[j],
-                final.template get_multi_ptr<sycl::access::decorated::no>() +
-                    hb * 8 * HD + (db * 4 + j) * 16,
-                HD, mx::layout::row_major);
+            if constexpr (!Direct)
+              mx::joint_matrix_store(
+                  sg, acc[j],
+                  final.template get_multi_ptr<sycl::access::decorated::no>() +
+                      hb * 8 * HD + (db * 4 + j) * 16,
+                  HD, mx::layout::row_major);
           }
-          it.barrier(sycl::access::fence_space::local_space);
-          for (int i = tid; i < HEADS * HD; i += WG)
-            output[(batch * shapes.n_head + kvhead * HEADS) * HD + i] =
-                final[i];
+          if constexpr (!Direct) {
+            it.barrier(sycl::access::fence_space::local_space);
+            for (int i = tid; i < HEADS * HD; i += WG)
+              output[(batch * shapes.n_head + kvhead * HEADS) * HD + i] = final[i];
+          }
         });
   });
   finish(stream, event);
+}
+// Select distinct kernels so the existing output path has no device branch.
+template <int Mode>
+void dispatch(const float *q, QsaAttnPools p, const int32_t *ids,
+              const int32_t *steps, int64_t cap, QsaShapes s, float *out,
+              int64_t nq, void *stream) {
+  const char *direct = std::getenv("STRATA_SYCL_PROMPT_DIRECT");
+  if (direct && direct[0] == '1')
+    launch<Mode, true>(q, p, ids, steps, cap, s, out, nq, stream);
+  else
+    launch<Mode, false>(q, p, ids, steps, cap, s, out, nq, stream);
 }
 bool matrix_available(const sycl::device &device, int mode) {
   const auto subgroups = device.get_info<sycl::info::device::sub_group_sizes>();
@@ -348,16 +366,16 @@ bool qsa_prompt_attn_batch(const float *q, const QsaAttnPools &p,
     input(p.v_q4);
   switch (mode) {
   case 0:
-    launch<0>(q, p, ids, steps, cap, s, out, nq, stream);
+    dispatch<0>(q, p, ids, steps, cap, s, out, nq, stream);
     break;
   case 1:
-    launch<1>(q, p, ids, steps, cap, s, out, nq, stream);
+    dispatch<1>(q, p, ids, steps, cap, s, out, nq, stream);
     break;
   case 2:
-    launch<2>(q, p, ids, steps, cap, s, out, nq, stream);
+    dispatch<2>(q, p, ids, steps, cap, s, out, nq, stream);
     break;
   case 3:
-    launch<3>(q, p, ids, steps, cap, s, out, nq, stream);
+    dispatch<3>(q, p, ids, steps, cap, s, out, nq, stream);
     break;
   }
   return true;

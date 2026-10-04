@@ -2849,3 +2849,48 @@ estimate. A oneMKL completion event may cover only the final internal command.
 The hooks were removed and the accepted AOT binary restored. Prompt attention
 is the next substantial compute cost to investigate. The [trace record](../bench/results/2026-10-04-sycl-prefill-device-full/run.json)
 retains the grouped intervals, settings and source helpers.
+
+### Direct prompt-attention output (2026-10-04)
+
+`STRATA_SYCL_PROMPT_DIRECT=1` writes normalized joint-matrix accumulators
+straight to the output, with a guard for the four padded heads. This skips
+the final local-memory staging stores, barrier and copy. Selected-cell order,
+softmax and matrix arithmetic stay the same. The existing staged kernel
+remains separately compiled and the option is off by default. For FP16 KV,
+the declared local-accessor ranges total 37,576 bytes instead of 53,956 bytes;
+these sizes are not an occupancy measurement. The original device capability
+and local-memory guard remains in place.
+
+On the B570/5600X, three alternating pairs used one AOT binary, ring 8, compact
+exact tile-8 XMX, packing off, same-queue event omission, five CPU workers and
+adaptive swaps off. Timed runs had no profiling or concurrent owned builds
+or GPU tests. All three pairs improved at each size and all twelve runs
+returned identical eight-token output ids.
+
+| Prefetched tokens | Context / chunk / cache slots | Direct off, median | Direct on, median | Rate change |
+| --- | --- | --- | --- | --- |
+| 826 | 2,048 / 1,024 / 1,649 | 8,705.8 ms, 94.88 token/s | 8,612.9 ms, 95.90 token/s | +1.08% |
+| 4,007 | 8,192 / 4,096 / 512 | 23,816.2 ms, 168.25 token/s | 22,232.4 ms, 180.23 token/s | +7.12% |
+
+The long-prompt off samples ranged from 23,809.8 to 24,042.1 ms; on samples
+ranged from 22,217.0 to 22,263.0 ms. The FP16 attention-only helper uses 512
+queries with selected-cell counts increasing to 4,096. Its direct and staged
+outputs matched bitwise, including output guards. Its timings are a separate
+synthetic measurement, not full-model token rates.
+
+A separate single control with the preceding accepted binary measured
+8,714.5 / 23,809.2 ms, or 94.78 / 168.30 token/s. These controls are not
+another three-pair comparison. The attention-only helper's nine timed calls
+per arm had medians of 70.38 ms staged and 48.48 ms direct.
+
+AOT and JIT each passed the prompt-attention test. It compares staged/direct
+outputs bitwise for FP16, Q8, Q4 and mixed KV formats, multiple page sizes,
+masked pages and scaled queries. The existing double-precision oracle,
+batch/single checks, empty/invalid widths and output guards also passed.
+Persistent writing/coding generation at the usual context, and two 128-token
+generations from a 4,035-token prompt with prompt reuse and prefill borrowing
+disabled, matched the preceding accepted outputs. Both serving checks passed
+prefill/decode cancellation and eight-token recovery. No decode-speed gain
+is claimed. Both local text presets enable direct output; their previous
+configs are backed up. The [measurement record](../bench/results/2026-10-04-sycl-prompt-direct/run.json)
+contains every timing, binary hash, validation result and reproduction details.

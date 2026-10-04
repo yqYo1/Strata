@@ -6,6 +6,7 @@
 #include <bit>
 #include <cmath>
 #include <cstring>
+#include <cstdlib>
 #include <iostream>
 #include <stdexcept>
 #include <vector>
@@ -156,6 +157,15 @@ void run(int format, int page_size, bool masked, bool scaled = false) {
   attention(q.data(), p, di.data(), ds.data(), cap, s, scratch.data(),
             out.data(), nq);
   auto y = out.get();
+#ifdef STRATA_TEST_PROMPT_MATRIX
+  setenv("STRATA_SYCL_PROMPT_DIRECT", "0", 1);
+  attention(q.data(), p, di.data(), ds.data(), cap, s, scratch.data(),
+            out.data(), nq);
+  const auto staged = out.get();
+  check(std::memcmp(y.data(), staged.data(), y.size() * sizeof(float)) == 0,
+        "direct/staged prompt output bitwise");
+  setenv("STRATA_SYCL_PROMPT_DIRECT", "1", 1);
+#endif
   for (int b = 0; b < nq; ++b)
     attention(q.data() + b * heads * dim, p, di.data() + b * cap,
               ds.data() + b * kStepCount, cap, s, ss.data(),
@@ -239,6 +249,9 @@ void run(int format, int page_size, bool masked, bool scaled = false) {
 int main() {
   try {
     runtime = sycl_backend::runtime_for();
+#ifdef STRATA_TEST_PROMPT_MATRIX
+    setenv("STRATA_SYCL_PROMPT_DIRECT", "1", 1);
+#endif
     for (int fmt = 0; fmt < 4; ++fmt)
       for (int page : {1, 4, 16})
         run(fmt, page, page != 1);
