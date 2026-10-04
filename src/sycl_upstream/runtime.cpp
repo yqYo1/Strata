@@ -25,13 +25,14 @@ bool complete(const sycl::event& e) {
 }
 namespace graph_api = sycl::ext::oneapi::experimental;
 struct Runtime::Capture {
+    sycl::context context;
     graph_api::command_graph<graph_api::graph_state::modifiable> graph;
     Stream root;
     std::thread::id owner = std::this_thread::get_id();
     std::vector<Stream> streams;
     bool active = true, invalid = false;
     Capture(const sycl::context& context, const sycl::device& device, Stream root):
-        graph(context, device), root(root), streams{root} {}
+        context(context), graph(context, device), root(root), streams{root} {}
 };
 struct Runtime::Graph::State {
     sycl::context context;
@@ -44,6 +45,7 @@ struct Runtime::Graph::State {
 
 };
 size_t Runtime::Graph::node_count() const { return state_ ? state_->nodes : 0; }
+size_t Runtime::GraphDefinition::node_count() const { return capture_ ? capture_->graph.get_nodes().size() : 0; }
 struct Runtime::Impl {
     struct Queue {
         sycl::queue q;
@@ -293,10 +295,12 @@ void Runtime::begin_capture(Stream stream) {
     target.capture = std::move(capture);
     target.captured_tail.reset();
 }
-bool Runtime::capturing(Stream stream) {
+Runtime::CaptureStatus Runtime::capture_status(Stream stream) {
     std::lock_guard lock(impl_->mutex);
-    return bool(impl_->get(stream).capture);
+    auto capture = impl_->get(stream).capture;
+    return !capture ? CaptureStatus::none : capture->invalid ? CaptureStatus::invalidated : CaptureStatus::active;
 }
+bool Runtime::capturing(Stream stream) { return capture_status(stream) != CaptureStatus::none; }
 void Runtime::abort_capture(Stream stream) {
     std::lock_guard lock(impl_->mutex);
     auto capture = impl_->get(stream).capture;
@@ -304,7 +308,7 @@ void Runtime::abort_capture(Stream stream) {
         throw std::invalid_argument("capture must end on its origin stream and thread");
     impl_->detach(capture);
 }
-Runtime::Graph Runtime::end_capture(Stream stream) {
+Runtime::GraphDefinition Runtime::end_capture_definition(Stream stream) {
     std::lock_guard lock(impl_->mutex);
     auto& target = impl_->get(stream);
     auto capture = target.capture;
@@ -328,8 +332,18 @@ Runtime::Graph Runtime::end_capture(Stream stream) {
     impl_->detach(capture);
     if (capture->invalid) throw std::invalid_argument("capture was invalidated");
     if (!joined) throw std::invalid_argument("capture has an unjoined stream branch");
-    if (capture->graph.empty()) throw std::invalid_argument("capture recorded zero nodes");
-    return Graph(std::make_shared<Graph::State>(impl_->context, *capture));
+    return GraphDefinition(std::move(capture));
+}
+Runtime::Graph Runtime::instantiate(const GraphDefinition& definition) {
+    std::lock_guard lock(impl_->mutex);
+    if (!definition.capture_ || definition.capture_->context != impl_->context)
+        throw std::invalid_argument("invalid graph definition or context");
+    return Graph(std::make_shared<Graph::State>(impl_->context, *definition.capture_));
+}
+Runtime::Graph Runtime::end_capture(Stream stream) {
+    auto definition = end_capture_definition(stream);
+    if (!definition.node_count()) throw std::invalid_argument("capture recorded zero nodes");
+    return instantiate(definition);
 }
 sycl::event Runtime::launch(Graph& graph, Stream stream) {
     std::lock_guard lock(impl_->mutex);

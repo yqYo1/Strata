@@ -20,6 +20,18 @@ public:
         std::weak_ptr<Capture> capture_;
         bool captured_ = false;
     };
+    class GraphDefinition {
+        friend class Runtime;
+        std::shared_ptr<Capture> capture_;
+        explicit GraphDefinition(std::shared_ptr<Capture> capture): capture_(std::move(capture)) {}
+    public:
+        GraphDefinition() = default;
+        GraphDefinition(GraphDefinition&&) = default;
+        GraphDefinition& operator=(GraphDefinition&&) = default;
+        GraphDefinition(const GraphDefinition&) = delete;
+        GraphDefinition& operator=(const GraphDefinition&) = delete;
+        size_t node_count() const;
+    };
     class Graph {
         friend class Runtime;
         struct State;
@@ -63,9 +75,16 @@ public:
     void check_memory_operation();
     // Thread-local capture: end on the originating stream and host thread.
     // Waiting on a captured event enrolls another stream; all branches must
-    // join the origin before end_capture. Empty or invalid captures fail.
+    // join the origin before end_capture. Invalid captures fail.
     void begin_capture(Stream);
+    enum class CaptureStatus { none, active, invalidated };
+    CaptureStatus capture_status(Stream);
     bool capturing(Stream);
+    // A definition can instantiate independent executable graphs. The existing
+    // end_capture convenience method performs both operations and rejects an
+    // empty capture; definitions expose zero nodes to the host caller's check.
+    GraphDefinition end_capture_definition(Stream);
+    Graph instantiate(const GraphDefinition&);
     Graph end_capture(Stream);
     void abort_capture(Stream);
     sycl::event launch(Graph&, Stream);

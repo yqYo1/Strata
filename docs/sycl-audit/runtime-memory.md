@@ -135,8 +135,9 @@ rejection check, select the system libraries and run
 probe intentionally exits 1 on that driver and keeps any retained mapping's
 system storage alive until process exit.
 
-Still open: compiling the original `PinnedArena` against the CUDA frontend,
-large real-model arena pin limits and residency behavior, multi-device portable
+The [CUDA source frontend](runtime-frontend.md) now compiles and tests the original
+`PinnedArena`, expert loader and graph manager. Still open: large real-model arena
+pin limits and residency behavior, multi-device portable
 registration, asynchronous allocators, frontend error/flag compatibility, and
 full-model state and speed measurements. These small tests do not qualify all
 heap/file mapping kinds, NUMA policy, pinned capacity, or PCIe transfer bandwidth.

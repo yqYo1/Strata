@@ -1,0 +1,159 @@
+{
+  "schema": 1,
+  "recorded_utc": "2026-10-04T11:17:50.709735+00:00",
+  "upstream": "99f3dbd0b21d1401b3769e0c0d963913607f380b",
+  "scope": "Original Linux graph/pinned host translation units through a partial CUDA source frontend. No full engine or new PP/TG result.",
+  "hardware": {
+    "gpu": "Intel Arc B570",
+    "cpu": "AMD Ryzen 5 5600X",
+    "compiler": "Intel oneAPI 2026.1.1",
+    "driver": "26.35.39758.10",
+    "igc": "2.41.5",
+    "gmm": "22.10.0",
+    "loader": "1.32.0",
+    "kernel": "7.0.0-38-generic"
+  },
+  "source_sha256": {
+    "include/strata/sycl_upstream/runtime.hpp": "b7dfe8091fa46b10f7b37ef5a90c791ba08afec4a86b4cc5f660cbb1f9cc7bf6",
+    "src/sycl_upstream/runtime.cpp": "2c067d306990b7a6a36b9fcb57ab6da7249faf8021f2fbc8dcc1ca7ce790a36c",
+    "include/strata/sycl_upstream/cuda/cuda_runtime.h": "a1215b6d97c8c275451bc73c78b1fa471b24e21549b553da0c49e5dce3505f9c",
+    "include/strata/sycl_upstream/cuda_backend.hpp": "53ffb66e04875d0ec7769a6493762628d0e6a19864e619299f8a5490d2195763",
+    "src/sycl_upstream/cuda_frontend.cpp": "ec6bbf4a9e67d8dc54e1e92357d5bc400a6901eef2a9f122036ac96755d3601f",
+    "tests/sycl_upstream/CMakeLists.txt": "dd96681bf46fdd9d20c061c1048d2232915fa675171882366cb57ba31795d45e",
+    "tests/sycl_upstream/cuda_frontend.cpp": "6f1412e68b957fc4551f59b13a89021d2e3ba2f2d3c4b4a495b9ffff5ba55db9",
+    "tests/sycl_upstream/graph_copy2d_probe.cpp": "bd871b9d8002dd12fe5d3ae64043d532a61dd2c8ee0286a37c5d7984ed7ffcb8"
+  },
+  "original_host_sha256": {
+    "src/core/graph.cpp": "ac8b1de9372b6755bb5c9be30b83c76fef2f89186b0f7e5316676448f66483c3",
+    "src/core/pinned.cu": "e40ee6b67946750ffabbc2f7074e6fe3f2f4c3c007f6731792274ab0f54f7722",
+    "src/platform/memory.cpp": "51e55255db8d617cf0ec19064eb68ac53187e930cabe69e0e7335c1320721220",
+    "src/core/pinned_shared_test.cpp": "0dd0cfe5f3e4d48631b5d95b0ce45e4b52d3e1701cddb231986606ef59b3ec02"
+  },
+  "original_source_files_checked": 256,
+  "original_source_changes": [],
+  "frontend_symbols": [
+    "cudaDeviceSynchronize",
+    "cudaEventCreateWithFlags",
+    "cudaEventDestroy",
+    "cudaEventQuery",
+    "cudaEventRecord",
+    "cudaEventSynchronize",
+    "cudaFree",
+    "cudaFreeHost",
+    "cudaGetErrorName",
+    "cudaGetErrorString",
+    "cudaGetLastError",
+    "cudaGraphDestroy",
+    "cudaGraphExecDestroy",
+    "cudaGraphGetNodes",
+    "cudaGraphInstantiate",
+    "cudaGraphLaunch",
+    "cudaHostAlloc",
+    "cudaHostGetDevicePointer",
+    "cudaHostRegister",
+    "cudaHostUnregister",
+    "cudaLaunchHostFunc",
+    "cudaMalloc",
+    "cudaMallocHost",
+    "cudaMemcpy",
+    "cudaMemcpy2DAsync",
+    "cudaMemcpyAsync",
+    "cudaMemset",
+    "cudaMemsetAsync",
+    "cudaPeekAtLastError",
+    "cudaStreamBeginCapture",
+    "cudaStreamCreate",
+    "cudaStreamCreateWithFlags",
+    "cudaStreamDestroy",
+    "cudaStreamEndCapture",
+    "cudaStreamIsCapturing",
+    "cudaStreamQuery",
+    "cudaStreamSynchronize",
+    "cudaStreamWaitEvent"
+  ],
+  "validation": {
+    "jit": {
+      "exit": 0,
+      "ctest_programs": 6,
+      "persistent_cache": false,
+      "log": "Internal ctest changing into directory: $WORKTREE/build-upstream-sycl\nUpdateCTestConfiguration  from :$WORKTREE/build-upstream-sycl/DartConfiguration.tcl\nUpdateCTestConfiguration  from :$WORKTREE/build-upstream-sycl/DartConfiguration.tcl\nTest project $WORKTREE/build-upstream-sycl\nConstructing a list of tests\nDone constructing a list of tests\nUpdating test list for fixtures\nAdded 0 tests to meet fixture requirements\nChecking test dependency graph...\nChecking test dependency graph end\ntest 6\n    Start  6: runtime_stream_event_ordering\n\n6: Test command: $WORKTREE/build-upstream-sycl/runtime_test\n6: Working Directory: $WORKTREE/build-upstream-sycl\n6: Test timeout computed to be: 45\n6: device=Intel(R) Arc(TM) B570 Graphics\n6: PASS runtime_cases=7 prefill_ring_batches=40 legacy_and_event_ordering=1 async_destroy=1\n1/6 Test  #6: runtime_stream_event_ordering ....   Passed    0.22 sec\ntest 7\n    Start  7: runtime_graph_capture_replay\n\n7: Test command: $WORKTREE/build-upstream-sycl/graph_test\n7: Working Directory: $WORKTREE/build-upstream-sycl\n7: Test timeout computed to be: 90\n7: device=Intel(R) Arc(TM) B570 Graphics\n7: PASS graph_scenarios=6 replays=32 exact_mmq_graph_outputs=6144 fork_join=1 invalidation=1 async_launch_and_teardown=1\n2/6 Test  #7: runtime_graph_capture_replay .....   Passed    0.13 sec\ntest 8\n    Start  8: runtime_mapped_handoff\n\n8: Test command: $WORKTREE/build-upstream-sycl/handoff_test\n8: Working Directory: $WORKTREE/build-upstream-sycl\n8: Test timeout computed to be: 90\n8: device=Intel(R) Arc(TM) B570 Graphics usm_atomic_host=0 usm_atomic_shared=0\n8: PASS handshakes=1152 exact_payload_values=4840176 direct_pipelines=8 graph_replays=16 graph_layers=48 capture_nodes=192 active_waits=12 ge_skip_replays=3 bounded_exhaustion=1 default_unbounded_pipelines=12 noop_graph_nodes=1 large_copy_values=65544 no_driver_calls_during_service=1\n3/6 Test  #8: runtime_mapped_handoff ...........   Passed    0.16 sec\ntest 9\n    Start  9: runtime_memory_lifetime\n\n9: Test command: $WORKTREE/build-upstream-sycl/memory_test\n9: Working Directory: $WORKTREE/build-upstream-sycl\n9: Test timeout computed to be: 90\n9: device=Intel(R) Arc(TM) B570 Graphics page=4096\n9: PASS memory_cases=5 exact_values=13464 registered_graph_replays=4 same_address_reimports=8 native_release_queries=1 shared_edge_page=1 readonly_file=1 release_waits_retired=1 capture_restrictions=1\n4/6 Test  #9: runtime_memory_lifetime ..........   Passed    0.19 sec\ntest 10\n    Start 10: original_pinned_shared_backing\n\n10: Test command: $WORKTREE/build-upstream-sycl/original_pinned_shared_test\n10: Working Directory: $WORKTREE/build-upstream-sycl\n10: Test timeout computed to be: 60\n10: pinned_shared_test: OK\n5/6 Test #10: original_pinned_shared_backing ...   Passed    0.07 sec\ntest 11\n    Start 11: original_host_cuda_frontend\n\n11: Test command: $WORKTREE/build-upstream-sycl/cuda_frontend_test\n11: Working Directory: $WORKTREE/build-upstream-sycl\n11: Test timeout computed to be: 90\n11: load_experts: short read in layer 2: got 94 of 97 B at offset 20383\n11: PASS frontend_cases=7 exact_values=47130 original_graph_registry_replays=32 independent_graph_execs=2 pitched_graph_replays=4 pitched_direct_runs=2 pitched_directions=3 pitched_copy_nodes=21 original_loader_layers=3 original_graph_handshakes=32 active_waits=2 unbounded_handoff_replays=2\n6/6 Test #11: original_host_cuda_frontend ......   Passed    0.27 sec\n\nThe following tests passed:\n\truntime_stream_event_ordering\n\truntime_graph_capture_replay\n\truntime_mapped_handoff\n\truntime_memory_lifetime\n\toriginal_pinned_shared_backing\n\toriginal_host_cuda_frontend\n\n100% tests passed, 0 tests failed out of 6\n\nTotal Test time (real) =   1.03 sec\n"
+    },
+    "aot": {
+      "exit": 0,
+      "ctest_programs": 6,
+      "device": "bmg_g21",
+      "log": "Internal ctest changing into directory: $WORKTREE/build-upstream-sycl-aot\nUpdateCTestConfiguration  from :$WORKTREE/build-upstream-sycl-aot/DartConfiguration.tcl\nUpdateCTestConfiguration  from :$WORKTREE/build-upstream-sycl-aot/DartConfiguration.tcl\nTest project $WORKTREE/build-upstream-sycl-aot\nConstructing a list of tests\nDone constructing a list of tests\nUpdating test list for fixtures\nAdded 0 tests to meet fixture requirements\nChecking test dependency graph...\nChecking test dependency graph end\ntest 6\n    Start  6: runtime_stream_event_ordering\n\n6: Test command: $WORKTREE/build-upstream-sycl-aot/runtime_test\n6: Working Directory: $WORKTREE/build-upstream-sycl-aot\n6: Test timeout computed to be: 45\n6: device=Intel(R) Arc(TM) B570 Graphics\n6: PASS runtime_cases=7 prefill_ring_batches=40 legacy_and_event_ordering=1 async_destroy=1\n1/6 Test  #6: runtime_stream_event_ordering ....   Passed    0.19 sec\ntest 7\n    Start  7: runtime_graph_capture_replay\n\n7: Test command: $WORKTREE/build-upstream-sycl-aot/graph_test\n7: Working Directory: $WORKTREE/build-upstream-sycl-aot\n7: Test timeout computed to be: 90\n7: device=Intel(R) Arc(TM) B570 Graphics\n7: PASS graph_scenarios=6 replays=32 exact_mmq_graph_outputs=6144 fork_join=1 invalidation=1 async_launch_and_teardown=1\n2/6 Test  #7: runtime_graph_capture_replay .....   Passed    0.12 sec\ntest 8\n    Start  8: runtime_mapped_handoff\n\n8: Test command: $WORKTREE/build-upstream-sycl-aot/handoff_test\n8: Working Directory: $WORKTREE/build-upstream-sycl-aot\n8: Test timeout computed to be: 90\n8: device=Intel(R) Arc(TM) B570 Graphics usm_atomic_host=0 usm_atomic_shared=0\n8: PASS handshakes=1152 exact_payload_values=4840176 direct_pipelines=8 graph_replays=16 graph_layers=48 capture_nodes=192 active_waits=12 ge_skip_replays=3 bounded_exhaustion=1 default_unbounded_pipelines=12 noop_graph_nodes=1 large_copy_values=65544 no_driver_calls_during_service=1\n3/6 Test  #8: runtime_mapped_handoff ...........   Passed    0.15 sec\ntest 9\n    Start  9: runtime_memory_lifetime\n\n9: Test command: $WORKTREE/build-upstream-sycl-aot/memory_test\n9: Working Directory: $WORKTREE/build-upstream-sycl-aot\n9: Test timeout computed to be: 90\n9: device=Intel(R) Arc(TM) B570 Graphics page=4096\n9: PASS memory_cases=5 exact_values=13464 registered_graph_replays=4 same_address_reimports=8 native_release_queries=1 shared_edge_page=1 readonly_file=1 release_waits_retired=1 capture_restrictions=1\n4/6 Test  #9: runtime_memory_lifetime ..........   Passed    0.19 sec\ntest 10\n    Start 10: original_pinned_shared_backing\n\n10: Test command: $WORKTREE/build-upstream-sycl-aot/original_pinned_shared_test\n10: Working Directory: $WORKTREE/build-upstream-sycl-aot\n10: Test timeout computed to be: 60\n10: pinned_shared_test: OK\n5/6 Test #10: original_pinned_shared_backing ...   Passed    0.06 sec\ntest 11\n    Start 11: original_host_cuda_frontend\n\n11: Test command: $WORKTREE/build-upstream-sycl-aot/cuda_frontend_test\n11: Working Directory: $WORKTREE/build-upstream-sycl-aot\n11: Test timeout computed to be: 90\n11: load_experts: short read in layer 2: got 94 of 97 B at offset 20383\n11: PASS frontend_cases=7 exact_values=47130 original_graph_registry_replays=32 independent_graph_execs=2 pitched_graph_replays=4 pitched_direct_runs=2 pitched_directions=3 pitched_copy_nodes=21 original_loader_layers=3 original_graph_handshakes=32 active_waits=2 unbounded_handoff_replays=2\n6/6 Test #11: original_host_cuda_frontend ......   Passed    0.20 sec\n\nThe following tests passed:\n\truntime_stream_event_ordering\n\truntime_graph_capture_replay\n\truntime_mapped_handoff\n\truntime_memory_lifetime\n\toriginal_pinned_shared_backing\n\toriginal_host_cuda_frontend\n\n100% tests passed, 0 tests failed out of 6\n\nTotal Test time (real) =   0.91 sec\n"
+    }
+  },
+  "diagnostics": {
+    "pitched_graph_probe": [
+      {
+        "mode": "sycl",
+        "returncode": 1,
+        "log": "recording_failed=The sycl_ext_oneapi_memcpy2d feature is not yet available for use with the SYCL Graph extension.\n"
+      },
+      {
+        "mode": "native",
+        "timeout_seconds": 5,
+        "terminated_after_timeout": true,
+        "log": "finalize=begin native=1\nnative_handle_query=begin\n"
+      }
+    ],
+    "native_graph_backtrace": "[New LWP 590251]\n[New LWP 590249]\n[Thread debugging using libthread_db enabled]\nUsing host libthread_db library \"/lib/x86_64-linux-gnu/libthread_db.so.1\".\nfutex_wait (private=0, expected=2, futex_word=0x24700290) at ../sysdeps/nptl/futex-internal.h:146\n\nwarning: 146\t../sysdeps/nptl/futex-internal.h: No such file or directory\nwarning: File \"/opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9.0.0-gdb.py\" auto-loading has been declined by your `auto-load safe-path' set to \"$debugdir:$datadir/auto-load\".\nTo enable execution of this file add\n\tadd-auto-load-safe-path /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9.0.0-gdb.py\nline to your configuration file \"/home/yayoi/.config/gdb/gdbinit\".\nTo completely disable this security protection add\n\tset auto-load safe-path /\nline to your configuration file \"/home/yayoi/.config/gdb/gdbinit\".\nFor more information about this security protection see the\n\"Auto-loading safe path\" section in the GDB manual.  E.g., run from the shell:\n\tinfo \"(gdb)Auto-loading safe path\"\n\nThread 3 (Thread 0x786e873086c0 (LWP 590249) \"cuda_frontend_t\"):\n#0  0x0000786e9ed60e51 in __futex_abstimed_wait_common64 (private=30830, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x245c7344) at ./nptl/futex-internal.c:57\n#1  __futex_abstimed_wait_common (cancel=true, private=30830, abstime=0x0, clockid=0, expected=0, futex_word=0x245c7344) at ./nptl/futex-internal.c:87\n#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x245c7344, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139\n#3  0x0000786e9ed638cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x245c7348, cond=0x245c7318) at ./nptl/pthread_cond_wait.c:503\n#4  ___pthread_cond_wait (cond=0x245c7318, mutex=0x245c7348) at ./nptl/pthread_cond_wait.c:627\n#5  0x0000786e984c12ca in ?? () from $DRIVER_ROOT/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1\n#6  0x0000786e9ed64b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447\n#7  0x0000786e9edf1ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78\n\nThread 2 (Thread 0x786e861356c0 (LWP 590251) \"cuda_frontend_t\"):\n#0  0x0000786e9ed60e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x245ff820) at ./nptl/futex-internal.c:57\n#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x245ff820) at ./nptl/futex-internal.c:87\n#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x245ff820, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139\n#3  0x0000786e9ed638cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x245ff7d0, cond=0x245ff7f8) at ./nptl/pthread_cond_wait.c:503\n#4  ___pthread_cond_wait (cond=0x245ff7f8, mutex=0x245ff7d0) at ./nptl/pthread_cond_wait.c:627\n#5  0x0000786e9f489047 in std::condition_variable::wait(std::unique_lock<std::mutex>&) () from /lib/x86_64-linux-gnu/libstdc++.so.6\n#6  0x0000786e9f0f3605 in sycl::_V1::detail::ThreadPool::worker() () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9\n#7  0x0000786e9f4bcdb4 in ?? () from /lib/x86_64-linux-gnu/libstdc++.so.6\n#8  0x0000786e9ed64b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447\n#9  0x0000786e9edf1ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78\n\nThread 1 (Thread 0x786e9c154080 (LWP 590239) \"cuda_frontend_t\"):\n#0  futex_wait (private=0, expected=2, futex_word=0x24700290) at ../sysdeps/nptl/futex-internal.h:146\n#1  __GI___lll_lock_wait (futex=futex@entry=0x24700290, private=0) at ./nptl/lowlevellock.c:49\n#2  0x0000786e9ed681e1 in lll_mutex_lock_optimized (mutex=0x24700290) at ./nptl/pthread_mutex_lock.c:48\n#3  ___pthread_mutex_lock (mutex=0x24700290) at ./nptl/pthread_mutex_lock.c:93\n#4  0x0000786e9bb12971 in ur::level_zero::urCommandBufferGetNativeHandleExp(ur_exp_command_buffer_handle_t_*, unsigned long*) () from /opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0\n#5  0x0000786e9e44addb in urCommandBufferGetNativeHandleExp () from /opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0\n#6  0x0000786e9f21d91c in sycl::_V1::interop_handle::getNativeGraph() const () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9\n#7  0x0000000000422a46 in std::_Function_handler<void (sycl::_V1::interop_handle), cudaMemcpy2DAsync(void*, unsigned long, void const*, unsigned long, unsigned long, unsigned long, cudaMemcpyKind, strata_cuda_stream*)::{lambda()#1}::operator()() const::{lambda(sycl::_V1::queue&)#1}::operator()(sycl::_V1::queue&) const::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::interop_handle)#1}>::_M_invoke(std::_Any_data const&, sycl::_V1::interop_handle&&) ()\n#8  0x0000786e9f1cd828 in sycl::_V1::detail::(anonymous namespace)::CommandBufferInteropFreeFunc(void*) () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9\n#9  0x0000786e9bb12639 in ur::level_zero::urCommandBufferAppendNativeCommandExp(ur_exp_command_buffer_handle_t_*, void (*)(void*), void*, ur_exp_command_buffer_handle_t_*, unsigned int, unsigned int const*, unsigned int*) () from /opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0\n#10 0x0000786e9e44a3a7 in urCommandBufferAppendNativeCommandExp () from /opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0\n#11 0x0000786e9f1cce21 in sycl::_V1::detail::ExecCGCommand::enqueueImpCommandBuffer() () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9\n[Inferior 1 (process 590239) detached]\n",
+    "integrated_native_graph_timeout": "Internal ctest changing into directory: $WORKTREE/build-upstream-sycl\nUpdateCTestConfiguration  from :$WORKTREE/build-upstream-sycl/DartConfiguration.tcl\nUpdateCTestConfiguration  from :$WORKTREE/build-upstream-sycl/DartConfiguration.tcl\nTest project $WORKTREE/build-upstream-sycl\nConstructing a list of tests\nDone constructing a list of tests\nUpdating test list for fixtures\nAdded 0 tests to meet fixture requirements\nChecking test dependency graph...\nChecking test dependency graph end\ntest 11\n    Start 11: original_host_cuda_frontend\n\n11: Test command: $WORKTREE/build-upstream-sycl/cuda_frontend_test\n11: Working Directory: $WORKTREE/build-upstream-sycl\n11: Test timeout computed to be: 90\n1/1 Test #11: original_host_cuda_frontend ......***Timeout  90.08 sec\n\n0% tests passed, 1 tests failed out of 1\n\nTotal Test time (real) =  90.09 sec\n\nThe following tests FAILED:\n\t 11 - original_host_cuda_frontend (Timeout)\nErrors while running CTest\nOutput from these tests are in: $WORKTREE/build-upstream-sycl/Testing/Temporary/LastTest.log\nUse \"--rerun-failed --output-on-failure\" to re-run the failed cases verbosely.\n",
+    "initial_memcpy2d_capture_rejection": "Internal ctest changing into directory: $WORKTREE/build-upstream-sycl\nUpdateCTestConfiguration  from :$WORKTREE/build-upstream-sycl/DartConfiguration.tcl\nUpdateCTestConfiguration  from :$WORKTREE/build-upstream-sycl/DartConfiguration.tcl\nTest project $WORKTREE/build-upstream-sycl\nConstructing a list of tests\nDone constructing a list of tests\nUpdating test list for fixtures\nAdded 0 tests to meet fixture requirements\nChecking test dependency graph...\nChecking test dependency graph end\ntest 11\n    Start 11: original_host_cuda_frontend\n\n11: Test command: $WORKTREE/build-upstream-sycl/cuda_frontend_test\n11: Working Directory: $WORKTREE/build-upstream-sycl\n11: Test timeout computed to be: 90\n11: cudaErrorUnknown: The sycl_ext_oneapi_memcpy2d feature is not yet available for use with the SYCL Graph extension.\n1/1 Test #11: original_host_cuda_frontend ......***Failed    0.19 sec\n\n0% tests passed, 1 tests failed out of 1\n\nTotal Test time (real) =   0.19 sec\n\nThe following tests FAILED:\n\t 11 - original_host_cuda_frontend (Failed)\nErrors while running CTest\nOutput from these tests are in: $WORKTREE/build-upstream-sycl/Testing/Temporary/LastTest.log\nUse \"--rerun-failed --output-on-failure\" to re-run the failed cases verbosely.\n",
+    "initial_test_cleanup_failure": "The first 2D rejection was hidden by the test Buffer destructor terminating on free during abandoned capture. The test Stream destructor now ends capture before buffer cleanup."
+  },
+  "remaining_scope": [
+    "Other original host translation units and public kernel bindings",
+    "Timed/interprocess events and unsupported allocation/registration flags",
+    "Graph upload/update/full introspection and other capture modes",
+    "Exact CUDA error mapping and asynchronous-fault recovery",
+    "Device selection/capabilities, peers, Windows and multi-device execution",
+    "Full model parity and PP1000/TG70 targets"
+  ],
+  "pitched_copy_deviation": {
+    "recorded_copy_nodes_per_rectangle": "height",
+    "native_sycl_memcpy2d_used_outside_capture": true,
+    "split_host_replay": false,
+    "performance_impact_measured": false
+  },
+  "native_runtime_libraries": {
+    "/opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9": "d769a71f2c71530e59a5ba22831ec5a82edcde718076d2663772255498c8e053",
+    "/opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0": "5338c03524f6d3fdd7d6067e5a3f84315e36e11fe1f526d5bbd02d0c88f82a32",
+    "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0": "bfdc0f26bf88bd0bccd66fc25302a4b22559f8fe30e499be18529be3ed610e60"
+  },
+  "binaries": {
+    "build-upstream-sycl/cuda_frontend_test": "5fcf2dc6c1306e929fb155acb73e8ab0edf16e748a356aa47a9557ef9b4fbb2d",
+    "build-upstream-sycl/original_pinned_shared_test": "6f5921841fecb075db98b86f1d5d25685d9c936a6b29a1083f7eab6976110825",
+    "build-upstream-sycl/runtime_test": "b1e3e21fe109ab3124cb58d12244d5a5526bfab79d516899bc798bab77df2663",
+    "build-upstream-sycl/graph_test": "59c652a46db9c50cf5bfb96335e0875a26b1267fa9dd91626b30dde34ed5f0ab",
+    "build-upstream-sycl/handoff_test": "9e0d1fdb8342f5190e86f46dedcd56b5d8d740e09b826a2d377e835834fee0b7",
+    "build-upstream-sycl/memory_test": "3eb6897dca79ff7f6cef60303ffe48cb93b1d99cd9b5b7436dc92e6ee3cfb897",
+    "build-upstream-sycl-aot/cuda_frontend_test": "1300ffb879a73e55f2fe208e6fb33864672ede4a6d5aeeb2fbbd8d947edb015c",
+    "build-upstream-sycl-aot/original_pinned_shared_test": "f63ac96a6a6c22f98e67dfeb3f8953d7e9743c74935e6da2d7169b21cba1e60f",
+    "build-upstream-sycl-aot/runtime_test": "f532801ec4cb09aa09399527e3c941bc0e1b1fe1f063a7243bb7dcc25887b89e",
+    "build-upstream-sycl-aot/graph_test": "285c1e0f3c223fc9ea6927ab4252bcd3bcf82b4db058f1abede28316d550113a",
+    "build-upstream-sycl-aot/handoff_test": "d9798a554ebce151d8b469cfe0eb2047363be4ffce72d6941bc9b9c73851df84",
+    "build-upstream-sycl-aot/memory_test": "e8217dff69f207e557eaf64866c88fdc8aa7b11202768cfae9eeed8c30a99477",
+    "build-upstream-sycl/graph_copy2d_probe": "3aad0d38a49f932b6494da0295ba45f922bf03adbc9f245227d9c0582b8a1fae"
+  },
+  "original_host_objects": {
+    "build-upstream-sycl": {
+      "platform/memory.cpp.o": "d1095a512a60537a4661f10dcfc70291d5a925b1bd66f80aba01505ae9d6fecf",
+      "core/pinned.cu.o": "87f9ffd8db3872284b606947751e12a14ba06bb27efe1a5678153848e2bc74cb",
+      "core/graph.cpp.o": "0e366aeb9f4cf8f7e40095984694a037c8019320641e359dc1e7af3350163772"
+    },
+    "build-upstream-sycl-aot": {
+      "platform/memory.cpp.o": "d1095a512a60537a4661f10dcfc70291d5a925b1bd66f80aba01505ae9d6fecf",
+      "core/pinned.cu.o": "87f9ffd8db3872284b606947751e12a14ba06bb27efe1a5678153848e2bc74cb",
+      "core/graph.cpp.o": "0e366aeb9f4cf8f7e40095984694a037c8019320641e359dc1e7af3350163772"
+    }
+  },
+  "references": [
+    "https://docs.nvidia.com/cuda/cuda-runtime-api/api-sync-behavior.html",
+    "https://docs.nvidia.com/cuda/cuda-runtime-api/cuda_runtime_api/group__CUDART__ERROR.html",
+    "https://docs.nvidia.com/cuda/cuda-programming-guide/pdf/cuda-programming-guide.pdf",
+    "https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_codeplay_enqueue_native_command.asciidoc"
+  ]
+}

@@ -111,6 +111,8 @@ loading `/opt/intel/oneapi/setvars.sh` and selecting `level_zero:gpu`, both buil
 passed. This was an environment-selection failure before any scenario executed.
 
 [Mapped-host CPU/GPU handoff](runtime-handoff.md) now has separate B570 evidence.
-Whole-model graph capture, the CUDA frontend binding, allocation APIs, asynchronous
-device-error recovery and complete engine integration remain open. These component
+[Allocation](runtime-memory.md) and the first [CUDA source frontend](runtime-frontend.md)
+now have connected tests, including independent executable instances of a graph.
+Whole-model graph capture, remaining frontend bindings, asynchronous device-error
+recovery and complete engine integration remain open. These component
 results do not establish full upstream parity or a new prefill/decode speed.

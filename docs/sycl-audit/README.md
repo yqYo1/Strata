@@ -113,5 +113,7 @@ chain in JIT/AOT tests. [Mapped CPU/GPU handoff](runtime-handoff.md) now passes
 connected 48-stage graphs on B570, with the failed direct translations and native
 code differences recorded. [Allocation and external host registration](runtime-memory.md)
 now cover shared-page slices, read-only files and release lifetime, including a
-reproduced driver cache defect and validation with a fixed driver. The CUDA
-frontend binding and full engine integration remain open.
+reproduced driver cache defect and validation with a fixed driver. The first
+[CUDA source frontend](runtime-frontend.md) now runs the original graph manager,
+pinned arena and expert loader without editing them. The remaining host/kernel
+bindings and full engine integration remain open.
