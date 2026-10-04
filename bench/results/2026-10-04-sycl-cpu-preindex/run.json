@@ -1,5 +1,5 @@
 {
-  "status": "component gain confirmed on1/6cores; real reuse/cost tracing next; not integrated",
+  "status": "Component gain confirmed on 1/6 cores; a serial on-demand LRU cache rejected by reuse/cost estimates; no production change.",
   "source_parent_commit": "dc2ca4e",
   "hardware": {
     "cpu": "Ryzen5 5600X",
@@ -903,5 +903,620 @@
     "-mavx2",
     "-mfma",
     "-mf16c"
-  ]
+  ],
+  "reuse_trace": {
+    "trace_rows": 120692,
+    "eligible_rows": 60873,
+    "unique_eligible": 9147,
+    "unique_expanded_bytes": 14652441600,
+    "type_uses": {
+      "22": 41906,
+      "21": 18967
+    },
+    "reuse_histogram": {
+      "18": 95,
+      "14": 182,
+      "10": 380,
+      "11": 339,
+      "16": 139,
+      "22": 41,
+      "12": 289,
+      "9": 406,
+      "5": 553,
+      "3": 648,
+      "8": 618,
+      "6": 797,
+      "20": 56,
+      "13": 203,
+      "24": 23,
+      "19": 56,
+      "15": 132,
+      "4": 1106,
+      "23": 20,
+      "17": 112,
+      "7": 464,
+      "27": 7,
+      "38": 2,
+      "28": 5,
+      "29": 5,
+      "21": 35,
+      "31": 6,
+      "33": 7,
+      "32": 4,
+      "25": 13,
+      "1": 640,
+      "2": 1738,
+      "30": 8,
+      "26": 15,
+      "36": 2,
+      "39": 1
+    },
+    "pointer_addresses": 14905,
+    "pointer_addresses_with_multiple_logical_experts": 0,
+    "simulations": [
+      {
+        "mib": 512,
+        "admission_use": 1,
+        "hits": 7887,
+        "packs": 52986,
+        "evictions": 52665,
+        "hit_fraction": 0.12956483169878272,
+        "peak_bytes": 536857600,
+        "hit_types": {
+          "22": 5366,
+          "21": 2521
+        },
+        "pack_types": {
+          "22": 36540,
+          "21": 16446
+        },
+        "estimated_saved_kernel_us": 62144.31492187503,
+        "estimated_serial_pack_us": 8733378.375
+      },
+      {
+        "mib": 512,
+        "admission_use": 2,
+        "hits": 8208,
+        "packs": 43518,
+        "evictions": 43197,
+        "hit_fraction": 0.13483810556404316,
+        "peak_bytes": 536857600,
+        "hit_types": {
+          "22": 5600,
+          "21": 2608
+        },
+        "pack_types": {
+          "22": 30078,
+          "21": 13440
+        },
+        "estimated_saved_kernel_us": 64543.46625000004,
+        "estimated_serial_pack_us": 7163508.875625
+      },
+      {
+        "mib": 512,
+        "admission_use": 4,
+        "hits": 8425,
+        "packs": 28025,
+        "evictions": 27708,
+        "hit_fraction": 0.138402904407537,
+        "peak_bytes": 536857600,
+        "hit_types": {
+          "22": 5709,
+          "21": 2716
+        },
+        "pack_types": {
+          "21": 8534,
+          "22": 19491
+        },
+        "estimated_saved_kernel_us": 66575.46062500004,
+        "estimated_serial_pack_us": 4596429.4153125
+      },
+      {
+        "mib": 512,
+        "admission_use": 8,
+        "hits": 6542,
+        "packs": 10645,
+        "evictions": 10333,
+        "hit_fraction": 0.10746964992689698,
+        "peak_bytes": 536857600,
+        "hit_types": {
+          "22": 4438,
+          "21": 2104
+        },
+        "pack_types": {
+          "22": 7496,
+          "21": 3149
+        },
+        "estimated_saved_kernel_us": 51654.30500000004,
+        "estimated_serial_pack_us": 1733094.7731249998
+      },
+      {
+        "mib": 1024,
+        "admission_use": 1,
+        "hits": 15767,
+        "packs": 45106,
+        "evictions": 44462,
+        "hit_fraction": 0.25901466988648497,
+        "peak_bytes": 1073740800,
+        "hit_types": {
+          "22": 10736,
+          "21": 5031
+        },
+        "pack_types": {
+          "22": 31170,
+          "21": 13936
+        },
+        "estimated_saved_kernel_us": 124160.40945312509,
+        "estimated_serial_pack_us": 7425680.334375
+      },
+      {
+        "mib": 1024,
+        "admission_use": 2,
+        "hits": 15367,
+        "packs": 36359,
+        "evictions": 35711,
+        "hit_fraction": 0.25244361211045946,
+        "peak_bytes": 1073740800,
+        "hit_types": {
+          "22": 10399,
+          "21": 4968
+        },
+        "pack_types": {
+          "22": 25279,
+          "21": 11080
+        },
+        "estimated_saved_kernel_us": 121549.46781250008,
+        "estimated_serial_pack_us": 5964435.8628125
+      },
+      {
+        "mib": 1024,
+        "admission_use": 4,
+        "hits": 13654,
+        "packs": 22796,
+        "evictions": 22140,
+        "hit_fraction": 0.22430305718463028,
+        "peak_bytes": 1073740800,
+        "hit_types": {
+          "22": 9268,
+          "21": 4386
+        },
+        "pack_types": {
+          "21": 6864,
+          "22": 15932
+        },
+        "estimated_saved_kernel_us": 107764.85359375007,
+        "estimated_serial_pack_us": 3728057.4212499997
+      },
+      {
+        "mib": 1024,
+        "admission_use": 8,
+        "hits": 10394,
+        "packs": 6793,
+        "evictions": 6136,
+        "hit_fraction": 0.1707489363100225,
+        "peak_bytes": 1073740800,
+        "hit_types": {
+          "22": 7162,
+          "21": 3232
+        },
+        "pack_types": {
+          "22": 4772,
+          "21": 2021
+        },
+        "estimated_saved_kernel_us": 81144.54312500005,
+        "estimated_serial_pack_us": 1107548.4493749999
+      },
+      {
+        "mib": 2048,
+        "admission_use": 1,
+        "hits": 24552,
+        "packs": 36321,
+        "evictions": 34994,
+        "hit_fraction": 0.40333152629244495,
+        "peak_bytes": 2147481600,
+        "hit_types": {
+          "22": 16771,
+          "21": 7781
+        },
+        "pack_types": {
+          "22": 25135,
+          "21": 11186
+        },
+        "estimated_saved_kernel_us": 192896.43679687515,
+        "estimated_serial_pack_us": 5974477.1890625
+      },
+      {
+        "mib": 2048,
+        "admission_use": 2,
+        "hits": 24011,
+        "packs": 27715,
+        "evictions": 26382,
+        "hit_fraction": 0.39444417065037046,
+        "peak_bytes": 2147481600,
+        "hit_types": {
+          "22": 16435,
+          "21": 7576
+        },
+        "pack_types": {
+          "22": 19243,
+          "21": 8472
+        },
+        "estimated_saved_kernel_us": 188366.26531250012,
+        "estimated_serial_pack_us": 4550070.3490625005
+      },
+      {
+        "mib": 2048,
+        "admission_use": 4,
+        "hits": 21678,
+        "packs": 14772,
+        "evictions": 13436,
+        "hit_fraction": 0.3561184761717017,
+        "peak_bytes": 2147481600,
+        "hit_types": {
+          "22": 14907,
+          "21": 6771
+        },
+        "pack_types": {
+          "21": 4479,
+          "22": 10293
+        },
+        "estimated_saved_kernel_us": 169489.47820312512,
+        "estimated_serial_pack_us": 2420113.2178125
+      },
+      {
+        "mib": 2048,
+        "admission_use": 8,
+        "hits": 13056,
+        "packs": 4131,
+        "evictions": 2791,
+        "hit_fraction": 0.21447932580947218,
+        "peak_bytes": 2147481600,
+        "hit_types": {
+          "22": 9084,
+          "21": 3972
+        },
+        "pack_types": {
+          "22": 2850,
+          "21": 1281
+        },
+        "estimated_saved_kernel_us": 101194.76343750008,
+        "estimated_serial_pack_us": 680723.5125
+      },
+      {
+        "mib": 4096,
+        "admission_use": 1,
+        "hits": 37198,
+        "packs": 23675,
+        "evictions": 20996,
+        "hit_fraction": 0.611075517881491,
+        "peak_bytes": 4294963200,
+        "hit_types": {
+          "22": 25579,
+          "21": 11619
+        },
+        "pack_types": {
+          "22": 16327,
+          "21": 7348
+        },
+        "estimated_saved_kernel_us": 290836.09445312514,
+        "estimated_serial_pack_us": 3902167.5978125
+      },
+      {
+        "mib": 4096,
+        "admission_use": 2,
+        "hits": 34568,
+        "packs": 17158,
+        "evictions": 14470,
+        "hit_fraction": 0.5678708130041233,
+        "peak_bytes": 4294963200,
+        "hit_types": {
+          "22": 23813,
+          "21": 10755
+        },
+        "pack_types": {
+          "22": 11865,
+          "21": 5293
+        },
+        "estimated_saved_kernel_us": 269918.7675781252,
+        "estimated_serial_pack_us": 2823546.9703125
+      },
+      {
+        "mib": 4096,
+        "admission_use": 4,
+        "hits": 28185,
+        "packs": 8265,
+        "evictions": 5575,
+        "hit_fraction": 0.46301315854319647,
+        "peak_bytes": 4294963200,
+        "hit_types": {
+          "22": 19529,
+          "21": 8656
+        },
+        "pack_types": {
+          "21": 2594,
+          "22": 5671
+        },
+        "estimated_saved_kernel_us": 219135.19031250017,
+        "estimated_serial_pack_us": 1366241.9215624998
+      },
+      {
+        "mib": 4096,
+        "admission_use": 8,
+        "hits": 13820,
+        "packs": 3367,
+        "evictions": 667,
+        "hit_fraction": 0.22703004616168088,
+        "peak_bytes": 4294937600,
+        "hit_types": {
+          "22": 9611,
+          "21": 4209
+        },
+        "pack_types": {
+          "22": 2323,
+          "21": 1044
+        },
+        "estimated_saved_kernel_us": 107154.49835937508,
+        "estimated_serial_pack_us": 554816.2240625
+      },
+      {
+        "mib": 8192,
+        "admission_use": 1,
+        "hits": 48839,
+        "packs": 12034,
+        "evictions": 6663,
+        "hit_fraction": 0.802309726808273,
+        "peak_bytes": 8589926400,
+        "hit_types": {
+          "22": 33679,
+          "21": 15160
+        },
+        "pack_types": {
+          "22": 8227,
+          "21": 3807
+        },
+        "estimated_saved_kernel_us": 381059.12656250026,
+        "estimated_serial_pack_us": 1993439.0384375
+      },
+      {
+        "mib": 8192,
+        "admission_use": 2,
+        "hits": 42463,
+        "packs": 9263,
+        "evictions": 3879,
+        "hit_fraction": 0.6975670658584265,
+        "peak_bytes": 8589926400,
+        "hit_types": {
+          "22": 29351,
+          "21": 13112
+        },
+        "pack_types": {
+          "22": 6327,
+          "21": 2936
+        },
+        "estimated_saved_kernel_us": 330737.30406250025,
+        "estimated_serial_pack_us": 1535198.6353125
+      },
+      {
+        "mib": 8192,
+        "admission_use": 4,
+        "hits": 30058,
+        "packs": 6392,
+        "evictions": 1015,
+        "hit_fraction": 0.49378213657943587,
+        "peak_bytes": 8589926400,
+        "hit_types": {
+          "22": 20829,
+          "21": 9229
+        },
+        "pack_types": {
+          "21": 2021,
+          "22": 4371
+        },
+        "estimated_saved_kernel_us": 233679.00929687516,
+        "estimated_serial_pack_us": 1058681.7121875
+      },
+      {
+        "mib": 8192,
+        "admission_use": 8,
+        "hits": 13986,
+        "packs": 3201,
+        "evictions": 0,
+        "hit_fraction": 0.22975703513873147,
+        "peak_bytes": 5087308800,
+        "hit_types": {
+          "22": 9702,
+          "21": 4284
+        },
+        "pack_types": {
+          "22": 2232,
+          "21": 969
+        },
+        "estimated_saved_kernel_us": 108645.40968750007,
+        "estimated_serial_pack_us": 524205.905625
+      },
+      {
+        "mib": 16384,
+        "admission_use": 1,
+        "hits": 51726,
+        "packs": 9147,
+        "evictions": 0,
+        "hit_fraction": 0.849736336306737,
+        "peak_bytes": 14652441600,
+        "hit_types": {
+          "22": 35678,
+          "21": 16048
+        },
+        "pack_types": {
+          "22": 6228,
+          "21": 2919
+        },
+        "estimated_saved_kernel_us": 403516.58812500024,
+        "estimated_serial_pack_us": 1518709.550625
+      },
+      {
+        "mib": 16384,
+        "admission_use": 2,
+        "hits": 43219,
+        "packs": 8507,
+        "evictions": 0,
+        "hit_fraction": 0.7099863650551147,
+        "peak_bytes": 13595929600,
+        "hit_types": {
+          "22": 29845,
+          "21": 13374
+        },
+        "pack_types": {
+          "22": 5833,
+          "21": 2674
+        },
+        "estimated_saved_kernel_us": 336863.7854687502,
+        "estimated_serial_pack_us": 1406805.8459375
+      },
+      {
+        "mib": 16384,
+        "admission_use": 4,
+        "hits": 30329,
+        "packs": 6121,
+        "evictions": 0,
+        "hit_fraction": 0.49823402822269314,
+        "peak_bytes": 9772620800,
+        "hit_types": {
+          "22": 20990,
+          "21": 9339
+        },
+        "pack_types": {
+          "21": 1911,
+          "22": 4210
+        },
+        "estimated_saved_kernel_us": 236009.23976562516,
+        "estimated_serial_pack_us": 1010431.3062499999
+      },
+      {
+        "mib": 16384,
+        "admission_use": 8,
+        "hits": 13986,
+        "packs": 3201,
+        "evictions": 0,
+        "hit_fraction": 0.22975703513873147,
+        "peak_bytes": 5087308800,
+        "hit_types": {
+          "22": 9702,
+          "21": 4284
+        },
+        "pack_types": {
+          "22": 2232,
+          "21": 969
+        },
+        "estimated_saved_kernel_us": 108645.40968750007,
+        "estimated_serial_pack_us": 524205.905625
+      }
+    ],
+    "workload": "One persistent engine: writing/coding, 128 generated tokens each, twice; prefill/decode cancellation and 8-token recovery.",
+    "identity": "Logical (layer, expert). Raw pointers are diagnostic only: FileExpertSource may reuse storage during staging/adaptive exchanges. This arena-backed run had no pointer aliasing.",
+    "simulation_scope": "Only nt=1 IQ3_S/IQ2_S n_embd=2560 calls. LRU by eligible job order; admission threshold is total uses since process start. Entries charged full expanded gate/up bytes. First admitted use is charged conversion, not a hit. No actual cache was built.",
+    "estimate_scope": "Kernel savings use measured 6-core E64 component deltas per expert; conversion uses serial warm E64 medians. Excludes allocation, file reads, eviction overhead and possible parallel conversion. These are cost estimates, not measured engine improvements.",
+    "checks": {
+      "binary_sha256": "0d8023d946be478e9adfa4f54e3b87e7e51c83c3a3ebfc5456cecd9b7fe02ff4",
+      "comparison_ids_equal": true,
+      "cancel_recovery_first_eight_ids": true,
+      "exit_code": 0
+    },
+    "diagnostic_run_only": true,
+    "memory_snapshot": {
+      "meminfo": {
+        "MemTotal": 131823176,
+        "MemFree": 5654448,
+        "MemAvailable": 41541864,
+        "Buffers": 336,
+        "Cached": 56498460,
+        "SwapCached": 638092,
+        "Active": 64174428,
+        "Inactive": 53734932,
+        "Active(anon)": 63426472,
+        "Inactive(anon)": 18383128,
+        "Active(file)": 747956,
+        "Inactive(file)": 35351804,
+        "Unevictable": 96,
+        "Mlocked": 96,
+        "SwapTotal": 14064636,
+        "SwapFree": 450236,
+        "Zswap": 0,
+        "Zswapped": 0,
+        "Dirty": 2112,
+        "Writeback": 0,
+        "AnonPages": 60773104,
+        "Mapped": 17546896,
+        "Shmem": 20399104,
+        "KReclaimable": 998316,
+        "Slab": 2487268,
+        "SReclaimable": 998316,
+        "SUnreclaim": 1488952,
+        "KernelStack": 40512,
+        "PageTables": 333940,
+        "SecPageTables": 32760,
+        "NFS_Unstable": 0,
+        "Bounce": 0,
+        "WritebackTmp": 0,
+        "CommitLimit": 79976224,
+        "Committed_AS": 120794824,
+        "VmallocTotal": 34359738367,
+        "VmallocUsed": 970988,
+        "VmallocChunk": 0,
+        "Percpu": 24720,
+        "HardwareCorrupted": 0,
+        "AnonHugePages": 0,
+        "ShmemHugePages": 0,
+        "ShmemPmdMapped": 0,
+        "FileHugePages": 0,
+        "FilePmdMapped": 0,
+        "CmaTotal": 0,
+        "CmaFree": 601572,
+        "Unaccepted": 0,
+        "Balloon": 0,
+        "GPUActive": 568808,
+        "GPUReclaim": 0,
+        "HugePages_Total": 0,
+        "HugePages_Free": 0,
+        "HugePages_Rsvd": 0,
+        "HugePages_Surp": 0,
+        "Hugepagesize": 2048,
+        "Hugetlb": 0,
+        "DirectMap4k": 389260,
+        "DirectMap2M": 22601728,
+        "DirectMap1G": 111149056
+      },
+      "smaps_rollup": {
+        "00400000-7ffdd8f7c000 ---p 00000000 00": 0,
+        "Rss": 49565584,
+        "Pss": 49562682,
+        "Pss_Dirty": 49485428,
+        "Pss_Anon": 49485428,
+        "Pss_File": 77254,
+        "Pss_Shmem": 0,
+        "Shared_Clean": 3112,
+        "Shared_Dirty": 0,
+        "Private_Clean": 77044,
+        "Private_Dirty": 49485428,
+        "Referenced": 49565584,
+        "Anonymous": 49485428,
+        "KSM": 0,
+        "LazyFree": 0,
+        "AnonHugePages": 0,
+        "ShmemPmdMapped": 0,
+        "FilePmdMapped": 0,
+        "Shared_Hugetlb": 0,
+        "Private_Hugetlb": 0,
+        "Swap": 0,
+        "SwapPss": 0,
+        "Locked": 0
+      }
+    },
+    "trace_sha256": "c85ecf34d5bc3c05e41edcce6acd114993951ac03d2149866e6a52f399491868",
+    "aborted_attempt": "An initial pointer-only trace was stopped after three requests when source inspection exposed possible pointer reuse. It is excluded from simulation; raw partial logs archived."
+  },
+  "restored_binaries": {
+    "aot_sha256": "022f86ab49ed4aab2ea527e4c8651990942e630d7839ea4a2894e8ddac423a94",
+    "jit_sha256": "743134e1c8006fca1f57cc1b0dee9391094268cdaa1e7567b66f31f24e148455",
+    "source": "Temporary tracing removed; AOT rebuilt and original binary digests reproduced."
+  }
 }
