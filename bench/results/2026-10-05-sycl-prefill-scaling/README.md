@@ -304,3 +304,13 @@ first-logit bit. The separate
 generates four tokens and four finite logprob records in each of four
 requests. Repeated and restored conversations reuse checkpoints and
 reproduce the original output IDs and logprobs exactly.
+
+The [normal CLI confirmation](attention/layout-study/selection-model/paired-cli-wall/summary.json)
+uses three pairs at 8,087 tokens, reversing the configuration order in the
+second pair. It has no phase markers, transfer timing or PLE preload, and
+keeps the same chunk, cache and attention settings. All six complete first
+heads and output IDs match the accepted original reference. Median prefill
+time falls from 17.278 to 17.147 seconds, or 468.07 to 471.64 tok/s.
+The elapsed reduction is 0.76% for this input and hardware. This is an
+additional selector gain after batch 128/layout 3, and an overall CLI
+rate rather than the local input-length slope.

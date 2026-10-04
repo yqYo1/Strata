@@ -1,0 +1,29 @@
+{
+  "hardware": "Intel Arc B570 10 GB, Ryzen 5 5600X, 128 GB RAM",
+  "source_revision": "c9500bd plus prompt selector and explicit diagnostic changes",
+  "mode": "Normal CLI, no phase markers, transfer markers or PLE preload",
+  "method": "Three pairs at 8087 input tokens. Config order attention/topk, topk/attention, attention/topk. Fixed 8192 context/chunk, 128 expert cache, batch128/layout3, IO16/direct. Model load and decode outside timer.",
+  "reference": "Original accepted first heads from the paired wall baseline",
+  "results": {
+    "attention": {
+      "cli_wall_ms": [
+        17277.5,
+        17267.6,
+        17279.7
+      ],
+      "median_cli_wall_ms": 17277.5,
+      "tokens_per_second": 468.0654029807553
+    },
+    "attention-topk": {
+      "cli_wall_ms": [
+        17154.4,
+        17146.6,
+        17133.4
+      ],
+      "median_cli_wall_ms": 17146.6,
+      "tokens_per_second": 471.6386922188656
+    }
+  },
+  "all_six_heads_bit_identical_to_original": true,
+  "relative_elapsed_reduction_percent": 0.7576327593691312
+}
