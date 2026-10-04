@@ -31,8 +31,11 @@
 #include "strata/kernels/sampler.hpp"
 
 #include <atomic>
+#include <array>
 #include <cstdint>
 #include <chrono>
+#include <memory>
+#include "strata/sycl_expert_transfer.hpp"
 #include <string>
 #include <vector>
 
@@ -161,7 +164,8 @@ public:
     /// beside the CPU; best when the CPU is compute-bound, the i-quants), 1 = the grouped kernel reads the mapped
     /// arena directly, 2 = a copy kernel stages it inside the graph (no API calls on the pool's thread; best when
     /// the CPU is RAM-bound, Q2_0).  Set before the first `run`.
-    void set_pcie_mode(int mode) { sink_.pcie_mode = mode; }
+    // Existing CPU arena memory is not host USM: use queue copies at host boundaries.
+    void set_pcie_mode(int mode) { sink_.pcie_mode = host_boundary_ ? kSyclHostStagingDma : mode; }
     /// the pool never plans a PCIe share (--pcie-frac 0): the window skips that path.  Before the first run.
 
     double ms_wait = 0, ms_pool = 0, ms_host = 0, ms_commit = 0;
@@ -196,6 +200,20 @@ private:
     int pending_commit_ = 0;                  ///< n_keep of a launched, unfinished commit (0: none)
     std::chrono::steady_clock::time_point pending_commit_t0_{};
     bool record_window(int T, dpct::queue_ptr cs, std::string &err);
+    // Host expert work is an event dependency between captured mixer and MoE graphs. The CPU plan and
+    // expert rows cross PCIe by queue copies before the MoE graph, rather than by a spin inside a kernel.
+    using BoundaryGraph = sycl::ext::oneapi::experimental::command_graph<
+        sycl::ext::oneapi::experimental::graph_state::executable>;
+    struct BoundaryGraphs {
+        std::unique_ptr<BoundaryGraph> input, tail;
+        std::vector<std::unique_ptr<BoundaryGraph>> pre, post;
+    };
+    std::array<BoundaryGraphs, 9> boundary_graphs_;
+    bool host_boundary_ = true;
+    int recording_stage_ = 0, recording_group_ = 0;
+    int64_t recording_layer_ = 0;
+    bool capture_boundary(int T, std::string& err);
+    bool run_boundary(int T, PoolMultiFn pool, void* user, std::string& err);
     // #649: STRATA_VERIFY_TRACE=1 - a host event ring (trace_ev) and GPU breadcrumbs: the profiler's stamp points,
     // per layer and token group, written to mapped memory (null when the trace is off)
     void trace_ev(const char* what, int64_t step, int64_t layer, int64_t aux) const;
@@ -277,6 +295,7 @@ private:
     int32_t *ids_ = nullptr, *hit_slot_ = nullptr, *hit_dst_ = nullptr, *hit_count_ = nullptr;
     int32_t* plan_ = nullptr;                                     // device copy of the plan block
     uint8_t* staging_ = nullptr;                                  // VRAM slots for the PCIe share of the misses
+    uint8_t* host_staging_ = nullptr;                             // host USM, one producer region per token group
     static constexpr int64_t kStagingBlobs = 16;
     static constexpr int64_t kPcieGroupRows = 4;                  // the PCIe call's groups side by side (of <= 16)
     uint8_t* hit_xq_ = nullptr;

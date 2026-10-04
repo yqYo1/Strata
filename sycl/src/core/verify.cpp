@@ -284,6 +284,8 @@ Verifier::~Verifier() try {
         slot.compare_exchange_strong(me, nullptr);
     }
     if (cs_) cs_->wait();
+    if (copy_) copy_->wait();
+    if (host_staging_) sycl::free(host_staging_, dpct::get_in_order_queue());
     for (auto& e : exec_)
         if (e) delete (e);
     if (commit_exec_) delete (commit_exec_);
@@ -333,6 +335,9 @@ bool Verifier::init(const WeightTable &wt, const ModelGeometry &g,
               "images on the CPU)";
         return false;
     }
+    const char* boundary = std::getenv("STRATA_SYCL_HOST_BOUNDARY");
+    host_boundary_ = std::getenv("STRATA_VERIFY_NO_HOST") == nullptr &&
+                     (boundary == nullptr || std::atoi(boundary) != 0);
     std::string why;
     if (!layer_verify_compatible(why)) {
         err = "verify: " + why + " (the verify window reproduces the default native decode path)";
@@ -440,6 +445,10 @@ bool Verifier::init(const WeightTable &wt, const ModelGeometry &g,
         sh_up_ = b.take<float>(T * (uint64_t) g.n_ff); sh_g_ = b.take<float>(T + 4);
         head_logits_ = b.take<float>(T * (uint64_t) n_vocab_);
         hist_snap_ = b.take<float>(T * HS);
+        if (host_boundary_) {
+            m_plan_ = b.take<int32_t>(2 * (uint64_t) plan_i32_ + 16);
+            m_ymiss_ = b.take<float>(T * K * N);
+        }
     };
     Bump count;
     carve(count);
@@ -537,6 +546,11 @@ bool Verifier::init(const WeightTable &wt, const ModelGeometry &g,
         dbgR_ = (float*) sycl::malloc_device((size_t) g.n_layers * g.n_embd * 4, dpct::get_in_order_queue());
         dbgM_ = (float*) sycl::malloc_device((size_t) g.n_layers * g.n_embd * 4, dpct::get_in_order_queue());
     }
+    if (host_boundary_) {
+        host_staging_ = sycl::malloc_host<uint8_t>((size_t) kStagingBlobs *
+            strata::kernels::cpu::expert_layout().max_blob, *cs_);
+        if (!host_staging_) { err = "verify: host USM expert staging allocation failed"; return false; }
+    }
     std::fprintf(stderr, "strata verify: window up to %d tokens, %.1f MiB of device buffers\n", max_t,
                  (double) count.used / 1048576.0);
     return true;
@@ -589,18 +603,19 @@ bool Verifier::record_window(int T, dpct::queue_ptr cs, std::string &err) {
     const int tb_[2] = {0, (T + 1) / 2}, te_[2] = {G == 2 ? (T + 1) / 2 : T, T};
     groups_[T] = G;
 
+    const int64_t HB = Verifier::handoff_floats(g);
+    const int32_t* pos_k = pos_ + MT * NH;
+    const int32_t* pos_i = pos_ + MT * (NH + NKV);
+    if (recording_stage_ <= 1) {
     // ---- the window's inputs, from mapped staging
     copy_i32_from_mapped(tok_, m_tok_, T, cs);
     copy_i32_from_mapped(step_, m_step_, (int64_t) T * kStepCount, cs);
     copy_i32_from_mapped(pos_, m_pos_, (int64_t) MT * (NH + NKV + IQ), cs);
     // per-ROW positions of the K rows [t][NKV] and the indexer query rows [t][IQ] (for batched RoPE)
-    const int32_t* pos_k = pos_ + MT * NH;
-    const int32_t* pos_i = pos_ + MT * (NH + NKV);
     if (ple_on) copy_from_mapped(ple_, m_ple_, (int64_t) T * N, cs);
 
     // ---- the embeddings, broadcast to the hc streams - or, in a later stage of a layer split, the previous stage's
     // residual, pending write and inject (see set_stage)
-    const int64_t HB = Verifier::handoff_floats(g);
     if (lb_ > 0) {
         for (int t = 0; t < T; ++t) {
             copy_from_mapped(Rt(t), hand_in_ + (size_t) t * HB, HC * N, cs);
@@ -626,6 +641,7 @@ bool Verifier::record_window(int T, dpct::queue_ptr cs, std::string &err) {
         broadcast_streams(emb_, R_, N, (int) HC, T, cs);
     }
 
+    }
     // per-layer state indices (GDN and QSA layers are numbered separately)
     std::vector<int64_t> gdn_idx((size_t) g.n_layers, -1), qsa_idx((size_t) g.n_layers, -1);
     {
@@ -936,10 +952,10 @@ bool Verifier::record_window(int T, dpct::queue_ptr cs, std::string &err) {
         const int64_t cap = (int64_t) n * K, capx = (int64_t) max_t_ * K;
         int32_t* pl = plan_ + (size_t) grp * (size_t) (plan_i32_ + 16);
         if (device_plan_) {   // E-6: skipped when the device planned this group (all its experts resident)
-            wait_flag_ge_or(m_flagA_, ring, skip_ + grp, cs);
+            if (!host_boundary_) wait_flag_ge_or(m_flagA_, ring, skip_ + grp, cs);
             copy_i32_from_mapped_unless(pl, m_plan_ + (size_t) grp * (size_t) plan_i32_, plan_i32_, skip_ + grp, ring, cs);
         } else {
-            wait_flag_ge(m_flagA_, ring, cs);                  // the pool published this group's GPU plan
+            if (!host_boundary_) wait_flag_ge(m_flagA_, ring, cs);                  // the pool published this group's GPU plan
             copy_i32_from_mapped(pl, m_plan_ + (size_t) grp * (size_t) plan_i32_, plan_i32_, cs);
         }
         stamp(l, 19, grp);
@@ -969,8 +985,10 @@ bool Verifier::record_window(int T, dpct::queue_ptr cs, std::string &err) {
         };
         grouped(p_ptr, p_start, p_counts, 0);
         stamp(l, 20, grp);
-        if (device_plan_) wait_flag_ge_or(m_flagB_, ring, skip_ + grp, cs);
-        else wait_flag_ge(m_flagB_, ring, cs);                 // the PCIe share is in staging (DMA) or mapped
+        if (!host_boundary_) {
+            if (device_plan_) wait_flag_ge_or(m_flagB_, ring, skip_ + grp, cs);
+            else wait_flag_ge(m_flagB_, ring, cs);
+        }                 // the PCIe share is in staging (DMA) or mapped
         if (sink_.pcie_mode == 2) {                            // stage it with a copy kernel, then point at staging
             const int64_t per = G == 2 ? kStagingBlobs / 2 : kStagingBlobs;
             uint8_t* stage = staging_ + (size_t) (grp * per) * lay.max_blob;
@@ -983,11 +1001,11 @@ bool Verifier::record_window(int T, dpct::queue_ptr cs, std::string &err) {
         grouped(p_ptr2, p_start2, p_counts + 2, kPcieGroupRows);
         stamp(l, 22, grp);
         if (device_plan_) {   // no CPU share when the device planned the group: its rows are zeros
-            wait_flag_ge_or(m_flag_, ring, skip_ + grp, cs);
+            if (!host_boundary_) wait_flag_ge_or(m_flag_, ring, skip_ + grp, cs);
             copy_or_zero_from_mapped(parts_ + (size_t) tb * K * N, m_ymiss_ + (size_t) tb * K * N, (long long) n * K * N,
                                      skip_ + grp, ring, cs);
         } else {
-            wait_flag_ge(m_flag_, ring, cs);               // the CPU's share is in the mapped rows
+            if (!host_boundary_) wait_flag_ge(m_flag_, ring, cs);               // the CPU's share is in the mapped rows
             stamp(l, 23, grp);
             if (dec_batch)   // only the CPU rows cross PCIe (p_dst[0, counts[1]) = the GPU's own rows)
                 copy_rows_from_mapped(parts_ + (size_t) tb * K * N, m_ymiss_ + (size_t) tb * K * N, (int64_t) n * K, N,
@@ -1016,6 +1034,17 @@ bool Verifier::record_window(int T, dpct::queue_ptr cs, std::string &err) {
         return true;
     };
 
+    if (recording_stage_ == 1) return true;
+    if (recording_stage_ == 2) return pre(recording_layer_, recording_group_);
+    if (recording_stage_ == 3) {
+        if (!post(recording_layer_, recording_group_)) return false;
+        if (dbgR_ && recording_group_ == 0) {
+            cs->memcpy(dbgR_ + (size_t) recording_layer_ * N, Rt(0), (size_t) N * 4);
+            cs->memcpy(dbgM_ + (size_t) recording_layer_ * N, mixed_, (size_t) N * 4);
+        }
+        return true;
+    }
+    if (recording_stage_ == 0) {
     for (int grp = 0; grp < G; ++grp)
         if (!pre(lb_, grp)) return false;
     for (int64_t l = lb_; l < le_; ++l)
@@ -1027,6 +1056,7 @@ bool Verifier::record_window(int T, dpct::queue_ptr cs, std::string &err) {
             }
             if (l + 1 < le_ && !pre(l + 1, grp)) return false;
         }
+    }
     if (le_ < g.n_layers) {   // a layer split's earlier stage: hand the residual on, no head
         for (int t = 0; t < T; ++t) {
             copy_from_mapped(hand_out_ + (size_t) t * HB, Rt(t), HC * N, cs);
@@ -1099,7 +1129,126 @@ std::string Verifier::profile_report() {
     return out;
 }
 
+bool Verifier::capture_boundary(int T, std::string& err) {
+    if (std::getenv("STRATA_VERIFY_EAGER") != nullptr) return true;
+    auto& graphs = boundary_graphs_[T];
+    if (graphs.tail) return true;
+    const int G = split_ && T >= 2 ? 2 : 1;
+    const size_t steps = (size_t) (le_ - lb_) * G;
+    graphs.pre.resize(steps);
+    graphs.post.resize(steps);
+    auto capture_one = [&](int stage, int64_t layer, int group,
+                           std::unique_ptr<BoundaryGraph>& out) {
+        recording_stage_ = stage;
+        recording_layer_ = layer;
+        recording_group_ = group;
+        dpct::experimental::begin_recording(cs_);
+        bool ok = false;
+        try { ok = record_window(T, cs_, err); }
+        catch (...) {
+            dpct::experimental::command_graph_ptr discarded = nullptr;
+            dpct::experimental::end_recording(cs_, &discarded);
+            delete discarded;
+            recording_stage_ = 0;
+            throw;
+        }
+        dpct::experimental::command_graph_ptr raw = nullptr;
+        dpct::experimental::end_recording(cs_, &raw);
+        recording_stage_ = 0;
+        std::unique_ptr<std::remove_pointer_t<decltype(raw)>> graph(raw);
+        if (!ok) return false;
+        out = std::make_unique<BoundaryGraph>(graph->finalize());
+        return true;
+    };
+    try {
+        if (!capture_one(1, lb_, 0, graphs.input)) return false;
+        for (int64_t l = lb_; l < le_; ++l) for (int group = 0; group < G; ++group) {
+            const size_t k = (size_t) (l - lb_) * G + group;
+            if (!capture_one(2, l, group, graphs.pre[k]) ||
+                !capture_one(3, l, group, graphs.post[k])) return false;
+        }
+        if (!capture_one(4, le_ - 1, 0, graphs.tail)) return false;
+        std::fprintf(stderr, "strata verify: captured %d-token window with %zu host expert boundaries\n", T, steps);
+        return true;
+    } catch (const std::exception& e) {
+        recording_stage_ = 0;
+        err = std::string("verify: host boundary capture: ") + e.what();
+        return false;
+    }
+}
+
+bool Verifier::run_boundary(int T, PoolMultiFn pool, void* user, std::string& err) {
+    const auto& g = *g_;
+    const auto& ss = *ss_;
+    const int G = split_ && T >= 2 ? 2 : 1;
+    const size_t steps = (size_t) (le_ - lb_) * G;
+    auto& graphs = boundary_graphs_[T];
+    const bool eager = std::getenv("STRATA_VERIFY_EAGER") != nullptr;
+    auto launch = [&](int stage, int64_t layer, int group) {
+        if (eager) {
+            recording_stage_ = stage;
+            recording_layer_ = layer;
+            recording_group_ = group;
+            const bool ok = record_window(T, cs_, err);
+            recording_stage_ = 0;
+            if (!ok) throw std::runtime_error(err);
+            return cs_->ext_oneapi_submit_barrier();
+        }
+        const size_t k = (size_t) (layer - lb_) * G + group;
+        BoundaryGraph* graph = stage == 1 ? graphs.input.get() : stage == 4 ? graphs.tail.get()
+                                      : stage == 2 ? graphs.pre[k].get() : graphs.post[k].get();
+        return cs_->ext_oneapi_graph(*graph);
+    };
+    try {
+        launch(1, lb_, 0);
+        std::vector<sycl::event> ready(steps);
+        for (int group = 0; group < G; ++group) ready[group] = launch(2, lb_, group);
+        for (size_t k = 0; k < steps; ++k) {
+            const int64_t l = lb_ + (int64_t) k / G;
+            const int group = (int) (k % G);
+            const int tb = group == 0 ? 0 : (T + 1) / 2;
+            const int te = group == 0 && G == 2 ? (T + 1) / 2 : T;
+            auto wait_start = Clock::now();
+            progress_at("verify window: waiting for the GPU mixer", l);
+            ready[k].wait_and_throw();
+            ms_wait += ms_since(wait_start);
+            cur_layer_ = (uint32_t) k;
+            set_plan_slot(group);
+            auto pool_start = Clock::now();
+            progress_at("verify window: the CPU experts of layer", l);
+            if (pool) pool(user, h_x_ + (size_t) tb * g.n_embd, h_ids_ + (size_t) tb * ss.k,
+                           te - tb, ss.k, h_ymiss_ + (size_t) tb * ss.k * g.n_embd, l);
+            else {
+                sink_.counts[0] = sink_.counts[1] = sink_.counts[2] = 0;
+                sink_.start[0] = sink_.start2[0] = 0;
+                std::fill_n(h_ymiss_ + (size_t) tb * ss.k * g.n_embd,
+                            (size_t) (te - tb) * ss.k * g.n_embd, 0.0f);
+            }
+            if (copy_) copy_->wait_and_throw();
+            ms_pool += ms_since(pool_start);
+            // Each group owns these host rows until its next mixer finishes. In-order copies and the
+            // MoE replay finish before that mixer, so neither plan nor expert output can be overwritten early.
+            cs_->memcpy(m_plan_ + (size_t) group * plan_i32_, h_plan_ + (size_t) group * plan_i32_,
+                        (size_t) plan_i32_ * sizeof(int32_t));
+            cs_->memcpy(m_ymiss_ + (size_t) tb * ss.k * g.n_embd,
+                        h_ymiss_ + (size_t) tb * ss.k * g.n_embd,
+                        (size_t) (te - tb) * ss.k * g.n_embd * sizeof(float));
+            *(volatile uint32_t*) h_flag_ = (uint32_t) k + 1;
+            launch(3, l, group);
+            if (l + 1 < le_) ready[k + G] = launch(2, l + 1, group);
+            progress_tick();
+        }
+        launch(4, le_ - 1, 0);
+        return true;
+    } catch (const std::exception& e) {
+        recording_stage_ = 0;
+        err = std::string("verify: host expert boundary: ") + e.what();
+        return false;
+    }
+}
+
 bool Verifier::capture(int T, std::string &err) try {
+    if (host_boundary_) return capture_boundary(T, err);
     if (exec_[T] != nullptr) return true;
     if (std::getenv("STRATA_VERIFY_EAGER") != nullptr) return true;   // SYCL port: no graph, run() replays the body
     if (DPCT_CHECK_ERROR(dpct::experimental::begin_recording(cs_)) != 0) {
@@ -1328,7 +1477,9 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
     VDBG("staged; launching\n");
     static Clock::time_point t_prev_end;   // SYCL port timing: where does a round's wall clock go?
     const Clock::time_point t_launch = Clock::now();
-    const dpct::err0 le = (std::getenv("STRATA_VERIFY_EAGER") != nullptr)
+    const dpct::err0 le = host_boundary_
+                              ? (run_boundary(T, pool, user, err) ? 0 : 1)
+                              : (std::getenv("STRATA_VERIFY_EAGER") != nullptr)
                               ? (record_window(T, cs_, err) ? 0 : 1)   // SYCL port: eager replay of the window body
                               : DPCT_CHECK_ERROR((cs_)->ext_oneapi_graph(*exec_[T]));
     /*
@@ -1344,6 +1495,7 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
     */
     trace_ev("LAUNCHED", -1, -1, (int64_t) le);
     if (le != 0) {
+        if (host_boundary_) return false;
         err =
             std::string("verify: launch: ") + dpct::get_error_string_dummy(le);
         return false;
@@ -1362,7 +1514,7 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
     static const bool no_host = std::getenv("STRATA_VERIFY_NO_HOST") != nullptr;
     const int64_t steps = (le_ - lb_) * G;
     const bool test_stall = g_test_stall > 0 && windows + 1 == g_test_stall;   // #267 test hook (off: false)
-    for (int64_t k = 0; !no_host && k < steps; ++k) {
+    for (int64_t k = 0; !host_boundary_ && !no_host && k < steps; ++k) {
         const int64_t l = lb_ + k / G;
         const int grp = (int) (k % G);
         const uint32_t want = (uint32_t) (k + 1);
@@ -1666,8 +1818,15 @@ void Verifier::fetch_dma(void* ctx, const uint8_t* const* src, int n, size_t byt
     memory, so you may need to call wait() on event return by memcpy API to
     ensure synchronization behavior.
     */
-    for (int i = 0; i < n; ++i)
-        v->copy_->memcpy(stage + (size_t)i * bytes, src[i], bytes);
+    if (v->host_boundary_) {
+        // The arena remains ordinary RAM. Copy the selected immutable blobs into genuine host USM
+        // before enqueueing one DMA. Group reuse is protected by its preceding MoE replay/mixer event.
+        auto* host = v->host_staging_ + (stage - v->staging_);
+        for (int i = 0; i < n; ++i) std::memcpy(host + (size_t) i * bytes, src[i], bytes);
+        v->copy_->memcpy(stage, host, (size_t) n * bytes);
+    } else {
+        for (int i = 0; i < n; ++i) v->copy_->memcpy(stage + (size_t) i * bytes, src[i], bytes);
+    }
     FlagSet& fs = v->flag_sets_[v->cur_layer_ % (sizeof v->flag_sets_ / sizeof v->flag_sets_[0])];
     fs.flag = v->h_flagB_;
     fs.value = want;

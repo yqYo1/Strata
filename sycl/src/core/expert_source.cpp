@@ -3,6 +3,7 @@
 #include <sycl/sycl.hpp>
 #include <dpct/dpct.hpp>
 #include "strata/sycl_queue.hpp"
+#include "strata/sycl_expert_transfer.hpp"
 #include "strata/core/expert_source.hpp"
 #include "strata/core/remote_experts.hpp"
 #include "strata/core/peer_experts.hpp"
@@ -2122,7 +2123,11 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
                     !(d.peer != nullptr && d.peer->has(d.layers, e))) ++nmiss;
             }
         }
-        const bool pcie_ok = d.pcie_num > 0 && d.src->pcie_layer(d.layers);
+        // Only the resident arena promises immutable blob pointers for a whole window. The streaming
+        // GGUF source can reuse a ring on its next blob(), so retain its original PCIe eligibility.
+        const bool stage_host = d.plan->pcie_mode == kSyclHostStagingDma &&
+                                dynamic_cast<ArenaExpertSource*>(d.src) != nullptr;
+        const bool pcie_ok = d.pcie_num > 0 && (stage_host || d.src->pcie_layer(d.layers));
         const int m = pcie_ok ? (nmiss * d.pcie_num) >> 8 : 0;
         int miss_rank = 0, groups = 0, entries = 0, fetches = 0;
         GpuPlanSink& P = *d.plan;
@@ -2143,7 +2148,8 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
                     kd = 2;                        // multi-GPU: the second GPU computes it
                 } else {
                     if (miss_rank >= nmiss - m && fetches < P.staging_cap && fetches < 64) {
-                        const uint8_t* src = d.src->pinned(d.layers, e) ? d.src->blob(d.layers, e) : nullptr;
+                        const uint8_t* src = stage_host || d.src->pinned(d.layers, e)
+                                                 ? d.src->blob(d.layers, e) : nullptr;
                         if (src != nullptr) {
                             kd = 1;
                             dma_src[fetches] = src;
@@ -2171,7 +2177,7 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
         const uint64_t bb = lay.blob_bytes(d.layers);
         for (int q = 0; q < fetches; ++q) {       // the PCIe groups: staging slot q, entries after the VRAM ones
             const int64_t i0 = pcie_i0[q];
-            P.ptr2[q] = P.pcie_mode != 0 ? (unsigned long long) d.src->device_alias(d.layers, ids[i0])
+            P.ptr2[q] = P.pcie_mode > 0 ? (unsigned long long) d.src->device_alias(d.layers, ids[i0])
                                  : P.staging + (unsigned long long) q * (unsigned long long) bb;
             P.start2[q] = entries;
             for (int64_t i = i0; i < n; ++i)
@@ -2190,7 +2196,7 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
         pt("publish", fetches);
         if (P.publish) P.publish(P.ctx);
         pt("fetch", fetches);
-        if (P.fetch) P.fetch(P.ctx, dma_src, P.pcie_mode != 0 ? 0 : fetches, (size_t) bb);   // the copy engine, beside the CPU's work
+        if (P.fetch) P.fetch(P.ctx, dma_src, P.pcie_mode > 0 ? 0 : fetches, (size_t) bb);   // the copy engine, beside the CPU's work
     } else {
         for (int64_t i = 0; i < n; ++i) {
             const int32_t e = ids[i];
