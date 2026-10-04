@@ -1,0 +1,655 @@
+{
+  "status": "component screen complete; IQ3_S fixed-width production candidate undergoing engine validation",
+  "source_parent_commit": "4e964c1",
+  "hardware": {
+    "cpu": "Ryzen 5 5600X",
+    "gpu": "Intel Arc B570 10 GiB"
+  },
+  "reference": "Accepted production iq_single_avx2.cpp.o, with all reference outputs also compared to linked GGML vec_dot. This is improvement over the already-tuned baseline, not the original GGML timing.",
+  "workload": "Real GGUF gate/up weights, N2560 FF640,8 or64 distinct experts, one valid random Q8_K activation. Outputs include SwiGLU, stored and compared bitwise and finite.",
+  "variants": {
+    "1": "Type dispatch to direct dot calls, existing noinline kernels",
+    "2": "Direct type dispatch, force-inline all three dot types, runtime input width",
+    "3": "Variant2 with N2560 specialization, generic fallback",
+    "4": "Production-shaped IQ3_S-only N2560 inline specialization; original indirect path for other types and widths"
+  },
+  "samples": {
+    "18/8/1": {
+      "baseline_us": [
+        2315.46,
+        2115.6,
+        1988.81,
+        2367.65,
+        2334.45
+      ],
+      "candidate_us": [
+        1921.86,
+        1952.24,
+        2350.33,
+        2220.16,
+        2384.64
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "12677700697604010274"
+    },
+    "18/8/2": {
+      "baseline_us": [
+        1909.12,
+        1951.5,
+        1867.55,
+        1937.41,
+        1874.82
+      ],
+      "candidate_us": [
+        2401.84,
+        1891.86,
+        1954.56,
+        1892.98,
+        1944.01
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "12677700697604010274"
+    },
+    "18/8/3": {
+      "baseline_us": [
+        1889.52,
+        1945.53,
+        1886.04,
+        1878.41,
+        1894.35
+      ],
+      "candidate_us": [
+        1955.98,
+        1894.92,
+        1895.37,
+        1896.71,
+        1896.83
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "12677700697604010274"
+    },
+    "21/8/1": {
+      "baseline_us": [
+        2333.73,
+        2421.49,
+        2346.6,
+        2457.78,
+        2364.1
+      ],
+      "candidate_us": [
+        2323.96,
+        2275.4,
+        2330.06,
+        2358.38,
+        2487.51
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "4879662021440489893"
+    },
+    "21/8/2": {
+      "baseline_us": [
+        2631.09,
+        2748.22,
+        2651.33,
+        2581.78,
+        2436.79
+      ],
+      "candidate_us": [
+        2960.74,
+        2642.21,
+        3119.46,
+        2671.83,
+        2703.2
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "4879662021440489893"
+    },
+    "21/8/3": {
+      "baseline_us": [
+        2563.92,
+        2475.49,
+        2355.93,
+        2511.57,
+        2367.67
+      ],
+      "candidate_us": [
+        2250.7,
+        2254.09,
+        2505.81,
+        2234.92,
+        2249.23
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "4879662021440489893"
+    },
+    "22/8/1": {
+      "baseline_us": [
+        1380.14,
+        1337.82,
+        1415.62,
+        1405.42,
+        1342.43
+      ],
+      "candidate_us": [
+        1499.33,
+        1329.57,
+        1337.04,
+        1349.03,
+        1376.71
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "11250638869989844481"
+    },
+    "22/8/2": {
+      "baseline_us": [
+        1443.19,
+        1335.56,
+        1365.45,
+        1350.8,
+        1354.7
+      ],
+      "candidate_us": [
+        1511.11,
+        1513.95,
+        1493.41,
+        1489.92,
+        1483.08
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "11250638869989844481"
+    },
+    "22/8/3": {
+      "baseline_us": [
+        1336.78,
+        1332.1,
+        1420.42,
+        1582.23,
+        1501.89
+      ],
+      "candidate_us": [
+        1495.02,
+        1418.26,
+        1471.47,
+        1579.14,
+        1490.69
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "11250638869989844481"
+    },
+    "18/64/1": {
+      "baseline_us": [
+        15720.7,
+        16187.9,
+        15629.5,
+        15463.3,
+        15251.3
+      ],
+      "candidate_us": [
+        16173.4,
+        15804.6,
+        15380.1,
+        15127.2,
+        15637.9
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "10821364999495291017"
+    },
+    "18/64/2": {
+      "baseline_us": [
+        15482.4,
+        15255.0,
+        15354.0,
+        15298.9,
+        15570.5
+      ],
+      "candidate_us": [
+        15472.1,
+        15366.1,
+        15550.1,
+        15457.5,
+        15437.3
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "10821364999495291017"
+    },
+    "18/64/3": {
+      "baseline_us": [
+        15709.9,
+        15225.3,
+        16184.0,
+        15343.3,
+        15318.9
+      ],
+      "candidate_us": [
+        15807.4,
+        15425.7,
+        15441.3,
+        15429.7,
+        15916.5
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "10821364999495291017"
+    },
+    "21/64/1": {
+      "baseline_us": [
+        19234.6,
+        19276.2,
+        19140.3,
+        18996.2,
+        19176.2
+      ],
+      "candidate_us": [
+        19557.5,
+        18628.3,
+        18371.1,
+        18484.5,
+        19712.8
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "7547259617829839303"
+    },
+    "21/64/2": {
+      "baseline_us": [
+        20807.7,
+        20294.6,
+        19203.1,
+        22737.6,
+        19469.9
+      ],
+      "candidate_us": [
+        22644.8,
+        20237.5,
+        20893.9,
+        22328.1,
+        22729.6
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "7547259617829839303"
+    },
+    "21/64/3": {
+      "baseline_us": [
+        24382.1,
+        19103.4,
+        19304.5,
+        18857.3,
+        19202.4
+      ],
+      "candidate_us": [
+        18107.3,
+        18206.4,
+        17804.2,
+        17869.0,
+        18246.3
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "7547259617829839303"
+    },
+    "22/64/1": {
+      "baseline_us": [
+        10871.1,
+        10884.0,
+        10870.3,
+        10938.9,
+        11185.0
+      ],
+      "candidate_us": [
+        10908.9,
+        11071.0,
+        10882.7,
+        10931.6,
+        11420.0
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "4055800259154708377"
+    },
+    "22/64/2": {
+      "baseline_us": [
+        11124.1,
+        10995.8,
+        10970.9,
+        10815.2,
+        13662.3
+      ],
+      "candidate_us": [
+        12187.5,
+        12237.3,
+        12084.6,
+        12195.8,
+        13091.1
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "4055800259154708377"
+    },
+    "22/64/3": {
+      "baseline_us": [
+        11714.1,
+        10814.5,
+        11000.3,
+        10691.2,
+        10881.4
+      ],
+      "candidate_us": [
+        11603.8,
+        12067.7,
+        11499.3,
+        12067.3,
+        11616.3
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "4055800259154708377"
+    },
+    "18/8/4": {
+      "baseline_us": [
+        1928.45,
+        1876.67,
+        1886.9,
+        1872.01,
+        1927.98,
+        1926.04,
+        1912.21,
+        1917.15,
+        1886.48,
+        1877.53
+      ],
+      "candidate_us": [
+        1940.44,
+        2266.2,
+        1999.99,
+        1916.74,
+        1912.94,
+        1880.75,
+        1876.15,
+        1918.77,
+        1926.28,
+        1921.32
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "12677700697604010274"
+    },
+    "21/8/4": {
+      "baseline_us": [
+        2417.79,
+        2420.27,
+        2391.53,
+        2413.53,
+        2333.17,
+        2555.57,
+        2550.47,
+        2707.28,
+        2414.69,
+        2350.85
+      ],
+      "candidate_us": [
+        2271.91,
+        2252.58,
+        2296.52,
+        2295.32,
+        2246.45,
+        2314.52,
+        2355.89,
+        2623.63,
+        2374.6,
+        2383.6
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "4879662021440489893"
+    },
+    "22/8/4": {
+      "baseline_us": [
+        1321.8,
+        1321.97,
+        1364.08,
+        1384.1,
+        1556.33,
+        1350.13,
+        1363.65,
+        1326.26,
+        1369.05,
+        1356.44
+      ],
+      "candidate_us": [
+        1337.45,
+        1541.99,
+        1346.06,
+        1348.03,
+        1334.25,
+        1734.82,
+        1329.0,
+        1383.48,
+        1334.42,
+        1369.57
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "11250638869989844481"
+    },
+    "18/64/4": {
+      "baseline_us": [
+        15501.8,
+        17377.1,
+        16676.9,
+        18323.6,
+        15559.9,
+        15868.3,
+        15391.4,
+        15486.5,
+        15837.4,
+        15274.8
+      ],
+      "candidate_us": [
+        15749.5,
+        16304.4,
+        16190.2,
+        15164.0,
+        17530.7,
+        17808.5,
+        15882.1,
+        19062.7,
+        15519.6,
+        15297.8
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "10821364999495291017"
+    },
+    "21/64/4": {
+      "baseline_us": [
+        19927.8,
+        21028.0,
+        21247.2,
+        20094.7,
+        19212.2,
+        19695.9,
+        20751.9,
+        25151.4,
+        19594.5,
+        19120.5
+      ],
+      "candidate_us": [
+        19571.9,
+        18415.0,
+        19130.8,
+        19024.8,
+        19042.5,
+        19824.5,
+        18612.5,
+        18966.5,
+        18561.7,
+        18381.3
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "7547259617829839303"
+    },
+    "22/64/4": {
+      "baseline_us": [
+        10955.2,
+        10943.7,
+        11320.2,
+        11876.0,
+        12063.9,
+        11668.6,
+        11310.1,
+        11408.9,
+        11232.0,
+        11281.4
+      ],
+      "candidate_us": [
+        11039.4,
+        11021.9,
+        11280.0,
+        11003.1,
+        12437.1,
+        12135.6,
+        11120.7,
+        12094.2,
+        11434.1,
+        11496.5
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "4055800259154708377"
+    }
+  },
+  "summary": {
+    "18/8/1": {
+      "baseline_median_us": 2315.46,
+      "candidate_median_us": 2220.16,
+      "rate_ratio": 1.0429248342461805
+    },
+    "18/8/2": {
+      "baseline_median_us": 1909.12,
+      "candidate_median_us": 1944.01,
+      "rate_ratio": 0.9820525614580171
+    },
+    "18/8/3": {
+      "baseline_median_us": 1889.52,
+      "candidate_median_us": 1896.71,
+      "rate_ratio": 0.9962092254482762
+    },
+    "21/8/1": {
+      "baseline_median_us": 2364.1,
+      "candidate_median_us": 2330.06,
+      "rate_ratio": 1.014609065860965
+    },
+    "21/8/2": {
+      "baseline_median_us": 2631.09,
+      "candidate_median_us": 2703.2,
+      "rate_ratio": 0.9733242083456645
+    },
+    "21/8/3": {
+      "baseline_median_us": 2475.49,
+      "candidate_median_us": 2250.7,
+      "rate_ratio": 1.0998755942595637
+    },
+    "22/8/1": {
+      "baseline_median_us": 1380.14,
+      "candidate_median_us": 1349.03,
+      "rate_ratio": 1.0230610142102103
+    },
+    "22/8/2": {
+      "baseline_median_us": 1354.7,
+      "candidate_median_us": 1493.41,
+      "rate_ratio": 0.9071186077500485
+    },
+    "22/8/3": {
+      "baseline_median_us": 1420.42,
+      "candidate_median_us": 1490.69,
+      "rate_ratio": 0.9528607557574009
+    },
+    "18/64/1": {
+      "baseline_median_us": 15629.5,
+      "candidate_median_us": 15637.9,
+      "rate_ratio": 0.9994628434764259
+    },
+    "18/64/2": {
+      "baseline_median_us": 15354.0,
+      "candidate_median_us": 15457.5,
+      "rate_ratio": 0.9933042212518195
+    },
+    "18/64/3": {
+      "baseline_median_us": 15343.3,
+      "candidate_median_us": 15441.3,
+      "rate_ratio": 0.9936533841062605
+    },
+    "21/64/1": {
+      "baseline_median_us": 19176.2,
+      "candidate_median_us": 18628.3,
+      "rate_ratio": 1.0294122383685038
+    },
+    "21/64/2": {
+      "baseline_median_us": 20294.6,
+      "candidate_median_us": 22328.1,
+      "rate_ratio": 0.908926420071569
+    },
+    "21/64/3": {
+      "baseline_median_us": 19202.4,
+      "candidate_median_us": 18107.3,
+      "rate_ratio": 1.060478370601912
+    },
+    "22/64/1": {
+      "baseline_median_us": 10884.0,
+      "candidate_median_us": 10931.6,
+      "rate_ratio": 0.9956456511398148
+    },
+    "22/64/2": {
+      "baseline_median_us": 10995.8,
+      "candidate_median_us": 12195.8,
+      "rate_ratio": 0.9016054707358271
+    },
+    "22/64/3": {
+      "baseline_median_us": 10881.4,
+      "candidate_median_us": 11616.3,
+      "rate_ratio": 0.9367354493255168
+    },
+    "18/8/4": {
+      "baseline_median_us": 1899.555,
+      "candidate_median_us": 1920.045,
+      "rate_ratio": 0.9893283751162082
+    },
+    "21/8/4": {
+      "baseline_median_us": 2416.24,
+      "candidate_median_us": 2305.52,
+      "rate_ratio": 1.0480238731392484
+    },
+    "22/8/4": {
+      "baseline_median_us": 1360.045,
+      "candidate_median_us": 1347.045,
+      "rate_ratio": 1.0096507540579565
+    },
+    "18/64/4": {
+      "baseline_median_us": 15698.65,
+      "candidate_median_us": 16036.150000000001,
+      "rate_ratio": 0.9789538012552887
+    },
+    "21/64/4": {
+      "baseline_median_us": 20011.25,
+      "candidate_median_us": 18995.65,
+      "rate_ratio": 1.0534648722207451
+    },
+    "22/64/4": {
+      "baseline_median_us": 11315.150000000001,
+      "candidate_median_us": 11357.05,
+      "rate_ratio": 0.996310661659498
+    }
+  },
+  "measurement_conditions": "No owned build or GPU workload overlapped timings. Existing workstation services active. Variants1..3:5 alternating samples,3 repeats; variant4:10 alternating samples,5 repeats. All samples retained.",
+  "validation": "180 broad-screen samples and120 production-shaped samples completed, all finite and bitwise equal; baseline additionally matches GGML.",
+  "baseline_cpu_object_sha256": "32eafa75c302e9613ca0efd43a5dc475db9a2a61fd99928dac90a479f00fe69e",
+  "compiler": "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+  "kernel_compile_flags": [
+    "-O3",
+    "-DNDEBUG",
+    "-std=c++20",
+    "-march=znver3",
+    "-mtune=znver3",
+    "-mavx2",
+    "-mfma",
+    "-mf16c"
+  ],
+  "candidate_AOT_sha256": "c95b0716551ccee2d8b0e8c3a4237d9424e4033bdbf14004ed2db52b470cbb8c",
+  "candidate_JIT_sha256": "f405af4e1f9d8b925eb99ee158c58ea2090025b66c40ffe66ca82ab7c12004b7",
+  "production_validation": {
+    "JIT_boundary_cases": 384,
+    "AOT_boundary_cases": 384,
+    "all_passed": true,
+    "GPU_text_bodies": 502,
+    "GPU_text_bodies_changed": 0
+  }
+}
