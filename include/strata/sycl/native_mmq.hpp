@@ -15,6 +15,9 @@ struct NativeMmq {
   float *output = nullptr;
   // The caller permits in-place rearrangement and refills before the next run.
   bool scratch_weights = false;
+  // Optional matching host bounds, read synchronously during submission only.
+  // A captured compact grid must be recaptured if these bounds change.
+  const int32_t *host_bounds = nullptr;
 };
 void native_mmq(const NativeMmq &p, void *stream);
 } // namespace strata::kernels

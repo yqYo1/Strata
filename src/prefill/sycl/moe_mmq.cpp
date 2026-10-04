@@ -79,6 +79,7 @@ void Context::run(const Product &p, void *stream) {
   native.ld_output = p.ld_dst; native.expert_bytes = p.expert_bytes;
   native.bounds = p.bounds; native.destinations = p.ids; native.output = p.dst;
   native.scratch_weights = p.scratch_weights;
+  native.host_bounds = p.host_bounds;
   kernels::native_mmq(native, stream);
 }
 void gather_native(const void *gate, const void *up, size_t half_bytes,

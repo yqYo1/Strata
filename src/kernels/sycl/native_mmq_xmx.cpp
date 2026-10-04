@@ -29,6 +29,7 @@
 #include "strata/sycl/esimd_half.hpp"
 #include "strata/sycl/launch.hpp"
 #include "strata/sycl/native_mmq.hpp"
+#include <array>
 #include <cstdlib>
 #include <sycl/ext/intel/esimd.hpp>
 #include <sycl/ext/intel/experimental/esimd/math.hpp>
@@ -295,26 +296,44 @@ fold_cells(const uint8_t *w, const uint8_t *x, U weight_rows,
   }
 }
 
-template <int Type, int Tile, bool Exact, bool Packed>
-void launch(NativeMmq p, void *stream) {
+template <int Type, int Tile, bool Exact, bool Packed, bool Compact>
+void launch_grid(NativeMmq p, void *stream, const std::array<int32_t, 17> &prefix) {
   const size_t tiles = (p.max_rows + Tile - 1) / Tile;
+  const size_t tile_count = Compact ? size_t(prefix[p.experts]) : size_t(p.experts) * tiles;
+  if (!tile_count)
+    return;
   const size_t row_tiles = (p.rows + 15) / 16;
   const size_t padded = (row_tiles + 15) / 16 * 16;
   const size_t stride = size_t(p.cols / width<Type>) * bytes<Type>;
   const size_t xs = ((size_t(p.cols) + 511) / 512 * 512) / 32 * 36;
   queue_for(stream).parallel_for(
-      sycl::nd_range<2>({size_t(p.experts) * tiles, padded}, {1, 16}),
+      sycl::nd_range<2>({tile_count, padded}, {1, 16}),
       sycl::ext::oneapi::experimental::properties{
           sycl::ext::intel::experimental::grf_size<128>},
       [=](sycl::nd_item<2> it) SYCL_ESIMD_KERNEL {
         const size_t tile = it.get_global_id(0), row = it.get_global_id(1) * 16;
         if (row >= size_t(p.rows))
           return;
-        const int expert = tile / tiles;
+        int expert;
+        size_t local_tile;
+        if constexpr (Compact) {
+          // Upper-bound search also skips repeated offsets from empty experts.
+          int low = 0, high = p.experts;
+          while (low + 1 < high) {
+            const int mid = (low + high) / 2;
+            if (tile < size_t(prefix[mid])) high = mid;
+            else low = mid;
+          }
+          expert = low;
+          local_tile = tile - size_t(prefix[expert]);
+        } else {
+          expert = tile / tiles;
+          local_tile = tile % tiles;
+        }
         const int begin = p.bounds[expert], end = p.bounds[expert + 1];
         if (begin < 0 || end < begin || end > p.total_rows)
           return;
-        const int64_t first = int64_t(begin) + int64_t(tile % tiles) * Tile;
+        const int64_t first = int64_t(begin) + int64_t(local_tile) * Tile;
         if (first >= end)
           return;
         const U rows = U(uint32_t(row), 1);
@@ -352,6 +371,33 @@ void launch(NativeMmq p, void *stream) {
         }
       });
 }
+template <int Type, int Tile, bool Exact, bool Packed>
+void launch(NativeMmq p, void *stream) {
+  static const bool compact_enabled = [] {
+    const char *v = std::getenv("STRATA_SYCL_MMQ_XMX_COMPACT");
+    return v && std::atoi(v) != 0;
+  }();
+  // The prefill caller already knows these bounds. Copy tile offsets into
+  // the launch arguments; device code never reads the host array.
+  std::array<int32_t, 17> prefix{};
+  bool compact = compact_enabled && p.host_bounds && p.experts <= 16;
+  if (compact) {
+    for (int expert = 0; expert < p.experts; ++expert) {
+      const int64_t begin = p.host_bounds[expert], end = p.host_bounds[expert + 1];
+      if (begin < 0 || end < begin || end > p.total_rows || end - begin > p.max_rows) {
+        compact = false;
+        break;
+      }
+      prefix[expert + 1] = prefix[expert] + int32_t((end - begin + Tile - 1) / Tile);
+    }
+  }
+  // Keep the uniform kernel free of the compact grid's arguments and search.
+  if (compact)
+    launch_grid<Type, Tile, Exact, Packed, true>(p, stream, prefix);
+  else
+    launch_grid<Type, Tile, Exact, Packed, false>(p, stream, prefix);
+}
+
 template <int Tile, bool Exact, bool Packed = false>
 void dispatch(NativeMmq p, void *stream) {
   switch (p.type) {

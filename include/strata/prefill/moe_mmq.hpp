@@ -51,6 +51,10 @@ struct Product {
     // Writable temporary weights, refilled before every run. SYCL may rearrange
     // their contents in place; false preserves the ordinary read-only contract.
     bool scratch_weights = false;
+    // Optional host copy of bounds; must match this launch, needed only until
+    // run returns. SYCL can compact its expert/token grid without a copy command.
+    // Captured compact grids require recapture when the bounds change.
+    const int32_t* host_bounds = nullptr;
 };
 
 /// The launch context (llama.cpp's MMQ keeps a small scratch pool for its stream-k fixup).  One per prompt path.

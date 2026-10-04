@@ -87,6 +87,7 @@ void product(int type, int cols, int R = 7, bool scratch = false, size_t padding
   Buffer<uint8_t> dw(uploaded.size()), xq(mmq::q8_bytes(T, cols) + 16);
   Buffer<float> dx(x.size()), dy(T * LD + 4);
   Buffer<int32_t> ds(T), dm(T), bounds(4);
+  const std::array<int32_t, 4> host_bounds{2, 5, 5, 36};
   dw.put(uploaded); dx.put(x); ds.put(source); dm.put(map); bounds.put({2, 5, 5, 36});
   xq.put(std::vector<uint8_t>(xq.n, 0xa5)); dy.put(std::vector<float>(dy.n, -123.f));
   auto *stream = &runtime->compute();
@@ -121,6 +122,7 @@ void product(int type, int cols, int R = 7, bool scratch = false, size_t padding
   p.bounds = bounds.data(); p.ids = dm.data(); p.total_rows = T; p.max_rows = 31;
   p.dst = dy.data(); p.ld_dst = LD;
   p.scratch_weights = scratch;
+  p.host_bounds = host_bounds.data();
   context.run(p, stream);
   const auto got = dy.get();
   const char *xmx = std::getenv("STRATA_SYCL_MMQ_XMX");
@@ -192,11 +194,52 @@ void product(int type, int cols, int R = 7, bool scratch = false, size_t padding
     }
   }
   check(got == expected, "routed row map, untouched rows, stride or output canary");
+  p.host_bounds = nullptr;
   bounds.put({37, 2, 2, 2}); dy.put(std::vector<float>(dy.n, -123.f));
   dw.put(uploaded);
   context.run(p, nullptr);
   check(dy.get() == std::vector<float>(dy.n, -123.f), "invalid or empty bounds wrote output");
   std::cout << "MMQ type=" << type << " K=" << cols << " routed rows=37 max_scaled=" << worst << '\n';
+}
+void compact_product(int type, int E, int pattern) {
+  constexpr int R = 33, T = 73, LD = R + 3;
+  const int cols = type == 20 || type == 42 ? 640 : 2560;
+  auto w = weights(type, cols, R, E);
+  std::vector<float> x(size_t(T) * cols);
+  for (size_t i = 0; i < x.size(); ++i) x[i] = float(std::sin(i * .017));
+  std::vector<int32_t> starts(E + 1, 2), ids(T);
+  for (int i = 0; i < T; ++i) ids[i] = (i * 7) % T;
+  ids[7] = -1;
+  int max_rows = 1;
+  for (int expert = 0; expert < E; ++expert) {
+    int count = 0;
+    if (pattern == 0) count = expert == E - 1 ? 41 : (expert % 3 == 1 ? 1 : 0);
+    if (pattern == 1) count = expert == 0 ? 41 : (expert % 3 == 1 ? 1 : 0);
+    starts[expert + 1] = starts[expert] + count;
+    max_rows = std::max(max_rows, count);
+  }
+  Buffer<uint8_t> dw(w.size()), xq(mmq::q8_bytes(T, cols));
+  Buffer<float> dx(x.size()), dy(T * LD + 4);
+  Buffer<int32_t> bounds(E + 1), map(T);
+  dw.put(w); dx.put(x); bounds.put(starts); map.put(ids);
+  mmq::quantize(dx.data(), nullptr, xq.data(), type, cols, cols, T, &runtime->compute());
+  mmq::Product p;
+  p.w = dw.data(); p.type = type; p.w_rows = R; p.w_cols = cols;
+  p.expert_bytes = w.size() / E; p.n = E; p.xq = xq.data();
+  p.bounds = bounds.data(); p.ids = map.data(); p.total_rows = T;
+  p.max_rows = max_rows; p.dst = dy.data(); p.ld_dst = LD;
+  mmq::Context context;
+  const std::vector<float> sentinel(dy.n, -123.f);
+  dy.put(sentinel);
+  context.run(p, &runtime->compute());
+  const auto reference = dy.get();
+  dy.put(sentinel);
+  p.host_bounds = starts.data();
+  context.run(p, &runtime->compute());
+  const auto got = dy.get();
+  check(std::memcmp(got.data(), reference.data(), got.size() * sizeof(float)) == 0,
+        "compact grid changed ragged, empty, mapped or padded output");
+  if (pattern == 2) check(got == sentinel, "empty compact grid wrote output");
 }
 void gather() {
   constexpr int E = 4, B = 128;
@@ -282,6 +325,10 @@ int main() {
     product(21, 2560, 17, true);     // incomplete row tile retains its GGUF layout
     product(21, 16384, 16, true);    // local-memory limit can require the raw path
     product(12, 2560, 16, true);     // unsupported packed type uses its original path
+    for (int type : {18, 20, 21, 22, 23, 42})
+      for (int experts : {1, 16, 17})
+        for (int pattern = 0; pattern < 3; ++pattern)
+          compact_product(type, experts, pattern);
     gather(); postops(); runtime->wait(); std::cout << "SYCL quantized prefill PASS\n";
     return 0;
   } catch (const std::exception &e) { std::cerr << e.what() << '\n'; return 1; }

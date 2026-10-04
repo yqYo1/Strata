@@ -2785,3 +2785,48 @@ flag alone does not accelerate that configuration. The measured gain applies
 to the large chunk above; larger prompts and other devices need their own
 comparison. The [measurement record](../bench/results/2026-10-04-sycl-prefill-routed/run.json)
 contains all six timings, serving checks, settings and reproduction helpers.
+
+### Compact XMX expert/token grids (2026-10-04)
+
+`STRATA_SYCL_MMQ_XMX_COMPACT=1` omits token tiles that contain no rows. For
+up to 16 experts, the prompt caller supplies matching host bounds; the
+launcher builds tile offsets and copies them into kernel arguments. Each
+work-item finds its expert by searching those offsets. There is no separate
+metadata allocation, copy command or host wait. The dot products and reduction
+order are unchanged. Calls without host bounds, larger groups and unsupported
+formats keep the existing path. The option is off by default. Captured compact
+grids must be recaptured if their bounds change.
+
+On the B570/5600X, three alternating pairs used one final AOT binary, exact
+XMX tile 8, packing off, ring 8, same-queue event omission, five CPU workers
+and adaptive swaps off. These are normal runs without profiling or concurrent
+owned builds/GPU tests; all eight output ids matched in every run.
+
+| Prefetched tokens | Context / chunk / cache slots | Compact off, median | Compact on, median | Rate change |
+| --- | --- | --- | --- | --- |
+| 826 | 2,048 / 1,024 / 1,649 | 8,810.8 ms, 93.75 token/s | 8,705.1 ms, 94.89 token/s | +1.21% |
+| 4,007 | 8,192 / 4,096 / 512 | 24,925.7 ms, 160.76 token/s | 23,806.4 ms, 168.32 token/s | +4.70% |
+
+All three pairs improved at each size. The long-prompt off samples ranged
+from 24,663.5 to 24,946.9 ms; on samples ranged from 23,800.6 to 23,823.0 ms.
+A separate single control with the preceding accepted binary measured
+8,821.9 / 24,790.4 ms, or 93.63 / 161.64 token/s. Those controls are not another
+three-pair comparison. The record also retains the initial shared-kernel
+prototype; the final revision chooses separate compact/uniform instantiations
+before launch, removing the compact search from the uniform kernel.
+
+AOT and JIT each passed the five prefill MMQ tests, including compact grids
+with and without packed weights. Six supported formats were compared bitwise
+with the uniform grid across 1/16/17 experts, empty experts at either end,
+uneven row counts, entirely empty groups, mapped outputs and padding. The
+existing oracle and canary checks remain. AOT also passed exact compact tests
+at tile widths 1/2/4 and the linear tile-8 test; the local presets retain the
+exact reduction.
+
+Persistent writing/coding requests at the usual context, and a 4,035-token
+writing prompt with `--no-prefill-borrow --prompt-cache 0`, matched their
+preceding accepted outputs. Both checks included repeated 128-token generation,
+prefill/decode cancellation and eight-token recovery. No decode-speed gain is
+claimed. The two local text presets enable compaction; their previous configs
+are backed up. The [measurement record](../bench/results/2026-10-04-sycl-xmx-compact/run.json)
+contains all samples, binary hashes, validation logs and reproduction details.

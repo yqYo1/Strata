@@ -199,6 +199,12 @@ if(STRATA_SYCL_TESTS)
   add_test(NAME sycl_prefill_mmq_xmx_packed COMMAND sycl_prefill_mmq_test)
   set_tests_properties(sycl_prefill_mmq_xmx_packed PROPERTIES TIMEOUT 180
     ENVIRONMENT "STRATA_SYCL_MMQ_XMX=1;STRATA_SYCL_MMQ_XMX_TILE=8;STRATA_SYCL_MMQ_XMX_EXACT=1;STRATA_SYCL_MMQ_XMX_PACK=1")
+  add_test(NAME sycl_prefill_mmq_xmx_compact COMMAND sycl_prefill_mmq_test)
+  set_tests_properties(sycl_prefill_mmq_xmx_compact PROPERTIES TIMEOUT 180
+    ENVIRONMENT "STRATA_SYCL_MMQ_XMX=1;STRATA_SYCL_MMQ_XMX_TILE=8;STRATA_SYCL_MMQ_XMX_EXACT=1;STRATA_SYCL_MMQ_XMX_PACK=0;STRATA_SYCL_MMQ_XMX_COMPACT=1")
+  add_test(NAME sycl_prefill_mmq_xmx_compact_packed COMMAND sycl_prefill_mmq_test)
+  set_tests_properties(sycl_prefill_mmq_xmx_compact_packed PROPERTIES TIMEOUT 180
+    ENVIRONMENT "STRATA_SYCL_MMQ_XMX=1;STRATA_SYCL_MMQ_XMX_TILE=8;STRATA_SYCL_MMQ_XMX_EXACT=1;STRATA_SYCL_MMQ_XMX_PACK=1;STRATA_SYCL_MMQ_XMX_COMPACT=1")
   if(STRATA_NATIVE_EXPERTS)
     add_executable(sycl_prefill_fused_test tests/sycl/prefill_fused.cpp)
     target_link_libraries(sycl_prefill_fused_test PRIVATE strata_prefill ggml-base)
