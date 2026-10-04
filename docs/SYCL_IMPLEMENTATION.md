@@ -2667,3 +2667,28 @@ type gave baseline/candidate rate ratios of 0.991, 0.975 and 0.940 respectively.
 This remained a component experiment; the engine was not changed. The
 [paired gate/up screen](../bench/results/2026-10-04-sycl-cpu-single-pair/run.json)
 preserves the generator, harness and all timings.
+
+### CPU preexpanded-index component screen (2026-10-04)
+
+A prototype stores IQ3_S and IQ2_S codebook indices as 16-bit values, preserving
+the scale and sign bytes and the original arithmetic. Blocks grow from
+110→166 bytes and 82→106 bytes respectively. The scalar-index variants passed
+all tested bitwise comparisons; AVX2 gather variants were slower.
+
+On the 5600X, the combined IQ3_S loop expanded twice and IQ2_S loop expanded
+four times. With 64 distinct real experts, one pinned core measured
+19,370.05→13,281.50 us for IQ3_S and 11,030.20→8,854.60 us for IQ2_S.
+Five persistent workers plus the main thread, pinned to physical cores 0–5,
+measured 4,103.22→3,235.87 us and 2,460.44→2,126.74 us (+26.8% and +15.7%
+rates). These component timings use an atomic 64-row task dispatcher, not the
+engine's pool. All 200 broad-screen and 160 threaded samples matched the
+accepted CPU object bitwise; that reference also matched linked GGML.
+
+Conversion and allocation are excluded from those kernel timings and measured
+separately. In the initial 64-expert screen, first conversions took 15.64 ms
+for IQ3_S and 7.81 ms for IQ2_S, after allocating and zeroing the expanded
+buffers (64.79/42.44 ms). Thus a faster warm kernel alone does not establish a
+serving improvement. No representation change or cache is integrated yet;
+real expert reuse and memory costs are the next checks. The
+[component record](../bench/results/2026-10-04-sycl-cpu-preindex/run.json)
+contains every sample, conversion cost, layout and source helper.
