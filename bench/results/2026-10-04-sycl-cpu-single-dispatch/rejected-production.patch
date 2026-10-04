@@ -1,0 +1,46 @@
+diff --git a/src/kernels/cpu/iq_single_avx2.cpp b/src/kernels/cpu/iq_single_avx2.cpp
+index 99a32cc..344fb11 100644
+--- a/src/kernels/cpu/iq_single_avx2.cpp
++++ b/src/kernels/cpu/iq_single_avx2.cpp
+@@ -223,7 +223,9 @@ __attribute__((noinline)) void iq2s_dot(int n, float * GGML_RESTRICT s, size_t b
+ 
+ }
+ 
+-__attribute__((noinline)) void iq3s_dot(int n, float * GGML_RESTRICT s, size_t bs, const void * GGML_RESTRICT vx, size_t bx, const void * GGML_RESTRICT vy, size_t by, int nrc) {
++template<int FixedN>
++__attribute__((always_inline)) inline void iq3s_dot_impl(int n, float * GGML_RESTRICT s, size_t bs, const void * GGML_RESTRICT vx, size_t bx, const void * GGML_RESTRICT vy, size_t by, int nrc) {
++    if constexpr (FixedN) n = FixedN;
+     assert(n % QK_K == 0);
+     assert(nrc == 1);
+     UNUSED(nrc);
+@@ -310,10 +312,30 @@ __attribute__((noinline)) void iq3s_dot(int n, float * GGML_RESTRICT s, size_t b
+ 
+ }
+ 
++__attribute__((noinline)) void iq3s_dot(int n, float* s, size_t bs,
++    const void* vx, size_t bx, const void* vy, size_t by, int nrc) {
++    iq3s_dot_impl<0>(n,s,bs,vx,bx,vy,by,nrc);
++}
++
++void iq3s_single_rows_2560(const uint8_t* blob, size_t row, size_t up_off,
++                          const void* act, float* ff, int r0, int r1) {
++    for (int r = r0; r < r1; ++r) {
++        const auto* gate = blob + size_t(r) * row;
++        float g = 0.f, u = 0.f;
++        iq3s_dot_impl<2560>(2560, &g, 0, gate, 0, act, 0, 1);
++        iq3s_dot_impl<2560>(2560, &u, 0, gate + up_off, 0, act, 0, 1);
++        ff[r] = (g / (1.f + std::exp(-g))) * u;
++    }
++}
++
+ } // namespace
+ bool iq256_single_gu_rows(int type, const uint8_t* blob, size_t row, size_t up_off,
+                           int n, const void* act, float* ff, int r0, int r1) {
+     if (type != 18 && type != 21 && type != 22) return false;
++    if (type == 21 && n == 2560) {
++        iq3s_single_rows_2560(blob,row,up_off,act,ff,r0,r1);
++        return true;
++    }
+     const auto dot = type == 18 ? iq3xxs_dot : type == 21 ? iq3s_dot : iq2s_dot;
+     for (int r = r0; r < r1; ++r) {
+         const auto* gate = blob + size_t(r) * row;

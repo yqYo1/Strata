@@ -2626,3 +2626,33 @@ other GPU test overlapped measurement; existing workstation services remained
 active. Tile-16 was rejected, and the accepted tile-8 implementation restored.
 The [record and rejected patch](../bench/results/2026-10-04-sycl-xmx16/run.json)
 retain timings, compiler behavior and device metadata.
+
+### Rejected CPU dispatch and exponential screens (2026-10-04)
+
+On the 5600X, direct calls, forced inlining and fixed input widths were compared
+against the already-tuned single-token CPU object. An IQ3_S-only specialization
+for width 2,560 improved the 64-expert gate/up component median by 5.35%.
+Both production builds passed all 384 GGML bitwise boundary cases; all 502
+GPU code bodies remained unchanged.
+
+Five alternating persistent-serving pairs on the B570/5600X retained all
+samples, including slower first responses. Median writing decode rates changed
+13.551→13.484 token/s on first use and 15.915→16.006 on repeat; coding changed
+17.567→17.876 and 20.194→20.105. The median sum of four decode times fell only
+31,150.3→31,091.5 ms (+0.19% rate), while two response categories regressed.
+All ten processes matched output ids and passed cancellation/recovery checks.
+No owned build or other benchmark overlapped measurement; existing workstation
+services remained active. A separate wrapper-isolation component screen did
+not improve the IQ3_S result. These variants were not adopted; restored JIT
+and AOT binaries matched their prior hashes and passed the 384-case test.
+The [dispatch record](../bench/results/2026-10-04-sycl-cpu-single-dispatch/run.json)
+includes all 420 component samples, engine results and the rejected patch.
+
+A separate exponential screen compared Intel SVML four/eight-lane functions
+with the static Intel IMF scalar `expf` used by this executable. Among
+2,097,152 deterministic inputs with magnitude below 80, ordinary vector
+functions disagreed on 561,494 values and high-accuracy functions on 45,718.
+Four and eight lanes gave the same mismatch counts. This fails the current
+bitwise requirement, so no vector SwiGLU path was introduced. The
+[source and results](../bench/results/2026-10-04-sycl-cpu-exp-vector/run.json)
+record this numerical screen without a throughput claim.
