@@ -314,3 +314,17 @@ time falls from 17.278 to 17.147 seconds, or 468.07 to 471.64 tok/s.
 The elapsed reduction is 0.76% for this input and hardware. This is an
 additional selector gain after batch 128/layout 3, and an overall CLI
 rate rather than the local input-length slope.
+
+The [FP16 library group probe](moe/f16-library-group-study/run.json)
+compares direct oneMKL 2026.1 GEMM calls with grouped GEMM calls for the
+native experts' 2,560-by-640 down and 1,280-by-2,560 gate/up matrices.
+Groups contain two, four or eight experts, with varied row counts and
+maximum counts of 1, 8, 32 or 128. It measures three warmed rounds of ten
+calls in alternating order, including host submission and queue completion.
+All 24 shapes preserve output padding and finite values, and sampled
+independent FP64 references stay within the existing normalized error
+bound. Eighteen shapes also match the original output bits everywhere;
+six change some bits. Grouped calls are slower in every shape. For four
+down products with up to 128 rows each, individual calls take 0.962 ms
+and the group takes 3.077 ms. This library batching route is not adopted;
+the raw log distinguishes the numeric bound from complete bit identity.
