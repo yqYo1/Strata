@@ -2927,3 +2927,53 @@ measurements; no full-model performance improvement is claimed. The accepted
 sources and engine binary were restored and local settings retained.
 The [trial record](../bench/results/2026-10-04-sycl-prompt-key-layout/run.json)
 contains all samples, validation results and patches.
+
+### Native FP16 prompt KV payloads (2026-10-04)
+
+`STRATA_SYCL_PROMPT_NATIVE_KV_MIN` sets the minimum query count in a prompt
+batch for direct FP16 key/value loading. It requires direct prompt output
+and FP16 KV. A missing, zero, negative or invalid value keeps the converted
+path. `1` forces native loading for all nonempty supported batches; `2048`
+keeps smaller batches on the existing path. The threshold applies to each
+prefill batch, not the total prompt length.
+
+The native path loads the existing FP16 payload into the half tile without
+converting it to FP32 and back. NaNs retain the old conversion. Tile layout,
+selected-cell order and arithmetic are unchanged. AOT and JIT probes compared
+all 65,536 half payloads against the previous round trip, including signed
+zeros, subnormals, infinities and NaNs: no mismatches. Prompt-attention tests
+also compare native/converted and direct/staged outputs bitwise alongside
+the existing oracle and guard checks.
+
+The initial unrestricted B570/5600X trial used direct output, ring 8, compact
+exact tile-8 XMX, packing off, same-queue event omission, five CPU workers and
+adaptive swaps off. Its synthetic 512-query attention helper changed from
+48.48 to 40.65 ms (nine calls per arm). Three normal 4,007-token pairs had
+medians of 22,358.5 ms off and 21,707.0 ms on, a 3.00% rate increase. All three
+pairs improved. The 826-token trial was extended to five pairs after the first
+on run regressed; every sample was retained. Its medians were 8,615.2 and
+8,591.8 ms (+0.27%), but two pairs regressed and on samples ranged from
+8,583.6 to 8,863.2 ms. This did not establish a reliable short-prompt gain,
+so the local presets use a 2,048-query minimum. Intermediate sizes were
+not used to determine an optimal crossover point.
+
+The final threshold revision used the same settings and a 2,048-query
+minimum. Three alternating pairs with 4,007 prefetched tokens (context 8,192,
+chunk 4,096, cache 512) measured **22,233.6 ms / 180.22 token/s off** versus
+**21,705.2 ms / 184.61 token/s on**, a **2.43%** rate increase. All three pairs
+improved. These are normal runs without profiling or concurrent owned builds
+or GPU tests. The one 826-token control pair measured 8,604.7 / 8,609.2 ms;
+both arms use the converted kernel at that size, and no short-prompt gain
+is claimed. Every run returned the expected eight output ids. The initial
+unrestricted measurements above are retained separately from this final binary.
+
+The final AOT and JIT prompt-attention tests passed. Persistent writing/coding
+requests at the usual context and two 128-token generations from a 4,035-token
+prompt matched the preceding accepted outputs. Both serving checks passed
+prefill/decode cancellation and eight-token recovery. The long test disabled
+prompt reuse and prefill borrowing. Both local text presets now set the
+minimum to 2,048; their preceding configs are backed up. No decode-speed gain
+is claimed. The [final record](../bench/results/2026-10-04-sycl-prompt-native/run.json)
+contains all final timings, binary hashes, checks and reproduction details;
+the [unrestricted record](../bench/results/2026-10-04-sycl-prompt-native/unrestricted.json)
+retains the earlier trial, including both short-prompt regressions.

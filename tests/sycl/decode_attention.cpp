@@ -158,6 +158,13 @@ void run(int format, int page_size, bool masked, bool scaled = false) {
             out.data(), nq);
   auto y = out.get();
 #ifdef STRATA_TEST_PROMPT_MATRIX
+  setenv("STRATA_SYCL_PROMPT_NATIVE_KV_MIN", "0", 1);
+  attention(q.data(), p, di.data(), ds.data(), cap, s, scratch.data(),
+            out.data(), nq);
+  const auto converted = out.get();
+  check(std::memcmp(y.data(), converted.data(), y.size() * sizeof(float)) == 0,
+        "native/converted prompt half bitwise");
+  setenv("STRATA_SYCL_PROMPT_NATIVE_KV_MIN", "1", 1);
   setenv("STRATA_SYCL_PROMPT_DIRECT", "0", 1);
   attention(q.data(), p, di.data(), ds.data(), cap, s, scratch.data(),
             out.data(), nq);
@@ -251,6 +258,7 @@ int main() {
     runtime = sycl_backend::runtime_for();
 #ifdef STRATA_TEST_PROMPT_MATRIX
     setenv("STRATA_SYCL_PROMPT_DIRECT", "1", 1);
+    setenv("STRATA_SYCL_PROMPT_NATIVE_KV_MIN", "1", 1);
 #endif
     for (int fmt = 0; fmt < 4; ++fmt)
       for (int page : {1, 4, 16})
