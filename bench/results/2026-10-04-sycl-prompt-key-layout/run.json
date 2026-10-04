@@ -1,0 +1,163 @@
+{
+  "base_commit": "ea00c79",
+  "hardware": "Intel Arc B570 / Ryzen 5 5600X",
+  "status": "Rejected: every candidate was slower than the accepted row-major key path. Production sources and accepted engine binary restored; local presets unchanged.",
+  "scope": "AOT prompt-attention CTest plus synthetic FP16 512-query selected-cell widths 8..4096. Each arm has three batches of one warmup and three timed calls. Full outputs and guards compared bitwise before every batch. No full-model or JIT performance claim.",
+  "variants": {
+    "column": {
+      "padding_half_elements": {
+        "1": 0,
+        "2": 8,
+        "3": 16,
+        "4": 32
+      },
+      "samples_ms": {
+        "0": [
+          48.467562,
+          48.497869,
+          48.324693,
+          48.664433,
+          48.597477,
+          48.580626,
+          48.622344,
+          48.597768,
+          48.507949
+        ],
+        "1": [
+          67.387634,
+          66.713023,
+          66.416765,
+          66.720317,
+          65.553919,
+          65.913857,
+          65.457447,
+          66.422997,
+          65.51202
+        ],
+        "2": [
+          63.705497,
+          63.583858,
+          64.74761,
+          63.883543,
+          63.952603,
+          63.758908,
+          64.300889,
+          63.846143,
+          63.597374
+        ],
+        "3": [
+          65.827495,
+          66.522434,
+          66.167996,
+          65.376785,
+          65.484108,
+          67.154674,
+          65.603593,
+          66.75944,
+          68.402135
+        ],
+        "4": [
+          66.20763,
+          65.923375,
+          66.184948,
+          65.722817,
+          66.164239,
+          66.813612,
+          67.504594,
+          65.917114,
+          65.737967
+        ]
+      },
+      "medians_ms": {
+        "0": 48.580626,
+        "1": 66.416765,
+        "2": 63.846143,
+        "3": 66.167996,
+        "4": 66.164239
+      },
+      "ctest": "Internal ctest changing into directory: /home/yayoi/orca/workspaces/Strata/sycl/build-sycl-aot\nTest project /home/yayoi/orca/workspaces/Strata/sycl/build-sycl-aot\n    Start 40: sycl_prompt_attention\n1/1 Test #40: sycl_prompt_attention ............   Passed    0.32 sec\n\n100% tests passed, 0 tests failed out of 1\n\nTotal Test time (real) =   0.33 sec\n",
+      "bitwise_and_guard_pass": true
+    },
+    "transpose": {
+      "padding_half_elements": {
+        "1": 0,
+        "2": 2,
+        "3": 8,
+        "4": 16
+      },
+      "samples_ms": {
+        "0": [
+          48.419907,
+          48.48464,
+          48.490661,
+          48.5752,
+          48.471055,
+          48.476604,
+          48.558078,
+          48.476304,
+          48.456977
+        ],
+        "1": [
+          52.22711,
+          52.145417,
+          52.117995,
+          52.249934,
+          52.197455,
+          52.140438,
+          52.232291,
+          52.15788,
+          52.149444
+        ],
+        "2": [
+          51.878855,
+          51.793705,
+          51.84502,
+          51.808712,
+          51.743529,
+          51.72819,
+          51.858677,
+          51.781041,
+          51.807871
+        ],
+        "3": [
+          51.684859,
+          51.636629,
+          51.621289,
+          51.687884,
+          51.654442,
+          51.591704,
+          51.678377,
+          51.580262,
+          51.59001
+        ],
+        "4": [
+          74.55023,
+          74.410867,
+          74.564918,
+          74.546233,
+          74.420174,
+          74.546984,
+          74.613269,
+          74.458117,
+          74.582902
+        ]
+      },
+      "medians_ms": {
+        "0": 48.476604,
+        "1": 52.15788,
+        "2": 51.807871,
+        "3": 51.636629,
+        "4": 74.546984
+      },
+      "ctest": "Internal ctest changing into directory: /home/yayoi/orca/workspaces/Strata/sycl/build-sycl-aot\nTest project /home/yayoi/orca/workspaces/Strata/sycl/build-sycl-aot\n    Start 40: sycl_prompt_attention\n1/1 Test #40: sycl_prompt_attention ............   Passed    0.32 sec\n\n100% tests passed, 0 tests failed out of 1\n\nTotal Test time (real) =   0.32 sec\n",
+      "bitwise_and_guard_pass": true
+    }
+  },
+  "reference_for_next_trial": {
+    "repository": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp",
+    "commit": "42d958167",
+    "file": "ggml/src/ggml-sycl/fattn-tile.hpp",
+    "lines": "193-249",
+    "observation": "FP16 tile loader copies half2 payloads directly into local tiles. Inspect eliminating the half->float->half round trip in Strata mode0 while retaining its current tile layout."
+  }
+}

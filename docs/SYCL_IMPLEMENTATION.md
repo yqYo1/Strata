@@ -2902,9 +2902,28 @@ all work-items while preserving the selected-cell and sum order. Both passed
 the AOT prompt-attention oracle and bitwise comparisons against the accepted
 serial path, including the 512-query, 4,096-cell helper. Adding two barriers
 per chunk changed its median from 48.47 to 49.39 ms. Reusing existing barriers
-changed it from 48.46 to 47.60 ms. Each arm had nine timed calls and direct
+changed it from 48.46 to 47.61 ms. Each arm had nine timed calls and direct
 output enabled. These are synthetic kernel timings, not full-model prefill
 rates. Neither trial is adopted; the barrier-reuse patch is retained for
 comparison with further memory-access changes. The accepted engine binary
 and sources were restored. The [trial record](../bench/results/2026-10-04-sycl-prompt-exp/run.json)
 contains the samples and both patches.
+
+### Prompt key-layout trials (2026-10-04)
+
+On the B570, eight key-layout candidates passed the AOT prompt-attention
+oracle, bitwise comparisons and output guards. The synthetic 512-query helper
+used FP16 KV and selected widths up to 4,096, with nine timed calls per arm.
+
+| Key tile method | Padding, half elements | Median ms |
+| --- | --- | --- |
+| Accepted layout, column trial control | — | 48.58 |
+| Column-major matrix load | 0 / 8 / 16 / 32 | 66.42 / 63.85 / 66.17 / 66.16 |
+| Accepted layout, transpose trial control | — | 48.48 |
+| Contiguous global loads, transposed local stores | 0 / 2 / 8 / 16 | 52.16 / 51.81 / 51.64 / 74.55 |
+
+Every candidate was slower, so none was adopted. These are kernel-only
+measurements; no full-model performance improvement is claimed. The accepted
+sources and engine binary were restored and local settings retained.
+The [trial record](../bench/results/2026-10-04-sycl-prompt-key-layout/run.json)
+contains all samples, validation results and patches.
