@@ -2830,3 +2830,22 @@ prefill/decode cancellation and eight-token recovery. No decode-speed gain is
 claimed. The two local text presets enable compaction; their previous configs
 are backed up. The [measurement record](../bench/results/2026-10-04-sycl-xmx-compact/run.json)
 contains all samples, binary hashes, validation logs and reproduction details.
+
+### Expanded prefill device trace (2026-10-04)
+
+With ring 8 and compact exact XMX tile 8 on the B570/5600X, diagnostic hooks
+recorded copies, XMX products and events returned through the common SYCL
+kernel wrapper. The 4,007-token run recorded 44,583 valid, unique, disjoint
+intervals: 22,969.36 ms inside a 24,226.80 ms event span. Host-to-device copies
+used 6,094.11 ms for 37.95 GB; twelve prompt-attention launches used 4,872.77 ms;
+Q8_1 prompt quantization used 1,450.68 ms. The 826-token run recorded
+8,306.36 ms inside an 8,592.84 ms span, including 4,840.83 ms of host-to-device
+copies, 287.67 ms of prompt attention and 299.98 ms of Q8_1 quantization.
+
+Both diagnostic runs returned the expected eight output ids. These are device
+costs with instrumentation, not normal performance measurements. Unmeasured
+span can include uncaptured commands and host gaps; it is not an idle-time
+estimate. A oneMKL completion event may cover only the final internal command.
+The hooks were removed and the accepted AOT binary restored. Prompt attention
+is the next substantial compute cost to investigate. The [trace record](../bench/results/2026-10-04-sycl-prefill-device-full/run.json)
+retains the grouped intervals, settings and source helpers.
