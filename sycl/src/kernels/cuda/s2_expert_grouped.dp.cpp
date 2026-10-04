@@ -1302,6 +1302,9 @@ __dpct_inline__ void gu_grouped_t_kernel(
     const int32_t *__restrict__ ent_tok, const uint8_t *__restrict__ x_q8_0,
     const float *__restrict__ x_scales, float *__restrict__ gate_up,
     int cap_entries) {
+// Match gu_grouped_kernel: its chunk_dot return rounds before accumulation.
+// Contracting this inline product changes the SwiGLU rows and downstream q8 bytes.
+#pragma clang fp contract(off)
     auto item_ct1 = sycl::ext::oneapi::this_work_item::get_nd_item<3>();
     constexpr int NC = H / 32;
     auto &xs_w = *sycl::ext::oneapi::group_local_memory_for_overwrite<

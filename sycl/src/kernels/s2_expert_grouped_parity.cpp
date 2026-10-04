@@ -216,6 +216,15 @@ bool twice(const char* name, float* d_out, size_t out_floats, const Scratch& s,
         std::printf(" (out %zu floats, gate/up %zu B, intermediate %zu B, its scales %zu B)", diff_out, diff_gu,
                     diff_q8, diff_hs);
     std::printf("\n");
+    if (!ok) {
+        size_t differing_gate = 0, differing_up = 0;
+        for (size_t i = 0; i < (size_t) s.cap * 2 * FF; ++i) {
+            if (std::memcmp(r[0].scratch.data() + i * 4, r[1].scratch.data() + i * 4, 4) == 0) continue;
+            if (i < (size_t) s.cap * FF) ++differing_gate;
+            else ++differing_up;
+        }
+        std::printf("    differing SwiGLU rows %zu, raw up rows %zu\n", differing_gate, differing_up);
+    }
     if (!ok) ++g_fail;
     if (keep) *keep = std::move(r[1]);
     return ok;
