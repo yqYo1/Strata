@@ -86,12 +86,11 @@ exact miscompiled instruction has not been identified by disassembly.
 
 ## Remaining fidelity work
 
-The kernel currently executes full-K tiles. GGML's `launch_mul_mat_q` also uses
-full-K tiling on NVIDIA when tile efficiency is at least 90%, but uses stream-K division and
-a fixup kernel otherwise. That work partitioning and its floating-point reduction
-order remain to be ported and compared. The original CUDA automatic tile/config
+The initial full-K implementation recorded above has since gained the
+[upstream stream-K partition and fixup algorithm](mmq-stream-k.md), with both
+numerical and exact addition-order checks. The original CUDA automatic tile/config
 selection, scratch pool, optional Q5_0/Q4_K/Q5_K/Q5_1 formats, gather/SwiGLU wrapper,
-and full host/runtime integration also remain open. No CUDA device comparison has
+and full host/runtime integration remain open. No CUDA device comparison has
 been run, including CUDA fast-math, FTZ, exact FMA contraction and stream-K results.
 
 The original host processing and root build remain unchanged. No old SYCL tuning

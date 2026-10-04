@@ -34,25 +34,41 @@ FORMAT(GGML_TYPE_Q8_0, q8_0, QK8_0, false)
 #undef FORMAT
 
 template<ggml_type Type>
-sycl::event launch(sycl::queue& queue, MmqProduct p) {
+sycl::event launch(sycl::queue& queue, MmqProduct p, MmqPlan plan, float* scratch) {
     using F = Format<Type>;
     const int tile_rows = 1 + (p.weight_rows - 1) / I;
     const int tile_cols = 1 + (p.max_rows - 1) / J;
-    const size_t groups = size_t(p.experts) * tile_rows * tile_cols;
-    if (groups > INT_MAX || p.weight_cols > INT_MAX - 255)
+    const size_t tiles = size_t(p.experts) * tile_rows * tile_cols;
+    const int groups = plan.groups;
+    const int blocks = p.weight_cols / F::qk;
+    const int per_iter = 256 / F::qk;
+    const int64_t total_blocks = int64_t(tiles) * blocks;
+    auto boundary = [=](int group) {
+        int64_t pos = int64_t(group) * total_blocks / groups;
+        return int(pos - (pos % blocks) % per_iter);
+    };
+    if (tiles > INT_MAX || p.weight_cols > INT_MAX - 255)
         throw std::invalid_argument("MMQ launch dimensions overflow");
-    return queue.submit([&](sycl::handler& h) {
+    auto main_event = queue.submit([&](sycl::handler& h) {
         sycl::local_accessor<int, 1> wtile(I * XS, h);
         sycl::local_accessor<int8_t, 1> a_local(J * 32, h), b_local(32 * I, h);
         sycl::local_accessor<int, 1> part0(J * I, h), part1(J * I, h);
-        h.parallel_for(sycl::nd_range<1>(groups * WG, WG),
+        h.parallel_for(sycl::nd_range<1>(size_t(groups) * WG, WG),
             [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(16)]] {
                 const int tid = int(it.get_local_linear_id());
                 const int g = int(it.get_group_linear_id());
-                const int tile_i = g % tile_rows, tile_j = (g / tile_rows) % tile_cols;
-                const int expert = g / (tile_rows * tile_cols);
+                const int stop = boundary(g + 1);
+                for (int cursor = boundary(g); cursor < stop;) {
+                const int tile = cursor / blocks;
+                const int tile_j = tile % tile_cols;
+                const int expert = (tile / tile_cols) % p.experts;
+                const int tile_i = tile / (tile_cols * p.experts);
+                const int kb_begin = cursor % blocks;
+                const int kb_end = sycl::min(blocks, kb_begin + stop - cursor);
+                const bool tail_partial = kb_end < blocks;
+                cursor += kb_end - kb_begin;
                 const int begin = p.bounds[expert] + tile_j * J, end = p.bounds[expert + 1];
-                if (begin >= end) return; // uniform across the workgroup
+                if (begin >= end) continue; // uniform across the workgroup
                 const int wi = tile_i * I;
                 const int last = sycl::min(I, p.weight_rows - wi) - 1;
                 const auto* weights = reinterpret_cast<const char*>(p.weights) + expert * p.expert_bytes;
@@ -71,7 +87,7 @@ sycl::event launch(sycl::queue& queue, MmqProduct p) {
                 using B = mx::joint_matrix<sycl::sub_group, int8_t, mx::use::b, 32, I, mx::layout::ext_intel_packed>;
                 using C = mx::joint_matrix<sycl::sub_group, int, mx::use::accumulator, 8, I>;
                 float sums[J * I / WG] = {};
-                for (int kb = 0; kb < p.weight_cols; kb += 256) {
+                for (int kb = kb_begin * F::qk; kb < kb_end * F::qk; kb += 256) {
                     F::load(weights, wt, weight_offset + kb / F::qk, last, row_stride, {tid % 32, tid / 32});
                     it.barrier(sycl::access::fence_space::local_space);
                     for (int k = 0; k < 256; k += 32) {
@@ -117,11 +133,44 @@ sycl::event launch(sycl::queue& queue, MmqProduct p) {
                 }
                 for (int n = 0; n < J * I / WG; ++n) {
                     const int idx = tid + n * WG, row = begin + idx / I, wr = idx % I;
-                    if (row < end && wr <= last)
-                        p.dst[size_t(p.ids[row]) * p.ld_dst + wi + wr] = sums[n];
+                    if (row < end && wr <= last) {
+                        if (tail_partial) scratch[size_t(g) * J * I + idx] = sums[n];
+                        else p.dst[size_t(p.ids[row]) * p.ld_dst + wi + wr] = sums[n];
+                    }
                 }
+                } // This group's contiguous stream-K range can cross tiles.
             });
     });
+    if (!plan.scratch_bytes) return main_event;
+    // Same reverse predecessor traversal as mul_mat_q_stream_k_fixup. The
+    // group that wrote a tile's final segment owns its one destination update.
+    return queue.parallel_for(sycl::nd_range<1>(size_t(groups) * WG, WG),
+        [=](sycl::nd_item<1> it) {
+            const int g = int(it.get_group_linear_id());
+            const int first = boundary(g), stop = boundary(g + 1);
+            if (first == stop || first % blocks == 0 ||
+                (first / blocks == stop / blocks && stop % blocks != 0)) return;
+            const int tile = first / blocks, tile_j = tile % tile_cols;
+            const int expert = (tile / tile_cols) % p.experts;
+            const int tile_i = tile / (tile_cols * p.experts);
+            const int begin = p.bounds[expert] + tile_j * J, end = p.bounds[expert + 1];
+            // Do not read undefined partial buffers for empty/padded expert tiles.
+            if (begin >= end) return;
+            for (int idx = int(it.get_local_linear_id()); idx < J * I; idx += WG) {
+                const int row = begin + idx / I, wr = tile_i * I + idx % I;
+                if (row >= end || wr >= p.weight_rows) continue;
+                float sum = 0;
+                int previous_stop = first;
+                for (int previous = g - 1; previous >= 0; --previous) {
+                    const int start = boundary(previous);
+                    if (start == previous_stop) { previous_stop = start; continue; }
+                    sum += scratch[size_t(previous) * J * I + idx];
+                    if (start % blocks == 0 || start / blocks < first / blocks) break;
+                    previous_stop = start;
+                }
+                p.dst[size_t(p.ids[row]) * p.ld_dst + wr] += sum;
+            }
+        });
 }
 struct Info { int qk, bytes; };
 Info info(ggml_type type) {
@@ -142,12 +191,29 @@ size_t mmq_matrix_bytes(ggml_type type, int rows, int cols) {
         throw std::invalid_argument("invalid MMQ matrix geometry/type");
     return size_t(rows) * (cols / f.qk) * f.bytes;
 }
-sycl::event mmq_product(sycl::queue& queue, const MmqProduct& p) {
+MmqPlan mmq_plan(const MmqProduct& p, int compute_units, int forced_groups) {
+    (void) mmq_matrix_bytes(p.type, p.weight_rows, p.weight_cols);
+    if (p.experts <= 0 || p.max_rows <= 0 || compute_units <= 0 || forced_groups < 0)
+        throw std::invalid_argument("invalid MMQ launch plan");
+    const int64_t tiles = int64_t(p.experts) * (1 + (p.weight_rows - 1) / I) * (1 + (p.max_rows - 1) / J);
+    const int blocks = p.weight_cols / info(p.type).qk;
+    // The pinned GGML launcher uses this same bound for its continuous K index.
+    if (tiles > INT_MAX || tiles * blocks >= (1LL << 30))
+        throw std::invalid_argument("MMQ launch dimensions overflow");
+    const int64_t waves = (tiles + compute_units - 1) / compute_units;
+    const int efficiency = int(100 * tiles / (int64_t(compute_units) * waves));
+    const int groups = forced_groups ? forced_groups : efficiency >= 90 ? int(tiles) : compute_units;
+    return {groups, tiles % groups ? size_t(groups) * J * I * sizeof(float) : 0};
+}
+sycl::event mmq_product(sycl::queue& queue, const MmqProduct& p, const MmqPlan& plan, float* scratch) {
     if (p.experts <= 0 || p.max_rows <= 0) return {};
     if (!queue.has_property<sycl::property::queue::in_order>() || !p.weights || !p.x || !p.bounds || !p.ids || !p.dst ||
         p.total_rows <= 0 || p.ld_dst < p.weight_rows || p.expert_bytes < mmq_matrix_bytes(p.type, p.weight_rows, p.weight_cols))
         throw std::invalid_argument("invalid MMQ product");
-#define CASE(TYPE) case TYPE: return launch<TYPE>(queue, p);
+    const auto expected = mmq_plan(p, 1, plan.groups);
+    if (plan.groups <= 0 || expected.scratch_bytes != plan.scratch_bytes || (plan.scratch_bytes && !scratch))
+        throw std::invalid_argument("invalid MMQ scratch/plan");
+#define CASE(TYPE) case TYPE: return launch<TYPE>(queue, p, plan, scratch);
     switch (p.type) {
         CASE(GGML_TYPE_Q2_0) CASE(GGML_TYPE_IQ2_XXS) CASE(GGML_TYPE_IQ2_XS)
         CASE(GGML_TYPE_IQ2_S) CASE(GGML_TYPE_IQ3_XXS) CASE(GGML_TYPE_IQ3_S)

@@ -30,10 +30,13 @@ int main() try {
     auto next = [&]() { rng ^= rng << 13; rng ^= rng >> 17; rng ^= rng << 5; return rng; };
     size_t checked = 0, guards = 0;
     double max_relative_l1 = 0;
-    int cases = 0;
+    int cases = 0, fixup_cases = 0;
+    const int compute_units = int(q.get_device().get_info<sycl::info::device::max_compute_units>());
+    std::cout << "compute_units=" << compute_units << '\n';
     for (const auto& kind : kinds)
     for (int wr : {1, 16, 19, 1280, 2560})
-    for (int cols : {256, 640, 1280, 2560}) {
+    for (int cols : {256, 640, 1280, 2560})
+    for (int policy : {0, 1, 2, 3, 4}) {
         if (cols % kind.qk) continue;
         if (wr == 1280 && (cols != 2560 ||
             (kind.type != GGML_TYPE_IQ3_S && kind.type != GGML_TYPE_IQ2_S && kind.type != GGML_TYPE_IQ4_XS))) continue;
@@ -102,9 +105,23 @@ int main() try {
             if (mismatches) throw std::runtime_error("IQ2_XS loader regression");
             sycl::free(diagnostic, q);
         }
-        mmq_product(q, p);
+        // 0: full tiles; 1: normal efficiency rule; others force partitions
+        // including more workgroups than nonempty K ranges.
+        const int forced[] = {0, 0, 3, 7, 257};
+        const auto plan = mmq_plan(p, policy == 0 ? 1 : compute_units, forced[policy]);
+        auto* scratch_raw = sycl::malloc_device<uint32_t>(plan.scratch_bytes / 4 + 64, q);
+        if (!scratch_raw) throw std::runtime_error("scratch allocation failed");
+        q.memset(scratch_raw, 0xff, plan.scratch_bytes + 256);
+        mmq_product(q, p, plan, reinterpret_cast<float*>(scratch_raw + 32));
+        fixup_cases += plan.scratch_bytes != 0;
         q.memcpy(result.data(), dst, result.size() * 4);
         q.memcpy(quantized.data(), dq, quantized.size() * sizeof(MmqBlock)).wait_and_throw();
+        uint32_t scratch_guards[64];
+        q.memcpy(scratch_guards, scratch_raw, 128);
+        q.memcpy(scratch_guards + 32, scratch_raw + 32 + plan.scratch_bytes / 4, 128).wait_and_throw();
+        sycl::free(scratch_raw, q);
+        for (auto v : scratch_guards) if (v != 0xffffffffu)
+            throw std::runtime_error("stream-K scratch guard overwritten");
         std::vector<uint8_t> after(weights.size());
         q.memcpy(after.data(), dw, after.size()).wait_and_throw();
         if (after != weights) throw std::runtime_error("weight input modified");
@@ -132,7 +149,7 @@ int main() try {
                 }
                 const double error = std::abs(result[at] - ref);
                 if (!std::isfinite(result[at]) || error > 3e-6 * l1 + 1e-6) {
-                    std::cerr << kind.name << " wr=" << wr << " cols=" << cols << " expert=" << e
+                    std::cerr << kind.name << " policy=" << policy << " groups=" << plan.groups << " wr=" << wr << " cols=" << cols << " expert=" << e
                               << " token=" << token << " weight_row=" << r << " got=" << result[at]
                               << " ref=" << ref << " error=" << error << " l1=" << l1 << '\n';
                     throw std::runtime_error("MMQ product disagrees with independent CPU dequantization");
@@ -146,10 +163,57 @@ int main() try {
             ++guards;
         }
         ++cases;
-        std::cout << "PASS " << kind.name << " wr=" << wr << " cols=" << cols << '\n';
+        std::cout << "PASS " << kind.name << " policy=" << policy << " groups=" << plan.groups << " wr=" << wr << " cols=" << cols << '\n';
+    }
+    // Exact cancellation fixture checks the upstream *order*, which a
+    // tolerance against a double dot cannot establish. Four 256-wide chunks
+    // contribute A, -A, 3, 4 with A=127*2^25. Full-K gives 7; four or more
+    // separated chunks give 4 because reverse fixup loses 3 before cancellation.
+    {
+        constexpr int cols = 1024;
+        std::vector<block_q8_0> weights(cols / 32 + 128);
+        for (auto& b : weights) { b.d = sycl::half(1.f); std::fill(std::begin(b.qs), std::end(b.qs), int8_t(0)); }
+        std::vector<float> x(cols, 0.f);
+        for (int chunk = 0; chunk < 4; ++chunk) {
+            weights[chunk * 8].qs[0] = chunk == 1 ? -1 : 1;
+            if (chunk < 2) std::fill(x.begin() + chunk * 256, x.begin() + chunk * 256 + 32, std::ldexp(127.f, 25));
+            else { x[chunk * 256] = float(chunk + 1); x[chunk * 256 + 31] = 127.f; }
+        }
+        auto* dw = sycl::malloc_device<block_q8_0>(weights.size(), q);
+        auto* dx = sycl::malloc_device<float>(cols, q);
+        auto* dq = sycl::malloc_device<MmqBlock>(mmq_q8_bytes(1, cols) / sizeof(MmqBlock), q);
+        auto* db = sycl::malloc_device<int32_t>(2, q);
+        auto* di = sycl::malloc_device<int32_t>(1, q);
+        auto* dst = sycl::malloc_device<float>(1, q);
+        if (!dw || !dx || !dq || !db || !di || !dst) throw std::runtime_error("cancellation fixture allocation");
+        const int32_t bounds[2] = {0, 1}, id = 0;
+        q.memcpy(dw, weights.data(), weights.size() * sizeof(block_q8_0));
+        q.memcpy(dx, x.data(), cols * 4); q.memcpy(db, bounds, 8); q.memcpy(di, &id, 4);
+        mmq_quantize(q, dx, nullptr, dq, GGML_TYPE_Q8_0, cols, cols, 1);
+        const MmqProduct p{dw, GGML_TYPE_Q8_0, 1, cols, cols / 32 * sizeof(block_q8_0), 1,
+                           dq, db, di, 1, 1, dst, 1};
+        for (int groups : {1, 2, 3, 4, 5, 7, 160, 257}) {
+            const auto plan = mmq_plan(p, compute_units, groups);
+            auto* scratch = sycl::malloc_device<float>(plan.scratch_bytes / 4 + 1, q);
+            if (!scratch) throw std::runtime_error("cancellation fixture scratch");
+            q.memset(scratch, 0xff, plan.scratch_bytes + 4);
+            q.fill(dst, -1234567.f, 1);
+            mmq_product(q, p, plan, scratch);
+            float actual;
+            q.memcpy(&actual, dst, 4).wait_and_throw();
+            sycl::free(scratch, q);
+            const float expected = groups < 4 ? 7.f : 4.f;
+            if (actual != expected) {
+                std::cerr << "fixup order groups=" << groups << " actual=" << actual << " expected=" << expected << '\n';
+                throw std::runtime_error("upstream fixup addition order mismatch");
+            }
+        }
+        sycl::free(dw, q); sycl::free(dx, q); sycl::free(dq, q);
+        sycl::free(db, q); sycl::free(di, q); sycl::free(dst, q);
+        std::cout << "PASS exact_fixup_order_cases=8\n";
     }
     std::cout << "PASS cases=" << cases << " products=" << checked << " output_guards=" << guards
-              << " max_error_over_l1=" << max_relative_l1 << '\n';
+              << " fixup_cases=" << fixup_cases << " max_error_over_l1=" << max_relative_l1 << '\n';
     return 0;
 } catch (const std::exception& e) {
     std::cerr << "FAIL: " << e.what() << '\n';
