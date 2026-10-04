@@ -1,0 +1,29 @@
+{
+  "source_revision": "6229d8a",
+  "engine_sha256": "daffb7241f80a67e8959e243f6c746abea937182826069c5c969a893a5823ed8",
+  "hardware": "Intel Arc B570 10 GB; Ryzen 5 5600X; 128 GB RAM",
+  "build": "Release; icpx 2026.1.1; STRATA_SYCL_AOT=bmg-g21; precise floating point and correctly rounded FP32 divide/sqrt; three build workers",
+  "scope": "Strata SYCL kernels AOT; oneMKL is provided by its separately compiled library",
+  "ctest": {
+    "registered": 28,
+    "passed": 28,
+    "skipped": 0,
+    "failed": 0,
+    "wall_seconds": 55.34
+  },
+  "model": {
+    "lengths": [
+      4096,
+      8087
+    ],
+    "one_chunk_each": true,
+    "all_first_heads_finite": true,
+    "values_per_head": 248320,
+    "whole_first_heads_and_ids_match_original_cli": true
+  },
+  "normal_mtp_serve": {
+    "requests": 4,
+    "tokens_and_finite_logprob_records_per_request": 4,
+    "repeat_and_restore_match_first_ids_and_logprobs": true
+  }
+}

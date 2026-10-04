@@ -328,3 +328,14 @@ six change some bits. Grouped calls are slower in every shape. For four
 down products with up to 128 rows each, individual calls take 0.962 ms
 and the group takes 3.077 ms. This library batching route is not adopted;
 the raw log distinguishes the numeric bound from complete bit identity.
+
+The final [B570 AOT validation](aot-validation/validation.json) uses
+`STRATA_SYCL_AOT=bmg-g21`, precise floating point and correctly rounded
+FP32 divide/sqrt. All 28 registered tests pass, with no skipped tests.
+The real IQ3_S model then runs 4,096 and 8,087 input tokens with batch
+128/layout 3 and the tuned selector; both use one chunk and match all
+248,320 finite first-logit bits and output IDs from the original CLI.
+These are single correctness runs. The AOT MTP server also passes four
+requests, including checkpoint reuse and exact output/logprob restoration.
+AOT covers Strata's SYCL kernels; oneMKL remains its separately supplied
+library.
