@@ -1,5 +1,5 @@
 {
-  "status": "accepted: small paired raw-prefill improvement; persistent regression checks passed; full suites in progress",
+  "status": "accepted: small paired raw-prefill improvement; persistent and full-suite regression checks passed",
   "source_parent_commit": "3bd22ad",
   "hardware": {
     "gpu": "Intel Arc B57010GiB",
@@ -1347,7 +1347,20 @@
     "AOT_MMQ": "3tests50geometries passed,2.48s",
     "raw_outputs": "all12short/long runs matched eight expected ids",
     "packed_outputs": "bothshort/long pairs matched expected ids",
-    "full_suites": "pending",
+    "full_suites": {
+      "jit": {
+        "passed": 41,
+        "failed": 0,
+        "seconds": 35.38,
+        "STRATA_IQ_SINGLE_EXACT": "1"
+      },
+      "aot": {
+        "passed": 41,
+        "failed": 0,
+        "seconds": 33.91,
+        "STRATA_IQ_SINGLE_EXACT": "1"
+      }
+    },
     "persistent": "bothPACK0/1 writing/coding128twice, prefill/decodecancel and8recovery passed; all completed ids equal"
   },
   "persistent": {

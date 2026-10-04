@@ -2561,7 +2561,7 @@ geometries, including bitwise comparisons and scratch-buffer canaries.
 
 The AOT image still has 54 XMX variants, all using 128 GRFs with no scratch
 buffers. Only the 27 affected GPU kernel bodies changed; all other GPU kernel
-bodies and CPU code remained unchanged. For raw exact tile-8, the IQ3_S kernel
+bodies and CPU expert code remained unchanged. For raw exact tile-8, the IQ3_S kernel
 code decreased from 134,720 to 118,720 bytes. This is code size, not a measured
 instruction-cache miss rate.
 
@@ -2581,5 +2581,5 @@ cancellation and recovery with identical completed output ids. Local configs
 continue to leave packing off. No decode throughput gain is claimed.
 
 The [measurement record](../bench/results/2026-10-04-sycl-xmx-signspread/run.json)
-contains samples, hashes, flags and GPU metadata. Full-suite checks are in
-progress after these targeted and real-model validations.
+contains samples, hashes, flags and GPU metadata. JIT and AOT each passed all
+41 tests with the CPU gate/up optimization enabled.
