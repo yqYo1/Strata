@@ -226,3 +226,30 @@ median times is 0.9581 versus 0.9107 ms/additional token; individual variant
 pair slopes range from 0.8930 to 0.9228. Overall throughput at 8,087 tokens
 is 467.93 tok/s; the 1,098 additional tok/s from the local slope is a separate
 metric. This comparison does not include the MTP draft layer or measure decode.
+
+
+The [compact XMX probe](attention/layout-study/compact-xmx/run.json) reduces
+requested shared local memory from 86,784 to 62,208 bytes by reusing regions
+after their last readers and processing one output tile per subgroup at a
+time. All six supported-case outputs match the original XMX CH32 kernel bit
+for bit. However, both K8V4 cases fail the existing FP64 and FP32 fallback
+accuracy bounds: matching the original XMX does not establish adequate
+precision. The [complete log](attention/layout-study/compact-xmx/wall-timer-probe.log)
+retains those failures. This variant is not used in the engine. The initial
+event-timer attempt also failed because the queue did not enable profiling;
+that record is retained separately. The subsequent probe uses synchronized
+wall time, with the same mathematical operations and accuracy bounds.
+
+The [selection probe](attention/layout-study/selection-study/run.json) keeps
+floating block scores unchanged and varies the integer radix selector. It
+compares 256, 512 and 1,024 threads, with serial or parallel searches of the
+256 histogram bins. All 48 cases match both the original GPU selector and
+an independent stable CPU sort, including ties, signed zero, NaN, infinities,
+denormals, identity selections, incomplete tails and capacity/live bounds.
+At 8,192 cells and 129 queries, the 256-thread, nine-key parallel version
+takes 0.0408 ms in the continuous-score case, versus 0.3447 ms for the
+original. These are medians of three warmed rounds of three launches,
+with order alternated; they are synthetic wall times, not model throughput.
+The probe reports zero spill bytes for that version, while its 33-key version
+reports 17,216. Any engine variant therefore needs an explicit live-size bound
+and model validation. Both probes retain their source and binary hashes.
