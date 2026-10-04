@@ -52,6 +52,7 @@ public:
         // by recorded commands remain caller-owned.
     };
     explicit Runtime(const sycl::device&);
+    Runtime(const sycl::device&, const sycl::context&);
     ~Runtime();
     Runtime(const Runtime&) = delete;
     Runtime& operator=(const Runtime&) = delete;
@@ -73,6 +74,9 @@ public:
     // Timestamp queries are made only after both completion states are ready.
     Timing elapsed_time(const Event& start, const Event& end);
     void wait_event(Stream, const Event&);
+    // Copy an uncaptured event under its owner's mutex for a wait in another
+    // runtime sharing this context. Captured dependencies stay in their owner.
+    Event snapshot_event(const Event&);
     bool query(Stream);
     bool query(const Event&);
     void synchronize(Stream);

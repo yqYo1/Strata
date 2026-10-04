@@ -70,7 +70,7 @@ struct Runtime::Impl {
             return state.use_count() == 1 && (!state->last_launch || complete(*state->last_launch));
         });
     }
-    explicit Impl(const sycl::device& d): device(d), context(d) {
+    Impl(const sycl::device& d, const sycl::context& c): device(d), context(c) {
         streams.emplace(0, std::make_unique<Queue>(context, device, false));
     }
     Queue& get(Stream stream) {
@@ -158,7 +158,8 @@ struct Runtime::Impl {
         return deps;
     }
 };
-Runtime::Runtime(const sycl::device& d): impl_(std::make_unique<Impl>(d)) {}
+Runtime::Runtime(const sycl::device& d): Runtime(d, sycl::context(d)) {}
+Runtime::Runtime(const sycl::device& d, const sycl::context& c): impl_(std::make_unique<Impl>(d,c)) {}
 Runtime::~Runtime() {
     try { prepare_teardown(); }
     catch (const std::exception& e) {
@@ -233,6 +234,11 @@ Runtime::Timing Runtime::elapsed_time(const Event& start, const Event& end) {
     const auto b = end.completion_->get_profiling_info<sycl::info::event_profiling::command_end>();
     const double ns = b >= a ? double(b - a) : -double(a - b);
     return {TimingStatus::ready, float(ns / 1e6)};
+}
+Runtime::Event Runtime::snapshot_event(const Event& event) {
+    std::lock_guard lock(impl_->mutex);
+    if (event.captured_) throw std::invalid_argument("cross-runtime captured event wait is not implemented");
+    return event;
 }
 void Runtime::wait_event(Stream stream, const Event& event) {
     std::lock_guard lock(impl_->mutex);

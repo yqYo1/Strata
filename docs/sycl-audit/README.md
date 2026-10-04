@@ -122,6 +122,7 @@ changed-input graphs and concurrent host submissions. An [original host compile
 inventory](host-compile-results.json) records the next integration blockers.
 
 [GPU event timing](runtime-timing.md) now compiles the original layer/session host
-files and runs the original stage timer. The [latest host syntax inventory](host-timing-compile-results.json)
-records 13 passes and seven remaining failures; full engine linking and execution
-remain open.
+files and runs the original stage timer. Its [host syntax checkpoint](host-timing-compile-results.json)
+records 13 passes and seven failures. [Device selection and free VRAM](runtime-devices.md)
+now run the original expert cache, bringing the [latest host syntax inventory](host-device-compile-results.json)
+to 14 passes and six failures. Full engine linking and execution remain open.

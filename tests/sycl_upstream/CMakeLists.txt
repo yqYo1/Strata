@@ -264,3 +264,33 @@ target_compile_options(graph_copy2d_probe PRIVATE -fsycl)
 if(STRATA_SYCL_DEVICE_ARCH)
     target_compile_options(graph_copy2d_probe PRIVATE -fsycl-targets=spir64_gen)
 endif()
+
+# Link and run the original expert cache through native device/memory queries.
+add_library(strata_sycl_original_cache_host STATIC ${STRATA_ROOT}/src/core/expert_cache.cpp)
+target_link_libraries(strata_sycl_original_cache_host PUBLIC strata_sycl_cuda_frontend)
+add_executable(runtime_devices_test runtime_devices.cpp)
+target_link_libraries(runtime_devices_test PRIVATE strata_sycl_original_cache_host)
+target_compile_options(runtime_devices_test PRIVATE -fsycl)
+if(STRATA_SYCL_DEVICE_ARCH)
+    target_compile_options(runtime_devices_test PRIVATE -fsycl-targets=spir64_gen)
+endif()
+add_test(NAME original_cache_device_memory COMMAND runtime_devices_test)
+set_tests_properties(original_cache_device_memory PROPERTIES TIMEOUT 60)
+add_test(NAME runtime_empty_device_visibility COMMAND ${CMAKE_COMMAND} -E env
+    ONEAPI_DEVICE_SELECTOR=opencl:gpu $<TARGET_FILE:runtime_devices_test> --no-level-zero)
+set_tests_properties(runtime_empty_device_visibility PROPERTIES TIMEOUT 20)
+add_test(NAME runtime_legacy_sysman_rejection COMMAND ${CMAKE_COMMAND} -E env
+    ZES_ENABLE_SYSMAN=1 $<TARGET_FILE:runtime_devices_test> --legacy-sysman)
+set_tests_properties(runtime_legacy_sysman_rejection PROPERTIES TIMEOUT 20)
+
+# Read-only native diagnostic: includes the raw physical/free and usable-memory
+# values, plus observed allocation-pool retention after sycl::free.
+add_executable(sysman_probe EXCLUDE_FROM_ALL sysman_probe.cpp)
+target_link_libraries(sysman_probe PRIVATE ${STRATA_LEVEL_ZERO_LOADER})
+target_compile_options(sysman_probe PRIVATE -fsycl)
+target_link_options(sysman_probe PRIVATE -fsycl)
+if(STRATA_SYCL_DEVICE_ARCH)
+    target_compile_options(sysman_probe PRIVATE -fsycl-targets=spir64_gen)
+    target_link_options(sysman_probe PRIVATE -fsycl-targets=spir64_gen
+        "SHELL:-Xsycl-target-backend=spir64_gen \"-device ${STRATA_SYCL_DEVICE_ARCH}\"")
+endif()

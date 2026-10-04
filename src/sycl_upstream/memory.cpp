@@ -1,6 +1,8 @@
 #include "strata/sycl_upstream/memory.hpp"
 #include <sycl/ext/oneapi/backend/level_zero.hpp>
 #include <level_zero/ze_api.h>
+#include <level_zero/zes_api.h>
+#include <cstdlib>
 #include <unistd.h>
 #include <algorithm>
 #include <cstdio>
@@ -236,6 +238,15 @@ std::optional<Memory::Info> Memory::info(const void* pointer) const {
     auto it = impl_->containing(reinterpret_cast<uintptr_t>(pointer));
     return it == impl_->entries.end() ? std::nullopt : std::optional<Info>(it->second->info);
 }
+bool Memory::overlaps(const void* pointer,size_t bytes) const {
+    const auto first=reinterpret_cast<uintptr_t>(pointer),last=end_of(first,bytes);
+    std::lock_guard lock(impl_->mutex);
+    const auto next=impl_->entries.lower_bound(first);
+    if(next!=impl_->entries.end() && next->first<last) return true;
+    if(next==impl_->entries.begin()) return false;
+    const auto previous=std::prev(next);
+    return previous->second->info.bytes>first-previous->first;
+}
 void* Memory::device_alias(void* pointer) const {
     std::lock_guard lock(impl_->mutex);
     auto it = impl_->containing(reinterpret_cast<uintptr_t>(pointer));
@@ -256,5 +267,52 @@ Memory::Stats Memory::stats() const {
         ++result.imported_ranges;
     }
     return result;
+}
+Memory::Available Memory::available() const {
+    auto unsupported=[](const char* why) -> void {
+        throw sycl::exception(sycl::make_error_code(sycl::errc::feature_not_supported),why);
+    };
+    auto query=[&](ze_result_t result) {
+        if (result!=ZE_RESULT_SUCCESS) unsupported("device free-memory Sysman query unavailable");
+    };
+    if (impl_->device.get_backend()!=sycl::backend::ext_oneapi_level_zero)
+        unsupported("free-memory query requires Level Zero");
+    // Standalone Sysman has its own handles. Never reinterpret a core handle,
+    // and never change the application's process-wide initialization variables.
+    if (const char* legacy=std::getenv("ZES_ENABLE_SYSMAN"); legacy && std::strcmp(legacy,"0"))
+        unsupported("standalone Sysman free-memory query requires ZES_ENABLE_SYSMAN unset or 0");
+    static const auto drivers=[&] {
+        query(zesInit(0));
+        uint32_t n=0; query(zesDriverGet(&n,nullptr));
+        std::vector<zes_driver_handle_t> result(n);
+        if(n) query(zesDriverGet(&n,result.data()));
+        result.resize(n);return result;
+    }();
+    ze_device_properties_t properties{ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES};
+    query(zeDeviceGetProperties(sycl::get_native<sycl::backend::ext_oneapi_level_zero>(impl_->device),&properties));
+    zes_uuid_t uuid{};static_assert(sizeof(uuid.id)==sizeof(properties.uuid.id));
+    std::memcpy(uuid.id,properties.uuid.id,sizeof(uuid.id));
+    zes_device_handle_t device=nullptr;ze_bool_t sub=0;uint32_t sub_id=0;
+    for(auto driver:drivers) {
+        zes_device_handle_t matched=nullptr;
+        if(zesDriverGetDeviceByUuidExp(driver,uuid,&matched,&sub,&sub_id)==ZE_RESULT_SUCCESS) {device=matched;break;}
+    }
+    if(!device) unsupported("no Sysman device matching the compute device UUID");
+    uint32_t n=0;query(zesDeviceEnumMemoryModules(device,&n,nullptr));
+    std::vector<zes_mem_handle_t> modules(n);
+    if(n) query(zesDeviceEnumMemoryModules(device,&n,modules.data()));
+    modules.resize(n);uint64_t free=0;bool found=false,root_module=false,tile_module=false;
+    for(auto module:modules) {
+        zes_mem_properties_t p{ZES_STRUCTURE_TYPE_MEM_PROPERTIES};query(zesMemoryGetProperties(module,&p));
+        if(p.location!=ZES_MEM_LOC_DEVICE || (sub && (!p.onSubdevice || p.subdeviceId!=sub_id))) continue;
+        root_module|=!p.onSubdevice;tile_module|=bool(p.onSubdevice);
+        zes_mem_state_t state{ZES_STRUCTURE_TYPE_MEM_STATE};query(zesMemoryGetState(module,&state));
+        if(state.free>std::numeric_limits<uint64_t>::max()-free) unsupported("free-memory sum overflow");
+        free+=state.free;found=true;
+    }
+    const auto total=impl_->device.get_info<sycl::info::device::global_mem_size>();
+    if(!found || (root_module && tile_module) || !total || free>total || total>std::numeric_limits<size_t>::max())
+        unsupported("inconsistent device memory capacity or missing device memory modules");
+    return {size_t(free),size_t(total)};
 }
 } // namespace strata::sycl_upstream

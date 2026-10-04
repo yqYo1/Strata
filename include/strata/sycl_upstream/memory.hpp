@@ -28,7 +28,12 @@ public:
     void unregister_host(void* original_pointer);
     void* device_alias(void* host_pointer) const;
     std::optional<Info> info(const void*) const;
+    bool overlaps(const void*, size_t bytes) const;
     Stats stats() const;
+    struct Available { size_t free, total; };
+    // Physical free memory from the device driver, and SYCL global memory
+    // capacity. No ledger subtraction or presumed allocation success.
+    Available available() const;
     size_t page_size() const;
 private:
     struct Impl;

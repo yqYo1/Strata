@@ -156,7 +156,7 @@ timeout 5 build-upstream-sycl/graph_copy2d_probe native
 
 Still open: the other original host translation units, kernel entry-point bindings,
 interprocess events, graph upload/update/full node introspection, capture
-modes beyond ThreadLocal, per-thread default streams, device capability/selection
+modes beyond ThreadLocal, per-thread default streams, device capability metadata
 and peer APIs, write-combined/I/O registration, asynchronous allocators, complete
 CUDA error behavior, Windows and multi-device execution. Unsupported flags and
 node enumeration return explicit errors. Full-model state parity and PP/TG
@@ -168,3 +168,7 @@ so a fatal launch diagnostic is not hidden by a teardown synchronization error.
 
 [GPU event timing](runtime-timing.md) now compiles the original layer/session host
 files and runs the original stage timer. Complete engine linkage remains open.
+
+[Device selection and free VRAM](runtime-devices.md) now retain resource owners,
+use native visible-device enumeration and run the original expert cache. The
+registry supports separate device domains; only the single B570 has been tested.

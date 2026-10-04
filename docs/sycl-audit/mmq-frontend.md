@@ -98,8 +98,8 @@ Compiler recovery can hide an API error behind an unknown argument type or
 constant. The full diagnostics and [source call inventory](runtime-inventory.json)
 remain authoritative; the table is a work list, not a complete API census.
 No CUDA compute capability or runtime version is fabricated to admit this GPU.
-The new MMQ binding still uses the frontend's single selected device domain;
-multi-device behavior, optional formats, remaining prefill/decode kernel families,
+The frontend now has [device-owned domains and native memory queries](runtime-devices.md).
+Multi-device execution is untested. Optional formats, remaining prefill/decode kernel families,
 full scheduling traces, layer/session tensors and actual model PP/TG are open.
 
 Reproduce with the driver environment described in [runtime-memory.md](runtime-memory.md):
