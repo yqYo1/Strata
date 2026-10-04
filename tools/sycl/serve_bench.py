@@ -152,7 +152,7 @@ def main():
             reason = fields[5]
             if int(fields[1]) != len(tokens) or len(tokens) > count:
                 raise RuntimeError("DONE token count mismatch")
-            allowed = ("cancel",) if cancel else ("length", "eos")
+            allowed = ("cancel",) if cancel else ("length", "stop", "eos")
             if reason not in allowed:
                 raise RuntimeError(f"unexpected finish reason: {reason}")
             if reason == "length" and len(tokens) != count:
