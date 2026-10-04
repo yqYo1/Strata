@@ -2550,3 +2550,36 @@ output ids and cancellation checks passed. The
 [record and rejected patch](../bench/results/2026-10-04-sycl-cpu-iq4-rows/run.json)
 also retain the slower loop-expansion and table-lookup variants. Component
 throughput alone was insufficient to justify this change.
+
+### XMX sign-bit expansion (2026-10-04)
+
+The XMX IQ3_XXS, IQ3_S and IQ2_S kernels now expand four sign bits with a
+constant multiply and byte mask, retaining the original negation, integer
+products and FP32 reduction tree. All 256 sign-byte values match the previous
+mask formula. JIT and B570 AOT each passed the three MMQ tests covering 50
+geometries, including bitwise comparisons and scratch-buffer canaries.
+
+The AOT image still has 54 XMX variants, all using 128 GRFs with no scratch
+buffers. Only the 27 affected GPU kernel bodies changed; all other GPU kernel
+bodies and CPU code remained unchanged. For raw exact tile-8, the IQ3_S kernel
+code decreased from 134,720 to 118,720 bytes. This is code size, not a measured
+instruction-cache miss rate.
+
+Three alternating old/new pairs on the same B570/5600X workstation used
+exact tile-8 with packing off and the preceding CPU gate/up tuning on. The
+826-token prefill median was 8,962.7→8,935.9 ms (+0.30% rate); the 4,007-token
+median was 26,617.5→26,549.6 ms, or 150.540→150.925 token/s (+0.26%). Context,
+chunk and cache settings matched the preceding row-offset experiment. All
+samples were retained, including the slower first new short run. Existing
+workstation services remained active; no compilation or other GPU test
+overlapped measurement.
+
+A separate packing-on screen gave 8,906.4→8,842.7 ms for 826 tokens and
+25,280.7→25,043.3 ms for 4,007 tokens. These are single-pair timings. Both
+packing modes passed repeated 128-token writing/coding, prefill/decode
+cancellation and recovery with identical completed output ids. Local configs
+continue to leave packing off. No decode throughput gain is claimed.
+
+The [measurement record](../bench/results/2026-10-04-sycl-xmx-signspread/run.json)
+contains samples, hashes, flags and GPU metadata. Full-suite checks are in
+progress after these targeted and real-model validations.

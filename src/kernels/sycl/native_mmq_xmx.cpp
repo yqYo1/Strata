@@ -72,10 +72,9 @@ U nonlinear(U packed, int shift) SYCL_ESIMD_FUNCTION {
   return out;
 }
 U signed_word(U positive, U signs) SYCL_ESIMD_FUNCTION {
-  U mask = 0;
-#pragma unroll
-  for (int byte = 0; byte < 4; ++byte)
-    mask |= ((0u - ((signs >> byte) & 1u)) & 255u) << (byte * 8);
+  // Spread the low four sign bits to bit zero of each byte, then fill the bytes.
+  const U spread = ((signs & 15u) * 0x00204081u) & 0x01010101u;
+  const U mask = spread * 255u;
   const U negative = (0x80808080u - positive) ^ 0x80808080u;
   return (positive & ~mask) | (negative & mask);
 }
