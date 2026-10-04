@@ -39,6 +39,10 @@ they are not a count of production kernels or a resolved build graph.
 | QSA tensor scorer | CUDA `qsa_block_scores_tc` has a tensor implementation | SYCL function unconditionally returns false | Scalar fallback exists; accuracy and performance contract still needs comparison |
 | Router cluster path | CUDA optional cluster implementation | SYCL cluster entry returns false | Check selection conditions, tie order and actual hot-path use |
 | Host/device flag handoff | CUDA mapped-memory wait kernels | SYCL wait functions throw, host flow uses event-completed alternatives | Audit memory visibility, CPU/GPU scheduling, graph capture and cancellation together |
+| Decode token graph | Upstream token capture can retain a whole token graph with host flag handoff | `session_capture_token` refuses SYCL; CLI defaults `no_token_graph=true` | A major scheduling difference, separate from kernel throughput; end-to-end impact not isolated |
+| Verify window | Upstream captures a whole window with GPU/CPU handoff | SYCL splits it into event-completed segments and forces PCIe mode 0 | Compare accepted/rejected drafts, commit state, CPU/GPU overlap and cancellation |
+| Host expert memory | CUDA can register/map the arena | SYCL uses ordinary host arena plus bounded staging | Direct GPU reads and copies have different requirements; preserve the visibility reproducers |
+| Multi-GPU | Peer experts and layer split have upstream paths | SYCL peer admission is rejected and several tables bind to device 0 | Explicitly unsupported, not reproduced |
 | Device timestamps | CUDA device timer stamps | SYCL entry throws | Diagnostic capability absent; not itself evidence of inference loss |
 | Fused experts | CUDA integer matrix kernels, optional IQ fused path | Portable integer loops / separate XMX implementation | Match opt-in conditions, layouts, reductions and epilogues before choosing device tiles |
 | CPU work split | Upstream defaults can send cache misses to GPU | Recorded local runs used `--pcie-frac 0` plus private CPU dispatch settings | Benchmark configuration differs independently of the GPU port |
@@ -84,3 +88,10 @@ queue-stall and host/device atomic-visibility reproducers. They justify focused
 runtime work, not assuming all transfer overlap is impossible. The rejected
 quantizer microbenchmarks at `bench/results/2026-10-04-sycl-quant-layout-trials/`
 measured the old layout and do not measure upstream MMQ reproduction.
+
+## First port component
+
+The isolated [MMQ quantizer](../../src/sycl_upstream/mmq_quantize.cpp) implements
+the upstream 2D activation layout. Its [validation record](mmq-quantizer.md)
+separates source-reference agreement from still-missing CUDA-device comparisons.
+The product consumer and full engine are not connected to this component yet.

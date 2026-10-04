@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-04",
+  "device": "Intel(R) Arc(TM) B570 Graphics",
+  "backend": "Level Zero",
+  "compiler": "IntelLLVM 2026.1.1",
+  "upstream": "99f3dbd0b21d1401b3769e0c0d963913607f380b",
+  "ggml": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+  "cuda_reference_executed": false,
+  "result": "PASS against host source translation",
+  "cases_per_build": 546,
+  "layout_types_checked": 22,
+  "compared_bytes_per_build_including_guards": 70640640,
+  "source_sha256": {
+    "include/strata/sycl_upstream/mmq_quantize.hpp": "188dfc66ae046ffefc52e59a3a1506038411d638629c9eaf4817d214b84abbb2",
+    "src/sycl_upstream/mmq_quantize.cpp": "33ea761f38e1eb3643d2f28a9a2ff2fd3109e29ea0827eb027828b47da1a95cd",
+    "tests/sycl_upstream/mmq_quantize.cpp": "195fba5d94546e210c4ee48fdc25f801d41fb322705e4eb0a25cf886a2caea94",
+    "tests/sycl_upstream/CMakeLists.txt": "b2ed375d2e30253965df52d0d2ed30cd40c1e4402af3e8738793f4050d2f4d64",
+    "tests/sycl_upstream/prepare_oracle.py": "0546e890936332e0024ad15db93532ec46dce3308da7ec20b9aff4b82a85a1f1"
+  },
+  "reference_change_rejection": "PASS: appending comment to temporary copy of quantize.cu fails hash check",
+  "builds": {
+    "jit": {
+      "executable_sha256": "15f1653ad9d69087ce345d7832e00a07e81db1aed628e448f55fe8c1ac031301",
+      "test_log": "Start testing: Oct 04 17:08 JST\n----------------------------------------------------------\n1/1 Testing: mmq_quantize_upstream_source\n1/1 Test: mmq_quantize_upstream_source\nCommand: \"<worktree>/build-upstream-sycl/mmq_quantize_test\"\nDirectory: <worktree>/build-upstream-sycl\n\"mmq_quantize_upstream_source\" start time: Oct 04 17:08 JST\nOutput:\n----------------------------------------------------------\ndevice=Intel(R) Arc(TM) B570 Graphics\nPASS source_reference_cases=546 layout_types=22 compared_bytes_including_guards=70640640\n<end of output>\nTest time =   0.63 sec\n----------------------------------------------------------\nTest Passed.\n\"mmq_quantize_upstream_source\" end time: Oct 04 17:08 JST\n\"mmq_quantize_upstream_source\" time elapsed: 00:00:00\n----------------------------------------------------------\n\nEnd testing: Oct 04 17:08 JST\n"
+    },
+    "aot_bmg_g21": {
+      "executable_sha256": "56bc8ca808b4c4c0e886b8eecfc183bd4a6ef364538afa0e408247cf62f88e2c",
+      "test_log": "Start testing: Oct 04 17:06 JST\n----------------------------------------------------------\n1/1 Testing: mmq_quantize_upstream_source\n1/1 Test: mmq_quantize_upstream_source\nCommand: \"<worktree>/build-upstream-sycl-aot/mmq_quantize_test\"\nDirectory: <worktree>/build-upstream-sycl-aot\n\"mmq_quantize_upstream_source\" start time: Oct 04 17:06 JST\nOutput:\n----------------------------------------------------------\ndevice=Intel(R) Arc(TM) B570 Graphics\nPASS source_reference_cases=546 layout_types=22 compared_bytes_including_guards=70640640\n<end of output>\nTest time =   0.61 sec\n----------------------------------------------------------\nTest Passed.\n\"mmq_quantize_upstream_source\" end time: Oct 04 17:06 JST\n\"mmq_quantize_upstream_source\" time elapsed: 00:00:00\n----------------------------------------------------------\n\nEnd testing: Oct 04 17:06 JST\n"
+    }
+  }
+}
