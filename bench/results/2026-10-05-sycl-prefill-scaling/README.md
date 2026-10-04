@@ -253,3 +253,54 @@ with order alternated; they are synthetic wall times, not model throughput.
 The probe reports zero spill bytes for that version, while its 33-key version
 reports 17,216. Any engine variant therefore needs an explicit live-size bound
 and model validation. Both probes retain their source and binary hashes.
+
+The bounded prompt selector is now available with
+`STRATA_PREFILL_TOPK_TUNED=1`. It uses 256 threads, nine keys per thread and
+an integer parallel histogram scan. It keeps the original floating scores,
+thresholds, tie order and ascending output IDs. The original selector remains
+the default and handles more than 2,304 live blocks or unsupported geometry.
+The integrated test checks 28 cases against the original GPU selector and
+an independent CPU sort; all pass, including both sides of the size bound.
+All 28 registered JIT tests pass in the
+[complete test log](attention/layout-study/resident-control/jit-ctest.log).
+
+The [resident comparison](attention/layout-study/selection-model/resident-profile/summary.json)
+uses the IQ3_S model on the same B570 and Ryzen 5 5600X. Each configuration
+has one validated warmup and three measured requests at each length, with
+opposite starting orders. Batch 128/layout 3, the 8,192-token chunk, 128
+expert-cache entries, PLE direct IO and 16 readers are fixed. Every request
+has a full uncached read and one prompt chunk. All 16 complete first heads
+contain 248,320 finite values and match the accepted CLI reference bit for
+bit; output IDs also match. Expert transfer volumes stay unchanged.
+
+| Input tokens | Original selector phase | Tuned selector phase | Original resident request | Tuned resident request |
+| ---: | ---: | ---: | ---: | ---: |
+| 4,096 | 93.539 ms | 42.178 ms | 14.781 s | 14.734 s |
+| 8,087 | 307.274 ms | 157.781 ms | 18.535 s | 18.362 s |
+
+These resident request times include setup and phase instrumentation.
+They support a comparison within this method; normal CLI elapsed times
+need their own confirmation.
+
+`sycl/tools/prefill_resident_profile.py` repeats a completed CLI fixture in
+one loaded engine and checks every full first head against that CLI record.
+It disables prompt and conversation caches, requires `RESUME 0`, validates
+the full read and one prompt chunk, and excludes validated warmups from
+medians. `--mode wall` removes phase markers. Its timer includes request
+setup and must be compared with other resident requests.
+
+For a reference without MTP, the tool explicitly enables
+`STRATA_SERVE_NO_MTP=1`. This diagnostic requires one GPU, no prompt or
+conversation cache, and no suffix drafts. It keeps the requested prompt
+chunk or fails; it skips MTP allocation and drafting and verifies one token
+at a time. The normal server still requires MTP and uses its original
+memory margin and chunk retry policy.
+
+The [control record](attention/layout-study/resident-control/run.json)
+checks four resident requests against the original CLI with batch 32/layout
+0. Both warmups and repeated 4k/8k requests use one chunk and match every
+first-logit bit. The separate
+[normal MTP server check](attention/layout-study/resident-control/normal-mtp-serve.json)
+generates four tokens and four finite logprob records in each of four
+requests. Repeated and restored conversations reuse checkpoints and
+reproduce the original output IDs and logprobs exactly.

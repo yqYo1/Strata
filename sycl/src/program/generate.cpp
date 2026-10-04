@@ -4933,7 +4933,16 @@ int main(int argc, char **argv) try {
 #endif
     }
     if (o.serve) {
-        if (o.spec < 2 || o.mtp.empty() || o.prefill_chunk <= 0 ||
+        // Diagnostic main-model prompt measurements can keep one session loaded without
+        // reserving the MTP's VRAM. Keep this mode explicit and prohibit cache/suffix reuse.
+        const char* no_mtp_env = std::getenv("STRATA_SERVE_NO_MTP");
+        const bool serve_no_mtp = o.mtp.empty() && no_mtp_env && std::atoi(no_mtp_env) == 1;
+        if (serve_no_mtp && (o.prompt_cache != 0 || o.conversation_cache_mib != 0 || o.suffix_draft != 0 || multi_gpu)) {
+            std::fprintf(stderr, "strata serve: STRATA_SERVE_NO_MTP needs one GPU, --prompt-cache 0, "
+                                 "--conversation-cache-mib 0 and --suffix-draft 0\n");
+            return 2;
+        }
+        if (((o.spec < 2 || o.mtp.empty()) && !serve_no_mtp) || o.spec < 1 || o.prefill_chunk <= 0 ||
             (graph_hits && (thits.d_res == nullptr || host_res.empty()))) {
             std::fprintf(stderr, "strata serve: needs --spec T, --mtp DIR and --prefill CHUNK (and a fillable "
                                  "--expert-cache; the graphed hit path additionally needs --expert-profile P)\n");
@@ -5202,7 +5211,9 @@ int main(int argc, char **argv) try {
             // First by arithmetic: a prompt path without a loan allocates its buffers, so the chunk must leave
             // headroom on that device (a chunk that fits to the last MiB left hipBLAS nothing: its GEMMs then
             // failed to launch on gfx1201 and the prompt hung).  `bytes_needed` is the same count `init` makes.
-            const int64_t kHeadroom = 512ll << 20;
+            // The explicit no-MTP diagnostic follows CLI allocation rules, so a matched
+            // benchmark cannot silently change its prompt chunk to reserve extra headroom.
+            const int64_t kHeadroom = serve_no_mtp ? 0 : 512ll << 20;
             auto own_fits = [&](int64_t c, int &dev_out, int64_t &need_out,
                                 int64_t &free_out) -> bool {
                 try {
@@ -5236,6 +5247,11 @@ int main(int argc, char **argv) try {
             int dev = 0;
             int64_t need = 0, fb = 0;
             if (!own_fits(o.prefill_chunk, dev, need, fb)) {
+                if (serve_no_mtp) {
+                    std::fprintf(stderr, "strata serve: diagnostic prompt chunk %lld needs %lld MiB, %lld MiB free\n",
+                                 (long long) o.prefill_chunk, (long long) (need >> 20), (long long) (fb >> 20));
+                    return 2;
+                }
                 int64_t c = 0;
                 for (const int64_t s : kStepChunks) {
                     int d2 = 0;
@@ -5256,7 +5272,7 @@ int main(int argc, char **argv) try {
             int64_t next = 0;
             for (const int64_t c : kStepChunks)
                 if (c < o.prefill_chunk) { next = c; break; }
-            if (r == 2 && next > 0) {
+            if (r == 2 && next > 0 && !serve_no_mtp) {
                 std::fprintf(stderr, "strata serve: %s: trying a %lld-token chunk\n", err.c_str(), (long long) next);
                 // start the prompt paths over (a failed init may hold buffers), and consume the failed allocation's
                 // error: it is sticky, and the next launch check would report "out of memory" for a kernel
@@ -5455,7 +5471,8 @@ int main(int argc, char **argv) try {
             std::fprintf(stderr, "strata serve: layer split: layers %s, one hand-off per window\n", plan_s.c_str());
         }
         if (!ver.init(wt, g, ss, vh, native_head.loaded() ? &native_head : nullptr, o.spec, err) ||
-            !mtp.bind(last_st ? last_st->wt : wt, last_st ? &last_st->head : &native_head, ver.final_R_all(), err)) {
+            (!serve_no_mtp && !mtp.bind(last_st ? last_st->wt : wt, last_st ? &last_st->head : &native_head,
+                                        ver.final_R_all(), err))) {
             std::fprintf(stderr, "strata serve: %s\n", err.c_str());
             return 1;
         }
@@ -5644,8 +5661,8 @@ int main(int argc, char **argv) try {
             std::vector<int32_t> nxt((size_t) T);
             for (int64_t t = 0; t < T; ++t) nxt[(size_t) t] = (int32_t) cur[(size_t) (p0 + t + 1)];
             // E-9: batched through the prompt path when it can (one GPU: a layer split's drafter is on the last stage)
-            const bool batched = !multi_gpu && sp.draft_kv(mtp, R_rows, nxt.data(), T, p0, e);
-            if (!e.empty() || (!batched && !mtp.prefill(R_rows, nxt.data(), T, p0, e))) return false;
+            const bool batched = !serve_no_mtp && !multi_gpu && sp.draft_kv(mtp, R_rows, nxt.data(), T, p0, e);
+            if (!serve_no_mtp && (!e.empty() || (!batched && !mtp.prefill(R_rows, nxt.data(), T, p0, e)))) return false;
             if (std::getenv("STRATA_SNAPSHOT_VERIFY") != nullptr)
                 std::fprintf(stderr, "strata serve: DRAFT_PREFILL path=%s mode=%d cells=%lld\n",
                              batched ? "batched" : "token", mtp.kv_state().kv_mode, (long long) T);
@@ -6079,7 +6096,7 @@ int main(int argc, char **argv) try {
         std::string line;
         int64_t rounds = 0;
         const int S = o.spec;
-        const int S_mtp = o.mtp_max_t > 0 ? std::min(o.mtp_max_t, S) : S;   // the MTP's windows; suffixes go up to S
+        const int S_mtp = serve_no_mtp ? 1 : o.mtp_max_t > 0 ? std::min(o.mtp_max_t, S) : S;
         if (S_mtp < S) mtp.set_max_drafts(S_mtp - 1);
         strata::spec::SuffixDrafter sfx(std::max(1, o.suffix_draft), 64, (size_t) o.max_context + 4096);
         strata::spec::DraftPolicy policy(S);   // MTP or lookup window, learned over the whole process
@@ -6662,7 +6679,7 @@ int main(int argc, char **argv) try {
                     }();
                     if (logpos != nullptr && !ver.window_logprobs(nxt.data(), T, q, logpos_extra, logpos, e))
                         return false;
-                    if (!ver.commit(T, e) || !mtp.prefill(ver.final_R_all(), nxt.data(), T, q, e)) return false;
+                    if (!ver.commit(T, e) || (!serve_no_mtp && !mtp.prefill(ver.final_R_all(), nxt.data(), T, q, e))) return false;
                     q += T;
                     pp_reached = q;   // #471
                 }
@@ -6991,6 +7008,17 @@ int main(int argc, char **argv) try {
                     std::printf("ERR %s\n", drive.d.failed && drive.d.fail ? drive.d.fail : err.c_str());
                     return 1;
                 }
+                // Match the CLI diagnostic before the first window is committed. A resident benchmark
+                // can preserve this file between requests and compare the complete prompt head, with caches off.
+                if (first_window) {
+                    if (const char* fl = std::getenv("STRATA_DUMP_FIRST_LOGITS")) {
+                        std::vector<float> row((size_t) ver.vocab());
+                        std::FILE* f = ver.copy_logits(0, row.data()) ? std::fopen(fl, "wb") : nullptr;
+                        if (f == nullptr || std::fwrite(row.data(), sizeof(float), row.size(), f) != row.size())
+                            std::fprintf(stderr, "strata serve: STRATA_DUMP_FIRST_LOGITS: cannot write %s\n", fl);
+                        if (f) std::fclose(f);
+                    }
+                }
                 int a = 0;
                 while (a < T - 1 && window[(size_t) a + 1] == outv[(size_t) a]) ++a;
                 if (from_sfx) { ++sfx_windows; sfx_drafts += T - 1; sfx_ok += a; }
@@ -7048,7 +7076,7 @@ int main(int argc, char **argv) try {
                 // commit, outv[a] is its row 0) - the drafts extend it on the device as the verify rows will
                 if (hist_n > 0 && mtp.coupled() && !eos && produced_n < max_new)
                     mtp.set_draft_history(consumed.data(), (int64_t) consumed.size(), outv[(size_t) a]);
-                const bool drafted = eos || produced_n >= max_new ||
+                const bool drafted = serve_no_mtp || eos || produced_n >= max_new ||
                                      mtp.draft(T, outv.data(), p, a, drafts.data(), err, dprob.data(), (float) req_spec_min_p);
                 {
                     const Clock::time_point tw3 = Clock::now();

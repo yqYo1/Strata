@@ -1,0 +1,47 @@
+{
+  "hardware": "Intel Arc B570 10 GB; Ryzen 5 5600X; 64 GB RAM",
+  "model": "Qwen3.8 Flash Next IQ3_S native experts",
+  "source_revision": "c9500bd plus top-k and explicit no-MTP diagnostic changes",
+  "method": "Two resident engines, one warmup plus three requests per length and configuration; opposite starting orders; no caches; 8192-token chunk; 128 expert cache entries; batch 128/layout 3; PLE direct IO with 16 readers. Resident prompt wall time includes request setup and profiler markers.",
+  "use_for_cli_speed_comparison": false,
+  "runs": {
+    "attention": {
+      "validated_requests": 8,
+      "binary_sha256": "22778c94b3cc30dd9c6771a5ddc2f8076eb39077bdd7c921b47ef4b3dabb93c2"
+    },
+    "attention-topk": {
+      "validated_requests": 8,
+      "binary_sha256": "22778c94b3cc30dd9c6771a5ddc2f8076eb39077bdd7c921b47ef4b3dabb93c2"
+    }
+  },
+  "medians": [
+    {
+      "configuration": "attention",
+      "tokens": 4096,
+      "request_prompt_wall_ms": 14780.7,
+      "selection_ms": 93.539375,
+      "expert_bytes": 45402470400
+    },
+    {
+      "configuration": "attention",
+      "tokens": 8087,
+      "request_prompt_wall_ms": 18534.8,
+      "selection_ms": 307.274374,
+      "expert_bytes": 46989286400
+    },
+    {
+      "configuration": "attention-topk",
+      "tokens": 4096,
+      "request_prompt_wall_ms": 14734.1,
+      "selection_ms": 42.178023,
+      "expert_bytes": 45402470400
+    },
+    {
+      "configuration": "attention-topk",
+      "tokens": 8087,
+      "request_prompt_wall_ms": 18361.9,
+      "selection_ms": 157.780833,
+      "expert_bytes": 46989286400
+    }
+  ]
+}
