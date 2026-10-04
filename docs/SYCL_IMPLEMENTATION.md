@@ -2692,3 +2692,35 @@ serving improvement. No representation change or cache is integrated yet;
 real expert reuse and memory costs are the next checks. The
 [component record](../bench/results/2026-10-04-sycl-cpu-preindex/run.json)
 contains every sample, conversion cost, layout and source helper.
+
+### Prefill events on one queue (2026-10-04)
+
+`STRATA_SYCL_PREFILL_SAME_QUEUE=1` omits device-ring event recording and
+waits when SYCL prefill uses the same in-order queue for copies and compute.
+The threaded issuer receives a slot only after its consumer has queued the
+last read. Routed staging also queues that read before reusing the slot.
+Host staging buffers still wait for their DMA completion before being
+rewritten. Separate transfer queues and other backends retain the events.
+The option is off by default.
+
+On the B570/5600X, three alternating pairs used the same AOT binary, exact
+XMX tile 8, packing off, five CPU workers and adaptive swaps off. Every run
+produced the same eight output ids:
+
+| Prefetched tokens | Context / chunk / cache slots | Events retained, median | Events omitted, median | Rate change |
+| --- | --- | --- | --- | --- |
+| 826 | 2,048 / 1,024 / 1,649 | 9,125.3 ms, 90.52 token/s | 8,881.4 ms, 93.00 token/s | +2.75% |
+| 4,007 | 8,192 / 4,096 / 512 | 26,546.4 ms, 150.94 token/s | 26,460.6 ms, 151.43 token/s | +0.32% |
+
+The shorter prompt improved in all three pairs. The longer prompt difference
+is small; it does not establish a substantial long-prompt improvement. No
+decode-speed improvement is claimed. These measurements used normal execution,
+without phase profiling or concurrent owned builds/GPU tests.
+
+JIT and AOT passed the GEMM test, including 200 changing-payload products
+through the device ring with its events omitted and host completion events
+retained. Persistent writing and coding requests (128 output tokens each,
+twice), prefill/decode cancellation and eight-token recovery matched the
+preceding fixture. The two local text presets select this option; their prior
+configs are backed up. The [measurement record](../bench/results/2026-10-04-sycl-prefill-events/run.json)
+contains every sample, settings, hashes and validation scope.

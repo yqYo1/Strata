@@ -57,7 +57,9 @@ void verify(const std::vector<uint16_t> &x, const std::vector<uint16_t> &w,
 // Re-recorded events protect host and device rings. Keep a small two-queue
 // case for adapter coverage and realistic expert matrices on the single queue
 // used by SYCL prefill. The latter stalled with separate queues on B570/2026.1.
-void pipeline(cudaStream_t compute, bool separate) {
+// A third case omits device-ring events while retaining host DMA completion.
+void pipeline(cudaStream_t compute, bool separate, bool omit_device_events = false) {
+  need(!omit_device_events || !separate, "event elision requires one queue");
   constexpr int jobs = 200, host_slots = 128, slots = 8;
   constexpr int T = 3;
   const int N = separate ? 32 : 1280, K = separate ? 640 : 2560, elements = N * K;
@@ -105,18 +107,18 @@ void pipeline(cudaStream_t compute, bool separate) {
       int h = staged % host_slots, d = staged % slots;
       while (!ready[staged].load(std::memory_order_acquire))
         std::this_thread::yield();
-      if (staged >= slots) CHECK(cudaStreamWaitEvent(copy, used[d]));
+      if (staged >= slots && !omit_device_events) CHECK(cudaStreamWaitEvent(copy, used[d]));
       CHECK(cudaMemcpyAsync(weights + d * elements, host + h * elements,
                             elements * 2, cudaMemcpyHostToDevice, copy));
       CHECK(cudaEventRecord(host_done[h], copy));
       issued.store(staged + 1, std::memory_order_release);
-      CHECK(cudaEventRecord(copied[d], copy));
+      if (!omit_device_events) CHECK(cudaEventRecord(copied[d], copy));
       ++staged;
     }
     int d = job % slots;
-    CHECK(cudaStreamWaitEvent(compute, copied[d]));
+    if (!omit_device_events) CHECK(cudaStreamWaitEvent(compute, copied[d]));
     gemm.f16(x, weights + d * elements, y + job * T * N, T, N, K);
-    CHECK(cudaEventRecord(used[d], compute));
+    if (!omit_device_events) CHECK(cudaEventRecord(used[d], compute));
   }
   for (auto &worker : workers) worker.join();
   CHECK(cudaStreamSynchronize(compute));
@@ -217,6 +219,7 @@ int main() {
     }
     pipeline(q, true);
     pipeline(q, false);
+    pipeline(q, false, true); // Host DMA events still protect changing payloads.
     CHECK(cudaStreamDestroy(q));
     std::cout << "SYCL oneMKL GEMM: " << cases << " CPU parity cases passed\n";
   } catch (const std::exception &e) {
