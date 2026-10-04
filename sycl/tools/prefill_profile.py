@@ -40,6 +40,10 @@ def main():
     parser.add_argument("--preload-ple", action="store_true",
                         help="Diagnostic: finish PLE gather before the GPU/transfer timer; report both times")
     parser.add_argument("--repeats", type=int, default=3)
+    parser.add_argument("--warmup", action="store_true",
+                        help="Run each input length once before measuring; validate and record it, excluding it from medians")
+    parser.add_argument("--reverse-order", action="store_true",
+                        help="Start with descending input lengths, then alternate order between repetitions")
     parser.add_argument("--timeout", type=int, default=600)
     parser.add_argument("--mtp", type=Path, help="Also include production draft-KV prompt processing")
     parser.add_argument("--label", default="baseline")
@@ -76,6 +80,7 @@ def main():
         "fixture": str(opts.tokens_file.resolve()), "fixture_sha256": sha256(opts.tokens_file),
         "lengths": lengths, "chunk": opts.chunk, "max_context": opts.max_context,
         "expert_cache": opts.expert_cache, "ple_io": opts.ple_io, "preload_ple": opts.preload_ple,
+        "warmup": opts.warmup, "reverse_order": opts.reverse_order,
         "mtp": str(opts.mtp) if opts.mtp else None,
         "env": {k: v for k, v in env.items() if k.startswith(("STRATA_", "SYCL_", "ONEAPI_", "NEO_"))
                 or k == "LD_LIBRARY_PATH"},
@@ -87,6 +92,7 @@ def main():
             "The local wall-time slope includes input-dependent routing and attention costs.",
             "Profiler results need a separate run without phase markers to check instrumentation overhead.",
             "With preload_ple, transfer.wall_ms excludes the separately reported preload; cli_wall_ms includes it.",
+            "Warmup runs are validated and preserved but excluded from all medians and length slopes.",
         ],
         "runs": [],
     }
@@ -96,10 +102,12 @@ def main():
         target.write_text(json.dumps(report, indent=2) + "\n")
 
     save()
-    for repeat in range(opts.repeats):
-        order = lengths if repeat % 2 == 0 else list(reversed(lengths))
+    for repeat in range(-int(opts.warmup), opts.repeats):
+        warmup = repeat < 0
+        ascending = (repeat % 2 == 0) != opts.reverse_order
+        order = lengths if ascending else list(reversed(lengths))
         for n in order:
-            name = f"{opts.label}-{n}-r{repeat + 1}"
+            name = f"{opts.label}-{n}-warmup" if warmup else f"{opts.label}-{n}-r{repeat + 1}"
             fixture = opts.output / f"{name}-tokens.txt"
             fixture.write_text(" ".join(map(str, tokens[:n + 1])) + "\n")
             logits = opts.output / f"{name}-logits.bin"
@@ -124,6 +132,7 @@ def main():
                 rc = 124
             text = log.read_text()
             record = {"name": name, "tokens": n, "repeat": repeat + 1, "args": args,
+                      "warmup": warmup,
                       "exit_code": rc, "process_wall_seconds": time.monotonic() - start,
                       "log": log.name, "input_sha256": sha256(fixture)}
             for prefix, key in (("strata prefill transfer: ", "transfer"),
@@ -170,7 +179,7 @@ def main():
                   flush=True)
     medians = []
     for n in lengths:
-        rows = [r for r in report["runs"] if r["tokens"] == n]
+        rows = [r for r in report["runs"] if r["tokens"] == n and not r["warmup"]]
         median = {"tokens": n, "wall_ms": statistics.median(r["wall_ms"] for r in rows)}
         if opts.mode != "wall":
             median.update({key: statistics.median(r["transfer"][key] for r in rows)

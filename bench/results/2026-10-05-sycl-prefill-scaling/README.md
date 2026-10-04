@@ -14,7 +14,11 @@ makes those two measurements unsuitable for estimating a per-token cost.
 [prefill_profile.py](../../../sycl/tools/prefill_profile.py) fixes the context
 limit, cache capacity, prefill chunk, and input token prefix across lengths.
 It sets `STRATA_PREFILL_FIRST=0` and checks that every run processes exactly
-one chunk. It alternates the length order between repetitions. Model loading
+one chunk. It alternates the length order between repetitions. `--warmup` first runs
+and validates each length, preserving those records while excluding them
+from medians and slopes. `--reverse-order` starts with descending lengths.
+Use both settings for matched comparisons of newly compiled GPU modules.
+Model loading
 and generation are outside the prefill timer. By default it omits the MTP
 draft layer; `--mtp DIR` also measures the production draft-KV work.
 
@@ -175,3 +179,26 @@ run, attention takes 2.167 seconds for layout 0 and 1.989 seconds for
 profiled observations. All four model runs match the accepted first-logit
 arrays and output IDs; a warmed, matched comparison is still required before
 changing the default. Both attention tests pass through CTest on the B570.
+
+
+The [warmed profile comparison](attention/layout-study/paired-profile/summary.json)
+uses three pairs of runs at each length. Configuration order is baseline,
+layout 3; then layout 3, baseline; then baseline, layout 3. The second pair
+also reverses the input-length order. Each configuration first runs both
+lengths as recorded, excluded warm-ups. All 16 first-logit arrays, including
+warm-ups, are finite and match the accepted baseline across all 248,320
+floats, bit for bit. Generated IDs also match.
+
+| Input tokens | Original attention | Batch 128, layout 3 attention | Original GPU/transfer stage | Batch 128, layout 3 GPU/transfer stage |
+| ---: | ---: | ---: | ---: | ---: |
+| 4,096 | 1.001 s | 0.877 s | 14.737 s | 14.623 s |
+| 8,087 | 2.272 s | 1.989 s | 18.607 s | 18.315 s |
+
+These are medians of three profiled runs with PLE preloaded. At the longer
+input, attention time decreases by 12.4%; the measured stage time decreases
+by 1.57%. The slope of the median stage times changes from 0.9695 to 0.9251
+ms/additional token. Individual pair slopes range from 0.9643 to 0.9863 for
+the original and 0.9185 to 0.9319 for the variant. All runs transfer the same
+45.402 GB at 4,096 tokens and 46.989 GB at 8,087 tokens. These observations
+explain the attention improvement; normal elapsed-time measurements are
+required to assess overall prefill speed, and the default remains unchanged.

@@ -1,0 +1,146 @@
+{
+  "source_revision": "af9349c",
+  "measurement": "Profiled GPU/expert-transfer stage with PLE preloaded; not overall prefill throughput",
+  "measured_runs_per_length_and_configuration": 3,
+  "input_lengths": [
+    4096,
+    8087
+  ],
+  "conditions": "Arc B570 10 GB; Ryzen 5 5600X; 128 GB installed RAM; IQ3_S; context/chunk 8192; cache 128; MTP off; direct PLE with 16 reader threads",
+  "excluded_warmup_runs": 4,
+  "first_logits": {
+    "count": 248320,
+    "finite": true,
+    "all_runs_bit_identical_to_baseline": true
+  },
+  "configurations": {
+    "base": {
+      "attention_batch": 32,
+      "attention_layout": 0,
+      "medians": [
+        {
+          "tokens": 4096,
+          "wall_ms": 14737.280749,
+          "wall_range_ms": [
+            14731.908321,
+            14741.647572
+          ],
+          "qsa_attention_ms": 1000.815536,
+          "expert_bytes": 45402470400,
+          "dma_active_ms": 7129.225019
+        },
+        {
+          "tokens": 8087,
+          "wall_ms": 18606.552455,
+          "wall_range_ms": [
+            18590.260252,
+            18668.249369
+          ],
+          "qsa_attention_ms": 2271.53447,
+          "expert_bytes": 46989286400,
+          "dma_active_ms": 7375.212811
+        }
+      ],
+      "longest_pair": {
+        "marginal_ms_per_token": 0.9694992999248312,
+        "marginal_tokens_per_second": 1031.4602600306505
+      },
+      "paired_slopes": [
+        {
+          "lengths": [
+            4096,
+            8087
+          ],
+          "marginal_ms_per_token": 0.9694992999248312,
+          "marginal_tokens_per_second": 1031.4602600306505,
+          "expert_bytes_change": 1586816000,
+          "dma_active_ms_change": 245.91335900000013
+        },
+        {
+          "lengths": [
+            4096,
+            8087
+          ],
+          "marginal_ms_per_token": 0.9643228965171636,
+          "marginal_tokens_per_second": 1036.99705110362,
+          "expert_bytes_change": 1586816000,
+          "dma_active_ms_change": 246.50093800000013
+        },
+        {
+          "lengths": [
+            4096,
+            8087
+          ],
+          "marginal_ms_per_token": 0.986304447005763,
+          "marginal_tokens_per_second": 1013.8857256862362,
+          "expert_bytes_change": 1586816000,
+          "dma_active_ms_change": 244.03835499999968
+        }
+      ]
+    },
+    "fast": {
+      "attention_batch": 128,
+      "attention_layout": 3,
+      "medians": [
+        {
+          "tokens": 4096,
+          "wall_ms": 14622.767406,
+          "wall_range_ms": [
+            14601.648481,
+            14649.127705
+          ],
+          "qsa_attention_ms": 877.188026,
+          "expert_bytes": 45402470400,
+          "dma_active_ms": 7127.697933
+        },
+        {
+          "tokens": 8087,
+          "wall_ms": 18314.802163,
+          "wall_range_ms": [
+            18311.654214,
+            18320.971794
+          ],
+          "qsa_attention_ms": 1989.30928,
+          "expert_bytes": 46989286400,
+          "dma_active_ms": 7375.311902
+        }
+      ],
+      "longest_pair": {
+        "marginal_ms_per_token": 0.9250901420696566,
+        "marginal_tokens_per_second": 1080.9757390374427
+      },
+      "paired_slopes": [
+        {
+          "lengths": [
+            4096,
+            8087
+          ],
+          "marginal_ms_per_token": 0.9184852062139813,
+          "marginal_tokens_per_second": 1088.7491635516099,
+          "expert_bytes_change": 1586816000,
+          "dma_active_ms_change": 244.7232409999997
+        },
+        {
+          "lengths": [
+            4096,
+            8087
+          ],
+          "marginal_ms_per_token": 0.9319276654973693,
+          "marginal_tokens_per_second": 1073.04465466888,
+          "expert_bytes_change": 1586816000,
+          "dma_active_ms_change": 247.46340099999998
+        },
+        {
+          "lengths": [
+            4096,
+            8087
+          ],
+          "marginal_ms_per_token": 0.9243013801052361,
+          "marginal_tokens_per_second": 1081.898200656311,
+          "expert_bytes_change": 1586816000,
+          "dma_active_ms_change": 247.613969
+        }
+      ]
+    }
+  }
+}
