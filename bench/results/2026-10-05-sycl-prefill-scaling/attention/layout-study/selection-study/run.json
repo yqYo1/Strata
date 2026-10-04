@@ -38,6 +38,11 @@
     "Tests cover continuous and tied scores, signed zero, NaN, infinities, denormals, identity selection, tails and live/capacity combinations.",
     "Variants compare 256/512/1024 threads and serial/parallel integer digit search; floating score generation is unchanged.",
     "Kernel resource queries report declared histogram bytes and runtime private/spill memory; histogram bytes are not total local allocation.",
-    "The 256-thread, nine-key parallel variant has zero reported spill bytes in this probe; its 33-key version reports 17216 spill bytes, so the proposed production path limits its live reach."
-  ]
+    "The 256-thread, nine-key parallel variant has zero reported spill bytes in this probe; its 33-key version reports 17216 spill bytes, so the proposed production path limits its live reach.",
+    "The archived kernel removes trailing whitespace; source_sha256 records the exact compiled input and archived_source_sha256 records the normalized copy."
+  ],
+  "archived_source_sha256": {
+    "kernel.cpp": "228cf0aa6ae7c2349187cc3c67b695aa26fe07cf61b0e42baac48ba91129372f",
+    "parity.cpp": "7bb9cda229128380fe1b35bf2556e85bed318bcd89c0e26c4d0a54586df319bf"
+  }
 }

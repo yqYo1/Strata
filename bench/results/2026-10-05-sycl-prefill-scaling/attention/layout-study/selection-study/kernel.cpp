@@ -22,21 +22,21 @@ __dpct_inline__ int block_excl_scan(int v, int *s_warp, int &total) {
     int x = v;
 #pragma unroll
     for (int o = 1; o < 32; o <<= 1) {
-        
+
         const int y = dpct::experimental::shift_sub_group_right(
             0xffffffffu, sycl::ext::oneapi::this_work_item::get_sub_group(), x,
             o);
         if (lane >= o) x += y;
     }
     if (lane == 31) s_warp[warp] = x;
-    
+
     item_ct1.barrier();
     if (warp == 0) {
         int w = lane < TK_T / 32 ? s_warp[lane] : 0;
         int z = w;
 #pragma unroll
         for (int o = 1; o < 32; o <<= 1) {
-            
+
             const int y = dpct::experimental::shift_sub_group_right(
                 0xffffffffu, sycl::ext::oneapi::this_work_item::get_sub_group(),
                 z, o);
@@ -45,11 +45,11 @@ __dpct_inline__ int block_excl_scan(int v, int *s_warp, int &total) {
         s_warp[lane] = z - w;               // exclusive per warp
         if (lane == 31) s_warp[32] = z;     // total
     }
-    
+
     item_ct1.barrier();
     const int r = s_warp[warp] + x - v;
     total = s_warp[32];
-    
+
     item_ct1.barrier();
     return r;
 }
@@ -107,8 +107,8 @@ auto &hist =
                     sycl::access::address_space::generic_space>(
                     &hist[warp][(key[j] >> shift) & 255], w);
         }
-        
-        
+
+
         item_ct1.barrier();
         if (t < 256) {                                // fold the warps' histograms into warp 0's
             int s = 0;
@@ -116,8 +116,8 @@ auto &hist =
             for (int w2 = 0; w2 < TK_T / 32; ++w2) s += hist[w2][t];
             hist[0][t] = s;
         }
-        
-        
+
+
         item_ct1.barrier();
         if constexpr (PARALLEL) {
             const int count=t<256 ? hist[0][255-t] : 0;
@@ -136,14 +136,14 @@ auto &hist =
             s_digit = d;
             s_above = cum;
         }
-        
-        
+
+
         }
         item_ct1.barrier();
         prefix |= (uint32_t) s_digit << shift;
         above = s_above;
-        
-        
+
+
         item_ct1.barrier();
     }
     const uint32_t thr = prefix;
