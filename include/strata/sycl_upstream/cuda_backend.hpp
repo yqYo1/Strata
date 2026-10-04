@@ -5,6 +5,9 @@ namespace strata::sycl_upstream::cuda {
 // Kernel adapters resolve the opaque frontend stream through this function.
 // A cudaStream_t is never a sycl::queue*. The Runtime callback rules apply.
 cudaError_t submit(cudaStream_t, const Runtime::Submit&) noexcept;
+// Native library adapters inspect the owning device without submitting work.
+cudaError_t stream_device(cudaStream_t, sycl::device*) noexcept;
+cudaError_t validate_device_buffer(cudaStream_t, const void*, size_t) noexcept;
 Memory::Stats memory_stats();
 std::optional<Memory::Info> allocation_info(const void*);
 // Diagnostic detail for the last caught backend exception on this host thread.

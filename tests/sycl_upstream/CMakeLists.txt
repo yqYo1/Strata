@@ -22,6 +22,7 @@ if(STRATA_SYCL_DEVICE_ARCH)
     target_link_options(mmq_quantize_test PRIVATE -fsycl-targets=spir64_gen
         "SHELL:-Xsycl-target-backend=spir64_gen \"-device ${STRATA_SYCL_DEVICE_ARCH}\"")
 endif()
+
 enable_testing()
 add_test(NAME mmq_quantize_upstream_source COMMAND mmq_quantize_test)
 set_tests_properties(mmq_quantize_upstream_source PROPERTIES TIMEOUT 90)
@@ -363,4 +364,42 @@ if(STRATA_SYCL_DEVICE_ARCH)
     target_compile_options(graph_prepare_probe PRIVATE -fsycl-targets=spir64_gen)
     target_link_options(graph_prepare_probe PRIVATE -fsycl-targets=spir64_gen
         "SHELL:-Xsycl-target-backend=spir64_gen \"-device ${STRATA_SYCL_DEVICE_ARCH}\"")
+endif()
+
+# Native BF16/FP16 BLAS and original quantized-weight GEMM orchestration.
+set(STRATA_MKL_ROOT "/opt/intel/oneapi/mkl/latest" CACHE PATH "oneMKL installation")
+find_path(STRATA_MKL_INCLUDE oneapi/mkl.hpp HINTS ${STRATA_MKL_ROOT}/include REQUIRED)
+foreach(component IN ITEMS sycl_blas intel_lp64 sequential core)
+    find_library(STRATA_MKL_${component} mkl_${component} HINTS ${STRATA_MKL_ROOT}/lib REQUIRED)
+endforeach()
+execute_process(COMMAND ${Python3_EXECUTABLE} ${STRATA_ROOT}/tools/sycl/extract_dequant.py
+    --ggml ${STRATA_GGML_DIR} --output ${CMAKE_CURRENT_BINARY_DIR}
+    COMMAND_ERROR_IS_FATAL ANY)
+add_library(strata_sycl_blas_frontend STATIC ${STRATA_ROOT}/src/sycl_upstream/blas_frontend.cpp)
+target_include_directories(strata_sycl_blas_frontend PRIVATE ${STRATA_MKL_INCLUDE})
+target_link_libraries(strata_sycl_blas_frontend PUBLIC strata_sycl_cuda_frontend
+    ${STRATA_MKL_sycl_blas} ${STRATA_MKL_intel_lp64} ${STRATA_MKL_sequential} ${STRATA_MKL_core})
+target_compile_options(strata_sycl_blas_frontend PRIVATE -fsycl -fno-fast-math -ffp-contract=off)
+add_library(strata_sycl_dequant STATIC ${STRATA_ROOT}/src/sycl_upstream/dequant.cpp)
+target_include_directories(strata_sycl_dequant PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
+    ${STRATA_GGML_DIR}/ggml/include ${STRATA_GGML_DIR}/ggml/src)
+target_link_libraries(strata_sycl_dequant PUBLIC strata_sycl_cuda_frontend)
+target_compile_options(strata_sycl_dequant PRIVATE -fsycl -fno-fast-math -ffp-contract=off -fno-strict-aliasing)
+set_source_files_properties(${STRATA_ROOT}/src/prefill/gemm.cu PROPERTIES LANGUAGE CXX)
+add_library(strata_sycl_original_gemm STATIC ${STRATA_ROOT}/src/prefill/gemm.cu)
+target_link_libraries(strata_sycl_original_gemm PUBLIC strata_sycl_blas_frontend strata_sycl_dequant)
+add_executable(original_gemm_test gemm.cpp)
+target_include_directories(original_gemm_test PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
+    ${STRATA_GGML_DIR}/ggml/include ${STRATA_GGML_DIR}/ggml/src)
+target_link_libraries(original_gemm_test PRIVATE strata_sycl_original_gemm ggml-base)
+target_compile_options(original_gemm_test PRIVATE -fsycl -fno-fast-math -ffp-contract=off -fno-strict-aliasing)
+add_test(NAME original_native_gemm COMMAND original_gemm_test)
+set_tests_properties(original_native_gemm PROPERTIES TIMEOUT 120)
+add_executable(original_dequant_model_test EXCLUDE_FROM_ALL
+    ${STRATA_ROOT}/src/kernels/dequant_bf16_test.cpp)
+target_link_libraries(original_dequant_model_test PRIVATE strata_sycl_dequant ggml-base)
+if(STRATA_SYCL_DEVICE_ARCH)
+    target_compile_options(strata_sycl_blas_frontend PRIVATE -fsycl-targets=spir64_gen)
+    target_compile_options(strata_sycl_dequant PRIVATE -fsycl-targets=spir64_gen)
+    target_compile_options(original_gemm_test PRIVATE -fsycl-targets=spir64_gen)
 endif()

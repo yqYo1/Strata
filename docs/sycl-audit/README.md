@@ -132,4 +132,9 @@ has 17 passes and three failures. [Graph preparation and inspection](runtime-gra
 now compile original MTP/verify host files and execute the original MTP capture
 finisher. They also fix a reproduced scheduler-lock stall during concurrent
 event waits. The [latest host syntax inventory](host-graph-compile-results.json)
-has 19 passes and one failure. Full engine linking and execution remain open.
+has 19 passes and one failure. [Original GEMM and weight expansion](native-gemm.md)
+now link the complete original GEMM translation unit to native oneMKL and run
+17 quantized formats, cold graph capture and changed-weight replay. Both builds
+pass 19 related CTest programs; the real-model sample test covers six formats.
+Fixed BLAS workspace binding, remaining kernel families, full engine linking
+and execution remain open. No new PP/TG measurement has been established.

@@ -435,6 +435,11 @@ cudaError_t cudaGraphDestroy(cudaGraph_t g) noexcept {return api([&]{auto defini
 cudaError_t cudaGraphExecDestroy(cudaGraphExec_t e) noexcept {return api([&]{devices().executables.erase(e);});}
 namespace strata::sycl_upstream::cuda {
 cudaError_t submit(cudaStream_t s,const Runtime::Submit& fn) noexcept {return api([&]{auto& d=stream_domain(s);d.runtime.enqueue(stream_id(s),fn);});}
+cudaError_t stream_device(cudaStream_t s,sycl::device* output) noexcept {return api([&]{require(output);*output=stream_domain(s).runtime.device();});}
+cudaError_t validate_device_buffer(cudaStream_t s,const void* p,size_t bytes) noexcept {return api([&]{
+    auto& d=stream_domain(s);stream_id(s);auto info=range(p,bytes);
+    if(bytes){require(info && info->kind==Memory::Kind::device);accessible(d,p);}
+});}
 Memory::Stats memory_stats(){return domain().memory.stats();}
 std::optional<Memory::Info> allocation_info(const void* p){auto a=allocation(p);return a ? std::optional<Memory::Info>(a->info) : std::nullopt;}
 const char* backend_error_detail() noexcept{return error_detail.c_str();}

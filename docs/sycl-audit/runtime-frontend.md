@@ -163,6 +163,12 @@ CUDA error behavior, Windows and multi-device execution. Unsupported flags and
 kernel parameter inspection return explicit errors. Full-model state parity and PP/TG
 measurements remain unestablished.
 
+[Original GEMM and quantized weight expansion](native-gemm.md) now bind the whole
+original GEMM CUDA translation unit to oneMKL through this stream registry.
+Native BF16/FP16 products, original row slicing, cold capture and changed-weight
+replay pass JIT/AOT checks. External BLAS workspace binding remains explicitly
+unsupported; full engine integration and new PP/TG measurements remain open.
+
 The [MMQ stream binding](mmq-frontend.md) now connects the original public MMQ
 API to this frontend. It also fixes process-exit cleanup of an unfinished capture,
 so a fatal launch diagnostic is not hidden by a teardown synchronization error.
