@@ -2598,3 +2598,10 @@ No owned build or other GPU test overlapped measurement; existing workstation
 services remained active. This single pair did not support adoption. The
 [record and rejected patch](../bench/results/2026-10-04-sycl-xmx-quarter/run.json)
 retain the code-size, scratch, correctness and end-to-end evidence.
+
+A follow-up kept only two partials and eight inlined leaf bodies. IQ2_S
+tile-8 scratch fell to 256 bytes in both layouts; JIT and AOT again passed
+all 50 MMQ geometries. One raw screening pair still slowed from
+8,941.3→9,216.5 ms (826 tokens) and 26,555.5→26,846.1 ms (4,007 tokens),
+with matching output ids. The [two-part record and rejected patch](../bench/results/2026-10-04-sycl-xmx-half2/run.json)
+retain this follow-up. Neither array-based reduction was adopted.
