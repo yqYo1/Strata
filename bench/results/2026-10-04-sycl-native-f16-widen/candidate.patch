@@ -1,0 +1,100 @@
+diff --git a/cmake/sycl_backend.cmake b/cmake/sycl_backend.cmake
+index 129b157..1f623aa 100644
+--- a/cmake/sycl_backend.cmake
++++ b/cmake/sycl_backend.cmake
+@@ -11,6 +11,10 @@ target_link_options(strata_sycl_runtime PUBLIC -fsycl)
+ 
+ set(STRATA_SYCL_DEVICE_ARCH "" CACHE STRING "Intel GPU AOT target, e.g. bmg_g21 (empty uses JIT)")
+ option(STRATA_SYCL_AOT_DOUBLE_GRF "Use 256 GRFs for ESIMD AOT images (no effect for JIT)" OFF)
++option(STRATA_SYCL_NATIVE_F16_READ "Use native FP16 widening on SYCL devices (requires FP16 support)" OFF)
++if(STRATA_SYCL_NATIVE_F16_READ)
++  target_compile_definitions(strata_sycl_runtime PUBLIC STRATA_SYCL_NATIVE_F16_READ=1)
++endif()
+ if(STRATA_SYCL_DEVICE_ARCH)
+   if(STRATA_PORTABLE)
+     message(FATAL_ERROR "STRATA_SYCL_DEVICE_ARCH selects a GPU-specific binary; disable STRATA_PORTABLE")
+diff --git a/include/strata/kernels/f16_bits.hpp b/include/strata/kernels/f16_bits.hpp
+index 396d690..2ed8807 100644
+--- a/include/strata/kernels/f16_bits.hpp
++++ b/include/strata/kernels/f16_bits.hpp
+@@ -25,6 +25,10 @@
+ #include <cstdint>
+ #include <cstring>
+ 
++#if defined(STRATA_SYCL_NATIVE_F16_READ) && STRATA_SYCL_NATIVE_F16_READ && defined(__SYCL_DEVICE_ONLY__)
++#include <sycl/sycl.hpp>
++#endif
++
+ #if defined(__CUDACC__) || defined(__HIPCC__)
+ #define STRATA_HD __host__ __device__
+ #else
+@@ -71,6 +75,12 @@ STRATA_HD inline uint16_t f16_from_f32(float f) {
+ /// Exact fp16 bits -> f32.  No rounding, no exceptions: every one of the 65,536 inputs maps to a value f32
+ /// represents exactly, including the subnormals (which is why the `ex == 0` case cannot be skipped).
+ STRATA_HD inline float f32_from_f16(uint16_t h) {
++#if defined(STRATA_SYCL_NATIVE_F16_READ) && STRATA_SYCL_NATIVE_F16_READ && defined(__SYCL_DEVICE_ONLY__)
++    // Native widening preserves every finite encoding, including subnormals.
++    // Keep the bit decoder for NaNs so signaling payloads are not quieted.
++    if ((h & 0x7FFFu) <= 0x7C00u)
++        return float(sycl::bit_cast<sycl::half>(h));
++#endif
+     const uint32_t sign = (uint32_t) (h & 0x8000u) << 16;
+     const uint32_t ex = (h >> 10) & 0x1Fu, man = h & 0x3FFu;
+     uint32_t out;
+diff --git a/tests/sycl/kernels.cpp b/tests/sycl/kernels.cpp
+index b382dee..ed07fae 100644
+--- a/tests/sycl/kernels.cpp
++++ b/tests/sycl/kernels.cpp
+@@ -1,3 +1,4 @@
++#include "strata/kernels/f16_bits.hpp"
+ #include "strata/kernels/elementwise.hpp"
+ #include "strata/kernels/native_router.hpp"
+ #include "strata/kernels/router_top10.hpp"
+@@ -49,6 +50,39 @@ void close(float actual, double expected, double tolerance, const char *label) {
+                              ", expected=" + std::to_string(expected));
+ }
+ 
++void half_reads() {
++  constexpr size_t count = 65536;
++  constexpr uint32_t guard = 0xa1b2c3d4u;
++  std::vector<uint16_t> input(count + 2, 0xffff);
++  for (size_t i = 0; i < count; ++i)
++    input[i + 1] = uint16_t(i);
++  Buffer<uint16_t> source(input.size());
++  Buffer<uint32_t> result(input.size());
++  source.upload(input);
++  result.upload(std::vector<uint32_t>(input.size(), guard));
++  const auto *in = source.data() + 1;
++  auto *out = result.data() + 1;
++  runtime->compute().parallel_for(sycl::range<1>(count), [=](sycl::id<1> i) {
++    out[i[0]] = sycl::bit_cast<uint32_t>(f32_from_f16(in[i[0]]));
++  });
++  const auto actual = result.read();
++  if (actual.front() != guard || actual.back() != guard)
++    throw std::runtime_error("FP16 widening output guard");
++  for (uint32_t code = 0; code < count; ++code) {
++    uint32_t expected;
++    if ((code & 0x7fffu) > 0x7c00u)
++      expected = ((code & 0x8000u) << 16) | 0x7f800000u |
++                 ((code & 0x3ffu) << 13);
++    else
++      expected = std::bit_cast<uint32_t>(
++          float(std::bit_cast<_Float16>(uint16_t(code))));
++    if (actual[code + 1] != expected)
++      throw std::runtime_error("FP16 widening bit mismatch at " +
++                               std::to_string(code));
++  }
++  std::cout << "FP16 widening: all 65536 encodings and guards PASS\n";
++}
++
+ void conversions() {
+   std::vector<float> values;
+   for (unsigned bits = 0; bits < 65536; ++bits)
+@@ -314,6 +348,7 @@ int main() {
+     // changes the stable top-k order even when its weight is very small.
+     std::fesetenv(FE_DFL_ENV);
+     runtime = sycl_backend::runtime_for();
++    half_reads();
+     conversions();
+     elementwise();
+     scatter();

@@ -1,3 +1,4 @@
+#include "strata/kernels/f16_bits.hpp"
 #include "strata/kernels/elementwise.hpp"
 #include "strata/kernels/native_router.hpp"
 #include "strata/kernels/router_top10.hpp"
@@ -47,6 +48,39 @@ void close(float actual, double expected, double tolerance, const char *label) {
     throw std::runtime_error(std::string(label) +
                              ": actual=" + std::to_string(actual) +
                              ", expected=" + std::to_string(expected));
+}
+
+void half_reads() {
+  constexpr size_t count = 65536;
+  constexpr uint32_t guard = 0xa1b2c3d4u;
+  std::vector<uint16_t> input(count + 2, 0xffff);
+  for (size_t i = 0; i < count; ++i)
+    input[i + 1] = uint16_t(i);
+  Buffer<uint16_t> source(input.size());
+  Buffer<uint32_t> result(input.size());
+  source.upload(input);
+  result.upload(std::vector<uint32_t>(input.size(), guard));
+  const auto *in = source.data() + 1;
+  auto *out = result.data() + 1;
+  runtime->compute().parallel_for(sycl::range<1>(count), [=](sycl::id<1> i) {
+    out[i[0]] = sycl::bit_cast<uint32_t>(f32_from_f16(in[i[0]]));
+  });
+  const auto actual = result.read();
+  if (actual.front() != guard || actual.back() != guard)
+    throw std::runtime_error("FP16 widening output guard");
+  for (uint32_t code = 0; code < count; ++code) {
+    uint32_t expected;
+    if ((code & 0x7fffu) > 0x7c00u)
+      expected = ((code & 0x8000u) << 16) | 0x7f800000u |
+                 ((code & 0x3ffu) << 13);
+    else
+      expected = std::bit_cast<uint32_t>(
+          float(std::bit_cast<_Float16>(uint16_t(code))));
+    if (actual[code + 1] != expected)
+      throw std::runtime_error("FP16 widening bit mismatch at " +
+                               std::to_string(code));
+  }
+  std::cout << "FP16 widening: all 65536 encodings and guards PASS\n";
 }
 
 void conversions() {
@@ -314,6 +348,7 @@ int main() {
     // changes the stable top-k order even when its weight is very small.
     std::fesetenv(FE_DFL_ENV);
     runtime = sycl_backend::runtime_for();
+    half_reads();
     conversions();
     elementwise();
     scatter();

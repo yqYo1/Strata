@@ -2977,3 +2977,32 @@ is claimed. The [final record](../bench/results/2026-10-04-sycl-prompt-native/ru
 contains all final timings, binary hashes, checks and reproduction details;
 the [unrestricted record](../bench/results/2026-10-04-sycl-prompt-native/unrestricted.json)
 retains the earlier trial, including both short-prompt regressions.
+
+### Common FP16 widening trial (2026-10-04)
+
+A B570/5600X trial replaced the common SYCL device half-to-float decoder
+with native widening for finite values and infinities. NaNs kept the software
+decoder to preserve signaling bits and payloads. Both AOT and JIT builds passed
+all 43 tests. A new test compares the FP32 bits for all 65,536 half encodings
+against an independent host reference and checks output guards.
+
+The full-model results did not establish a reliable speed gain. With the
+preceding settings retained, three alternating 4,007-token pairs measured
+median prefill times of **21,809.5 ms before / 21,715.0 ms after**
+(183.73 / 184.53 token/s). The paired rate changes were +2.82%, +0.35% and
+effectively zero; the median rate difference was +0.44%. The single 826-token
+pair measured 8,611.9 / 8,594.7 ms. All runs returned the same eight output ids.
+
+Three persistent runs per binary also matched the completed writing/coding
+outputs, cache counters and prompt reuse, including cancellation recovery.
+They used the normal context-512 preset with automatic cache sizing and
+64 adaptive swaps, separately from the fixed-cache, adapt-0 prefill runs.
+Decode timings varied substantially within each binary while unrelated host
+CPU processes were active. No TG speedup is claimed, and no slow sample was
+discarded.
+
+The conversion change was not adopted. The preceding engine binaries and
+conversion implementation were restored; the exhaustive half-read test remains.
+The [trial record](../bench/results/2026-10-04-sycl-native-f16-widen/run.json)
+contains all model samples, binary hashes and validation results. Its adjacent
+patch preserves the candidate against the recorded base commit.
