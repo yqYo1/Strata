@@ -3,7 +3,7 @@ index 129b157..1f623aa 100644
 --- a/cmake/sycl_backend.cmake
 +++ b/cmake/sycl_backend.cmake
 @@ -11,6 +11,10 @@ target_link_options(strata_sycl_runtime PUBLIC -fsycl)
- 
+
  set(STRATA_SYCL_DEVICE_ARCH "" CACHE STRING "Intel GPU AOT target, e.g. bmg_g21 (empty uses JIT)")
  option(STRATA_SYCL_AOT_DOUBLE_GRF "Use 256 GRFs for ESIMD AOT images (no effect for JIT)" OFF)
 +option(STRATA_SYCL_NATIVE_F16_READ "Use native FP16 widening on SYCL devices (requires FP16 support)" OFF)
@@ -20,7 +20,7 @@ index 396d690..2ed8807 100644
 @@ -25,6 +25,10 @@
  #include <cstdint>
  #include <cstring>
- 
+
 +#if defined(STRATA_SYCL_NATIVE_F16_READ) && STRATA_SYCL_NATIVE_F16_READ && defined(__SYCL_DEVICE_ONLY__)
 +#include <sycl/sycl.hpp>
 +#endif
@@ -53,7 +53,7 @@ index b382dee..ed07fae 100644
 @@ -49,6 +50,39 @@ void close(float actual, double expected, double tolerance, const char *label) {
                               ", expected=" + std::to_string(expected));
  }
- 
+
 +void half_reads() {
 +  constexpr size_t count = 65536;
 +  constexpr uint32_t guard = 0xa1b2c3d4u;
