@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-04",
+  "device": "Intel(R) Arc(TM) B570 Graphics",
+  "compiler": "IntelLLVM 2026.1.1",
+  "backend": "Level Zero",
+  "upstream": "99f3dbd0b21d1401b3769e0c0d963913607f380b",
+  "cuda_device_reference_executed": false,
+  "engine_integrated": false,
+  "runtime_scenarios": 7,
+  "prefill_ring_batches": 40,
+  "unchanged_upstream_manifest_files": 256,
+  "source_sha256": {
+    "include/strata/sycl_upstream/runtime.hpp": "c1fcf0dfe3cedd7ad27d03054e7c31b43eaef04f6dd2f9b2e4748ebd1263f6f4",
+    "src/sycl_upstream/runtime.cpp": "517d77a870ad67a0b09a93509ee47153b582e0182e18c9de513ee17a6b628237",
+    "tests/sycl_upstream/runtime.cpp": "2a8c84aaaded0edbdc075317fc5d646ec9998197beb4b3fbc7d4b017cd4b194a",
+    "tests/sycl_upstream/CMakeLists.txt": "73d8a006aca56786fcee2d3b7f98710197b27d67734a181971244412d381efd6",
+    "tools/sycl/audit_runtime.py": "fa2f107b2a7d7b3e70edef67543e0509e91d7155a07c85932a98fa170c85b6ed",
+    "docs/sycl-audit/runtime-inventory.json": "9d4b37f95f59aea36d0e9c39aaaaa8f6559fc1fd73ce70de02082935dc26c474"
+  },
+  "builds": {
+    "jit": {
+      "binaries": {
+        "runtime_test": "f5bd9aad7a647e7feaefe41bac81b83850c8b00e9b9436df969f35f4252a39f0",
+        "libstrata_sycl_runtime.a": "f7ab8656945ecb58688c608770aeae7d52b5bf06df8d84cc249cafb06a3fe7a4"
+      },
+      "log": "Internal ctest changing into directory: <worktree>/build-upstream-sycl\nUpdateCTestConfiguration  from :<worktree>/build-upstream-sycl/DartConfiguration.tcl\nUpdateCTestConfiguration  from :<worktree>/build-upstream-sycl/DartConfiguration.tcl\nTest project <worktree>/build-upstream-sycl\nConstructing a list of tests\nDone constructing a list of tests\nUpdating test list for fixtures\nAdded 0 tests to meet fixture requirements\nChecking test dependency graph...\nChecking test dependency graph end\ntest 6\n    Start 6: runtime_stream_event_ordering\n\n6: Test command: <worktree>/build-upstream-sycl/runtime_test\n6: Working Directory: <worktree>/build-upstream-sycl\n6: Test timeout computed to be: 45\n6: device=Intel(R) Arc(TM) B570 Graphics\n6: PASS runtime_cases=7 prefill_ring_batches=40 legacy_and_event_ordering=1 async_destroy=1\n1/1 Test #6: runtime_stream_event_ordering ....   Passed    0.23 sec\n\nThe following tests passed:\n\truntime_stream_event_ordering\n\n100% tests passed, 0 tests failed out of 1\n\nTotal Test time (real) =   0.24 sec\n"
+    },
+    "aot": {
+      "binaries": {
+        "runtime_test": "f951013ad55be69bc428a3a641915ee308f9193cbbe7fd71c421db367ebbdbaf",
+        "libstrata_sycl_runtime.a": "fa869f413c7443a242664a1eb71b01475f45fa962f3965127687fc80dd5e3b72"
+      },
+      "log": "Internal ctest changing into directory: <worktree>/build-upstream-sycl-aot\nUpdateCTestConfiguration  from :<worktree>/build-upstream-sycl-aot/DartConfiguration.tcl\nUpdateCTestConfiguration  from :<worktree>/build-upstream-sycl-aot/DartConfiguration.tcl\nTest project <worktree>/build-upstream-sycl-aot\nConstructing a list of tests\nDone constructing a list of tests\nUpdating test list for fixtures\nAdded 0 tests to meet fixture requirements\nChecking test dependency graph...\nChecking test dependency graph end\ntest 6\n    Start 6: runtime_stream_event_ordering\n\n6: Test command: <worktree>/build-upstream-sycl-aot/runtime_test\n6: Working Directory: <worktree>/build-upstream-sycl-aot\n6: Test timeout computed to be: 45\n6: device=Intel(R) Arc(TM) B570 Graphics\n6: PASS runtime_cases=7 prefill_ring_batches=40 legacy_and_event_ordering=1 async_destroy=1\n1/1 Test #6: runtime_stream_event_ordering ....   Passed    0.31 sec\n\nThe following tests passed:\n\truntime_stream_event_ordering\n\n100% tests passed, 0 tests failed out of 1\n\nTotal Test time (real) =   0.32 sec\n"
+    }
+  },
+  "initial_barrier_diagnostic": {
+    "runtime_source_sha256": "60652f2d0a77fdb27695af1a41d935e606d584ebd502e42c5c9ec0ab7070c78a",
+    "log": "Internal ctest changing into directory: <worktree>/build-upstream-sycl\nUpdateCTestConfiguration  from :<worktree>/build-upstream-sycl/DartConfiguration.tcl\nUpdateCTestConfiguration  from :<worktree>/build-upstream-sycl/DartConfiguration.tcl\nTest project <worktree>/build-upstream-sycl\nConstructing a list of tests\nDone constructing a list of tests\nUpdating test list for fixtures\nAdded 0 tests to meet fixture requirements\nChecking test dependency graph...\nChecking test dependency graph end\ntest 6\n    Start 6: runtime_stream_event_ordering\n\n6: Test command: <worktree>/build-upstream-sycl/runtime_test\n6: Working Directory: <worktree>/build-upstream-sycl\n6: Test timeout computed to be: 45\n6: device=Intel(R) Arc(TM) B570 Graphics\n6: returned=0 independent=0 blocked=0 phase=2\n6: legacy dependencies/nonblocking exclusion\n1/1 Test #6: runtime_stream_event_ordering ....***Failed    2.10 sec\ndevice=Intel(R) Arc(TM) B570 Graphics\nreturned=0 independent=0 blocked=0 phase=2\nlegacy dependencies/nonblocking exclusion\n\n\n0% tests passed, 1 tests failed out of 1\n\nTotal Test time (real) =   2.10 sec\n\nThe following tests FAILED:\n\t  6 - runtime_stream_event_ordering (Failed)\nErrors while running CTest\n",
+    "finding": "Submission stalls at phase 2 (legacy stream dependency on producer behind a blocked host task); pending gate is always released after 2-second observation.",
+    "test_source_sha256": "2a8c84aaaded0edbdc075317fc5d646ec9998197beb4b3fbc7d4b017cd4b194a"
+  },
+  "interpretation": "The barrier diagnostic shows submission failed to return until the held host task was released. The final dependent-kernel marker passes that same gate plus ordering tests. This does not quantify inference throughput or identify the underlying driver instruction.",
+  "sources": [
+    "https://docs.nvidia.com/cuda/cuda-runtime-api/stream-sync-behavior.html",
+    "https://docs.nvidia.com/cuda/cuda-runtime-api/cuda_runtime_api/group__CUDART__STREAM.html",
+    "https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_enqueue_barrier.asciidoc"
+  ]
+}

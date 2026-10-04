@@ -101,3 +101,11 @@ now cover all nine default formats and the Strata Q2 packed layout. The
 [public MMQ adapter and scratch context](mmq-context.md) now have queue/lifetime
 evidence. Full runtime and engine integration remain open; this is not a complete
 translation-unit parity verdict.
+
+## Runtime core
+
+[Stream/event ordering](runtime-streams.md) now has an implementation and B570
+validation, including a reproduced host-blocking barrier and a dependent-command
+replacement. Its [pinned call inventory](runtime-inventory.json) keeps the remaining
+CUDA API scope visible. Graphs, mapped-memory handoff and full engine integration
+remain open.
