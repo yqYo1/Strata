@@ -234,6 +234,30 @@ set_tests_properties(original_mmq_stream_frontend PROPERTIES TIMEOUT 120)
 add_test(NAME original_mmq_fatal_errors COMMAND ${Python3_EXECUTABLE}
     ${CMAKE_CURRENT_SOURCE_DIR}/check_mmq_errors.py $<TARGET_FILE:mmq_frontend_test>)
 set_tests_properties(original_mmq_fatal_errors PROPERTIES TIMEOUT 75)
+
+# Original layer/session host code now compiles through the timing frontend.
+# The timing test links only the original stage timer; unused unresolved engine
+# functions are discarded. This target is not a fully linked inference engine.
+add_library(strata_sycl_original_timing_host STATIC ${STRATA_ROOT}/src/core/layer.cpp
+    ${STRATA_ROOT}/src/core/session.cpp)
+target_compile_definitions(strata_sycl_original_timing_host PRIVATE STRATA_NATIVE_EXPERTS=1)
+target_compile_options(strata_sycl_original_timing_host PRIVATE -ffunction-sections -fdata-sections)
+target_link_libraries(strata_sycl_original_timing_host PUBLIC strata_sycl_cuda_frontend)
+add_executable(runtime_timing_test runtime_timing.cpp)
+target_compile_options(runtime_timing_test PRIVATE -fsycl)
+target_link_options(runtime_timing_test PRIVATE -Wl,--gc-sections)
+target_link_libraries(runtime_timing_test PRIVATE strata_sycl_original_timing_host strata_sycl_original_host)
+add_test(NAME original_host_event_timing COMMAND runtime_timing_test)
+set_tests_properties(original_host_event_timing PROPERTIES TIMEOUT 60)
+add_executable(profiling_tag_probe EXCLUDE_FROM_ALL profiling_tag_probe.cpp)
+target_compile_options(profiling_tag_probe PRIVATE -fsycl)
+target_link_options(profiling_tag_probe PRIVATE -fsycl)
+if(STRATA_SYCL_DEVICE_ARCH)
+    target_compile_options(runtime_timing_test PRIVATE -fsycl-targets=spir64_gen)
+    target_compile_options(profiling_tag_probe PRIVATE -fsycl-targets=spir64_gen)
+    target_link_options(profiling_tag_probe PRIVATE -fsycl-targets=spir64_gen
+        "SHELL:-Xsycl-target-backend=spir64_gen \"-device ${STRATA_SYCL_DEVICE_ARCH}\"")
+endif()
 add_executable(graph_copy2d_probe EXCLUDE_FROM_ALL graph_copy2d_probe.cpp)
 target_link_libraries(graph_copy2d_probe PRIVATE strata_sycl_runtime ${STRATA_LEVEL_ZERO_LOADER})
 target_compile_options(graph_copy2d_probe PRIVATE -fsycl)

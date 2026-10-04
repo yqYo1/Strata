@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <thread>
 #include <sycl/ext/oneapi/experimental/graph.hpp>
+#include <sycl/ext/oneapi/experimental/profiling_tag.hpp>
 #include <map>
 #include <mutex>
 #include <stdexcept>
@@ -210,10 +211,28 @@ void Runtime::record(Event& event, Stream stream) {
     std::lock_guard lock(impl_->mutex);
     if (event.context_ && *event.context_ != impl_->context)
         throw std::invalid_argument("event belongs to a different runtime context");
-    event.completion_ = impl_->enqueue(stream, [](sycl::queue& q) { return fence(q); });
+    // Captured records represent internal graph dependencies, not exported
+    // completion/timing states. Upstream's stage timer also excludes capture.
+    const bool timed = event.timing_ && !impl_->get(stream).capture;
+    event.completion_ = impl_->enqueue(stream, [timed](sycl::queue& q) {
+        return timed ? sycl::ext::oneapi::experimental::submit_profiling_tag(q) : fence(q);
+    });
     event.context_ = impl_->context;
     event.capture_ = impl_->get(stream).capture;
     event.captured_ = bool(impl_->get(stream).capture);
+}
+Runtime::Timing Runtime::elapsed_time(const Event& start, const Event& end) {
+    std::lock_guard lock(impl_->mutex);
+    if (!start.timing_ || !end.timing_ || !start.completion_ || !end.completion_ ||
+        start.captured_ || end.captured_ || start.context_ != impl_->context ||
+        end.context_ != impl_->context)
+        return {TimingStatus::invalid};
+    if (!complete(*start.completion_) || !complete(*end.completion_))
+        return {TimingStatus::not_ready};
+    const auto a = start.completion_->get_profiling_info<sycl::info::event_profiling::command_end>();
+    const auto b = end.completion_->get_profiling_info<sycl::info::event_profiling::command_end>();
+    const double ns = b >= a ? double(b - a) : -double(a - b);
+    return {TimingStatus::ready, float(ns / 1e6)};
 }
 void Runtime::wait_event(Stream stream, const Event& event) {
     std::lock_guard lock(impl_->mutex);

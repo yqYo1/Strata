@@ -18,7 +18,7 @@ compiled as C++ for this target.
 | --- | --- |
 | Allocations | Device and mapped-host ownership, native host registration, interior aliases, matching free/unregister |
 | Streams | Null legacy stream, blocking/nonblocking creation, asynchronous destruction, query/synchronize and event waits |
-| Events | Disable-timing events, record/query/synchronize and destruction without waiting; stale handles rejected |
+| Events | Record/query/synchronize and destruction without waiting; stale handles rejected; [timed records and elapsed time](runtime-timing.md) now also supported |
 | Graphs | ThreadLocal capture, separate definition/executable handles, node count, instantiation, replay and asynchronous release |
 | Errors | Per-thread last error; successful calls preserve it; peek preserves it; get consumes it; NotReady does not set it |
 | Copies | H2D/D2H/D2D/H2H and default direction inference; 1D and pitched 2D; byte-valued memset |
@@ -26,9 +26,9 @@ compiled as C++ for this target.
 
 Handles are monotonic opaque tokens looked up in a registry. They are not raw
 `sycl::queue*` values. Kernel adapters use `cuda::submit`, which resolves the handle
-and submits through the Runtime dependency/capture path. The previously ported
-MMQ adapter still has its own queue-based interface; converting its public entry
-points to these frontend handles remains necessary before full prefill binding.
+and submits through the Runtime dependency/capture path. The [engine-facing MMQ adapter](mmq-frontend.md) now resolves its public entry
+points through these handles; its earlier raw-queue variant remains for component
+tests. Full prefill binding remains open.
 
 A graph definition now retains a completed recording separately from executable
 state. Each instantiation finalizes its own SYCL executable and tracks its own
@@ -155,7 +155,7 @@ timeout 5 build-upstream-sycl/graph_copy2d_probe native
 ```
 
 Still open: the other original host translation units, kernel entry-point bindings,
-timed/interprocess events, graph upload/update/full node introspection, capture
+interprocess events, graph upload/update/full node introspection, capture
 modes beyond ThreadLocal, per-thread default streams, device capability/selection
 and peer APIs, write-combined/I/O registration, asynchronous allocators, complete
 CUDA error behavior, Windows and multi-device execution. Unsupported flags and
@@ -165,3 +165,6 @@ measurements remain unestablished.
 The [MMQ stream binding](mmq-frontend.md) now connects the original public MMQ
 API to this frontend. It also fixes process-exit cleanup of an unfinished capture,
 so a fatal launch diagnostic is not hidden by a teardown synchronization error.
+
+[GPU event timing](runtime-timing.md) now compiles the original layer/session host
+files and runs the original stage timer. Complete engine linkage remains open.

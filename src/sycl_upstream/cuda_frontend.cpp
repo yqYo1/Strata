@@ -31,7 +31,10 @@ template<class F> cudaError_t api(F&& f) noexcept {
     catch(...) { return remember(cudaErrorUnknown); }
 }
 struct Stream { Runtime::Stream id; };
-struct Event { Runtime::Event event; };
+struct Event {
+    Runtime::Event event;
+    explicit Event(bool timing): event(timing) {}
+};
 struct Definition { Runtime::GraphDefinition graph; };
 struct Executable { Runtime::Graph graph; };
 // Monotonic opaque tokens avoid reusing a destroyed handle's address. Tokens
@@ -173,10 +176,20 @@ cudaError_t cudaStreamDestroy(cudaStream_t s) noexcept {return api([&]{auto& d=d
 cudaError_t cudaStreamSynchronize(cudaStream_t s) noexcept {return api([&]{auto& d=domain();d.runtime.synchronize(d.stream(s));});}
 cudaError_t cudaStreamQuery(cudaStream_t s) noexcept {return api([&]{auto& d=domain();require(d.runtime.query(d.stream(s)),cudaErrorNotReady);});}
 cudaError_t cudaDeviceSynchronize() noexcept {return api([&]{domain().runtime.synchronize_device();});}
+cudaError_t cudaEventCreate(cudaEvent_t* e) noexcept {return cudaEventCreateWithFlags(e,cudaEventDefault);}
 cudaError_t cudaEventCreateWithFlags(cudaEvent_t* e,unsigned flags) noexcept {return api([&]{require(e);*e=nullptr;
-    // Timing and interprocess event behavior are not silently approximated.
-    require(flags==cudaEventDisableTiming || flags==(cudaEventDisableTiming|cudaEventBlockingSync),cudaErrorNotSupported);
-    *e=domain().events.insert(std::make_shared<Event>());});}
+    require((flags&~(cudaEventDisableTiming|cudaEventBlockingSync))==0,cudaErrorNotSupported);
+    const bool timing=!(flags&cudaEventDisableTiming);
+    auto& d=domain();
+    require(!timing || d.runtime.device().has(sycl::aspect::ext_oneapi_queue_profiling_tag),cudaErrorNotSupported);
+    *e=d.events.insert(std::make_shared<Event>(timing));});}
+cudaError_t cudaEventElapsedTime(float* ms,cudaEvent_t start,cudaEvent_t end) noexcept {return api([&]{
+    require(ms);auto& d=domain();
+    const auto result=d.runtime.elapsed_time(d.events.get(start)->event,d.events.get(end)->event);
+    require(result.status!=Runtime::TimingStatus::invalid,cudaErrorInvalidResourceHandle);
+    require(result.status!=Runtime::TimingStatus::not_ready,cudaErrorNotReady);
+    *ms=result.milliseconds;
+});}
 cudaError_t cudaEventDestroy(cudaEvent_t e) noexcept {return api([&]{domain().events.erase(e);});}
 cudaError_t cudaEventRecord(cudaEvent_t e,cudaStream_t s) noexcept {return api([&]{auto& d=domain();d.runtime.record(d.events.get(e)->event,d.stream(s));});}
 cudaError_t cudaEventQuery(cudaEvent_t e) noexcept {return api([&]{auto& d=domain();require(d.runtime.query(d.events.get(e)->event),cudaErrorNotReady);});}

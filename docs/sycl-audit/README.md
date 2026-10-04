@@ -120,3 +120,8 @@ bindings and full engine integration remain open. The [MMQ stream binding](mmq-f
 now connects every original public MMQ entry point to this runtime, including
 changed-input graphs and concurrent host submissions. An [original host compile
 inventory](host-compile-results.json) records the next integration blockers.
+
+[GPU event timing](runtime-timing.md) now compiles the original layer/session host
+files and runs the original stage timer. The [latest host syntax inventory](host-timing-compile-results.json)
+records 13 passes and seven remaining failures; full engine linking and execution
+remain open.

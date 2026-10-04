@@ -110,7 +110,7 @@ an inference benchmark. All 256 files in the original shared-source manifest
 remain byte-identical.
 
 [Native capture/replay](runtime-graphs.md) extends this component. Graph update,
-full introspection, timing events, per-thread
+full introspection, per-thread
 implicit streams, device selection, multi-device/cross-context waits,
 complete CUDA error compatibility remain open.
 [Allocation and mapped-host registration](runtime-memory.md) now have separate
@@ -119,3 +119,6 @@ thread-local error state and the original arena/graph callers; remaining engine
 bindings are open. The new runtime uses SYCL exceptions and explicit USM pointers;
 asynchronous failure injection and teardown recovery have not been established.
 It is not yet a complete runtime parity verdict or an end-to-end speed result.
+
+[GPU event timing](runtime-timing.md) now uses native profiling tags without
+enabling profiling on every queue command.

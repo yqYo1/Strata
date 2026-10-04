@@ -79,12 +79,12 @@ not rerun for this binding change. Logs and source/binary hashes are in
 The new [host compile inventory](host-compile-results.json) probes 20 original
 host translation units without editing them or injecting API implementations.
 Native experts, MMQ and fused declarations are enabled, so the original prefill
-fallback stubs do not hide their dependencies. Eleven files pass syntax and nine
-fail. A syntax pass does not establish linking, execution or processing parity.
+fallback stubs do not hide their dependencies. At that checkpoint, eleven files passed syntax and nine
+failed. A syntax pass does not establish linking, execution or processing parity.
 The original CUDA device/GEMM translation units and CPU kernel ISA builds are
 outside this probe; this is not a resolved build graph for all options.
 
-| Original host caller | Current compile blockers |
+| Original host caller | Compile blockers at this checkpoint |
 | --- | --- |
 | `prefill.cpp` | Device get/set, free-memory query, timed events, peer copies |
 | `layer.cpp`, `session.cpp` | Timed event creation and elapsed time |
@@ -112,3 +112,7 @@ SYCL_CACHE_PERSISTENT=0 ctest --test-dir build-upstream-sycl \
 python3 tools/sycl/audit_host_compile.py --compiler icpx \
   --ggml /path/to/pinned/llama.cpp --output /tmp/host-compile-results.json
 ```
+
+The subsequent [GPU timing binding](runtime-timing.md) removes the layer/session
+syntax blockers; its [updated inventory](host-timing-compile-results.json) reports
+13 syntax passes and seven failures.

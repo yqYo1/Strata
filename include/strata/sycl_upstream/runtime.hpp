@@ -15,10 +15,13 @@ public:
     using Submit = std::function<sycl::event(sycl::queue&)>;
     class Event {
         friend class Runtime;
+        bool timing_;
         std::optional<sycl::event> completion_;
         std::optional<sycl::context> context_;
         std::weak_ptr<Capture> capture_;
         bool captured_ = false;
+    public:
+        explicit Event(bool timing = false): timing_(timing) {}
     };
     class GraphDefinition {
         friend class Runtime;
@@ -64,6 +67,11 @@ public:
     sycl::event memset(Stream, void* dst, int byte, size_t bytes);
     sycl::event host_function(Stream, std::function<void()>);
     void record(Event&, Stream);
+    enum class TimingStatus { ready, not_ready, invalid };
+    struct Timing { TimingStatus status; float milliseconds = 0; };
+    // Nonblocking. Requires two recorded, uncaptured timing-enabled events.
+    // Timestamp queries are made only after both completion states are ready.
+    Timing elapsed_time(const Event& start, const Event& end);
     void wait_event(Stream, const Event&);
     bool query(Stream);
     bool query(const Event&);
