@@ -111,8 +111,9 @@ remain byte-identical.
 
 [Native capture/replay](runtime-graphs.md) extends this component. Graph update,
 full introspection, timing events, per-thread
-implicit streams, device selection, multi-device/cross-context waits, allocation
-and mapped-host registration, CUDA-compatible error codes and thread-local error
-state remain open. The new runtime uses SYCL exceptions and explicit USM pointers;
+implicit streams, device selection, multi-device/cross-context waits,
+CUDA-compatible error codes and thread-local error state remain open.
+[Allocation and mapped-host registration](runtime-memory.md) now have separate
+component tests; their original-engine frontend binding remains open. The new runtime uses SYCL exceptions and explicit USM pointers;
 asynchronous failure injection and teardown recovery have not been established.
 It is not yet a complete runtime parity verdict or an end-to-end speed result.

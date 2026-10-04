@@ -149,3 +149,7 @@ multi-device mappings, complete cancellation/fault recovery, or whole-model
 inference parity. Allocation/registration APIs and the CUDA frontend binding
 still need to connect the original host processing to these components. No new
 prefill/decode throughput result follows from this test.
+
+[External host registration and owned allocation](runtime-memory.md) now have
+separate lifetime tests, including a required fix for the older Intel driver.
+Original-engine binding and full-token integration remain open.

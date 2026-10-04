@@ -111,5 +111,7 @@ CUDA API scope visible. [Native graph capture and replay](runtime-graphs.md) now
 cover changed inputs, event fork/join, asynchronous release and the ported MMQ
 chain in JIT/AOT tests. [Mapped CPU/GPU handoff](runtime-handoff.md) now passes
 connected 48-stage graphs on B570, with the failed direct translations and native
-code differences recorded. Allocation/registration, the CUDA frontend binding
-and full engine integration remain open.
+code differences recorded. [Allocation and external host registration](runtime-memory.md)
+now cover shared-page slices, read-only files and release lifetime, including a
+reproduced driver cache defect and validation with a fixed driver. The CUDA
+frontend binding and full engine integration remain open.

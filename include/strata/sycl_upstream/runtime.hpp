@@ -58,6 +58,9 @@ public:
     void synchronize(Stream);
     void synchronize(const Event&);
     void synchronize_device();
+    // Allocation/registration are unsafe on the thread owning an active
+    // thread-local capture. Called by the memory component before mutation.
+    void check_memory_operation();
     // Thread-local capture: end on the originating stream and host thread.
     // Waiting on a captured event enrolls another stream; all branches must
     // join the origin before end_capture. Empty or invalid captures fail.

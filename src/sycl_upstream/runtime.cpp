@@ -270,6 +270,16 @@ void Runtime::synchronize_device() {
     std::lock_guard lock(impl_->mutex);
     impl_->reclaim_graphs();
 }
+void Runtime::check_memory_operation() {
+    std::lock_guard lock(impl_->mutex);
+    bool invalid = false;
+    for (const auto& [id, q] : impl_->streams)
+        if (q->capture && q->capture->owner == std::this_thread::get_id()) {
+            q->capture->invalid = true;
+            invalid = true;
+        }
+    if (invalid) throw std::invalid_argument("memory operation on a thread with an active capture");
+}
 void Runtime::begin_capture(Stream stream) {
     std::lock_guard lock(impl_->mutex);
     if (!stream) throw std::invalid_argument("legacy stream capture is not supported");
