@@ -2517,3 +2517,24 @@ contains all samples, hashes, flags and component measurements. The earlier
 [loop-expansion screen](../bench/results/2026-10-04-sycl-cpu-single-unroll/run.json)
 also records the slower alternatives. The 1,000 token/s prefill and 70 token/s
 decode targets remain unmet.
+
+The same opt-in now also covers IQ3_S single-token gate/up. For this format,
+forming the nine-bit codebook indices directly with integer shifts and masks
+avoids the original vector-to-scalar index temporary. The float accumulation
+is unchanged. In the production-object component test, this improved the
+8/64-expert rates by 9.07%/9.20%, with bitwise GGML parity. Loop expansion alone
+and AVX2 gathers were slower. IQ3_S gate/up occurs in 10 of this model's 48 layers.
+
+Five alternating old/new engine pairs retained the preceding IQ3_XXS/IQ2_S
+tuning in both binaries. Median decode rates were 13.449→13.661 token/s for
+first writing, 15.947→16.029 for repeated writing, 17.702→17.688 for first
+coding, and 20.120→20.183 for repeated coding. Thus repeated-request gains
+were only 0.52%/0.31%, and first coding was effectively unchanged. The median
+sum of the four sequential decode times improved just 0.20%; this is a small
+fixture-specific result, not a broad throughput claim. All ten processes
+matched the expected output ids and passed cancellation recovery. No samples
+were excluded, including the slower fourth new coding request.
+
+The expanded CPU test passed all 384 cases on JIT and AOT. No GPU kernels or
+CPU/GPU assignment changed. The [IQ3_S record](../bench/results/2026-10-04-sycl-cpu-iq3s-index/run.json)
+includes the first three pairs, the added two pairs, and all component variants.

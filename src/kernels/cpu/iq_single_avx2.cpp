@@ -223,11 +223,98 @@ __attribute__((noinline)) void iq2s_dot(int n, float * GGML_RESTRICT s, size_t b
 
 }
 
+__attribute__((noinline)) void iq3s_dot(int n, float * GGML_RESTRICT s, size_t bs, const void * GGML_RESTRICT vx, size_t bx, const void * GGML_RESTRICT vy, size_t by, int nrc) {
+    assert(n % QK_K == 0);
+    assert(nrc == 1);
+    UNUSED(nrc);
+    UNUSED(bx);
+    UNUSED(by);
+    UNUSED(bs);
+
+    const block_iq3_s * GGML_RESTRICT x = static_cast<const block_iq3_s *>(vx);
+    const block_q8_K  * GGML_RESTRICT y = static_cast<const block_q8_K *>(vy);
+
+    const int nb = n / QK_K;
+
+
+
+   static const uint8_t k_mask1[32] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+                                       0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03
+   };
+
+    static const uint8_t k_mask2[32] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80,
+                                        0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80,
+    };
+
+    const __m256i mask1 = _mm256_loadu_si256((const __m256i*)k_mask1);
+    const __m256i mask2 = _mm256_loadu_si256((const __m256i*)k_mask2);
+
+    __m256 accumf = _mm256_setzero_ps();
+    for (int i = 0; i < nb; ++i) {
+        const float d = GGML_CPU_FP16_TO_FP32(x[i].d) * y[i].d;
+        const uint8_t * GGML_RESTRICT qs = x[i].qs;
+        const uint8_t * GGML_RESTRICT qh = x[i].qh;
+        const uint16_t * GGML_RESTRICT signs = (const uint16_t *)x[i].signs;
+        const int8_t  * GGML_RESTRICT q8 = y[i].qs;
+        __m256i sumi1 = _mm256_setzero_si256();
+        __m256i sumi2 = _mm256_setzero_si256();
+        for (int ib32 = 0; ib32 < QK_K/32; ib32 += 2) {
+            const __m256i q8_1 = _mm256_loadu_si256((const __m256i *)q8); q8 += 32;
+            const __m256i q8_2 = _mm256_loadu_si256((const __m256i *)q8); q8 += 32;
+            const __m256i q2_1 = _mm256_set_epi32(
+                iq3s_grid[qs[7] | (((qh[ib32+0] >> 7) & 1) << 8)],
+                iq3s_grid[qs[6] | (((qh[ib32+0] >> 6) & 1) << 8)],
+                iq3s_grid[qs[5] | (((qh[ib32+0] >> 5) & 1) << 8)],
+                iq3s_grid[qs[4] | (((qh[ib32+0] >> 4) & 1) << 8)],
+                iq3s_grid[qs[3] | (((qh[ib32+0] >> 3) & 1) << 8)],
+                iq3s_grid[qs[2] | (((qh[ib32+0] >> 2) & 1) << 8)],
+                iq3s_grid[qs[1] | (((qh[ib32+0] >> 1) & 1) << 8)],
+                iq3s_grid[qs[0] | (((qh[ib32+0] >> 0) & 1) << 8)]);
+            const __m256i q2_2 = _mm256_set_epi32(
+                iq3s_grid[qs[15] | (((qh[ib32+1] >> 7) & 1) << 8)],
+                iq3s_grid[qs[14] | (((qh[ib32+1] >> 6) & 1) << 8)],
+                iq3s_grid[qs[13] | (((qh[ib32+1] >> 5) & 1) << 8)],
+                iq3s_grid[qs[12] | (((qh[ib32+1] >> 4) & 1) << 8)],
+                iq3s_grid[qs[11] | (((qh[ib32+1] >> 3) & 1) << 8)],
+                iq3s_grid[qs[10] | (((qh[ib32+1] >> 2) & 1) << 8)],
+                iq3s_grid[qs[9] | (((qh[ib32+1] >> 1) & 1) << 8)],
+                iq3s_grid[qs[8] | (((qh[ib32+1] >> 0) & 1) << 8)]);
+            qs += 16;
+            __m256i aux256 = _mm256_set1_epi32(signs[0] | (signs[1] << 16));
+            aux256 = _mm256_and_si256(_mm256_shuffle_epi8(aux256,mask1), mask2);
+            const __m256i s2_1 = _mm256_cmpeq_epi8(aux256, mask2);
+            const __m256i q8s_1 = _mm256_sub_epi8(_mm256_xor_si256(s2_1, q8_1), s2_1);
+
+            aux256 = _mm256_set1_epi32(signs[2] | (signs[3] << 16));
+            aux256 = _mm256_and_si256(_mm256_shuffle_epi8(aux256,mask1), mask2);
+            const __m256i s2_2 = _mm256_cmpeq_epi8(aux256, mask2);
+            const __m256i q8s_2 = _mm256_sub_epi8(_mm256_xor_si256(s2_2, q8_2), s2_2);
+
+            signs += 4;
+
+            const __m256i dot1  = _mm256_maddubs_epi16(q2_1, q8s_1);
+            const __m256i dot2  = _mm256_maddubs_epi16(q2_2, q8s_2);
+            const uint16_t ls1 = x[i].scales[ib32/2] & 0xf;
+            const uint16_t ls2 = x[i].scales[ib32/2] >>  4;
+            const __m256i p1 = _mm256_madd_epi16(dot1, _mm256_set1_epi16(2*ls1+1));
+            const __m256i p2 = _mm256_madd_epi16(dot2, _mm256_set1_epi16(2*ls2+1));
+            sumi1 = _mm256_add_epi32(sumi1, p1);
+            sumi2 = _mm256_add_epi32(sumi2, p2);
+        }
+
+        accumf = _mm256_fmadd_ps(_mm256_set1_ps(d), _mm256_cvtepi32_ps(_mm256_add_epi32(sumi1, sumi2)), accumf);
+
+    }
+
+    *s = hsum_float_8(accumf);
+
+}
+
 } // namespace
 bool iq256_single_gu_rows(int type, const uint8_t* blob, size_t row, size_t up_off,
                           int n, const void* act, float* ff, int r0, int r1) {
-    if (type != 18 && type != 22) return false;
-    const auto dot = type == 18 ? iq3xxs_dot : iq2s_dot;
+    if (type != 18 && type != 21 && type != 22) return false;
+    const auto dot = type == 18 ? iq3xxs_dot : type == 21 ? iq3s_dot : iq2s_dot;
     for (int r = r0; r < r1; ++r) {
         const auto* gate = blob + size_t(r) * row;
         float g = 0.f, u = 0.f;

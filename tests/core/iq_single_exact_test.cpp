@@ -14,7 +14,7 @@ int main() {
     using strata::kernels::cpu::iq256_single_gu_rows;
     ggml_cpu_init();
     float untouched = 123.f;
-    for (int type : {0, 16, 17, 19, 20, 21, 23}) {
+    for (int type : {0, 16, 17, 19, 20, 23}) {
         if (iq256_single_gu_rows(type, nullptr, 0, 0, 256, nullptr, &untouched, 0, 1) ||
             untouched != 123.f) return 1;
     }
@@ -23,8 +23,9 @@ int main() {
         return 77;
     }
     unsigned cases = 0;
-    for (int type : {18, 22}) for (int n : {256, 512, 768, 2560}) {
-        const size_t block = type == 18 ? sizeof(block_iq3_xxs) : sizeof(block_iq2_s);
+    for (int type : {18, 21, 22}) for (int n : {256, 512, 768, 2560}) {
+        const size_t block = type == 18 ? sizeof(block_iq3_xxs) :
+                             type == 21 ? sizeof(block_iq3_s) : sizeof(block_iq2_s);
         const size_t row = n / 256 * block + 16; // Exercise padded row strides.
         constexpr int rows = 9;
         const size_t up = rows * row + 32;
