@@ -110,7 +110,7 @@ The initial test invocation without the oneAPI environment found no GPU. After
 loading `/opt/intel/oneapi/setvars.sh` and selecting `level_zero:gpu`, both builds
 passed. This was an environment-selection failure before any scenario executed.
 
-Mapped-host CPU/GPU flag visibility, whole-model graph capture, the CUDA frontend
-binding, allocation APIs, asynchronous device-error recovery and complete engine
-integration remain open. These component results do not establish full upstream
-parity or a new prefill/decode speed.
+[Mapped-host CPU/GPU handoff](runtime-handoff.md) now has separate B570 evidence.
+Whole-model graph capture, the CUDA frontend binding, allocation APIs, asynchronous
+device-error recovery and complete engine integration remain open. These component
+results do not establish full upstream parity or a new prefill/decode speed.

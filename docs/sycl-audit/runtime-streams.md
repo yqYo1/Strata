@@ -101,7 +101,8 @@ Intel Arc B570, Linux, oneAPI 2026.1.1, Level Zero, 2026-10-04, JIT and `bmg_g21
   event also remains usable after that stream handle is invalidated.
 - Copies, host callback and later device work are checked in queue order.
   The host callback test does not establish a running GPU spin loop observing a
-  host atomic flag; that is a separate mapped-memory visibility requirement.
+  host atomic flag; [mapped-memory visibility](runtime-handoff.md) has separate
+  device-specific validation.
 
 [Runtime results](runtime-streams-results.json) contain source/binary hashes,
 JIT/AOT logs and the original barrier-stall diagnostic. Test elapsed time is not

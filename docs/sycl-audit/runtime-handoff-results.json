@@ -1,0 +1,171 @@
+{
+  "date": "2026-10-04",
+  "device": "Intel(R) Arc(TM) B570 Graphics",
+  "cpu": "AMD Ryzen 5 5600X",
+  "compiler": "IntelLLVM 2026.1.1",
+  "backend": "Level Zero V2",
+  "driver": "1.17.39395+14",
+  "igc_package": "libigc2 2.40.13+ds1-1~24.04",
+  "compute_runtime_package": "libze-intel-gpu1 26.31.39395.14-1~24.04~ppa1",
+  "level_zero_loader": "libze1 1.32.0-1~24.04~ppa1",
+  "kernel": "7.0.0-38-generic",
+  "upstream": "99f3dbd0b21d1401b3769e0c0d963913607f380b",
+  "cuda_device_reference_executed": false,
+  "engine_integrated": false,
+  "standard_sycl_host_atomic_support": false,
+  "usm_atomic_shared_allocations": false,
+  "handshakes_per_build": 1152,
+  "exact_payload_and_final_outputs_per_build": 4840176,
+  "large_copy_values_and_guards_per_build": 65544,
+  "direct_pipelines": 8,
+  "graph_replays": 16,
+  "graph_layers": 48,
+  "capture_nodes": 192,
+  "bounded_pipelines": 12,
+  "default_unbounded_pipelines": 12,
+  "first_stage_waits_with_observed_positive_poll_count": 12,
+  "ge_skip_replays": 3,
+  "unchanged_upstream_manifest_files": 256,
+  "source_sha256": {
+    "include/strata/sycl_upstream/handoff.hpp": "b47a1f8c43508679704a09fb60f385717dbd4bd78a88691b6840577949c2ef52",
+    "src/sycl_upstream/handoff.cpp": "aedf5a0c1e44a8fdc3cce127c8beabbc25cc9ec5efe5e732b5707ffecba85299",
+    "tests/sycl_upstream/handoff.cpp": "5630c48f0772fe8a3f25b92ab901e292c19162f407c42ccf0ed55670c247e529",
+    "tests/sycl_upstream/handoff_probe.cpp": "d92a618440691c66537b96eebe3befa929b838cf3eed3ad358a0fea9929da2a8",
+    "tests/sycl_upstream/CMakeLists.txt": "545df8daaeacbf6739c306101b66c6bb901d051d5d5ae70346c0149856660496",
+    "include/strata/sycl_upstream/runtime.hpp": "a6f3e9295fcd5e39a4e863eab3452af379e3ef5142f69e41b15086593328cdf4",
+    "src/sycl_upstream/runtime.cpp": "6c74c1763138163e4328dfa2a3f398692e248f5380195c1f53928d7c3ecbaa63",
+    "src/kernels/cuda/elementwise.cu": "39b553eeb5a60a2dcdece798ad7c305493195743bef277d24d99bde9759a14e1",
+    "src/kernels/cuda/verify_kernels.cu": "bccc7b510609524f2d45f07690de5e47800a302820a3dceeae2a3c2486a9d24b",
+    "src/core/session.cpp": "1e3a979614dae1910924e592ae1e2190afd8c6eb14438d7fdba5886ea034de18",
+    "src/core/verify.cpp": "d5d5040feff51d94a167603096eacab48b4ae41f1acc4df534bf0bb3c0336f77"
+  },
+  "builds": {
+    "jit": {
+      "aot_arch": null,
+      "binaries": {
+        "handoff_test": "29fd304fe428d24fa48284b2d8a3079f5fc2df897bf5265109785e7bec986738",
+        "libstrata_sycl_handoff.a": "b52056699e55f169e03282c031965f27071a829d30dc92aba44ed63d987a8a4a"
+      },
+      "command": "source /opt/intel/oneapi/setvars.sh; ONEAPI_DEVICE_SELECTOR=level_zero:gpu ctest --test-dir build-upstream-sycl -R runtime_mapped_handoff -V",
+      "log": "Internal ctest changing into directory: <worktree>/build-upstream-sycl\nUpdateCTestConfiguration  from :<worktree>/build-upstream-sycl/DartConfiguration.tcl\nUpdateCTestConfiguration  from :<worktree>/build-upstream-sycl/DartConfiguration.tcl\nTest project <worktree>/build-upstream-sycl\nConstructing a list of tests\nDone constructing a list of tests\nUpdating test list for fixtures\nAdded 0 tests to meet fixture requirements\nChecking test dependency graph...\nChecking test dependency graph end\ntest 8\n    Start 8: runtime_mapped_handoff\n\n8: Test command: <worktree>/build-upstream-sycl/handoff_test\n8: Working Directory: <worktree>/build-upstream-sycl\n8: Test timeout computed to be: 90\n8: device=Intel(R) Arc(TM) B570 Graphics usm_atomic_host=0 usm_atomic_shared=0\n8: PASS handshakes=1152 exact_payload_values=4840176 direct_pipelines=8 graph_replays=16 graph_layers=48 capture_nodes=192 active_waits=12 ge_skip_replays=3 bounded_exhaustion=1 default_unbounded_pipelines=12 noop_graph_nodes=1 large_copy_values=65544 no_driver_calls_during_service=1\n1/1 Test #8: runtime_mapped_handoff ...........   Passed    0.23 sec\n\nThe following tests passed:\n\truntime_mapped_handoff\n\n100% tests passed, 0 tests failed out of 1\n\nTotal Test time (real) =   0.24 sec\n"
+    },
+    "aot": {
+      "aot_arch": "bmg_g21",
+      "binaries": {
+        "handoff_test": "f371d3cf279f9652f403e2cd7298775e23d92c9cc77ce877de635f9be9651c75",
+        "libstrata_sycl_handoff.a": "d6d9cbd2b890fa2a36f75c07278d740b1c5b4a6903f05a0f9575f40583653aeb"
+      },
+      "command": "source /opt/intel/oneapi/setvars.sh; ONEAPI_DEVICE_SELECTOR=level_zero:gpu ctest --test-dir build-upstream-sycl-aot -R runtime_mapped_handoff -V",
+      "log": "Internal ctest changing into directory: <worktree>/build-upstream-sycl-aot\nUpdateCTestConfiguration  from :<worktree>/build-upstream-sycl-aot/DartConfiguration.tcl\nUpdateCTestConfiguration  from :<worktree>/build-upstream-sycl-aot/DartConfiguration.tcl\nTest project <worktree>/build-upstream-sycl-aot\nConstructing a list of tests\nDone constructing a list of tests\nUpdating test list for fixtures\nAdded 0 tests to meet fixture requirements\nChecking test dependency graph...\nChecking test dependency graph end\ntest 8\n    Start 8: runtime_mapped_handoff\n\n8: Test command: <worktree>/build-upstream-sycl-aot/handoff_test\n8: Working Directory: <worktree>/build-upstream-sycl-aot\n8: Test timeout computed to be: 90\n8: device=Intel(R) Arc(TM) B570 Graphics usm_atomic_host=0 usm_atomic_shared=0\n8: PASS handshakes=1152 exact_payload_values=4840176 direct_pipelines=8 graph_replays=16 graph_layers=48 capture_nodes=192 active_waits=12 ge_skip_replays=3 bounded_exhaustion=1 default_unbounded_pipelines=12 noop_graph_nodes=1 large_copy_values=65544 no_driver_calls_during_service=1\n1/1 Test #8: runtime_mapped_handoff ...........   Passed    0.17 sec\n\nThe following tests passed:\n\truntime_mapped_handoff\n\n100% tests passed, 0 tests failed out of 1\n\nTotal Test time (real) =   0.17 sec\n"
+    }
+  },
+  "probe_binaries_sha256": {
+    "handoff_probe_0": "817cb4cf15838e7bc37a4384cc3b7404ad1343bb9025b58bc963ddb17232a37e",
+    "handoff_probe_1": "78d08baba15e11ccf0b0005539c5c7ff8d769717d8d5b3c441f0144068d1f326"
+  },
+  "ordinary_jit_probes": [
+    {
+      "poll_fence": false,
+      "mode": "spmd",
+      "returncode": 1,
+      "stdout": "device=Intel(R) Arc(TM) B570 Graphics host_atomic=0 shared_atomic=0 scopes=0,1,2,3,4, esimd=0 poll_fence=0\nsubmitted_seconds=0.104604 host_seen=1 host_payload=1 gpu_payload=1 gpu_timeout=1\n",
+      "stderr": ""
+    },
+    {
+      "poll_fence": false,
+      "mode": "esimd",
+      "returncode": 1,
+      "stdout": "device=Intel(R) Arc(TM) B570 Graphics host_atomic=0 shared_atomic=0 scopes=0,1,2,3,4, esimd=1 poll_fence=0\nsubmitted_seconds=0.00361995 host_seen=1 host_payload=1 gpu_payload=0 gpu_timeout=1\n",
+      "stderr": ""
+    },
+    {
+      "poll_fence": true,
+      "mode": "spmd",
+      "returncode": 0,
+      "stdout": "device=Intel(R) Arc(TM) B570 Graphics host_atomic=0 shared_atomic=0 scopes=0,1,2,3,4, esimd=0 poll_fence=1\nsubmitted_seconds=0.00422897 host_seen=1 host_payload=1 gpu_payload=1 gpu_timeout=0\n",
+      "stderr": ""
+    },
+    {
+      "poll_fence": true,
+      "mode": "esimd",
+      "returncode": 0,
+      "stdout": "device=Intel(R) Arc(TM) B570 Graphics host_atomic=0 shared_atomic=0 scopes=0,1,2,3,4, esimd=1 poll_fence=1\nsubmitted_seconds=0.00398232 host_seen=1 host_payload=1 gpu_payload=1 gpu_timeout=0\n",
+      "stderr": ""
+    }
+  ],
+  "dump_enabled_jit_probes": [
+    {
+      "poll_fence": false,
+      "mode": "spmd",
+      "returncode": 1,
+      "stdout": "device=Intel(R) Arc(TM) B570 Graphics host_atomic=0 shared_atomic=0 scopes=0,1,2,3,4, esimd=0 poll_fence=0\nsubmitted_seconds=0.147804 host_seen=1 host_payload=1 gpu_payload=1 gpu_timeout=1\n",
+      "stderr": "",
+      "generated_code": {
+        "visa_filename": "OCL_asm6b33bbed3380585f_simd32_entry_0001.visaasm",
+        "visa_sha256": "e996f4649536b037971656265151c94701c45d909b6a71ad00d5edf1f6c8421a",
+        "optimized_ir_filename": "OCL_asm6b33bbed3380585f_optimized.ll",
+        "optimized_ir_sha256": "fdb5895dd23cc678b9c81e14a69e7fe32661692b207501e1a0b7d30eb7bce63a",
+        "visa_excerpt": "    lsc_fence.slm.none.group                                                     /// $50\n    lsc_fence.ugm.invalidate.gpu                                                 /// $51\n    mov (M1_NM, 1) V0074(0,0)<1> V0034(0,0)<0;1,0>                               /// $52\n    mov (M1_NM, 1) V0075(0,0)<1> 0x1:d                                           /// $53\n    lsc_store.ugm (M1_NM, 1)  flat[V0074]:a64  V0075:d32t                        /// $54\n    lsc_fence.slm.none.group                                                     /// $55\n    lsc_fence.ugm.invalidate.gpu                                                 /// $56\n    mov (M1_NM, 1) V0076(0,0)<1> 0x0:d                                           /// $57\n\n_0_648:\n    mov (M1_NM, 1) V0078(0,0)<1> V0041(0,0)<0;1,0>                               /// $59\n    lsc_load.ugm (M1_NM, 1)  V0077:d32t  flat[V0078+0x40]:a64                    /// $60\n    cmp.eq (M1_NM, 32) P1 V0077(0,0)<0;1,0> 0x1:d                                /// $61\n    (P1) goto (M1, 1) _0_649                                                     /// $62\n\n_0_650:\n    mov (M1_NM, 1) V0080(0,0)<1> V0041(0,0)<0;1,0>                               /// $64\n    lsc_load.ugm (M1_NM, 1)  V0079:d32t  flat[V0080+0x40]:a64                    /// $65\n    cmp.eq (M1_NM, 32) P2 V0079(0,0)<0;1,0> 0x1:d                                /// $66\n    (P2) goto (M1, 1) _0_651                                                     /// $67\n\n_0_652:\n    mov (M1_NM, 1) V0082(0,0)<1> V0041(0,0)<0;1,0>                               /// $69\n    lsc_load.ugm (M1_NM, 1)  V0081:d32t  flat[V0082+0x40]:a64                    /// $70\n    cmp.eq (M1_NM, 32) P3 V0081(0,0)<0;1,0> 0x1:d                                /// $71\n    (P3) goto (M1, 1) _0_653                                                     /// $72\n\n_0_654:\n",
+        "observed_poll_loop_retained": true
+      },
+      "interpretation": "Repeated volatile loads remain, but the wait exhausted its bound; cache/coherency cause not isolated."
+    },
+    {
+      "poll_fence": false,
+      "mode": "esimd",
+      "returncode": 1,
+      "stdout": "device=Intel(R) Arc(TM) B570 Graphics host_atomic=0 shared_atomic=0 scopes=0,1,2,3,4, esimd=1 poll_fence=0\nsubmitted_seconds=0.0369757 host_seen=1 host_payload=1 gpu_payload=0 gpu_timeout=1\n",
+      "stderr": "",
+      "generated_code": {
+        "visa_filename": "VC_asm2345c74afeca908c__ZTSZ4mainEUlvE1_.visaasm",
+        "visa_sha256": "81527b0ec252bea632719f123552db32febe7d98394987f0c274550a7b5ee4cb",
+        "optimized_ir_filename": "VC_asm2345c74afeca908c_optimized.ll",
+        "optimized_ir_sha256": "a4651c34e052b3435c88da74ecd665466201d072ac2e9510b7c4b150fc31b9fc",
+        "visa_excerpt": ".function \"_ZTSZ4mainEUlvE1__BB_0\"\n_ZTSZ4mainEUlvE1__BB_0:\n    mov (M1, 1) V46(0,0)<1> V32(0,0)<0;1,0>                                      /// $1\n    and (M1, 1) %cr0(0,0)<1> %cr0(0,0)<0;1,0> 0xbffffb0f:d                       /// $2\n    or (M1, 1) %cr0(0,0)<1> %cr0(0,0)<0;1,0> 0x400004c0:d                        /// $3\n    add (M1, 1) V47(0,0)<1> V48(0,0)<0;1,0> 0x80:q                               /// $4\n    mov (M1, 8) V37(0,0)<1> 0x76543210:v                                         /// $5\n    add (M1, 8) V49(0,8)<1> V49(0,0)<1;1,0> 0x8:d                                /// $6\n    add (M1, 16) V50(0,0)<1> V49(0,0)<1;1,0> 0x64:d                              /// $7\n    lsc_store.ugm.uc.uc (M1, 1)  flat[V51]:a64  V38:d32x16t                      /// $8\n    lsc_fence.ugm.none.sysrel                                                    /// $9\n    mov (M1, 1) V40(0,0)<1> 0x1:d                                                /// $10\n    lsc_store.ugm.uc.uc (M1, 1)  flat[V52]:a64  V40:d32                          /// $11\n    lsc_fence.ugm.none.sysrel                                                    /// $12\n    add (M1, 1) V53(0,0)<1> V48(0,0)<0;1,0> 0x40:q                               /// $13\n    lsc_load.ugm.uc.uc (M1, 1)  V42:d32  flat[V54]:a64                           /// $14\n    lsc_fence.ugm.none.sysrel                                                    /// $15\n    add (M1, 1) V55(0,0)<1> V48(0,0)<0;1,0> 0xc0:q                               /// $16\n    lsc_load.ugm.uc.uc (M1, 1)  V56:d32x16t  flat[V57]:a64                       /// $17\n    lsc_store.ugm (M1, 1)  flat[V52+0x100]:a64  V44:d64x8t                       /// $18\n    cmp.ne (M1, 1) P1 V58(0,0)<0;1,0> 0x1:d                                      /// $19\n    (P1) sel (M1, 1) V45(0,0)<1> 0x1:d 0x0:d                                     /// $20\n    lsc_store.ugm (M1, 1)  flat[V52+0x140]:a64  V45:d32                          /// $21\n    ret (M1, 1)                                                                  /// $22\n\n//Platform: XE2\n//Build option: \"-samplerHeaderWA -enablePreemptionR0Only -abiver 2 -output -binary -dumpcommonisa -enableHalfLSC \"",
+        "observed_poll_loop_retained": false,
+        "before_backend_optimization_sha256": "501544a0880c871aadb4983f8b9fdba713e18258bfe6049d37325916c040b1c1"
+      },
+      "interpretation": "Uncached ESIMD flag read collapsed to a single load with no polling back edge."
+    },
+    {
+      "poll_fence": true,
+      "mode": "spmd",
+      "returncode": 0,
+      "stdout": "device=Intel(R) Arc(TM) B570 Graphics host_atomic=0 shared_atomic=0 scopes=0,1,2,3,4, esimd=0 poll_fence=1\nsubmitted_seconds=0.117114 host_seen=1 host_payload=1 gpu_payload=1 gpu_timeout=0\n",
+      "stderr": "",
+      "generated_code": {
+        "visa_filename": "OCL_asm4a430109b3808712_simd32_entry_0001.visaasm",
+        "visa_sha256": "d094b87dbed5ed55e80f1586ae1e350f4a74ccc109711290e87b821c0e7e359a",
+        "optimized_ir_filename": "OCL_asm4a430109b3808712_optimized.ll",
+        "optimized_ir_sha256": "c1ce102a3110c6670deffcf59bfbd1f05106c79aa598bbf2d5c6767b31bed637",
+        "visa_excerpt": "    lsc_fence.slm.none.group                                                     /// $50\n    lsc_fence.ugm.invalidate.gpu                                                 /// $51\n    mov (M1_NM, 1) V0074(0,0)<1> V0034(0,0)<0;1,0>                               /// $52\n    mov (M1_NM, 1) V0075(0,0)<1> 0x1:d                                           /// $53\n    lsc_store.ugm (M1_NM, 1)  flat[V0074]:a64  V0075:d32t                        /// $54\n    lsc_fence.slm.none.group                                                     /// $55\n    lsc_fence.ugm.invalidate.gpu                                                 /// $56\n    mov (M1_NM, 1) V0076(0,0)<1> 0x0:d                                           /// $57\n\n_0_408:\n    mov (M1_NM, 1) V0078(0,0)<1> V0041(0,0)<0;1,0>                               /// $59\n    lsc_load.ugm (M1_NM, 1)  V0077:d32t  flat[V0078+0x40]:a64                    /// $60\n    cmp.eq (M1_NM, 32) P1 V0077(0,0)<0;1,0> 0x1:d                                /// $61\n    (P1) goto (M1, 1) _0_409                                                     /// $62\n\n_0_410:\n    lsc_fence.slm.none.group                                                     /// $64\n    lsc_fence.ugm.invalidate.gpu                                                 /// $65\n    mov (M1_NM, 1) V0080(0,0)<1> V0041(0,0)<0;1,0>                               /// $66\n    lsc_load.ugm (M1_NM, 1)  V0079:d32t  flat[V0080+0x40]:a64                    /// $67\n    cmp.eq (M1_NM, 32) P2 V0079(0,0)<0;1,0> 0x1:d                                /// $68\n    (P2) goto (M1, 1) _0_411                                                     /// $69\n\n_0_412:\n    lsc_fence.slm.none.group                                                     /// $71\n    lsc_fence.ugm.invalidate.gpu                                                 /// $72\n    mov (M1_NM, 1) V0082(0,0)<1> V0041(0,0)<0;1,0>                               /// $73\n    lsc_load.ugm (M1_NM, 1)  V0081:d32t  flat[V0082+0x40]:a64                    /// $74\n",
+        "observed_poll_loop_retained": true
+      },
+      "interpretation": "Reply observed without wait exhaustion; polling fence and back edge retained."
+    },
+    {
+      "poll_fence": true,
+      "mode": "esimd",
+      "returncode": 0,
+      "stdout": "device=Intel(R) Arc(TM) B570 Graphics host_atomic=0 shared_atomic=0 scopes=0,1,2,3,4, esimd=1 poll_fence=1\nsubmitted_seconds=0.0393928 host_seen=1 host_payload=1 gpu_payload=1 gpu_timeout=0\n",
+      "stderr": "",
+      "generated_code": {
+        "visa_filename": "VC_asm06bdb631c053dc30__ZTSZ4mainEUlvE1_.visaasm",
+        "visa_sha256": "d17f28d1d7081691dce25e7086fb9b1b44af3758fb281c336339c31ebb9ffcca",
+        "optimized_ir_filename": "VC_asm06bdb631c053dc30_optimized.ll",
+        "optimized_ir_sha256": "931979378cc89c2e6d76ee408645a20a02dee0a04d1ad5a510f4456e9df321af",
+        "visa_excerpt": ".function \"_ZTSZ4mainEUlvE1__BB_0\"\n_ZTSZ4mainEUlvE1__BB_0:\n    mov (M1, 1) V47(0,0)<1> V32(0,0)<0;1,0>                                      /// $1\n    and (M1, 1) %cr0(0,0)<1> %cr0(0,0)<0;1,0> 0xbffffb0f:d                       /// $2\n    or (M1, 1) %cr0(0,0)<1> %cr0(0,0)<0;1,0> 0x400004c0:d                        /// $3\n    add (M1, 1) V48(0,0)<1> V49(0,0)<0;1,0> 0x80:q                               /// $4\n    mov (M1, 8) V37(0,0)<1> 0x76543210:v                                         /// $5\n    add (M1, 8) V50(0,8)<1> V50(0,0)<1;1,0> 0x8:d                                /// $6\n    add (M1, 16) V51(0,0)<1> V50(0,0)<1;1,0> 0x64:d                              /// $7\n    lsc_store.ugm.uc.uc (M1, 1)  flat[V52]:a64  V38:d32x16t                      /// $8\n    lsc_fence.ugm.none.sysrel                                                    /// $9\n    mov (M1, 1) V40(0,0)<1> 0x1:d                                                /// $10\n    lsc_store.ugm.uc.uc (M1, 1)  flat[V53]:a64  V40:d32                          /// $11\n    lsc_fence.ugm.none.sysrel                                                    /// $12\n    add (M1, 1) V54(0,0)<1> V49(0,0)<0;1,0> 0x40:q                               /// $13\n    mov (M1, 1) V43(0,0)<1> 0x0:d                                                /// $14\n\nBB_1:\n    lifetime.start V42                                                           /// $16\n    lsc_load.ugm.uc.uc (M1, 1)  V42:d32  flat[V55]:a64                           /// $17\n    cmp.eq (M1, 1) P1 V56(0,0)<0;1,0> 0x1:d                                      /// $18\n    (P1) jmp (M1, 1) BB_2                                                        /// $19\n    lsc_fence.ugm.none.group                                                     /// $20\n    add (M1, 1) V57(0,0)<1> V57(0,0)<0;1,0> 0x1:d                                /// $21\n    cmp.eq (M1, 1) P2 V57(0,0)<0;1,0> 0xf4240:d                                  /// $22\n    (!P2) jmp (M1, 1) BB_1                                                       /// $23\n    mov (M1, 1) V43(0,0)<1> 0xf4240:d                                            /// $24\n\nBB_2:\n    lsc_fence.ugm.none.sysrel                                                    /// $26\n    add (M1, 1) V58(0,0)<1> V49(0,0)<0;1,0> 0xc0:q                               /// $27\n    lsc_load.ugm.uc.uc (M1, 1)  V59:d32x16t  flat[V60]:a64                       /// $28\n    lsc_store.ugm (M1, 1)  flat[V53+0x100]:a64  V45:d64x8t                       /// $29\n    cmp.eq (M1, 1) P3 V57(0,0)<0;1,0> 0xf4240:d                                  /// $30\n    (P3) sel (M1, 1) V46(0,0)<1> 0x1:d 0x0:d                                     /// $31\n    lsc_store.ugm (M1, 1)  flat[V53+0x140]:a64  V46:d32                          /// $32\n    ret (M1, 1)                                                                  /// $33\n\n//Platform: XE2\n//Build option: \"-samplerHeaderWA -enablePreemptionR0Only -abiver 2 -output -binary -dumpcommonisa -enableHalfLSC \"",
+        "observed_poll_loop_retained": true,
+        "before_backend_optimization_sha256": "772272b088783253c300cdd68951a1674790d5fd062248fa8c198c942af7d0b4"
+      },
+      "interpretation": "Reply observed without wait exhaustion; polling fence and back edge retained."
+    }
+  ],
+  "capability_log": "[level_zero:gpu][level_zero:0] Intel(R) oneAPI Unified Runtime over Level-Zero V2, Intel(R) Arc(TM) B570 Graphics 20.1.0 [1.17.39395+14]\n[opencl:cpu][opencl:0] Intel(R) OpenCL, AMD Ryzen 5 5600X 6-Core Processor              OpenCL 3.0 (Build 0) [2026.21.7.0.24_160000]\n[opencl:gpu][opencl:1] Intel(R) OpenCL Graphics, Intel(R) Arc(TM) B570 Graphics OpenCL 3.0 NEO  [26.31.39395.14]\n\nPlatforms: 3\nPlatform [#1]:\n    Version  : 1.17\n    Name     : Intel(R) oneAPI Unified Runtime over Level-Zero V2\n    Vendor   : Intel(R) Corporation\n    Devices  : 1\n        Device [#0]:\n        Type              : gpu\n        Version           : 20.1.0\n        Name              : Intel(R) Arc(TM) B570 Graphics\n        Vendor            : Intel(R) Corporation\n        Driver            : 1.17.39395+14\n        UUID              : 86800ce2-0000-0000-0500-000000000000\n        DeviceID          : 57868\n        Num SubDevices    : 0\n        Num SubSubDevices : 0\n        Aspects           : gpu fp16 fp64 online_compiler online_linker queue_profiling usm_device_allocations usm_host_allocations usm_shared_allocations usm_system_allocations ext_intel_pci_address ext_intel_gpu_eu_count ext_intel_gpu_eu_simd_width ext_intel_gpu_slices ext_intel_gpu_subslices_per_slice ext_intel_gpu_eu_count_per_subslice atomic64 ext_intel_device_info_uuid ext_oneapi_native_assert ext_intel_gpu_hw_threads_per_eu ext_intel_free_memory ext_intel_device_id ext_intel_memory_clock_rate ext_intel_memory_bus_width ext_intel_legacy_image ext_oneapi_bindless_images ext_oneapi_bindless_images_1d_usm ext_oneapi_bindless_images_2d_usm ext_oneapi_external_memory_import ext_oneapi_external_semaphore_import ext_intel_esimd ext_oneapi_fragment ext_oneapi_chunk ext_oneapi_tangle ext_intel_matrix ext_oneapi_graph ext_oneapi_limited_graph ext_oneapi_private_alloca ext_oneapi_bindless_sampled_image_fetch_1d_usm ext_oneapi_bindless_sampled_image_fetch_1d ext_oneapi_bindless_sampled_image_fetch_2d_usm ext_oneapi_bindless_sampled_image_fetch_2d ext_oneapi_bindless_sampled_image_fetch_3d ext_oneapi_queue_profiling_tag ext_oneapi_virtual_mem ext_oneapi_image_array ext_oneapi_virtual_functions ext_intel_spill_memory_size ext_intel_current_clock_throttle_reasons ext_intel_fan_speed ext_intel_power_limits ext_oneapi_async_memory_alloc ext_oneapi_exportable_device_mem ext_oneapi_clock_sub_group ext_oneapi_ipc_memory ext_oneapi_device_wait ext_intel_xe_stack_count ext_intel_xe_regions_per_stack ext_intel_xe_clusters_per_region ext_intel_xe_cores_per_cluster ext_intel_eus_per_xe_core ext_intel_max_lanes_per_hw_thread\n        info::device::sub_group_sizes: 16 32\n        Architecture: intel_gpu_bmg_g21\nPlatform [#2]:\n    Version  : OpenCL 3.0 LINUX\n    Name     : Intel(R) OpenCL\n    Vendor   : Intel(R) Corporation\n    Devices  : 1\n        Device [#0]:\n        Type              : cpu\n        Version           : OpenCL 3.0 (Build 0)\n        Name              : AMD Ryzen 5 5600X 6-Core Processor             \n        Vendor            : Intel(R) Corporation\n        Driver            : 2026.21.7.0.24_160000\n        UUID              : 2210100f-a200-0b32-f87e-fffb8b170000\n        DeviceID          : 10620688\n        Num SubDevices    : 0\n        Num SubSubDevices : 0\n        Aspects           : cpu fp16 fp64 online_compiler online_linker queue_profiling usm_device_allocations usm_host_allocations usm_shared_allocations usm_system_allocations ext_intel_gpu_slices ext_intel_gpu_subslices_per_slice ext_intel_gpu_eu_count_per_subslice usm_atomic_host_allocations usm_atomic_shared_allocations atomic64 ext_intel_device_info_uuid ext_oneapi_srgb ext_oneapi_native_assert ext_intel_gpu_hw_threads_per_eu ext_intel_device_id ext_intel_legacy_image ext_oneapi_fragment ext_oneapi_chunk ext_oneapi_tangle ext_oneapi_limited_graph ext_oneapi_private_alloca ext_oneapi_atomic16 ext_oneapi_virtual_functions ext_intel_device_info_node_mask ext_oneapi_clock_sub_group ext_oneapi_clock_work_group ext_oneapi_clock_device\n        info::device::sub_group_sizes: 4 8 16 32 64\n        Architecture: x86_64\nPlatform [#3]:\n    Version  : OpenCL 3.0 \n    Name     : Intel(R) OpenCL Graphics\n    Vendor   : Intel(R) Corporation\n    Devices  : 1\n        Device [#1]:\n        Type              : gpu\n        Version           : OpenCL 3.0 NEO \n        Name              : Intel(R) Arc(TM) B570 Graphics\n        Vendor            : Intel(R) Corporation\n        Driver            : 26.31.39395.14\n        UUID              : 86800ce2-0000-0000-0500-000000000000\n        DeviceID          : 57868\n        Num SubDevices    : 0\n        Num SubSubDevices : 0\n        Aspects           : gpu fp16 fp64 online_compiler online_linker queue_profiling usm_device_allocations usm_host_allocations usm_shared_allocations usm_system_allocations ext_intel_pci_address ext_intel_gpu_eu_count ext_intel_gpu_slices ext_intel_gpu_subslices_per_slice ext_intel_gpu_eu_count_per_subslice atomic64 ext_intel_device_info_uuid ext_oneapi_srgb ext_intel_gpu_hw_threads_per_eu ext_intel_device_id ext_intel_legacy_image ext_intel_esimd ext_oneapi_fragment ext_oneapi_chunk ext_oneapi_tangle ext_intel_matrix ext_oneapi_private_alloca ext_oneapi_atomic16 ext_oneapi_virtual_functions ext_intel_device_info_node_mask\n        info::device::sub_group_sizes: 16 32\n        Architecture: intel_gpu_bmg_g21\ndefault_selector()      : gpu, Intel(R) oneAPI Unified Runtime over Level-Zero V2, Intel(R) Arc(TM) B570 Graphics 20.1.0 [1.17.39395+14]\naccelerator_selector()  : No device of requested type available. Please chec...\ncpu_selector()          : cpu, Intel(R) OpenCL, AMD Ryzen 5 5600X 6-Core Processor              OpenCL 3.0 (Build 0) [2026.21.7.0.24_160000]\ngpu_selector()          : gpu, Intel(R) oneAPI Unified Runtime over Level-Zero V2, Intel(R) Arc(TM) B570 Graphics 20.1.0 [1.17.39395+14]\ncustom_selector(gpu)    : gpu, Intel(R) oneAPI Unified Runtime over Level-Zero V2, Intel(R) Arc(TM) B570 Graphics 20.1.0 [1.17.39395+14]\ncustom_selector(cpu)    : cpu, Intel(R) OpenCL, AMD Ryzen 5 5600X 6-Core Processor              OpenCL 3.0 (Build 0) [2026.21.7.0.24_160000]\ncustom_selector(acc)    : No device of requested type available. Please chec...\n",
+  "interpretation": "Device-specific volatile/fence protocol validated for mapped host USM, including native graph replay and actual GPU polling. Not a portable host-atomic guarantee, full CUDA API parity verdict, complete cancellation/fault-recovery test, or inference throughput result. Generated SPMD system-scope fences include GPU-scope invalidation, unlike the ESIMD explicit system-release instruction.",
+  "sources": [
+    "https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html",
+    "https://github.khronos.org/SYCL_Reference/iface/usm_basic_concept.html",
+    "https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_intel_esimd/sycl_ext_intel_esimd_functions.md"
+  ]
+}
