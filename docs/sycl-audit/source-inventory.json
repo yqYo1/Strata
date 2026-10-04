@@ -1,0 +1,4116 @@
+{
+  "schema": 1,
+  "upstream": "99f3dbd0b21d1401b3769e0c0d963913607f380b",
+  "legacy": "22e61b950a6149649796abd4ef3568892b928b9b",
+  "ggml": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+  "scope": [
+    "src",
+    "include",
+    "cmake",
+    "CMakeLists.txt",
+    "third_party/ggml"
+  ],
+  "limitations": [
+    "Inventory only; no parity verdict follows from source identity.",
+    "CMake literal .cu references are not a resolved build graph.",
+    "GGML directory inventory is a conservative superset, not all transitive dependencies.",
+    "Header files are complete in scope; per-entry-point semantic audit remains pending.",
+    "Working-tree changes and runtime environment are outside these fixed snapshots."
+  ],
+  "files": [
+    {
+      "path": "CMakeLists.txt",
+      "upstream_sha256": "7c85aa14ef1d8b7f72401036a8685860d8878403ecfa02624e9c186d73db3158",
+      "legacy_sha256": "ff459657a5eebe01742c227bb9f99d930fd3914b0224cf09760b2500f7291887",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "cmake/hip_backend.cmake",
+      "upstream_sha256": "68bc2b7974b1052477c3de53cfb8a8ed3241a9e2473d9f4363905837f24d357a",
+      "legacy_sha256": "68bc2b7974b1052477c3de53cfb8a8ed3241a9e2473d9f4363905837f24d357a",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "cmake/sycl_backend.cmake",
+      "upstream_sha256": null,
+      "legacy_sha256": "77f71306692400de25b5d869c478ddfcf603be45e567a6687ee4c207c535d30d",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/artifact/dequant.hpp",
+      "upstream_sha256": "4cb13d27a80f1c1de3ce73470eebf1cc4d0dba2f981cd69a93cb9bd58ba565af",
+      "legacy_sha256": "51fcc756845ddbadb62e4164ec3b88a5cea7d66ceb13d60f12897f41c5ddf255",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/artifact/gguf_reader.hpp",
+      "upstream_sha256": "fc8453a95677e797c8fb1198bfb47d715b73a53446d39a29920c372180ca5ee0",
+      "legacy_sha256": "fc8453a95677e797c8fb1198bfb47d715b73a53446d39a29920c372180ca5ee0",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/artifact/gguf_split.hpp",
+      "upstream_sha256": "6280aabf7e4b77447caa5d046d7b7389c82af08b2d02c004897d0d4826a09760",
+      "legacy_sha256": "6280aabf7e4b77447caa5d046d7b7389c82af08b2d02c004897d0d4826a09760",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/artifact/iq_codebooks.hpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "302000e6a85fa7224bff9a10155601a82391b7a64d5ee76fba1f76b537bb6c71",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/core/conversation_buffer.hpp",
+      "upstream_sha256": "12f1abac2ec75cc71e8cf308a5a691923d8b617317560e009a41f713809f49d4",
+      "legacy_sha256": "12f1abac2ec75cc71e8cf308a5a691923d8b617317560e009a41f713809f49d4",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/core/conversation_cache.hpp",
+      "upstream_sha256": "94a84eace5d0ece1a2ba0a0a18994181d6c23121f279fbe95e283ad8b519ff45",
+      "legacy_sha256": "94a84eace5d0ece1a2ba0a0a18994181d6c23121f279fbe95e283ad8b519ff45",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/core/conversation_memory.hpp",
+      "upstream_sha256": "b4c784080bfda39adb7a2fd4c64bac27a77bb7a6f4557b609e08c2afcb7f9954",
+      "legacy_sha256": "b4c784080bfda39adb7a2fd4c64bac27a77bb7a6f4557b609e08c2afcb7f9954",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/core/conversation_snapshot.hpp",
+      "upstream_sha256": "078b537fc2a526f27727f9cd81bd0ac37fed9bc3fd4f64a1509d131fd77f414b",
+      "legacy_sha256": "078b537fc2a526f27727f9cd81bd0ac37fed9bc3fd4f64a1509d131fd77f414b",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/core/coupled_draft.hpp",
+      "upstream_sha256": "9b1773764c3867599a42a48aa41444bf79441254e9250de542d5427f093f599b",
+      "legacy_sha256": "9b1773764c3867599a42a48aa41444bf79441254e9250de542d5427f093f599b",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/core/device.hpp",
+      "upstream_sha256": "382f04df3a95349bf03dfce47402753aa2ed7e958dc6b12d0830ff1bab40d059",
+      "legacy_sha256": "dfed509262b091e47a98c00b4f7a7fc3ae4062b9aab668b30eb0342a5dc1639f",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/core/emulate.hpp",
+      "upstream_sha256": "eb3df4efe89642f069420e0f68ec526b33d4cc66f9a6b26de0583492b5758a77",
+      "legacy_sha256": "eb3df4efe89642f069420e0f68ec526b33d4cc66f9a6b26de0583492b5758a77",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/core/expert_cache.hpp",
+      "upstream_sha256": "a51821644c37bfc8fa7f67d0ca1e376f46fc21f6877135d136aeadd9981afa35",
+      "legacy_sha256": "d9df6e24fefdb61503d12803073cc0a7d654e9969aca0371ca06d4a463bc90ed",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/core/expert_slot_sizes.hpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "93ea194c1b4d63c71747d27fa6eda8d10ae4f1c308ba9ac8d6e026ce6a6b81b2",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/core/expert_source.hpp",
+      "upstream_sha256": "efeb63f7cf2c6ff5fb0caa51927929e557c1f13db88709a56a736dca06795fac",
+      "legacy_sha256": "45347df4c9f01b79cc43885e5396e48535b546f6ed411c3848f2ed5b6b6041f6",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/core/graph.hpp",
+      "upstream_sha256": "21fb807b9c3cbd8665b14145ca19d4d9a93fa897d378042254f4e4cb1f9060a4",
+      "legacy_sha256": "21fb807b9c3cbd8665b14145ca19d4d9a93fa897d378042254f4e4cb1f9060a4",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/core/hit_hook.hpp",
+      "upstream_sha256": "4c006f473d71a79cf03d9ce07cb246dc8b5ec10269fd335960a27733d51bc033",
+      "legacy_sha256": "4c006f473d71a79cf03d9ce07cb246dc8b5ec10269fd335960a27733d51bc033",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/core/layer.hpp",
+      "upstream_sha256": "682d87df7fc1a07999300fe3c11e104f0ff0c8118988d453314ce2cb6506b3bf",
+      "legacy_sha256": "80c2e1a8cac8a1600418dbf26d035b342136fb4164636196f51122205656cfb1",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/core/layout.hpp",
+      "upstream_sha256": "20afe27849aa28de7ec2f19fbf4be212240504008c643331eadbc10934821c0b",
+      "legacy_sha256": "20afe27849aa28de7ec2f19fbf4be212240504008c643331eadbc10934821c0b",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/core/mtp.hpp",
+      "upstream_sha256": "6240600a0620805774473bfbec9cc1cf6071dd2fa4aaccfb8fb8d15c6351fc69",
+      "legacy_sha256": "6240600a0620805774473bfbec9cc1cf6071dd2fa4aaccfb8fb8d15c6351fc69",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/core/native_dense.hpp",
+      "upstream_sha256": "464273d8c820c0fe9cff922486ccd43a1a91e0057576b4677ac99e09d04fc646",
+      "legacy_sha256": "464273d8c820c0fe9cff922486ccd43a1a91e0057576b4677ac99e09d04fc646",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/core/native_head.hpp",
+      "upstream_sha256": "d80052035aeba3dbbc90cf84549d8424a10335d28fb04140e2265ba7819d27dc",
+      "legacy_sha256": "d80052035aeba3dbbc90cf84549d8424a10335d28fb04140e2265ba7819d27dc",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/core/on_device.hpp",
+      "upstream_sha256": "f9317a4c19eb32924462b8aa9829a97528064f6a8fcdb64a746bb13a60c773a2",
+      "legacy_sha256": "f9317a4c19eb32924462b8aa9829a97528064f6a8fcdb64a746bb13a60c773a2",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/core/peer_experts.hpp",
+      "upstream_sha256": "02ef10cd0b6a9c0ee8b6de3a4489e5fdabb108f0182539fd4ab49705428e7f59",
+      "legacy_sha256": "02ef10cd0b6a9c0ee8b6de3a4489e5fdabb108f0182539fd4ab49705428e7f59",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/core/pinned.hpp",
+      "upstream_sha256": "90216fc44216de8820fb50525061bac7cbf427d5fd166650a8911a953961e788",
+      "legacy_sha256": "90216fc44216de8820fb50525061bac7cbf427d5fd166650a8911a953961e788",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/core/progress.hpp",
+      "upstream_sha256": "f72c21548bea3b8a8b07488bcd561d6c16e5960f5dbf78fca642011d3f8ff923",
+      "legacy_sha256": "f72c21548bea3b8a8b07488bcd561d6c16e5960f5dbf78fca642011d3f8ff923",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/core/remote_experts.hpp",
+      "upstream_sha256": "d4efb5a0cc06465e48e7df6f1f6e2d4a50d785a237da0232aab3cecad697af9e",
+      "legacy_sha256": "d4efb5a0cc06465e48e7df6f1f6e2d4a50d785a237da0232aab3cecad697af9e",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/core/session.hpp",
+      "upstream_sha256": "939b6aa2d9c66edf27ce1854ba0cc7ba31e2048390645d7fa1cae643bc11d622",
+      "legacy_sha256": "c112fe7b465e07b762d90a32e6012f12b9302a767a8b845afe353819f1b19827",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/core/verify.hpp",
+      "upstream_sha256": "fa9449c5cd25e7c55be39a0f5e02f07a4d368d360ad7f40f51ab9c53425af198",
+      "legacy_sha256": "a27421049ef5745bb55ea7725596f568033579dfa78801c7711e03fe8c9887bb",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/core/weights.hpp",
+      "upstream_sha256": "18063071334211c008f5ca17814eda86570f228ab47e916b30f1a9690750956e",
+      "legacy_sha256": "18063071334211c008f5ca17814eda86570f228ab47e916b30f1a9690750956e",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/hip_compat/cublas_v2.h",
+      "upstream_sha256": "38f15f5e4f79dcbadc42b6d5bb4c65c067f54494b0f9f401740f655785811bda",
+      "legacy_sha256": "38f15f5e4f79dcbadc42b6d5bb4c65c067f54494b0f9f401740f655785811bda",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/hip_compat/cuda_fp16.h",
+      "upstream_sha256": "5864a3c6a57debde2e84b83702a1467a01130dd1d2cdb70d75695931ca1582cc",
+      "legacy_sha256": "5864a3c6a57debde2e84b83702a1467a01130dd1d2cdb70d75695931ca1582cc",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/hip_compat/cuda_runtime.h",
+      "upstream_sha256": "fdbce49d05115a7db17fd1c5f7df2be551d510a5d81cac15453d71b7a12f7689",
+      "legacy_sha256": "fdbce49d05115a7db17fd1c5f7df2be551d510a5d81cac15453d71b7a12f7689",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/hip_compat/cuda_runtime_api.h",
+      "upstream_sha256": "153e9ca18085214f68b95183d5ffac1a247c305144fb217bb6c68f8a4e6e01f3",
+      "legacy_sha256": "153e9ca18085214f68b95183d5ffac1a247c305144fb217bb6c68f8a4e6e01f3",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/hip_compat/intrinsics.hpp",
+      "upstream_sha256": "4c855e31e945dddc8b78044767f30875c8afab12324154b33a21be755b59cd82",
+      "legacy_sha256": "4c855e31e945dddc8b78044767f30875c8afab12324154b33a21be755b59cd82",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/bf16_bits.hpp",
+      "upstream_sha256": "813b51f17c5c264d642f4d77b3d6e5f35e7ea7310ba87b18b3a2a5bc9185198f",
+      "legacy_sha256": "813b51f17c5c264d642f4d77b3d6e5f35e7ea7310ba87b18b3a2a5bc9185198f",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/bf16_gemv.hpp",
+      "upstream_sha256": "402538e5405d93e6617997ffa45561e259e01bf3d7b00ffca5379721ff4a71f3",
+      "legacy_sha256": "2704fa4ff747a9cdcfe0d708d1540045ddcb7e31043806902fdeab235dbff317",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/cpu/expert.hpp",
+      "upstream_sha256": "ae3e6f4c079a0dcbf300d59c83a1b3b88377abf3115210543161e41ee83df6e0",
+      "legacy_sha256": "ae3e6f4c079a0dcbf300d59c83a1b3b88377abf3115210543161e41ee83df6e0",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/cpu/expert_layout.hpp",
+      "upstream_sha256": "00eeaf7d0bde06f3db22d7865f932393cd5e1026434cd0009780d3f063bdf651",
+      "legacy_sha256": "00eeaf7d0bde06f3db22d7865f932393cd5e1026434cd0009780d3f063bdf651",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/cpu/iq_avx2.hpp",
+      "upstream_sha256": "aff6543052f5289ee9d60b5a54585489fd25681d8493cf45d7c9751c3d8e656c",
+      "legacy_sha256": "37c785fdd73a641cd925c395e44a53e88775613c0cb23c066393d0d7421cd90a",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/cpu/iq_avx512.hpp",
+      "upstream_sha256": "ede01ee7e474f5d816d9bc6ad6b0804cabd924c69b2b3d536d40f2432410841b",
+      "legacy_sha256": "ede01ee7e474f5d816d9bc6ad6b0804cabd924c69b2b3d536d40f2432410841b",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/cpu/kq_avx2.hpp",
+      "upstream_sha256": "c4cd342ba0f2ffd34f6b5ac9c254c59d0a521370de0d7650f0c28e7a390b55dd",
+      "legacy_sha256": "c4cd342ba0f2ffd34f6b5ac9c254c59d0a521370de0d7650f0c28e7a390b55dd",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/cpu/native_expert.hpp",
+      "upstream_sha256": "45ccf6df8b4cc5b468a245a2ddee845e0b10ece14951a5a7ab7b6ffbca087e94",
+      "legacy_sha256": "45ccf6df8b4cc5b468a245a2ddee845e0b10ece14951a5a7ab7b6ffbca087e94",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/cpu/pool.hpp",
+      "upstream_sha256": "177897a23a38f78f51545bc50a056d3cd8feb03c0b594a0026e66fab92cec07a",
+      "legacy_sha256": "177897a23a38f78f51545bc50a056d3cd8feb03c0b594a0026e66fab92cec07a",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/cvec.hpp",
+      "upstream_sha256": "34e0a44c41392634451d4d676a0035623b205cf2952685aa1946b4df78dd5a65",
+      "legacy_sha256": "34e0a44c41392634451d4d676a0035623b205cf2952685aa1946b4df78dd5a65",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/dequant_bf16.hpp",
+      "upstream_sha256": "6b49ba8f050e6684caa57879f14657c5453078a3ccb8f963432ea3049a4178ca",
+      "legacy_sha256": "6b49ba8f050e6684caa57879f14657c5453078a3ccb8f963432ea3049a4178ca",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/dequant_s2.hpp",
+      "upstream_sha256": "d8f3aa8d610887451f177f05ada1135d52daf21b95a8c2c58686c07403c8013d",
+      "legacy_sha256": "d8f3aa8d610887451f177f05ada1135d52daf21b95a8c2c58686c07403c8013d",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/dp4a.hpp",
+      "upstream_sha256": "05404993da1f077653a1dbf2dc54278b03821dfc3fe31ae1b963d30e94e95cf9",
+      "legacy_sha256": "05404993da1f077653a1dbf2dc54278b03821dfc3fe31ae1b963d30e94e95cf9",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/elementwise.hpp",
+      "upstream_sha256": "92685d6ed73a064852a52fa3f81c8f124955a77cbf4ae82cd6a0e41942c49035",
+      "legacy_sha256": "97014c150169fd4867b161dc3c3c5c7c66ced295de311eb2d5e77341603a22d0",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/f16_bits.hpp",
+      "upstream_sha256": "0f74e6dd832da427b681c9971265a0af1a91198694fdef3654d860b98863fc8c",
+      "legacy_sha256": "0f74e6dd832da427b681c9971265a0af1a91198694fdef3654d860b98863fc8c",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/fused_gdn.hpp",
+      "upstream_sha256": "595205dcf531d8fb758bcd7b2d3ac4e4158bd06f20160199e592824d530e2078",
+      "legacy_sha256": "595205dcf531d8fb758bcd7b2d3ac4e4158bd06f20160199e592824d530e2078",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/fused_gr.hpp",
+      "upstream_sha256": "0506a16f95e4f0ab05dab62619d642598282677a126efa05303a8b278b712360",
+      "legacy_sha256": "e953ecdca811cc703d08d4034f8162e9a39eaeb04c4c9a7e9e8c61881a2a2bdf",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/gdn.hpp",
+      "upstream_sha256": "f44626e3f52813b9be289aee72f708e9ad61aa9b3a0e43037ba5ff8b358fc638",
+      "legacy_sha256": "f44626e3f52813b9be289aee72f708e9ad61aa9b3a0e43037ba5ff8b358fc638",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/gr.hpp",
+      "upstream_sha256": "2a5bbba0ea74752dceba2e14bcf5e7c470dd69dd74e533a3e2e9aa76804ef74e",
+      "legacy_sha256": "2a5bbba0ea74752dceba2e14bcf5e7c470dd69dd74e533a3e2e9aa76804ef74e",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/iq_kernels.hpp",
+      "upstream_sha256": "c2dc19befbc36c2a06f8e87bee298f57d64051d9a848cff7f9f0cb0703abe5eb",
+      "legacy_sha256": "0db8b5c104e2b29dbd0e12bf2f12b6a1d4403ffb1340398d7bf4f58a60742f30",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/kv_q4.hpp",
+      "upstream_sha256": "c7624d5567d464edd0e5e99951dca08f8a748545af2f0be4f18398a011c8ab89",
+      "legacy_sha256": "c7624d5567d464edd0e5e99951dca08f8a748545af2f0be4f18398a011c8ab89",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/kv_q8.hpp",
+      "upstream_sha256": "8917232c10900e85a6193012d2cc56138c7ab000c01d964bc9d296cf2b2e4bb6",
+      "legacy_sha256": "8917232c10900e85a6193012d2cc56138c7ab000c01d964bc9d296cf2b2e4bb6",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/kv_stream.hpp",
+      "upstream_sha256": "ed033f7cb5f8214f9128614e10241196493950b02e75d481fe76ae914a0f36d7",
+      "legacy_sha256": "6cb4bdf1a1f522060dbd93a78c333955791aab7aedbd9cc2b63c1c2ed037fee6",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/mrope.hpp",
+      "upstream_sha256": "92d153fcedd6fcb747fee61fb0e01c3adb0c36e205154255b81e4337cb782402",
+      "legacy_sha256": "92f208409f99116676ca6cce1579cd16c0365e515d02071ec55522a7b28e02c6",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/native_flash_attn.hpp",
+      "upstream_sha256": "6cc7bb288fc263ee800f5b5329bcc8d139ddde7e31a022364850cf80b1e5f7ff",
+      "legacy_sha256": "6cc7bb288fc263ee800f5b5329bcc8d139ddde7e31a022364850cf80b1e5f7ff",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/native_gdn.hpp",
+      "upstream_sha256": "2b65e1b5b689c06d099bc061d746d606dcc5b974a7bffe0820ce01e7295d1971",
+      "legacy_sha256": "2b65e1b5b689c06d099bc061d746d606dcc5b974a7bffe0820ce01e7295d1971",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/native_gdn_preprocess.hpp",
+      "upstream_sha256": "7533d8464b6ae8e2800e43ee3036d23f21181c2472c069d19bacf115beeafc69",
+      "legacy_sha256": "7533d8464b6ae8e2800e43ee3036d23f21181c2472c069d19bacf115beeafc69",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/native_gr_norm.hpp",
+      "upstream_sha256": "520230cbf749a13c4f91687da31c0136fdcb2f14d4e4f956c38334d0e2cf742c",
+      "legacy_sha256": "4f589ca2af997968ecfa6276baca2e4c094834590248f4ccf8fb4a8ce1af5623",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/native_gr_postops.hpp",
+      "upstream_sha256": "572867fecf55294f99251e679b934bb6ce63e2162f9c5c0e27bcec167a74d0f6",
+      "legacy_sha256": "59f6488e41b29bb38e1c3e9beec7bb47ed102a98c07991f00f4fde9ccc03ebba",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/native_mmvq.hpp",
+      "upstream_sha256": "283d882a96e1f22d97ee170bd0c8bca5cc226ab5f82fa1df133c8fd901efe487",
+      "legacy_sha256": "bcbadff81f650d62866889cfcbf2fba1f6798a82bb5de8a4a2bef6d844e7c589",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/native_moe.hpp",
+      "upstream_sha256": "b8400379c2f0deea4f440a2aeb343d45377f4a334bf4b1c8eb8aa933eaace51f",
+      "legacy_sha256": "b8400379c2f0deea4f440a2aeb343d45377f4a334bf4b1c8eb8aa933eaace51f",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/native_ple_postops.hpp",
+      "upstream_sha256": "eeeec9650c6e19402dcec9c4c807ff5a62f0b64b4a3ad86e6a286489ee7af091",
+      "legacy_sha256": "eeeec9650c6e19402dcec9c4c807ff5a62f0b64b4a3ad86e6a286489ee7af091",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/native_qsa.hpp",
+      "upstream_sha256": "ef43d79914eb433458e2b212a9733e6a0e15be115aa156675d18a8d012c66387",
+      "legacy_sha256": "ef43d79914eb433458e2b212a9733e6a0e15be115aa156675d18a8d012c66387",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/native_qsa_indexer.hpp",
+      "upstream_sha256": "d040ccbef7943f16c7ce99d8070979b555a8c740950a6f53945b7199226d3fc3",
+      "legacy_sha256": "d040ccbef7943f16c7ce99d8070979b555a8c740950a6f53945b7199226d3fc3",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/native_qsa_score.hpp",
+      "upstream_sha256": "d57ba2509e97093ed2bfa3cbe73886407211a5d476a0b629ed925dd992369354",
+      "legacy_sha256": "d57ba2509e97093ed2bfa3cbe73886407211a5d476a0b629ed925dd992369354",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/native_rope.hpp",
+      "upstream_sha256": "550e8640263e0fbf2319e0d26426371b917eb34b6a24d3d672d502ff94717040",
+      "legacy_sha256": "38fb7dbdf43fda7134dd13bda06e97f82525ff0d6d39ec39a976bd8366378bda",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/native_router.hpp",
+      "upstream_sha256": "e5e0a529c11235080ec541cdc65a1ac1c0dba8eb994cf5373609fc8985311502",
+      "legacy_sha256": "e5e0a529c11235080ec541cdc65a1ac1c0dba8eb994cf5373609fc8985311502",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/ngram.hpp",
+      "upstream_sha256": "cac660e7566e7df9d6bae18e19728362b6516d9f14707104a4d7a797b2f3975a",
+      "legacy_sha256": "cac660e7566e7df9d6bae18e19728362b6516d9f14707104a4d7a797b2f3975a",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/ple.hpp",
+      "upstream_sha256": "d658e7186f1e81a8b183a583b5fa6bfaf228042cda4e88aa1c41ada260db6b12",
+      "legacy_sha256": "d658e7186f1e81a8b183a583b5fa6bfaf228042cda4e88aa1c41ada260db6b12",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/qsa.hpp",
+      "upstream_sha256": "87c02222284f842fcecb46a422b119af769c72c3914edc8da5b2ee782456dc74",
+      "legacy_sha256": "87c02222284f842fcecb46a422b119af769c72c3914edc8da5b2ee782456dc74",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/qsa_decode_attn.hpp",
+      "upstream_sha256": "6fa4b817f835c43783774d5946d14938f2867d7af16abb4db0f4b75d4622a915",
+      "legacy_sha256": "6fa4b817f835c43783774d5946d14938f2867d7af16abb4db0f4b75d4622a915",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/qsa_prompt_attn.hpp",
+      "upstream_sha256": "a535cf4bf4fd5770e8726327f5dd64145e22478b2d711441d066ad3082f79d55",
+      "legacy_sha256": "ad662c1dbb166e1c31b933ced070fa65250ffda20b03f86a7f3b38add8138b75",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/qsa_select.hpp",
+      "upstream_sha256": "c7c6f484c89541f1e64efbdfc942fcd3eeb719637d3cd1a99ee2f4491b3116cc",
+      "legacy_sha256": "c7c6f484c89541f1e64efbdfc942fcd3eeb719637d3cd1a99ee2f4491b3116cc",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/quantize_act.hpp",
+      "upstream_sha256": "baad6fe6c691f8f5aee2d6dbbb3513eead12c754b485ee41af4618d5035772f7",
+      "legacy_sha256": "baad6fe6c691f8f5aee2d6dbbb3513eead12c754b485ee41af4618d5035772f7",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/rope.hpp",
+      "upstream_sha256": "bd9094c0f0f761971a6760fde2b84a5660c934ce9a654dc287c686acd284a65a",
+      "legacy_sha256": "bd9094c0f0f761971a6760fde2b84a5660c934ce9a654dc287c686acd284a65a",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/rope_scaling.hpp",
+      "upstream_sha256": "05a8dcf57c9b12a23128f22e4bef01445c3a37991df5e1ffacd01d077c46595d",
+      "legacy_sha256": "05a8dcf57c9b12a23128f22e4bef01445c3a37991df5e1ffacd01d077c46595d",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/router_top10.hpp",
+      "upstream_sha256": "cd0d8e91e702bfa2cfd681d4ccf4f6c4c62af2cd612d2d109e5369845ddf362d",
+      "legacy_sha256": "cd0d8e91e702bfa2cfd681d4ccf4f6c4c62af2cd612d2d109e5369845ddf362d",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/s2_expert_grouped.hpp",
+      "upstream_sha256": "74802f312c20daa90b7fbacba4a3357c8e94c7ecdab75f402be507dd303a8193",
+      "legacy_sha256": "74802f312c20daa90b7fbacba4a3357c8e94c7ecdab75f402be507dd303a8193",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/s2_gemv.hpp",
+      "upstream_sha256": "cc146b9c652f1ee0c89be65ce179ea4cb31d4b4d32366c07f06b45644bbb8eb0",
+      "legacy_sha256": "cc146b9c652f1ee0c89be65ce179ea4cb31d4b4d32366c07f06b45644bbb8eb0",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/s2_gemv_q8.hpp",
+      "upstream_sha256": "5c2ccbdc5b3f3a66b9afef5bc799ae2a83bcb2103b258bb84e8d82aad06b4eb1",
+      "legacy_sha256": "5c2ccbdc5b3f3a66b9afef5bc799ae2a83bcb2103b258bb84e8d82aad06b4eb1",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/s_gemv.hpp",
+      "upstream_sha256": "369ab6cc010b49ac1d82bb680246e93b4c10f4f7081f56a325f6c7138ab1c3fb",
+      "legacy_sha256": "369ab6cc010b49ac1d82bb680246e93b4c10f4f7081f56a325f6c7138ab1c3fb",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/sampler.hpp",
+      "upstream_sha256": "2fadb4618763906f7bb6718db199628e22522f266a52b1ab03f8c87a4e5b9a0e",
+      "legacy_sha256": "2fadb4618763906f7bb6718db199628e22522f266a52b1ab03f8c87a4e5b9a0e",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/shared_expert.hpp",
+      "upstream_sha256": "9f49d44286650219f488dea3fbe0474b009498e88921cc3ef806e87c372da8e2",
+      "legacy_sha256": "9f49d44286650219f488dea3fbe0474b009498e88921cc3ef806e87c372da8e2",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/kernels/verify_kernels.hpp",
+      "upstream_sha256": "54e349fe4ab994f57a15ae8c15f81c3778652aa881ce6d25aa4136670bfa9ba7",
+      "legacy_sha256": "59f66a3437f4f70304b3ed84fd2fc9697d0e7cf4f939e49c0e18e490c738158d",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/ngram/ple_reader.hpp",
+      "upstream_sha256": "d19b99a681a533f47144293bb170913c1496b5e0c344aed097ad1418375f7498",
+      "legacy_sha256": "d19b99a681a533f47144293bb170913c1496b5e0c344aed097ad1418375f7498",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/plan/plan.hpp",
+      "upstream_sha256": "d6eca56c9d00ba3ad13e8a39ef4cb78f8a2c23fd3037e2e951167155a5b3dda5",
+      "legacy_sha256": "d6eca56c9d00ba3ad13e8a39ef4cb78f8a2c23fd3037e2e951167155a5b3dda5",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/platform/direct_file.hpp",
+      "upstream_sha256": "ae9a8999aef1769d729e5d6e4058888a14b758cbce3804b291809b1a521a4253",
+      "legacy_sha256": "ae9a8999aef1769d729e5d6e4058888a14b758cbce3804b291809b1a521a4253",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/platform/memory.hpp",
+      "upstream_sha256": "7272eb1956a73f63b0a352e747c71d72caff6a023ef0cdeeaa1222d05059bdea",
+      "legacy_sha256": "7272eb1956a73f63b0a352e747c71d72caff6a023ef0cdeeaa1222d05059bdea",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/prefill/gemm.hpp",
+      "upstream_sha256": "e89cbb994adec4e2f6bd522e453aa1778523d90ed73047f5a2d6878c5e0c0570",
+      "legacy_sha256": "e89cbb994adec4e2f6bd522e453aa1778523d90ed73047f5a2d6878c5e0c0570",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/prefill/kernels.hpp",
+      "upstream_sha256": "0fdf02834d4dd440d386c6dd157f1af55a6608defa89453d670e8dcadc5dd1cb",
+      "legacy_sha256": "0fdf02834d4dd440d386c6dd157f1af55a6608defa89453d670e8dcadc5dd1cb",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/prefill/moe_fused.hpp",
+      "upstream_sha256": "2809428405209d177a5ded160f62707f21eb344e85c84de8837b2b86ea938f65",
+      "legacy_sha256": "41b58910e68ca3bf88e6b8c19bcb3dcb787fcf1882a66926970b4e3ea6fdecc9",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/prefill/moe_fused_iq.hpp",
+      "upstream_sha256": "84d0c99ace277a53deb5d091b2a0a5137fdc390f834815b43e8a5a910f42b4c8",
+      "legacy_sha256": "89e1eabb7e51571c35111f6f9e7bbba13cc516f2ed8d99bcb9cdc680dd99499e",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/prefill/moe_mmq.hpp",
+      "upstream_sha256": "2fcca5cfd1f9c25c35c28a01ae8e4202b203479f8893fe263e7a9b30954a753a",
+      "legacy_sha256": "c8d1c68340e704a2b0ba3cebe217a990b98de56c3c38a61cbb02e7c2ea0d9a60",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/prefill/prefill.hpp",
+      "upstream_sha256": "046e189bc077c2a037add1f0dc0b445d1af20f5cc382f3ee2943ea0450e8ec7f",
+      "legacy_sha256": "046e189bc077c2a037add1f0dc0b445d1af20f5cc382f3ee2943ea0450e8ec7f",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/program/conv_cache.hpp",
+      "upstream_sha256": "bac12824a15f99197e94305f90953914efd622b0380853675453f841a332eb5b",
+      "legacy_sha256": "bac12824a15f99197e94305f90953914efd622b0380853675453f841a332eb5b",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/program/logits_selection.hpp",
+      "upstream_sha256": "f023d183fecb0c236dd0941988c672f6096fa92963393d4d879767838313e006",
+      "legacy_sha256": "f023d183fecb0c236dd0941988c672f6096fa92963393d4d879767838313e006",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/spec/controller.hpp",
+      "upstream_sha256": "e1c8400792ec87882646c96b22d768e2f62a5cfebf4b415798ef177ea6e60cce",
+      "legacy_sha256": "e1c8400792ec87882646c96b22d768e2f62a5cfebf4b415798ef177ea6e60cce",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/spec/draft_policy.hpp",
+      "upstream_sha256": "d7810bde5ca46b65f41e0eb3351ea86e55ea6a048e18b53a8761f0fc62b63bc5",
+      "legacy_sha256": "d7810bde5ca46b65f41e0eb3351ea86e55ea6a048e18b53a8761f0fc62b63bc5",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/spec/suffix_drafter.hpp",
+      "upstream_sha256": "30c7b82d26f013c4029f4db93947dd20060a7163840a5547dbb2513a5ee4844c",
+      "legacy_sha256": "30c7b82d26f013c4029f4db93947dd20060a7163840a5547dbb2513a5ee4844c",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/sycl/compat/cuda_runtime.h",
+      "upstream_sha256": null,
+      "legacy_sha256": "39b71df35e317851bd16b383027f088be159be2e0d602c592e8ddab30fe7e26a",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/sycl/esimd_half.hpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "4df77302592b43546b831505c5d71ef2202890bebafeb9c244e81def3dc4394e",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/sycl/gguf_decode.hpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "be53c2b1d612433720599999ea0bc4902d2d550e16270a9eebe8e6868fb91c50",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/sycl/launch.hpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "9c5aaf14e4b92232d4dcd4e2e68071201d436d287a9615088a9428d88f53b1ce",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/sycl/native_mmq.hpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "756b2275ecfb6737857a127cd951ad478b7b4db2ce7f90ec99e01d64311f3c85",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/sycl/native_q2.hpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "3f646631ac9cf843bd48d143bdc2784ad180d7081a30af80184a60b82fc0b69b",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/sycl/runtime.hpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "bcfbb035fa5a95f0409db013158f756ba4136b0aa06f636c6ff747ec0bcfd0fd",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "include/strata/sycl/sform.hpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "5317d2217ec1949e23fdd6f0a8a716cdc6d76a785a9d1d1792fa36680981059f",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/artifact/dequant.cpp",
+      "upstream_sha256": "944edf278c6d9858ed63998976b50d2b7913385d4a832de6d76bd32cd1090f26",
+      "legacy_sha256": "944edf278c6d9858ed63998976b50d2b7913385d4a832de6d76bd32cd1090f26",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/artifact/gguf_reader.cpp",
+      "upstream_sha256": "90e6a1a664645075d4a946a84a498cf05cd9947ab11c4036aee577a3b8632431",
+      "legacy_sha256": "90e6a1a664645075d4a946a84a498cf05cd9947ab11c4036aee577a3b8632431",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/artifact/gguf_reader_test.cpp",
+      "upstream_sha256": "3fe4c7e31303e70b4428a89d25a9a147baceef3abcad792b3a1d0e847d660932",
+      "legacy_sha256": "3fe4c7e31303e70b4428a89d25a9a147baceef3abcad792b3a1d0e847d660932",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/concurrent_main.cpp",
+      "upstream_sha256": "06d919aab9a1687d4bb0b5f9be0c69273b7af5857d81718ff50a2fd351a7c582",
+      "legacy_sha256": "06d919aab9a1687d4bb0b5f9be0c69273b7af5857d81718ff50a2fd351a7c582",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/conversation_cache_test.cpp",
+      "upstream_sha256": "018aebe071039cbef68045c7750b0e5330cc6b3d0c0f8f6825e855ca4619dc19",
+      "legacy_sha256": "018aebe071039cbef68045c7750b0e5330cc6b3d0c0f8f6825e855ca4619dc19",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/conversation_checked.hpp",
+      "upstream_sha256": "8fb6f2734b3b96d3590644133ccd07f09befda6ef2243325ef8ea3f1c6a972ad",
+      "legacy_sha256": "8fb6f2734b3b96d3590644133ccd07f09befda6ef2243325ef8ea3f1c6a972ad",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/conversation_memory.cpp",
+      "upstream_sha256": "2654582ed22f147a3e83073664d74ff67f3f8a550d58c30654a417e8aa5b2b2a",
+      "legacy_sha256": "2654582ed22f147a3e83073664d74ff67f3f8a550d58c30654a417e8aa5b2b2a",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/conversation_memory_test.cpp",
+      "upstream_sha256": "24c8ccc575ecf8290eb14a06a9d8b23de58b2c708c70dd6ecc4fd5ac1591b1bf",
+      "legacy_sha256": "24c8ccc575ecf8290eb14a06a9d8b23de58b2c708c70dd6ecc4fd5ac1591b1bf",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/conversation_snapshot.cpp",
+      "upstream_sha256": "57ced89d4e3e90f5a93b597b04d1c73f406f20a742e43174eb042b4dea885fe2",
+      "legacy_sha256": "57ced89d4e3e90f5a93b597b04d1c73f406f20a742e43174eb042b4dea885fe2",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/conversation_snapshot_test.cpp",
+      "upstream_sha256": "5841318653361963d50edee9572e80335df636a61480667fd546a43bcebf18c7",
+      "legacy_sha256": "5841318653361963d50edee9572e80335df636a61480667fd546a43bcebf18c7",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/conversation_state.cpp",
+      "upstream_sha256": "296a5e2de758e638a80ddaf6a25f9a48419c88bc42d8ceb68eae4df7fb933c7d",
+      "legacy_sha256": "296a5e2de758e638a80ddaf6a25f9a48419c88bc42d8ceb68eae4df7fb933c7d",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/conversation_validation_test.cpp",
+      "upstream_sha256": "206a0b2e764cec8211be66bebbedee726b6814d47e990df21f2672ce39b8d9da",
+      "legacy_sha256": "206a0b2e764cec8211be66bebbedee726b6814d47e990df21f2672ce39b8d9da",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/coupled_draft_test.cpp",
+      "upstream_sha256": "d5be5618fef9255ff04499723893bc1538d7238166255de62ba7092678ab2a55",
+      "legacy_sha256": "d5be5618fef9255ff04499723893bc1538d7238166255de62ba7092678ab2a55",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/device.cu",
+      "upstream_sha256": "330e9d0bb33c0b850bd56393614b7030416fd70cf55fd1ddd196856ea19f9942",
+      "legacy_sha256": "330e9d0bb33c0b850bd56393614b7030416fd70cf55fd1ddd196856ea19f9942",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/device_main.cpp",
+      "upstream_sha256": "60a66b6b2c05527f5cb59d6c5397370c4740205551d74d04db2202989d7f3584",
+      "legacy_sha256": "25f5904e880448f9047d5574814e8ad178b814ec9ef3bcca2f450378f4bae2d8",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/expert_cache.cpp",
+      "upstream_sha256": "438efa2e79e188f973520738fdea622cd0f09191682cc5b54817fef14c74c138",
+      "legacy_sha256": "c691d1147fea50f351a208b676efc4ceaaee9d4e8534cdbf5f7672c934db7e19",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/expert_source.cpp",
+      "upstream_sha256": "47f73e112987892efcad858fe25e5872e77055be27fbe01d51d9257f8c1b6a36",
+      "legacy_sha256": "daf174b8ded139073d0b16ff524892410bd8c74beb282878ff1afbbb4b27606b",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/graph.cpp",
+      "upstream_sha256": "ac8b1de9372b6755bb5c9be30b83c76fef2f89186b0f7e5316676448f66483c3",
+      "legacy_sha256": "ac8b1de9372b6755bb5c9be30b83c76fef2f89186b0f7e5316676448f66483c3",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/layer.cpp",
+      "upstream_sha256": "08989c2a8080d8b865315a1bc9868f6f164cb6a85ab19382e8a78ef874ad8576",
+      "legacy_sha256": "38dbcfab306d948d099ad3ae07e070a7311caad00f670d4b1c01001282c2b278",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/layout.cpp",
+      "upstream_sha256": "f1e166c91025710fe318c85f7fba27a721291ca2d27ececd797abafa5a5cc7eb",
+      "legacy_sha256": "f1e166c91025710fe318c85f7fba27a721291ca2d27ececd797abafa5a5cc7eb",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/load_main.cpp",
+      "upstream_sha256": "83ea314dd762cf37c7ea9249842bc10613f16e7ba17715ee8b2dadae320fa008",
+      "legacy_sha256": "83ea314dd762cf37c7ea9249842bc10613f16e7ba17715ee8b2dadae320fa008",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/mtp.cpp",
+      "upstream_sha256": "f5288a88c399d0611d13b7d418fa2d3268f05eabb9ff13a620fd317a5465a287",
+      "legacy_sha256": "f5288a88c399d0611d13b7d418fa2d3268f05eabb9ff13a620fd317a5465a287",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/native_dense.cpp",
+      "upstream_sha256": "7ba9ac4d1df59142f352f5b6330dc5a2b8451068c8391c26a080dcfca9cc5470",
+      "legacy_sha256": "7ba9ac4d1df59142f352f5b6330dc5a2b8451068c8391c26a080dcfca9cc5470",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/native_head.cpp",
+      "upstream_sha256": "e4c7865002ad5a22b797c055c0780956469b8128b47bc03529e469a7c93e82c6",
+      "legacy_sha256": "e4c7865002ad5a22b797c055c0780956469b8128b47bc03529e469a7c93e82c6",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/overlap_main.cpp",
+      "upstream_sha256": "d48e5d20cf224301da6ff05cfc67fedf6fe40b8c6b17a39e8a191192f03e03c4",
+      "legacy_sha256": "d48e5d20cf224301da6ff05cfc67fedf6fe40b8c6b17a39e8a191192f03e03c4",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/peer_experts.cpp",
+      "upstream_sha256": "078fa5f8d866729210a13e6e6cc1ca0fa2a1a37eabd6b87e3b27d21a262bc0dc",
+      "legacy_sha256": "8de3d34658ed8662ea966e9e822bbb95e0c5aed5e4b35d7ddc777855017a74c4",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/pinned.cu",
+      "upstream_sha256": "e40ee6b67946750ffabbc2f7074e6fe3f2f4c3c007f6731792274ab0f54f7722",
+      "legacy_sha256": "68d17f04f6d3b916eb87f02e1bc891129015a6ecac74b3848a3bd014a5c1a1fa",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/pinned_shared_test.cpp",
+      "upstream_sha256": "0dd0cfe5f3e4d48631b5d95b0ce45e4b52d3e1701cddb231986606ef59b3ec02",
+      "legacy_sha256": "0dd0cfe5f3e4d48631b5d95b0ce45e4b52d3e1701cddb231986606ef59b3ec02",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/remote_experts.cpp",
+      "upstream_sha256": "7c10c2b923bdd5105d6626d0d1950883da7e53f64e581a67ef0fdacd3e3284b7",
+      "legacy_sha256": "7c10c2b923bdd5105d6626d0d1950883da7e53f64e581a67ef0fdacd3e3284b7",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/session.cpp",
+      "upstream_sha256": "1e3a979614dae1910924e592ae1e2190afd8c6eb14438d7fdba5886ea034de18",
+      "legacy_sha256": "f2ef0b5c115ba23bca711241fb720dd806bd505225c75c37fd8c11bbf531b5b2",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/verify.cpp",
+      "upstream_sha256": "d5d5040feff51d94a167603096eacab48b4ae41f1acc4df534bf0bb3c0336f77",
+      "legacy_sha256": "7334ccf8bf602dbec17cf560ba93e57fc4823b8a458ef0194793cd7b7a29a816",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/core/weights.cpp",
+      "upstream_sha256": "367d88d224a5db8a23bab42c7d12c08a7ac64395792cb4ab6adfbc4eb99d8d53",
+      "legacy_sha256": "367d88d224a5db8a23bab42c7d12c08a7ac64395792cb4ab6adfbc4eb99d8d53",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/bf16_bits_test.cpp",
+      "upstream_sha256": "e26ebb9239946d0416e81cb212ba24618386ed3da15522c8ed1af9995b586d97",
+      "legacy_sha256": "e26ebb9239946d0416e81cb212ba24618386ed3da15522c8ed1af9995b586d97",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/bf16_gemv_parity.cpp",
+      "upstream_sha256": "a7c6de83f57b333865e5fefb7f790573db6de6d8a88d79c950280f56c2f5e44e",
+      "legacy_sha256": "a7c6de83f57b333865e5fefb7f790573db6de6d8a88d79c950280f56c2f5e44e",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cpu/expert.cpp",
+      "upstream_sha256": "9bcf5d889818ef3cb9619df6536e8844d151714803ac8930eada115a61b62e48",
+      "legacy_sha256": "9bcf5d889818ef3cb9619df6536e8844d151714803ac8930eada115a61b62e48",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cpu/expert_layout.cpp",
+      "upstream_sha256": "62a20856e50a955776cab30c293b2a5a03ad68cd08895fa1d984d14e791927d3",
+      "legacy_sha256": "62a20856e50a955776cab30c293b2a5a03ad68cd08895fa1d984d14e791927d3",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cpu/expert_multi_test.cpp",
+      "upstream_sha256": "b39500f0d1084f2843cdbba4700a79b608f053a1a8625afd724174300c48fea7",
+      "legacy_sha256": "b39500f0d1084f2843cdbba4700a79b608f053a1a8625afd724174300c48fea7",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cpu/expert_parity.cpp",
+      "upstream_sha256": "75bd21e3e73d294669dd795832cb174eaecee286c75bb813f80af8d52e135031",
+      "legacy_sha256": "75bd21e3e73d294669dd795832cb174eaecee286c75bb813f80af8d52e135031",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cpu/iq_avx2.cpp",
+      "upstream_sha256": "80efab0bed11ddf3980c0d146101218efa061cf5304e39fc88d93e5e94a99136",
+      "legacy_sha256": "80efab0bed11ddf3980c0d146101218efa061cf5304e39fc88d93e5e94a99136",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cpu/iq_avx512.cpp",
+      "upstream_sha256": "c57d176884fcd34ab730e4684fb560a21aa1ec2a5dde8759a1705c0344658b96",
+      "legacy_sha256": "c57d176884fcd34ab730e4684fb560a21aa1ec2a5dde8759a1705c0344658b96",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cpu/iq_single_avx2.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "8579db5f02086cc660d376a77e00a9285e038f6757a53e8b2a8ef6d79eb2074f",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cpu/kq_avx2.cpp",
+      "upstream_sha256": "9bdade163b90b219ab3be746818cb2e6e9bca93813f69e2cb4e8e448b633c4f1",
+      "legacy_sha256": "9bdade163b90b219ab3be746818cb2e6e9bca93813f69e2cb4e8e448b633c4f1",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cpu/native_expert.cpp",
+      "upstream_sha256": "d77666ee42cc43eaa8339116950ef0603aba6591c66be53344603f8749e76d4a",
+      "legacy_sha256": "fcb4a7c74ba45a13da162eed832860f9644f4544d3f269b9c8588f01b40fb106",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cpu/pool.cpp",
+      "upstream_sha256": "83c91704efeff4c88c25a9d1e69661f34ad76e556c154320ff6373edc7a168b8",
+      "legacy_sha256": "83c91704efeff4c88c25a9d1e69661f34ad76e556c154320ff6373edc7a168b8",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cpu/pool_stress.cpp",
+      "upstream_sha256": "21fdb493bc6aab804583c38a3f8befba418becb67243452d61a6fa3b8a32d88b",
+      "legacy_sha256": "21fdb493bc6aab804583c38a3f8befba418becb67243452d61a6fa3b8a32d88b",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cpu/pool_test.cpp",
+      "upstream_sha256": "d1f225f1b5f5e4ec2805843fc3a49cfc3a53788f15e243c76c63b02f2ed913ef",
+      "legacy_sha256": "d1f225f1b5f5e4ec2805843fc3a49cfc3a53788f15e243c76c63b02f2ed913ef",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cpu/q2_avx2.cpp",
+      "upstream_sha256": "9d43e6314a75a1095953f935ed95583141afff67ba5e4da96b6e2520c5a95eee",
+      "legacy_sha256": "9d43e6314a75a1095953f935ed95583141afff67ba5e4da96b6e2520c5a95eee",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/bf16_gemv.cu",
+      "upstream_sha256": "1408ce4707d9d03bc3d752773401afbb1170b0cf1fc3b53fb95cab9aff652c53",
+      "legacy_sha256": "1408ce4707d9d03bc3d752773401afbb1170b0cf1fc3b53fb95cab9aff652c53",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/cvec.cu",
+      "upstream_sha256": "387d692a0ca65ec54a90caa0a596e4fd6e9640468773674c855dab4fddfd4851",
+      "legacy_sha256": "387d692a0ca65ec54a90caa0a596e4fd6e9640468773674c855dab4fddfd4851",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/dequant_bf16.cu",
+      "upstream_sha256": "6106efec7f926e3d41983a17b5e2d5a9fc3fd63c8708e51c178970885504460a",
+      "legacy_sha256": "6106efec7f926e3d41983a17b5e2d5a9fc3fd63c8708e51c178970885504460a",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/dequant_s2.cu",
+      "upstream_sha256": "a32870e7c7fb7deab1bb93e36ba15d6679ba3b5b2055ea0ab0b3e88c421d2f63",
+      "legacy_sha256": "a32870e7c7fb7deab1bb93e36ba15d6679ba3b5b2055ea0ab0b3e88c421d2f63",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/elementwise.cu",
+      "upstream_sha256": "39b553eeb5a60a2dcdece798ad7c305493195743bef277d24d99bde9759a14e1",
+      "legacy_sha256": "39b553eeb5a60a2dcdece798ad7c305493195743bef277d24d99bde9759a14e1",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/fused_gdn.cu",
+      "upstream_sha256": "c1f6e538c86db170891650ce065732c4b50733d4744b0f32634fce34c68fef1f",
+      "legacy_sha256": "c1f6e538c86db170891650ce065732c4b50733d4744b0f32634fce34c68fef1f",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/fused_gr.cu",
+      "upstream_sha256": "8aa2d09378e5b2268d634a7ebd265be9904e066b896805a2a3f0d54b931114ce",
+      "legacy_sha256": "8aa2d09378e5b2268d634a7ebd265be9904e066b896805a2a3f0d54b931114ce",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/gdn.cu",
+      "upstream_sha256": "0ed432dfd55d3d758fe0661fb7f4bc951bd57cd23adf73c2dfbe323ba1c0bbfd",
+      "legacy_sha256": "0ed432dfd55d3d758fe0661fb7f4bc951bd57cd23adf73c2dfbe323ba1c0bbfd",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/gr.cu",
+      "upstream_sha256": "6066f31f28dde4231a9dd49f4a39bfc59ecc46322c70a0f3c0e65e0996b5ec8a",
+      "legacy_sha256": "6066f31f28dde4231a9dd49f4a39bfc59ecc46322c70a0f3c0e65e0996b5ec8a",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/iq_kernels.cu",
+      "upstream_sha256": "f1d8887573a0ca5197809d1198da00ae899d391ae0fb4874d7b32aacb93b5d92",
+      "legacy_sha256": "f1d8887573a0ca5197809d1198da00ae899d391ae0fb4874d7b32aacb93b5d92",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/kv_q4.cu",
+      "upstream_sha256": "736a6d0b37d314a13abf377d9e03fff54b84910c81cf4dfbd55b2d1408e03cac",
+      "legacy_sha256": "736a6d0b37d314a13abf377d9e03fff54b84910c81cf4dfbd55b2d1408e03cac",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/kv_q8.cu",
+      "upstream_sha256": "0caae8f765e10c395135f71b5a6eda7d1b7713806112906ff0c9399fba5882c3",
+      "legacy_sha256": "0caae8f765e10c395135f71b5a6eda7d1b7713806112906ff0c9399fba5882c3",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/kv_stream.cu",
+      "upstream_sha256": "27aa7ed26365dc86aa68a8b64c3820dc0abb3fde0f1e892c3d3e0695b3a05c95",
+      "legacy_sha256": "27aa7ed26365dc86aa68a8b64c3820dc0abb3fde0f1e892c3d3e0695b3a05c95",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/native_bf16.cu",
+      "upstream_sha256": "70b44795528fb73d636be5914d60f0adaa849a48cc38f309d327a2976c3ed3da",
+      "legacy_sha256": "70b44795528fb73d636be5914d60f0adaa849a48cc38f309d327a2976c3ed3da",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/native_flash_attn.cu",
+      "upstream_sha256": "d848cc229226e499405b50050e6baacd4ca6031087b45983065319c16b06b9bf",
+      "legacy_sha256": "d848cc229226e499405b50050e6baacd4ca6031087b45983065319c16b06b9bf",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/native_gdn.cu",
+      "upstream_sha256": "0478b434053e080890ceed248581bbc67f4ce6b92ce29c09706180fd33bd7270",
+      "legacy_sha256": "0478b434053e080890ceed248581bbc67f4ce6b92ce29c09706180fd33bd7270",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/native_gdn_preprocess.cu",
+      "upstream_sha256": "940aa60cd42e77ad7f4b5a6e2fd8177b80016975d2aaf55ed7a620f6437f27c4",
+      "legacy_sha256": "940aa60cd42e77ad7f4b5a6e2fd8177b80016975d2aaf55ed7a620f6437f27c4",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/native_gr_norm.cu",
+      "upstream_sha256": "494cb16ddcaf345972c1c05c406e2f4377733975ae35bfe0587bfe91bb75b228",
+      "legacy_sha256": "494cb16ddcaf345972c1c05c406e2f4377733975ae35bfe0587bfe91bb75b228",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/native_gr_postops.cu",
+      "upstream_sha256": "8c10274e8693bf8c3ddc85073731841d62a8467308f5a29ed3b07e441f63ca28",
+      "legacy_sha256": "8c10274e8693bf8c3ddc85073731841d62a8467308f5a29ed3b07e441f63ca28",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/native_mmvq.cu",
+      "upstream_sha256": "f2fc636e5e8f6db9bbb8146fbf2b78a717c0e0076bf8c72ac2b784df7b3f455f",
+      "legacy_sha256": "f2fc636e5e8f6db9bbb8146fbf2b78a717c0e0076bf8c72ac2b784df7b3f455f",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/native_moe.cu",
+      "upstream_sha256": "410db2245e411a1b91ccd2e4431731166f6e5e687ab5c9b24afeb5863d9ae57b",
+      "legacy_sha256": "410db2245e411a1b91ccd2e4431731166f6e5e687ab5c9b24afeb5863d9ae57b",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/native_ple_postops.cu",
+      "upstream_sha256": "91849f4257d6ee9c85b1dc04cb16397963eac51d725aa31575e63c8f0d0f56f4",
+      "legacy_sha256": "91849f4257d6ee9c85b1dc04cb16397963eac51d725aa31575e63c8f0d0f56f4",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/native_qsa.cu",
+      "upstream_sha256": "a9f47aa583e656757e4b81830143e05cac1a8266fb22cee085663732d5c6948a",
+      "legacy_sha256": "a9f47aa583e656757e4b81830143e05cac1a8266fb22cee085663732d5c6948a",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/native_qsa_indexer.cu",
+      "upstream_sha256": "bc46a3a289a4decc400fe1db05b54879dac4c3cd1a91634c18a08dbd2f71360a",
+      "legacy_sha256": "bc46a3a289a4decc400fe1db05b54879dac4c3cd1a91634c18a08dbd2f71360a",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/native_qsa_score.cu",
+      "upstream_sha256": "ca180366923d56e77f68cf7ab4999edc8222894af3e4534b010e7e6f8d156e2c",
+      "legacy_sha256": "ca180366923d56e77f68cf7ab4999edc8222894af3e4534b010e7e6f8d156e2c",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/native_rope.cu",
+      "upstream_sha256": "21cc2bc7c84254811fc0ff66c8b995d2c3a5abf91260068f7ae6767d5e217ab2",
+      "legacy_sha256": "21cc2bc7c84254811fc0ff66c8b995d2c3a5abf91260068f7ae6767d5e217ab2",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/native_router.cu",
+      "upstream_sha256": "006cde3fa5bcdb721c8e8d8a7bdc1094b1d2ff09ec7bdc9b3a1855e494d8d39e",
+      "legacy_sha256": "006cde3fa5bcdb721c8e8d8a7bdc1094b1d2ff09ec7bdc9b3a1855e494d8d39e",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/ple.cu",
+      "upstream_sha256": "afcd6efac591acf6c7ff95d8c756a782cfa6dbb4490146f924cb32a55d9d6262",
+      "legacy_sha256": "afcd6efac591acf6c7ff95d8c756a782cfa6dbb4490146f924cb32a55d9d6262",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/qsa.cu",
+      "upstream_sha256": "dc7ff0992355ec744bcdcb919f50cf8925a340438e0c5209ae917177d938295a",
+      "legacy_sha256": "dc7ff0992355ec744bcdcb919f50cf8925a340438e0c5209ae917177d938295a",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/qsa_decode_attn.cu",
+      "upstream_sha256": "a60c57c6d1cec6f73500672d86b46f97f6c41627ace3c60ca3058f9e0a246a34",
+      "legacy_sha256": "a60c57c6d1cec6f73500672d86b46f97f6c41627ace3c60ca3058f9e0a246a34",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/qsa_prompt_attn.cu",
+      "upstream_sha256": "956ad1b15fba0973624b8268bb7ae3bb379cb5a2e6d862c57b86d5901b2a0c23",
+      "legacy_sha256": "956ad1b15fba0973624b8268bb7ae3bb379cb5a2e6d862c57b86d5901b2a0c23",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/qsa_select.cu",
+      "upstream_sha256": "5db6feb2867cf920aeb304bf561561e9db727e87026e5731cef9155183da6268",
+      "legacy_sha256": "5db6feb2867cf920aeb304bf561561e9db727e87026e5731cef9155183da6268",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/quantize_act.cu",
+      "upstream_sha256": "29ef08b4cfe129dcc7e610d024a6546584d9e7216cc16b0779e15ab573bbf25d",
+      "legacy_sha256": "29ef08b4cfe129dcc7e610d024a6546584d9e7216cc16b0779e15ab573bbf25d",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/rope.cu",
+      "upstream_sha256": "8b72c00ff58b885e06561f01c3474cd9d9731c0b42abdc635fba7cef84d262ba",
+      "legacy_sha256": "8b72c00ff58b885e06561f01c3474cd9d9731c0b42abdc635fba7cef84d262ba",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/router_top10.cu",
+      "upstream_sha256": "678140eb0c52d2d548a198dfdbf01ca0ada767552c783f52221e36c2996f22b2",
+      "legacy_sha256": "678140eb0c52d2d548a198dfdbf01ca0ada767552c783f52221e36c2996f22b2",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/s2_expert_grouped.cu",
+      "upstream_sha256": "7901a08dce54c98ed485d89a521d8a427beca9bfae9d7612cf16c161989c2917",
+      "legacy_sha256": "7901a08dce54c98ed485d89a521d8a427beca9bfae9d7612cf16c161989c2917",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/s2_gemv.cu",
+      "upstream_sha256": "4d21a4e14e166b02652719c095b25fa7f346c3d0b3dd1009e050e793b2167b9b",
+      "legacy_sha256": "4d21a4e14e166b02652719c095b25fa7f346c3d0b3dd1009e050e793b2167b9b",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/s2_gemv_fast.cu",
+      "upstream_sha256": "ff3ab5c5b0da5b25aa73f7da3a86894c93960efef3b8c71463d501c1e8adaafe",
+      "legacy_sha256": "ff3ab5c5b0da5b25aa73f7da3a86894c93960efef3b8c71463d501c1e8adaafe",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/s2_gemv_q8.cu",
+      "upstream_sha256": "c5123b1a7373acad6e62c701bac3ed04f90c1ed5702104008892125de052733d",
+      "legacy_sha256": "c5123b1a7373acad6e62c701bac3ed04f90c1ed5702104008892125de052733d",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/s2_gemv_quads.cu",
+      "upstream_sha256": "3633ad7b7006fdfc96e7b1aa06733168e2292a5b700c49ece60e121c3db4280c",
+      "legacy_sha256": "3633ad7b7006fdfc96e7b1aa06733168e2292a5b700c49ece60e121c3db4280c",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/s_gemv.cu",
+      "upstream_sha256": "46c946cff34b50f252a5d4a6b2f99e0d30b78a6ad741919417566ccb43017e40",
+      "legacy_sha256": "46c946cff34b50f252a5d4a6b2f99e0d30b78a6ad741919417566ccb43017e40",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/sampler.cu",
+      "upstream_sha256": "0804c1e735be50dde1b99816553a8ec3c70f48cf0f9cade447d7080a9f048530",
+      "legacy_sha256": "0804c1e735be50dde1b99816553a8ec3c70f48cf0f9cade447d7080a9f048530",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/shared_expert.cu",
+      "upstream_sha256": "bcb63f8b6f2dd92d5035ceae33f9b6b513fe34e3e2c5c54a4c9bbf867dbad4ca",
+      "legacy_sha256": "bcb63f8b6f2dd92d5035ceae33f9b6b513fe34e3e2c5c54a4c9bbf867dbad4ca",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cuda/verify_kernels.cu",
+      "upstream_sha256": "bccc7b510609524f2d45f07690de5e47800a302820a3dceeae2a3c2486a9d24b",
+      "legacy_sha256": "bccc7b510609524f2d45f07690de5e47800a302820a3dceeae2a3c2486a9d24b",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/cvec_parity.cpp",
+      "upstream_sha256": "cadfaa08778a4db2254e714940b3cbc23e08c3b366f02c4b07a0d756717ce8e7",
+      "legacy_sha256": "cadfaa08778a4db2254e714940b3cbc23e08c3b366f02c4b07a0d756717ce8e7",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/decode_cluster_parity.cpp",
+      "upstream_sha256": "89957dbd82f2921663da5e97cb6051bc298661d18600098e2f088aaf8e915d95",
+      "legacy_sha256": "89957dbd82f2921663da5e97cb6051bc298661d18600098e2f088aaf8e915d95",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/dequant_bf16_test.cpp",
+      "upstream_sha256": "608b829d22d5740085b3e97ee4a4df0c08cfc342521c1a5d74ac43b3c207a88e",
+      "legacy_sha256": "608b829d22d5740085b3e97ee4a4df0c08cfc342521c1a5d74ac43b3c207a88e",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/dequant_s2_parity.cpp",
+      "upstream_sha256": "456935d009abf36b7d8ff3f620094ea281210e077f234b5ceba74d3634d84679",
+      "legacy_sha256": "456935d009abf36b7d8ff3f620094ea281210e077f234b5ceba74d3634d84679",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/elementwise_parity.cpp",
+      "upstream_sha256": "4e8a5efb2cade6675d8d0687e63bdc1edc1b712914834a65870e00571a571098",
+      "legacy_sha256": "4e8a5efb2cade6675d8d0687e63bdc1edc1b712914834a65870e00571a571098",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/gdn_parity.cpp",
+      "upstream_sha256": "bf38763aa618b1fe3c8957b6ccfca330304242a873b0b614c95882a2ff94a119",
+      "legacy_sha256": "bf38763aa618b1fe3c8957b6ccfca330304242a873b0b614c95882a2ff94a119",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/gr_parity.cpp",
+      "upstream_sha256": "c4cb7396c3a329913b661c8e3cb5c691a161c42cbda551605a6f42ebe6a114b5",
+      "legacy_sha256": "c4cb7396c3a329913b661c8e3cb5c691a161c42cbda551605a6f42ebe6a114b5",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/iq_multi_parity.cpp",
+      "upstream_sha256": "3927dbda34d436ae9355d2164c83e0be36be8ee6a8f29ff2ee2aaf7a44e941e8",
+      "legacy_sha256": "3927dbda34d436ae9355d2164c83e0be36be8ee6a8f29ff2ee2aaf7a44e941e8",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/iq_parity.cpp",
+      "upstream_sha256": "21bba170ff91d80d5b0f1db877af96d4c57e3b70957eb7fae27e238a39851b8a",
+      "legacy_sha256": "21bba170ff91d80d5b0f1db877af96d4c57e3b70957eb7fae27e238a39851b8a",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/kv_hybrid_parity.cpp",
+      "upstream_sha256": "fd9c33c05bda596b967de9a41759a9467d0a17197928e39e48c63eaa8dfa67ae",
+      "legacy_sha256": "fd9c33c05bda596b967de9a41759a9467d0a17197928e39e48c63eaa8dfa67ae",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/kv_q4_parity.cpp",
+      "upstream_sha256": "2b5dece46df2c1448735ac78e5f81c7fa1108b9d4827f5ec75190b504681af63",
+      "legacy_sha256": "2b5dece46df2c1448735ac78e5f81c7fa1108b9d4827f5ec75190b504681af63",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/kv_q8_parity.cpp",
+      "upstream_sha256": "acb2310d93f60f5638941e350d1dd29b860c9575202bf264dc03c37efe95c04f",
+      "legacy_sha256": "acb2310d93f60f5638941e350d1dd29b860c9575202bf264dc03c37efe95c04f",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/kv_stream_parity.cpp",
+      "upstream_sha256": "78e9468d7d3f417c1d911d06eff4fd8289e435590c47108681e63f6be64910d7",
+      "legacy_sha256": "78e9468d7d3f417c1d911d06eff4fd8289e435590c47108681e63f6be64910d7",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/mmvq_multi_parity.cpp",
+      "upstream_sha256": "ccec53f26a22b675e6e7d171777d92f6ae0367db8c666b038b023ea34b30ed74",
+      "legacy_sha256": "ccec53f26a22b675e6e7d171777d92f6ae0367db8c666b038b023ea34b30ed74",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/native_expert_parity.cpp",
+      "upstream_sha256": "145b0f301774f17e31b9393e01809393a944005ddcfda9ea4e21bb707a4b8f6c",
+      "legacy_sha256": "145b0f301774f17e31b9393e01809393a944005ddcfda9ea4e21bb707a4b8f6c",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/native_grouped_parity.cpp",
+      "upstream_sha256": "8276ea6f10f5ce792180e884faad2b88146a0a39ca05a7a999c307790211fbb8",
+      "legacy_sha256": "8276ea6f10f5ce792180e884faad2b88146a0a39ca05a7a999c307790211fbb8",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/ngram.cpp",
+      "upstream_sha256": "3bff07eba26ed24c3a3cf2e571d4e7c5a457236e7de4d6a5b0f0a5e89ff23db2",
+      "legacy_sha256": "3bff07eba26ed24c3a3cf2e571d4e7c5a457236e7de4d6a5b0f0a5e89ff23db2",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/ple_fp8_parity.cpp",
+      "upstream_sha256": "cc9f2003628c6169a38464d2e65b28237311d92fa92f6b4fdbb8984d775a168e",
+      "legacy_sha256": "cc9f2003628c6169a38464d2e65b28237311d92fa92f6b4fdbb8984d775a168e",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/ple_oracle_vectors.inc",
+      "upstream_sha256": "81db49806af4a3c8d333cb00ad0353a322b61f34f62e96a1eaffe4b782611fd3",
+      "legacy_sha256": "81db49806af4a3c8d333cb00ad0353a322b61f34f62e96a1eaffe4b782611fd3",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/ple_parity.cpp",
+      "upstream_sha256": "418dcaff1185bde55cf693c69f35a58727724fb39f99aa9f746ea1f2a13a4531",
+      "legacy_sha256": "418dcaff1185bde55cf693c69f35a58727724fb39f99aa9f746ea1f2a13a4531",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/ple_q5_parity.cpp",
+      "upstream_sha256": "7d1a9d400cd36eb6de0d888a1c0cf8b3166afeb5f1fafde2439377a831303f30",
+      "legacy_sha256": "7d1a9d400cd36eb6de0d888a1c0cf8b3166afeb5f1fafde2439377a831303f30",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/q5_projection_parity.cpp",
+      "upstream_sha256": "efc674248722919c1c2daafeaee07cc6fe104955a7b8fe58106d6e94dba202dd",
+      "legacy_sha256": "efc674248722919c1c2daafeaee07cc6fe104955a7b8fe58106d6e94dba202dd",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/qsa_oracle_vectors.inc",
+      "upstream_sha256": "214122dd83b2b36d8945848e5d3ebd74eae5238d82ce769110881aa2775406c3",
+      "legacy_sha256": "214122dd83b2b36d8945848e5d3ebd74eae5238d82ce769110881aa2775406c3",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/qsa_parity.cpp",
+      "upstream_sha256": "5e7c6b5fed22f8681e96203d42ca9c9368b9075c8568e5144c5811d5c9d997a3",
+      "legacy_sha256": "5e7c6b5fed22f8681e96203d42ca9c9368b9075c8568e5144c5811d5c9d997a3",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/qsa_prompt_attn_parity.cpp",
+      "upstream_sha256": "7a9d1dc41c12854a5c4536dcbe347a95544b29f880339c7f5fdaa8ba47e833c2",
+      "legacy_sha256": "7a9d1dc41c12854a5c4536dcbe347a95544b29f880339c7f5fdaa8ba47e833c2",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/qsa_select_bench.cpp",
+      "upstream_sha256": "e905c67c69ee11d2af906ba6c229462b767da6b2b5b2edaad3d8099c1155a715",
+      "legacy_sha256": "e905c67c69ee11d2af906ba6c229462b767da6b2b5b2edaad3d8099c1155a715",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/qsa_topk_active_parity.cpp",
+      "upstream_sha256": "7ba680c1cf78f5e56d8cb11581e8ef103bf765bc5d0257a514f5a79b8fb498e0",
+      "legacy_sha256": "7ba680c1cf78f5e56d8cb11581e8ef103bf765bc5d0257a514f5a79b8fb498e0",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/quantize_act_parity.cpp",
+      "upstream_sha256": "435da59b51f4279e1b479fffb5e705245390295639618b533311f9372a709ea8",
+      "legacy_sha256": "435da59b51f4279e1b479fffb5e705245390295639618b533311f9372a709ea8",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/rope_parity.cpp",
+      "upstream_sha256": "522b389104b1f64884087753b6e9fe1d2540a6ac0a703240f54a7affffb7a041",
+      "legacy_sha256": "522b389104b1f64884087753b6e9fe1d2540a6ac0a703240f54a7affffb7a041",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/router_top10_parity.cpp",
+      "upstream_sha256": "987983c10f5035d919d26853f068ea45007296c5a3fe22df2c0bc3a694b086d9",
+      "legacy_sha256": "987983c10f5035d919d26853f068ea45007296c5a3fe22df2c0bc3a694b086d9",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/s2_expert_grouped_parity.cpp",
+      "upstream_sha256": "2a83a46766172baa4690fc2310a09fe6575ac1faf45d18fdf0ecb039dbdbbc55",
+      "legacy_sha256": "1e5100c2483d3ecc5bed9613d40264a8b2d44317563c8a193f0055c5780eeb4c",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/s2_gemv_parity.cpp",
+      "upstream_sha256": "3b7f7f5b1fdbcb24962ceb4cfc659e8660a002f538bc181fb2f791560a2fcacc",
+      "legacy_sha256": "3b7f7f5b1fdbcb24962ceb4cfc659e8660a002f538bc181fb2f791560a2fcacc",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/s2_gemv_q8_parity.cpp",
+      "upstream_sha256": "33b0372c74e09a429987d154130394db47e203bca15a6d9a4fbd4f9821e02935",
+      "legacy_sha256": "33b0372c74e09a429987d154130394db47e203bca15a6d9a4fbd4f9821e02935",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/s_gemv_parity.cpp",
+      "upstream_sha256": "e936521ff789e93ef7052594f41e90eb8af165394ef3a8f170aa8e0fdad876ba",
+      "legacy_sha256": "e936521ff789e93ef7052594f41e90eb8af165394ef3a8f170aa8e0fdad876ba",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/s_gemv_q8k_parity.cpp",
+      "upstream_sha256": "da527cedd708f376a2fed8ecd62859fa5e462dd853f1fab72e39a15cc07de566",
+      "legacy_sha256": "da527cedd708f376a2fed8ecd62859fa5e462dd853f1fab72e39a15cc07de566",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sampler_parity.cpp",
+      "upstream_sha256": "fdda0b8d83761b0272f3511a0c6ee81106b6cbd184406e95c8ba382087df2331",
+      "legacy_sha256": "fdda0b8d83761b0272f3511a0c6ee81106b6cbd184406e95c8ba382087df2331",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/shared_expert_parity.cpp",
+      "upstream_sha256": "fc6ed4bbcf0ad9902298e748aa3c580ebd63ee5d518d525b5ea55aed1d8a3b0e",
+      "legacy_sha256": "fc6ed4bbcf0ad9902298e748aa3c580ebd63ee5d518d525b5ea55aed1d8a3b0e",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/attention.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "23cf287ae852aa6c906f2c9653cc289f07cdf9c1b5432e6b220589da64f704c7",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/bf16_gemv.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "66af4ff08c9010e6276857dc2557af12923cf0e334d7b871b6a60b2dc428fcdf",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/cvec.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "f75e954c60a795813d00a43a0a4f60e880d8edad34a8d500847c62010778e3ec",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/decode_attention.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "2ce2a61f6beb1acbf9c673da346e887b386fffedba10e7df2c157aedab8ac05d",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/elementwise.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "69161a4894ea5b28b9b281ae31aa03dca948b64a2fb6c54fd582f0f943636172",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/expert_routing.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "3fee7357d857c3d9f7d0c30b41d8eed719914b76e7ecacf30a6b3ac11e837f07",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/fused_gdn.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "70abf4fd1359477a2e170b54f2172ba148a2ae21306e8145e070ebd0db7d995f",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/fused_gr.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "34abe455a3bf8906b7c854b540b73eaad57e9bcabfc3647baf763598f5de6c2b",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/gdn.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "3de5ac1aa35184534834e8fd0957068509a0ecf5080a666354a98cd134d56117",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/gr.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "74370693d67f427bc496e24861a19c330010af50ffac4aa2b881d93fbe64f80e",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/iq.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "4571f9903e7cc0890fca0b33c1464c8f5d0eb5501e4663b0f863f0c51daa9494",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/kv.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "04acafc4607c9ef1376b9d66c63424c036b7499de8f04ed6318726a7a2dff7bf",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/kv_stream.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "d935fcc1ba07f5e3982cd255e3ad53e0f375ec16425a92b049696f142575e76c",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/native_flash_attn.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "7b61ec26317256848dbd37b4405c2e4cb0b18f024e659d0694a0a5765f0480ca",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/native_iq4xs_esimd.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "5e6b78ca4a9775304a9f209f6750fff88b608281fefed7242cb6709c655957ef",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/native_iq_esimd.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "cdd822167d73c4446ca195b3f5c937c2fe545710000d87a707ffc9857fce18c1",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/native_mmq_xmx.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "458e62475fc004b9a1a3f4d688bc981a9ab0d625a1cf2fe573920c36718f8e3b",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/native_mmvq.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "09b34a547c57ef6fbe84c66f58b685096381f9d6a6ad9a3c74830da20a2152d2",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/native_q2.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "177add46be490acc5a781e70272912ea1471353ae40f27d18984d66b6fa1a6a1",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/native_q2_esimd.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "3365fe1b905684d50d9a6de902a2faf27833325382c2418afc7b55ee99681fd2",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/native_q3_esimd.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "8348851986f91d162b08d4be20c7551aadc8c732f4b9fca5a8c79fc9f6f82a8c",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/native_q4_esimd.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "ced4f387fcfb318b0e3f4f2bdebbf4270cef4a0d3e27560fa9fbca7919505a68",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/native_q5_head.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "c916932c0b2d5e37876b3f36221d071c8586b69e488142ef0d08f33a71002365",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/native_qsa_indexer.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "d87abcf8aece04bc1566f4310e0dee546b7c80e0b711d75d118551b606d38685",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/native_router.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "1494eeff9c64ab77a692394e9366ee189fa8ed52f9f6a3088538d86acd901119",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/ple.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "5ea6ce675c7e541905f17d1048b56e41cd9834704314bf4ff43f3084d54c7b91",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/prompt_attention.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "97b1b9e4020b532bfabd5db2245224cfda52bbc793e5891f0e8bbbcb374763e4",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/qsa_index.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "5424b1489fb2dcabad0abf49ffa4c4501c8b89e8519f61649d8d53cb20dbdf8f",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/qsa_select.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "45084756ca5e8e36085dae46581049c81366a45cdfde23e8c6f38defbba0c809",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/quantize_act.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "16cf784f88631e416624d7bdff0fbf140ec60a5f42c29107ad16695234dfd3f4",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/rope.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "ae875617716a0d6c2f5ec260b24fbf541b24b616f733645e975b6418127588da",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/router.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "3ade9d977da5f34db0154db5153debdf389753b74fc8b43dfd604aba4fabd029",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/s2_experts.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "95dc6af42be07d192a5500b509d5ec579ce8d1e472d5d16b1c8126a710aa3fba",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/s2_gemv_q8.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "76662fdd179d6ee153eade1397102abd20558aca1cda7b3c8df875ba2a7440d6",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/s_gemv.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "e7f9afb96939ab016b91b2ac0b9d62cb85980ba93dc9e8f39ac2202b3c56249e",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/sampler.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "9a8549f6b5865fac7a3ac89ddd3ecfe6ca4bce6bb1d4ad78cdd951600fe3f054",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/sequence.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "14ed9efceafac9828d495e0265d5831e0e2f5eea071e9edb159df94580c730b8",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/kernels/sycl/shared_expert.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "c73d4399715dd5b4cbe99ead6eb962b3606b9c0829c90cff138ae9c927f45a8c",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/ngram/ple_reader.cpp",
+      "upstream_sha256": "ddec6dbcc8afd8186c724403d5aaa54b70b9fbd551fea733ce422974131ede9e",
+      "legacy_sha256": "ddec6dbcc8afd8186c724403d5aaa54b70b9fbd551fea733ce422974131ede9e",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/ngram/ple_reader_test.cpp",
+      "upstream_sha256": "89d105b9604a6dec38af69579e71095eb899db0ca1cd8bb9cefddecbacdb804e",
+      "legacy_sha256": "89d105b9604a6dec38af69579e71095eb899db0ca1cd8bb9cefddecbacdb804e",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/plan/plan_main.cpp",
+      "upstream_sha256": "8687284d95632f2908af9b9ff6680448d3e48726cecfa17211339cde36ce094a",
+      "legacy_sha256": "8687284d95632f2908af9b9ff6680448d3e48726cecfa17211339cde36ce094a",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/platform/direct_file.cpp",
+      "upstream_sha256": "be3fa0296a934b797744e365b9848fcfa6d3a48f8304defbcb30298c7140465b",
+      "legacy_sha256": "be3fa0296a934b797744e365b9848fcfa6d3a48f8304defbcb30298c7140465b",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/platform/memory.cpp",
+      "upstream_sha256": "51e55255db8d617cf0ec19064eb68ac53187e930cabe69e0e7335c1320721220",
+      "legacy_sha256": "51e55255db8d617cf0ec19064eb68ac53187e930cabe69e0e7335c1320721220",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/platform/memory_test.cpp",
+      "upstream_sha256": "ff8df246bed117085a97fd97250bab95e4638bd39564106f15eb0250cb65d13a",
+      "legacy_sha256": "ff8df246bed117085a97fd97250bab95e4638bd39564106f15eb0250cb65d13a",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/prefill/gdn_rec_parity.cu",
+      "upstream_sha256": "95d482c4d73bbd8caaac7131e55352933f3902d709ae633828c345b15a4a58d0",
+      "legacy_sha256": "95d482c4d73bbd8caaac7131e55352933f3902d709ae633828c345b15a4a58d0",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/prefill/gemm.cu",
+      "upstream_sha256": "95ac612e47d0c6ea27dc4d3fb045e08c7d82d031befcb20277535b9b7f75fa7a",
+      "legacy_sha256": "95ac612e47d0c6ea27dc4d3fb045e08c7d82d031befcb20277535b9b7f75fa7a",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/prefill/ggml_cuda_host.cu",
+      "upstream_sha256": "6ea66ed71f8ea15c6f7bada00f8aef2b603c29bd2686ceecbc69c2bbf15dd630",
+      "legacy_sha256": "6ea66ed71f8ea15c6f7bada00f8aef2b603c29bd2686ceecbc69c2bbf15dd630",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/prefill/hipblaslt_tuning.hpp",
+      "upstream_sha256": "0e91123469e8273b9cdc61e6bd6ec4cf64073363dfd73f8ea9660378da2ae48b",
+      "legacy_sha256": "0e91123469e8273b9cdc61e6bd6ec4cf64073363dfd73f8ea9660378da2ae48b",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/prefill/kernels.cu",
+      "upstream_sha256": "417f5504b821d2d64462d9f59adc3ee9c2d9d9da9a4654862076336fcce2163c",
+      "legacy_sha256": "417f5504b821d2d64462d9f59adc3ee9c2d9d9da9a4654862076336fcce2163c",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/prefill/moe_fused.cu",
+      "upstream_sha256": "df7dd0ef2984c57d2b3266b0c7fba315961eb59eef26bbfaabca62f863adee34",
+      "legacy_sha256": "df7dd0ef2984c57d2b3266b0c7fba315961eb59eef26bbfaabca62f863adee34",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/prefill/moe_fused_iq.cu",
+      "upstream_sha256": "e692cfe3c8ded5c78ca924dccb78f0fc1f95eb60aeaf109bec8e9a9aa48d5313",
+      "legacy_sha256": "e692cfe3c8ded5c78ca924dccb78f0fc1f95eb60aeaf109bec8e9a9aa48d5313",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/prefill/moe_mmq.cu",
+      "upstream_sha256": "5499d53336f4fc36cb08e1d5159d4007a55869f795c418b8a5d344211cb516ec",
+      "legacy_sha256": "5499d53336f4fc36cb08e1d5159d4007a55869f795c418b8a5d344211cb516ec",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/prefill/prefill.cpp",
+      "upstream_sha256": "c4fe7bec45252944423b71f9cb993d4b35c8a44fcea86da56a5752d54432842a",
+      "legacy_sha256": "6913f3ab5e8c71af753796c73ad7e24f8578331d66f0df5e9d842c9a38a9bfdc",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/prefill/sycl/blob.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "dfd21046aded93fe2f2b7134d1db2a2c7c0e4301ef3e4868b79abd28068f7f73",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/prefill/sycl/gemm.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "0fe1904787462a4156185bc08b2076e047f9cf51d9517ede4c8f482fa76c5410",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/prefill/sycl/moe_fused.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "6321199ee8213ee1ff2b370929e7bc723e078d13e30a3b4ecb56fe8a3c03b438",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/prefill/sycl/moe_mmq.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "403dccf14f3a632f3cb5a6b7ecbaaf7dcfae5f0c3fbf875dae2789b6f85978f8",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/prefill/sycl/postops.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "ac8f7077f3eddedfcfec14bbfd86d486c39584bac34196a21e1014d077e9c8c7",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/program/conv_cache_test.cpp",
+      "upstream_sha256": "86d9395b3cdc3addc35914f99df16ec74dfab078140c48b7d80167472863c527",
+      "legacy_sha256": "86d9395b3cdc3addc35914f99df16ec74dfab078140c48b7d80167472863c527",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "upstream_sha256": "27e841224c32256bf38570b6792e67704e1d9333bb055701c25b102c32d43c7f",
+      "legacy_sha256": "aa58f73711d3ad9b2020a3d9f54b98610b3aa070abe8da0cbd56ba3f42b2b76a",
+      "source_relation": "modified",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/spec/controller.cpp",
+      "upstream_sha256": "9ea393b4d369ddce11315032695899a51deeb697e1a7745dc397724f4db7351f",
+      "legacy_sha256": "9ea393b4d369ddce11315032695899a51deeb697e1a7745dc397724f4db7351f",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/spec/controller_test.cpp",
+      "upstream_sha256": "8c7674086900898bb67afced50e76812b5e6848f490c95526397497475a1d7b4",
+      "legacy_sha256": "8c7674086900898bb67afced50e76812b5e6848f490c95526397497475a1d7b4",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/spec/draft_policy.cpp",
+      "upstream_sha256": "1668fb1ac1a3e57cb9e7b350a25a86c59ab2b2a4f2517ef213629e82863c03ea",
+      "legacy_sha256": "1668fb1ac1a3e57cb9e7b350a25a86c59ab2b2a4f2517ef213629e82863c03ea",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/spec/draft_policy_test.cpp",
+      "upstream_sha256": "46f9990683b727d1fb686cebc602f3d8836c5d817573b8bcc2e78cb330536c19",
+      "legacy_sha256": "46f9990683b727d1fb686cebc602f3d8836c5d817573b8bcc2e78cb330536c19",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/spec/suffix_drafter.cpp",
+      "upstream_sha256": "a3e8b6487d34dcdb8208c482190ad9079e759a40f995167bb33a951f30de19ff",
+      "legacy_sha256": "a3e8b6487d34dcdb8208c482190ad9079e759a40f995167bb33a951f30de19ff",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/spec/suffix_drafter_test.cpp",
+      "upstream_sha256": "bf65b8b60b8d7fd5b2b8c77adc1e07ab01f8f0c1b973cec222e48e6f74456fc9",
+      "legacy_sha256": "bf65b8b60b8d7fd5b2b8c77adc1e07ab01f8f0c1b973cec222e48e6f74456fc9",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/sycl/compat.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "2dd9729e7449b4817366b5416a88c947b6f1e43bc86b9d5c6e975d27244b7712",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/sycl/device.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "bd6a65f29cfc6497fd19228741026f4edad29d31e1690cef6cfe36ad7de760d6",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "src/sycl/runtime.cpp",
+      "upstream_sha256": null,
+      "legacy_sha256": "9c4e18cf8777148c8f4513b9aa376d7eb1441ee9895a955fb8696aadd741c2a1",
+      "source_relation": "legacy_only",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "third_party/ggml/LICENSE",
+      "upstream_sha256": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d",
+      "legacy_sha256": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "third_party/ggml/VERSION.txt",
+      "upstream_sha256": "c6ee69e9acdf5b4a2f5b8e64191bd380baeaf00b1984de721d67d4698c96b5fb",
+      "legacy_sha256": "c6ee69e9acdf5b4a2f5b8e64191bd380baeaf00b1984de721d67d4698c96b5fb",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    },
+    {
+      "path": "third_party/ggml/ggml-common.h",
+      "upstream_sha256": "0061131b615c5721fc88a78feeb22c1f8c450f1c2646a317d80796a653bf595c",
+      "legacy_sha256": "0061131b615c5721fc88a78feeb22c1f8c450f1c2646a317d80796a653bf595c",
+      "source_relation": "identical",
+      "semantic_parity": "unverified",
+      "runtime_parity": "unverified"
+    }
+  ],
+  "cmake_literal_cu": [
+    "src/core/device.cu",
+    "src/core/pinned.cu",
+    "src/kernels/cuda/bf16_gemv.cu",
+    "src/kernels/cuda/cvec.cu",
+    "src/kernels/cuda/dequant_bf16.cu",
+    "src/kernels/cuda/dequant_s2.cu",
+    "src/kernels/cuda/elementwise.cu",
+    "src/kernels/cuda/fused_gdn.cu",
+    "src/kernels/cuda/fused_gr.cu",
+    "src/kernels/cuda/gdn.cu",
+    "src/kernels/cuda/gr.cu",
+    "src/kernels/cuda/iq_kernels.cu",
+    "src/kernels/cuda/kv_q4.cu",
+    "src/kernels/cuda/kv_q8.cu",
+    "src/kernels/cuda/kv_stream.cu",
+    "src/kernels/cuda/native_bf16.cu",
+    "src/kernels/cuda/native_flash_attn.cu",
+    "src/kernels/cuda/native_gdn.cu",
+    "src/kernels/cuda/native_gdn_preprocess.cu",
+    "src/kernels/cuda/native_gr_norm.cu",
+    "src/kernels/cuda/native_gr_postops.cu",
+    "src/kernels/cuda/native_mmvq.cu",
+    "src/kernels/cuda/native_moe.cu",
+    "src/kernels/cuda/native_ple_postops.cu",
+    "src/kernels/cuda/native_qsa.cu",
+    "src/kernels/cuda/native_qsa_indexer.cu",
+    "src/kernels/cuda/native_qsa_score.cu",
+    "src/kernels/cuda/native_rope.cu",
+    "src/kernels/cuda/native_router.cu",
+    "src/kernels/cuda/ple.cu",
+    "src/kernels/cuda/qsa.cu",
+    "src/kernels/cuda/qsa_decode_attn.cu",
+    "src/kernels/cuda/qsa_prompt_attn.cu",
+    "src/kernels/cuda/qsa_select.cu",
+    "src/kernels/cuda/quantize_act.cu",
+    "src/kernels/cuda/rope.cu",
+    "src/kernels/cuda/router_top10.cu",
+    "src/kernels/cuda/s2_expert_grouped.cu",
+    "src/kernels/cuda/s2_gemv.cu",
+    "src/kernels/cuda/s2_gemv_fast.cu",
+    "src/kernels/cuda/s2_gemv_q8.cu",
+    "src/kernels/cuda/s2_gemv_quads.cu",
+    "src/kernels/cuda/s_gemv.cu",
+    "src/kernels/cuda/sampler.cu",
+    "src/kernels/cuda/shared_expert.cu",
+    "src/kernels/cuda/verify_kernels.cu",
+    "src/prefill/gdn_rec_parity.cu",
+    "src/prefill/gemm.cu",
+    "src/prefill/ggml_cuda_host.cu",
+    "src/prefill/kernels.cu",
+    "src/prefill/moe_fused.cu",
+    "src/prefill/moe_fused_iq.cu",
+    "src/prefill/moe_mmq.cu"
+  ],
+  "upstream_cu_not_literal": [],
+  "external_sources": [
+    {
+      "path": "ggml/CMakeLists.txt",
+      "sha256": "f4754450a3a00e405d2ffb6a904fe5571ec85c39ad12c666e73af1addccd5e00"
+    },
+    {
+      "path": "ggml/include/ggml-alloc.h",
+      "sha256": "94e4cd069b9313b2ceb35dacec901981e0bb478d8bb31035b7126be091998c23"
+    },
+    {
+      "path": "ggml/include/ggml-backend.h",
+      "sha256": "46d84cb998105f871240864fd0f55446939a2fe86c5c281afa63a010fb1f65a2"
+    },
+    {
+      "path": "ggml/include/ggml-blas.h",
+      "sha256": "e76cb8594dc9866d99e7d63191b9fff6ab8b50244b4a28ce3af0f962964a6b5b"
+    },
+    {
+      "path": "ggml/include/ggml-cann.h",
+      "sha256": "2cdb134f27fe5c4ec19d52f1eb58f5355aa42b8f54bf385f0e487501c5df7362"
+    },
+    {
+      "path": "ggml/include/ggml-cpp.h",
+      "sha256": "bc15ba002c68685df23faae42df0d2b3d58032011f88b649021ab92485862c72"
+    },
+    {
+      "path": "ggml/include/ggml-cpu.h",
+      "sha256": "316279e004cdeb8e6ef78599acb602bf79a8abdf897fed9fd1914808c1518c6e"
+    },
+    {
+      "path": "ggml/include/ggml-cuda.h",
+      "sha256": "9cbfcea49f6da4d07f41dc22fa8dbf870825faaa2a68e34e65fe30ea6c41e042"
+    },
+    {
+      "path": "ggml/include/ggml-et.h",
+      "sha256": "33118c0642b8059a99ea930fd4e4a045e78ccb41760b173ede221f1297c35977"
+    },
+    {
+      "path": "ggml/include/ggml-hexagon.h",
+      "sha256": "b2c12bac390f14707b16bdd27c8c75ce4f075ed509c729ee28fd4f03b17e7375"
+    },
+    {
+      "path": "ggml/include/ggml-metal.h",
+      "sha256": "322f36cd30f3e9e7aad7b5b9bc63078012fd0b7706ac4e24f5721b604f3d8980"
+    },
+    {
+      "path": "ggml/include/ggml-opencl.h",
+      "sha256": "8e443e1aa9c8bc6e0cf116c4cc3f42f4858938fa15e65b06bc07b26686e1233a"
+    },
+    {
+      "path": "ggml/include/ggml-openvino.h",
+      "sha256": "c2e3f301e28ad815b4285888aad6130808a77e6acb4e8b558de63a648cf9743e"
+    },
+    {
+      "path": "ggml/include/ggml-opt.h",
+      "sha256": "3586de1bc8a934b5c72339e2b6937b0641e8f149b512231e666f67de0736eea2"
+    },
+    {
+      "path": "ggml/include/ggml-rpc.h",
+      "sha256": "196d2a7434f0abdb01f13c5360e0b118b9f2d66c6452e3a7a844fbecc890205c"
+    },
+    {
+      "path": "ggml/include/ggml-sycl.h",
+      "sha256": "c8b369fc015c9e18b3bdafeeb272d65399c97ed6943e223cccc02a5f80d0976c"
+    },
+    {
+      "path": "ggml/include/ggml-virtgpu.h",
+      "sha256": "ed231e7db3f0f58b84073f5ee67f9ec9d63046d1a7ed091c36a6cfe9f685a463"
+    },
+    {
+      "path": "ggml/include/ggml-vulkan.h",
+      "sha256": "7eae5dad2cc7bb4d3eca828539f441816d5fd59fdc7b224d49aa229fc7b7248c"
+    },
+    {
+      "path": "ggml/include/ggml-webgpu.h",
+      "sha256": "a91d855313a9e85e75ba597ff869a267247dea936a2c0faef03aeb7f1ea6e79c"
+    },
+    {
+      "path": "ggml/include/ggml-zdnn.h",
+      "sha256": "ee1d79c95ade45ba195a6b71f59a05c18617de4a596d2b2b03ecf38975a9a448"
+    },
+    {
+      "path": "ggml/include/ggml-zendnn.h",
+      "sha256": "2cb034b842438281616ce647232d922fb224450323f0d422d2af567c334aa8ff"
+    },
+    {
+      "path": "ggml/include/ggml.h",
+      "sha256": "12ee71f99db7db9b353bc02b1fbb57c344ee17c01ac5fb7952b41a637a747ea9"
+    },
+    {
+      "path": "ggml/include/gguf.h",
+      "sha256": "e56714aab702e5ce62ee587a409643c08f7e93e8fbb77f48ef7cc85075f96fa4"
+    },
+    {
+      "path": "ggml/src/CMakeLists.txt",
+      "sha256": "38ddf053a1adfc14bb84b7722e3c4ec01909694f7e51e32013f36e7a324fa4f0"
+    },
+    {
+      "path": "ggml/src/ggml-common.h",
+      "sha256": "0061131b615c5721fc88a78feeb22c1f8c450f1c2646a317d80796a653bf595c"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/CMakeLists.txt",
+      "sha256": "ed4d3cf43377accac79bd09b4b93c10725e66f189e1ddfcd528c7c29508cf3d0"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/amx/amx.cpp",
+      "sha256": "636d1e4b858a86ad6568100bbdb4bf9715d9dfb25d3831415d55e04e39acad86"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/amx/amx.h",
+      "sha256": "9d098ceee6a8114d4a660ff269064a27aa25b8a4f205d1e6984d17bec5104f0d"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/amx/common.h",
+      "sha256": "c694f6bb066a820b717f986914b0d112dca0d8d3a1e239e958fce30c864751c3"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/amx/mmq.cpp",
+      "sha256": "0f95c80e0300eca3b3a3df07272042fee708425e19cd5f2c4cba7b253b26d226"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/amx/mmq.h",
+      "sha256": "bd33d0713b12daf9eedea1619dd715619baaa36b98c44ec754d532909d80933a"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/arch-fallback.h",
+      "sha256": "3cb8b95338a7a059e559389637e11e158ee417895e8c409cab27909863792c9f"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/arch/arm/cpu-feats.cpp",
+      "sha256": "a8691f7fb8f41f707d68566a168196b5ff7743090b0b486a0be998df6476c511"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/arch/arm/quants.c",
+      "sha256": "9fccd3897db24c9df89b8431b588175894e5f54697cf45768d0c6e6c5544093e"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/arch/arm/repack.cpp",
+      "sha256": "2e7ba6aaf10834601315fc8f5e7f52a1638076bf6c0435542247c3de1ee4cce7"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/arch/loongarch/quants.c",
+      "sha256": "6adfe8a7ef75113fff1eba93e7fa52affd156f5f6f9f0adb2c53557909b02d4c"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/arch/powerpc/cpu-feats.cpp",
+      "sha256": "cbee31db1ec3b93278f6b4724d26fa07c8641359c25a40ffc464617632859c47"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/arch/powerpc/quants.c",
+      "sha256": "5a7d65d4cae3cb46adac6cb151349e1a18d571f15306bc46bc9a65eddc8f1c2d"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/arch/riscv/cpu-feats.cpp",
+      "sha256": "6187bf810718647068814020407d25ecb89ccd96d40135a064029e5c1f3cd60f"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/arch/riscv/quants.c",
+      "sha256": "acf089ff8b39c1eeb7cb8f67df8ab49055a5b82a530b9c4871ea7ab732cf390f"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/arch/riscv/repack.cpp",
+      "sha256": "57b1362562ec0dfe8475e49a639783468da3ddbf7a5f009adcd01a7e4ed61fbf"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/arch/s390/cpu-feats.cpp",
+      "sha256": "177c1d60be3487bc8635180fd43c2ed2be456a81c6260e6a1c30f2c16c7df3ea"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/arch/s390/quants.c",
+      "sha256": "64ff35b604fac47f7b41b65c6cef61ee5d704fdee738142c1eefb10050edc157"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/arch/s390/repack.cpp",
+      "sha256": "eae0bb63cf209dc9e9e695a291f0dfbed92e0ddecbc05d33676d35e1d12efed9"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/arch/wasm/quants.c",
+      "sha256": "defc3f28aa882d52a390d4573f5308ddc3aa95c5f487bbdaf311e7b0874493b3"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/arch/x86/cpu-feats.cpp",
+      "sha256": "b0f6aaaeb0b12a4f3e15ceec14d0c2031633f91e864a6c15954a001d6390f6d4"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/arch/x86/quants.c",
+      "sha256": "3c489fdc77e3ab484a5f188bff9c60c0e9483c951ed65c1a562a04c249d5628e"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/arch/x86/repack.cpp",
+      "sha256": "c69735f83caf854172cac78eed2cbc022ef81c077e5f6aca55a49d3404a02331"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/binary-ops.cpp",
+      "sha256": "2df261aadce36a20f5e3bf6961d4ca27b8c2d461afc41488361ee6ad09c1730d"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/binary-ops.h",
+      "sha256": "5915519c4e2227db28239b2a5d3b8a5f9022730cc0ddb7880b24748ee78cd1f9"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/cmake/FindSIMD.cmake",
+      "sha256": "c36807121bb1452dfb1ab39a7b366bd49f454c49b43b1df4b7c54f038c824d49"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/cmake/FindSMTIME.cmake",
+      "sha256": "81fc6290d1b2fdc30746c222fe993cc7403942ca388f9db0c5885ef568929adb"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/common.h",
+      "sha256": "db7c19747a28c819d18922aa43b91b224df3730e424e6d8a4cf4fd16bfb1db14"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/ggml-cpu-impl.h",
+      "sha256": "785a19aac84bd35671d34b1986b920baadccdf61cd8b81e787028f6ac24cae60"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/ggml-cpu.c",
+      "sha256": "7b451e6528cec3bc27bfd812a1314859c92d22a00c2db371d543cde5b7d5ca94"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/ggml-cpu.cpp",
+      "sha256": "7a850fc98efd2dfb94647ad3617c226cd87291f6eef4a2ec8cd58cc2ffc52725"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/hbm.cpp",
+      "sha256": "3c75b5aaf9b51d17060ecfb93cb5f8b22ce3974d7eff3d76dec2156d2f194b80"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/hbm.h",
+      "sha256": "340c84ac6a1c83d2218a15d6d71c1efb6ba1a5517162c2fde4baa0a9204af26b"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/iqp.cpp",
+      "sha256": "0e2ab5a4be4bea1dbce740a5ff436ddeac0bcfdaff6fd9edfa367dc75c069126"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/iqp.h",
+      "sha256": "3b30f9968e3264fd611a6ff14148af296e95b7b442443c54c830958d2da89f69"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/kleidiai/CMakeLists.txt",
+      "sha256": "305d5a47e237a5dcfba62f19e24c4fdaa68286e6397d779fef68cf06f87ad14b"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/kleidiai/kernels.cpp",
+      "sha256": "eec4fdb940204c1afcff6f84d312275c32c941e9577585c1fa9d60a6dd017ebe"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/kleidiai/kernels.h",
+      "sha256": "f205ce317c703d021f8625f6eefd822c13e8d6a4e2acdec56eaf870f9bbbb0b4"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/kleidiai/kleidiai.cpp",
+      "sha256": "1b42c193ef1cca6f56a9df6a567ed1da5310b575b96df49ef8a59ad12dae3bdf"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/kleidiai/kleidiai.h",
+      "sha256": "bea31f009d2c471a7f6cd7a0ecf31ecaf08691914305a9ef7f986740e39f0910"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/llamafile/sgemm.cpp",
+      "sha256": "e226380b05393302ba91b38d22718d9521700ee2cb7943f83ad316a7a9dcd597"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/llamafile/sgemm.h",
+      "sha256": "6ec12aa9244a8ffb13ae56b2e391f905b1d152ae25ff45da6a66e18daf650b3b"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/ops.cpp",
+      "sha256": "3ad6c159f0e9c2e8cef589be2f41f8ca7221a4e465488ad13ae5bff55669158c"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/ops.h",
+      "sha256": "2727d0414c23f1d06ade33d277c3ca1f0726c7902642c0e36d839c20781b1694"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/quants.c",
+      "sha256": "a61f1011e49d05b5f99d352b158d5b8e36cf008294bb0db309f72bdd7f1d4e35"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/quants.h",
+      "sha256": "918d6755b3e601ec7bb83c7dbf1d73304490651ccbb4072b0d31a2b45df751da"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/repack.cpp",
+      "sha256": "61982d6d4b5843a933fb5814d0a2e0bc328a321cc9ffb37b14463fd8312e8c67"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/repack.h",
+      "sha256": "fe472315b4106400d7890fca308659c74bcdedad1b011a9ba60c02dcd5bef57b"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/simd-gemm.h",
+      "sha256": "ce613195325cea048ede4c7a86c382ac6abf4c701c91eee640bd3cc78b39ce5e"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/simd-mappings.h",
+      "sha256": "d1ca849419a643d4304d82d3921d11b02722ccf69d607a86c2c579b864f700b2"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/spacemit/ime.cpp",
+      "sha256": "ac285559a23f82721a15259e7af8c4cee7b82bcbabab7633feb378d030bcbec9"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/spacemit/ime.h",
+      "sha256": "2007cbf6ea43a0d97f46e046f1449ab752ff35cc42caa09a22195dbe06656143"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/spacemit/ime1_kernels.cpp",
+      "sha256": "ea1170753bdaca75d629001d7e820ec315bbd54511c37d1ed4c9347eda67bc46"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/spacemit/ime2_kernels.cpp",
+      "sha256": "98b9f38041ead963baf59628167979d667f44c52570cb80d9340efce775fae73"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/spacemit/ime_env.cpp",
+      "sha256": "5f31bd7195f7daffe278e7394c7c84327ec6cce421a2f035b9a0ba4edfd53b2c"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/spacemit/ime_env.h",
+      "sha256": "2d8b0529166cefb919715e87ca2ed56ef6f0739a6ba008a4e98b2db9545c8295"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/spacemit/ime_kernels.h",
+      "sha256": "84da9984cab8de6430cb99088a1ae85443678e98f99ab09b050804f907deabb2"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/spacemit/repack.cpp",
+      "sha256": "65a3e0359ebc9949bac6ea6f9b4b44af811a8160464f394a659e5c4f39cf5a2d"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/spacemit/repack.h",
+      "sha256": "70f7c5aae3b7972841bbb68e05acb84f299c08af61ea8608ab233fc432db8920"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/spacemit/rvv_kernels.cpp",
+      "sha256": "cde0a685538533b52e614485871656651f48f800babd78b37a60507138e0db5d"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/spacemit/rvv_kernels.h",
+      "sha256": "666e988d3700b733dad9a406b1575f521f75186fad942a27edd0792f2b4165e7"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/spacemit/spine_barrier.h",
+      "sha256": "ddba450200089601aac492a45d6be7881eeef02cd0a4abedf69db5c4b9dfe134"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/spacemit/spine_mem_pool.cpp",
+      "sha256": "3ca25e1b06f9aa8144d15e4382b40a1561609e65518119da876765bd6fc1aeed"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/spacemit/spine_mem_pool.h",
+      "sha256": "8f441ca61472aef8ee16f88fe0f640c188ff036e4c80bb5657b1c0a4c204d889"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/spacemit/spine_tcm.h",
+      "sha256": "8bfe1bfa04a24f88d79610e209047de81f867d12c7dce8bf16402fcb3f67b0c8"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/traits.cpp",
+      "sha256": "a85bd3ff50c91cb67d14221988544664dfe5975db0811b330dc4a2f385239de4"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/traits.h",
+      "sha256": "26e1b41879091a663325848aa82a4023b459fd1e688b3b0e2a9bde3e72a3a764"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/unary-ops.cpp",
+      "sha256": "e63b382766f1b8c5ded1577be9704e85cb4e9cd24584f3e1474911a40146df33"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/unary-ops.h",
+      "sha256": "280b7979055079d43bdde7790a7290bf04f75640481c59abc2364c46d6ac6d8e"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/vec.cpp",
+      "sha256": "cda0babb53f9c8ff1faa7459b2c49019d15e5970dfe0c613d58e2659e919f524"
+    },
+    {
+      "path": "ggml/src/ggml-cpu/vec.h",
+      "sha256": "926330bae1c5d003bd654035426e31381fafcdca23ffcc23201d219dbb97cbeb"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/CMakeLists.txt",
+      "sha256": "8810366d36247b5e4f923f58f92a340ba6071ad5700ef4e5af7eb0cb7f7bc67a"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/acc.cu",
+      "sha256": "9463f70b9edc9749d3f06331640120d99fd75af072c46c5fd1ee40d6148ffd3d"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/acc.cuh",
+      "sha256": "4d5ff42aa0767d1b2d1f38ebd7aafef34989c329ba10ff075309feb8dcf0524a"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/add-id.cu",
+      "sha256": "f696adbcf54d0fda380fc56009c0d68009cacdbc0d226d1c27f999f3881b4840"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/add-id.cuh",
+      "sha256": "5e6a300c364652c50d4b73ceaef0134f70a0bd381c31d8a797e4d2124990b922"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/allreduce.cu",
+      "sha256": "45c54239613dedd015a2d6f514844c877587015bd8d3af6492069eb0fa40bc7f"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/allreduce.cuh",
+      "sha256": "e47975de4989f07dc0b73ae52f744ae9651f08ebfc47470c001f4b8699eccc90"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/arange.cu",
+      "sha256": "e9bef1d5940009034d8bc8ca4185dd204191c20d1a0682a9bdccf4f953c57a5e"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/arange.cuh",
+      "sha256": "f5bd2851bc3a5c0191aa3e5ef6dbd4e1aa6a3baef6f7b01ff018220b803cc4a6"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/argmax.cu",
+      "sha256": "1a9219bb25c3dfbbd2f8757dfdd9c92c9ede74e8406539138d72678f9ac89280"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/argmax.cuh",
+      "sha256": "ef21bf4859104c16037220a70a0c64de0b64a2469d6c1a65b49cf3ce6dc45b84"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/argsort.cu",
+      "sha256": "494d430cdeac39ff8fac7b9ab94648400a2a118fff070c4587a4fd5373237d36"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/argsort.cuh",
+      "sha256": "fece4f9312dc2757ab85472366e026ca035344afba412daca2f97fbf89df477a"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/binbcast.cu",
+      "sha256": "08c4e21cc2144ee317c52b23c940105f04ffa47a3ed71cbf1f5e06ecaa8cb810"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/binbcast.cuh",
+      "sha256": "d26b240e58140e52b6f1cbd94e15792b4281d6f88faaa6f91413e22aa6b74854"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/clamp.cu",
+      "sha256": "ad20b2b271c125a306509d81b062ac6f79be3f430ef6f75099946078bc8d6a0a"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/clamp.cuh",
+      "sha256": "53713bdce3d2cd614719a00e3e282c7ec2555cad1d35baa65e930cb5bda54b27"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/col2im-1d.cu",
+      "sha256": "b8fc7f68813ae7591764006915b98e1e32355099be3823339cff44e05978fb1b"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/col2im-1d.cuh",
+      "sha256": "686a1a9e78b2348f08b5471a2b4398383c32c4ffec3b34fd90bd2bbbde371e0f"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/common.cuh",
+      "sha256": "a210a71f965419ab55cce071b900df118c2520c1566ea5e068d8be07805644a2"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/concat.cu",
+      "sha256": "3cba4d2a26e6a70970ae9b77017f449e41d48e9b1297ba64966e18c6146e53db"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/concat.cuh",
+      "sha256": "d367604a4ae4ab673580082fb397d04062bd541706d9eefb6989f9a905e61a12"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/conv-transpose-1d.cu",
+      "sha256": "4512d31d80985a109c2c594009307d35afc183b2141f621b35ae1e4707690403"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/conv-transpose-1d.cuh",
+      "sha256": "7b0e3ae90967a5d20331a045786adbf6c9c32df3fece85ad5489a3b5309920a3"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/conv2d-dw.cu",
+      "sha256": "fb451d1ff03ef05a28fdd82fe08d2083c05c9f39b04d6821c2758395ee990fa8"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/conv2d-dw.cuh",
+      "sha256": "9df0c2add5f474dcd1499fe6b1375a9e90bd4b970b7bd51c26c05ef8c0804ec6"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/conv2d-transpose.cu",
+      "sha256": "6d213f873c13608e09abae8d89923e019dc932d218c1292441bc78f9cb24b2d8"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/conv2d-transpose.cuh",
+      "sha256": "27c43fc6f61f5d17e79f89d2000efd9b322bfc2eb51938923b21287c010ea987"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/conv2d.cu",
+      "sha256": "1f37725f2085135756b548970f7404a3c0397bdd38f00684ce49c97d0e13a592"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/conv2d.cuh",
+      "sha256": "6edb9e83097aed547422aa293762a1b30ad671c25d272a2425518b61bba2e562"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/convert.cu",
+      "sha256": "8ebad5e72905e1218c93e3c636c8317896ba385b07d0c41a35a432ca88654c1c"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/convert.cuh",
+      "sha256": "fc32372473421c99494d7eea21ab510a8cea61d637f572afe34ed9db32b0d6ce"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/count-equal.cu",
+      "sha256": "77a92c2ce713ab41427cae44857e3e1b7f5c25fd2fd9ae0d2d79398fae5c0e51"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/count-equal.cuh",
+      "sha256": "8eca686572d160baa9c16de9d5851124626421f1760526c00aab641d36cadd1c"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/cp-async.cuh",
+      "sha256": "c0857cb62072ead470b2ec86039a90cd06b1825443fc523564992f5b7d94fec4"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/cpy-utils.cuh",
+      "sha256": "dd7cd3edb55f8c5e160b6e6f37b0d61b94843fa3bcb9f8978965759f85ea6489"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/cpy.cu",
+      "sha256": "7f0868e7fa8069d4b00dd40446fcd3e77b355aa59aeb50030895707b5f5bfc8d"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/cpy.cuh",
+      "sha256": "d34e529f05a2e9db2bce75abd4ff681d286e239b4f10a67c1baf990b1170645c"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/cross-entropy-loss.cu",
+      "sha256": "05eda816185b4f0ddc00fc188d66a00f48cbb98bf079632f79628d65984e0d9b"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/cross-entropy-loss.cuh",
+      "sha256": "0f75c1b9f02243ca08a6972f5c8758781033106a38e9f64b5e2f37bade7a1130"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/cumsum.cu",
+      "sha256": "75e37c9febac23c6fb103ac18914a154bfe34cbaadb862b177f46f63441b0d1e"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/cumsum.cuh",
+      "sha256": "9f177ada2f09467c6bb0936b0a246c4d43798e520628c7182ee98601f22b08b3"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/dequantize.cuh",
+      "sha256": "135b3f11b7e7e49d96b18cc653a0440e79e05591397a3d12f94ce61b58432469"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/diag.cu",
+      "sha256": "9d683fe8ba8e1fec233ebb7f6a4a9ed06979cb944a046277265aebeb6d795299"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/diag.cuh",
+      "sha256": "119ef91c4eeecc49726e8bfc1c8831e739b999a6b6424751c43993ebbec39f8f"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/diagmask.cu",
+      "sha256": "dbd7dcd55bbe033bb34d8ead3733c37a7e4e2eecb905a9199315d98cc3e04f7a"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/diagmask.cuh",
+      "sha256": "6017d90f19b13f525806151ff115d94ff38154764334c143b966c5e0efb66bc1"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/dsv4-hc.cu",
+      "sha256": "91336e95d1b370c010a1dbdee7ee4ed87e865138efe9a30e0a9d6686a6af4230"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/dsv4-hc.cuh",
+      "sha256": "42d197817df516d24cf8e939e8ea860259a61fac50c1a6b3d574520d0fecee61"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/fattn-common.cuh",
+      "sha256": "c3620ddda02049b1dab2f9e12dd9824d2e10a81d356a8354a90f199a83e9d9e2"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/fattn-mma-f16.cuh",
+      "sha256": "39f766ffc260595f1483adbf4c5b3741c43a84691edba703d2cac6fa80a97a32"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/fattn-swizzle.cuh",
+      "sha256": "d5ad3e5c2982f23ca3bc0b94df349ef2f7bd370862dcb215bb5e33bb02c58e74"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/fattn-tile.cu",
+      "sha256": "abe042dc4bf57810439b26f0338a1f41dfc70bdc2e33dc498360f6c0269c055b"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/fattn-tile.cuh",
+      "sha256": "4cc9ff180840f2795640b01f507c608a1d65d09e582dfd9825d1a07a6ad16f39"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/fattn-vec.cuh",
+      "sha256": "deb732ee1f1007814d95943ce48f3eec228087bac986c2bfcf8191a65706cfe7"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/fattn.cu",
+      "sha256": "ba15c00dfe95086bee5d021e2b279d3b44089b91934b151023d97ce9bb542ced"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/fattn.cuh",
+      "sha256": "e3a56f9e753b3994a086f668903e9c960ade092e134df9ff55b351d84828d7b6"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/fill.cu",
+      "sha256": "ed8387d00e6144d5fbc761bc646d046862f95eb8700cbc8acd540898e558f562"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/fill.cuh",
+      "sha256": "4ee8dcaf81b8a9aaae4041373c91c7b35d6e018006566a941030022e70e6dc14"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/fwht.cu",
+      "sha256": "d99be96e71b549472359991d8d72f6dced3a774aa8bbc2a8ec0876edd9d85b02"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/fwht.cuh",
+      "sha256": "966c93e7a5e6fc1198348eae59b91740f2f82b3fc758d3a5e911b1fa43db1a66"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/gated_delta_net.cu",
+      "sha256": "fe5cfe4a35195fac999e8bd93d3ed18c68830096d4019bafa60e5da91d6ef4bf"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/gated_delta_net.cuh",
+      "sha256": "5a155069868ffb238d90503ae380e68a6d1baa4abb9c0292f369fb0045ffffda"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/getrows.cu",
+      "sha256": "b857a798c69a6a6ed71e1f99064673dd7a406a301b54d7d92f93787c12c1e3cd"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/getrows.cuh",
+      "sha256": "5c365e5111fe5a44ded0c0344568dbc8489c94aa87583746c8e15666fe910601"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/ggml-cuda.cu",
+      "sha256": "af947e45946d0c47cfae9e056f589a25b61892e4273decf0a893e2dcad48d065"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/gla.cu",
+      "sha256": "472ea9747c46ad2de4279d3322efaac8783ae4c971f678da47fcdb301cda9dcb"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/gla.cuh",
+      "sha256": "8d10e6be2e286883888ae4fa781c566dc376a269f984cca37928dce9d96fa95a"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/im2col.cu",
+      "sha256": "6c17599d3aa3e8a65688d8d197dc2d4b6155b667a03d8cb726b6b3634611e8ac"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/im2col.cuh",
+      "sha256": "3050c2e0edad2d05dcda4077543648f9ac404be63f95b9e874110216998d08ba"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/lightning-indexer.cu",
+      "sha256": "7a2464ebab9af8321c4e53b7ff73765279ce994850e02e8105fbf39e6b7e1cae"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/lightning-indexer.cuh",
+      "sha256": "d80e2dd6a5d8c311edd1af352624701662fd55865ff1d72df76b1286bcfaf48d"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/mean.cu",
+      "sha256": "8c0afeb2caaf844196d11a4c043abac4633a5d6b700cba1a56645fb9714cb208"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/mean.cuh",
+      "sha256": "5e9e789ca937828dfd316495716264fe37c32845e59c5e457ab108f361141adb"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/mma.cuh",
+      "sha256": "c7e0f3332da182e203b4b953f9fa8535ffca3767d2b7d4d7dbf7ce486262d1af"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/mmf.cu",
+      "sha256": "08bfea71b2f25d273b82f53bbb2181c60b3e9bb22641d3c4ed93067ce4bb3de1"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/mmf.cuh",
+      "sha256": "ec4fa21930d65f59bd77ee2fdfdbbc9bc1690b12071e3885ba10d5ac2c73234e"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/mmid.cu",
+      "sha256": "cd5a6895c52a413f7c8f7273d02ed5a1253d3b6833701fa40b68e3716bbc3c87"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/mmid.cuh",
+      "sha256": "236962648e49c0faa2d76f505c781e36a99c833b27ff3a871111d9de135803ed"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/mmq-config-ampere.cuh",
+      "sha256": "6de9336a6c2f65c0ad83cbe9303dcd03e8cbb6185d15346133a31421000f6408"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/mmq-config-blackwell.cuh",
+      "sha256": "8bec1e65a3a2a58fab1f406225f6ba2f1a4c38a19793dfa255baff69bc044d70"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/mmq-config-cdna.cuh",
+      "sha256": "314eeb8453834723d5224012f692f70673f86ecc42d2b6d6f2005a0fad124dbc"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/mmq-config-gcn.cuh",
+      "sha256": "f669a723fc19d1e650de33a2852a10472a5773b0c8a3cd5b96662bc4fe6ebfe3"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/mmq-config-pascal-dp4a.cuh",
+      "sha256": "67a93b6d26d3e16e77fd285dd77e7cca7848fb0b0d68897c2ff1e8cc47102263"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/mmq-config-pascal-older.cuh",
+      "sha256": "48bae44f1f0e667fa02fb898859eb18c03961bdbadf53c1e22d98801ed70affe"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/mmq-config-rdna2.cuh",
+      "sha256": "758be2a33b89018841f432c15cd63009ad212d71eae888a04b4535cb64941aa7"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/mmq-config-rdna3-5.cuh",
+      "sha256": "5243cb07aded29b0bd3254cf9f9856989f53b133a73874388282a35c3990f0cd"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/mmq-config-rdna3.cuh",
+      "sha256": "a1ac4f4fa799f2fb200ead23f3403bb0f729d41109b8967c6d76216768aae0cf"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/mmq-config-rdna4.cuh",
+      "sha256": "e40c9c5fe85607db07ae351dd6ca13c92caaa238e2a62d5134877d9fbcb5c645"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/mmq-load-tiles.cuh",
+      "sha256": "f1adb201fa40087e294c40887e62f583f6a7adf40ddca542a735774742e0ae2c"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/mmq-vec-dot.cuh",
+      "sha256": "58e87f162ec6e4bd5d23e99aeac76f3dd0e13a6cdfe01165cae806b51fe9ae65"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/mmq.cu",
+      "sha256": "a35bb96dfc917c9026023482e24dcf47539fc08ccee1bb4236f40932e9fe540e"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/mmq.cuh",
+      "sha256": "50db23f5055af6e28c142fcb4c7fb16c51f7137184ebf8c0ca113ed88906851b"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/mmvf.cu",
+      "sha256": "0aca92c9d54cf4a17cf79ee082f243b99c9bf62915e523050ab57c55e30555a1"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/mmvf.cuh",
+      "sha256": "bca80856e91767311caf4c8bf62309efe246ff907e167f45aabc2a9eaba00716"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/mmvq.cu",
+      "sha256": "d4c70f68ab79d463fd6fd52cac66a62e915858397ba4b2b7f658a7fbf13121f3"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/mmvq.cuh",
+      "sha256": "b37f8359f519ba90ddecd9cb3ca5f8c2ae05685bfae6813d435d75763c2bb006"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/moe-weighted-reduction.cu",
+      "sha256": "c05a68615007e34ffbbd8a5f381a8f915c2cc0d38cd859351c8535ddb513c1d0"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/moe-weighted-reduction.cuh",
+      "sha256": "89b9a6138bbc20ca12a82cc082a3b38da94cd83c2f41367ef6f8a41abd044638"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/norm.cu",
+      "sha256": "8cb872a9633a7c68c5e9fa8c1f7d39afe9e66636c1299b9fc610b1b4217e7307"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/norm.cuh",
+      "sha256": "0f2d6b743ff349012424cddc8866eb0fa504ea16b7a58cb47b31b392d1f78a73"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/opt-step-adamw.cu",
+      "sha256": "41b4f129b149af3bb86257c41521329448b08f6e41743a8ab2edb98a1f6165a2"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/opt-step-adamw.cuh",
+      "sha256": "250c6fda21e8ed98e34518599c9fe1db2ac50596c8f41fafe03b752d6f0355a4"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/opt-step-sgd.cu",
+      "sha256": "6b82809e3a4e883cca28e689d340ca31c0ab9a8b62e8180cdc42d043e705ec3f"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/opt-step-sgd.cuh",
+      "sha256": "92a52bae098f5126d686a3fb9a02dfc4b4bb81dd6b349661ac63abbc661e9337"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/out-prod.cu",
+      "sha256": "c6fe3a117f327eb880f27764bae2865dd3b544cd477efed815f91116c98abb94"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/out-prod.cuh",
+      "sha256": "98e053024e8111bc908c904fc2734a3069d219fefb4699a5588623a5237411da"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/pad.cu",
+      "sha256": "6e346e3252dc624d4e5750ee50985b68d1e3ae31c1d3c26f584884fa77d0aead"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/pad.cuh",
+      "sha256": "2ac173fd9d89eb83c146962f741ca8e1ec49c0d2312df07b16e77a1a3407a275"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/pad_reflect_1d.cu",
+      "sha256": "db74030f87b562c29a02c2bcaf433e62fe4f16efa64ccbcd7bbf306dfb4c477a"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/pad_reflect_1d.cuh",
+      "sha256": "3e04a3df38b7ccdf560a0d8e94233f63f90b43366a06a0f2e8939bca94d9fc5f"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/pool1d.cu",
+      "sha256": "aaa6ed31acc6e5eff05a0362769cc111e6fef50fe8a03102aecba437e4044471"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/pool1d.cuh",
+      "sha256": "c6569e9ee949ba25d4954ca0e37a069a9501ac927567bb01ac624c411812a7fe"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/pool2d.cu",
+      "sha256": "71d204b8bff51226abe25f3eecf6ca8325fd9399ff89d4eb0c41b1b00f8ad1bb"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/pool2d.cuh",
+      "sha256": "3417872508e299a2b480df788fb96bdeae09cfd48e089238d9eedca779d80a30"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/quantize.cu",
+      "sha256": "71cd7baab62ee1f457d23ae648c381d18b9b1327ec34832f31463b14b81895b3"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/quantize.cuh",
+      "sha256": "112e190a096e1fa68d4c72ca2a450cb202586e3f2919c884f3e3316a8d5c57cd"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/reduce_rows.cuh",
+      "sha256": "b6b3708e1fe4bc72b3bd33cd6c8b45b7d5058ece28083dfbf5e7fb5dc2be36c2"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/roll.cu",
+      "sha256": "69cee7872166c8eb05893284f7f51ed2c195d6d00e997246610aa01a67cbda58"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/roll.cuh",
+      "sha256": "3935af611b59141ef8f97b268a71c5a68d57cc488ed4fa174a63291a0e74bafb"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/rope.cu",
+      "sha256": "21b424e872267180570dfbc86e6ea67d1a3ced0efd5273d0f23d36da3c621905"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/rope.cuh",
+      "sha256": "182542526249adc83170a534a427730aeeae54d4c863af7d7a6698a762ccdaa7"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/scale.cu",
+      "sha256": "38450f05603bf7ea3b2885402c91d0cc40acbe8b29cd1385e0523ff3b065bbe9"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/scale.cuh",
+      "sha256": "7b7c8e4eaeba76d297739b3757f775b9f011568cf40f4f2cc242e8aeb6f4ff5c"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/set-rows.cu",
+      "sha256": "24654fe55234c12b0d4d1e9c78871509fc5348f7e3ff123e146838c861a8c8a9"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/set-rows.cuh",
+      "sha256": "e4a61e6fbeaed73bdb9d080f70a34312b3487507ff1db347187cce4322b0a604"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/set.cu",
+      "sha256": "14aa1ad3fc5469c57379b5a6d54d41865552741c84fbc2e9abb251e64ebc94e5"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/set.cuh",
+      "sha256": "80d876a132bb3a7dcc238b896eaee7607bbd106698b3946ef441ed460d3aef43"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/snake.cu",
+      "sha256": "f79225a2c26f7f066719360e252274435e42fb02919eda0e3763660d92b599e2"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/snake.cuh",
+      "sha256": "b7556707a24a81903b07f20b4751fd72488792ae07e917db4aa21c5a2182babc"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/softcap.cu",
+      "sha256": "a3ae060b52326da5185ad03ea880255fccd6c6515d979c49b864d00263f2a8d0"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/softcap.cuh",
+      "sha256": "4187b9b447cdafcce48c5d855f6b614e6637fa1c1138943c8fec8ef415eb0def"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/softmax.cu",
+      "sha256": "ac288d3d091ceab46e56b05e298b893f37f6129a7e3b36703c3244675d384976"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/softmax.cuh",
+      "sha256": "972a8aa13502aa291771c05c4f6cb815f60879734d7e8bdd82ba32d9d37132cd"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/solve_tri.cu",
+      "sha256": "98a4c0a80fc2e01baaafeb0e3e0d8ff3d80188967e5f781131abce0e711146d0"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/solve_tri.cuh",
+      "sha256": "4bc82e78e8ed66d9526ff9e8a133f01ea2948add3860136ce7d32fd248429f9f"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/ssm-conv.cu",
+      "sha256": "684ef5e8180ba88bb1f389310b28f8a694cb107a924492c43682a5c5c1754424"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/ssm-conv.cuh",
+      "sha256": "36de452e725fd79f445fba170e1f361255be602e1fd52a3d87745b63735f3852"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/ssm-scan.cu",
+      "sha256": "8a0287be798b6fb2e0ae0ab74c984741040e7f48792d3b366f1510810b020517"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/ssm-scan.cuh",
+      "sha256": "ff506178172b025df33aabab47df575813b41208c9a82901d9ffca1636481bf7"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/sum.cu",
+      "sha256": "b03a1f7f5eaca802c23bb6ca91e7e482799cf3785c6f63bd073f4c7c2547804a"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/sum.cuh",
+      "sha256": "a5164e2c10a2bd6c83ae481bb6a99a0eab739c2e3d67d55baa38461d2f5b5619"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/sumrows.cu",
+      "sha256": "344cd327588d0f78ead31c32c59842cf44a9a8149724879f3ff00ab2b114ec36"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/sumrows.cuh",
+      "sha256": "2adea2dc3e9b6e6bf2c2f6c73c1a5491ea04c002832ea3fa2acebdeab86e8f86"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_1-ncols2_16.cu",
+      "sha256": "56f0823ff875ccfc8653e0af7afbb9548e9803991bb21586d19b128a57506e3f"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_1-ncols2_32.cu",
+      "sha256": "71f2bc2091dba36e7b290415f69a6642fe23199ddf17f468c5721790c1b4f875"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_1-ncols2_8.cu",
+      "sha256": "850d3e2ae9ad3e4720280125e3ecfa28212378cac9f87faf243de4eb301171a3"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_16-ncols2_1.cu",
+      "sha256": "00570ad7a17671a574c4d371011e7f5a230593f6f79b66970a277c7b4f200e75"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_16-ncols2_2.cu",
+      "sha256": "cfd48fe9021c76de648ad9fc1a2d26307d05091eb33c5396ec0c5d782d589d8a"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_16-ncols2_4.cu",
+      "sha256": "16a8d5d9db3a5f1ebb7abf284fd6ebc1a2ac28a29454b4b9ffe18c0e2337201b"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_2-ncols2_16.cu",
+      "sha256": "db2ae872db2af781a636dd16eb3059abd063829f7adcf102320c8c4fc697348e"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_2-ncols2_32.cu",
+      "sha256": "06eb626b2c87c8609f180eb86dea493ccabbbfae717067626721baea34de1d71"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_2-ncols2_4.cu",
+      "sha256": "69359db5c751b8ca52198621c5fd70fe8fc25cdf02b332ad72d690ac0178069a"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_2-ncols2_8.cu",
+      "sha256": "b62ead5b5d86796978c12009444f7bbb1df4cc8d474ecc835fc513ce82c5d8e8"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_32-ncols2_1.cu",
+      "sha256": "39877cde59cfa7480c10a01dcce06c7a8833df514e0a8b26749e2d144dabd889"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_32-ncols2_2.cu",
+      "sha256": "620e085177d0fd4a2196b314003216f6d77b1080506d34deaf5bbf890665a143"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_4-ncols2_16.cu",
+      "sha256": "3a2868aa04f76170a5908ec0a51b9317e56031f99dbb13468e9c4f1befc58889"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_4-ncols2_2.cu",
+      "sha256": "8524cdc68971093afee3c5c892b773096a4f5046c38541b51f76e7847ce46039"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_4-ncols2_4.cu",
+      "sha256": "c17fa8bff1a38fcc8886748bbc5002e7d5db57ffcd6b3765be9554938b7fbbb0"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_4-ncols2_8.cu",
+      "sha256": "d0fd76969c022a6ae8dee71d43956cdafcff8bb70b4dd9db103d106f6f08974d"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_64-ncols2_1.cu",
+      "sha256": "cd6a7f75926dd4ef73997dce43eb35e88eee410588a62b9105197d38c409eb50"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_8-ncols2_1.cu",
+      "sha256": "a25c36e1dfe4308e7deaa743c842e0a03b014fc651f31149ce35614bb0fca30e"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_8-ncols2_2.cu",
+      "sha256": "8e9369f085ce4b98da47e444e01388d171e8fd1c8386d1c47e0cfea144d2a88b"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_8-ncols2_4.cu",
+      "sha256": "3d43f8ba74a037d08464ea1f056a43d6210bcd37d959c200dc20e6905cb76426"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_8-ncols2_8.cu",
+      "sha256": "3eaa34096cba75511c7108367ace96c1d74dba9a25f9f9d631d407adead73f1a"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-tile-instance-dkq112-dv112.cu",
+      "sha256": "d9a41a0ca7a68e2e7f0739277657a2f401c852f7caa16bfcc3df7da75f0d7a81"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-tile-instance-dkq128-dv128.cu",
+      "sha256": "8670e5455bea2ba6b03ac1daf86001a4125d806ad744ab1fb08bb1ee473a5b1a"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-tile-instance-dkq192-dv128.cu",
+      "sha256": "fcf0373b3d655497b9285931e598c976f239807eb079496c4d9a9e2bd9fb8713"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-tile-instance-dkq256-dv256.cu",
+      "sha256": "e13966ac7f971950f9060ba87e0026a1ffab9b1f5697b5b29a5ff3226169ea5b"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-tile-instance-dkq320-dv256.cu",
+      "sha256": "ab92f425e018a5d1902b54708e050b15e682ccd7a37d56b66e0904a3f0740265"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-tile-instance-dkq40-dv40.cu",
+      "sha256": "44849192ac6c1852ac8ad0a377565f5a550ab726905701163fa4c885f1856818"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-tile-instance-dkq512-dv512.cu",
+      "sha256": "10b07cec88eca02266b046c51c38798749bb8e2f751b1cefdfcd8b144ba93a37"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-tile-instance-dkq576-dv512.cu",
+      "sha256": "80bae9cf03430ab7e1a9bc58a6b8245353efdbdfb90fd2415aa47dfc6fdef218"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-tile-instance-dkq64-dv64.cu",
+      "sha256": "f9a5c827cb365345691e1449b092b38e78aa1b29f9bbb51bb6faef2cb499594e"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-tile-instance-dkq72-dv72.cu",
+      "sha256": "4c413954dfce0998e05411ddaaf65197359bf8dc03a60cdd2efc83f0a7ce637a"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-tile-instance-dkq80-dv80.cu",
+      "sha256": "c612ad426e577eac4c6cb2c669348611273b2490e0a029f8c344612826b78583"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-tile-instance-dkq96-dv96.cu",
+      "sha256": "c998376005406c0d43e9c1993b4fd363cf42f045c08a1356bcebacf9f3b7d37c"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-bf16-bf16.cu",
+      "sha256": "f245d7d7b84066627177e338dd5e88c53b9381160772e1e23baf82f9da03d807"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-bf16-f16.cu",
+      "sha256": "0b5d45ad0ca1c32a7ad303a577b45b175b8b9740f6e6bf4153ac7739b7eb5f15"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-bf16-q4_0.cu",
+      "sha256": "cfdb11631cf53ec4612e9f539370c6137d2a9260ab96824d6cdbf1e865caba2e"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-bf16-q4_1.cu",
+      "sha256": "ecd4a4ac719efaae129e84a90bacc477f8ed81f0f89bedf3726a76f69c9f9b91"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-bf16-q5_0.cu",
+      "sha256": "291fcc48f6413c3d8632f93ad69b3d39202a7f36d1c361e17c0129c543f4dd45"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-bf16-q5_1.cu",
+      "sha256": "965920a7bb5338a3aa5508a53884bd6f0627a1f7390f9c807287aa450ba0e4dd"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-bf16-q8_0.cu",
+      "sha256": "9717723d82d34461fe3b81ace35f35ea646dd5e605338efce2f854f4d0be913f"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-f16-bf16.cu",
+      "sha256": "414643af38e89b81481c4cc2754ee588f7fb8736a3244b8ebf4e117800408678"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-f16-f16.cu",
+      "sha256": "bab518968e5b19bfbc523b7d51ec913bb450c70fc2ad61c75cadf12f90cc4821"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-f16-q4_0.cu",
+      "sha256": "f752044e1f9460e5e755e7374b670758f02879b2cbee69ef5de703fd8a0ae391"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-f16-q4_1.cu",
+      "sha256": "c6d058025aca6ba04d8021eec9527b5127ce894c441e60bb1eb2842da5a3dfbd"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-f16-q5_0.cu",
+      "sha256": "c458b9f7fa1a9b7c39cb87ae562e365638b73787dbf605cee2695df9f7db53ec"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-f16-q5_1.cu",
+      "sha256": "4ff7aac5f09c003046eefd4878ea94932bd7f28e03e31d2b88cecff6d341fca0"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-f16-q8_0.cu",
+      "sha256": "c590a9c33bd34d4cef8ae3f597dc0facaca335ce78a22945be14485bcdb9570f"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q4_0-bf16.cu",
+      "sha256": "393184f821c6fbf3913a58b8483e88cc4b0544fd1358a0a8c898bc304fbad1ab"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q4_0-f16.cu",
+      "sha256": "b3705c72615bff21801392c3e4fae6ec7c4be47b6e5f0631d9d0b3ed8b9c6946"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q4_0-q4_0.cu",
+      "sha256": "eb758e247ff817a5302ebb59ddaf1efa9839731a6c2e4ad48e6a9e9b14f71b54"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q4_0-q4_1.cu",
+      "sha256": "670d500782db8ec0505119d076be7188a5ee99bd2b692d08751fbed756eeff04"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q4_0-q5_0.cu",
+      "sha256": "7ceff0e710fbd6cef899ae1aae5aa1edbfa99dd5ff1da7da9571c37f2e15730d"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q4_0-q5_1.cu",
+      "sha256": "f25dc7bfb44e7cecdb62d8d06d3f2379e96802debfdb91f1421b2c4a5c997b74"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q4_0-q8_0.cu",
+      "sha256": "9e4d60ed5343911d73257fff88e3a246d33e6a6ede5423a3f8c0a19f3e7b4f50"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q4_1-bf16.cu",
+      "sha256": "6d8a5fb18b5b26eb023b2595db92fb89090962b2d2048c45d18c95ba011cf328"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q4_1-f16.cu",
+      "sha256": "63fa4cc03c468671b607b10a3ddb18e7e02f3caea64815dc24452c41ad902436"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q4_1-q4_0.cu",
+      "sha256": "1e8a61d2d873da1d51d2ab5219dc6be4ea5cc56a1442667f3707daa0bf83e0d2"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q4_1-q4_1.cu",
+      "sha256": "fb8e2959a0552107b178ba383bfde471c6d673371a961c7f09869dcc87d2713e"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q4_1-q5_0.cu",
+      "sha256": "71cf807f632a058b10a17d3ef49609c71079b10845fa41075090d5301d4d83e0"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q4_1-q5_1.cu",
+      "sha256": "52b4d9e5831fe94866b362ce277dc7986605ee1489f54e19b6ec664f56796654"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q4_1-q8_0.cu",
+      "sha256": "e56d7a55ab855f590c727f49ad63344bf95a4cbb2c81f87ff89c5caca9b38ad2"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q5_0-bf16.cu",
+      "sha256": "039bb544da39a272eadae170ef33e8b6383d29fbd24c1e4b08daef10bd6b6a48"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q5_0-f16.cu",
+      "sha256": "4215edbddfdf05767adb6ef2b96ad185775a36f3ace3c574dd78b9739530e343"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q5_0-q4_0.cu",
+      "sha256": "d05149870f644d92be08ac6d238ca23e17a2e1ed34ae8d3d4987740adacf661d"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q5_0-q4_1.cu",
+      "sha256": "2716891b2a864dfc69300a588a1a96cad308c724845b81ce3c2a594d827e985a"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q5_0-q5_0.cu",
+      "sha256": "45b3253be5a74d3d48a8717b06fa6acbd1837f1b19fa28d1455cc99c9d2af4b7"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q5_0-q5_1.cu",
+      "sha256": "b89758d29469041c18832e433d9c7e4f8ea105a839878b019221f32499a43616"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q5_0-q8_0.cu",
+      "sha256": "4da72bf724aeaaf1646ebf9fb29f35d39db43744c46de9f696db9c47d48c6ead"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q5_1-bf16.cu",
+      "sha256": "e66731e7ad6a362e88ebe077b48af49d30d7d2ce0c3960c74e83c851c3c39819"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q5_1-f16.cu",
+      "sha256": "0080236e48fdbdb72fff1e49da29e6cf48f6fab1b39dde36c28e1e8b57876de9"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q5_1-q4_0.cu",
+      "sha256": "ee36ebdaa7bbfb4c4dd1a30691102de174b6d571dd38a0679e76330b2e7663fe"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q5_1-q4_1.cu",
+      "sha256": "e2e2b048ca5a323d0407f28adc24a2d92917cb4f676f53bd8a16ca6b06f75fc8"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q5_1-q5_0.cu",
+      "sha256": "f723d737a7b3033101d8f97a62f52f9cadc6c124296e9afc01f3c2551fc67126"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q5_1-q5_1.cu",
+      "sha256": "5a33c75dc410c0e4a65883f201164c99dd5def34839ac19ab1f99fb5ff3b085c"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q5_1-q8_0.cu",
+      "sha256": "7a9f1283ad89550cc58bdf53230228a18e6ee0101808f9138b47a16669d8a2bd"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q8_0-bf16.cu",
+      "sha256": "0bd85f28352f8504debaed9f06722e87c9e546c1f6974aa55b059aa47085e4a5"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q8_0-f16.cu",
+      "sha256": "1d80936c45fac29c7c0681152525bc6252c8f1cbca65c063d7c1cd263d47eec1"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q8_0-q4_0.cu",
+      "sha256": "a56d98b1f9df2aa39da3c8f1e1e81c90cd9afa3b5357d9b18ecc364593b0d3a6"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q8_0-q4_1.cu",
+      "sha256": "315761765078497915ceee0c4607459321e0579bf65a3ef6d0a9ab39d331c848"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q8_0-q5_0.cu",
+      "sha256": "5e05e34d536a53e24f936e65505db480c2944ba21ca07ccc8286b3a0e2c41ddd"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q8_0-q5_1.cu",
+      "sha256": "c8d72aa4f033ebaacf07e78d644c4a9bae7a41f56f6ce62e95dd9366a7d916ef"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/fattn-vec-instance-q8_0-q8_0.cu",
+      "sha256": "482a63647edc7ce0cafd92548bb188131f5c5aa72db162647f93d6bfa9378923"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/generate_cu_files.py",
+      "sha256": "a74b72d4dd7b615e0626181b7e20e0f31f193281a2b52c4b8f127549ee4fc7cd"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmf-instance-ncols_1.cu",
+      "sha256": "48fddfa154dd4942e943a47a697597e3d2e5406f4d7fae74687bf12e23aeefb0"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmf-instance-ncols_10.cu",
+      "sha256": "1f7692c8454683d97951ab3b56c3404089bc6e7ac9fd8e42fd89e069165841cd"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmf-instance-ncols_11.cu",
+      "sha256": "56ad9283c689b9873371ee3feb5d72d862f272e22bf21a1ff582f3556c69ac79"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmf-instance-ncols_12.cu",
+      "sha256": "2000decac72b0078ec5a510a23d710a59c1ea6dab8a342b87ae033d3a11130f0"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmf-instance-ncols_13.cu",
+      "sha256": "cc1aef2d65fdccfaf650c019d38a32831027faaca28a10fe45d43a16317b6f0a"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmf-instance-ncols_14.cu",
+      "sha256": "9392a013e2409e6e8951231486a665167a008dfeb2a482c27c68391cb9f3563f"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmf-instance-ncols_15.cu",
+      "sha256": "ce65eb4614112d7cdbf7634aeb35200e1c4ec953c862ea0239c61035d2e0e2fb"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmf-instance-ncols_16.cu",
+      "sha256": "af9a987d95b380cba2cf24eb137ccd371e42038535357a83a9dc179274a334b6"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmf-instance-ncols_2.cu",
+      "sha256": "c6093a25b6b64837d84e8550c2e6a78b8c4737332aa40e8be6ceb2bb04eb233f"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmf-instance-ncols_3.cu",
+      "sha256": "840ae67f3bb493d2e66f2882db271645f5a9f10874650d43c132e43f5eaab557"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmf-instance-ncols_4.cu",
+      "sha256": "f09068f887bba46756ce3de2b1051b4b6d26e0fbf97c89fbc666d1b63855028c"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmf-instance-ncols_5.cu",
+      "sha256": "d35d85ef1eed82154f90b6196cb51d2e1df82bef04a7e01634e8e064e0e6cec4"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmf-instance-ncols_6.cu",
+      "sha256": "7fc80d943ea461f79641bf8c65a6b846ed1a4e7025ec0f8bd97c1cf45ab3503e"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmf-instance-ncols_7.cu",
+      "sha256": "30c54b581a145dce88bf0c78ce262fe32028fc505dabc0d43133751ebc8cbbb5"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmf-instance-ncols_8.cu",
+      "sha256": "50f55a27ffbf909727ddd2f97658602d118e8e87d66035f72c315676ef7c1943"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmf-instance-ncols_9.cu",
+      "sha256": "2e950c4704407339bbe3047c2028accdc503e428fc88bc82238b0270237459c2"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmq-instance-iq1_s.cu",
+      "sha256": "3e54437db9b0cdda4ddb629982f1f083458de06771a04e5d25ab3e65dbca9e95"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmq-instance-iq2_s.cu",
+      "sha256": "8a841418b1b818a13f739759ea0d36ed778e1b6343aee85fdc58d341b169bd55"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmq-instance-iq2_xs.cu",
+      "sha256": "549d0c56b4b7ffccf262a611e28d257ce8e7ee94ce7ac814259c427eaeb10fe8"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmq-instance-iq2_xxs.cu",
+      "sha256": "7fa1a4a0aaec59e2e27eb40a13078be685952e446c5c9fb0840a47d0e28a17bf"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmq-instance-iq3_s.cu",
+      "sha256": "8167508364494a8f51f736186c5294585a26302cb034e051b8b80acf1db18850"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmq-instance-iq3_xxs.cu",
+      "sha256": "13af5ff17c13dbbe712a6f400b83b69da77792969162c6f345491392d36c1d51"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmq-instance-iq4_nl.cu",
+      "sha256": "a03418c7c0607a3ce3707129dd7e0fcd18d36f241c55289a274fac66f1548f93"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmq-instance-iq4_xs.cu",
+      "sha256": "c4f568105a3ff273287b04c58879ea455efd5fa05aa72da9ef0efeb7ab9de520"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmq-instance-mxfp4.cu",
+      "sha256": "c9be52057f9662aaa0479e5948d6dffed2de2a344dec6c90f1ed3d9d32b42497"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmq-instance-nvfp4.cu",
+      "sha256": "b88918c580b960ba3b22cd2228a85849cb244a8027f699ad3f50027ecfb74759"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmq-instance-q1_0.cu",
+      "sha256": "bca0611976cc447dc317e3fa81954f69061e45a9370b24fcbdddd9b5340b7da6"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmq-instance-q2_0.cu",
+      "sha256": "41253e37b9d032e78135d8bcee4544de82e07002530f7045eccf782727c8a784"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmq-instance-q2_k.cu",
+      "sha256": "e378922ee4aaabe395e7e3f620a38ae26e36e27b46036b8b7fea71292bf8cc2b"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmq-instance-q3_k.cu",
+      "sha256": "3847ca2cefb02dd316033e05db5451b24440cf6ab4cb2d23b4f54a388b492edc"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmq-instance-q4_0.cu",
+      "sha256": "b0f6646afd4a8cc45aaf390a004700057baeae6d87d672dcd67c21a0a81eb74f"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmq-instance-q4_1.cu",
+      "sha256": "8a8c0da33c1c44fcbe516c6c7bd7bf1a6f3b934b63eaf99333e3fba42bfebbea"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmq-instance-q4_k.cu",
+      "sha256": "2ab47361d40a9ece25406c20693424a466c93bcb5cdb5c06cee8f9d03a806beb"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmq-instance-q5_0.cu",
+      "sha256": "34a443ed0e68b1ad614eb251758d0f43f003ce8d10e7833f9f58a46677d336db"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmq-instance-q5_1.cu",
+      "sha256": "a1312dd1316cd75b4a18e2c4a4c34d54ddfcd92b7fc1e45d4daee101e8d69f00"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmq-instance-q5_k.cu",
+      "sha256": "c98bbe1dd91e03362f4136357c6f4e4e2c5328902fdc6fd857d0f608386ffb2e"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmq-instance-q6_k.cu",
+      "sha256": "989943d6501a74927d079eacca793e94a1233863196c94dd20e459017ed76fc2"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/template-instances/mmq-instance-q8_0.cu",
+      "sha256": "b38f4de9a3563debaf4796d6772e1ed72ce6944c2b8b03f9c26bf19191addee7"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/top-k.cu",
+      "sha256": "e8fd64d90d021e5d0549e6c529619a782a050df3e309ac088151d6b5490a5c89"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/top-k.cuh",
+      "sha256": "3dc6221a33577372fe7f907aeeb395fb20ed0a6e6543efd8f03cd9dce7b82b08"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/topk-moe.cu",
+      "sha256": "fdf688136cbf728b825c6a62534855a53e64cb73acb7f3dd3a3ab1b161456199"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/topk-moe.cuh",
+      "sha256": "cc1cec0c9b865624be058697b9a21048cfdaac0aca547bc6f6b18d54d820c88b"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/tri.cu",
+      "sha256": "29fb339d668087b81509987953fbd31df3d8b0987b53ec85be8725c37ef2b4c8"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/tri.cuh",
+      "sha256": "c98755c7eaeb37b694184160007e9c3dcfc487eb1d27dc753b795ff601e9b7e4"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/tsembd.cu",
+      "sha256": "54109ff13fb88f2f2bfd3bb0d91a11833f347a3a2e129963cf103d41108abe82"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/tsembd.cuh",
+      "sha256": "7dd4784baed53b3f8cf3c2919fb294e5341398f91297776e4b8af775279e6dc1"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/unary.cu",
+      "sha256": "e8340525baecc6d34b6250fb4e588c774ddf22accc49b6526fa15691ae7def9a"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/unary.cuh",
+      "sha256": "a6903bb02577a33b79c738e62e425867f9122d1b4981a3b228062b4f978b2858"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/upscale.cu",
+      "sha256": "8eabc72b145f4aaf3201873f5cd5fdd7d8216d98286881a41f624100bfec349f"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/upscale.cuh",
+      "sha256": "2557d6d800986a0aa9153adbfdbba746945c179323661030b5c45b4aae869687"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/vecdotq.cuh",
+      "sha256": "a7fd4281ad9f0a6d9373c776325411d2522e0b62ffae2c16e91e667a1af251fe"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/vendors/cuda.h",
+      "sha256": "e7847065d5d741f892d2f1f7aaaa8f418a41e3b983d1e6f09010055d4d1c38d1"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/vendors/hip.h",
+      "sha256": "087f721fcab92e4b716b2469398a0177cf81cecb1fb6172dfcb909949b867aa5"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/vendors/musa.h",
+      "sha256": "4874631c16eebbfc6d0f3081779dbe00890b7f94561db7224e4a517f33eb5a3e"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/wkv.cu",
+      "sha256": "221b5d3a5c60e67932b60c333ecdc9623155b7960c82cdfda9661eba6ced379f"
+    },
+    {
+      "path": "ggml/src/ggml-cuda/wkv.cuh",
+      "sha256": "d2a64d7f343e103f41f4f171c297248e8bc4d4dbee8271e7e77490e2c3edd6c4"
+    },
+    {
+      "path": "ggml/src/ggml-quants.c",
+      "sha256": "07143d7068936ae46b3c528b2f3d4bbb666e74d88992165716174d243573965d"
+    },
+    {
+      "path": "ggml/src/ggml-quants.h",
+      "sha256": "28ae5fca1f3be636b36cd6c4fa2ca74fd42d229bfbd5352eaf66f3727bb8a6da"
+    }
+  ]
+}
