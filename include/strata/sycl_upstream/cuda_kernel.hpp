@@ -21,7 +21,9 @@ using original_loaders::__byte_perm;
 using original_loaders::__popc;
 using original_loaders::__vcmpne4;
 using original_loaders::__vsub4;
+using sycl::max;
 struct alignas(8) float2 { float x, y; };
+inline float2 make_float2(float x,float y) { return {x,y}; }
 inline float __half2float(half x) { return float(x); }
 inline float __low2float(half2 x) { return float(x[0]); }
 inline float __high2float(half2 x) { return float(x[1]); }
@@ -30,11 +32,18 @@ inline half __high2half(half2 x) { return x[1]; }
 inline float2 __half22float2(half2 x) { return {float(x[0]),float(x[1])}; }
 inline half2 make_half2(float a,float b) { return half2(half(a),half(b)); }
 inline half __float2half(float x) { return half(x); }
+inline half __float2half_rn(float x) { return half(x); }
+inline half __ushort_as_half(uint16_t x) { return sycl::bit_cast<half>(x); }
+inline float __int_as_float(int32_t x) { return sycl::bit_cast<float>(x); }
 inline float __uint_as_float(uint32_t x) { return sycl::bit_cast<float>(x); }
+inline float __fadd_rn(float a,float b) { return sycl::ext::intel::math::fadd_rn(a,b); }
 inline float __fmaf_rn(float a,float b,float c) { return sycl::fma(a,b,c); }
 inline float __fmul_rn(float a,float b) { return sycl::ext::intel::math::fmul_rn(a,b); }
 inline float __fdiv_rn(float a,float b) { return sycl::ext::intel::math::fdiv_rn(a,b); }
 inline float __expf(float a) { return sycl::native::exp(a); }
+inline float rsqrtf(float a) { return sycl::rsqrt(a); }
+inline bool __isnanf(float a) { return sycl::isnan(a); }
+template<class T> inline T __ldg(const T* p) { return *p; }
 inline int __dp4a(int a,int b,int c) {
     // The original Pascal fallback has the same signed four-byte operation.
     const auto x=sycl::bit_cast<sycl::vec<int8_t,4>>(a);
@@ -50,14 +59,21 @@ inline uint32_t __vsubss4(uint32_t a,uint32_t b) {
     }
     return out;
 }
-inline float __shfl_xor_sync(uint32_t,float x,int mask,int width=32) {
+template<class T> inline T __shfl_xor_sync(uint32_t,T x,int mask,int width=32) {
     (void)width; // All lowered original call sites use the complete 32-lane warp.
     return sycl::permute_group_by_xor(sycl::ext::oneapi::this_work_item::get_sub_group(),x,mask);
 }
-inline float __shfl_down_sync(uint32_t,float x,int delta,int width=32) {
+template<class T> inline T __shfl_down_sync(uint32_t,T x,int delta,int width=32) {
     const auto sg=sycl::ext::oneapi::this_work_item::get_sub_group();
-    const float other=sycl::shift_group_left(sg,x,delta);
-    return int(sg.get_local_linear_id())+delta<width?other:x;
+    const T other=sycl::shift_group_left(sg,x,delta);
+    return int(sg.get_local_linear_id())%width+delta<width?other:x;
+}
+template<class T> inline T __shfl_sync(uint32_t,T x,int source,int width=32) {
+    const auto sg=sycl::ext::oneapi::this_work_item::get_sub_group();
+    return sycl::select_from_group(sg,x,int(sg.get_local_linear_id())/width*width+source%width);
+}
+inline void __syncwarp(uint32_t=0xffffffffu) {
+    sycl::group_barrier(sycl::ext::oneapi::this_work_item::get_sub_group());
 }
 inline void __syncthreads() {
     sycl::group_barrier(sycl::ext::oneapi::this_work_item::get_work_group<3>());
@@ -93,12 +109,12 @@ template<bool Warp32,bool Shared,class F> void launch(dim3 grid,dim3 block,size_
         const sycl::range<3> global(size_t(grid.z)*block.z,size_t(grid.y)*block.y,size_t(grid.x)*block.x);
         return q.submit([&](sycl::handler& h) {
             if constexpr(Shared) {
-                sycl::local_accessor<float,1> scratch((shared_bytes+3)/4,h);
+                sycl::local_accessor<sycl::vec<float,4>,1> scratch((shared_bytes+15)/16,h);
                 if constexpr(Warp32) h.parallel_for(sycl::nd_range<3>(global,local),[=](sycl::nd_item<3>) [[sycl::reqd_sub_group_size(32)]] {
-                    fn(scratch.template get_multi_ptr<sycl::access::decorated::no>().get());
+                    fn(reinterpret_cast<float*>(scratch.template get_multi_ptr<sycl::access::decorated::no>().get()));
                 });
                 else h.parallel_for(sycl::nd_range<3>(global,local),[=](sycl::nd_item<3>) {
-                    fn(scratch.template get_multi_ptr<sycl::access::decorated::no>().get());
+                    fn(reinterpret_cast<float*>(scratch.template get_multi_ptr<sycl::access::decorated::no>().get()));
                 });
             } else {
                 if constexpr(Warp32) h.parallel_for(sycl::nd_range<3>(global,local),[=](sycl::nd_item<3>) [[sycl::reqd_sub_group_size(32)]] { fn(nullptr); });

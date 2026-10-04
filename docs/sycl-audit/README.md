@@ -142,5 +142,10 @@ multi-exact and v1/fused branches. Both builds pass 20 related CTest programs,
 including 17 quantized product formats, all 72 grouped format pairs and
 changed-input graph replay. A reproduced Q8_1 division half-tie now uses an
 explicit rounding operation; CUDA device bit identity remains unverified.
+[Original native state and attention primitives](native-primitives.md) now compile
+12 more whole source files and validate connected GDN state/history, PLE
+single/batch state, RoPE/indexer, short attention and QSA gates. Both builds pass
+21 related CTest programs. The new test covers 944 cases and 649 graph replays;
+precision differences in analytic power and PLE normalization are recorded.
 Fixed BLAS workspace binding, remaining kernel families, full engine linking
 and execution remain open. No new PP/TG measurement has been established.

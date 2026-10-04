@@ -7,13 +7,18 @@ native layouts, grouped v1/fused choices and launch geometry remain in the
 translated files. The original files are unchanged. This closes these component
 bindings; full engine execution and new PP/TG measurements remain open.
 
-The final JIT and B570 AOT builds each pass 20 related CTest programs. The new
+The JIT and B570 AOT builds at this checkpoint each pass 20 related CTest programs. The new
 product test performs 2,420,678 numerical comparisons, 6,932,160 byte comparisons,
 2,168,088 bit comparisons and 1,997,284 guard comparisons per build. Full logs,
 source/object/binary hashes and earlier failures are in
 [native-products-results.json](native-products-results.json). The earlier
 [GEMM checkpoint](native-gemm.md) remains historical; its complete synthetic
 GEMM/dequant regression also passes with these new IQ bindings.
+
+The following [native primitive phase](native-primitives.md) extends launch
+argument capture and local-memory support, regenerates these four product files,
+and passes their complete regressions in both 21-program suites. Hashes and
+logs below remain the earlier product checkpoint.
 
 ## How the original sources execute
 

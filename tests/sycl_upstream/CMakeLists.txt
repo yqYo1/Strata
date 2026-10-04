@@ -404,6 +404,11 @@ if(STRATA_SYCL_DEVICE_ARCH)
     target_compile_options(original_gemm_test PRIVATE -fsycl-targets=spir64_gen)
 endif()
 
+# Regenerate whole native sources whenever either mechanical lowerer changes.
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+    ${STRATA_ROOT}/tools/sycl/lower_cuda_products.py
+    ${STRATA_ROOT}/tools/sycl/lower_cuda_primitives.py)
+
 # Keep original native decode products, IQ grouped experts and BF16 variants.
 # Generated sources lower launch/intrinsic syntax; original files remain pinned.
 execute_process(COMMAND ${Python3_EXECUTABLE} ${STRATA_ROOT}/tools/sycl/lower_cuda_products.py
@@ -438,3 +443,34 @@ if(STRATA_SYCL_DEVICE_ARCH)
 endif()
 add_test(NAME original_native_products COMMAND original_products_test)
 set_tests_properties(original_native_products PROPERTIES TIMEOUT 300)
+
+# Native state updates and attention primitives retain whole original files.
+execute_process(COMMAND ${Python3_EXECUTABLE} ${STRATA_ROOT}/tools/sycl/lower_cuda_primitives.py
+    --ggml ${STRATA_GGML_DIR} --output ${CMAKE_CURRENT_BINARY_DIR}
+    COMMAND_ERROR_IS_FATAL ANY)
+set(_strata_native_primitives native_gr_norm native_gr_postops native_moe native_gdn
+    native_gdn_preprocess native_qsa native_router native_rope native_ple_postops
+    native_flash_attn native_qsa_indexer native_qsa_score)
+set(_strata_native_primitive_sources)
+foreach(_name IN LISTS _strata_native_primitives)
+    list(APPEND _strata_native_primitive_sources ${CMAKE_CURRENT_BINARY_DIR}/original_${_name}.cpp)
+endforeach()
+add_library(strata_sycl_original_primitives STATIC ${_strata_native_primitive_sources})
+target_include_directories(strata_sycl_original_primitives BEFORE PRIVATE
+    ${CMAKE_CURRENT_BINARY_DIR}/native_include ${STRATA_GGML_DIR}/ggml/include ${STRATA_GGML_DIR}/ggml/src)
+target_compile_definitions(strata_sycl_original_primitives PRIVATE STRATA_USE_SYCL=1)
+target_compile_options(strata_sycl_original_primitives PRIVATE -fsycl -fno-fast-math
+    -ffp-contract=fast -fno-strict-aliasing)
+target_link_libraries(strata_sycl_original_primitives PUBLIC strata_sycl_original_products)
+if(STRATA_SYCL_DEVICE_ARCH)
+    target_compile_options(strata_sycl_original_primitives PRIVATE -fsycl-targets=spir64_gen)
+endif()
+add_executable(original_primitives_test native_primitives.cpp)
+target_include_directories(original_primitives_test PRIVATE ${STRATA_GGML_DIR}/ggml/include)
+target_link_libraries(original_primitives_test PRIVATE strata_sycl_original_primitives ggml-base)
+target_compile_options(original_primitives_test PRIVATE -fsycl -fno-fast-math -ffp-contract=off)
+if(STRATA_SYCL_DEVICE_ARCH)
+    target_compile_options(original_primitives_test PRIVATE -fsycl-targets=spir64_gen)
+endif()
+add_test(NAME original_native_primitives COMMAND original_primitives_test)
+set_tests_properties(original_native_primitives PROPERTIES TIMEOUT 300)

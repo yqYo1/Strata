@@ -174,6 +174,11 @@ whole original MMVQ/IQ/MMVF/BF16 files to native kernels through the same stream
 registry. Their original old/new and separate/fused choices, local memory and
 changed-state graph replay pass JIT/AOT component checks. Full engine binding
 and CUDA device arithmetic identity remain open.
+[Original native state and attention primitives](native-primitives.md) now also
+bind 12 whole original files, including connected GDN state/history, PLE
+single/batch state and attention/indexer graphs. Both final builds pass 21
+related CTest programs. Native program admission, remaining kernel families,
+tensor score binding and whole-model execution remain open.
 
 The [MMQ stream binding](mmq-frontend.md) now connects the original public MMQ
 API to this frontend. It also fixes process-exit cleanup of an unfinished capture,

@@ -55,21 +55,42 @@ def lower(source):
     kernels = {}
     # Kernel signatures do not contain function-pointer parameters. Bodies end
     # at the original column-zero closing brace, including all nested scopes.
-    pattern = re.compile(r'__global__ void (\w+)\((.*?)\)\s*\{(.*?)\n\}', re.S)
+    pattern = re.compile(r'__global__\s+void\s+(\w+)\((.*?)\)\s*\{(.*?)\n\}', re.S)
     def kernel(match):
         name, args, body = match.groups()
         prefix = text[:match.start()].rstrip()
         template = re.search(r'(template\s*<([^\n]+)>)(?:\s*)$', prefix)
         template_text = template.group(1) if template else ''
         template_names = [a.split()[-1] for a in split_args(template.group(2))] if template else []
-        declarations = re.findall(r'__shared__ float (\w+)((?:\[[^\]]+\])+);', body)
+        declarations = []
+        shared_declarations = re.findall(r'(__shared__ (?:__align__\((\d+)\) )?float ([^;]+);)', body)
+        for original_declaration,alignment,declaration in shared_declarations:
+            assert not alignment or int(alignment)<=16, (name, alignment)
+            # The aligned native declaration is first in its kernel. Reject
+            # later aligned declarations until field padding is implemented.
+            assert not alignment or not declarations, (name, alignment)
+            # Commas between array declarations; comparisons within extents
+            # (e.g. NW-1 > 0) are not template nesting delimiters here.
+            parts = re.split(r',\s*(?![^\[]*\])', declaration)
+            assert not alignment or len(parts)==1, (name, declaration)
+            for part in parts:
+                item = re.fullmatch(r'(\w+)((?:\[[^\]]*\])+)', part.strip())
+                assert item, (name, declaration)
+                declarations.append(item.groups())
         dynamic = re.findall(r'extern __shared__ float (\w+)\[\];', body)
         static = [(n,d) for n,d in declarations if d != '[]']
-        assert len(dynamic) <= 1 and len(static) <= 1, name
+        assert len(dynamic) <= 1, name
         sizes = []
+        replacements = {}
         for n,d in static:
-            body = body.replace('__shared__ float '+n+d+';', 'auto& '+n+' = *reinterpret_cast<float (*)'+d+'>(strata_shared);')
+            offset = ' + '.join('('+s+')/sizeof(float)' for s in sizes)
+            pointer = 'strata_shared' + (' + '+offset if offset else '')
+            replacements[n] = 'auto& '+n+' = *reinterpret_cast<float (*)'+d+'>('+pointer+');'
             sizes.append('sizeof(float)' + ''.join('*('+s+')' for s in re.findall(r'\[([^\]]+)\]',d)))
+        for original_declaration,alignment,declaration in shared_declarations:
+            names = re.findall(r'(?:^|,)\s*(\w+)\[',declaration)
+            if names and all(n in replacements for n in names):
+                body = body.replace(original_declaration, '\n'.join(replacements[n] for n in names))
         for n in dynamic:
             body = body.replace('extern __shared__ float '+n+'[];', 'float* '+n+' = strata_shared;')
         assert '__shared__' not in body, name
@@ -98,10 +119,16 @@ def lower(source):
         stream = configs[3] if len(configs)>3 else 'nullptr'
         end = closing(text, m.end()-1)
         args = text[m.end():end]
+        arguments = split_args(args)
+        # CUDA evaluates kernel arguments on the host at each launch. Evaluate
+        # getters/casts here too; putting their expressions in the device body
+        # would re-read host state on replay or call host-only functions on GPU.
+        captures = ', '.join(f'strata_arg_{i} = ({a})' for i,a in enumerate(arguments))
+        captured_args = ', '.join(f'strata_arg_{i}' for i in range(len(arguments)))
         warp = 'true' if kernels[name]['warp32'] else 'false'
         uses_shared = 'true' if kernels[name]['shared'] else 'false'
         suffix = templates or ''
-        replacement = f'sycl_upstream::cuda_kernel::launch<{warp}, {uses_shared}>({grid}, {block}, ({shared}) + {name}_shared_bytes{suffix}(), {stream}, [=](float* strata_shared) {{ {name}{suffix}(strata_shared, {args}); }})'
+        replacement = f'sycl_upstream::cuda_kernel::launch<{warp}, {uses_shared}>({grid}, {block}, ({shared}) + {name}_shared_bytes{suffix}(), {stream}, [=, {captures}](float* strata_shared) {{ {name}{suffix}(strata_shared, {captured_args}); }})'
         text = text[:m.start()]+replacement+text[end+1:]
         launches.append(name)
     assert '<<<' not in text and '__global__' not in text
