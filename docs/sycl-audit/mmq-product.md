@@ -89,8 +89,9 @@ exact miscompiled instruction has not been identified by disassembly.
 The initial full-K implementation recorded above has since gained the
 [upstream stream-K partition and fixup algorithm](mmq-stream-k.md), with both
 numerical and exact addition-order checks. The original CUDA automatic tile/config
-selection, scratch pool, optional Q5_0/Q4_K/Q5_K/Q5_1 formats, gather/SwiGLU wrapper,
-and full host/runtime integration remain open. No CUDA device comparison has
+selection, optional Q5_0/Q4_K/Q5_K/Q5_1 formats, and full host/runtime integration
+remain open. [Gather/SwiGLU](mmq-stages.md) and the
+[public adapter/scratch context](mmq-context.md) now have separate validation. No CUDA device comparison has
 been run, including CUDA fast-math, FTZ, exact FMA contraction and stream-K results.
 
 The original host processing and root build remain unchanged. No old SYCL tuning
@@ -99,6 +100,5 @@ preset or implementation is imported as the new baseline.
 ## Reproduction
 
 Use the same isolated CMake commands as [the quantizer](mmq-quantizer.md).
-`ctest -V` now runs both `mmq_quantize_upstream_source` and
-`mmq_product_upstream_cpu`. The product requires Intel XMX int8 support as tested
+`ctest -V` runs quantizer, product, direct/public stage and context lifetime tests. The product requires Intel XMX int8 support as tested
 on the B570; it is not a generic-device fallback.

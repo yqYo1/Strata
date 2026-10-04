@@ -97,5 +97,7 @@ separates source-reference agreement from still-missing CUDA-device comparisons.
 The [first routed product consumer](mmq-product.md) now uses this layout for all nine
 default MMQ formats. [Stream-K scheduling and fixup](mmq-stream-k.md) have also
 been ported and tested. [Gather, SwiGLU and connected products](mmq-stages.md)
-now cover all nine default formats and the Strata Q2 packed layout. The full adapter
-and engine integration remain open; this is not a complete translation-unit parity verdict.
+now cover all nine default formats and the Strata Q2 packed layout. The
+[public MMQ adapter and scratch context](mmq-context.md) now have queue/lifetime
+evidence. Full runtime and engine integration remain open; this is not a complete
+translation-unit parity verdict.

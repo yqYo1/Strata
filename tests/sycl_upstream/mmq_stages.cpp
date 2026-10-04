@@ -1,4 +1,4 @@
-#include "strata/sycl_upstream/mmq_stages.hpp"
+#include "mmq_test_api.hpp"
 #include "strata/sycl_upstream/mmq_product.hpp"
 #include "upstream_cpu_dequant.hpp"
 #include <algorithm>
@@ -36,7 +36,7 @@ int main() try {
         for (size_t j = 0; j < 640; ++j) { a.p[j] = j * 17; b.p[j] = j * 13 + 3; c.p[j] = j * 7 + 11; }
         gu.fill(0xce); dn.fill(0xce);
         const int ao = mode == 1, bo = mode == 2, co = mode == 3, go = 32 + (mode == 4), dno = 32 + (mode == 5);
-        mmq_gather_native(q, a.p + ao, b.p + bo, na, c.p + co, nc, gu.p + go, dn.p + dno).wait_and_throw();
+        tested::mmq_gather_native(q, a.p + ao, b.p + bo, na, c.p + co, nc, gu.p + go, dn.p + dno).wait_and_throw();
         for (size_t j = 0; j < gu.n; ++j) {
             const uint8_t expected = j < go || j >= go + 2 * na ? 0xce :
                 j < go + na ? a.p[ao + j - go] : b.p[bo + j - go - na];
@@ -53,7 +53,7 @@ int main() try {
         strata::prefill::mmq::GatherGroup g;
         for (int e = 0; e < 16; ++e) g.blob[e] = blobs.p + e * 1024;
         g.first = 3; g.n = 16; gu.fill(0xce); dn.fill(0xce);
-        check(mmq_gather_native_group(q, g, up, na, down, nc, gu.p + 32, gs, dn.p + 32, ds), "group rejected");
+        check(tested::mmq_gather_native_group(q, g, up, na, down, nc, gu.p + 32, gs, dn.p + 32, ds), "group rejected");
         q.wait_and_throw();
         for (int out = 0; out < 2; ++out) {
             const auto& buf = out ? dn : gu; const size_t stride = out ? ds : gs, active = out ? nc : 2 * na;
@@ -71,7 +71,7 @@ int main() try {
             if (bad == 1) invalid.n = invalid.first;
             if (bad == 2) invalid.n = 17;
             if (bad == 3) invalid.blob[9]++;
-            bool accepted = mmq_gather_native_group(q, invalid, up + (bad == 4), na + (bad == 5),
+            bool accepted = tested::mmq_gather_native_group(q, invalid, up + (bad == 4), na + (bad == 5),
                 down + (bad == 6), nc + (bad == 7), gu.p + (bad == 8), gs + (bad == 9),
                 dn.p + (bad == 10), ds + (bad == 11));
             if (bad == 12) { check(accepted, "valid group"); q.wait_and_throw(); continue; }
@@ -85,7 +85,7 @@ int main() try {
         Buffer<uint8_t> blob(q, gc + dc + (ng + nd) * 2), gu(q, ng * 18 + 64), dn(q, nd * 18 + 64);
         for (size_t j = 0; j < blob.n; ++j) blob.p[j] = uint8_t((j * 17) ^ (j >> 8));
         gu.fill(0xce); dn.fill(0xce);
-        mmq_gather_strata_q2(q, blob.p, gu.p + 32, dn.p + 32).wait_and_throw();
+        tested::mmq_gather_strata_q2(q, blob.p, gu.p + 32, dn.p + 32).wait_and_throw();
         for (int out = 0; out < 2; ++out) {
             const auto& buf = out ? dn : gu;
             for (size_t j = 0; j < buf.n; ++j) {
@@ -105,7 +105,7 @@ int main() try {
             gu.p[base + (interleaved ? 2 * k : k)] = g;
             gu.p[base + (interleaved ? 2 * k + 1 : 257 + k)] = u;
         }
-        mmq_swiglu(q, gu.p, h.p, 3, 257, interleaved).wait_and_throw();
+        tested::mmq_swiglu(q, gu.p, h.p, 3, 257, interleaved).wait_and_throw();
         for (int i = 0; i < n; ++i) {
             const double g = i % 241 - 120, u = float(i % 29 - 14) / 7;
             const double ref = g / (1 + std::exp(-g)) * u, error = std::abs(h.p[i] - ref);
@@ -113,11 +113,11 @@ int main() try {
             max_swiglu = std::max(max_swiglu, error); ++numeric_checked;
         }
         for (int i = n; i < n + 32; ++i) check(h.p[i] == -1234567.f, "SwiGLU guard");
-        mmq_swiglu(q, nullptr, nullptr, 0, 257, interleaved);
+        tested::mmq_swiglu(q, nullptr, nullptr, 0, 257, interleaved);
     }
     for (int n : {0, 1, 255, 256, 257, 4007}) {
         Buffer<int32_t> ids(q, n + 32); ids.fill(-12345);
-        mmq_iota(q, ids.p, n); q.wait_and_throw();
+        tested::mmq_iota(q, ids.p, n); q.wait_and_throw();
         for (int i = 0; i < n + 32; ++i) check(ids.p[i] == (i < n ? i : -12345), "iota/guard");
     }
     uint32_t rng = 0x489275;
@@ -169,18 +169,18 @@ int main() try {
         const auto gp = mmq_plan(pg, cu), dp = mmq_plan(pd, cu);
         Buffer<float> scratch(q, std::max(gp.scratch_bytes, dp.scratch_bytes) / 4 + 1);
         // No wait/readback between gather, quantizer, products and activation.
-        if (packed) mmq_gather_strata_q2(q, blob.p, guw.p, dw.p);
+        if (packed) tested::mmq_gather_strata_q2(q, blob.p, guw.p, dw.p);
         else {
             strata::prefill::mmq::GatherGroup group; group.n = experts;
             for (int e = 0; e < experts; ++e) group.blob[e] = blob.p + e * blob_bytes;
-            check(mmq_gather_native_group(q, group, up_off, half_bytes, down_off, down_bytes, guw.p, gs, dw.p, ds), "chain group alignment");
+            check(tested::mmq_gather_native_group(q, group, up_off, half_bytes, down_off, down_bytes, guw.p, gs, dw.p, ds), "chain group alignment");
         }
-        mmq_iota(q, identity.p, total);
-        mmq_quantize(q, x.p, input_ids.p, xq.p, kind.type, cols, cols + 12, total);
-        mmq_product(q, pg, gp, scratch.p);
-        mmq_swiglu(q, gu.p, h.p, total, ff, packed);
-        mmq_quantize(q, h.p, nullptr, hq.p, kind.type, ff, ff, total);
-        mmq_product(q, pd, dp, scratch.p).wait_and_throw();
+        tested::mmq_iota(q, identity.p, total);
+        tested::mmq_quantize(q, x.p, input_ids.p, xq.p, kind.type, cols, cols + 12, total);
+        tested::mmq_product(q, pg, gp, scratch.p);
+        tested::mmq_swiglu(q, gu.p, h.p, total, ff, packed);
+        tested::mmq_quantize(q, h.p, nullptr, hq.p, kind.type, ff, ff, total);
+        tested::mmq_product(q, pd, dp, scratch.p).wait_and_throw();
         // Independent pinned CPU dequantizer + double dot for every output of
         // both products. Actual quantized intermediates are stage inputs, so
         // each failure is attributable without cascading quantization thresholds.

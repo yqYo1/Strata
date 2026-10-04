@@ -64,3 +64,45 @@ if(STRATA_SYCL_DEVICE_ARCH)
 endif()
 add_test(NAME mmq_surrounding_stages COMMAND mmq_stages_test)
 set_tests_properties(mmq_surrounding_stages PROPERTIES TIMEOUT 120)
+
+# Use the pinned GGML's actual type table for the public matrix_bytes API,
+# including non-MMQ formats. Do not duplicate a reduced size/type table.
+set(GGML_CPU OFF CACHE BOOL "Component tests need only GGML base" FORCE)
+set(GGML_CUDA OFF CACHE BOOL "No CUDA backend in component tests" FORCE)
+set(GGML_SYCL OFF CACHE BOOL "Strata supplies its own faithful MMQ component" FORCE)
+set(GGML_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GGML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+add_subdirectory(${STRATA_GGML_DIR}/ggml ${CMAKE_CURRENT_BINARY_DIR}/ggml EXCLUDE_FROM_ALL)
+
+add_library(strata_sycl_mmq STATIC
+    ${STRATA_ROOT}/src/sycl_upstream/mmq_adapter.cpp
+    ${STRATA_ROOT}/src/sycl_upstream/mmq_stages.cpp
+    ${STRATA_ROOT}/src/sycl_upstream/mmq_quantize.cpp)
+target_link_libraries(strata_sycl_mmq PUBLIC mmq_product ggml-base)
+target_compile_options(strata_sycl_mmq PRIVATE -fsycl -fno-fast-math -ffp-contract=off -fno-strict-aliasing)
+target_link_options(strata_sycl_mmq PUBLIC -fsycl)
+if(STRATA_SYCL_DEVICE_ARCH)
+    target_compile_options(strata_sycl_mmq PRIVATE -fsycl-targets=spir64_gen)
+    target_compile_definitions(strata_sycl_mmq PRIVATE
+        STRATA_SYCL_MMQ_AOT_ARCH=sycl::ext::oneapi::experimental::architecture::intel_gpu_${STRATA_SYCL_DEVICE_ARCH})
+    target_link_options(strata_sycl_mmq PUBLIC -fsycl-targets=spir64_gen
+        "SHELL:-Xsycl-target-backend=spir64_gen \"-device ${STRATA_SYCL_DEVICE_ARCH}\"")
+endif()
+
+add_executable(mmq_public_stages_test mmq_stages.cpp)
+target_compile_definitions(mmq_public_stages_test PRIVATE STRATA_TEST_PUBLIC_MMQ=1)
+target_link_libraries(mmq_public_stages_test PRIVATE strata_sycl_mmq)
+target_compile_options(mmq_public_stages_test PRIVATE -fsycl -fno-fast-math -ffp-contract=off -fno-strict-aliasing)
+if(STRATA_SYCL_DEVICE_ARCH)
+    target_compile_options(mmq_public_stages_test PRIVATE -fsycl-targets=spir64_gen)
+endif()
+add_test(NAME mmq_public_stages COMMAND mmq_public_stages_test)
+set_tests_properties(mmq_public_stages PROPERTIES TIMEOUT 120)
+add_executable(mmq_context_test mmq_context.cpp)
+target_link_libraries(mmq_context_test PRIVATE strata_sycl_mmq)
+target_compile_options(mmq_context_test PRIVATE -fsycl -fno-fast-math -ffp-contract=off -fno-strict-aliasing)
+if(STRATA_SYCL_DEVICE_ARCH)
+    target_compile_options(mmq_context_test PRIVATE -fsycl-targets=spir64_gen)
+endif()
+add_test(NAME mmq_context_lifetime COMMAND mmq_context_test)
+set_tests_properties(mmq_context_lifetime PROPERTIES TIMEOUT 120)

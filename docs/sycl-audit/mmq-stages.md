@@ -18,8 +18,9 @@ parity or a speed measurement.
 The component interfaces use an explicit in-order SYCL queue, device-accessible
 pointers and caller-owned storage. They allocate no memory and introduce no host
 waits. Event-returning operations expose completion; grouped gather retains the
-upstream boolean admission contract. This does not yet supply the engine's public
-`void* stream` adapter or MMQ context/pool lifetime management.
+upstream boolean admission contract. The [public adapter and context](mmq-context.md) now provide the original
+entry-point symbols with an explicit SYCL queue contract; the full runtime is
+still separate work.
 
 ## Validation
 
@@ -62,4 +63,4 @@ Build/source hashes and test logs are in [mmq-stages-results.json](mmq-stages-re
 Existing product and exact fixup-order checks remain unchanged. These tests do not
 establish CUDA fast-math/FTZ agreement, NaN/Inf parity, routing/top-k equivalence,
 full layer/session behavior, or full-model performance. Optional MMQ formats and
-the complete runtime/engine adapter remain open audit items.
+the complete runtime/engine integration remain open audit items.
