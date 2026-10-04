@@ -176,8 +176,9 @@ edit("src/kernels/cuda/s2_gemv_fast.dp.cpp", lambda s: s.replace(
     "inline dpct::constant_memory<float, 2>& c_codes = *new dpct::constant_memory<float, 2>(256, 4);   // never freed: exit-order safe"))
 
 # Keep allocation/deallocation paired in the snapshot fixture (cudaMallocHost becomes SYCL USM).
-edit("src/core/conversation_snapshot_test.cpp", lambda s: s.replace(
-    "for (void* p : host) std::free(p);", "for (void* p : host) sycl::free(p, dpct::get_in_order_queue());"))
+edit("src/core/conversation_snapshot_test.cpp", sub(
+    r"(for \(void \*p : host\)\s*)std::free\(p\);",
+    r"\1DPCT_CHECK_ERROR(sycl::free(p, dpct::get_in_order_queue()));"))
 
 # The new grouped S2 loop inlines a chunk product; preserve the old loop's rounded function result.
 def s2_grouped_rounding(s):
@@ -188,6 +189,10 @@ def s2_grouped_rounding(s):
     if "#pragma clang fp contract(off)" in s[brace:brace + 350]: return s
     return s[:brace + 1] + "\n// Match gu_grouped_kernel: round each chunk product before accumulation.\n#pragma clang fp contract(off)" + s[brace + 1:]
 edit("src/kernels/cuda/s2_expert_grouped.dp.cpp", s2_grouped_rounding)
+
+# Preserve the native PLE explicit-stream rejection test; dpct turned null into a valid default queue.
+edit("src/kernels/ple_parity.cpp", lambda s: s.replace(
+    "c == 2 ? &dpct::get_in_order_queue() : stream", "c == 2 ? nullptr : stream"))
 
 # 8. ggml-common.h has a SYCL declaration mode (sycl::half instead of cuda_fp16.h).
 edit("src/kernels/cuda/iq_kernels.dp.cpp", lambda s: s.replace("#define GGML_COMMON_DECL_CUDA", "#define GGML_COMMON_DECL_SYCL")

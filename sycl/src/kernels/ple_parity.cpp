@@ -1183,7 +1183,7 @@ int main(int argc, char** argv) {
                 if (c == 8) invalid.key_native_q8_1 = native_data;
                 try {
                     k::ple_block(d_emb, d_hid, d_hist, invalid, out, ple_ws,
-                                 c == 2 ? &dpct::get_in_order_queue() : stream);
+                                 c == 2 ? nullptr : stream);
                 }
                 catch (const std::invalid_argument&) { ++refused; }
             }

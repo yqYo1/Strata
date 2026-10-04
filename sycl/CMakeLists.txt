@@ -178,13 +178,22 @@ target_link_libraries(strata PRIVATE strata_engine strata_prefill strata_spec)
 option(STRATA_SYCL_PARITY "Build the kernel parity tests" ON)
 if(STRATA_SYCL_PARITY)
   enable_testing()
+  set(STRATA_IQ_FIXTURE_DIR "${CMAKE_BINARY_DIR}/iq_fixture" CACHE PATH "tools/iq_fixture.py output")
+  set(STRATA_PLE_FIXTURE_DIR "${CMAKE_BINARY_DIR}/ple_fixture" CACHE PATH "sycl/tools/ple_fixture.py output")
   foreach(p IN ITEMS dequant_s2 s2_gemv iq shared_expert gr gdn s2_gemv_q8 sampler rope quantize_act router_top10
                      s_gemv elementwise bf16_gemv s_gemv_q8k qsa ple kv_q8 kv_stream kv_q4 cvec)
     strata_resolve(_src src/kernels/${p}_parity.cpp)
     add_executable(${p}_parity ${_src})
     target_include_directories(${p}_parity PRIVATE ${STRATA_ROOT}/src/kernels)   # the oracle .inc fixtures
     target_link_libraries(${p}_parity PRIVATE strata_kernels)
-    add_test(NAME ${p}_parity COMMAND ${p}_parity --selftest)
+    if(p STREQUAL "iq")
+      add_test(NAME iq_parity COMMAND iq_parity "${STRATA_IQ_FIXTURE_DIR}")
+    elseif(p STREQUAL "ple")
+      add_test(NAME ple_parity COMMAND ple_parity --selftest --pack "${STRATA_PLE_FIXTURE_DIR}"
+        --in "${STRATA_PLE_FIXTURE_DIR}/ple_in.bin" --out "${STRATA_PLE_FIXTURE_DIR}/ple_out.bin")
+    else()
+      add_test(NAME ${p}_parity COMMAND ${p}_parity --selftest)
+    endif()
   endforeach()
   # 0.1.31: the IQ kernels that decode a weight part once for every column/entry, bitwise vs the per-column ones
   # (no --selftest flag: it runs its checks by default), and the rewritten per-hit/grouped expert kernels vs the
@@ -234,6 +243,8 @@ if(STRATA_SYCL_PARITY)
   # one native expert three ways on real GGUF rows (ggml reference, CPU path, GPU native_expert_grouped):
   #   native_expert_parity <shard1.gguf> [layer ...]
   if(STRATA_NATIVE_EXPERTS)
+    add_executable(ple_graph_oracle ${CMAKE_CURRENT_SOURCE_DIR}/tools/ple_graph_oracle.cpp)
+    target_link_libraries(ple_graph_oracle PRIVATE ggml-cpu ggml-base)
     add_executable(native_expert_parity ${CMAKE_CURRENT_SOURCE_DIR}/src/kernels/native_expert_parity.cpp)
     target_include_directories(native_expert_parity PRIVATE ${STRATA_ROOT}/third_party/ggml)
     target_link_libraries(native_expert_parity PRIVATE strata_kernels strata_kernels_cpu)
