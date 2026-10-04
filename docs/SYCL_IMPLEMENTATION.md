@@ -2656,3 +2656,14 @@ Four and eight lanes gave the same mismatch counts. This fails the current
 bitwise requirement, so no vector SwiGLU path was introduced. The
 [source and results](../bench/results/2026-10-04-sycl-cpu-exp-vector/run.json)
 record this numerical screen without a throughput claim.
+
+A further single-token prototype interleaved gate and up within each
+64-value group to share Q8_K vector loads, while keeping independent integer
+accumulators and the original FP32 FMA chains. All 180 component samples on
+real IQ3_XXS/IQ3_S/IQ2_S weights matched the accepted CPU object and GGML
+bitwise. Across inner-loop expansion factors 1/2/4 and 8/64 distinct experts,
+every tested median was slower. For 64 experts, even the best factor for each
+type gave baseline/candidate rate ratios of 0.991, 0.975 and 0.940 respectively.
+This remained a component experiment; the engine was not changed. The
+[paired gate/up screen](../bench/results/2026-10-04-sycl-cpu-single-pair/run.json)
+preserves the generator, harness and all timings.

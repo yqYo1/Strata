@@ -1,0 +1,439 @@
+{
+  "status": "rejected at component screen; not integrated",
+  "source_parent_commit": "33b1e8c",
+  "hardware": "Ryzen 5 5600X",
+  "change": "Interleave gate and up for each64-value group, load the two Q8_K vectors once, retain separate original integer accumulators and FP32 FMA chains. Compare inner-loop unroll1/2/4.",
+  "reference": "Accepted production single-token CPU object, also checked against linked GGML gate/up dots and SwiGLU",
+  "compile_flags": [
+    "-O3",
+    "-DNDEBUG",
+    "-std=c++20",
+    "-march=znver3",
+    "-mtune=znver3",
+    "-mavx2",
+    "-mfma",
+    "-mf16c"
+  ],
+  "workload": "Real GGUF N2560 FF640 gate/up matrices of8 or64 distinct experts, one valid deterministic Q8_K activation. Five alternating samples with three repeats each.",
+  "validation": "All180 samples finite and bitwise equal, baseline also matches GGML",
+  "measurement_conditions": "No owned compilation or GPU benchmark overlapped timings; existing workstation services remained active. All samples retained.",
+  "samples": {
+    "18/8/unroll1": {
+      "baseline_us": [
+        1958.7,
+        1873.0,
+        1949.23,
+        1875.83,
+        1934.2
+      ],
+      "candidate_us": [
+        2170.85,
+        2202.68,
+        2163.9,
+        2197.89,
+        2171.01
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "12677700697604010274"
+    },
+    "18/8/unroll2": {
+      "baseline_us": [
+        1922.83,
+        1887.93,
+        1932.65,
+        1876.34,
+        1884.04
+      ],
+      "candidate_us": [
+        1942.31,
+        2030.22,
+        1942.06,
+        2099.66,
+        1943.39
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "12677700697604010274"
+    },
+    "18/8/unroll4": {
+      "baseline_us": [
+        2033.65,
+        1875.7,
+        1930.34,
+        1875.6,
+        1877.7
+      ],
+      "candidate_us": [
+        1968.5,
+        2050.72,
+        1956.56,
+        1953.54,
+        2009.73
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "12677700697604010274"
+    },
+    "21/8/unroll1": {
+      "baseline_us": [
+        2437.8,
+        2432.58,
+        2331.07,
+        2350.16,
+        2421.22
+      ],
+      "candidate_us": [
+        2683.09,
+        2738.16,
+        2720.0,
+        2638.55,
+        2636.65
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "4879662021440489893"
+    },
+    "21/8/unroll2": {
+      "baseline_us": [
+        2332.12,
+        2447.79,
+        2387.39,
+        2442.76,
+        2344.0
+      ],
+      "candidate_us": [
+        2724.19,
+        2599.45,
+        2636.01,
+        2764.2,
+        2712.94
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "4879662021440489893"
+    },
+    "21/8/unroll4": {
+      "baseline_us": [
+        2335.96,
+        2332.25,
+        2420.82,
+        2350.29,
+        2335.74
+      ],
+      "candidate_us": [
+        2349.8,
+        2450.3,
+        2366.74,
+        2435.42,
+        2449.63
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "4879662021440489893"
+    },
+    "22/8/unroll1": {
+      "baseline_us": [
+        1398.65,
+        1323.23,
+        1330.94,
+        1323.09,
+        1324.82
+      ],
+      "candidate_us": [
+        1410.25,
+        1415.43,
+        1407.19,
+        1411.37,
+        1493.1
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "11250638869989844481"
+    },
+    "22/8/unroll2": {
+      "baseline_us": [
+        1329.04,
+        1320.63,
+        1482.19,
+        1413.9,
+        1365.66
+      ],
+      "candidate_us": [
+        1679.9,
+        1540.27,
+        1541.13,
+        1539.01,
+        1644.59
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "11250638869989844481"
+    },
+    "22/8/unroll4": {
+      "baseline_us": [
+        1358.86,
+        1333.95,
+        1404.94,
+        1430.39,
+        1361.29
+      ],
+      "candidate_us": [
+        1538.13,
+        1579.99,
+        1522.59,
+        1516.67,
+        1527.06
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "11250638869989844481"
+    },
+    "18/64/unroll1": {
+      "baseline_us": [
+        15495.3,
+        15398.6,
+        15208.5,
+        15176.5,
+        15311.4
+      ],
+      "candidate_us": [
+        17584.8,
+        17803.5,
+        17366.5,
+        17468.3,
+        17405.1
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "10821364999495291017"
+    },
+    "18/64/unroll2": {
+      "baseline_us": [
+        15549.5,
+        15274.3,
+        15268.0,
+        15703.4,
+        15249.6
+      ],
+      "candidate_us": [
+        15749.6,
+        15799.5,
+        15827.3,
+        18416.3,
+        15970.0
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "10821364999495291017"
+    },
+    "18/64/unroll4": {
+      "baseline_us": [
+        15598.4,
+        15421.4,
+        15294.0,
+        15935.5,
+        16600.1
+      ],
+      "candidate_us": [
+        15661.8,
+        15744.2,
+        15716.8,
+        19149.0,
+        16061.7
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "10821364999495291017"
+    },
+    "21/64/unroll1": {
+      "baseline_us": [
+        18920.0,
+        19079.6,
+        19206.2,
+        19156.0,
+        19066.7
+      ],
+      "candidate_us": [
+        21429.3,
+        21931.0,
+        21674.6,
+        21575.0,
+        23026.0
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "7547259617829839303"
+    },
+    "21/64/unroll2": {
+      "baseline_us": [
+        19303.8,
+        19123.7,
+        18923.8,
+        19154.4,
+        19022.7
+      ],
+      "candidate_us": [
+        21726.0,
+        21447.8,
+        21754.8,
+        24402.9,
+        21488.9
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "7547259617829839303"
+    },
+    "21/64/unroll4": {
+      "baseline_us": [
+        19083.8,
+        19199.2,
+        19353.4,
+        19350.4,
+        19561.3
+      ],
+      "candidate_us": [
+        19162.6,
+        21759.9,
+        19848.1,
+        19842.5,
+        19421.2
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "7547259617829839303"
+    },
+    "22/64/unroll1": {
+      "baseline_us": [
+        11120.0,
+        10996.1,
+        11051.3,
+        13592.2,
+        12013.7
+      ],
+      "candidate_us": [
+        11667.3,
+        11829.1,
+        12894.5,
+        12860.5,
+        11788.8
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "4055800259154708377"
+    },
+    "22/64/unroll2": {
+      "baseline_us": [
+        11326.7,
+        11005.1,
+        11607.0,
+        11437.6,
+        10950.8
+      ],
+      "candidate_us": [
+        14231.3,
+        12777.2,
+        13383.8,
+        12974.8,
+        12911.6
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "4055800259154708377"
+    },
+    "22/64/unroll4": {
+      "baseline_us": [
+        11413.7,
+        10989.0,
+        11005.4,
+        10956.4,
+        10996.7
+      ],
+      "candidate_us": [
+        13023.9,
+        12407.1,
+        12382.6,
+        12464.8,
+        12334.4
+      ],
+      "all_output_hashes_equal": true,
+      "fnv1a64": "4055800259154708377"
+    }
+  },
+  "summary": {
+    "18/8/unroll1": {
+      "baseline_median_us": 1934.2,
+      "candidate_median_us": 2171.01,
+      "rate_ratio": 0.8909217368874394
+    },
+    "18/8/unroll2": {
+      "baseline_median_us": 1887.93,
+      "candidate_median_us": 1943.39,
+      "rate_ratio": 0.9714622386654248
+    },
+    "18/8/unroll4": {
+      "baseline_median_us": 1877.7,
+      "candidate_median_us": 1968.5,
+      "rate_ratio": 0.9538735077470155
+    },
+    "21/8/unroll1": {
+      "baseline_median_us": 2421.22,
+      "candidate_median_us": 2683.09,
+      "rate_ratio": 0.902399844954884
+    },
+    "21/8/unroll2": {
+      "baseline_median_us": 2387.39,
+      "candidate_median_us": 2712.94,
+      "rate_ratio": 0.880001032090647
+    },
+    "21/8/unroll4": {
+      "baseline_median_us": 2335.96,
+      "candidate_median_us": 2435.42,
+      "rate_ratio": 0.9591610481970255
+    },
+    "22/8/unroll1": {
+      "baseline_median_us": 1324.82,
+      "candidate_median_us": 1411.37,
+      "rate_ratio": 0.9386766050008148
+    },
+    "22/8/unroll2": {
+      "baseline_median_us": 1365.66,
+      "candidate_median_us": 1541.13,
+      "rate_ratio": 0.8861419867240272
+    },
+    "22/8/unroll4": {
+      "baseline_median_us": 1361.29,
+      "candidate_median_us": 1527.06,
+      "rate_ratio": 0.8914449988867497
+    },
+    "18/64/unroll1": {
+      "baseline_median_us": 15311.4,
+      "candidate_median_us": 17468.3,
+      "rate_ratio": 0.8765249051138347
+    },
+    "18/64/unroll2": {
+      "baseline_median_us": 15274.3,
+      "candidate_median_us": 15827.3,
+      "rate_ratio": 0.9650603703727104
+    },
+    "18/64/unroll4": {
+      "baseline_median_us": 15598.4,
+      "candidate_median_us": 15744.2,
+      "rate_ratio": 0.9907394469074325
+    },
+    "21/64/unroll1": {
+      "baseline_median_us": 19079.6,
+      "candidate_median_us": 21674.6,
+      "rate_ratio": 0.8802746071438458
+    },
+    "21/64/unroll2": {
+      "baseline_median_us": 19123.7,
+      "candidate_median_us": 21726.0,
+      "rate_ratio": 0.8802218539998159
+    },
+    "21/64/unroll4": {
+      "baseline_median_us": 19350.4,
+      "candidate_median_us": 19842.5,
+      "rate_ratio": 0.9751996976187477
+    },
+    "22/64/unroll1": {
+      "baseline_median_us": 11120.0,
+      "candidate_median_us": 11829.1,
+      "rate_ratio": 0.9400546110862196
+    },
+    "22/64/unroll2": {
+      "baseline_median_us": 11326.7,
+      "candidate_median_us": 12974.8,
+      "rate_ratio": 0.8729768474273207
+    },
+    "22/64/unroll4": {
+      "baseline_median_us": 10996.7,
+      "candidate_median_us": 12407.1,
+      "rate_ratio": 0.886323153678136
+    }
+  },
+  "interpretation": "Every tested type/unroll/expert-count median was slower. No engine comparison or adoption."
+}
