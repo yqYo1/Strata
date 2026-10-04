@@ -1,0 +1,678 @@
+{
+  "schema": 1,
+  "recorded_utc": "2026-10-04T16:24:48.879193+00:00",
+  "upstream": "99f3dbd0b21d1401b3769e0c0d963913607f380b",
+  "hardware": {
+    "gpu": "Intel Arc B570",
+    "cpu": "AMD Ryzen 5 5600X",
+    "compiler": "Intel oneAPI 2026.1.1",
+    "driver": "26.35.39758.10",
+    "igc": "2.41.5",
+    "gmm": "22.10.0",
+    "loader": "1.32.0",
+    "kernel": "7.0.0-38-generic"
+  },
+  "scope": "Complete pinned native_mmvq/iq_kernels/native_bf16/bf16_gemv translation units mechanically lowered to native SYCL, including original old/new, multi-exact, grouped v1/fused branches. Component correctness only; full engine, CUDA device identity and PP/TG not established.",
+  "original_source_files_checked": 256,
+  "original_source_changes": [],
+  "source_sha256": {
+    "include/strata/sycl_upstream/cuda_kernel.hpp": "dfbb426c95a013e5a75cf7ebcab33b1f57bba467c922625f6128d2a7d130c3da",
+    "tools/sycl/lower_cuda_products.py": "2153b7f04b20077c56d0633c29030562c94c888beae8c51ed70d4baedb12807a",
+    "tests/sycl_upstream/products.cpp": "06cb8c082fd602ff3bc0ced3f780939fe5020b8bc44586faed8db75e6d444d58",
+    "tests/sycl_upstream/product_groups.hpp": "4abe7e8e6c25aab0df1d791645d2ce936420b3657071677bc178744ff83f30e3",
+    "tests/sycl_upstream/CMakeLists.txt": "6470b61f52097f96db751fd7effea52db89af87772054269fb1fc02f7711ce42",
+    "src/sycl_upstream/dequant.cpp": "a579a4a1260b7d1ec3aeffbfa9812b241516a4c763848367a091d586ac93cbc9",
+    "src/sycl_upstream/cuda_frontend.cpp": "5da0750f6f59e2b95f4754ae1ee4822a86995cb63bfe68ff216a737f6eb682d3",
+    "src/sycl_upstream/runtime.cpp": "ce568aa1a080c9680b5b205ac0dee410c5029ef125da44affbd4c519a77ad0b8",
+    "include/strata/sycl_upstream/runtime.hpp": "3064195507485eb8c0a9faeae9d308fe307a2b7e0bf11900af638233db62ff19",
+    "include/strata/sycl_upstream/cuda_backend.hpp": "8a1a43e9a6b63f5da5efe24cc92d359ffc6527915944f28f6b55186a1ad7043b",
+    "include/strata/sycl_upstream/mmq_loader_shim.hpp": "dc02d8c679fb4a56fa1f294660fc8457281795737fc6353fd10aacd2e15539f5"
+  },
+  "original_source_sha256": {
+    "src/kernels/cuda/native_mmvq.cu": "f2fc636e5e8f6db9bbb8146fbf2b78a717c0e0076bf8c72ac2b784df7b3f455f",
+    "src/kernels/cuda/iq_kernels.cu": "f1d8887573a0ca5197809d1198da00ae899d391ae0fb4874d7b32aacb93b5d92",
+    "src/kernels/cuda/native_bf16.cu": "70b44795528fb73d636be5914d60f0adaa849a48cc38f309d327a2976c3ed3da",
+    "src/kernels/cuda/bf16_gemv.cu": "1408ce4707d9d03bc3d752773401afbb1170b0cf1fc3b53fb95cab9aff652c53",
+    "include/strata/kernels/native_mmvq.hpp": "283d882a96e1f22d97ee170bd0c8bca5cc226ab5f82fa1df133c8fd901efe487",
+    "include/strata/kernels/iq_kernels.hpp": "c2dc19befbc36c2a06f8e87bee298f57d64051d9a848cff7f9f0cb0703abe5eb",
+    "include/strata/kernels/bf16_gemv.hpp": "402538e5405d93e6617997ffa45561e259e01bf3d7b00ffca5379721ff4a71f3"
+  },
+  "external_pinned_source_sha256": {
+    "/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/ggml-quants.c": "07143d7068936ae46b3c528b2f3d4bbb666e74d88992165716174d243573965d",
+    "/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/ggml-common.h": "0061131b615c5721fc88a78feeb22c1f8c450f1c2646a317d80796a653bf595c"
+  },
+  "test_environment": {
+    "setup": "source /opt/intel/oneapi/setvars.sh",
+    "LD_LIBRARY_PATH_prefix": [
+      "/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/lib/x86_64-linux-gnu",
+      "/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/local/lib"
+    ],
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "SYCL_CACHE_PERSISTENT": "0"
+  },
+  "driver_library_files": [
+    {
+      "path": "/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/lib/x86_64-linux-gnu/libigdgmm.so.12",
+      "resolved": "/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+      "sha256": "41892701dc8de4a9086653e1599c533f40e8e28baf435df27cab70ec2d0b9526"
+    },
+    {
+      "path": "/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1",
+      "resolved": "/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+      "sha256": "7c0f894af43db6612150084167094c20c7ffa7f6ee1182bdd14ac1fdbfa077c9"
+    },
+    {
+      "path": "/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/local/lib/libopencl-clang2.so.22.1",
+      "resolved": "/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/local/lib/libopencl-clang2.so.22.1",
+      "sha256": "02ba9fb0f16b7f02c012095c46f8053c4bc20f9b5bde3028eedff6dcfed94bfe"
+    },
+    {
+      "path": "/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/local/lib/libigdfcl.so.2",
+      "resolved": "/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+      "sha256": "ece8bcd533a44cc1684c1f24eeeca3302e4d19307a806fad5f1b83171f9fc1c3"
+    },
+    {
+      "path": "/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/local/lib/libigc.so.2",
+      "resolved": "/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/local/lib/libigc.so.2.41.5+1788943183",
+      "sha256": "40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123"
+    }
+  ],
+  "sycl_runtime_library_file": {
+    "path": "/opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9",
+    "resolved": "/opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9.0.0",
+    "sha256": "d769a71f2c71530e59a5ba22831ec5a82edcde718076d2663772255498c8e053"
+  },
+  "native_library_identity_scope": "Selected driver and runtime paths/resolved targets/hashes rechecked against previous phase. No new loader trace was taken for these product tests.",
+  "compiler_header_files": [
+    {
+      "path": "/opt/intel/oneapi/compiler/2026.1/include/sycl/ext/intel/math/imf_rounding_math.hpp",
+      "resolved": "/opt/intel/oneapi/compiler/2026.1/include/sycl/ext/intel/math/imf_rounding_math.hpp",
+      "sha256": "426272a71d61c2032aef48887f145fc3cab0b3cc9140debf34e344f89372a14c"
+    },
+    {
+      "path": "/opt/intel/oneapi/compiler/2026.1/include/sycl/ext/oneapi/free_function_queries.hpp",
+      "resolved": "/opt/intel/oneapi/compiler/2026.1/include/sycl/ext/oneapi/free_function_queries.hpp",
+      "sha256": "4bcd5cec7c294cf9ecf0fe066623cda2bdcaa73ecc18f7ff597aa8ba8eb73a70"
+    }
+  ],
+  "validation": {
+    "jit": {
+      "build_exit_code": 0,
+      "test_exit_code": 0,
+      "ctest_programs": 20,
+      "ctest_regex": "original_|mmq_public_stages|mmq_context_lifetime|runtime_",
+      "ctest_total_seconds": 14.59,
+      "device_target": "spir64 JIT",
+      "metrics": {
+        "native_cases": 320,
+        "iq_cases": 504,
+        "bf16_cases": 184,
+        "group_cases": 371,
+        "graph_cases": 75,
+        "numerical_checks": 2420678,
+        "byte_checks": 6932160,
+        "bitwise_checks": 2168088,
+        "guard_checks": 1997284,
+        "max_error_over_L1": 1.83106e-05
+      },
+      "gemm_regression_metrics": {
+        "dequant_cases": 51,
+        "iq_cases": 32,
+        "dequant_values": 1513728,
+        "gemm_cases": 59,
+        "blas_cases": 10,
+        "graph_cases": 18,
+        "numeric_checks": 1011302,
+        "guard_checks": 15556,
+        "max_product_error_over_L1": 7.6064e-08
+      },
+      "ctest_log": {
+        "path": "/tmp/strata-products-jit-final-test.log",
+        "sha256": "3e77ebcff93e1107436072466460b5dc8c02ae49f9b1cc9505da41a472fa4c7c",
+        "text": "Internal ctest changing into directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\nUpdateCTestConfiguration  from :/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/DartConfiguration.tcl\nUpdateCTestConfiguration  from :/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/DartConfiguration.tcl\nTest project /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\nConstructing a list of tests\nDone constructing a list of tests\nUpdating test list for fixtures\nAdded 0 tests to meet fixture requirements\nChecking test dependency graph...\nChecking test dependency graph end\ntest 4\n      Start  4: mmq_public_stages\n\n4: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/mmq_public_stages_test\n4: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n4: Test timeout computed to be: 120\n4: device=Intel(R) Arc(TM) B570 Graphics\n4: PASS chain=q2_0 packed=0 gate_groups=160 down_groups=160\n4: PASS chain=iq2_xxs packed=0 gate_groups=160 down_groups=160\n4: PASS chain=iq2_xs packed=0 gate_groups=160 down_groups=160\n4: PASS chain=iq2_s packed=0 gate_groups=160 down_groups=160\n4: PASS chain=iq3_xxs packed=0 gate_groups=160 down_groups=160\n4: PASS chain=iq3_s packed=0 gate_groups=160 down_groups=160\n4: PASS chain=iq4_nl packed=0 gate_groups=160 down_groups=160\n4: PASS chain=iq4_xs packed=0 gate_groups=160 down_groups=160\n4: PASS chain=q8_0 packed=0 gate_groups=160 down_groups=160\n4: PASS chain=q2_0 packed=1 gate_groups=160 down_groups=160\n4: PASS byte_checks=1410304 numeric_checks=135046 max_swiglu_absolute_error=0.000973148 max_product_error_over_L1=1.17884e-07\n 1/20 Test  #4: mmq_public_stages ....................   Passed    0.31 sec\ntest 5\n      Start  5: mmq_context_lifetime\n\n5: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/mmq_context_test\n5: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n5: Test timeout computed to be: 120\n5: device=Intel(R) Arc(TM) B570 Graphics\n5: PASS supported=9 generic_matrix_size_cases=30 exact_products=2565 queue_lifetime_runs=27 concurrent_host_submissions=12 blocked_queue_nonblocking=1\n 2/20 Test  #5: mmq_context_lifetime .................   Passed    0.11 sec\ntest 6\n      Start  6: runtime_stream_event_ordering\n\n6: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/runtime_test\n6: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n6: Test timeout computed to be: 45\n6: device=Intel(R) Arc(TM) B570 Graphics\n6: PASS runtime_cases=7 prefill_ring_batches=40 legacy_and_event_ordering=1 async_destroy=1\n 3/20 Test  #6: runtime_stream_event_ordering ........   Passed    0.19 sec\ntest 7\n      Start  7: runtime_graph_capture_replay\n\n7: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/graph_test\n7: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n7: Test timeout computed to be: 90\n7: device=Intel(R) Arc(TM) B570 Graphics\n7: PASS graph_scenarios=6 replays=32 exact_mmq_graph_outputs=6144 fork_join=1 invalidation=1 async_launch_and_teardown=1\n 4/20 Test  #7: runtime_graph_capture_replay .........   Passed    0.10 sec\ntest 8\n      Start  8: runtime_mapped_handoff\n\n8: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/handoff_test\n8: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n8: Test timeout computed to be: 90\n8: device=Intel(R) Arc(TM) B570 Graphics usm_atomic_host=0 usm_atomic_shared=0\n8: PASS handshakes=1152 exact_payload_values=4840176 direct_pipelines=8 graph_replays=16 graph_layers=48 capture_nodes=192 active_waits=12 ge_skip_replays=3 bounded_exhaustion=1 default_unbounded_pipelines=12 noop_graph_nodes=1 large_copy_values=65544 no_driver_calls_during_service=1\n 5/20 Test  #8: runtime_mapped_handoff ...............   Passed    0.14 sec\ntest 9\n      Start  9: runtime_memory_lifetime\n\n9: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/memory_test\n9: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n9: Test timeout computed to be: 90\n9: device=Intel(R) Arc(TM) B570 Graphics page=4096\n9: PASS memory_cases=5 exact_values=13464 registered_graph_replays=4 same_address_reimports=8 native_release_queries=1 shared_edge_page=1 readonly_file=1 release_waits_retired=1 capture_restrictions=1\n 6/20 Test  #9: runtime_memory_lifetime ..............   Passed    0.18 sec\ntest 10\n      Start 10: original_pinned_shared_backing\n\n10: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_pinned_shared_test\n10: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n10: Test timeout computed to be: 60\n10: pinned_shared_test: OK\n 7/20 Test #10: original_pinned_shared_backing .......   Passed    0.06 sec\ntest 11\n      Start 11: original_host_cuda_frontend\n\n11: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/cuda_frontend_test\n11: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n11: Test timeout computed to be: 90\n11: load_experts: short read in layer 2: got 94 of 97 B at offset 20383\n11: PASS frontend_cases=7 exact_values=47130 original_graph_registry_replays=32 independent_graph_execs=2 pitched_graph_replays=4 pitched_direct_runs=2 pitched_directions=3 pitched_copy_nodes=21 original_loader_layers=3 original_graph_handshakes=32 active_waits=2 unbounded_handoff_replays=2\n 8/20 Test #11: original_host_cuda_frontend ..........   Passed    0.20 sec\ntest 12\n      Start 12: original_mmq_stream_frontend\n\n12: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/mmq_frontend_test\n12: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n12: Test timeout computed to be: 120\n12: format=q2_0 nodes=13 changed_replays=8\n12: format=iq2_xxs nodes=13 changed_replays=8\n12: format=iq2_xs nodes=13 changed_replays=8\n12: format=iq2_s nodes=13 changed_replays=8\n12: format=iq3_xxs nodes=13 changed_replays=8\n12: format=iq3_s nodes=13 changed_replays=8\n12: format=iq4_nl nodes=13 changed_replays=8\n12: format=iq4_xs nodes=13 changed_replays=8\n12: concurrent_host_submissions=16 blocked_stream_nonblocking=1\n12: format=q8_0 nodes=13 changed_replays=8\n12: PASS frontend_formats=9 product_comparisons=7695 stride_guards=1620 changed_product_replays=72 max_error_over_l1=0 stage_bytes=5543168\n 9/20 Test #12: original_mmq_stream_frontend .........   Passed    0.13 sec\ntest 13\n      Start 13: original_mmq_fatal_errors\n\n13: Test command: /usr/bin/python3 \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/tests/sycl_upstream/check_mmq_errors.py\" \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/mmq_frontend_test\"\n13: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n13: Test timeout computed to be: 75\n13: {\"mode\": \"--invalid-stream\", \"exit_code\": 1, \"stdout\": \"\", \"stderr\": \"prefill mmq: iota: invalid resource handle ()\\n\"}\n13: {\"mode\": \"--sticky-error\", \"exit_code\": 1, \"stdout\": \"\", \"stderr\": \"prefill mmq: iota: invalid resource handle ()\\n\"}\n13: {\"mode\": \"--cold-capture\", \"exit_code\": 1, \"stdout\": \"\", \"stderr\": \"prefill mmq: mul_mat_q: invalid argument (MMQ scratch must be warmed before graph capture)\\n\"}\n13: PASS fatal_launch_checks=3 exit_code=1 teardown_does_not_mask_capture_error=1\n10/20 Test #13: original_mmq_fatal_errors ............   Passed    0.22 sec\ntest 14\n      Start 14: original_host_event_timing\n\n14: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/runtime_timing_test\n14: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n14: Test timeout computed to be: 60\n14: \n14: per-stage GPU time, summed over 1 layers (one token):\n14:   SYCL timed event probe   20.441 ms/token   20.441 ms/layer   100.0%\n14:   sum of stages            20.441 ms/token\n14: \n14: per-layer, the attention block (ms).  A `*` marks a QSA layer:\n14: \n14:   GDN: 0 layers, 0.000 ms total, 0.0000 ms/layer\n14:   QSA: 0 layers, 0.000 ms total, 0.0000 ms/layer\n14: held_interval_ms=51.2777 native_outer_ms=51.7894 record_nonblocking=1 elapsed_nonblocking=1\n14: kernel_interval_ms=12.1703 native_outer_ms=12.2466 result=1505064235\n14: PASS timing_cases=8 original_stage_timer=1 queues_enable_profiling=0\n11/20 Test #14: original_host_event_timing ...........   Passed    0.16 sec\ntest 15\n      Start 15: original_cache_device_memory\n\n15: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/runtime_devices_test\n15: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n15: Test timeout computed to be: 60\n15: external_allocation_bytes=134217728 free_before=10424426496 free_after=10285666304 total=10666115072\n15: PASS device_cases=4 visible_devices=1 original_cache_bytes_verified=16384 shared_context_event_wait=1 multi_gpu_switch_executed=0\n12/20 Test #15: original_cache_device_memory .........   Passed    0.10 sec\ntest 16\n      Start 16: runtime_empty_device_visibility\n\n16: Test command: /usr/bin/cmake \"-E\" \"env\" \"ONEAPI_DEVICE_SELECTOR=opencl:gpu\" \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/runtime_devices_test\" \"--no-level-zero\"\n16: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n16: Test timeout computed to be: 20\n16: PASS visible_level_zero_devices=0\n13/20 Test #16: runtime_empty_device_visibility ......   Passed    0.06 sec\ntest 17\n      Start 17: runtime_legacy_sysman_rejection\n\n17: Test command: /usr/bin/cmake \"-E\" \"env\" \"ZES_ENABLE_SYSMAN=1\" \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/runtime_devices_test\" \"--legacy-sysman\"\n17: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n17: Test timeout computed to be: 20\n17: legacy_status=cudaErrorNotSupported detail=standalone Sysman free-memory query requires ZES_ENABLE_SYSMAN unset or 0\n17: PASS legacy_sysman_rejected=1 outputs_untouched=1\n14/20 Test #17: runtime_legacy_sysman_rejection ......   Passed    0.07 sec\ntest 18\n      Start 18: original_host_peer_api\n\n18: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/runtime_peer_test\n18: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n18: Test timeout computed to be: 60\n18: PASS peer_cases=4 same_gpu_bytes_verified=20480 original_remote_preflight=1 actual_device_pairs_queried=0 physical_peer_copies=0\n15/20 Test #18: original_host_peer_api ...............   Passed    0.09 sec\ntest 19\n      Start 19: original_prefill_stager_ring\n\n19: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_prefill_stager_test\n19: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n19: Test timeout computed to be: 60\n19: PASS original_stager_generations=8 jobs=136 cpu_threads=3 pinned_ring=2 blob_stride=65536 exact_bytes=8912896 gpu_checksums=136 held_dma_reuse_protected=1 generations_without_gpu_sync=1 transient_source_jobs=68\n16/20 Test #19: original_prefill_stager_ring .........   Passed    0.37 sec\ntest 20\n      Start 20: original_prefill_stager_model_size\n\n20: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_prefill_stager_test \"--model-sized\"\n20: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n20: Test timeout computed to be: 60\n20: PASS original_stager_generations=8 jobs=136 cpu_threads=3 pinned_ring=2 blob_stride=1382400 exact_bytes=188006400 gpu_checksums=136 held_dma_reuse_protected=1 generations_without_gpu_sync=1 transient_source_jobs=68\n17/20 Test #20: original_prefill_stager_model_size ...   Passed    3.96 sec\ntest 21\n      Start 21: original_graph_upload_inspection\n\n21: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/runtime_graph_api_test\n21: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n21: Test timeout computed to be: 60\n21: PASS graph_api_cases=6 native_node_kinds=4 stable_enumeration=1 upload_without_execution=1 asynchronous_upload=1 serialized_upload_launch=1 pending_destroy=1 original_mtp_finish_capture=1 original_mtp_replays=4 concurrent_native_wait_cases=4 asynchronous_error_delivery=1\n18/20 Test #21: original_graph_upload_inspection .....   Passed    0.17 sec\ntest 22\n      Start 22: original_native_gemm\n\n22: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_gemm_test\n22: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n22: Test timeout computed to be: 120\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: device=Intel(R) Arc(TM) B570 Graphics\n22: PASS dequant_cases=51 iq_cases=32 dequant_values=1513728 gemm_cases=59 blas_cases=10 graph_cases=18 numeric_checks=1011302 guard_checks=15556 max_product_error_over_L1=7.6064e-08\n19/20 Test #22: original_native_gemm .................   Passed    6.72 sec\ntest 23\n      Start 23: original_native_products\n\n23: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_products_test\n23: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n23: Test timeout computed to be: 300\n23: device=Intel(R) Arc(TM) B570 Graphics\n23: PASS native and IQ product cases=824\n23: PASS grouped cases=371 graph replays=75\n23: PASS native_cases=320 iq_cases=504 bf16_cases=184 group_cases=371 graph_cases=75 numerical_checks=2420678 byte_checks=6932160 bitwise_checks=2168088 guard_checks=1997284 max_error_over_L1=1.83106e-05\n20/20 Test #23: original_native_products .............   Passed    1.25 sec\n\nThe following tests passed:\n\tmmq_public_stages\n\tmmq_context_lifetime\n\truntime_stream_event_ordering\n\truntime_graph_capture_replay\n\truntime_mapped_handoff\n\truntime_memory_lifetime\n\toriginal_pinned_shared_backing\n\toriginal_host_cuda_frontend\n\toriginal_mmq_stream_frontend\n\toriginal_mmq_fatal_errors\n\toriginal_host_event_timing\n\toriginal_cache_device_memory\n\truntime_empty_device_visibility\n\truntime_legacy_sysman_rejection\n\toriginal_host_peer_api\n\toriginal_prefill_stager_ring\n\toriginal_prefill_stager_model_size\n\toriginal_graph_upload_inspection\n\toriginal_native_gemm\n\toriginal_native_products\n\n100% tests passed, 0 tests failed out of 20\n\nTotal Test time (real) =  14.59 sec\n"
+      },
+      "build_logs": {
+        "all_targets": {
+          "path": "/tmp/strata-products-jit-all-build.log",
+          "sha256": "d906460dcea0c327b0418bcb9d6e50f5219fad16d9c243bbdfeedb7005ac2584",
+          "text": "[1/22] Building CXX object CMakeFiles/mmq_quantize_test.dir/mmq_quantize.cpp.o\n[2/22] Building CXX object CMakeFiles/mmq_product.dir/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/src/sycl_upstream/mmq_product.cpp.o\n[3/22] Linking CXX static library libmmq_product.a\n[4/22] Building CXX object CMakeFiles/mmq_product_test.dir/mmq_product.cpp.o\n[5/22] Linking CXX executable mmq_quantize_test\n[6/22] Linking CXX executable mmq_product_test\n[7/22] Building CXX object CMakeFiles/mmq_stages_test.dir/mmq_stages.cpp.o\n[8/22] Building CXX object CMakeFiles/mmq_public_stages_test.dir/mmq_stages.cpp.o\n[9/22] Linking CXX executable mmq_stages_test\n[10/22] Building CXX object CMakeFiles/mmq_context_test.dir/mmq_context.cpp.o\n[11/22] Linking CXX executable mmq_public_stages_test\n[12/22] Linking CXX executable mmq_context_test\n[13/22] Linking CXX executable runtime_peer_test\n[14/22] Linking CXX executable original_prefill_stager_test\n[15/22] Linking CXX executable runtime_graph_api_test\n[16/22] Building CXX object CMakeFiles/graph_test.dir/graph.cpp.o\n[17/22] Building CXX object CMakeFiles/mmq_frontend_test.dir/mmq_frontend.cpp.o\n[18/22] Linking CXX executable graph_test\n[19/22] Linking CXX executable mmq_frontend_test\n[20/22] Building CXX object CMakeFiles/strata_sycl_dequant.dir/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/src/sycl_upstream/dequant.cpp.o\n[21/22] Linking CXX static library libstrata_sycl_dequant.a\n[22/22] Linking CXX executable original_gemm_test\n"
+        },
+        "explicit_rounding_all_four_sources": {
+          "path": "/tmp/strata-products-imf-build.log",
+          "sha256": "27c77573cd03fcd0ee9836b0a2895917aeb6fbfef9588d60e975498abfdb450b",
+          "text": "[1/6] Building CXX object CMakeFiles/strata_sycl_original_products.dir/original_native_bf16.cpp.o\n[2/6] Building CXX object CMakeFiles/strata_sycl_original_products.dir/original_iq_kernels.cpp.o\n[3/6] Building CXX object CMakeFiles/strata_sycl_original_products.dir/original_bf16_gemv.cpp.o\n[4/6] Building CXX object CMakeFiles/strata_sycl_original_products.dir/original_native_mmvq.cpp.o\n[5/6] Linking CXX static library libstrata_sycl_original_products.a\n[6/6] Linking CXX executable original_products_test\n"
+        },
+        "final_graph_tests_incremental": {
+          "path": "/tmp/strata-products-graphs-build.log",
+          "sha256": "9487d45f9b3d517ecb81e6cfb25d0c89a5538a440f5ff43421b9ed60fbd14113",
+          "text": "[1/2] Building CXX object CMakeFiles/original_products_test.dir/products.cpp.o\n[2/2] Linking CXX executable original_products_test\n"
+        }
+      },
+      "binary_sha256": {
+        "cuda_frontend_test": "b1083765275debb23a1a95d141ae0cda9151400639f127ad469fde32a9257cf2",
+        "ggml/src/libggml-base.so.0.24.0": "67cfb39097e8fe47fff98c6edc2cb393edee7e998bf4b3f1ce8cb6ce788ff527",
+        "graph_test": "51f29c76f740aec49116a99d8c6b2e73e28c5d64feda7fec8c5f94d37517032d",
+        "handoff_test": "78d9d3300656943bb173480ba23a3a16e53720e64fa3382959f6296cd85fea55",
+        "libstrata_sycl_blas_frontend.a": "bf83cde29aaf100776f366caa56cb06ea261da79fe859e5822b0180bf548c285",
+        "libstrata_sycl_cuda_frontend.a": "b4dba36bbc0417bffe738148e4621252c193495d93fe39a6e7df5c1eb310a82a",
+        "libstrata_sycl_dequant.a": "9be1d72987214e670dec6f9c7253eb41e4f73788c5205aff82363a2817ef9cf4",
+        "libstrata_sycl_memory.a": "085c5809f2042a5d48e62fcb6c8ef485d66c45a10835ce84ef8c982f9d825ddd",
+        "libstrata_sycl_mmq_frontend.a": "11a733dff42d1467485fdc6315189510ce30ade6b12c05838e970f16a162a6f3",
+        "libstrata_sycl_original_gemm.a": "fdd4bf0cea3672d6e01f67e0955f93815454e9417a73f8acd196a2db708a725d",
+        "libstrata_sycl_original_graph_host.a": "d2e120db68652c43145231e8d5600ff1a36fd2dbab6f5285f23e75c1a598f3ec",
+        "libstrata_sycl_original_products.a": "449c6cca09c0b6f6ce036367c01e75e713ae20241572e78b51588049a9d85ed8",
+        "libstrata_sycl_runtime.a": "7f65e0cceae9f81b5e3de7987757445f5b175a69ad7589dec655dad0765f5b22",
+        "memory_test": "96432d88cf094c0d246ba6377d899c4c99ad26e3284036510c20a80951b88513",
+        "mmq_context_test": "ae046f34011ceb8bb1662a6834f04e47291b7d6b3a4526db4442724637677373",
+        "mmq_frontend_test": "39332c1ffe3a434abfd9ce3522f8d10efd55ec65466ba0b7aa403393c1ba7613",
+        "mmq_public_stages_test": "2c995b20b95470d7ff9418fc933554a26425859c4c68cd78e0f71bad80c80a14",
+        "original_gemm_test": "31371c2bf74914a8b0e5452d3159495e2021f87f2f3546a637e43a522e8ab224",
+        "original_pinned_shared_test": "a6fc1551e21886d681a1a0a943ae07f2641611acd4be892d000cc2f81ecb5ae2",
+        "original_prefill_stager_test": "17f426869aeee186546064d35ad531429fbb2ef002f7d1ebf02629ccf26f11c2",
+        "original_products_test": "6e67d06da3e3e84a8516babc9dbcb6f542e13b4f5a0327d2e67957f21f8a9652",
+        "runtime_devices_test": "c5fffa95137f3baed1b6884490901948bdb9416f7cabe0f1a62335c705c4c54f",
+        "runtime_graph_api_test": "93c2c10061bccf8a9c9bce9093d0a86dfe4c5c0e8d8877859e3c5798361d9f3c",
+        "runtime_peer_test": "0a885cd174b2177051570c283f2a24c5723a31bc6c9bfd53a54a5d3a18636110",
+        "runtime_test": "c02b596144bea8350fa8ba4653e758fe9e1f541638974f03b9387e092fc21379",
+        "runtime_timing_test": "3ff97b2146c92ef9655c82f2338436bb33da92aedc9dd975da59724a9b9e2b0e"
+      },
+      "entire_original_product_object_sha256": {
+        "CMakeFiles/strata_sycl_original_products.dir/original_native_bf16.cpp.o": "5a3853da5c9cb2bc5d359a4798e22578e414b0aab768bf26fbf7d3e1de791f29",
+        "CMakeFiles/strata_sycl_original_products.dir/original_native_mmvq.cpp.o": "4e5519f0ebdb2de63005066e450b86f39ecf490e2f85eccbd88b744dfea4e55a",
+        "CMakeFiles/strata_sycl_original_products.dir/original_bf16_gemv.cpp.o": "2825600abb5be46301c5b6abf6a6c1d44d6bff2748fdab1a012ac04e475844b7",
+        "CMakeFiles/strata_sycl_original_products.dir/original_iq_kernels.cpp.o": "df2f8b6d8c8692968040b215b40a34c34b8cdf8f3952c7c3b003b2583e3c684e"
+      },
+      "pinned_cpu_oracle_object": {
+        "ggml/src/CMakeFiles/ggml-base.dir/ggml-quants.c.o": "5b6c556aa439e6a70d1f2d893599c3338deb6b5b7806d7d0162e76a9c26fec6f"
+      },
+      "lowering_inventory": {
+        "src/kernels/cuda/native_mmvq.cu": {
+          "original_sha256": "f2fc636e5e8f6db9bbb8146fbf2b78a717c0e0076bf8c72ac2b784df7b3f455f",
+          "generated_sha256": "2005a2173e7ca8cd81509e9993619623daae1bf70eadbb3cf2353c6289981534",
+          "kernels": [
+            "native_iq4_xs_mmvq_kernel",
+            "native_mmvq_multi_kernel",
+            "native_q2_0_mmvq_kernel",
+            "native_q3_k_mmvq_kernel",
+            "native_q4_k_mmvq_kernel",
+            "native_q5_k_mmvq_kernel",
+            "native_q6_k_mmvq_kernel",
+            "native_quantize_q8_1_kernel",
+            "native_small_mmvq_kernel"
+          ],
+          "launch_sites": 18,
+          "q8_1_explicit_rn_divisions": 2
+        },
+        "src/kernels/cuda/iq_kernels.cu": {
+          "original_sha256": "f1d8887573a0ca5197809d1198da00ae899d391ae0fb4874d7b32aacb93b5d92",
+          "generated_sha256": "45f46187d142a308356cdf798f40e2b66f2dfbe62f1fdd8145e126967483748a",
+          "kernels": [
+            "dequant_flat_kernel",
+            "dequant_gu_kernel",
+            "embed_rows_kernel",
+            "mmvq_kernel",
+            "mmvq_multi_kernel",
+            "native_down_kernel",
+            "native_down_multi_kernel",
+            "native_gu_kernel",
+            "native_gu_multi_kernel",
+            "quantize_q8_1_kernel",
+            "swiglu_entries_kernel",
+            "swiglu_q8_1_entries_kernel"
+          ],
+          "launch_sites": 20,
+          "q8_1_explicit_rn_divisions": 2
+        },
+        "src/kernels/cuda/native_bf16.cu": {
+          "original_sha256": "70b44795528fb73d636be5914d60f0adaa849a48cc38f309d327a2976c3ed3da",
+          "generated_sha256": "58040f601b04dce06ba3ab15c3b1cfa645dc1a2c95e002f3caeb4b5c8b02a94c",
+          "kernels": [
+            "bf16_f32_mmvf_kernel",
+            "bf16_f32_mmvf_multi_kernel"
+          ],
+          "launch_sites": 3,
+          "q8_1_explicit_rn_divisions": 0
+        },
+        "src/kernels/cuda/bf16_gemv.cu": {
+          "original_sha256": "1408ce4707d9d03bc3d752773401afbb1170b0cf1fc3b53fb95cab9aff652c53",
+          "generated_sha256": "5d49fe3774425310e019c919d6d46b730a0e470328a2b52a4a61c8faf513e8d4",
+          "kernels": [
+            "bf16_gemv_naive_kernel",
+            "bf16_gemv_split_kernel",
+            "bf16_gemv_warp_kernel"
+          ],
+          "launch_sites": 4,
+          "q8_1_explicit_rn_divisions": 0
+        }
+      },
+      "generated_header_sha256": {
+        "upstream_dequant.hpp": "f48b8f93876e78b1d3b065fbb93a19be6b857958badba817546303dcb481f493",
+        "upstream_mmq_loaders.hpp": "d6e2b1925ae9d570860c5af33c009579398888657afd715e5877a1c613e5ccc6"
+      }
+    },
+    "aot": {
+      "build_exit_code": 0,
+      "test_exit_code": 0,
+      "ctest_programs": 20,
+      "ctest_regex": "original_|mmq_public_stages|mmq_context_lifetime|runtime_",
+      "ctest_total_seconds": 8.94,
+      "device_target": "bmg_g21",
+      "metrics": {
+        "native_cases": 320,
+        "iq_cases": 504,
+        "bf16_cases": 184,
+        "group_cases": 371,
+        "graph_cases": 75,
+        "numerical_checks": 2420678,
+        "byte_checks": 6932160,
+        "bitwise_checks": 2168088,
+        "guard_checks": 1997284,
+        "max_error_over_L1": 1.83106e-05
+      },
+      "gemm_regression_metrics": {
+        "dequant_cases": 51,
+        "iq_cases": 32,
+        "dequant_values": 1513728,
+        "gemm_cases": 59,
+        "blas_cases": 10,
+        "graph_cases": 18,
+        "numeric_checks": 1011302,
+        "guard_checks": 15556,
+        "max_product_error_over_L1": 7.6064e-08
+      },
+      "ctest_log": {
+        "path": "/tmp/strata-products-aot-final-test.log",
+        "sha256": "a3efa2e157d122b3cd3081365a2bf93459f5cd21299c3b06462f9d6a0d1db87f",
+        "text": "Internal ctest changing into directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot\nUpdateCTestConfiguration  from :/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot/DartConfiguration.tcl\nUpdateCTestConfiguration  from :/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot/DartConfiguration.tcl\nTest project /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot\nConstructing a list of tests\nDone constructing a list of tests\nUpdating test list for fixtures\nAdded 0 tests to meet fixture requirements\nChecking test dependency graph...\nChecking test dependency graph end\ntest 4\n      Start  4: mmq_public_stages\n\n4: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot/mmq_public_stages_test\n4: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot\n4: Test timeout computed to be: 120\n4: device=Intel(R) Arc(TM) B570 Graphics\n4: PASS chain=q2_0 packed=0 gate_groups=160 down_groups=160\n4: PASS chain=iq2_xxs packed=0 gate_groups=160 down_groups=160\n4: PASS chain=iq2_xs packed=0 gate_groups=160 down_groups=160\n4: PASS chain=iq2_s packed=0 gate_groups=160 down_groups=160\n4: PASS chain=iq3_xxs packed=0 gate_groups=160 down_groups=160\n4: PASS chain=iq3_s packed=0 gate_groups=160 down_groups=160\n4: PASS chain=iq4_nl packed=0 gate_groups=160 down_groups=160\n4: PASS chain=iq4_xs packed=0 gate_groups=160 down_groups=160\n4: PASS chain=q8_0 packed=0 gate_groups=160 down_groups=160\n4: PASS chain=q2_0 packed=1 gate_groups=160 down_groups=160\n4: PASS byte_checks=1410304 numeric_checks=135046 max_swiglu_absolute_error=0.000973148 max_product_error_over_L1=1.17884e-07\n 1/20 Test  #4: mmq_public_stages ....................   Passed    0.29 sec\ntest 5\n      Start  5: mmq_context_lifetime\n\n5: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot/mmq_context_test\n5: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot\n5: Test timeout computed to be: 120\n5: device=Intel(R) Arc(TM) B570 Graphics\n5: PASS supported=9 generic_matrix_size_cases=30 exact_products=2565 queue_lifetime_runs=27 concurrent_host_submissions=12 blocked_queue_nonblocking=1\n 2/20 Test  #5: mmq_context_lifetime .................   Passed    0.10 sec\ntest 6\n      Start  6: runtime_stream_event_ordering\n\n6: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot/runtime_test\n6: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot\n6: Test timeout computed to be: 45\n6: device=Intel(R) Arc(TM) B570 Graphics\n6: PASS runtime_cases=7 prefill_ring_batches=40 legacy_and_event_ordering=1 async_destroy=1\n 3/20 Test  #6: runtime_stream_event_ordering ........   Passed    0.18 sec\ntest 7\n      Start  7: runtime_graph_capture_replay\n\n7: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot/graph_test\n7: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot\n7: Test timeout computed to be: 90\n7: device=Intel(R) Arc(TM) B570 Graphics\n7: PASS graph_scenarios=6 replays=32 exact_mmq_graph_outputs=6144 fork_join=1 invalidation=1 async_launch_and_teardown=1\n 4/20 Test  #7: runtime_graph_capture_replay .........   Passed    0.11 sec\ntest 8\n      Start  8: runtime_mapped_handoff\n\n8: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot/handoff_test\n8: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot\n8: Test timeout computed to be: 90\n8: device=Intel(R) Arc(TM) B570 Graphics usm_atomic_host=0 usm_atomic_shared=0\n8: PASS handshakes=1152 exact_payload_values=4840176 direct_pipelines=8 graph_replays=16 graph_layers=48 capture_nodes=192 active_waits=12 ge_skip_replays=3 bounded_exhaustion=1 default_unbounded_pipelines=12 noop_graph_nodes=1 large_copy_values=65544 no_driver_calls_during_service=1\n 5/20 Test  #8: runtime_mapped_handoff ...............   Passed    0.14 sec\ntest 9\n      Start  9: runtime_memory_lifetime\n\n9: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot/memory_test\n9: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot\n9: Test timeout computed to be: 90\n9: device=Intel(R) Arc(TM) B570 Graphics page=4096\n9: PASS memory_cases=5 exact_values=13464 registered_graph_replays=4 same_address_reimports=8 native_release_queries=1 shared_edge_page=1 readonly_file=1 release_waits_retired=1 capture_restrictions=1\n 6/20 Test  #9: runtime_memory_lifetime ..............   Passed    0.18 sec\ntest 10\n      Start 10: original_pinned_shared_backing\n\n10: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot/original_pinned_shared_test\n10: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot\n10: Test timeout computed to be: 60\n10: pinned_shared_test: OK\n 7/20 Test #10: original_pinned_shared_backing .......   Passed    0.06 sec\ntest 11\n      Start 11: original_host_cuda_frontend\n\n11: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot/cuda_frontend_test\n11: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot\n11: Test timeout computed to be: 90\n11: load_experts: short read in layer 2: got 94 of 97 B at offset 20383\n11: PASS frontend_cases=7 exact_values=47130 original_graph_registry_replays=32 independent_graph_execs=2 pitched_graph_replays=4 pitched_direct_runs=2 pitched_directions=3 pitched_copy_nodes=21 original_loader_layers=3 original_graph_handshakes=32 active_waits=2 unbounded_handoff_replays=2\n 8/20 Test #11: original_host_cuda_frontend ..........   Passed    0.20 sec\ntest 12\n      Start 12: original_mmq_stream_frontend\n\n12: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot/mmq_frontend_test\n12: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot\n12: Test timeout computed to be: 120\n12: format=q2_0 nodes=13 changed_replays=8\n12: format=iq2_xxs nodes=13 changed_replays=8\n12: format=iq2_xs nodes=13 changed_replays=8\n12: format=iq2_s nodes=13 changed_replays=8\n12: format=iq3_xxs nodes=13 changed_replays=8\n12: format=iq3_s nodes=13 changed_replays=8\n12: format=iq4_nl nodes=13 changed_replays=8\n12: format=iq4_xs nodes=13 changed_replays=8\n12: concurrent_host_submissions=16 blocked_stream_nonblocking=1\n12: format=q8_0 nodes=13 changed_replays=8\n12: PASS frontend_formats=9 product_comparisons=7695 stride_guards=1620 changed_product_replays=72 max_error_over_l1=0 stage_bytes=5543168\n 9/20 Test #12: original_mmq_stream_frontend .........   Passed    0.14 sec\ntest 13\n      Start 13: original_mmq_fatal_errors\n\n13: Test command: /usr/bin/python3 \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/tests/sycl_upstream/check_mmq_errors.py\" \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot/mmq_frontend_test\"\n13: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot\n13: Test timeout computed to be: 75\n13: {\"mode\": \"--invalid-stream\", \"exit_code\": 1, \"stdout\": \"\", \"stderr\": \"prefill mmq: iota: invalid resource handle ()\\n\"}\n13: {\"mode\": \"--sticky-error\", \"exit_code\": 1, \"stdout\": \"\", \"stderr\": \"prefill mmq: iota: invalid resource handle ()\\n\"}\n13: {\"mode\": \"--cold-capture\", \"exit_code\": 1, \"stdout\": \"\", \"stderr\": \"prefill mmq: mul_mat_q: invalid argument (MMQ scratch must be warmed before graph capture)\\n\"}\n13: PASS fatal_launch_checks=3 exit_code=1 teardown_does_not_mask_capture_error=1\n10/20 Test #13: original_mmq_fatal_errors ............   Passed    0.21 sec\ntest 14\n      Start 14: original_host_event_timing\n\n14: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot/runtime_timing_test\n14: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot\n14: Test timeout computed to be: 60\n14: \n14: per-stage GPU time, summed over 1 layers (one token):\n14:   SYCL timed event probe   20.416 ms/token   20.416 ms/layer   100.0%\n14:   sum of stages            20.416 ms/token\n14: \n14: per-layer, the attention block (ms).  A `*` marks a QSA layer:\n14: \n14:   GDN: 0 layers, 0.000 ms total, 0.0000 ms/layer\n14:   QSA: 0 layers, 0.000 ms total, 0.0000 ms/layer\n14: held_interval_ms=51.1998 native_outer_ms=51.6212 record_nonblocking=1 elapsed_nonblocking=1\n14: kernel_interval_ms=10.6528 native_outer_ms=10.7254 result=1505064235\n14: PASS timing_cases=8 original_stage_timer=1 queues_enable_profiling=0\n11/20 Test #14: original_host_event_timing ...........   Passed    0.16 sec\ntest 15\n      Start 15: original_cache_device_memory\n\n15: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot/runtime_devices_test\n15: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot\n15: Test timeout computed to be: 60\n15: external_allocation_bytes=134217728 free_before=10424426496 free_after=10285666304 total=10666115072\n15: PASS device_cases=4 visible_devices=1 original_cache_bytes_verified=16384 shared_context_event_wait=1 multi_gpu_switch_executed=0\n12/20 Test #15: original_cache_device_memory .........   Passed    0.09 sec\ntest 16\n      Start 16: runtime_empty_device_visibility\n\n16: Test command: /usr/bin/cmake \"-E\" \"env\" \"ONEAPI_DEVICE_SELECTOR=opencl:gpu\" \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot/runtime_devices_test\" \"--no-level-zero\"\n16: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot\n16: Test timeout computed to be: 20\n16: PASS visible_level_zero_devices=0\n13/20 Test #16: runtime_empty_device_visibility ......   Passed    0.06 sec\ntest 17\n      Start 17: runtime_legacy_sysman_rejection\n\n17: Test command: /usr/bin/cmake \"-E\" \"env\" \"ZES_ENABLE_SYSMAN=1\" \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot/runtime_devices_test\" \"--legacy-sysman\"\n17: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot\n17: Test timeout computed to be: 20\n17: legacy_status=cudaErrorNotSupported detail=standalone Sysman free-memory query requires ZES_ENABLE_SYSMAN unset or 0\n17: PASS legacy_sysman_rejected=1 outputs_untouched=1\n14/20 Test #17: runtime_legacy_sysman_rejection ......   Passed    0.07 sec\ntest 18\n      Start 18: original_host_peer_api\n\n18: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot/runtime_peer_test\n18: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot\n18: Test timeout computed to be: 60\n18: PASS peer_cases=4 same_gpu_bytes_verified=20480 original_remote_preflight=1 actual_device_pairs_queried=0 physical_peer_copies=0\n15/20 Test #18: original_host_peer_api ...............   Passed    0.07 sec\ntest 19\n      Start 19: original_prefill_stager_ring\n\n19: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot/original_prefill_stager_test\n19: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot\n19: Test timeout computed to be: 60\n19: PASS original_stager_generations=8 jobs=136 cpu_threads=3 pinned_ring=2 blob_stride=65536 exact_bytes=8912896 gpu_checksums=136 held_dma_reuse_protected=1 generations_without_gpu_sync=1 transient_source_jobs=68\n16/20 Test #19: original_prefill_stager_ring .........   Passed    0.37 sec\ntest 20\n      Start 20: original_prefill_stager_model_size\n\n20: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot/original_prefill_stager_test \"--model-sized\"\n20: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot\n20: Test timeout computed to be: 60\n20: PASS original_stager_generations=8 jobs=136 cpu_threads=3 pinned_ring=2 blob_stride=1382400 exact_bytes=188006400 gpu_checksums=136 held_dma_reuse_protected=1 generations_without_gpu_sync=1 transient_source_jobs=68\n17/20 Test #20: original_prefill_stager_model_size ...   Passed    3.97 sec\ntest 21\n      Start 21: original_graph_upload_inspection\n\n21: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot/runtime_graph_api_test\n21: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot\n21: Test timeout computed to be: 60\n21: PASS graph_api_cases=6 native_node_kinds=4 stable_enumeration=1 upload_without_execution=1 asynchronous_upload=1 serialized_upload_launch=1 pending_destroy=1 original_mtp_finish_capture=1 original_mtp_replays=4 concurrent_native_wait_cases=4 asynchronous_error_delivery=1\n18/20 Test #21: original_graph_upload_inspection .....   Passed    0.18 sec\ntest 22\n      Start 22: original_native_gemm\n\n22: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot/original_gemm_test\n22: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot\n22: Test timeout computed to be: 120\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: prefill gemm: cublasSetWorkspace: cuBLAS status 15 (continuing)\n22: device=Intel(R) Arc(TM) B570 Graphics\n22: PASS dequant_cases=51 iq_cases=32 dequant_values=1513728 gemm_cases=59 blas_cases=10 graph_cases=18 numeric_checks=1011302 guard_checks=15556 max_product_error_over_L1=7.6064e-08\n19/20 Test #22: original_native_gemm .................   Passed    1.07 sec\ntest 23\n      Start 23: original_native_products\n\n23: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot/original_products_test\n23: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl-aot\n23: Test timeout computed to be: 300\n23: device=Intel(R) Arc(TM) B570 Graphics\n23: PASS native and IQ product cases=824\n23: PASS grouped cases=371 graph replays=75\n23: PASS native_cases=320 iq_cases=504 bf16_cases=184 group_cases=371 graph_cases=75 numerical_checks=2420678 byte_checks=6932160 bitwise_checks=2168088 guard_checks=1997284 max_error_over_L1=1.83106e-05\n20/20 Test #23: original_native_products .............   Passed    1.26 sec\n\nThe following tests passed:\n\tmmq_public_stages\n\tmmq_context_lifetime\n\truntime_stream_event_ordering\n\truntime_graph_capture_replay\n\truntime_mapped_handoff\n\truntime_memory_lifetime\n\toriginal_pinned_shared_backing\n\toriginal_host_cuda_frontend\n\toriginal_mmq_stream_frontend\n\toriginal_mmq_fatal_errors\n\toriginal_host_event_timing\n\toriginal_cache_device_memory\n\truntime_empty_device_visibility\n\truntime_legacy_sysman_rejection\n\toriginal_host_peer_api\n\toriginal_prefill_stager_ring\n\toriginal_prefill_stager_model_size\n\toriginal_graph_upload_inspection\n\toriginal_native_gemm\n\toriginal_native_products\n\n100% tests passed, 0 tests failed out of 20\n\nTotal Test time (real) =   8.94 sec\n"
+      },
+      "build_logs": {
+        "all_targets": {
+          "path": "/tmp/strata-products-aot-build.log",
+          "sha256": "388453db23da5affea43ad99edd3b5cb28e1d5e32b1b8e797e6f86f632be2395",
+          "text": "[1/29] Building CXX object CMakeFiles/mmq_quantize_test.dir/mmq_quantize.cpp.o\n[2/29] Building CXX object CMakeFiles/mmq_product.dir/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/src/sycl_upstream/mmq_product.cpp.o\n[3/29] Linking CXX static library libmmq_product.a\n[4/29] Building CXX object CMakeFiles/mmq_product_test.dir/mmq_product.cpp.o\n[5/29] Linking CXX executable mmq_quantize_test\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\n[6/29] Linking CXX executable mmq_product_test\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\n[7/29] Building CXX object CMakeFiles/mmq_stages_test.dir/mmq_stages.cpp.o\n[8/29] Building CXX object CMakeFiles/mmq_public_stages_test.dir/mmq_stages.cpp.o\n[9/29] Linking CXX executable mmq_stages_test\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\n[10/29] Building CXX object CMakeFiles/mmq_context_test.dir/mmq_context.cpp.o\n[11/29] Linking CXX executable mmq_public_stages_test\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\n[12/29] Linking CXX executable mmq_context_test\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\n[13/29] Building CXX object CMakeFiles/graph_test.dir/graph.cpp.o\n[14/29] Building CXX object CMakeFiles/mmq_frontend_test.dir/mmq_frontend.cpp.o\n[15/29] Linking CXX executable runtime_peer_test\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\n[16/29] Linking CXX executable graph_test\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\n[17/29] Linking CXX executable mmq_frontend_test\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\n[18/29] Linking CXX executable runtime_graph_api_test\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\n[19/29] Linking CXX executable original_prefill_stager_test\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\n[20/29] Building CXX object CMakeFiles/strata_sycl_dequant.dir/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/src/sycl_upstream/dequant.cpp.o\n[21/29] Building CXX object CMakeFiles/strata_sycl_original_products.dir/original_native_bf16.cpp.o\n[22/29] Building CXX object CMakeFiles/strata_sycl_original_products.dir/original_iq_kernels.cpp.o\n[23/29] Building CXX object CMakeFiles/strata_sycl_original_products.dir/original_bf16_gemv.cpp.o\n[24/29] Building CXX object CMakeFiles/original_products_test.dir/products.cpp.o\n[25/29] Building CXX object CMakeFiles/strata_sycl_original_products.dir/original_native_mmvq.cpp.o\n[26/29] Linking CXX static library libstrata_sycl_original_products.a\n[27/29] Linking CXX static library libstrata_sycl_dequant.a\n[28/29] Linking CXX executable original_gemm_test\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\n\n[bmg_g21] warning: in kernel 'typeinfo name for void strata::sycl_upstream::cuda_kernel::launch<true, false, void strata::kernels::(anonymous namespace)::launch_mmvq<18>(unsigned char const*, unsigned long, block_q8_1 const*, float*, int, int, int, strata_cuda_stream*)::'lambda2'(float*)>(dim3, dim3, unsigned long, strata_cuda_stream*, void strata::kernels::(anonymous namespace)::launch_mmvq<18>(unsigned char const*, unsigned long, block_q8_1 const*, float*, int, int, int, strata_cuda_stream*)::'lambda2'(float*))::'lambda'(sycl::_V1::queue&)::operator()(sycl::_V1::queue&) const::'lambda'(sycl::_V1::handler&)::operator()(sycl::_V1::handler&) const::'lambda'(sycl::_V1::nd_item<3>)': compiled SIMD32 allocated 128 regs and spilled around 8\n\n[bmg_g21] warning: in kernel 'typeinfo name for void strata::sycl_upstream::cuda_kernel::launch<true, false, void strata::kernels::(anonymous namespace)::launch_mmvq<16>(unsigned char const*, unsigned long, block_q8_1 const*, float*, int, int, int, strata_cuda_stream*)::'lambda2'(float*)>(dim3, dim3, unsigned long, strata_cuda_stream*, void strata::kernels::(anonymous namespace)::launch_mmvq<16>(unsigned char const*, unsigned long, block_q8_1 const*, float*, int, int, int, strata_cuda_stream*)::'lambda2'(float*))::'lambda'(sycl::_V1::queue&)::operator()(sycl::_V1::queue&) const::'lambda'(sycl::_V1::handler&)::operator()(sycl::_V1::handler&) const::'lambda'(sycl::_V1::nd_item<3>)': compiled SIMD32 allocated 128 regs and spilled around 4\n\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\n[29/29] Linking CXX executable original_products_test\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\n\n[bmg_g21] warning: in kernel 'typeinfo name for void strata::sycl_upstream::cuda_kernel::launch<true, true, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::Q5KTraits, 3>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda'(float*)>(dim3, dim3, unsigned long, strata_cuda_stream*, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::Q5KTraits, 3>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda'(float*))::'lambda'(sycl::_V1::queue&)::operator()(sycl::_V1::queue&) const::'lambda'(sycl::_V1::handler&)::operator()(sycl::_V1::handler&) const::'lambda'(sycl::_V1::nd_item<3>)': compiled SIMD32 allocated 128 regs and spilled around 12\n\n[bmg_g21] warning: in kernel 'typeinfo name for void strata::sycl_upstream::cuda_kernel::launch<true, true, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::Q5KTraits, 7>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda1'(float*)>(dim3, dim3, unsigned long, strata_cuda_stream*, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::Q5KTraits, 7>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda1'(float*))::'lambda'(sycl::_V1::queue&)::operator()(sycl::_V1::queue&) const::'lambda'(sycl::_V1::handler&)::operator()(sycl::_V1::handler&) const::'lambda'(sycl::_V1::nd_item<3>)': compiled SIMD32 allocated 128 regs and spilled around 6\n\n[bmg_g21] warning: in kernel 'typeinfo name for void strata::sycl_upstream::cuda_kernel::launch<true, true, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::IQ4XSTraits, 8>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda0'(float*)>(dim3, dim3, unsigned long, strata_cuda_stream*, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::IQ4XSTraits, 8>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda0'(float*))::'lambda'(sycl::_V1::queue&)::operator()(sycl::_V1::queue&) const::'lambda'(sycl::_V1::handler&)::operator()(sycl::_V1::handler&) const::'lambda'(sycl::_V1::nd_item<3>)': compiled SIMD32 allocated 128 regs and spilled around 17\n\n[bmg_g21] warning: in kernel 'typeinfo name for void strata::sycl_upstream::cuda_kernel::launch<true, true, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q50Block, 4>, 6>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda0'(float*)>(dim3, dim3, unsigned long, strata_cuda_stream*, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q50Block, 4>, 6>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda0'(float*))::'lambda'(sycl::_V1::queue&)::operator()(sycl::_V1::queue&) const::'lambda'(sycl::_V1::handler&)::operator()(sycl::_V1::handler&) const::'lambda'(sycl::_V1::nd_item<3>)': compiled SIMD32 allocated 128 regs and spilled around 4\n\n[bmg_g21] warning: in kernel 'typeinfo name for void strata::sycl_upstream::cuda_kernel::launch<true, true, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::Q6KTraits, 5>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda0'(float*)>(dim3, dim3, unsigned long, strata_cuda_stream*, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::Q6KTraits, 5>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda0'(float*))::'lambda'(sycl::_V1::queue&)::operator()(sycl::_V1::queue&) const::'lambda'(sycl::_V1::handler&)::operator()(sycl::_V1::handler&) const::'lambda'(sycl::_V1::nd_item<3>)': compiled SIMD32 allocated 128 regs and spilled around 22\n\n[bmg_g21] warning: in kernel 'typeinfo name for void strata::sycl_upstream::cuda_kernel::launch<true, true, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::Q4KTraits, 3>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda0'(float*)>(dim3, dim3, unsigned long, strata_cuda_stream*, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::Q4KTraits, 3>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda0'(float*))::'lambda'(sycl::_V1::queue&)::operator()(sycl::_V1::queue&) const::'lambda'(sycl::_V1::handler&)::operator()(sycl::_V1::handler&) const::'lambda'(sycl::_V1::nd_item<3>)': compiled SIMD32 allocated 128 regs and spilled around 24\n\n[bmg_g21] warning: in kernel 'typeinfo name for void strata::sycl_upstream::cuda_kernel::launch<true, true, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::Q5KTraits, 8>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda1'(float*)>(dim3, dim3, unsigned long, strata_cuda_stream*, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::Q5KTraits, 8>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda1'(float*))::'lambda'(sycl::_V1::queue&)::operator()(sycl::_V1::queue&) const::'lambda'(sycl::_V1::handler&)::operator()(sycl::_V1::handler&) const::'lambda'(sycl::_V1::nd_item<3>)': compiled SIMD32 allocated 128 regs and spilled around 10\n\n[bmg_g21] warning: in kernel 'typeinfo name for void strata::sycl_upstream::cuda_kernel::launch<true, true, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q40Block, 4>, 8>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda0'(float*)>(dim3, dim3, unsigned long, strata_cuda_stream*, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q40Block, 4>, 8>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda0'(float*))::'lambda'(sycl::_V1::queue&)::operator()(sycl::_V1::queue&) const::'lambda'(sycl::_V1::handler&)::operator()(sycl::_V1::handler&) const::'lambda'(sycl::_V1::nd_item<3>)': compiled SIMD32 allocated 128 regs and spilled around 8\n\n[bmg_g21] warning: in kernel 'typeinfo name for void strata::sycl_upstream::cuda_kernel::launch<true, true, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::Q20Traits, 7>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda0'(float*)>(dim3, dim3, unsigned long, strata_cuda_stream*, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::Q20Traits, 7>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda0'(float*))::'lambda'(sycl::_V1::queue&)::operator()(sycl::_V1::queue&) const::'lambda'(sycl::_V1::handler&)::operator()(sycl::_V1::handler&) const::'lambda'(sycl::_V1::nd_item<3>)': compiled SIMD32 allocated 128 regs and spilled around 2\n\n[bmg_g21] warning: in kernel 'typeinfo name for void strata::sycl_upstream::cuda_kernel::launch<true, true, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::Q4KTraits, 5>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda'(float*)>(dim3, dim3, unsigned long, strata_cuda_stream*, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::Q4KTraits, 5>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda'(float*))::'lambda'(sycl::_V1::queue&)::operator()(sycl::_V1::queue&) const::'lambda'(sycl::_V1::handler&)::operator()(sycl::_V1::handler&) const::'lambda'(sycl::_V1::nd_item<3>)': compiled SIMD32 allocated 128 regs and spilled around 16\n\n[bmg_g21] warning: in kernel 'typeinfo name for void strata::sycl_upstream::cuda_kernel::launch<true, true, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::Q4KTraits, 2>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda0'(float*)>(dim3, dim3, unsigned long, strata_cuda_stream*, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::Q4KTraits, 2>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda0'(float*))::'lambda'(sycl::_V1::queue&)::operator()(sycl::_V1::queue&) const::'lambda'(sycl::_V1::handler&)::operator()(sycl::_V1::handler&) const::'lambda'(sycl::_V1::nd_item<3>)': compiled SIMD32 allocated 128 regs and spilled around 14\n\n[bmg_g21] warning: in kernel 'typeinfo name for void strata::sycl_upstream::cuda_kernel::launch<true, true, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::Q4KTraits, 6>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda'(float*)>(dim3, dim3, unsigned long, strata_cuda_stream*, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::Q4KTraits, 6>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda'(float*))::'lambda'(sycl::_V1::queue&)::operator()(sycl::_V1::queue&) const::'lambda'(sycl::_V1::handler&)::operator()(sycl::_V1::handler&) const::'lambda'(sycl::_V1::nd_item<3>)': compiled SIMD32 allocated 128 regs and spilled around 20\n\n[bmg_g21] warning: in kernel 'typeinfo name for void strata::sycl_upstream::cuda_kernel::launch<true, true, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::Q6KTraits, 6>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda0'(float*)>(dim3, dim3, unsigned long, strata_cuda_stream*, void strata::kernels::(anonymous namespace)::launch_multi_n<strata::kernels::(anonymous namespace)::Q6KTraits, 6>(void const*, void const*, float*, int, int, strata_cuda_stream*)::'lambda0'(float*))::'lambda'(sycl::_V1::queue&)::operator()(sycl::_V1::queue&) const::'lambda'(sycl::_V1::handler&)::operator()(sycl::_V1::handler&) const::'lambda'(sycl::_V1::nd_item<3>)': compiled SIMD32 allocated 128 regs and spilled around 30\n\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\n\n[bmg_g21] warning: in kernel 'typeinfo name for void strata::sycl_upstream::cuda_kernel::launch<true, false, void strata::kernels::(anonymous namespace)::launch_mmvq<18>(unsigned char const*, unsigned long, block_q8_1 const*, float*, int, int, int, strata_cuda_stream*)::'lambda2'(float*)>(dim3, dim3, unsigned long, strata_cuda_stream*, void strata::kernels::(anonymous namespace)::launch_mmvq<18>(unsigned char const*, unsigned long, block_q8_1 const*, float*, int, int, int, strata_cuda_stream*)::'lambda2'(float*))::'lambda'(sycl::_V1::queue&)::operator()(sycl::_V1::queue&) const::'lambda'(sycl::_V1::handler&)::operator()(sycl::_V1::handler&) const::'lambda'(sycl::_V1::nd_item<3>)': compiled SIMD32 allocated 128 regs and spilled around 8\n\n[bmg_g21] warning: in kernel 'typeinfo name for void strata::sycl_upstream::cuda_kernel::launch<true, false, void strata::kernels::(anonymous namespace)::launch_mmvq<16>(unsigned char const*, unsigned long, block_q8_1 const*, float*, int, int, int, strata_cuda_stream*)::'lambda2'(float*)>(dim3, dim3, unsigned long, strata_cuda_stream*, void strata::kernels::(anonymous namespace)::launch_mmvq<16>(unsigned char const*, unsigned long, block_q8_1 const*, float*, int, int, int, strata_cuda_stream*)::'lambda2'(float*))::'lambda'(sycl::_V1::queue&)::operator()(sycl::_V1::queue&) const::'lambda'(sycl::_V1::handler&)::operator()(sycl::_V1::handler&) const::'lambda'(sycl::_V1::nd_item<3>)': compiled SIMD32 allocated 128 regs and spilled around 4\n\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\nCompilation from IR - skipping loading of FCL\nBuild succeeded.\n"
+        }
+      },
+      "binary_sha256": {
+        "cuda_frontend_test": "8a77269e794837588e652be32fde3634e71dd357f51df04ff2d91fc32d942c5d",
+        "ggml/src/libggml-base.so.0.24.0": "67cfb39097e8fe47fff98c6edc2cb393edee7e998bf4b3f1ce8cb6ce788ff527",
+        "graph_test": "c8a0b455128c79e1a30cba74ca8bf838e9d330ab3f69e77560f1287a30c1f97f",
+        "handoff_test": "acc8f9bc8f882465d9e45d4bdba05f3c9f08d9f8c627550a519b20c6ea10eefb",
+        "libstrata_sycl_blas_frontend.a": "7a9cec402e0c7aa305f4e15f410ea0758562c9bf034ce2ebc3245b506e525a06",
+        "libstrata_sycl_cuda_frontend.a": "a9cc1c92f545c8090c73c5aed2fe33867859ea03a21b5dca9e5b07ae2c7efd0c",
+        "libstrata_sycl_dequant.a": "473f4a0985155d795658a177d2b9996e904b073bed4847cc3ca8672d0d9fa6ca",
+        "libstrata_sycl_memory.a": "1ddcf78f54224109daf88d77aafb87fd0e1e465c89ed68a11ee5cbf5176f8a23",
+        "libstrata_sycl_mmq_frontend.a": "1991ca1520d7e1053753037660317a66b7a2b685ef53331eea4c0caee8b3b86c",
+        "libstrata_sycl_original_gemm.a": "fdd4bf0cea3672d6e01f67e0955f93815454e9417a73f8acd196a2db708a725d",
+        "libstrata_sycl_original_graph_host.a": "d2e120db68652c43145231e8d5600ff1a36fd2dbab6f5285f23e75c1a598f3ec",
+        "libstrata_sycl_original_products.a": "13235ec55d5f764a74ed22c44abe57fcee139d2cffcad4d87ed041a06bb79dd6",
+        "libstrata_sycl_runtime.a": "01636803e2582b14e14e7afa6a1bb22acdc66bcd1bf77ba8202f5ca142b12355",
+        "memory_test": "5e1a42739d6cbc11f5699f827340fbae3704fc399d97e5ef5a7ae9e66d4747c1",
+        "mmq_context_test": "a8983aefc3cedf3a75d474c4f0f61e94b9d71028c017848e1f8b8d6d8517bc1f",
+        "mmq_frontend_test": "3c50e7d5cc45df9075230fb1c301b59a5d4be0687690c51ebfa178e0dd6a1c8f",
+        "mmq_public_stages_test": "20b19c3ace0ee21580d99ccc8d3f3cc4907cb9e4558afa93c353679fd624ff9b",
+        "original_gemm_test": "9ea827d984a924f3ef3d915dce8f6a8ccf820647f428b8ccb93e015f33317312",
+        "original_pinned_shared_test": "22eb0e5719a3ca422297a305821903a2bd13e1b2a46632505e82ffd997a8c963",
+        "original_prefill_stager_test": "0743f54b3069b82320d971ef9b74f91a8eec757107178d316968c8759185d510",
+        "original_products_test": "0f2fabb4cd4ce35ac10a49ac95960b026ffa8fd9e7c35e825f71f1dab03d17ca",
+        "runtime_devices_test": "5306ccd80f237ffe1aacf50dce7acf40fa849f29ce68b232f2ab19ec26783f46",
+        "runtime_graph_api_test": "9dc1ba0ffc535ea16ea7f2adac189a4faeedbbc0323786e8f7398758236666de",
+        "runtime_peer_test": "6cab89dd435a9862bba3aa6b8e77854b0fdbad3a37e2562a6c5b419df4901960",
+        "runtime_test": "398c858e5c5fbd62c20f0f66313b3e9dd88994a29c0e62a430ccdab527cf479c",
+        "runtime_timing_test": "3c86cc51d96e415a136e209c44668f86eff04c043793a9be1f54625f1e7791dc"
+      },
+      "entire_original_product_object_sha256": {
+        "CMakeFiles/strata_sycl_original_products.dir/original_bf16_gemv.cpp.o": "d821a417fa66113913d608743f428d7743793b0a515c8db20ba7fd141e51d779",
+        "CMakeFiles/strata_sycl_original_products.dir/original_iq_kernels.cpp.o": "588bef00efe25d337720f5b0039114fcd3fb0a40169262a3ce6f096a1ed1a857",
+        "CMakeFiles/strata_sycl_original_products.dir/original_native_mmvq.cpp.o": "81d3bc236f2df13e3e896136ba372eac38c3cbbd778dde27d823e15e79da87eb",
+        "CMakeFiles/strata_sycl_original_products.dir/original_native_bf16.cpp.o": "b0a2d9cdfbca687c63057910c304b99d6aed37b6025c62904925cdebfa7f615d"
+      },
+      "pinned_cpu_oracle_object": {
+        "ggml/src/CMakeFiles/ggml-base.dir/ggml-quants.c.o": "5b6c556aa439e6a70d1f2d893599c3338deb6b5b7806d7d0162e76a9c26fec6f"
+      },
+      "lowering_inventory": {
+        "src/kernels/cuda/native_mmvq.cu": {
+          "original_sha256": "f2fc636e5e8f6db9bbb8146fbf2b78a717c0e0076bf8c72ac2b784df7b3f455f",
+          "generated_sha256": "2005a2173e7ca8cd81509e9993619623daae1bf70eadbb3cf2353c6289981534",
+          "kernels": [
+            "native_iq4_xs_mmvq_kernel",
+            "native_mmvq_multi_kernel",
+            "native_q2_0_mmvq_kernel",
+            "native_q3_k_mmvq_kernel",
+            "native_q4_k_mmvq_kernel",
+            "native_q5_k_mmvq_kernel",
+            "native_q6_k_mmvq_kernel",
+            "native_quantize_q8_1_kernel",
+            "native_small_mmvq_kernel"
+          ],
+          "launch_sites": 18,
+          "q8_1_explicit_rn_divisions": 2
+        },
+        "src/kernels/cuda/iq_kernels.cu": {
+          "original_sha256": "f1d8887573a0ca5197809d1198da00ae899d391ae0fb4874d7b32aacb93b5d92",
+          "generated_sha256": "45f46187d142a308356cdf798f40e2b66f2dfbe62f1fdd8145e126967483748a",
+          "kernels": [
+            "dequant_flat_kernel",
+            "dequant_gu_kernel",
+            "embed_rows_kernel",
+            "mmvq_kernel",
+            "mmvq_multi_kernel",
+            "native_down_kernel",
+            "native_down_multi_kernel",
+            "native_gu_kernel",
+            "native_gu_multi_kernel",
+            "quantize_q8_1_kernel",
+            "swiglu_entries_kernel",
+            "swiglu_q8_1_entries_kernel"
+          ],
+          "launch_sites": 20,
+          "q8_1_explicit_rn_divisions": 2
+        },
+        "src/kernels/cuda/native_bf16.cu": {
+          "original_sha256": "70b44795528fb73d636be5914d60f0adaa849a48cc38f309d327a2976c3ed3da",
+          "generated_sha256": "58040f601b04dce06ba3ab15c3b1cfa645dc1a2c95e002f3caeb4b5c8b02a94c",
+          "kernels": [
+            "bf16_f32_mmvf_kernel",
+            "bf16_f32_mmvf_multi_kernel"
+          ],
+          "launch_sites": 3,
+          "q8_1_explicit_rn_divisions": 0
+        },
+        "src/kernels/cuda/bf16_gemv.cu": {
+          "original_sha256": "1408ce4707d9d03bc3d752773401afbb1170b0cf1fc3b53fb95cab9aff652c53",
+          "generated_sha256": "5d49fe3774425310e019c919d6d46b730a0e470328a2b52a4a61c8faf513e8d4",
+          "kernels": [
+            "bf16_gemv_naive_kernel",
+            "bf16_gemv_split_kernel",
+            "bf16_gemv_warp_kernel"
+          ],
+          "launch_sites": 4,
+          "q8_1_explicit_rn_divisions": 0
+        }
+      },
+      "generated_header_sha256": {
+        "upstream_dequant.hpp": "f48b8f93876e78b1d3b065fbb93a19be6b857958badba817546303dcb481f493",
+        "upstream_mmq_loaders.hpp": "d6e2b1925ae9d570860c5af33c009579398888657afd715e5877a1c613e5ccc6"
+      }
+    }
+  },
+  "coverage": {
+    "native_types": [
+      42,
+      2,
+      6,
+      8,
+      11,
+      12,
+      13,
+      14,
+      20,
+      23
+    ],
+    "native_reduction_widths": [
+      512,
+      8192
+    ],
+    "native_columns": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "native_output_rows": 5,
+    "iq_product_types": [
+      16,
+      17,
+      18,
+      20,
+      21,
+      22,
+      23,
+      29,
+      42,
+      12,
+      13,
+      7,
+      6,
+      8
+    ],
+    "iq_reduction_widths": [
+      256,
+      1280,
+      2560
+    ],
+    "iq_columns": [
+      1,
+      3,
+      4,
+      5,
+      8,
+      9
+    ],
+    "gu_types": [
+      16,
+      17,
+      18,
+      21,
+      22,
+      23,
+      29,
+      42,
+      12,
+      13,
+      6,
+      8
+    ],
+    "down_types": [
+      20,
+      23,
+      42,
+      7,
+      6,
+      8
+    ],
+    "group_type_pairs": 72,
+    "group_shapes": [
+      [
+        256,
+        256
+      ],
+      [
+        2560,
+        640
+      ]
+    ],
+    "additional_large_shape_pairs": [
+      [
+        42,
+        42
+      ],
+      [
+        21,
+        20
+      ]
+    ],
+    "group_shapes_scope": "Synthetic weights in both shapes. These tests do not load real model tensors.",
+    "group_cpu_oracle": "Pinned actual GGML CPU to_float, independent Q8_1 tree, FP64 gate/up/down reference, independent exponential on stored gate/up, original Q4_0/Q5_0 sum correction. Old/new/v1/fused GPU outputs and active HQ bytes compared bitwise.",
+    "group_capacity": {
+      "groups": 7,
+      "entries": 13,
+      "tokens": 9,
+      "output_rows": 17
+    },
+    "group_active": {
+      "groups": 4,
+      "entries_per_group": [
+        1,
+        0,
+        5,
+        2
+      ],
+      "group_stride_variants": [
+        1,
+        7
+      ],
+      "indices_scope": "Permuted/repeated activation tokens, scatter to eight distinct rows, unused prefix/suffix and empty group."
+    },
+    "group_graph_replays": 3,
+    "group_graph_device_groups": [
+      0,
+      2,
+      4
+    ],
+    "product_graphs": 24,
+    "product_graph_replays": 72,
+    "graph_scope": "Each product graph has two native kernels, group graph three. No output changes during instantiation. Changed input values and group expert addresses/counts read on replay; captured old/new/geometry choices persist after host flags change.",
+    "held_pipeline": "Warmed complete original group call returns within two seconds while its stream waits for a held CPU callback; independent stream GPU fill completes. Correctness/asynchrony only, not an overlap throughput benchmark.",
+    "bf16_native_widths": [
+      2,
+      62,
+      64,
+      66,
+      130,
+      194,
+      256,
+      320,
+      384,
+      448,
+      512,
+      640,
+      2560
+    ],
+    "bf16_native_columns": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "bf16_split_tpr": [
+      1,
+      16,
+      32,
+      64,
+      128,
+      256
+    ],
+    "bf16_ordinary_output_rows": [
+      7,
+      65
+    ],
+    "guard_scope": "Output tail, BF16 strides, Q8_1 scratch tail, grouped unused output rows/HQ entries and arena scratch tail. Inputs/weight blobs/index arrays compared after calls."
+  },
+  "quantizer_rounding_diagnostic": {
+    "plain_gpu_ratio": "0x1.fbfffep+5",
+    "cpu_and_explicit_rn_ratio": "0x1.fcp+5",
+    "amax": "0x1.e2p-4",
+    "cpu_and_gpu_scale": "0x1.e5cb98p-11",
+    "plain_code": 63,
+    "explicit_rn_and_cpu_code": 64,
+    "log": {
+      "path": "/tmp/strata-products-div-diagnostic-test.log",
+      "sha256": "b9bf63db19d5cf89e36ae868ae57b1cf4e6116a6eaecf2a63ef4d9e3c2842e19",
+      "text": "Internal ctest changing into directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\nUpdateCTestConfiguration  from :/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/DartConfiguration.tcl\nUpdateCTestConfiguration  from :/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/DartConfiguration.tcl\nTest project /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\nConstructing a list of tests\nDone constructing a list of tests\nUpdating test list for fixtures\nAdded 0 tests to meet fixture requirements\nChecking test dependency graph...\nChecking test dependency graph end\ntest 23\n    Start 23: original_native_products\n\n23: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_products_test\n23: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n23: Test timeout computed to be: 300\n23: device=Intel(R) Arc(TM) B570 Graphics\n23: quant block=26 byte=30 gpu=63 cpu=64 d=0.000926495 sum=-0.215088 input=0.0588379 amax=0.117676 unrounded_d=0x1.e5cb98p-11 ratio=0x1.fcp+5 GPU_tree[a,d,ratio,round,d_rn,ratio_rn,round_rn]=0x1.e2p-4,0x1.e5cb98p-11,0x1.fbfffep+5,0x1.f8p+5,0x1.e5cb98p-11,0x1.fcp+5,0x1p+6,\n23: FAIL native type=42 width=512 cols=7: Q8_1 bytes differ from independent CPU tree\n1/1 Test #23: original_native_products .........***Failed   35.81 sec\n\n0% tests passed, 1 tests failed out of 1\n\nTotal Test time (real) =  35.83 sec\n\nThe following tests FAILED:\n\t 23 - original_native_products (Failed)\nErrors while running CTest\nOutput from these tests are in: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/Testing/Temporary/LastTest.log\nUse \"--rerun-failed --output-on-failure\" to re-run the failed cases verbosely.\n"
+    },
+    "simple_scalar_probe": {
+      "source": {
+        "path": "/tmp/strata-q8-div-probe.cpp",
+        "sha256": "86c9064a5459b669452710b0b677e12c84cf5069f5965b215b8f3511eefa3c78",
+        "text": "#include <sycl/sycl.hpp>\n#include <sycl/ext/intel/math.hpp>\n#include <cmath>\n#include <bit>\n#include <iostream>\nstruct Result {float d,ratio,rounded,drn,ratio_rn,rounded_rn,sycl_round;};\nint main(){sycl::queue q;auto* out=sycl::malloc_shared<Result>(512*1025,q);\nq.parallel_for(sycl::range<1>(512*1025),[=](sycl::id<1> id){int m=id[0]/1025+1,i=int(id[0]%1025)-512;float a=float(m)/4096.f,x=float(i)/4096.f;\nfloat d=a/127.f,r=x/d,drn=sycl::ext::intel::math::fdiv_rn(a,127.f),rrn=sycl::ext::intel::math::fdiv_rn(x,drn);\nout[id]={d,r,roundf(r),drn,rrn,roundf(rrn),sycl::round(rrn)};}).wait_and_throw();\nsize_t dm=0,rm=0,qm=0,drm=0,rrm=0,qrm=0,srm=0;\nfor(int m=1;m<=512;++m)for(int i=-m;i<=m;++i){float a=float(m)/4096.f,x=float(i)/4096.f,d=a/127.f,r=x/d,round=std::round(r);auto g=out[(m-1)*1025+i+512];\nauto ne=[](float a,float b){return std::bit_cast<unsigned>(a)!=std::bit_cast<unsigned>(b);};dm+=ne(g.d,d);rm+=ne(g.ratio,r);drm+=ne(g.drn,d);rrm+=ne(g.ratio_rn,r);qm+=g.rounded!=round;qrm+=g.rounded_rn!=round;srm+=g.sycl_round!=round;\nif((g.rounded!=round||g.rounded_rn!=round||g.sycl_round!=round)&&i>0)std::cout<<\"m=\"<<m<<\" i=\"<<i<<\" cpu=\"<<std::hexfloat<<d<<' '<<r<<' '<<round<<\" gpu=\"<<g.d<<' '<<g.ratio<<' '<<g.rounded<<\" rn=\"<<g.drn<<' '<<g.ratio_rn<<' '<<g.rounded_rn<<' '<<g.sycl_round<<std::defaultfloat<<'\\n';}\nstd::cout<<\"mismatch d/r/q=\"<<dm<<'/'<<rm<<'/'<<qm<<\" RN=\"<<drm<<'/'<<rrm<<'/'<<qrm<<\" sycl_round=\"<<srm<<'\\n';sycl::free(out,q);}\n"
+      },
+      "binary": {
+        "path": "/tmp/strata-q8-div-probe",
+        "resolved": "/tmp/strata-q8-div-probe",
+        "sha256": "7867090ca9cb0a295b35229abcfb304d07620217f39d04e54b8185f997168597"
+      },
+      "build": {
+        "path": "/tmp/strata-q8-div-probe-build.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "text": ""
+      },
+      "test": {
+        "path": "/tmp/strata-q8-div-probe-test.log",
+        "sha256": "5e1d538dd6eb8aee70050ef67b4a1a513bf30e859ed3560b551d1b02f1217866",
+        "text": "mismatch d/r/q=0/0/0 RN=0/0/0 sycl_round=0\n"
+      },
+      "scope": "Without the subgroup reduction, this separate arithmetic probe reported no differences. The original product and subgroup-tree diagnostic above reproduce the error."
+    }
+  },
+  "earlier_failures": [
+    {
+      "case": "missing_intrinsic_imports",
+      "resolution": "Initial whole IQ build lacked uint2/min imports. Fixed in the device shim.",
+      "log": {
+        "path": "/tmp/strata-products-first-build.log",
+        "sha256": "f211b49d769af207950d6919bf5e5d922f853de2b10d28b7bf3cd0c8e0a70273",
+        "text": "[1/8] Building CXX object CMakeFiles/strata_sycl_original_products.dir/original_iq_kernels.cpp.o\nFAILED: CMakeFiles/strata_sycl_original_products.dir/original_iq_kernels.cpp.o \n/opt/intel/oneapi/compiler/2026.1/bin/icpx  -I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/include -I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src -I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/include/strata/sycl_upstream/cuda -I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/include -O3 -DNDEBUG -std=gnu++20 -fsycl -fno-fast-math -ffp-contract=off -fno-strict-aliasing -MD -MT CMakeFiles/strata_sycl_original_products.dir/original_iq_kernels.cpp.o -MF CMakeFiles/strata_sycl_original_products.dir/original_iq_kernels.cpp.o.d -o CMakeFiles/strata_sycl_original_products.dir/original_iq_kernels.cpp.o -c /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_iq_kernels.cpp\n/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_iq_kernels.cpp:91:15: error: unknown type name 'uint2'\n   91 |         const uint2 grid_pos = ((const uint2*) iq2xxs_grid)[aux8[k0 / 2]];\n      |               ^\n/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_iq_kernels.cpp:91:40: error: unknown type name 'uint2'\n   91 |         const uint2 grid_pos = ((const uint2*) iq2xxs_grid)[aux8[k0 / 2]];\n      |                                        ^\n/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_iq_kernels.cpp:118:15: error: unknown type name 'uint2'\n  118 |         const uint2 grid_pos = ((const uint2*) iq2xs_grid)[q2[l0 / 2] & 0x1FF];\n      |               ^\n/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_iq_kernels.cpp:118:40: error: unknown type name 'uint2'\n  118 |         const uint2 grid_pos = ((const uint2*) iq2xs_grid)[q2[l0 / 2] & 0x1FF];\n      |                                        ^\n/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_iq_kernels.cpp:575:19: error: unknown type name 'uint2'\n  575 |             const uint2 grid_pos = ((const uint2*) iq2xxs_grid)[aux8[k0 / 2]];\n      |                   ^\n/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_iq_kernels.cpp:575:44: error: unknown type name 'uint2'\n  575 |             const uint2 grid_pos = ((const uint2*) iq2xxs_grid)[aux8[k0 / 2]];\n      |                                            ^\n/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_iq_kernels.cpp:620:19: error: unknown type name 'uint2'\n  620 |             const uint2 grid_pos = ((const uint2*) iq2xs_grid)[q2[l0 / 2] & 0x1FF];\n      |                   ^\n/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_iq_kernels.cpp:620:44: error: unknown type name 'uint2'\n  620 |             const uint2 grid_pos = ((const uint2*) iq2xs_grid)[q2[l0 / 2] & 0x1FF];\n      |                                            ^\n/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_iq_kernels.cpp:880:23: error: use of undeclared identifier 'min'; did you mean 'fmin'?\n  880 |         const int n = min(NC, ncols - c0);\n      |                       ^~~\n      |                       fmin\n/usr/include/x86_64-linux-gnu/bits/mathcalls.h:336:14: note: 'fmin' declared here\n  336 | __MATHCALLX (fmin,, (_Mdouble_ __x, _Mdouble_ __y), (__const__));\n      |              ^\n/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_iq_kernels.cpp:883:53: error: use of undeclared identifier 'min'; did you mean 'fmin'?\n  883 |         for (int c = 0; c < NC; ++c) off[c] = (c0 + min(c, n - 1)) * xb;\n      |                                                     ^~~\n      |                                                     fmin\n/usr/include/x86_64-linux-gnu/bits/mathcalls.h:336:14: note: 'fmin' declared here\n  336 | __MATHCALLX (fmin,, (_Mdouble_ __x, _Mdouble_ __y), (__const__));\n      |              ^\n/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_iq_kernels.cpp:955:27: error: use of undeclared identifier 'min'; did you mean 'fmin'?\n  955 |             const int n = min(GRP_NC, e1 - e);\n      |                           ^~~\n      |                           fmin\n/usr/include/x86_64-linux-gnu/bits/mathcalls.h:336:14: note: 'fmin' declared here\n  336 | __MATHCALLX (fmin,, (_Mdouble_ __x, _Mdouble_ __y), (__const__));\n      |              ^\n/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_iq_kernels.cpp:958:67: error: use of undeclared identifier 'min'; did you mean 'fmin'?\n  958 |             for (int c = 0; c < GRP_NC; ++c) off[c] = ent_tok[e + min(c, n - 1)] * xb;\n      |                                                                   ^~~\n      |                                                                   fmin\n/usr/include/x86_64-linux-gnu/bits/mathcalls.h:336:14: note: 'fmin' declared here\n  336 | __MATHCALLX (fmin,, (_Mdouble_ __x, _Mdouble_ __y), (__const__));\n      |              ^\n/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_iq_kernels.cpp:958:62: error: array subscript is not an integer\n  958 |             for (int c = 0; c < GRP_NC; ++c) off[c] = ent_tok[e + min(c, n - 1)] * xb;\n      |                                                              ^~~~~~~~~~~~~~~~~~\n/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_iq_kernels.cpp:1022:27: error: use of undeclared identifier 'min'; did you mean 'fmin'?\n 1022 |             const int n = min(GRP_NC, e1 - e);\n      |                           ^~~\n      |                           fmin\n/usr/include/x86_64-linux-gnu/bits/mathcalls.h:336:14: note: 'fmin' declared here\n  336 | __MATHCALLX (fmin,, (_Mdouble_ __x, _Mdouble_ __y), (__const__));\n      |              ^\n/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_iq_kernels.cpp:1025:60: error: use of undeclared identifier 'min'; did you mean 'fmin'?\n 1025 |             for (int c = 0; c < GRP_NC; ++c) off[c] = (e + min(c, n - 1)) * hb;\n      |                                                            ^~~\n      |                                                            fmin\n/usr/include/x86_64-linux-gnu/bits/mathcalls.h:336:14: note: 'fmin' declared here\n  336 | __MATHCALLX (fmin,, (_Mdouble_ __x, _Mdouble_ __y), (__const__));\n      |              ^\n15 errors generated.\n[2/8] Building CXX object CMakeFiles/strata_sycl_dequant.dir/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/src/sycl_upstream/dequant.cpp.o\n[3/8] Building CXX object CMakeFiles/strata_sycl_original_products.dir/original_native_mmvq.cpp.o\nicpx: warning: overriding '-ffast-math' option with '-ffp-contract=fast' [-Woverriding-option]\nicpx: warning: overriding '-ffast-math' option with '-ffp-contract=fast' [-Woverriding-option]\nninja: build stopped: subcommand failed.\n"
+      }
+    },
+    {
+      "case": "initial_quantizer_bytes",
+      "resolution": "Initial native quantizer bytes disagreed with CPU scalar-expression oracle.",
+      "log": {
+        "path": "/tmp/strata-products-first-test.log",
+        "sha256": "5267ee5f5416d86241173ddd9808befabf62b4927d8f52e96326a9aed2e47f36",
+        "text": "Internal ctest changing into directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\nUpdateCTestConfiguration  from :/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/DartConfiguration.tcl\nUpdateCTestConfiguration  from :/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/DartConfiguration.tcl\nTest project /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\nConstructing a list of tests\nDone constructing a list of tests\nUpdating test list for fixtures\nAdded 0 tests to meet fixture requirements\nChecking test dependency graph...\nChecking test dependency graph end\ntest 23\n    Start 23: original_native_products\n\n23: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_products_test\n23: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n23: Test timeout computed to be: 300\n23: device=Intel(R) Arc(TM) B570 Graphics\n23: FAIL native Q8_1 bytes differ from independent CPU tree\n1/1 Test #23: original_native_products .........***Failed   36.88 sec\n\n0% tests passed, 1 tests failed out of 1\n\nTotal Test time (real) =  36.88 sec\n\nThe following tests FAILED:\n\t 23 - original_native_products (Failed)\nErrors while running CTest\nOutput from these tests are in: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/Testing/Temporary/LastTest.log\nUse \"--rerun-failed --output-on-failure\" to re-run the failed cases verbosely.\n"
+      }
+    },
+    {
+      "case": "quantizer_diagnostic",
+      "resolution": "Native fast-math code produced 63 instead of 64 at a half-tie.",
+      "log": {
+        "path": "/tmp/strata-products-diagnostic-test.log",
+        "sha256": "f6a962049d2fd3b5835c38104a3deaff859172fd7392766ff1b1b0130c631988",
+        "text": "Internal ctest changing into directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\nUpdateCTestConfiguration  from :/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/DartConfiguration.tcl\nUpdateCTestConfiguration  from :/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/DartConfiguration.tcl\nTest project /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\nConstructing a list of tests\nDone constructing a list of tests\nUpdating test list for fixtures\nAdded 0 tests to meet fixture requirements\nChecking test dependency graph...\nChecking test dependency graph end\ntest 23\n    Start 23: original_native_products\n\n23: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_products_test\n23: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n23: Test timeout computed to be: 300\n23: device=Intel(R) Arc(TM) B570 Graphics\n23: quant block=24 byte=35 gpu=63 cpu=64 d=0.000953674 sum=-0.114746 input=0.0605469 input_over_scale=63.488\n23: FAIL native type=42 width=512 cols=2: Q8_1 bytes differ from independent CPU tree\n1/1 Test #23: original_native_products .........***Failed    0.13 sec\n\n0% tests passed, 1 tests failed out of 1\n\nTotal Test time (real) =   0.14 sec\n\nThe following tests FAILED:\n\t 23 - original_native_products (Failed)\nErrors while running CTest\nOutput from these tests are in: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/Testing/Temporary/LastTest.log\nUse \"--rerun-failed --output-on-failure\" to re-run the failed cases verbosely.\n"
+      }
+    },
+    {
+      "case": "without_fast_math",
+      "resolution": "Removing fast-math alone still left a one-ULP ratio error at a half-tie.",
+      "log": {
+        "path": "/tmp/strata-products-precise-test.log",
+        "sha256": "5d456a29f82a608b635b1683c8fdaef1a0177b2224f90a013dc3f4692fcf276f",
+        "text": "Internal ctest changing into directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\nUpdateCTestConfiguration  from :/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/DartConfiguration.tcl\nUpdateCTestConfiguration  from :/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/DartConfiguration.tcl\nTest project /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\nConstructing a list of tests\nDone constructing a list of tests\nUpdating test list for fixtures\nAdded 0 tests to meet fixture requirements\nChecking test dependency graph...\nChecking test dependency graph end\ntest 23\n    Start 23: original_native_products\n\n23: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_products_test\n23: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n23: Test timeout computed to be: 300\n23: device=Intel(R) Arc(TM) B570 Graphics\n23: quant block=26 byte=30 gpu=63 cpu=64 d=0.000926495 sum=-0.215088 input=0.0588379 input_over_scale=63.5059\n23: FAIL native type=42 width=512 cols=7: Q8_1 bytes differ from independent CPU tree\n1/1 Test #23: original_native_products .........***Failed   36.63 sec\n\n0% tests passed, 1 tests failed out of 1\n\nTotal Test time (real) =  36.63 sec\n\nThe following tests FAILED:\n\t 23 - original_native_products (Failed)\nErrors while running CTest\nOutput from these tests are in: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/Testing/Temporary/LastTest.log\nUse \"--rerun-failed --output-on-failure\" to re-run the failed cases verbosely.\n"
+      }
+    },
+    {
+      "case": "compiler_prec_div_flag",
+      "resolution": "-foffload-fp32-prec-div alone still produced 63 instead of 64.",
+      "log": {
+        "path": "/tmp/strata-products-rn-test.log",
+        "sha256": "993fba84bca04029886b8a4c642fef5759a216d6965c800ccb5aa58026401cb6",
+        "text": "Internal ctest changing into directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\nUpdateCTestConfiguration  from :/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/DartConfiguration.tcl\nUpdateCTestConfiguration  from :/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/DartConfiguration.tcl\nTest project /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\nConstructing a list of tests\nDone constructing a list of tests\nUpdating test list for fixtures\nAdded 0 tests to meet fixture requirements\nChecking test dependency graph...\nChecking test dependency graph end\ntest 23\n    Start 23: original_native_products\n\n23: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_products_test\n23: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n23: Test timeout computed to be: 300\n23: device=Intel(R) Arc(TM) B570 Graphics\n23: quant block=26 byte=30 gpu=63 cpu=64 d=0.000926495 sum=-0.215088 input=0.0588379 input_over_scale=63.5059\n23: FAIL native type=42 width=512 cols=7: Q8_1 bytes differ from independent CPU tree\n1/1 Test #23: original_native_products .........***Failed    0.15 sec\n\n0% tests passed, 1 tests failed out of 1\n\nTotal Test time (real) =   0.16 sec\n\nThe following tests FAILED:\n\t 23 - original_native_products (Failed)\nErrors while running CTest\nOutput from these tests are in: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/Testing/Temporary/LastTest.log\nUse \"--rerun-failed --output-on-failure\" to re-run the failed cases verbosely.\n"
+      }
+    },
+    {
+      "case": "tree_division_diagnostic",
+      "resolution": "Extra GPU outputs isolate a matching amax/d, plain xi/d=0x1.fbfffep+5 and explicit fdiv_rn=0x1.fcp+5. Final lowering uses explicit RN division at both Q8_1 divisions.",
+      "log": {
+        "path": "/tmp/strata-products-div-diagnostic-test.log",
+        "sha256": "b9bf63db19d5cf89e36ae868ae57b1cf4e6116a6eaecf2a63ef4d9e3c2842e19",
+        "text": "Internal ctest changing into directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\nUpdateCTestConfiguration  from :/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/DartConfiguration.tcl\nUpdateCTestConfiguration  from :/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/DartConfiguration.tcl\nTest project /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\nConstructing a list of tests\nDone constructing a list of tests\nUpdating test list for fixtures\nAdded 0 tests to meet fixture requirements\nChecking test dependency graph...\nChecking test dependency graph end\ntest 23\n    Start 23: original_native_products\n\n23: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/original_products_test\n23: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl\n23: Test timeout computed to be: 300\n23: device=Intel(R) Arc(TM) B570 Graphics\n23: quant block=26 byte=30 gpu=63 cpu=64 d=0.000926495 sum=-0.215088 input=0.0588379 amax=0.117676 unrounded_d=0x1.e5cb98p-11 ratio=0x1.fcp+5 GPU_tree[a,d,ratio,round,d_rn,ratio_rn,round_rn]=0x1.e2p-4,0x1.e5cb98p-11,0x1.fbfffep+5,0x1.f8p+5,0x1.e5cb98p-11,0x1.fcp+5,0x1p+6,\n23: FAIL native type=42 width=512 cols=7: Q8_1 bytes differ from independent CPU tree\n1/1 Test #23: original_native_products .........***Failed   35.81 sec\n\n0% tests passed, 1 tests failed out of 1\n\nTotal Test time (real) =  35.83 sec\n\nThe following tests FAILED:\n\t 23 - original_native_products (Failed)\nErrors while running CTest\nOutput from these tests are in: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-sycl-upstream-faithful/build-upstream-sycl/Testing/Temporary/LastTest.log\nUse \"--rerun-failed --output-on-failure\" to re-run the failed cases verbosely.\n"
+      }
+    }
+  ],
+  "primary_references": [
+    "https://github.khronos.org/SYCL_Reference/iface/group-algorithms-library.html",
+    "https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2026-0/foffload-fp32-prec-div.html"
+  ],
+  "limits": [
+    "All four original files remain byte-identical to the pinned upstream; transformation replaces CUDA launch syntax, index queries, local memory and intrinsics. Q8_1 divisions explicitly use fdiv_rn with original operands/order.",
+    "No CUDA device baseline. Native source was originally compiled with CUDA --use_fast_math. SYCL uses no-fast-math with fast FMA contraction for native_mmvq/native_bf16 only. NVIDIA approximate division, FTZ and native exp bit identity is unproven; CPU oracle agreement does not establish that identity.",
+    "DP4A is lowered to the exact scalar four-signed-byte operation; hardware Intel DP4A instruction generation/performance is not established.",
+    "AOT warnings identify register spills in some IQ multi-column kernels. No native-product throughput improvement is claimed or measured here.",
+    "20 related CTest programs pass JIT/AOT, including full GEMM/dequant regression. Unchanged standalone large MMQ quantizer/product tests and old real-model sample target were not rerun in this phase.",
+    "All product/group weights here are synthetic. Previous real-model sample evidence remains a historical six-format dequant checkpoint.",
+    "Host CPP syntax inventory remains the earlier 19/20 checkpoint. New four CUDA translation units compile completely as separate native components, not extra entries in the host census.",
+    "Remaining kernel families, native architecture/program metadata, original full engine linking and whole-model state validation are open.",
+    "Fixed vendor BLAS workspace allocation parity remains unsupported as documented in native-gemm.md.",
+    "Only one physical GPU, Linux B570 execution; Windows/HIP/other GPUs/multi-GPU remain untested.",
+    "No new full inference PP/TG result; PP1000/TG70 remain unachieved."
+  ]
+}

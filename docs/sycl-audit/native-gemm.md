@@ -53,8 +53,11 @@ The IQ flat and gate/up entry points cover their original 15 formats. The
 embedding dispatcher additionally covers BF16, including padded source rows and
 repeated token IDs. Each IQ work item retains its original logical lane within
 a 32-lane block; no physical 32-wide SYCL subgroup is assumed by these helpers.
-Other IQ products, native expert products and Q8 activation quantizers remain
-separate open families.
+At this checkpoint, other IQ products, native expert products and Q8 activation
+quantizers remained separate open families. The later
+[original product binding](native-products.md) compiles the whole IQ/native
+files and replaces these separately written IQ wrappers. Its tests cover the
+product and grouped branches; CUDA device arithmetic identity remains open.
 
 The numerical oracle links the actual pinned `ggml-base` CPU dequantizers and
 FP16/BF16 conversions. It does not reuse the generated GPU arithmetic. Tests use

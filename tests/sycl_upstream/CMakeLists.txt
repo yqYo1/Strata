@@ -403,3 +403,38 @@ if(STRATA_SYCL_DEVICE_ARCH)
     target_compile_options(strata_sycl_dequant PRIVATE -fsycl-targets=spir64_gen)
     target_compile_options(original_gemm_test PRIVATE -fsycl-targets=spir64_gen)
 endif()
+
+# Keep original native decode products, IQ grouped experts and BF16 variants.
+# Generated sources lower launch/intrinsic syntax; original files remain pinned.
+execute_process(COMMAND ${Python3_EXECUTABLE} ${STRATA_ROOT}/tools/sycl/lower_cuda_products.py
+    --ggml ${STRATA_GGML_DIR} --output ${CMAKE_CURRENT_BINARY_DIR}
+    COMMAND_ERROR_IS_FATAL ANY)
+add_library(strata_sycl_original_products STATIC
+    ${CMAKE_CURRENT_BINARY_DIR}/original_native_mmvq.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/original_iq_kernels.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/original_native_bf16.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/original_bf16_gemv.cpp)
+target_include_directories(strata_sycl_original_products PRIVATE
+    ${STRATA_GGML_DIR}/ggml/include ${STRATA_GGML_DIR}/ggml/src)
+target_link_libraries(strata_sycl_original_products PUBLIC strata_sycl_cuda_frontend)
+# Q8_1 uses explicit fdiv_rn in the mechanical lowering: the compiler precision
+# flag alone still changed a half-tie on this device. Preserve native FMA here.
+# This is not proof of bit identity with CUDA's --use_fast_math device baseline.
+target_compile_options(strata_sycl_original_products PRIVATE -fsycl -fno-fast-math -ffp-contract=off
+    -fno-strict-aliasing)
+set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/original_native_mmvq.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/original_native_bf16.cpp PROPERTIES COMPILE_OPTIONS "-ffp-contract=fast")
+target_link_libraries(strata_sycl_dequant PUBLIC strata_sycl_original_products)
+if(STRATA_SYCL_DEVICE_ARCH)
+    target_compile_options(strata_sycl_original_products PRIVATE -fsycl-targets=spir64_gen)
+endif()
+
+add_executable(original_products_test products.cpp)
+target_include_directories(original_products_test PRIVATE ${STRATA_GGML_DIR}/ggml/include)
+target_link_libraries(original_products_test PRIVATE strata_sycl_original_products ggml-base)
+target_compile_options(original_products_test PRIVATE -fsycl -fno-fast-math -ffp-contract=off)
+if(STRATA_SYCL_DEVICE_ARCH)
+    target_compile_options(original_products_test PRIVATE -fsycl-targets=spir64_gen)
+endif()
+add_test(NAME original_native_products COMMAND original_products_test)
+set_tests_properties(original_native_products PROPERTIES TIMEOUT 300)

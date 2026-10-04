@@ -169,6 +169,12 @@ Native BF16/FP16 products, original row slicing, cold capture and changed-weight
 replay pass JIT/AOT checks. External BLAS workspace binding remains explicitly
 unsupported; full engine integration and new PP/TG measurements remain open.
 
+[Original native products and grouped experts](native-products.md) now bind the
+whole original MMVQ/IQ/MMVF/BF16 files to native kernels through the same stream
+registry. Their original old/new and separate/fused choices, local memory and
+changed-state graph replay pass JIT/AOT component checks. Full engine binding
+and CUDA device arithmetic identity remain open.
+
 The [MMQ stream binding](mmq-frontend.md) now connects the original public MMQ
 API to this frontend. It also fixes process-exit cleanup of an unfinished capture,
 so a fatal launch diagnostic is not hidden by a teardown synchronization error.

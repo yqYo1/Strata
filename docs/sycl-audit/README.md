@@ -135,6 +135,12 @@ event waits. The [latest host syntax inventory](host-graph-compile-results.json)
 has 19 passes and one failure. [Original GEMM and weight expansion](native-gemm.md)
 now link the complete original GEMM translation unit to native oneMKL and run
 17 quantized formats, cold graph capture and changed-weight replay. Both builds
-pass 19 related CTest programs; the real-model sample test covers six formats.
+pass 19 related CTest programs at that checkpoint; the real-model sample test covers six formats.
+[Original native products and grouped experts](native-products.md) now compile
+the complete original MMVQ/IQ/BF16 translation units, retaining old/new,
+multi-exact and v1/fused branches. Both builds pass 20 related CTest programs,
+including 17 quantized product formats, all 72 grouped format pairs and
+changed-input graph replay. A reproduced Q8_1 division half-tie now uses an
+explicit rounding operation; CUDA device bit identity remains unverified.
 Fixed BLAS workspace binding, remaining kernel families, full engine linking
 and execution remain open. No new PP/TG measurement has been established.
