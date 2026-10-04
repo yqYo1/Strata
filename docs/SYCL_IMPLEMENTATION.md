@@ -2538,3 +2538,15 @@ were excluded, including the slower fourth new coding request.
 The expanded CPU test passed all 384 cases on JIT and AOT. No GPU kernels or
 CPU/GPU assignment changed. The [IQ3_S record](../bench/results/2026-10-04-sycl-cpu-iq3s-index/run.json)
 includes the first three pairs, the added two pairs, and all component variants.
+
+An IQ4_NL single-token down prototype shared each input block across two output
+rows while keeping GGML's separate even/odd accumulators. Its production object
+was 11.66%/11.59% faster for 8/64 real experts in isolation, and 576 boundary
+cases passed after explicitly preserving signed zero in the scalar tail.
+However, three alternating engine pairs made all four decode medians slower
+by 0.13–1.77%; the median sum of the four decode times rose 0.70%. It was
+rejected and the preceding gate/up-only implementation was restored. All
+output ids and cancellation checks passed. The
+[record and rejected patch](../bench/results/2026-10-04-sycl-cpu-iq4-rows/run.json)
+also retain the slower loop-expansion and table-lookup variants. Component
+throughput alone was insufficient to justify this change.
