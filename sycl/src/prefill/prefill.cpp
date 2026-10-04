@@ -28,6 +28,7 @@
 #include "strata/kernels/qsa_decode_attn_variant.hpp"
 #include "strata/kernels/qsa_prompt_attn.hpp"
 #include "strata/kernels/qsa_select.hpp"
+#include "strata/kernels/qsa_select_variant.hpp"
 #include "strata/prefill/gemm.hpp"
 #include "strata/prefill/moe_fused.hpp"
 #include "strata/prefill/moe_fused_iq.hpp"
@@ -703,6 +704,13 @@ int prompt_attn_variant() {
         return requested >= 1 && requested <= 3 ? requested : 0;
     }();
     return variant;
+}
+bool prompt_topk_variant() {
+    static const bool enabled = [] {
+        const char* value = std::getenv("STRATA_PREFILL_TOPK_TUNED");
+        return value && std::atoi(value) == 1;
+    }();
+    return enabled;
 }
 // Step 2b: which layers' experts go through MMQ (both weight types covered; the Strata Q2_0 pack always - its blob
 // is converted to GGUF Q2_0 blocks on the gather), whether any layer keeps the FP16 path (IQ1_M), and the largest
@@ -2452,8 +2460,11 @@ bool Prefill::run(const int64_t *tokens, int64_t n, int64_t pos0,
                                                                              m.cs, active))
                             strata::kernels::qsa_block_scores(st.idx_pooled, st.idx_dead, m.q_idx + t0 * 512, steps0, nb,
                                                               m.max_blocks, s, m.sel_scores, m.cs, active);
-                        strata::kernels::qsa_block_topk(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,
-                                                        m.sel_ids + t0 * m.cap, m.cs, active);
+                        if (!prompt_topk_variant() ||
+                            !strata::kernels::qsa_block_topk_prompt_variant(m.sel_scores, steps0, nb, m.max_blocks,
+                                                                          m.cap, s, m.sel_ids + t0 * m.cap, m.cs, active))
+                            strata::kernels::qsa_block_topk(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,
+                                                            m.sel_ids + t0 * m.cap, m.cs, active);
                     }
                     // STRATA_SEL_OVERLAP (debug, D-1's question): how much do neighbouring queries' selections share?
                     // Per tile of 16 queries: the union of their selected cells against the sum of their widths.

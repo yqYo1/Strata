@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <cstring>
 #include "strata/kernels/qsa_select.hpp"
+#include "strata/kernels/qsa_select_variant.hpp"
 
 #include <cfloat>
 #include <cstdio>
@@ -629,6 +630,7 @@ constexpr int TK_PER_MAX = 66;
 constexpr int TK_PER_MAX = TK_PER;
 #endif
 
+template <int THREADS = TK_T>
 __dpct_inline__ int block_excl_scan(int v, int *s_warp, int &total) {
     auto item_ct1 = sycl::ext::oneapi::this_work_item::get_nd_item<3>();
     const int lane = item_ct1.get_local_id(2) & 31,
@@ -654,7 +656,7 @@ __dpct_inline__ int block_excl_scan(int v, int *s_warp, int &total) {
     */
     item_ct1.barrier();
     if (warp == 0) {
-        int w = s_warp[lane];
+        int w = lane < THREADS / 32 ? s_warp[lane] : 0;
         int z = w;
 #pragma unroll
         for (int o = 1; o < 32; o <<= 1) {
@@ -688,7 +690,7 @@ __dpct_inline__ int block_excl_scan(int v, int *s_warp, int &total) {
     return r;
 }
 
-template <int PER>
+template <int PER, int THREADS = TK_T, bool PARALLEL_DIGITS = false>
 /*
 DPCT1110: The total declared local variable size in device function
 block_topk_reg_kernel exceeds 128 bytes and may cause high register pressure.
@@ -701,7 +703,7 @@ __dpct_inline__ void block_topk_reg_kernel(const float *__restrict__ scores,
                                            int32_t *__restrict__ ids) {
     auto item_ct1 = sycl::ext::oneapi::this_work_item::get_nd_item<3>();
 auto &hist =
-    *sycl::ext::oneapi::group_local_memory_for_overwrite<int[TK_T / 32][256]>(
+    *sycl::ext::oneapi::group_local_memory_for_overwrite<int[THREADS / 32][256]>(
         sycl::ext::oneapi::this_work_item::get_work_group<3>());
     auto &s_warp =
         *sycl::ext::oneapi::group_local_memory_for_overwrite<int[33]>(
@@ -717,12 +719,12 @@ auto &hist =
     const int t = item_ct1.get_local_id(2), lane = t & 31, warp = t >> 5;
     if (n_kv <= width) {
 #pragma unroll
-        for (int64_t j = t; j < n_kv; j += TK_T) out[j] = (int32_t)j;
+        for (int64_t j = t; j < n_kv; j += THREADS) out[j] = (int32_t)j;
         return;
     }
     const float* sc = scores + qi * max_blocks;
     const int64_t nb = n_bid + 1;
-    const int64_t per = (nb + TK_T - 1) / TK_T;       // <= PER (the caller checks)
+    const int64_t per = (nb + THREADS - 1) / THREADS;       // <= PER (the caller checks)
     const int64_t b0 = (int64_t) t * per, b1 = (b0 + per < nb) ? b0 + per : nb;
     uint32_t key[PER];
 #pragma unroll
@@ -759,7 +761,7 @@ auto &hist =
         if (t < 256) {                                // fold the warps' histograms into warp 0's
             int s = 0;
 #pragma unroll
-            for (int w2 = 0; w2 < TK_T / 32; ++w2) s += hist[w2][t];
+            for (int w2 = 0; w2 < THREADS / 32; ++w2) s += hist[w2][t];
             hist[0][t] = s;
         }
         /*
@@ -772,7 +774,15 @@ auto &hist =
         better performance if there is no access to global memory.
         */
         item_ct1.barrier();
-        if (t == 0) {
+        if constexpr (PARALLEL_DIGITS) {
+            // Integer histogram scan, in descending digit order. The first crossing is the
+            // original threshold, and its exclusive count is the original `above` value.
+            const int count = t < 256 ? hist[0][255 - t] : 0;
+            const int before = sycl::exclusive_scan_over_group(item_ct1.get_group(), count, 0, sycl::plus<int>());
+            const int candidate = t < 256 && above + before + count >= width ? t : 256;
+            const int chosen = sycl::reduce_over_group(item_ct1.get_group(), candidate, sycl::minimum<int>());
+            if (t == chosen) { s_digit = 255 - t; s_above = above + before; }
+        } else if (t == 0) {
             int cum = above, d = 255;
 #pragma unroll
             for (; d > 0; --d) {
@@ -818,12 +828,12 @@ auto &hist =
         else if (key[j] == thr) eq += w;
     }
     int tot;
-    const int eq_before = block_excl_scan(eq, s_warp, tot);
+    const int eq_before = block_excl_scan<THREADS>(eq, s_warp, tot);
     int64_t my_eq = eq_budget - eq_before;
     if (my_eq < 0) my_eq = 0;
     if (my_eq > eq) my_eq = eq;
     const int sel = gt + (int) my_eq;
-    int64_t wpos = block_excl_scan(sel, s_warp, tot);
+    int64_t wpos = block_excl_scan<THREADS>(sel, s_warp, tot);
     int64_t eq_left = my_eq;
 #pragma unroll
     for (int j = 0; j < PER; ++j) {
@@ -1767,6 +1777,22 @@ void qsa_block_topk(const float* scores, const int32_t* steps, int64_t nq, int64
     codes. Please replace the "get_error_string_dummy(...)" with a real
     error-handling function.
     */
+}
+
+// Port-only prompt variant: keep the original selector for large or unsupported geometry.
+// Nine keys per thread cover up to 2,304 blocks, including the possibly empty tail.
+bool qsa_block_topk_prompt_variant(const float* scores, const int32_t* steps, int64_t nq,
+                                   int64_t max_blocks, int64_t cap, const QsaShapes& s,
+                                   int32_t* ids, void* stream, int64_t active_blocks) {
+    if (nq <= 0 || max_blocks <= 0 || s.idx_block != R || cap < qsa_selection_width(kTopkMaxCells, s)) return false;
+    const int64_t reach = active_blocks > 0 && active_blocks <= max_blocks ? active_blocks : max_blocks;
+    if (reach > 256 * 9) return false;
+    strata::q_of(stream)->parallel_for(
+        sycl::nd_range<3>(sycl::range<3>(1, 1, (size_t) nq * 256), sycl::range<3>(1, 1, 256)),
+        [=](sycl::nd_item<3>) [[sycl::reqd_sub_group_size(32)]] {
+            block_topk_reg_kernel<9, 256, true>(scores, steps, max_blocks, cap, ids);
+        });
+    return true;
 }
 
 }  // namespace strata::kernels
