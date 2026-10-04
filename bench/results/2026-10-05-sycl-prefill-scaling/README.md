@@ -200,5 +200,29 @@ by 1.57%. The slope of the median stage times changes from 0.9695 to 0.9251
 ms/additional token. Individual pair slopes range from 0.9643 to 0.9863 for
 the original and 0.9185 to 0.9319 for the variant. All runs transfer the same
 45.402 GB at 4,096 tokens and 46.989 GB at 8,087 tokens. These observations
-explain the attention improvement; normal elapsed-time measurements are
-required to assess overall prefill speed, and the default remains unchanged.
+explain the attention improvement; the separate normal elapsed-time
+comparison below assesses overall prefill speed. The default remains unchanged.
+
+
+The [normal elapsed-time comparison](attention/layout-study/paired-wall/summary.json)
+repeats the same three paired orders with both profiling forms and PLE preload
+disabled. It uses the same immutable binary, token prefixes, memory settings
+and 16 PLE reader threads. The OS row cache is warm. Loading the model and
+reading the final held-out prompt token during decode are outside this timer.
+All 16 complete first-head arrays and generated IDs, including the four
+excluded warm-up runs, match the accepted baseline.
+
+| Input tokens | Original prefill time | Batch 128, layout 3 prefill time | Original overall prefill | Batch 128, layout 3 overall prefill |
+| ---: | ---: | ---: | ---: | ---: |
+| 4,096 | 13.737 s | 13.648 s | 298.18 tok/s | 300.12 tok/s |
+| 8,087 | 17.560 s | 17.283 s | 460.53 tok/s | 467.93 tok/s |
+
+Each time is the median of three measured runs. At 8,087 tokens the observed
+ranges are 17.554–17.563 seconds for the original and 17.280–17.302 seconds
+for the variant: a 1.58% decrease in median latency and a 1.61% increase in
+overall prefill throughput. The 4,096-token variant has a wider range,
+13.597–13.719 seconds, versus 13.734–13.739 for the original. The slope of the
+median times is 0.9581 versus 0.9107 ms/additional token; individual variant
+pair slopes range from 0.8930 to 0.9228. Overall throughput at 8,087 tokens
+is 467.93 tok/s; the 1,098 additional tok/s from the local slope is a separate
+metric. This comparison does not include the MTP draft layer or measure decode.
