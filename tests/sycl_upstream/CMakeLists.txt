@@ -74,15 +74,19 @@ set(GGML_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GGML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(${STRATA_GGML_DIR}/ggml ${CMAKE_CURRENT_BINARY_DIR}/ggml EXCLUDE_FROM_ALL)
 
-add_library(strata_sycl_mmq STATIC
-    ${STRATA_ROOT}/src/sycl_upstream/mmq_adapter.cpp
+add_library(strata_sycl_mmq_kernels STATIC
     ${STRATA_ROOT}/src/sycl_upstream/mmq_stages.cpp
     ${STRATA_ROOT}/src/sycl_upstream/mmq_quantize.cpp)
-target_link_libraries(strata_sycl_mmq PUBLIC mmq_product ggml-base)
+target_link_libraries(strata_sycl_mmq_kernels PUBLIC mmq_product ggml-base)
+target_compile_options(strata_sycl_mmq_kernels PRIVATE -fsycl -fno-fast-math -ffp-contract=off -fno-strict-aliasing)
+target_link_options(strata_sycl_mmq_kernels PUBLIC -fsycl)
+add_library(strata_sycl_mmq STATIC ${STRATA_ROOT}/src/sycl_upstream/mmq_adapter.cpp)
+target_link_libraries(strata_sycl_mmq PUBLIC strata_sycl_mmq_kernels)
 target_compile_options(strata_sycl_mmq PRIVATE -fsycl -fno-fast-math -ffp-contract=off -fno-strict-aliasing)
 target_link_options(strata_sycl_mmq PUBLIC -fsycl)
 if(STRATA_SYCL_DEVICE_ARCH)
     target_compile_options(strata_sycl_mmq PRIVATE -fsycl-targets=spir64_gen)
+    target_compile_options(strata_sycl_mmq_kernels PRIVATE -fsycl-targets=spir64_gen)
     target_compile_definitions(strata_sycl_mmq PRIVATE
         STRATA_SYCL_MMQ_AOT_ARCH=sycl::ext::oneapi::experimental::architecture::intel_gpu_${STRATA_SYCL_DEVICE_ARCH})
     target_link_options(strata_sycl_mmq PUBLIC -fsycl-targets=spir64_gen
@@ -204,6 +208,32 @@ if(STRATA_SYCL_DEVICE_ARCH)
 endif()
 add_test(NAME original_host_cuda_frontend COMMAND cuda_frontend_test)
 set_tests_properties(original_host_cuda_frontend PROPERTIES TIMEOUT 90)
+
+# Engine-facing original MMQ API: opaque CUDA frontend handles, including
+# stream zero. The raw-queue adapter above remains a component-test target.
+# Never link both public adapters into one executable.
+add_library(strata_sycl_mmq_frontend STATIC ${STRATA_ROOT}/src/sycl_upstream/mmq_adapter.cpp)
+target_compile_definitions(strata_sycl_mmq_frontend PRIVATE STRATA_SYCL_MMQ_CUDA_FRONTEND=1)
+target_link_libraries(strata_sycl_mmq_frontend PUBLIC strata_sycl_mmq_kernels strata_sycl_cuda_frontend)
+target_compile_options(strata_sycl_mmq_frontend PRIVATE -fsycl -fno-fast-math -ffp-contract=off -fno-strict-aliasing)
+if(STRATA_SYCL_DEVICE_ARCH)
+    target_compile_options(strata_sycl_mmq_frontend PRIVATE -fsycl-targets=spir64_gen)
+    target_compile_definitions(strata_sycl_mmq_frontend PRIVATE
+        STRATA_SYCL_MMQ_AOT_ARCH=sycl::ext::oneapi::experimental::architecture::intel_gpu_${STRATA_SYCL_DEVICE_ARCH})
+    target_link_options(strata_sycl_mmq_frontend PUBLIC -fsycl-targets=spir64_gen
+        "SHELL:-Xsycl-target-backend=spir64_gen \"-device ${STRATA_SYCL_DEVICE_ARCH}\"")
+endif()
+add_executable(mmq_frontend_test mmq_frontend.cpp)
+target_link_libraries(mmq_frontend_test PRIVATE strata_sycl_mmq_frontend strata_sycl_original_host)
+target_compile_options(mmq_frontend_test PRIVATE -fsycl -fno-fast-math -ffp-contract=off -fno-strict-aliasing)
+if(STRATA_SYCL_DEVICE_ARCH)
+    target_compile_options(mmq_frontend_test PRIVATE -fsycl-targets=spir64_gen)
+endif()
+add_test(NAME original_mmq_stream_frontend COMMAND mmq_frontend_test)
+set_tests_properties(original_mmq_stream_frontend PROPERTIES TIMEOUT 120)
+add_test(NAME original_mmq_fatal_errors COMMAND ${Python3_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/check_mmq_errors.py $<TARGET_FILE:mmq_frontend_test>)
+set_tests_properties(original_mmq_fatal_errors PROPERTIES TIMEOUT 75)
 add_executable(graph_copy2d_probe EXCLUDE_FROM_ALL graph_copy2d_probe.cpp)
 target_link_libraries(graph_copy2d_probe PRIVATE strata_sycl_runtime ${STRATA_LEVEL_ZERO_LOADER})
 target_compile_options(graph_copy2d_probe PRIVATE -fsycl)

@@ -2,15 +2,20 @@
 #include "strata/sycl_upstream/mmq_adapter.hpp"
 #include "strata/sycl_upstream/mmq_product.hpp"
 #include "strata/sycl_upstream/mmq_stages.hpp"
+#ifdef STRATA_SYCL_MMQ_CUDA_FRONTEND
+#include "strata/sycl_upstream/cuda_backend.hpp"
+#endif
 #include <sycl/ext/oneapi/matrix/matrix.hpp>
 #include <sycl/ext/oneapi/experimental/device_architecture.hpp>
 #include <algorithm>
 #include <climits>
 #include <cstdio>
+#include <cstdlib>
 #include <limits>
 #include <memory>
 #include <mutex>
 #include <stdexcept>
+#include <utility>
 #include <vector>
 
 namespace strata::sycl_upstream {
@@ -49,12 +54,27 @@ bool mmq_device_fits(const sycl::device& d, int type, int64_t rows) {
 namespace strata::prefill::mmq {
 namespace {
 using namespace sycl_upstream;
+#ifdef STRATA_SYCL_MMQ_CUDA_FRONTEND
+template<class F> void dispatch(void* stream, const char* what, F&& body) {
+    const auto error = cuda::submit(static_cast<cudaStream_t>(stream), std::forward<F>(body));
+    // Match the original launch wrappers: a launch error, including a previous
+    // sticky error on this host thread, terminates the caller with a diagnostic.
+    const auto last = cudaGetLastError();
+    if (error != cudaSuccess || last != cudaSuccess) {
+        std::fprintf(stderr, "prefill mmq: %s: %s (%s)\n", what,
+            cudaGetErrorString(error != cudaSuccess ? error : last), cuda::backend_error_detail());
+        std::exit(1);
+    }
+}
+#else
 sycl::queue& queue(void* stream) {
     if (!stream) throw std::invalid_argument("SYCL MMQ requires an explicit queue");
     auto& q = *static_cast<sycl::queue*>(stream);
     if (!q.is_in_order()) throw std::invalid_argument("SYCL MMQ requires an in-order queue");
     return q;
 }
+template<class F> void dispatch(void* stream, const char*, F&& body) { body(queue(stream)); }
+#endif
 int narrow(int64_t n) {
     if (n < 0 || n > INT_MAX) throw std::invalid_argument("SYCL MMQ dimension exceeds int32 range");
     return int(n);
@@ -88,6 +108,8 @@ struct QueueState {
         // The device of this retained queue is fixed, so scratch never grows.
         if (capacity && bytes > capacity) throw std::logic_error("MMQ scratch plan changed for one device");
         if (!scratch) {
+            if (q.ext_oneapi_get_state() == sycl::ext::oneapi::experimental::queue_state::recording)
+                throw std::invalid_argument("MMQ scratch must be warmed before graph capture");
             scratch = static_cast<float*>(sycl::malloc_device(bytes, q));
             if (!scratch) throw std::bad_alloc();
             capacity = bytes;
@@ -135,25 +157,30 @@ size_t matrix_bytes(int t, int64_t rows, int64_t cols) {
 size_t q8_bytes(int64_t rows, int64_t cols) { return sycl_upstream::mmq_q8_bytes(rows, cols); }
 void quantize(const float* x, const int32_t* ids, void* xq, int t, int64_t cols, int64_t ld, int64_t rows, void* stream) {
     if (rows <= 0) return;
-    sycl_upstream::mmq_quantize(queue(stream), x, ids, static_cast<sycl_upstream::MmqBlock*>(xq), ggml_type(t), cols, ld, rows);
+    dispatch(stream, "quantize", [&](sycl::queue& q) {
+        return sycl_upstream::mmq_quantize(q, x, ids, static_cast<sycl_upstream::MmqBlock*>(xq), ggml_type(t), cols, ld, rows);
+    });
 }
 Context::Context(): ctx_(new State) {}
 Context::~Context() { delete static_cast<State*>(ctx_); }
 void Context::run(const Product& p, void* stream) {
     if (p.n <= 0 || p.max_rows <= 0) return;
-    auto& q = queue(stream);
-    const sycl_upstream::MmqProduct product{p.w, ggml_type(p.type), narrow(p.w_rows), narrow(p.w_cols), p.expert_bytes,
-        p.n, static_cast<const sycl_upstream::MmqBlock*>(p.xq), p.bounds, p.ids, narrow(p.total_rows), narrow(p.max_rows),
-        p.dst, narrow(p.ld_dst)};
-    if (!supported(p.type)) throw std::invalid_argument("unsupported SYCL MMQ product type");
-    auto& state = *static_cast<State*>(ctx_);
-    std::lock_guard lock(state.mutex);
-    auto& entry = state.get(q);
-    const auto plan = sycl_upstream::mmq_plan(product, entry.compute_units);
-    sycl_upstream::mmq_product(entry.q, product, plan, entry.reserve(plan.scratch_bytes));
+    dispatch(stream, "mul_mat_q", [&](sycl::queue& q) {
+        const sycl_upstream::MmqProduct product{p.w, ggml_type(p.type), narrow(p.w_rows), narrow(p.w_cols), p.expert_bytes,
+            p.n, static_cast<const sycl_upstream::MmqBlock*>(p.xq), p.bounds, p.ids, narrow(p.total_rows), narrow(p.max_rows),
+            p.dst, narrow(p.ld_dst)};
+        if (!supported(p.type)) throw std::invalid_argument("unsupported SYCL MMQ product type");
+        auto& state = *static_cast<State*>(ctx_);
+        std::lock_guard lock(state.mutex);
+        auto& entry = state.get(q);
+        const auto plan = sycl_upstream::mmq_plan(product, entry.compute_units);
+        return sycl_upstream::mmq_product(entry.q, product, plan, entry.reserve(plan.scratch_bytes));
+    });
 }
 void gather_native(const void* g, const void* u, size_t half, const void* d, size_t bytes, void* gu, void* dn, void* stream) {
-    sycl_upstream::mmq_gather_native(queue(stream), g, u, half, d, bytes, gu, dn);
+    dispatch(stream, "gather_native", [&](sycl::queue& q) {
+        return sycl_upstream::mmq_gather_native(q, g, u, half, d, bytes, gu, dn);
+    });
 }
 bool gather_native_group(const GatherGroup& g, size_t up, size_t half, size_t down, size_t bytes,
     void* gu, size_t gs, void* dn, size_t ds, void* stream) {
@@ -162,17 +189,29 @@ bool gather_native_group(const GatherGroup& g, size_t up, size_t half, size_t do
     uintptr_t alignment = uintptr_t(gu) | uintptr_t(dn) | up | half | down | bytes | gs | ds;
     for (int e = g.first; e < g.n; ++e) alignment |= uintptr_t(g.blob[e]);
     if (alignment % 16) return false;
-    return sycl_upstream::mmq_gather_native_group(queue(stream), g, up, half, down, bytes, gu, gs, dn, ds);
+    dispatch(stream, "gather_native_group", [&](sycl::queue& q) {
+        sycl::event completion;
+        if (!sycl_upstream::mmq_gather_native_group(q, g, up, half, down, bytes, gu, gs, dn, ds, &completion))
+            throw std::logic_error("MMQ group admission changed during submission");
+        return completion;
+    });
+    return true;
 }
 void gather_strata_q2(const uint8_t* blob, void* gu, void* dn, void* stream) {
-    sycl_upstream::mmq_gather_strata_q2(queue(stream), blob, gu, dn);
+    dispatch(stream, "gather_strata_q2", [&](sycl::queue& q) {
+        return sycl_upstream::mmq_gather_strata_q2(q, blob, gu, dn);
+    });
 }
 void swiglu(const float* gu, float* h, int64_t rows, int64_t ff, bool interleaved, void* stream) {
     if (rows <= 0) return;
-    sycl_upstream::mmq_swiglu(queue(stream), gu, h, rows, ff, interleaved);
+    dispatch(stream, "swiglu", [&](sycl::queue& q) {
+        return sycl_upstream::mmq_swiglu(q, gu, h, rows, ff, interleaved);
+    });
 }
 void iota(int32_t* dst, int64_t n, void* stream) {
     if (n <= 0) return;
-    sycl_upstream::mmq_iota(queue(stream), dst, n);
+    dispatch(stream, "iota", [&](sycl::queue& q) {
+        return sycl_upstream::mmq_iota(q, dst, n);
+    });
 }
 } // namespace strata::prefill::mmq

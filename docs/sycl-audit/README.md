@@ -116,4 +116,7 @@ now cover shared-page slices, read-only files and release lifetime, including a
 reproduced driver cache defect and validation with a fixed driver. The first
 [CUDA source frontend](runtime-frontend.md) now runs the original graph manager,
 pinned arena and expert loader without editing them. The remaining host/kernel
-bindings and full engine integration remain open.
+bindings and full engine integration remain open. The [MMQ stream binding](mmq-frontend.md)
+now connects every original public MMQ entry point to this runtime, including
+changed-input graphs and concurrent host submissions. An [original host compile
+inventory](host-compile-results.json) records the next integration blockers.

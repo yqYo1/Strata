@@ -159,11 +159,18 @@ struct Runtime::Impl {
 };
 Runtime::Runtime(const sycl::device& d): impl_(std::make_unique<Impl>(d)) {}
 Runtime::~Runtime() {
-    try { impl_->abort_all(); synchronize_device(); }
+    try { prepare_teardown(); }
     catch (const std::exception& e) {
         std::fprintf(stderr, "SYCL runtime teardown: %s\n", e.what());
         std::terminate();
     }
+}
+void Runtime::prepare_teardown() {
+    {
+        std::lock_guard lock(impl_->mutex);
+        impl_->abort_all();
+    }
+    synchronize_device();
 }
 sycl::context Runtime::context() const { return impl_->context; }
 sycl::device Runtime::device() const { return impl_->device; }

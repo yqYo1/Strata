@@ -109,3 +109,7 @@ symbols. The AOT enum mapping currently targets Intel GPU architecture names.
 Optional MMQ formats, non-MMQ fallback implementations and other inference
 families remain open. These component checks are not CUDA device parity,
 full-model state/logit agreement or a PP/TG speed result.
+
+The [engine-facing MMQ stream binding](mmq-frontend.md) now uses opaque source-runtime
+handles and the original graph manager. The raw-queue adapter documented above
+remains a separate component-test target sharing the same kernels.

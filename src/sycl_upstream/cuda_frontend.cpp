@@ -69,7 +69,10 @@ struct Domain {
     ~Domain() {
         // Staging must remain allocated until queued copies finish. Runtime
         // subsequently releases its retained graph/retired-stream resources.
-        try { runtime.synchronize_device(); }
+        // Fatal upstream launch checks use std::exit, so an unfinished capture
+        // may still exist here. Discard it before draining submitted work;
+        // otherwise the teardown exception hides the original launch error.
+        try { runtime.prepare_teardown(); }
         catch(...) { std::terminate(); }
     }
     Runtime::Stream stream(cudaStream_t s) { return s ? streams.get(s)->id : 0; }

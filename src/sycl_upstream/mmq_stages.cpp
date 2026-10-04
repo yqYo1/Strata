@@ -34,14 +34,14 @@ sycl::event mmq_gather_native(sycl::queue& q, const void* gate, const void* up,
 }
 bool mmq_gather_native_group(sycl::queue& q, const prefill::mmq::GatherGroup& g,
     size_t up_off, size_t na, size_t down_off, size_t nc,
-    void* gu, size_t gu_stride, void* dn, size_t dn_stride) {
+    void* gu, size_t gu_stride, void* dn, size_t dn_stride, sycl::event* completion) {
     if (g.first < 0 || g.n <= g.first || g.n > prefill::mmq::kGatherGroupMax) return false;
     uintptr_t alignment = uintptr_t(gu) | uintptr_t(dn) | up_off | na | down_off | nc | gu_stride | dn_stride;
     for (int e = g.first; e < g.n; ++e) alignment |= uintptr_t(g.blob[e]);
     if (alignment % 16 != 0) return false;
     ordered(q);
     // Capture the pointer table by value, as CUDA's GroupArgs kernel argument.
-    q.parallel_for(sycl::nd_range<2>({size_t(g.n - g.first), rounded((2 * na + nc) / 16)}, {1, 256}),
+    auto event = q.parallel_for(sycl::nd_range<2>({size_t(g.n - g.first), rounded((2 * na + nc) / 16)}, {1, 256}),
         [=](sycl::nd_item<2> it) {
             const int e = g.first + int(it.get_global_id(0));
             const size_t i = it.get_global_id(1), a = na / 16, c = nc / 16;
@@ -52,6 +52,7 @@ bool mmq_gather_native_group(sycl::queue& q, const prefill::mmq::GatherGroup& g,
             else if (i < 2 * a) ab[i] = src[up_off / 16 + i - a];
             else if (i < 2 * a + c) cd[i - 2 * a] = src[down_off / 16 + i - 2 * a];
         });
+    if (completion) *completion = event;
     return true;
 }
 sycl::event mmq_gather_strata_q2(sycl::queue& q, const uint8_t* blob, void* gu, void* dn) {

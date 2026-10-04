@@ -70,6 +70,10 @@ public:
     void synchronize(Stream);
     void synchronize(const Event&);
     void synchronize_device();
+    // Teardown only, with no concurrent callers: discard unfinished capture
+    // definitions, then wait for previously submitted work. Owners of memory
+    // and pageable-copy staging call this before destroying that storage.
+    void prepare_teardown();
     // Allocation/registration are unsafe on the thread owning an active
     // thread-local capture. Called by the memory component before mutation.
     void check_memory_operation();
