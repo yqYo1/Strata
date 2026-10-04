@@ -52,7 +52,8 @@ actual CUDA comparison. Extreme subnormals, NaN and infinity inputs are not cove
 For all-zero blocks the source reaches NaN-to-char conversion (`0 * inf`); the new
 component writes zero codes explicitly. Those bytes still need CUDA confirmation.
 
-This is not a full MMQ product, a full engine port, or a speed improvement. The
+This quantizer alone is not a full MMQ product, a full engine port, or a speed
+improvement. A separate [product component](mmq-product.md) now consumes its layout. The
 CUDA translation-unit checklist remains unverified for complete `moe_mmq.cu`.
 The root build and existing upstream CPU/host processing have not been modified.
 

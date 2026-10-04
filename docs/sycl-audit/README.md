@@ -94,4 +94,6 @@ measured the old layout and do not measure upstream MMQ reproduction.
 The isolated [MMQ quantizer](../../src/sycl_upstream/mmq_quantize.cpp) implements
 the upstream 2D activation layout. Its [validation record](mmq-quantizer.md)
 separates source-reference agreement from still-missing CUDA-device comparisons.
-The product consumer and full engine are not connected to this component yet.
+The [first routed product consumer](mmq-product.md) now uses this layout for all nine
+default MMQ formats. Stream-K scheduling, the full adapter, and engine integration
+remain open; this is not a complete translation-unit parity verdict.
