@@ -2,7 +2,8 @@
 
 This measurement separates expert-weight transfer work from the way prompt
 latency grows with input length. The device is an Intel Arc B570 10 GB, with a
-Ryzen 5 5600X and 64 GB of system RAM. The model is the native IQ3_S
+Ryzen 5 5600X and 128 GB of installed system RAM (125.72 GiB reported by
+`MemTotal`). The model is the native IQ3_S
 Qwen3.8-Flash-Next pack. The selected compute runtime is 26.35.39758.10.
 
 The earlier 826- and 4,007-token measurements used different context limits and
@@ -53,3 +54,59 @@ of CPU staging. All 248,320 first-logit floats were bit-identical to the
 unprofiled accepted AOT binary, and the eight generated token IDs matched.
 The profiled prefill wall time was 13,830.73 ms; phase markers introduce
 overhead, so this is not a speed improvement over the unprofiled baseline.
+
+The first length sweep fixes the context at 8,192, the prefill chunk at 8,192,
+and the cache at 128 slots, with MTP omitted. All three inputs fit one chunk.
+The wall-time result is the median of three runs, ordered short-to-long,
+long-to-short, then short-to-long. Transfer measurements are from one separate
+profiled run per length, rather than from the uninstrumented speed runs.
+
+| Input tokens | Median wall time | Overall prefill | Profiled expert bytes | Profiled active DMA |
+| ---: | ---: | ---: | ---: | ---: |
+| 2,048 | 12.657 s | 161.81 tok/s | 42.496 GB | 6.674 s |
+| 4,096 | 17.340 s | 236.22 tok/s | 45.402 GB | 7.129 s |
+| 8,087 | 24.582 s | 328.98 tok/s | 46.989 GB | 7.374 s |
+
+Between the two longest inputs, wall time grows by 7.243 seconds for 3,991
+additional tokens: 1.815 ms/token, or 551.05 additional tokens per second.
+This is a measured local slope, including routing, attention, and PLE reads;
+it is not the GPU's pure arithmetic throughput. The transferred expert bytes
+grow by 1.587 GB over the same interval. The 8,087-token profiled run reads
+90,360 SSD pages for the PLE table; the prompt path reports 6.169 seconds of
+PLE handling, most of it waiting for the row gather.
+
+The model files are on ZFS (`rpool/USERDATA/yayoi`, 128 KiB records,
+compression off, `primarycache=metadata`), and the direct reader uses
+the Linux default of 16 blocking-read threads. This storage and reader setting
+is part of the measurement condition. It affects the token-dependent row
+reads as well as the GPU work. Future comparisons keep the file and GPU
+settings fixed and report any change to the reader concurrency explicitly.
+
+All nine wall runs produce finite first logits that match the corresponding
+profiled run bit for bit across all 248,320 values. The generated token also
+matches at each input length. See the [profiled record](profile/run.json),
+[wall record](wall/run.json), and [parity checks](profile-wall-parity.json).
+
+Increasing `STRATA_IO_THREADS` from 16 to 64 did not improve the longest-pair
+slope: 1.833 ms/token versus 1.815. PLE handling times were also similar. All
+nine runs retain the baseline's first-logit bits. The [64-thread record](io64/run.json)
+is an experiment, rather than a new default.
+
+The CPU-only [PLE probe](../../../sycl/tools/ple_read_probe.cpp) calls the
+original table gather and decoder. Its [record](ple-probe/run.json) separates
+cold reads from page-cache hits: the first 8,087-token mmap gather took
+21.098 seconds, and the repeated gather took 0.157 seconds. The later direct
+reads also benefited from the warmed pages. Their speed is not evidence that
+64 threads beat 16. The embedding hashes agree in all modes and repetitions.
+
+`--preload-ple` is an explicit diagnostic mode. It completes the same PLE
+gather before the GPU/expert-transfer timer, reuses its embedding, and reports
+the preload separately. The CLI's enclosing timer still includes it. It
+requires one chunk, and does not disable the PLE or replace its values.
+The [preloaded record](preloaded/run.json) has one profiled run per length:
+GPU/expert-transfer stage times of 12.267, 14.705, and 18.598 seconds. The
+4,096-to-8,087 local slope is 0.975 ms/token (1,025 additional tokens/s).
+This diagnostic slope is not overall prefill throughput or a measured speed
+improvement. All three first-logit arrays match the unmodified baseline bit
+for bit. The extra phase markers separate PLE read waits from combine and
+hyper-connection write/normalization time.

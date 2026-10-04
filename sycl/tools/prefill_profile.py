@@ -36,6 +36,9 @@ def main():
     parser.add_argument("--chunk", type=int, default=4096)
     parser.add_argument("--max-context", type=int, default=8192)
     parser.add_argument("--expert-cache", type=int, default=512)
+    parser.add_argument("--ple-io", choices=("direct", "mmap"), default="direct")
+    parser.add_argument("--preload-ple", action="store_true",
+                        help="Diagnostic: finish PLE gather before the GPU/transfer timer; report both times")
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--timeout", type=int, default=600)
     parser.add_argument("--mtp", type=Path, help="Also include production draft-KV prompt processing")
@@ -60,6 +63,9 @@ def main():
     env.update(STRATA_PREFILL_FIRST="0", STRATA_PREFILL_RING="8")
     env.pop("STRATA_PREFILL_TIMING", None)
     env.pop("STRATA_PREFILL_TRANSFER_TIMING", None)
+    env.pop("STRATA_PREFILL_PRELOAD_PLE", None)
+    if opts.preload_ple:
+        env["STRATA_PREFILL_PRELOAD_PLE"] = "1"
     if opts.mode != "wall":
         env["STRATA_PREFILL_TRANSFER_TIMING"] = "1"
     if opts.mode == "profile":
@@ -69,7 +75,8 @@ def main():
         "exe": str(exe), "binary_sha256": sha256(exe),
         "fixture": str(opts.tokens_file.resolve()), "fixture_sha256": sha256(opts.tokens_file),
         "lengths": lengths, "chunk": opts.chunk, "max_context": opts.max_context,
-        "expert_cache": opts.expert_cache, "mtp": str(opts.mtp) if opts.mtp else None,
+        "expert_cache": opts.expert_cache, "ple_io": opts.ple_io, "preload_ple": opts.preload_ple,
+        "mtp": str(opts.mtp) if opts.mtp else None,
         "env": {k: v for k, v in env.items() if k.startswith(("STRATA_", "SYCL_", "ONEAPI_", "NEO_"))
                 or k == "LD_LIBRARY_PATH"},
         "notes": [
@@ -79,6 +86,7 @@ def main():
             "Copy, CPU staging, and compute overlap. Do not add them or subtract DMA time from wall time.",
             "The local wall-time slope includes input-dependent routing and attention costs.",
             "Profiler results need a separate run without phase markers to check instrumentation overhead.",
+            "With preload_ple, transfer.wall_ms excludes the separately reported preload; cli_wall_ms includes it.",
         ],
         "runs": [],
     }
@@ -103,7 +111,7 @@ def main():
                     "--no-prefill-borrow", "--expert-cache", str(opts.expert_cache),
                     "--expert-profile", str(opts.expert_profile.resolve()), "--expert-cache-per-layer",
                     "--pool-workers", "5", "--pcie-frac", "0", "--adapt-swaps", "0",
-                    "--suffix-draft", "0", "--greedy", "--stats"]
+                    "--ple-io", opts.ple_io, "--suffix-draft", "0", "--greedy", "--stats"]
             if opts.mtp:
                 args += ["--mtp", str(opts.mtp.resolve())]
             start = time.monotonic()
@@ -119,7 +127,8 @@ def main():
                       "exit_code": rc, "process_wall_seconds": time.monotonic() - start,
                       "log": log.name, "input_sha256": sha256(fixture)}
             for prefix, key in (("strata prefill transfer: ", "transfer"),
-                                ("strata prefill phases: ", "phases")):
+                                ("strata prefill phases: ", "phases"),
+                                ("strata prefill preload: ", "preload")):
                 found = [line[len(prefix):] for line in text.splitlines() if line.startswith(prefix)]
                 if found:
                     record[key] = json.loads(found[-1])
@@ -131,6 +140,9 @@ def main():
             chunk_match = re.search(r"strata generate: prefill \d+ tokens in (\d+) chunks", text)
             if chunk_match:
                 record["chunks"] = int(chunk_match[1])
+            ple_match = re.search(r"strata generate: prefill .*; PLE ([\d.]+) ms", text)
+            if ple_match:
+                record["ple_ms"] = float(ple_match[1])
             if "transfer" in record:
                 # The engine captures this before querying/printing profiling
                 # records; its CLI timer also includes that reporting work.

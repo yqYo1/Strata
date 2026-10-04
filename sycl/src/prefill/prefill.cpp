@@ -1493,11 +1493,11 @@ namespace {
 // are folded at every MoE layer's host sync, after which all of them have completed.
 enum PfPhase { kPfStart, kPfHc, kPfGdn, kPfQsa, kPfQsaIdx, kPfQsaSel, kPfQsaAttn, kPfRouter, kPfHostGroup, kPfGather,
                kPfWaitCopy, kPfDequant, kPfGemmGU, kPfGemmD, kPfCombine, kPfPle, kPfKvStage, kPfGdnConv, kPfGdnRec, kPfGdnOut,
-               kPfCount };
+               kPfPleRead, kPfGrWrite, kPfCount };
 const char* const kPfNames[kPfCount] = {"embed+steps", "hc read", "gdn", "qsa proj", "qsa indexer", "qsa select",
                                         "qsa attn", "router+shared", "host grouping", "gather", "wait copy", "dequant",
                                         "gemm gate/up", "gemm down", "combine", "ple", "kv stage", "gdn conv+gates",
-                                        "gdn recurrence", "gdn out proj"};
+                                        "gdn recurrence", "gdn out proj", "ple read wait", "hc write+norm"};
 struct PfTimer {
     bool on = std::getenv("STRATA_PREFILL_TIMING") != nullptr;
     std::vector<dpct::event_ptr> ev;
@@ -1568,7 +1568,8 @@ struct ExpertTransferTimer {
         if (on) copies.push_back({event, (uint64_t) bytes, layer});
         return event;
     }
-    void report(int64_t tokens, int64_t chunks, int64_t layers, double wall_ms, double host_copy_ms) const {
+    void report(int64_t tokens, int64_t chunks, int64_t layers, double wall_ms, double host_copy_ms,
+                double ple_preload_ms) const {
         if (!on) return;
         uint64_t bytes = 0, active_ns = 0, first = UINT64_MAX, last = 0;
         std::vector<uint64_t> layer_bytes((size_t) layers), layer_ns((size_t) layers), layer_copies((size_t) layers);
@@ -1585,9 +1586,9 @@ struct ExpertTransferTimer {
         const double span_ms = copies.empty() ? 0 : (double) (last - first) / 1e6;
         std::fprintf(stderr, "strata prefill transfer: {\"tokens\":%lld,\"chunks\":%lld,\"expert_copies\":%zu,"
                              "\"expert_bytes\":%llu,\"dma_active_ms\":%.6f,\"copy_span_ms\":%.6f,"
-                             "\"host_copy_worker_ms\":%.6f,\"wall_ms\":%.6f,\"layers\":[",
+                             "\"host_copy_worker_ms\":%.6f,\"wall_ms\":%.6f,\"ple_preload_ms\":%.6f,\"layers\":[",
                      (long long) tokens, (long long) chunks, copies.size(), (unsigned long long) bytes,
-                     active_ms, span_ms, host_copy_ms, wall_ms);
+                     active_ms, span_ms, host_copy_ms, wall_ms, ple_preload_ms);
         for (int64_t l = 0; l < layers; ++l)
             std::fprintf(stderr, "%s{\"layer\":%lld,\"copies\":%llu,\"bytes\":%llu,\"dma_active_ms\":%.6f}",
                          l ? "," : "", (long long) l, (unsigned long long) layer_copies[(size_t) l],
@@ -1665,7 +1666,7 @@ bool Prefill::run(const int64_t *tokens, int64_t n, int64_t pos0,
     const core::OnDevice on_device(m.device);
     const core::ModelGeometry& g = *m.g;
     core::SessionState& ss = *m.ss;
-    const auto t_start = Clock::now();
+    auto t_start = Clock::now();
     const int64_t LB = stage_lb_, LE = stage_le_;
     // the next stage reads chunk c on a thread while this one reads chunk c + 1 (declared first: an early return
     // waits for it before anything it reads goes away)
@@ -1674,6 +1675,7 @@ bool Prefill::run(const int64_t *tokens, int64_t n, int64_t pos0,
     int hand_buf = 0;
     double host_sync_ms = 0, host_chunk_ms = 0, host_setup_ms = 0;   // STRATA_PREFILL_TIMING: the host's share
     double grp_wait_ms = 0, grp_cpu_ms = 0;   // the per-layer grouping: the drain wait, the host's loops
+    double ple_read_ms = 0, ple_wait_ms = 0;
     strata::kernels::QsaShapes s = strata::kernels::qsa_real_shapes();
     s.n_head = g.n_head; s.n_head_kv = g.n_head_kv; s.head_dim = g.head_dim; s.idx_n_head = g.idx_q_heads;
     s.idx_dim = g.idx_key_dim;
@@ -1712,7 +1714,8 @@ bool Prefill::run(const int64_t *tokens, int64_t n, int64_t pos0,
         if (c0 == 0 && first_chunk > 0 && first_chunk < m.T && n > 2 * first_chunk) return first_chunk;
         return std::min(m.T, n - c0);
     };
-    auto ple_gather = [&m, &ss, tokens, n, prev0, &chunk_len](int64_t c0, int buf, std::string& e) -> bool {
+    auto ple_gather = [&m, &ss, tokens, n, prev0, &chunk_len, &ple_read_ms](int64_t c0, int buf, std::string& e) -> bool {
+        const auto started = Clock::now();
         const int64_t T = chunk_len(c0);
         auto at = [&](int64_t i) { return i < 2 ? prev0[i] : (int32_t) tokens[i - 2]; };   // prev0, then the tokens
         int32_t pv[2] = {at(c0), at(c0 + 1)};
@@ -1723,11 +1726,31 @@ bool Prefill::run(const int64_t *tokens, int64_t n, int64_t pos0,
             pv[0] = pv[1];
             pv[1] = tok;
         }
-        return ss.ple.table->gather_batch(m.ple_rows[buf].data(), (size_t) T, m.ple_emb_host[buf], e);
+        const bool ok = ss.ple.table->gather_batch(m.ple_rows[buf].data(), (size_t) T, m.ple_emb_host[buf], e);
+        ple_read_ms += ms_since(started); // read only after this future has joined
+        return ok;
     };
     std::string ple_next_err;
     std::future<bool> ple_next;             // declared after everything it reads: an early return waits for it
     int ple_buf = 0;
+    // Diagnostic only: isolate the prompt's GPU/weight-streaming work from
+    // cold PLE row reads. The CLI's enclosing timer still includes the preload.
+    // Reuse the exact same gathered embedding, rather than replacing the PLE.
+    double ple_preload_ms = 0;
+    const char* preload_env = std::getenv("STRATA_PREFILL_PRELOAD_PLE");
+    if (ple_on && preload_env && preload_env[0] == '1') {
+        if (chunk_len(0) != n) {
+            err = "prefill: STRATA_PREFILL_PRELOAD_PLE needs one chunk (STRATA_PREFILL_FIRST=0)";
+            return false;
+        }
+        const auto started = Clock::now();
+        if (!ple_gather(0, ple_buf, err)) return false;
+        ple_preload_ms = ms_since(started);
+        ple_next = std::async(std::launch::deferred, [] { return true; });
+        t_start = Clock::now();
+        std::fprintf(stderr, "strata prefill preload: {\"tokens\":%lld,\"ple_ms\":%.6f}\n",
+                     (long long) n, ple_preload_ms);
+    }
 
     for (int64_t c0 = 0; c0 < n; c0 += chunk_len(c0)) {
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
@@ -1832,10 +1855,13 @@ bool Prefill::run(const int64_t *tokens, int64_t n, int64_t pos0,
             if (!ple_pending) return true;
             ple_pending = false;
             const auto tp = Clock::now();
+            pt.mark(kPfPleRead, cs);
             if (!ple_next.get()) {
                 err = ple_next_err;
                 return false;
             }
+            ple_wait_ms += ms_since(tp);
+            pt.mark(kPfPle, cs);
             /*
             DPCT1124: cudaMemcpyAsync is migrated to asynchronous memcpy
             API. While the origin API might be synchronous, it depends on the
@@ -3477,6 +3503,7 @@ bool Prefill::run(const int64_t *tokens, int64_t n, int64_t pos0,
                     wnn = need(vn, half == 0 ? "hc_ffn_norm.weight" : "hc_attn_norm.weight", err);
                     if (!wnn) return false;
                 }
+                pt.mark(kPfGrWrite, cs);
                 if (wnn) {
                     gr_write_norm_rs(m.R, m.bo, m.inj, HC, (const float*) wnn->data, EPS, m.grs, m.xn16, T, m.cs,
                                      m.xn16_lo);
@@ -3639,7 +3666,8 @@ bool Prefill::run(const int64_t *tokens, int64_t n, int64_t pos0,
     }
     stats_.ms_total += ms_since(t_start);
     transfers.report(n, stats_.chunks - chunks_start, g.n_layers, ms_since(t_start),
-                     (double) (m.stager->host_copy_ns.load(std::memory_order_relaxed) - host_copy_start) / 1e6);
+                     (double) (m.stager->host_copy_ns.load(std::memory_order_relaxed) - host_copy_start) / 1e6,
+                     ple_preload_ms);
     if (pt.on) {
         pt.fold();
         double total = 0.0;
@@ -3657,8 +3685,9 @@ bool Prefill::run(const int64_t *tokens, int64_t n, int64_t pos0,
                              "waiting for each chunk %.0f ms, after each chunk (the draft layer, progress) %.0f ms, "
                              "PLE %.0f ms\n", host_setup_ms, host_sync_ms, host_chunk_ms, stats_.ms_ple);
         std::fprintf(stderr, "strata prefill phases: {\"gpu_timeline_ms\":%.6f,\"host_setup_ms\":%.6f,"
-                             "\"host_chunk_wait_ms\":%.6f,\"host_after_chunk_ms\":%.6f,\"phase_ms\":{",
-                     total, host_setup_ms, host_sync_ms, host_chunk_ms);
+                             "\"host_chunk_wait_ms\":%.6f,\"host_after_chunk_ms\":%.6f,"
+                             "\"ple_gather_wall_ms\":%.6f,\"ple_host_wait_ms\":%.6f,\"phase_ms\":{",
+                     total, host_setup_ms, host_sync_ms, host_chunk_ms, ple_read_ms, ple_wait_ms);
         for (int i = 0; i < kPfCount; ++i)
             std::fprintf(stderr, "%s\"%s\":%.6f", i ? "," : "", kPfNames[i], pt.ms[i]);
         std::fprintf(stderr, "}}\n");
