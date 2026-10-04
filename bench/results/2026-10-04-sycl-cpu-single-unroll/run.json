@@ -6,7 +6,7 @@
   },
   "source": "GGML arch/x86/quants.c AVX2 IQ3_XXS18 and IQ2_S22 bodies, cloned into temporary source; upstream dependency untouched",
   "oracle": "Actual ggml_get_type_traits_cpu(type)->vec_dot from current production libggml-cpu.a; x86 quants.c.o SHA2563ddd98750acafa2e8059f81b139785006189931418d922cc875030a4ba9d8bfa",
-  "change": "Only inner ib32 loop unroll_count(1/2/4); variant0 copies original without pragma. Same FMA and hsum_float_8 tree.",
+  "change": "Among clones, only inner ib32 unroll_count(1/2/4) changes; variant0 has no pragma. All clones use F16C FP16 conversion, whereas the linked GGML x86 oracle uses its FP16 lookup table. Same finite scale values, FMA and hsum_float_8 tree; variant0 controls the common adaptation.",
   "workload": "Real GGUF gate/up matrices N2560 FF640; 8 or64 distinct experts; random valid Q8_K activation; NT1; three repeats per sample, five alternating samples per candidate; stores gate dot, up dot and SwiGLU output for bitwise finite checks",
   "cpu_compiler": "icx2026.1 -O3 -DNDEBUG -std=gnu11 -march=znver3 -mtune=znver3 -fno-associative-math",
   "validation": "All160 samples completed; all gate/up/SwiGLU values bitwise equal and finite. No compilation or GPU tests overlapped performance runs. Existing workstation services active.",

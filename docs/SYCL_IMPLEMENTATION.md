@@ -2480,6 +2480,9 @@ for IQ3_XXS and four times for IQ2_S. Integer lanes, FMA order and GGML's
 horizontal float reduction are preserved. This selection follows the existing
 multi-token dispatch, respects `STRATA_NO_IQ256`, and leaves other formats,
 AVX-512 CPUs and compiler targets on their existing paths. It is off by default.
+The tuned kernels convert FP16 scales with F16C; the linked GGML oracle uses
+its FP16 lookup table. This common change in the screened variants preserves
+finite scale values, and its cost is included in the production measurements.
 
 On the Ryzen 5 5600X, the production CPU object processed 64 distinct real
 experts 13.39% faster for IQ3_XXS and 5.22% faster for IQ2_S in an isolated
