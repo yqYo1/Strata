@@ -83,9 +83,11 @@ The updated [host syntax inventory](host-timing-compile-results.json) reports
 13 passing and seven failing translation units, compared with 11/9 before timing.
 At that checkpoint, prefill's compile blockers were device get/set, free-memory
 query and peer copies. [Device selection and free VRAM](runtime-devices.md) now
-resolve the first three API families and run the original expert cache. The
-remaining peer, device metadata, graph upload/inspection and kernel/GEMM bindings
-are open, as are complete engine linking and model results.
+resolve the first three API families and run the original expert cache.
+[Peer APIs and the original stager](runtime-peer.md) subsequently resolve
+prefill's syntax blockers and verify pinned-ring reuse. Device metadata, graph
+upload/inspection and remaining kernel/GEMM bindings are open, as are complete
+engine linking and model results.
 
 ```sh
 # Use the driver environment from runtime-memory.md first.

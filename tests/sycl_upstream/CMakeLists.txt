@@ -294,3 +294,45 @@ if(STRATA_SYCL_DEVICE_ARCH)
     target_link_options(sysman_probe PRIVATE -fsycl-targets=spir64_gen
         "SHELL:-Xsycl-target-backend=spir64_gen \"-device ${STRATA_SYCL_DEVICE_ARCH}\"")
 endif()
+
+# Original prefill and peer/remote host objects compile with their real MMQ,
+# fused and native declarations. No disabled-feature source stubs are injected.
+add_library(strata_sycl_original_peer_host STATIC ${STRATA_ROOT}/src/prefill/prefill.cpp
+    ${STRATA_ROOT}/src/core/peer_experts.cpp ${STRATA_ROOT}/src/core/remote_experts.cpp)
+target_compile_definitions(strata_sycl_original_peer_host PRIVATE
+    STRATA_NATIVE_EXPERTS=1 STRATA_PREFILL_MMQ=1 STRATA_PREFILL_FUSED=1)
+target_compile_options(strata_sycl_original_peer_host PRIVATE -ffunction-sections -fdata-sections)
+target_link_libraries(strata_sycl_original_peer_host PUBLIC strata_sycl_mmq_frontend strata_sycl_original_cache_host)
+add_executable(runtime_peer_test runtime_peer.cpp)
+target_compile_options(runtime_peer_test PRIVATE -fsycl)
+target_link_options(runtime_peer_test PRIVATE -Wl,--gc-sections)
+target_link_libraries(runtime_peer_test PRIVATE strata_sycl_original_peer_host)
+if(STRATA_SYCL_DEVICE_ARCH)
+    target_compile_options(runtime_peer_test PRIVATE -fsycl-targets=spir64_gen)
+endif()
+add_test(NAME original_host_peer_api COMMAND runtime_peer_test)
+set_tests_properties(original_host_peer_api PROPERTIES TIMEOUT 60)
+
+add_executable(original_prefill_stager_test prefill_stager.cpp)
+target_compile_definitions(original_prefill_stager_test PRIVATE
+    STRATA_NATIVE_EXPERTS=1 STRATA_PREFILL_MMQ=1 STRATA_PREFILL_FUSED=1)
+target_compile_options(original_prefill_stager_test PRIVATE -fsycl -ffunction-sections -fdata-sections)
+target_link_options(original_prefill_stager_test PRIVATE -Wl,--gc-sections)
+target_link_libraries(original_prefill_stager_test PRIVATE strata_sycl_mmq_frontend)
+if(STRATA_SYCL_DEVICE_ARCH)
+    target_compile_options(original_prefill_stager_test PRIVATE -fsycl-targets=spir64_gen)
+endif()
+add_test(NAME original_prefill_stager_ring COMMAND original_prefill_stager_test)
+set_tests_properties(original_prefill_stager_ring PROPERTIES TIMEOUT 60)
+
+# The real ExpertSource key function/typeinfo and layout are retained when the
+# stager test supplies a transient source through the original virtual interface.
+add_library(strata_sycl_original_source_host STATIC ${STRATA_ROOT}/src/core/expert_source.cpp
+    ${STRATA_ROOT}/src/kernels/cpu/expert_layout.cpp)
+target_compile_definitions(strata_sycl_original_source_host PRIVATE STRATA_NATIVE_EXPERTS=1)
+target_compile_options(strata_sycl_original_source_host PRIVATE -ffunction-sections -fdata-sections)
+target_link_libraries(strata_sycl_original_source_host PUBLIC strata_sycl_mmq_frontend)
+target_link_libraries(original_prefill_stager_test PRIVATE strata_sycl_original_source_host)
+
+add_test(NAME original_prefill_stager_model_size COMMAND original_prefill_stager_test --model-sized)
+set_tests_properties(original_prefill_stager_model_size PROPERTIES TIMEOUT 60)

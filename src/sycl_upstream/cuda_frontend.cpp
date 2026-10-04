@@ -5,6 +5,7 @@
 #include <limits>
 #include <map>
 #include <mutex>
+#include <set>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -64,11 +65,12 @@ struct Staging {
     std::optional<sycl::event> completion;
 };
 struct Domain {
+    const int ordinal;
     Runtime runtime;
     Memory memory{runtime};
     std::mutex staging_mutex;
     std::vector<Staging> staging;
-    Domain(const sycl::device& device,const sycl::context& context): runtime(device,context) {}
+    Domain(int ordinal,const sycl::device& device,const sycl::context& context): ordinal(ordinal),runtime(device,context) {}
     ~Domain() {
         // Staging must remain allocated until queued copies finish. Runtime
         // subsequently releases its retained graph/retired-stream resources.
@@ -103,6 +105,8 @@ struct Devices {
     std::vector<std::unique_ptr<Domain>> domains;
     std::vector<std::pair<sycl::platform,sycl::context>> contexts;
     std::mutex mutex;
+    std::mutex peer_mutex;
+    std::set<std::pair<int,int>> peers;
     Handles<cudaStream_t,Stream> streams;
     Handles<cudaEvent_t,Event> events;
     Handles<cudaGraph_t,Definition> definitions;
@@ -131,7 +135,7 @@ struct Devices {
                 for(const auto& d:visible) if(d.get_platform()==platform) peers.push_back(d);
                 contexts.emplace_back(platform,sycl::context(peers));c=std::prev(contexts.end());
             }
-            domains[ordinal]=std::make_unique<Domain>(visible[ordinal],c->second);
+            domains[ordinal]=std::make_unique<Domain>(ordinal,visible[ordinal],c->second);
         }
         return *domains[ordinal];
     }
@@ -157,7 +161,7 @@ std::optional<Allocation> allocation(const void* p) {
     for(auto* d:devices().live()) if(auto info=d->memory.info(p)) return Allocation{d,*info};
     return {};
 }
-void drain_host_users(Domain& owner) {
+void drain_context_users(Domain& owner) {
     for(auto* d:devices().live()) if(d->runtime.context()==owner.runtime.context()) d->runtime.synchronize_device();
 }
 void require_portable(unsigned flags,unsigned portable) {
@@ -168,9 +172,10 @@ void require_portable(unsigned flags,unsigned portable) {
 void accessible(Domain& d,const void* p) {
     if(auto a=allocation(p)) {
         require(a->owner->runtime.context()==d.runtime.context(),cudaErrorNotSupported);
-        // Cross-device memory access needs the native peer binding; reject it
-        // until that binding exists instead of submitting an invalid USM copy.
-        require(a->info.kind!=Memory::Kind::device || a->owner==&d,cudaErrorNotSupported);
+        if(a->info.kind==Memory::Kind::device && a->owner!=&d) {
+            std::lock_guard lock(devices().peer_mutex);
+            require(devices().peers.contains({d.ordinal,a->owner->ordinal}),cudaErrorNotSupported);
+        }
     }
 }
 std::optional<Memory::Info> range(const void* p, size_t bytes) {
@@ -213,6 +218,7 @@ const char* cudaGetErrorName(cudaError_t e) noexcept {
         CASE(cudaSuccess) CASE(cudaErrorInvalidValue) CASE(cudaErrorMemoryAllocation)
         CASE(cudaErrorInitializationError) CASE(cudaErrorInvalidDevice) CASE(cudaErrorInvalidResourceHandle)
         CASE(cudaErrorNotReady) CASE(cudaErrorNotSupported) CASE(cudaErrorStreamCaptureUnsupported)
+        CASE(cudaErrorPeerAccessAlreadyEnabled) CASE(cudaErrorPeerAccessNotEnabled)
         CASE(cudaErrorStreamCaptureInvalidated) CASE(cudaErrorUnknown)
 #undef CASE
         default:return "unrecognized error code";
@@ -227,6 +233,8 @@ const char* cudaGetErrorString(cudaError_t e) noexcept {
         case cudaErrorInvalidDevice:return "invalid device ordinal";
         case cudaErrorInvalidResourceHandle:return "invalid resource handle";
         case cudaErrorNotReady:return "device not ready";
+        case cudaErrorPeerAccessAlreadyEnabled:return "peer access already enabled";
+        case cudaErrorPeerAccessNotEnabled:return "peer access not enabled";
         case cudaErrorNotSupported:return "operation not supported by the SYCL frontend";
         case cudaErrorStreamCaptureUnsupported:return "operation not permitted during stream capture";
         case cudaErrorStreamCaptureInvalidated:return "stream capture invalidated";
@@ -238,20 +246,58 @@ cudaError_t cudaPeekAtLastError() noexcept { return last_error; }
 cudaError_t cudaGetDeviceCount(int* out) noexcept {return api([&]{require(out);*out=int(devices().visible.size());});}
 cudaError_t cudaGetDevice(int* out) noexcept {return api([&]{require(out);devices().validate(current_device);*out=current_device;});}
 cudaError_t cudaSetDevice(int ordinal) noexcept {return api([&]{devices().get(ordinal);current_device=ordinal;});}
+cudaError_t cudaInitDevice(int ordinal,unsigned device_flags,unsigned flags) noexcept {return api([&]{
+    devices().validate(ordinal);require(flags==0);
+    // The installed SYCL runtime offers no per-device CUDA spin/yield policy.
+    // Report that request explicitly; the original remote preflight already
+    // clears this optional policy error and retains native default scheduling.
+    require((device_flags&~cudaDeviceMapHost)==0,cudaErrorNotSupported);
+    require(!(device_flags&cudaDeviceMapHost) || devices().visible[ordinal].has(sycl::aspect::usm_host_allocations),cudaErrorNotSupported);
+    devices().get(ordinal); // Initialization does not change the calling thread's device.
+});}
+cudaError_t cudaDeviceCanAccessPeer(int* out,int ordinal,int peer) noexcept {return api([&]{
+    require(out);devices().validate(ordinal);devices().validate(peer);
+    *out=ordinal!=peer && devices().visible[ordinal].ext_oneapi_can_access_peer(devices().visible[peer]);
+});}
+cudaError_t cudaDeviceEnablePeerAccess(int peer,unsigned flags) noexcept {return api([&]{
+    require(flags==0);devices().validate(peer);devices().validate(current_device);
+    require(peer!=current_device,cudaErrorInvalidDevice);
+    auto& from=devices().get(current_device);auto& to=devices().get(peer);
+    require(from.runtime.context()==to.runtime.context(),cudaErrorNotSupported);
+    auto& source=devices().visible[current_device];auto& target=devices().visible[peer];
+    require(source.ext_oneapi_can_access_peer(target),cudaErrorInvalidDevice);
+    from.runtime.check_memory_operation();to.runtime.check_memory_operation();
+    std::lock_guard lock(devices().peer_mutex);
+    auto [it,inserted]=devices().peers.emplace(current_device,peer);
+    require(inserted,cudaErrorPeerAccessAlreadyEnabled);
+    // Reserve ledger storage first; no allocation may fail after native access
+    // succeeds. On native failure the attempted entry is rolled back.
+    try {source.ext_oneapi_enable_peer_access(target);} catch(...) {devices().peers.erase(it);throw;}
+});}
+cudaError_t cudaDeviceDisablePeerAccess(int peer) noexcept {return api([&]{
+    devices().validate(peer);devices().validate(current_device);require(peer!=current_device,cudaErrorInvalidDevice);
+    auto& from=devices().get(current_device);from.runtime.synchronize_device();
+    std::lock_guard lock(devices().peer_mutex);
+    const auto it=devices().peers.find({current_device,peer});require(it!=devices().peers.end(),cudaErrorPeerAccessNotEnabled);
+    devices().visible[current_device].ext_oneapi_disable_peer_access(devices().visible[peer]);devices().peers.erase(it);
+});}
 cudaError_t cudaMemGetInfo(size_t* free,size_t* total) noexcept {return api([&]{require(free && total);const auto value=domain().memory.available();*free=value.free;*total=value.total;});}
 cudaError_t cudaMalloc(void** p,size_t n) noexcept {return api([&]{require(p);*p=nullptr;*p=domain().memory.allocate_device(n);});}
 cudaError_t cudaHostAlloc(void** p,size_t n,unsigned flags) noexcept {return api([&]{require(p);*p=nullptr;
     require((flags&~(cudaHostAllocPortable|cudaHostAllocMapped))==0,cudaErrorNotSupported);require_portable(flags,cudaHostAllocPortable);
     domain().runtime.check_memory_operation();*p=devices().host(current_device).memory.allocate_host(n);});}
 cudaError_t cudaMallocHost(void** p,size_t n) noexcept {return cudaHostAlloc(p,n,0);}
-cudaError_t cudaFree(void* p) noexcept {return api([&]{if(p){auto a=allocation(p);require(bool(a));a->owner->memory.free_device(p);}});}
-cudaError_t cudaFreeHost(void* p) noexcept {return api([&]{if(p){auto a=allocation(p);require(bool(a));drain_host_users(*a->owner);a->owner->memory.free_host(p);}});}
+cudaError_t cudaFree(void* p) noexcept {return api([&]{if(p){auto a=allocation(p);require(bool(a));
+    // Peer queues can use this device allocation too. Drain all runtimes in
+    // the shared context before the owner's ledger releases the native USM.
+    drain_context_users(*a->owner);a->owner->memory.free_device(p);}});}
+cudaError_t cudaFreeHost(void* p) noexcept {return api([&]{if(p){auto a=allocation(p);require(bool(a));drain_context_users(*a->owner);a->owner->memory.free_host(p);}});}
 cudaError_t cudaHostRegister(void* p,size_t n,unsigned flags) noexcept {return api([&]{
     require((flags&~(cudaHostRegisterPortable|cudaHostRegisterMapped|cudaHostRegisterReadOnly))==0,cudaErrorNotSupported);
     require_portable(flags,cudaHostRegisterPortable);domain().runtime.check_memory_operation();
     for(auto* d:devices().live())require(!d->memory.overlaps(p,n));
     devices().host(current_device).memory.register_host(p,n,flags&cudaHostRegisterReadOnly);});}
-cudaError_t cudaHostUnregister(void* p) noexcept {return api([&]{require(p);auto a=allocation(p);require(bool(a));drain_host_users(*a->owner);a->owner->memory.unregister_host(p);});}
+cudaError_t cudaHostUnregister(void* p) noexcept {return api([&]{require(p);auto a=allocation(p);require(bool(a));drain_context_users(*a->owner);a->owner->memory.unregister_host(p);});}
 cudaError_t cudaHostGetDevicePointer(void** out,void* p,unsigned flags) noexcept {return api([&]{require(out && flags==0);*out=nullptr;auto a=allocation(p);require(bool(a));require(a->owner->runtime.context()==domain().runtime.context(),cudaErrorNotSupported);*out=a->owner->memory.device_alias(p);});}
 cudaError_t cudaStreamCreate(cudaStream_t* s) noexcept {return cudaStreamCreateWithFlags(s,0);}
 cudaError_t cudaStreamCreateWithFlags(cudaStream_t* s,unsigned flags) noexcept {return api([&]{require(s);*s=nullptr;require((flags&~cudaStreamNonBlocking)==0);
@@ -284,6 +330,17 @@ cudaError_t cudaStreamWaitEvent(cudaStream_t s,cudaEvent_t e,unsigned flags) noe
 cudaError_t cudaLaunchHostFunc(cudaStream_t s,cudaHostFn_t fn,void* data) noexcept {return api([&]{require(fn);auto& d=stream_domain(s);d.runtime.host_function(stream_id(s),[=]{fn(data);});});}
 cudaError_t cudaMemcpy(void* dst,const void* src,size_t n,cudaMemcpyKind k) noexcept {return api([&]{copy(dst,src,n,k,nullptr,false);});}
 cudaError_t cudaMemcpyAsync(void* dst,const void* src,size_t n,cudaMemcpyKind k,cudaStream_t s) noexcept {return api([&]{copy(dst,src,n,k,s,true);});}
+cudaError_t cudaMemcpyPeerAsync(void* dst,int dst_device,const void* src,int src_device,size_t n,cudaStream_t s) noexcept {return api([&]{
+    devices().validate(dst_device);devices().validate(src_device);stream_domain(s);stream_id(s);
+    if(!n)return;
+    const auto destination=allocation(dst),source=allocation(src);
+    require(destination && source && destination->info.kind==Memory::Kind::device && source->info.kind==Memory::Kind::device);
+    require(destination->owner->ordinal==dst_device && source->owner->ordinal==src_device);
+    // Native copies keep this stream's ordering, capture and asynchronous
+    // lifetime. Foreign USM requires enabled native access in its direction.
+    // CUDA's no-P2P staging fallback remains unsupported, not a fake success.
+    copy(dst,src,n,cudaMemcpyDeviceToDevice,s,true);
+});}
 cudaError_t cudaMemcpy2DAsync(void* dst,size_t dp,const void* src,size_t sp,size_t width,size_t height,cudaMemcpyKind k,cudaStream_t stream) noexcept {return api([&]{
     require(width<=dp && width<=sp);auto& d=stream_domain(stream);const auto s=stream_id(stream);
     accessible(d,dst);accessible(d,src);k=direction(dst,src,k);

@@ -17,6 +17,7 @@ enum cudaError_t {
     cudaSuccess=0, cudaErrorInvalidValue=1, cudaErrorMemoryAllocation=2,
     cudaErrorInitializationError=3, cudaErrorInvalidDevice=101,
     cudaErrorInvalidResourceHandle=400, cudaErrorNotReady=600,
+    cudaErrorPeerAccessAlreadyEnabled=704, cudaErrorPeerAccessNotEnabled=705,
     cudaErrorNotSupported=801, cudaErrorStreamCaptureUnsupported=900,
     cudaErrorStreamCaptureInvalidated=901, cudaErrorUnknown=999
 };
@@ -33,6 +34,7 @@ enum cudaStreamCaptureStatus {
     cudaStreamCaptureStatusInvalidated=2
 };
 inline constexpr unsigned cudaStreamDefault=0, cudaStreamNonBlocking=1;
+inline constexpr unsigned cudaDeviceScheduleSpin=1, cudaDeviceMapHost=8;
 inline constexpr unsigned cudaEventDefault=0, cudaEventBlockingSync=1,
     cudaEventDisableTiming=2, cudaEventInterprocess=4;
 inline constexpr unsigned cudaHostAllocDefault=0, cudaHostAllocPortable=1,
@@ -46,6 +48,10 @@ cudaError_t cudaPeekAtLastError() noexcept;
 cudaError_t cudaGetDeviceCount(int*) noexcept;
 cudaError_t cudaGetDevice(int*) noexcept;
 cudaError_t cudaSetDevice(int) noexcept;
+cudaError_t cudaInitDevice(int, unsigned, unsigned) noexcept;
+cudaError_t cudaDeviceCanAccessPeer(int*, int, int) noexcept;
+cudaError_t cudaDeviceEnablePeerAccess(int, unsigned = 0) noexcept;
+cudaError_t cudaDeviceDisablePeerAccess(int) noexcept;
 cudaError_t cudaMemGetInfo(size_t*, size_t*) noexcept;
 cudaError_t cudaMalloc(void**, size_t) noexcept;
 cudaError_t cudaMallocHost(void**, size_t) noexcept;
@@ -74,6 +80,7 @@ cudaError_t cudaStreamWaitEvent(cudaStream_t, cudaEvent_t, unsigned = 0) noexcep
 cudaError_t cudaLaunchHostFunc(cudaStream_t, cudaHostFn_t, void*) noexcept;
 cudaError_t cudaMemcpy(void*, const void*, size_t, cudaMemcpyKind) noexcept;
 cudaError_t cudaMemcpyAsync(void*, const void*, size_t, cudaMemcpyKind, cudaStream_t = nullptr) noexcept;
+cudaError_t cudaMemcpyPeerAsync(void*, int, const void*, int, size_t, cudaStream_t = nullptr) noexcept;
 cudaError_t cudaMemcpy2DAsync(void*, size_t, const void*, size_t, size_t, size_t, cudaMemcpyKind, cudaStream_t = nullptr) noexcept;
 cudaError_t cudaMemset(void*, int, size_t) noexcept;
 cudaError_t cudaMemsetAsync(void*, int, size_t, cudaStream_t = nullptr) noexcept;

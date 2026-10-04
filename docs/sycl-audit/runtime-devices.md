@@ -24,9 +24,10 @@ Visible devices in a Level Zero platform share a SYCL context. Host allocations
 and registrations use one ledger per platform, preventing duplicate native page
 imports after a device switch. Host release drains all live runtimes in that
 context before releasing storage. Portable host flags are rejected when visible
-devices span platforms with separate contexts. Cross-device USM operations still
-require the peer binding; they currently return an explicit unsupported error.
-No peer capability or CUDA compute capability is invented.
+devices span platforms with separate contexts. Cross-device USM operations were
+unsupported at this checkpoint; the subsequent [peer binding](runtime-peer.md)
+now uses native capability and directed enable/disable operations. No peer
+capability or CUDA compute capability is invented.
 
 An uncaptured event can be copied under its owner's runtime mutex and waited on
 by a different runtime in the same context. A later record cannot retarget the
@@ -98,10 +99,12 @@ The [results](runtime-devices-results.json) record source/binary hashes, origina
 source identity, complete build/test logs, the native probe and the earlier test
 failure that exposed UR's environment-variable change. All 256 original manifest
 files remain unchanged. The [host syntax inventory](host-device-compile-results.json)
-now has 14 passes and six failures. Prefill's remaining syntax errors are the
-four `cudaMemcpyPeerAsync` calls. Peer APIs, remote initialization flags, graph
-upload/inspection, device metadata and remaining device/GEMM kernel bindings
-are open, as are full linking, model-state parity and PP/TG results.
+at this checkpoint has 14 passes and six failures; prefill's four syntax errors
+are `cudaMemcpyPeerAsync` calls. The subsequent [peer/stager validation](runtime-peer.md)
+resolves those errors and compiles original peer/remote host files, bringing the
+[latest inventory](host-peer-compile-results.json) to 17 passes and three failures.
+Graph upload/inspection, device metadata, remaining device/GEMM bindings, full
+linking, model-state parity and PP/TG results remain open.
 
 ```sh
 # Select the isolated driver libraries as in runtime-memory.md first.
@@ -119,5 +122,4 @@ Primary references: [CUDA device management](https://docs.nvidia.com/cuda/cuda-r
 [CUDA memory queries](https://docs.nvidia.com/cuda/cuda-runtime-api/cuda_runtime_api/group__CUDART__MEMORY.html),
 [Sysman initialization](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/sysman/PROG.html)
 and [native peer access](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_peer_access.asciidoc).
-The peer extension is a reference for the next binding; it is not implemented
-by this change.
+The subsequent native peer binding is documented in [runtime-peer.md](runtime-peer.md).

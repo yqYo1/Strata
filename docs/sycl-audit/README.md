@@ -124,5 +124,8 @@ inventory](host-compile-results.json) records the next integration blockers.
 [GPU event timing](runtime-timing.md) now compiles the original layer/session host
 files and runs the original stage timer. Its [host syntax checkpoint](host-timing-compile-results.json)
 records 13 passes and seven failures. [Device selection and free VRAM](runtime-devices.md)
-now run the original expert cache, bringing the [latest host syntax inventory](host-device-compile-results.json)
-to 14 passes and six failures. Full engine linking and execution remain open.
+now run the original expert cache, bringing that [host syntax checkpoint](host-device-compile-results.json)
+to 14 passes and six failures. [Peer APIs and the original prefill stager](runtime-peer.md)
+now compile the original prefill/peer/remote host files and verify stager reuse
+with small and original-size expert blobs. The [latest host syntax inventory](host-peer-compile-results.json)
+has 17 passes and three failures. Full engine linking and execution remain open.
