@@ -2583,3 +2583,18 @@ continue to leave packing off. No decode throughput gain is claimed.
 The [measurement record](../bench/results/2026-10-04-sycl-xmx-signspread/run.json)
 contains samples, hashes, flags and GPU metadata. JIT and AOT each passed all
 41 tests with the CPU gate/up optimization enabled.
+
+### Rejected four-part XMX reduction (2026-10-04)
+
+A loop forming four partials preserved the original XOR-8/4/2/1 FP32 tree
+while reducing raw exact tile-8 GPU code to about 29–33% of its previous size.
+JIT and B570 AOT each passed all three MMQ tests (50 geometries). However,
+IQ2_S tile-8 acquired 1,600 bytes of scratch in raw mode and 1,728 bytes in
+packed mode, with the same 128-GRF setting.
+
+One raw-mode screening pair on the B570/5600X gave 8,945.5→9,199.8 ms for
+826 tokens and 26,535.0→26,924.7 ms for 4,007 tokens. All output ids matched.
+No owned build or other GPU test overlapped measurement; existing workstation
+services remained active. This single pair did not support adoption. The
+[record and rejected patch](../bench/results/2026-10-04-sycl-xmx-quarter/run.json)
+retain the code-size, scratch, correctness and end-to-end evidence.
