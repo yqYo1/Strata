@@ -2894,3 +2894,17 @@ prefill/decode cancellation and eight-token recovery. No decode-speed gain
 is claimed. Both local text presets enable direct output; their previous
 configs are backed up. The [measurement record](../bench/results/2026-10-04-sycl-prompt-direct/run.json)
 contains every timing, binary hash, validation result and reproduction details.
+
+### Parallel prompt exponent trial (2026-10-04)
+
+Two B570 attention-only trials distributed the softmax exponentials across
+all work-items while preserving the selected-cell and sum order. Both passed
+the AOT prompt-attention oracle and bitwise comparisons against the accepted
+serial path, including the 512-query, 4,096-cell helper. Adding two barriers
+per chunk changed its median from 48.47 to 49.39 ms. Reusing existing barriers
+changed it from 48.46 to 47.60 ms. Each arm had nine timed calls and direct
+output enabled. These are synthetic kernel timings, not full-model prefill
+rates. Neither trial is adopted; the barrier-reuse patch is retained for
+comparison with further memory-access changes. The accepted engine binary
+and sources were restored. The [trial record](../bench/results/2026-10-04-sycl-prompt-exp/run.json)
+contains the samples and both patches.
