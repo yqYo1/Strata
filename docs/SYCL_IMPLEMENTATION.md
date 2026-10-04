@@ -2724,3 +2724,32 @@ twice), prefill/decode cancellation and eight-token recovery matched the
 preceding fixture. The two local text presets select this option; their prior
 configs are backed up. The [measurement record](../bench/results/2026-10-04-sycl-prefill-events/run.json)
 contains every sample, settings, hashes and validation scope.
+
+### Prefill device trace and CPU placement (2026-10-04)
+
+On the B570/5600X with the preceding exact XMX tile-8 settings, a diagnostic
+build retained copy and XMX events until prefill completed. For 4,007 tokens
+it recorded 24,071 host-to-device copies (49.27 GB) taking 7,939.59 ms on the
+GPU, and 2,396 XMX launches taking 9,200.02 ms. The event span was 26,591.41 ms.
+Captured intervals did not overlap on the shared queue. Other kernels and
+host gaps were not captured, so the difference is not an idle-time estimate.
+The diagnostic hooks add overhead and are not normal performance timings.
+
+The same run allocated 1,372,400 expert/token tiles but only 249,636 contained
+rows: 81.81% were empty. The kernel returns early for such tiles; this count
+does not imply that they consume 81.81% of execution time. The 826-token run
+had 79.03% empty tiles. This identifies launch compaction as a further screen.
+
+Linux thread snapshots also confirmed that the three prefill staging workers
+and the transfer issuer inherited the session thread's CPU-0 affinity. A
+separate experiment assigned the staging workers to CPUs 1–3 and the issuer
+to CPU 4, which are distinct physical cores on this 5600X. The decode expert
+pool already used cores 1–5 and was not changed.
+
+With the same prototype binary and normal execution, affinity off measured
+26,446.9 / 8,886.3 ms for 4,007 / 826 tokens. Two affinity-on runs measured
+26,622.2 and 26,433.0 ms / 9,441.4 and 8,876.0 ms respectively. All six runs
+returned the same eight output ids. The change gave no repeatable improvement
+and was removed. The accepted source and AOT binary were restored; no local
+CPU-placement setting was enabled. The [diagnostic and screen record](../bench/results/2026-10-04-sycl-prefill-affinity/run.json)
+includes the experimental patch and all samples.
