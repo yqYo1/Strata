@@ -130,7 +130,7 @@ are correctness checks; their server times are not a speed comparison.
 
 ## B570 AOT validation
 
-The [AOT validation](aot-validation/summary.json) uses target `bmg_g21` and
+The [AOT validation](aot-validation/summary.json) uses target `bmg-g21` and
 binary SHA256 `7a8e306d9574109751d7daedec6787b7480c3442a14ef953dd314446a8f6f7b0`.
 [All 29 CTests](aot-validation/ctest.log) pass without skips. The integrated
 [GDN test](aot-validation/gdn-parity.log) matches every state and output bit
