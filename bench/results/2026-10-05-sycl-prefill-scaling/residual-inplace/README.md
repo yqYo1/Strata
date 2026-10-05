@@ -62,6 +62,13 @@ python3 check_full_context.py --stage cli
 python3 check_full_context.py --stage serve
 ```
 
+Repeat the CLI/serve checks for the combined opt-in GCC build using
+`--executable ~/.local/state/strata-sycl/cpu-gcc-probe/engine-gcc`. Alternate
+executables have separate report directories and their hashes are recorded.
+Both builds require successful full-length GPU execution. GCC-build CLI
+overflow refusals are recorded in `boundary-gcc-262144`; they do not establish
+prefill/decoding correctness.
+
 `check_residual.py` compares every head float, every FP32 residual row and all
 dumped persistent state against original same-configuration references. It
 includes all-GPU, mixed GPU/RAM, all-RAM, a single chunk, a short first chunk and

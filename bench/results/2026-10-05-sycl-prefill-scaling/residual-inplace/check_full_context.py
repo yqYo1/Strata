@@ -11,9 +11,10 @@ p.add_argument('--context',type=int,default=262144)
 p.add_argument('--serve-chunk',type=int,default=128)
 p.add_argument('--gpu-rows',type=int,default=0)
 p.add_argument('--recovery',type=Path,default=Path.home()/'.local/state/strata-sycl/residual-inplace-recovery')
+p.add_argument('--executable',type=Path,help='Frozen alternate engine; its reports use a separate directory')
 p.add_argument('--stage',choices=['boundary','cli','serve'],required=True)
 a=p.parse_args();root=Path(__file__).resolve().parents[4];recovery=a.recovery
-exe=recovery/'strata-upstream-arc-residual-inplace2-jit'
+exe=a.executable.resolve() if a.executable else recovery/'strata-upstream-arc-residual-inplace2-jit'
 ref=json.loads((recovery/'reference.json').read_text());args0=ref['runs'][0]['args']
 def value(k):return args0[args0.index(k)+1]
 env=dict(os.environ,**ref['env'])
@@ -22,7 +23,7 @@ for k in list(env):
 env.update(STRATA_IO_THREADS='16',STRATA_PREFILL_RING='8',STRATA_PREFILL_FIRST='0',STRATA_PREFILL_ATTN_BATCH='128',STRATA_PREFILL_ATTN_LAYOUT='4',STRATA_PREFILL_TOPK_TUNED='1',STRATA_GDN_KEYHEAD='0',STRATA_GDN_KEYHEAD_TUNED='1',STRATA_PREFILL_COMPACT='2',STRATA_PREFILL_LAYER_MAJOR='1',STRATA_PREFILL_LAYER_MAJOR_R_INPLACE='1',STRATA_PREFILL_LAYER_MAJOR_R_GPU=str(a.gpu_rows),STRATA_PREFILL_RELEASE_CACHE='1',STRATA_PREFILL_CACHE_ALLOC='vmm',STRATA_PREFILL_CACHE_RESTORE='ram',SYCL_CACHE_PERSISTENT='1')
 source=list(map(int,(recovery/'coding-context-256k-tokens.txt').read_text().split()))
 assert len(source)>=a.context and a.context>=64
-out=recovery/f'{a.stage}-{a.context}';out.mkdir(exist_ok=True)
+out=recovery/(f'{a.stage}-{a.context}'+('-'+exe.stem if a.executable else ''));out.mkdir(exist_ok=True)
 report=dict(stage=a.stage,context=a.context,completed=False,runs=[],binary_sha256=hashlib.sha256(exe.read_bytes()).hexdigest(),env={k:v for k,v in env.items() if k.startswith(('STRATA_','ONEAPI_','SYCL_')) or k=='LD_LIBRARY_PATH'})
 def save():(out/'summary.json').write_text(json.dumps(report,indent=2)+'\n')
 def finite_head(path):
