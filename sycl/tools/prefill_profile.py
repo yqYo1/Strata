@@ -39,7 +39,8 @@ def main():
     parser.add_argument("--max-context", type=int, default=8192)
     parser.add_argument("--expert-cache", type=int, default=512)
     parser.add_argument("--kv", choices=("fp16", "int8", "q4_0", "k8v4"), default="fp16")
-    parser.add_argument("--ple-io", choices=("direct", "mmap"), default="direct")
+    parser.add_argument("--ple-io", choices=("direct", "mmap", "ram"), default="direct",
+                        help="Production PLE mode; ram loads the full table at startup and attempts to lock it")
     parser.add_argument("--preload-ple", action="store_true",
                         help="Diagnostic: finish PLE gather before the GPU/transfer timer; report both times")
     parser.add_argument("--repeats", type=int, default=3)
@@ -104,6 +105,7 @@ def main():
             "Layer-major activation_bytes count host/device residual transfers separately from quantized expert weight transfers.",
             "device_residual_bytes count copies within VRAM; total_transfer_bytes includes only expert weights and host/device residual copies.",
             "serial_layer_load_wall_ms measures layer-major preload phases, including CPU staging and DMA; it is not pure DMA time.",
+            "With ple_io=ram, table loading happens at startup, outside prefill wall time but inside process_wall_seconds; ple_table_locked records whether locking succeeded.",
         ],
         "runs": [],
     }
@@ -171,6 +173,10 @@ def main():
             ple_match = re.search(r"strata generate: prefill .*; PLE ([\d.]+) ms", text)
             if ple_match:
                 record["ple_ms"] = float(ple_match[1])
+            table_match = re.search(r"strata generate: PLE table (locked in RAM|loaded \(not locked\)) \(--ple-io ram\) in ([\d.]+) s", text)
+            if table_match:
+                record.update(ple_table_locked=table_match[1] == "locked in RAM",
+                              ple_table_startup_seconds=float(table_match[2]))
             if "transfer" in record:
                 # The engine captures this before querying/printing profiling
                 # records; its CLI timer also includes that reporting work.
