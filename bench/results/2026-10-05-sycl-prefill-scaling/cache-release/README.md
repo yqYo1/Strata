@@ -64,7 +64,39 @@ timings are not performance medians.
 The current direct-RAM implementation also passed the same eight full-head,
 all-residual-row and persistent-state comparisons (`direct-ram-proof`). All 30
 registered GPU tests passed: the first run passed 29, and the PLE test passed
-when rerun with its required GGUF fixture path (`tests`). Server graph recreation
-and long-context capacity are under validation. `build-manifest.json` identifies the frozen binary and source.
-Results will be added after finite controllers finish; there is no measured
-winning cache policy yet.
+when rerun with its required GGUF fixture path (`tests`). `build-manifest.json`
+identifies the frozen binary and source.
+
+## Actual server graph recreation
+
+Six policies, four requests each, passed normal MTP generation, repeated
+requests and checkpoint restoration (`serve`). Each policy produced the same
+complete finite first head, all generated IDs and printed logprobs for all
+requests, and the same final dumped persistent state bytes.
+
+Each process has two fresh 1,024-token prefill segments, with 128-token chunks
+and a 128-slot expert cache. The second fresh segment follows decode, so the
+rebuild case really replaces graphs that have already executed. The table is
+that **single second-segment observation**, not a repeated-process median.
+It includes preparation, release, allocation, weight restoration and any graph
+recreation. It does not include the rest of prefill's compute time.
+
+| Cache policy | Physical VRAM released | Lifecycle time |
+| --- | ---: | ---: |
+| Full snapshot to RAM, fixed address | 384 MiB | 278.334 ms |
+| Full direct RAM restore, fixed address | 384 MiB | 53.514 ms |
+| Half physical release, snapshot to RAM | 192 MiB | 113.237 ms |
+| Half physical release, direct RAM restore | 192 MiB | 24.676 ms |
+| Ordinary reallocation, direct RAM restore, recreate graphs | 325 MiB | 153.111 ms |
+
+The full logical payload is 325 MiB. Fixed-address physical storage is padded
+to 384 MiB. Consequently half physical release restores 133 MiB of logical
+payload, not half of 325 MiB. Graph recreation took 102.940 ms in the second
+fresh segment, included in 153.111 ms. First-time graph creation took 588.045 ms
+in this process; do not treat it as the warm recreation cost.
+
+Here, ordinary RAM restoration plus graph recreation beats snapshotting to RAM
+at a fixed address. Keeping the address and restoring directly from the existing
+RAM arena has the lowest full-release lifecycle time in these observations.
+These costs alone do not decide which cache policy gives the fastest prefill.
+The 64K capacity and complete prefill timing comparison is still running.
