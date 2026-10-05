@@ -388,3 +388,9 @@ additional tokens/s; it is distinct from overall throughput. All twelve
 complete finite first heads and IDs match the accepted baseline. Short and
 long normal-MTP checkpoint checks also pass. The option is
 `STRATA_PREFILL_ATTN_LAYOUT=4`; the default layout remains 0.
+
+The query-order change also passes all 30 B570 `bmg-g21` AOT tests, full
+4K/8K model-head comparisons and short/long normal-MTP checkpoint checks.
+The [AOT record](attention-query-order/aot-validation/summary.json) contains
+the binary hash, test results and correctness-run wall times; the speed
+estimate above is from the three JIT CLI pairs.

@@ -1,0 +1,25 @@
+29/30 Testing: qsa_decode_attn_query_order_parity
+29/30 Test: qsa_decode_attn_query_order_parity
+Command: "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-aot/qsa_prompt_attn_parity" "8192" "129" "1" "128" "4"
+Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-aot
+"qsa_decode_attn_query_order_parity" start time: Oct 05 10:52 JST
+Output:
+----------------------------------------------------------
+Fallback batch 128, layout 4 vs original 32 queries; require finite, bit-identical outputs
+PASS int8 ctx 8192, 129 queries: vs FP64 old 2.38e-06 new 2.38e-06 (output scale 3.38); new vs old 0 (0 of scale); 4.703 -> 4.002 ms per chunk (1.18x)
+PASS k8v4 ctx 8192, 129 queries: vs FP64 old 4.93e-06 new 4.93e-06 (output scale 6.96); new vs old 0 (0 of scale); 5.852 -> 5.017 ms per chunk (1.17x)
+PASS k8v4 ctx 1500, 129 queries: vs FP64 old 4.01e-06 new 4.01e-06 (output scale 6.7); new vs old 0 (0 of scale); 3.407 -> 2.853 ms per chunk (1.19x)
+PASS fp16 ctx 8192, 129 queries: vs FP64 old 2.1e-06 new 2.1e-06 (output scale 3.34); new vs old 0 (0 of scale); 5.857 -> 4.712 ms per chunk (1.24x)
+PASS q4_0 ctx 8192, 129 queries: vs FP64 old 5.07e-06 new 5.07e-06 (output scale 7.73); new vs old 0 (0 of scale); 6.426 -> 6.044 ms per chunk (1.06x)
+PASS q4_0 ctx 1500, 129 queries: vs FP64 old 3.81e-06 new 3.81e-06 (output scale 7.65); new vs old 0 (0 of scale); 3.471 -> 4.105 ms per chunk (0.85x)
+PASS int8 ctx 1500, 129 queries: vs FP64 old 1.97e-06 new 1.97e-06 (output scale 3.75); new vs old 0 (0 of scale); 3.699 -> 3.024 ms per chunk (1.22x)
+PASS int8 ctx 2100, 129 queries: vs FP64 old 1.89e-06 new 1.89e-06 (output scale 3.61); new vs old 0 (0 of scale); 5.352 -> 4.432 ms per chunk (1.21x)
+FAILURES: 0
+<end of output>
+Test time =  10.30 sec
+----------------------------------------------------------
+Test Passed.
+"qsa_decode_attn_query_order_parity" end time: Oct 05 10:52 JST
+"qsa_decode_attn_query_order_parity" time elapsed: 00:00:10
+----------------------------------------------------------
+

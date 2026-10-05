@@ -84,3 +84,15 @@ The first complete finite head matches bit for bit between layouts (SHA-256
 `95435da8b4d1c0ee4f84ff295b5b4ee5d02f791b233d19dd0bd2ebb969d66e2e`).
 All eight requests return IDs `[40, 3172, 1151, 539]` with equal logprobs.
 Repeat/restored requests resume at checkpoint 1,018 and read seven tokens.
+
+The B570-specific `bmg-g21` [AOT validation](aot-validation/summary.json)
+passes all 30 registered tests with no skips. The new [query-order parity
+test](aot-validation/query-order-parity.log) passes all eight cases. The
+4,096- and 8,087-token normal CLI checks have finite complete 248,320 heads
+and IDs matching the accepted original reference, with one chunk each.
+Four short normal-MTP request outputs and logprobs match JIT exactly; the
+four long requests match the original long reference, including the full
+first-head hash and checkpoint restoration. These AOT model runs validate
+correctness; they are not a repeated AOT speed comparison. The immutable
+AOT binary SHA-256 is
+`6068197c3793066552c039b6629dca668dc214a35066b49073a98eb0de3c032d`.
