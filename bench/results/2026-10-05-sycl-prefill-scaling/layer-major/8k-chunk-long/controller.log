@@ -1,0 +1,15 @@
+baseline-k8v8-32768-c8192 metrics start
+{"name": "baseline-k8v8-32768-c8192-32768-r1", "wall_ms": 79509.05804, "tokens_per_second": 412.12914361926954, "expert_copies": 92934, "expert_bytes": 190110182400, "dma_active_ms": 29830.871118, "host_copy_worker_ms": 10136.773511}
+{"medians": [{"tokens": 32768, "wall_ms": 79509.05804, "dma_active_ms": 29830.871118, "expert_bytes": 190110182400, "activation_bytes": 0, "activation_dma_active_ms": 0.0, "total_transfer_bytes": 190110182400, "residual_gpu_tokens": 0, "device_residual_bytes": 0, "device_residual_dma_active_ms": 0.0, "serial_layer_load_wall_ms": 0.0}], "longest_pair": null}
+gpu32-k8v8-32768-c8192 metrics start
+{"name": "gpu32-k8v8-32768-c8192-32768-r1", "wall_ms": 74476.929554, "tokens_per_second": 439.97517346954186, "expert_copies": 24576, "expert_bytes": 50292326400, "dma_active_ms": 8103.327184, "host_copy_worker_ms": 2964.307153}
+{"medians": [{"tokens": 32768, "wall_ms": 74476.929554, "dma_active_ms": 8103.327184, "expert_bytes": 50292326400, "activation_bytes": 0, "activation_dma_active_ms": 0.0, "total_transfer_bytes": 50292326400, "residual_gpu_tokens": 32768, "device_residual_bytes": 126164664320, "device_residual_dma_active_ms": 763.216026, "serial_layer_load_wall_ms": 8298.128264}], "longest_pair": null}
+gpu32-k8v8-32768-c8192 complete head bit-identical to original SAME C8192 control
+baseline-k8v8-65536-c8192 metrics start
+{"name": "baseline-k8v8-65536-c8192-65536-r1", "wall_ms": 157088.880944, "tokens_per_second": 417.19057138972596, "expert_copies": 187295, "expert_bytes": 382986547200, "dma_active_ms": 60088.808366, "host_copy_worker_ms": 20169.879273}
+{"medians": [{"tokens": 65536, "wall_ms": 157088.880944, "dma_active_ms": 60088.808366, "expert_bytes": 382986547200, "activation_bytes": 0, "activation_dma_active_ms": 0.0, "total_transfer_bytes": 382986547200, "residual_gpu_tokens": 0, "device_residual_bytes": 0, "device_residual_dma_active_ms": 0.0, "serial_layer_load_wall_ms": 0.0}], "longest_pair": null}
+gpu32-k8v8-65536-c8192 metrics start
+{"name": "gpu32-k8v8-65536-c8192-65536-r1", "wall_ms": 157157.355317, "tokens_per_second": 417.0087990333523, "expert_copies": 24576, "expert_bytes": 50292326400, "dma_active_ms": 8090.81169, "host_copy_worker_ms": 2892.329474}
+{"medians": [{"tokens": 65536, "wall_ms": 157157.355317, "dma_active_ms": 8090.81169, "expert_bytes": 50292326400, "activation_bytes": 126164664320, "activation_dma_active_ms": 19993.281545, "total_transfer_bytes": 176456990720, "residual_gpu_tokens": 32768, "device_residual_bytes": 126164664320, "device_residual_dma_active_ms": 763.218541, "serial_layer_load_wall_ms": 8294.908828}], "longest_pair": null}
+gpu32-k8v8-65536-c8192 complete head bit-identical to original SAME C8192 control
+PASS C8192 paired original/layer-major 32K/64K full-head and memory measurements
