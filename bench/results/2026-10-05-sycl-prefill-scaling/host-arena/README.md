@@ -49,3 +49,38 @@ layer-window. This motivates testing smaller PCIe shares before deciding
 whether CPU-side page changes help the actual bottleneck. The printed
 phase times cover host submission and waits; they are not independent
 GPU kernel times. PP 1000 and TG 70 remain unachieved targets.
+
+## Request-level PCIe share sweep
+
+The [PCIe sweep](pcie-sweep/summary.json) keeps the same binary and model
+settings. One process per page mode accepts a 16-token warmup followed
+by ten 64-token requests. The request-level shares are 0.55, 0, 0.1,
+0.25, 0.4, then reverse order. Startup is excluded, and all requests
+reuse the same warmed prompt checkpoint. Each table entry is the median
+of two requests, not an independent multi-process confidence estimate.
+
+| PCIe fraction | Original pages, decode tokens/s | THP, decode tokens/s |
+| ---: | ---: | ---: |
+| 0 | 14.817 | 15.359 |
+| 0.1 | 12.774 | 12.998 |
+| 0.25 | 11.724 | 11.625 |
+| 0.4 | 7.757 | 7.875 |
+| 0.55 | 7.303 | 7.412 |
+
+All requests generate the requested length and finite printed logprobs.
+For each fraction, all IDs and printed logprobs match between repetitions
+and page modes. Both initial complete finite heads match. Different PCIe
+fractions change which experts use CPU or GPU arithmetic and are not
+required to have identical logprob bits to each other. The checkpoint
+was initially warmed at fraction 0.55; this sweep is not a fresh-prompt
+comparison for every fraction.
+
+Zero PCIe share roughly doubles generation throughput in this writing
+fixture. In the original-page zero-share final request, the diagnostic
+reports 156.71 ms/window, including 136.44 ms of CPU jobs, 0.12 ms of
+planning and zero PCIe experts. Returning to 0.55 reports 323.34
+ms/window, including 71.56 ms of CPU jobs, 79.23 ms of planning and
+14.68 distinct PCIe experts per layer-window. Reducing CPU jobs by
+transferring more experts therefore loses overall time on this card.
+This is a decode result; layer-major FP16 prefill still uses GPU expert
+work and is not switched to CPU by this request option.
