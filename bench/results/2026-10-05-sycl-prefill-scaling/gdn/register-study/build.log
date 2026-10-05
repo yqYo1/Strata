@@ -1,0 +1,101 @@
+/tmp/strata-upstream-arc-gdn-sync-probe.cpp:434:18: warning: 'parallel_for' is deprecated: To specify properties, use a launch configuration object of type launch_config or a kernel functor with a get(sycl::ext::oneapi::experimental::properties_tag) member function instead. [-Wdeprecated-declarations]
+  434 |  if(variant==4)q.parallel_for<GdnPairLarge>(paired,sycl::ext::oneapi::experimental::properties{sycl::ext::intel::experimental::grf_size<256>},[=](sycl::nd_item<3>) [[sycl::reqd_sub_group_size(32)]] {probe::pair_rec(state,h,gate,beta,y,T);});
+      |                  ^
+/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/queue.hpp:3232:14: note: 'parallel_for' has been explicitly marked deprecated here
+ 3232 |       event> parallel_for(nd_range<Dims> Range, PropertiesT Properties,
+      |              ^
+/tmp/strata-upstream-arc-gdn-sync-probe.cpp:434:18: warning: 'parallel_for<GdnPairLarge, 3, sycl::ext::oneapi::experimental::properties<sycl::ext::oneapi::experimental::detail::properties_type_list<sycl::ext::oneapi::experimental::property_value<sycl::ext::intel::experimental::grf_size_key, std::integral_constant<unsigned int, 256>>>>, (lambda at /tmp/strata-upstream-arc-gdn-sync-probe.cpp:434:143)>' is deprecated: To specify properties, use a launch configuration object of type launch_config or a kernel functor with a get(sycl::ext::oneapi::experimental::properties_tag) member function instead. [-Wdeprecated-declarations]
+  434 |  if(variant==4)q.parallel_for<GdnPairLarge>(paired,sycl::ext::oneapi::experimental::properties{sycl::ext::intel::experimental::grf_size<256>},[=](sycl::nd_item<3>) [[sycl::reqd_sub_group_size(32)]] {probe::pair_rec(state,h,gate,beta,y,T);});
+      |                  ^
+/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/queue.hpp:3225:3: note: 'parallel_for<GdnPairLarge, 3, sycl::ext::oneapi::experimental::properties<sycl::ext::oneapi::experimental::detail::properties_type_list<sycl::ext::oneapi::experimental::property_value<sycl::ext::intel::experimental::grf_size_key, std::integral_constant<unsigned int, 256>>>>, (lambda at /tmp/strata-upstream-arc-gdn-sync-probe.cpp:434:143)>' has been explicitly marked deprecated here
+ 3225 |   __SYCL_DEPRECATED("To specify properties, use a launch configuration object "
+      |   ^
+/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/detail/defines_elementary.hpp:66:38: note: expanded from macro '__SYCL_DEPRECATED'
+   66 | #define __SYCL_DEPRECATED(message) [[deprecated(message)]]
+      |                                      ^
+/tmp/strata-upstream-arc-gdn-sync-probe.cpp:436:18: warning: 'parallel_for' is deprecated: To specify properties, use a launch configuration object of type launch_config or a kernel functor with a get(sycl::ext::oneapi::experimental::properties_tag) member function instead. [-Wdeprecated-declarations]
+  436 |  if(variant==5)q.parallel_for<GdnKH32Large>(kh,sycl::ext::oneapi::experimental::properties{sycl::ext::intel::experimental::grf_size<256>},[=](sycl::nd_item<3>) [[sycl::reqd_sub_group_size(32)]] {probe::keyhead_rec(state,h,gate,beta,y,T);});
+      |                  ^
+/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/queue.hpp:3232:14: note: 'parallel_for' has been explicitly marked deprecated here
+ 3232 |       event> parallel_for(nd_range<Dims> Range, PropertiesT Properties,
+      |              ^
+/tmp/strata-upstream-arc-gdn-sync-probe.cpp:436:18: warning: 'parallel_for<GdnKH32Large, 3, sycl::ext::oneapi::experimental::properties<sycl::ext::oneapi::experimental::detail::properties_type_list<sycl::ext::oneapi::experimental::property_value<sycl::ext::intel::experimental::grf_size_key, std::integral_constant<unsigned int, 256>>>>, (lambda at /tmp/strata-upstream-arc-gdn-sync-probe.cpp:436:139)>' is deprecated: To specify properties, use a launch configuration object of type launch_config or a kernel functor with a get(sycl::ext::oneapi::experimental::properties_tag) member function instead. [-Wdeprecated-declarations]
+  436 |  if(variant==5)q.parallel_for<GdnKH32Large>(kh,sycl::ext::oneapi::experimental::properties{sycl::ext::intel::experimental::grf_size<256>},[=](sycl::nd_item<3>) [[sycl::reqd_sub_group_size(32)]] {probe::keyhead_rec(state,h,gate,beta,y,T);});
+      |                  ^
+/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/queue.hpp:3225:3: note: 'parallel_for<GdnKH32Large, 3, sycl::ext::oneapi::experimental::properties<sycl::ext::oneapi::experimental::detail::properties_type_list<sycl::ext::oneapi::experimental::property_value<sycl::ext::intel::experimental::grf_size_key, std::integral_constant<unsigned int, 256>>>>, (lambda at /tmp/strata-upstream-arc-gdn-sync-probe.cpp:436:139)>' has been explicitly marked deprecated here
+ 3225 |   __SYCL_DEPRECATED("To specify properties, use a launch configuration object "
+      |   ^
+/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/detail/defines_elementary.hpp:66:38: note: expanded from macro '__SYCL_DEPRECATED'
+   66 | #define __SYCL_DEPRECATED(message) [[deprecated(message)]]
+      |                                      ^
+/tmp/strata-upstream-arc-gdn-sync-probe.cpp:438:18: warning: 'parallel_for' is deprecated: To specify properties, use a launch configuration object of type launch_config or a kernel functor with a get(sycl::ext::oneapi::experimental::properties_tag) member function instead. [-Wdeprecated-declarations]
+  438 |  if(variant==7)q.parallel_for<GdnKH16Large>(kh,sycl::ext::oneapi::experimental::properties{sycl::ext::intel::experimental::grf_size<256>},[=](sycl::nd_item<3>) [[sycl::reqd_sub_group_size(16)]] {probe::keyhead_rec(state,h,gate,beta,y,T);});
+      |                  ^
+/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/queue.hpp:3232:14: note: 'parallel_for' has been explicitly marked deprecated here
+ 3232 |       event> parallel_for(nd_range<Dims> Range, PropertiesT Properties,
+      |              ^
+/tmp/strata-upstream-arc-gdn-sync-probe.cpp:438:18: warning: 'parallel_for<GdnKH16Large, 3, sycl::ext::oneapi::experimental::properties<sycl::ext::oneapi::experimental::detail::properties_type_list<sycl::ext::oneapi::experimental::property_value<sycl::ext::intel::experimental::grf_size_key, std::integral_constant<unsigned int, 256>>>>, (lambda at /tmp/strata-upstream-arc-gdn-sync-probe.cpp:438:139)>' is deprecated: To specify properties, use a launch configuration object of type launch_config or a kernel functor with a get(sycl::ext::oneapi::experimental::properties_tag) member function instead. [-Wdeprecated-declarations]
+  438 |  if(variant==7)q.parallel_for<GdnKH16Large>(kh,sycl::ext::oneapi::experimental::properties{sycl::ext::intel::experimental::grf_size<256>},[=](sycl::nd_item<3>) [[sycl::reqd_sub_group_size(16)]] {probe::keyhead_rec(state,h,gate,beta,y,T);});
+      |                  ^
+/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/queue.hpp:3225:3: note: 'parallel_for<GdnKH16Large, 3, sycl::ext::oneapi::experimental::properties<sycl::ext::oneapi::experimental::detail::properties_type_list<sycl::ext::oneapi::experimental::property_value<sycl::ext::intel::experimental::grf_size_key, std::integral_constant<unsigned int, 256>>>>, (lambda at /tmp/strata-upstream-arc-gdn-sync-probe.cpp:438:139)>' has been explicitly marked deprecated here
+ 3225 |   __SYCL_DEPRECATED("To specify properties, use a launch configuration object "
+      |   ^
+/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/detail/defines_elementary.hpp:66:38: note: expanded from macro '__SYCL_DEPRECATED'
+   66 | #define __SYCL_DEPRECATED(message) [[deprecated(message)]]
+      |                                      ^
+/tmp/strata-upstream-arc-gdn-sync-probe.cpp:434:167: warning: kernel has both attribute 'sycl::reqd_sub_group_size' and kernel properties; if the kernel properties contains the property "sycl::ext::oneapi::experimental::sub_group_size" it will be ignored [-Wignored-attributes]
+  434 |  if(variant==4)q.parallel_for<GdnPairLarge>(paired,sycl::ext::oneapi::experimental::properties{sycl::ext::intel::experimental::grf_size<256>},[=](sycl::nd_item<3>) [[sycl::reqd_sub_group_size(32)]] {probe::pair_rec(state,h,gate,beta,y,T);});
+      |                                                                                                                                                                       ^
+/tmp/strata-upstream-arc-gdn-sync-probe.cpp:436:163: warning: kernel has both attribute 'sycl::reqd_sub_group_size' and kernel properties; if the kernel properties contains the property "sycl::ext::oneapi::experimental::sub_group_size" it will be ignored [-Wignored-attributes]
+  436 |  if(variant==5)q.parallel_for<GdnKH32Large>(kh,sycl::ext::oneapi::experimental::properties{sycl::ext::intel::experimental::grf_size<256>},[=](sycl::nd_item<3>) [[sycl::reqd_sub_group_size(32)]] {probe::keyhead_rec(state,h,gate,beta,y,T);});
+      |                                                                                                                                                                   ^
+/tmp/strata-upstream-arc-gdn-sync-probe.cpp:438:163: warning: kernel has both attribute 'sycl::reqd_sub_group_size' and kernel properties; if the kernel properties contains the property "sycl::ext::oneapi::experimental::sub_group_size" it will be ignored [-Wignored-attributes]
+  438 |  if(variant==7)q.parallel_for<GdnKH16Large>(kh,sycl::ext::oneapi::experimental::properties{sycl::ext::intel::experimental::grf_size<256>},[=](sycl::nd_item<3>) [[sycl::reqd_sub_group_size(16)]] {probe::keyhead_rec(state,h,gate,beta,y,T);});
+      |                                                                                                                                                                   ^
+9 warnings generated.
+/tmp/strata-upstream-arc-gdn-sync-probe.cpp:434:18: warning: 'parallel_for' is deprecated: To specify properties, use a launch configuration object of type launch_config or a kernel functor with a get(sycl::ext::oneapi::experimental::properties_tag) member function instead. [-Wdeprecated-declarations]
+  434 |  if(variant==4)q.parallel_for<GdnPairLarge>(paired,sycl::ext::oneapi::experimental::properties{sycl::ext::intel::experimental::grf_size<256>},[=](sycl::nd_item<3>) [[sycl::reqd_sub_group_size(32)]] {probe::pair_rec(state,h,gate,beta,y,T);});
+      |                  ^
+/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/queue.hpp:3232:14: note: 'parallel_for' has been explicitly marked deprecated here
+ 3232 |       event> parallel_for(nd_range<Dims> Range, PropertiesT Properties,
+      |              ^
+/tmp/strata-upstream-arc-gdn-sync-probe.cpp:434:18: warning: 'parallel_for<GdnPairLarge, 3, sycl::ext::oneapi::experimental::properties<sycl::ext::oneapi::experimental::detail::properties_type_list<sycl::ext::oneapi::experimental::property_value<sycl::ext::intel::experimental::grf_size_key, std::integral_constant<unsigned int, 256>>>>, (lambda at /tmp/strata-upstream-arc-gdn-sync-probe.cpp:434:143)>' is deprecated: To specify properties, use a launch configuration object of type launch_config or a kernel functor with a get(sycl::ext::oneapi::experimental::properties_tag) member function instead. [-Wdeprecated-declarations]
+  434 |  if(variant==4)q.parallel_for<GdnPairLarge>(paired,sycl::ext::oneapi::experimental::properties{sycl::ext::intel::experimental::grf_size<256>},[=](sycl::nd_item<3>) [[sycl::reqd_sub_group_size(32)]] {probe::pair_rec(state,h,gate,beta,y,T);});
+      |                  ^
+/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/queue.hpp:3225:3: note: 'parallel_for<GdnPairLarge, 3, sycl::ext::oneapi::experimental::properties<sycl::ext::oneapi::experimental::detail::properties_type_list<sycl::ext::oneapi::experimental::property_value<sycl::ext::intel::experimental::grf_size_key, std::integral_constant<unsigned int, 256>>>>, (lambda at /tmp/strata-upstream-arc-gdn-sync-probe.cpp:434:143)>' has been explicitly marked deprecated here
+ 3225 |   __SYCL_DEPRECATED("To specify properties, use a launch configuration object "
+      |   ^
+/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/detail/defines_elementary.hpp:66:38: note: expanded from macro '__SYCL_DEPRECATED'
+   66 | #define __SYCL_DEPRECATED(message) [[deprecated(message)]]
+      |                                      ^
+/tmp/strata-upstream-arc-gdn-sync-probe.cpp:436:18: warning: 'parallel_for' is deprecated: To specify properties, use a launch configuration object of type launch_config or a kernel functor with a get(sycl::ext::oneapi::experimental::properties_tag) member function instead. [-Wdeprecated-declarations]
+  436 |  if(variant==5)q.parallel_for<GdnKH32Large>(kh,sycl::ext::oneapi::experimental::properties{sycl::ext::intel::experimental::grf_size<256>},[=](sycl::nd_item<3>) [[sycl::reqd_sub_group_size(32)]] {probe::keyhead_rec(state,h,gate,beta,y,T);});
+      |                  ^
+/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/queue.hpp:3232:14: note: 'parallel_for' has been explicitly marked deprecated here
+ 3232 |       event> parallel_for(nd_range<Dims> Range, PropertiesT Properties,
+      |              ^
+/tmp/strata-upstream-arc-gdn-sync-probe.cpp:436:18: warning: 'parallel_for<GdnKH32Large, 3, sycl::ext::oneapi::experimental::properties<sycl::ext::oneapi::experimental::detail::properties_type_list<sycl::ext::oneapi::experimental::property_value<sycl::ext::intel::experimental::grf_size_key, std::integral_constant<unsigned int, 256>>>>, (lambda at /tmp/strata-upstream-arc-gdn-sync-probe.cpp:436:139)>' is deprecated: To specify properties, use a launch configuration object of type launch_config or a kernel functor with a get(sycl::ext::oneapi::experimental::properties_tag) member function instead. [-Wdeprecated-declarations]
+  436 |  if(variant==5)q.parallel_for<GdnKH32Large>(kh,sycl::ext::oneapi::experimental::properties{sycl::ext::intel::experimental::grf_size<256>},[=](sycl::nd_item<3>) [[sycl::reqd_sub_group_size(32)]] {probe::keyhead_rec(state,h,gate,beta,y,T);});
+      |                  ^
+/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/queue.hpp:3225:3: note: 'parallel_for<GdnKH32Large, 3, sycl::ext::oneapi::experimental::properties<sycl::ext::oneapi::experimental::detail::properties_type_list<sycl::ext::oneapi::experimental::property_value<sycl::ext::intel::experimental::grf_size_key, std::integral_constant<unsigned int, 256>>>>, (lambda at /tmp/strata-upstream-arc-gdn-sync-probe.cpp:436:139)>' has been explicitly marked deprecated here
+ 3225 |   __SYCL_DEPRECATED("To specify properties, use a launch configuration object "
+      |   ^
+/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/detail/defines_elementary.hpp:66:38: note: expanded from macro '__SYCL_DEPRECATED'
+   66 | #define __SYCL_DEPRECATED(message) [[deprecated(message)]]
+      |                                      ^
+/tmp/strata-upstream-arc-gdn-sync-probe.cpp:438:18: warning: 'parallel_for' is deprecated: To specify properties, use a launch configuration object of type launch_config or a kernel functor with a get(sycl::ext::oneapi::experimental::properties_tag) member function instead. [-Wdeprecated-declarations]
+  438 |  if(variant==7)q.parallel_for<GdnKH16Large>(kh,sycl::ext::oneapi::experimental::properties{sycl::ext::intel::experimental::grf_size<256>},[=](sycl::nd_item<3>) [[sycl::reqd_sub_group_size(16)]] {probe::keyhead_rec(state,h,gate,beta,y,T);});
+      |                  ^
+/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/queue.hpp:3232:14: note: 'parallel_for' has been explicitly marked deprecated here
+ 3232 |       event> parallel_for(nd_range<Dims> Range, PropertiesT Properties,
+      |              ^
+/tmp/strata-upstream-arc-gdn-sync-probe.cpp:438:18: warning: 'parallel_for<GdnKH16Large, 3, sycl::ext::oneapi::experimental::properties<sycl::ext::oneapi::experimental::detail::properties_type_list<sycl::ext::oneapi::experimental::property_value<sycl::ext::intel::experimental::grf_size_key, std::integral_constant<unsigned int, 256>>>>, (lambda at /tmp/strata-upstream-arc-gdn-sync-probe.cpp:438:139)>' is deprecated: To specify properties, use a launch configuration object of type launch_config or a kernel functor with a get(sycl::ext::oneapi::experimental::properties_tag) member function instead. [-Wdeprecated-declarations]
+  438 |  if(variant==7)q.parallel_for<GdnKH16Large>(kh,sycl::ext::oneapi::experimental::properties{sycl::ext::intel::experimental::grf_size<256>},[=](sycl::nd_item<3>) [[sycl::reqd_sub_group_size(16)]] {probe::keyhead_rec(state,h,gate,beta,y,T);});
+      |                  ^
+/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/queue.hpp:3225:3: note: 'parallel_for<GdnKH16Large, 3, sycl::ext::oneapi::experimental::properties<sycl::ext::oneapi::experimental::detail::properties_type_list<sycl::ext::oneapi::experimental::property_value<sycl::ext::intel::experimental::grf_size_key, std::integral_constant<unsigned int, 256>>>>, (lambda at /tmp/strata-upstream-arc-gdn-sync-probe.cpp:438:139)>' has been explicitly marked deprecated here
+ 3225 |   __SYCL_DEPRECATED("To specify properties, use a launch configuration object "
+      |   ^
+/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/detail/defines_elementary.hpp:66:38: note: expanded from macro '__SYCL_DEPRECATED'
+   66 | #define __SYCL_DEPRECATED(message) [[deprecated(message)]]
+      |                                      ^
+6 warnings generated.
