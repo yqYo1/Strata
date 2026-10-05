@@ -1,0 +1,21 @@
+{
+  "args": [
+    "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+    "-fsycl",
+    "-O3",
+    "-std=c++20",
+    "-fsycl-default-sub-group-size=32",
+    "-fsycl-device-code-split=per_kernel",
+    "-fp-model=precise",
+    "-Wno-unused-parameter",
+    "-Wno-unused-variable",
+    "-Wno-deprecated-declarations",
+    "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/third_party/ggml",
+    "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+    "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/include",
+    "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/kernels/cuda",
+    "/tmp/strata-upstream-arc-dequant-workgroup.cpp",
+    "-o",
+    "/tmp/strata-upstream-arc-dequant-workgroup"
+  ]
+}
