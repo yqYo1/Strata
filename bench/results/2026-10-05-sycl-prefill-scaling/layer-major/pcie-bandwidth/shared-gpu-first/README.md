@@ -2,11 +2,10 @@
 
 The probe completed after host restart and GPU access was restored. All
 35 cases passed, with five measured rounds each and complete final-copy
-byte checks. The second pass runs after the user stops the resident embedding service;
-it is verified inactive before measurement, and no other Arc GPU clients
-are found. The probe itself performs copies without inference or disk reads.
-The [first pass](shared-gpu-first/run.json) remains archived with its shared
-GPU condition and agrees closely with the repeat. The device is Intel Arc B570 10 GB, with Ryzen 5 5600X
+byte checks. The probe itself performs copies without inference or disk reads.
+A separately running embedding server was subsequently found to hold
+about 1.73 GiB on this GPU. Its request activity during this first pass
+was not monitored; this pass does not prove an exclusive-GPU ceiling. The device is Intel Arc B570 10 GB, with Ryzen 5 5600X
 and 128 GB installed RAM, oneAPI 2026.1 and compute driver
 1.17.39758+10. The [machine record](machine.json) includes the kernel;
 the [run record](run.json) includes driver environment and PCIe metadata.
@@ -18,16 +17,16 @@ for the staged mode, serial CPU memcpy into the ring are included.
 
 | Copy size | Ordinary RAM → VRAM | Host USM → VRAM | CPU staging + H2D, ring 8 | VRAM → ordinary RAM | VRAM → host USM |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| 1.5104 MB expert | 5.961 | 6.288 | 6.125 | 4.155 | 6.570 |
-| 2.1760 MB expert | 5.927 | 6.343 | 6.141 | 4.210 | 6.571 |
-| 2.6624 MB expert | 5.970 | 6.365 | 6.192 | 4.625 | 6.571 |
-| 5.24288 MB residual (128 rows) | 6.024 | 6.428 | 6.261 | 4.758 | 6.572 |
-| 167.77216 MB residual (4K rows) | 6.098 | 6.466 | 6.057 | 6.309 | 6.567 |
-| 335.54432 MB residual (8K rows) | 6.123 | 6.463 | 5.863 | 6.185 | 6.568 |
-| 1 GiB bulk | 5.888 | 6.466 | 5.716 | 6.049 | 6.572 |
+| 1.5104 MB expert | 5.913 | 6.285 | 6.112 | 4.141 | 6.569 |
+| 2.1760 MB expert | 5.916 | 6.340 | 6.158 | 4.237 | 6.571 |
+| 2.6624 MB expert | 5.930 | 6.362 | 6.182 | 4.625 | 6.573 |
+| 5.24288 MB residual (128 rows) | 6.010 | 6.428 | 6.241 | 4.724 | 6.573 |
+| 167.77216 MB residual (4K rows) | 6.096 | 6.453 | 6.040 | 6.315 | 6.566 |
+| 335.54432 MB residual (8K rows) | 6.103 | 6.457 | 5.890 | 6.188 | 6.567 |
+| 1 GiB bulk | 5.898 | 6.460 | 5.723 | 6.054 | 6.572 |
 
-At the three native expert sizes, staging plus H2D reaches 6.125–6.192
-GB/s. Direct host-USM H2D reaches 6.288–6.365 GB/s, and reaches 6.466
+At the three native expert sizes, staging plus H2D reaches 6.112–6.182
+GB/s. Direct host-USM H2D reaches 6.285–6.362 GB/s, and reaches 6.460
 GB/s at 1 GiB. Host-USM D2H reaches about 6.57 GB/s. Thus the engine's
 previous expert-DMA observation, about 50.292 GB in 8.1 seconds, is close
 to the standalone copy rate. Those engine event durations overlap other
