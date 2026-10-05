@@ -106,3 +106,18 @@ individual timings and a 12.228 tokens/s outlier retained in the first
 original-page process. This is a small local observation, not a general
 throughput guarantee. The gather flag gives no improvement and is not
 selected. Prefill performance is not measured by these short prompts.
+
+## Allocation and AOT validation
+
+The [24 mapping checks](mapping-check/run.log) exercise original pages,
+THP and the `STRATA_NO_LARGEPAGES` override at sizes immediately around
+system and 2 MiB page boundaries, including a 64 MiB plus 17-byte arena.
+They observe the actual mapping boundaries and use `mincore` after
+destruction to verify that both ends are unmapped. All checks pass.
+
+The current-source B570 [AOT check](aot-check/summary.json) also passes.
+Its complete finite first head and all IDs and printed logprobs from
+one 16-token warmup and two 64-token requests match the JIT original-page
+control. The AOT result is a validation observation; it is not a paired
+AOT speed comparison. Both build logs and the allocation probe are
+preserved. The embedding service remains inactive.
