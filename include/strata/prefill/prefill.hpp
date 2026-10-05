@@ -135,6 +135,10 @@ public:
     /// Checked before every chunk: true stops the prompt early (`run` returns false with err "cancelled").
     std::function<bool()> should_stop;
 
+    /// SYCL experiment: refresh consumers after the decode expert cache is
+    /// reallocated. Called after weights are restored, before decode can run.
+    std::function<bool(const uint8_t* address, std::string& err)> on_cache_restore;
+
     /// A layer-major prompt has coherent whole-model state only at its final chunk.
     bool checkpoint_ready() const { return checkpoint_ready_; }
 

@@ -3510,6 +3510,25 @@ int main(int argc, char **argv) try {
             xcache.set_segment_bytes(o.vram_segment_mib << 20);
         }
     }
+    if (const char* release = std::getenv("STRATA_PREFILL_RELEASE_CACHE"); release && std::atoi(release) != 0) {
+        if (!o.no_prefill_borrow) {
+            std::fprintf(stderr, "strata generate: prefill cache release requires --no-prefill-borrow\n");
+            return 2;
+        }
+        if (multi_gpu || std::any_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(),
+                                    [](int n) { return n > 0; })) {
+            std::fprintf(stderr, "strata generate: prefill cache release requires one GPU and no helper caches\n");
+            return 2;
+        }
+        // A reserved virtual address survives physical release, so token and
+        // verify graphs keep their original cache pointers after restoration.
+        const char* allocation = std::getenv("STRATA_PREFILL_CACHE_ALLOC");
+        if (!allocation || !std::strcmp(allocation, "vmm")) xcache.set_segment_bytes(64ll << 20);
+        else if (std::strcmp(allocation, "rebuild") || !native_pack || o.vram_elastic) {
+            std::fprintf(stderr, "strata generate: cache allocation must be vmm, or rebuild with a native pack and no elastic resize\n");
+            return 2;
+        }
+    }
     if (o.expert_cache > 0) {
         // keep the first `keep_bytes` of the cache (the profile's hottest experts first); false when nothing is left
         auto shrink_to = [&](int64_t keep_bytes) -> bool {
@@ -5717,6 +5736,15 @@ int main(int argc, char **argv) try {
             }
         }
         drive.d.plan = ver.plan_sink();
+        if (const char* allocation = std::getenv("STRATA_PREFILL_CACHE_ALLOC");
+            allocation && !std::strcmp(allocation, "rebuild")) {
+            sp.on_cache_restore = [&](const uint8_t* address, std::string& e) {
+                drive.d.cache_base = address;
+                thits.cache_base = address;
+                vh.cache_base = address;
+                return ver.rebuild_cache_graphs(address, e);
+            };
+        }
         drive.d.pcie_num = std::max(0, std::min(256, (int) (o.pcie_frac * 256.0 + 0.5)));
         if (o.adapt_every > 0 && o.adapt_swaps > 0) drive.d.usage.assign((size_t) (g.n_layers * g.n_expert), 0.0f);
         // #477 --expert-profile-save: what the adaptive tier learned, kept across restarts (opt-in; off: `heat` stays
@@ -7433,6 +7461,17 @@ int main(int argc, char **argv) try {
             };
         }
         const Clock::time_point tp0 = Clock::now();
+        if (const char* allocation = std::getenv("STRATA_PREFILL_CACHE_ALLOC");
+            allocation && !std::strcmp(allocation, "rebuild")) {
+            prefill.on_cache_restore = [&](const uint8_t* address, std::string& e) {
+                // Native CLI initializes its verifier after prefill. Serve's
+                // callback above also rebuilds already captured window graphs.
+                if (tgraph.captured) { e = "cache reallocation cannot retain a captured token graph"; return false; }
+                drive.d.cache_base = address;
+                thits.cache_base = address;
+                return true;
+            };
+        }
         if (!prefill.run(o.tokens.data(), n_batched, 0, err)) {
             std::fprintf(stderr, "strata generate: %s\n", err.c_str());
             return 1;

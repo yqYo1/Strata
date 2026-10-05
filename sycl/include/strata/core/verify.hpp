@@ -132,6 +132,9 @@ public:
     /// SYCL port: capture every window graph now (one per window size) instead of on first use, so the first
     /// request does not pay for them (a 2,400-node graph takes tens of ms to finalize on this backend).
     bool warm(std::string& err);
+    /// SYCL cache-release experiment: rebuild window graphs with a restored
+    /// expert arena address. Session/KV and commit graphs keep their storage.
+    bool rebuild_cache_graphs(const uint8_t* address, std::string& err);
     /// (upstream 0.1.32; the port maps it onto commit_finish, verify.cpp) commit() returns without waiting for its graph (a single-GPU session sets it): the next window follows it on
     /// the same stream and the drafter reads nothing it writes, so it overlaps the draft. Whoever reads or writes
     /// the session from another stream or the host afterwards (a new request, a checkpoint, a snapshot, the prompt
