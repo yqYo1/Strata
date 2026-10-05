@@ -1,0 +1,2081 @@
+{
+  "binary_sha256": "edaca1417fc4fdaa7d0ea6752b58c38225e6ec03465b80152263a7131f9cd471",
+  "source_sha256": "673a432794f5f42cce9753a29b88401e706f6ecd87008e38e5476ab37fde8994",
+  "command": [
+    "/tmp/strata-upstream-arc-pcie-bandwidth"
+  ],
+  "env": {
+    "SYCL_CACHE_DIR": "/tmp/strata-bandwidth-cache-home/sycl",
+    "LD_LIBRARY_PATH": "/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/lib/x86_64-linux-gnu:/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/local/lib:/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/dal/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/:/usr/local/cuda/lib64:/usr/local/cuda/lib64:/nix/store/mj9klbkhzal0vc1aazsajrydkimhc0h2-libglvnd-1.7.0/lib",
+    "ONEAPI_ROOT": "/opt/intel/oneapi",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "SYCL_CACHE_PERSISTENT": "1",
+    "STRATA_IO_THREADS": "16",
+    "STRATA_PREFILL_ATTN_BATCH": "32",
+    "STRATA_PREFILL_ATTN_LAYOUT": "0",
+    "STRATA_PREFILL_FIRST": "0",
+    "STRATA_PREFILL_RING": "8"
+  },
+  "link_before": [
+    {
+      "path": "/sys/devices/pci0000:00/0000:00:01.2/0000:01:00.0/0000:02:02.0/0000:03:00.0/0000:04:01.0/0000:05:00.0",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "current_link_speed": "2.5 GT/s PCIe",
+      "current_link_width": "1",
+      "max_link_speed": "2.5 GT/s PCIe",
+      "max_link_width": "1"
+    },
+    {
+      "path": "/sys/devices/pci0000:00/0000:00:01.2/0000:01:00.0/0000:02:02.0/0000:03:00.0/0000:04:01.0",
+      "vendor": "0x8086",
+      "device": "0xe2f0",
+      "current_link_speed": "2.5 GT/s PCIe",
+      "current_link_width": "1",
+      "max_link_speed": "2.5 GT/s PCIe",
+      "max_link_width": "1"
+    },
+    {
+      "path": "/sys/devices/pci0000:00/0000:00:01.2/0000:01:00.0/0000:02:02.0/0000:03:00.0",
+      "vendor": "0x8086",
+      "device": "0xe2ff",
+      "current_link_speed": "16.0 GT/s PCIe",
+      "current_link_width": "4",
+      "max_link_speed": "16.0 GT/s PCIe",
+      "max_link_width": "8"
+    },
+    {
+      "path": "/sys/devices/pci0000:00/0000:00:01.2/0000:01:00.0/0000:02:02.0",
+      "vendor": "0x1022",
+      "device": "0x57a3",
+      "current_link_speed": "16.0 GT/s PCIe",
+      "current_link_width": "4",
+      "max_link_speed": "16.0 GT/s PCIe",
+      "max_link_width": "4"
+    },
+    {
+      "path": "/sys/devices/pci0000:00/0000:00:01.2/0000:01:00.0",
+      "vendor": "0x1022",
+      "device": "0x57ad",
+      "current_link_speed": "16.0 GT/s PCIe",
+      "current_link_width": "4",
+      "max_link_speed": "16.0 GT/s PCIe",
+      "max_link_width": "8"
+    }
+  ],
+  "rounds": [
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "round": 1,
+      "wall_ms": 128.963212,
+      "dma_ms": 125.848242,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "round": 2,
+      "wall_ms": 129.332916,
+      "dma_ms": 126.557337,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "round": 3,
+      "wall_ms": 130.069318,
+      "dma_ms": 127.174536,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "round": 4,
+      "wall_ms": 130.546325,
+      "dma_ms": 127.697192,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "round": 5,
+      "wall_ms": 129.733158,
+      "dma_ms": 126.864891,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "round": 1,
+      "wall_ms": 123.025443,
+      "dma_ms": 121.735001,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "round": 2,
+      "wall_ms": 122.983294,
+      "dma_ms": 121.687402,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "round": 3,
+      "wall_ms": 122.956644,
+      "dma_ms": 121.66657,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "round": 4,
+      "wall_ms": 122.979327,
+      "dma_ms": 121.691007,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "round": 5,
+      "wall_ms": 122.97606,
+      "dma_ms": 121.682982,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "round": 1,
+      "wall_ms": 186.112536,
+      "dma_ms": 115.445733,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "round": 2,
+      "wall_ms": 185.069156,
+      "dma_ms": 115.416189,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "round": 3,
+      "wall_ms": 186.197305,
+      "dma_ms": 115.431292,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "round": 4,
+      "wall_ms": 187.468221,
+      "dma_ms": 115.416565,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "round": 5,
+      "wall_ms": 185.629358,
+      "dma_ms": 115.425122,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "round": 1,
+      "wall_ms": 117.658545,
+      "dma_ms": 116.365101,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "round": 2,
+      "wall_ms": 117.711114,
+      "dma_ms": 116.355475,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "round": 3,
+      "wall_ms": 117.85782,
+      "dma_ms": 116.495117,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "round": 4,
+      "wall_ms": 117.713449,
+      "dma_ms": 116.354737,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "round": 5,
+      "wall_ms": 117.668825,
+      "dma_ms": 116.353532,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "round": 1,
+      "wall_ms": 125.496803,
+      "dma_ms": 124.204156,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "round": 2,
+      "wall_ms": 126.254566,
+      "dma_ms": 124.94626,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "round": 3,
+      "wall_ms": 126.015998,
+      "dma_ms": 124.688701,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "round": 4,
+      "wall_ms": 127.079605,
+      "dma_ms": 125.767127,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "round": 5,
+      "wall_ms": 126.333714,
+      "dma_ms": 125.01427,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "round": 1,
+      "wall_ms": 180.970079,
+      "dma_ms": 178.220721,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "round": 2,
+      "wall_ms": 181.661598,
+      "dma_ms": 178.938174,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "round": 3,
+      "wall_ms": 181.805417,
+      "dma_ms": 179.067724,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "round": 4,
+      "wall_ms": 181.378857,
+      "dma_ms": 178.629061,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "round": 5,
+      "wall_ms": 181.179633,
+      "dma_ms": 178.458271,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "round": 1,
+      "wall_ms": 169.465418,
+      "dma_ms": 168.223014,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "round": 2,
+      "wall_ms": 169.476649,
+      "dma_ms": 168.233751,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "round": 3,
+      "wall_ms": 169.662107,
+      "dma_ms": 168.417444,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "round": 4,
+      "wall_ms": 169.458265,
+      "dma_ms": 168.211962,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "round": 5,
+      "wall_ms": 169.554666,
+      "dma_ms": 168.30974,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "round": 1,
+      "wall_ms": 256.9292,
+      "dma_ms": 162.219413,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "round": 2,
+      "wall_ms": 253.866749,
+      "dma_ms": 162.232232,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "round": 3,
+      "wall_ms": 255.333623,
+      "dma_ms": 162.214276,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "round": 4,
+      "wall_ms": 254.061124,
+      "dma_ms": 162.226658,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "round": 5,
+      "wall_ms": 255.703898,
+      "dma_ms": 162.210725,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "round": 1,
+      "wall_ms": 163.515425,
+      "dma_ms": 162.269529,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "round": 2,
+      "wall_ms": 163.584696,
+      "dma_ms": 162.263962,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "round": 3,
+      "wall_ms": 163.659496,
+      "dma_ms": 162.342661,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "round": 4,
+      "wall_ms": 163.582281,
+      "dma_ms": 162.265207,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "round": 5,
+      "wall_ms": 163.585086,
+      "dma_ms": 162.269433,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "round": 1,
+      "wall_ms": 175.044092,
+      "dma_ms": 173.449203,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "round": 2,
+      "wall_ms": 174.629333,
+      "dma_ms": 173.284755,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "round": 3,
+      "wall_ms": 175.889198,
+      "dma_ms": 174.612972,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "round": 4,
+      "wall_ms": 177.426865,
+      "dma_ms": 176.135835,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "round": 5,
+      "wall_ms": 174.564071,
+      "dma_ms": 173.277959,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "round": 1,
+      "wall_ms": 179.573946,
+      "dma_ms": 177.375059,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "round": 2,
+      "wall_ms": 179.713939,
+      "dma_ms": 177.445199,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "round": 3,
+      "wall_ms": 180.334024,
+      "dma_ms": 178.053642,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "round": 4,
+      "wall_ms": 180.176267,
+      "dma_ms": 177.889895,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "round": 5,
+      "wall_ms": 180.387985,
+      "dma_ms": 178.093751,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "round": 1,
+      "wall_ms": 169.053133,
+      "dma_ms": 168.024272,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "round": 2,
+      "wall_ms": 168.967001,
+      "dma_ms": 167.939066,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "round": 3,
+      "wall_ms": 169.010011,
+      "dma_ms": 167.983866,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "round": 4,
+      "wall_ms": 168.992999,
+      "dma_ms": 167.965542,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "round": 5,
+      "wall_ms": 168.990616,
+      "dma_ms": 167.966261,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "round": 1,
+      "wall_ms": 230.704779,
+      "dma_ms": 162.031285,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "round": 2,
+      "wall_ms": 232.842332,
+      "dma_ms": 162.029271,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "round": 3,
+      "wall_ms": 231.656756,
+      "dma_ms": 162.028696,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "round": 4,
+      "wall_ms": 235.733722,
+      "dma_ms": 162.03786,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "round": 5,
+      "wall_ms": 232.586652,
+      "dma_ms": 162.031665,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "round": 1,
+      "wall_ms": 163.777587,
+      "dma_ms": 162.751097,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "round": 2,
+      "wall_ms": 163.681998,
+      "dma_ms": 162.586049,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "round": 3,
+      "wall_ms": 163.692097,
+      "dma_ms": 162.597608,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "round": 4,
+      "wall_ms": 163.687778,
+      "dma_ms": 162.586923,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "round": 5,
+      "wall_ms": 163.67852,
+      "dma_ms": 162.587023,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "round": 1,
+      "wall_ms": 173.758357,
+      "dma_ms": 172.647724,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "round": 2,
+      "wall_ms": 173.874464,
+      "dma_ms": 172.762342,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "round": 3,
+      "wall_ms": 173.716828,
+      "dma_ms": 172.607095,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "round": 4,
+      "wall_ms": 173.715476,
+      "dma_ms": 172.576415,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "round": 5,
+      "wall_ms": 173.496525,
+      "dma_ms": 172.395721,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "round": 1,
+      "wall_ms": 178.121428,
+      "dma_ms": 176.730418,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "round": 2,
+      "wall_ms": 179.500948,
+      "dma_ms": 178.12673,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "round": 3,
+      "wall_ms": 177.980484,
+      "dma_ms": 176.686824,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "round": 4,
+      "wall_ms": 178.407405,
+      "dma_ms": 177.049841,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "round": 5,
+      "wall_ms": 179.971642,
+      "dma_ms": 178.624843,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "round": 1,
+      "wall_ms": 167.206454,
+      "dma_ms": 166.669582,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "round": 2,
+      "wall_ms": 167.1668,
+      "dma_ms": 166.632544,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "round": 3,
+      "wall_ms": 167.200102,
+      "dma_ms": 166.662138,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "round": 4,
+      "wall_ms": 167.196867,
+      "dma_ms": 166.662558,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "round": 5,
+      "wall_ms": 167.176748,
+      "dma_ms": 166.639538,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "round": 1,
+      "wall_ms": 225.881923,
+      "dma_ms": 162.69667,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "round": 2,
+      "wall_ms": 225.237833,
+      "dma_ms": 162.534383,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "round": 3,
+      "wall_ms": 228.384962,
+      "dma_ms": 162.610615,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "round": 4,
+      "wall_ms": 225.520513,
+      "dma_ms": 162.538967,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "round": 5,
+      "wall_ms": 227.344067,
+      "dma_ms": 162.60464,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "round": 1,
+      "wall_ms": 164.407649,
+      "dma_ms": 163.868696,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "round": 2,
+      "wall_ms": 163.531274,
+      "dma_ms": 162.960881,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "round": 3,
+      "wall_ms": 163.547493,
+      "dma_ms": 162.942084,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "round": 4,
+      "wall_ms": 163.509452,
+      "dma_ms": 162.945367,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "round": 5,
+      "wall_ms": 163.559356,
+      "dma_ms": 162.943643,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "round": 1,
+      "wall_ms": 171.484686,
+      "dma_ms": 170.700931,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "round": 2,
+      "wall_ms": 171.297885,
+      "dma_ms": 170.560778,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "round": 3,
+      "wall_ms": 172.125159,
+      "dma_ms": 171.400412,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "round": 4,
+      "wall_ms": 172.365431,
+      "dma_ms": 171.628483,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "round": 5,
+      "wall_ms": 171.674924,
+      "dma_ms": 170.898753,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "round": 1,
+      "wall_ms": 192.962663,
+      "dma_ms": 192.381563,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "round": 2,
+      "wall_ms": 192.990766,
+      "dma_ms": 192.426874,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "round": 3,
+      "wall_ms": 192.59914,
+      "dma_ms": 192.032918,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "round": 4,
+      "wall_ms": 192.405567,
+      "dma_ms": 191.73349,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "round": 5,
+      "wall_ms": 192.336127,
+      "dma_ms": 191.735937,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "round": 1,
+      "wall_ms": 181.733459,
+      "dma_ms": 181.48323,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "round": 2,
+      "wall_ms": 181.847072,
+      "dma_ms": 181.616352,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "round": 3,
+      "wall_ms": 181.76619,
+      "dma_ms": 181.534999,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "round": 4,
+      "wall_ms": 182.003926,
+      "dma_ms": 181.767813,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "round": 5,
+      "wall_ms": 181.799142,
+      "dma_ms": 181.571096,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "round": 1,
+      "wall_ms": 185.8886,
+      "dma_ms": 178.65974,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "round": 2,
+      "wall_ms": 186.882055,
+      "dma_ms": 179.557864,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "round": 3,
+      "wall_ms": 186.198812,
+      "dma_ms": 178.927084,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "round": 4,
+      "wall_ms": 186.025998,
+      "dma_ms": 178.805209,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "round": 5,
+      "wall_ms": 186.159739,
+      "dma_ms": 178.716146,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "round": 1,
+      "wall_ms": 178.716614,
+      "dma_ms": 178.593802,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "round": 2,
+      "wall_ms": 178.837231,
+      "dma_ms": 178.60125,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "round": 3,
+      "wall_ms": 178.844063,
+      "dma_ms": 178.603593,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "round": 4,
+      "wall_ms": 178.820289,
+      "dma_ms": 178.580051,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "round": 5,
+      "wall_ms": 178.839094,
+      "dma_ms": 178.599738,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "round": 1,
+      "wall_ms": 195.887774,
+      "dma_ms": 186.338542,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "round": 2,
+      "wall_ms": 194.168325,
+      "dma_ms": 185.66552,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "round": 3,
+      "wall_ms": 193.898379,
+      "dma_ms": 185.359377,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "round": 4,
+      "wall_ms": 193.700527,
+      "dma_ms": 185.142396,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "round": 5,
+      "wall_ms": 193.253858,
+      "dma_ms": 185.072759,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "round": 1,
+      "wall_ms": 219.236443,
+      "dma_ms": 218.61276,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "round": 2,
+      "wall_ms": 219.216845,
+      "dma_ms": 218.573437,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "round": 3,
+      "wall_ms": 218.657826,
+      "dma_ms": 217.982812,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "round": 4,
+      "wall_ms": 218.623101,
+      "dma_ms": 217.981406,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "round": 5,
+      "wall_ms": 220.974926,
+      "dma_ms": 218.601615,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "round": 1,
+      "wall_ms": 207.840545,
+      "dma_ms": 207.603854,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "round": 2,
+      "wall_ms": 207.663413,
+      "dma_ms": 207.428542,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "round": 3,
+      "wall_ms": 207.594493,
+      "dma_ms": 207.369114,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "round": 4,
+      "wall_ms": 207.73131,
+      "dma_ms": 207.497657,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "round": 5,
+      "wall_ms": 207.674654,
+      "dma_ms": 207.439114,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "round": 1,
+      "wall_ms": 217.574802,
+      "dma_ms": 204.640468,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "round": 2,
+      "wall_ms": 216.852165,
+      "dma_ms": 204.951874,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "round": 3,
+      "wall_ms": 217.383052,
+      "dma_ms": 204.531407,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "round": 4,
+      "wall_ms": 216.786221,
+      "dma_ms": 204.713073,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "round": 5,
+      "wall_ms": 217.002236,
+      "dma_ms": 204.467134,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "round": 1,
+      "wall_ms": 204.349028,
+      "dma_ms": 204.114688,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "round": 2,
+      "wall_ms": 204.342726,
+      "dma_ms": 204.099427,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "round": 3,
+      "wall_ms": 204.359749,
+      "dma_ms": 204.124636,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "round": 4,
+      "wall_ms": 204.331546,
+      "dma_ms": 204.10078,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "round": 5,
+      "wall_ms": 204.354078,
+      "dma_ms": 204.120259,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "round": 1,
+      "wall_ms": 227.819847,
+      "dma_ms": 210.858646,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "round": 2,
+      "wall_ms": 228.915223,
+      "dma_ms": 211.889219,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "round": 3,
+      "wall_ms": 228.710989,
+      "dma_ms": 211.806301,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "round": 4,
+      "wall_ms": 228.930632,
+      "dma_ms": 211.518438,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "round": 5,
+      "wall_ms": 229.208894,
+      "dma_ms": 212.148594,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "round": 1,
+      "wall_ms": 546.780654,
+      "dma_ms": 506.087967,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "round": 2,
+      "wall_ms": 547.399085,
+      "dma_ms": 506.152188,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "round": 3,
+      "wall_ms": 548.095392,
+      "dma_ms": 506.039948,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "round": 4,
+      "wall_ms": 546.83749,
+      "dma_ms": 506.718385,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "round": 5,
+      "wall_ms": 547.075015,
+      "dma_ms": 506.250728,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "round": 1,
+      "wall_ms": 498.152259,
+      "dma_ms": 497.908019,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "round": 2,
+      "wall_ms": 498.130588,
+      "dma_ms": 497.883958,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "round": 3,
+      "wall_ms": 498.567678,
+      "dma_ms": 498.31875,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "round": 4,
+      "wall_ms": 498.834218,
+      "dma_ms": 498.599272,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "round": 5,
+      "wall_ms": 498.194817,
+      "dma_ms": 497.951094,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "round": 1,
+      "wall_ms": 531.390082,
+      "dma_ms": 494.377396,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "round": 2,
+      "wall_ms": 532.520785,
+      "dma_ms": 494.389219,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "round": 3,
+      "wall_ms": 533.036263,
+      "dma_ms": 494.386302,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "round": 4,
+      "wall_ms": 532.160758,
+      "dma_ms": 494.375469,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "round": 5,
+      "wall_ms": 534.698132,
+      "dma_ms": 495.327552,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "round": 1,
+      "wall_ms": 490.151933,
+      "dma_ms": 489.909949,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "round": 2,
+      "wall_ms": 490.170338,
+      "dma_ms": 489.92974,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "round": 3,
+      "wall_ms": 490.115494,
+      "dma_ms": 489.870677,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "round": 4,
+      "wall_ms": 490.143597,
+      "dma_ms": 489.900209,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "round": 5,
+      "wall_ms": 490.136945,
+      "dma_ms": 489.889687,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "round": 1,
+      "wall_ms": 561.215086,
+      "dma_ms": 507.896198,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "round": 2,
+      "wall_ms": 564.259832,
+      "dma_ms": 507.634115,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "round": 3,
+      "wall_ms": 563.531814,
+      "dma_ms": 508.017864,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "round": 4,
+      "wall_ms": 564.218974,
+      "dma_ms": 508.548229,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "round": 5,
+      "wall_ms": 557.100257,
+      "dma_ms": 505.862187,
+      "final_copy_all_bytes_identical": true
+    }
+  ],
+  "summaries": [
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "rounds": 5,
+      "median_wall_ms": 129.733158,
+      "median_dma_ms": 126.864891,
+      "wall_GB_s": 5.960887809,
+      "dma_GB_s": 6.09565652,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "rounds": 5,
+      "median_wall_ms": 122.979327,
+      "median_dma_ms": 121.687402,
+      "wall_GB_s": 6.288250382,
+      "dma_GB_s": 6.355011179,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "rounds": 5,
+      "median_wall_ms": 186.112536,
+      "median_dma_ms": 115.425122,
+      "wall_GB_s": 4.155146218,
+      "dma_GB_s": 6.699796254,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "rounds": 5,
+      "median_wall_ms": 117.711114,
+      "median_dma_ms": 116.355475,
+      "wall_GB_s": 6.569683811,
+      "dma_GB_s": 6.646226144,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 1510400,
+      "iterations": 512,
+      "rounds": 5,
+      "median_wall_ms": 126.254566,
+      "median_dma_ms": 124.94626,
+      "wall_GB_s": 6.125123427,
+      "dma_GB_s": 6.189259286,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "rounds": 5,
+      "median_wall_ms": 181.378857,
+      "median_dma_ms": 178.629061,
+      "wall_GB_s": 5.926512151,
+      "dma_GB_s": 6.017744224,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "rounds": 5,
+      "median_wall_ms": 169.476649,
+      "median_dma_ms": 168.233751,
+      "wall_GB_s": 6.342726307,
+      "dma_GB_s": 6.38958588,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "rounds": 5,
+      "median_wall_ms": 255.333623,
+      "median_dma_ms": 162.219413,
+      "wall_GB_s": 4.20995867,
+      "dma_GB_s": 6.626481875,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "rounds": 5,
+      "median_wall_ms": 163.584696,
+      "median_dma_ms": 162.269433,
+      "wall_GB_s": 6.571177049,
+      "dma_GB_s": 6.624439244,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 2176000,
+      "iterations": 494,
+      "rounds": 5,
+      "median_wall_ms": 175.044092,
+      "median_dma_ms": 173.449203,
+      "wall_GB_s": 6.140989894,
+      "dma_GB_s": 6.197457131,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "rounds": 5,
+      "median_wall_ms": 180.176267,
+      "median_dma_ms": 177.889895,
+      "wall_GB_s": 5.969762932,
+      "dma_GB_s": 6.046490724,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "rounds": 5,
+      "median_wall_ms": 168.992999,
+      "median_dma_ms": 167.966261,
+      "wall_GB_s": 6.364817515,
+      "dma_GB_s": 6.403724138,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "rounds": 5,
+      "median_wall_ms": 232.586652,
+      "median_dma_ms": 162.031285,
+      "wall_GB_s": 4.624554293,
+      "dma_GB_s": 6.638283465,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "rounds": 5,
+      "median_wall_ms": 163.687778,
+      "median_dma_ms": 162.587023,
+      "wall_GB_s": 6.571105144,
+      "dma_GB_s": 6.615593177,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 2662400,
+      "iterations": 404,
+      "rounds": 5,
+      "median_wall_ms": 173.716828,
+      "median_dma_ms": 172.607095,
+      "wall_GB_s": 6.191740964,
+      "dma_GB_s": 6.231549172,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "rounds": 5,
+      "median_wall_ms": 178.407405,
+      "median_dma_ms": 177.049841,
+      "wall_GB_s": 6.024359807,
+      "dma_GB_s": 6.070552755,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "rounds": 5,
+      "median_wall_ms": 167.196867,
+      "median_dma_ms": 166.662138,
+      "wall_GB_s": 6.428292702,
+      "dma_GB_s": 6.44891763,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "rounds": 5,
+      "median_wall_ms": 225.881923,
+      "median_dma_ms": 162.60464,
+      "wall_GB_s": 4.758195723,
+      "dma_GB_s": 6.60983844,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "rounds": 5,
+      "median_wall_ms": 163.547493,
+      "median_dma_ms": 162.945367,
+      "wall_GB_s": 6.571732653,
+      "dma_GB_s": 6.596016934,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 5242880,
+      "iterations": 205,
+      "rounds": 5,
+      "median_wall_ms": 171.674924,
+      "median_dma_ms": 170.898753,
+      "wall_GB_s": 6.26061381,
+      "dma_GB_s": 6.289047644,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "rounds": 5,
+      "median_wall_ms": 192.59914,
+      "median_dma_ms": 192.032918,
+      "wall_GB_s": 6.097665441,
+      "dma_GB_s": 6.115644819,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "rounds": 5,
+      "median_wall_ms": 181.799142,
+      "median_dma_ms": 181.571096,
+      "wall_GB_s": 6.459904635,
+      "dma_GB_s": 6.468018015,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "rounds": 5,
+      "median_wall_ms": 186.159739,
+      "median_dma_ms": 178.805209,
+      "wall_GB_s": 6.308588131,
+      "dma_GB_s": 6.568069949,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "rounds": 5,
+      "median_wall_ms": 178.837231,
+      "median_dma_ms": 178.599738,
+      "wall_GB_s": 6.566893892,
+      "dma_GB_s": 6.57562622,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 167772160,
+      "iterations": 7,
+      "rounds": 5,
+      "median_wall_ms": 193.898379,
+      "median_dma_ms": 185.359377,
+      "wall_GB_s": 6.056807313,
+      "dma_GB_s": 6.335827941,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "rounds": 5,
+      "median_wall_ms": 219.216845,
+      "median_dma_ms": 218.573437,
+      "wall_GB_s": 6.122601025,
+      "dma_GB_s": 6.140623941,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "rounds": 5,
+      "median_wall_ms": 207.674654,
+      "median_dma_ms": 207.439114,
+      "wall_GB_s": 6.462884392,
+      "dma_GB_s": 6.470222776,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "rounds": 5,
+      "median_wall_ms": 217.002236,
+      "median_dma_ms": 204.640468,
+      "wall_GB_s": 6.185085024,
+      "dma_GB_s": 6.558709004,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "rounds": 5,
+      "median_wall_ms": 204.349028,
+      "median_dma_ms": 204.114688,
+      "wall_GB_s": 6.568062952,
+      "dma_GB_s": 6.575603614,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 335544320,
+      "iterations": 4,
+      "rounds": 5,
+      "median_wall_ms": 228.915223,
+      "median_dma_ms": 211.806301,
+      "wall_GB_s": 5.863206747,
+      "dma_GB_s": 6.336814692,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-h2d",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "rounds": 5,
+      "median_wall_ms": 547.075015,
+      "median_dma_ms": 506.152188,
+      "wall_GB_s": 5.888087344,
+      "dma_GB_s": 6.364144122,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-h2d",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "rounds": 5,
+      "median_wall_ms": 498.194817,
+      "median_dma_ms": 497.951094,
+      "wall_GB_s": 6.46579483,
+      "dma_GB_s": 6.468959524,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "pageable-d2h",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "rounds": 5,
+      "median_wall_ms": 532.520785,
+      "median_dma_ms": 494.386302,
+      "wall_GB_s": 6.049013602,
+      "dma_GB_s": 6.515604213,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "host-usm-d2h",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "rounds": 5,
+      "median_wall_ms": 490.143597,
+      "median_dma_ms": 489.900209,
+      "wall_GB_s": 6.572003576,
+      "dma_GB_s": 6.575268622,
+      "final_copy_all_bytes_identical": true
+    },
+    {
+      "mode": "staged-ring8-h2d",
+      "bytes_per_copy": 1073741824,
+      "iterations": 3,
+      "rounds": 5,
+      "median_wall_ms": 563.531814,
+      "median_dma_ms": 507.896198,
+      "wall_GB_s": 5.716137744,
+      "dma_GB_s": 6.342290973,
+      "final_copy_all_bytes_identical": true
+    }
+  ],
+  "note": "No inference or disk workload. One in-order profiling-enabled GPU queue. Ordinary host memory versus the same USM host allocation API used by engine staging. H2D sources rotate within 1 GiB; staged mode adds serial CPU copies to an eight-slot host-USM ring, with DMA completion checked before slot reuse. It has one issuer, unlike the engine worker pool. Warmup, allocation, source initialization and complete final-copy checks are outside timers. Decimal GB/s from bytes/wall time and the summed memcpy event durations; raw event timing is not a separate electrical link measurement.",
+  "pid": 247737,
+  "exit_code": 0,
+  "wall_seconds": 60.21890460099985,
+  "link_after": [
+    {
+      "path": "/sys/devices/pci0000:00/0000:00:01.2/0000:01:00.0/0000:02:02.0/0000:03:00.0/0000:04:01.0/0000:05:00.0",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "current_link_speed": "2.5 GT/s PCIe",
+      "current_link_width": "1",
+      "max_link_speed": "2.5 GT/s PCIe",
+      "max_link_width": "1"
+    },
+    {
+      "path": "/sys/devices/pci0000:00/0000:00:01.2/0000:01:00.0/0000:02:02.0/0000:03:00.0/0000:04:01.0",
+      "vendor": "0x8086",
+      "device": "0xe2f0",
+      "current_link_speed": "2.5 GT/s PCIe",
+      "current_link_width": "1",
+      "max_link_speed": "2.5 GT/s PCIe",
+      "max_link_width": "1"
+    },
+    {
+      "path": "/sys/devices/pci0000:00/0000:00:01.2/0000:01:00.0/0000:02:02.0/0000:03:00.0",
+      "vendor": "0x8086",
+      "device": "0xe2ff",
+      "current_link_speed": "16.0 GT/s PCIe",
+      "current_link_width": "4",
+      "max_link_speed": "16.0 GT/s PCIe",
+      "max_link_width": "8"
+    },
+    {
+      "path": "/sys/devices/pci0000:00/0000:00:01.2/0000:01:00.0/0000:02:02.0",
+      "vendor": "0x1022",
+      "device": "0x57a3",
+      "current_link_speed": "16.0 GT/s PCIe",
+      "current_link_width": "4",
+      "max_link_speed": "16.0 GT/s PCIe",
+      "max_link_width": "4"
+    },
+    {
+      "path": "/sys/devices/pci0000:00/0000:00:01.2/0000:01:00.0",
+      "vendor": "0x1022",
+      "device": "0x57ad",
+      "current_link_speed": "16.0 GT/s PCIe",
+      "current_link_width": "4",
+      "max_link_speed": "16.0 GT/s PCIe",
+      "max_link_width": "8"
+    }
+  ]
+}

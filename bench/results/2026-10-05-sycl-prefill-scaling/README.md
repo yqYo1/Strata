@@ -394,3 +394,16 @@ The query-order change also passes all 30 B570 `bmg-g21` AOT tests, full
 The [AOT record](attention-query-order/aot-validation/summary.json) contains
 the binary hash, test results and correctness-run wall times; the speed
 estimate above is from the three JIT CLI pairs.
+
+## Compact scratch and layer-major traversal
+
+The [layer-major study](layer-major/README.md) preserves the original
+FP16 expert arithmetic while reusing scratch and loading one layer's
+quantized experts for all prompt chunks. Complete first heads, every
+residual row and all persistent state bytes match the original in the
+compact, host-residual and GPU-residual checks. The long-input records
+separate quantized weights, host residual transfers and copies within
+VRAM. They also include actual allocation at a 256K K8/V8 context and
+the 32K/64K comparisons with 4K and 8K chunks. Lower transfer volume does
+not imply a speed gain: the 64K comparison with 8K chunks has no observed
+wall-time improvement.

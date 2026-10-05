@@ -1,0 +1,761 @@
+{
+  "binary_sha256": "4f7b3e69f24db86ab523006d175c2aa0c7129797b0753fcda91bdf70bfcf4884",
+  "runs": [
+    {
+      "name": "aot-direct-gpu32-wall",
+      "args": [
+        "/usr/bin/python3",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/prefill_profile.py",
+        "--exe",
+        "/tmp/strata-upstream-arc-layer-major-aot",
+        "--pack",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "--native",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--expert-profile",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/data/expert-profile.bin",
+        "--expert-cache",
+        "128",
+        "--cwd",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05",
+        "--repeats",
+        "1",
+        "--chunk",
+        "8192",
+        "--max-context",
+        "65538",
+        "--kv",
+        "int8",
+        "--multiple-chunks",
+        "--tokens-file",
+        "/tmp/strata-upstream-arc-long-context-fixture/coding-context-64k-tokens.txt",
+        "--lengths",
+        "32768",
+        "--timeout",
+        "1800",
+        "--ple-io",
+        "direct",
+        "--mode",
+        "wall",
+        "--label",
+        "aot-direct-gpu32-wall",
+        "--output",
+        "/tmp/strata-upstream-arc-isolated-validation/aot-direct-gpu32-wall"
+      ],
+      "env": {
+        "LD_LIBRARY_PATH": "/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/lib/x86_64-linux-gnu:/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/local/lib:/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/dal/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/:/usr/local/cuda/lib64:/usr/local/cuda/lib64:/nix/store/mj9klbkhzal0vc1aazsajrydkimhc0h2-libglvnd-1.7.0/lib",
+        "ONEAPI_ROOT": "/opt/intel/oneapi",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "SYCL_CACHE_PERSISTENT": "1",
+        "STRATA_IO_THREADS": "16",
+        "STRATA_PREFILL_ATTN_BATCH": "128",
+        "STRATA_PREFILL_ATTN_LAYOUT": "4",
+        "STRATA_PREFILL_FIRST": "0",
+        "STRATA_PREFILL_RING": "8",
+        "STRATA_PREFILL_TOPK_TUNED": "1",
+        "STRATA_GDN_KEYHEAD": "0",
+        "STRATA_GDN_KEYHEAD_TUNED": "1",
+        "STRATA_PREFILL_COMPACT": "2",
+        "STRATA_PREFILL_LAYER_MAJOR": "1",
+        "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "32768"
+      },
+      "samples": 78,
+      "sampled_peak_bytes": {
+        "VmRSS_bytes": 50753953792,
+        "VmHWM_bytes": 50772103168,
+        "VmSize_bytes": 191957864448,
+        "VmSwap_bytes": 0,
+        "drm-total-system_bytes": 4194304,
+        "drm-shared-system_bytes": 0,
+        "drm-active-system_bytes": 0,
+        "drm-resident-system_bytes": 4194304,
+        "drm-purgeable-system_bytes": 4194304,
+        "drm-total-gtt_bytes": 732536832,
+        "drm-shared-gtt_bytes": 0,
+        "drm-active-gtt_bytes": 0,
+        "drm-resident-gtt_bytes": 732536832,
+        "drm-total-vram0_bytes": 10573488128,
+        "drm-shared-vram0_bytes": 0,
+        "drm-active-vram0_bytes": 872448,
+        "drm-resident-vram0_bytes": 10573488128,
+        "drm-total-stolen_bytes": 0,
+        "drm-shared-stolen_bytes": 0,
+        "drm-active-stolen_bytes": 0,
+        "drm-resident-stolen_bytes": 0,
+        "minor_faults": 12446489,
+        "major_faults": 10
+      },
+      "exit_code": 0,
+      "process_wall_seconds": 79.79560255199976,
+      "observer_errors": [],
+      "prefill_wall_ms": 50654.0,
+      "tokens_per_second": 646.9,
+      "full_head_and_ids_identical_to_original": true,
+      "ple_io": "direct",
+      "mode": "wall"
+    },
+    {
+      "name": "aot-ram-gpu32-transfer",
+      "args": [
+        "/usr/bin/python3",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/prefill_profile.py",
+        "--exe",
+        "/tmp/strata-upstream-arc-layer-major-aot",
+        "--pack",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "--native",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--expert-profile",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/data/expert-profile.bin",
+        "--expert-cache",
+        "128",
+        "--cwd",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05",
+        "--repeats",
+        "1",
+        "--chunk",
+        "8192",
+        "--max-context",
+        "65538",
+        "--kv",
+        "int8",
+        "--multiple-chunks",
+        "--tokens-file",
+        "/tmp/strata-upstream-arc-long-context-fixture/coding-context-64k-tokens.txt",
+        "--lengths",
+        "32768",
+        "--timeout",
+        "1800",
+        "--ple-io",
+        "ram",
+        "--mode",
+        "transfer",
+        "--label",
+        "aot-ram-gpu32-transfer",
+        "--output",
+        "/tmp/strata-upstream-arc-isolated-validation/aot-ram-gpu32-transfer"
+      ],
+      "env": {
+        "LD_LIBRARY_PATH": "/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/lib/x86_64-linux-gnu:/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/local/lib:/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/dal/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/:/usr/local/cuda/lib64:/usr/local/cuda/lib64:/nix/store/mj9klbkhzal0vc1aazsajrydkimhc0h2-libglvnd-1.7.0/lib",
+        "ONEAPI_ROOT": "/opt/intel/oneapi",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "SYCL_CACHE_PERSISTENT": "1",
+        "STRATA_IO_THREADS": "16",
+        "STRATA_PREFILL_ATTN_BATCH": "128",
+        "STRATA_PREFILL_ATTN_LAYOUT": "4",
+        "STRATA_PREFILL_FIRST": "0",
+        "STRATA_PREFILL_RING": "8",
+        "STRATA_PREFILL_TOPK_TUNED": "1",
+        "STRATA_GDN_KEYHEAD": "0",
+        "STRATA_GDN_KEYHEAD_TUNED": "1",
+        "STRATA_PREFILL_COMPACT": "2",
+        "STRATA_PREFILL_LAYER_MAJOR": "1",
+        "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "32768"
+      },
+      "samples": 80,
+      "sampled_peak_bytes": {
+        "VmRSS_bytes": 79452176384,
+        "VmHWM_bytes": 79477100544,
+        "VmSize_bytes": 219402186752,
+        "VmSwap_bytes": 0,
+        "drm-total-system_bytes": 4194304,
+        "drm-shared-system_bytes": 0,
+        "drm-active-system_bytes": 0,
+        "drm-resident-system_bytes": 4194304,
+        "drm-purgeable-system_bytes": 4194304,
+        "drm-total-gtt_bytes": 730439680,
+        "drm-shared-gtt_bytes": 0,
+        "drm-active-gtt_bytes": 0,
+        "drm-resident-gtt_bytes": 730439680,
+        "drm-total-vram0_bytes": 10579861504,
+        "drm-shared-vram0_bytes": 0,
+        "drm-active-vram0_bytes": 0,
+        "drm-resident-vram0_bytes": 10579861504,
+        "drm-total-stolen_bytes": 0,
+        "drm-shared-stolen_bytes": 0,
+        "drm-active-stolen_bytes": 0,
+        "drm-resident-stolen_bytes": 0,
+        "minor_faults": 12862034,
+        "major_faults": 970
+      },
+      "exit_code": 0,
+      "process_wall_seconds": 81.89956004399937,
+      "observer_errors": [],
+      "prefill_wall_ms": 50173.797248,
+      "tokens_per_second": 653.0898954694161,
+      "full_head_and_ids_identical_to_original": true,
+      "ple_io": "ram",
+      "mode": "transfer",
+      "ple_table_locked": false,
+      "ple_table_startup_seconds": 1.5,
+      "transfer": {
+        "tokens": 32768,
+        "chunks": 4,
+        "expert_copies": 24576,
+        "expert_bytes": 50292326400,
+        "dma_active_ms": 8085.454955,
+        "copy_span_ms": 48490.530417,
+        "host_copy_worker_ms": 2900.897624,
+        "wall_ms": 50173.797248,
+        "ple_preload_ms": 0.0,
+        "layers": [
+          {
+            "layer": 0,
+            "copies": 512,
+            "bytes": 1114112000,
+            "dma_active_ms": 178.806044
+          },
+          {
+            "layer": 1,
+            "copies": 512,
+            "bytes": 773324800,
+            "dma_active_ms": 124.820372
+          },
+          {
+            "layer": 2,
+            "copies": 512,
+            "bytes": 1009254400,
+            "dma_active_ms": 161.979586
+          },
+          {
+            "layer": 3,
+            "copies": 512,
+            "bytes": 1009254400,
+            "dma_active_ms": 162.937024
+          },
+          {
+            "layer": 4,
+            "copies": 512,
+            "bytes": 1009254400,
+            "dma_active_ms": 162.261839
+          },
+          {
+            "layer": 5,
+            "copies": 512,
+            "bytes": 1009254400,
+            "dma_active_ms": 162.124949
+          },
+          {
+            "layer": 6,
+            "copies": 512,
+            "bytes": 1009254400,
+            "dma_active_ms": 162.17417
+          },
+          {
+            "layer": 7,
+            "copies": 512,
+            "bytes": 1114112000,
+            "dma_active_ms": 178.978284
+          },
+          {
+            "layer": 8,
+            "copies": 512,
+            "bytes": 773324800,
+            "dma_active_ms": 124.968489
+          },
+          {
+            "layer": 9,
+            "copies": 512,
+            "bytes": 1009254400,
+            "dma_active_ms": 162.324995
+          },
+          {
+            "layer": 10,
+            "copies": 512,
+            "bytes": 773324800,
+            "dma_active_ms": 126.894169
+          },
+          {
+            "layer": 11,
+            "copies": 512,
+            "bytes": 1009254400,
+            "dma_active_ms": 161.692139
+          },
+          {
+            "layer": 12,
+            "copies": 512,
+            "bytes": 878182400,
+            "dma_active_ms": 141.584492
+          },
+          {
+            "layer": 13,
+            "copies": 512,
+            "bytes": 773324800,
+            "dma_active_ms": 126.497385
+          },
+          {
+            "layer": 14,
+            "copies": 512,
+            "bytes": 1114112000,
+            "dma_active_ms": 178.652295
+          },
+          {
+            "layer": 15,
+            "copies": 512,
+            "bytes": 1009254400,
+            "dma_active_ms": 161.893791
+          },
+          {
+            "layer": 16,
+            "copies": 512,
+            "bytes": 1114112000,
+            "dma_active_ms": 181.726093
+          },
+          {
+            "layer": 17,
+            "copies": 512,
+            "bytes": 1192755200,
+            "dma_active_ms": 190.407972
+          },
+          {
+            "layer": 18,
+            "copies": 512,
+            "bytes": 1114112000,
+            "dma_active_ms": 178.730754
+          },
+          {
+            "layer": 19,
+            "copies": 512,
+            "bytes": 1009254400,
+            "dma_active_ms": 162.019688
+          },
+          {
+            "layer": 20,
+            "copies": 512,
+            "bytes": 878182400,
+            "dma_active_ms": 141.064992
+          },
+          {
+            "layer": 21,
+            "copies": 512,
+            "bytes": 956825600,
+            "dma_active_ms": 153.746396
+          },
+          {
+            "layer": 22,
+            "copies": 512,
+            "bytes": 1114112000,
+            "dma_active_ms": 179.075361
+          },
+          {
+            "layer": 23,
+            "copies": 512,
+            "bytes": 1009254400,
+            "dma_active_ms": 162.342035
+          },
+          {
+            "layer": 24,
+            "copies": 512,
+            "bytes": 1009254400,
+            "dma_active_ms": 161.980266
+          },
+          {
+            "layer": 25,
+            "copies": 512,
+            "bytes": 1192755200,
+            "dma_active_ms": 191.760564
+          },
+          {
+            "layer": 26,
+            "copies": 512,
+            "bytes": 1009254400,
+            "dma_active_ms": 162.459579
+          },
+          {
+            "layer": 27,
+            "copies": 512,
+            "bytes": 1192755200,
+            "dma_active_ms": 191.08338
+          },
+          {
+            "layer": 28,
+            "copies": 512,
+            "bytes": 1192755200,
+            "dma_active_ms": 191.677341
+          },
+          {
+            "layer": 29,
+            "copies": 512,
+            "bytes": 1192755200,
+            "dma_active_ms": 191.601409
+          },
+          {
+            "layer": 30,
+            "copies": 512,
+            "bytes": 878182400,
+            "dma_active_ms": 140.731754
+          },
+          {
+            "layer": 31,
+            "copies": 512,
+            "bytes": 1114112000,
+            "dma_active_ms": 178.83699
+          },
+          {
+            "layer": 32,
+            "copies": 512,
+            "bytes": 1009254400,
+            "dma_active_ms": 162.037657
+          },
+          {
+            "layer": 33,
+            "copies": 512,
+            "bytes": 1114112000,
+            "dma_active_ms": 178.626085
+          },
+          {
+            "layer": 34,
+            "copies": 512,
+            "bytes": 1009254400,
+            "dma_active_ms": 162.018376
+          },
+          {
+            "layer": 35,
+            "copies": 512,
+            "bytes": 1192755200,
+            "dma_active_ms": 191.390532
+          },
+          {
+            "layer": 36,
+            "copies": 512,
+            "bytes": 773324800,
+            "dma_active_ms": 124.591418
+          },
+          {
+            "layer": 37,
+            "copies": 512,
+            "bytes": 1114112000,
+            "dma_active_ms": 178.547581
+          },
+          {
+            "layer": 38,
+            "copies": 512,
+            "bytes": 1114112000,
+            "dma_active_ms": 179.098377
+          },
+          {
+            "layer": 39,
+            "copies": 512,
+            "bytes": 1009254400,
+            "dma_active_ms": 161.537406
+          },
+          {
+            "layer": 40,
+            "copies": 512,
+            "bytes": 1192755200,
+            "dma_active_ms": 191.053703
+          },
+          {
+            "layer": 41,
+            "copies": 512,
+            "bytes": 1114112000,
+            "dma_active_ms": 179.256967
+          },
+          {
+            "layer": 42,
+            "copies": 512,
+            "bytes": 1114112000,
+            "dma_active_ms": 179.555364
+          },
+          {
+            "layer": 43,
+            "copies": 512,
+            "bytes": 1114112000,
+            "dma_active_ms": 178.585531
+          },
+          {
+            "layer": 44,
+            "copies": 512,
+            "bytes": 1192755200,
+            "dma_active_ms": 192.207922
+          },
+          {
+            "layer": 45,
+            "copies": 512,
+            "bytes": 1192755200,
+            "dma_active_ms": 191.294897
+          },
+          {
+            "layer": 46,
+            "copies": 512,
+            "bytes": 1114112000,
+            "dma_active_ms": 178.724046
+          },
+          {
+            "layer": 47,
+            "copies": 512,
+            "bytes": 1363148800,
+            "dma_active_ms": 219.094496
+          }
+        ],
+        "activation_copies": 0,
+        "activation_bytes": 0,
+        "activation_dma_active_ms": 0.0,
+        "total_transfer_bytes": 50292326400,
+        "residual_gpu_tokens": 32768,
+        "device_residual_copies": 376,
+        "device_residual_bytes": 126164664320,
+        "device_residual_dma_active_ms": 763.253547,
+        "serial_layer_load_wall_ms": 8269.707947
+      }
+    },
+    {
+      "name": "aot-ram-original-wall",
+      "args": [
+        "/usr/bin/python3",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/prefill_profile.py",
+        "--exe",
+        "/tmp/strata-upstream-arc-layer-major-aot",
+        "--pack",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "--native",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--expert-profile",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/data/expert-profile.bin",
+        "--expert-cache",
+        "128",
+        "--cwd",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05",
+        "--repeats",
+        "1",
+        "--chunk",
+        "8192",
+        "--max-context",
+        "65538",
+        "--kv",
+        "int8",
+        "--multiple-chunks",
+        "--tokens-file",
+        "/tmp/strata-upstream-arc-long-context-fixture/coding-context-64k-tokens.txt",
+        "--lengths",
+        "32768",
+        "--timeout",
+        "1800",
+        "--ple-io",
+        "ram",
+        "--mode",
+        "wall",
+        "--label",
+        "aot-ram-original-wall",
+        "--output",
+        "/tmp/strata-upstream-arc-isolated-validation/aot-ram-original-wall"
+      ],
+      "env": {
+        "LD_LIBRARY_PATH": "/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/lib/x86_64-linux-gnu:/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/local/lib:/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/dal/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/:/usr/local/cuda/lib64:/usr/local/cuda/lib64:/nix/store/mj9klbkhzal0vc1aazsajrydkimhc0h2-libglvnd-1.7.0/lib",
+        "ONEAPI_ROOT": "/opt/intel/oneapi",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "SYCL_CACHE_PERSISTENT": "1",
+        "STRATA_IO_THREADS": "16",
+        "STRATA_PREFILL_ATTN_BATCH": "128",
+        "STRATA_PREFILL_ATTN_LAYOUT": "4",
+        "STRATA_PREFILL_FIRST": "0",
+        "STRATA_PREFILL_RING": "8",
+        "STRATA_PREFILL_TOPK_TUNED": "1",
+        "STRATA_GDN_KEYHEAD": "0",
+        "STRATA_GDN_KEYHEAD_TUNED": "1",
+        "STRATA_PREFILL_COMPACT": "0",
+        "STRATA_PREFILL_LAYER_MAJOR": "0",
+        "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "32768"
+      },
+      "samples": 101,
+      "sampled_peak_bytes": {
+        "VmRSS_bytes": 79438069760,
+        "VmHWM_bytes": 79469268992,
+        "VmSize_bytes": 219481772032,
+        "VmSwap_bytes": 0,
+        "drm-total-system_bytes": 4194304,
+        "drm-shared-system_bytes": 0,
+        "drm-active-system_bytes": 0,
+        "drm-resident-system_bytes": 4194304,
+        "drm-purgeable-system_bytes": 4194304,
+        "drm-total-gtt_bytes": 730439680,
+        "drm-shared-gtt_bytes": 0,
+        "drm-active-gtt_bytes": 0,
+        "drm-resident-gtt_bytes": 730439680,
+        "drm-total-vram0_bytes": 9490259968,
+        "drm-shared-vram0_bytes": 0,
+        "drm-active-vram0_bytes": 905216,
+        "drm-resident-vram0_bytes": 9490259968,
+        "drm-total-stolen_bytes": 0,
+        "drm-shared-stolen_bytes": 0,
+        "drm-active-stolen_bytes": 0,
+        "drm-resident-stolen_bytes": 0,
+        "minor_faults": 12862705,
+        "major_faults": 10
+      },
+      "exit_code": 0,
+      "process_wall_seconds": 103.45712489800007,
+      "observer_errors": [],
+      "prefill_wall_ms": 72158.0,
+      "tokens_per_second": 454.11,
+      "full_head_and_ids_identical_to_original": true,
+      "ple_io": "ram",
+      "mode": "wall",
+      "ple_table_locked": false,
+      "ple_table_startup_seconds": 1.5
+    },
+    {
+      "name": "aot-ram-gpu32-wall",
+      "args": [
+        "/usr/bin/python3",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/prefill_profile.py",
+        "--exe",
+        "/tmp/strata-upstream-arc-layer-major-aot",
+        "--pack",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "--native",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--expert-profile",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/data/expert-profile.bin",
+        "--expert-cache",
+        "128",
+        "--cwd",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05",
+        "--repeats",
+        "1",
+        "--chunk",
+        "8192",
+        "--max-context",
+        "65538",
+        "--kv",
+        "int8",
+        "--multiple-chunks",
+        "--tokens-file",
+        "/tmp/strata-upstream-arc-long-context-fixture/coding-context-64k-tokens.txt",
+        "--lengths",
+        "32768",
+        "--timeout",
+        "1800",
+        "--ple-io",
+        "ram",
+        "--mode",
+        "wall",
+        "--label",
+        "aot-ram-gpu32-wall",
+        "--output",
+        "/tmp/strata-upstream-arc-isolated-validation/aot-ram-gpu32-wall"
+      ],
+      "env": {
+        "LD_LIBRARY_PATH": "/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/lib/x86_64-linux-gnu:/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/local/lib:/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/dal/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/:/usr/local/cuda/lib64:/usr/local/cuda/lib64:/nix/store/mj9klbkhzal0vc1aazsajrydkimhc0h2-libglvnd-1.7.0/lib",
+        "ONEAPI_ROOT": "/opt/intel/oneapi",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "SYCL_CACHE_PERSISTENT": "1",
+        "STRATA_IO_THREADS": "16",
+        "STRATA_PREFILL_ATTN_BATCH": "128",
+        "STRATA_PREFILL_ATTN_LAYOUT": "4",
+        "STRATA_PREFILL_FIRST": "0",
+        "STRATA_PREFILL_RING": "8",
+        "STRATA_PREFILL_TOPK_TUNED": "1",
+        "STRATA_GDN_KEYHEAD": "0",
+        "STRATA_GDN_KEYHEAD_TUNED": "1",
+        "STRATA_PREFILL_COMPACT": "2",
+        "STRATA_PREFILL_LAYER_MAJOR": "1",
+        "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "32768"
+      },
+      "samples": 82,
+      "sampled_peak_bytes": {
+        "VmRSS_bytes": 79413997568,
+        "VmHWM_bytes": 79435370496,
+        "VmSize_bytes": 219352997888,
+        "VmSwap_bytes": 0,
+        "drm-total-system_bytes": 4194304,
+        "drm-shared-system_bytes": 0,
+        "drm-active-system_bytes": 0,
+        "drm-resident-system_bytes": 4194304,
+        "drm-purgeable-system_bytes": 4194304,
+        "drm-total-gtt_bytes": 726245376,
+        "drm-shared-gtt_bytes": 0,
+        "drm-active-gtt_bytes": 0,
+        "drm-resident-gtt_bytes": 726245376,
+        "drm-total-vram0_bytes": 10573500416,
+        "drm-shared-vram0_bytes": 0,
+        "drm-active-vram0_bytes": 0,
+        "drm-resident-vram0_bytes": 10573500416,
+        "drm-total-stolen_bytes": 0,
+        "drm-shared-stolen_bytes": 0,
+        "drm-active-stolen_bytes": 0,
+        "drm-resident-stolen_bytes": 0,
+        "minor_faults": 12852790,
+        "major_faults": 10
+      },
+      "exit_code": 0,
+      "process_wall_seconds": 83.91224704399974,
+      "observer_errors": [],
+      "prefill_wall_ms": 50245.2,
+      "tokens_per_second": 652.16,
+      "full_head_and_ids_identical_to_original": true,
+      "ple_io": "ram",
+      "mode": "wall",
+      "ple_table_locked": false,
+      "ple_table_startup_seconds": 1.5
+    }
+  ],
+  "measurement": "Embedding service stopped by user before this finite validation sequence. Fixed 65,538-position K8/V8 context, 32K input, 8K chunks; complete first-head/ID comparisons. AOT single observations and three JIT wall pairs are recorded separately. Production RAM PLE loads at startup, outside prefill time but inside process time.",
+  "support_sha256": "01c098a6fde1658dd1fb8ca9d036eccca31176983ad832da83a4eebbebf8fc6e",
+  "service_before": "MainPID=0\nActiveState=inactive\nSubState=dead",
+  "jit_paired_wall": {
+    "binary_sha256": "eae0f3ed824d13cf25033e7dc60d1f8e69bb770b0b764ea6600a9900969b7ed9",
+    "tokens": 32768,
+    "chunk": 8192,
+    "max_context": 65538,
+    "kv": "int8",
+    "pairs": [
+      {
+        "pair": 1,
+        "label": "baseline",
+        "wall_ms": 72286.6,
+        "tokens_per_second": 453.30669861357427,
+        "report": "/tmp/strata-upstream-arc-layer-major-paired-wall/baseline-p1/run.json"
+      },
+      {
+        "pair": 1,
+        "label": "layer-major",
+        "wall_ms": 51172.7,
+        "tokens_per_second": 640.3414320526374,
+        "report": "/tmp/strata-upstream-arc-layer-major-paired-wall/layer-major-p1/run.json"
+      },
+      {
+        "pair": 2,
+        "label": "layer-major",
+        "wall_ms": 50688.0,
+        "tokens_per_second": 646.4646464646464,
+        "report": "/tmp/strata-upstream-arc-layer-major-paired-wall/layer-major-p2/run.json"
+      },
+      {
+        "pair": 2,
+        "label": "baseline",
+        "wall_ms": 72288.7,
+        "tokens_per_second": 453.2935299707977,
+        "report": "/tmp/strata-upstream-arc-layer-major-paired-wall/baseline-p2/run.json"
+      },
+      {
+        "pair": 3,
+        "label": "baseline",
+        "wall_ms": 72288.7,
+        "tokens_per_second": 453.2935299707977,
+        "report": "/tmp/strata-upstream-arc-layer-major-paired-wall/baseline-p3/run.json"
+      },
+      {
+        "pair": 3,
+        "label": "layer-major",
+        "wall_ms": 50736.4,
+        "tokens_per_second": 645.8479513721903,
+        "report": "/tmp/strata-upstream-arc-layer-major-paired-wall/layer-major-p3/run.json"
+      }
+    ],
+    "median_wall_ms": {
+      "baseline": 72288.7,
+      "layer-major": 50736.4
+    },
+    "median_tokens_per_second": {
+      "baseline": 453.2935299707977,
+      "layer-major": 645.8479513721903
+    },
+    "elapsed_reduction_percent": 29.814203326384337,
+    "measurement": "Three pairs, reversed order in pair two; no phase markers, transfer timers or PLE preload; fixed 64K context and complete first-head/ID equality."
+  },
+  "completed": true,
+  "service_restore_exit_code": 0,
+  "service_restore_stderr": "",
+  "service_after": "MainPID=316094\nActiveState=active\nSubState=running"
+}

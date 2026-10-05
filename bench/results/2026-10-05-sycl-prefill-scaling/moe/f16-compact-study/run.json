@@ -1,0 +1,112 @@
+{
+  "hardware": "Arc B570 10 GB; Ryzen 5 5600X; 128 GB RAM",
+  "compiler": "Intel oneAPI 2026.1 icpx",
+  "compute_runtime": "26.35.39758.10",
+  "engine_library_source": "f8519b9; original gather_rows16, Gemm::f16 and swiglu_interleaved bodies unchanged",
+  "source_sha256": "cd84005f0ee86a92601f9bd00d0213499914dff664362fd729fc66d44db604ce",
+  "binary_sha256": "0f9f4a32fab143091038bf23a31de001469c7edbacee07dd34cc4b7649446fb1",
+  "queue": "in-order with profiling",
+  "weights": "Eight rotating random FP16 gate/up and down matrices; real N2560/F640 shapes, not streamed GGUF weights",
+  "method": [
+    "512 experts, ten unique expert IDs per token, grouped into the same source-row order for both paths.",
+    "Original bulk gather and full X/GU/H arrays versus per-expert gather and shared X/GU/H arrays; full Dm retained.",
+    "Every gathered half input, FP32 gate/up, FP16 SwiGLU result and FP32 down result is finite and bit-identical.",
+    "128-entry prefix/suffix guards on all compared and reused allocations pass.",
+    "Independent sampled FP64 GU/down checks use L1 bound1e-6; down reference uses the original half SwiGLU result.",
+    "Correctness-only copies capture all compact intermediates; these copies are omitted from both timings.",
+    "Warm both paths after the CPU oracle; three alternating rounds of two calls per path; medians reported.",
+    "No competing compilation or other GPU work; synthetic timings do not establish model prefill improvement."
+  ],
+  "notes": [
+    "The three target arrays shrink from900MiB to90MiB at8192, excluding Dm, debug capture arrays and guards.",
+    "Per-expert gathers add launches. Every measured compact median is slower, with a small difference at8192.",
+    "Other GDN/attention buffers share the workspace, so this array-size reduction is not the whole-model VRAM reduction.",
+    "No production change is adopted on the basis of these synthetic timings alone."
+  ],
+  "runs": [
+    {
+      "T": 1,
+      "experts": 10,
+      "max_rows": 1,
+      "unequal": 0,
+      "guards": 1,
+      "finite": 1,
+      "gu_L1": 8.4957933e-09,
+      "down_L1": 3.23661631e-08,
+      "original_ms": 0.479603,
+      "compact_ms": 0.542597,
+      "original_scratch_bytes": 115200,
+      "compact_scratch_bytes": 11520
+    },
+    {
+      "T": 17,
+      "experts": 139,
+      "max_rows": 3,
+      "unequal": 0,
+      "guards": 1,
+      "finite": 1,
+      "gu_L1": 1.4197634e-08,
+      "down_L1": 4.51041822e-08,
+      "original_ms": 5.495571,
+      "compact_ms": 6.347355,
+      "original_scratch_bytes": 1958400,
+      "compact_scratch_bytes": 195840
+    },
+    {
+      "T": 257,
+      "experts": 506,
+      "max_rows": 15,
+      "unequal": 0,
+      "guards": 1,
+      "finite": 1,
+      "gu_L1": 1.51282472e-08,
+      "down_L1": 7.61300446e-08,
+      "original_ms": 21.582036,
+      "compact_ms": 24.626763,
+      "original_scratch_bytes": 29606400,
+      "compact_scratch_bytes": 2960640
+    },
+    {
+      "T": 1024,
+      "experts": 512,
+      "max_rows": 36,
+      "unequal": 0,
+      "guards": 1,
+      "finite": 1,
+      "gu_L1": 1.38527084e-08,
+      "down_L1": 6.09287521e-08,
+      "original_ms": 23.402223,
+      "compact_ms": 25.960098,
+      "original_scratch_bytes": 117964800,
+      "compact_scratch_bytes": 11796480
+    },
+    {
+      "T": 4096,
+      "experts": 512,
+      "max_rows": 111,
+      "unequal": 0,
+      "guards": 1,
+      "finite": 1,
+      "gu_L1": 1.66138252e-08,
+      "down_L1": 5.71704426e-08,
+      "original_ms": 33.833616,
+      "compact_ms": 36.124414,
+      "original_scratch_bytes": 471859200,
+      "compact_scratch_bytes": 47185920
+    },
+    {
+      "T": 8192,
+      "experts": 512,
+      "max_rows": 194,
+      "unequal": 0,
+      "guards": 1,
+      "finite": 1,
+      "gu_L1": 3.23031076e-08,
+      "down_L1": 5.70898636e-08,
+      "original_ms": 43.244498,
+      "compact_ms": 43.552703,
+      "original_scratch_bytes": 943718400,
+      "compact_scratch_bytes": 94371840
+    }
+  ]
+}
