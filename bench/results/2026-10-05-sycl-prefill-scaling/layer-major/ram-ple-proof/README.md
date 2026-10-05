@@ -21,6 +21,7 @@ and no process swap is observed. Sampling is at 1 Hz and can miss peaks.
 A separate embedding server remains resident on this GPU; this is a
 correctness proof, not an exclusive-GPU performance comparison.
 
-Long input timings are pending an equivalent GPU memory condition. Do
-not use the proof's state-download timing as production throughput or
-exclude startup loading without reporting it.
+The [subsequent long-input measurements](../isolated-long-validation/README.md)
+run after the service pause and record warm startup costs. Do not use
+this proof's state-download timing as production throughput or exclude
+startup loading without reporting it.

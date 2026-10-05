@@ -10,9 +10,9 @@ against the original 32K/8K-chunk K8/V8 control. All use the same fixed
 
 | AOT observation | Prefill seconds | Tokens/s | PLE startup seconds |
 | --- | ---: | ---: | ---: |
-| Direct PLE, layer-major, GPU residual 32K, normal wall | 50.655 | 646.90 | — |
+| Direct PLE, layer-major, GPU residual 32K, normal wall | 50.654 | 646.90 | — |
 | RAM PLE, layer-major, GPU residual 32K, transfer markers | 50.174 | 653.09 | 1.5 |
-| RAM PLE, original traversal, normal wall | 72.156 | 454.11 | 1.5 |
+| RAM PLE, original traversal, normal wall | 72.158 | 454.11 | 1.5 |
 | RAM PLE, layer-major, GPU residual 32K, normal wall | 50.245 | 652.16 | 1.5 |
 
 These are single AOT observations, not repeated medians. All RAM table
