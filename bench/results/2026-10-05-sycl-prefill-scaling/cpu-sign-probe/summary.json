@@ -1,0 +1,116 @@
+{
+  "proofs": [
+    {
+      "kind": "synthetic",
+      "sign_patterns": 165602,
+      "checked_floats": 218880,
+      "all_bits_equal": true
+    },
+    {
+      "kind": "real",
+      "expert_cases": 90,
+      "checked_floats": 7591680,
+      "all_bits_equal": true
+    },
+    {
+      "kind": "completed",
+      "cpu": 2,
+      "streaming_bytes": 135168000,
+      "n_embd": 2560,
+      "n_ff": 640,
+      "all_bits_equal": true
+    }
+  ],
+  "measurements": [
+    {
+      "nt": 1,
+      "experts": 1,
+      "pairs": 9,
+      "original_median_ms": 41.45583,
+      "candidate_median_ms": 41.887795001,
+      "paired_speed_ratio_median": 1.001141091
+    },
+    {
+      "nt": 1,
+      "experts": 96,
+      "pairs": 9,
+      "original_median_ms": 63.255101997,
+      "candidate_median_ms": 64.112629998,
+      "paired_speed_ratio_median": 0.98793919
+    },
+    {
+      "nt": 2,
+      "experts": 1,
+      "pairs": 9,
+      "original_median_ms": 49.611190002,
+      "candidate_median_ms": 50.648176998,
+      "paired_speed_ratio_median": 0.981974397
+    },
+    {
+      "nt": 2,
+      "experts": 96,
+      "pairs": 9,
+      "original_median_ms": 75.293430001,
+      "candidate_median_ms": 73.193847001,
+      "paired_speed_ratio_median": 0.989529201
+    },
+    {
+      "nt": 3,
+      "experts": 1,
+      "pairs": 9,
+      "original_median_ms": 57.433262002,
+      "candidate_median_ms": 63.073415998,
+      "paired_speed_ratio_median": 1.027723283
+    },
+    {
+      "nt": 3,
+      "experts": 96,
+      "pairs": 9,
+      "original_median_ms": 86.456726,
+      "candidate_median_ms": 84.955963001,
+      "paired_speed_ratio_median": 1.013429358
+    },
+    {
+      "nt": 4,
+      "experts": 1,
+      "pairs": 9,
+      "original_median_ms": 61.315629002,
+      "candidate_median_ms": 65.616645001,
+      "paired_speed_ratio_median": 0.931283404
+    },
+    {
+      "nt": 4,
+      "experts": 96,
+      "pairs": 9,
+      "original_median_ms": 93.348650999,
+      "candidate_median_ms": 101.513271,
+      "paired_speed_ratio_median": 0.921583776
+    }
+  ],
+  "adopted": false,
+  "compiler": "Intel icpx 2026.1, -O3 -fp-model=precise -mavx2 -mfma -mf16c",
+  "cpu": "Ryzen 5 5600X, pinned logical CPU 2",
+  "whole_engine_not_measured": true,
+  "notes": [
+    "Original and candidate sign_bytes helper use the same AVX2 instruction sequence; inlined row code is not identical.",
+    "One thread, real layer 17 IQ3_S gate/up slices, n_embd 2560, n_ff 640.",
+    "The 96-expert 135,168,000-byte dataset is larger than L3. Nine pairs alternate order.",
+    "A separate stalled baseline GPU process remains alive; whole-engine GPU measurements are unavailable.",
+    "Candidate is rejected: no consistent gate/up improvement."
+  ],
+  "source_sha256": {
+    "build.sh": "068d77ca3a51e94237a23c3d44bccf0893ee3892b442b818ff2c8cc5df86c6da",
+    "run-selected-layers.stderr": "1188d721028dc759729258e05151054cfae933653826e3dd299b8693abc6f8f6",
+    "build-initial-failed.log": "767139dd0f91c7dab7fd882f517fc84e4333b15af2e3bdbfde55a1e68f4d5255",
+    "wide.cpp": "f15fd36106dc047f287c9eca71e0538b01c8cfc6d0ef5ce0ef6800edfae4bb6e",
+    "original.cpp": "342789487c0720fc07ef66f7c19277693254368cc20e3bbce2d266ed990dc99c",
+    "build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "run-selected-layers.jsonl": "45a0f76eef1d675d0cbdf6e20e62400dc349213c8a672385120800009734001a",
+    "run.jsonl": "60209438750f587a0dbf7d3a8d21333f49d3028f8f5de7a01e1120fcc44e6de8",
+    "run.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "candidate.cpp": "8c1df811f93604ea87c53ddb13020af21b0de8b50753c67ddbde1e37d0a3798c",
+    "probe.cpp": "b36f79f8d6943b350e37915dc660b4b382b92a40b088ef30b83d5ca9dd5533be",
+    "make_sources.py": "a44b300472337012676be779b941acf6ef115c2e9a121bd783eb74eb993e8ed0",
+    "manifest.json": "6a627b10d6ffa6934494109c2244b07239d689f10cf235c4480b6880cc503e7a"
+  }
+}
