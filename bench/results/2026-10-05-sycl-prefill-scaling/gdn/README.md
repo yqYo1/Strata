@@ -120,8 +120,9 @@ prefill chunk 1,024, cache capacity 128, speculative window 4, and the
 conversation cache is enabled. Timing instrumentation is disabled. Both
 original and tuned settings use the same JIT binary and normal MTP pack.
 
-The initial request processes 1,024 prompt tokens in one chunk, exercising
-the tuned recurrence. Both settings produce identical complete finite first
+The initial request processes a 1,018-token prefix through the tuned
+recurrence, then six tokens through the short-input fallback to retain the
+conversation checkpoint. Both settings produce identical complete finite first
 heads (248,320 floats), four output token IDs and finite logprobs. Repeated
 and restored requests reuse 1,018 tokens and match their first request's IDs
 and logprobs. All four requests also match between the two settings. These
