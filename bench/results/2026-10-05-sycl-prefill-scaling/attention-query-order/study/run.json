@@ -1,0 +1,408 @@
+{
+  "device": "Intel Arc B570 10 GB",
+  "compiler": "Intel oneAPI DPC++ 2026.1",
+  "runtime": "26.35.39758.10",
+  "env": {
+    "LD_LIBRARY_PATH": "/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/lib/x86_64-linux-gnu:/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/local/lib:/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/dal/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/:/usr/local/cuda/lib64:/usr/local/cuda/lib64:/nix/store/mj9klbkhzal0vc1aazsajrydkimhc0h2-libglvnd-1.7.0/lib",
+    "ONEAPI_ROOT": "/opt/intel/oneapi",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "STRATA_IO_THREADS": "16",
+    "STRATA_PREFILL_ATTN_BATCH": "32",
+    "STRATA_PREFILL_ATTN_LAYOUT": "0",
+    "STRATA_PREFILL_FIRST": "0",
+    "STRATA_PREFILL_RING": "8"
+  },
+  "binary_sha256": "6c47fb7da6fcdfe930dccbcb9779a2e544223fd63bf91e21abdb8dbacf427893",
+  "source_sha256": {
+    "probe-kernel.cpp": "e01e5b3caa1f61c409cc5facfacaf288d7341974ca178a54d4aa749a6a8d5fff",
+    "probe-driver.cpp": "bc47a18d7ed094ea712b9d3f6e7172264083ab739c57a899de073b15aeebd1b2"
+  },
+  "argv": [
+    "8192",
+    "513",
+    "5",
+    "128",
+    "LAYOUT"
+  ],
+  "layout_order": [
+    3,
+    4,
+    4,
+    3
+  ],
+  "method": [
+    "One immutable binary; no competing compilation or GPU work.",
+    "Each run checks all output floats against original batch32 and an independent FP64 reference.",
+    "Both paths warm after the CPU oracle; three alternating timing rounds, five calls per round.",
+    "Compare candidate batch128 times across layouts 3 and 4; the printed original time is batch32.",
+    "The two layout samples per case establish a synthetic result, not end-to-end model throughput."
+  ],
+  "total_cases": 32,
+  "all_finite_bit_identical": true,
+  "records": [
+    {
+      "layout": 3,
+      "log": "layout3-r1.log",
+      "cases": [
+        {
+          "kv": "int8",
+          "context": 8192,
+          "queries": 513,
+          "original_batch32_ms": 14.746,
+          "candidate_batch128_ms": 13.0
+        },
+        {
+          "kv": "k8v4",
+          "context": 8192,
+          "queries": 513,
+          "original_batch32_ms": 15.377,
+          "candidate_batch128_ms": 13.805
+        },
+        {
+          "kv": "k8v4",
+          "context": 1500,
+          "queries": 513,
+          "original_batch32_ms": 9.888,
+          "candidate_batch128_ms": 9.393
+        },
+        {
+          "kv": "fp16",
+          "context": 8192,
+          "queries": 513,
+          "original_batch32_ms": 13.646,
+          "candidate_batch128_ms": 11.867
+        },
+        {
+          "kv": "q4_0",
+          "context": 8192,
+          "queries": 513,
+          "original_batch32_ms": 15.628,
+          "candidate_batch128_ms": 14.526
+        },
+        {
+          "kv": "q4_0",
+          "context": 1500,
+          "queries": 513,
+          "original_batch32_ms": 10.029,
+          "candidate_batch128_ms": 9.886
+        },
+        {
+          "kv": "int8",
+          "context": 1500,
+          "queries": 513,
+          "original_batch32_ms": 9.564,
+          "candidate_batch128_ms": 8.844
+        },
+        {
+          "kv": "int8",
+          "context": 2100,
+          "queries": 256,
+          "original_batch32_ms": 7.222,
+          "candidate_batch128_ms": 6.301
+        }
+      ]
+    },
+    {
+      "layout": 4,
+      "log": "layout4-r2.log",
+      "cases": [
+        {
+          "kv": "int8",
+          "context": 8192,
+          "queries": 513,
+          "original_batch32_ms": 14.743,
+          "candidate_batch128_ms": 12.402
+        },
+        {
+          "kv": "k8v4",
+          "context": 8192,
+          "queries": 513,
+          "original_batch32_ms": 15.381,
+          "candidate_batch128_ms": 13.306
+        },
+        {
+          "kv": "k8v4",
+          "context": 1500,
+          "queries": 513,
+          "original_batch32_ms": 9.89,
+          "candidate_batch128_ms": 8.31
+        },
+        {
+          "kv": "fp16",
+          "context": 8192,
+          "queries": 513,
+          "original_batch32_ms": 13.643,
+          "candidate_batch128_ms": 11.175
+        },
+        {
+          "kv": "q4_0",
+          "context": 8192,
+          "queries": 513,
+          "original_batch32_ms": 15.624,
+          "candidate_batch128_ms": 14.002
+        },
+        {
+          "kv": "q4_0",
+          "context": 1500,
+          "queries": 513,
+          "original_batch32_ms": 10.027,
+          "candidate_batch128_ms": 8.741
+        },
+        {
+          "kv": "int8",
+          "context": 1500,
+          "queries": 513,
+          "original_batch32_ms": 9.56,
+          "candidate_batch128_ms": 7.784
+        },
+        {
+          "kv": "int8",
+          "context": 2100,
+          "queries": 256,
+          "original_batch32_ms": 7.223,
+          "candidate_batch128_ms": 5.971
+        }
+      ]
+    },
+    {
+      "layout": 4,
+      "log": "layout4-r3.log",
+      "cases": [
+        {
+          "kv": "int8",
+          "context": 8192,
+          "queries": 513,
+          "original_batch32_ms": 14.745,
+          "candidate_batch128_ms": 12.403
+        },
+        {
+          "kv": "k8v4",
+          "context": 8192,
+          "queries": 513,
+          "original_batch32_ms": 15.378,
+          "candidate_batch128_ms": 13.306
+        },
+        {
+          "kv": "k8v4",
+          "context": 1500,
+          "queries": 513,
+          "original_batch32_ms": 9.902,
+          "candidate_batch128_ms": 8.316
+        },
+        {
+          "kv": "fp16",
+          "context": 8192,
+          "queries": 513,
+          "original_batch32_ms": 13.653,
+          "candidate_batch128_ms": 11.181
+        },
+        {
+          "kv": "q4_0",
+          "context": 8192,
+          "queries": 513,
+          "original_batch32_ms": 15.627,
+          "candidate_batch128_ms": 14.005
+        },
+        {
+          "kv": "q4_0",
+          "context": 1500,
+          "queries": 513,
+          "original_batch32_ms": 10.026,
+          "candidate_batch128_ms": 8.747
+        },
+        {
+          "kv": "int8",
+          "context": 1500,
+          "queries": 513,
+          "original_batch32_ms": 9.561,
+          "candidate_batch128_ms": 7.779
+        },
+        {
+          "kv": "int8",
+          "context": 2100,
+          "queries": 256,
+          "original_batch32_ms": 7.217,
+          "candidate_batch128_ms": 5.966
+        }
+      ]
+    },
+    {
+      "layout": 3,
+      "log": "layout3-r4.log",
+      "cases": [
+        {
+          "kv": "int8",
+          "context": 8192,
+          "queries": 513,
+          "original_batch32_ms": 14.747,
+          "candidate_batch128_ms": 12.999
+        },
+        {
+          "kv": "k8v4",
+          "context": 8192,
+          "queries": 513,
+          "original_batch32_ms": 15.387,
+          "candidate_batch128_ms": 13.802
+        },
+        {
+          "kv": "k8v4",
+          "context": 1500,
+          "queries": 513,
+          "original_batch32_ms": 9.893,
+          "candidate_batch128_ms": 9.402
+        },
+        {
+          "kv": "fp16",
+          "context": 8192,
+          "queries": 513,
+          "original_batch32_ms": 13.647,
+          "candidate_batch128_ms": 11.869
+        },
+        {
+          "kv": "q4_0",
+          "context": 8192,
+          "queries": 513,
+          "original_batch32_ms": 15.627,
+          "candidate_batch128_ms": 14.527
+        },
+        {
+          "kv": "q4_0",
+          "context": 1500,
+          "queries": 513,
+          "original_batch32_ms": 10.036,
+          "candidate_batch128_ms": 9.901
+        },
+        {
+          "kv": "int8",
+          "context": 1500,
+          "queries": 513,
+          "original_batch32_ms": 9.554,
+          "candidate_batch128_ms": 8.843
+        },
+        {
+          "kv": "int8",
+          "context": 2100,
+          "queries": 256,
+          "original_batch32_ms": 7.221,
+          "candidate_batch128_ms": 6.31
+        }
+      ]
+    }
+  ],
+  "summary": [
+    {
+      "kv": "int8",
+      "context": 8192,
+      "queries": 513,
+      "layout3_ms": [
+        13.0,
+        12.999
+      ],
+      "layout4_ms": [
+        12.402,
+        12.403
+      ],
+      "median_reduction_percent": 4.592484326320252
+    },
+    {
+      "kv": "k8v4",
+      "context": 8192,
+      "queries": 513,
+      "layout3_ms": [
+        13.805,
+        13.802
+      ],
+      "layout4_ms": [
+        13.306,
+        13.306
+      ],
+      "median_reduction_percent": 3.6041583656319087
+    },
+    {
+      "kv": "k8v4",
+      "context": 1500,
+      "queries": 513,
+      "layout3_ms": [
+        9.393,
+        9.402
+      ],
+      "layout4_ms": [
+        8.31,
+        8.316
+      ],
+      "median_reduction_percent": 11.540303272146849
+    },
+    {
+      "kv": "fp16",
+      "context": 8192,
+      "queries": 513,
+      "layout3_ms": [
+        11.867,
+        11.869
+      ],
+      "layout4_ms": [
+        11.175,
+        11.181
+      ],
+      "median_reduction_percent": 5.813953488372088
+    },
+    {
+      "kv": "q4_0",
+      "context": 8192,
+      "queries": 513,
+      "layout3_ms": [
+        14.526,
+        14.527
+      ],
+      "layout4_ms": [
+        14.002,
+        14.005
+      ],
+      "median_reduction_percent": 3.6003166626510033
+    },
+    {
+      "kv": "q4_0",
+      "context": 1500,
+      "queries": 513,
+      "layout3_ms": [
+        9.886,
+        9.901
+      ],
+      "layout4_ms": [
+        8.741,
+        8.747
+      ],
+      "median_reduction_percent": 11.618739576489613
+    },
+    {
+      "kv": "int8",
+      "context": 1500,
+      "queries": 513,
+      "layout3_ms": [
+        8.844,
+        8.843
+      ],
+      "layout4_ms": [
+        7.784,
+        7.779
+      ],
+      "median_reduction_percent": 12.008820037315536
+    },
+    {
+      "kv": "int8",
+      "context": 2100,
+      "queries": 256,
+      "layout3_ms": [
+        6.301,
+        6.31
+      ],
+      "layout4_ms": [
+        5.971,
+        5.966
+      ],
+      "median_reduction_percent": 5.344540480532864
+    }
+  ],
+  "linked_original_source_revision": "c2fe3ee7d8e1c7c91e61f3bfd4eb8d297567ad18"
+}
