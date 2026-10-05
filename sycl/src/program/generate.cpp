@@ -5675,7 +5675,7 @@ int main(int argc, char **argv) try {
             strata::core::progress_at("reading the prompt (batched), done up to token", done);
             strata::core::progress_beat();
             std::fflush(stdout);
-            if (o.prompt_cache_every > 0 && done >= pp_next_check) {
+            if (o.prompt_cache_every > 0 && done >= pp_next_check && sp.checkpoint_ready()) {
                 bool saved = false;
                 if (multi_gpu) {   // the stages' parts, saved when each of them read this chunk
                     std::vector<ConvCheckpoint> parts;

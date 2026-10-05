@@ -34,8 +34,11 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--lengths", default="1024,2048,4007")
     parser.add_argument("--chunk", type=int, default=4096)
+    parser.add_argument("--multiple-chunks", action="store_true",
+                        help="Measure a whole long prompt across chunks, recording the actual chunk count")
     parser.add_argument("--max-context", type=int, default=8192)
     parser.add_argument("--expert-cache", type=int, default=512)
+    parser.add_argument("--kv", choices=("fp16", "int8", "q4_0", "k8v4"), default="fp16")
     parser.add_argument("--ple-io", choices=("direct", "mmap"), default="direct")
     parser.add_argument("--preload-ple", action="store_true",
                         help="Diagnostic: finish PLE gather before the GPU/transfer timer; report both times")
@@ -55,7 +58,9 @@ def main():
     tokens = [int(t) for t in opts.tokens_file.read_text().split()]
     if not lengths or min(lengths) < 1 or max(lengths) >= len(tokens):
         parser.error("The fixture must contain at least max(lengths) + 1 tokens")
-    if opts.chunk < max(lengths):
+    if opts.chunk < 1:
+        parser.error("chunk must be positive")
+    if opts.chunk < max(lengths) and not opts.multiple_chunks:
         parser.error("Use a chunk at least as large as every length for a one-chunk comparison")
     if opts.max_context < max(lengths) + 2:
         parser.error("The context must fit the longest prefix and one generated token")
@@ -77,9 +82,11 @@ def main():
     report = {
         "label": opts.label, "mode": opts.mode,
         "exe": str(exe), "binary_sha256": sha256(exe),
+        "profile_tool_sha256": sha256(Path(__file__)),
         "fixture": str(opts.tokens_file.resolve()), "fixture_sha256": sha256(opts.tokens_file),
         "lengths": lengths, "chunk": opts.chunk, "max_context": opts.max_context,
-        "expert_cache": opts.expert_cache, "ple_io": opts.ple_io, "preload_ple": opts.preload_ple,
+        "multiple_chunks": opts.multiple_chunks,
+        "expert_cache": opts.expert_cache, "kv": opts.kv, "ple_io": opts.ple_io, "preload_ple": opts.preload_ple,
         "warmup": opts.warmup, "reverse_order": opts.reverse_order,
         "mtp": str(opts.mtp) if opts.mtp else None,
         "env": {k: v for k, v in env.items() if k.startswith(("STRATA_", "SYCL_", "ONEAPI_", "NEO_"))
@@ -93,6 +100,10 @@ def main():
             "Profiler results need a separate run without phase markers to check instrumentation overhead.",
             "With preload_ple, transfer.wall_ms excludes the separately reported preload; cli_wall_ms includes it.",
             "Warmup runs are validated and preserved but excluded from all medians and length slopes.",
+            "With multiple_chunks, wall time and transfer counts cover the whole prompt; the slope also includes changes in chunk count.",
+            "Layer-major activation_bytes count host/device residual transfers separately from quantized expert weight transfers.",
+            "device_residual_bytes count copies within VRAM; total_transfer_bytes includes only expert weights and host/device residual copies.",
+            "serial_layer_load_wall_ms measures layer-major preload phases, including CPU staging and DMA; it is not pure DMA time.",
         ],
         "runs": [],
     }
@@ -116,7 +127,7 @@ def main():
             args = [str(exe), "--pack", str(opts.pack.resolve()), "--native", str(opts.native.resolve()),
                     "--tokens-file", str(fixture.resolve()), "--max-new", "1", "--spec", "2",
                     "--max-context", str(opts.max_context), "--prefill", str(opts.chunk),
-                    "--no-prefill-borrow", "--expert-cache", str(opts.expert_cache),
+                    "--no-prefill-borrow", "--expert-cache", str(opts.expert_cache), "--kv", opts.kv,
                     "--expert-profile", str(opts.expert_profile.resolve()), "--expert-cache-per-layer",
                     "--pool-workers", "5", "--pcie-frac", "0", "--adapt-swaps", "0",
                     "--ple-io", opts.ple_io, "--suffix-draft", "0", "--greedy", "--stats"]
@@ -149,6 +160,14 @@ def main():
             chunk_match = re.search(r"strata generate: prefill \d+ tokens in (\d+) chunks", text)
             if chunk_match:
                 record["chunks"] = int(chunk_match[1])
+            layouts = re.findall(r"strata prefill: (original|compact|compact-hc) layout for (\d+) tokens: (\d+) accounted bytes, (\d+) shared workspace bytes", text)
+            if layouts:
+                record["workspace_layouts"] = [{"layout": layout, "capacity_tokens": int(t),
+                                                "accounted_bytes": int(total), "shared_workspace_bytes": int(shared)}
+                                               for layout, t, total, shared in layouts]
+            free = re.findall(r"strata (?:generate|serve): (\d+) MiB of VRAM free", text)
+            if free:
+                record["startup_free_vram_mib"] = list(map(int, free))
             ple_match = re.search(r"strata generate: prefill .*; PLE ([\d.]+) ms", text)
             if ple_match:
                 record["ple_ms"] = float(ple_match[1])
@@ -167,9 +186,12 @@ def main():
                               logits_finite=bool(values) and all(map(math.isfinite, values)))
             report["runs"].append(record)
             save()
+            chunks = record.get("chunks", 0)
+            chunk_valid = chunks >= 1 if opts.multiple_chunks else chunks == 1
             valid = (rc == 0 and record.get("reported_tokens") == n
-                     and record.get("chunks") == 1 and record.get("logits_finite")
-                     and (opts.mode == "wall" or record.get("transfer", {}).get("chunks") == 1)
+                     and chunk_valid and record.get("logits_finite")
+                     and (opts.mode == "wall" or (record.get("transfer", {}).get("chunks") == chunks
+                                                 and record["transfer"].get("tokens") == n))
                      and (opts.mode != "profile" or "phases" in record))
             if not valid:
                 raise RuntimeError(f"Invalid or failed profile {name}; evidence saved to {target}")
@@ -184,6 +206,11 @@ def main():
         if opts.mode != "wall":
             median.update({key: statistics.median(r["transfer"][key] for r in rows)
                            for key in ("dma_active_ms", "expert_bytes")})
+            for key in ("activation_bytes", "activation_dma_active_ms", "total_transfer_bytes",
+                        "residual_gpu_tokens", "device_residual_bytes", "device_residual_dma_active_ms",
+                        "serial_layer_load_wall_ms"):
+                if all(key in r["transfer"] for r in rows):
+                    median[key] = statistics.median(r["transfer"][key] for r in rows)
         medians.append(median)
     report["medians"] = medians
     if len(medians) >= 2:
