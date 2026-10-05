@@ -120,6 +120,15 @@ the original scratch uses 3,353,103,360 bytes and compact HC scratch
 uses 1,895,413,760 bytes at this chunk size. RAM and VRAM samples are in
 the [memory record](8k-chunk-long/memory-summary.json).
 
+## Standalone RAM/VRAM bandwidth
+
+The [standalone copy probe](pcie-bandwidth/README.md) completes 35 cases,
+five rounds each, with complete final-copy byte checks. At native expert
+sizes, CPU staging plus H2D reaches 6.112–6.182 GB/s; direct host-USM H2D
+reaches 6.285–6.362 GB/s and 6.460 GB/s at 1 GiB. This supports the earlier
+in-engine rate of about 6.2 GB/s. DMA overlaps other prompt work, so the
+copy rate alone does not establish the critical-path transfer wait.
+
 ## Phase intervals and the remaining SSD wait
 
 The [32K profiled record](gpu-residual-long/gpu32768-k8v8-32768-c4096-profile/run.json)
