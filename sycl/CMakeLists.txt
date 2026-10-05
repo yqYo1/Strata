@@ -211,8 +211,14 @@ if(STRATA_SYCL_PARITY)
   add_executable(native_grouped_parity ${_src})
   target_link_libraries(native_grouped_parity PRIVATE strata_kernels)
   add_test(NAME native_grouped_parity COMMAND native_grouped_parity)
-  # (upstream PR #413's gdn_rec_parity is an SM-holding NVIDIA bench - PTX timers, __nanosleep - not built here; the
-  # key-head kernel is checked through the engine: output hashes with STRATA_GDN_KEYHEAD=1 and without)
+  # Upstream PR #413's gdn_rec_parity uses NVIDIA SM timers and is not built here.
+  # Check the SYCL variant against the original exported pipeline in full instead.
+  strata_resolve(_src src/prefill/gdn_variant_parity.cpp)
+  add_executable(gdn_variant_parity ${_src})
+  target_link_libraries(gdn_variant_parity PRIVATE strata_prefill)
+  add_test(NAME gdn_variant_parity COMMAND gdn_variant_parity)
+  set_tests_properties(gdn_variant_parity PROPERTIES TIMEOUT 180
+    ENVIRONMENT_MODIFICATION "STRATA_GDN_KEYHEAD_TUNED=set:0;STRATA_GDN_KEYHEAD=set:0;STRATA_GDN_PIPELINE=set:1;STRATA_GDN_REC_HEADS=unset:")
   # the conversation snapshots (#216) against the engine, as upstream's STRATA_BUILD_CONVERSATION_TESTS
   strata_resolve(_src src/core/conversation_snapshot_test.cpp)
   add_executable(conversation_snapshot_test ${_src})

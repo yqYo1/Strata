@@ -1,9 +1,11 @@
 // src/prefill/kernels.cu - see include/strata/prefill/kernels.hpp.
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include <sycl/ext/intel/experimental/grf_size_properties.hpp>
 #include <dpct/dpct.hpp>
 #include "strata/sycl_queue.hpp"
 #include "strata/prefill/kernels.hpp"
+#include "strata/prefill/gdn_variant.hpp"
 #include "strata/kernels/mrope.hpp"
 #include "strata/kernels/router_top10.hpp"
 
@@ -1708,9 +1710,35 @@ void gdn_conv(float* history, const float* qkv, const float* conv_w, float* h, i
     }
     check("gdn_conv");
 }
-void gdn_recurrence(float* state, const float* h, const float* gate, const float* beta, const float* z,
-                    const float* gamma, float eps, float* y, uint16_t* y16, int64_t T, void* stream) {
-    static const bool serial = std::getenv("STRATA_GDN_REC_HEADS") != nullptr;   // the one-block-per-head kernel (A/B)
+namespace {
+void launch_gdn_out_norm(const float *z, const float *gamma, float eps, const float *y, uint16_t *y16, int64_t T,
+                         void *stream) {
+    auto exp_props = sycl::ext::oneapi::experimental::properties{sycl::ext::oneapi::experimental::use_root_sync};
+
+    strata::q_of(stream)->parallel_for<dpct_kernel_name<class gdn_out_norm_kernel_43e92c>>(
+        sycl::nd_range<3>(sycl::range(1, HV, (unsigned)T) * sycl::range(1, 1, S), sycl::range(1, 1, S)), exp_props,
+        [=](sycl::nd_item<3> item_ct1)
+            [[sycl::reqd_sub_group_size(32)]] { gdn_out_norm_kernel(z, gamma, eps, y, y16); });
+}
+} // namespace
+
+bool gdn_recurrence_keyhead_variant(float *state, const float *h, const float *gate, const float *beta, const float *z,
+                                    const float *gamma, float eps, float *y, uint16_t *y16, int64_t T, void *stream) {
+    if (T < 256)
+        return false;
+    // The original key-head arithmetic; SG16 and 256 GRFs avoid the B570's register spills.
+    const auto props = sycl::ext::oneapi::experimental::properties{sycl::ext::intel::experimental::grf_size<256>};
+    strata::q_of(stream)->parallel_for<dpct_kernel_name<class gdn_rec_kh_tuned_kernel>>(
+        sycl::nd_range<3>(sycl::range(1, 1, HK * NCB) * sycl::range(1, RG, CB), sycl::range(1, RG, CB)), props,
+        [=](sycl::nd_item<3>) [[sycl::reqd_sub_group_size(16)]] { gdn_rec_kh_kernel(state, h, gate, beta, y, T); });
+    launch_gdn_out_norm(z, gamma, eps, y, y16, T, stream);
+    check("gdn_recurrence_keyhead_variant");
+    return true;
+}
+
+void gdn_recurrence(float *state, const float *h, const float *gate, const float *beta, const float *z,
+                    const float *gamma, float eps, float *y, uint16_t *y16, int64_t T, void *stream) {
+    static const bool serial = std::getenv("STRATA_GDN_REC_HEADS") != nullptr; // the one-block-per-head kernel (A/B)
     if (serial || T <= 0) {
         /*
         DPCT1049: The work-group size passed to the SYCL kernel may exceed
@@ -1732,6 +1760,12 @@ void gdn_recurrence(float* state, const float* h, const float* gate, const float
                     });
     } else {
         static const bool pipe = [] { const char* v = std::getenv("STRATA_GDN_PIPELINE"); return v == nullptr || std::atoi(v) != 0; }();
+        static const bool tuned = [] {
+            const char* value = std::getenv("STRATA_GDN_KEYHEAD_TUNED");
+            return value && std::atoi(value) == 1;
+        }();
+        if (pipe && tuned && gdn_recurrence_keyhead_variant(state, h, gate, beta, z, gamma, eps, y, y16, T, stream))
+            return;
 #if !defined(__HIPCC__)
         if (pipe && gdn_keyhead_ok())   // the value heads of a key head in one thread (same bits)
         {
@@ -1777,22 +1811,7 @@ void gdn_recurrence(float* state, const float* h, const float* gate, const float
                         gdn_rec_cols_kernel(state, h, gate, beta, y, T);
                     });
         }
-        {
-            auto exp_props = sycl::ext::oneapi::experimental::properties{
-                sycl::ext::oneapi::experimental::use_root_sync};
-
-            strata::q_of(stream)
-                ->parallel_for<
-                    dpct_kernel_name<class gdn_out_norm_kernel_43e92c>>(
-                    sycl::nd_range<3>(sycl::range(1, HV, (unsigned)T) *
-                                          sycl::range(1, 1, S),
-                                      sycl::range(1, 1, S)),
-                    exp_props,
-                    [=](sycl::nd_item<3> item_ct1)
-                        [[sycl::reqd_sub_group_size(32)]] {
-                            gdn_out_norm_kernel(z, gamma, eps, y, y16);
-                        });
-        }
+        launch_gdn_out_norm(z, gamma, eps, y, y16, T, stream);
     }
     check("gdn_recurrence");
 }
