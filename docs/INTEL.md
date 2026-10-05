@@ -667,3 +667,12 @@ work; whole-engine TG and full-context GPU validation are still pending.
 The default-off executable remains byte-for-byte the prior build. See
 [the recorded compiler experiment](../bench/results/2026-10-05-sycl-prefill-scaling/cpu-gcc-probe/README.md)
 and [production-object checks](../bench/results/2026-10-05-sycl-prefill-scaling/cpu-gcc-probe/dispatch-check/README.md).
+
+The full CPU expert pool (five workers plus host, gate/up, intermediate
+quantization and down) also passes 34,412,784 exact finite output comparisons
+over all 48 layers and mixed batches up to 97 experts. With 27 pairs per case,
+IQ2_S pool speed ratios are 1.076–1.139 at two tokens, 1.068–1.177 at four and
+1.024–1.100 for mixed groups. A stuck GPU-load control used one CPU core during
+these tests; unchanged-format controls also vary. These are CPU-pool results,
+not whole-engine TG. See [the full pool records](../bench/results/2026-10-05-sycl-prefill-scaling/cpu-gcc-pool-probe/README.md)
+for all controls, outliers, phase times and process observations.
