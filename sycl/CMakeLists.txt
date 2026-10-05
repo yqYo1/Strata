@@ -234,6 +234,7 @@ if(STRATA_SYCL_PARITY)
   # unlike the XMX path it accepts all three KV formats above.
   add_test(NAME qsa_decode_attn_batch_parity COMMAND qsa_prompt_attn_parity 8192 129 1 128)
   add_test(NAME qsa_decode_attn_layout_parity COMMAND qsa_prompt_attn_parity 8192 129 1 128 3)
+  add_test(NAME qsa_decode_attn_query_order_parity COMMAND qsa_prompt_attn_parity 8192 129 1 128 4)
   strata_resolve(_src src/kernels/qsa_block_topk_variant_parity.cpp)
   add_executable(qsa_block_topk_variant_parity ${_src})
   target_link_libraries(qsa_block_topk_variant_parity PRIVATE strata_kernels)

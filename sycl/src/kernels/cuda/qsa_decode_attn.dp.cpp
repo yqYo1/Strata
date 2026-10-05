@@ -109,7 +109,7 @@ __dpct_inline__ void load8(const QsaAttnPools &p, bool value, long long row,
     } else load8_q4(p, value, row, d0, out);
 }
 
-template <int KV_MODE, int SG = 32, bool TRANSPOSE_Q = false>
+template <int KV_MODE, int SG = 32, bool TRANSPOSE_Q = false, bool QUERY_FAST = false>
 /*
 DPCT1110: The total declared local variable size in device function
 attn_chunk_kernel exceeds 128 bytes and may cause high register pressure.
@@ -125,14 +125,16 @@ attn_chunk_kernel(const float *__restrict__ q, QsaAttnPools p,
                   int n_chunks, int cap = 0, long long scratch_stride = 0) {
     constexpr int LOCAL_THREADS = 8 * SG;
     constexpr int LOCAL_WARPS = 8;
-    // batched form: query blockIdx.z, with its own q row, selection, step and scratch
+    // Each query has its own q row, selection, step and scratch.
+    // QUERY_FAST puts neighboring queries along the innermost workgroup dimension.
     auto item_ct1 = sycl::ext::oneapi::this_work_item::get_nd_item<3>();
-    q += (size_t)item_ct1.get_group(0) * (size_t)(n_kv_heads * G) * HD;
-    ids += (size_t)item_ct1.get_group(0) * (size_t)cap;
-    step += (size_t)item_ct1.get_group(0) * kStepCount;
-    part_acc += (size_t)item_ct1.get_group(0) * (size_t)scratch_stride;
-    part_m += (size_t)item_ct1.get_group(0) * (size_t)scratch_stride;
-    part_l += (size_t)item_ct1.get_group(0) * (size_t)scratch_stride;
+    const size_t query_index = QUERY_FAST ? item_ct1.get_group(2) : item_ct1.get_group(0);
+    q += query_index * (size_t)(n_kv_heads * G) * HD;
+    ids += query_index * (size_t)cap;
+    step += query_index * kStepCount;
+    part_acc += query_index * (size_t)scratch_stride;
+    part_m += query_index * (size_t)scratch_stride;
+    part_l += query_index * (size_t)scratch_stride;
     auto &sq =
         *sycl::ext::oneapi::group_local_memory_for_overwrite<float[G][HD]>(
             sycl::ext::oneapi::this_work_item::get_work_group<
@@ -151,7 +153,8 @@ attn_chunk_kernel(const float *__restrict__ q, QsaAttnPools p,
     generated code for potential precision and/or performance issues.
     */
     const int n_ids = *(step + kStepWidth);
-    const int chunk = item_ct1.get_group(2), kvh = item_ct1.get_group(1);
+    const int chunk = QUERY_FAST ? item_ct1.get_group(0) : item_ct1.get_group(2);
+    const int kvh = item_ct1.get_group(1);
     const int t = item_ct1.get_local_id(2), lane = t % SG, warp = t / SG;
     const int c0 = chunk * CHUNK;
     const int n_here = sycl::min(CHUNK, n_ids - c0);
@@ -341,7 +344,7 @@ __dpct_inline__ void attn_merge_kernel(const float *__restrict__ part_acc,
 }
 
 // Keep the original 64-cell split and merge, with only lane/query layout varied.
-template <int KV_MODE, int SG, bool TRANSPOSE_Q>
+template <int KV_MODE, int SG, bool TRANSPOSE_Q, bool QUERY_FAST = false>
 void launch_chunk_variant(const float* q, QsaAttnPools pools, const int32_t* ids, const int32_t* steps,
                           int64_t cap, const QsaShapes& s, float* scratch, int64_t n_q,
                           dpct::queue_ptr st) {
@@ -355,11 +358,12 @@ void launch_chunk_variant(const float* q, QsaAttnPools pools, const int32_t* ids
         sycl::ext::oneapi::experimental::use_root_sync};
     st->parallel_for<dpct_kernel_name<class qsa_attn_chunk_variant,
                                      dpct_kernel_scalar<KV_MODE>, dpct_kernel_scalar<SG>,
-                                     dpct_kernel_scalar<TRANSPOSE_Q>>>(
-        sycl::nd_range<3>(sycl::range<3>((size_t) n_q, (size_t) n_kv_heads, (size_t) n_chunks * 8 * SG),
+                                     dpct_kernel_scalar<TRANSPOSE_Q>, dpct_kernel_scalar<QUERY_FAST>>>(
+        sycl::nd_range<3>(sycl::range<3>((size_t)(QUERY_FAST ? n_chunks : n_q), (size_t)n_kv_heads,
+                                        (size_t)(QUERY_FAST ? n_q : n_chunks) * 8 * SG),
                           sycl::range<3>(1, 1, 8 * SG)), properties,
         [=](sycl::nd_item<3>) [[sycl::reqd_sub_group_size(SG)]] {
-            attn_chunk_kernel<KV_MODE, SG, TRANSPOSE_Q>(q, pools, ids, steps, n_kv_heads,
+            attn_chunk_kernel<KV_MODE, SG, TRANSPOSE_Q, QUERY_FAST>(q, pools, ids, steps, n_kv_heads,
                                                        page_size, scale, scratch, part_m, part_l,
                                                        n_chunks, (int) cap, stride);
         });
@@ -369,7 +373,8 @@ template <int KV_MODE>
 void dispatch_chunk_variant(const float* q, QsaAttnPools pools, const int32_t* ids, const int32_t* steps,
                             int64_t cap, const QsaShapes& s, float* scratch, int64_t n_q,
                             int variant, dpct::queue_ptr st) {
-    if (variant == 1) launch_chunk_variant<KV_MODE, 32, true>(q, pools, ids, steps, cap, s, scratch, n_q, st);
+    if (variant == 4) launch_chunk_variant<KV_MODE, 16, true, true>(q, pools, ids, steps, cap, s, scratch, n_q, st);
+    else if (variant == 1) launch_chunk_variant<KV_MODE, 32, true>(q, pools, ids, steps, cap, s, scratch, n_q, st);
     else if (variant == 2) launch_chunk_variant<KV_MODE, 16, false>(q, pools, ids, steps, cap, s, scratch, n_q, st);
     else launch_chunk_variant<KV_MODE, 16, true>(q, pools, ids, steps, cap, s, scratch, n_q, st);
 }
@@ -487,7 +492,7 @@ void qsa_decode_attn_batch_variant(const float* q, const QsaAttnPools& pools, co
                                    float* scratch, float* attn, int64_t n_q, int variant, void* stream) {
     if (n_q <= 0) return;
     if (s.head_dim != HD || s.n_head != (int64_t) G * s.n_head_kv || cap <= 0 || !scratch || !ids || !steps ||
-        !pools.page_table || n_q > 65535 || variant < 1 || variant > 3) {
+        !pools.page_table || n_q > 65535 || variant < 1 || variant > 4) {
         std::fprintf(stderr, "qsa_decode_attn_batch_variant: unsupported geometry, variant, or missing buffers\n");
         std::exit(1);
     }

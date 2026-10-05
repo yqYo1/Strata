@@ -344,7 +344,7 @@ int main(int argc, char** argv) {
     const int reps = argc > 3 ? std::atoi(argv[3]) : 5;
     const int64_t candidate_batch = argc > 4 ? std::atoll(argv[4]) : 0;
     const int variant = argc > 5 ? std::atoi(argv[5]) : 0;
-    if (variant < 0 || variant > 3 || (variant != 0 && candidate_batch == 0)) return 2;
+    if (variant < 0 || variant > 4 || (variant != 0 && candidate_batch == 0)) return 2;
     if (ctx < 1 || nq < 1 || nq > ctx || reps < 1 || candidate_batch < 0 || candidate_batch > 1024) {
         std::fprintf(stderr, "Invalid context, queries, repetitions, or fallback batch (0..1024)\n");
         return 2;

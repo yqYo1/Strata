@@ -701,7 +701,7 @@ int prompt_attn_variant() {
     static const int variant = [] {
         const char* value = std::getenv("STRATA_PREFILL_ATTN_LAYOUT");
         const int requested = value ? std::atoi(value) : 0;
-        return requested >= 1 && requested <= 3 ? requested : 0;
+        return requested >= 1 && requested <= 4 ? requested : 0;
     }();
     return variant;
 }
