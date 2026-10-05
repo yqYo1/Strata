@@ -29,6 +29,11 @@
 #include <vector>
 
 namespace k = strata::kernels;
+namespace probe {
+void qsa_decode_attn_batch_variant(const float*, const k::QsaAttnPools&, const int32_t*, const int32_t*, int64_t,
+                                 const k::QsaShapes&, float*, float*, int64_t, int, void*);
+}
+
 
 namespace {
 void ck(dpct::err0 e, const char *w) {
@@ -196,7 +201,7 @@ int run(int fmt, int64_t ctx, int64_t nq, int reps, int64_t candidate_batch, int
                                              d_steps + t0 * k::kStepCount, cap, s, scratch,
                                              d_new + t0 * NH * HD, nb, nullptr);
                 else
-                    k::qsa_decode_attn_batch_variant(d_q + t0 * NH * HD, pl, d_ids + t0 * cap,
+                    probe::qsa_decode_attn_batch_variant(d_q + t0 * NH * HD, pl, d_ids + t0 * cap,
                                                      d_steps + t0 * k::kStepCount, cap, s, scratch,
                                                      d_new + t0 * NH * HD, nb, variant, nullptr);
             }

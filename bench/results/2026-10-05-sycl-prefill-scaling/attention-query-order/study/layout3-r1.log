@@ -1,0 +1,10 @@
+Fallback batch 128, layout 3 vs original 32 queries; require finite, bit-identical outputs
+PASS int8 ctx 8192, 513 queries: vs FP64 old 3.02e-06 new 3.02e-06 (output scale 3.45); new vs old 0 (0 of scale); 14.746 -> 13.000 ms per chunk (1.13x)
+PASS k8v4 ctx 8192, 513 queries: vs FP64 old 3.17e-06 new 3.17e-06 (output scale 6.88); new vs old 0 (0 of scale); 15.377 -> 13.805 ms per chunk (1.11x)
+PASS k8v4 ctx 1500, 513 queries: vs FP64 old 3.05e-06 new 3.05e-06 (output scale 7.77); new vs old 0 (0 of scale); 9.888 -> 9.393 ms per chunk (1.05x)
+PASS fp16 ctx 8192, 513 queries: vs FP64 old 1.76e-06 new 1.76e-06 (output scale 3.16); new vs old 0 (0 of scale); 13.646 -> 11.867 ms per chunk (1.15x)
+PASS q4_0 ctx 8192, 513 queries: vs FP64 old 4.07e-06 new 4.07e-06 (output scale 7.65); new vs old 0 (0 of scale); 15.628 -> 14.526 ms per chunk (1.08x)
+PASS q4_0 ctx 1500, 513 queries: vs FP64 old 4.81e-06 new 4.81e-06 (output scale 7.22); new vs old 0 (0 of scale); 10.029 -> 9.886 ms per chunk (1.01x)
+PASS int8 ctx 1500, 513 queries: vs FP64 old 1.68e-06 new 1.68e-06 (output scale 3.76); new vs old 0 (0 of scale); 9.564 -> 8.844 ms per chunk (1.08x)
+PASS int8 ctx 2100, 256 queries: vs FP64 old 2.03e-06 new 2.03e-06 (output scale 3.61); new vs old 0 (0 of scale); 7.222 -> 6.301 ms per chunk (1.15x)
+FAILURES: 0

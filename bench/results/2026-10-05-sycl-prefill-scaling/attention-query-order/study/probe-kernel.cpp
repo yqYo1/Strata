@@ -13,7 +13,9 @@
 #include <cstdlib>
 #include <cmath>
 
-namespace strata::kernels {
+namespace probe {
+using namespace strata::kernels;
+uint64_t qsa_decode_attn_scratch_floats(int64_t cap, const QsaShapes& s);
 namespace {
 
 constexpr int HD = 256;          // head_dim
@@ -125,8 +127,7 @@ attn_chunk_kernel(const float *__restrict__ q, QsaAttnPools p,
                   int n_chunks, int cap = 0, long long scratch_stride = 0) {
     constexpr int LOCAL_THREADS = 8 * SG;
     constexpr int LOCAL_WARPS = 8;
-    // Each query has its own q row, selection, step and scratch.
-    // QUERY_FAST puts neighboring queries along the innermost workgroup dimension.
+    // batched form: query blockIdx.z, with its own q row, selection, step and scratch
     auto item_ct1 = sycl::ext::oneapi::this_work_item::get_nd_item<3>();
     const size_t query_index = QUERY_FAST ? item_ct1.get_group(2) : item_ct1.get_group(0);
     q += query_index * (size_t)(n_kv_heads * G) * HD;
@@ -349,7 +350,7 @@ void launch_chunk_variant(const float* q, QsaAttnPools pools, const int32_t* ids
                           int64_t cap, const QsaShapes& s, float* scratch, int64_t n_q,
                           dpct::queue_ptr st) {
     const int n_chunks = (int) ((cap + CHUNK - 1) / CHUNK);
-    const long long stride = (long long) qsa_decode_attn_scratch_floats(cap, s);
+    const long long stride = (long long) probe::qsa_decode_attn_scratch_floats(cap, s);
     float* part_m = scratch + (size_t) n_chunks * s.n_head * HD;
     float* part_l = part_m + (size_t) n_chunks * s.n_head;
     const float scale = 1.0f / sqrtf((float) HD);
@@ -359,8 +360,7 @@ void launch_chunk_variant(const float* q, QsaAttnPools pools, const int32_t* ids
     st->parallel_for<dpct_kernel_name<class qsa_attn_chunk_variant,
                                      dpct_kernel_scalar<KV_MODE>, dpct_kernel_scalar<SG>,
                                      dpct_kernel_scalar<TRANSPOSE_Q>, dpct_kernel_scalar<QUERY_FAST>>>(
-        sycl::nd_range<3>(sycl::range<3>((size_t)(QUERY_FAST ? n_chunks : n_q), (size_t)n_kv_heads,
-                                        (size_t)(QUERY_FAST ? n_q : n_chunks) * 8 * SG),
+        sycl::nd_range<3>(sycl::range<3>((size_t)(QUERY_FAST ? n_chunks : n_q), (size_t)n_kv_heads, (size_t)(QUERY_FAST ? n_q : n_chunks) * 8 * SG),
                           sycl::range<3>(1, 1, 8 * SG)), properties,
         [=](sycl::nd_item<3>) [[sycl::reqd_sub_group_size(SG)]] {
             attn_chunk_kernel<KV_MODE, SG, TRANSPOSE_Q, QUERY_FAST>(q, pools, ids, steps, n_kv_heads,
@@ -393,7 +393,7 @@ void qsa_decode_attn_batch(const float* q, const QsaAttnPools& pools, const int3
                         : (pools.k_q != nullptr ? 1 : 0));
     const int n_chunks = (int) ((cap + CHUNK - 1) / CHUNK);
     // per query: [acc: n_chunks*n_head*HD][m: n_chunks*n_head][l: n_chunks*n_head], all offsets from one stride
-    const long long stride = (long long) qsa_decode_attn_scratch_floats(cap, s);
+    const long long stride = (long long) probe::qsa_decode_attn_scratch_floats(cap, s);
     float* part_acc = scratch;
     float* part_m = scratch + (size_t) n_chunks * s.n_head * HD;
     float* part_l = part_m + (size_t) n_chunks * s.n_head;
@@ -505,7 +505,7 @@ void qsa_decode_attn_batch_variant(const float* q, const QsaAttnPools& pools, co
     else if (kv_mode == 1) dispatch_chunk_variant<1>(q, pools, ids, steps, cap, s, scratch, n_q, variant, st);
     else dispatch_chunk_variant<0>(q, pools, ids, steps, cap, s, scratch, n_q, variant, st);
     const int n_chunks = (int) ((cap + CHUNK - 1) / CHUNK);
-    const long long stride = (long long) qsa_decode_attn_scratch_floats(cap, s);
+    const long long stride = (long long) probe::qsa_decode_attn_scratch_floats(cap, s);
     const float* part_m = scratch + (size_t) n_chunks * s.n_head * HD;
     const float* part_l = part_m + (size_t) n_chunks * s.n_head;
     const int n_head = (int) s.n_head;
