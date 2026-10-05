@@ -126,10 +126,30 @@ if(STRATA_NATIVE_EXPERTS)
   target_include_directories(strata_kernels_cpu PRIVATE ${STRATA_ROOT}/third_party/ggml)
   set_source_files_properties(${STRATA_ROOT}/src/kernels/cpu/iq_avx512.cpp PROPERTIES COMPILE_OPTIONS
     "-mavx512f;-mavx512bw;-mavx512vl;-mavx512dq;-mavx512vnni;-mavx512vbmi;-mf16c;-mfma")
-  set_source_files_properties(${STRATA_ROOT}/src/kernels/cpu/iq_avx2.cpp PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c")
+  set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/kernels/cpu/iq_avx2.cpp PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c")
   set_source_files_properties(${STRATA_ROOT}/src/kernels/cpu/kq_avx2.cpp PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c")
   target_link_libraries(strata_kernels_cpu PUBLIC ggml-cpu ggml-base)
   target_compile_definitions(strata_kernels_cpu PUBLIC STRATA_NATIVE_EXPERTS=1)
+  option(STRATA_IQ2S_GCC "Use GCC for IQ2_S AVX2 gate/up groups of two/four tokens (experimental)" OFF)
+  if(STRATA_IQ2S_GCC)
+    if(NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
+      message(FATAL_ERROR "STRATA_IQ2S_GCC currently supports Linux builds only")
+    endif()
+    find_program(STRATA_IQ2S_GXX NAMES g++ REQUIRED)
+    set(_iq2s_object ${CMAKE_CURRENT_BINARY_DIR}/iq2s_gcc.o)
+    add_custom_command(OUTPUT ${_iq2s_object}
+      COMMAND ${STRATA_IQ2S_GXX} -O3 -DNDEBUG -std=c++20 -ffp-contract=off -mavx2 -mfma -mf16c
+        -Diq256_gu_rows=iq256_gu_rows_gcc -Diq256_rows=iq256_rows_gcc
+        -Diq256_supported=iq256_supported_gcc -Diq4nl256_down_rows=iq4nl256_down_rows_gcc
+        -I${STRATA_ROOT}/include -I${STRATA_ROOT}/third_party/ggml
+        -MMD -MF ${_iq2s_object}.d -c ${STRATA_ROOT}/src/kernels/cpu/iq_avx2.cpp -o ${_iq2s_object}
+      DEPENDS ${STRATA_ROOT}/src/kernels/cpu/iq_avx2.cpp ${STRATA_IQ2S_GXX}
+      DEPFILE ${_iq2s_object}.d
+      VERBATIM)
+    set_source_files_properties(${_iq2s_object} PROPERTIES GENERATED TRUE EXTERNAL_OBJECT TRUE)
+    target_sources(strata_kernels_cpu PRIVATE ${_iq2s_object})
+    target_compile_definitions(strata_kernels_cpu PRIVATE STRATA_IQ2S_GCC=1)
+  endif()
 endif()
 
 # --- the GPU engine ------------------------------------------------------------------------------------------------

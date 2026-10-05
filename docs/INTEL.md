@@ -650,3 +650,20 @@ test an SM-holding NVIDIA bench (not built). Outputs identical to 0.1.33 (Coder 
 | decode | 23-25 tok/s; GPU 92% busy at 165 W, CPU idle |
 | prefill | 149 tok/s on a 2,701-token prompt; 424 tok/s on a 104,798-token prompt at 131k context |
 | quality | correct code on every test; matches the NVIDIA path token for token in spirit, not measured |
+
+### Experimental IQ2_S CPU compiler selection (2026-10-05)
+
+`-DSTRATA_IQ2S_GCC=ON` builds an alternate GCC AVX2 object on Linux and uses it
+only for IQ2_S gate/up groups of exactly two or four tokens. It is off by
+default. GPU code retains the precise oneAPI build, and the upstream CPU
+arithmetic and group-size rounding policy are unchanged.
+
+On Ryzen 5 5600X, the actual engine CPU objects show median original/candidate
+speed ratios of 1.130 for two tokens and 1.086 for four on 96 real experts
+(100,761,600 bytes, above L3), over 27 alternating-order pairs in three
+processes. Four CPU-only validation processes each pass 7,591,680 exact finite
+float comparisons including boundary guards. These numbers measure CPU gate/up
+work; whole-engine TG and full-context GPU validation are still pending.
+The default-off executable remains byte-for-byte the prior build. See
+[the recorded compiler experiment](../bench/results/2026-10-05-sycl-prefill-scaling/cpu-gcc-probe/README.md)
+and [production-object checks](../bench/results/2026-10-05-sycl-prefill-scaling/cpu-gcc-probe/dispatch-check/README.md).
