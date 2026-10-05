@@ -1,0 +1,41 @@
+{
+  "source_revision": "49a2ccd",
+  "kernel_change_revision": "0f228e8",
+  "binary_sha256": "7a8e306d9574109751d7daedec6787b7480c3442a14ef953dd314446a8f6f7b0",
+  "compute_runtime": "26.35.39758.10",
+  "hardware": "Arc B570 10 GB; Ryzen 5 5600X; 128 GB installed RAM",
+  "aot_target": "bmg-g21",
+  "ctest_passed": 29,
+  "ctest_skips": 0,
+  "full_state_and_both_output_bits_match_original": true,
+  "reported_spill_bytes": 0,
+  "ordinary_cli_full_first_heads_match_original": true,
+  "cli_runs": [
+    {
+      "tokens": 4096,
+      "wall_ms": 13478.4,
+      "logits_sha256": "a6c83c6f96125d7ae9d9daebe222889ec5ecf47cc5b017a4aa4e5c5b6d708252",
+      "output_ids": [
+        248046
+      ],
+      "finite": true
+    },
+    {
+      "tokens": 8087,
+      "wall_ms": 17005.4,
+      "logits_sha256": "784bd42a3fc5b6d2b6056859266adc8f2bf40d4456f495819afb896afd1f12bc",
+      "output_ids": [
+        248046
+      ],
+      "finite": true
+    }
+  ],
+  "normal_mtp_short_restoration_pass": true,
+  "normal_mtp_long_restoration_pass": true,
+  "normal_mtp_long_first_head_matches_original": true,
+  "notes": [
+    "AOT CLI values are single correctness runs, not a paired speed estimate.",
+    "The normal long MTP test retains a checkpoint after 1018 tokens and processes the six-token tail separately.",
+    "Offline compilation uses oneAPI; measured engine/test runs use the selected compute runtime."
+  ]
+}
