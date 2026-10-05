@@ -32,3 +32,22 @@ with no skipped tests. The new [query-order test](jit-query-order-parity.log)
 checks all eight format/context cases using 129 queries, including the
 one-query tail, against the original batch 32. The frozen model-test binary
 has SHA-256 `de59fb937d2446c153b1bfe94a4e58c220fec9ee003afa86739da75973e1076c`.
+
+The first [resident model comparison](resident-initial/summary.json) fixes
+batch 128, cache 128, context/chunk 8,192, top-k tuning and GDN tuning for
+both layouts. Each length has one checked warmup and one measured request.
+All eight requests reread the full prefix, resume at zero and process one
+chunk; their complete finite 248,320 first logits and generated IDs match
+the accepted reference. Expert bytes are identical between layouts at each
+length: 45,402,470,400 at 4,096 and 46,989,286,400 at 8,087.
+
+| Input tokens | Layout 3 attention interval | Layout 4 attention interval | Layout 3 resident prompt wall | Layout 4 resident prompt wall |
+| ---: | ---: | ---: | ---: | ---: |
+| 4,096 | 882.25 ms | 820.64 ms | 14,663.7 ms | 14,616.5 ms |
+| 8,087 | 1,996.63 ms | 1,884.28 ms | 18,246.3 ms | 18,147.4 ms |
+
+These single samples have transfer and phase markers enabled. The attention
+interval includes kernel-launch gaps; resident prompt wall also includes
+request setup. They support the observed attention change but do not
+establish a repeated end-to-end speed improvement. Warmups are retained in
+the raw records and excluded from this table.

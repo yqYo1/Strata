@@ -1,0 +1,54 @@
+{
+  "source_revision": "f8519b9",
+  "binary_sha256": "de59fb937d2446c153b1bfe94a4e58c220fec9ee003afa86739da75973e1076c",
+  "method": [
+    "Same immutable binary for both layouts, batch128, topk1 and GDN keyhead-tuned1.",
+    "Cache128/context8192/chunk8192, one validated warmup and one measured request per length per layout.",
+    "Persistent SYCL cache1, transfer/phase markers on, no MTP draft; request prompt wall includes request setup.",
+    "All eight requests, including warmups, have one chunk, full-prefix read and RESUME0.",
+    "All complete finite 248320 first-logit floats and IDs match the accepted reference.",
+    "A single profiled sample per length is diagnostic; use normal CLI paired measurements to assess elapsed-time improvement."
+  ],
+  "expert_bytes_equal": true,
+  "all_heads_bit_identical": true,
+  "records": [
+    {
+      "layout": 3,
+      "runs": [
+        {
+          "tokens": 4096,
+          "request_prompt_wall_ms": 14663.7,
+          "attention_timeline_ms": 882.248734,
+          "expert_bytes": 45402470400,
+          "expert_copies": 22186
+        },
+        {
+          "tokens": 8087,
+          "request_prompt_wall_ms": 18246.3,
+          "attention_timeline_ms": 1996.633545,
+          "expert_bytes": 46989286400,
+          "expert_copies": 22963
+        }
+      ]
+    },
+    {
+      "layout": 4,
+      "runs": [
+        {
+          "tokens": 4096,
+          "request_prompt_wall_ms": 14616.5,
+          "attention_timeline_ms": 820.639801,
+          "expert_bytes": 45402470400,
+          "expert_copies": 22186
+        },
+        {
+          "tokens": 8087,
+          "request_prompt_wall_ms": 18147.4,
+          "attention_timeline_ms": 1884.276443,
+          "expert_bytes": 46989286400,
+          "expert_copies": 22963
+        }
+      ]
+    }
+  ]
+}
