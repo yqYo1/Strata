@@ -84,3 +84,25 @@ ms/window, including 71.56 ms of CPU jobs, 79.23 ms of planning and
 transferring more experts therefore loses overall time on this card.
 This is a decode result; layer-major FP16 prefill still uses GPU expert
 work and is not switched to CPU by this request option.
+
+## CPU-heavy paired comparison
+
+The [nine-process comparison](cpu-paired/summary.json) fixes the startup
+PCIe share to zero. Three rounds compare original pages, THP, and THP
+plus the existing `STRATA_IQ256_GATHER=1` flag. Round two reverses their
+order. Each process has a 16-token warmup and two repeated 64-token
+requests, with all other settings and instrumentation as above.
+
+| Mode | Median decode tokens/s, six measured requests |
+| --- | ---: |
+| Original pages | 15.3910 |
+| THP | 15.8294 |
+| THP and AVX2 gather | 15.3843 |
+
+All nine complete finite first heads match bit for bit, and every ID
+and printed logprob matches across processes and repetitions. THP's
+median is about 2.8% higher in this CPU-heavy condition, with overlapping
+individual timings and a 12.228 tokens/s outlier retained in the first
+original-page process. This is a small local observation, not a general
+throughput guarantee. The gather flag gives no improvement and is not
+selected. Prefill performance is not measured by these short prompts.
