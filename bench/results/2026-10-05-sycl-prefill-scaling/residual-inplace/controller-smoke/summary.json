@@ -1,0 +1,85 @@
+{
+  "scope": "CPU protocol stub only; no real model or GPU execution",
+  "controller_sha256": "a6e3910e79da7a9f571aa8ded652442f6234f7195898e93da523aa8d0fa3fc66",
+  "stub_sha256": "a45fc7f33e045b258a30d7787b46f9f12d1f13b8ed0261d2fcd443ebc4f65030",
+  "checks": [
+    {
+      "name": "valid-64",
+      "exit_code": 0,
+      "expected_completion": true,
+      "completed": true,
+      "terminal_error": null
+    },
+    {
+      "name": "valid-262144",
+      "exit_code": 0,
+      "expected_completion": true,
+      "completed": true,
+      "terminal_error": null
+    },
+    {
+      "name": "overrun-64",
+      "exit_code": 1,
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError([(61, 1), (62, 4)])"
+    },
+    {
+      "name": "last-cell-missing-64",
+      "exit_code": 1,
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError([(61, 1), (62, 1)])"
+    },
+    {
+      "name": "wrong-tail-64",
+      "exit_code": 1,
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError([(61, 1), (63, 1)])"
+    },
+    {
+      "name": "early-eos-64",
+      "exit_code": 1,
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError(['REUSED 0', 'T 100', 'LP -0.5 100:-0.5', 'DONE 1 62 1.0 1.0 stop 0 0 0 0 0 0 0 0.0 62 0'])"
+    },
+    {
+      "name": "wrong-count-64",
+      "exit_code": 1,
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError(['DONE', '2', '61', '1.0', '1.0', 'length', '0', '0', '0', '0', '0', '0', '0', '0.0', '62', '0'])"
+    },
+    {
+      "name": "wrong-finish-64",
+      "exit_code": 1,
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError(['DONE', '2', '62', '1.0', '1.0', 'stop', '0', '0', '0', '0', '0', '0', '0', '0.0', '62', '0'])"
+    },
+    {
+      "name": "nan-logprob-64",
+      "exit_code": 1,
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError()"
+    },
+    {
+      "name": "stale-head-64",
+      "exit_code": 1,
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "FileNotFoundError(2, 'No such file or directory')"
+    },
+    {
+      "name": "refusal-executes-64",
+      "exit_code": 1,
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError(['ERR prompt (64 tokens) + max_new (1) exceeds the context (64)'])"
+    }
+  ],
+  "completed": true
+}

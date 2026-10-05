@@ -79,7 +79,11 @@ same-configuration control rather than a differently chunked reference.
 `check_full_context.py` fixes the limit at 262,144, not 262,146. The CLI case
 reads 262,142 input tokens and requests two output tokens. The normal-MTP serve
 case reads 262,140 and requests four. Each must actually return enough tokens to
-fill the advertised context. Serve then checks a completely full prompt, a
+fill the advertised context. A second serve case reads 262,142 and requests two.
+Its first verify window must be `(262141, 1)` and its second `(262142, 2)`. This
+forces the normal four-token MTP window to shorten at the boundary regardless
+of draft acceptance. Both requests must finish with `length`, matching prompt
+and output counts in `DONE`. Serve then checks a completely full prompt, a
 one-token overflow, and a valid request after refusal. Complete first heads and
 all returned logprobs must be finite. Early EOS or insufficient output fails the
 check rather than being reported as a full-context pass.
@@ -88,7 +92,17 @@ The serve check also inspects every traced verify window. No window may go
 beyond 262,144; the full request must actually execute KV cell 262,143, the last
 allocated cell. A logical input/output count alone is insufficient for that
 assertion. Normal four-token MTP runs with its default confidence clipping
-disabled. These trace assertions are pending the actual GPU run.
+disabled. Refused requests must not execute a verify window or emit `REUSED`,
+tokens or logprobs. These trace assertions are pending the actual GPU run.
+
+`check_full_context_controller.py` tests the controller with a CPU protocol
+stub at limits 64 and 262,144. It checks request lengths and deliberately emits
+an overrun, a missing last cell, an incorrect shortened window, early EOS,
+incorrect counts or finish reason, NaN logprobs, a missing fresh head, and
+execution before refusal. This validates the test's pass/fail guards only. It
+does not fill a real model context or provide GPU correctness evidence.
+The recorded controller smoke run passes both valid limits and rejects all
+nine injected faults; see [controller-smoke](controller-smoke/README.md).
 
 `observe_memory.py` records process RSS/swap and DRM total/resident VRAM once
 per second, with host available RAM/swap as context. It reads `/proc` and never

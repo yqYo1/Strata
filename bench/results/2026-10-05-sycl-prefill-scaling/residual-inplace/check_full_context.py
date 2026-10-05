@@ -76,9 +76,9 @@ try:
      if s.startswith('ERR'):raise RuntimeError(s)
      if s.startswith('READY '):break
     report['startup']=startup;save()
-    # A large request fills the window. Small boundary runs also exercise T=1,
-    # T=2 tails and request reuse with the same normal MTP graphs.
-    cases=[('fills-context',a.context-4,4,True),('no-room',a.context,1,False),('one-too-many',a.context-2,3,False),('works-after-refusal',37,2,True)]
+    # Four output tokens can finish without shortening the normal T=4 window.
+    # Two force the second verify window to T=2, regardless of draft acceptance.
+    cases=[('fills-context',a.context-4,4,True),('fills-context-tail-2',a.context-2,2,True),('no-room',a.context,1,False),('one-too-many',a.context-2,3,False),('works-after-refusal',37,2,True)]
     for name,n,new,ok in cases:
      trace_start=log.tell()
      if ok:head.unlink(missing_ok=True)
@@ -98,14 +98,23 @@ try:
      assert all(pos>=0 and count>0 and pos+count<=a.context for pos,count in windows),windows
      if ok:
       assert lines[-1].startswith('DONE ') and len(output)==new and len(lp)==new,lines[-10:]
+      done=lines[-1].split()
+      assert len(done)>=6 and int(done[1])==new and int(done[2])==n and done[5]=='length',done
+      assert all(math.isfinite(float(x)) and float(x)>=0 for x in done[3:5]),done
+      r['finish']=done[5]
       r['logits_sha256']=finite_head(head)
-      if name=='fills-context':
+      if name.startswith('fills-context'):
        assert n+len(output)==a.context;r['logical_length']=a.context
        # S=4 with confidence clipping disabled reaches the final allocated cell,
        # even when the last speculative token is rejected rather than emitted.
        assert windows and max(pos+count for pos,count in windows)==a.context,windows
        r['last_executed_kv_cell']=a.context-1
-     else:assert lines[-1].startswith('ERR prompt') and not output
+       if name=='fills-context-tail-2':
+        assert windows==[(a.context-3,1),(a.context-2,2)],windows
+        r['clipped_verify_tail']=2
+     else:
+      assert lines[-1].startswith('ERR prompt') and not output
+      assert not windows and not any(s.startswith(('REUSED ','LP ')) for s in lines),lines
      save()
     child.stdin.write(b'QUIT\n');child.stdin.flush();rc=child.wait();assert rc==0;report['exit_code']=rc
    finally:
