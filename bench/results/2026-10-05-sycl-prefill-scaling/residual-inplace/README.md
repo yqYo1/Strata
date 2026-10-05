@@ -77,6 +77,21 @@ one-token overflow, and a valid request after refusal. Complete first heads and
 all returned logprobs must be finite. Early EOS or insufficient output fails the
 check rather than being reported as a full-context pass.
 
+The serve check also inspects every traced verify window. No window may go
+beyond 262,144; the full request must actually execute KV cell 262,143, the last
+allocated cell. A logical input/output count alone is insufficient for that
+assertion. Normal four-token MTP runs with its default confidence clipping
+disabled. These trace assertions are pending the actual GPU run.
+
+`observe_memory.py` records process RSS/swap and DRM total/resident VRAM once
+per second, with host available RAM/swap as context. It reads `/proc` and never
+calls GPU APIs. Duplicate handles for one DRM client count once. CLI and serve
+reports include the observed peaks and any sampler errors. The observer smoke
+run records a 32 MiB CPU allocation over 14 samples; live xe fdinfo reading is
+also checked against the stuck control's 1,716,344 KiB VRAM allocation. Those
+checks validate the observer, not full-context memory use. The two capacity
+refusals with observation are recorded in `boundary-observed-262144`.
+
 CLI uses 1K chunks, matching the previous allocation-only 256K capacity probe.
 Serve starts with 128-token chunks because it also allocates normal MTP and
 verifier buffers. No full-length fit or speed is asserted for either path until
@@ -85,6 +100,5 @@ substituted for the maximum-length check.
 
 Still required separately: normal checkpoint save/restore and cancellation
 checks with in-place storage, paired warm performance measurements, and
-memory/swap observation over successful full-length runs. Long-context runs
-here validate logical input-plus-output length; speculative execution may touch
-an additional final KV cell, which trace records must be inspected to establish.
+successful full-length runs with the added trace/memory observations. None has
+been established by a build, refusal test or observer smoke run.
