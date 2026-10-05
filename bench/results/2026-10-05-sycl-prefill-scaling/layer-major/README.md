@@ -74,6 +74,9 @@ allocation fails while a separate embedding server occupies about 1.73
 GiB of the GPU; its failure record is preserved. After the user stops
 that service, the [AOT long CLI and RAM comparisons](isolated-long-validation/)
 complete. The service is restored and its health check returns HTTP 200.
+Afterward, the user asks to leave the embedding service stopped because
+it had been left running unintentionally. It is stopped again; systemd
+reports `ActiveState=inactive`, `SubState=dead` and `MainPID=0`.
 The repeated JIT wall comparison below also passes.
 
 ## Long-input measurements
