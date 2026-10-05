@@ -1,0 +1,90 @@
+# In-place FP32 residual storage and full-context boundary checks
+
+**GPU correctness and performance validation are pending. These changes must
+not be merged on the strength of a successful build or short capacity probe.**
+
+The implementation adds `STRATA_PREFILL_LAYER_MAJOR_R_INPLACE=1` (off by
+default). GPU-resident chunks compute directly in their persistent residual
+rows. If every chunk stays in VRAM, the existing scratch allocation also stores
+the first chunk, reducing the new allocation by that chunk's actual length.
+Mixed GPU/RAM storage retains the scratch for the RAM tail. Its GPU prefix can
+still skip residual copies. Arithmetic and GEMM shapes are unchanged, but
+complete output and state equality must be measured before adoption.
+
+The debug NaN scan now uses the actual final chunk length, including a short
+first chunk. This avoids reading beyond an aliased final allocation. Temporary
+residual pointers and the original scratch pointer are restored on every exit.
+
+The SYCL generation driver also clips speculative verify windows and MTP draft
+continuation to the available context. Serve's unconditional eight-token input
+margin is removed; prompt plus requested output must fit the configured limit.
+These changes need normal MTP, checkpoint and boundary integration tests.
+
+## Checks completed
+
+On Intel Arc B570 / Ryzen 5 5600X / 128 GiB RAM, the current precise SYCL JIT
+build succeeds. Frozen candidate SHA-256:
+`b1a7db41d1225d024d3455b9db58e71aebd13c8f88b8e737ae11049fe257b56d`.
+Both Python controllers compile. The candidate correctly rejects these CLI
+requests at `--max-context 262144`, with exit status 2 before loading the model:
+
+- 262,144 prompt tokens plus one requested output token.
+- 262,142 prompt tokens plus three requested output tokens.
+
+These rejection checks do **not** validate prefill at the maximum length.
+Their commands, environment and logs are in `boundary-262144`.
+
+## GPU validation interrupted
+
+The first candidate test (257 tokens, 128-token chunks) fails while uploading
+native dense weights, before prefill or in-place storage executes. The kernel
+records GuC timeouts, a device coredump, an unexpected engine-class warning and
+repeated xe resets. A previously validated immutable control binary also stops
+progressing during model load. No speed or output-equivalence result is claimed.
+The cause has not been established; see `pending-gpu-checks` for raw records.
+
+The control process was not forcibly killed. At the recorded status it was
+still waiting; GPU recovery is required before more measurements. The embedding
+service remains stopped, as requested by the user.
+
+Candidate and control executables, the 256K fixture, original short equality
+references and environment are preserved outside `/tmp` in:
+`~/.local/state/strata-sycl/residual-inplace-recovery`.
+
+## Required verification after recovery
+
+Run from this directory, in order:
+
+```sh
+python3 check_residual.py
+python3 check_full_context.py --stage serve --context 256 --gpu-rows 256
+python3 check_full_context.py --stage cli
+python3 check_full_context.py --stage serve
+```
+
+`check_residual.py` compares every head float, every FP32 residual row and all
+dumped persistent state against original same-configuration references. It
+includes all-GPU, mixed GPU/RAM, all-RAM, a single chunk, a short first chunk and
+an incomplete final chunk. Removed VRAM copies and unchanged RAM traffic are
+checked against transfer counters. Short-first variants compare with a fresh
+same-configuration control rather than a differently chunked reference.
+
+`check_full_context.py` fixes the limit at 262,144, not 262,146. The CLI case
+reads 262,142 input tokens and requests two output tokens. The normal-MTP serve
+case reads 262,140 and requests four. Each must actually return enough tokens to
+fill the advertised context. Serve then checks a completely full prompt, a
+one-token overflow, and a valid request after refusal. Complete first heads and
+all returned logprobs must be finite. Early EOS or insufficient output fails the
+check rather than being reported as a full-context pass.
+
+CLI uses 1K chunks, matching the previous allocation-only 256K capacity probe.
+Serve starts with 128-token chunks because it also allocates normal MTP and
+verifier buffers. No full-length fit or speed is asserted for either path until
+these runs finish. A capacity refusal needs investigation, not a smaller input
+substituted for the maximum-length check.
+
+Still required separately: normal checkpoint save/restore and cancellation
+checks with in-place storage, paired warm performance measurements, and
+memory/swap observation over successful full-length runs. Long-context runs
+here validate logical input-plus-output length; speculative execution may touch
+an additional final KV cell, which trace records must be inspected to establish.

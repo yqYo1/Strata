@@ -6476,7 +6476,7 @@ int main(int argc, char **argv) try {
                 mrope_identity = !geni;
             }
             sp.embd_rows = geni ? row_ptr.data() : nullptr;
-            if (n + max_new + 8 > o.max_context) {
+            if (max_new > o.max_context || n > o.max_context - max_new) {
                 std::printf("ERR prompt (%lld tokens) + max_new (%lld) exceeds the context (%lld)\n", (long long) n,
                             (long long) max_new, (long long) o.max_context);
                 continue;
@@ -7007,7 +7007,10 @@ int main(int argc, char **argv) try {
                 }
                 const bool timed_round = !first_window;
                 const Clock::time_point round0 = Clock::now();
-                if (p + T > o.max_context) break;
+                // The final speculative window can be shorter than the normal
+                // one. A request that exactly fills the advertised context fits.
+                T = (int) std::min<int64_t>(T, o.max_context - p);
+                if (T <= 0) break;
                 window[0] = x;
                 for (int i = 1; i < T; ++i) window[(size_t) i] = from_sfx ? sbuf[(size_t) i - 1] : drafts[(size_t) i - 1];
                 drive.d.layers = 0;
@@ -7104,6 +7107,11 @@ int main(int argc, char **argv) try {
                 // commit, outv[a] is its row 0) - the drafts extend it on the device as the verify rows will
                 if (hist_n > 0 && mtp.coupled() && !eos && produced_n < max_new)
                     mtp.set_draft_history(consumed.data(), (int64_t) consumed.size(), outv[(size_t) a]);
+                // draft() always computes its first guess at the accepted row;
+                // cap the continuation to guesses the next window can consume.
+                if (!serve_no_mtp)
+                    mtp.set_max_drafts((int) std::min<int64_t>(S_mtp - 1,
+                        std::max<int64_t>(1, o.max_context - (p + a + 1) - 1)));
                 const bool drafted = serve_no_mtp || eos || produced_n >= max_new ||
                                      mtp.draft(T, outv.data(), p, a, drafts.data(), err, dprob.data(), (float) req_spec_min_p);
                 {
@@ -8056,11 +8064,12 @@ int main(int argc, char **argv) try {
                 }
             }
             const bool timed_round = !first_window;
-            ++window_hist[(size_t) T];
-            if (p + T > o.max_context) {
+            T = (int) std::min<int64_t>(T, o.max_context - p);
+            if (T <= 0) {
                 std::fprintf(stderr, "strata generate: ran out of context at position %lld\n", (long long) p);
                 return 2;
             }
+            ++window_hist[(size_t) T];
             window[0] = x;
             for (int i = 1; i < T; ++i) {
                 const size_t at = produced.size() - 1 + (size_t) i;
@@ -8132,6 +8141,9 @@ int main(int argc, char **argv) try {
                 total_ms += std::chrono::duration<double, std::milli>(Clock::now() - t0).count();
                 break;
             }
+            if (use_mtp)
+                mtp.set_max_drafts((int) std::min<int64_t>(S_mtp - 1,
+                    std::max<int64_t>(1, o.max_context - (p + a + 1) - 1)));
             const bool drafted = !use_mtp || (int64_t) produced.size() >= o.max_new ||
                                  mtp.draft(T, outv.data(), p, a, drafts.data(), err, dprob.data(), (float) o.spec_min_p);
             if (adapt_thr.joinable()) adapt_thr.join();

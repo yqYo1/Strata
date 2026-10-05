@@ -518,6 +518,13 @@ struct Prefill::Impl {
     PfTimer* phase_context = nullptr;
     float* residual_gpu = nullptr;
     int64_t residual_gpu_tokens = 0;
+    float* residual_scratch = nullptr;
+    int64_t residual_reused_tokens = 0;
+    bool residual_inplace = false;
+    float* residual_gpu_row(int64_t row) const {
+        return row < residual_reused_tokens ? residual_scratch + (size_t) row * D
+                                           : residual_gpu + (size_t) (row - residual_reused_tokens) * D;
+    }
     int64_t T = 0, T_max = 0;
     bool borrowed = false, compact = false, compact_hc = false;
     dpct::queue_ptr cs = &dpct::get_in_order_queue(),
@@ -2105,24 +2112,30 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         return false;
     const char* gpu_env = std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_GPU");
     int64_t gpu_tokens = gpu_env ? std::clamp<int64_t>(std::atoll(gpu_env), 0, n) : 0;
+    const char* first_env = std::getenv("STRATA_PREFILL_FIRST");
+    const int64_t first = first_env ? std::atoll(first_env) : 256;
+    const int64_t first_len = first > 0 && first < m.T && n > 2 * first ? first : std::min(m.T, n);
     if (gpu_tokens < n) {
-        const char* first_env = std::getenv("STRATA_PREFILL_FIRST");
-        const int64_t first = first_env ? std::atoll(first_env) : 256;
-        const int64_t first_len = first > 0 && first < m.T && n > 2 * first ? first : std::min(m.T, n);
         // Keep a complete prefix of chunks on-device. A tail never straddles the two stores.
         gpu_tokens = gpu_tokens < first_len ? 0 : first_len + (gpu_tokens - first_len) / m.T * m.T;
     }
+    const char* inplace_env = std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_INPLACE");
+    const bool inplace = inplace_env && std::atoi(inplace_env) != 0;
+    // RAM chunks still need the scratch, so reuse its allocation only when all
+    // chunks stay on-device. Mixed stores can compute directly in their GPU prefix.
+    const int64_t reused_tokens = inplace && gpu_tokens == n ? first_len : 0;
+    const int64_t allocated_tokens = gpu_tokens - reused_tokens;
     auto free_rows = [q = m.cs](float* p) { if (p) sycl::free(p, *q); };
     std::unique_ptr<float, decltype(free_rows)> device_rows(nullptr, free_rows);
-    if (gpu_tokens) {
+    if (allocated_tokens) {
         size_t free_bytes = 0, total_bytes = 0;
         dpct::get_current_device().get_memory_info(free_bytes, total_bytes);
-        const size_t bytes = (size_t) gpu_tokens * D * sizeof(float);
+        const size_t bytes = (size_t) allocated_tokens * D * sizeof(float);
         if (free_bytes && bytes > free_bytes) {
             err = "prefill layer-major: requested GPU residual rows exceed free VRAM; lower STRATA_PREFILL_LAYER_MAJOR_R_GPU";
             return false;
         }
-        device_rows.reset(sycl::malloc_device<float>((size_t) gpu_tokens * D, *m.cs));
+        device_rows.reset(sycl::malloc_device<float>((size_t) allocated_tokens * D, *m.cs));
         if (!device_rows) { err = "prefill layer-major: GPU residual allocation failed"; return false; }
     }
     std::vector<float> rows((size_t) (n - gpu_tokens) * D);
@@ -2135,7 +2148,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         Prefill& p; Impl& m;
         int64_t lb, le; const float* input; bool ready;
         const core::ExpertCache* cache; const int32_t* residency; ExpertTransferTimer* timer;
-        float* gpu; int64_t gpu_tokens; PfTimer* phases;
+        float *gpu, *scratch, *r; int64_t gpu_tokens, reused_tokens; bool inplace; PfTimer* phases;
         decltype(on_chunk) chunk; decltype(on_stage_chunk) stage;
         ~Restore() {
             m.cs->wait(); m.copy->wait(); m.stager->finish();
@@ -2143,16 +2156,24 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             p.on_chunk = std::move(chunk); p.on_stage_chunk = std::move(stage);
             m.cache = cache; m.host_res = residency; m.transfer_context = timer;
             m.residual_gpu = gpu; m.residual_gpu_tokens = gpu_tokens; m.phase_context = phases;
+            m.residual_scratch = scratch; m.residual_reused_tokens = reused_tokens;
+            m.residual_inplace = inplace; m.R = r;
         }
     } restore{*this, m, stage_lb_, stage_le_, hand_in_, checkpoint_ready_, m.cache, m.host_res,
-              m.transfer_context, m.residual_gpu, m.residual_gpu_tokens, m.phase_context, on_chunk, on_stage_chunk};
+              m.transfer_context, m.residual_gpu, m.residual_scratch, m.R, m.residual_gpu_tokens,
+              m.residual_reused_tokens, m.residual_inplace, m.phase_context, on_chunk, on_stage_chunk};
     m.cache = &layer_cache; m.host_res = residency.data(); m.transfer_context = &transfers;
     m.residual_gpu = device_rows.get(); m.residual_gpu_tokens = gpu_tokens; m.phase_context = &phases;
+    m.residual_scratch = restore.r; m.residual_reused_tokens = reused_tokens; m.residual_inplace = inplace;
     checkpoint_ready_ = false;
     int64_t logical_chunks = 0;
     std::fprintf(stderr, "strata prefill: layer-major, %lld tokens, host residual bytes %llu, GPU residual bytes %llu, layer expert cache bytes %lld\n",
                  (long long) n, (unsigned long long) (rows.size() * sizeof(float)),
                  (unsigned long long) ((size_t) gpu_tokens * D * sizeof(float)), (long long) layer_cache.bytes());
+    if (inplace)
+        std::fprintf(stderr, "strata prefill residual in-place: %lld GPU rows, %lld reused scratch rows, %llu new GPU bytes\n",
+                     (long long) gpu_tokens, (long long) reused_tokens,
+                     (unsigned long long) ((size_t) allocated_tokens * D * sizeof(float)));
     for (int64_t layer = 0; layer < g.n_layers; ++layer) {
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
         m.cs->wait(); m.copy->wait(); m.stager->finish();
@@ -2190,7 +2211,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             std::fill_n(residency.data() + (size_t) (layer - 1) * g.n_expert, (size_t) g.n_expert, -1);
         for (int32_t e = 0; e < g.n_expert; ++e) residency[(size_t) layer * g.n_expert + e] = e;
         stage_lb_ = layer; stage_le_ = layer + 1;
-        hand_in_ = layer == 0 ? nullptr : (gpu_tokens == n ? device_rows.get() : rows.data());
+        hand_in_ = layer == 0 ? nullptr : (gpu_tokens == n ? m.residual_gpu_row(0) : rows.data());
         m.ss->ple_prev[0] = prev[0]; m.ss->ple_prev[1] = prev[1];
         on_stage_chunk = [&](int64_t done, std::string& error) {
             checkpoint_ready_ = layer + 1 == g.n_layers && done == pos0 + n;
@@ -2200,10 +2221,12 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             if (layer + 1 < g.n_layers) {
                 phases.mark(kPfResidual, strata::q_of(m.cs));
                 const int64_t row = position - pos0;
-                if (row + count <= gpu_tokens)
-                    transfers.device_residual(m.cs, device_rows.get() + (size_t) row * D, residual,
-                                              (size_t) count * D * sizeof(float), layer).wait();
-                else
+                if (row + count <= gpu_tokens) {
+                    float* output = m.residual_gpu_row(row);
+                    if (output != residual)
+                        transfers.device_residual(m.cs, output, residual,
+                                                  (size_t) count * D * sizeof(float), layer).wait();
+                } else
                     transfers.activation(m.cs, rows.data() + (size_t) (row - gpu_tokens) * D, residual,
                                          (size_t) count * D * sizeof(float), layer).wait();
                 phases.mark(kPfStart, strata::q_of(m.cs));
@@ -2221,6 +2244,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     // enclosing prefill timer includes both suspension and restoration.
     m.copy->wait(); m.stager->finish();
     layer_cache.close();
+    m.R = restore.r;
     device_rows.reset();
     if (!cache_lease.restore(err)) return false;
     if (cache_lease.cache)
@@ -2300,7 +2324,8 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
     // SYCL port: a short first chunk so the GPU starts while the rest of the prompt's PLE rows are still being read
     // (27k random 4 KB reads per 2k tokens, 330 ms at the drive's ~85k IOPS, otherwise all before the first kernel).
     // STRATA_PREFILL_FIRST=<tokens> (0: off), default 256 when the prompt is longer than twice that.
-    static const int64_t first_chunk = [] { const char* v = std::getenv("STRATA_PREFILL_FIRST"); return v ? std::atoll(v) : 256; }();
+    const char* first_env = std::getenv("STRATA_PREFILL_FIRST");
+    const int64_t first_chunk = first_env ? std::atoll(first_env) : 256;
     auto chunk_len = [&](int64_t c0) {
         if (c0 == 0 && first_chunk > 0 && first_chunk < m.T && n > 2 * first_chunk) return first_chunk;
         return std::min(m.T, n - c0);
@@ -2343,10 +2368,15 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                      (long long) n, ple_preload_ms);
     }
 
+    int64_t last_chunk_len = 0;
     for (int64_t c0 = 0; c0 < n; c0 += chunk_len(c0)) {
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
         if (std::getenv("STRATA_TRACE")) { std::fprintf(stderr, "strata trace: prompt chunk %lld of %lld\n", (long long) c0, (long long) n); std::fflush(stderr); }
         const int64_t T = chunk_len(c0), p0 = pos0 + c0;
+        last_chunk_len = T;
+        const bool gpu_rows = m.transfer_context && c0 + T <= m.residual_gpu_tokens;
+        if (m.residual_inplace)
+            m.R = gpu_rows ? m.residual_gpu_row(c0) : m.residual_scratch;
         core::progress_at("reading the prompt (batched): preparing the chunk from token", p0);   // #251
         ++stats_.chunks;
         pt.mark(kPfStart, cs);
@@ -2366,10 +2396,9 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
             return by memcpy API to ensure synchronization behavior.
             */
             if (m.phase_context) pt.mark(kPfResidual, cs);
-            const bool gpu_rows = m.transfer_context && c0 + T <= m.residual_gpu_tokens;
-            const float* input = gpu_rows ? m.residual_gpu + (size_t) c0 * D
+            const float* input = gpu_rows ? m.residual_gpu_row(c0)
                                          : hand_in_ + (size_t) (c0 - (m.transfer_context ? m.residual_gpu_tokens : 0)) * D;
-            if (DPCT_CHECK_ERROR(gpu_rows ? transfers.device_residual(m.cs, m.R, input, (size_t) T * D * 4, LB)
+            if (input != m.R && DPCT_CHECK_ERROR(gpu_rows ? transfers.device_residual(m.cs, m.R, input, (size_t) T * D * 4, LB)
                                          : transfers.activation(m.cs, m.R, input, (size_t) T * D * 4, LB)) != 0) {
                 err = "prefill: the layer split's hand-off upload failed";
                 return false;
@@ -4216,7 +4245,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
     if (next_run.valid() && !next_run.get()) { err = next_err; return false; }
     ss.ple_prev[0] = prev[0];
     ss.ple_prev[1] = prev[1];
-    if (std::getenv("STRATA_DBG_NAN") != nullptr) {   // debug: the state the prompt leaves for the token path
+    if (last_chunk_len > 0 && std::getenv("STRATA_DBG_NAN") != nullptr) {   // debug: the state the prompt leaves for the token path
         m.cs->wait();
         auto bad = [&](const float *d, int64_t n) {
             try {
@@ -4235,7 +4264,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
           std::exit(1);
         }
         };
-        const int64_t last = (n - 1) % m.T;
+        const int64_t last = last_chunk_len - 1;
         std::fprintf(stderr, "strata dbg: prompt end: last residual row");
         bad(m.R + last * D, D);
         if (ss.ple.ready()) { std::fprintf(stderr, "; PLE history"); bad(ss.ple.hist, (int64_t) strata::kernels::NG_HIST * strata::kernels::NG_HC_DIM); }
