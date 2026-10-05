@@ -184,3 +184,13 @@ session's memlock limit. Its startup load takes 42.3 seconds and sampled
 engine RAM reaches 74.104 GiB without process swap. Long timing comparisons
 remain pending. The profiling helper now accepts the production RAM mode
 and records its actual locking outcome and startup load time separately.
+
+The [32K RAM diagnostic with the embedding server resident](ram-ple-shared-gpu/README.md)
+uses 4K chunks and a 4K GPU residual prefix to fit the current free VRAM.
+Both complete finite heads and IDs match the original 4K control. One
+normal-wall run takes 79.063 seconds (414.46 tokens/s), with a warm
+1.5-second table startup separately recorded. The profile's PLE waiting
+is about 20 ms, while host residual DMA takes 17.460 seconds and the
+dequantization phase interval is 17.239 seconds. This condition differs
+from the earlier 8K-chunk, 32K-GPU-prefix runs and is not a matched speed
+comparison. All sampled process swap remains zero.
