@@ -127,3 +127,22 @@ heads (248,320 floats), four output token IDs and finite logprobs. Repeated
 and restored requests reuse 1,018 tokens and match their first request's IDs
 and logprobs. All four requests also match between the two settings. These
 are correctness checks; their server times are not a speed comparison.
+
+## B570 AOT validation
+
+The [AOT validation](aot-validation/summary.json) uses target `bmg_g21` and
+binary SHA256 `7a8e306d9574109751d7daedec6787b7480c3442a14ef953dd314446a8f6f7b0`.
+[All 29 CTests](aot-validation/ctest.log) pass without skips. The integrated
+[GDN test](aot-validation/gdn-parity.log) matches every state and output bit
+in all eight cases, preserves guards, and reports zero spill bytes.
+
+Both [ordinary CLI first heads](aot-validation/cli/run.json), for 4,096 and
+8,087 tokens, match the original accepted heads exactly and contain only
+finite values. Both requests process one chunk. Their elapsed times are
+13,478.4 and 17,005.4 ms; these are single correctness runs, so the paired
+JIT comparison above supplies the measured speed estimate.
+
+The [short](aot-validation/normal-mtp-serve.json) and
+[long](aot-validation/long-mtp-serve.json) normal MTP tests both pass repeated
+generation and checkpoint restoration. The long input's full first head,
+all four requests' output IDs and logprobs match the original JIT control.
