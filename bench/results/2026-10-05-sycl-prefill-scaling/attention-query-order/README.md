@@ -76,3 +76,11 @@ The [normal MTP short-prompt check](normal-mtp-serve/run.json) passes first,
 repeat, other-input and restored-checkpoint requests. All return IDs
 `[760, 10849, 88851, 2272]`; repeat/restored logprobs agree exactly. This
 server check measures correctness, not a speed improvement.
+
+The [long normal MTP check](long-mtp-serve/summary.json) repeats this test for
+both layouts with a 1,025-token input. The first prompt is processed as
+1,018 checkpoint tokens followed by six tokens, with total prefill 1,024.
+The first complete finite head matches bit for bit between layouts (SHA-256
+`95435da8b4d1c0ee4f84ff295b5b4ee5d02f791b233d19dd0bd2ebb969d66e2e`).
+All eight requests return IDs `[40, 3172, 1151, 539]` with equal logprobs.
+Repeat/restored requests resume at checkpoint 1,018 and read seven tokens.

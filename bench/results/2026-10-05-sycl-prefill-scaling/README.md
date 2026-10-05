@@ -377,3 +377,14 @@ matching the engine. Wrapper and direct timings remain close; for the
 160-row down product they are about 37.5 and 37.3 microseconds. The much
 longer profiled engine phase intervals also include scheduling gaps and
 streamed-weight waits, as described above.
+
+The [attention query-order study](attention-query-order/README.md) keeps
+layout 3's arithmetic and exchanges the query/chunk workgroup dimensions.
+All 32 standalone cases and all 30 JIT tests pass. In three matched normal
+CLI pairs at cache 128 and context/chunk 8,192, the 8,087-token median falls
+from 17,034.7 to 16,924.2 ms (0.65%), or 474.74 to 477.84 overall tok/s.
+The longest-pair incremental rate improves from 1,128.58 to 1,146.41
+additional tokens/s; it is distinct from overall throughput. All twelve
+complete finite first heads and IDs match the accepted baseline. Short and
+long normal-MTP checkpoint checks also pass. The option is
+`STRATA_PREFILL_ATTN_LAYOUT=4`; the default layout remains 0.
