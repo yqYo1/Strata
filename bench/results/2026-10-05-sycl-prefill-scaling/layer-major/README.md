@@ -62,6 +62,12 @@ match the previously accepted original, and the available complete first
 heads match. The long case forces layer traversal and keeps all residual
 rows in VRAM. It exercises model state across prompt segments.
 
+The current-source B570 `bmg-g21` AOT build succeeds. Its
+[build record](aot-validation/build.json) and
+[30 registered tests](aot-validation/registered-tests.json) are saved.
+Current-source AOT GPU execution remains pending recovery of an xe
+kernel fault; a successful build is not a GPU validation result.
+
 ## Long-input measurements
 
 The [host-residual records](host-residual-long/controller.py) use
