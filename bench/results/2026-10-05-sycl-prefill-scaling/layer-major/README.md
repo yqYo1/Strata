@@ -65,8 +65,11 @@ rows in VRAM. It exercises model state across prompt segments.
 The current-source B570 `bmg-g21` AOT build succeeds. Its
 [build record](aot-validation/build.json) and
 [30 registered tests](aot-validation/registered-tests.json) are saved.
-Current-source AOT GPU execution remains pending recovery of an xe
-kernel fault; a successful build is not a GPU validation result.
+All 30 current-source AOT GPU tests pass in 93.84 seconds after host
+restart. The [six AOT model cases](aot-validation/initial/summary.json)
+preserve all head, residual and persistent-state bytes against both the
+original controls and the corresponding JIT cases. AOT MTP and long CLI
+confirmation, and repeated normal-wall measurements, are still pending.
 
 ## Long-input measurements
 
