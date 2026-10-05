@@ -174,3 +174,13 @@ does not establish full 256K prompt throughput or full-prefix numerical
 parity. The [256K fixture manifest](256k-fixture/fixture.json) records a
 262,145-token prefix of the same extended source stream as the
 [64K fixture](long-fixture/fixture.json), preserving its complete prefix.
+
+## Production PLE table in RAM
+
+The [RAM PLE proof](ram-ple-proof/README.md) exercises the upstream
+`--ple-io ram` option, retaining every output, residual and state byte at
+8,087 tokens/chunk 4,096. The table is loaded but not locked under this
+session's memlock limit. Its startup load takes 42.3 seconds and sampled
+engine RAM reaches 74.104 GiB without process swap. Long timing comparisons
+remain pending. The profiling helper now accepts the production RAM mode
+and records its actual locking outcome and startup load time separately.
