@@ -69,11 +69,12 @@ All 30 current-source AOT GPU tests pass in 93.84 seconds after host
 restart. The [six AOT model cases](aot-validation/initial/summary.json)
 preserve all head, residual and persistent-state bytes against both the
 original controls and the corresponding JIT cases. The [normal and long AOT MTP checks](aot-validation/confirmation/) each
-preserve four requests and checkpoint restoration. The 32K/8K-chunk CLI
+preserve four requests and checkpoint restoration. The initial 32K/8K-chunk CLI
 allocation fails while a separate embedding server occupies about 1.73
-GiB of the GPU; its failure record is preserved. That confirmation and
-repeated normal-wall measurements remain pending an equivalent GPU
-memory condition.
+GiB of the GPU; its failure record is preserved. After the user stops
+that service, the [AOT long CLI and RAM comparisons](isolated-long-validation/)
+complete. The service is restored and its health check returns HTTP 200.
+The repeated JIT wall comparison below also passes.
 
 ## Long-input measurements
 
@@ -181,8 +182,7 @@ The [RAM PLE proof](ram-ple-proof/README.md) exercises the upstream
 `--ple-io ram` option, retaining every output, residual and state byte at
 8,087 tokens/chunk 4,096. The table is loaded but not locked under this
 session's memlock limit. Its startup load takes 42.3 seconds and sampled
-engine RAM reaches 74.104 GiB without process swap. Long timing comparisons
-remain pending. The profiling helper now accepts the production RAM mode
+engine RAM reaches 74.104 GiB without process swap. Warm long timing comparisons are recorded separately below. The profiling helper now accepts the production RAM mode
 and records its actual locking outcome and startup load time separately.
 
 The [32K RAM diagnostic with the embedding server resident](ram-ple-shared-gpu/README.md)
@@ -194,3 +194,26 @@ is about 20 ms, while host residual DMA takes 17.460 seconds and the
 dequantization phase interval is 17.239 seconds. This condition differs
 from the earlier 8K-chunk, 32K-GPU-prefix runs and is not a matched speed
 comparison. All sampled process swap remains zero.
+
+## Repeated normal-wall comparison after service pause
+
+The [three original/layer-major JIT pairs](paired-normal-wall/summary.json)
+use 32,768 input tokens, 8K chunks and the same fixed 65,538-position
+K8/V8 context. Pair two reverses the order. Phase markers, transfer
+timers and diagnostic PLE preload are disabled. The embedding service
+is stopped for the whole sequence. All six complete finite first heads
+and generated IDs match the original control with the same chunk size.
+
+| Traversal | Median prefill seconds | Median tokens/s |
+| --- | ---: | ---: |
+| Original | 72.289 | 453.29 |
+| Layer-major, all 32K residual rows in VRAM | 50.736 | 645.85 |
+
+Elapsed prefill time falls by 29.8%. The PLE table has been fully touched
+before these pairs; this warm-table condition differs from the earlier
+single transfer-timed results. The three paired controls establish the
+improvement within this condition. They do not attribute the change from
+pre-restart timings solely to the engine. All six process memory samples
+and raw logs are preserved. The [AOT CLI confirmations](isolated-long-validation/README.md)
+also match the original output and record RAM startup costs. PP 1000 and
+TG 70 have not been reached.
