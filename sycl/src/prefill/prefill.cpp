@@ -1948,12 +1948,15 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         struct RamSpan { int64_t offset; const uint8_t* source; size_t bytes; };
         std::vector<RamSpan> ram_spans;
         size_t restore_bytes = 0, span_bytes = 0;
+        size_t remapped_experts = 0;
+        bool verify_weights = false;
         const char* mode = "snapshot";
         std::function<bool(const uint8_t*, std::string&)> refresh;
         bool active = false;
         double suspend_ms = 0, restore_ms = 0, graph_ms = 0;
         bool suspend(const core::ExpertCache* original, core::ExpertSource* source,
-                     dpct::queue_ptr q, decltype(refresh) callback, std::string& error) {
+                     const int32_t* residency, dpct::queue_ptr q,
+                     decltype(refresh) callback, std::string& error) {
             if (!original || !original->bytes()) return true;
             if (!original->segmented() && !callback) {
                 error = "prefill cache reallocation requires a graph refresh callback";
@@ -1983,6 +1986,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             const int64_t payload = cache->bytes();
             restore_bytes = static_cast<size_t>(std::max<int64_t>(0, payload - kept));
             if (const char* value = std::getenv("STRATA_PREFILL_CACHE_RESTORE")) mode = value;
+            if (const char* value = std::getenv("STRATA_PREFILL_CACHE_VERIFY")) verify_weights = value[0] == '1';
             if (std::strcmp(mode, "snapshot") && std::strcmp(mode, "ram")) {
                 error = "prefill cache restore must be snapshot or ram";
                 return false;
@@ -1999,11 +2003,15 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                 const auto& layout = strata::kernels::cpu::expert_layout();
                 for (int64_t l = 0; l < layout.n_layers; ++l)
                     for (int64_t e = 0; e < layout.n_expert; ++e) {
-                        const int32_t slot = cache->slot_of(l, e);
+                        // Adaptive swaps update the driver's table, not the
+                        // ExpertCache's original admission map. Restore the
+                        // experts currently resident, including after swaps.
+                        const int32_t slot = residency ? residency[l * layout.n_expert + e] : cache->slot_of(l, e);
                         if (slot < 0 || slot >= slots) continue;
+                        if (verify_weights && residency && slot != cache->slot_of(l, e)) ++remapped_experts;
                         const int64_t begin = cache->device_slot(slot) - address;
                         const int64_t end = begin + static_cast<int64_t>(layout.blob_bytes(l));
-                        if (begin < 0 || end > payload) {
+                        if (begin < 0 || end > payload || end > cache->bytes_of(slot + 1)) {
                             error = "prefill cache resident payload is outside its allocation";
                             return false;
                         }
@@ -2015,6 +2023,15 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                         ram_spans.push_back({first, blob + first - begin, bytes});
                         span_bytes += bytes;
                     }
+                if (verify_weights && restore_bytes) {
+                    std::vector<uint8_t> before(restore_bytes);
+                    q->memcpy(before.data(), address + kept, before.size()).wait_and_throw();
+                    for (const auto& span : ram_spans)
+                        if (std::memcmp(before.data() + span.offset - kept, span.source, span.bytes)) {
+                            error = "prefill RAM cache restoration disagrees with a current GPU expert payload";
+                            return false;
+                        }
+                }
             } else if (restore_bytes) {
                 saved.resize(restore_bytes);
                 q->memcpy(saved.data(), address + kept, restore_bytes).wait_and_throw();
@@ -2043,6 +2060,19 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                     queue->memcpy(cache->device_slot(0) + span.offset, span.source, span.bytes);
                 queue->wait_and_throw();
             }
+            if (verify_weights && restore_bytes) {
+                std::vector<uint8_t> after(restore_bytes);
+                queue->memcpy(after.data(), cache->device_slot(0) + kept, after.size()).wait_and_throw();
+                if (!saved.empty()) {
+                    if (after != saved) { error = "prefill snapshot cache payload restoration failed"; return false; }
+                } else {
+                    for (const auto& span : ram_spans)
+                        if (std::memcmp(after.data() + span.offset - kept, span.source, span.bytes)) {
+                            error = "prefill RAM cache payload restoration failed";
+                            return false;
+                        }
+                }
+            }
             if (refresh) {
                 const auto graph_start = Clock::now();
                 if (!refresh(cache->device_slot(0), error)) return false;
@@ -2066,7 +2096,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         }
     } cache_lease;
     if (const char* release = std::getenv("STRATA_PREFILL_RELEASE_CACHE"); release && std::atoi(release) != 0)
-        if (!cache_lease.suspend(m.cache, m.src, m.cs, on_cache_restore, err)) return false;
+        if (!cache_lease.suspend(m.cache, m.src, m.host_res, m.cs, on_cache_restore, err)) return false;
     // Each chunk reads its old host rows before writing the same range back. In-order
     // compute plus the synchronized callback prevent the download racing its upload.
     core::ExpertCache layer_cache;
@@ -2200,6 +2230,11 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                      (unsigned long long) cache_lease.restore_bytes, cache_lease.mode,
                      cache_lease.suspend_ms, cache_lease.restore_ms, cache_lease.graph_ms,
                      cache_lease.cache->device_slot(0) == cache_lease.address);
+    if (cache_lease.cache && cache_lease.verify_weights)
+        std::fprintf(stderr, "strata prefill cache verify: %llu occupied tail bytes matched before and after restoration; "
+                     "%llu experts differ from the initial admission map\n",
+                     (unsigned long long) (!std::strcmp(cache_lease.mode, "ram") ? cache_lease.span_bytes : cache_lease.restore_bytes),
+                     (unsigned long long) cache_lease.remapped_experts);
     phases.report(n, ms_since(started), stats_.ms_experts_host - old_stats.ms_experts_host,
                   stats_.ms_ple - old_stats.ms_ple);
     stats_.tokens = old_stats.tokens + n;

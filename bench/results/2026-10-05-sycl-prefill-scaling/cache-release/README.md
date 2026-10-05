@@ -12,6 +12,7 @@ No setting below is enabled by default.
 ```
 STRATA_PREFILL_COMPACT=2
 STRATA_PREFILL_LAYER_MAJOR=1
+STRATA_PREFILL_LAYER_MAJOR_R_GPU=65536 # request this many residual rows in VRAM
 STRATA_PREFILL_RELEASE_CACHE=1
 STRATA_PREFILL_CACHE_ALLOC=vmm       # vmm or rebuild
 STRATA_PREFILL_CACHE_RESTORE=ram     # ram or snapshot
@@ -89,9 +90,9 @@ recreation. It does not include the rest of prefill's compute time.
 | Half physical release, direct RAM restore | 192 MiB | 24.676 ms |
 | Ordinary reallocation, direct RAM restore, recreate graphs | 325 MiB | 153.111 ms |
 
-The full logical payload is 325 MiB. Fixed-address physical storage is padded
+The full logical slot-storage extent is 325 MiB. Fixed-address physical storage is padded
 to 384 MiB. Consequently half physical release restores 133 MiB of logical
-payload, not half of 325 MiB. Graph recreation took 102.940 ms in the second
+slot storage, not half of 325 MiB. Graph recreation took 102.940 ms in the second
 fresh segment, included in 153.111 ms. First-time graph creation took 588.045 ms
 in this process; do not treat it as the warm recreation cost.
 
@@ -99,4 +100,53 @@ Here, ordinary RAM restoration plus graph recreation beats snapshotting to RAM
 at a fixed address. Keeping the address and restoring directly from the existing
 RAM arena has the lowest full-release lifecycle time in these observations.
 These costs alone do not decide which cache policy gives the fastest prefill.
-The 64K capacity and complete prefill timing comparison is still running.
+## 64K capacity and prefill observations
+
+`long-context` records nine successful or refused configurations on the same
+frozen JIT binary. Each has 65,536 input tokens, 4K chunks, a fixed 65,538-position
+K8/V8 context, and 128 decode cache slots. Transfer diagnostics are enabled.
+These are single observations, not repeated timing medians. The CLI initializes
+its Verifier after prefill; the graph recreation costs above come from the
+separate server runs.
+
+| Decode cache policy | Residual rows in VRAM | RAM residual traffic | Prefill seconds | token/s |
+| --- | ---: | ---: | ---: | ---: |
+| Retained, previous 32K-prefix setting | 32,768 | 126.165 GB | 140.996 | 464.81 |
+| Retained, largest fitting 4K-step prefix | 57,344 | 31.541 GB | 126.097 | 519.73 |
+| Half physical release, direct RAM restore | 61,440 | 15.771 GB | 123.065 | 532.53 |
+| Full physical release, direct RAM restore | 65,536 | 0 | 121.418 | 539.76 |
+| Full physical release, snapshot restore | 65,536 | 0 | 120.848 | 542.30 |
+| Ordinary full release and RAM restore | 65,536 | 0 | 120.887 | 542.13 |
+
+Retaining the cache with 60K or 64K residual rows, and half release with 64K
+rows, failed the free-VRAM capacity check. Every successful run has the same
+complete finite head and generated IDs. Expert-weight traffic remains 50.292 GB
+in each run. RAM residual DMA time falls from about 5.0 seconds for the largest
+retained-cache prefix to zero with full release. Sampled peak VRAM is below
+10 GiB and process swap is zero; 1 Hz samples can miss short peaks.
+
+Full release reduces the observed time by 3.7% versus the largest fitting
+retained-cache prefix, rather than the larger improvement against the old 32K
+prefix. The three full-release timings differ by less than 0.5%; they do not
+establish a prefill-speed winner among restoration mechanisms.
+
+## Adaptive cache correctness
+
+RAM restoration must use the driver's current residency table. Adaptive swaps
+update that table rather than the cache object's original admission map.
+The implementation now follows the current table. `STRATA_PREFILL_CACHE_VERIFY=1`
+adds diagnostic downloads that compare every occupied released-tail payload
+against RAM before release and after restoration; snapshot mode checks its
+entire restored tail. These diagnostics add copies and RAM allocations, so
+their timings must not be used for performance comparisons.
+
+The timing binary above used `--adapt-swaps 0`. The corrected restoration passed
+five policies and 20 normal-MTP requests of 16 generated tokens, with four
+adaptive swaps every window (`adaptive-check`). Complete finite first heads,
+all IDs/logprobs for all requests, and final dumped state bytes match the
+retained-cache control. RAM restoration checks all occupied released-tail
+weight bytes before and after copying, including requests with experts that
+differ from the original admission map (56 changed entries in the full-RAM
+case). The full cache occupies 325 MiB of logical slot storage; occupied expert
+weights occupy 268.60 MiB. RAM restore copies those weights and clears unused
+slot padding on-device; the snapshot method copies the whole slot extent.

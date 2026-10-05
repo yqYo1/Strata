@@ -107,8 +107,9 @@ public:
     /// management) instead of one cudaMalloc, so `shrink` can give the tail's VRAM back to the driver - for another
     /// program - and `grow` can take it again, while every slot keeps its address (the captured graphs, the verify
     /// plan's pointers and the prompt path's loan all hold addresses into it).  0 (the default): one cudaMalloc, as
-    /// always.  CUDA only: a HIP build refuses it at open.  The slots past `slots()` after a shrink must hold no
-    /// resident expert and no loan: the CALLER evicts them first (they become CPU misses).
+    /// always. The SYCL port uses its experimental virtual/physical-memory API; HIP refuses it at open.
+    /// The slots past `slots()` after a shrink must hold no resident expert and no loan: the CALLER evicts them
+    /// first, or pauses all cache consumers and restores their payloads before resuming them.
     void set_segment_bytes(int64_t seg_bytes) { seg_req_ = seg_bytes > 0 ? seg_bytes : 0; }
     bool segmented() const { return !segs_.empty(); }
     int64_t segment_bytes() const { return seg_; }
@@ -116,7 +117,8 @@ public:
     int64_t mapped_bytes() const;
     /// Unmaps every segment past the first `keep_bytes` (rounded UP to a segment boundary): `slots()` becomes the
     /// slots wholly inside what stays.  Waits for the device first.  False with `err` when not segmented or a driver
-    /// call failed.
+    /// call failed. SYCL also permits a complete release of a non-segmented allocation; its subsequent grow
+    /// can change the base address, requiring consumers and captured graphs to be refreshed.
     bool shrink(int64_t keep_bytes, std::string& err);
     /// Maps segments again up to `want_bytes` (rounded DOWN to a segment, at most the arena; the last, shorter
     /// segment only when `want_bytes` covers the arena).  Stops at the first segment the driver cannot back (false,
