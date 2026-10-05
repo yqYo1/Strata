@@ -68,8 +68,12 @@ The current-source B570 `bmg-g21` AOT build succeeds. Its
 All 30 current-source AOT GPU tests pass in 93.84 seconds after host
 restart. The [six AOT model cases](aot-validation/initial/summary.json)
 preserve all head, residual and persistent-state bytes against both the
-original controls and the corresponding JIT cases. AOT MTP and long CLI
-confirmation, and repeated normal-wall measurements, are still pending.
+original controls and the corresponding JIT cases. The [normal and long AOT MTP checks](aot-validation/confirmation/) each
+preserve four requests and checkpoint restoration. The 32K/8K-chunk CLI
+allocation fails while a separate embedding server occupies about 1.73
+GiB of the GPU; its failure record is preserved. That confirmation and
+repeated normal-wall measurements remain pending an equivalent GPU
+memory condition.
 
 ## Long-input measurements
 

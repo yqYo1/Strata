@@ -2,8 +2,10 @@
 
 The probe completed after host restart and GPU access was restored. All
 35 cases passed, with five measured rounds each and complete final-copy
-byte checks. This is a standalone copy measurement without an inference
-or disk workload. The device is Intel Arc B570 10 GB, with Ryzen 5 5600X
+byte checks. The probe itself performs copies without inference or disk reads.
+A separately running embedding server was subsequently found to hold
+about 1.73 GiB on this GPU. Its request activity during this first pass
+was not monitored; this pass does not prove an exclusive-GPU ceiling. The device is Intel Arc B570 10 GB, with Ryzen 5 5600X
 and 128 GB installed RAM, oneAPI 2026.1 and compute driver
 1.17.39758+10. The [machine record](machine.json) includes the kernel;
 the [run record](run.json) includes driver environment and PCIe metadata.
