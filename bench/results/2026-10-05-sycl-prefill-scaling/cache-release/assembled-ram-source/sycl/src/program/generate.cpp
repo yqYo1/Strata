@@ -3511,10 +3511,6 @@ int main(int argc, char **argv) try {
         }
     }
     if (const char* release = std::getenv("STRATA_PREFILL_RELEASE_CACHE"); release && std::atoi(release) != 0) {
-        if (!o.no_prefill_borrow) {
-            std::fprintf(stderr, "strata generate: prefill cache release requires --no-prefill-borrow\n");
-            return 2;
-        }
         if (multi_gpu || std::any_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(),
                                     [](int n) { return n > 0; })) {
             std::fprintf(stderr, "strata generate: prefill cache release requires one GPU and no helper caches\n");

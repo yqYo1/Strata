@@ -1,0 +1,581 @@
+diff --git a/include/strata/prefill/prefill.hpp b/include/strata/prefill/prefill.hpp
+index 7efb619..17bfbbd 100644
+--- a/include/strata/prefill/prefill.hpp
++++ b/include/strata/prefill/prefill.hpp
+@@ -135,6 +135,10 @@ public:
+     /// Checked before every chunk: true stops the prompt early (`run` returns false with err "cancelled").
+     std::function<bool()> should_stop;
+ 
++    /// SYCL experiment: refresh consumers after the decode expert cache is
++    /// reallocated. Called after weights are restored, before decode can run.
++    std::function<bool(const uint8_t* address, std::string& err)> on_cache_restore;
++
+     /// A layer-major prompt has coherent whole-model state only at its final chunk.
+     bool checkpoint_ready() const { return checkpoint_ready_; }
+ 
+diff --git a/sycl/include/strata/core/verify.hpp b/sycl/include/strata/core/verify.hpp
+index c7c993d..d57fe51 100644
+--- a/sycl/include/strata/core/verify.hpp
++++ b/sycl/include/strata/core/verify.hpp
+@@ -132,6 +132,9 @@ public:
+     /// SYCL port: capture every window graph now (one per window size) instead of on first use, so the first
+     /// request does not pay for them (a 2,400-node graph takes tens of ms to finalize on this backend).
+     bool warm(std::string& err);
++    /// SYCL cache-release experiment: rebuild window graphs with a restored
++    /// expert arena address. Session/KV and commit graphs keep their storage.
++    bool rebuild_cache_graphs(const uint8_t* address, std::string& err);
+     /// (upstream 0.1.32; the port maps it onto commit_finish, verify.cpp) commit() returns without waiting for its graph (a single-GPU session sets it): the next window follows it on
+     /// the same stream and the drafter reads nothing it writes, so it overlaps the draft. Whoever reads or writes
+     /// the session from another stream or the host afterwards (a new request, a checkpoint, a snapshot, the prompt
+diff --git a/sycl/src/core/expert_cache.cpp b/sycl/src/core/expert_cache.cpp
+index 56cd011..3e2cb73 100644
+--- a/sycl/src/core/expert_cache.cpp
++++ b/sycl/src/core/expert_cache.cpp
+@@ -16,6 +16,8 @@
+ #include <cstdio>
+ #include <filesystem>
+ #include <utility>
++#include <memory>
++#include <sycl/ext/oneapi/virtual_mem/virtual_mem.hpp>
+ #include <cstring>
+ 
+ namespace strata::core {
+@@ -257,90 +259,90 @@ bool map_segment(const Vmm &v, int dev, dpct::device_ptr va, size_t bytes,
+ }  // namespace
+ #endif
+ 
+-bool ExpertCache::open_segmented(uint64_t want, std::string &err) try {
+-#if 1   // SYCL port: --vram-elastic is CUDA-only (#533)
+-    (void) want;
+-    err = "ExpertCache: --vram-elastic (a segmented expert cache) is CUDA-only for now";
+-    return false;
+-#else
+-    const Vmm& v = vmm();
+-    int dev = 0, supported = 0;
+-    int cu = 0;
+-    if (!v.ok || DPCT_CHECK_ERROR(dev = dpct::get_current_device_id()) != 0 ||
+-        v.device_get(&cu, dev) != 0 ||
+-        v.attribute(&supported,
+-                    CU_DEVICE_ATTRIBUTE_VIRTUAL_MEMORY_MANAGEMENT_SUPPORTED,
+-                    cu) != 0 ||
+-        !supported) {
+-        err = "ExpertCache: --vram-elastic needs the driver's virtual memory management, which this GPU or driver "
+-              "does not offer";
+-        return false;
+-    }
+-    const dpct::experimental::mem_prop prop = device_prop(dev);
+-    size_t gran = 0;
+-    if (v.granularity(
+-            &gran, &prop,
+-            sycl::ext::oneapi::experimental::granularity_mode::recommended) !=
+-            0 ||
+-        gran == 0) {
+-        err = "ExpertCache: cannot read the driver's allocation granularity";
+-        return false;
+-    }
+-    const uint64_t g = (uint64_t) gran;
+-    const uint64_t total = (want + g - 1) / g * g;
+-    seg_ = (int64_t) (((uint64_t) seg_req_ + g - 1) / g * g);
+-    dpct::device_ptr va = 0;
+-    if (v.reserve(&va, (size_t)total, 0, 0, 0) != 0) {
+-        err = "ExpertCache: cannot reserve the address range of the segmented expert cache";
++namespace {
++using SyclPhysicalMem = sycl::ext::oneapi::experimental::physical_mem;
++namespace vm = sycl::ext::oneapi::experimental;
++
++bool map_sycl_cache_segment(uint8_t* address, size_t bytes,
++                            unsigned long long& handle, std::string& err) {
++    const char* operation = "allocate";
++    try {
++        auto& q = dpct::get_in_order_queue();
++        auto physical = std::make_unique<SyclPhysicalMem>(q, bytes);
++        operation = "map";
++        if (physical->map(reinterpret_cast<uintptr_t>(address), bytes,
++                          vm::address_access_mode::read_write) != address) {
++            err = "ExpertCache: a physical segment mapped at the wrong address";
++            return false;
++        }
++        static_assert(sizeof(uintptr_t) <= sizeof(handle));
++        handle = static_cast<unsigned long long>(reinterpret_cast<uintptr_t>(physical.release()));
++        return true;
++    } catch (const std::exception& e) {
++        err = std::string("ExpertCache: cudaMalloc failed: SYCL physical segment ") + operation +
++              " (" + std::to_string(bytes) + " bytes at " +
++              std::to_string(reinterpret_cast<uintptr_t>(address)) + "): " + e.what();
+         return false;
+     }
+-    base_ = reinterpret_cast<uint8_t*>(va);
+-    reserved_ = total;
+-    for (uint64_t at = 0; at < total; at += (uint64_t) seg_) {
+-        segs_.push_back(0);
+-        seg_size_.push_back((int64_t) std::min<uint64_t>((uint64_t) seg_, total - at));
+-    }
+-    for (size_t i = 0; i < segs_.size(); ++i) {
+-        if (!map_segment(v, dev,
+-                         va + (dpct::device_ptr)((uint64_t)i * (uint64_t)seg_),
+-                         (size_t)seg_size_[i], segs_[i])) {
+-            char buf[200];
+-            std::snprintf(buf, sizeof buf, "ExpertCache: cudaMalloc failed: segment %zu of %zu (%.2f GiB) of the "
+-                          "segmented cache could not be allocated", i + 1, segs_.size(),
+-                          (double) seg_size_[i] / 1073741824.0);
+-            err = buf;   // "cudaMalloc failed": the auto cache's smaller-retry path reads it as an allocation failure
+-            release_segmented();
++}
++} // namespace
++
++bool ExpertCache::open_segmented(uint64_t want, std::string& err) {
++    try {
++        auto& q = dpct::get_in_order_queue();
++        if (!q.get_device().has(sycl::aspect::ext_oneapi_virtual_mem)) {
++            err = "ExpertCache: this SYCL device does not support virtual memory";
++            return false;
++        }
++        const uint64_t gran = vm::get_mem_granularity(q.get_device(), q.get_context());
++        if (!gran || want > UINT64_MAX - gran ||
++            static_cast<uint64_t>(seg_req_) > UINT64_MAX - gran) {
++            err = "ExpertCache: invalid virtual memory granularity or size";
++            return false;
++        }
++        seg_ = static_cast<int64_t>((static_cast<uint64_t>(seg_req_) + gran - 1) / gran * gran);
++        // Arc B570 rejects a 5 MiB physical allocation even though its advertised
++        // minimum granularity is 64 KiB (6 MiB and 64 MiB succeed). Use complete
++        // segments, including the tail, rather than assuming every multiple of
++        // the advertised minimum can back physical memory of this size.
++        if (want > UINT64_MAX - static_cast<uint64_t>(seg_)) {
++            err = "ExpertCache: segmented size overflow";
+             return false;
+         }
+-        mapped_segs_ = (int64_t) i + 1;
++        const uint64_t total = (want + seg_ - 1) / seg_ * seg_;
++        base_ = reinterpret_cast<uint8_t*>(vm::reserve_virtual_mem(total, q.get_context()));
++        reserved_ = total;
++        for (uint64_t at = 0; at < total; at += static_cast<uint64_t>(seg_)) {
++            segs_.push_back(0);
++            seg_size_.push_back(static_cast<int64_t>(std::min<uint64_t>(seg_, total - at)));
++        }
++        for (size_t i = 0; i < segs_.size(); ++i) {
++            if (!map_sycl_cache_segment(base_ + i * static_cast<uint64_t>(seg_),
++                                         seg_size_[i], segs_[i], err)) {
++                release_segmented();
++                return false;
++            }
++            mapped_segs_ = static_cast<int64_t>(i + 1);
++        }
++        return true;
++    } catch (const std::exception& e) {
++        err = std::string("ExpertCache: segmented allocation failed: ") + e.what();
++        release_segmented();
++        return false;
+     }
+-    return true;
+-#endif
+-}
+-catch (sycl::exception const &exc) {
+-  std::cerr << exc.what() << "Exception caught at file:" << __FILE__
+-            << ", line:" << __LINE__ << std::endl;
+-  std::exit(1);
+ }
+ 
+ void ExpertCache::release_segmented() {
+-#if 0   // SYCL port: no segmented arena (#533)
+-    const Vmm& v = vmm();
+-    if (base_ != nullptr) dpct::get_current_device().queues_wait_and_throw();
+-    const dpct::device_ptr va = reinterpret_cast<dpct::device_ptr>(base_);
+-    for (size_t i = 0; i < segs_.size(); ++i)
+-        if (segs_[i] != 0) {
+-            v.unmap(va + (dpct::device_ptr)((uint64_t)i * (uint64_t)seg_),
+-                    (size_t)seg_size_[i]);
+-            v.release((dpct::experimental::physical_mem_ptr)segs_[i]);
+-        }
+-    if (base_ != nullptr && reserved_ > 0) v.address_free(va, (size_t) reserved_);
+-#endif
+-    segs_.clear();
+-    seg_size_.clear();
+-    mapped_segs_ = 0;
+-    reserved_ = 0;
+-    base_ = nullptr;
++    auto& q = dpct::get_in_order_queue();
++    if (base_) dpct::get_current_device().queues_wait_and_throw();
++    for (size_t i = 0; i < segs_.size(); ++i) {
++        if (!segs_[i]) continue;
++        vm::unmap(base_ + i * static_cast<uint64_t>(seg_), seg_size_[i], q.get_context());
++        delete reinterpret_cast<SyclPhysicalMem*>(static_cast<uintptr_t>(segs_[i]));
++        segs_[i] = 0;
++    }
++    if (base_ && reserved_) vm::free_virtual_mem(reinterpret_cast<uintptr_t>(base_), reserved_, q.get_context());
++    segs_.clear(); seg_size_.clear(); mapped_segs_ = 0; reserved_ = 0; base_ = nullptr;
+ }
+ 
+ int64_t ExpertCache::mapped_bytes() const {
+@@ -358,85 +360,54 @@ int64_t ExpertCache::slots_within(int64_t bytes) const {
+     return (int64_t) (std::upper_bound(off_.begin() + 1, off_.end(), (uint64_t) bytes) - (off_.begin() + 1));
+ }
+ 
+-bool ExpertCache::shrink(int64_t keep_bytes, std::string &err) try {
++bool ExpertCache::shrink(int64_t keep_bytes, std::string& err) {
+     if (segs_.empty()) {
+-        err = "the expert cache is not segmented (the engine needs --vram-elastic)";
+-        return false;
+-    }
+-#if 1   // SYCL port: --vram-elastic is CUDA-only (#533)
+-    (void) keep_bytes;
+-    return false;
+-#else
+-    const Vmm& v = vmm();
+-    int64_t keep = 0, at = 0;   // the segments [0, keep) hold the first keep_bytes
+-    while (keep < (int64_t) segs_.size() && at < keep_bytes) at += seg_size_[(size_t) keep++];
+-    if (keep >= mapped_segs_) return true;
+-    if (DPCT_CHECK_ERROR(dpct::get_current_device().queues_wait_and_throw()) !=
+-        0) {
+-        /*
+-        DPCT1009: SYCL reports errors using exceptions and does not use
+-        error codes. Please replace the "get_error_string_dummy(...)" with a
+-        real error-handling function.
+-        */
+-        /*
+-        DPCT1010: SYCL uses exceptions to report errors and does not use the
+-        error codes. The cudaGetLastError function call was replaced with 0. You
+-        need to rewrite this code.
+-        */
+-        err = std::string("the device failed before the cache shrank: ") +
+-              dpct::get_error_string_dummy(0);
+-        return false;
+-    }
+-    const dpct::device_ptr va = reinterpret_cast<dpct::device_ptr>(base_);
+-    for (int64_t i = mapped_segs_ - 1; i >= keep; --i) {
+-        const dpct::device_ptr p =
+-            va + (dpct::device_ptr)((uint64_t)i * (uint64_t)seg_);
+-        if (v.unmap(p, (size_t)seg_size_[(size_t)i]) != 0 ||
+-            v.release((dpct::experimental::physical_mem_ptr)segs_[(size_t)i]) !=
+-                0) {
+-            err = "the driver refused to release an expert-cache segment";
+-            live_slots_ = slots_within(mapped_bytes());
+-            return false;
++        if (keep_bytes != 0) { err = "a non-segmented cache can only be released completely"; return false; }
++        try {
++            dpct::get_current_device().queues_wait_and_throw();
++            if (base_) sycl::free(base_, dpct::get_in_order_queue());
++            base_ = nullptr; live_slots_ = 0;
++            return true;
++        } catch (const std::exception& e) { err = e.what(); return false; }
++    }
++    try {
++        int64_t keep = 0, at = 0;
++        while (keep < static_cast<int64_t>(segs_.size()) && at < keep_bytes)
++            at += seg_size_[static_cast<size_t>(keep++)];
++        if (keep >= mapped_segs_) return true;
++        dpct::get_current_device().queues_wait_and_throw();
++        auto& q = dpct::get_in_order_queue();
++        for (int64_t i = mapped_segs_ - 1; i >= keep; --i) {
++            vm::unmap(base_ + i * static_cast<uint64_t>(seg_), seg_size_[i], q.get_context());
++            delete reinterpret_cast<SyclPhysicalMem*>(static_cast<uintptr_t>(segs_[i]));
++            segs_[i] = 0;
++            mapped_segs_ = i;
+         }
+-        segs_[(size_t) i] = 0;
+-        mapped_segs_ = i;
++        live_slots_ = slots_within(mapped_bytes());
++        return true;
++    } catch (const std::exception& e) {
++        live_slots_ = slots_within(mapped_bytes());
++        err = std::string("ExpertCache: releasing a SYCL segment failed: ") + e.what();
++        return false;
+     }
+-    live_slots_ = slots_within(mapped_bytes());
+-    return true;
+-#endif
+-}
+-catch (sycl::exception const &exc) {
+-  std::cerr << exc.what() << "Exception caught at file:" << __FILE__
+-            << ", line:" << __LINE__ << std::endl;
+-  std::exit(1);
+ }
+ 
+ bool ExpertCache::grow(int64_t want_bytes, std::string& err) {
+     if (segs_.empty()) {
+-        err = "the expert cache is not segmented (the engine needs --vram-elastic)";
+-        return false;
++        if (want_bytes < full_bytes()) { err = "a non-segmented cache must be restored completely"; return false; }
++        try {
++            if (!base_) base_ = sycl::malloc_device<uint8_t>(static_cast<size_t>(full_bytes()), dpct::get_in_order_queue());
++            if (!base_) { err = "ExpertCache: decode cache reallocation failed"; return false; }
++            live_slots_ = slots_;
++            return true;
++        } catch (const std::exception& e) { err = e.what(); return false; }
+     }
+-#if 1   // SYCL port: --vram-elastic is CUDA-only (#533)
+-    (void) want_bytes;
+-    return false;
+-#else
+-    const Vmm& v = vmm();
+-    int dev = 0;
+-    dev = dpct::get_current_device_id();
+-    const dpct::device_ptr va = reinterpret_cast<dpct::device_ptr>(base_);
+     int64_t at = mapped_bytes();
+-    while (mapped_segs_ < (int64_t) segs_.size() && at + seg_size_[(size_t) mapped_segs_] <= want_bytes) {
+-        const size_t i = (size_t) mapped_segs_;
+-        if (!map_segment(v, dev,
+-                         va + (dpct::device_ptr)((uint64_t)i * (uint64_t)seg_),
+-                         (size_t)seg_size_[i], segs_[i])) {
+-            /*
+-            DPCT1010: SYCL uses exceptions to report errors and does not use
+-            the error codes. The cudaGetLastError function call was replaced
+-            with 0. You need to rewrite this code.
+-            */
+-            (void)0;
+-            err = "the driver has no VRAM for another expert-cache segment";
++    const uint64_t target = want_bytes >= full_bytes() ? reserved_ : static_cast<uint64_t>(std::max<int64_t>(want_bytes, 0));
++    while (mapped_segs_ < static_cast<int64_t>(segs_.size()) &&
++           static_cast<uint64_t>(at + seg_size_[mapped_segs_]) <= target) {
++        const size_t i = static_cast<size_t>(mapped_segs_);
++        if (!map_sycl_cache_segment(base_ + i * static_cast<uint64_t>(seg_), seg_size_[i], segs_[i], err)) {
+             live_slots_ = slots_within(mapped_bytes());
+             return false;
+         }
+@@ -445,7 +416,6 @@ bool ExpertCache::grow(int64_t want_bytes, std::string& err) {
+     }
+     live_slots_ = slots_within(mapped_bytes());
+     return true;
+-#endif
+ }
+ 
+ #if defined(STRATA_USE_HIP)
+diff --git a/sycl/src/core/verify.cpp b/sycl/src/core/verify.cpp
+index 8d23dc2..a943695 100644
+--- a/sycl/src/core/verify.cpp
++++ b/sycl/src/core/verify.cpp
+@@ -1953,6 +1953,29 @@ bool Verifier::warm(std::string &err) {
+     return true;
+ }
+ 
++bool Verifier::rebuild_cache_graphs(const uint8_t* address, std::string& err) try {
++    if (!address || next_) {
++        err = "verify cache graph rebuild requires a restored single-GPU cache";
++        return false;
++    }
++    const OnDevice on(device_);
++    if (!wait_commit(err)) return false;
++    cs_->wait_and_throw();
++    copy_->wait_and_throw();
++    for (auto& graph : exec_) { delete graph; graph = nullptr; }
++    for (auto& graphs : boundary_graphs_) {
++        graphs.input.reset(); graphs.tail.reset();
++        graphs.pre.clear(); graphs.post.clear();
++    }
++    hits_.cache_base = address;
++    // Recording submits nodes to a graph, rather than executing the window.
++    // Full-model checks still verify that recapture preserves persistent state.
++    return warm(err);
++} catch (const std::exception& e) {
++    err = std::string("verify cache graph rebuild: ") + e.what();
++    return false;
++}
++
+ bool Verifier::commit_finish(std::string &err) try {
+     if (pending_commit_ == 0) return true;
+     const OnDevice on_device(device_);
+diff --git a/sycl/src/prefill/prefill.cpp b/sycl/src/prefill/prefill.cpp
+index 2d10b21..d6b4be8 100644
+--- a/sycl/src/prefill/prefill.cpp
++++ b/sycl/src/prefill/prefill.cpp
+@@ -1939,6 +1939,120 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
+     const auto old_stats = stats_;
+     const auto host_copy_start = m.stager->host_copy_ns.load(std::memory_order_relaxed);
+     const int32_t prev[2] = {m.ss->ple_prev[0], m.ss->ple_prev[1]};
++    struct CacheLease {
++        core::ExpertCache* cache = nullptr;
++        dpct::queue_ptr queue = nullptr;
++        const uint8_t* address = nullptr;
++        int64_t mapped = 0, slots = 0, kept = 0;
++        std::vector<uint8_t> saved;
++        const char* mode = "snapshot";
++        std::function<bool(const uint8_t*, std::string&)> refresh;
++        bool active = false;
++        double suspend_ms = 0, restore_ms = 0, graph_ms = 0;
++        bool suspend(const core::ExpertCache* original, core::ExpertSource* source,
++                     dpct::queue_ptr q, decltype(refresh) callback, std::string& error) {
++            if (!original || !original->bytes()) return true;
++            if (!original->segmented() && !callback) {
++                error = "prefill cache reallocation requires a graph refresh callback";
++                return false;
++            }
++            const auto t = Clock::now();
++            cache = const_cast<core::ExpertCache*>(original);
++            queue = q; mapped = cache->mapped_bytes(); slots = cache->slots();
++            refresh = std::move(callback);
++            address = cache->device_slot(0);
++            double fraction = 1;
++            if (const char* value = std::getenv("STRATA_PREFILL_CACHE_RELEASE_FRAC")) {
++                char* end = nullptr;
++                fraction = std::strtod(value, &end);
++                if (end == value || *end || !std::isfinite(fraction) || fraction < 0 || fraction > 1) {
++                    error = "prefill cache release fraction must be between 0 and 1";
++                    return false;
++                }
++            }
++            const int64_t want = static_cast<int64_t>(std::ceil(mapped * (1 - fraction)));
++            const int64_t segment = cache->segment_bytes();
++            if (!cache->segmented() && fraction != 1) {
++                error = "prefill ordinary cache reallocation requires full release";
++                return false;
++            }
++            kept = cache->segmented() ? std::min(mapped, ((want + segment - 1) / segment) * segment) : 0;
++            const int64_t payload = cache->bytes();
++            saved.resize(static_cast<size_t>(std::max<int64_t>(0, payload - kept)));
++            if (const char* value = std::getenv("STRATA_PREFILL_CACHE_RESTORE")) mode = value;
++            if (std::strcmp(mode, "snapshot") && std::strcmp(mode, "ram")) {
++                error = "prefill cache restore must be snapshot or ram";
++                return false;
++            }
++            q->wait_and_throw();
++            if (!std::strcmp(mode, "ram")) {
++                // Require an existing complete RAM arena. Do not silently turn a
++                // RAM comparison into reads from GGUF or a transient file tier.
++                auto* arena = dynamic_cast<core::ArenaExpertSource*>(source);
++                if (!arena || !arena->mapped()) {
++                    error = "prefill RAM cache restoration requires a complete resident expert arena";
++                    return false;
++                }
++                const auto& layout = strata::kernels::cpu::expert_layout();
++                for (int64_t l = 0; l < layout.n_layers; ++l)
++                    for (int64_t e = 0; e < layout.n_expert; ++e) {
++                        const int32_t slot = cache->slot_of(l, e);
++                        if (slot < 0 || slot >= slots) continue;
++                        const int64_t begin = cache->device_slot(slot) - address;
++                        const int64_t end = begin + static_cast<int64_t>(layout.blob_bytes(l));
++                        if (begin < 0 || end > payload) {
++                            error = "prefill cache resident payload is outside its allocation";
++                            return false;
++                        }
++                        if (end <= kept) continue;
++                        const uint8_t* blob = arena->blob(l, e);
++                        if (!blob) { error = "prefill cache resident expert is absent from RAM"; return false; }
++                        const int64_t first = std::max(begin, kept);
++                        std::memcpy(saved.data() + first - kept, blob + first - begin,
++                                    static_cast<size_t>(end - first));
++                    }
++            } else if (!saved.empty()) {
++                q->memcpy(saved.data(), address + kept, saved.size()).wait_and_throw();
++            }
++            active = true; // A partial shrink also needs restoration on exit.
++            if (!cache->shrink(kept, error)) return false;
++            suspend_ms = ms_since(t);
++            return true;
++        }
++        bool restore(std::string& error) {
++            if (!active) return true;
++            const auto t = Clock::now();
++            if (!cache->grow(mapped, error)) return false;
++            if (cache->slots() != slots || (cache->segmented() && cache->device_slot(0) != address)) {
++                error = "prefill cache restoration changed its slots or address";
++                return false;
++            }
++            if (!saved.empty())
++                queue->memcpy(cache->device_slot(0) + kept, saved.data(), saved.size()).wait_and_throw();
++            if (refresh) {
++                const auto graph_start = Clock::now();
++                if (!refresh(cache->device_slot(0), error)) return false;
++                graph_ms = ms_since(graph_start);
++            }
++            restore_ms = ms_since(t);
++            active = false;
++            return true;
++        }
++        ~CacheLease() {
++            if (!active) return;
++            try {
++                std::string error;
++                if (restore(error)) return;
++                std::fprintf(stderr, "prefill: cannot restore decode cache: %s\n", error.c_str());
++            } catch (const std::exception& e) {
++                std::fprintf(stderr, "prefill: cannot restore decode cache: %s\n", e.what());
++            }
++            // Captured kernels must never replay against unbacked cache memory.
++            std::terminate();
++        }
++    } cache_lease;
++    if (const char* release = std::getenv("STRATA_PREFILL_RELEASE_CACHE"); release && std::atoi(release) != 0)
++        if (!cache_lease.suspend(m.cache, m.src, m.cs, on_cache_restore, err)) return false;
+     // Each chunk reads its old host rows before writing the same range back. In-order
+     // compute plus the synchronized callback prevent the download racing its upload.
+     core::ExpertCache layer_cache;
+@@ -2059,6 +2173,19 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
+     }
+     phases.mark(kPfStart, strata::q_of(m.cs));
+     m.cs->wait(); phases.fold();
++    // Drop temporary VRAM before restoring the exact decode cache bytes. The
++    // enclosing prefill timer includes both suspension and restoration.
++    m.copy->wait(); m.stager->finish();
++    layer_cache.close();
++    device_rows.reset();
++    if (!cache_lease.restore(err)) return false;
++    if (cache_lease.cache)
++        std::fprintf(stderr, "strata prefill cache release: %lld physical bytes, %llu restored bytes, source %s, "
++                     "suspend %.3f ms, restore %.3f ms, graph %.3f ms, same_address %d, slots restored\n",
++                     (long long) (cache_lease.mapped - cache_lease.kept),
++                     (unsigned long long) cache_lease.saved.size(), cache_lease.mode,
++                     cache_lease.suspend_ms, cache_lease.restore_ms, cache_lease.graph_ms,
++                     cache_lease.cache->device_slot(0) == cache_lease.address);
+     phases.report(n, ms_since(started), stats_.ms_experts_host - old_stats.ms_experts_host,
+                   stats_.ms_ple - old_stats.ms_ple);
+     stats_.tokens = old_stats.tokens + n;
+diff --git a/sycl/src/program/generate.cpp b/sycl/src/program/generate.cpp
+index e601f33..ec9c188 100644
+--- a/sycl/src/program/generate.cpp
++++ b/sycl/src/program/generate.cpp
+@@ -3510,6 +3510,21 @@ int main(int argc, char **argv) try {
+             xcache.set_segment_bytes(o.vram_segment_mib << 20);
+         }
+     }
++    if (const char* release = std::getenv("STRATA_PREFILL_RELEASE_CACHE"); release && std::atoi(release) != 0) {
++        if (multi_gpu || std::any_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(),
++                                    [](int n) { return n > 0; })) {
++            std::fprintf(stderr, "strata generate: prefill cache release requires one GPU and no helper caches\n");
++            return 2;
++        }
++        // A reserved virtual address survives physical release, so token and
++        // verify graphs keep their original cache pointers after restoration.
++        const char* allocation = std::getenv("STRATA_PREFILL_CACHE_ALLOC");
++        if (!allocation || !std::strcmp(allocation, "vmm")) xcache.set_segment_bytes(64ll << 20);
++        else if (std::strcmp(allocation, "rebuild") || !native_pack || o.vram_elastic) {
++            std::fprintf(stderr, "strata generate: cache allocation must be vmm, or rebuild with a native pack and no elastic resize\n");
++            return 2;
++        }
++    }
+     if (o.expert_cache > 0) {
+         // keep the first `keep_bytes` of the cache (the profile's hottest experts first); false when nothing is left
+         auto shrink_to = [&](int64_t keep_bytes) -> bool {
+@@ -5717,6 +5732,15 @@ int main(int argc, char **argv) try {
+             }
+         }
+         drive.d.plan = ver.plan_sink();
++        if (const char* allocation = std::getenv("STRATA_PREFILL_CACHE_ALLOC");
++            allocation && !std::strcmp(allocation, "rebuild")) {
++            sp.on_cache_restore = [&](const uint8_t* address, std::string& e) {
++                drive.d.cache_base = address;
++                thits.cache_base = address;
++                vh.cache_base = address;
++                return ver.rebuild_cache_graphs(address, e);
++            };
++        }
+         drive.d.pcie_num = std::max(0, std::min(256, (int) (o.pcie_frac * 256.0 + 0.5)));
+         if (o.adapt_every > 0 && o.adapt_swaps > 0) drive.d.usage.assign((size_t) (g.n_layers * g.n_expert), 0.0f);
+         // #477 --expert-profile-save: what the adaptive tier learned, kept across restarts (opt-in; off: `heat` stays
+@@ -7433,6 +7457,17 @@ int main(int argc, char **argv) try {
+             };
+         }
+         const Clock::time_point tp0 = Clock::now();
++        if (const char* allocation = std::getenv("STRATA_PREFILL_CACHE_ALLOC");
++            allocation && !std::strcmp(allocation, "rebuild")) {
++            prefill.on_cache_restore = [&](const uint8_t* address, std::string& e) {
++                // Native CLI initializes its verifier after prefill. Serve's
++                // callback above also rebuilds already captured window graphs.
++                if (tgraph.captured) { e = "cache reallocation cannot retain a captured token graph"; return false; }
++                drive.d.cache_base = address;
++                thits.cache_base = address;
++                return true;
++            };
++        }
+         if (!prefill.run(o.tokens.data(), n_batched, 0, err)) {
+             std::fprintf(stderr, "strata generate: %s\n", err.c_str());
+             return 1;

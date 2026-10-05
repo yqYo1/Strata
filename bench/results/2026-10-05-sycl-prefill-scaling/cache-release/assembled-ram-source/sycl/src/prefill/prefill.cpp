@@ -1945,9 +1945,6 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         const uint8_t* address = nullptr;
         int64_t mapped = 0, slots = 0, kept = 0;
         std::vector<uint8_t> saved;
-        struct RamSpan { int64_t offset; const uint8_t* source; size_t bytes; };
-        std::vector<RamSpan> ram_spans;
-        size_t restore_bytes = 0, span_bytes = 0;
         const char* mode = "snapshot";
         std::function<bool(const uint8_t*, std::string&)> refresh;
         bool active = false;
@@ -1981,7 +1978,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             }
             kept = cache->segmented() ? std::min(mapped, ((want + segment - 1) / segment) * segment) : 0;
             const int64_t payload = cache->bytes();
-            restore_bytes = static_cast<size_t>(std::max<int64_t>(0, payload - kept));
+            saved.resize(static_cast<size_t>(std::max<int64_t>(0, payload - kept)));
             if (const char* value = std::getenv("STRATA_PREFILL_CACHE_RESTORE")) mode = value;
             if (std::strcmp(mode, "snapshot") && std::strcmp(mode, "ram")) {
                 error = "prefill cache restore must be snapshot or ram";
@@ -2011,13 +2008,11 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                         const uint8_t* blob = arena->blob(l, e);
                         if (!blob) { error = "prefill cache resident expert is absent from RAM"; return false; }
                         const int64_t first = std::max(begin, kept);
-                        const size_t bytes = static_cast<size_t>(end - first);
-                        ram_spans.push_back({first, blob + first - begin, bytes});
-                        span_bytes += bytes;
+                        std::memcpy(saved.data() + first - kept, blob + first - begin,
+                                    static_cast<size_t>(end - first));
                     }
-            } else if (restore_bytes) {
-                saved.resize(restore_bytes);
-                q->memcpy(saved.data(), address + kept, restore_bytes).wait_and_throw();
+            } else if (!saved.empty()) {
+                q->memcpy(saved.data(), address + kept, saved.size()).wait_and_throw();
             }
             active = true; // A partial shrink also needs restoration on exit.
             if (!cache->shrink(kept, error)) return false;
@@ -2034,15 +2029,6 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             }
             if (!saved.empty())
                 queue->memcpy(cache->device_slot(0) + kept, saved.data(), saved.size()).wait_and_throw();
-            else if (restore_bytes) {
-                // Copy directly from the already resident immutable RAM blobs.
-                // No second RAM image, page faults for it, or device-to-host copy.
-                if (span_bytes != restore_bytes)
-                    queue->memset(cache->device_slot(0) + kept, 0, restore_bytes);
-                for (const auto& span : ram_spans)
-                    queue->memcpy(cache->device_slot(0) + span.offset, span.source, span.bytes);
-                queue->wait_and_throw();
-            }
             if (refresh) {
                 const auto graph_start = Clock::now();
                 if (!refresh(cache->device_slot(0), error)) return false;
@@ -2197,7 +2183,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         std::fprintf(stderr, "strata prefill cache release: %lld physical bytes, %llu restored bytes, source %s, "
                      "suspend %.3f ms, restore %.3f ms, graph %.3f ms, same_address %d, slots restored\n",
                      (long long) (cache_lease.mapped - cache_lease.kept),
-                     (unsigned long long) cache_lease.restore_bytes, cache_lease.mode,
+                     (unsigned long long) cache_lease.saved.size(), cache_lease.mode,
                      cache_lease.suspend_ms, cache_lease.restore_ms, cache_lease.graph_ms,
                      cache_lease.cache->device_slot(0) == cache_lease.address);
     phases.report(n, ms_since(started), stats_.ms_experts_host - old_stats.ms_experts_host,
