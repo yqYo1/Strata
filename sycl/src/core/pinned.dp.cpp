@@ -225,6 +225,39 @@ void* reserve(uint64_t bytes, PageBacking& got, std::string& note, const std::st
         note = "MAP_HUGETLB unavailable (needed " + std::to_string(need) + " 2 MiB pages, vm.nr_hugepages=" +
                (have_pool ? std::to_string(pool) : std::string("?")) + "); using 4 KB pages";
     }
+    // Opt-in equivalent of upstream's aligned MADV_HUGEPAGE fallback. Keep the
+    // existing arena layout by default until full-model timing is established.
+    const char* thp = std::getenv("STRATA_SYCL_ARENA_THP");
+    if (thp && std::atoi(thp) != 0 && std::getenv("STRATA_NO_LARGEPAGES") == nullptr) {
+        constexpr uint64_t align = 2ull << 20;
+        const long page_size = sysconf(_SC_PAGESIZE);
+        if (page_size > 0 && bytes <= UINT64_MAX - align - (uint64_t) page_size) {
+            const uint64_t kept = ((bytes + page_size - 1) / page_size) * page_size;
+            const uint64_t padded = kept + align;
+            void* raw = mmap(nullptr, padded, PROT_READ | PROT_WRITE,
+                             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+            if (raw != MAP_FAILED) {
+                const uintptr_t start = (uintptr_t) raw;
+                const uintptr_t aligned = (start + align - 1) & ~(uintptr_t) (align - 1);
+                if (aligned > start) munmap(raw, aligned - start);
+                const uintptr_t end = aligned + kept, raw_end = start + padded;
+                if (raw_end > end) munmap((void*) end, raw_end - end);
+                void* p = (void*) aligned;
+                got = PageBacking::NormalPages; // advice is not a guarantee of huge backing
+                if (madvise(p, bytes, MADV_HUGEPAGE) == 0) {
+                    const std::string suffix = "; using 4 KB pages";
+                    if (note.size() >= suffix.size() &&
+                        note.compare(note.size() - suffix.size(), suffix.size(), suffix) == 0)
+                        note.resize(note.size() - suffix.size());
+                    note += "; transparent huge pages requested (MADV_HUGEPAGE)";
+                } else {
+                    note += "; MADV_HUGEPAGE refused: ";
+                    note += std::strerror(errno);
+                }
+                return p;
+            }
+        }
+    }
     void* p = mmap(nullptr, bytes, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     got = PageBacking::NormalPages;
     return p == MAP_FAILED ? nullptr : p;
