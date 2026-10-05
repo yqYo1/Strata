@@ -319,7 +319,9 @@ The [FP16 library group probe](moe/f16-library-group-study/run.json)
 compares direct oneMKL 2026.1 GEMM calls with grouped GEMM calls for the
 native experts' 2,560-by-640 down and 1,280-by-2,560 gate/up matrices.
 Groups contain two, four or eight experts, with varied row counts and
-maximum counts of 1, 8, 32 or 128. It measures three warmed rounds of ten
+maximum counts of 1, 8, 32 or 128. Output rows use stride `N+3` for
+guard columns, so those measured times include that stride. It measures
+three warmed rounds of ten
 calls in alternating order, including host submission and queue completion.
 All 24 shapes preserve output padding and finite values, and sampled
 independent FP64 references stay within the existing normalized error
@@ -354,3 +356,24 @@ selector already enabled in both cases, change the 8,087-token median from
 The 4,096-token median changes from 13,550.2 to 13,506.0 ms. The complete
 first heads and output IDs match in all twelve runs. See the linked study for
 the synthetic controls, profiled phase intervals and comparison settings.
+
+## Aligned FP16 library controls
+
+The [padding study](moe/f16-padding-study/run.json) uses the engine's aligned
+output stride `N` for 2,560-by-640 down and 1,280-by-2,560 gate/up products.
+It tests nine active row counts and rounding to 32, 64, 128 or 256 rows, with
+queue profiling both disabled and enabled. Each mode has 72 cases. All
+outputs are finite, padding and guards are correct, and sampled FP64 error
+bounds pass. Complete active output bits match in 65 cases per mode; seven
+gate/up cases change some bits. Input staging, zero filling and output copying
+make every padded candidate slower than the original. This route is not
+used by the engine.
+
+The [wrapper control](moe/f16-wrapper-study/run.json) compares the original
+`Gemm::f16` implementation with direct oneMKL calls at ten row counts,
+including 1, 3, 8 and 17, for both product shapes. All 20 complete outputs
+match bit for bit and preserve guards. Profiling is enabled in the queue,
+matching the engine. Wrapper and direct timings remain close; for the
+160-row down product they are about 37.5 and 37.3 microseconds. The much
+longer profiled engine phase intervals also include scheduling gaps and
+streamed-weight waits, as described above.
