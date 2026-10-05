@@ -51,3 +51,28 @@ interval includes kernel-launch gaps; resident prompt wall also includes
 request setup. They support the observed attention change but do not
 establish a repeated end-to-end speed improvement. Warmups are retained in
 the raw records and excluded from this table.
+
+The [normal CLI confirmation](paired-cli-wall/summary.json) alternates layouts
+3/4, 4/3, 3/4 and reverses the input-length order for the middle pair. Both
+paths use the same frozen JIT binary, batch 128, cache 128, context/chunk
+8,192, top-k tuning and GDN tuning. Phase/transfer/preload markers are off;
+model loading and generation are outside the prefill timer. No compilation
+or other GPU work overlaps these runs. Persistent SYCL caching is on, with
+no extra CLI warmup; the first run is not claimed to have every module
+prewarmed.
+
+| Input tokens | Layout 3 median wall | Layout 4 median wall | Layout 3 overall prefill | Layout 4 overall prefill | Median wall reduction |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 4,096 | 13,498.4 ms | 13,442.9 ms | 303.44 tok/s | 304.70 tok/s | 0.41% |
+| 8,087 | 17,034.7 ms | 16,924.2 ms | 474.74 tok/s | 477.84 tok/s | 0.65% |
+
+Each median uses three runs. Between the two lengths, the median wall
+increase is 3,536.3 ms for layout 3 and 3,481.3 ms for layout 4: 1,128.58
+and 1,146.41 additional tokens/s. These incremental rates are not overall
+prefill throughput. All twelve complete finite first heads and generated
+IDs match the accepted baseline bit for bit, with exactly one prompt chunk.
+
+The [normal MTP short-prompt check](normal-mtp-serve/run.json) passes first,
+repeat, other-input and restored-checkpoint requests. All return IDs
+`[760, 10849, 88851, 2272]`; repeat/restored logprobs agree exactly. This
+server check measures correctness, not a speed improvement.

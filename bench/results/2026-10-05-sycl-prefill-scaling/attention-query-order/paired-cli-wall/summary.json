@@ -1,0 +1,87 @@
+{
+  "source_revision": "f8519b9",
+  "binary_sha256": "de59fb937d2446c153b1bfe94a4e58c220fec9ee003afa86739da75973e1076c",
+  "hardware": "Intel Arc B570 10 GB; Ryzen 5 5600X; 128 GB installed RAM",
+  "runtime": "26.35.39758.10",
+  "pair_layout_order": [
+    [
+      3,
+      4
+    ],
+    [
+      4,
+      3
+    ],
+    [
+      3,
+      4
+    ]
+  ],
+  "pair_length_order": [
+    "ascending",
+    "descending",
+    "ascending"
+  ],
+  "method": [
+    "Same immutable binary and memory settings; only attention layout3 vs layout4 differs.",
+    "Normal CLI prefill, transfer/phase/preload markers off; model loading and generation outside the prefill timer.",
+    "No competing GPU jobs or compilation; one run per length per pair; no additional CLI warmup.",
+    "Persistent SYCL cache1; first case is not guaranteed to have every module prewarmed.",
+    "All twelve finite complete248320 first heads/IDs match the accepted baseline, and all process one chunk.",
+    "Medians are across three runs per length/layout; the longest-pair incremental rate is distinct from overall prefill throughput."
+  ],
+  "records": [
+    {
+      "layout": 3,
+      "wall_ms": {
+        "4096": [
+          13498.4,
+          13490.8,
+          13499.1
+        ],
+        "8087": [
+          17034.7,
+          17068.9,
+          17032.0
+        ]
+      },
+      "median_wall_ms": {
+        "4096": 13498.4,
+        "8087": 17034.7
+      },
+      "median_tokens_per_second": {
+        "4096": 303.4433710662004,
+        "8087": 474.7368606432752
+      },
+      "longest_pair_marginal_tokens_per_second": 1128.5807199615413
+    },
+    {
+      "layout": 4,
+      "wall_ms": {
+        "4096": [
+          13433.6,
+          13449.5,
+          13442.9
+        ],
+        "8087": [
+          16924.2,
+          16920.5,
+          16925.8
+        ]
+      },
+      "median_wall_ms": {
+        "4096": 13442.9,
+        "8087": 16924.2
+      },
+      "median_tokens_per_second": {
+        "4096": 304.696159310863,
+        "8087": 477.8364708523889
+      },
+      "longest_pair_marginal_tokens_per_second": 1146.4108235429292
+    }
+  ],
+  "median_wall_reduction_percent": {
+    "4096": 0.41115984116636045,
+    "8087": 0.6486759379384432
+  }
+}
