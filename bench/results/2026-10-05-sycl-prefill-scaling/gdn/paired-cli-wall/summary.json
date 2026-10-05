@@ -1,0 +1,126 @@
+{
+  "binary_sha256": "61f08da5b70da0160ae42cc0776cb91c34e57213cdc731e033178aa16b947a4a",
+  "hardware": "Arc B570 10 GB; Ryzen 5 5600X; 128 GB installed RAM",
+  "source_revision": "508d661 plus GDN tuning committed as 0f228e8; explicit string include and formatting affect the test only",
+  "method": "Three ordinary CLI pairs, alternating configuration and length order; no phase/transfer/preload markers, no resident diagnostic mode; model load and decode excluded from the prefill timer; common context/chunk8192, cache128, batch128, layout3, topk1, directIO16",
+  "medians": [
+    {
+      "tokens": 4096,
+      "original_wall_ms": 13550.2,
+      "tuned_wall_ms": 13506.0,
+      "original_tokens_per_second": 302.283361131201,
+      "tuned_tokens_per_second": 303.27261957648454,
+      "elapsed_reduction_percent": 0.32619444731443614
+    },
+    {
+      "tokens": 8087,
+      "original_wall_ms": 17141.0,
+      "tuned_wall_ms": 17036.5,
+      "original_tokens_per_second": 471.79277755090135,
+      "tuned_tokens_per_second": 474.6867020808265,
+      "elapsed_reduction_percent": 0.6096493786826906
+    }
+  ],
+  "runs": [
+    {
+      "configuration": "original",
+      "pair": 1,
+      "tokens": 4096,
+      "wall_ms": 13548.7,
+      "full_first_head_bits_equal": true,
+      "all_finite": true
+    },
+    {
+      "configuration": "original",
+      "pair": 1,
+      "tokens": 8087,
+      "wall_ms": 17171.9,
+      "full_first_head_bits_equal": true,
+      "all_finite": true
+    },
+    {
+      "configuration": "original",
+      "pair": 2,
+      "tokens": 8087,
+      "wall_ms": 17140.0,
+      "full_first_head_bits_equal": true,
+      "all_finite": true
+    },
+    {
+      "configuration": "original",
+      "pair": 2,
+      "tokens": 4096,
+      "wall_ms": 13559.6,
+      "full_first_head_bits_equal": true,
+      "all_finite": true
+    },
+    {
+      "configuration": "original",
+      "pair": 3,
+      "tokens": 4096,
+      "wall_ms": 13550.2,
+      "full_first_head_bits_equal": true,
+      "all_finite": true
+    },
+    {
+      "configuration": "original",
+      "pair": 3,
+      "tokens": 8087,
+      "wall_ms": 17141.0,
+      "full_first_head_bits_equal": true,
+      "all_finite": true
+    },
+    {
+      "configuration": "tuned",
+      "pair": 1,
+      "tokens": 4096,
+      "wall_ms": 13510.2,
+      "full_first_head_bits_equal": true,
+      "all_finite": true
+    },
+    {
+      "configuration": "tuned",
+      "pair": 1,
+      "tokens": 8087,
+      "wall_ms": 17027.9,
+      "full_first_head_bits_equal": true,
+      "all_finite": true
+    },
+    {
+      "configuration": "tuned",
+      "pair": 2,
+      "tokens": 8087,
+      "wall_ms": 17058.7,
+      "full_first_head_bits_equal": true,
+      "all_finite": true
+    },
+    {
+      "configuration": "tuned",
+      "pair": 2,
+      "tokens": 4096,
+      "wall_ms": 13506.0,
+      "full_first_head_bits_equal": true,
+      "all_finite": true
+    },
+    {
+      "configuration": "tuned",
+      "pair": 3,
+      "tokens": 4096,
+      "wall_ms": 13494.6,
+      "full_first_head_bits_equal": true,
+      "all_finite": true
+    },
+    {
+      "configuration": "tuned",
+      "pair": 3,
+      "tokens": 8087,
+      "wall_ms": 17036.5,
+      "full_first_head_bits_equal": true,
+      "all_finite": true
+    }
+  ],
+  "original_marginal_ms_per_token": 0.8997243798546728,
+  "original_marginal_tokens_per_second": 1111.4514871337865,
+  "tuned_marginal_ms_per_token": 0.8846153846153846,
+  "tuned_marginal_tokens_per_second": 1130.4347826086957
+}

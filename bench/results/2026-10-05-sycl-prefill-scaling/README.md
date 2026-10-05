@@ -339,3 +339,18 @@ These are single correctness runs. The AOT MTP server also passes four
 requests, including checkpoint reuse and exact output/logprob restoration.
 AOT covers Strata's SYCL kernels; oneMKL remains its separately supplied
 library.
+
+## GDN register tuning
+
+The [GDN study](gdn/README.md) keeps the original key-head arithmetic while
+requesting subgroup size 16 and 256 GRFs for at least 256 input tokens.
+`STRATA_GDN_KEYHEAD_TUNED=1` enables it; it defaults to off. Full state and
+both output formats match the original pipeline in the eight integrated
+parity cases. The Arc B570 reports no register spill for the selected kernel.
+
+Three paired ordinary CLI runs, with batch 128, layout 3 and the tuned prompt
+selector already enabled in both cases, change the 8,087-token median from
+17,141.0 to 17,036.5 ms (0.61% elapsed reduction, 471.79 to 474.69 tokens/s).
+The 4,096-token median changes from 13,550.2 to 13,506.0 ms. The complete
+first heads and output IDs match in all twelve runs. See the linked study for
+the synthetic controls, profiled phase intervals and comparison settings.

@@ -83,3 +83,46 @@ The [unchanged key-head control](original-keyhead-control/run.json), using
 SG32 with the default GRF setting in the preceding accepted AOT binary,
 also matches all heads. It takes 3,428.097 ms in the GDN interval at 8,087
 tokens and is not selected.
+
+## Ordinary CLI comparison
+
+The [paired CLI summary](paired-cli-wall/summary.json) uses three pairs of
+ordinary CLI runs on the same immutable JIT binary. Configuration order
+alternates original/tuned, tuned/original, original/tuned. Input-length order
+also alternates. Phase markers, transfer markers and PLE preload are disabled.
+The persistent JIT cache is enabled in both configurations. Context, chunk,
+cache, I/O and attention settings match the profile above. Model loading and
+generation are outside the prefill timer.
+
+| Input tokens | Original median, ms | Tuned median, ms | Elapsed reduction | Original tokens/s | Tuned tokens/s |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 4,096 | 13,550.2 | 13,506.0 | 0.33% | 302.28 | 303.27 |
+| 8,087 | 17,141.0 | 17,036.5 | 0.61% | 471.79 | 474.69 |
+
+All twelve complete first heads contain 248,320 finite floats, match the
+accepted original head in every bit, and produce the same output token ID.
+Every run reports one chunk. The incremental rate between these two lengths
+changes from 1,111.45 to 1,130.43 tokens/s. This incremental rate measures
+latency growth over the two prefixes; total throughput for the 8,087-token
+input is 474.69 tokens/s.
+
+The [normal MTP server check](normal-mtp-serve.json) also passes four requests:
+first, repeat, another prompt, and restoration of the first prompt. The repeated
+and restored requests reuse their checkpoint and return identical four token
+IDs and finite logprobs. That existing check uses short prefill chunks, which
+take the variant's fallback path. A separate long-prompt check exercises the
+new path with normal MTP and conversation snapshots.
+
+The [long-prompt MTP check](long-mtp-serve/summary.json) uses a 1,025-token
+completed chat input: 1,016 tokens from the code-review fixture followed by
+the verified assistant suffix from the writing fixture. Context is 2,048,
+prefill chunk 1,024, cache capacity 128, speculative window 4, and the
+conversation cache is enabled. Timing instrumentation is disabled. Both
+original and tuned settings use the same JIT binary and normal MTP pack.
+
+The initial request processes 1,024 prompt tokens in one chunk, exercising
+the tuned recurrence. Both settings produce identical complete finite first
+heads (248,320 floats), four output token IDs and finite logprobs. Repeated
+and restored requests reuse 1,018 tokens and match their first request's IDs
+and logprobs. All four requests also match between the two settings. These
+are correctness checks; their server times are not a speed comparison.
