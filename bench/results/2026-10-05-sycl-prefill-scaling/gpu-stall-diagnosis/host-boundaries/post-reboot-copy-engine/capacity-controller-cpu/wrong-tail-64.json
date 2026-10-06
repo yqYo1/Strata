@@ -1,0 +1,192 @@
+{
+  "stage": "serve",
+  "context": 64,
+  "ple_io": "direct",
+  "completed": false,
+  "runs": [
+    {
+      "name": "fills-context",
+      "input_tokens": 60,
+      "max_new": 4,
+      "ids": [
+        100,
+        101,
+        102,
+        103
+      ],
+      "protocol": [
+        "REUSED 0",
+        "T 100",
+        "LP -0.5 100:-0.5",
+        "T 101",
+        "LP -0.5 101:-0.5",
+        "T 102",
+        "LP -0.5 102:-0.5",
+        "T 103",
+        "LP -0.5 103:-0.5",
+        "DONE 4 60 1.0 1.0 length 0 0 0 0 0 0 0 0.0 60 0"
+      ],
+      "wall_seconds": 0.0013065380007901695,
+      "request_sha256": "64197819b3244ce7d0100560ad73270a34fc2f957a18c7f08daa1b22d26cb22d",
+      "verify_windows": [
+        [
+          59,
+          1
+        ],
+        [
+          60,
+          4
+        ]
+      ],
+      "finish": "length",
+      "logits_sha256": "895365e27ed4255bccdcabe85bebf7c22aaaeebab375264d8e90eae30dc28399",
+      "logical_length": 64,
+      "last_executed_kv_cell": 63
+    },
+    {
+      "name": "fills-context-tail-2",
+      "input_tokens": 62,
+      "max_new": 2,
+      "ids": [
+        100,
+        101
+      ],
+      "protocol": [
+        "REUSED 0",
+        "T 100",
+        "LP -0.5 100:-0.5",
+        "T 101",
+        "LP -0.5 101:-0.5",
+        "DONE 2 62 1.0 1.0 length 0 0 0 0 0 0 0 0.0 62 0"
+      ],
+      "wall_seconds": 0.0011881340005857055,
+      "request_sha256": "74136d1e57d7fc0c2a695195ca271c3dc0463814fd826fc4d7c3383657d1bcbd",
+      "verify_windows": [
+        [
+          61,
+          1
+        ],
+        [
+          63,
+          1
+        ]
+      ],
+      "finish": "length",
+      "logits_sha256": "895365e27ed4255bccdcabe85bebf7c22aaaeebab375264d8e90eae30dc28399",
+      "logical_length": 64,
+      "last_executed_kv_cell": 63
+    }
+  ],
+  "binary_sha256": "12a66e85ff5198c79c743f8374d5eb9e243a1752faa50f611126f4823ab6fac0",
+  "controller_sha256": "0f0f51bf6e6b9c778005da8123ea30b022f7b96925873cea523b5d0446d8d9b3",
+  "env": {
+    "LD_LIBRARY_PATH": "/usr/local/cuda/lib64:/nix/store/mj9klbkhzal0vc1aazsajrydkimhc0h2-libglvnd-1.7.0/lib",
+    "STRATA_IO_THREADS": "16",
+    "STRATA_PREFILL_RING": "8",
+    "STRATA_PREFILL_FIRST": "0",
+    "STRATA_PREFILL_ATTN_BATCH": "128",
+    "STRATA_PREFILL_ATTN_LAYOUT": "4",
+    "STRATA_PREFILL_TOPK_TUNED": "1",
+    "STRATA_GDN_KEYHEAD": "0",
+    "STRATA_GDN_KEYHEAD_TUNED": "1",
+    "STRATA_PREFILL_COMPACT": "2",
+    "STRATA_PREFILL_LAYER_MAJOR": "1",
+    "STRATA_PREFILL_LAYER_MAJOR_R_INPLACE": "1",
+    "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "0",
+    "STRATA_PREFILL_RELEASE_CACHE": "1",
+    "STRATA_PREFILL_CACHE_ALLOC": "vmm",
+    "STRATA_PREFILL_CACHE_RESTORE": "ram",
+    "SYCL_CACHE_PERSISTENT": "0"
+  },
+  "assistant_suffix": [
+    248046,
+    198,
+    248045,
+    74455,
+    198,
+    248068,
+    198,
+    248069,
+    271
+  ],
+  "source_fixture_sha256": "6709b7517b97c268efc2ed31fe1e21c7f522d2c8ccc4a7e714b39c9f28449090",
+  "environment_file_sha256": null,
+  "timeouts": {
+    "job_seconds": 7200,
+    "protocol_seconds": 7200,
+    "shutdown_seconds": 30
+  },
+  "processes": [
+    {
+      "pid": 480451,
+      "start_ticks": 764070,
+      "started_monotonic": 7640.708579089,
+      "exit_code": 0,
+      "still_alive": false,
+      "cleanup_actions": [
+        "QUIT"
+      ]
+    }
+  ],
+  "args": [
+    "/tmp/strata-context-controller-gofh34vt/protocol-stub",
+    "--pack",
+    "unused",
+    "--native",
+    "unused",
+    "--max-context",
+    "64",
+    "--kv",
+    "int8",
+    "--spec",
+    "4",
+    "--spec-min-p",
+    "0",
+    "--suffix-draft",
+    "0",
+    "--no-prefill-borrow",
+    "--expert-cache",
+    "128",
+    "--expert-profile",
+    "unused",
+    "--expert-cache-per-layer",
+    "--pool-workers",
+    "5",
+    "--pcie-frac",
+    "0",
+    "--adapt-swaps",
+    "0",
+    "--ple-io",
+    "direct",
+    "--greedy",
+    "--serve",
+    "--mtp",
+    "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+    "--spec-split",
+    "--prefill",
+    "128",
+    "--prompt-cache",
+    "0"
+  ],
+  "startup": [
+    "READY 64 stop"
+  ],
+  "active_request": "fills-context-tail-2",
+  "processing_error": "AssertionError([(61, 1), (63, 1)])",
+  "exit_code": 0,
+  "memory": {
+    "path": "/tmp/strata-context-controller-gofh34vt/serve-64-protocol-stub/engine.memory.jsonl",
+    "samples": 1,
+    "peak": {
+      "VmRSS_kib": 1316,
+      "VmSwap_kib": 0,
+      "VmPeak_kib": 11736,
+      "vram_total_kib": 0,
+      "vram_resident_kib": 0
+    },
+    "sample_interval_seconds": 1.0,
+    "errors": [],
+    "observer_still_alive": false
+  },
+  "terminal_error": "AssertionError([(61, 1), (63, 1)])"
+}

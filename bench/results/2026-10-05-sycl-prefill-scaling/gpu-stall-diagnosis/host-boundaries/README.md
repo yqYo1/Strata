@@ -35,6 +35,15 @@ releasing weights and recreating graphs fails repeat-result equality even with
 prompt/conversation reuse disabled. The lease remains experimental and off by
 default; GPU execution success is distinct from mathematical validation.
 
+The subsequent [copy-engine comparisons](post-reboot-copy-engine/README.md)
+complete 24 more requests and six ordinary process exits without new xe faults.
+They show a retained-weight control also failing when state-dump copies are
+added, so the earlier attribution to release alone is too narrow. Disabling
+copy offload makes both actual retained/released pairs agree on all head bytes,
+with and without the state diagnostic. This supplies an experimental tuning
+configuration while direct submission remains disabled. Actual 262,144-cell
+CLI and normal-MTP serve validation remains separate and required.
+
 The GPU is the same Arc B570 10 GiB, Ryzen 5 5600X, 128 GiB RAM, kernel
 7.0.0-38-generic, stock NEO 26.31.39395.14 and oneAPI 2026.1.1. Boot ID is
 `ef28c8b7-46f0-4806-9326-36e3158bceb7` for the earlier tests below. Those positive GPU tests use
