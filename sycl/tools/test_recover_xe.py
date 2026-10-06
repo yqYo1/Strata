@@ -130,7 +130,7 @@ class RecoveryTests(unittest.TestCase):
         binary = self.directory / 'probe'; binary.write_text(''); binary.chmod(0o755)
         runner = types.SimpleNamespace(output=self.directory, stranded=False)
         def run(label, argv, **kwargs):
-            return {'before-health-cursor': '-- cursor: cursor-1\n',
+            return {'health-runtime': '', 'before-health-cursor': '-- cursor: cursor-1\n',
                     'health': 'PASS 0000:05:00.0: 3 rounds, 16384 exact words each\n',
                     'health-kernel': 'xe 0000:05:00.0: GT0 Engine reset\n'}[label]
         runner.run = run
@@ -138,6 +138,18 @@ class RecoveryTests(unittest.TestCase):
             with self.assertRaisesRegex(recovery.RecoveryError, 'new xe'):
                 recovery.check_health(self.device, runner, binary)
         self.assertTrue((self.directory / 'health-xe.txt').exists())
+
+    def test_missing_adapter_dependency_stops_before_gpu_probe(self):
+        binary = self.directory / 'probe'; binary.write_text(''); binary.chmod(0o755)
+        calls = []
+        def run(label, argv, **kwargs):
+            calls.append(label)
+            self.assertIn('/opt/intel/oneapi/umf/1.1/lib', kwargs['env']['LD_LIBRARY_PATH'].split(':'))
+            raise recovery.RecoveryError('missing libumf.so.1')
+        runner = types.SimpleNamespace(output=self.directory, run=run)
+        with self.assertRaisesRegex(recovery.RecoveryError, 'libumf'):
+            recovery.check_health(self.device, runner, binary)
+        self.assertEqual(calls, ['health-runtime'])
 
     def test_health_rejects_wrong_device_or_partial_output(self):
         binary = self.directory / 'probe'; binary.write_text(''); binary.chmod(0o755)
@@ -166,7 +178,7 @@ class RecoveryTests(unittest.TestCase):
 
 class RecoveryEntryTests(unittest.TestCase):
     """Run the actual shell entry after escalation, with harmless fake helpers."""
-    def run_entry(self, flr_result, bus_result=0, arguments=(), display_result=None):
+    def run_entry(self, flr_result, bus_result=0, arguments=(), display_result=None, resume_result=3):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             entry = Path(__file__).with_name('recover-gpu.sh').read_text()
@@ -188,7 +200,11 @@ class RecoveryEntryTests(unittest.TestCase):
             probe.write_text('#!/bin/bash\nexit 99\n'); probe.chmod(0o755)
             if display_result is not None:
                 (root / 'strata-xe-display-recover').write_text(
-                    '#!/bin/bash\n(( $# == 0 )) || exit 99\n'
+                    '#!/bin/bash\n'
+                    'if [[ "$*" == --resume ]]; then\n'
+                    'echo "--apply --method resume" >> "$(dirname "$0")/calls"\n'
+                    f'exit {resume_result}\nfi\n'
+                    '(( $# == 0 )) || exit 99\n'
                     'echo "--apply --method display" >> "$(dirname "$0")/calls"\n'
                     f'exit {display_result}\n')
             result = subprocess.run(['/bin/bash', str(script), *arguments],
@@ -211,11 +227,16 @@ class RecoveryEntryTests(unittest.TestCase):
     def test_options_rejected_before_helpers(self):
         self.assertEqual(self.run_entry(0, arguments=('--apply',)), (2, []))
 
-    def test_refusal_delegates_to_optional_display_helper_without_arguments(self):
-        self.assertEqual(self.run_entry(4, display_result=3), (3, ['flr', 'display']))
-        self.assertEqual(self.run_entry(4, display_result=4), (4, ['flr', 'display']))
-        self.assertEqual(self.run_entry(0, display_result=3), (0, ['flr']))
-        self.assertEqual(self.run_entry(143, display_result=3), (143, ['flr']))
+    def test_refusal_never_delegates_to_gui_shutdown(self):
+        self.assertEqual(self.run_entry(4, display_result=3), (4, ['resume', 'flr']))
+        self.assertEqual(self.run_entry(4, display_result=4), (4, ['resume', 'flr']))
+        self.assertEqual(self.run_entry(0, display_result=3), (0, ['resume', 'flr']))
+        self.assertEqual(self.run_entry(143, display_result=3), (143, ['resume', 'flr']))
+
+    def test_resumed_restoration_stops_before_any_new_reset(self):
+        for code in [0, 1, 4]:
+            with self.subTest(code=code):
+                self.assertEqual(self.run_entry(0, display_result=3, resume_result=code), (code, ['resume']))
 
 
 if __name__ == '__main__':

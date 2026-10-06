@@ -13,21 +13,20 @@ it tries a bus reset only when the GPU is alone on that secondary bus. It stops
 after the first verified recovery. The installed entry point is built from
 [sycl/tools/recover-gpu.sh](../sycl/tools/recover-gpu.sh).
 
-If the remaining users are exclusively Xorg processes belonging to this host's
-`sddm.service`, the script offers to end the GUI session. Save open GUI work
-first: entering the literal `yes` ends those applications. Enter, any other
-answer, or no interactive terminal cancels without stopping the GUI. This
-path also requires a separate connected boot/display GPU, a disconnected B570,
-inspectable owners and no stuck recovery writer. It rechecks the approved
-process identities before stopping SDDM.
+The script does not stop SDDM, Xorg, Orca or Codex. Xorg can hold B570 descriptors
+and mappings even when every B570 connector is disconnected and another GPU
+drives the monitor. Such ownership stops recovery before any reset. Ending a
+GUI session from its Orca/Codex terminal destroys that working environment.
+The earlier automatic GUI-shutdown path is disabled, including its worker CLI.
 
-After that confirmation, a transient system service handles the reset outside
-the GUI session and attempts to start the login screen afterward, including
-an `ExecStopPost` backup if the worker exits early. This uses the service-manager
-parent described in [systemd-run 255](https://raw.githubusercontent.com/systemd/systemd/v255/man/systemd-run.xml).
+Before a new reset, the entry checks for an interrupted, previously approved
+display restoration from the same boot and caller. It can request SDDM startup
+and check GPU health, but performs no reset or GUI shutdown in that path. It
+does not reuse old-boot approvals. A running recovery or a stuck writer prevents
+competing restoration. This compatibility path repairs only the earlier
+root-owned 0644 plan inside its private 0700 directory; writable or linked plans
+are refused. New plan replacements explicitly use 0600 regardless of umask.
 Starting SDDM is a bounded request, not proof that the login screen appeared.
-Applications are not restored. A still-stuck writer or another ongoing recovery
-prevents competing display startup/reset operations.
 
 Other remaining clients, an attached B570 display, incomplete inspection and
 interruption stop the sequence. The embedding service remains inactive and
@@ -38,8 +37,8 @@ Client detection uses descriptors, mappings and blocked xe close stacks because
 The result is printed on the terminal and a summary is saved at
 `~/.local/state/strata-sycl/gpu-recovery/latest.json`. Detailed logs stay under
 `/var/log/strata-gpu-recovery`. Exit 0 means the small GPU probe passed without
-new xe fault/reset messages. Exit 3 means the detached GUI recovery was handed
-off; it does not mean the GPU recovered. Its final receipt must have
+new xe fault/reset messages. Exit 3 meant the old detached GUI recovery was handed
+off; it did not mean the GPU recovered. A health receipt must have
 `healthy: true`, after another GPU probe covering the display-start request and
 fresh kernel messages. A queued or interrupted receipt has `healthy: false`.
 Exit 4 means recovery was declined or refused because a blocking condition
@@ -47,17 +46,17 @@ remains. Other failures report the step and its log. A successful
 probe does not establish that a full Strata workload is correct.
 
 The helper does not save devcoredumps, flash firmware, change xe's timeout/reset
-policy, or reboot the host. The only service it may stop/start is SDDM after the
-interactive GUI-exit confirmation. Each sysfs writer and GPU probe
+policy, or reboot the host. It never stops services. It may start SDDM only to
+finish the same caller's previously approved interrupted restoration. Each sysfs writer and GPU probe
 runs in a separate process with a deadline. A writer still in uninterruptible
 sleep after KILL is recorded by PID and start time; subsequent runs refuse to
 compete with it. KILL cannot make a kernel D-state wait immediately disappear.
 
 The internal helper is [sycl/tools/recover-xe.sh](../sycl/tools/recover-xe.sh),
 installed alongside the entry point as `strata-xe-recover-core`. Its inspection
-and developer controls are not needed for normal recovery. The GUI handoff is
+and developer controls are not needed for normal recovery. The legacy restoration helper is
 [sycl/tools/recover-xe-display.sh](../sycl/tools/recover-xe-display.sh), installed
-as `strata-xe-display-recover`; its worker controls are internal. The probe is
+as `strata-xe-display-recover`; it cannot start a new GUI-shutdown worker. The probe is
 [sycl/tools/xe-health.cpp](../sycl/tools/xe-health.cpp), installed as
 `strata-xe-health`. Rebuilding it with oneAPI only compiles it:
 
@@ -73,8 +72,10 @@ The host's four installed files are already prepared. The probe selects PCI
 words after H2D, a kernel and D2H in three rounds. It uses no Strata model,
 graphs, virtual memory or mapped polling words. The helper runs it as the
 ordinary sudo caller using the installed Level Zero V2 adapter, persistent
-caching off and copy offload off. New kernel-journal faults/resets invalidate a
-data match.
+caching off and copy offload off. Its library search path includes the installed
+UMF 1.1 library required by the V2 adapter. An isolated dependency-load check
+runs before any reset; a missing runtime refuses recovery. New kernel-journal
+faults/resets invalidate a data match.
 
 No software reset is guaranteed to recover every firmware/driver wedge. There
 is an [upstream B570 report](https://github.com/intel/compute-runtime/issues/962)
@@ -130,11 +131,14 @@ named `intel-arc-bmg-21.1180.cab` but its release metadata says FWCODE 21.1182.
 The [original validation record](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/recovery-validation-20261006.json)
 records the earlier 14-test version. The
 [GUI handoff validation](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/display-recovery-20261006/record.json)
-records 39 passing CPU test methods, shell syntax and the current installed
+records the earlier 39-test implementation. The
+[incident and revised validation](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/recovery-incident-20261006/record.json)
+records 48 passing CPU test methods, shell syntax and the revised installed
 digests. These cover reset ordering, method restoration, child timeouts,
 misleading health results, no-argument shell sequencing, explicit consent,
 changed/hidden owners, display ownership, borrowed locks, stranded writers,
-service-stop failures and interrupted-worker receipts:
+service-stop failures, interrupted-worker receipts, manager umask changes,
+same-boot restoration, runtime dependencies and disabled GUI-shutdown entry points:
 
 ```sh
 python3 sycl/tools/test_recover_xe.py
@@ -152,11 +156,37 @@ it does not validate the root SDDM recovery transaction. The probe builds with
 oneAPI 2026.1.1.
 Read-only inspection ran on this host. A root recovery attempt was refused
 before reset because Xorg held the B570 open in an active local X11 session.
-The new entry obtains GUI-exit consent on the terminal for that case. No display
-shutdown or device reset was performed during these tests, so successful
-no-reboot hardware recovery remains pending.
+The revised entry refuses that case without stopping the GUI. No display
+shutdown or device reset was performed by the agent during these tests.
+Successful no-reboot hardware recovery remains pending.
 The full Strata arithmetic/context/cancellation/graph checks remain separate
 from this 64 KiB GPU health check.
+
+## GUI recovery incident on 2026-10-06
+
+The human ran the earlier entry from the GUI at 18:57 JST and reported Orca and
+Codex hanging, then rebooted the PC. The previous-boot service journal records
+SDDM stopping at 18:57:59 and the recovery worker and its backup both exiting at
+18:58:03 with `Unsafe recovery plan ownership/permissions`. The plan-save code
+depended on the launcher's 0077 umask. A manager worker using 0022 instead writes
+a 0644 replacement, which its own reader refuses; the backup cannot restore
+SDDM either. Actual old save/read definitions reproduce the same exception with
+CPU temporary files. The changed definitions preserve 0600 across replacements.
+The privileged original plan has not been read, so its exact mode is inferred
+from this reproduction and the journal, not directly observed.
+
+The journal also records xe reinitialization during both attempts. The saved
+kernel interval contains no kernel-panic/lockup signatures; that does not disprove
+the reported whole-PC hang. Ending the GUI session and failing to restore it are
+established defects. This is why normal recovery no longer stops the GUI.
+
+After the human reboot, the first small probe exited with no SYCL GPU available.
+Read-only Level Zero enumeration still found one device. The UR loader identified
+the missing dependency `libumf.so.1`: the script's sanitized library search path
+omitted `/opt/intel/oneapi/umf/1.1/lib`. Including that path let the unchanged
+probe pass all three integer rounds at 20:25:31 JST, with no new xe fault/reset
+messages. That check performed no reset or service operation. This establishes
+small-probe health after reboot, not recovery without reboot or full-model health.
 
 The verifier watchdog registry also had a CPU lifetime race: a callback could
 load an atomic raw pointer, then use the verifier after another thread removed

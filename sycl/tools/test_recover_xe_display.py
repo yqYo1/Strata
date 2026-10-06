@@ -42,8 +42,8 @@ class DisplayRecoveryTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.base = Path(self.temp.name)
-        self.umask = os.umask(0o077)
-        self.output = self.base / 'display-test'; self.output.mkdir()
+        self.umask = os.umask(0o022)
+        self.output = self.base / 'display-test'; self.output.mkdir(mode=0o700)
         self.path = self.output / 'plan.json'
         self.script = self.base / 'strata-xe-display-recover'
         self.script.write_text('')
@@ -78,6 +78,12 @@ class DisplayRecoveryTests(unittest.TestCase):
             self.assertEqual(display.offer(self.fake, self.script), 4)
         self.assertEqual(self.runner.calls, [])
 
+    def test_cli_cannot_offer_or_launch_any_gui_shutdown(self):
+        with patch.object(display.sys, 'argv', ['python3', str(self.script)]), patch.object(display.os, 'geteuid', return_value=0), patch.object(display, 'secure_base'), patch.object(display, 'load_core', return_value=self.fake), patch.object(display, 'offer', side_effect=AssertionError('GUI offered')), patch.object(display, 'worker', side_effect=AssertionError('GUI worker called')):
+            self.assertEqual(display.main([]), 4)
+            self.assertEqual(display.main(['--worker', str(self.path)]), 4)
+        self.assertEqual(self.runner.calls, [])
+
     def test_confirmation_launches_detached_job_only(self):
         with patch.dict(os.environ, SUDO_USER=self.user.pw_name), patch.object(display, 'admissible', return_value=[(4330, 3692)]), patch.object(display, 'confirm', return_value=True):
             self.assertEqual(display.offer(self.fake, self.script), 3)
@@ -103,6 +109,85 @@ class DisplayRecoveryTests(unittest.TestCase):
         self.assertEqual(calls, ['flr'])
         self.assertEqual(self.labels(), ['display-stop', 'display-start'])
         self.assertTrue(json.loads((self.output / 'report.json').read_text())['healthy'])
+
+    def test_plan_replacements_are_private_under_manager_umask(self):
+        os.umask(0o022)
+        for started in [False, True, False]:
+            self.plan['worker_started'] = started
+            display.save_plan(self.path, self.plan)
+            self.assertEqual(self.path.stat().st_mode & 0o777, 0o600)
+            self.assertEqual(display.read_plan(self.path)['worker_started'], started)
+        self.assertEqual(list(self.output.glob('.plan-*')), [])
+
+    def test_legacy_repair_requires_private_directory_and_unwritable_file(self):
+        self.path.chmod(0o644)
+        self.assertEqual(display.read_plan(self.path, repair_legacy=True), json.loads(self.path.read_text()))
+        self.assertEqual(self.path.stat().st_mode & 0o777, 0o600)
+        for mode in [0o664, 0o666, 0o640]:
+            self.path.chmod(mode)
+            with self.assertRaises(RuntimeError): display.read_plan(self.path, repair_legacy=True)
+        self.path.chmod(0o644); self.output.chmod(0o755)
+        with self.assertRaises(RuntimeError): display.read_plan(self.path, repair_legacy=True)
+        self.output.chmod(0o700)
+        link = self.output / 'hardlink'; os.link(self.path, link)
+        with self.assertRaises(RuntimeError): display.read_plan(self.path, repair_legacy=True)
+        link.unlink()
+        self.path.unlink(); self.path.symlink_to(self.output / 'missing')
+        with self.assertRaises(RuntimeError): display.read_plan(self.path, repair_legacy=True)
+
+    def mark_interrupted(self):
+        self.plan.update(worker_started=True, display_stop_attempted=True)
+        display.save_plan(self.path, self.plan)
+        self.path.chmod(0o644)  # Actual previous manager-worker mode.
+
+    def resume(self):
+        with patch.dict(os.environ, SUDO_USER=self.user.pw_name):
+            return display.resume(self.fake, self.script)
+
+    def test_resume_legacy_interruption_restores_and_checks_without_reset(self):
+        self.mark_interrupted()
+        self.fake.main = lambda *args, **kwargs: self.fail('resume performed a reset')
+        self.fake.check_health = lambda *args, **kwargs: self.assertEqual(kwargs['cursor'], 'before-GUI-start')
+        published = []; self.fake.publish_summary = lambda report, *args: published.append(dict(report))
+        self.assertEqual(self.resume(), 0)
+        self.assertEqual(self.labels(), ['display-start'])
+        self.assertTrue(published[0]['healthy'])
+        self.assertFalse(published[0]['recovery_completed'])
+        self.assertEqual(self.path.stat().st_mode & 0o777, 0o600)
+        self.assertEqual(self.resume(), 3)
+        self.assertEqual(self.labels(), ['display-start'])
+
+    def test_resume_pending_writer_or_live_worker_never_starts_display(self):
+        self.mark_interrupted()
+        with core.acquire_recovery_lock(self.base):
+            with self.assertRaises(BlockingIOError): self.resume()
+        raw = Path(f'/proc/{os.getpid()}/stat').read_text()
+        (self.base / 'stalled-writer.json').write_text(json.dumps(
+            dict(pid=os.getpid(), start_ticks=int(raw[raw.rfind(')') + 2:].split()[19]))))
+        self.assertEqual(self.resume(), 4)
+        self.assertEqual(self.runner.calls, [])
+        self.assertFalse(json.loads((self.output / 'report.json').read_text())['healthy'])
+
+    def test_resume_restore_or_health_failure_is_not_success(self):
+        for failure in ['display-start', 'health']:
+            with self.subTest(failure=failure):
+                self.mark_interrupted(); self.runner.calls.clear(); self.runner.fail = failure
+                def probe(*args, **kwargs):
+                    if failure == 'health': raise core.RecoveryError('new GPU fault')
+                self.fake.check_health = probe
+                self.assertEqual(self.resume(), 1)
+                self.assertFalse(json.loads((self.output / 'report.json').read_text())['healthy'])
+                self.assertEqual(self.labels(), ['display-start'])
+
+    def test_resume_skips_old_boot_and_refuses_other_caller(self):
+        self.mark_interrupted()
+        self.plan['boot_id'] = 'old-boot'; display.save_plan(self.path, self.plan)
+        self.assertEqual(self.resume(), 3)
+        self.plan['boot_id'] = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+        display.save_plan(self.path, self.plan)
+        with patch.dict(os.environ, SUDO_USER='another-caller'):
+            with self.assertRaises(core.RecoveryRefused): display.resume(self.fake, self.script)
+        self.assertEqual(self.runner.calls, [])
 
     def test_failed_flr_tries_bus_before_restart(self):
         methods = []

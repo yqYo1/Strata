@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import pwd
 import re
+import stat
 import sys
 import tempfile
 import time
@@ -36,22 +37,44 @@ def secure_base():
 
 
 def save_plan(path, plan):
-    temporary = path.with_suffix('.new')
-    temporary.write_text(json.dumps(plan, indent=2) + '\n')
-    temporary.replace(path)
+    # A manager-owned worker does not inherit the launcher's umask. Every
+    # replacement must be private on its own, including shutdown markers.
+    descriptor, temporary = tempfile.mkstemp(prefix='.plan-', dir=path.parent)
+    try:
+        with os.fdopen(descriptor, 'w', encoding='utf-8') as stream:
+            os.fchmod(stream.fileno(), 0o600)
+            stream.write(json.dumps(plan, indent=2) + '\n')
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
 
 
-def read_plan(path):
+def read_plan(path, repair_legacy=False, expected_boot=None):
     path = Path(path)
     if path.is_symlink() or path.parent.is_symlink() or path.parent.parent != BASE:
         raise RuntimeError('Invalid recovery plan location')
     if path.parent.stat().st_uid != os.geteuid() or path.parent.stat().st_mode & 0o077:
         raise RuntimeError('Unsafe recovery plan directory')
-    if path.stat().st_uid != os.geteuid() or path.stat().st_mode & 0o077:
-        raise RuntimeError('Unsafe recovery plan ownership/permissions')
-    plan = json.loads(path.read_text())
+    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    with os.fdopen(descriptor, 'r', encoding='utf-8') as stream:
+        info = os.fstat(stream.fileno())
+        if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1 or info.st_uid != os.geteuid():
+            raise RuntimeError('Unsafe recovery plan ownership/type')
+        if info.st_mode & 0o077:
+            # The old worker wrote 0644 inside a root-only 0700 directory.
+            # Nobody else could access or change it. Repair only that exact
+            # mode, never a group/other-writable or linked plan.
+            if not repair_legacy or stat.S_IMODE(info.st_mode) != 0o644:
+                raise RuntimeError('Unsafe recovery plan ownership/permissions')
+            os.fchmod(stream.fileno(), 0o600)
+        plan = json.load(stream)
     if plan.get('approved') is not True or plan.get('service') != SERVICE or plan.get('bdf') != BDF:
         raise RuntimeError('Display shutdown was not approved')
+    if expected_boot is not None and plan.get('boot_id') != expected_boot:
+        return None
     if plan.get('boot_id') != Path('/proc/sys/kernel/random/boot_id').read_text().strip():
         raise RuntimeError('Recovery plan belongs to another boot')
     account = pwd.getpwnam(plan['user'])
@@ -210,6 +233,50 @@ def restore_after_exit(core, path):
         raise core.RecoveryError(error)
 
 
+def resume(core, script):
+    """Finish an already-approved, interrupted display restoration; no reset."""
+    secure_base()
+    with core.acquire_recovery_lock(BASE) as lock:
+        candidates = []
+        boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+        for path in sorted(BASE.glob('display-*/plan.json')):
+            plan = read_plan(path, repair_legacy=True, expected_boot=boot)
+            if plan is None or not plan['display_stop_attempted'] or plan['display_restore_requested']:
+                continue
+            if not plan['worker_started'] or plan['user'] != os.environ.get('SUDO_USER'):
+                raise core.RecoveryRefused('Interrupted display restoration belongs to another caller or has no started worker')
+            candidates.append((path, plan))
+        if not candidates:
+            return 3  # No interrupted display transaction; normal recovery can run.
+        if len(candidates) != 1:
+            raise core.RecoveryRefused('Several interrupted display transactions require inspection')
+        path, plan = candidates[0]
+        runner = core.Runner(path.parent)
+        receipt = dict(action='display-restoration', status='running', healthy=False,
+                       recovery_completed=False, dump_saved=False, steps=runner.calls,
+                       started_utc=datetime.datetime.now(datetime.timezone.utc).isoformat())
+        code = 1
+        try:
+            reject_pending(core)
+            cursor = core.journal_cursor(runner, 'before-resumed-display-start-cursor')
+            print('中断した復旧処理のログイン画面起動を再開します。新しいリセットは行いません。', flush=True)
+            restore(core, path, plan, runner, held_lock=lock)
+            core.check_health(core.Device(BDF), runner, script.parent / 'strata-xe-health', cursor=cursor)
+            receipt['healthy'] = True
+            code = 0
+        except Exception as error:
+            receipt['error'] = str(error)
+            code = 4 if isinstance(error, core.RecoveryRefused) else 1
+        finally:
+            plan = read_plan(path)
+            receipt.update(status='finished', display_stop_attempted=plan['display_stop_attempted'],
+                           display_restore_requested=plan['display_restore_requested'],
+                           finished_utc=datetime.datetime.now(datetime.timezone.utc).isoformat())
+            (path.parent / 'report.json').write_text(json.dumps(receipt, indent=2) + '\n')
+            core.publish_summary(receipt, path.parent, runner)
+        return code
+
+
 def worker(core, script, path):
     plan = read_plan(path)
     runner = core.Runner(path.parent)
@@ -270,14 +337,15 @@ def main(argv=None):
         return 4
     core = load_core(script.parent)
     try:
+        secure_base()
         if not argv:
-            return offer(core, script)
-        if len(argv) == 2 and argv[0] in ['--worker', '--restore']:
+            raise core.RecoveryRefused('GUI shutdown is disabled: it terminates Orca/Codex running in that session')
+        if argv == ['--resume']:
+            return resume(core, script)
+        if len(argv) == 2 and argv[0] == '--restore':
             path = Path(argv[1])
-            if argv[0] == '--restore':
-                restore_after_exit(core, path)
-                return 0
-            return worker(core, script, path)
+            restore_after_exit(core, path)
+            return 0
         raise RuntimeError('Invalid internal recovery invocation')
     except Exception as error:
         print('復旧処理を完了できませんでした: ' + str(error), file=sys.stderr)

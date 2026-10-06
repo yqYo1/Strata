@@ -1,0 +1,32 @@
+{
+  "recorded_utc": "2026-10-06T11:30:32.653159+00:00",
+  "entry_command": "~/.local/bin/strata-gpu-recover",
+  "control_commit": "6d782060ae2b0633589fa0304bd3bc1c4255e950",
+  "source_and_installed_sha256": {
+    "sycl/tools/recover-gpu.sh": "755c843f88a63c5561e7ad133e4824926e280e34f808007dd09984bb9b7898fa",
+    "sycl/tools/recover-xe.sh": "5c6d46a416a1e524c20bb90a823023e464d7e681b1caab86595f83144b187e44",
+    "sycl/tools/recover-xe-display.sh": "db69d4e5521a857d2b2a3354e7015757eb88185ce6d13816149c9ecdf379086f",
+    "sycl/tools/test_recover_xe.py": "982e200ab1ee2ff92720c2323904901ff2c5cd087a34d16965558388a2774d32",
+    "sycl/tools/test_recover_xe_display.py": "2cce1550e3cd3d485092a40e02cd8f249570cb58b8f5edf2d58220c869ea7d15",
+    "sycl/tools/test_recovery_plan_umask_host.py": "8a8922141646cfda1487dc119360ccfe526b03ac5b54d337e30260eb3d0b1572",
+    "/home/yayoi/.local/bin/strata-gpu-recover": "755c843f88a63c5561e7ad133e4824926e280e34f808007dd09984bb9b7898fa",
+    "/home/yayoi/.local/bin/strata-xe-recover-core": "5c6d46a416a1e524c20bb90a823023e464d7e681b1caab86595f83144b187e44",
+    "/home/yayoi/.local/bin/strata-xe-display-recover": "db69d4e5521a857d2b2a3354e7015757eb88185ce6d13816149c9ecdf379086f"
+  },
+  "cpu_tests": {
+    "core_and_entry": 18,
+    "display": 30,
+    "total": 48,
+    "passed": true
+  },
+  "plan_regression": "Actual old save/read reproduces 0644 and the same refusal; candidate saves 0600 across umask change",
+  "shell_syntax": "PASS all three scripts",
+  "gui_shutdown": "Disabled in human entry and display worker CLI",
+  "resumption": "Only restore an already-approved same-boot/same-caller interrupted display transaction; no reset or shutdown",
+  "user_report": "Orca and Codex hung after running GUI recovery; user rebooted PC",
+  "previous_boot_evidence": "SDDM stopped, worker and backup failed permissions at 18:58:03; xe reinitialized twice; exact privileged plan mode and whole-host hang cause remain unverified",
+  "runtime_dependency": "Initial fresh-boot probe could not load V2 adapter because libumf.so.1 directory was absent from sanitized LD_LIBRARY_PATH; fixed path and dependency preflight",
+  "fresh_gpu_health": "PASS unchanged 64 KiB integer probe, 3 x 16384 exact words; no new xe fault/reset messages, no reset/service operation",
+  "no_reboot_recovery": "Unproven; strict small-probe health was after human reboot",
+  "full_model_and_speed": "Not measured in this incident validation"
+}

@@ -16,6 +16,18 @@ if [[ ! -f "$core" || ! -x "$health" ]]; then
     echo '復帰用ヘルパーまたはGPU検査プログラムがありません。配置を確認してください。' >&2
     exit 1
 fi
+display_helper="$script_dir/strata-xe-display-recover"
+if [[ -f "$display_helper" ]]; then
+    if /bin/bash "$display_helper" --resume; then
+        exit 0
+    else
+        result=$?
+    fi
+    if [[ "$result" != 3 ]]; then
+        echo '中断したGUI復元処理を完了できませんでした。表示されたログを確認してください。' >&2
+        exit "$result"
+    fi
+fi
 echo 'Arc B570の利用者を確認し、FLRで復帰を試します。'
 if /bin/bash "$core" --apply --method flr --check "$health"; then
     exit 0
@@ -24,11 +36,8 @@ else
 fi
 case "$result" in
     4)
-        display_helper="$script_dir/strata-xe-display-recover"
-        if [[ -f "$display_helper" ]]; then
-            exec /bin/bash "$display_helper"
-        fi
         echo 'GPUの利用者が残っているか、安全に操作できない状態です。リセットを中止しました。' >&2
+        echo 'XorgもB570を保持することがあります。GUI、Orca、Codexを終了する処理は実行しません。' >&2
         exit 4
         ;;
     130|137|143)

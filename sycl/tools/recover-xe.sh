@@ -279,11 +279,7 @@ def journal_cursor(runner, label):
     return match[1]
 
 
-def check_health(device, runner, binary, cursor=None):
-    if not binary.is_file() or not os.access(binary, os.X_OK):
-        raise RecoveryError(f'Health executable is unavailable: {binary}')
-    if cursor is None:
-        cursor = journal_cursor(runner, 'before-health-cursor')
+def health_environment():
     # Probe as the invoking user even when resets run under sudo. Clear unrelated
     # tuning flags; use the installed runtime, V2, cache off, no copy offload.
     env = {k: v for k, v in os.environ.items()
@@ -295,7 +291,27 @@ def check_health(device, runner, binary, cursor=None):
                UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='1', ONEAPI_DEVICE_SELECTOR='level_zero:gpu')
     env['LD_LIBRARY_PATH'] = ':'.join(['/opt/intel/oneapi/compiler/2026.1/lib',
                                      '/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib',
+                                     '/opt/intel/oneapi/umf/1.1/lib',
                                      '/usr/lib/x86_64-linux-gnu'])
+    return env
+
+
+def validate_probe_runtime(runner, binary):
+    if not binary.is_file() or not os.access(binary, os.X_OK):
+        raise RecoveryError(f'Health executable is unavailable: {binary}')
+    env = health_environment()
+    # Loading the adapter resolves its shared-library dependencies without
+    # calling a GPU API. A missing runtime must be reported before any reset.
+    runner.run('health-runtime', ['/usr/bin/python3', '-c',
+               'import ctypes,sys; ctypes.CDLL(sys.argv[1])', env['UR_ADAPTERS_FORCE_LOAD']],
+               seconds=5, env=env)
+    return env
+
+
+def check_health(device, runner, binary, cursor=None):
+    env = validate_probe_runtime(runner, binary)
+    if cursor is None:
+        cursor = journal_cursor(runner, 'before-health-cursor')
     argv = [str(binary.resolve()), device.bdf]
     if os.geteuid() == 0:
         user = os.environ.get('SUDO_USER')
@@ -413,6 +429,11 @@ def main(argv=None, held_lock=None, publish=True):
             # Validate a requested probe before any destructive action.
             if args.check and (not args.check.is_file() or not os.access(args.check, os.X_OK)):
                 raise RecoveryError('Requested health executable is unavailable')
+            if args.check:
+                try:
+                    validate_probe_runtime(runner, args.check)
+                except RecoveryError as error:
+                    raise RecoveryRefused('Health runtime is unavailable; no reset: ' + str(error)) from error
             for pid in args.stop_pid:
                 stop_client(device, pid)
             report['clients'], report['uninspectable_pids'] = device.clients()
