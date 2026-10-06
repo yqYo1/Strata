@@ -95,6 +95,7 @@ namespace strata::prefill { void set_nonresident_share(double share); }   // SYC
 #include <iostream>
 #include <future>
 #include <thread>
+#include "strata/serve_input.hpp"
 #include <atomic>
 #include <condition_variable>
 #include <deque>
@@ -5965,6 +5966,7 @@ int main(int argc, char **argv) try {
         };
         // stdin is read on its own thread, so a STOP line reaches a request that is still running (the client went
         // away, or pressed Esc): the flag is checked between prompt chunks and between verify windows.
+#if defined(_WIN32)
         std::atomic<bool> stop_req{false};
         std::mutex in_mu;
         std::condition_variable in_cv;
@@ -6018,6 +6020,11 @@ int main(int argc, char **argv) try {
             in_lines.pop_front();
             return true;
         };
+#else
+        strata::ServeInput input;
+        auto& stop_req = input.stop_request;
+        auto next_line = [&](std::string& out) { return input.next_line(out); };
+#endif
         sp.should_stop = [&] { return stop_req.load(); };
         // STRATA_TRACE=1: one stderr line per step of a request (the log shows where a request stops)
         const bool trace = std::getenv("STRATA_TRACE") != nullptr;
@@ -6100,16 +6107,26 @@ int main(int argc, char **argv) try {
         // a flag nobody will raise - end the engine with where it was, so the server starts it again instead of the
         // GPU spinning forever.  STRATA_WATCHDOG_S=0 turns it off.  Issue #31: before it does, it reports what every
         // part was doing (stall_report), so one occurrence says where the wait is.
+#if !defined(_WIN32)
+        std::jthread watchdog;
+#endif
         {
             const char* ws = std::getenv("STRATA_WATCHDOG_S");
             const int limit = ws ? std::atoi(ws) : 60;   // one step (a prompt layer, a verify window) takes seconds
             if (limit > 0)
+#if defined(_WIN32)
                 std::thread([limit] {
+#else
+                watchdog = std::jthread([limit](std::stop_token stopping) {
+#endif
                     strata::core::Progress& p = strata::core::progress();
                     uint64_t last = p.beats.load(), ticks_at = p.ticks.load();
                     auto since = std::chrono::steady_clock::now();
                     for (;;) {
                         std::this_thread::sleep_for(std::chrono::seconds(1));
+#if !defined(_WIN32)
+                        if (stopping.stop_requested()) return;
+#endif
                         const auto now = std::chrono::steady_clock::now();
                         const uint64_t b = p.beats.load();
                         if (!p.busy.load() || b != last) { last = b; ticks_at = p.ticks.load(); since = now; continue; }
@@ -6122,7 +6139,11 @@ int main(int argc, char **argv) try {
                         std::fflush(stderr);
                         std::abort();
                     }
+#if defined(_WIN32)
                 }).detach();
+#else
+                });
+#endif
         }
         std::printf("READY %lld stop\n", (long long) o.max_context);   // "stop": this engine honours STOP
         std::fflush(stdout);
@@ -7396,14 +7417,34 @@ int main(int argc, char **argv) try {
                              remote_experts[(size_t) r].ms_wait() - wait_before[(size_t) r]);
         }
         save_profile("exit");   // #477: QUIT, or the server closed stdin
-        // SYCL port: the requests are done and their output written; leave without unwinding the GPU objects (the OS
-        // reclaims them). Their destructors ran against a runtime already shutting down and aborted (exit 139).
+        // Stop host issuers before draining and destroying GPU resources. A
+        // successful _Exit bypasses the runtime's direct-submission ring stop;
+        // completion of application work is not teardown of that internal ring.
+#if !defined(_WIN32)
+        input.close();
+        watchdog.request_stop();
+        if (watchdog.joinable()) watchdog.join();
+#endif
         const int shutdown_status = strata::finish_sycl_serve([] {
             dpct::get_current_device().queues_wait_and_throw();
         });
         std::fflush(stdout);
         std::fflush(stderr);
+#if defined(_WIN32)
         std::_Exit(shutdown_status);
+#else
+        // Failed quiescence cannot safely reclaim allocations still in use.
+        if (shutdown_status) std::_Exit(shutdown_status);
+        strata::core::session_graphs_free(gr);
+        strata::core::doorbell_free(db);
+        sycl::free(d_next, dpct::get_in_order_queue());
+        sycl::free(d_logits, dpct::get_in_order_queue());
+        sycl::free(d_emb, dpct::get_in_order_queue());
+        sycl::free(d_parts, dpct::get_in_order_queue());
+        sycl::free(sbuf, dpct::get_in_order_queue());
+        sycl::free(arena, dpct::get_in_order_queue());
+        return 0;
+#endif
     }
 
     // ---- plan v0.3 P5: the prompt's conditioning positions [0, n_prompt - 1) in batched chunks.  The token loop

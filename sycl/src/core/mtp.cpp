@@ -117,7 +117,8 @@ bool read_file(const std::string& path, std::vector<uint8_t>& out) {
 }  // namespace
 
 MtpDrafter::~MtpDrafter() {
-    if (cs_) cs_->wait();
+    const OnDevice on(device_);
+    if (cs_) cs_->wait_and_throw();
     for (auto &e : prefill_exec_) if (e) delete (e);
     for (auto &e : prefill_dev_exec_) if (e) delete (e);
     if (pf_dev_) sycl::free(pf_dev_, dpct::get_in_order_queue());

@@ -431,13 +431,13 @@ struct PeerPrefill {
     core::PeerExperts* peer = nullptr;
     int dev = -1;
     int64_t cap_rows = 0, T_max = 0;
-    dpct::queue_ptr s = &dpct::get_in_order_queue();
+    dpct::queue_ptr s = nullptr; // owned after peer initialization
     dpct::event_ptr ev_in =
         nullptr; // on the primary: the activations and the row tables are ready
     dpct::event_ptr ev_done =
         nullptr; // on the peer: its rows have landed in the primary's Dm
     // multi-GPU: the result rows go back group by group on a second stream while the next group computes
-    dpct::queue_ptr s_out = &dpct::get_in_order_queue();
+    dpct::queue_ptr s_out = nullptr;
     static constexpr int kGrpEv = NE / 16 + 2;
     dpct::event_ptr ev_grp[kGrpEv] = {};
     bool out_pending = false;       // s_out may still read Dm (the next layer's products wait for it)
@@ -462,7 +462,7 @@ struct PeerPrefill {
     std::vector<uint8_t*> pstage;
     std::vector<dpct::event_ptr> pcopied, pused;
     std::vector<char> plive;
-    dpct::queue_ptr s_cp = &dpct::get_in_order_queue();
+    dpct::queue_ptr s_cp = nullptr;
     struct PsEntry { int32_t l, e; const uint8_t* blob; };
     std::vector<PsEntry> pseq;            // this chunk's peer-streamed experts, layer by layer in id order
     std::vector<size_t> pseq_start;
@@ -486,15 +486,15 @@ struct PeerPrefill {
         Adjust the selected device if needed.
         */
         dpct::select_device(dev);
-        if (s) s->wait();
+        if (s) s->wait_and_throw();
+        if (s_out) s_out->wait_and_throw();
+        if (s_cp) s_cp->wait_and_throw();
         ctx.reset();
         for (void *p : owned)
             DPCT_CHECK_ERROR(sycl::free(p, dpct::get_in_order_queue()));
         if (ev_done) dpct::destroy_event(ev_done);
-        if (s_out) s_out->wait();
         for (dpct::event_ptr e : ev_grp) if (e) dpct::destroy_event(e);
         for (dpct::event_ptr e : ev_dm) if (e) dpct::destroy_event(e);
-        if (s_cp) s_cp->wait();
         for (dpct::event_ptr e : pcopied) if (e) dpct::destroy_event(e);
         for (dpct::event_ptr e : pused) if (e) dpct::destroy_event(e);
         if (s_cp) dpct::get_current_device().destroy_queue(s_cp);
@@ -529,8 +529,8 @@ struct Prefill::Impl {
     }
     int64_t T = 0, T_max = 0;
     bool borrowed = false, compact = false, compact_hc = false;
-    dpct::queue_ptr cs = &dpct::get_in_order_queue(),
-                    copy = &dpct::get_in_order_queue();
+    dpct::queue_ptr cs = nullptr,  // borrowed compute queue, assigned by init()
+                    copy = nullptr; // owned copy queue, created by init()
     Gemm gemm;
     std::vector<void*> owned;
     // chunk buffers
@@ -660,8 +660,12 @@ void Prefill::reset() {
 
 void Prefill::release() {
     if (!impl_) return;
-    if (impl_->cs) impl_->cs->wait();
-    if (impl_->copy) impl_->copy->wait();
+    const core::OnDevice on(impl_->device);
+    // Peer output copies can still write into this object's primary buffers.
+    impl_->pp.reset();
+    if (impl_->cs) impl_->cs->wait_and_throw();
+    if (impl_->copy) impl_->copy->wait_and_throw();
+    impl_->stager.reset();
     for (int i = 0; i < RING_MAX; ++i) {
         if (impl_->copied[i]) dpct::destroy_event(impl_->copied[i]);
         if (impl_->used[i]) dpct::destroy_event(impl_->used[i]);

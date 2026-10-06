@@ -1,0 +1,26 @@
+{
+  "started_utc": "2026-10-06T12:37:59.045145+00:00",
+  "scope": "Real pipe tests of production Linux input reader; CPU-only ASan/UBSan, no GPU/SYCL/LevelZero",
+  "command": [
+    "g++",
+    "-std=c++20",
+    "-O1",
+    "-g",
+    "-fno-omit-frame-pointer",
+    "-fno-pie",
+    "-no-pie",
+    "-pthread",
+    "-fsanitize=address,undefined",
+    "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/serve_input_test.cpp",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/orderly-serve-shutdown-20261006/serve-input-test"
+  ],
+  "exit_code": 0,
+  "finished_utc": "2026-10-06T12:38:02.143616+00:00",
+  "sources": {
+    "sycl/include/strata/serve_input.hpp": "acf855a982056fddf858afa6318ee9d72e61bfda7825268f76ca22cbc50b4687",
+    "sycl/tools/serve_input_test.cpp": "6cb13ef844d95c4286d1eb2f5b7682ba2d5f0499affcd36ac15644aaea66df6f",
+    "sycl/src/program/generate.cpp": "a5aaa09c5893a87e29f8c83b532f7b24a0dbceb84093c4a81b5847cd4f08f831"
+  }
+}

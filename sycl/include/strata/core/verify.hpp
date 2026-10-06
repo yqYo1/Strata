@@ -245,7 +245,9 @@ private:
     std::atomic<uint32_t> diag_layer_{0};
     int32_t last_tokens_[8] = {};
     int64_t n_vocab_ = 0;
-    dpct::queue_ptr cs_ = &dpct::get_in_order_queue();
+    // These queues are owned only after init() creates them. An unused
+    // verifier must never destroy the device's borrowed default queue.
+    dpct::queue_ptr cs_ = nullptr;
     float* dbgR_ = nullptr;   ///< SYCL port debug: R (token 0) after every layer, n_layers x n_embd
     float* dbgM_ = nullptr;   ///< SYCL port debug: mixed_ (token 0) after every layer
     dpct::experimental::command_graph_exec_ptr exec_[9] = {};
@@ -269,9 +271,7 @@ private:
         nullptr; // recorded after an async commit (set_commit_async); see
                  // wait_commit
     bool commit_pending_ = false;
-    dpct::queue_ptr copy_ =
-        &dpct::get_in_order_queue(); // the copy engine's stream (DMA of missed
-                                     // experts)
+    dpct::queue_ptr copy_ = nullptr; // owned copy stream (DMA of missed experts)
     static void fetch_dma(void* ctx, const uint8_t* const* src, int n, size_t bytes);
     static void raise_flag(uint32_t* flag, uint32_t value);
     int32_t* h_plan_ = nullptr;  int32_t* m_plan_ = nullptr;     // counts | start | dst | tok | ptr (as int32 pairs)

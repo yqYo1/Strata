@@ -42,6 +42,10 @@ def fragment(text, control):
     destructor = text.index('Verifier::~Verifier() try {')
     removal_begin = destructor + len('Verifier::~Verifier() try {')
     removal_end = text.index('    if (cs_)', removal_begin)
+    # Registry lifetime is tested without GPU/device-scope stand-ins.
+    device_scope = text.find('    const OnDevice on(device_);', removal_begin, removal_end)
+    if device_scope >= 0:
+        removal_end = device_scope
     removal = text[removal_begin:removal_end]
     init_suffix = ''
     if not control:

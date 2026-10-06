@@ -77,7 +77,8 @@ inferior remains alive, avoiding that reporting error.
 
 The investigation prioritizes Strata's trigger and prevention paths. Other
 programs failing after a xe fault do not exclude Strata as the first trigger.
-No full-model or performance test has run since that priority was established.
+Short real-model shutdown checks have since run; these are not performance
+or full-capacity validation.
 
 The retained first page fault is October 5 at 16:24:54.289299, ASID 81, BCS0,
 address `0x0000d556aa2e0000`; see [the kernel observations](earliest-retained-faults.json).
@@ -89,18 +90,34 @@ saved AOT build record. See [the association record](earliest-fault-normal-mtp-a
 This prioritizes serve shutdown for investigation, but the filesystem timestamp
 is not an exact process-exit timestamp or a mapping from ASID 81 to its PID.
 
+The second fault likewise falls within 52.622 ms of the long MTP report written
+after `QUIT`/exit. A current healthy 64 KiB probe with default copy offload names
+the same address as NEO's internal `SEMAPHORE_BUFFER`; a process-local direct
+submission override removes the semaphore/ring allocations. Source review shows
+that `_Exit` bypasses the runtime destructor that stops that internal ring.
+The Linux candidate now joins its host threads and returns through ordinary
+destruction after successful quiescence. Restoring destruction exposed a
+reproducible Strata ownership bug: an unused verifier destroyed a borrowed
+default queue and waited through its dangling alias. Owned queue initializers
+are now null until creation, and the common helper rejects borrowed defaults
+and another device's queues. The corrected short MTP/checkpoint run exits
+normally with matching generated IDs/printed logprobs and no new xe faults;
+the final default-submission binary also passes MTP/checkpoint and no-MTP/no-cache
+shutdown checks, with no new xe faults. See [the queue proof](queue-ownership/README.md)
+and [the shutdown observations](direct-submission/README.md).
+
 An ordinary cache-close path lacked the queue drain required before SYCL USM
 reclamation. The actual method with deferred CPU read/write consumers reproduces
 two AddressSanitizer use-after-free errors. The fix passes five CPU cases and
 rebuilds the engine; see [the cache-close proof](expert-cache-close/README.md).
 It is a proven lifetime gap under pending consumers, not yet the demonstrated
-cause of the real GPU faults. Serve uses `_Exit`, so this destructor fix by
-itself does not cover its shutdown path.
+cause of the real GPU faults. The earlier serve used `_Exit`, so that
+destructor fix alone did not cover its shutdown path.
 
 Small GPU checks passed after the human reboot once the recovery probe's missing
 UMF library path was fixed. Those checks do not validate full Strata execution
-or prove recovery without reboot. Orca's headless-service termination is being
-investigated independently. Human recovery no longer stops the GUI; the
+or prove recovery without reboot. Orca's headless-service termination was
+investigated independently without changing its live service. Human recovery no longer stops the GUI; the
 [incident evidence](recovery-incident-20261006/) records that correction.
 
 ## What the preserved xe dump proves

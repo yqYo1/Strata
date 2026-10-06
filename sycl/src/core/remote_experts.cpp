@@ -132,7 +132,7 @@ void RemoteExperts::close() {
     if (device_ < 0) return;
     DeviceScope scope(device_);
     if (scope.ok) {
-        if (stream_) stream_->wait();
+        if (stream_) stream_->wait_and_throw();
         cache_.close();
         if (d_x_) sycl::free(d_x_, dpct::get_in_order_queue());
         if (d_out_) sycl::free(d_out_, dpct::get_in_order_queue());
@@ -146,7 +146,7 @@ void RemoteExperts::close() {
         if (stream_) dpct::get_current_device().destroy_queue(stream_);
     }
     device_ = -1;
-    stream_ = &dpct::get_in_order_queue();
+    stream_ = nullptr;
     h_x_ = h_out_ = d_x_ = d_out_ = nullptr;
     h_meta_ = d_meta_ = nullptr;
     d_q8_ = nullptr;
