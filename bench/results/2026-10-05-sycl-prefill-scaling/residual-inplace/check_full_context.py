@@ -10,6 +10,7 @@ p=argparse.ArgumentParser()
 p.add_argument('--context',type=int,default=262144)
 p.add_argument('--serve-chunk',type=int,default=128)
 p.add_argument('--gpu-rows',type=int,default=0)
+p.add_argument('--ple-io',choices=['direct','ram'],default='direct',help='PLE table policy; RAM reports use a separate directory')
 p.add_argument('--release-draft',action='store_true',help='Lease immutable MTP decode weights during layer-major prefill')
 p.add_argument('--verify-draft',action='store_true',help='Compare every leased weight byte before and after restoration')
 p.add_argument('--recovery',type=Path,default=Path.home()/'.local/state/strata-sycl/residual-inplace-recovery')
@@ -36,15 +37,21 @@ def prompt_ids(n):
  ids=source[:n-len(assistant_suffix)]+assistant_suffix
  assert len(ids)==n
  return ids
-variant=('-draft-lease' if a.release_draft else '')+('-verified' if a.verify_draft else '')
+variant=('-draft-lease' if a.release_draft else '')+('-verified' if a.verify_draft else '')+('-ple-ram' if a.ple_io=='ram' else '')
 out=recovery/(f'{a.stage}-{a.context}'+('-'+exe.stem if a.executable else '')+variant);out.mkdir(exist_ok=True)
-report=dict(stage=a.stage,context=a.context,completed=False,runs=[],binary_sha256=hashlib.sha256(exe.read_bytes()).hexdigest(),controller_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),env={k:v for k,v in env.items() if k.startswith(('STRATA_','ONEAPI_','SYCL_','UR_','ZE_')) or k=='LD_LIBRARY_PATH'})
+report=dict(stage=a.stage,context=a.context,ple_io=a.ple_io,completed=False,runs=[],binary_sha256=hashlib.sha256(exe.read_bytes()).hexdigest(),controller_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),env={k:v for k,v in env.items() if k.startswith(('STRATA_','ONEAPI_','SYCL_','UR_','ZE_')) or k=='LD_LIBRARY_PATH'})
 report['assistant_suffix']=assistant_suffix
 report['source_fixture_sha256']=hashlib.sha256((recovery/'coding-context-256k-tokens.txt').read_bytes()).hexdigest()
 def save():(out/'summary.json').write_text(json.dumps(report,indent=2)+'\n')
 def finite_head(path):
  v=array.array('f');v.frombytes(path.read_bytes());assert len(v)==248320 and all(map(math.isfinite,v));return hashlib.sha256(path.read_bytes()).hexdigest()
-common=[str(exe),'--pack',value('--pack'),'--native',value('--native'),'--max-context',str(a.context),'--kv','int8','--spec','4','--suffix-draft','0','--no-prefill-borrow','--expert-cache','128','--expert-profile',value('--expert-profile'),'--expert-cache-per-layer','--pool-workers','5','--pcie-frac','0','--adapt-swaps','0','--ple-io','direct','--greedy']
+def ple_startup(text):
+ if a.ple_io!='ram':return {}
+ m=re.search(r'strata generate: PLE table (locked in RAM|loaded \(not locked\)) \(--ple-io ram\) in ([\d.]+) s',text)
+ assert m,'RAM PLE startup record missing'
+ seconds=float(m[2]);assert math.isfinite(seconds) and seconds>=0
+ return dict(ple_table_locked=m[1]=='locked in RAM',ple_table_startup_seconds=seconds)
+common=[str(exe),'--pack',value('--pack'),'--native',value('--native'),'--max-context',str(a.context),'--kv','int8','--spec','4','--suffix-draft','0','--no-prefill-borrow','--expert-cache','128','--expert-profile',value('--expert-profile'),'--expert-cache-per-layer','--pool-workers','5','--pcie-frac','0','--adapt-swaps','0','--ple-io',a.ple_io,'--greedy']
 assert subprocess.check_output(['systemctl','--user','show','llama-server-qwen3embed.service','-p','ActiveState'],text=True).strip()=='ActiveState=inactive'
 save()
 try:
@@ -63,6 +70,7 @@ try:
     finally:memory=observer.finish()
    text=(out/(name+'.log')).read_text();r=dict(name=name,args=args,input_tokens=n,max_new=new,exit_code=rc,wall_seconds=time.monotonic()-start,memory=memory,fixture_sha256=hashlib.sha256(fixture.read_bytes()).hexdigest());report['runs'].append(r);save()
    if ok:
+    r.update(ple_startup(text));save()
     assert rc==0,(name,rc);m=re.search(r'^output\s*:\s*(.*)$',text,re.M);ids=list(map(int,m[1].split()));assert len(ids)==new
     assert f'prefill {n-1} tokens' in text;r.update(ids=ids,logits_sha256=finite_head(head),logical_length=n+len(ids));assert r['logical_length']==a.context
    else:assert rc==2 and 'must fit the prompt and generation' in text
@@ -91,7 +99,8 @@ try:
      s=line();startup.append(s)
      if s.startswith('ERR'):raise RuntimeError(s)
      if s.startswith('READY '):break
-    report['startup']=startup;save()
+    report['startup']=startup
+    report.update(ple_startup((out/'engine.log').read_text()));save()
     # Four output tokens can finish without shortening the normal T=4 window.
     # Two force the second verify window to T=2, regardless of draft acceptance.
     cases=[('fills-context',a.context-4,4,True),('fills-context-tail-2',a.context-2,2,True),('no-room',a.context,1,False),('one-too-many',a.context-2,3,False),('works-after-refusal',37,2,True)]

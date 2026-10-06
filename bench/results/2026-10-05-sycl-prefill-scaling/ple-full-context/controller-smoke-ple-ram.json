@@ -1,0 +1,120 @@
+{
+  "scope": "CPU protocol stub only; no real model or GPU execution",
+  "controller_sha256": "f43fe7149cd3c3999ca77bf511194fdf05865372ffb0e9aba208a72e5143b40d",
+  "stub_sha256": "01dae60d4022df5e228de232700d5bc71869c7d1bc172ce7bc6f35c1d6151acc",
+  "checks": [
+    {
+      "name": "valid-64",
+      "exit_code": 0,
+      "ple_io": "direct",
+      "expected_completion": true,
+      "completed": true,
+      "terminal_error": null
+    },
+    {
+      "name": "valid-262144",
+      "exit_code": 0,
+      "ple_io": "direct",
+      "expected_completion": true,
+      "completed": true,
+      "terminal_error": null
+    },
+    {
+      "name": "overrun-64",
+      "exit_code": 1,
+      "ple_io": "direct",
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError([(61, 1), (62, 4)])"
+    },
+    {
+      "name": "last-cell-missing-64",
+      "exit_code": 1,
+      "ple_io": "direct",
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError([(61, 1), (62, 1)])"
+    },
+    {
+      "name": "wrong-tail-64",
+      "exit_code": 1,
+      "ple_io": "direct",
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError([(61, 1), (63, 1)])"
+    },
+    {
+      "name": "early-eos-64",
+      "exit_code": 1,
+      "ple_io": "direct",
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError(['REUSED 0', 'T 100', 'LP -0.5 100:-0.5', 'DONE 1 62 1.0 1.0 stop 0 0 0 0 0 0 0 0.0 62 0'])"
+    },
+    {
+      "name": "wrong-count-64",
+      "exit_code": 1,
+      "ple_io": "direct",
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError(['DONE', '2', '61', '1.0', '1.0', 'length', '0', '0', '0', '0', '0', '0', '0', '0.0', '62', '0'])"
+    },
+    {
+      "name": "wrong-finish-64",
+      "exit_code": 1,
+      "ple_io": "direct",
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError(['DONE', '2', '62', '1.0', '1.0', 'stop', '0', '0', '0', '0', '0', '0', '0', '0.0', '62', '0'])"
+    },
+    {
+      "name": "nan-logprob-64",
+      "exit_code": 1,
+      "ple_io": "direct",
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError()"
+    },
+    {
+      "name": "stale-head-64",
+      "exit_code": 1,
+      "ple_io": "direct",
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "FileNotFoundError(2, 'No such file or directory')"
+    },
+    {
+      "name": "refusal-executes-64",
+      "exit_code": 1,
+      "ple_io": "direct",
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError(['ERR prompt (64 tokens) + max_new (1) exceeds the context (64)'])"
+    },
+    {
+      "name": "valid-64-ple-ram",
+      "exit_code": 0,
+      "ple_io": "ram",
+      "expected_completion": true,
+      "completed": true,
+      "terminal_error": null
+    },
+    {
+      "name": "valid-262144-ple-ram",
+      "exit_code": 0,
+      "ple_io": "ram",
+      "expected_completion": true,
+      "completed": true,
+      "terminal_error": null
+    },
+    {
+      "name": "missing-ram-startup-64-ple-ram",
+      "exit_code": 1,
+      "ple_io": "ram",
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError('RAM PLE startup record missing')"
+    }
+  ],
+  "completed": true
+}

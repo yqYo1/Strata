@@ -182,10 +182,69 @@ The tiny integer check with forced V2 and
 13:46:42, but its interval includes repeated kernel migration-queue
 timeouts/resets: GuC ID 0, flags `0x73`, no userspace process. Thus its exit
 zero does not establish that the driver's recovery is finished. A new
-privileged dump is present; preservation has been requested. See
+privileged dump was present and preservation was requested; it later expired
+without a saved copy, as recorded below. See
 `full-serve-failure-and-health.xe-kernel.txt` and
 `health-after-full-serve-v2-no-copy.json`. No rebind, firmware or kernel
 change was performed.
+
+## Later GPU controls and dump preservation
+
+The installed module's first-failure guard and delayed dump release are
+checked separately in [the preservation audit](devcoredump-preservation-audit.json).
+The captured flag prevents another snapshot until release; the actual
+module passes 3,600,000 jiffies and the installed kernel uses HZ=1,000.
+This agrees with the upstream
+[xe dump source](https://raw.githubusercontent.com/torvalds/linux/v7.0/drivers/gpu/drm/xe/xe_devcoredump.c).
+Thus waiting for privileged preservation did not require a blanket hold on
+GPU checks. The dump's inode and directory remain unchanged across the next
+probe. A retained dump describes its captured failure, not necessarily the
+current recovery state.
+
+At 14:40, the real ExpertCache/captured-graph probe, SHA-256
+`b4cfb86d1718b4b29951e9678e6fcb3ae3831cc5018a1f8e5fe300e07454befd`,
+aborts with `UR_RESULT_ERROR_DEVICE_LOST` before completing any result.
+The kernel records 188 xe messages. Its first timeout is the internal
+migration queue, GuC ID 0, sequence 46,312, not started; the later timeout
+names the probe's own queue. The prior tiny health run reached migration
+sequence 46,311, so this is consistent with an unresolved recovery path.
+The probe's `unique_ptr` cleanup calls a throwing queue wait: its abort stack
+therefore hides the original operation's exception. The result cannot
+classify 8 MiB VMM support or validate the new MTP weight lease. See
+[probe metadata](cache-lease-8m-v2-no-copy.json),
+[stack](cache-lease-8m-v2-no-copy.stack.txt) and bounded kernel text.
+
+At 14:46, the existing llama-bench executable with the same recorded hash
+runs Qwen3 0.6B, PP32/TG8, all GPU layers, one repetition and six CPU threads.
+It uses user-local NEO 26.35, forced V2, disabled copy offload and disabled
+persistent caching, matching the probe's runtime policy. It also aborts with
+`DEVICE_LOST`, at `ggml_backend_sycl_buffer_clear` during KV-cache
+initialization's `memset(...).wait()`. It completes no inference or benchmark
+result. The interval contains 7,679 xe messages. See
+[control metadata](llama-after-vmm-loss-v2-no-copy.json),
+[stack](llama-after-vmm-loss-v2-no-copy.stack.txt) and stderr.
+Current execution therefore also fails outside the new Strata lease code;
+this does not identify the first fault's trigger or exclude a userspace bug
+that initiated the earlier driver failure. It does not compare runtime
+reliability from a healthy device state.
+
+The old debugger script returns zero after an inferior stops on SIGABRT.
+These records explicitly mark inference/probe completion false; debugger
+exit zero is not used as proof of target success. The separate
+`first-fault-strict.gdb` returns failure when an inferior remains stopped or
+its exit status is unavailable, and propagates a normal nonzero exit.
+Its [CPU checks](gdb-strict-cpu-check.json) cover successful exit, nonzero
+exit and SIGABRT; they do not run the GPU. Future GPU proofs still require
+complete result records and the kernel-event audit.
+
+The kernel reports dump deletion at 14:48:58.506821. The requested
+`xe-devcoredump-1346.txt` is absent. The old pre-reboot dump remains preserved,
+but the newer retained dump cannot be analyzed now. Both new inferior
+processes are absent, and no accessible process owned by the current user
+holds an Arc B570 DRM file descriptor at the subsequent observation.
+This is a process-ownership check, not a GPU recovery claim; inaccessible
+processes are outside its scope. See
+[process/dump status](post-probe-process-and-dump-status.json).
 
 Checkpoint/cancellation integration, paired warm performance measurements and
 full normal-MTP serve remain separate requirements, as do full checks of the

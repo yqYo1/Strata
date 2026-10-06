@@ -193,3 +193,15 @@ Still required separately: normal checkpoint save/restore and cancellation
 checks with in-place storage, paired warm performance measurements, and
 successful full-length runs with the added trace/memory observations. None has
 been established by a build, refusal test or observer smoke run.
+
+The [full-context CPU PLE comparison](../ple-full-context/README.md) now
+checks all output bytes at 262,141 prefill tokens across sixteen cases.
+Whole-context PLE batching does not improve the observed direct reads.
+Existing RAM-table mode gathers in 0.843–0.887 seconds after startup, whose
+first table touch takes 42.043 seconds. These are CPU-only timings under
+different file-cache states, not a model-level speed result.
+`check_full_context.py --ple-io ram` retains the configured capacity and all
+boundary assertions, records actual table startup/lock status, and uses a
+separate `-ple-ram` directory. The updated fourteen-case CPU protocol check
+also rejects a missing RAM startup record. Actual full-length RAM-table GPU
+execution remains pending.

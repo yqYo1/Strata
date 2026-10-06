@@ -1,0 +1,27 @@
+Thread 1 "cache-lease-pro" received signal SIGABRT, Aborted.
+__pthread_kill_implementation (no_tid=0, signo=6, threadid=<optimized out>) at ./nptl/pthread_kill.c:44
+
+Thread 2 (Thread 0x7fffc4b816c0 (LWP 512023) "cache-lease-pro"):
+#0  0x00007fffdc653e51 in __futex_abstimed_wait_common64 (private=-994571488, cancel=true, abstime=0x7fffc4b80c30, op=137, expected=0, futex_word=0x28de684) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=-994571488, abstime=0x7fffc4b80c30, clockid=32767, expected=0, futex_word=0x28de684) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x28de684, expected=expected@entry=0, clockid=clockid@entry=1, abstime=abstime@entry=0x7fffc4b80c30, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc6571f6 in __pthread_cond_wait_common (abstime=<optimized out>, clockid=<optimized out>, mutex=0x28de688, cond=0x28de658) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_clockwait64 (abstime=<optimized out>, clockid=<optimized out>, mutex=0x28de688, cond=0x28de658) at ./nptl/pthread_cond_wait.c:691
+#5  ___pthread_cond_clockwait64 (cond=0x28de658, mutex=0x28de688, clockid=<optimized out>, abstime=<optimized out>) at ./nptl/pthread_cond_wait.c:679
+#6  0x00007fffd5c7c295 in ?? () from /home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1
+#7  0x00007fffdc657b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc6e4ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 1 (Thread 0x7fffd9a47e40 (LWP 511887) "cache-lease-pro"):
+#0  __pthread_kill_implementation (no_tid=0, signo=6, threadid=<optimized out>) at ./nptl/pthread_kill.c:44
+#1  __pthread_kill_internal (signo=6, threadid=<optimized out>) at ./nptl/pthread_kill.c:78
+#2  __GI___pthread_kill (threadid=<optimized out>, signo=signo@entry=6) at ./nptl/pthread_kill.c:89
+#3  0x00007fffdc60027e in __GI_raise (sig=sig@entry=6) at ../sysdeps/posix/raise.c:26
+#4  0x00007fffdc5e38ff in __GI_abort () at ./stdlib/abort.c:79
+#5  0x00007fffdcd7cff5 in ?? () from /lib/x86_64-linux-gnu/libstdc++.so.6
+#6  0x00007fffdcd920da in ?? () from /lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdcd7ca55 in std::terminate() () from /lib/x86_64-linux-gnu/libstdc++.so.6
+#8  0x000000000040ae9b in __clang_call_terminate ()
+#9  0x000000000040a20b in std::unique_ptr<unsigned int, check(long, long)::{lambda(unsigned int*)#1}>::~unique_ptr() ()
+#10 0x0000000000409c0a in check(long, long) ()
+#11 0x000000000040a304 in main ()

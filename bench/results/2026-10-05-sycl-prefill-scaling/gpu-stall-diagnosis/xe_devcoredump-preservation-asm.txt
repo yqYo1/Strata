@@ -1,0 +1,135 @@
+
+/home/yayoi/.local/state/strata-sycl/gpu-stall-diagnosis/20261006-012240/installed-xe.ko:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000009830 <xe_devcoredump>:
+    9830:	e8 00 00 00 00       	call   9835 <xe_devcoredump+0x5>
+			9831: R_X86_64_PLT32	__fentry__-0x4
+    9835:	55                   	push   %rbp
+    9836:	48 89 e5             	mov    %rsp,%rbp
+    9839:	41 57                	push   %r15
+    983b:	49 89 d7             	mov    %rdx,%r15
+    983e:	41 56                	push   %r14
+    9840:	49 89 f6             	mov    %rsi,%r14
+    9843:	41 55                	push   %r13
+    9845:	41 54                	push   %r12
+    9847:	49 89 fc             	mov    %rdi,%r12
+    984a:	53                   	push   %rbx
+    984b:	48 83 ec 58          	sub    $0x58,%rsp
+    984f:	48 89 4c 24 40       	mov    %rcx,0x40(%rsp)
+    9854:	4c 89 44 24 48       	mov    %r8,0x48(%rsp)
+    9859:	4c 89 4c 24 50       	mov    %r9,0x50(%rsp)
+    985e:	65 48 8b 05 00 00 00 	mov    %gs:0x0(%rip),%rax        # 9866 <xe_devcoredump+0x36>
+    9865:	00
+			9862: R_X86_64_PC32	__ref_stack_chk_guard-0x4
+    9866:	48 89 44 24 20       	mov    %rax,0x20(%rsp)
+    986b:	48 8b 47 08          	mov    0x8(%rdi),%rax
+    986f:	48 8b 00             	mov    (%rax),%rax
+    9872:	48 8b 18             	mov    (%rax),%rbx
+    9875:	48 c7 44 24 08 00 00 	movq   $0x0,0x8(%rsp)
+    987c:	00 00
+    987e:	48 c7 44 24 10 00 00 	movq   $0x0,0x10(%rsp)
+    9885:	00 00
+    9887:	48 c7 44 24 18 00 00 	movq   $0x0,0x18(%rsp)
+    988e:	00 00
+    9890:	4c 8d ab 68 06 00 00 	lea    0x668(%rbx),%r13
+    9897:	4c 89 ef             	mov    %r13,%rdi
+    989a:	e8 00 00 00 00       	call   989f <xe_devcoredump+0x6f>
+			989b: R_X86_64_PLT32	mutex_lock-0x4
+    989f:	0f b6 83 88 06 00 00 	movzbl 0x688(%rbx),%eax
+    98a6:	3c 01                	cmp    $0x1,%al
+    98a8:	0f 87 00 00 00 00    	ja     98ae <xe_devcoredump+0x7e>
+			98aa: R_X86_64_PC32	.text+0x2085e5
+    98ae:	a8 01                	test   $0x1,%al
+    98b0:	74 5d                	je     990f <xe_devcoredump+0xdf>
+    98b2:	48 89 de             	mov    %rbx,%rsi
+    98b5:	48 85 db             	test   %rbx,%rbx
+    98b8:	74 04                	je     98be <xe_devcoredump+0x8e>
+    98ba:	48 8b 73 08          	mov    0x8(%rbx),%rsi
+    98be:	31 ff                	xor    %edi,%edi
+    98c0:	48 c7 c1 00 00 00 00 	mov    $0x0,%rcx
+			98c3: R_X86_64_32S	.rodata+0x3a9e8
+    98c7:	ba 01 00 00 00       	mov    $0x1,%edx
+    98cc:	e8 00 00 00 00       	call   98d1 <xe_devcoredump+0xa1>
+			98cd: R_X86_64_PLT32	__drm_dev_dbg-0x4
+    98d1:	4c 89 ef             	mov    %r13,%rdi
+    98d4:	e8 00 00 00 00       	call   98d9 <xe_devcoredump+0xa9>
+			98d5: R_X86_64_PLT32	mutex_unlock-0x4
+    98d9:	48 8b 44 24 20       	mov    0x20(%rsp),%rax
+    98de:	65 48 2b 05 00 00 00 	sub    %gs:0x0(%rip),%rax        # 98e6 <xe_devcoredump+0xb6>
+    98e5:	00
+			98e2: R_X86_64_PC32	__ref_stack_chk_guard-0x4
+    98e6:	0f 85 c1 00 00 00    	jne    99ad <xe_devcoredump+0x17d>
+    98ec:	48 83 c4 58          	add    $0x58,%rsp
+    98f0:	5b                   	pop    %rbx
+    98f1:	41 5c                	pop    %r12
+    98f3:	41 5d                	pop    %r13
+    98f5:	41 5e                	pop    %r14
+    98f7:	41 5f                	pop    %r15
+    98f9:	5d                   	pop    %rbp
+    98fa:	31 c0                	xor    %eax,%eax
+    98fc:	31 d2                	xor    %edx,%edx
+    98fe:	31 c9                	xor    %ecx,%ecx
+    9900:	31 f6                	xor    %esi,%esi
+    9902:	31 ff                	xor    %edi,%edi
+    9904:	45 31 c0             	xor    %r8d,%r8d
+    9907:	45 31 c9             	xor    %r9d,%r9d
+    990a:	e9 00 00 00 00       	jmp    990f <xe_devcoredump+0xdf>
+			990b: R_X86_64_PLT32	__x86_return_thunk-0x4
+    990f:	c6 83 88 06 00 00 01 	movb   $0x1,0x688(%rbx)
+    9916:	48 8d 45 10          	lea    0x10(%rbp),%rax
+    991a:	48 8d 54 24 08       	lea    0x8(%rsp),%rdx
+    991f:	4c 89 fe             	mov    %r15,%rsi
+    9922:	48 89 44 24 10       	mov    %rax,0x10(%rsp)
+    9927:	bf 20 08 00 00       	mov    $0x820,%edi
+    992c:	48 8d 44 24 28       	lea    0x28(%rsp),%rax
+    9931:	c7 44 24 08 18 00 00 	movl   $0x18,0x8(%rsp)
+    9938:	00
+    9939:	48 89 44 24 18       	mov    %rax,0x18(%rsp)
+    993e:	e8 00 00 00 00       	call   9943 <xe_devcoredump+0x113>
+			993f: R_X86_64_PLT32	kvasprintf-0x4
+    9943:	4c 89 f2             	mov    %r14,%rdx
+    9946:	4c 89 e6             	mov    %r12,%rsi
+    9949:	4c 89 ef             	mov    %r13,%rdi
+    994c:	48 89 83 b8 06 00 00 	mov    %rax,0x6b8(%rbx)
+    9953:	e8 28 fb ff ff       	call   9480 <devcoredump_snapshot>
+    9958:	48 85 db             	test   %rbx,%rbx
+    995b:	74 36                	je     9993 <xe_devcoredump+0x163>
+    995d:	48 8b 7b 08          	mov    0x8(%rbx),%rdi
+    9961:	48 c7 c6 00 00 00 00 	mov    $0x0,%rsi
+			9964: R_X86_64_32S	.rodata+0x3aa30
+    9968:	e8 00 00 00 00       	call   996d <xe_devcoredump+0x13d>
+			9969: R_X86_64_PLT32	_dev_info-0x4
+    996d:	48 8b 43 48          	mov    0x48(%rbx),%rax
+    9971:	48 8b 5b 08          	mov    0x8(%rbx),%rbx
+    9975:	8b 10                	mov    (%rax),%edx
+    9977:	48 89 df             	mov    %rbx,%rdi
+    997a:	48 c7 c6 00 00 00 00 	mov    $0x0,%rsi
+			997d: R_X86_64_32S	.rodata+0x3aa60
+    9981:	e8 00 00 00 00       	call   9986 <xe_devcoredump+0x156>
+			9982: R_X86_64_PLT32	_dev_info-0x4
+    9986:	4c 89 ef             	mov    %r13,%rdi
+    9989:	e8 00 00 00 00       	call   998e <xe_devcoredump+0x15e>
+			998a: R_X86_64_PLT32	mutex_unlock-0x4
+    998e:	e9 46 ff ff ff       	jmp    98d9 <xe_devcoredump+0xa9>
+    9993:	48 c7 c6 00 00 00 00 	mov    $0x0,%rsi
+			9996: R_X86_64_32S	.rodata+0x3aa30
+    999a:	31 ff                	xor    %edi,%edi
+    999c:	e8 00 00 00 00       	call   99a1 <xe_devcoredump+0x171>
+			999d: R_X86_64_PLT32	_dev_info-0x4
+    99a1:	48 8b 04 25 48 00 00 	mov    0x48,%rax
+    99a8:	00
+    99a9:	8b 10                	mov    (%rax),%edx
+    99ab:	eb ca                	jmp    9977 <xe_devcoredump+0x147>
+    99ad:	e8 00 00 00 00       	call   99b2 <xe_devcoredump+0x182>
+			99ae: R_X86_64_PLT32	__stack_chk_fail-0x4
+
+Disassembly of section .altinstr_replacement:
+
+Disassembly of section .init.text:
+
+Disassembly of section .exit.text:
+
+Disassembly of section .static_call.text:

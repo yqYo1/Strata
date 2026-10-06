@@ -38,8 +38,11 @@ The ordinary restore path does not download weights at each prompt boundary.
 `cache-lease-probe.cpp` links the real `ExpertCache` implementation. It checks
 a partial segment and the two draft weight sizes across three releases each,
 compares every restored word, and executes a previously captured kernel that
-reads every payload word. It is compiled but has not run on the GPU. Even a
-successful probe would only verify storage and captured graph replay.
+reads every payload word. Its first actual GPU attempt fails with
+`DEVICE_LOST` before completing any case. Its cleanup wait throws inside a
+`unique_ptr` destructor, so the abort stack does not identify the initial
+failing probe operation. This is not proof of unsupported 8 MiB segments.
+Even a successful probe would only verify storage and captured graph replay.
 
 The full-context controller accepts `--release-draft --verify-draft` with an
 alternate frozen executable. Its reports use a distinct directory for these
@@ -51,9 +54,15 @@ overflow requests and a valid request afterward. Its CPU protocol stub passes
 all eleven existing cases; the stub never runs model or GPU code and cannot
 validate weight restoration.
 
-The new xe dump from the failed full serve run is awaiting privileged
-preservation outside Git. No further GPU test has been launched since the
-request to preserve it. Next checks are the actual storage probe, normal-MTP
+The installed xe module was checked to retain the first dump without
+overwriting it during later hangs. After that check, the storage probe and
+an independent existing llama-bench control both fail with `DEVICE_LOST`;
+llama-bench fails while clearing its initial KV buffer, before inference.
+Both processes have exited. The retained dump is subsequently deleted by
+the kernel at 14:48 without a saved copy. See
+[the investigation](../gpu-stall-diagnosis/README.md) for bounded stacks,
+kernel records and the limits of these observations.
+Next checks, after a healthy GPU control, are the actual storage probe, normal-MTP
 output equality with and without this option, cancellation/checkpoint reuse,
 full 262,144 normal-MTP execution, and repeated warm PP/TG measurements.
 The optimization goal remains PP 1,000 and TG 70 token/s.

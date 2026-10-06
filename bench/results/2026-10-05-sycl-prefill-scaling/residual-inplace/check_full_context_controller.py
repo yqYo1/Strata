@@ -17,6 +17,9 @@ import os, sys
 from pathlib import Path
 capacity = int(sys.argv[sys.argv.index('--max-context') + 1])
 mode = os.environ.get('STRATA_CONTROLLER_STUB_MODE', 'valid')
+ple_io = sys.argv[sys.argv.index('--ple-io') + 1]
+if ple_io == 'ram' and mode != 'missing-ram-startup':
+    print('strata generate: PLE table loaded (not locked) (--ple-io ram) in 1.5 s', file=sys.stderr, flush=True)
 print(f'READY {capacity} stop', flush=True)
 for request in sys.stdin:
     if request.strip() == 'QUIT':
@@ -64,11 +67,13 @@ def main():
     # The controller removes inherited STRATA_* tuning variables. The stub
     # therefore receives its test mode through an ordinary environment key.
     stub = STUB.replace('STRATA_CONTROLLER_STUB_MODE', 'CONTROLLER_STUB_MODE')
-    checks = [('valid', 64, True), ('valid', 262144, True)]
-    checks += [(mode, 64, False) for mode in (
+    checks = [('valid', 64, True, 'direct'), ('valid', 262144, True, 'direct')]
+    checks += [(mode, 64, False, 'direct') for mode in (
         'overrun', 'last-cell-missing', 'wrong-tail', 'early-eos',
         'wrong-count', 'wrong-finish', 'nan-logprob', 'stale-head',
         'refusal-executes')]
+    checks += [('valid', 64, True, 'ram'), ('valid', 262144, True, 'ram'),
+               ('missing-ram-startup', 64, False, 'ram')]
     result = {
         'scope': 'CPU protocol stub only; no real model or GPU execution',
         'controller_sha256': hashlib.sha256(controller.read_bytes()).hexdigest(),
@@ -85,15 +90,16 @@ def main():
             'runs': [{'args': ['--pack', 'unused', '--native', 'unused', '--expert-profile', 'unused']}],
             'env': {},
         }))
-        for mode, capacity, expected in checks:
-            name = f'{mode}-{capacity}'
+        for mode, capacity, expected, ple_io in checks:
+            name = f'{mode}-{capacity}' + ('-ple-ram' if ple_io == 'ram' else '')
             env = dict(os.environ, CONTROLLER_STUB_MODE=mode)
             command = ['/usr/bin/python3', str(controller), '--stage', 'serve',
                        '--context', str(capacity), '--recovery', str(recovery),
-                       '--executable', str(exe)]
+                       '--executable', str(exe), '--ple-io', ple_io]
             # Only a CPU stub is timed out here; this never kills a GPU process.
             run = subprocess.run(command, env=env, text=True, capture_output=True, timeout=60)
-            summary = json.loads((recovery / f'serve-{capacity}-{exe.stem}' / 'summary.json').read_text())
+            variant = '-ple-ram' if ple_io == 'ram' else ''
+            summary = json.loads((recovery / (f'serve-{capacity}-{exe.stem}' + variant) / 'summary.json').read_text())
             (args.out / f'{name}.json').write_text(json.dumps(summary, indent=2) + '\n')
             (args.out / f'{name}.log').write_text(run.stdout + run.stderr)
             observed = run.returncode == 0 and summary['completed']
@@ -102,12 +108,18 @@ def main():
                 error = summary.get('terminal_error', '')
                 assert error.startswith(('AssertionError(', 'FileNotFoundError(')), (name, error)
             else:
+                assert summary['ple_io'] == ple_io
+                assert summary['args'][summary['args'].index('--ple-io') + 1] == ple_io
+                if ple_io == 'ram':
+                    assert summary['ple_table_locked'] is False
+                    assert summary['ple_table_startup_seconds'] == 1.5
                 rows = summary['runs']
                 assert len(rows) == 5
                 assert [r['input_tokens'] for r in rows] == [capacity-4, capacity-2, capacity, capacity-2, 37]
                 assert rows[1]['clipped_verify_tail'] == 2
                 assert rows[1]['last_executed_kv_cell'] == capacity-1
             result['checks'].append({'name': name, 'exit_code': run.returncode,
+                                     'ple_io': ple_io,
                                      'expected_completion': expected, 'completed': summary['completed'],
                                      'terminal_error': summary.get('terminal_error')})
     result['completed'] = True
