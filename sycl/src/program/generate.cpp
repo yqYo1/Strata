@@ -8164,6 +8164,12 @@ int main(int argc, char **argv) try {
                              drive.d.fail ? drive.d.fail : "(no message)");
                 return 1;
             }
+            if (std::getenv("STRATA_TRACE")) {
+                // Record only a completed window. Logical output length alone
+                // does not establish that the final allocated KV cell ran.
+                std::fprintf(stderr, "strata trace: window %lld %d\n", (long long) p, T);
+                std::fflush(stderr);
+            }
             int a = 0;
             while (a < T - 1 && window[(size_t) a + 1] == outv[(size_t) a]) ++a;
             if (first_window) {

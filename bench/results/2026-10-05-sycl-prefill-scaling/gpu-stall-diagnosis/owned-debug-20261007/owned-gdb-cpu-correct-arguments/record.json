@@ -1,0 +1,100 @@
+{
+  "scope": "Actual GDB as parent of CPU-only fixtures; no GPU runtime, sudo, services or reset",
+  "compile_argv": [
+    "/usr/bin/gcc",
+    "-g",
+    "-O0",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-gdb-cpu-correct-arguments/probe.c",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-gdb-cpu-correct-arguments/probe"
+  ],
+  "cases": [
+    {
+      "mode": "0",
+      "passed": true,
+      "inferior": {
+        "pid": 806931,
+        "start_ticks": 1297406,
+        "state": "t"
+      },
+      "debugger": {
+        "pid": 806919,
+        "start_ticks": 1297397,
+        "state": "R"
+      },
+      "exit_code": 0,
+      "exit_signal": null,
+      "stops": [
+        "*stopped,reason=\"exited-normally\""
+      ],
+      "snapshots": [],
+      "cleanup": {
+        "forced": false,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    },
+    {
+      "mode": "7",
+      "passed": true,
+      "inferior": {
+        "pid": 806952,
+        "start_ticks": 1297428,
+        "state": "t"
+      },
+      "debugger": {
+        "pid": 806938,
+        "start_ticks": 1297421,
+        "state": "R"
+      },
+      "exit_code": 7,
+      "exit_signal": null,
+      "stops": [
+        "*stopped,reason=\"exited\",exit-code=\"07\""
+      ],
+      "snapshots": [],
+      "cleanup": {
+        "forced": false,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    },
+    {
+      "mode": "127",
+      "passed": true,
+      "inferior": {
+        "pid": 806980,
+        "start_ticks": 1297450,
+        "state": "t"
+      },
+      "debugger": {
+        "pid": 806966,
+        "start_ticks": 1297443,
+        "state": "R"
+      },
+      "exit_code": 127,
+      "exit_signal": null,
+      "stops": [
+        "*stopped,reason=\"exited\",exit-code=\"0177\""
+      ],
+      "snapshots": [],
+      "cleanup": {
+        "forced": false,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    },
+    {
+      "mode": "argv",
+      "passed": false,
+      "cleanup": {
+        "forced": false,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    }
+  ],
+  "passed": false,
+  "compile_exit_code": 0,
+  "error": "AssertionError()"
+}

@@ -1,0 +1,106 @@
+{
+  "scope": "CPU stub only: verifies trace/cardinality parsing, not physical GPU capacity",
+  "controller_sha256": "37f6951f0ee311bb1c654ca5e55aba2dd0ea009e9a65187eb2e11a097109dcaf",
+  "cases": [
+    {
+      "mode": "valid",
+      "context": 64,
+      "stage": "cli",
+      "diagnostics": false,
+      "expected": true,
+      "exit_code": 0,
+      "completed": true,
+      "summary": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cli-capacity-trace-cpu/0-cli-valid-64/cli-64-fake-engine/summary.json",
+      "passed": true
+    },
+    {
+      "mode": "valid",
+      "context": 262144,
+      "stage": "cli",
+      "diagnostics": true,
+      "expected": true,
+      "exit_code": 0,
+      "completed": true,
+      "summary": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cli-capacity-trace-cpu/1-cli-valid-262144/cli-262144-fake-engine/summary.json",
+      "passed": true
+    },
+    {
+      "mode": "missing",
+      "context": 64,
+      "stage": "cli",
+      "diagnostics": false,
+      "expected": false,
+      "exit_code": 1,
+      "completed": false,
+      "summary": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cli-capacity-trace-cpu/2-cli-missing-64/cli-64-fake-engine/summary.json",
+      "passed": true
+    },
+    {
+      "mode": "short",
+      "context": 64,
+      "stage": "cli",
+      "diagnostics": false,
+      "expected": false,
+      "exit_code": 1,
+      "completed": false,
+      "summary": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cli-capacity-trace-cpu/3-cli-short-64/cli-64-fake-engine/summary.json",
+      "passed": true
+    },
+    {
+      "mode": "overrun",
+      "context": 64,
+      "stage": "cli",
+      "diagnostics": false,
+      "expected": false,
+      "exit_code": 1,
+      "completed": false,
+      "summary": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cli-capacity-trace-cpu/4-cli-overrun-64/cli-64-fake-engine/summary.json",
+      "passed": true
+    },
+    {
+      "mode": "wrong-start",
+      "context": 64,
+      "stage": "cli",
+      "diagnostics": false,
+      "expected": false,
+      "exit_code": 1,
+      "completed": false,
+      "summary": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cli-capacity-trace-cpu/5-cli-wrong-start-64/cli-64-fake-engine/summary.json",
+      "passed": true
+    },
+    {
+      "mode": "valid",
+      "context": 64,
+      "stage": "boundary",
+      "diagnostics": true,
+      "expected": true,
+      "exit_code": 0,
+      "completed": true,
+      "summary": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cli-capacity-trace-cpu/6-boundary-valid-64/boundary-64-fake-engine/summary.json",
+      "passed": true
+    },
+    {
+      "mode": "valid",
+      "context": 64,
+      "stage": "serve",
+      "diagnostics": true,
+      "expected": true,
+      "exit_code": 0,
+      "completed": true,
+      "summary": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cli-capacity-trace-cpu/7-serve-valid-64/serve-64-fake-engine/summary.json",
+      "passed": true
+    },
+    {
+      "mode": "valid",
+      "context": 262144,
+      "stage": "serve",
+      "diagnostics": true,
+      "expected": true,
+      "exit_code": 0,
+      "completed": true,
+      "summary": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cli-capacity-trace-cpu/8-serve-valid-262144/serve-262144-fake-engine/summary.json",
+      "passed": true
+    }
+  ],
+  "passed": true
+}

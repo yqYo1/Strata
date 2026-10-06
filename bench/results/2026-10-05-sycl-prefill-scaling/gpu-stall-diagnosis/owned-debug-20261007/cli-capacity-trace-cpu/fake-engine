@@ -1,0 +1,27 @@
+#!/usr/bin/python3
+import array,json,os,sys
+from pathlib import Path
+a=sys.argv;get=lambda k:a[a.index(k)+1]
+c=int(get('--max-context'));mode=os.environ['CAPACITY_STUB_MODE']
+def head():
+ p=Path(os.environ['STRATA_DUMP_FIRST_LOGITS']);p.write_bytes((array.array('f',[.5])*248320).tobytes())
+def windows(n,new):
+ w=[(n-1,1),(n,min(4,c-n))]
+ if mode=='missing':w=[]
+ if mode=='short':w[-1]=(n,1)
+ if mode=='overrun':w[-1]=(n,3)
+ if mode=='wrong-start':w[0]=(n,1)
+ for p,t in w:print(f'strata trace: window {p} {t}',file=sys.stderr,flush=True)
+if '--serve' in a:
+ print('READY stub',flush=True)
+ for line in sys.stdin:
+  if line.startswith('QUIT'):break
+  words=line.split();new=int(words[1]);n=len(words[-1].split(','))
+  if n+new>c:print('ERR prompt exceeds context',flush=True);continue
+  head();windows(n,new);print('REUSED 0',flush=True)
+  for i in range(new):print(f'T {100+i}\nLP -0.5 {100+i}:-0.5',flush=True)
+  print(f'DONE {new} {n} 1.0 1.0 length 0 0 0 0 0 0 0 0.0 {n} 0',flush=True)
+else:
+ n=len(Path(get('--tokens-file')).read_text().split());new=int(get('--max-new'))
+ if n+new>c:print('positive --max-new and --max-context must fit the prompt and generation');sys.exit(2)
+ head();windows(n,new);print(f'prefill {n-1} tokens');print('output : '+' '.join(str(100+i) for i in range(new)))

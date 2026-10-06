@@ -3,7 +3,7 @@
 Finite jobs end naturally. Explicit job deadlines bound protocol I/O and cleanup;
 failed cleanup records a surviving PID. Full tests can take longer than 64K.
 """
-import argparse,array,hashlib,json,math,os,re,selectors,signal,subprocess,time,types
+import argparse,array,hashlib,json,math,os,re,selectors,signal,subprocess,time
 from pathlib import Path
 from observe_memory import MemoryObserver
 p=argparse.ArgumentParser()
@@ -16,7 +16,6 @@ p.add_argument('--verify-draft',action='store_true',help='Compare every leased w
 p.add_argument('--recovery',type=Path,default=Path.home()/'.local/state/strata-sycl/residual-inplace-recovery')
 p.add_argument('--executable',type=Path,help='Frozen alternate engine; its reports use a separate directory')
 p.add_argument('--environment-file',type=Path,help='Complete execution environment as JSON; replaces the historical reference environment')
-p.add_argument('--diagnostics',action='store_true',help='Enable Level Zero/UR API logs and parameter checks; not a timing run')
 p.add_argument('--job-timeout',type=float,default=7200,help='Maximum engine lifetime, seconds')
 p.add_argument('--protocol-timeout',type=float,default=7200,help='Maximum time for each protocol reply, seconds')
 p.add_argument('--shutdown-timeout',type=float,default=30,help='Grace for QUIT before bounded TERM/KILL cleanup, seconds')
@@ -34,11 +33,6 @@ env.update(STRATA_IO_THREADS='16',STRATA_PREFILL_RING='8',STRATA_PREFILL_FIRST='
 if a.verify_draft and not a.release_draft:p.error('--verify-draft requires --release-draft')
 if a.release_draft:env['STRATA_PREFILL_RELEASE_DRAFT']='1'
 if a.verify_draft:env['STRATA_PREFILL_DRAFT_VERIFY']='1'
-env['STRATA_TRACE']='1'  # Capacity proof needs executed windows, even without API logs.
-if a.diagnostics:
- helper=root/'sycl/tools/recover-xe.sh';module=types.ModuleType('capacity_diagnostics')
- exec(compile(helper.read_text().split("<<'PY'\n",1)[1].rsplit('\nPY',1)[0],str(helper),'exec'),module.__dict__)
- env=module.diagnostic_environment(env)
 source=list(map(int,(recovery/'coding-context-256k-tokens.txt').read_text().split()))
 assert len(source)>=a.context and a.context>=64
 # The raw coding prefix is an unfinished user message and greedily predicts
@@ -51,7 +45,7 @@ def prompt_ids(n):
  return ids
 variant=('-draft-lease' if a.release_draft else '')+('-verified' if a.verify_draft else '')+('-ple-ram' if a.ple_io=='ram' else '')
 out=recovery/(f'{a.stage}-{a.context}'+('-'+exe.stem if a.executable else '')+variant);out.mkdir(exist_ok=True)
-report=dict(stage=a.stage,context=a.context,ple_io=a.ple_io,completed=False,runs=[],diagnostics=a.diagnostics,binary_sha256=hashlib.sha256(exe.read_bytes()).hexdigest(),controller_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),env={k:v for k,v in env.items() if k.startswith(('STRATA_','ONEAPI_','SYCL_','UR_','ZE_','ZEL_')) or k=='LD_LIBRARY_PATH'})
+report=dict(stage=a.stage,context=a.context,ple_io=a.ple_io,completed=False,runs=[],binary_sha256=hashlib.sha256(exe.read_bytes()).hexdigest(),controller_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),env={k:v for k,v in env.items() if k.startswith(('STRATA_','ONEAPI_','SYCL_','UR_','ZE_')) or k=='LD_LIBRARY_PATH'})
 report['assistant_suffix']=assistant_suffix
 report['source_fixture_sha256']=hashlib.sha256((recovery/'coding-context-256k-tokens.txt').read_bytes()).hexdigest()
 report['environment_file_sha256']=hashlib.sha256(a.environment_file.read_bytes()).hexdigest() if a.environment_file else None
@@ -115,7 +109,7 @@ try:
   cases=[('full-no-output-room',a.context,1,False),('one-too-many',a.context-2,3,False)] if a.stage=='boundary' else [('fills-context',a.context-2,2,True)]
   for name,n,new,ok in cases:
    fixture=out/(name+'.tokens.txt');fixture.write_text(' '.join(map(str,prompt_ids(n)))+'\n')
-   head=out/(name+'.head.bin');head.unlink(missing_ok=True);runenv=dict(env,STRATA_DUMP_FIRST_LOGITS=str(head),STRATA_TRACE='1')
+   head=out/(name+'.head.bin');head.unlink(missing_ok=True);runenv=dict(env,STRATA_DUMP_FIRST_LOGITS=str(head))
    # 1K fits the old 256K capacity probe; normal MTP is tested separately.
    args=common+['--tokens-file',str(fixture),'--max-new',str(new),'--prefill','1024','--stats']
    start=time.monotonic()
@@ -124,7 +118,6 @@ try:
     observer=MemoryObserver(child.pid,out/(name+'.memory.jsonl'))
     try:
      try:rc=child.wait(timeout=a.job_timeout)
-     except BaseException as e:report['processing_error']=repr(e);save();raise
      finally:cleanup(child,proc)
     finally:memory=observer.finish()
    text=(out/(name+'.log')).read_text();r=dict(name=name,args=args,input_tokens=n,max_new=new,exit_code=rc,wall_seconds=time.monotonic()-start,memory=memory,fixture_sha256=hashlib.sha256(fixture.read_bytes()).hexdigest());report['runs'].append(r);save()
@@ -132,10 +125,6 @@ try:
     r.update(ple_startup(text));save()
     assert rc==0,(name,rc);m=re.search(r'^output\s*:\s*(.*)$',text,re.M);ids=list(map(int,m[1].split()));assert len(ids)==new
     assert f'prefill {n-1} tokens' in text;r.update(ids=ids,logits_sha256=finite_head(head),logical_length=n+len(ids));assert r['logical_length']==a.context
-    windows=[(int(pos),int(count)) for pos,count in re.findall(r'strata trace: window (-?\d+) (-?\d+)',text)]
-    r['verify_windows']=windows
-    assert windows==[(a.context-3,1),(a.context-2,2)],windows
-    r['last_executed_kv_cell']=a.context-1;r['clipped_verify_tail']=2
    else:assert rc==2 and 'must fit the prompt and generation' in text
    save()
  else:
@@ -226,7 +215,6 @@ try:
       assert lines[-1].startswith('ERR prompt') and not output
       assert not windows and not any(s.startswith(('REUSED ','LP ')) for s in lines),lines
      save()
-   except BaseException as e:report['processing_error']=repr(e);save();raise
    finally:
     try:report['exit_code']=cleanup(child,proc,sel,raw)
     finally:

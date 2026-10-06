@@ -1,5 +1,12 @@
 # In-place FP32 residual storage and full-context boundary checks
 
+**2026-10-07: the newer lifetime/residency candidate did not finish its
+262,144-cell CLI run within two hours. The small logged GPU probe afterward
+passed without a reset. Full CLI last-cell and normal-MTP serve validation
+remain pending for this candidate.** See the
+[owned-debug evidence](../gpu-stall-diagnosis/owned-debug-20261007/README.md).
+The successful older build's run below is retained as historical evidence.
+
 **Short GPU residual comparisons and real full-256K CLI execution pass. Full
 normal-MTP serve, checkpoint/cancellation and warm performance validation
 remain pending; do not merge until they pass.**
@@ -157,13 +164,22 @@ one-token overflow, and a valid request after refusal. Complete first heads and
 all returned logprobs must be finite. Early EOS or insufficient output fails the
 check rather than being reported as a full-context pass.
 
-The serve check also inspects every traced verify window. No window may go
+The CLI and serve checks inspect every traced verify window. CLI records a
+window only after the verifier returns successfully and requires the exact
+two windows `(262141, 1)` and `(262142, 2)`. No window may go
 beyond 262,144; the full request must actually execute KV cell 262,143, the last
 allocated cell. A logical input/output count alone is insufficient for that
 assertion. Normal four-token MTP runs with its default confidence clipping
 disabled. Refused requests must not execute a verify window or emit `REUSED`,
 tokens or logprobs. These trace assertions pass at limit 256; their full-length
 GPU validation remains pending.
+
+`test_cli_capacity_trace.py` adds nine CPU stub cases for the completed CLI
+window check and diagnostic environment. It accepts valid limits 64 and
+262,144, rejects missing, shortened, oversized or incorrectly positioned CLI
+windows, and checks boundary and serve modes. These are controller checks,
+not physical GPU capacity measurements. `--diagnostics` applies the same
+Level Zero and UR logging used by `sycl/tools/debug-run.py`.
 
 `check_full_context_controller.py` tests the controller with a CPU protocol
 stub at limits 64 and 262,144. It checks request lengths and deliberately emits

@@ -110,13 +110,28 @@ These are diagnostic runs. Do not report their timings as normal performance.
 Start a separate timing process with the trace and validation settings removed;
 the clean `health_environment()` also removes inherited `ZEL_` settings.
 Environment variables must be set before launch. They cannot turn tracing on
-in the full-context CLI process that is already running.
+in a process that is already running.
+
+For a wait that needs a CPU backtrace, `sycl/tools/owned_gdb.py` starts a new
+diagnostic process as GDB's child. It can capture all threads and resume its
+own requested interrupt without root or a change to the host's ptrace policy.
+The caller must provide a finite deadline and a private output directory.
+Its cleanup checks the debugger and inferior separately; a surviving process
+blocks another GPU job. A debugger pause can affect host-dependent GPU work,
+so record the pause and do not treat a fault during it as an untouched
+reproduction. This helper is for diagnosis, not performance measurements.
 
 The [2026-10-07 logging check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/runtime-tracing-20261007/README.md)
 confirmed Level Zero entry/results and UR traces before the child exited,
 using driver/adapter enumeration without submitting GPU commands. The 48
 existing CPU recovery test methods also passed. This validates log delivery,
 not GPU execution or full-context capacity.
+
+The [owned-debug checks](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/owned-debug-20261007/README.md)
+also cover real CPU/GDB lifecycle checks, CLI last-cell trace parsing and a
+small GPU execution probe after the unsuccessful two-hour full-context run.
+The probe passed without a reset; full-context correctness remains pending
+for that candidate.
 
 No software reset is guaranteed to recover every firmware/driver wedge. There
 is an [upstream B570 report](https://github.com/intel/compute-runtime/issues/962)

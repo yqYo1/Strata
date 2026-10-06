@@ -1,0 +1,50 @@
+{
+  "scope": "Actual GDB as parent of CPU-only fixtures; no GPU runtime, sudo, services or reset",
+  "compile_argv": [
+    "/usr/bin/gcc",
+    "-g",
+    "-O0",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-gdb-cpu-system-tools/probe.c",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-gdb-cpu-system-tools/probe"
+  ],
+  "cases": [
+    {
+      "mode": "0",
+      "passed": true,
+      "inferior": {
+        "pid": 789897,
+        "start_ticks": 1269790,
+        "state": "t"
+      },
+      "debugger": {
+        "pid": 789869,
+        "start_ticks": 1269777,
+        "state": "R"
+      },
+      "exit_code": 0,
+      "exit_signal": null,
+      "stops": [
+        "*stopped,reason=\"exited-normally\""
+      ],
+      "snapshots": [],
+      "cleanup": {
+        "forced": false,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    },
+    {
+      "mode": "7",
+      "passed": false,
+      "cleanup": {
+        "forced": false,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    }
+  ],
+  "passed": false,
+  "compile_exit_code": 0,
+  "error": "AssertionError()"
+}
