@@ -283,7 +283,7 @@ def health_environment():
     # Probe as the invoking user even when resets run under sudo. Clear unrelated
     # tuning flags; use the installed runtime, V2, cache off, no copy offload.
     env = {k: v for k, v in os.environ.items()
-           if not k.startswith(('STRATA_', 'SYCL_', 'UR_', 'ZE_', 'ONEAPI_'))}
+           if not k.startswith(('STRATA_', 'SYCL_', 'UR_', 'ZE_', 'ZEL_', 'ONEAPI_'))}
     adapter = '/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0'
     if not Path(adapter).is_file():
         raise RecoveryError('Expected installed Level Zero V2 adapter is unavailable')
@@ -293,6 +293,27 @@ def health_environment():
                                      '/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib',
                                      '/opt/intel/oneapi/umf/1.1/lib',
                                      '/usr/lib/x86_64-linux-gnu'])
+    return env
+
+
+def diagnostic_environment(env=None):
+    """Trace API entry/return to stderr; use only for correctness/debug runs."""
+    env = dict(health_environment() if env is None else env)
+    # Level Zero 1.32 API logging requires the validation layer. Successful
+    # returns matter too: an entry without a return can locate a blocked API.
+    env.update(ZEL_ENABLE_LOADER_LOGGING='1', ZEL_LOADER_LOG_CONSOLE='1',
+               ZEL_LOADER_LOGGING_LEVEL='trace',
+               ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT='1',
+               ZE_ENABLE_VALIDATION_LAYER='1', ZE_ENABLE_PARAMETER_VALIDATION='1',
+               UR_LOG_LOADER='level:debug;flush:debug;output:stderr',
+               UR_LOG_LEVEL_ZERO='level:debug;flush:debug;output:stderr',
+               UR_LOG_TRACING='level:info;flush:info;output:stderr',
+               STRATA_TRACE='1')
+    # Preserve any deliberately selected validation layers in a debug run.
+    layers = [x for x in env.get('UR_ENABLE_LAYERS', '').split(',') if x]
+    if 'UR_LAYER_TRACING' not in layers:
+        layers.append('UR_LAYER_TRACING')
+    env['UR_ENABLE_LAYERS'] = ','.join(layers)
     return env
 
 
@@ -309,7 +330,12 @@ def validate_probe_runtime(runner, binary):
 
 
 def check_health(device, runner, binary, cursor=None):
-    env = validate_probe_runtime(runner, binary)
+    env = diagnostic_environment(validate_probe_runtime(runner, binary))
+    settings = [k for k in env
+                if k.startswith(('SYCL_', 'UR_', 'ZE_', 'ZEL_', 'ONEAPI_', 'STRATA_'))
+                or k == 'LD_LIBRARY_PATH']
+    (runner.output / 'health-environment.json').write_text(
+        json.dumps({k: env[k] for k in settings}, indent=2) + '\n')
     if cursor is None:
         cursor = journal_cursor(runner, 'before-health-cursor')
     argv = [str(binary.resolve()), device.bdf]
@@ -317,8 +343,6 @@ def check_health(device, runner, binary, cursor=None):
         user = os.environ.get('SUDO_USER')
         if not user or user == 'root':
             raise RecoveryError('Run with sudo from your ordinary account to execute the probe unprivileged')
-        settings = ['SYCL_CACHE_PERSISTENT', 'UR_ADAPTERS_FORCE_LOAD',
-                    'UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD', 'ONEAPI_DEVICE_SELECTOR', 'LD_LIBRARY_PATH']
         argv = ['/usr/sbin/runuser', '-u', user, '--', '/usr/bin/env'] + [k + '=' + env[k] for k in settings] + argv
     probe_error = None
     try:

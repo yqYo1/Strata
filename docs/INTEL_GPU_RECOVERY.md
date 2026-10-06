@@ -78,6 +78,46 @@ UMF 1.1 library required by the V2 adapter. An isolated dependency-load check
 runs before any reset; a missing runtime refuses recovery. New kernel-journal
 faults/resets invalidate a data match.
 
+## Logs for first correctness checks
+
+Use `python3 sycl/tools/debug-run.py EXECUTABLE ...` for initial SYCL checks and
+failure investigation. It preserves the caller's runtime, device and tuning
+settings, enables Strata progress, and writes UR and Level Zero API traces to
+stderr. The recovery health probe uses the same diagnostic settings and saves
+its environment in `health-environment.json` beside `health.stderr`.
+
+The installed Level Zero loader is 1.32.0. Its
+[API logging documentation](https://github.com/oneapi-src/level-zero/blob/v1.32.0/README.md#logging-api-calls)
+requires `ZEL_ENABLE_LOADER_LOGGING=1`, `ZEL_LOADER_LOGGING_LEVEL=trace` and
+`ZE_ENABLE_VALIDATION_LAYER=1`. We also enable successful results with
+`ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT=1`, parameter checks with
+`ZE_ENABLE_PARAMETER_VALIDATION=1`, and stderr output with
+`ZEL_LOADER_LOG_CONSOLE=1`. Entries include time and thread ID, so a call with
+no matching return is useful evidence of a wait inside that call.
+The old `ZE_ENABLE_LOADER_DEBUG_TRACE` prints loader diagnostics and is
+deprecated in this version; it is insufficient for tracking all API calls.
+
+The [UR tracing layer](https://oneapi-src.github.io/unified-runtime/core/INTRO.html#tracing)
+is enabled with `UR_ENABLE_LAYERS=UR_LAYER_TRACING`. Its logger flushes each
+info-level call using `UR_LOG_TRACING=level:info;flush:info;output:stderr`.
+Loader and Level Zero adapter debug messages also flush to stderr. Capture
+stderr directly to a file when supervising a probe, preserving the last
+entry even when the child never returns. Keep stdout separate for the serving
+protocol. Parameter validation alone does not establish memory-lifetime,
+dependency or device-kernel correctness.
+
+These are diagnostic runs. Do not report their timings as normal performance.
+Start a separate timing process with the trace and validation settings removed;
+the clean `health_environment()` also removes inherited `ZEL_` settings.
+Environment variables must be set before launch. They cannot turn tracing on
+in the full-context CLI process that is already running.
+
+The [2026-10-07 logging check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/runtime-tracing-20261007/README.md)
+confirmed Level Zero entry/results and UR traces before the child exited,
+using driver/adapter enumeration without submitting GPU commands. The 48
+existing CPU recovery test methods also passed. This validates log delivery,
+not GPU execution or full-context capacity.
+
 No software reset is guaranteed to recover every firmware/driver wedge. There
 is an [upstream B570 report](https://github.com/intel/compute-runtime/issues/962)
 where both rebind and PCI reset failed; that report is not proof of this host's

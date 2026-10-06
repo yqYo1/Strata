@@ -21,3 +21,8 @@ offers the same steps as tools.
   `tools/test_setup_amd.py`, `tools/test_setup_choices.py`).
 - Keep the docs' style: plain words, measured numbers with what they were measured on, no claims without a
   measurement.
+- For first SYCL correctness checks and failure investigation, run through
+  `python3 sycl/tools/debug-run.py EXECUTABLE ...` or apply `diagnostic_environment()` from
+  `sycl/tools/recover-xe.sh`. Capture stderr: it contains flushed UR API calls, Level Zero API entry/results
+  and Strata progress. Record the environment and keep these logs with the result. Use a clean environment
+  without these logging/validation settings for timing; see [docs/INTEL_GPU_RECOVERY.md](docs/INTEL_GPU_RECOVERY.md).
