@@ -134,6 +134,7 @@ public:
     bool warm(std::string& err);
     /// SYCL cache-release experiment: rebuild window graphs with a restored
     /// expert arena address. Session/KV and commit graphs keep their storage.
+    bool discard_cache_graphs(std::string& err);
     bool rebuild_cache_graphs(const uint8_t* address, std::string& err);
     /// (upstream 0.1.32; the port maps it onto commit_finish, verify.cpp) commit() returns without waiting for its graph (a single-GPU session sets it): the next window follows it on
     /// the same stream and the drafter reads nothing it writes, so it overlaps the draft. Whoever reads or writes

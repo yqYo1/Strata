@@ -116,16 +116,26 @@ bool read_file(const std::string& path, std::vector<uint8_t>& out) {
 
 }  // namespace
 
+void MtpDrafter::discard_graphs_after_idle() {
+    auto discard = [](auto& graphs) {
+        for (auto& graph : graphs) {
+            delete graph;
+            graph = nullptr;
+        }
+    };
+    discard(prefill_exec_);
+    discard(prefill_dev_exec_);
+    discard(round_exec_);
+    discard(step_exec_);
+    discard(round_exec_c_);
+    discard(step_exec_c_);
+}
+
 MtpDrafter::~MtpDrafter() {
     const OnDevice on(device_);
     if (cs_) cs_->wait_and_throw();
-    for (auto &e : prefill_exec_) if (e) delete (e);
-    for (auto &e : prefill_dev_exec_) if (e) delete (e);
+    discard_graphs_after_idle();
     if (pf_dev_) sycl::free(pf_dev_, dpct::get_in_order_queue());
-    for (auto &e : round_exec_) if (e) delete (e);
-    for (auto &e : step_exec_) if (e) delete (e);
-    for (auto &e : round_exec_c_) if (e) delete (e);
-    for (auto &e : step_exec_c_) if (e) delete (e);
     if (cparams_) sycl::free(cparams_, dpct::get_in_order_queue());
     if (cring_) sycl::free(cring_, dpct::get_in_order_queue());
     if (dinv_) sycl::free(dinv_, dpct::get_in_order_queue());
@@ -174,6 +184,13 @@ bool MtpDrafter::suspend_decode_weights(std::string& err) try {
     const auto verify_started = Clock::now();
     if (!verify_decode_payload(err)) return false;
     const double verify_ms = ms_since(verify_started);
+    const auto graph_started = Clock::now();
+    // Backend command lists can retain allocation pointers as well as VAs.
+    // Drop those references before destroying physical allocations and
+    // recapture after restoration. Same-address copies alone cannot check
+    // backend residency; the Oct 7 repeated lease crashed in that path.
+    discard_graphs_after_idle();
+    const double graph_ms = ms_since(graph_started);
     const int64_t physical = expert_storage_.mapped_bytes() + head_storage_.mapped_bytes();
     // A partially successful unmap must also be restored before any consumer.
     decode_weights_suspended_ = true;
@@ -182,8 +199,8 @@ bool MtpDrafter::suspend_decode_weights(std::string& err) try {
         (head_storage_.full_bytes() && !head_storage_.shrink(0, err))) return false;
     const double unmap_ms = ms_since(unmap_started);
     std::fprintf(stderr, "strata mtp decode release: %lld physical bytes, experts and head; K/V retained; "
-                         "total %.3f ms, wait %.3f ms, unmap %.3f ms, verify %.3f ms, verified=%d\n",
-                 (long long) physical, ms_since(started), wait_ms, unmap_ms, verify_ms, verify_decode_weights_);
+                         "total %.3f ms, wait %.3f ms, unmap %.3f ms, verify %.3f ms, verified=%d, graph_drop %.3f ms\n",
+                 (long long) physical, ms_since(started), wait_ms, unmap_ms, verify_ms, verify_decode_weights_, graph_ms);
     return true;
 } catch (const std::exception& e) {
     err = std::string("mtp decode release: ") + e.what(); return false;

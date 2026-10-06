@@ -1198,121 +1198,13 @@ catch (sycl::exception const &exc) {
 
 namespace strata::core {
 
-bool session_capture_token(const WeightTable &tables, const ModelGeometry &g,
-                           SessionState &s, float *parts_dev,
-                           const float *y_miss_host, size_t parts_bytes,
-                           TokenGraph &tg, std::string &err,
-                           const TokenHits *hits) try {
-    if (hits != nullptr && !hits->on()) { err = "session_capture_token: incomplete hit configuration"; return false; }
-    if (tg.captured) return true;
-    if (!strata::require_host_handshake(dpct::get_in_order_queue(), err)) return false;
-    if (s.db == nullptr || s.db->d_flag == nullptr || s.db->d_seq == nullptr) {
-        err = "session_capture_token: the doorbell has no flag";
-        return false;
-    }
-    if (parts_dev == nullptr || y_miss_host == nullptr || parts_bytes == 0) {
-        err = "session_capture_token: parts buffers are required";
-        return false;
-    }
-    float* y_dev = nullptr;
-    if (DPCT_CHECK_ERROR(*(void **)&y_dev =
-                             (float *)const_cast<float *>(y_miss_host)) != 0 ||
-        !y_dev) {
-        err = "session_capture_token: the parts staging is not mapped pinned memory";
-        return false;
-    }
-    dpct::queue_ptr cs = &dpct::get_in_order_queue();
-    if (DPCT_CHECK_ERROR(cs = dpct::get_current_device().create_queue(true)) !=
-        0) {
-        err = "session_capture_token: stream create failed"; return false;
-    }
-    if (DPCT_CHECK_ERROR(dpct::experimental::begin_recording(cs)) != 0) {
-        dpct::get_current_device().destroy_queue(cs);
-        err = "session_capture_token: begin capture failed";
-        return false;
-    }
-    int64_t qsa_index = 0;
-    bool ok = true;
-    for (int64_t l = 0; l < g.n_layers && ok; ++l) {
-        gdn_point_at(g, l, s);
-        const bool qsa = is_qsa_layer(g, l);
-        QsaState& qst = qsa ? s.qsa_states[qsa_index] : s.qsa_states[0];
-        err.clear();
-        ok = block_layer_pre(tables, g, l, 0, 0, s.gdn, qst, s.qsa_bufs, s.moe, s.k, s.block, (void*) cs, err, s.db,
-                             s.ple.ready() ? &s.ple : nullptr);
-        if (!ok) { err = "session_capture_token: pre layer " + std::to_string(l) + ": " + err; break; }
-        if (hits != nullptr) {
-            // After the ring (and the shared expert): the GPU's experts run while the CPU computes the misses.
-            strata::kernels::moe_hit_select(s.moe.ids, hits->d_res + l * hits->n_expert, (int) s.k,
-                                            (int) hits->n_expert, hits->d_slot, hits->d_dst, hits->d_count, (void*) cs);
-            strata::kernels::quantize_q8_0_scaled(s.block.mixed, hits->x_q8, hits->x_scale, g.n_embd, (void*) cs);
-            strata::kernels::moe_hit_grouped_s2_dev(hits->cache_base, hits->d_slot, hits->d_dst, hits->d_count, s.k,
-                                                    hits->blob, hits->x_q8, hits->scratch, hits->hit_out, (void*) cs,
-                                                    hits->x_scale);
-        }
-        strata::kernels::doorbell_wait(s.db->d_flag, s.db->d_seq, (void*) cs);
-        // A kernel, not a memcpy node: a copy-engine node splits the WDDM submission (measured 67 flushes/token).
-        strata::kernels::copy_from_mapped(parts_dev, y_dev, (int64_t) (parts_bytes / sizeof(float)), (void*) cs);
-        if (hits != nullptr)
-            strata::kernels::moe_hit_add(parts_dev, hits->hit_out, hits->d_dst, hits->d_count, s.k, g.n_embd, (void*) cs);
-        ok = block_layer_post(tables, g, l, s.k, s.moe, s.block, parts_dev, (void*) cs, err);
-        if (!ok) { err = "session_capture_token: post layer " + std::to_string(l) + ": " + err; break; }
-        if (qsa) ++qsa_index;
-    }
-    dpct::experimental::command_graph_ptr graph = nullptr;
-    const dpct::err0 ce =
-        DPCT_CHECK_ERROR(dpct::experimental::end_recording(cs, &graph));
-    dpct::get_current_device().destroy_queue(cs);
-    if (!ok) { if (graph) delete (graph); return false; }
-    /*
-    DPCT1000: Error handling if-stmt was detected but could not be
-    rewritten.
-    */
-    if (ce != 0) {
-        /*
-        DPCT1009: SYCL reports errors using exceptions and does not use
-        error codes. Please replace the "get_error_string_dummy(...)" with a
-        real error-handling function.
-        */
-        /*
-        DPCT1001: The statement could not be removed.
-        */
-        err = std::string("session_capture_token: end capture: ") +
-              dpct::get_error_string_dummy(ce);
-        return false;
-    }
-    const dpct::err0 ie = DPCT_CHECK_ERROR(
-        tg.exec = new sycl::ext::oneapi::experimental::command_graph<
-            sycl::ext::oneapi::experimental::graph_state::executable>(
-            graph->finalize()));
-    delete (graph);
-    /*
-    DPCT1000: Error handling if-stmt was detected but could not be
-    rewritten.
-    */
-    if (ie != 0) {
-        /*
-        DPCT1009: SYCL reports errors using exceptions and does not use
-        error codes. Please replace the "get_error_string_dummy(...)" with a
-        real error-handling function.
-        */
-        /*
-        DPCT1001: The statement could not be removed.
-        */
-        err = std::string("session_capture_token: instantiate: ") +
-              dpct::get_error_string_dummy(ie);
-        return false;
-    }
-    tg.captured = true;
-    tg.n_layers = g.n_layers;
-    tg.y_src = y_miss_host;
-    tg.parts_bytes = parts_bytes;
-    return true;
-}
-catch (sycl::exception const &exc) {
-  std::cerr << exc.what() << "Exception caught at file:" << __FILE__
-            << ", line:" << __LINE__ << std::endl;
-  std::exit(1);
+bool session_capture_token(const WeightTable&, const ModelGeometry&, SessionState&,
+                           float*, const float*, size_t, TokenGraph&, std::string& err,
+                           const TokenHits*) {
+    // The monolithic graph depended on a GPU spin that could expire while the
+    // CPU was still publishing its expert rows. Per-layer graphs wait on the host.
+    err = "SYCL monolithic token graph disabled: CPU results require host completion";
+    return false;
 }
 
 bool session_run_token(const ModelGeometry &g, int64_t pos, int32_t pos_base,

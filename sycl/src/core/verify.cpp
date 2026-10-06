@@ -4,6 +4,7 @@
 #include "strata/sycl_allocation.hpp"
 #include "strata/host_atomic.hpp"
 #include "strata/sycl_handshake.hpp"
+#include "strata/sycl_execution_policy.hpp"
 #include "strata/core/verify.hpp"
 #if defined(_WIN32)
 #include <intrin.h>
@@ -356,10 +357,8 @@ bool Verifier::init(const WeightTable &wt, const ModelGeometry &g,
               "images on the CPU)";
         return false;
     }
-    const char* boundary = std::getenv("STRATA_SYCL_HOST_BOUNDARY");
-    host_boundary_ = std::getenv("STRATA_VERIFY_NO_HOST") == nullptr &&
-                     (boundary == nullptr || std::atoi(boundary) != 0);
-    if (!host_boundary_ && !strata::require_host_handshake(dpct::get_in_order_queue(), err)) return false;
+    if (!strata::require_sycl_host_boundaries(err)) return false;
+    host_boundary_ = true;
     std::string why;
     if (!layer_verify_compatible(why)) {
         err = "verify: " + why + " (the verify window reproduces the default native decode path)";
@@ -1962,9 +1961,9 @@ bool Verifier::warm(std::string &err) {
     return true;
 }
 
-bool Verifier::rebuild_cache_graphs(const uint8_t* address, std::string& err) try {
-    if (!address || next_) {
-        err = "verify cache graph rebuild requires a restored single-GPU cache";
+bool Verifier::discard_cache_graphs(std::string& err) try {
+    if (next_) {
+        err = "verify cache graph release requires a single GPU";
         return false;
     }
     const OnDevice on(device_);
@@ -1976,6 +1975,19 @@ bool Verifier::rebuild_cache_graphs(const uint8_t* address, std::string& err) tr
         graphs.input.reset(); graphs.tail.reset();
         graphs.pre.clear(); graphs.post.clear();
     }
+    return true;
+} catch (const std::exception& e) {
+    err = std::string("verify cache graph release: ") + e.what();
+    return false;
+}
+
+bool Verifier::rebuild_cache_graphs(const uint8_t* address, std::string& err) try {
+    if (!address) {
+        err = "verify cache graph rebuild requires a restored cache";
+        return false;
+    }
+    const OnDevice on(device_);
+    if (!discard_cache_graphs(err)) return false;
     hits_.cache_base = address;
     // Recording submits nodes to a graph, rather than executing the window.
     // Full-model checks still verify that recapture preserves persistent state.

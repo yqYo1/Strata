@@ -302,15 +302,16 @@ public:
   static inline void set_saved_queue(::dpct::cs::queue_ptr q_ptr) noexcept {
     _saved_queue_ptr = q_ptr;
   }
-  static inline sycl::queue &get_saved_queue() noexcept {
-    return *_saved_queue_ptr;
+  static inline sycl::queue &get_saved_queue() {
+    return _saved_queue_ptr ? *_saved_queue_ptr : ::dpct::cs::get_default_queue();
   }
 
 private:
   ::dpct::cs::queue_ptr _queue_ptr = &::dpct::cs::get_default_queue();
   math_mode _mm = math_mode::mm_default;
-  static inline ::dpct::cs::queue_ptr _saved_queue_ptr =
-      &::dpct::cs::get_default_queue();
+  // Eager initialization here creates the device manager before main, so even
+  // --help and rejected configurations enter the driver outside error handling.
+  static inline ::dpct::cs::queue_ptr _saved_queue_ptr = nullptr;
 };
 
 using descriptor_ptr = descriptor *;

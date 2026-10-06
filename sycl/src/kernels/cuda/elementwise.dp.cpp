@@ -13,6 +13,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <stdexcept>
 
 namespace strata::kernels {
 namespace {
@@ -377,32 +378,10 @@ __dpct_inline__ void doorbell_ring_kernel(uint32_t *seq) {
     strata::sys_store(seq, strata::sys_load(seq) + 1u);
 }
 
-__dpct_inline__ void doorbell_wait_kernel(const volatile uint32_t *flag,
-                                          const volatile uint32_t *seq) {
-    const uint32_t want = strata::sys_load(seq);
-    for (uint32_t spin = 0; spin < strata::kSpinMax && strata::sys_load(flag) != want; ++spin) strata_spin_pause();
-    /*
-    DPCT1078: Consider replacing memory_order::acq_rel with
-    memory_order::seq_cst for correctness if strong memory order restrictions
-    are needed.
-    */
-    sycl::atomic_fence(sycl::memory_order::acq_rel, sycl::memory_scope::system);
-}
 
-void doorbell_wait(const uint32_t* d_flag, const uint32_t* d_seq, void* stream) {
-    if (d_flag == nullptr || d_seq == nullptr) return;
-    {
-        auto exp_props = sycl::ext::oneapi::experimental::properties{
-            sycl::ext::oneapi::experimental::use_root_sync};
 
-        strata::q_of(stream)
-            ->parallel_for<dpct_kernel_name<class doorbell_wait_kernel_47b360>>(
-                sycl::nd_range<3>(sycl::range(1, 1, 1), sycl::range(1, 1, 1)),
-                exp_props, [=](sycl::nd_item<3> item_ct1) {
-                    doorbell_wait_kernel(d_flag, d_seq);
-                });
-    }
-    check_launch("doorbell_wait");
+void doorbell_wait(const uint32_t*, const uint32_t*, void*) {
+    throw std::logic_error("SYCL doorbell_wait is disabled; use per-layer host completion");
 }
 
 /*
@@ -620,7 +599,9 @@ __dpct_inline__ void doorbell_publish_value_kernel(
     are needed.
     */
     sycl::atomic_fence(sycl::memory_order::acq_rel, sycl::memory_scope::system);
-    item_ct1.barrier(sycl::access::fence_space::local_space);
+    // Payload rows are global/host USM, so thread 0 must acquire every
+    // work-item's global writes before publishing the sequence to the host.
+    item_ct1.barrier(sycl::access::fence_space::global_and_local);
     if (item_ct1.get_local_id(2) == 0) {
         /*
         DPCT1078: Consider replacing memory_order::acq_rel with
@@ -629,7 +610,7 @@ __dpct_inline__ void doorbell_publish_value_kernel(
         */
         sycl::atomic_fence(sycl::memory_order::acq_rel,
                            sycl::memory_scope::system);
-        *(volatile uint32_t*) seq = value;
+        strata::sys_store(seq, value);
         /*
         DPCT1078: Consider replacing memory_order::acq_rel with
         memory_order::seq_cst for correctness if strong memory order

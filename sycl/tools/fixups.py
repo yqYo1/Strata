@@ -4,6 +4,8 @@
 Each entry is a thing dpct 2025.3 got wrong or could not do, with the reason. Upstream files are never touched.
 """
 import re, sys, pathlib
+from disable_device_waits import disable_device_waits
+from lazy_device_tables import lazy_device_tables
 root = pathlib.Path(__file__).resolve().parents[1]
 changed = 0
 
@@ -25,6 +27,14 @@ def all_sources():
 # 1. dpct's helper headers predate the 2026.1 compiler: the non-uniform group API was renamed.
 edit("include/dpct/util.hpp", lambda s: s.replace("experimental::get_tangle_group(", "experimental::entangle(")
      .replace("experimental::get_fixed_size_group<", "experimental::chunked_partition<"))
+
+# The saved BLAS queue is unused until requested. Its static initializer must
+# not select/create a GPU before main can validate options and catch failures.
+edit("include/dpct/blas_utils.hpp", lambda s: s.replace(
+    "  static inline ::dpct::cs::queue_ptr _saved_queue_ptr =\n      &::dpct::cs::get_default_queue();",
+    "  static inline ::dpct::cs::queue_ptr _saved_queue_ptr = nullptr;").replace(
+    "  static inline sycl::queue &get_saved_queue() noexcept {\n    return *_saved_queue_ptr;",
+    "  static inline sycl::queue &get_saved_queue() {\n    return _saved_queue_ptr ? *_saved_queue_ptr : ::dpct::cs::get_default_queue();"))
 
 for rel in all_sources():
     rel = str(rel)
@@ -83,22 +93,12 @@ def doorbell(s):
     s = s.replace("    if (*skip == value) return;", "    if (strata::sys_load(skip) == value) return;")
     s = s.replace("    *skip = ring;\n}", "    strata::sys_store(skip, ring);\n}")
     s = s.replace("        *(volatile uint32_t*) seq = *(volatile uint32_t*) seq + 1u;", "        strata::sys_store(seq, strata::sys_load(seq) + 1u);")
-    # bounded spins (see kSpinMax in sycl_doorbell.hpp)
-    s = s.replace("    while (strata::sys_load(flag) != want) /* spin (no __nanosleep on SYCL) */;",
-                  "    for (uint32_t spin = 0; spin < strata::kSpinMax && strata::sys_load(flag) != want; ++spin) {}")
-    s = s.replace("    while (strata::sys_load(flag) < value) /* spin (no __nanosleep on SYCL) */;",
-                  "    for (uint32_t spin = 0; spin < strata::kSpinMax && strata::sys_load(flag) < value; ++spin) {}")
-    # upstream 0.1.31 spells the waits `while (*flag ...) strata_spin_pause();` and the ring with 4-space indent:
-    # same treatment (system-scope loads/stores, bounded: an unbounded orphaned spin wedges the B70's GT)
+    # Retire both bounded fall-through and unbounded waits after any migration.
     s = s.replace("    *(volatile uint32_t*) seq = *(volatile uint32_t*) seq + 1u;", "    strata::sys_store(seq, strata::sys_load(seq) + 1u);")
-    s = s.replace("    while (*flag != want) strata_spin_pause();",
-                  "    for (uint32_t spin = 0; spin < strata::kSpinMax && strata::sys_load(flag) != want; ++spin) strata_spin_pause();")
-    s = s.replace("    while (*flag < value) strata_spin_pause();",
-                  "    for (uint32_t spin = 0; spin < strata::kSpinMax && strata::sys_load(flag) < value; ++spin) strata_spin_pause();")
-    return s
-# 0.1.31: dp4a.hpp's spin pause is __nanosleep, which SYCL lacks: the bounded spin (kSpinMax) is the backoff
+    return disable_device_waits(s)
+# SYCL has no __nanosleep; dependent work is submitted after host completion.
 edit("include/strata/kernels/dp4a.hpp", lambda s: s.replace("    __nanosleep(100);\n",
-     "    // SYCL port: no __nanosleep; the doorbell waits are bounded by strata::kSpinMax instead\n"))
+     "    // SYCL has no __nanosleep; device doorbell waits are disabled in this port.\n"))
 # 0.1.31/0.1.32: fused_gr's per-block shared-memory query stays CUDA (dpct leaves the attribute untranslated)
 edit("src/kernels/cuda/fused_gr.dp.cpp", lambda s: s.replace(
     "        cudaDeviceGetAttribute(&per_block, cudaDevAttrMaxSharedMemoryPerBlock, dev);\n",
@@ -322,3 +322,8 @@ for p in sorted((root / "src" / "kernels").glob("*_parity.cpp")):
 edit("src/program/generate.cpp", sub(
     r"(    const strata::core::OnDevice on\(dev\);\n        size_t fb = 0, tb = 0;\n)(?!        dpct::get_current_device)",
     r"\1        dpct::get_current_device().get_memory_info(fb, tb);   // #423 (tmking01): dpct dropped cudaMemGetInfo here\n"))
+
+# Keep retained codebooks out of pre-main initialization. Their bytes are copied
+# into typed words instead of reading int8_t storage through a uint32_t pointer.
+for rel in ('src/kernels/cuda/native_mmvq.dp.cpp', 'src/kernels/cuda/s2_gemv_fast.dp.cpp'):
+    edit(rel, lazy_device_tables)

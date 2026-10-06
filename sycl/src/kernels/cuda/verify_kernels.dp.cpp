@@ -13,6 +13,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <stdexcept>
 
 #ifndef STRATA_PLAN_LOCAL
 #define STRATA_PLAN_LOCAL 1   // 0: the original one-thread plan kernel (A/B)
@@ -909,19 +910,6 @@ void gdn_step_norm_multi(float* state, const float* h, int conv_channels, const 
 }
 
 namespace {
-__dpct_inline__ void wait_flag_ge_kernel(const volatile uint32_t *flag,
-                                         uint32_t value) {
-    for (uint32_t spin = 0; spin < strata::kSpinMax && strata::sys_load(flag) < value; ++spin) strata_spin_pause();
-    /*
-    DPCT1078: Consider replacing memory_order::acq_rel with
-    memory_order::seq_cst for correctness if strong memory order restrictions
-    are needed.
-    */
-    sycl::atomic_fence(sycl::memory_order::acq_rel, sycl::memory_scope::system);
-}
-}  // namespace
-
-namespace {
 inline bool plan_parallel() {   // STRATA_PLAN_PARALLEL=0: thread 0 groups the entries alone (the old way)
     static const bool v = std::getenv("STRATA_PLAN_PARALLEL") == nullptr || std::atoi(std::getenv("STRATA_PLAN_PARALLEL")) != 0;
     return v;
@@ -1067,18 +1055,7 @@ __dpct_inline__ void resident_plan_kernel(
 #undef s_ids
 #undef S_RES
 }
-__dpct_inline__ void wait_flag_ge_or_kernel(const volatile uint32_t *flag,
-                                            uint32_t value,
-                                            const volatile uint32_t *skip) {
-    if (strata::sys_load(skip) == value) return;
-    for (uint32_t spin = 0; spin < strata::kSpinMax && strata::sys_load(flag) < value; ++spin) strata_spin_pause();
-    /*
-    DPCT1078: Consider replacing memory_order::acq_rel with
-    memory_order::seq_cst for correctness if strong memory order restrictions
-    are needed.
-    */
-    sycl::atomic_fence(sycl::memory_order::acq_rel, sycl::memory_scope::system);
-}
+
 __dpct_inline__ void copy_i32_unless_kernel(int32_t *__restrict__ dst,
                                             const volatile int32_t *src, int n,
                                             const uint32_t *skip,
@@ -1140,20 +1117,8 @@ void resident_plan(const int32_t* ids, int n_entries, int k, const int32_t* res_
     }
     check("resident_plan");
 }
-void wait_flag_ge_or(const uint32_t* flag, uint32_t value, const uint32_t* skip, void* stream) {
-    {
-        auto exp_props = sycl::ext::oneapi::experimental::properties{
-            sycl::ext::oneapi::experimental::use_root_sync};
-
-        strata::q_of(stream)
-            ->parallel_for<
-                dpct_kernel_name<class wait_flag_ge_or_kernel_2b2de3>>(
-                sycl::nd_range<3>(sycl::range(1, 1, 1), sycl::range(1, 1, 1)),
-                exp_props, [=](sycl::nd_item<3> item_ct1) {
-                    wait_flag_ge_or_kernel(flag, value, skip);
-                });
-    }
-    check("wait_flag_ge_or");
+void wait_flag_ge_or(const uint32_t*, uint32_t, const uint32_t*, void*) {
+    throw std::logic_error("SYCL wait_flag_ge_or is disabled; use host completion before submission");
 }
 void copy_i32_from_mapped_unless(int32_t* dst, const int32_t* src, long long n, const uint32_t* skip, uint32_t value,
                                  void* stream) {
@@ -1197,19 +1162,8 @@ void copy_or_zero_from_mapped(float* dst, const float* src, long long n, const u
     check("copy_or_zero_from_mapped");
 }
 
-void wait_flag_ge(const uint32_t* flag, uint32_t value, void* stream) {
-    {
-        auto exp_props = sycl::ext::oneapi::experimental::properties{
-            sycl::ext::oneapi::experimental::use_root_sync};
-
-        strata::q_of(stream)
-            ->parallel_for<dpct_kernel_name<class wait_flag_ge_kernel_d7debf>>(
-                sycl::nd_range<3>(sycl::range(1, 1, 1), sycl::range(1, 1, 1)),
-                exp_props, [=](sycl::nd_item<3> item_ct1) {
-                    wait_flag_ge_kernel(flag, value);
-                });
-    }
-    check("wait_flag_ge");
+void wait_flag_ge(const uint32_t*, uint32_t, void*) {
+    throw std::logic_error("SYCL wait_flag_ge is disabled; use host completion before submission");
 }
 
 void embedding_gather_dev(const uint8_t* codes, const float* scales, const float* offsets, const int32_t* tokens,

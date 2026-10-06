@@ -182,7 +182,7 @@ How to run it by hand (a greedy test run, the way every number in this section w
 `strata-sycl-dev` image, AOT build in `build-sycl-aot/`):
 
 ```
-STRATA_VERIFY_DEVICE_PLAN=1 STRATA_VERIFY_NO_HOST=1 \
+STRATA_VERIFY_DEVICE_PLAN=1 \
 build-sycl/strata --pack <iq pack> --native <shard1> --ple-gguf <shard2> \
     --expert-profile data/expert-profile-coder.bin --expert-cache auto --stream-experts \
     --prefill auto --spec 4 --spec-min-p 0.5 --max-context 8192 --tokens <ids> --max-new 64 --greedy
@@ -192,8 +192,9 @@ build-sycl/strata --pack <iq pack> --native <shard1> --ple-gguf <shard2> \
   the GGUF into the VRAM cache through a small staging ring (`GgufExpertSource`). Upstream needs 32 GB of
   RAM for this model; with the flag the engine runs on 23 GiB.
 - `STRATA_VERIFY_DEVICE_PLAN=1`: the GPU plans each layer itself (upstream's E-6; off by default there).
-- `STRATA_VERIFY_NO_HOST=1` (this port): the host waits for the whole window graph instead of per-layer
-  rings. Only valid with every expert resident, which is the case on a 32 GB card.
+- Earlier measurements in this section used `STRATA_VERIFY_NO_HOST=1`. That device-spin path is now
+  rejected, including on fully resident cards: its bounded waits could return before their flags were
+  ready. The current port uses host completion boundaries. `STRATA_SYCL_HOST_BOUNDARY=0` is also rejected.
 - `--no-prefill-borrow`: the prompt path must not lend expert slots (a lent expert is served from the host
   behind a flag the GPU does not see reliably here; long prompts hung without it).
 

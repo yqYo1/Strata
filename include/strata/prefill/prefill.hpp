@@ -135,8 +135,9 @@ public:
     /// Checked before every chunk: true stops the prompt early (`run` returns false with err "cancelled").
     std::function<bool()> should_stop;
 
-    /// SYCL experiment: refresh consumers after the decode expert cache is
-    /// reallocated. Called after weights are restored, before decode can run.
+    /// SYCL experiment: discard captured consumers before freeing physical
+    /// backing, then refresh after restoration even when the VA is unchanged.
+    std::function<bool(std::string& err)> on_cache_suspend;
     std::function<bool(const uint8_t* address, std::string& err)> on_cache_restore;
     /// SYCL layer-major lease for other decode-only weights. The paired
     /// restore runs after temporary VRAM is freed, including cancellation.

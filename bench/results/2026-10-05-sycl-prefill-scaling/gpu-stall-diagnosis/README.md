@@ -1,4 +1,16 @@
-# Arc B570 failure investigation, 2026-10-06
+# Arc B570 failure investigation, updated 2026-10-07
+
+A forced Strata draft-weight lease now records a CPU SIGSEGV before a BCS
+page fault: 00:10:39.203062 followed by 00:10:43.491993 JST on October 7.
+Matching installed-library debug symbols identify
+`NEO::GraphicsAllocation::prepareHostPtrForResidency`. The first normal-MTP
+request succeeds; the repeat fails after verified weight restoration. See
+[the actual crash](host-boundaries/draft-lease-runtime-crash/README.md).
+Graph retirement before physical release is implemented as a prevention
+candidate, with a successful build, 13 CPU resource-ordering cases and six
+CPU controller cases. It has not run on the GPU. Further GPU submissions
+stopped when the new fault occurred. The exact invalid allocation and the
+original machine-wide stall remain unresolved.
 
 The observations distinguish a reproducible CPU-side SYCL cache crash from
 the later xe/GuC failure. The first Strata stall's exact userspace location was
@@ -9,6 +21,16 @@ Hardware: Arc B570 10 GiB, Ryzen 5 5600X, 128 GiB RAM. Kernel:
 `7.0.0-38-generic`, Ubuntu package `7.0.0-38.38~24.04.4`. SYCL runtime:
 oneAPI 2026.1.1. Stock compute runtime: `26.31.39395.14`; user-local runtime:
 `26.35.39758.10`. All timestamps below are JST.
+
+Further production-code controls find bounded GPU waits returning before
+readiness, an unguarded CLI reclamation footer, pre-main GPU initialization,
+and an invalid word read from byte codebook storage. The candidate closes the
+legacy wait paths and passes short real MTP/checkpoint/normal-exit checks with
+default direct submission and copy offload. See the
+[host-boundary and initialization audit](host-boundaries/README.md) for CPU
+reproductions, actual preflight failures, fixes and limits. These findings keep
+the direct Strata trigger under investigation; failures of other programs on
+an already stalled GPU do not exonerate the project.
 
 ## The reproducible llama-bench crash
 

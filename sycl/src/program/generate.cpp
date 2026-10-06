@@ -26,6 +26,7 @@
 #include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/sycl_queue.hpp"
+#include "strata/sycl_execution_policy.hpp"
 #include "strata/core/device.hpp"
 #include "strata/core/expert_cache.hpp"
 #include "strata/core/conversation_snapshot.hpp"
@@ -117,6 +118,12 @@ namespace strata::prefill { void set_nonresident_share(double share); }   // SYC
 #include <vector>
 
 namespace {
+static void drain_sycl_devices() {
+    // Another device's copy queue may still use the primary's allocations.
+    for (unsigned int device = 0; device < dpct::device_count(); ++device)
+        dpct::get_device(device).queues_wait_and_throw();
+}
+
 // Windows' WDDM driver model: native Windows, or WSL2 (its GPU goes through /dev/dxg to the Windows driver).  There,
 // pinning a large arena into two CUDA contexts leaves WDDM refusing every later allocation (the 5080 + 3090 rig);
 // a Linux driver has no such limit (#253: the 8 GiB cap cost a 4090 + 3060 split 3x of its prompt speed).
@@ -1606,6 +1613,11 @@ int main(int argc, char **argv) try {
             return 2;
         }
         }
+    }
+    std::string execution_error;
+    if (!strata::require_sycl_host_boundaries(execution_error)) {
+        std::fprintf(stderr, "strata generate: %s\n", execution_error.c_str());
+        return 2;
     }
     strata::core::set_coupled_draft(o.coupled_draft);
     strata::core::set_peer_portable(o.peer_device >= 1);   // multi-GPU: the Portable flag on mapped host buffers only with a peer device (before any allocation)
@@ -4519,6 +4531,7 @@ int main(int argc, char **argv) try {
         }
         std::printf("\n  compare `--gpu-only-full`, which replays the same work as TWO graphs per layer.  The\n");
         std::printf("  three sum slightly above it because each launch carries the driver's gap.\n");
+        if (strata::finish_sycl_serve(drain_sycl_devices)) std::_Exit(1);
         strata::core::session_graphs_free(gr);
         strata::core::doorbell_free(db);
         sycl::free(d_next, dpct::get_in_order_queue());
@@ -4767,10 +4780,10 @@ int main(int argc, char **argv) try {
         (hit_fn == nullptr || thits.on()) && !native_pack && !multi_gpu) {   // a split's token graph cannot span stages
         if (!strata::core::session_capture_token(wt, g, ss, d_parts, loop_scratch.y_miss, loop_scratch.parts_bytes,
                                                  tgraph, err, thits.on() ? &thits : nullptr)) {
-            std::fprintf(stderr, "strata generate: %s\n", err.c_str());
-            return 1;
+            std::fprintf(stderr, "strata generate: %s; using per-layer graphs\n", err.c_str());
+        } else {
+            std::fprintf(stderr, "strata generate: token graph captured (48 layers, one launch per token)\n");
         }
-        std::fprintf(stderr, "strata generate: token graph captured (48 layers, one launch per token)\n");
     }
 
     // ================================ WHERE THE HOST TERM GOES, PER TOKEN ================================
@@ -5742,8 +5755,9 @@ int main(int argc, char **argv) try {
             }
         }
         drive.d.plan = ver.plan_sink();
-        if (const char* allocation = std::getenv("STRATA_PREFILL_CACHE_ALLOC");
-            allocation && !std::strcmp(allocation, "rebuild")) {
+        if (const char* release = std::getenv("STRATA_PREFILL_RELEASE_CACHE");
+            release && std::atoi(release) != 0) {
+            sp.on_cache_suspend = [&](std::string& e) { return ver.discard_cache_graphs(e); };
             sp.on_cache_restore = [&](const uint8_t* address, std::string& e) {
                 drive.d.cache_base = address;
                 thits.cache_base = address;
@@ -7425,9 +7439,7 @@ int main(int argc, char **argv) try {
         watchdog.request_stop();
         if (watchdog.joinable()) watchdog.join();
 #endif
-        const int shutdown_status = strata::finish_sycl_serve([] {
-            dpct::get_current_device().queues_wait_and_throw();
-        });
+        const int shutdown_status = strata::finish_sycl_serve(drain_sycl_devices);
         std::fflush(stdout);
         std::fflush(stderr);
 #if defined(_WIN32)
@@ -7521,8 +7533,12 @@ int main(int argc, char **argv) try {
             };
         }
         const Clock::time_point tp0 = Clock::now();
-        if (const char* allocation = std::getenv("STRATA_PREFILL_CACHE_ALLOC");
-            allocation && !std::strcmp(allocation, "rebuild")) {
+        if (const char* release = std::getenv("STRATA_PREFILL_RELEASE_CACHE");
+            release && std::atoi(release) != 0) {
+            prefill.on_cache_suspend = [&](std::string& e) {
+                if (tgraph.captured) { e = "cache release cannot retain a captured token graph"; return false; }
+                return true;
+            };
             prefill.on_cache_restore = [&](const uint8_t* address, std::string& e) {
                 // Native CLI initializes its verifier after prefill. Serve's
                 // callback above also rebuilds already captured window graphs.
@@ -8462,6 +8478,7 @@ int main(int argc, char **argv) try {
 
     if (dump != nullptr) std::printf("%-24s %s\n", "logits dumped", o.dump_logits.c_str());
 
+    if (strata::finish_sycl_serve(drain_sycl_devices)) std::_Exit(1);
     strata::core::session_graphs_free(gr);
     strata::core::doorbell_free(db);
     sycl::free(d_next, dpct::get_in_order_queue());

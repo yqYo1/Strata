@@ -1,0 +1,41 @@
+{
+  "passed": true,
+  "binary_sha256": "9a2da2252d50b0a594f891490816fbf8f2f6bb385a972c0bbf599fdc07cbd74f",
+  "runs": [
+    {
+      "key": "STRATA_SYCL_HOST_BOUNDARY",
+      "value": "0",
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "strata generate: SYCL device-spin verification is disabled; unset STRATA_VERIFY_NO_HOST and use STRATA_SYCL_HOST_BOUNDARY=1 (the default)\n",
+      "invalid_device_selector": "level_zero:987654"
+    },
+    {
+      "key": "STRATA_VERIFY_NO_HOST",
+      "value": "1",
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "strata generate: SYCL device-spin verification is disabled; unset STRATA_VERIFY_NO_HOST and use STRATA_SYCL_HOST_BOUNDARY=1 (the default)\n",
+      "invalid_device_selector": "level_zero:987654"
+    },
+    {
+      "key": "STRATA_VERIFY_NO_HOST",
+      "value": "0",
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "strata generate: SYCL device-spin verification is disabled; unset STRATA_VERIFY_NO_HOST and use STRATA_SYCL_HOST_BOUNDARY=1 (the default)\n",
+      "invalid_device_selector": "level_zero:987654"
+    },
+    {
+      "scope": "Actual --help works with invalid GPU selector",
+      "exit_code": 0,
+      "stdout_bytes": 0,
+      "stderr_bytes": 14873
+    },
+    {
+      "scope": "Launcher rejects before Docker commands",
+      "exit_code": 2,
+      "stderr": "SYCL device-spin verification is disabled; unset STRATA_VERIFY_NO_HOST and use the default host boundaries.\n"
+    }
+  ]
+}

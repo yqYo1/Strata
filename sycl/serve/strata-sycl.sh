@@ -9,6 +9,12 @@
 #   STRATA_SYCL_NAME   the container's name                   (default: strata-sycl-serve)
 #   ONEAPI_DEVICE_SELECTOR  passed in when set (the image pins level_zero:0; level_zero:* for a two-card split, #423)
 set -euo pipefail
+# Reject the retired path before removing a container or opening the GPU.
+if [ -n "${STRATA_VERIFY_NO_HOST+x}" ] ||
+   { [ -n "${STRATA_SYCL_HOST_BOUNDARY+x}" ] && [ "$STRATA_SYCL_HOST_BOUNDARY" != "1" ]; }; then
+    echo 'SYCL device-spin verification is disabled; unset STRATA_VERIFY_NO_HOST and use the default host boundaries.' >&2
+    exit 2
+fi
 here=$(cd "$(dirname "$0")/../.." && pwd)                 # the repo
 root=${STRATA_SYCL_ROOT:-$(dirname "$here")}
 repo_in=/work/$(basename "$here")
@@ -18,8 +24,6 @@ args=""
 for a in "$@"; do args+=" $(printf '%q' "$a")"; done
 sel=()
 [ -n "${ONEAPI_DEVICE_SELECTOR:-}" ] && sel=(-e "ONEAPI_DEVICE_SELECTOR=$ONEAPI_DEVICE_SELECTOR")
-# Only a fully resident expert tier can omit CPU expert work. Keep host boundaries on smaller cards.
-[ "${STRATA_VERIFY_NO_HOST:-}" = "1" ] && sel+=(-e STRATA_VERIFY_NO_HOST=1)
 # the port's run-time switches: the device-built verify plan (docs/INTEL.md)
 exec docker run --rm -i --name "$name" --device /dev/dri --oom-score-adj 1000 --stop-timeout 30 --no-healthcheck \
     -v "$root:/work" \

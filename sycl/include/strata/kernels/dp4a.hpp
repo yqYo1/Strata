@@ -46,6 +46,6 @@ __dpct_inline__ void strata_spin_pause() {
     hardware-specific feature. Consult with your hardware vendor to find a
     replacement.
     */
-    // SYCL port: no __nanosleep; the doorbell waits are bounded by strata::kSpinMax instead
+    // SYCL has no __nanosleep; device doorbell waits are disabled in this port.
 #endif
 }

@@ -1,0 +1,68 @@
+
+/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000007ca490 <zetGetCommandListExpProcAddrTable@@Base+0x5392d0>:
+  7ca490:	f3 0f 1e fa          	endbr64
+  7ca494:	48 8b 86 c0 04 00 00 	mov    0x4c0(%rsi),%rax
+  7ca49b:	48 89 fa             	mov    %rdi,%rdx
+  7ca49e:	48 89 f7             	mov    %rsi,%rdi
+  7ca4a1:	8b 70 1c             	mov    0x1c(%rax),%esi
+  7ca4a4:	48 89 d0             	mov    %rdx,%rax
+  7ca4a7:	66 0f 1f 84 00 00 00 	nopw   0x0(%rax,%rax,1)
+  7ca4ae:	00 00 
+  7ca4b0:	48 89 c1             	mov    %rax,%rcx
+  7ca4b3:	48 8b 80 f8 01 00 00 	mov    0x1f8(%rax),%rax
+  7ca4ba:	48 85 c0             	test   %rax,%rax
+  7ca4bd:	75 f1                	jne    7ca4b0 <zetGetCommandListExpProcAddrTable@@Base+0x5392f0>
+  7ca4bf:	89 f0                	mov    %esi,%eax
+  7ca4c1:	48 8b 71 18          	mov    0x18(%rcx),%rsi
+  7ca4c5:	48 8b 49 20          	mov    0x20(%rcx),%rcx
+  7ca4c9:	48 29 f1             	sub    %rsi,%rcx
+  7ca4cc:	48 c1 f9 04          	sar    $0x4,%rcx
+  7ca4d0:	48 39 c8             	cmp    %rcx,%rax
+  7ca4d3:	73 23                	jae    7ca4f8 <zetGetCommandListExpProcAddrTable@@Base+0x539338>
+  7ca4d5:	48 c1 e0 04          	shl    $0x4,%rax
+  7ca4d9:	48 8b 04 06          	mov    (%rsi,%rax,1),%rax
+  7ca4dd:	48 8b 8f 00 05 00 00 	mov    0x500(%rdi),%rcx
+  7ca4e4:	48 83 c1 01          	add    $0x1,%rcx
+  7ca4e8:	48 39 c8             	cmp    %rcx,%rax
+  7ca4eb:	72 16                	jb     7ca503 <zetGetCommandListExpProcAddrTable@@Base+0x539343>
+  7ca4ed:	48 83 f8 ff          	cmp    $0xffffffffffffffff,%rax
+  7ca4f1:	74 10                	je     7ca503 <zetGetCommandListExpProcAddrTable@@Base+0x539343>
+  7ca4f3:	c3                   	ret
+  7ca4f4:	0f 1f 40 00          	nopl   0x0(%rax)
+  7ca4f8:	48 8b 8f 00 05 00 00 	mov    0x500(%rdi),%rcx
+  7ca4ff:	48 83 c1 01          	add    $0x1,%rcx
+  7ca503:	48 8b 87 c0 04 00 00 	mov    0x4c0(%rdi),%rax
+  7ca50a:	8b 78 1c             	mov    0x1c(%rax),%edi
+  7ca50d:	48 89 d0             	mov    %rdx,%rax
+  7ca510:	48 89 c6             	mov    %rax,%rsi
+  7ca513:	48 8b 80 f8 01 00 00 	mov    0x1f8(%rax),%rax
+  7ca51a:	48 85 c0             	test   %rax,%rax
+  7ca51d:	75 f1                	jne    7ca510 <zetGetCommandListExpProcAddrTable@@Base+0x539350>
+  7ca51f:	89 f8                	mov    %edi,%eax
+  7ca521:	48 8b 7e 18          	mov    0x18(%rsi),%rdi
+  7ca525:	48 c1 e0 04          	shl    $0x4,%rax
+  7ca529:	48 83 3c 07 ff       	cmpq   $0xffffffffffffffff,(%rdi,%rax,1)
+  7ca52e:	74 28                	je     7ca558 <zetGetCommandListExpProcAddrTable@@Base+0x539398>
+  7ca530:	48 83 f9 ff          	cmp    $0xffffffffffffffff,%rcx
+  7ca534:	74 29                	je     7ca55f <zetGetCommandListExpProcAddrTable@@Base+0x53939f>
+  7ca536:	48 8b 76 18          	mov    0x18(%rsi),%rsi
+  7ca53a:	48 89 0c 06          	mov    %rcx,(%rsi,%rax,1)
+  7ca53e:	66 90                	xchg   %ax,%ax
+  7ca540:	48 89 d0             	mov    %rdx,%rax
+  7ca543:	48 8b 92 f8 01 00 00 	mov    0x1f8(%rdx),%rdx
+  7ca54a:	48 85 d2             	test   %rdx,%rdx
+  7ca54d:	75 f1                	jne    7ca540 <zetGetCommandListExpProcAddrTable@@Base+0x539380>
+  7ca54f:	f0 83 a8 08 02 00 00 	lock subl $0x1,0x208(%rax)
+  7ca556:	01 
+  7ca557:	c3                   	ret
+  7ca558:	f0 83 46 68 01       	lock addl $0x1,0x68(%rsi)
+  7ca55d:	eb d1                	jmp    7ca530 <zetGetCommandListExpProcAddrTable@@Base+0x539370>
+  7ca55f:	f0 83 6e 68 01       	lock subl $0x1,0x68(%rsi)
+  7ca564:	eb d0                	jmp    7ca536 <zetGetCommandListExpProcAddrTable@@Base+0x539376>
+  7ca566:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
+  7ca56d:	00 00 00 

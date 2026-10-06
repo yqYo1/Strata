@@ -1962,10 +1962,11 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         double suspend_ms = 0, restore_ms = 0, graph_ms = 0;
         bool suspend(const core::ExpertCache* original, core::ExpertSource* source,
                      const int32_t* residency, dpct::queue_ptr q,
+                     const std::function<bool(std::string&)>& retire,
                      decltype(refresh) callback, std::string& error) {
             if (!original || !original->bytes()) return true;
-            if (!original->segmented() && !callback) {
-                error = "prefill cache reallocation requires a graph refresh callback";
+            if (!retire || !callback) {
+                error = "prefill cache release requires graph retirement and refresh callbacks";
                 return false;
             }
             const auto t = Clock::now();
@@ -2042,6 +2043,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                 saved.resize(restore_bytes);
                 q->memcpy(saved.data(), address + kept, restore_bytes).wait_and_throw();
             }
+            // Complete all consumers and retire their backend allocation
+            // references before any physical backing can be destroyed.
+            dpct::get_current_device().queues_wait_and_throw();
+            if (mapped > kept && !retire(error)) return false;
             active = true; // A partial shrink also needs restoration on exit.
             if (!cache->shrink(kept, error)) return false;
             suspend_ms = ms_since(t);
@@ -2079,7 +2084,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                         }
                 }
             }
-            if (refresh) {
+            if (refresh && mapped > kept) {
                 const auto graph_start = Clock::now();
                 if (!refresh(cache->device_slot(0), error)) return false;
                 graph_ms = ms_since(graph_start);
@@ -2102,7 +2107,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         }
     } cache_lease;
     if (const char* release = std::getenv("STRATA_PREFILL_RELEASE_CACHE"); release && std::atoi(release) != 0)
-        if (!cache_lease.suspend(m.cache, m.src, m.host_res, m.cs, on_cache_restore, err)) return false;
+        if (!cache_lease.suspend(m.cache, m.src, m.host_res, m.cs,
+                                on_cache_suspend, on_cache_restore, err)) return false;
     struct DecodeLease {
         decltype(on_decode_restore) restore_fn;
         bool active = false;

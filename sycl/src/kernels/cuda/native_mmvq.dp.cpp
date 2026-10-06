@@ -506,12 +506,19 @@ __dpct_inline__ void native_q3_k_mmvq_kernel(const Q3KBlock *__restrict__ w,
 
 // The pinned nonlinear IQ4 codebook and its CUDA two-stage byte lookup. The
 // explicit alignment satisfies the four 32-bit table loads; values are unchanged.
-inline dpct::global_memory<int8_t, 1>& iq4nl_values = *new dpct::global_memory<int8_t, 1>(sycl::range(16), {-127, -104, -83, -65, -49, -35, -22, -10, 1,
-                                   13, 25, 38, 53, 69, 89, 113});
+inline dpct::global_memory<int8_t, 1>& iq4nl_storage() {
+    // Retain the table for captured graphs; initialize only at its first use.
+    static auto* table = new dpct::global_memory<int8_t, 1>(sycl::range(16),
+        {-127, -104, -83, -65, -49, -35, -22, -10, 1, 13, 25, 38, 53, 69, 89, 113});
+    return *table;
+}
 
 static constexpr int8_t kIq4nlTable[16] = {-127, -104, -83, -65, -49, -35, -22, -10, 1, 13, 25, 38, 53, 69, 89, 113};
 __dpct_inline__ sycl::int2 iq4_table_lookup(int q4, int8_t *iq4nl_values) {
-    const uint32_t* table32 = reinterpret_cast<const uint32_t*>(iq4nl_values);
+    // Copy bytes into word objects: the codebook's int8_t storage neither
+    // promises uint32_t alignment nor permits a uint32_t aliasing load.
+    uint32_t table32[4];
+    __builtin_memcpy(table32, iq4nl_values, sizeof table32);
     uint32_t tmp[2];
     const uint32_t low_high_selection_indices = 0x32103210 | ((q4 & 0x88888888) >> 1);
 #pragma unroll
@@ -1999,13 +2006,13 @@ void small_mmvq(const void* weights, const void* x_q8_1, float* y,
         info::device::max_work_group_size. Adjust the work-group size if needed.
         */
         {
-            iq4nl_values.init(*s);
+            iq4nl_storage().init(*s);
 
             auto exp_props = sycl::ext::oneapi::experimental::properties{
                 sycl::ext::oneapi::experimental::use_root_sync};
 
             s->submit([&](sycl::handler &cgh) {
-                auto iq4nl_values_ptr_ct1 = iq4nl_values.get_ptr();
+                auto iq4nl_values_ptr_ct1 = iq4nl_storage().get_ptr();
 
                 cgh.parallel_for<dpct_kernel_name<
                     class native_small_mmvq_kernel_75ea67, Weight,
@@ -2026,13 +2033,13 @@ void small_mmvq(const void* weights, const void* x_q8_1, float* y,
         the limit. To get the device limit, query
         info::device::max_work_group_size. Adjust the work-group size if needed.
         */
-        iq4nl_values.init(*s);
+        iq4nl_storage().init(*s);
 
         auto exp_props = sycl::ext::oneapi::experimental::properties{
             sycl::ext::oneapi::experimental::use_root_sync};
 
         s->submit([&](sycl::handler &cgh) {
-            auto iq4nl_values_ptr_ct1 = iq4nl_values.get_ptr();
+            auto iq4nl_values_ptr_ct1 = iq4nl_storage().get_ptr();
 
             cgh.parallel_for<dpct_kernel_name<
                 class native_small_mmvq_kernel_7408e4, Weight,
@@ -2361,13 +2368,13 @@ void native_iq4_xs_mmvq(const void* weights, const void* x_q8_1, float* y,
         info::device::max_work_group_size. Adjust the work-group size if needed.
         */
         {
-            iq4nl_values.init(*s);
+            iq4nl_storage().init(*s);
 
             auto exp_props = sycl::ext::oneapi::experimental::properties{
                 sycl::ext::oneapi::experimental::use_root_sync};
 
             s->submit([&](sycl::handler &cgh) {
-                auto iq4nl_values_ptr_ct1 = iq4nl_values.get_ptr();
+                auto iq4nl_values_ptr_ct1 = iq4nl_storage().get_ptr();
 
                 cgh.parallel_for<
                     dpct_kernel_name<class native_iq4_xs_mmvq_kernel_4d1d70,
@@ -2388,13 +2395,13 @@ void native_iq4_xs_mmvq(const void* weights, const void* x_q8_1, float* y,
         the limit. To get the device limit, query
         info::device::max_work_group_size. Adjust the work-group size if needed.
         */
-        iq4nl_values.init(*s);
+        iq4nl_storage().init(*s);
 
         auto exp_props = sycl::ext::oneapi::experimental::properties{
             sycl::ext::oneapi::experimental::use_root_sync};
 
         s->submit([&](sycl::handler &cgh) {
-            auto iq4nl_values_ptr_ct1 = iq4nl_values.get_ptr();
+            auto iq4nl_values_ptr_ct1 = iq4nl_storage().get_ptr();
 
             cgh.parallel_for<
                 dpct_kernel_name<class native_iq4_xs_mmvq_kernel_e6ab3b,

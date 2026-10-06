@@ -1,8 +1,12 @@
 # MTP decode weights during layer-major prefill
 
-This experiment is off by default. Its build succeeds; GPU execution and
-model-output equality have not yet been verified. It does not establish a
-speed improvement or a successful full-context MTP run.
+This experiment is off by default. Its first real short request succeeds,
+but the repeat crashes inside the CPU Level Zero runtime before a BCS fault.
+The [failure](../gpu-stall-diagnosis/host-boundaries/draft-lease-runtime-crash/README.md)
+is recorded with exact matching debug symbols. A graph-retirement candidate
+builds and passes CPU ordering checks; it has not run on the GPU. The experiment
+does not establish stable model output, a speed improvement or successful
+full-context MTP operation.
 
 On Arc B570 10 GiB, Ryzen 5 5600X and 128 GiB RAM, the frozen candidate's
 normal-MTP serve run at exactly 262,144 context failed before prefill. Its
@@ -18,15 +22,19 @@ The subset head is gathered normally at startup and copied once into RAM.
 Layer-major prefill waits for outstanding device work, unmaps those decode
 weights, and keeps the dense projections and draft K/V used during prefill.
 After temporary prefill VRAM is freed, it maps the original virtual addresses
-and uploads the RAM images. Captured decode graphs retain their addresses.
+and uploads the RAM images. The candidate discards existing decode graphs
+before physical release and captures fresh ones after restoration. Unchanged
+virtual addresses alone do not validate cached backend allocation metadata.
 The restoration callback also runs on cancellation and error returns.
 
 Both arenas request 8 MiB physical segments. With this model's 675 MiB draft
 expert payload and 106,299 subset rows of 2,100 bytes each, rounding gives
-896 MiB of physical segments. These numbers are calculated from the payload
-geometry, not measurements of a successful release. Automatic cache sizing
-reserves the head padding, and the MTP VRAM counter includes physical padding.
-Actual remaining capacity and driver support still need GPU checks.
+896 MiB of physical segments. The failed repeat test measures three paired
+releases/restores at this size and verifies all restored payload bytes. The
+931,016,700-byte RAM uploads take 175.987-176.243 ms, excluding mapping and the
+optional verification. Automatic cache sizing reserves the head padding, and
+the MTP VRAM counter includes physical padding. These transfer observations
+do not turn the failed model run into a passing lease test.
 
 `STRATA_PREFILL_DRAFT_VERIFY=1` compares every payload byte with its immutable
 RAM image before unmapping and after restoration. This diagnostic performs
@@ -42,7 +50,10 @@ reads every payload word. Its first actual GPU attempt fails with
 `DEVICE_LOST` before completing any case. Its cleanup wait throws inside a
 `unique_ptr` destructor, so the abort stack does not identify the initial
 failing probe operation. This is not proof of unsupported 8 MiB segments.
-Even a successful probe would only verify storage and captured graph replay.
+A later current-library run passes all nine storage/replay rounds with no new
+xe fault: [receipt](../gpu-stall-diagnosis/host-boundaries/cli-and-storage/record.json).
+The subsequently failing real model demonstrates that this storage control
+does not validate model-level cached graphs or repeated request state.
 
 The full-context controller accepts `--release-draft --verify-draft` with an
 alternate frozen executable. Its reports use a distinct directory for these
@@ -62,7 +73,7 @@ Both processes have exited. The retained dump is subsequently deleted by
 the kernel at 14:48 without a saved copy. See
 [the investigation](../gpu-stall-diagnosis/README.md) for bounded stacks,
 kernel records and the limits of these observations.
-Next checks, after a healthy GPU control, are the actual storage probe, normal-MTP
-output equality with and without this option, cancellation/checkpoint reuse,
+Next checks are identifying the invalid residency object, validating graph
+retirement, normal-MTP output equality, cancellation/checkpoint reuse,
 full 262,144 normal-MTP execution, and repeated warm PP/TG measurements.
 The optimization goal remains PP 1,000 and TG 70 token/s.

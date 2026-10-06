@@ -123,6 +123,8 @@ public:
     }
 
 private:
+    // Caller must complete all graph consumers before dropping backend residency.
+    void discard_graphs_after_idle();
     bool verify_decode_payload(std::string& err) const;
     bool record_forward(int T, int step_row0, dpct::queue_ptr cs,
                         std::string &err);

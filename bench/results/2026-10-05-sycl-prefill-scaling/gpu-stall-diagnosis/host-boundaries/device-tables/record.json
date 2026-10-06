@@ -1,0 +1,55 @@
+{
+  "started_utc": "2026-10-06T14:45:08.057877+00:00",
+  "control_commit": "60fc342df60ec970b60c54a3d07a3f7a53273bdd",
+  "scope": "Production table constructors, lookup and byte permutation; CPU memory/device stand-ins, no GPU",
+  "sources": {
+    "control": {
+      "sycl/src/kernels/cuda/native_mmvq.dp.cpp": "f1ed7528db42c95955099b35fba08381b712ec4366344d267edebbf2336dc25f",
+      "sycl/src/kernels/cuda/s2_gemv_fast.dp.cpp": "55e690148ccdf797f5cf1b91d2164e7708706bd514b36d4c1548096008f19b48"
+    },
+    "candidate": {
+      "sycl/src/kernels/cuda/native_mmvq.dp.cpp": "f32a3c35e986d5081af653b8ed1aa9439a669622f340f9e532e8a53ae320ec1a",
+      "sycl/src/kernels/cuda/s2_gemv_fast.dp.cpp": "1631e9bf2584921901362ea4e9e865384cd25ddb658f476e72d99de20fc59c10"
+    }
+  },
+  "runs": [
+    {
+      "variant": "control",
+      "group": "lifetime",
+      "mode": "normal",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "control",
+      "group": "lookup",
+      "mode": "aligned",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "control",
+      "group": "lookup",
+      "mode": "misaligned",
+      "exit_code": 1,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "group": "lifetime",
+      "mode": "normal",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "group": "lookup",
+      "mode": "normal",
+      "exit_code": 0,
+      "expected_result": true
+    }
+  ],
+  "passed": true,
+  "regeneration_idempotent": true,
+  "finished_utc": "2026-10-06T14:45:10.562074+00:00"
+}

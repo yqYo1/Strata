@@ -41,7 +41,11 @@ constexpr int QK_S2 = 64;
 constexpr int MAX_SHARED_HALVES = 4096;      // 8 KB of shared for x; n_embd 2560 fits with room
 
 // byte -> the four code values with the -1 bias already applied, in element order (bits 0,2,4,6).
-inline dpct::constant_memory<float, 2>& c_codes = *new dpct::constant_memory<float, 2>(256, 4);   // never freed: exit-order safe
+inline dpct::constant_memory<float, 2>& s2_codes_storage() {
+    // Captured kernels retain the codebook; avoid creating a GPU before main.
+    static auto* table = new dpct::constant_memory<float, 2>(256, 4);
+    return *table;
+}
 
 bool g_lut_ready[64] = {};   // per device: __constant__ memory is per device (a layer split runs on two)
 
@@ -58,7 +62,7 @@ void ensure_lut() try {
     }
     const dpct::err0 e =
         DPCT_CHECK_ERROR(dpct::get_in_order_queue()
-                             .memcpy(c_codes.get_ptr(), host, sizeof(host))
+                             .memcpy(s2_codes_storage().get_ptr(), host, sizeof(host))
                              .wait());
 
     g_lut_ready[dev] = true;
@@ -179,7 +183,7 @@ void s2_gemv_fast(const uint16_t *x, const uint8_t *codes, const float *scales,
         the limit. To get the device limit, query
         info::device::max_work_group_size. Adjust the work-group size if needed.
         */
-        c_codes.init();
+        s2_codes_storage().init();
 
         auto exp_props = sycl::ext::oneapi::experimental::properties{
             sycl::ext::oneapi::experimental::use_root_sync};
@@ -189,7 +193,7 @@ void s2_gemv_fast(const uint16_t *x, const uint8_t *codes, const float *scales,
         dpct::get_in_order_queue().submit([&](sycl::handler &cgh) {
             sycl::local_accessor<uint8_t, 1> dpct_local_acc_ct1(
                 sycl::range(smem), cgh);
-            auto c_codes_acc_ct1 = c_codes.get_access(cgh);
+            auto c_codes_acc_ct1 = s2_codes_storage().get_access(cgh);
 
             cgh.parallel_for<dpct_kernel_name<class s2_gemv_fast_kernel_3b9618,
                                               dpct_kernel_scalar<true>>>(
@@ -211,7 +215,7 @@ void s2_gemv_fast(const uint16_t *x, const uint8_t *codes, const float *scales,
         the limit. To get the device limit, query
         info::device::max_work_group_size. Adjust the work-group size if needed.
         */
-        c_codes.init();
+        s2_codes_storage().init();
 
         auto exp_props = sycl::ext::oneapi::experimental::properties{
             sycl::ext::oneapi::experimental::use_root_sync};
@@ -221,7 +225,7 @@ void s2_gemv_fast(const uint16_t *x, const uint8_t *codes, const float *scales,
         dpct::get_in_order_queue().submit([&](sycl::handler &cgh) {
             sycl::local_accessor<uint8_t, 1> dpct_local_acc_ct1(
                 sycl::range(smem), cgh);
-            auto c_codes_acc_ct1 = c_codes.get_access(cgh);
+            auto c_codes_acc_ct1 = s2_codes_storage().get_access(cgh);
 
             cgh.parallel_for<dpct_kernel_name<class s2_gemv_fast_kernel_61f77f,
                                               dpct_kernel_scalar<false>>>(
