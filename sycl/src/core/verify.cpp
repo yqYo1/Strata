@@ -134,16 +134,42 @@ bool native_of(const WeightRef* w, const std::string& name, std::string& err) {
 }  // namespace
 
 namespace {
-std::atomic<const Verifier*> g_diag_verifier{nullptr};
+// A pointer load alone cannot keep a verifier alive until a watchdog call
+// finishes. Removal must wait for those calls before freeing mapped flags.
+std::mutex g_verifier_mutex;
+const Verifier* g_diag_verifier = nullptr;
 void diag_active_verifier(std::FILE* f) {
-    if (const Verifier* v = g_diag_verifier.load()) v->diag(f);
+    std::lock_guard<std::mutex> lock(g_verifier_mutex);
+    if (const Verifier* v = g_diag_verifier) v->diag(f);
 }
 // #267: every live verifier (a layer split has one per stage), for the release before the engine ends
 constexpr int kLiveMax = 16;
-std::atomic<Verifier*> g_live[kLiveMax];
-void release_live_verifiers(std::FILE* f) {
+Verifier* g_live[kLiveMax]{};
+void unregister_live_verifier(Verifier* verifier) {
+    std::lock_guard<std::mutex> lock(g_verifier_mutex);
+    if (g_diag_verifier == verifier) g_diag_verifier = nullptr;
     for (auto& slot : g_live)
-        if (Verifier* v = slot.load()) {
+        if (slot == verifier) slot = nullptr;
+}
+bool register_live_verifier(Verifier* verifier) {
+    std::lock_guard<std::mutex> lock(g_verifier_mutex);
+    for (auto& slot : g_live)
+        if (slot == verifier) {
+            g_diag_verifier = verifier;
+            return true;
+        }
+    for (auto& slot : g_live)
+        if (slot == nullptr) {
+            slot = verifier;
+            g_diag_verifier = verifier;
+            return true;
+        }
+    return false;
+}
+void release_live_verifiers(std::FILE* f) {
+    std::lock_guard<std::mutex> lock(g_verifier_mutex);
+    for (auto& slot : g_live)
+        if (Verifier* v = slot) {
             const Clock::time_point t0 = Clock::now();
             const bool done = v->release_gpu_waits(5000);
             if (f != nullptr)
@@ -286,12 +312,7 @@ void Verifier::diag(std::FILE* f) const {
 Verifier::~Verifier() try {
     // SYCL port: at process exit the Level Zero context can already be gone (serve mode's end), and a destructor
     // that throws aborts the process (exit 139); the waits and frees below are best-effort then.
-    const Verifier* self = this;
-    g_diag_verifier.compare_exchange_strong(self, nullptr);
-    for (auto& slot : g_live) {
-        Verifier* me = this;
-        slot.compare_exchange_strong(me, nullptr);
-    }
+    unregister_live_verifier(this);
     if (cs_) cs_->wait();
     if (copy_) copy_->wait();
     if (host_staging_) sycl::free(host_staging_, dpct::get_in_order_queue());
@@ -314,13 +335,7 @@ Verifier::~Verifier() try {
 bool Verifier::init(const WeightTable &wt, const ModelGeometry &g,
                     SessionState &ss, const VerifyHits &hits,
                     const NativeHead *head, int max_t, std::string &err) try {
-    g_diag_verifier.store(this);
-    diag_verify_fn().store(&diag_active_verifier);
-    for (auto& slot : g_live) {
-        Verifier* none = nullptr;
-        if (slot.load() == this || slot.compare_exchange_strong(none, this)) break;
-    }
-    release_gpu_fn().store(&release_live_verifiers);
+    unregister_live_verifier(this);
     device_ = dpct::get_current_device_id(); // a layer split's stage on another
                                              // GPU: its streams, graphs and
                                              // buffers live there
@@ -554,6 +569,14 @@ bool Verifier::init(const WeightTable &wt, const ModelGeometry &g,
             strata::kernels::cpu::expert_layout().max_blob, *cs_));
         if (!host_staging_) { err = "verify: host USM expert staging allocation failed"; return false; }
     }
+    // Publish only fully initialized flags and queues. A failed or partial
+    // initialization must not be observed by the watchdog.
+    if (!register_live_verifier(this)) {
+        err = "verify: too many live verifier stages for watchdog registration";
+        return false;
+    }
+    diag_verify_fn().store(&diag_active_verifier);
+    release_gpu_fn().store(&release_live_verifiers);
     std::fprintf(stderr, "strata verify: window up to %d tokens, %.1f MiB of device buffers\n", max_t,
                  (double) count.used / 1048576.0);
     return true;

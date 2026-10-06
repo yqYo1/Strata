@@ -1,0 +1,94 @@
+{
+  "scope": "Actual production registry/callbacks and registration/removal snippets; CPU verifier substitutes payload for mapped flags/queues; no SYCL/Level Zero/GPU",
+  "started_utc": "2026-10-06T09:37:32.821260+00:00",
+  "source_sha256": "4784e341ade1d7d775265766781c345da44c1e3602eef7bc63eb15b11de323fa",
+  "tests": [
+    {
+      "mode": "diag-race",
+      "exit_code": 0,
+      "elapsed_seconds": 0.035778940000454895,
+      "passed": true
+    },
+    {
+      "mode": "release-race",
+      "exit_code": 0,
+      "elapsed_seconds": 0.0346958860027371,
+      "passed": true
+    },
+    {
+      "mode": "failed-init",
+      "exit_code": 0,
+      "elapsed_seconds": 0.008693338000739459,
+      "passed": true
+    },
+    {
+      "mode": "capacity",
+      "exit_code": 0,
+      "elapsed_seconds": 0.008097289002762409,
+      "passed": true
+    },
+    {
+      "mode": "stress",
+      "exit_code": 0,
+      "elapsed_seconds": 0.01236455899925204,
+      "passed": true
+    }
+  ],
+  "controls": [
+    {
+      "mode": "diag-race",
+      "exit_code": -6,
+      "reproduced": "ASan heap-use-after-free"
+    },
+    {
+      "mode": "release-race",
+      "exit_code": -6,
+      "reproduced": "ASan heap-use-after-free"
+    }
+  ],
+  "passed": true,
+  "candidate": {
+    "compile": [
+      "g++",
+      "-std=c++20",
+      "-O1",
+      "-g",
+      "-pthread",
+      "-fsanitize=address,undefined",
+      "-fno-omit-frame-pointer",
+      "-DSTRATA_REGISTRY_CONTROL=0",
+      "-I/home/yayoi/.local/state/strata-sycl/verifier-registry-20261006-v3",
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/verifier_registry_host_test.cpp",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/verifier-registry-20261006-v3/registry-test"
+    ],
+    "fragment_sha256": "8f871ce21446c0eeb35777ba67f56a07483c44f9e9f78733779f1d2a1e35f89f",
+    "binary_sha256": "9377267025c77ad84e39ebe3150e2d78e84beecb01d7f53f0b3ca8204c7b234b"
+  },
+  "control_build": {
+    "compile": [
+      "g++",
+      "-std=c++20",
+      "-O1",
+      "-g",
+      "-pthread",
+      "-fsanitize=address,undefined",
+      "-fno-omit-frame-pointer",
+      "-DSTRATA_REGISTRY_CONTROL=1",
+      "-I/home/yayoi/.local/state/strata-sycl/verifier-registry-20261006-v3/control",
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/verifier_registry_host_test.cpp",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/verifier-registry-20261006-v3/control/registry-test"
+    ],
+    "fragment_sha256": "ea4e544af38bf0b2b7886320441ac22370d6ac9ef2ddba3cdf2f31d9bd722667",
+    "binary_sha256": "50ff4a311fad80fed82d578f265494f2b5370de24ff343927057b8c40e3a22c0",
+    "revision": "4a9b24724da2a683186d1ce4199c39c6090b51ae",
+    "source_sha256": "16a2cc59d4016597a462ad2af0443b4e6df1d06d5667a11d1190d8b569971414"
+  },
+  "helper_sha256": {
+    "sycl/tools/verifier_registry_host_test.cpp": "0fd88e957e10919e9252a247498a0b87558a4d9cb65df01c83bd08d37dc82790",
+    "sycl/tools/test_verifier_registry_host.py": "90159ef6460ef55534b21d307e4bb9790f02c19178afc72614364db52cf6a060"
+  },
+  "stress_observation": "2048 ownership cycles, 4334 diagnostic reads, 2107 release reads\nPASS: stress",
+  "pending": "Real SYCL callbacks, full model arithmetic/state/context/cancellation integration, GPU recovery cause and performance. This is a CPU registry regression, not proof of the original device fault trigger."
+}

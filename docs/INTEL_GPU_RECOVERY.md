@@ -157,3 +157,34 @@ shutdown or device reset was performed during these tests, so successful
 no-reboot hardware recovery remains pending.
 The full Strata arithmetic/context/cancellation/graph checks remain separate
 from this 64 KiB GPU health check.
+
+The verifier watchdog registry also had a CPU lifetime race: a callback could
+load an atomic raw pointer, then use the verifier after another thread removed
+and freed it. Registration now occurs after initialization, and a mutex covers
+each diagnostic/release callback and removal before mapped flags are freed.
+This follows the C++ rules for
+[object destruction](https://eel.is/c++draft/class.cdtor) and
+[thread synchronization](https://eel.is/c++draft/intro.races); an atomic pointer
+does not provide ownership of the pointed-to object.
+The [CPU regression record](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/verifier-registry/record.json)
+extracts the actual registration/callback/removal code, substituting CPU payloads
+for the verifier's mapped flags and queues. The pinned old control reproduces
+ASan heap-use-after-free for both diagnostic and release callbacks. Five
+candidate ASan/UBSan cases pass those races, failed initialization/retry,
+16-stage capacity/gap reuse and 2,048 ownership cycles across four owner threads
+with concurrent diagnostics/releases. Run it without a GPU:
+
+```sh
+python3 sycl/tools/test_verifier_registry_host.py --output /tmp/strata-verifier-registry-check
+```
+
+Both reference and CPU task-factor-9 engines compile/link with the registry
+change. Their measured production CPU archives remain byte-identical to the
+earlier exact-output/timing evidence. The
+[link environment audit](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/verifier-registry/link-environment-audit.json)
+preserves an initial failed identity check: configuring pinned ggml without
+`ONEAPI_ROOT` adds `-lm` and changes the executable. Explicit oneAPI/MKL paths
+make both builds use the prior recipe; restoring factor 0 reproduces the initial
+reference hash. Neither new engine ran on the GPU. This regression proves a
+possible CPU use-after-free, not the trigger of the original GPU fault or a
+speed improvement. Other source-review and full-context gates remain pending.

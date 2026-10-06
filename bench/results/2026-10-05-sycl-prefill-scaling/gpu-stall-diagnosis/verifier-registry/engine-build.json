@@ -1,0 +1,100 @@
+{
+  "started_utc": "2026-10-06T09:38:30.587594+00:00",
+  "scope": "Compile/link only; no GPU execution",
+  "source_sha256": "4784e341ade1d7d775265766781c345da44c1e3602eef7bc63eb15b11de323fa",
+  "original_cpu_pool_sha256": "41a2be640f1d1823f7ba88107beba4815cb3ad6f7ffc39e6f34575b8b1b1cd32",
+  "environment": {
+    "LIBRARY_PATH": "/opt/intel/oneapi/mkl/2026.1/lib"
+  },
+  "initial_link_attempt": "Modified verifier compiled; first link lacked MKL search path. Explicit installed MKL LIBRARY_PATH corrected it.",
+  "commands": [
+    {
+      "label": "reference-build",
+      "command": [
+        "cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-jit",
+        "--target",
+        "strata",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0
+    },
+    {
+      "label": "tasks9-configure",
+      "command": [
+        "cmake",
+        "-S",
+        "sycl",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-jit",
+        "-DSTRATA_NATIVE_POOL_TASK_FACTOR=9"
+      ],
+      "exit_code": 0
+    },
+    {
+      "label": "tasks9-build",
+      "command": [
+        "cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-jit",
+        "--target",
+        "strata",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0
+    },
+    {
+      "label": "restore-reference-configure",
+      "command": [
+        "cmake",
+        "-S",
+        "sycl",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-jit",
+        "-DSTRATA_NATIVE_POOL_TASK_FACTOR=0"
+      ],
+      "exit_code": 0
+    },
+    {
+      "label": "restore-reference-build",
+      "command": [
+        "cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-jit",
+        "--target",
+        "strata",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "builds": [
+    {
+      "task_factor": 0,
+      "binary": "/home/yayoi/.local/state/strata-sycl/verifier-registry-20261006-v3/strata-registry-guard-jit",
+      "sha256": "43ad474d17a51a27841d1bb0d536ac4e27fa95af83a4aecebd06f78fd1f4eaf3",
+      "production_cpu_archive_sha256": {
+        "libstrata_kernels_cpu.a": "766e388d445dc0da3627f1eae91c8a2575785ac739cdeffebce16b2237f8220f",
+        "ggml/src/libggml-cpu.a": "e3cefe0cf3c866aec7d9f06b9181ca4263304dd7307af462195a9b869be953f2",
+        "ggml/src/libggml-base.a": "98059baeddf43574e613949b8382d67c088f3f62d1b84c3d47bef31581bcae1c"
+      },
+      "gpu_executed": false
+    },
+    {
+      "task_factor": 9,
+      "binary": "/home/yayoi/.local/state/strata-sycl/verifier-registry-20261006-v3/strata-registry-guard-tasks9-jit",
+      "sha256": "8550be263b4966cd199612c148b3b93d22cb0a7ea63d02461ad562b85084a380",
+      "production_cpu_archive_sha256": {
+        "libstrata_kernels_cpu.a": "ac0a17a817eef883083214efa941ff2d6ead3e4549c0306e91b3bf78b038577c",
+        "ggml/src/libggml-cpu.a": "e3cefe0cf3c866aec7d9f06b9181ca4263304dd7307af462195a9b869be953f2",
+        "ggml/src/libggml-base.a": "98059baeddf43574e613949b8382d67c088f3f62d1b84c3d47bef31581bcae1c"
+      },
+      "gpu_executed": false
+    }
+  ],
+  "passed": false
+}

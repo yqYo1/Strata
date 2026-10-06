@@ -1,0 +1,12 @@
+{
+  "recorded_utc": "2026-10-06T09:49:08.871179+00:00",
+  "pinned_ggml_cmake": "/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/CMakeLists.txt",
+  "pinned_cmake_sha256": "38ddf053a1adfc14bb84b7722e3c4ec01909694f7e51e32013f36e7a324fa4f0",
+  "condition": "if (DEFINED MATH_LIBRARY)\n    target_link_libraries(ggml-base PRIVATE ${MATH_LIBRARY})\nelseif (NOT WIN32 AND NOT DEFINED ENV{ONEAPI_ROOT})\n    target_link_libraries(ggml-base PRIVATE m)\nendif()\n\nif (CMAKE_SYSTEM_NAME MATCHES \"Android\")\n    target_link_libraries(ggml-base PRIVATE dl)\nendif()",
+  "mismatch": "Existing recipe from oneAPI environment lacked explicit -lm; reconfiguration without ONEAPI_ROOT added it. First/ref-restored hashes differ and are preserved, not treated as a matched comparison.",
+  "fix": "Explicit ONEAPI_ROOT=/opt/intel/oneapi and LIBRARY_PATH=/opt/intel/oneapi/mkl/2026.1/lib for both configurations. No pinned source or CPU pool source was edited.",
+  "matched_reference_sha256": "43ad474d17a51a27841d1bb0d536ac4e27fa95af83a4aecebd06f78fd1f4eaf3",
+  "reference_matches_initial": true,
+  "paired_candidate_sha256": "798a7fb4bff8216f268fc798d3e75267df02dc5243e55d9b4b11eb5359b2e124",
+  "scope": "Build recipe/ELF identity only; GPU model arithmetic remains unverified"
+}
