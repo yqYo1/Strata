@@ -26,18 +26,11 @@ def process_identity(pid):
 
 
 class OwnedGdb:
-    def __init__(self, argv, output, env, *, inferior_tty_fd=None):
-        # The caller owns a newly allocated PTY and its protocol I/O. GDB's MI
-        # channel must remain separate from a serving child's stdin/stdout.
-        self.terminal = None
-        if inferior_tty_fd is not None:
-            if not os.isatty(inferior_tty_fd):
-                raise ValueError('inferior_tty_fd is not a terminal')
-            self.terminal = os.ttyname(inferior_tty_fd)
+    def __init__(self, argv, output, env):
         self.output = Path(output)
         self.output.mkdir(exist_ok=True)
         if any((self.output / name).exists() for name in
-               ['gdb-mi.stdout', 'engine-and-gdb.stderr', 'inferior.stderr']):
+               ['gdb-mi.stdout', 'engine-and-gdb.stderr']):
             raise FileExistsError('Refusing to overwrite a previous debugger log')
         self.responses, self.stops, self.inferior = {}, [], None
         self.exit_code, self.exit_signal, self.token = None, None, 0
@@ -50,16 +43,10 @@ class OwnedGdb:
         # keeps the inferior PID and GDB follows the real executable's symbols.
         self.launch = tempfile.TemporaryDirectory(prefix='strata-gdb-args-', dir='/tmp')
         launch = Path(self.launch.name)
-        (launch / 'argv.json').write_text(json.dumps({
-            'argv': [str(x) for x in argv],
-            'stderr': str(self.output.resolve() / 'inferior.stderr') if self.terminal else None}))
+        (launch / 'argv.json').write_text(json.dumps([str(x) for x in argv]))
         (launch / 'exec.py').write_text(
             'import json,os,sys\n'
-            'with open(sys.argv[1]) as f: config=json.load(f)\n'
-            'if config["stderr"] is not None:\n'
-            ' fd=os.open(config["stderr"],os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)\n'
-            ' os.dup2(fd,2);os.close(fd)\n'
-            'argv=config["argv"]\n'
+            'with open(sys.argv[1]) as f: argv=json.load(f)\n'
             'os.execvpe(argv[0],argv,os.environ)\n')
         (self.output / 'inferior-argv.json').write_text(json.dumps([str(x) for x in argv], indent=2) + '\n')
         self.child = subprocess.Popen(
@@ -76,8 +63,6 @@ class OwnedGdb:
                             '-gdb-set debuginfod enabled off', '-gdb-set mi-async on']:
                 self.command(command)
             self.command('-file-exec-and-symbols /usr/bin/python3')
-            if self.terminal:
-                self.command('-inferior-tty-set ' + self.terminal)
             self.command('-exec-arguments ' + str(launch / 'exec.py') + ' ' + str(launch / 'argv.json'))
         except BaseException:
             self.close()

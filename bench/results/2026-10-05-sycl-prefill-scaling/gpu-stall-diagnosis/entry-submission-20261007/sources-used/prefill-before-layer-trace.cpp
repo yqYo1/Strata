@@ -2403,11 +2403,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
     int64_t last_chunk_len = 0;
     for (int64_t c0 = 0; c0 < n; c0 += chunk_len(c0)) {
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
-        if (std::getenv("STRATA_TRACE")) {
-            std::fprintf(stderr, "strata trace: prompt chunk %lld of %lld, layers [%lld, %lld)\n",
-                         (long long) c0, (long long) n, (long long) LB, (long long) LE);
-            std::fflush(stderr);
-        }
+        if (std::getenv("STRATA_TRACE")) { std::fprintf(stderr, "strata trace: prompt chunk %lld of %lld\n", (long long) c0, (long long) n); std::fflush(stderr); }
         const int64_t T = chunk_len(c0), p0 = pos0 + c0;
         last_chunk_len = T;
         const bool gpu_rows = m.transfer_context && c0 + T <= m.residual_gpu_tokens;

@@ -1,0 +1,46 @@
+10^done
+(gdb) 
+~"\nProgram"
+~" received signal SIGINT, Interrupt.\n"
+~"0x00007ffff7ea24d4 in __libc_pause () at ../sysdeps/unix/sysv/linux/pause.c:29\n"
+&"warning: 29\t../sysdeps/unix/sysv/linux/pause.c: No such file or directory\n"
+*stopped,reason="signal-received",signal-name="SIGINT",signal-meaning="Interrupt",frame={addr="0x00007ffff7ea24d4",func="__libc_pause",args=[],file="../sysdeps/unix/sysv/linux/pause.c",fullname="./posix/../sysdeps/unix/sysv/linux/pause.c",line="29",arch="i386:x86-64"},thread-id="1",stopped-threads="all",core="2"
+11^done,threads=[{id="1",target-id="Thread 0x7ffff7da5740 (LWP 1045616)",name="protocol-probe",frame={level="0",addr="0x00007ffff7ea24d4",func="__libc_pause",args=[],file="../sysdeps/unix/sysv/linux/pause.c",fullname="./posix/../sysdeps/unix/sysv/linux/pause.c",line="29",arch="i386:x86-64"},state="stopped",core="2"}],current-thread-id="1"
+(gdb) 
+~"\nThread 1 (Thread 0x7ffff7da5740 (LWP 1045616) \"protocol-probe\"):\n"
+~"#0  0x00007ffff7ea24d4 in __libc_pause () at ../sysdeps/unix/sysv/linux/pause.c:29\n#1  0x0000555555555311 in main (argc=2, argv=0x7fffffffd9a8) at /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-gdb-pty-cpu-fixed-path/protocol.c:10\n"
+12^done
+(gdb) 
+~"rax            0xfffffffffffffdfe  -514\n"
+~"rbx            0x7fffffffd9a8      140737488345512\n"
+~"rcx            0x7ffff7ea24d4      140737352705236\n"
+~"rdx            0x55555555601c      93824992239644\n"
+~"rsi            0x55555555601c      93824992239644\n"
+~"rdi            0x7fffffffdf0c      140737488346892\n"
+~"rbp            0x7fffffffd880      0x7fffffffd880\n"
+~"rsp            0x7fffffffd838      0x7fffffffd838\n"
+~"r8             0x7ffff7facb20      140737353796384\n"
+~"r9             0x410               1040\n"
+~"r10            0x1                 1\n"
+~"r11            0x202               514\n"
+~"r12            0x2                 2\n"
+~"r13            0x0                 0\n"
+~"r14            0x555555557d78      93824992247160\n"
+~"r15            0x7ffff7ffd000      140737354125312\n"
+~"rip            0x7ffff7ea24d4      0x7ffff7ea24d4 <__libc_pause+20>\n"
+~"eflags         0x202               [ IF ]\n"
+~"cs             0x33                51\n"
+~"ss             0x2b                43\n"
+~"ds             0x0                 0\n"
+~"es             0x0                 0\n"
+~"fs             0x0                 0\n"
+~"gs             0x0                 0\n"
+~"fs_base        0x7ffff7da5740      140737351669568\n"
+~"gs_base        0x0                 0\n"
+13^done
+(gdb) 
+~"From                To                  Syms Read   Shared Object Library\n"
+~"0x00007ffff7fc6000  0x00007ffff7ff0195  Yes         /lib64/ld-linux-x86-64.so.2\n"
+~"0x00007ffff7dd0800  0x00007ffff7f58039  Yes         /usr/lib/x86_64-linux-gnu/libc.so.6\n"
+14^done
+(gdb) 

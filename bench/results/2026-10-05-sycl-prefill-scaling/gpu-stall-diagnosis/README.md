@@ -340,3 +340,10 @@ are preserved in
 The recorded runner source expects that persistent state directory, including
 the preserved compiler environment and health binary; it is an investigation
 artifact, not an installed general-purpose benchmark tool.
+
+The [2026-10-07 API-entry diagnostics](entry-submission-20261007/README.md)
+capture a long-prefill host submission stuck retrying `EAGAIN`, a bounded
+repeat that continues progressing, healthy GPU probes after both cleanups,
+and CPU/GDB serving-transport checks. They do not establish full-context
+capacity or a prevention fix. Prefill now identifies its layer range in
+chunk-start logs; the separate build receipt makes no GPU execution claim.

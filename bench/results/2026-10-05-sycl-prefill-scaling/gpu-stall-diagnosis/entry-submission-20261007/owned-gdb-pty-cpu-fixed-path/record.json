@@ -1,0 +1,85 @@
+{
+  "scope": "CPU-only real GDB/PTY stdin/stdout/stderr isolation; no GPU runtime or system changes",
+  "passed": true,
+  "compile_exit_code": 0,
+  "cases": [
+    {
+      "mode": "protocol",
+      "passed": true,
+      "requests": [
+        {
+          "bytes": 33,
+          "sha256": "749db2db920dd9741a73aeaa33987b0c14377eb1d396d4d9cc96a0ec555c5058",
+          "reply": "ACK 33 347491515"
+        },
+        {
+          "bytes": 1260008,
+          "sha256": "0bd383827fcf330ec676e3c6e40e49d13cdbab343754cc9943bc671a41fcd8ce",
+          "reply": "ACK 1260008 1373174543"
+        }
+      ],
+      "inferior": {
+        "pid": 1045496,
+        "start_ticks": 1698548,
+        "state": "t"
+      },
+      "debugger": {
+        "pid": 1045484,
+        "start_ticks": 1698540,
+        "state": "R"
+      },
+      "terminal": "/dev/pts/2",
+      "exit_code": 0,
+      "snapshots": [
+        {
+          "label": "waiting-protocol",
+          "stop": "*stopped,reason=\"signal-received\",signal-name=\"SIGINT\",signal-meaning=\"Interrupt\",frame={addr=\"0x00007ffff7ec3d31\",func=\"__GI___libc_read\",args=[{name=\"fd\",value=\"0\"},{name=\"buf\",value=\"0x555555559730\"},{name=\"nbytes\",value=\"1024\"}],file=\"../sysdeps/unix/sysv/linux/read.c\",fullname=\"./io/../sysdeps/unix/sysv/linux/read.c\",line=\"26\",arch=\"i386:x86-64\"},thread-id=\"1\",stopped-threads=\"all\",core=\"5\"",
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-gdb-pty-cpu-fixed-path/protocol/waiting-protocol.mi.txt",
+          "resumed": true
+        }
+      ],
+      "stderr": "DIAGNOSTIC-START\nDIAGNOSTIC-REQUEST 33\nDIAGNOSTIC-REQUEST 1260008\n",
+      "cleanup": {
+        "forced": false,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    },
+    {
+      "mode": "blocked",
+      "passed": true,
+      "requests": [],
+      "inferior": {
+        "pid": 1045616,
+        "start_ticks": 1698755,
+        "state": "t"
+      },
+      "debugger": {
+        "pid": 1045601,
+        "start_ticks": 1698748,
+        "state": "R"
+      },
+      "terminal": "/dev/pts/2",
+      "exit_code": null,
+      "snapshots": [
+        {
+          "label": "waiting-protocol",
+          "stop": "*stopped,reason=\"signal-received\",signal-name=\"SIGINT\",signal-meaning=\"Interrupt\",frame={addr=\"0x00007ffff7ea24d4\",func=\"__libc_pause\",args=[],file=\"../sysdeps/unix/sysv/linux/pause.c\",fullname=\"./posix/../sysdeps/unix/sysv/linux/pause.c\",line=\"29\",arch=\"i386:x86-64\"},thread-id=\"1\",stopped-threads=\"all\",core=\"2\"",
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-gdb-pty-cpu-fixed-path/blocked/waiting-protocol.mi.txt",
+          "resumed": true
+        }
+      ],
+      "stderr": "DIAGNOSTIC-START\n",
+      "cleanup": {
+        "forced": true,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    }
+  ],
+  "source_sha256": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/test_owned_gdb_protocol.py": "9a52c2ab9ed645475602f5d60b9e43f274e92766a389e3d17546770b8d340877",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/owned_gdb.py": "547838e423525c824b7c033f7490153f8174d772e7c8f736c2f9255b50de758c",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-gdb-pty-cpu-fixed-path/protocol.c": "45fa1c30de9eb3d8a75b9dd438a8ed092b12ded1066b6e17dce56a0b7456b062"
+  }
+}

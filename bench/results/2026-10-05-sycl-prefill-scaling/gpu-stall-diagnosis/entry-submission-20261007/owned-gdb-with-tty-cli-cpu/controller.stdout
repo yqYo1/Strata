@@ -1,0 +1,227 @@
+{
+  "scope": "Actual GDB as parent of CPU-only fixtures; no GPU runtime, sudo, services or reset",
+  "compile_argv": [
+    "/usr/bin/gcc",
+    "-g",
+    "-O0",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-gdb-with-tty-cli-cpu/probe.c",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-gdb-with-tty-cli-cpu/probe"
+  ],
+  "cases": [
+    {
+      "mode": "0",
+      "passed": true,
+      "inferior": {
+        "pid": 1037367,
+        "start_ticks": 1685974,
+        "state": "t"
+      },
+      "debugger": {
+        "pid": 1037355,
+        "start_ticks": 1685964,
+        "state": "R"
+      },
+      "exit_code": 0,
+      "exit_signal": null,
+      "stops": [
+        "*stopped,reason=\"exited-normally\""
+      ],
+      "snapshots": [],
+      "cleanup": {
+        "forced": false,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    },
+    {
+      "mode": "7",
+      "passed": true,
+      "inferior": {
+        "pid": 1037414,
+        "start_ticks": 1686006,
+        "state": "t"
+      },
+      "debugger": {
+        "pid": 1037382,
+        "start_ticks": 1685999,
+        "state": "R"
+      },
+      "exit_code": 7,
+      "exit_signal": null,
+      "stops": [
+        "*stopped,reason=\"exited\",exit-code=\"07\""
+      ],
+      "snapshots": [],
+      "cleanup": {
+        "forced": false,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    },
+    {
+      "mode": "127",
+      "passed": true,
+      "inferior": {
+        "pid": 1037447,
+        "start_ticks": 1686041,
+        "state": "t"
+      },
+      "debugger": {
+        "pid": 1037431,
+        "start_ticks": 1686032,
+        "state": "R"
+      },
+      "exit_code": 127,
+      "exit_signal": null,
+      "stops": [
+        "*stopped,reason=\"exited\",exit-code=\"0177\""
+      ],
+      "snapshots": [],
+      "cleanup": {
+        "forced": false,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    },
+    {
+      "mode": "argv",
+      "passed": true,
+      "inferior": {
+        "pid": 1037468,
+        "start_ticks": 1686075,
+        "state": "t"
+      },
+      "debugger": {
+        "pid": 1037456,
+        "start_ticks": 1686067,
+        "state": "R"
+      },
+      "exit_code": 0,
+      "exit_signal": null,
+      "stops": [
+        "*stopped,reason=\"exited-normally\""
+      ],
+      "snapshots": [],
+      "cleanup": {
+        "forced": false,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    },
+    {
+      "mode": "resume",
+      "passed": true,
+      "inferior": {
+        "pid": 1037492,
+        "start_ticks": 1686104,
+        "state": "t"
+      },
+      "debugger": {
+        "pid": 1037479,
+        "start_ticks": 1686096,
+        "state": "R"
+      },
+      "exit_code": 0,
+      "exit_signal": null,
+      "stops": [
+        "*stopped,reason=\"signal-received\",signal-name=\"SIGINT\",signal-meaning=\"Interrupt\",frame={addr=\"0x00007ffff7e94b7a\",func=\"__GI___clock_nanosleep\",args=[{name=\"clock_id\",value=\"0\"},{name=\"clock_id@entry\",value=\"0\"},{name=\"flags\",value=\"0\"},{name=\"flags@entry\",value=\"0\"},{name=\"req\",value=\"0x7fffffffd810\"},{name=\"req@entry\",value=\"0x7fffffffd810\"},{name=\"rem\",value=\"0x0\"},{name=\"rem@entry\",value=\"0x0\"}],file=\"../sysdeps/unix/sysv/linux/clock_nanosleep.c\",fullname=\"./time/../sysdeps/unix/sysv/linux/clock_nanosleep.c\",line=\"78\",arch=\"i386:x86-64\"},thread-id=\"1\",stopped-threads=\"all\",core=\"4\"",
+        "resumed",
+        "*stopped,reason=\"signal-received\",signal-name=\"SIGINT\",signal-meaning=\"Interrupt\",frame={addr=\"0x00007ffff7e94b7a\",func=\"__GI___clock_nanosleep\",args=[{name=\"clock_id\",value=\"0\"},{name=\"clock_id@entry\",value=\"0\"},{name=\"flags\",value=\"0\"},{name=\"flags@entry\",value=\"0\"},{name=\"req\",value=\"0x7fffffffd810\"},{name=\"req@entry\",value=\"0x7fffffffd810\"},{name=\"rem\",value=\"0x0\"},{name=\"rem@entry\",value=\"0x0\"}],file=\"../sysdeps/unix/sysv/linux/clock_nanosleep.c\",fullname=\"./time/../sysdeps/unix/sysv/linux/clock_nanosleep.c\",line=\"78\",arch=\"i386:x86-64\"},thread-id=\"1\",stopped-threads=\"all\",core=\"4\"",
+        "resumed",
+        "*stopped,reason=\"exited-normally\""
+      ],
+      "snapshots": [
+        {
+          "label": "snapshot-1",
+          "stop": "*stopped,reason=\"signal-received\",signal-name=\"SIGINT\",signal-meaning=\"Interrupt\",frame={addr=\"0x00007ffff7e94b7a\",func=\"__GI___clock_nanosleep\",args=[{name=\"clock_id\",value=\"0\"},{name=\"clock_id@entry\",value=\"0\"},{name=\"flags\",value=\"0\"},{name=\"flags@entry\",value=\"0\"},{name=\"req\",value=\"0x7fffffffd810\"},{name=\"req@entry\",value=\"0x7fffffffd810\"},{name=\"rem\",value=\"0x0\"},{name=\"rem@entry\",value=\"0x0\"}],file=\"../sysdeps/unix/sysv/linux/clock_nanosleep.c\",fullname=\"./time/../sysdeps/unix/sysv/linux/clock_nanosleep.c\",line=\"78\",arch=\"i386:x86-64\"},thread-id=\"1\",stopped-threads=\"all\",core=\"4\"",
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-gdb-with-tty-cli-cpu/resume/snapshot-1.mi.txt",
+          "resumed": true
+        },
+        {
+          "label": "snapshot-2",
+          "stop": "*stopped,reason=\"signal-received\",signal-name=\"SIGINT\",signal-meaning=\"Interrupt\",frame={addr=\"0x00007ffff7e94b7a\",func=\"__GI___clock_nanosleep\",args=[{name=\"clock_id\",value=\"0\"},{name=\"clock_id@entry\",value=\"0\"},{name=\"flags\",value=\"0\"},{name=\"flags@entry\",value=\"0\"},{name=\"req\",value=\"0x7fffffffd810\"},{name=\"req@entry\",value=\"0x7fffffffd810\"},{name=\"rem\",value=\"0x0\"},{name=\"rem@entry\",value=\"0x0\"}],file=\"../sysdeps/unix/sysv/linux/clock_nanosleep.c\",fullname=\"./time/../sysdeps/unix/sysv/linux/clock_nanosleep.c\",line=\"78\",arch=\"i386:x86-64\"},thread-id=\"1\",stopped-threads=\"all\",core=\"4\"",
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-gdb-with-tty-cli-cpu/resume/snapshot-2.mi.txt",
+          "resumed": true
+        }
+      ],
+      "cleanup": {
+        "forced": false,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    },
+    {
+      "mode": "crash",
+      "passed": true,
+      "inferior": {
+        "pid": 1037681,
+        "start_ticks": 1686439,
+        "state": "t"
+      },
+      "debugger": {
+        "pid": 1037669,
+        "start_ticks": 1686430,
+        "state": "R"
+      },
+      "exit_code": null,
+      "exit_signal": null,
+      "stops": [
+        "*stopped,reason=\"signal-received\",signal-name=\"SIGSEGV\",signal-meaning=\"Segmentation fault\",frame={addr=\"0x00007ffff7e46c0c\",func=\"__pthread_kill_implementation\",args=[{name=\"no_tid\",value=\"0\"},{name=\"signo\",value=\"11\"},{name=\"threadid\",value=\"<optimized out>\"}],file=\"./nptl/pthread_kill.c\",fullname=\"./nptl/./nptl/pthread_kill.c\",line=\"44\",arch=\"i386:x86-64\"},thread-id=\"1\",stopped-threads=\"all\",core=\"9\""
+      ],
+      "snapshots": [
+        {
+          "label": "first-fault",
+          "stop": "*stopped,reason=\"signal-received\",signal-name=\"SIGSEGV\",signal-meaning=\"Segmentation fault\",frame={addr=\"0x00007ffff7e46c0c\",func=\"__pthread_kill_implementation\",args=[{name=\"no_tid\",value=\"0\"},{name=\"signo\",value=\"11\"},{name=\"threadid\",value=\"<optimized out>\"}],file=\"./nptl/pthread_kill.c\",fullname=\"./nptl/./nptl/pthread_kill.c\",line=\"44\",arch=\"i386:x86-64\"},thread-id=\"1\",stopped-threads=\"all\",core=\"9\"",
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-gdb-with-tty-cli-cpu/crash/first-fault.mi.txt",
+          "resumed": false
+        }
+      ],
+      "cleanup": {
+        "forced": true,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    },
+    {
+      "mode": "blocked",
+      "passed": true,
+      "inferior": {
+        "pid": 1037707,
+        "start_ticks": 1686473,
+        "state": "t"
+      },
+      "debugger": {
+        "pid": 1037694,
+        "start_ticks": 1686465,
+        "state": "R"
+      },
+      "exit_code": null,
+      "exit_signal": null,
+      "stops": [
+        "*stopped,reason=\"signal-received\",signal-name=\"SIGINT\",signal-meaning=\"Interrupt\",frame={addr=\"0x00007ffff7e94b7a\",func=\"__GI___clock_nanosleep\",args=[{name=\"clock_id\",value=\"0\"},{name=\"clock_id@entry\",value=\"0\"},{name=\"flags\",value=\"0\"},{name=\"flags@entry\",value=\"0\"},{name=\"req\",value=\"0x7fffffffd810\"},{name=\"req@entry\",value=\"0x7fffffffd810\"},{name=\"rem\",value=\"0x0\"},{name=\"rem@entry\",value=\"0x0\"}],file=\"../sysdeps/unix/sysv/linux/clock_nanosleep.c\",fullname=\"./time/../sysdeps/unix/sysv/linux/clock_nanosleep.c\",line=\"78\",arch=\"i386:x86-64\"},thread-id=\"1\",stopped-threads=\"all\",core=\"7\""
+      ],
+      "snapshots": [
+        {
+          "label": "snapshot",
+          "stop": "*stopped,reason=\"signal-received\",signal-name=\"SIGINT\",signal-meaning=\"Interrupt\",frame={addr=\"0x00007ffff7e94b7a\",func=\"__GI___clock_nanosleep\",args=[{name=\"clock_id\",value=\"0\"},{name=\"clock_id@entry\",value=\"0\"},{name=\"flags\",value=\"0\"},{name=\"flags@entry\",value=\"0\"},{name=\"req\",value=\"0x7fffffffd810\"},{name=\"req@entry\",value=\"0x7fffffffd810\"},{name=\"rem\",value=\"0x0\"},{name=\"rem@entry\",value=\"0x0\"}],file=\"../sysdeps/unix/sysv/linux/clock_nanosleep.c\",fullname=\"./time/../sysdeps/unix/sysv/linux/clock_nanosleep.c\",line=\"78\",arch=\"i386:x86-64\"},thread-id=\"1\",stopped-threads=\"all\",core=\"7\"",
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-gdb-with-tty-cli-cpu/blocked/snapshot.mi.txt",
+          "resumed": false
+        }
+      ],
+      "cleanup": {
+        "forced": true,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    }
+  ],
+  "passed": true,
+  "compile_exit_code": 0,
+  "overwrite_refused": true,
+  "source_sha256": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/test_owned_gdb.py": "000d5082739ed3a20d6a7dee8ca277b95db0465562de09eb139f9e1daa96fde8",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/owned_gdb.py": "547838e423525c824b7c033f7490153f8174d772e7c8f736c2f9255b50de758c",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-gdb-with-tty-cli-cpu/probe.c": "718f515ec332e77a5ce5067fa012f9620cc91cbe63f0c98a2aab937629b1e0ad"
+  }
+}

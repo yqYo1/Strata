@@ -112,6 +112,15 @@ the clean `health_environment()` also removes inherited `ZEL_` settings.
 Environment variables must be set before launch. They cannot turn tracing on
 in a process that is already running.
 
+For a long model investigation, a smaller log can retain Level Zero API
+entries, error results and parameter validation while suppressing successful
+argument dumps and the additional UR tracing layer. Record the exact settings
+and elapsed time in the supervisor. This still changes execution timing; it
+does not replace the detailed profile for short first checks.
+Prefill's chunk-start trace also identifies its zero-based layer range,
+`[begin, end)`, so repeated positions in layer-major processing are distinguishable.
+These start messages do not establish completed token processing.
+
 For a wait that needs a CPU backtrace, `sycl/tools/owned_gdb.py` starts a new
 diagnostic process as GDB's child. It can capture all threads and resume its
 own requested interrupt without root or a change to the host's ptrace policy.
@@ -120,6 +129,15 @@ Its cleanup checks the debugger and inferior separately; a surviving process
 blocks another GPU job. A debugger pause can affect host-dependent GPU work,
 so record the pause and do not treat a fault during it as an untouched
 reproduction. This helper is for diagnosis, not performance measurements.
+
+A serving diagnostic can pass a newly allocated PTY slave descriptor as
+`inferior_tty_fd`. The caller owns the PTY and its stdin/stdout protocol;
+the helper puts the inferior's stderr in `inferior.stderr`, separate from
+GDB/MI and protocol replies. The
+[CPU protocol checks](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/entry-submission-20261007/README.md)
+cover a 1,260,008-byte request, exact replies, stack capture/resume and bounded
+cleanup. These checks establish transport and process ownership, not GPU
+serving correctness.
 
 The [2026-10-07 logging check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/runtime-tracing-20261007/README.md)
 confirmed Level Zero entry/results and UR traces before the child exited,
