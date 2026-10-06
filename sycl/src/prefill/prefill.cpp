@@ -2104,6 +2104,32 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     } cache_lease;
     if (const char* release = std::getenv("STRATA_PREFILL_RELEASE_CACHE"); release && std::atoi(release) != 0)
         if (!cache_lease.suspend(m.cache, m.src, m.host_res, m.cs, on_cache_restore, err)) return false;
+    struct DecodeLease {
+        decltype(on_decode_restore) restore_fn;
+        bool active = false;
+        bool restore(std::string& error) {
+            if (!active) return true;
+            if (!restore_fn(error)) return false;
+            active = false;
+            return true;
+        }
+        ~DecodeLease() {
+            if (!active) return;
+            try {
+                std::string error;
+                if (restore(error)) return;
+                std::fprintf(stderr, "prefill: cannot restore decode weights: %s\n", error.c_str());
+            } catch (const std::exception& e) {
+                std::fprintf(stderr, "prefill: cannot restore decode weights: %s\n", e.what());
+            }
+            std::terminate();
+        }
+    } decode_lease{on_decode_restore};
+    if (on_decode_suspend) {
+        if (!on_decode_restore) { err = "prefill: decode release requires a restoration callback"; return false; }
+        decode_lease.active = true;
+        if (!on_decode_suspend(err)) return false;
+    }
     // Each chunk reads its old host rows before writing the same range back. In-order
     // compute plus the synchronized callback prevent the download racing its upload.
     core::ExpertCache layer_cache;
@@ -2247,6 +2273,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     m.R = restore.r;
     device_rows.reset();
     if (!cache_lease.restore(err)) return false;
+    if (!decode_lease.restore(err)) return false;
     if (cache_lease.cache)
         std::fprintf(stderr, "strata prefill cache release: %lld physical bytes, %llu restored bytes, source %s, "
                      "suspend %.3f ms, restore %.3f ms, graph %.3f ms, same_address %d, slots restored\n",

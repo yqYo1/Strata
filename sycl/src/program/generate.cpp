@@ -5676,6 +5676,10 @@ int main(int argc, char **argv) try {
             }
             return true;
         };
+        if (!serve_no_mtp && !multi_gpu && mtp.can_release_decode_weights()) {
+            sp.on_decode_suspend = [&](std::string& e) { return mtp.suspend_decode_weights(e); };
+            sp.on_decode_restore = [&](std::string& e) { return mtp.restore_decode_weights(e); };
+        }
         sp.on_chunk = [&](const float* R_rows, int64_t T, int64_t p0, std::string& e) -> bool {
             std::vector<int32_t> nxt((size_t) T);
             for (int64_t t = 0; t < T; ++t) nxt[(size_t) t] = (int32_t) cur[(size_t) (p0 + t + 1)];
@@ -7459,6 +7463,10 @@ int main(int argc, char **argv) try {
             if (!mtp.bind(wt, &native_head, nullptr, err)) {
                 std::fprintf(stderr, "strata generate: %s\n", err.c_str());
                 return 1;
+            }
+            if (mtp.can_release_decode_weights()) {
+                prefill.on_decode_suspend = [&](std::string& e) { return mtp.suspend_decode_weights(e); };
+                prefill.on_decode_restore = [&](std::string& e) { return mtp.restore_decode_weights(e); };
             }
             prefill.on_chunk = [&](const float* R_rows, int64_t T, int64_t p0, std::string& e) -> bool {
                 // cell i pairs R_i with the token at i + 1 (every such token is in the prompt)

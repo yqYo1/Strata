@@ -22,6 +22,7 @@
 #include <sycl/sycl.hpp>
 #include <dpct/dpct.hpp>
 #include "strata/core/layer.hpp"
+#include "strata/core/expert_cache.hpp"
 #include "strata/core/session.hpp"
 #include "strata/kernels/sampler.hpp"
 
@@ -58,6 +59,11 @@ public:
         return true;
     }
     uint64_t vram_bytes() const { return vram_; }
+    /// Opt-in prompt lease: keep dense projections and K/V live, but unback
+    /// immutable decode-only weights. Their virtual addresses remain stable.
+    bool can_release_decode_weights() const { return release_decode_weights_; }
+    bool suspend_decode_weights(std::string& err);
+    bool restore_decode_weights(std::string& err);
     /// The draft layer's K/V state (read-only: --serve's STRATA_STATE_HASH check hashes it)
     const QsaState& kv_state() const { return st_; }
     /// KV streaming: refill the ring of the drafter's window from its host copy for a sequence that continues at
@@ -117,6 +123,7 @@ public:
     }
 
 private:
+    bool verify_decode_payload(std::string& err) const;
     bool record_forward(int T, int step_row0, dpct::queue_ptr cs,
                         std::string &err);
     bool capture_prefill(int T, std::string& err);
@@ -160,6 +167,10 @@ private:
     std::vector<Tensor> tensors_;
     uint8_t* dense_ = nullptr;
     uint8_t* experts_ = nullptr;
+    ExpertCache expert_storage_, head_storage_;
+    std::vector<uint8_t> expert_host_, head_host_;
+    bool release_decode_weights_ = false, decode_weights_suspended_ = false;
+    bool verify_decode_weights_ = false;
     void* state_arena_ = nullptr;
     QsaState st_;
     void* arena_ = nullptr;

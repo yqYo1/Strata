@@ -10,6 +10,8 @@ p=argparse.ArgumentParser()
 p.add_argument('--context',type=int,default=262144)
 p.add_argument('--serve-chunk',type=int,default=128)
 p.add_argument('--gpu-rows',type=int,default=0)
+p.add_argument('--release-draft',action='store_true',help='Lease immutable MTP decode weights during layer-major prefill')
+p.add_argument('--verify-draft',action='store_true',help='Compare every leased weight byte before and after restoration')
 p.add_argument('--recovery',type=Path,default=Path.home()/'.local/state/strata-sycl/residual-inplace-recovery')
 p.add_argument('--executable',type=Path,help='Frozen alternate engine; its reports use a separate directory')
 p.add_argument('--stage',choices=['boundary','cli','serve'],required=True)
@@ -21,6 +23,9 @@ env=dict(os.environ,**ref['env'])
 for k in list(env):
  if k.startswith('STRATA_'):env.pop(k)
 env.update(STRATA_IO_THREADS='16',STRATA_PREFILL_RING='8',STRATA_PREFILL_FIRST='0',STRATA_PREFILL_ATTN_BATCH='128',STRATA_PREFILL_ATTN_LAYOUT='4',STRATA_PREFILL_TOPK_TUNED='1',STRATA_GDN_KEYHEAD='0',STRATA_GDN_KEYHEAD_TUNED='1',STRATA_PREFILL_COMPACT='2',STRATA_PREFILL_LAYER_MAJOR='1',STRATA_PREFILL_LAYER_MAJOR_R_INPLACE='1',STRATA_PREFILL_LAYER_MAJOR_R_GPU=str(a.gpu_rows),STRATA_PREFILL_RELEASE_CACHE='1',STRATA_PREFILL_CACHE_ALLOC='vmm',STRATA_PREFILL_CACHE_RESTORE='ram',SYCL_CACHE_PERSISTENT=os.environ.get('SYCL_CACHE_PERSISTENT','0'))
+if a.verify_draft and not a.release_draft:p.error('--verify-draft requires --release-draft')
+if a.release_draft:env['STRATA_PREFILL_RELEASE_DRAFT']='1'
+if a.verify_draft:env['STRATA_PREFILL_DRAFT_VERIFY']='1'
 source=list(map(int,(recovery/'coding-context-256k-tokens.txt').read_text().split()))
 assert len(source)>=a.context and a.context>=64
 # The raw coding prefix is an unfinished user message and greedily predicts
@@ -31,8 +36,9 @@ def prompt_ids(n):
  ids=source[:n-len(assistant_suffix)]+assistant_suffix
  assert len(ids)==n
  return ids
-out=recovery/(f'{a.stage}-{a.context}'+('-'+exe.stem if a.executable else ''));out.mkdir(exist_ok=True)
-report=dict(stage=a.stage,context=a.context,completed=False,runs=[],binary_sha256=hashlib.sha256(exe.read_bytes()).hexdigest(),env={k:v for k,v in env.items() if k.startswith(('STRATA_','ONEAPI_','SYCL_')) or k=='LD_LIBRARY_PATH'})
+variant=('-draft-lease' if a.release_draft else '')+('-verified' if a.verify_draft else '')
+out=recovery/(f'{a.stage}-{a.context}'+('-'+exe.stem if a.executable else '')+variant);out.mkdir(exist_ok=True)
+report=dict(stage=a.stage,context=a.context,completed=False,runs=[],binary_sha256=hashlib.sha256(exe.read_bytes()).hexdigest(),controller_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),env={k:v for k,v in env.items() if k.startswith(('STRATA_','ONEAPI_','SYCL_','UR_','ZE_')) or k=='LD_LIBRARY_PATH'})
 report['assistant_suffix']=assistant_suffix
 report['source_fixture_sha256']=hashlib.sha256((recovery/'coding-context-256k-tokens.txt').read_bytes()).hexdigest()
 def save():(out/'summary.json').write_text(json.dumps(report,indent=2)+'\n')
@@ -103,6 +109,15 @@ try:
      r=dict(name=name,input_tokens=n,max_new=new,ids=output,protocol=lines,wall_seconds=time.monotonic()-start,request_sha256=hashlib.sha256(request.encode()).hexdigest());report['runs'].append(r);save()
      with (out/'engine.log').open('rb') as trace:
       trace.seek(trace_start);text=trace.read(log.tell()-trace_start).decode()
+     if a.release_draft:
+      releases=re.findall(r'strata mtp decode release: (\d+) physical bytes,.*?total ([\d.]+) ms, wait ([\d.]+) ms, unmap ([\d.]+) ms, verify ([\d.]+) ms, verified=(\d+)',text)
+      restores=re.findall(r'strata mtp decode restore: (\d+) payload bytes from RAM, same addresses; total ([\d.]+) ms, map ([\d.]+) ms, copy ([\d.]+) ms, verify ([\d.]+) ms, verified=(\d+)',text)
+      r['mtp_decode_lease']={
+       'releases':[dict(physical_bytes=int(v[0]),total_ms=float(v[1]),wait_ms=float(v[2]),unmap_ms=float(v[3]),verify_ms=float(v[4]),verified=bool(int(v[5]))) for v in releases],
+       'restores':[dict(payload_bytes=int(v[0]),total_ms=float(v[1]),map_ms=float(v[2]),copy_ms=float(v[3]),verify_ms=float(v[4]),verified=bool(int(v[5]))) for v in restores]}
+      assert len(releases)==len(restores),(name,releases,restores)
+      if name=='fills-context' and n-1>a.serve_chunk:assert releases,'layer-major prompt did not lease MTP decode weights'
+      if a.verify_draft:assert all(int(v[5])==1 for v in releases+restores)
      windows=[(int(pos),int(count)) for pos,count in re.findall(r'strata trace: window (-?\d+) (-?\d+)',text)]
      r['verify_windows']=windows
      assert all(pos>=0 and count>0 and pos+count<=a.context for pos,count in windows),windows

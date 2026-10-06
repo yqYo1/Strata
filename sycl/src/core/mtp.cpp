@@ -132,14 +132,89 @@ MtpDrafter::~MtpDrafter() {
     if (h_chist_) sycl::free(h_chist_, dpct::get_in_order_queue());
     if (cs_) dpct::get_current_device().destroy_queue(cs_);
     if (dense_) sycl::free(dense_, dpct::get_in_order_queue());
-    if (experts_) sycl::free(experts_, dpct::get_in_order_queue());
+    if (experts_ && !expert_storage_.segmented()) sycl::free(experts_, dpct::get_in_order_queue());
     if (state_arena_) sycl::free(state_arena_, dpct::get_in_order_queue());
     if (arena_) sycl::free(arena_, dpct::get_in_order_queue());
     if (head_logits_) sycl::free(head_logits_, dpct::get_in_order_queue());
-    if (dhead_) sycl::free(dhead_, dpct::get_in_order_queue());
+    if (dhead_ && !head_storage_.segmented()) sycl::free(dhead_, dpct::get_in_order_queue());
     if (dvocab_) sycl::free(dvocab_, dpct::get_in_order_queue());
     void* hosts[] = {h_tok_, h_step_, h_pos_, h_row_, h_out_, h_prob_};
     for (void *h : hosts) if (h) sycl::free(h, dpct::get_in_order_queue());
+}
+
+bool MtpDrafter::verify_decode_payload(std::string& err) const {
+    if (!verify_decode_weights_) return true;
+    auto check = [&](const ExpertCache& storage, const std::vector<uint8_t>& host,
+                     const uint8_t* address) {
+        if (storage.full_bytes() == 0) return true;
+        if (host.size() != (size_t) storage.full_bytes()) {
+            err = "mtp: immutable decode source has the wrong length"; return false;
+        }
+        std::vector<uint8_t> actual(host.size());
+        dpct::get_in_order_queue().memcpy(actual.data(), address, actual.size()).wait_and_throw();
+        if (actual != host) { err = "mtp: decode weight bytes differ from their RAM source"; return false; }
+        return true;
+    };
+    return check(expert_storage_, expert_host_, experts_) &&
+           check(head_storage_, head_host_, dhead_);
+}
+
+bool MtpDrafter::suspend_decode_weights(std::string& err) try {
+    if (!release_decode_weights_ || decode_weights_suspended_) return true;
+    const OnDevice on_device(device_);
+    const auto started = Clock::now();
+    dpct::get_current_device().queues_wait_and_throw();
+    const double wait_ms = ms_since(started);
+    if (expert_host_.size() != (size_t) expert_storage_.full_bytes() ||
+        head_host_.size() != (size_t) head_storage_.full_bytes()) {
+        err = "mtp: decode weights have no complete immutable RAM source"; return false;
+    }
+    const auto verify_started = Clock::now();
+    if (!verify_decode_payload(err)) return false;
+    const double verify_ms = ms_since(verify_started);
+    const int64_t physical = expert_storage_.mapped_bytes() + head_storage_.mapped_bytes();
+    // A partially successful unmap must also be restored before any consumer.
+    decode_weights_suspended_ = true;
+    const auto unmap_started = Clock::now();
+    if (!expert_storage_.shrink(0, err) ||
+        (head_storage_.full_bytes() && !head_storage_.shrink(0, err))) return false;
+    const double unmap_ms = ms_since(unmap_started);
+    std::fprintf(stderr, "strata mtp decode release: %lld physical bytes, experts and head; K/V retained; "
+                         "total %.3f ms, wait %.3f ms, unmap %.3f ms, verify %.3f ms, verified=%d\n",
+                 (long long) physical, ms_since(started), wait_ms, unmap_ms, verify_ms, verify_decode_weights_);
+    return true;
+} catch (const std::exception& e) {
+    err = std::string("mtp decode release: ") + e.what(); return false;
+}
+
+bool MtpDrafter::restore_decode_weights(std::string& err) try {
+    if (!decode_weights_suspended_) return true;
+    const OnDevice on_device(device_);
+    const auto started = Clock::now();
+    if (!expert_storage_.grow(expert_storage_.full_bytes(), err) ||
+        (head_storage_.full_bytes() && !head_storage_.grow(head_storage_.full_bytes(), err))) return false;
+    const double map_ms = ms_since(started);
+    if (expert_storage_.device_slot(0) != experts_ ||
+        (head_storage_.full_bytes() && head_storage_.device_slot(0) != dhead_)) {
+        err = "mtp: decode restoration changed a captured virtual address"; return false;
+    }
+    auto& q = dpct::get_in_order_queue();
+    const auto copy_started = Clock::now();
+    q.memcpy(experts_, expert_host_.data(), expert_host_.size());
+    if (!head_host_.empty()) q.memcpy(dhead_, head_host_.data(), head_host_.size());
+    q.wait_and_throw();
+    const double copy_ms = ms_since(copy_started);
+    const auto verify_started = Clock::now();
+    if (!verify_decode_payload(err)) return false;
+    const double verify_ms = ms_since(verify_started);
+    decode_weights_suspended_ = false;
+    std::fprintf(stderr, "strata mtp decode restore: %llu payload bytes from RAM, same addresses; "
+                         "total %.3f ms, map %.3f ms, copy %.3f ms, verify %.3f ms, verified=%d\n",
+                 (unsigned long long) (expert_host_.size() + head_host_.size()), ms_since(started),
+                 map_ms, copy_ms, verify_ms, verify_decode_weights_);
+    return true;
+} catch (const std::exception& e) {
+    err = std::string("mtp decode restoration: ") + e.what(); return false;
 }
 
 const float* MtpDrafter::f32(const char* name) const {
@@ -165,6 +240,10 @@ bool MtpDrafter::load(const std::string &rt_dir, const ModelGeometry &g,
     ss_ = &ss;
     max_t_ = max_t;
     rt_dir_ = rt_dir;
+    if (const char* value = std::getenv("STRATA_PREFILL_RELEASE_DRAFT"))
+        release_decode_weights_ = std::atoi(value) != 0;
+    if (const char* value = std::getenv("STRATA_PREFILL_DRAFT_VERIFY"))
+        verify_decode_weights_ = std::atoi(value) != 0;
     if (max_t < 1 || max_t > strata::kernels::kVerifyMaxT) { err = "mtp: max_t out of range"; return false; }
     // Loader fix (0.1.15+loaderfix.2): the two reads below are the whole “drafter files” cost; reporting
     // them apart from the rest of the stage is what makes the next regression visible.
@@ -237,20 +316,30 @@ bool MtpDrafter::load(const std::string &rt_dir, const ModelGeometry &g,
             FILE* f;
             ~Closer() { if (f != nullptr) std::fclose(f); }
         } closer{f};
-        if (DPCT_CHECK_ERROR(experts_ = (uint8_t *)sycl::malloc_device(
-                                 bytes, dpct::get_in_order_queue())) != 0) {
+        if (release_decode_weights_) {
+            // Small power-of-two segments limit padding at a nearly full
+            // context. Retain the original file bytes; no per-prompt D2H copy.
+            expert_storage_.set_segment_bytes(8ll << 20);
+            if (!expert_storage_.open(g.n_expert, 1, g.n_expert,
+                                      strata::kernels::cpu::BLOB, err)) return false;
+            experts_ = const_cast<uint8_t*>(expert_storage_.device_slot(0));
+            expert_host_.resize((size_t) bytes);
+        } else if (DPCT_CHECK_ERROR(experts_ = (uint8_t *)sycl::malloc_device(
+                                      bytes, dpct::get_in_order_queue())) != 0) {
             err = "mtp: the 512 experts do not fit in VRAM"; return false;
         }
         std::vector<uint8_t> chunk(64u << 20);
         for (uint64_t off = 0; off < bytes;) {
             const uint64_t n = std::min<uint64_t>(chunk.size(), bytes - off);
             if (std::fread(chunk.data(), 1, (size_t) n, f) != (size_t) n) { err = "mtp: experts.bin is truncated"; return false; }
+            if (release_decode_weights_)
+                std::memcpy(expert_host_.data() + off, chunk.data(), (size_t) n);
             dpct::get_in_order_queue()
                 .memcpy(experts_ + off, chunk.data(), n)
                 .wait();
             off += n;
         }
-        vram_ += bytes;
+        vram_ += release_decode_weights_ ? static_cast<uint64_t>(expert_storage_.mapped_bytes()) : bytes;
     }
     const char* required[] = {"fc_embedding.weight", "fc_hidden.weight", "self_attn.q_proj.weight", "self_attn.k_proj.weight",
                               "self_attn.v_proj.weight", "self_attn.o_proj.weight", "mlp.shared_expert.gate_proj.weight",
@@ -392,7 +481,15 @@ uint64_t MtpDrafter::bind_bytes(uint64_t head_row_bytes, int64_t n_vocab) const 
             std::fseek(f, 0, SEEK_END);
             const long size = std::ftell(f);
             std::fclose(f);
-            if (size >= 4 && size % 4 == 0) bytes += (uint64_t) (size / 4) * head_row_bytes + (uint64_t) size;
+            if (size >= 4 && size % 4 == 0) {
+                uint64_t head_bytes = (uint64_t) (size / 4) * head_row_bytes;
+                // Both leased arenas use the same segment request and device.
+                // Reserve the head's physical padding in automatic cache sizing.
+                const uint64_t segment = static_cast<uint64_t>(expert_storage_.segment_bytes());
+                if (release_decode_weights_ && segment)
+                    head_bytes = (head_bytes + segment - 1) / segment * segment;
+                bytes += head_bytes + (uint64_t) size;
+            }
         }
     }
     // coupled draft sampling (STRATA_SPEC_COUPLED=1 only): an upper bound - the id -> subset map, the penalty ring,
@@ -526,19 +623,32 @@ bool MtpDrafter::bind(const WeightTable &wt, const NativeHead *head,
             if (DPCT_CHECK_ERROR(dvocab_ = (int32_t *)sycl::malloc_device(
                                      raw.size(), dpct::get_in_order_queue())) !=
                     0 ||
-                DPCT_CHECK_ERROR(dhead_ = (uint8_t *)sycl::malloc_device(
-                                     (size_t)(n_dvocab_ * row_bytes),
-                                     dpct::get_in_order_queue())) != 0) {
+                (!release_decode_weights_ &&
+                 DPCT_CHECK_ERROR(dhead_ = (uint8_t *)sycl::malloc_device(
+                                      (size_t)(n_dvocab_ * row_bytes),
+                                      dpct::get_in_order_queue())) != 0)) {
                 err = "mtp: the draft head does not fit";
                 draft_head_hint(n_dvocab_, row_bytes);
                 return false;
+            }
+            if (release_decode_weights_) {
+                head_storage_.set_segment_bytes(8ll << 20);
+                if (!head_storage_.open(1, 1, 1, n_dvocab_ * row_bytes, err)) return false;
+                dhead_ = const_cast<uint8_t*>(head_storage_.device_slot(0));
             }
             dpct::get_in_order_queue()
                 .memcpy(dvocab_, raw.data(), raw.size())
                 .wait();
             strata::kernels::gather_rows((const uint8_t*) head->weights(), row_bytes, dvocab_, n_dvocab_, dhead_, nullptr);
             dpct::get_current_device().queues_wait_and_throw();
-            vram_ += (uint64_t) (n_dvocab_ * row_bytes) + raw.size();
+            if (release_decode_weights_) {
+                // The subset is gathered once at bind. Keep that exact image
+                // in RAM instead of downloading it at every prompt boundary.
+                head_host_.resize((size_t) (n_dvocab_ * row_bytes));
+                dpct::get_in_order_queue().memcpy(head_host_.data(), dhead_, head_host_.size()).wait_and_throw();
+            }
+            vram_ += (release_decode_weights_ ? static_cast<uint64_t>(head_storage_.mapped_bytes())
+                                             : (uint64_t) (n_dvocab_ * row_bytes)) + raw.size();
             std::fprintf(stderr, "strata mtp: draft head over %lld tokens (%.1f MiB)\n", (long long) n_dvocab_,
                          (double) (n_dvocab_ * row_bytes) / 1048576.0);
         }
@@ -1070,6 +1180,7 @@ catch (sycl::exception const &exc) {
 bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t* drafts, std::string& err,
                        float* probs, float min_p, int* n_drafts) {
     const OnDevice on_device(device_);
+    if (decode_weights_suspended_ && !restore_decode_weights(err)) return false;
     if (T < 1 || T > max_t_ || a < 0 || a >= T) { err = "mtp: draft arguments out of range"; return false; }
     const bool cp = coupled_active_;   // coupled draft sampling for this request: its own graphs
     if (!capture_round(T, cp, err)) return false;
@@ -1146,6 +1257,7 @@ bool MtpDrafter::draft_first(int T, const float *R_row, int32_t token,
                              int64_t cell, int32_t *drafts, std::string &err,
                              float *probs, float min_p, int *n_drafts) try {
     const OnDevice on_device(device_);
+    if (decode_weights_suspended_ && !restore_decode_weights(err)) return false;
     // row 0 is the real pair; rows 1.. repeat it and only write cells the next round overwrites
     const int64_t HCN = g_->hc * g_->n_embd;
     for (int t = 0; t < T; ++t)
