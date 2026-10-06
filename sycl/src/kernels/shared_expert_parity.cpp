@@ -16,6 +16,7 @@
 //      checked the same way - it is computed and required to differ.
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/kernels/bf16_bits.hpp"
 #include "strata/kernels/f16_bits.hpp"
@@ -193,38 +194,38 @@ int main(int argc, char** argv) {
     uint16_t *d_xb = nullptr, *d_ginpb = nullptr;
     uint8_t *d_gc = nullptr, *d_uc = nullptr, *d_dc = nullptr;
     float *d_gs = nullptr, *d_us = nullptr, *d_ds = nullptr, *d_ginp = nullptr, *d_out = nullptr;
-    check(DPCT_CHECK_ERROR(d_x = sycl::malloc_device<uint16_t>(
-                               hx.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_x = strata::checked_usm(sycl::malloc_device<uint16_t>(
+                               hx.size(), dpct::get_in_order_queue()))),
           "m x");
-    check(DPCT_CHECK_ERROR(d_gc = (uint8_t *)sycl::malloc_device(
-                               gc.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_gc = (uint8_t *)strata::checked_usm(sycl::malloc_device(
+                               gc.size(), dpct::get_in_order_queue()))),
           "m gc");
-    check(DPCT_CHECK_ERROR(d_uc = (uint8_t *)sycl::malloc_device(
-                               uc.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_uc = (uint8_t *)strata::checked_usm(sycl::malloc_device(
+                               uc.size(), dpct::get_in_order_queue()))),
           "m uc");
-    check(DPCT_CHECK_ERROR(d_dc = (uint8_t *)sycl::malloc_device(
-                               dc.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_dc = (uint8_t *)strata::checked_usm(sycl::malloc_device(
+                               dc.size(), dpct::get_in_order_queue()))),
           "m dc");
-    check(DPCT_CHECK_ERROR(d_gs = sycl::malloc_device<float>(
-                               gs.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_gs = strata::checked_usm(sycl::malloc_device<float>(
+                               gs.size(), dpct::get_in_order_queue()))),
           "m gs");
-    check(DPCT_CHECK_ERROR(d_us = sycl::malloc_device<float>(
-                               us.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_us = strata::checked_usm(sycl::malloc_device<float>(
+                               us.size(), dpct::get_in_order_queue()))),
           "m us");
-    check(DPCT_CHECK_ERROR(d_ds = sycl::malloc_device<float>(
-                               ds.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_ds = strata::checked_usm(sycl::malloc_device<float>(
+                               ds.size(), dpct::get_in_order_queue()))),
           "m ds");
-    check(DPCT_CHECK_ERROR(d_ginp = sycl::malloc_device<float>(
-                               ginp.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_ginp = strata::checked_usm(sycl::malloc_device<float>(
+                               ginp.size(), dpct::get_in_order_queue()))),
           "m ginp");
-    check(DPCT_CHECK_ERROR(d_xb = sycl::malloc_device<uint16_t>(
-                               hx_bf16.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_xb = strata::checked_usm(sycl::malloc_device<uint16_t>(
+                               hx_bf16.size(), dpct::get_in_order_queue()))),
           "m xb");
-    check(DPCT_CHECK_ERROR(d_ginpb = sycl::malloc_device<uint16_t>(
-                               hginp_bf16.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_ginpb = strata::checked_usm(sycl::malloc_device<uint16_t>(
+                               hginp_bf16.size(), dpct::get_in_order_queue()))),
           "m ginpb");
-    check(DPCT_CHECK_ERROR(d_out = sycl::malloc_device<float>(
-                               (size_t)n_embd, dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_out = strata::checked_usm(sycl::malloc_device<float>(
+                               (size_t)n_embd, dpct::get_in_order_queue()))),
           "m out");
     /*
     DPCT1114: cudaMemcpy is migrated to asynchronization memcpy, assuming in
@@ -328,11 +329,11 @@ int main(int argc, char** argv) {
         float* d_xf = nullptr;
         uint8_t* d_x0 = nullptr;
         check(DPCT_CHECK_ERROR(
-                  d_xf = (float *)sycl::malloc_device(
-                      (size_t)n_embd * 4, dpct::get_in_order_queue())),
+                  d_xf = (float *)strata::checked_usm(sycl::malloc_device(
+                      (size_t)n_embd * 4, dpct::get_in_order_queue()))),
               "xf");
-        check(DPCT_CHECK_ERROR(d_x0 = (uint8_t *)sycl::malloc_device(
-                                   hx0.size(), dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_x0 = (uint8_t *)strata::checked_usm(sycl::malloc_device(
+                                   hx0.size(), dpct::get_in_order_queue()))),
               "x0");
         /*
         DPCT1114: cudaMemcpy is migrated to asynchronization memcpy,
@@ -356,9 +357,9 @@ int main(int argc, char** argv) {
     // layer does, so the test exercises the real contract instead of a private one.
     float* d_scratch = nullptr;
     check(
-        DPCT_CHECK_ERROR(d_scratch = (float *)sycl::malloc_device(
+        DPCT_CHECK_ERROR(d_scratch = (float *)strata::checked_usm(sycl::malloc_device(
                              strata::kernels::shared_expert_scratch_bytes(n_ff),
-                             dpct::get_in_order_queue())),
+                             dpct::get_in_order_queue()))),
         "m scratch");
     strata::kernels::shared_expert(d_x_used, nullptr, d_xb, f, d_gc, d_gs, nullptr, f, d_uc, d_us, nullptr, f,
                                    d_dc, d_ds, nullptr, d_ginpb, d_scratch, d_out, n_embd, n_ff, tpr, nullptr);
@@ -463,8 +464,8 @@ int main(int argc, char** argv) {
         std::vector<uint16_t> witness_bf16((size_t) n_embd, 0);
         witness_bf16[0] = bf16_from_f32(witness[0]);
         float* d_witness = nullptr;
-        check(DPCT_CHECK_ERROR(d_witness = sycl::malloc_device<float>(
-                                   witness.size(), dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_witness = strata::checked_usm(sycl::malloc_device<float>(
+                                   witness.size(), dpct::get_in_order_queue()))),
               "native shared x");
         /*
         DPCT1114: cudaMemcpy is migrated to asynchronization memcpy,
@@ -653,19 +654,19 @@ int main(int argc, char** argv) {
 
         float *d_p = nullptr, *d_w = nullptr, *d_s = nullptr, *d_y = nullptr;
         check(
-            DPCT_CHECK_ERROR(d_p = (float *)sycl::malloc_device(
-                                 parts.size() * 4, dpct::get_in_order_queue())),
+            DPCT_CHECK_ERROR(d_p = (float *)strata::checked_usm(sycl::malloc_device(
+                                 parts.size() * 4, dpct::get_in_order_queue()))),
             "mc p");
-        check(DPCT_CHECK_ERROR(d_w = (float *)sycl::malloc_device(
-                                   w.size() * 4, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_w = (float *)strata::checked_usm(sycl::malloc_device(
+                                   w.size() * 4, dpct::get_in_order_queue()))),
               "mc w");
         check(DPCT_CHECK_ERROR(
-                  d_s = (float *)sycl::malloc_device(
-                      shared.size() * 4, dpct::get_in_order_queue())),
+                  d_s = (float *)strata::checked_usm(sycl::malloc_device(
+                      shared.size() * 4, dpct::get_in_order_queue()))),
               "mc s");
         check(DPCT_CHECK_ERROR(
-                  d_y = (float *)sycl::malloc_device(
-                      (size_t)n_embd2 * 4, dpct::get_in_order_queue())),
+                  d_y = (float *)strata::checked_usm(sycl::malloc_device(
+                      (size_t)n_embd2 * 4, dpct::get_in_order_queue()))),
               "mc y");
         /*
         DPCT1114: cudaMemcpy is migrated to asynchronization memcpy,

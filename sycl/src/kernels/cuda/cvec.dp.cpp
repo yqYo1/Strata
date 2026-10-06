@@ -1,6 +1,7 @@
 // src/kernels/cuda/cvec.cu - see include/strata/kernels/cvec.hpp.
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/sycl_queue.hpp"
 #include "strata/kernels/cvec.hpp"
@@ -35,14 +36,14 @@ bool upload_here(std::string &err) try {
     DevTables& t = g_dev[cur_device()];
     if (t.dir != nullptr) return true;
     const int flag = g_on_host ? 1 : 0;
-    if (DPCT_CHECK_ERROR(t.dir = sycl::malloc_device<float>(
-                             g_dir_host.size(), dpct::get_in_order_queue())) !=
+    if (DPCT_CHECK_ERROR(t.dir = strata::checked_usm(sycl::malloc_device<float>(
+                             g_dir_host.size(), dpct::get_in_order_queue()))) !=
             0 ||
-        DPCT_CHECK_ERROR(t.s = sycl::malloc_device<float>(
-                             g_s_host.size(), dpct::get_in_order_queue())) !=
+        DPCT_CHECK_ERROR(t.s = strata::checked_usm(sycl::malloc_device<float>(
+                             g_s_host.size(), dpct::get_in_order_queue()))) !=
             0 ||
-        DPCT_CHECK_ERROR(t.on = sycl::malloc_device<int>(
-                             1, dpct::get_in_order_queue())) != 0 ||
+        DPCT_CHECK_ERROR(t.on = strata::checked_usm(sycl::malloc_device<int>(
+                             1, dpct::get_in_order_queue()))) != 0 ||
         /*
         DPCT1114: cudaMemcpy is migrated to asynchronization memcpy,
         assuming in the original code the source host memory is pageable memory.

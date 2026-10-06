@@ -21,6 +21,7 @@
 #include <sstream>
 #include <stack>
 #include <sycl/sycl.hpp>
+#include "strata/sycl_error.hpp"
 #include <thread>
 #include <vector>
 #if defined(__linux__)
@@ -67,16 +68,7 @@ static void get_version(const sycl::device &dev, int &major, int &minor) {
 
 /// SYCL default exception handler
 inline auto exception_handler = [](sycl::exception_list exceptions) {
-  for (std::exception_ptr const &e : exceptions) {
-    try {
-      std::rethrow_exception(e);
-    } catch (sycl::exception const &e) {
-      std::cerr << "Caught asynchronous SYCL exception:" << std::endl
-                << e.what() << std::endl
-                << "Exception caught at file:" << __FILE__
-                << ", line:" << __LINE__ << std::endl;
-    }
-  }
+  strata::rethrow_sycl_errors(exceptions);
 };
 
 typedef sycl::event *event_ptr;

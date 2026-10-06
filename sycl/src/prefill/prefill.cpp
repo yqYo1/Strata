@@ -3,6 +3,7 @@
 #include <sycl/sycl.hpp>
 #include <dpct/dpct.hpp>
 #include "strata/sycl_queue.hpp"
+#include "strata/sycl_allocation.hpp"
 #include "strata/prefill/prefill.hpp"
 #include "strata/core/gguf_expert_source.hpp"
 #include "strata/core/mtp.hpp"
@@ -49,6 +50,7 @@
 #include <mutex>
 #include <thread>
 #include <vector>
+#include "strata/host_completion.hpp"
 
 #ifndef STRATA_PREFILL_MMQ
 // A build without the llama.cpp sources (no STRATA_NATIVE_EXPERTS): no MMQ, the FP16 expert path everywhere.
@@ -216,8 +218,8 @@ struct Alloc {
             return p;
         }
         void* p = nullptr;
-        if (DPCT_CHECK_ERROR(p = (void *)sycl::malloc_device(
-                                 bytes, dpct::get_in_order_queue())) != 0) {
+        if (DPCT_CHECK_ERROR(p = (void *)strata::checked_usm(sycl::malloc_device(
+                                 bytes, dpct::get_in_order_queue()))) != 0) {
             ok = false; return nullptr;
         }
         owned->push_back(p);
@@ -252,8 +254,7 @@ struct Stager {
     std::vector<uint8_t*> buf;
     std::vector<char> pinned;
     std::vector<std::vector<uint8_t>> pageable;   // the fallback when no more RAM can be pinned
-    std::vector<dpct::event_ptr> dma_done;
-    uint64_t* done_seq = nullptr;            // page-locked: the copy queue's last finished DMA per buffer
+    std::vector<strata::HostCompletion> done_seq;
     std::vector<uint64_t> want;              // the sequence number each buffer's last DMA writes
     uint64_t issue_seq = 0;
     bool measure_copies = false;
@@ -278,11 +279,9 @@ struct Stager {
         if (const char* v = std::getenv("STRATA_STAGER_RING")) kRing = std::clamp(std::atoi(v), 2, 256);
         buf.assign((size_t) kRing, nullptr);
         pinned.assign((size_t) kRing, 0);
-        dma_done.assign((size_t) kRing, nullptr);
         want.assign((size_t) kRing, 0);
-        done_seq = sycl::malloc_host<uint64_t>((size_t) kRing, dpct::get_in_order_queue());
-        if (done_seq == nullptr) return false;
-        for (int i = 0; i < kRing; ++i) done_seq[i] = 0;
+        done_seq.resize((size_t) kRing);
+        for (auto& done : done_seq) done = strata::make_host_completion();
         pageable.resize(kRing);
         for (int i = 0; i < kRing; ++i) {
             /*
@@ -291,8 +290,8 @@ struct Stager {
             You may need to check the migrated code.
             */
             pinned[i] = DPCT_CHECK_ERROR(
-                            buf[i] = (unsigned char *)sycl::malloc_host(
-                                blob_bytes, dpct::get_in_order_queue())) == 0;
+                            buf[i] = (unsigned char *)strata::checked_usm(sycl::malloc_host(
+                                blob_bytes, dpct::get_in_order_queue()))) == 0;
             if (!pinned[i]) {
                 /*
                 DPCT1026: The call to cudaGetLastError was removed because
@@ -301,8 +300,6 @@ struct Stager {
                 pageable[(size_t)i].resize(blob_bytes);
                 buf[i] = pageable[(size_t) i].data();
             }
-            if (DPCT_CHECK_ERROR(dma_done[i] = new sycl::event()) !=
-                0) return false;
         }
         device = dpct::get_current_device_id();
         for (int t = 0; t < nthreads; ++t) threads.emplace_back([this] { work(); });
@@ -313,9 +310,7 @@ struct Stager {
         { std::lock_guard<std::mutex> lk(mu); quit = true; }
         cv.notify_all();
         for (auto& t : threads) t.join();
-        if (done_seq) sycl::free(done_seq, dpct::get_in_order_queue());
         for (int i = 0; i < kRing; ++i) {
-            if (dma_done[i]) dpct::destroy_event(dma_done[i]);
             if (buf[i] && pinned[i])
                 sycl::free(buf[i], dpct::get_in_order_queue());
         }
@@ -397,21 +392,16 @@ struct Stager {
         while (!ready[(size_t) j].load(std::memory_order_acquire)) std::this_thread::yield();
         return buf[j % kRing];
     }
-    /// The launching thread queued job j's DMA on `copy`: its buffer is free once that is done.
-    /// The launching thread queued job j's DMA on `copy`: its buffer is free once that is done.
-    // SYCL port: the copy queue writes a sequence number into page-locked host memory after the DMA and the stager
-    // thread polls it, instead of waiting on an event. A stager thread's host wait on the copy queue's events (the
-    // CUDA form, cudaEventSynchronize) hung a lent-slot prompt in its first full chunk under the Level Zero v2 adapter
-    // once the ring wrapped: no thread was waiting by then, the GPU sat busy - the event a host thread had waited on
-    // was still in a queue's wait list (the v1 adapter and a 256-buffer ring, which never waits, both ran). 2026-10-01
+    // The copy queue's host task acknowledges its preceding DMA. Worker polls
+    // access CPU atomics only; no GPU-written volatile marker is assumed safe.
     void issued_one(int j, dpct::queue_ptr copy) {
         const uint64_t s = ++issue_seq;
         want[(size_t) (j % kRing)] = s;
-        copy->fill<uint64_t>(done_seq + j % kRing, s, 1);
+        strata::enqueue_host_completion(*copy, done_seq[(size_t) (j % kRing)], s);
         issued.store(j + 1, std::memory_order_release);
     }
     bool buffer_free(int b) const {
-        return *(volatile const uint64_t*) (done_seq + b) >= want[(size_t) b];
+        return strata::host_completed(done_seq[(size_t) b], want[(size_t) b]);
     }
     /// No job is running after this (the end of a layer, or an early return in the middle of one).
     void finish() {
@@ -590,10 +580,8 @@ struct Prefill::Impl {
     dpct::event_ptr ple_copied[2] =
         {}; // one runs; the event marks that buffer's upload done
     std::vector<uint32_t> ple_rows[2];
-    // SYCL port: each buffer's upload is marked by a sequence number the queue writes into page-locked memory after
-    // it, polled by the host - not a host wait on `ple_copied` (a host wait on a queue's event hung the prompt path
-    // under the Level Zero v2 adapter once #374 moved it inside the layer loop; see Stager::issued_one)
-    uint64_t* ple_done_seq = nullptr;
+    // CPU-only acknowledgements run as host tasks after the preceding upload.
+    strata::HostCompletion ple_done_seq[2];
     uint64_t ple_want[2] = {};
     uint64_t ple_seq = 0;
     float* ple_norm = nullptr;
@@ -670,7 +658,6 @@ void Prefill::release() {
         if (impl_->hand[b])
             sycl::free(impl_->hand[b], dpct::get_in_order_queue());
         if (impl_->ple_copied[b]) dpct::destroy_event(impl_->ple_copied[b]);
-        if (b == 1 && impl_->ple_done_seq) { sycl::free(impl_->ple_done_seq, dpct::get_in_order_queue()); impl_->ple_done_seq = nullptr; }
         if (impl_->ple_emb_host[b] && impl_->ple_pageable[b].empty())
             sycl::free(impl_->ple_emb_host[b], dpct::get_in_order_queue());
     }
@@ -886,8 +873,8 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
     Impl& m = *impl_;
     m.wt = &wt; m.g = &g; m.ss = &ss; m.src = src; m.cache = cache; m.host_res = host_res;
     m.T = chunk; m.cs = strata::q_of(stream); m.stats = &stats_;
-    if (compact_prefill() && !m.cs->is_in_order()) {
-        err = "prefill: compact workspace requires an in-order queue";
+    if (!m.cs->is_in_order()) {
+        err = "prefill: workspace reuse and DMA acknowledgements require an in-order queue";
         return false;
     }
     if (g.n_embd != N || g.hc != HC || g.hc_lr != LR || g.n_expert < 1 || ss.k != K) {
@@ -907,8 +894,8 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
         */
         if (!m.hand[b] &&
             DPCT_CHECK_ERROR(
-                m.hand[b] = (float *)sycl::malloc_host(
-                    (size_t)chunk * D * 4, dpct::get_in_order_queue())) != 0) {
+                m.hand[b] = (float *)strata::checked_usm(sycl::malloc_host(
+                    (size_t)chunk * D * 4, dpct::get_in_order_queue()))) != 0) {
             err = "prefill: the layer split's hand-off buffers";
             return false;
         }
@@ -918,8 +905,8 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
         rewritten.
         */
         if (const dpct::err0 e = DPCT_CHECK_ERROR(
-                m.tok_dev = sycl::malloc_device<int32_t>(
-                    (size_t)chunk, dpct::get_in_order_queue()));
+                m.tok_dev = strata::checked_usm(sycl::malloc_device<int32_t>(
+                    (size_t)chunk, dpct::get_in_order_queue())));
             e != 0) {
             /*
             DPCT1009: SYCL reports errors using exceptions and does not use
@@ -941,7 +928,7 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
     options.
     */
     if (DPCT_CHECK_ERROR(
-            m.copy = dpct::get_current_device().create_queue(true)) != 0) {
+            m.copy = dpct::get_current_device().create_in_order_queue(true)) != 0) {
         err = "prefill: copy stream"; return false;
     }
     const size_t T = (size_t) chunk;
@@ -987,8 +974,8 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
             meaningful in the migrated code and was removed or replaced with 0.
             You may need to check the migrated code.
             */
-            if (DPCT_CHECK_ERROR(h = (void *)sycl::malloc_host(
-                                     need * 4, dpct::get_in_order_queue())) ==
+            if (DPCT_CHECK_ERROR(h = (void *)strata::checked_usm(sycl::malloc_host(
+                                     need * 4, dpct::get_in_order_queue()))) ==
                     0 &&
                 DPCT_CHECK_ERROR(d = (void *)h) == 0) {
                 m.grp_host = (int32_t*) h;
@@ -1012,8 +999,8 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
             You may need to check the migrated code.
             */
             DPCT_CHECK_ERROR(
-                m.ple_emb_host[b] = (float *)sycl::malloc_host(
-                    (size_t)T * N * 4, dpct::get_in_order_queue())) != 0) {
+                m.ple_emb_host[b] = (float *)strata::checked_usm(sycl::malloc_host(
+                    (size_t)T * N * 4, dpct::get_in_order_queue()))) != 0) {
             /*
             DPCT1026: The call to cudaGetLastError was removed because this
             functionality is redundant in SYCL.
@@ -1025,11 +1012,7 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
         if (!m.ple_copied[b] &&
             DPCT_CHECK_ERROR(m.ple_copied[b] = new sycl::event()) != 0)
             ok = false;
-        if (!m.ple_done_seq) {
-            m.ple_done_seq = sycl::malloc_host<uint64_t>(2, dpct::get_in_order_queue());
-            if (m.ple_done_seq) m.ple_done_seq[0] = m.ple_done_seq[1] = 0;
-            else ok = false;
-        }
+        if (!m.ple_done_seq[b]) m.ple_done_seq[b] = strata::make_host_completion();
         m.ple_rows[b].resize(T * strata::kernels::PLE_N_HEADS);
     }
     if (ss.qsa_states[ss.qsa_primary()].kv_mode == 1) {   // KV streaming: the staging pool's identity page table
@@ -1037,8 +1020,8 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
         std::vector<int32_t> ident((size_t) pages);
         for (int64_t i = 0; i < pages; ++i) ident[(size_t) i] = (int32_t) i;
         if (DPCT_CHECK_ERROR(
-                m.ident_table = (int32_t *)sycl::malloc_device(
-                    ident.size() * 4, dpct::get_in_order_queue())) != 0 ||
+                m.ident_table = (int32_t *)strata::checked_usm(sycl::malloc_device(
+                    ident.size() * 4, dpct::get_in_order_queue()))) != 0 ||
             /*
             DPCT1114: cudaMemcpy is migrated to asynchronization memcpy,
             assuming in the original code the source host memory is pageable
@@ -1469,8 +1452,8 @@ bool Prefill::set_peer(core::PeerExperts *peer, int64_t cap_rows,
         try {
     void *p = nullptr;
         if (!ok ||
-            DPCT_CHECK_ERROR(p = (void *)sycl::malloc_device(
-                                 bytes, dpct::get_in_order_queue())) != 0) {
+            DPCT_CHECK_ERROR(p = (void *)strata::checked_usm(sycl::malloc_device(
+                                 bytes, dpct::get_in_order_queue()))) != 0) {
             ok = false; return nullptr;
         }
         pp->owned.push_back(p);
@@ -2161,7 +2144,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             err = "prefill layer-major: requested GPU residual rows exceed free VRAM; lower STRATA_PREFILL_LAYER_MAJOR_R_GPU";
             return false;
         }
-        device_rows.reset(sycl::malloc_device<float>((size_t) allocated_tokens * D, *m.cs));
+        device_rows.reset(strata::checked_usm(sycl::malloc_device<float>((size_t) allocated_tokens * D, *m.cs)));
         if (!device_rows) { err = "prefill layer-major: GPU residual allocation failed"; return false; }
     }
     std::vector<float> rows((size_t) (n - gpu_tokens) * D);
@@ -2530,7 +2513,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                 consuming the error code.
                 */
                 DPCT_CHECK_ERROR((m.ple_want[ple_buf] = ++m.ple_seq,
-                                  m.cs->fill<uint64_t>(m.ple_done_seq + ple_buf, m.ple_want[ple_buf], 1))) != 0) {
+                                  strata::enqueue_host_completion(*m.cs, m.ple_done_seq[ple_buf], m.ple_want[ple_buf]))) != 0) {
                 /*
                 DPCT1009: SYCL reports errors using exceptions and does not
                 use error codes. Please replace the
@@ -2549,7 +2532,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
             if (c0 + T < n) {   // SYCL port: T, this chunk's length (the first chunk can be shorter: chunk_len)
                 // the other buffer's upload (a chunk ago) is done before the SSD thread refills it
                 if (DPCT_CHECK_ERROR([&] {
-                        while (*(volatile const uint64_t*) (m.ple_done_seq + (ple_buf ^ 1)) < m.ple_want[ple_buf ^ 1])
+                        while (!strata::host_completed(m.ple_done_seq[ple_buf ^ 1], m.ple_want[ple_buf ^ 1]))
                             std::this_thread::yield();
                     }()) != 0) {
                     /*
@@ -3130,17 +3113,17 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                         const int64_t rows = st.idx_pooled_rows;
                         if (pooled16 == nullptr &&
                             (DPCT_CHECK_ERROR(
-                                 pooled16 = (float *)sycl::malloc_device(
+                                 pooled16 = (float *)strata::checked_usm(sycl::malloc_device(
                                      (size_t)rows * s.idx_dim * 4,
-                                     dpct::get_in_order_queue())) != 0 ||
+                                     dpct::get_in_order_queue()))) != 0 ||
                              DPCT_CHECK_ERROR(
-                                 dead16 = (float *)sycl::malloc_device(
+                                 dead16 = (float *)strata::checked_usm(sycl::malloc_device(
                                      (size_t)s.idx_dim * 4,
-                                     dpct::get_in_order_queue())) != 0 ||
+                                     dpct::get_in_order_queue()))) != 0 ||
                              DPCT_CHECK_ERROR(
-                                 ids16 = (int32_t *)sycl::malloc_device(
+                                 ids16 = (int32_t *)strata::checked_usm(sycl::malloc_device(
                                      (size_t)(m.T * m.cap) * 4,
-                                     dpct::get_in_order_queue())) != 0)) {
+                                     dpct::get_in_order_queue()))) != 0)) {
                             err = "STRATA_IDX_FP16_CHECK: no room for its buffers";
                             return false;
                         }

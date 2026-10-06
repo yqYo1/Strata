@@ -1,4 +1,5 @@
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/core/remote_experts.hpp"
 
@@ -254,8 +255,8 @@ bool RemoteExperts::open(int device, int slots, int64_t layers, int64_t experts,
         check the migrated code.
         */
         check(
-            DPCT_CHECK_ERROR(h_x_ = sycl::malloc_host<float>(
-                                 (size_t)CAP * H, dpct::get_in_order_queue())),
+            DPCT_CHECK_ERROR(h_x_ = strata::checked_usm(sycl::malloc_host<float>(
+                                 (size_t)CAP * H, dpct::get_in_order_queue()))),
             "input staging", err, device) &&
         /*
         DPCT1048: The original value cudaHostAllocPortable is not meaningful
@@ -268,8 +269,8 @@ bool RemoteExperts::open(int device, int slots, int64_t layers, int64_t experts,
         check the migrated code.
         */
         check(
-            DPCT_CHECK_ERROR(h_out_ = sycl::malloc_host<float>(
-                                 (size_t)CAP * H, dpct::get_in_order_queue())),
+            DPCT_CHECK_ERROR(h_out_ = strata::checked_usm(sycl::malloc_host<float>(
+                                 (size_t)CAP * H, dpct::get_in_order_queue()))),
             "result staging", err, device) &&
         /*
         DPCT1048: The original value cudaHostAllocPortable is not meaningful
@@ -277,31 +278,31 @@ bool RemoteExperts::open(int device, int slots, int64_t layers, int64_t experts,
         check the migrated code.
         */
         check(DPCT_CHECK_ERROR(
-                  h_meta_ = (void *)sycl::malloc_host(
-                      sizeof(RemoteMeta), dpct::get_in_order_queue())),
+                  h_meta_ = (void *)strata::checked_usm(sycl::malloc_host(
+                      sizeof(RemoteMeta), dpct::get_in_order_queue()))),
               "metadata staging", err, device) &&
         check(
-            DPCT_CHECK_ERROR(d_x_ = sycl::malloc_device<float>(
-                                 (size_t)CAP * H, dpct::get_in_order_queue())),
+            DPCT_CHECK_ERROR(d_x_ = strata::checked_usm(sycl::malloc_device<float>(
+                                 (size_t)CAP * H, dpct::get_in_order_queue()))),
             "input", err, device) &&
         check(
-            DPCT_CHECK_ERROR(d_out_ = sycl::malloc_device<float>(
-                                 (size_t)CAP * H, dpct::get_in_order_queue())),
+            DPCT_CHECK_ERROR(d_out_ = strata::checked_usm(sycl::malloc_device<float>(
+                                 (size_t)CAP * H, dpct::get_in_order_queue()))),
             "result", err, device) &&
         check(DPCT_CHECK_ERROR(
-                  d_q8_ = (uint8_t *)sycl::malloc_device(
-                      (size_t)CAP * (H / 32) * 36, dpct::get_in_order_queue())),
+                  d_q8_ = (uint8_t *)strata::checked_usm(sycl::malloc_device(
+                      (size_t)CAP * (H / 32) * 36, dpct::get_in_order_queue()))),
               "activation", err, device) &&
         check(DPCT_CHECK_ERROR(
-                  d_scales_ = sycl::malloc_device<float>(
-                      (size_t)CAP * (H / 32), dpct::get_in_order_queue())),
+                  d_scales_ = strata::checked_usm(sycl::malloc_device<float>(
+                      (size_t)CAP * (H / 32), dpct::get_in_order_queue()))),
               "activation scales", err, device) &&
-        check(DPCT_CHECK_ERROR(d_scratch_ = (void *)sycl::malloc_device(
-                                   scratch, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_scratch_ = (void *)strata::checked_usm(sycl::malloc_device(
+                                   scratch, dpct::get_in_order_queue()))),
               "scratch", err, device) &&
         check(DPCT_CHECK_ERROR(
-                  d_meta_ = (void *)sycl::malloc_device(
-                      sizeof(RemoteMeta), dpct::get_in_order_queue())),
+                  d_meta_ = (void *)strata::checked_usm(sycl::malloc_device(
+                      sizeof(RemoteMeta), dpct::get_in_order_queue()))),
               "group metadata", err, device);
     if (!allocated) { close(); return false; }
     // Zero-copy: the helper reads its input from, and writes its compact rows into, the pinned host buffers

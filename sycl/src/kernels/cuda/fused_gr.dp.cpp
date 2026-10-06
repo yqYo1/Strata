@@ -1,6 +1,7 @@
 // src/kernels/cuda/fused_gr.cu - see include/strata/kernels/fused_gr.hpp.
 #define DPCT_PROFILING_ENABLED
 #include <mutex>
+#include "strata/sycl_allocation.hpp"
 #include <unordered_map>
 #include <sycl/sycl.hpp>
 #include <dpct/dpct.hpp>
@@ -1971,8 +1972,8 @@ bool fused_gr_selftest(bool ok_variant[4], std::string why[4]) try {
     const size_t bytes = h_down.size() * 2 + h_up.size() * 2 + h_inj.size() * 2 +
                          (h_norm.size() + h_R.size() + h_bo.size() + h_ip.size() + NV * n_set) * 4 + 32 * 256;
     uint8_t* base = nullptr;
-    if (DPCT_CHECK_ERROR(base = (uint8_t *)sycl::malloc_device(
-                             bytes, dpct::get_in_order_queue())) != 0) {
+    if (DPCT_CHECK_ERROR(base = (uint8_t *)strata::checked_usm(sycl::malloc_device(
+                             bytes, dpct::get_in_order_queue()))) != 0) {
         /*
         DPCT1026: The call to cudaGetLastError was removed because this
         functionality is redundant in SYCL.

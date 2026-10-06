@@ -1,5 +1,6 @@
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/core/native_head.hpp"
 #include "strata/artifact/gguf_reader.hpp"
@@ -48,13 +49,13 @@ bool NativeHead::load(const std::vector<std::string> &shards, int64_t n_in,
         void* weights = nullptr;
         void* scratch = nullptr;
         dpct::err0 status =
-            DPCT_CHECK_ERROR(weights = (void *)sycl::malloc_device(
-                                 bytes, dpct::get_in_order_queue()));
+            DPCT_CHECK_ERROR(weights = (void *)strata::checked_usm(sycl::malloc_device(
+                                 bytes, dpct::get_in_order_queue())));
         if (status == 0)
             status = DPCT_CHECK_ERROR(
-                scratch = (void *)sycl::malloc_device(
+                scratch = (void *)strata::checked_usm(sycl::malloc_device(
                     strata::kernels::native_q8_1_bytes((int)n_in, 1),
-                    dpct::get_in_order_queue()));
+                    dpct::get_in_order_queue())));
         if (status == 0)
             status = DPCT_CHECK_ERROR(
                 dpct::get_in_order_queue()
@@ -195,8 +196,8 @@ bool NativeEmbed::load(const std::vector<std::string> &shards, int64_t n_embd,
         in the migrated code and was removed or replaced with 0. You may need to
         check the migrated code.
         */
-        if (DPCT_CHECK_ERROR(host_ = (void *)sycl::malloc_host(
-                                 bytes_, dpct::get_in_order_queue())) != 0) {
+        if (DPCT_CHECK_ERROR(host_ = (void *)strata::checked_usm(sycl::malloc_host(
+                                 bytes_, dpct::get_in_order_queue()))) != 0) {
             // Under WSL2 the driver's pinned/mapped host budget (~1 GiB) can be spent by the GPU contexts
             // themselves (three cards). The table is only gathered from, so keep it in the current device's VRAM
             // instead: it costs its size there and reads faster than over PCIe.
@@ -206,8 +207,8 @@ bool NativeEmbed::load(const std::vector<std::string> &shards, int64_t n_embd,
             */
             host_ = nullptr;
             void* d = nullptr;
-            if (DPCT_CHECK_ERROR(d = (void *)sycl::malloc_device(
-                                     bytes_, dpct::get_in_order_queue())) !=
+            if (DPCT_CHECK_ERROR(d = (void *)strata::checked_usm(sycl::malloc_device(
+                                     bytes_, dpct::get_in_order_queue()))) !=
                     0 ||
                 /*
                 DPCT1114: cudaMemcpy is migrated to asynchronization memcpy,

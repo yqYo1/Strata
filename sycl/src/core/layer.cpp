@@ -4,6 +4,8 @@
 #include <sycl/sycl.hpp>
 #include <dpct/dpct.hpp>
 #include "strata/sycl_queue.hpp"
+#include "strata/sycl_allocation.hpp"
+#include "strata/host_atomic.hpp"
 #include "strata/core/layer.hpp"
 #include "strata/core/native_head.hpp"
 #include "strata/kernels/bf16_bits.hpp"
@@ -680,9 +682,9 @@ uint64_t qsa_state_init(const ModelGeometry &g, int64_t max_cells, void *base,
     st.pos_dev = c.take<int32_t>((uint64_t) s.n_head);
     // the pinned staging the uploads copy FROM - see the note on `host_step` in the header
     if (DPCT_CHECK_ERROR(
-            st.host_step = (int32_t *)sycl::malloc_host(
+            st.host_step = (int32_t *)strata::checked_usm(sycl::malloc_host(
                 strata::kernels::qsa_step_bytes() + sizeof(int32_t),
-                dpct::get_in_order_queue())) != 0 ||
+                dpct::get_in_order_queue()))) != 0 ||
         /*
         DPCT1048: The original value cudaHostAllocMapped is not meaningful in
         the migrated code and was removed or replaced with 0. You may need to
@@ -694,8 +696,8 @@ uint64_t qsa_state_init(const ModelGeometry &g, int64_t max_cells, void *base,
         check the migrated code.
         */
         DPCT_CHECK_ERROR(
-            st.host_pos = (int32_t *)sycl::malloc_host(
-                (size_t)s.n_head * 4, dpct::get_in_order_queue())) != 0) {
+            st.host_pos = (int32_t *)strata::checked_usm(sycl::malloc_host(
+                (size_t)s.n_head * 4, dpct::get_in_order_queue()))) != 0) {
         return 0;   // the caller sees a zero byte count; a half-built state is worse than none
     }
     st.host_step[strata::kernels::kStepCount] = 0;
@@ -716,8 +718,8 @@ uint64_t qsa_state_init(const ModelGeometry &g, int64_t max_cells, void *base,
         in the migrated code and was removed or replaced with 0. You may need to
         check the migrated code.
         */
-        if (DPCT_CHECK_ERROR(h = (uint8_t *)sycl::malloc_host(
-                                 bytes, dpct::get_in_order_queue())) != 0 ||
+        if (DPCT_CHECK_ERROR(h = (uint8_t *)strata::checked_usm(sycl::malloc_host(
+                                 bytes, dpct::get_in_order_queue()))) != 0 ||
             DPCT_CHECK_ERROR(*(void **)&d = (uint8_t *)h) != 0) {
             // under WSL the NVIDIA driver pins only ~1 GiB in all, which is less than 128K of 8-bit KV needs
             if (p.mode == 1) std::fprintf(stderr, "strata: KV streaming: cannot pin %.2f GiB of RAM for a layer's KV copy "
@@ -1163,7 +1165,7 @@ migrated code.
 */
 auto alloc = [&](size_t n, void** h, void** d, const char* what) {
                                                                           try {
-if (DPCT_CHECK_ERROR(*h = (void *)sycl::malloc_host(n, dpct::get_in_order_queue())) != 0) {            std::fprintf(stderr, "doorbell_init: cudaHostAlloc(%s) failed\n", what);            return false;        }        if (DPCT_CHECK_ERROR(*d = (void *)*h) != 0) {            std::fprintf(stderr, "doorbell_init: cudaHostGetDevicePointer(%s) failed\n", what);            return false;        }        std::memset(*h, 0, n);        bytes += n;        return true;    }
+if (DPCT_CHECK_ERROR(*h = (void *)strata::checked_usm(sycl::malloc_host(n, dpct::get_in_order_queue()))) != 0) {            std::fprintf(stderr, "doorbell_init: cudaHostAlloc(%s) failed\n", what);            return false;        }        if (DPCT_CHECK_ERROR(*d = (void *)*h) != 0) {            std::fprintf(stderr, "doorbell_init: cudaHostGetDevicePointer(%s) failed\n", what);            return false;        }        std::memset(*h, 0, n);        bytes += n;        return true;    }
 catch (sycl::exception const &exc) {
   std::cerr << exc.what() << "Exception caught at file:" << __FILE__
             << ", line:" << __LINE__ << std::endl;
@@ -1179,8 +1181,8 @@ void doorbell_free(Doorbell &db) {
     db = Doorbell{};
 }
 void doorbell_reset(const Doorbell& db) {
-    if (db.h_seq) *db.h_seq = 0;
-    if (db.h_flag) *(volatile uint32_t*) db.h_flag = 0;
+    if (db.h_seq) strata::host_atomic_store(db.h_seq, uint32_t{0});
+    if (db.h_flag) strata::host_atomic_store(db.h_flag, uint32_t{0});
 }
 // ================================ THE TWO ENDS OF A TOKEN ================================
 bool embed_row(const WeightTable& tables, const ModelGeometry& g, int64_t token, float* out_dev,

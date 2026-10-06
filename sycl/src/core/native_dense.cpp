@@ -1,5 +1,6 @@
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/core/native_dense.hpp"
 #include "strata/core/weights.hpp"
@@ -183,8 +184,8 @@ bool NativeDense::load(const std::vector<std::string> &shards,
                     tensor.type, (int) ref.ne0, (int) ref.ne1);
                 void* allocation = nullptr;
                 auto status =
-                    DPCT_CHECK_ERROR(allocation = (void *)sycl::malloc_device(
-                                         bytes, dpct::get_in_order_queue()));
+                    DPCT_CHECK_ERROR(allocation = (void *)strata::checked_usm(sycl::malloc_device(
+                                         bytes, dpct::get_in_order_queue())));
                 DevicePtr data(allocation);
                 if (status == 0)
                     status = DPCT_CHECK_ERROR(
@@ -217,9 +218,9 @@ bool NativeDense::load(const std::vector<std::string> &shards,
         if (pending.empty()) { err = "native dense: no supported GDN/QSA matrices in supplied shards"; return false; }
         void* allocation = nullptr;
         const auto status =
-            DPCT_CHECK_ERROR(allocation = (void *)sycl::malloc_device(
+            DPCT_CHECK_ERROR(allocation = (void *)strata::checked_usm(sycl::malloc_device(
                                  strata::kernels::native_q8_1_bytes(max_in),
-                                 dpct::get_in_order_queue()));
+                                 dpct::get_in_order_queue())));
         DevicePtr scratch(allocation);
         /*
         DPCT1009: SYCL reports errors using exceptions and does not use

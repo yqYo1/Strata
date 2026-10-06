@@ -48,6 +48,7 @@
 //     separate so a kernel bug cannot hide inside it.
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/kernels/qsa.hpp"
 #include "strata/kernels/native_qsa_indexer.hpp"
@@ -86,8 +87,8 @@ struct Dev {
     void alloc(size_t n) {
         if (p) { sycl::free(p, dpct::get_in_order_queue()); p = nullptr; }
         if (n) check(
-            DPCT_CHECK_ERROR(p = (T *)sycl::malloc_device(
-                                 n * sizeof(T), dpct::get_in_order_queue())),
+            DPCT_CHECK_ERROR(p = (T *)strata::checked_usm(sycl::malloc_device(
+                                 n * sizeof(T), dpct::get_in_order_queue()))),
             "cudaMalloc");
     }
     void put(const std::vector<T>& v) {

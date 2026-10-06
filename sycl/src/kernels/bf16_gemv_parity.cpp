@@ -12,6 +12,7 @@
 //      before `docs/activation-contract.md` settled the question and it produces perfectly plausible output.
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/kernels/bf16_bits.hpp"
 #include "strata/kernels/bf16_gemv.hpp"
@@ -92,15 +93,15 @@ int main(int argc, char** argv) {
 
         uint16_t *d_x = nullptr, *d_w = nullptr;
         float *d_y = nullptr;
-        check(DPCT_CHECK_ERROR(d_x = (uint16_t *)sycl::malloc_device(
-                                   x.size() * 2, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_x = (uint16_t *)strata::checked_usm(sycl::malloc_device(
+                                   x.size() * 2, dpct::get_in_order_queue()))),
               "x");
-        check(DPCT_CHECK_ERROR(d_w = (uint16_t *)sycl::malloc_device(
-                                   w.size() * 2, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_w = (uint16_t *)strata::checked_usm(sycl::malloc_device(
+                                   w.size() * 2, dpct::get_in_order_queue()))),
               "w");
         check(DPCT_CHECK_ERROR(
-                  d_y = (float *)sycl::malloc_device(
-                      (size_t)s.n_out * 4, dpct::get_in_order_queue())),
+                  d_y = (float *)strata::checked_usm(sycl::malloc_device(
+                      (size_t)s.n_out * 4, dpct::get_in_order_queue()))),
               "y");
         /*
         DPCT1114: cudaMemcpy is migrated to asynchronization memcpy,

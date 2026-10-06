@@ -1,5 +1,6 @@
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/core/conversation_snapshot.hpp"
 #include "strata/kernels/kv_q4.hpp"
@@ -42,15 +43,15 @@ struct Fixture {
             meaningful in the migrated code and was removed or replaced with 0.
             You may need to check the migrated code.
             */
-            cuda_check(DPCT_CHECK_ERROR(raw = (void *)sycl::malloc_host(
-                                            n, dpct::get_in_order_queue())));
+            cuda_check(DPCT_CHECK_ERROR(raw = (void *)strata::checked_usm(sycl::malloc_host(
+                                            n, dpct::get_in_order_queue()))));
             host.push_back(raw);
             void* mapped = nullptr;
             cuda_check(DPCT_CHECK_ERROR(mapped = (void *)raw));
             p = static_cast<T*>(mapped);
         } else {
-            cuda_check(DPCT_CHECK_ERROR(raw = (void *)sycl::malloc_device(
-                                            n, dpct::get_in_order_queue())));
+            cuda_check(DPCT_CHECK_ERROR(raw = (void *)strata::checked_usm(sycl::malloc_device(
+                                            n, dpct::get_in_order_queue()))));
                 device.push_back(raw); p = static_cast<T *>(raw);
         }
     }

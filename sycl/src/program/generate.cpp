@@ -23,6 +23,7 @@
 
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/sycl_queue.hpp"
 #include "strata/core/device.hpp"
@@ -1209,8 +1210,8 @@ double probe_pcie_h2d_gbps(std::string *samples = nullptr) try {
     void* h = nullptr;
     void* d = nullptr;
     if (DPCT_CHECK_ERROR(h = (void *)malloc(kBytes)) != 0) return -1.0;
-    if (DPCT_CHECK_ERROR(d = (void *)sycl::malloc_device(
-                             kBytes, dpct::get_in_order_queue())) != 0) {
+    if (DPCT_CHECK_ERROR(d = (void *)strata::checked_usm(sycl::malloc_device(
+                             kBytes, dpct::get_in_order_queue()))) != 0) {
         free(h);
         return -1.0;
     }
@@ -2314,8 +2315,8 @@ int main(int argc, char **argv) try {
     rewritten.
     */
     if (const dpct::err0 ce =
-            DPCT_CHECK_ERROR(arena = (void *)sycl::malloc_device(
-                                 pool_bytes, dpct::get_in_order_queue()));
+            DPCT_CHECK_ERROR(arena = (void *)strata::checked_usm(sycl::malloc_device(
+                                 pool_bytes, dpct::get_in_order_queue())));
         ce != 0) {
         // #486: the arena is the first large allocation and its size does not depend on the context, so what is
         // missing is held by something else: say how much was free
@@ -2401,8 +2402,8 @@ int main(int argc, char **argv) try {
         for (int64_t c = 0; c < cells; ++c)
             mrope_host[(size_t) c * 3] = mrope_host[(size_t) c * 3 + 1] = mrope_host[(size_t) c * 3 + 2] = (int32_t) c;
         if (DPCT_CHECK_ERROR(
-                d_mrope = sycl::malloc_device<int32_t>(
-                    mrope_host.size(), dpct::get_in_order_queue())) != 0 ||
+                d_mrope = strata::checked_usm(sycl::malloc_device<int32_t>(
+                    mrope_host.size(), dpct::get_in_order_queue()))) != 0 ||
             /*
             DPCT1114: cudaMemcpy is migrated to asynchronization memcpy,
             assuming in the original code the source host memory is pageable
@@ -2476,8 +2477,8 @@ int main(int argc, char **argv) try {
         the migrated code and was removed or replaced with 0. You may need to
         check the migrated code.
         */
-        if (DPCT_CHECK_ERROR(half_stage = sycl::malloc_host<float>(
-                                 n, dpct::get_in_order_queue())) != 0) {
+        if (DPCT_CHECK_ERROR(half_stage = strata::checked_usm(sycl::malloc_host<float>(
+                                 n, dpct::get_in_order_queue()))) != 0) {
             std::fprintf(stderr, "strata generate: cannot pin the half-dump staging buffer\n");
             return 1;
         }
@@ -2603,12 +2604,12 @@ int main(int argc, char **argv) try {
         // `ss.ple.hist` and the ready() check wait for `session_init`, which carves the history - the session is
         // now allocated after the layer-split search (see the carve), and the wiring lands there
         ss.ple.emb_host = ple_emb_host.data();
-        if (DPCT_CHECK_ERROR(ple_emb_dev = (float *)sycl::malloc_device(
+        if (DPCT_CHECK_ERROR(ple_emb_dev = (float *)strata::checked_usm(sycl::malloc_device(
                                  (size_t)strata::kernels::NG_N_EMBD * 4,
-                                 dpct::get_in_order_queue())) != 0 ||
-            DPCT_CHECK_ERROR(ple_scratch = (float *)sycl::malloc_device(
+                                 dpct::get_in_order_queue()))) != 0 ||
+            DPCT_CHECK_ERROR(ple_scratch = (float *)strata::checked_usm(sycl::malloc_device(
                                  strata::core::ple_run_scratch_bytes(),
-                                 dpct::get_in_order_queue())) != 0) {
+                                 dpct::get_in_order_queue()))) != 0) {
             std::fprintf(stderr, "strata generate: the PLE buffers failed\n");
             return 1;
         }
@@ -2622,8 +2623,8 @@ int main(int argc, char **argv) try {
 
     float* d_parts = nullptr;
     if (DPCT_CHECK_ERROR(
-            d_parts = (float *)sycl::malloc_device(
-                (size_t)K * g.n_embd * 4, dpct::get_in_order_queue())) != 0 ||
+            d_parts = (float *)strata::checked_usm(sycl::malloc_device(
+                (size_t)K * g.n_embd * 4, dpct::get_in_order_queue()))) != 0 ||
         DPCT_CHECK_ERROR(dpct::get_in_order_queue()
                              .memset(d_parts, 0, (size_t)K * g.n_embd * 4)
                              .wait()) != 0) {
@@ -2725,8 +2726,8 @@ int main(int argc, char **argv) try {
             skip_s = skip;
         }
         void* arena_s = nullptr;
-        if (DPCT_CHECK_ERROR(arena_s = (void *)sycl::malloc_device(
-                                 pool_s, dpct::get_in_order_queue())) != 0 ||
+        if (DPCT_CHECK_ERROR(arena_s = (void *)strata::checked_usm(sycl::malloc_device(
+                                 pool_s, dpct::get_in_order_queue()))) != 0 ||
             !st.wt.load(o.pack, arena_s, pool_s, err,
                         skip_s.empty() ? nullptr : &skip_s)) {
             /*
@@ -2782,8 +2783,8 @@ int main(int argc, char **argv) try {
         // kernel its stage runs - set before any of its graphs is captured
         if (o.vision) {
             if (DPCT_CHECK_ERROR(
-                    st.mrope = sycl::malloc_device<int32_t>(
-                        mrope_host.size(), dpct::get_in_order_queue())) != 0 ||
+                    st.mrope = strata::checked_usm(sycl::malloc_device<int32_t>(
+                        mrope_host.size(), dpct::get_in_order_queue()))) != 0 ||
                 /*
                 DPCT1114: cudaMemcpy is migrated to asynchronization
                 memcpy, assuming in the original code the source host memory is
@@ -3070,9 +3071,9 @@ int main(int argc, char **argv) try {
         const strata::core::OnDevice on0(0);
         const int64_t hi0 = multi_gpu ? split_at[0] : -1;
         if (DPCT_CHECK_ERROR(
-                sbuf = (void *)sycl::malloc_device(
+                sbuf = (void *)strata::checked_usm(sycl::malloc_device(
                     strata::core::session_bytes(g, o.max_context, K, 0, hi0),
-                    dpct::get_in_order_queue())) != 0) {
+                    dpct::get_in_order_queue()))) != 0) {
             std::fprintf(stderr, "strata generate: session state allocation failed\n");
             return 1;
         }
@@ -3108,10 +3109,10 @@ int main(int argc, char **argv) try {
         GpuStage& st = *stages[i];
         const strata::core::OnDevice on(st.dev);
         void* sbuf_s = nullptr;
-        if (DPCT_CHECK_ERROR(sbuf_s = (void *)sycl::malloc_device(
+        if (DPCT_CHECK_ERROR(sbuf_s = (void *)strata::checked_usm(sycl::malloc_device(
                                  strata::core::session_bytes(g, o.max_context,
                                                              K, st.lb, st.le),
-                                 dpct::get_in_order_queue())) != 0 ||
+                                 dpct::get_in_order_queue()))) != 0 ||
             strata::core::session_init(g, o.max_context, K, sbuf_s, st.ss,
                                        st.lb, st.le) == 0) {
             std::fprintf(stderr, "strata generate: layer split, CUDA%d: the session state failed\n", st.dev);
@@ -3175,8 +3176,8 @@ int main(int argc, char **argv) try {
     std::vector<float> logits((size_t) n_vocab);
     float* d_logits = nullptr;
     if (DPCT_CHECK_ERROR(
-            d_logits = (float *)sycl::malloc_device(
-                (size_t)n_vocab * 4, dpct::get_in_order_queue())) != 0) {
+            d_logits = (float *)strata::checked_usm(sycl::malloc_device(
+                (size_t)n_vocab * 4, dpct::get_in_order_queue()))) != 0) {
         /*
         DPCT1010: SYCL uses exceptions to report errors and does not use
         the error codes. The cudaGetLastError function call was replaced with 0.
@@ -4040,27 +4041,27 @@ int main(int argc, char **argv) try {
     float* d_hit_out = nullptr;
     if (o.expert_cache > 0 && !o.no_pool) {
         const uint64_t sb = strata::kernels::moe_hit_grouped_scratch_bytes(K, g.n_embd, strata::kernels::cpu::FF);
-        if (DPCT_CHECK_ERROR(hit_scratch = (void *)sycl::malloc_device(
-                                 (size_t)sb, dpct::get_in_order_queue())) !=
+        if (DPCT_CHECK_ERROR(hit_scratch = (void *)strata::checked_usm(sycl::malloc_device(
+                                 (size_t)sb, dpct::get_in_order_queue()))) !=
                 0 ||
-            DPCT_CHECK_ERROR(d_hit_slot = sycl::malloc_device<int32_t>(
-                                 (size_t)K, dpct::get_in_order_queue())) != 0 ||
-            DPCT_CHECK_ERROR(d_hit_dst = sycl::malloc_device<int32_t>(
-                                 (size_t)K, dpct::get_in_order_queue())) != 0 ||
-            DPCT_CHECK_ERROR(d_hit_q8 = (uint8_t *)sycl::malloc_device(
+            DPCT_CHECK_ERROR(d_hit_slot = strata::checked_usm(sycl::malloc_device<int32_t>(
+                                 (size_t)K, dpct::get_in_order_queue()))) != 0 ||
+            DPCT_CHECK_ERROR(d_hit_dst = strata::checked_usm(sycl::malloc_device<int32_t>(
+                                 (size_t)K, dpct::get_in_order_queue()))) != 0 ||
+            DPCT_CHECK_ERROR(d_hit_q8 = (uint8_t *)strata::checked_usm(sycl::malloc_device(
                                  (size_t)(g.n_embd / 32) * 34,
-                                 dpct::get_in_order_queue())) != 0 ||
+                                 dpct::get_in_order_queue()))) != 0 ||
             // R4.2h: the fp32 activation scales.  Without this the GPU's hits
             // use the block's fp16 `d` while the CPU's misses use
             // `ActQ::scale`, which is fp32 - a 4.761e-04 relative disagreement
             // on every chunk, and the reason enabling the cache changed the
             // tokens.
-            DPCT_CHECK_ERROR(d_hit_q8_scale = sycl::malloc_device<float>(
+            DPCT_CHECK_ERROR(d_hit_q8_scale = strata::checked_usm(sycl::malloc_device<float>(
                                  (size_t)(g.n_embd / 32),
-                                 dpct::get_in_order_queue())) != 0 ||
-            DPCT_CHECK_ERROR(d_hit_out = (float *)sycl::malloc_device(
+                                 dpct::get_in_order_queue()))) != 0 ||
+            DPCT_CHECK_ERROR(d_hit_out = (float *)strata::checked_usm(sycl::malloc_device(
                                  (size_t)K * g.n_embd * 4,
-                                 dpct::get_in_order_queue())) != 0) {
+                                 dpct::get_in_order_queue()))) != 0) {
             std::fprintf(stderr, "strata generate: the R4 hit path could not allocate its device buffers\n");
             return 1;
         }
@@ -4219,8 +4220,8 @@ int main(int argc, char **argv) try {
     };
     float* d_emb = nullptr;
     if (DPCT_CHECK_ERROR(
-            d_emb = (float *)sycl::malloc_device(
-                (size_t)g.n_embd * 4, dpct::get_in_order_queue())) != 0) {
+            d_emb = (float *)strata::checked_usm(sycl::malloc_device(
+                (size_t)g.n_embd * 4, dpct::get_in_order_queue()))) != 0) {
         std::fprintf(stderr, "strata generate: the embedding buffer failed\n");
         return 1;
     }
@@ -4229,8 +4230,8 @@ int main(int argc, char **argv) try {
     // error surfaces at the NEXT synchronising call, which here was the next token's `embed_row`, reporting an
     // illegal access on a weight plane.  Nothing in the parameter names said device.
     int* d_next = nullptr;
-    if (DPCT_CHECK_ERROR(d_next = sycl::malloc_device<int>(
-                             1, dpct::get_in_order_queue())) != 0) {
+    if (DPCT_CHECK_ERROR(d_next = strata::checked_usm(sycl::malloc_device<int>(
+                             1, dpct::get_in_order_queue()))) != 0) {
         std::fprintf(stderr, "strata generate: the sampler output buffer failed\n");
         return 1;
     }
@@ -4337,8 +4338,8 @@ int main(int argc, char **argv) try {
         the migrated code and was removed or replaced with 0. You may need to
         check the migrated code.
         */
-        if (DPCT_CHECK_ERROR(layer_stage = sycl::malloc_host<float>(
-                                 layer_floats, dpct::get_in_order_queue())) !=
+        if (DPCT_CHECK_ERROR(layer_stage = strata::checked_usm(sycl::malloc_host<float>(
+                                 layer_floats, dpct::get_in_order_queue()))) !=
             0) {
             std::fprintf(stderr, "strata generate: cannot pin the layer-dump staging buffer\n");
             return 1;
@@ -4687,10 +4688,10 @@ int main(int argc, char **argv) try {
                 if (slot != strata::core::kNotResident) ++resident;
             }
         if (DPCT_CHECK_ERROR(
-                d_res = sycl::malloc_device<int32_t>(
-                    host_res.size(), dpct::get_in_order_queue())) != 0 ||
-            DPCT_CHECK_ERROR(d_hit_count = sycl::malloc_device<int32_t>(
-                                 1, dpct::get_in_order_queue())) != 0 ||
+                d_res = strata::checked_usm(sycl::malloc_device<int32_t>(
+                    host_res.size(), dpct::get_in_order_queue()))) != 0 ||
+            DPCT_CHECK_ERROR(d_hit_count = strata::checked_usm(sycl::malloc_device<int32_t>(
+                                 1, dpct::get_in_order_queue()))) != 0 ||
             /*
             DPCT1114: cudaMemcpy is migrated to asynchronization memcpy,
             assuming in the original code the source host memory is pageable
@@ -4733,8 +4734,8 @@ int main(int argc, char **argv) try {
         for (auto& st : stages) {   // layer split across GPUs: the same table on every device
             const strata::core::OnDevice on(st->dev);
             if (DPCT_CHECK_ERROR(
-                    st->d_res = sycl::malloc_device<int32_t>(
-                        host_res.size(), dpct::get_in_order_queue())) != 0 ||
+                    st->d_res = strata::checked_usm(sycl::malloc_device<int32_t>(
+                        host_res.size(), dpct::get_in_order_queue()))) != 0 ||
                 /*
                 DPCT1114: cudaMemcpy is migrated to asynchronization
                 memcpy, assuming in the original code the source host memory is
@@ -5400,8 +5401,8 @@ int main(int argc, char **argv) try {
         std::vector<int32_t> hist_stage(kHistSlots, -1);
         const int hist_dev = last_st ? last_st->dev : -1;   // with the head: the last stage's device
         if (const strata::core::OnDevice on_h(hist_dev);
-            DPCT_CHECK_ERROR(d_hist = sycl::malloc_device<int32_t>(
-                                 kHistSlots, dpct::get_in_order_queue())) !=
+            DPCT_CHECK_ERROR(d_hist = strata::checked_usm(sycl::malloc_device<int32_t>(
+                                 kHistSlots, dpct::get_in_order_queue()))) !=
             0) {
             std::fprintf(stderr, "strata serve: the penalty-history allocation failed\n");
             return 1;
@@ -5440,8 +5441,8 @@ int main(int argc, char **argv) try {
                 meaningful in the migrated code and was removed or replaced with
                 0. You may need to check the migrated code.
                 */
-                if (DPCT_CHECK_ERROR(hh = (float *)sycl::malloc_host(
-                                         hb, dpct::get_in_order_queue())) !=
+                if (DPCT_CHECK_ERROR(hh = (float *)strata::checked_usm(sycl::malloc_host(
+                                         hb, dpct::get_in_order_queue()))) !=
                         0 ||
                     DPCT_CHECK_ERROR(*(void **)&h = (float *)hh) != 0) {
                     std::fprintf(stderr, "strata serve: the layer-split hand-off allocation failed\n");
@@ -7397,10 +7398,12 @@ int main(int argc, char **argv) try {
         save_profile("exit");   // #477: QUIT, or the server closed stdin
         // SYCL port: the requests are done and their output written; leave without unwinding the GPU objects (the OS
         // reclaims them). Their destructors ran against a runtime already shutting down and aborted (exit 139).
-        try { dpct::get_current_device().queues_wait_and_throw(); } catch (...) {}
+        const int shutdown_status = strata::finish_sycl_serve([] {
+            dpct::get_current_device().queues_wait_and_throw();
+        });
         std::fflush(stdout);
         std::fflush(stderr);
-        std::_Exit(0);
+        std::_Exit(shutdown_status);
     }
 
     // ---- plan v0.3 P5: the prompt's conditioning positions [0, n_prompt - 1) in batched chunks.  The token loop

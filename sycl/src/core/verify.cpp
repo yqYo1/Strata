@@ -1,6 +1,9 @@
 // src/core/verify.cpp - see include/strata/core/verify.hpp.
 #include <sycl/sycl.hpp>
 #include <dpct/dpct.hpp>
+#include "strata/sycl_allocation.hpp"
+#include "strata/host_atomic.hpp"
+#include "strata/sycl_handshake.hpp"
 #include "strata/core/verify.hpp"
 #if defined(_WIN32)
 #include <intrin.h>
@@ -40,6 +43,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <mutex>
 #include <map>
 #include <string>
 #include <thread>
@@ -90,8 +94,8 @@ bool mapped(size_t bytes, void **h, void **d) try {
     migrated code and was removed or replaced with 0. You may need to check the
     migrated code.
     */
-    if (DPCT_CHECK_ERROR(*h = (void *)sycl::malloc_host(
-                             bytes, dpct::get_in_order_queue())) !=
+    if (DPCT_CHECK_ERROR(*h = (void *)strata::checked_usm(sycl::malloc_host(
+                             bytes, dpct::get_in_order_queue()))) !=
         0) return false;
     std::memset(*h, 0, bytes);
     return DPCT_CHECK_ERROR(*d = (void *)*h) == 0;
@@ -160,6 +164,7 @@ struct TraceEv {
 constexpr uint64_t kTraceN = 4096;
 TraceEv g_trace_ring[kTraceN];
 std::atomic<uint64_t> g_trace_next{0};
+std::mutex g_trace_mutex;
 int64_t trace_now_ns() {
     return std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now().time_since_epoch()).count();
 }
@@ -182,7 +187,7 @@ bool Verifier::release_gpu_waits(int timeout_ms) try {
     // reaches them with no API call; UINT32_MAX is past every ring.  (E-6's skip words are device memory, but
     // wait_flag_ge_or also returns on its flag.)  A host function raising flag B later only raises.
     for (uint32_t* p : {h_flag_, h_flagA_, h_flagB_})
-        if (p != nullptr) *(volatile uint32_t*) p = UINT32_MAX;
+        if (p != nullptr) strata::host_atomic_raise(p, UINT32_MAX);
     std::atomic_thread_fence(std::memory_order_seq_cst);
     _mm_sfence();
     const OnDevice on_device(device_);
@@ -206,13 +211,16 @@ bool Verifier::release_gpu_waits(int timeout_ms) try {
 
 void Verifier::trace_ev(const char* what, int64_t step, int64_t layer, int64_t aux) const {
     if (!g_trace) return;
-    auto rd = [](const uint32_t* p) { return p ? *(const volatile uint32_t*) p : 0u; };
+    std::lock_guard<std::mutex> lock(g_trace_mutex);
+    auto rd = [](const uint32_t* p) { return p ? strata::host_atomic_load(p) : 0u; };
     TraceEv& e = g_trace_ring[g_trace_next.fetch_add(1) % kTraceN];
-    e = {trace_now_ns(), this, windows, step, layer, aux, rd(h_seq_), rd(h_flag_), rd(h_flagA_), rd(h_flagB_), what};
+    e = {trace_now_ns(), this, diag_windows_.load(), step, layer, aux,
+         rd(h_seq_), rd(h_flag_), rd(h_flagA_), rd(h_flagB_), what};
 }
 
 void Verifier::trace_dump(std::FILE* f) const {
     if (!g_trace || f == nullptr) return;
+    std::lock_guard<std::mutex> lock(g_trace_mutex);
     static const char* names[kProfPer] = {"pre", "hc-read0", "qkv gemv", "conv", "ab", "z", "rec", "kv-idx",
                                           "k/v rope", "kv append", "q", "scores+topk", "kv-resolve", "attention",
                                           "gate", "", "out-proj", "router+ring", "shared", "waitA", "VRAM hits", "waitB",
@@ -264,13 +272,14 @@ void Verifier::trace_dump(std::FILE* f) const {
 }
 
 void Verifier::diag(std::FILE* f) const {
-    auto rd = [](const uint32_t* p) { return p ? *(const volatile uint32_t*) p : 0u; };
+    auto rd = [](const uint32_t* p) { return p ? strata::host_atomic_load(p) : 0u; };
     // #251: outside a verify stage these are the LAST window's numbers (it finished), not the stalled work's
     const char* where = progress().where.load();
     const bool current = where != nullptr && std::strncmp(where, "verify window", 13) == 0;
     std::fprintf(f, "  verify window%s: %d tokens at position %lld, host at layer step %u; the GPU rang %u; flags: "
                     "served %u, plan (A) %u, copies (B) %u\n", current ? "" : " (last window, not the current stage)",
-                 last_t_, (long long) last_pos0_, cur_layer_ + 1, rd(h_seq_), rd(h_flag_), rd(h_flagA_), rd(h_flagB_));
+                 diag_t_.load(), (long long) diag_pos0_.load(), diag_layer_.load() + 1,
+                 rd(h_seq_), rd(h_flag_), rd(h_flagA_), rd(h_flagB_));
     trace_dump(f);   // #649: STRATA_VERIFY_TRACE=1 only
 }
 
@@ -338,6 +347,7 @@ bool Verifier::init(const WeightTable &wt, const ModelGeometry &g,
     const char* boundary = std::getenv("STRATA_SYCL_HOST_BOUNDARY");
     host_boundary_ = std::getenv("STRATA_VERIFY_NO_HOST") == nullptr &&
                      (boundary == nullptr || std::atoi(boundary) != 0);
+    if (!host_boundary_ && !strata::require_host_handshake(dpct::get_in_order_queue(), err)) return false;
     std::string why;
     if (!layer_verify_compatible(why)) {
         err = "verify: " + why + " (the verify window reproduces the default native decode path)";
@@ -446,33 +456,26 @@ bool Verifier::init(const WeightTable &wt, const ModelGeometry &g,
         head_logits_ = b.take<float>(T * (uint64_t) n_vocab_);
         hist_snap_ = b.take<float>(T * HS);
         if (host_boundary_) {
+            // GPU ring updates stay in device USM. The host publishes its own
+            // diagnostic sequence only after the mixer event completes.
+            m_seq_ = b.take<uint32_t>(16);
             m_plan_ = b.take<int32_t>(2 * (uint64_t) plan_i32_ + 16);
             m_ymiss_ = b.take<float>(T * K * N);
         }
     };
     Bump count;
     carve(count);
-    if (DPCT_CHECK_ERROR(arena_ = (void *)sycl::malloc_device(
-                             count.used, dpct::get_in_order_queue())) != 0) {
+    if (DPCT_CHECK_ERROR(arena_ = (void *)strata::checked_usm(sycl::malloc_device(
+                             count.used, dpct::get_in_order_queue()))) != 0) {
         err = "verify: the device arena (" + std::to_string(count.used >> 20) + " MiB) does not fit";
         return false;
     }
     dpct::get_in_order_queue().memset(arena_, 0, count.used).wait();
-    if (g_trace && trace_h_ == nullptr) {   // #649: the breadcrumbs, mapped so they read while the GPU hangs
-        trace_n_ = (size_t) (g.n_layers + 1) * kProfPer * 2;
-        if (!mapped(trace_n_ * 8, (void**) &trace_h_, (void**) &trace_m_)) {
-            trace_h_ = trace_m_ = nullptr;
-            trace_n_ = 0;
-        }
-#if defined(STRATA_USE_HIP)
-        std::fprintf(stderr, "strata verify trace (#649): on; coherent words %s, doorbell %s, HIP_HOST_COHERENT=%s "
-                             "HSA_ENABLE_SDMA=%s GPU_MAX_HW_QUEUES=%s\n", g_coherent ? "explicit" : "default",
-                     g_doorbell_store ? "stored" : "incremented", std::getenv("HIP_HOST_COHERENT") ? std::getenv("HIP_HOST_COHERENT") : "-",
-                     std::getenv("HSA_ENABLE_SDMA") ? std::getenv("HSA_ENABLE_SDMA") : "-",
-                     std::getenv("GPU_MAX_HW_QUEUES") ? std::getenv("GPU_MAX_HW_QUEUES") : "-");
-#else
-        std::fprintf(stderr, "strata verify trace (#649): on\n");
-#endif
+    if (g_trace) {
+        // The migrated gpu_stamp writes only zero on SYCL. Keep host events;
+        // zero GPU stamps provide no diagnostic evidence and mapped polling
+        // would require an additional atomic-host-USM contract.
+        std::fprintf(stderr, "strata verify trace: host events only; GPU timestamps unavailable on SYCL\n");
     }
     prof_on_ = std::getenv("STRATA_VERIFY_PROFILE") != nullptr;
     if (prof_on_) {
@@ -481,8 +484,8 @@ bool Verifier::init(const WeightTable &wt, const ModelGeometry &g,
         DPCT1026: The call to cudaGetLastError was removed because this
         functionality is redundant in SYCL.
         */
-        if (DPCT_CHECK_ERROR(prof_ = (unsigned long long *)sycl::malloc_device(
-                                 np * 8, dpct::get_in_order_queue())) != 0) {
+        if (DPCT_CHECK_ERROR(prof_ = (unsigned long long *)strata::checked_usm(sycl::malloc_device(
+                                 np * 8, dpct::get_in_order_queue()))) != 0) {
             prof_on_ = false; prof_ = nullptr;
         } else {
             dpct::get_in_order_queue().memset(prof_, 0, np * 8).wait();
@@ -521,14 +524,14 @@ bool Verifier::init(const WeightTable &wt, const ModelGeometry &g,
     }
     if (device_plan_) {
         bool ok2 =
-            DPCT_CHECK_ERROR(skip_ = (uint32_t *)sycl::malloc_device(
-                                 64, dpct::get_in_order_queue())) == 0 &&
+            DPCT_CHECK_ERROR(skip_ = (uint32_t *)strata::checked_usm(sycl::malloc_device(
+                                 64, dpct::get_in_order_queue()))) == 0 &&
             DPCT_CHECK_ERROR(
                 dpct::get_in_order_queue().memset(skip_, 0, 64).wait()) == 0;
         if (ok2 && hits.slot_off != nullptr && hits.n_slots > 0) {
             ok2 = DPCT_CHECK_ERROR(
-                      slot_off_d_ = sycl::malloc_device<unsigned long long>(
-                          (size_t)hits.n_slots, dpct::get_in_order_queue())) ==
+                      slot_off_d_ = strata::checked_usm(sycl::malloc_device<unsigned long long>(
+                          (size_t)hits.n_slots, dpct::get_in_order_queue()))) ==
                       0 &&
                   DPCT_CHECK_ERROR(dpct::get_in_order_queue()
                                        .memcpy(slot_off_d_, hits.slot_off,
@@ -543,12 +546,12 @@ bool Verifier::init(const WeightTable &wt, const ModelGeometry &g,
         if (!ok2) {; device_plan_ = false; }
     }
     if (std::getenv("STRATA_VERIFY_DEBUG") != nullptr) {   // SYCL port: the per-layer residual ladder (token 0)
-        dbgR_ = (float*) sycl::malloc_device((size_t) g.n_layers * g.n_embd * 4, dpct::get_in_order_queue());
-        dbgM_ = (float*) sycl::malloc_device((size_t) g.n_layers * g.n_embd * 4, dpct::get_in_order_queue());
+        dbgR_ = (float*) strata::checked_usm(sycl::malloc_device((size_t) g.n_layers * g.n_embd * 4, dpct::get_in_order_queue()));
+        dbgM_ = (float*) strata::checked_usm(sycl::malloc_device((size_t) g.n_layers * g.n_embd * 4, dpct::get_in_order_queue()));
     }
     if (host_boundary_) {
-        host_staging_ = sycl::malloc_host<uint8_t>((size_t) kStagingBlobs *
-            strata::kernels::cpu::expert_layout().max_blob, *cs_);
+        host_staging_ = strata::checked_usm(sycl::malloc_host<uint8_t>((size_t) kStagingBlobs *
+            strata::kernels::cpu::expert_layout().max_blob, *cs_));
         if (!host_staging_) { err = "verify: host USM expert staging allocation failed"; return false; }
     }
     std::fprintf(stderr, "strata verify: window up to %d tokens, %.1f MiB of device buffers\n", max_t,
@@ -607,6 +610,7 @@ bool Verifier::record_window(int T, dpct::queue_ptr cs, std::string &err) {
     const int32_t* pos_k = pos_ + MT * NH;
     const int32_t* pos_i = pos_ + MT * (NH + NKV);
     if (recording_stage_ <= 1) {
+    if (host_boundary_) cs->memset(m_seq_, 0, sizeof(uint32_t));
     // ---- the window's inputs, from mapped staging
     copy_i32_from_mapped(tok_, m_tok_, T, cs);
     copy_i32_from_mapped(step_, m_step_, (int64_t) T * kStepCount, cs);
@@ -1211,8 +1215,10 @@ bool Verifier::run_boundary(int T, PoolMultiFn pool, void* user, std::string& er
             auto wait_start = Clock::now();
             progress_at("verify window: waiting for the GPU mixer", l);
             ready[k].wait_and_throw();
+            strata::host_atomic_store(h_seq_, (uint32_t) k + 1);
             ms_wait += ms_since(wait_start);
             cur_layer_ = (uint32_t) k;
+            diag_layer_.store(cur_layer_);
             set_plan_slot(group);
             auto pool_start = Clock::now();
             progress_at("verify window: the CPU experts of layer", l);
@@ -1233,7 +1239,7 @@ bool Verifier::run_boundary(int T, PoolMultiFn pool, void* user, std::string& er
             cs_->memcpy(m_ymiss_ + (size_t) tb * ss.k * g.n_embd,
                         h_ymiss_ + (size_t) tb * ss.k * g.n_embd,
                         (size_t) (te - tb) * ss.k * g.n_embd * sizeof(float));
-            *(volatile uint32_t*) h_flag_ = (uint32_t) k + 1;
+            strata::host_atomic_raise(h_flag_, (uint32_t) k + 1);
             launch(3, l, group);
             if (l + 1 < le_) ready[k + G] = launch(2, l + 1, group);
             progress_tick();
@@ -1463,15 +1469,17 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
         }
         if (!ss.ple.table->gather_batch(rows, (size_t) T, h_ple_, err)) return false;
     }
-    *(volatile uint32_t*) h_seq_ = 0;
-    *(volatile uint32_t*) h_flag_ = 0;
-    *(volatile uint32_t*) h_flagA_ = 0;
-    *(volatile uint32_t*) h_flagB_ = 0;
+    strata::host_atomic_store(h_seq_, uint32_t{0});
+    strata::host_atomic_store(h_flag_, uint32_t{0});
+    strata::host_atomic_store(h_flagA_, uint32_t{0});
+    strata::host_atomic_store(h_flagB_, uint32_t{0});
     if (trace_h_ != nullptr) std::memset(trace_h_, 0, trace_n_ * 8);   // #649: this window's breadcrumbs only
     std::atomic_thread_fence(std::memory_order_seq_cst);
     trace_ev("WINDOW", -1, -1, pos0 * 16 + T);
     last_t_ = T;
     last_pos0_ = pos0;
+    diag_t_.store(T);
+    diag_pos0_.store(pos0);
     for (int t = 0; t < T; ++t) last_tokens_[t] = tokens[t];
     ms_host += ms_since(t0);
     VDBG("staged; launching\n");
@@ -1502,8 +1510,8 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
     }
     (void)DPCT_CHECK_ERROR(((cs_)->ext_oneapi_empty()));
     VDBG("launched\n");
-    volatile uint32_t* const seq = h_seq_;
-    volatile uint32_t* const flag = h_flag_;
+    uint32_t* const seq = h_seq_;
+    uint32_t* const flag = h_flag_;
     const int G = groups_[T] > 0 ? groups_[T] : 1;
     const int gtb[2] = {0, (T + 1) / 2}, gte[2] = {G == 2 ? (T + 1) / 2 : T, T};
     // SYCL port: with every routed expert resident the GPU takes its own plan (`device_plan_`) and skips every
@@ -1522,28 +1530,19 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
         auto last_flush = a;
         uint32_t spins = 0;
         progress_at("verify window: waiting for the GPU to reach layer", l);
-        while (*seq < want) {
+        while (strata::host_atomic_load(seq) < want) {
             _mm_pause();
             if ((++spins & 1023u) != 0) continue;
             const auto now = Clock::now();
             if (now - last_flush > std::chrono::microseconds(2000)) {
                 last_flush = now;
-                const dpct::err0 q =
-                    DPCT_CHECK_ERROR(((cs_)->ext_oneapi_empty()));
-                if (q != 1 && *seq < want) {
-                    trace_ev("NEVER-RANG", k, l, (int64_t) q);
+                const bool finished = cs_->ext_oneapi_empty();
+                if (finished && strata::host_atomic_load(seq) < want) {
+                    trace_ev("NEVER-RANG", k, l, 0);
                     trace_dump(stderr);
                     err = "verify: layer " + std::to_string(l) +
                           " never rang (" +
-                          /*
-                          DPCT1009: SYCL reports errors using exceptions and
-                          does not use error codes. Please replace the
-                          "get_error_string_dummy(...)" with a real
-                          error-handling function.
-                          */
-                          (q == 0
-                               ? std::string("graph finished")
-                               : std::string(dpct::get_error_string_dummy(q))) +
+                          std::string("graph finished") +
                           ")";
                     return false;
                 }
@@ -1566,6 +1565,7 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
         if (g_trace) trace_ev("RANG", k, l, (int64_t) std::chrono::duration_cast<std::chrono::microseconds>(b - a).count());
         VDBG("layer %lld rang\n", (long long) l);
         cur_layer_ = want - 1;
+        diag_layer_.store(cur_layer_);
         set_plan_slot(grp);
         const int tb = gtb[grp], n = gte[grp] - gtb[grp];
         progress_at("verify window: the CPU experts of layer", l);
@@ -1573,22 +1573,22 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
             pool(user, h_x_ + (size_t) tb * g.n_embd, h_ids_ + (size_t) tb * ss.k, n, ss.k,
                  h_ymiss_ + (size_t) tb * ss.k * g.n_embd, l);
         VDBG("layer %lld served\n", (long long) l);
-        if (g_trace) trace_ev(*(volatile uint32_t*) h_flagA_ == want ? "SERVED" : "SERVED-NO-PLAN-YET", k, l,
+        if (g_trace) trace_ev(strata::host_atomic_load(h_flagA_) == want ? "SERVED" : "SERVED-NO-PLAN-YET", k, l,
                               (int64_t) ms_since(b));   // aux: ms the CPU experts took
         progress_tick();
         std::atomic_thread_fence(std::memory_order_seq_cst);
         _mm_sfence();
-        if (*(volatile uint32_t*) h_flagA_ != want) {        // the pool did not publish a plan: an empty one
+        if (strata::host_atomic_load(h_flagA_) != want) {        // the pool did not publish a plan: an empty one
             sink_.counts[0] = 0;
             sink_.counts[1] = 0;
             sink_.counts[2] = 0;
             sink_.start[0] = 0;
             sink_.start2[0] = 0;
             std::atomic_thread_fence(std::memory_order_seq_cst);
-            *(volatile uint32_t*) h_flagA_ = want;
+            strata::host_atomic_raise(h_flagA_, want);
             raise_flag(h_flagB_, want);
         }
-        if (!(test_stall && k + 1 == steps)) *flag = want;
+        if (!(test_stall && k + 1 == steps)) strata::host_atomic_raise(flag, want);
         ms_wait += std::chrono::duration<double, std::milli>(b - a).count();
         ms_pool += ms_since(b);
     }
@@ -1630,7 +1630,7 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
         cs_->memcpy(sk.data(), skip_, sk.size() * 4).wait();
         cs_->memcpy(id0.data(), ids_, id0.size() * 4).wait();
         cs_->memcpy(res0.data(), hits_.d_res, res0.size() * 4).wait();
-        std::fprintf(stderr, "verify dbg: window T=%d: host seq=%u (expected %lld), skip[]=", T, *(volatile uint32_t*) h_seq_,
+        std::fprintf(stderr, "verify dbg: window T=%d: host seq=%u (expected %lld), skip[]=", T, strata::host_atomic_load(h_seq_),
                      (long long) ((le_ - lb_) * Gd));
         for (int i = 0; i < Gd; ++i) std::fprintf(stderr, " %u", sk[(size_t) i]);
         std::vector<float> w0((size_t) ss.k, 0.f);
@@ -1726,6 +1726,7 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
     // the drafts were. Exact: a rejected row's draw is discarded, and no kept decision depends on a reused draw.
     if (le_ < g.n_layers) {   // a layer split's earlier stage: the hand-off is written (synced above)
         ++windows;
+        diag_windows_.store(windows);
         return next_ == nullptr || next_->run(T, tokens, pos0, pool, next_user_, out, err);
     }
     const bool sampled = !sampling_.greedy && sampling_.temperature > 0.0f;
@@ -1760,6 +1761,7 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
     }
     VDBG("window done\n");
     ++windows;
+    diag_windows_.store(windows);
     progress_at("decode");
     progress_beat();
     return true;
@@ -1790,18 +1792,7 @@ void Verifier::set_plan_slot(int grp) {
 
 // Flag B only rises: a host function of an earlier layer may run after a later layer already raised it directly.
 void Verifier::raise_flag(uint32_t* flag, uint32_t value) {
-    volatile long* f = (volatile long*) flag;
-#if defined(_WIN32)
-    long cur = *f;
-    while ((uint32_t) cur < value) {
-        const long prev = _InterlockedCompareExchange(f, (long) value, cur);
-        if (prev == cur) break;
-        cur = prev;
-    }
-#else
-    uint32_t cur = __atomic_load_n((uint32_t*) flag, __ATOMIC_SEQ_CST);
-    while (cur < value && !__atomic_compare_exchange_n((uint32_t*) flag, &cur, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST)) {}
-#endif
+    strata::host_atomic_raise(flag, value);
 }
 
 // Plan v0.3 P6: the PCIe share by DMA.  The copy engine moves the blobs while the CPU computes its own share and the
@@ -1827,19 +1818,17 @@ void Verifier::fetch_dma(void* ctx, const uint8_t* const* src, int n, size_t byt
     } else {
         for (int i = 0; i < n; ++i) v->copy_->memcpy(stage + (size_t) i * bytes, src[i], bytes);
     }
-    FlagSet& fs = v->flag_sets_[v->cur_layer_ % (sizeof v->flag_sets_ / sizeof v->flag_sets_[0])];
-    fs.flag = v->h_flagB_;
-    fs.value = want;
-  FlagSet* fsp = &fs;
-  v->copy_->submit([&](sycl::handler &cgh) {
-    cgh.host_task([=]() { raise_flag(fsp->flag, fsp->value); });
-  });
+    // Capture immutable values instead of a pointer into mutable callback slots.
+    uint32_t* const flag = v->h_flagB_;
+    v->copy_->submit([flag, want](sycl::handler& cgh) {
+        cgh.host_task([flag, want] { raise_flag(flag, want); });
+    });
 }
 
 void Verifier::publish_plan(void* ctx) {
     Verifier* v = (Verifier*) ctx;
     _mm_sfence();
-    *(volatile uint32_t*) v->h_flagA_ = v->cur_layer_ + 1;
+    strata::host_atomic_raise(v->h_flagA_, v->cur_layer_ + 1);
 }
 
 bool Verifier::window_logprobs(const int32_t* targets, int T, int64_t pos0, int32_t extra_id, std::FILE* out,

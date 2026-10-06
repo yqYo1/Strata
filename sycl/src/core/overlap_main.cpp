@@ -11,6 +11,7 @@
 // not the absolute figure - and L6 established that absolute figures on this machine move by 20%.
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/core/pinned.hpp"
 #include "strata/kernels/s_gemv.hpp"
@@ -84,22 +85,22 @@ int main(int argc, char** argv) {
     // device side: double buffered codes, plus x / scales / y
     uint8_t* d_codes[2] = {nullptr, nullptr};
     for (int b = 0; b < 2; ++b)
-        check(DPCT_CHECK_ERROR(d_codes[b] = (uint8_t *)sycl::malloc_device(
-                                   role_codes, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_codes[b] = (uint8_t *)strata::checked_usm(sycl::malloc_device(
+                                   role_codes, dpct::get_in_order_queue()))),
               "cudaMalloc codes");
     uint16_t* d_x = nullptr;
     float *d_scales = nullptr, *d_y = nullptr;
     check(DPCT_CHECK_ERROR(
-              d_x = (uint16_t *)sycl::malloc_device(
-                  n_in * sizeof(uint16_t), dpct::get_in_order_queue())),
+              d_x = (uint16_t *)strata::checked_usm(sycl::malloc_device(
+                  n_in * sizeof(uint16_t), dpct::get_in_order_queue()))),
           "cudaMalloc x");
-    check(DPCT_CHECK_ERROR(d_scales = (float *)sycl::malloc_device(
+    check(DPCT_CHECK_ERROR(d_scales = (float *)strata::checked_usm(sycl::malloc_device(
                                (size_t)n_out * (n_in / 64) * sizeof(float),
-                               dpct::get_in_order_queue())),
+                               dpct::get_in_order_queue()))),
           "cudaMalloc scales");
     check(DPCT_CHECK_ERROR(
-              d_y = (float *)sycl::malloc_device(n_out * sizeof(float),
-                                                 dpct::get_in_order_queue())),
+              d_y = (float *)strata::checked_usm(sycl::malloc_device(n_out * sizeof(float),
+                                                 dpct::get_in_order_queue()))),
           "cudaMalloc y");
     std::vector<uint16_t> hx((size_t) n_in, 0x3C00);
     std::vector<float> hs((size_t) n_out * (size_t) (n_in / 64), 0.001f);

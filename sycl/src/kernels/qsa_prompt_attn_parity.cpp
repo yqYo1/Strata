@@ -13,6 +13,7 @@
 // Zero tests the opt-in XMX implementation (which does not accept Q4_0 K).
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/kernels/qsa.hpp"
 #include "strata/kernels/qsa_decode_attn.hpp"
@@ -40,8 +41,8 @@ void ck(dpct::err0 e, const char *w) {
 template <typename T> T* up(const std::vector<T>& h) {
     T* d = nullptr;
     ck(DPCT_CHECK_ERROR(
-           d = (T *)sycl::malloc_device(h.size() * sizeof(T) + 64,
-                                        dpct::get_in_order_queue())),
+           d = (T *)strata::checked_usm(sycl::malloc_device(h.size() * sizeof(T) + 64,
+                                        dpct::get_in_order_queue()))),
        "malloc");
     /*
     DPCT1114: cudaMemcpy is migrated to asynchronization memcpy, assuming
@@ -171,16 +172,16 @@ int run(int fmt, int64_t ctx, int64_t nq, int reps, int64_t candidate_batch, int
     const float* d_q = up(q);
     float *d_old = nullptr, *d_new = nullptr, *scratch = nullptr;
     const int64_t batch = 32;
-    ck(DPCT_CHECK_ERROR(d_old = (float *)sycl::malloc_device(
-                            nq * NH * HD * 4, dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(d_old = (float *)strata::checked_usm(sycl::malloc_device(
+                            nq * NH * HD * 4, dpct::get_in_order_queue()))),
        "malloc");
-    ck(DPCT_CHECK_ERROR(d_new = (float *)sycl::malloc_device(
-                            nq * NH * HD * 4, dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(d_new = (float *)strata::checked_usm(sycl::malloc_device(
+                            nq * NH * HD * 4, dpct::get_in_order_queue()))),
        "malloc");
     ck(DPCT_CHECK_ERROR(
-           scratch = (float *)sycl::malloc_device(
+           scratch = (float *)strata::checked_usm(sycl::malloc_device(
                std::max(batch, candidate_batch) * k::qsa_decode_attn_scratch_floats(cap, s) * 4,
-               dpct::get_in_order_queue())),
+               dpct::get_in_order_queue()))),
        "malloc");
     auto old_run = [&]() {
         for (int64_t t0 = 0; t0 < nq; t0 += batch)

@@ -1,5 +1,6 @@
 // src/core/mtp.cpp - see include/strata/core/mtp.hpp.
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/core/mtp.hpp"
 #include "strata/core/coupled_draft.hpp"
@@ -64,8 +65,8 @@ bool mapped(size_t bytes, void **h, void **d) try {
     migrated code and was removed or replaced with 0. You may need to check the
     migrated code.
     */
-    if (DPCT_CHECK_ERROR(*h = (void *)sycl::malloc_host(
-                             bytes, dpct::get_in_order_queue())) !=
+    if (DPCT_CHECK_ERROR(*h = (void *)strata::checked_usm(sycl::malloc_host(
+                             bytes, dpct::get_in_order_queue()))) !=
         0) return false;
     std::memset(*h, 0, bytes);
     return DPCT_CHECK_ERROR(*d = (void *)*h) == 0;
@@ -264,8 +265,8 @@ bool MtpDrafter::load(const std::string &rt_dir, const ModelGeometry &g,
         std::vector<uint8_t> blob;
         if (!read_file(rt_dir + "/dense.bin", blob)) { err = "mtp: cannot read dense.bin"; return false; }
         const dpct::err0 alloc =
-            DPCT_CHECK_ERROR(dense_ = (uint8_t *)sycl::malloc_device(
-                                 blob.size(), dpct::get_in_order_queue()));
+            DPCT_CHECK_ERROR(dense_ = (uint8_t *)strata::checked_usm(sycl::malloc_device(
+                                 blob.size(), dpct::get_in_order_queue())));
         /*
         DPCT1000: Error handling if-stmt was detected but could not be
         rewritten.
@@ -324,8 +325,8 @@ bool MtpDrafter::load(const std::string &rt_dir, const ModelGeometry &g,
                                       strata::kernels::cpu::BLOB, err)) return false;
             experts_ = const_cast<uint8_t*>(expert_storage_.device_slot(0));
             expert_host_.resize((size_t) bytes);
-        } else if (DPCT_CHECK_ERROR(experts_ = (uint8_t *)sycl::malloc_device(
-                                      bytes, dpct::get_in_order_queue())) != 0) {
+        } else if (DPCT_CHECK_ERROR(experts_ = (uint8_t *)strata::checked_usm(sycl::malloc_device(
+                                      bytes, dpct::get_in_order_queue()))) != 0) {
             err = "mtp: the 512 experts do not fit in VRAM"; return false;
         }
         std::vector<uint8_t> chunk(64u << 20);
@@ -360,8 +361,8 @@ bool MtpDrafter::load(const std::string &rt_dir, const ModelGeometry &g,
     qsa_set_kv_hybrid(false);
     if (kv_hybrid_was) qsa_set_kv_int8(true);   // the drafter under --kv k8v4: plain INT8
     uint64_t sb = qsa_state_bytes(g, max_cells, false, ring);
-    if (DPCT_CHECK_ERROR(state_arena_ = (void *)sycl::malloc_device(
-                             sb, dpct::get_in_order_queue())) != 0) {
+    if (DPCT_CHECK_ERROR(state_arena_ = (void *)strata::checked_usm(sycl::malloc_device(
+                             sb, dpct::get_in_order_queue()))) != 0) {
         err = "mtp: the K/V state does not fit"; return false;
     }
     if (qsa_state_init(g, max_cells, state_arena_, st_, &ss.qsa_states[ss.qsa_primary()], ring) == 0) {
@@ -375,8 +376,8 @@ bool MtpDrafter::load(const std::string &rt_dir, const ModelGeometry &g,
         st_ = QsaState{};
         ring = -1;   // fully resident
         sb = qsa_state_bytes(g, max_cells, false, ring);
-        if (DPCT_CHECK_ERROR(state_arena_ = (void *)sycl::malloc_device(
-                                 sb, dpct::get_in_order_queue())) != 0) {
+        if (DPCT_CHECK_ERROR(state_arena_ = (void *)strata::checked_usm(sycl::malloc_device(
+                                 sb, dpct::get_in_order_queue()))) != 0) {
             err = "mtp: the K/V state does not fit"; return false;
         }
         if (qsa_state_init(g, max_cells, state_arena_, st_, &ss.qsa_states[ss.qsa_primary()], ring) == 0) { err = "mtp: state init failed"; return false; }
@@ -431,8 +432,8 @@ bool MtpDrafter::load(const std::string &rt_dir, const ModelGeometry &g,
     };
     Bump count;
     carve(count);
-    if (DPCT_CHECK_ERROR(arena_ = (void *)sycl::malloc_device(
-                             count.used, dpct::get_in_order_queue())) != 0) {
+    if (DPCT_CHECK_ERROR(arena_ = (void *)strata::checked_usm(sycl::malloc_device(
+                             count.used, dpct::get_in_order_queue()))) != 0) {
         err = "mtp: buffers do not fit"; return false;
     }
     dpct::get_in_order_queue().memset(arena_, 0, count.used).wait();
@@ -608,9 +609,9 @@ bool MtpDrafter::bind(const WeightTable &wt, const NativeHead *head,
     n_vocab_ = wo->ne1;
     if (head == nullptr || !head->loaded()) { err = "mtp: the draft layer needs the native head (--native)"; return false; }
     if (head_logits_ == nullptr &&
-        DPCT_CHECK_ERROR(head_logits_ = sycl::malloc_device<float>(
+        DPCT_CHECK_ERROR(head_logits_ = strata::checked_usm(sycl::malloc_device<float>(
                              (size_t)max_t_ * (size_t)n_vocab_,
-                             dpct::get_in_order_queue())) != 0) {
+                             dpct::get_in_order_queue()))) != 0) {
         err = "mtp: the draft logits do not fit";
         return false;
     }
@@ -620,13 +621,13 @@ bool MtpDrafter::bind(const WeightTable &wt, const NativeHead *head,
         if (read_file(rt_dir_ + "/draft_vocab.bin", raw) && raw.size() >= 4 && raw.size() % 4 == 0) {
             n_dvocab_ = (int64_t) (raw.size() / 4);
             const int64_t row_bytes = (int64_t) head->row_bytes();   // a vocabulary row of the native head
-            if (DPCT_CHECK_ERROR(dvocab_ = (int32_t *)sycl::malloc_device(
-                                     raw.size(), dpct::get_in_order_queue())) !=
+            if (DPCT_CHECK_ERROR(dvocab_ = (int32_t *)strata::checked_usm(sycl::malloc_device(
+                                     raw.size(), dpct::get_in_order_queue()))) !=
                     0 ||
                 (!release_decode_weights_ &&
-                 DPCT_CHECK_ERROR(dhead_ = (uint8_t *)sycl::malloc_device(
+                 DPCT_CHECK_ERROR(dhead_ = (uint8_t *)strata::checked_usm(sycl::malloc_device(
                                       (size_t)(n_dvocab_ * row_bytes),
-                                      dpct::get_in_order_queue())) != 0)) {
+                                      dpct::get_in_order_queue()))) != 0)) {
                 err = "mtp: the draft head does not fit";
                 draft_head_hint(n_dvocab_, row_bytes);
                 return false;
@@ -1021,9 +1022,9 @@ bool MtpDrafter::prefill(const float *R_rows, const int32_t *next_tokens,
             if (pf_dev_) sycl::free(pf_dev_, dpct::get_in_order_queue());
             pf_dev_ = nullptr;
             pf_cap_ = 0;
-            if (DPCT_CHECK_ERROR(pf_dev_ = sycl::malloc_device<int32_t>(
+            if (DPCT_CHECK_ERROR(pf_dev_ = strata::checked_usm(sycl::malloc_device<int32_t>(
                                      (size_t)(n * per_row),
-                                     dpct::get_in_order_queue())) != 0) {
+                                     dpct::get_in_order_queue()))) != 0) {
                 err = "mtp prefill: the input records do not fit";
                 return false;
             }

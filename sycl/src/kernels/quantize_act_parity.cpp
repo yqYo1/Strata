@@ -13,6 +13,7 @@
 //     round trip = q * d16
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/kernels/quantize_act.hpp"
 #include "strata/kernels/f16_bits.hpp"
@@ -74,14 +75,14 @@ int run_case(const char* name, const std::vector<float>& x, bool check_bytes) {
     float* d_x = nullptr;
     uint8_t* d_b = nullptr;
     float* d_back = nullptr;
-    check(DPCT_CHECK_ERROR(d_x = sycl::malloc_device<float>(
-                               (size_t)n, dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_x = strata::checked_usm(sycl::malloc_device<float>(
+                               (size_t)n, dpct::get_in_order_queue()))),
           "malloc x");
-    check(DPCT_CHECK_ERROR(d_b = (uint8_t *)sycl::malloc_device(
-                               g_blocks.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_b = (uint8_t *)strata::checked_usm(sycl::malloc_device(
+                               g_blocks.size(), dpct::get_in_order_queue()))),
           "malloc blocks");
-    check(DPCT_CHECK_ERROR(d_back = sycl::malloc_device<float>(
-                               (size_t)n, dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_back = strata::checked_usm(sycl::malloc_device<float>(
+                               (size_t)n, dpct::get_in_order_queue()))),
           "malloc back");
     /*
     DPCT1114: cudaMemcpy is migrated to asynchronization memcpy, assuming
@@ -206,14 +207,14 @@ int run_case_k(const char* name, const std::vector<float>& x, bool check_bytes, 
     float* d_x = nullptr;
     uint8_t* d_b = nullptr;
     float* d_back = nullptr;
-    check(DPCT_CHECK_ERROR(d_x = sycl::malloc_device<float>(
-                               (size_t)n, dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_x = strata::checked_usm(sycl::malloc_device<float>(
+                               (size_t)n, dpct::get_in_order_queue()))),
           "malloc x");
-    check(DPCT_CHECK_ERROR(d_b = (uint8_t *)sycl::malloc_device(
-                               g_blocks.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_b = (uint8_t *)strata::checked_usm(sycl::malloc_device(
+                               g_blocks.size(), dpct::get_in_order_queue()))),
           "malloc blocks");
-    check(DPCT_CHECK_ERROR(d_back = sycl::malloc_device<float>(
-                               (size_t)n, dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_back = strata::checked_usm(sycl::malloc_device<float>(
+                               (size_t)n, dpct::get_in_order_queue()))),
           "malloc back");
     /*
     DPCT1114: cudaMemcpy is migrated to asynchronization memcpy, assuming

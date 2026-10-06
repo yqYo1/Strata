@@ -3,6 +3,9 @@
 #include <sycl/sycl.hpp>
 #include <dpct/dpct.hpp>
 #include "strata/sycl_queue.hpp"
+#include "strata/sycl_allocation.hpp"
+#include "strata/host_atomic.hpp"
+#include "strata/sycl_handshake.hpp"
 #include "strata/core/session.hpp"
 #include "strata/kernels/mrope.hpp"
 #include "strata/core/progress.hpp"
@@ -199,6 +202,7 @@ void stage_token(const ModelGeometry& g, int64_t pos, int32_t pos_base, SessionS
 bool session_capture(const WeightTable& tables, const ModelGeometry& g, SessionState& s, const float* parts,
                      SessionGraphs& gr, std::string& err, bool split, int64_t layer_lo, int64_t layer_hi) {
     if (gr.captured) return true;
+    if (s.db && !strata::require_host_handshake(dpct::get_in_order_queue(), err)) return false;
     if (layer_hi < 0 || layer_hi > g.n_layers) layer_hi = g.n_layers;
     if (layer_lo < 0) layer_lo = 0;
     gr.execs =
@@ -580,8 +584,8 @@ bool session_replay_stage_prefixes(const ModelGeometry &g, int64_t pos,
     const size_t r_floats = (size_t) g.hc * (size_t) g.n_embd;
 
     float* saved = nullptr;
-    if (DPCT_CHECK_ERROR(saved = sycl::malloc_device<float>(
-                             r_floats, dpct::get_in_order_queue())) != 0) {
+    if (DPCT_CHECK_ERROR(saved = strata::checked_usm(sycl::malloc_device<float>(
+                             r_floats, dpct::get_in_order_queue()))) != 0) {
         err = "session_replay_stage_prefixes: could not save the residual";
         return false;
     }
@@ -764,8 +768,8 @@ bool SessionLoopScratch::init(size_t parts_bytes_in, std::string &err) try {
     the migrated code and was removed or replaced with 0. You may need to check
     the migrated code.
     */
-    if (DPCT_CHECK_ERROR(y_miss = (float *)sycl::malloc_host(
-                             parts_bytes, dpct::get_in_order_queue())) != 0) {
+    if (DPCT_CHECK_ERROR(y_miss = (float *)strata::checked_usm(sycl::malloc_host(
+                             parts_bytes, dpct::get_in_order_queue()))) != 0) {
         err = "SessionLoopScratch: cudaHostAlloc for the pool's staging failed";
         return false;
     }
@@ -951,21 +955,14 @@ bool session_loop(const ModelGeometry &g, int64_t pos, int32_t pos_base,
         const uint32_t want = ++expected;
         bool rang = false;
         bool mid_graph = false;
-        // VOLATILE, because the device writes this through mapped pinned memory and a cached host line would
-        // never see it.  Read through a volatile pointer so the compiler re-issues the load every iteration -
-        // otherwise this whole spin collapses into `while (true) { }`.
-        volatile uint32_t* const seq = s.db->h_seq;
+        // Pair the GPU's release publication with an acquire CPU atomic.
+        uint32_t* const seq = s.db->h_seq;
         for (;;) {
-            // **THE PER-ITERATION DRIVER CALL IS REQUIRED, AND THREE EXPERIMENTS NOW SAY SO.**  Round 287
-            // throttled this to one call in 64 and broke tests 51 and 56; adding `__threadfence_system()` to
-            // `doorbell_ring_kernel` and a volatile read here, then throttling, broke them again.  So the call
-            // is not merely flushing submission (round 195's reading) and it is not a missing fence either: on
-            // this driver, the device's write to mapped pinned memory becomes host-visible only when the driver
-            // is entered.  The fence and the volatile read are kept because they are correct and cost nothing -
-            // without them the ring's ordering against `x_f`/`ids`/`weights` is unstated - but they do not
-            // remove the need for the call, and nothing here should be read as claiming they do.
+            // Historical tests required entering the driver on every poll.
+            // Retain that query until the atomic protocol is measured on a
+            // healthy GPU; volatile reads were not a valid synchronization.
             const dpct::err0 q = dpct::sycl_event_query(probe);
-            if (!rang && *seq >= want) {
+            if (!rang && strata::host_atomic_load(seq) >= want) {
                 rang = true;
                 mid_graph = (q != 0);
             }
@@ -1208,6 +1205,7 @@ bool session_capture_token(const WeightTable &tables, const ModelGeometry &g,
                            const TokenHits *hits) try {
     if (hits != nullptr && !hits->on()) { err = "session_capture_token: incomplete hit configuration"; return false; }
     if (tg.captured) return true;
+    if (!strata::require_host_handshake(dpct::get_in_order_queue(), err)) return false;
     if (s.db == nullptr || s.db->d_flag == nullptr || s.db->d_seq == nullptr) {
         err = "session_capture_token: the doorbell has no flag";
         return false;
@@ -1350,8 +1348,8 @@ bool session_run_token(const ModelGeometry &g, int64_t pos, int32_t pos_base,
         const char* e = std::getenv("STRATA_TG_FLUSH_US");
         return e ? std::atoi(e) : 2000;   // 24 Sep: 0 flushes run as fast as 5 us ones; this only notices faults
     }();
-    volatile uint32_t* const seq = s.db->h_seq;
-    volatile uint32_t* const flag = s.db->h_flag;
+    uint32_t* const seq = s.db->h_seq;
+    uint32_t* const flag = s.db->h_flag;
     using Clock = std::chrono::steady_clock;
     for (int64_t l = 0; l < g.n_layers; ++l) {
         const uint32_t want = (uint32_t) (l + 1);
@@ -1359,7 +1357,7 @@ bool session_run_token(const ModelGeometry &g, int64_t pos, int32_t pos_base,
         auto last_flush = t0;
         uint32_t spins = 0;
         progress_at("token: waiting for the GPU to reach layer", l);
-        while (*seq < want) {
+        while (strata::host_atomic_load(seq) < want) {
             STRATA_SPIN_PAUSE();
             if ((++spins & 1023u) != 0) continue;
             const auto now = Clock::now();
@@ -1367,19 +1365,11 @@ bool session_run_token(const ModelGeometry &g, int64_t pos, int32_t pos_base,
                 // A slow ring: flush the submission queue once more, and notice a fault or a finished graph.
                 last_flush = now;
                 ++tg.flushes;
-                const dpct::err0 q = DPCT_CHECK_ERROR((cs->ext_oneapi_empty()));
-                if (q != 1 && *seq < want) {
+                const bool finished = cs->ext_oneapi_empty();
+                if (finished && strata::host_atomic_load(seq) < want) {
                     err = "session_run_token: layer " + std::to_string(l) +
                           " never rang (" +
-                          /*
-                          DPCT1009: SYCL reports errors using exceptions
-                          and does not use error codes. Please replace the
-                          "get_error_string_dummy(...)" with a real
-                          error-handling function.
-                          */
-                          (q == 0
-                               ? std::string("graph finished")
-                               : std::string(dpct::get_error_string_dummy(q))) +
+                          std::string("graph finished") +
                           ")";
                     return false;
                 }
@@ -1394,7 +1384,7 @@ bool session_run_token(const ModelGeometry &g, int64_t pos, int32_t pos_base,
         if (pool != nullptr) pool(user, s.db->h_x_f, s.db->h_ids, s.db->h_weights, g.n_embd, s.k, y_miss_host);
         std::atomic_thread_fence(std::memory_order_seq_cst);
         _mm_sfence();
-        *flag = want;
+        strata::host_atomic_raise(flag, want);
         const auto t2 = Clock::now();
         tg.ms_wait += std::chrono::duration<double, std::milli>(t1 - t0).count();
         tg.ms_pool += std::chrono::duration<double, std::milli>(t2 - t1).count();

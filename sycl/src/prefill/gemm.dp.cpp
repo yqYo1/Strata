@@ -1,6 +1,7 @@
 // src/prefill/gemm.cu - see include/strata/prefill/gemm.hpp.
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/sycl_queue.hpp"
 #include "strata/prefill/gemm.hpp"
@@ -380,8 +381,8 @@ bool Gemm::init(void *stream, int64_t scratch_elems, std::string &err) try {
     rewritten.
     */
     if (const dpct::err0 e =
-            DPCT_CHECK_ERROR(workspace_ = (void *)sycl::malloc_device(
-                                 ws, dpct::get_in_order_queue()));
+            DPCT_CHECK_ERROR(workspace_ = (void *)strata::checked_usm(sycl::malloc_device(
+                                 ws, dpct::get_in_order_queue())));
         e != 0) {
         /*
         DPCT1009: SYCL reports errors using exceptions and does not use
@@ -411,8 +412,8 @@ bool Gemm::init(void *stream, int64_t scratch_elems, std::string &err) try {
         rewritten.
         */
         if (const dpct::err0 e = DPCT_CHECK_ERROR(
-                scratch_ = (uint16_t *)sycl::malloc_device(
-                    (size_t)scratch_elems * 2, dpct::get_in_order_queue()));
+                scratch_ = (uint16_t *)strata::checked_usm(sycl::malloc_device(
+                    (size_t)scratch_elems * 2, dpct::get_in_order_queue())));
             e != 0) {
             /*
             DPCT1001: The statement could not be removed.

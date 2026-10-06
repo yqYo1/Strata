@@ -3,6 +3,7 @@
 // header first.
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/sycl_queue.hpp"
 #include "strata/core/expert_cache.hpp"
@@ -151,7 +152,13 @@ bool write_expert_profile(const std::string& path, int64_t n_layers, int64_t n_e
     return true;
 }
 
-ExpertCache::~ExpertCache() { close(); }
+ExpertCache::~ExpertCache() {
+    try { close(); }
+    catch (const std::exception& e) {
+        std::fprintf(stderr, "ExpertCache: cleanup failed: %s\n", e.what());
+    }
+    catch (...) { std::fprintf(stderr, "ExpertCache: cleanup failed: unknown exception\n"); }
+}
 
 // ---- #533: the segmented arena (--vram-elastic).  The driver API's virtual memory functions, looked up through the
 // runtime (no link against the driver library): one address range for the whole arena, backed by physical segments,
@@ -288,6 +295,11 @@ bool map_sycl_cache_segment(uint8_t* address, size_t bytes,
 } // namespace
 
 bool ExpertCache::open_segmented(uint64_t want, std::string& err) {
+    const auto cleanup = [&] {
+        try { release_segmented(); }
+        catch (const std::exception& e) { err += std::string("; cleanup also failed: ") + e.what(); }
+        catch (...) { err += "; cleanup also failed: unknown exception"; }
+    };
     try {
         auto& q = dpct::get_in_order_queue();
         if (!q.get_device().has(sycl::aspect::ext_oneapi_virtual_mem)) {
@@ -310,6 +322,13 @@ bool ExpertCache::open_segmented(uint64_t want, std::string& err) {
             return false;
         }
         const uint64_t total = (want + seg_ - 1) / seg_ * seg_;
+        // Physical allocation and virtual reservation granularities are
+        // distinct contracts, even when this single-device context agrees.
+        const uint64_t context_gran = vm::get_mem_granularity(q.get_context(), vm::granularity_mode::minimum);
+        if (!context_gran || total % context_gran) {
+            err = "ExpertCache: segmented reservation is not aligned to the context granularity";
+            return false;
+        }
         base_ = reinterpret_cast<uint8_t*>(vm::reserve_virtual_mem(total, q.get_context()));
         reserved_ = total;
         for (uint64_t at = 0; at < total; at += static_cast<uint64_t>(seg_)) {
@@ -319,7 +338,7 @@ bool ExpertCache::open_segmented(uint64_t want, std::string& err) {
         for (size_t i = 0; i < segs_.size(); ++i) {
             if (!map_sycl_cache_segment(base_ + i * static_cast<uint64_t>(seg_),
                                          seg_size_[i], segs_[i], err)) {
-                release_segmented();
+                cleanup();
                 return false;
             }
             mapped_segs_ = static_cast<int64_t>(i + 1);
@@ -327,7 +346,7 @@ bool ExpertCache::open_segmented(uint64_t want, std::string& err) {
         return true;
     } catch (const std::exception& e) {
         err = std::string("ExpertCache: segmented allocation failed: ") + e.what();
-        release_segmented();
+        cleanup();
         return false;
     }
 }
@@ -478,8 +497,8 @@ bool ExpertCache::open(int64_t n_slots, int64_t n_layers, int64_t n_expert,
     if (seg_req_ > 0) {   // #533: --vram-elastic: physical segments behind one address range (zeroed below)
         if (!open_segmented(want, err)) return false;
     } else if (DPCT_CHECK_ERROR(
-                   base_ = (uint8_t *)sycl::malloc_device(
-                       (size_t)want, dpct::get_in_order_queue())) != 0) {
+                   base_ = (uint8_t *)strata::checked_usm(sycl::malloc_device(
+                       (size_t)want, dpct::get_in_order_queue()))) != 0) {
         base_ = nullptr;
         char buf[256];
         std::snprintf(

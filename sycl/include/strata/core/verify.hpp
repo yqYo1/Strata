@@ -239,6 +239,10 @@ private:
     int max_t_ = 0;
     int last_t_ = 0;
     int64_t last_pos0_ = 0;
+    // The watchdog reads these snapshots while the main thread advances.
+    std::atomic<int> diag_t_{0};
+    std::atomic<int64_t> diag_pos0_{0}, diag_windows_{0};
+    std::atomic<uint32_t> diag_layer_{0};
     int32_t last_tokens_[8] = {};
     int64_t n_vocab_ = 0;
     dpct::queue_ptr cs_ = &dpct::get_in_order_queue();
@@ -268,8 +272,6 @@ private:
     dpct::queue_ptr copy_ =
         &dpct::get_in_order_queue(); // the copy engine's stream (DMA of missed
                                      // experts)
-    struct FlagSet { uint32_t* flag; uint32_t value; };
-    FlagSet flag_sets_[2 * 64 * 2] = {};                          // host-function arguments, one per (layer, group)
     static void fetch_dma(void* ctx, const uint8_t* const* src, int n, size_t bytes);
     static void raise_flag(uint32_t* flag, uint32_t value);
     int32_t* h_plan_ = nullptr;  int32_t* m_plan_ = nullptr;     // counts | start | dst | tok | ptr (as int32 pairs)

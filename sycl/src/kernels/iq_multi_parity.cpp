@@ -16,6 +16,7 @@
 // are set, small enough that the grouped path's SwiGLU output keeps a finite fp16 q8_1 scale.
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/kernels/iq_kernels.hpp"
@@ -43,8 +44,8 @@ void ck(dpct::err0 e, const char *w) {
 template<typename T>
 T* dalloc(size_t n) {
     T* p = nullptr;
-    ck(DPCT_CHECK_ERROR(p = (T *)sycl::malloc_device(
-                            n * sizeof(T) + 256, dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(p = (T *)strata::checked_usm(sycl::malloc_device(
+                            n * sizeof(T) + 256, dpct::get_in_order_queue()))),
        "malloc");
     ck(DPCT_CHECK_ERROR(
            (dpct::get_current_device().queues_wait_and_throw(), dpct::get_in_order_queue()).memset(p, 0, n * sizeof(T) + 256).wait()),

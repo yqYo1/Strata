@@ -6,6 +6,7 @@
 // (max_blocks = capacity / 4 + 2), the work follows the context. Default: capacity = context (max_blocks = ctx / 4 + 1).
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/kernels/qsa.hpp"
 #include "strata/kernels/qsa_select.hpp"
@@ -30,8 +31,8 @@ void ck(dpct::err0 e, const char *w) {
 template <typename T> T* up(const std::vector<T>& h) {
     T* d = nullptr;
     ck(DPCT_CHECK_ERROR(
-           d = (T *)sycl::malloc_device(h.size() * sizeof(T) + 64,
-                                        dpct::get_in_order_queue())),
+           d = (T *)strata::checked_usm(sycl::malloc_device(h.size() * sizeof(T) + 64,
+                                        dpct::get_in_order_queue()))),
        "malloc");
     /*
     DPCT1114: cudaMemcpy is migrated to asynchronization memcpy, assuming in
@@ -81,20 +82,20 @@ int main(int argc, char** argv) {
     float *sc_old = nullptr, *sc_new = nullptr;
     int32_t *ids_old = nullptr, *ids_new = nullptr;
     ck(DPCT_CHECK_ERROR(
-           sc_old = (float *)sycl::malloc_device((size_t)(nq * max_blocks) * 4,
-                                                 dpct::get_in_order_queue())),
+           sc_old = (float *)strata::checked_usm(sycl::malloc_device((size_t)(nq * max_blocks) * 4,
+                                                 dpct::get_in_order_queue()))),
        "malloc");
     ck(DPCT_CHECK_ERROR(
-           sc_new = (float *)sycl::malloc_device((size_t)(nq * max_blocks) * 4,
-                                                 dpct::get_in_order_queue())),
+           sc_new = (float *)strata::checked_usm(sycl::malloc_device((size_t)(nq * max_blocks) * 4,
+                                                 dpct::get_in_order_queue()))),
        "malloc");
     ck(DPCT_CHECK_ERROR(
-           ids_old = (int32_t *)sycl::malloc_device(
-               (size_t)(nq * cap) * 4, dpct::get_in_order_queue())),
+           ids_old = (int32_t *)strata::checked_usm(sycl::malloc_device(
+               (size_t)(nq * cap) * 4, dpct::get_in_order_queue()))),
        "malloc");
     ck(DPCT_CHECK_ERROR(
-           ids_new = (int32_t *)sycl::malloc_device(
-               (size_t)(nq * cap) * 4, dpct::get_in_order_queue())),
+           ids_new = (int32_t *)strata::checked_usm(sycl::malloc_device(
+               (size_t)(nq * cap) * 4, dpct::get_in_order_queue()))),
        "malloc");
     const int64_t active = steps[(size_t) ((nq - 1) * k::kStepCount + k::kStepNBid)] + 1;
     auto run_old = [&] { k::qsa_block_scores(d_pooled, d_dead, d_q, d_steps, nq, max_blocks, s, sc_old, nullptr, active); };
@@ -115,8 +116,8 @@ int main(int argc, char** argv) {
     k::qsa_block_topk(sc_new, d_steps, nq, max_blocks, cap, s, ids_new, nullptr, active);
     int32_t* ids_reg = nullptr;   // the register top-k on the OLD scores: must equal the reference exactly
     ck(DPCT_CHECK_ERROR(
-           ids_reg = (int32_t *)sycl::malloc_device(
-               (size_t)(nq * cap) * 4, dpct::get_in_order_queue())),
+           ids_reg = (int32_t *)strata::checked_usm(sycl::malloc_device(
+               (size_t)(nq * cap) * 4, dpct::get_in_order_queue()))),
        "malloc");
     k::qsa_block_topk(sc_old, d_steps, nq, max_blocks, cap, s, ids_reg, nullptr, active);
     ck(DPCT_CHECK_ERROR(dpct::get_current_device().queues_wait_and_throw()),

@@ -1,6 +1,7 @@
 // src/core/pinned.cu - P2.S1: the pinned host arena and the parallel expert load.
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/core/pinned.hpp"
 #include "strata/platform/memory.hpp"
@@ -654,8 +655,8 @@ StreamStats stream_bandwidth(const uint8_t *src, uint64_t bytes, uint64_t chunk,
     st.chunk = chunk;
     uint8_t* dst = nullptr;
     dpct::queue_ptr s{};
-    if (DPCT_CHECK_ERROR(dst = (uint8_t *)sycl::malloc_device(
-                             (size_t)chunk, dpct::get_in_order_queue())) != 0) {
+    if (DPCT_CHECK_ERROR(dst = (uint8_t *)strata::checked_usm(sycl::malloc_device(
+                             (size_t)chunk, dpct::get_in_order_queue()))) != 0) {
         std::fprintf(stderr, "stream_bandwidth: cudaMalloc failed for %llu B\n", (unsigned long long) chunk);
         st.seconds = -1.0;
         return st;

@@ -7,6 +7,7 @@
 
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/kernels/cvec.hpp"
 #include "strata/kernels/fused_gr.hpp"
@@ -30,8 +31,8 @@ void ck(dpct::err0 e, const char *w) {
 template <typename T>
 T* dalloc(size_t n) {
     T* p = nullptr;
-    ck(DPCT_CHECK_ERROR(p = (T *)sycl::malloc_device(
-                            n * sizeof(T), dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(p = (T *)strata::checked_usm(sycl::malloc_device(
+                            n * sizeof(T), dpct::get_in_order_queue()))),
        "malloc");
     return p;
 }

@@ -21,6 +21,7 @@
 // The two new ones share `sampled_tail_warp` (top_p / min_p / temperature / draw on one warp).
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/sycl_queue.hpp"
 #include "strata/kernels/sampler.hpp"
@@ -1358,8 +1359,8 @@ sycl::int2 *split_scratch(void *stream, size_t entries) {
     size_t want = 2 * slot->entries < kCap ? 2 * slot->entries : kCap;
     if (want < entries) want = entries;
     sycl::int2 *ptr = nullptr;
-    if (DPCT_CHECK_ERROR(ptr = sycl::malloc_device<sycl::int2>(
-                             want, dpct::get_in_order_queue())) != 0) {
+    if (DPCT_CHECK_ERROR(ptr = strata::checked_usm(sycl::malloc_device<sycl::int2>(
+                             want, dpct::get_in_order_queue()))) != 0) {
         /*
         DPCT1010: SYCL uses exceptions to report errors and does not use
         the error codes. The cudaGetLastError function call was replaced with 0.
@@ -1367,8 +1368,8 @@ sycl::int2 *split_scratch(void *stream, size_t entries) {
         */
         (void)0;
         want = entries;
-        if (DPCT_CHECK_ERROR(ptr = sycl::malloc_device<sycl::int2>(
-                                 want, dpct::get_in_order_queue())) != 0) {
+        if (DPCT_CHECK_ERROR(ptr = strata::checked_usm(sycl::malloc_device<sycl::int2>(
+                                 want, dpct::get_in_order_queue()))) != 0) {
             /*
             DPCT1010: SYCL uses exceptions to report errors and does not
             use the error codes. The cudaGetLastError function call was replaced

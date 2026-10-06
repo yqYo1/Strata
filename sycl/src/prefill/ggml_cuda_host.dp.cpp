@@ -1,6 +1,7 @@
 // src/prefill/ggml_cuda_host.cu - prompt-speed plan step 2b: the host-side symbols of llama.cpp's ggml-cuda that its MMQ
 // and quantize code reference, for the MMQ kernels compiled into strata_mmq without the rest of ggml-cuda.cu.
 #include "common.cuh"
+#include "strata/sycl_allocation.hpp"
 
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
@@ -81,7 +82,7 @@ struct CachingPool : ggml_cuda_pool {
             if (!b.used && b.size >= size) { b.used = true; *actual_size = b.size; return b.p; }
         void * p = nullptr;
         CUDA_CHECK(DPCT_CHECK_ERROR(
-            p = (void *)sycl::malloc_device(size, dpct::get_in_order_queue())));
+            p = (void *)strata::checked_usm(sycl::malloc_device(size, dpct::get_in_order_queue()))));
         bufs.push_back({p, size, true});
         *actual_size = size;
         return p;

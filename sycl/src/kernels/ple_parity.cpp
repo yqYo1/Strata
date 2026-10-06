@@ -12,6 +12,7 @@
 //      in it were checked to be the artifact's real ones before this test was written.
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/kernels/ple.hpp"
 #include "strata/kernels/ngram.hpp"
@@ -189,12 +190,12 @@ int history_advance_regression() {
     for (size_t c = 0; c < channels; ++c)
         for (size_t r = 0; r < rows; ++r) expected[c * rows + r] = -float(c * 16 + r + 1);
     float *history_storage = nullptr, *norm_storage = nullptr;
-    ck(DPCT_CHECK_ERROR(history_storage = sycl::malloc_device<float>(
-                            (count + 2 * guard), dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(history_storage = strata::checked_usm(sycl::malloc_device<float>(
+                            (count + 2 * guard), dpct::get_in_order_queue()))),
        "history regression allocation");
     ck(DPCT_CHECK_ERROR(
-           norm_storage = sycl::malloc_device<float>(
-               (channels + 2 * guard), dpct::get_in_order_queue())),
+           norm_storage = strata::checked_usm(sycl::malloc_device<float>(
+               (channels + 2 * guard), dpct::get_in_order_queue()))),
        "history norm allocation");
     ck(DPCT_CHECK_ERROR((dpct::get_current_device().queues_wait_and_throw(), dpct::get_in_order_queue())
                             .memset(history_storage, 0xa5,
@@ -708,60 +709,60 @@ int main(int argc, char** argv) {
     uint8_t* d_kc = nullptr;
     uint16_t *d_vb = nullptr, *d_c1 = nullptr;
     float *d_g = nullptr, *d_v = nullptr, *d_gd = nullptr, *d_nm = nullptr, *d_co = nullptr;
-    ck(DPCT_CHECK_ERROR(d_emb = (float *)sycl::malloc_device(
-                            nd * 4, dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(d_emb = (float *)strata::checked_usm(sycl::malloc_device(
+                            nd * 4, dpct::get_in_order_queue()))),
        "emb");
-    ck(DPCT_CHECK_ERROR(d_hid = (float *)sycl::malloc_device(
-                            hcd * 4, dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(d_hid = (float *)strata::checked_usm(sycl::malloc_device(
+                            hcd * 4, dpct::get_in_order_queue()))),
        "hid");
     ck(DPCT_CHECK_ERROR(
-           d_hist = (float *)sycl::malloc_device((size_t)k::NG_HIST * hcd * 4,
-                                                 dpct::get_in_order_queue())),
+           d_hist = (float *)strata::checked_usm(sycl::malloc_device((size_t)k::NG_HIST * hcd * 4,
+                                                 dpct::get_in_order_queue()))),
        "hist");
-    ck(DPCT_CHECK_ERROR(d_nk = (float *)sycl::malloc_device(
-                            hcd * 4, dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(d_nk = (float *)strata::checked_usm(sycl::malloc_device(
+                            hcd * 4, dpct::get_in_order_queue()))),
        "nk");
-    ck(DPCT_CHECK_ERROR(d_nq = (float *)sycl::malloc_device(
-                            hcd * 4, dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(d_nq = (float *)strata::checked_usm(sycl::malloc_device(
+                            hcd * 4, dpct::get_in_order_queue()))),
        "nq");
-    ck(DPCT_CHECK_ERROR(d_nc = (float *)sycl::malloc_device(
-                            hcd * 4, dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(d_nc = (float *)strata::checked_usm(sycl::malloc_device(
+                            hcd * 4, dpct::get_in_order_queue()))),
        "nc");
-    ck(DPCT_CHECK_ERROR(d_kc = (uint8_t *)sycl::malloc_device(
-                            key_codes.size(), dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(d_kc = (uint8_t *)strata::checked_usm(sycl::malloc_device(
+                            key_codes.size(), dpct::get_in_order_queue()))),
        "kc");
-    ck(DPCT_CHECK_ERROR(d_vb = (uint16_t *)sycl::malloc_device(
-                            value_bf16.size() * 2, dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(d_vb = (uint16_t *)strata::checked_usm(sycl::malloc_device(
+                            value_bf16.size() * 2, dpct::get_in_order_queue()))),
        "vb");
-    ck(DPCT_CHECK_ERROR(d_c1 = (uint16_t *)sycl::malloc_device(
-                            conv1d_f16.size() * 2, dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(d_c1 = (uint16_t *)strata::checked_usm(sycl::malloc_device(
+                            conv1d_f16.size() * 2, dpct::get_in_order_queue()))),
        "c1");
-    ck(DPCT_CHECK_ERROR(d_g = (float *)sycl::malloc_device(
-                            k::NG_HC * 4, dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(d_g = (float *)strata::checked_usm(sycl::malloc_device(
+                            k::NG_HC * 4, dpct::get_in_order_queue()))),
        "g");
-    ck(DPCT_CHECK_ERROR(d_v = (float *)sycl::malloc_device(
-                            nd * 4, dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(d_v = (float *)strata::checked_usm(sycl::malloc_device(
+                            nd * 4, dpct::get_in_order_queue()))),
        "v");
-    ck(DPCT_CHECK_ERROR(d_gd = (float *)sycl::malloc_device(
-                            hcd * 4, dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(d_gd = (float *)strata::checked_usm(sycl::malloc_device(
+                            hcd * 4, dpct::get_in_order_queue()))),
        "gd");
-    ck(DPCT_CHECK_ERROR(d_nm = (float *)sycl::malloc_device(
-                            hcd * 4, dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(d_nm = (float *)strata::checked_usm(sycl::malloc_device(
+                            hcd * 4, dpct::get_in_order_queue()))),
        "nm");
-    ck(DPCT_CHECK_ERROR(d_co = (float *)sycl::malloc_device(
-                            hcd * 4, dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(d_co = (float *)strata::checked_usm(sycl::malloc_device(
+                            hcd * 4, dpct::get_in_order_queue()))),
        "co");
-    ck(DPCT_CHECK_ERROR(d_ck = (float *)sycl::malloc_device(
-                            hcd * 4, dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(d_ck = (float *)strata::checked_usm(sycl::malloc_device(
+                            hcd * 4, dpct::get_in_order_queue()))),
        "ck");
-    ck(DPCT_CHECK_ERROR(d_cv = (float *)sycl::malloc_device(
-                            nd * 4, dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(d_cv = (float *)strata::checked_usm(sycl::malloc_device(
+                            nd * 4, dpct::get_in_order_queue()))),
        "cv");
-    ck(DPCT_CHECK_ERROR(d_cn = (float *)sycl::malloc_device(
-                            hcd * 4, dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(d_cn = (float *)strata::checked_usm(sycl::malloc_device(
+                            hcd * 4, dpct::get_in_order_queue()))),
        "cn");
-    ck(DPCT_CHECK_ERROR(d_cr = (float *)sycl::malloc_device(
-                            hcd * 4, dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(d_cr = (float *)strata::checked_usm(sycl::malloc_device(
+                            hcd * 4, dpct::get_in_order_queue()))),
        "cr");
     /*
     DPCT1114: cudaMemcpy is migrated to asynchronization memcpy, assuming in
@@ -827,8 +828,8 @@ int main(int argc, char** argv) {
     w.norm_conv = d_nc;
     w.conv1d_f16 = d_c1;
     float* d_ks = nullptr;
-    ck(DPCT_CHECK_ERROR(d_ks = (float *)sycl::malloc_device(
-                            key_scales.size() * 4, dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(d_ks = (float *)strata::checked_usm(sycl::malloc_device(
+                            key_scales.size() * 4, dpct::get_in_order_queue()))),
        "ks");
     /*
     DPCT1114: cudaMemcpy is migrated to asynchronization memcpy, assuming in
@@ -893,8 +894,8 @@ int main(int argc, char** argv) {
         // the workspace is the caller's, and the sync the block used to do is now the caller's too
     void* ple_ws = nullptr;
     ck(DPCT_CHECK_ERROR(
-           ple_ws = (void *)sycl::malloc_device(k::ple_block_scratch_bytes(),
-                                                dpct::get_in_order_queue())),
+           ple_ws = (void *)strata::checked_usm(sycl::malloc_device(k::ple_block_scratch_bytes(),
+                                                dpct::get_in_order_queue()))),
        "ple_block scratch");
     if (t == 0) {
         const size_t bytes = (size_t) k::ple_block_scratch_bytes();
@@ -1125,15 +1126,15 @@ int main(int argc, char** argv) {
             void *native_storage = nullptr, *q_storage = nullptr;
             float* raw_projection = nullptr;
             ck(DPCT_CHECK_ERROR(
-                   native_storage = (void *)sycl::malloc_device(
-                       native_bytes + 2 * guard, dpct::get_in_order_queue())),
+                   native_storage = (void *)strata::checked_usm(sycl::malloc_device(
+                       native_bytes + 2 * guard, dpct::get_in_order_queue()))),
                "native PLE weights");
             ck(DPCT_CHECK_ERROR(
-                   q_storage = (void *)sycl::malloc_device(
-                       qbytes + 2 * guard, dpct::get_in_order_queue())),
+                   q_storage = (void *)strata::checked_usm(sycl::malloc_device(
+                       qbytes + 2 * guard, dpct::get_in_order_queue()))),
                "native PLE q8 scratch");
-            ck(DPCT_CHECK_ERROR(raw_projection = (float *)sycl::malloc_device(
-                                    hcd * 4, dpct::get_in_order_queue())),
+            ck(DPCT_CHECK_ERROR(raw_projection = (float *)strata::checked_usm(sycl::malloc_device(
+                                    hcd * 4, dpct::get_in_order_queue()))),
                "native PLE raw projection");
             ck(DPCT_CHECK_ERROR(
                    (dpct::get_current_device().queues_wait_and_throw(), dpct::get_in_order_queue())
@@ -1326,9 +1327,9 @@ int main(int argc, char** argv) {
             // workspace; result may overwrite hidden once its original values are no longer needed.
             const size_t workspace_bytes = (size_t) k::ple_block_scratch_bytes();
             void* compact_workspace = nullptr;
-            ck(DPCT_CHECK_ERROR(compact_workspace = (void *)sycl::malloc_device(
+            ck(DPCT_CHECK_ERROR(compact_workspace = (void *)strata::checked_usm(sycl::malloc_device(
                                     workspace_bytes + hcd * sizeof(float),
-                                    dpct::get_in_order_queue())),
+                                    dpct::get_in_order_queue()))),
                "compact PLE workspace");
             k::PleOut compact{};
             compact.normalized = reinterpret_cast<float*>(static_cast<uint8_t*>(compact_workspace) + workspace_bytes);

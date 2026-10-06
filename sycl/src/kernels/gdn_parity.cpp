@@ -20,6 +20,7 @@
 // filled with a value that encodes its own coordinates.
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/kernels/gdn.hpp"
 
@@ -158,29 +159,29 @@ int main(int argc, char** argv) {
         float *d_st = nullptr, *d_q = nullptr, *d_k = nullptr, *d_v = nullptr, *d_g = nullptr, *d_b = nullptr,
               *d_o = nullptr;
         check(DPCT_CHECK_ERROR(
-                  d_st = (float *)sycl::malloc_device(
-                      st_dev.size() * 4, dpct::get_in_order_queue())),
+                  d_st = (float *)strata::checked_usm(sycl::malloc_device(
+                      st_dev.size() * 4, dpct::get_in_order_queue()))),
               "st");
-        check(DPCT_CHECK_ERROR(d_q = (float *)sycl::malloc_device(
-                                   q.size() * 4, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_q = (float *)strata::checked_usm(sycl::malloc_device(
+                                   q.size() * 4, dpct::get_in_order_queue()))),
               "q");
-        check(DPCT_CHECK_ERROR(d_k = (float *)sycl::malloc_device(
-                                   k.size() * 4, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_k = (float *)strata::checked_usm(sycl::malloc_device(
+                                   k.size() * 4, dpct::get_in_order_queue()))),
               "k");
-        check(DPCT_CHECK_ERROR(d_v = (float *)sycl::malloc_device(
-                                   v.size() * 4, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_v = (float *)strata::checked_usm(sycl::malloc_device(
+                                   v.size() * 4, dpct::get_in_order_queue()))),
               "v");
         check(
-            DPCT_CHECK_ERROR(d_g = (float *)sycl::malloc_device(
-                                 gate.size() * 4, dpct::get_in_order_queue())),
+            DPCT_CHECK_ERROR(d_g = (float *)strata::checked_usm(sycl::malloc_device(
+                                 gate.size() * 4, dpct::get_in_order_queue()))),
             "g");
         check(
-            DPCT_CHECK_ERROR(d_b = (float *)sycl::malloc_device(
-                                 beta.size() * 4, dpct::get_in_order_queue())),
+            DPCT_CHECK_ERROR(d_b = (float *)strata::checked_usm(sycl::malloc_device(
+                                 beta.size() * 4, dpct::get_in_order_queue()))),
             "b");
         check(DPCT_CHECK_ERROR(
-                  d_o = (float *)sycl::malloc_device(
-                      (size_t)h_v * S * 4, dpct::get_in_order_queue())),
+                  d_o = (float *)strata::checked_usm(sycl::malloc_device(
+                      (size_t)h_v * S * 4, dpct::get_in_order_queue()))),
               "o");
         /*
         DPCT1114: cudaMemcpy is migrated to asynchronization memcpy,
@@ -383,17 +384,17 @@ int main(int argc, char** argv) {
         }
 
         float *d_cs = nullptr, *d_x = nullptr, *d_w = nullptr, *d_o = nullptr;
-        check(DPCT_CHECK_ERROR(d_cs = (float *)sycl::malloc_device(
-                                   cs.size() * 4, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_cs = (float *)strata::checked_usm(sycl::malloc_device(
+                                   cs.size() * 4, dpct::get_in_order_queue()))),
               "cs");
-        check(DPCT_CHECK_ERROR(d_x = (float *)sycl::malloc_device(
-                                   x.size() * 4, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_x = (float *)strata::checked_usm(sycl::malloc_device(
+                                   x.size() * 4, dpct::get_in_order_queue()))),
               "cx");
-        check(DPCT_CHECK_ERROR(d_w = (float *)sycl::malloc_device(
-                                   kW.size() * 4, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_w = (float *)strata::checked_usm(sycl::malloc_device(
+                                   kW.size() * 4, dpct::get_in_order_queue()))),
               "cw");
-        check(DPCT_CHECK_ERROR(d_o = (float *)sycl::malloc_device(
-                                   (size_t)C * 4, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_o = (float *)strata::checked_usm(sycl::malloc_device(
+                                   (size_t)C * 4, dpct::get_in_order_queue()))),
               "co");
         /*
         DPCT1114: cudaMemcpy is migrated to asynchronization memcpy,
@@ -474,8 +475,8 @@ int main(int argc, char** argv) {
         if (!(rel_trap > 0.05)) ++bad;
 
         float* d_x = nullptr;
-        check(DPCT_CHECK_ERROR(d_x = (float *)sycl::malloc_device(
-                                   x.size() * 4, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_x = (float *)strata::checked_usm(sycl::malloc_device(
+                                   x.size() * 4, dpct::get_in_order_queue()))),
               "lx");
         /*
         DPCT1114: cudaMemcpy is migrated to asynchronization memcpy,
@@ -515,18 +516,18 @@ int main(int argc, char** argv) {
                                               sigmoid_f(z[(size_t) (h * S2 + i)]);
         }
         float *d_o = nullptr, *d_z = nullptr, *d_sn = nullptr, *d_y = nullptr;
-        check(DPCT_CHECK_ERROR(d_o = (float *)sycl::malloc_device(
-                                   o.size() * 4, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_o = (float *)strata::checked_usm(sycl::malloc_device(
+                                   o.size() * 4, dpct::get_in_order_queue()))),
               "no");
-        check(DPCT_CHECK_ERROR(d_z = (float *)sycl::malloc_device(
-                                   z.size() * 4, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_z = (float *)strata::checked_usm(sycl::malloc_device(
+                                   z.size() * 4, dpct::get_in_order_queue()))),
               "nz");
-        check(DPCT_CHECK_ERROR(d_sn = (float *)sycl::malloc_device(
-                                   sn.size() * 4, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_sn = (float *)strata::checked_usm(sycl::malloc_device(
+                                   sn.size() * 4, dpct::get_in_order_queue()))),
               "ns");
         check(
-            DPCT_CHECK_ERROR(d_y = (float *)sycl::malloc_device(
-                                 y_ref.size() * 4, dpct::get_in_order_queue())),
+            DPCT_CHECK_ERROR(d_y = (float *)strata::checked_usm(sycl::malloc_device(
+                                 y_ref.size() * 4, dpct::get_in_order_queue()))),
             "ny");
         /*
         DPCT1114: cudaMemcpy is migrated to asynchronization memcpy,

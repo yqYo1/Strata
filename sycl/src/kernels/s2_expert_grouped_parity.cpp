@@ -25,6 +25,7 @@
 // kernels agreeing on garbage would otherwise pass.
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/kernels/s2_expert_grouped.hpp"
@@ -65,8 +66,8 @@ void ck(dpct::err0 e, const char *w) {
 }
 template <typename T> T* dalloc(size_t n) {
     T* p = nullptr;
-    ck(DPCT_CHECK_ERROR(p = (T *)sycl::malloc_device(
-                            n * sizeof(T) + 256, dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(p = (T *)strata::checked_usm(sycl::malloc_device(
+                            n * sizeof(T) + 256, dpct::get_in_order_queue()))),
        "malloc");
     ck(DPCT_CHECK_ERROR(
            (dpct::get_current_device().queues_wait_and_throw(), dpct::get_in_order_queue()).memset(p, 0, n * sizeof(T) + 256).wait()),
@@ -416,8 +417,8 @@ void check_all() {
         the migrated code and was removed or replaced with 0. You may need to
         check the migrated code.
         */
-        ck(DPCT_CHECK_ERROR(h_host = (uint8_t *)sycl::malloc_host(
-                                BLOB, dpct::get_in_order_queue())),
+        ck(DPCT_CHECK_ERROR(h_host = (uint8_t *)strata::checked_usm(sycl::malloc_host(
+                                BLOB, dpct::get_in_order_queue()))),
            "host blob");
         std::memcpy(h_host, fx.hb(fx.nb - 1), BLOB);
         ck(DPCT_CHECK_ERROR(*(void **)&d_host = (uint8_t *)h_host),

@@ -11,6 +11,7 @@
 // INT8, FP16 and Q4_0 (PR #21) pools.
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/kernels/kv_q4.hpp"
 #include "strata/kernels/kv_q8.hpp"
@@ -39,8 +40,8 @@ void ck(dpct::err0 e, const char *w) {
 }
 template <typename T> T* dalloc(size_t n) {
     T* p = nullptr;
-    ck(DPCT_CHECK_ERROR(p = (T *)sycl::malloc_device(
-                            n * sizeof(T) + 64, dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(p = (T *)strata::checked_usm(sycl::malloc_device(
+                            n * sizeof(T) + 64, dpct::get_in_order_queue()))),
        "malloc");
     ck(DPCT_CHECK_ERROR(
            (dpct::get_current_device().queues_wait_and_throw(), dpct::get_in_order_queue()).memset(p, 0, n * sizeof(T) + 64).wait()),
@@ -55,8 +56,8 @@ template <typename T> T* halloc(size_t n) {   // pinned, mapped; returns the dev
     migrated code and was removed or replaced with 0. You may need to check the
     migrated code.
     */
-    ck(DPCT_CHECK_ERROR(h = (void *)sycl::malloc_host(
-                            n * sizeof(T) + 64, dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(h = (void *)strata::checked_usm(sycl::malloc_host(
+                            n * sizeof(T) + 64, dpct::get_in_order_queue()))),
        "hostalloc");
     std::memset(h, 0, n * sizeof(T) + 64);
     ck(DPCT_CHECK_ERROR(d = (void *)h), "devptr");

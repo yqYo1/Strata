@@ -11,6 +11,7 @@
 // error were near that the tolerance would be hiding something rather than bounding rounding.
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/artifact/dequant.hpp"
 #include "strata/kernels/s2_gemv.hpp"
@@ -112,17 +113,17 @@ int main(int argc, char** argv) {
     uint16_t* d_x = nullptr;
     uint8_t* d_codes = nullptr;
     float *d_scales = nullptr, *d_y = nullptr;
-    check(DPCT_CHECK_ERROR(d_x = sycl::malloc_device<uint16_t>(
-                               x.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_x = strata::checked_usm(sycl::malloc_device<uint16_t>(
+                               x.size(), dpct::get_in_order_queue()))),
           "cudaMalloc x");
-    check(DPCT_CHECK_ERROR(d_codes = (uint8_t *)sycl::malloc_device(
-                               codes.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_codes = (uint8_t *)strata::checked_usm(sycl::malloc_device(
+                               codes.size(), dpct::get_in_order_queue()))),
           "cudaMalloc codes");
-    check(DPCT_CHECK_ERROR(d_scales = sycl::malloc_device<float>(
-                               scales.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_scales = strata::checked_usm(sycl::malloc_device<float>(
+                               scales.size(), dpct::get_in_order_queue()))),
           "cudaMalloc scales");
-    check(DPCT_CHECK_ERROR(d_y = sycl::malloc_device<float>(
-                               (size_t)n_out, dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_y = strata::checked_usm(sycl::malloc_device<float>(
+                               (size_t)n_out, dpct::get_in_order_queue()))),
           "cudaMalloc y");
     /*
     DPCT1114: cudaMemcpy is migrated to asynchronization memcpy, assuming in

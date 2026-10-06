@@ -1,6 +1,7 @@
 // src/core/expert_source.cpp - the adapter.  See the header for the three clauses of the contract.
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/sycl_queue.hpp"
 #include "strata/sycl_expert_transfer.hpp"
@@ -1517,8 +1518,8 @@ bool FileExpertSource::pin_cache_complement(
         std::fflush(stderr);
         if (pin) {
             const dpct::err0 allocated = DPCT_CHECK_ERROR(
-                arena = (void *)sycl::malloc_host((size_t)bytes,
-                                                  dpct::get_in_order_queue()));
+                arena = (void *)strata::checked_usm(sycl::malloc_host((size_t)bytes,
+                                                  dpct::get_in_order_queue())));
             if (allocated == 0) {
                 void* alias = nullptr;
                 const dpct::err0 aliased =
@@ -1827,8 +1828,8 @@ bool FileExpertSource::reserve_exchanges(int64_t n, std::string &err) try {
     migrated code and was removed or replaced with 0. You may need to check the
     migrated code.
     */
-    if (DPCT_CHECK_ERROR(p = (void *)sycl::malloc_host(
-                             total, dpct::get_in_order_queue())) == 0 &&
+    if (DPCT_CHECK_ERROR(p = (void *)strata::checked_usm(sycl::malloc_host(
+                             total, dpct::get_in_order_queue()))) == 0 &&
         p != nullptr) {
         xstage_pinned_ = true;
     } else {
