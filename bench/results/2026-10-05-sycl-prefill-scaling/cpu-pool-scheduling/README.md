@@ -1,5 +1,10 @@
 # CPU native expert pool: row task factor 9
 
+The [2026-10-07 relink](current-engine-link-20261007/README.md) reuses the current
+SYCL lifetime fixes with the same measured CPU archives. Its build succeeds;
+GPU parity and engine timing remain pending. The earlier engine hash below
+belongs to the 2026-10-06 build.
+
 Ryzen 5 5600X, 128 GiB RAM, oneAPI 2026.1.1, real mixed GSQ-RCO IQ3_S
 Qwen3.8 Flash Next weights, 2026-10-06. Five pinned worker threads and the
 pinned host execute the production `ExpertPool::run_split_multi_native`.
@@ -54,7 +59,7 @@ runtime; `asan-record.json`, `asan-validation.jsonl` and `asan-ldd.txt` record
 the scope. A CPU sanitizer pass does not establish GPU correctness or exclude
 all data races.
 
-The latest engine build includes the SYCL safety changes. Its factor-9
+The earlier engine build includes the SYCL safety changes. Its factor-9
 candidate SHA-256 is `752abec884dc9caee99ba80435aa5018689ec021b045d2050b9748dccc4d7d80`.
 The reference was restored to factor 0 after building. The CPU archives and
 harness executables have exactly the same hashes as the measured and
