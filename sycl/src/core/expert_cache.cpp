@@ -601,6 +601,11 @@ void ExpertCache::close() {
     if (!segs_.empty()) {
         release_segmented();
     } else if (base_ != nullptr) {
+        // sycl::free does not synchronize like CUDA's ordinary cudaFree.
+        // Cache fills/readers can use other queues, so drain every queue on
+        // this device before reclaiming their payload. A failed wait must not
+        // proceed to free memory which may still be in use.
+        dpct::get_current_device().queues_wait_and_throw();
         sycl::free(base_, dpct::get_in_order_queue());
         base_ = nullptr;
     }

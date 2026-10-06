@@ -73,6 +73,36 @@ It is not an inference failure. The following plain run records exit 0 and
 parseable benchmark JSON. `first-fault.gdb` now emits a trace only while an
 inferior remains alive, avoiding that reporting error.
 
+## Project-trigger audit after the 19:05 human reboot
+
+The investigation prioritizes Strata's trigger and prevention paths. Other
+programs failing after a xe fault do not exclude Strata as the first trigger.
+No full-model or performance test has run since that priority was established.
+
+The retained first page fault is October 5 at 16:24:54.289299, ASID 81, BCS0,
+address `0x0000d556aa2e0000`; see [the kernel observations](earliest-retained-faults.json).
+The AOT normal-MTP report's preserved filesystem timestamp is 16:24:54.350903,
+61.604 ms later. Its controller writes this report only after sending `QUIT`
+and waiting for the engine to exit. All four requests completed and the engine
+returned zero. The engine hash and historical `generate.cpp` hash match the
+saved AOT build record. See [the association record](earliest-fault-normal-mtp-association.json).
+This prioritizes serve shutdown for investigation, but the filesystem timestamp
+is not an exact process-exit timestamp or a mapping from ASID 81 to its PID.
+
+An ordinary cache-close path lacked the queue drain required before SYCL USM
+reclamation. The actual method with deferred CPU read/write consumers reproduces
+two AddressSanitizer use-after-free errors. The fix passes five CPU cases and
+rebuilds the engine; see [the cache-close proof](expert-cache-close/README.md).
+It is a proven lifetime gap under pending consumers, not yet the demonstrated
+cause of the real GPU faults. Serve uses `_Exit`, so this destructor fix by
+itself does not cover its shutdown path.
+
+Small GPU checks passed after the human reboot once the recovery probe's missing
+UMF library path was fixed. Those checks do not validate full Strata execution
+or prove recovery without reboot. Orca's headless-service termination is being
+investigated independently. Human recovery no longer stops the GUI; the
+[incident evidence](recovery-incident-20261006/) records that correction.
+
 ## What the preserved xe dump proves
 
 The user saved the privileged dump and process stack before reboot. The raw

@@ -15,8 +15,9 @@ after the first verified recovery. The installed entry point is built from
 
 The script does not stop SDDM, Xorg, Orca or Codex. Xorg can hold B570 descriptors
 and mappings even when every B570 connector is disconnected and another GPU
-drives the monitor. Such ownership stops recovery before any reset. Ending a
-GUI session from its Orca/Codex terminal destroys that working environment.
+drives the monitor. Such ownership stops recovery before any reset. The earlier
+GUI shutdown coincided with termination of this host's headless Orca service;
+it cannot be treated as isolated from the running work environment.
 The earlier automatic GUI-shutdown path is disabled, including its worker CLI.
 
 Before a new reset, the entry checks for an interrupted, previously approved
@@ -179,6 +180,15 @@ The journal also records xe reinitialization during both attempts. The saved
 kernel interval contains no kernel-panic/lockup signatures; that does not disprove
 the reported whole-PC hang. Ending the GUI session and failing to restore it are
 established defects. This is why normal recovery no longer stops the GUI.
+
+Orca is actually a user `orca-headless.service` running with Xvfb; it is not
+running on SDDM's display. Current unit dependencies have no `PartOf`/`BindsTo`
+on the graphical session, and user lingering is enabled. The previous journal
+records GNOME restarting the user D-Bus at 18:57:59, followed in the same second
+by the Orca application scope exiting and its headless service killing remaining
+Xvfb/crashpad processes. This contradicts an explanation based solely on Orca
+using the display. The exact headless-service shutdown mechanism is being
+investigated separately, without stopping that service or D-Bus.
 
 After the human reboot, the first small probe exited with no SYCL GPU available.
 Read-only Level Zero enumeration still found one device. The UR loader identified
