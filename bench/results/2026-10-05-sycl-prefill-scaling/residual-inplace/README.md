@@ -1,7 +1,8 @@
 # In-place FP32 residual storage and full-context boundary checks
 
-**Short GPU residual comparisons pass. Full 256K, checkpoint/cancellation and
-warm performance validation are pending; do not merge until they pass.**
+**Short GPU residual comparisons and real full-256K CLI execution pass. Full
+normal-MTP serve, checkpoint/cancellation and warm performance validation
+remain pending; do not merge until they pass.**
 
 The implementation adds `STRATA_PREFILL_LAYER_MAJOR_R_INPLACE=1` (off by
 default). GPU-resident chunks compute directly in their persistent residual
@@ -63,8 +64,29 @@ expected byte counts. No new xe events occurred in these runs. Records are in
 [post-reboot-proof](post-reboot-proof/summary.json). An independent run of the
 frozen legacy executable also matches the fresh short-first control; see
 [legacy-short-first-equality](post-reboot-proof/legacy-short-first-equality.json).
-Actual full 256K and warm
-performance validation remain pending.
+At that point full-context execution remained pending; the subsequent CLI
+result is below. Full normal-MTP serve and warm performance remain pending.
+
+The subsequent [real full-context CLI run](post-reboot-proof/cli-262144.json)
+passes at exactly 262,144 capacity: 262,142 inputs plus output IDs `40, 3172`.
+All 248,320 head floats are finite and their hash is independently rechecked.
+The process exits zero; the executable hash is unchanged and the kernel
+records no new xe event during the run. Prefill processes 262,141 tokens in
+1,340.298 seconds (195.58 token/s); the overall job takes 1,371.021 seconds.
+This is one correctness observation with persistent device-code caching
+disabled, not a paired warm speed estimate. The 1,370 memory samples peak at
+59,935,868 KiB RSS and 10,048,828 KiB resident VRAM, with zero process swap and
+no sampler errors. The [engine output](post-reboot-proof/cli-262144-engine.txt)
+and [independent audit](post-reboot-proof/cli-262144-audit.json) are preserved.
+
+The first full normal-MTP serve attempt fails before prefill: its 1,363,148,800
+byte layer cache needs about 1.27 GiB, but only 0.43 GiB is available after
+decode's expert-cache release. It returns no tokens and executes no verify
+window. The [capacity failure](post-reboot-proof/serve-262144-capacity-failure.json)
+retains the exact context and request. The solution needs more available
+prefill memory; reducing the context would not satisfy this check. A BCS fault
+and GuC recovery timeouts occur during/after its shutdown; they are recorded
+separately in the failure investigation.
 
 Candidate and control executables, the 256K fixture, original short equality
 references and environment are preserved outside `/tmp` in:

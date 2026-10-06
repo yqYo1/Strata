@@ -166,9 +166,30 @@ The corrected real 256-token normal-MTP serve check fills the final KV cell,
 shortens its last verify window to two tokens, refuses both overflowing
 requests and handles a valid request afterward. It is a small boundary
 integration check, not the full 256K result.
+The subsequent full CLI run processes 262,141 prefill tokens and generates
+two tokens after 262,142 inputs at exactly 262,144 capacity. It exits zero,
+has a complete finite head and records no new xe events. See
+[the full CLI report](../residual-inplace/post-reboot-proof/cli-262144.json).
+This does not prove the separate normal-MTP final-KV-cell check.
+
+Full normal-MTP serve fails before prefill because its 1.27 GiB layer cache
+does not fit the 0.43 GiB available after decode's expert-cache release. At
+13:44:31, after that failed request exits, BCS again faults at
+`0x0000d556aa2e0000`, ASID 72, followed by `-ENOENT` and a reset. At 13:45:24,
+GuC action 0509 times out and scheduling-policy enable returns `-ETIME`.
+The tiny integer check with forced V2 and
+`UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1` still passes all 16,384 words at
+13:46:42, but its interval includes repeated kernel migration-queue
+timeouts/resets: GuC ID 0, flags `0x73`, no userspace process. Thus its exit
+zero does not establish that the driver's recovery is finished. A new
+privileged dump is present; preservation has been requested. See
+`full-serve-failure-and-health.xe-kernel.txt` and
+`health-after-full-serve-v2-no-copy.json`. No rebind, firmware or kernel
+change was performed.
+
 Checkpoint/cancellation integration, paired warm performance measurements and
-actual full 262,144-cell CLI/serve execution remain separate requirements. A
-short recovery check does not satisfy them. Raw per-stage metadata and controllers
+full normal-MTP serve remain separate requirements, as do full checks of the
+combined GCC build. Raw per-stage metadata and controllers
 are preserved in
 `~/.local/state/strata-sycl/gpu-stall-diagnosis/post-reboot-20261006`.
 The recorded runner source expects that persistent state directory, including
