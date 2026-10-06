@@ -1,6 +1,14 @@
 # Arc B570 failure investigation, updated 2026-10-07
 
-A forced Strata draft-weight lease now records a CPU SIGSEGV before a BCS
+After an external reboot, the current lifetime fixes execute four normal-MTP
+processes and all 16 requests with ordinary exits and no new xe faults,
+with direct submission disabled. Both retained-weight controls pass exact
+full-head comparisons. The release/graph-recreation experiment still changes
+repeat results even with prompt/conversation reuse disabled and remains off
+by default. These are correctness failures, not new GPU hangs. See the
+[post-reboot comparisons](host-boundaries/post-reboot-retirement/README.md).
+
+An earlier forced Strata draft-weight lease records a CPU SIGSEGV before a BCS
 page fault: 00:10:39.203062 followed by 00:10:43.491993 JST on October 7.
 Matching installed-library debug symbols identify
 `NEO::GraphicsAllocation::prepareHostPtrForResidency`. The first normal-MTP
@@ -8,15 +16,15 @@ request succeeds; the repeat fails after verified weight restoration. See
 [the actual crash](host-boundaries/draft-lease-runtime-crash/README.md).
 Graph retirement before physical release is implemented as a prevention
 candidate, with a successful build, 13 CPU resource-ordering cases and six
-CPU controller cases. It has not run on the GPU. Further GPU submissions
-stopped when the new fault occurred. The exact invalid allocation and the
+CPU controller cases. It had not run on the GPU when submissions
+stopped after that fault. The exact invalid allocation and the
 original machine-wide stall remain unresolved.
 
 The [subsequent residency audit](host-boundaries/residency-lifetime/README.md)
 demonstrates the stale recorded-pointer mechanism on CPU, fixes a separate
 MTP prefill host-upload error-path UAF, and rejects unvalidated interactive
 cache resizing before device selection. The new engine builds, but its model
-check was not started: a prerequisite small GPU check exits 1 after 12.8724 s
+check was not started on that boot: a prerequisite small GPU check exits 1 after 12.8724 s
 with `UR_RESULT_ERROR_OUT_OF_RESOURCES`. GuC ID 0, an internal migration queue,
 fails to start and the kernel records 37 resets. This is post-Strata-fault
 evidence on the same boot, not an independent trigger or recovery success.

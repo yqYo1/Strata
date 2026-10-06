@@ -24,13 +24,20 @@ actual crashing object. A separate extracted MTP prefill control finds a local
 host upload source freed on capture failure; seven candidate cases pass after
 completing that upload and propagating asynchronous errors. The interactive
 SYCL cache-resize feature is rejected before device selection. The updated
-engine builds and passes actual preflight, but has not run on the GPU: its
-small health prerequisite fails on the same boot with internal migration queue
-timeouts and 37 recorded resets. No model comparison or recovery was attempted.
+engine builds and passes actual preflight. Its first small health prerequisite
+fails on that same boot with internal migration queue timeouts and 37 recorded
+resets, so no model comparison or recovery was attempted on that boot.
+
+After an external reboot, the [current-candidate model comparisons](post-reboot-retirement/README.md)
+complete all 16 requests and ordinary process exits without new xe faults,
+with direct submission disabled. Retained weights pass full-head equality;
+releasing weights and recreating graphs fails repeat-result equality even with
+prompt/conversation reuse disabled. The lease remains experimental and off by
+default; GPU execution success is distinct from mathematical validation.
 
 The GPU is the same Arc B570 10 GiB, Ryzen 5 5600X, 128 GiB RAM, kernel
 7.0.0-38-generic, stock NEO 26.31.39395.14 and oneAPI 2026.1.1. Boot ID is
-`ef28c8b7-46f0-4806-9326-36e3158bceb7`. Every positive GPU test here uses
+`ef28c8b7-46f0-4806-9326-36e3158bceb7` for the earlier tests below. Those positive GPU tests use
 persistent SYCL cache off, Level Zero V2, default direct submission and default
 copy offload. No reset, rebind, display shutdown, kernel update or firmware
 flash is performed during these tests.

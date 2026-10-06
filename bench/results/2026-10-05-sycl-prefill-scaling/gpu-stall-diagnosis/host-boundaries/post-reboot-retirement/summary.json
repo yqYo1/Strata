@@ -1,0 +1,89 @@
+{
+  "created_utc": "2026-10-06T19:11:06.869783+00:00",
+  "scope": "Post-reboot current-candidate GPU execution and full first-window-head comparison; short context 128, not prevention, performance, or full capacity",
+  "candidate_commit": "9fbf844fdb971d82f00cffbe1b9a6ce9077c6333",
+  "candidate_binary_sha256": "79a4b363d33f66f41d910be6274e609b4eb73f62afb0dc49bca72bf2a538d223",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "gpu_runs": [
+    {
+      "mode": "small-health",
+      "validation_passed": true,
+      "kernel_fault_count": 0,
+      "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+      "started_utc": "2026-10-06T18:39:18.692823+00:00",
+      "finished_utc": "2026-10-06T18:39:22.616202+00:00"
+    },
+    {
+      "mode": "model-retained",
+      "validation_passed": true,
+      "kernel_fault_count": 0,
+      "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+      "started_utc": "2026-10-06T18:42:47.461065+00:00",
+      "finished_utc": "2026-10-06T18:45:22.832636+00:00",
+      "engine_exit_code": 0,
+      "still_alive": false,
+      "completed_requests": 4,
+      "error": null,
+      "releases": 0,
+      "restores": 0,
+      "released_physical_bytes": [],
+      "ram_source_payload_bytes": []
+    },
+    {
+      "mode": "model-lease",
+      "validation_passed": false,
+      "kernel_fault_count": 0,
+      "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+      "started_utc": "2026-10-06T18:46:44.247628+00:00",
+      "finished_utc": "2026-10-06T18:48:39.657751+00:00",
+      "engine_exit_code": 0,
+      "still_alive": false,
+      "completed_requests": 4,
+      "error": "AssertionError: repeated head logprobs differ",
+      "releases": 6,
+      "restores": 6,
+      "released_physical_bytes": [
+        939524096
+      ],
+      "ram_source_payload_bytes": [
+        931016700
+      ]
+    },
+    {
+      "mode": "model-lease-uncached",
+      "validation_passed": false,
+      "kernel_fault_count": 0,
+      "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+      "started_utc": "2026-10-06T18:56:04.067573+00:00",
+      "finished_utc": "2026-10-06T18:57:41.180857+00:00",
+      "engine_exit_code": 0,
+      "still_alive": false,
+      "completed_requests": 4,
+      "error": "AssertionError: repeated head logprobs differ",
+      "releases": 4,
+      "restores": 4,
+      "released_physical_bytes": [
+        939524096
+      ],
+      "ram_source_payload_bytes": [
+        931016700
+      ]
+    },
+    {
+      "mode": "model-retained-uncached",
+      "validation_passed": true,
+      "kernel_fault_count": 0,
+      "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+      "started_utc": "2026-10-06T19:06:14.433003+00:00",
+      "finished_utc": "2026-10-06T19:07:40.280352+00:00",
+      "engine_exit_code": 0,
+      "still_alive": false,
+      "completed_requests": 4,
+      "error": null,
+      "releases": 0,
+      "restores": 0,
+      "released_physical_bytes": [],
+      "ram_source_payload_bytes": []
+    }
+  ]
+}

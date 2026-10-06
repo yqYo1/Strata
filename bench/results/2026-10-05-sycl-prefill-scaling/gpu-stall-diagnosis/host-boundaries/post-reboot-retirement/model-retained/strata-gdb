@@ -1,0 +1,3 @@
+#!/bin/bash
+export DEBUGINFOD_URLS=""
+exec /usr/bin/gdb -nx -q -batch --return-child-result -iex 'set debuginfod enabled off' -ex 'set logging file /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/model-retained/gdb.txt' -ex 'set logging overwrite on' -ex 'set logging redirect on' -ex 'set logging enabled on' -ex 'set debug-file-directory /usr/lib/debug:/home/yayoi/.local/state/strata-sycl/orderly-serve-shutdown-20261006/runtime-symbols/extracted/usr/lib/debug' -x /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/first-fault-strict.gdb --args /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/strata-residency-candidate "$@"

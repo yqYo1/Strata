@@ -108,12 +108,12 @@ and 262,144-context elastic requests; help returns 0. See
 [preflight](preflight/record.json). The context argument in that test is only
 configuration validation, not consumption of any context cells.
 
-## Current validation and GPU state
+## Validation before the external reboot
 
 The current candidate builds successfully with the existing oneAPI/MKL
 toolchain: [build](build-record.json). Its frozen SHA-256 is
 `79a4b363d33f66f41d910be6274e609b4eb73f62afb0dc49bca72bf2a538d223`.
-It has not been submitted to the GPU. A failed first link omitted MKL's library
+At that point it had not been submitted to the GPU. A failed first link omitted MKL's library
 search path; the corrected build environment and both logs are retained.
 The earlier graph-retirement candidate is a different binary.
 
@@ -156,3 +156,14 @@ model validation on a usable GPU, cancellation/checkpoint/partial-restoration
 paths, and consuming all 262,144 cells in both CLI and normal-MTP serve. CPU
 work can continue while GPU validation is unavailable. Kernel reset completion
 messages alone do not make those checks safe or prove recovery.
+
+## Subsequent GPU validation
+
+After an external reboot, this same frozen executable runs the actual model:
+[post-reboot comparisons](../post-reboot-retirement/README.md). Four processes
+complete 16 requests and ordinary exits, without new xe faults, with direct
+submission disabled. Both retained controls pass full-head equality. Releasing
+draft weights and recreating graphs still changes repeated target-head results,
+including with prompt/conversation reuse disabled. The release optimization
+is not accepted; the earlier health failure describes the previous boot,
+not the current operational GPU state. Full capacity remains unvalidated.

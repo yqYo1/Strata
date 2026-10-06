@@ -3,12 +3,17 @@
 This experiment is off by default. Its first real short request succeeds,
 but the repeat crashes inside the CPU Level Zero runtime before a BCS fault.
 The [failure](../gpu-stall-diagnosis/host-boundaries/draft-lease-runtime-crash/README.md)
-is recorded with exact matching debug symbols. A graph-retirement candidate
-builds and passes CPU ordering checks; it has not run on the GPU. The experiment
+is recorded with exact matching debug symbols. After an external reboot,
+the updated graph-retirement candidate completes four processes and 16 requests
+with ordinary exits and no new xe faults, with direct submission disabled.
+Both retained-weight controls pass full-head equality, while releasing weights
+changes repeat results even with prompt/conversation reuse disabled. See the
+[post-reboot comparison](../gpu-stall-diagnosis/host-boundaries/post-reboot-retirement/README.md).
+The experiment
 does not establish stable model output, a speed improvement or successful
 full-context MTP operation.
 
-On Arc B570 10 GiB, Ryzen 5 5600X and 128 GiB RAM, the frozen candidate's
+On Arc B570 10 GiB, Ryzen 5 5600X and 128 GiB RAM, an earlier frozen candidate's
 normal-MTP serve run at exactly 262,144 context failed before prefill. Its
 1.27 GiB layer expert cache did not fit the 0.43 GiB free after releasing the
 target's decode expert cache. The capacity is retained. See the
