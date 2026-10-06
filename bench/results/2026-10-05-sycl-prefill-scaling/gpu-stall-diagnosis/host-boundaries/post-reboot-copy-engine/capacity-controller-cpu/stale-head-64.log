@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/residual-inplace/check_full_context.py", line 205, in <module>
+    r['logits_sha256']=finite_head(head)
+                       ^^^^^^^^^^^^^^^^^
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/residual-inplace/check_full_context.py", line 91, in finite_head
+    v=array.array('f');v.frombytes(path.read_bytes());assert len(v)==248320 and all(map(math.isfinite,v));return hashlib.sha256(path.read_bytes()).hexdigest()
+                                   ^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1021, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1015, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/strata-context-controller-gofh34vt/serve-64-protocol-stub/first-head.bin'

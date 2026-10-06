@@ -1,0 +1,21 @@
+Traceback (most recent call last):
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/residual-inplace/check_full_context.py", line 120, in <module>
+    try:rc=child.wait(timeout=a.job_timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 1264, in wait
+    return self._wait(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 2045, in _wait
+    raise TimeoutExpired(self.args, timeout)
+subprocess.TimeoutExpired: Command '['/tmp/strata-context-controller-gofh34vt/protocol-stub', '--pack', 'unused', '--native', 'unused', '--max-context', '64', '--kv', 'int8', '--spec', '4', '--spec-min-p', '0', '--suffix-draft', '0', '--no-prefill-borrow', '--expert-cache', '128', '--expert-profile', 'unused', '--expert-cache-per-layer', '--pool-workers', '5', '--pcie-frac', '0', '--adapt-swaps', '0', '--ple-io', 'direct', '--greedy', '--tokens-file', '/tmp/strata-context-controller-gofh34vt/cli-64-protocol-stub/fills-context.tokens.txt', '--max-new', '2', '--prefill', '1024', '--stats']' timed out after 0.5 seconds
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/residual-inplace/check_full_context.py", line 122, in <module>
+    finally:cleanup(child,proc)
+            ^^^^^^^^^^^^^^^^^^^
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/residual-inplace/check_full_context.py", line 88, in cleanup
+    if actions and actions!=['QUIT']:raise RuntimeError(f'engine required forced cleanup: {actions}')
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: engine required forced cleanup: ['SIGTERM']
