@@ -1,0 +1,48 @@
+To enable execution of this file add
+	add-auto-load-safe-path /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9.0.0-gdb.py
+line to your configuration file "/home/yayoi/.config/gdb/gdbinit".
+To completely disable this security protection add
+	set auto-load safe-path /
+line to your configuration file "/home/yayoi/.config/gdb/gdbinit".
+For more information about this security protection see the
+"Auto-loading safe path" section in the GDB manual.  E.g., run from the shell:
+	info "(gdb)Auto-loading safe path"
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+[New Thread 0x7fffd012b6c0 (LWP 47267)]
+
+Thread 1 "llama-bench" received signal SIGSEGV, Segmentation fault.
+__strcmp_avx2 () at ../sysdeps/x86_64/multiarch/strcmp-avx2.S:994
+#0  __strcmp_avx2 () at ../sysdeps/x86_64/multiarch/strcmp-avx2.S:994
+#1  0x00007ffff78e8dff in sycl::_V1::detail::getSortedImages(std::vector<sycl::_V1::detail::RTDeviceBinaryImage const*, std::allocator<sycl::_V1::detail::RTDeviceBinaryImage const*> > const&) () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#2  0x00007ffff78ed9b4 in sycl::_V1::detail::PersistentDeviceCodeCache::getItemFromDisc(sycl::_V1::detail::devices_range, std::vector<sycl::_V1::detail::RTDeviceBinaryImage const*, std::allocator<sycl::_V1::detail::RTDeviceBinaryImage const*> > const&, std::vector<unsigned char, std::allocator<unsigned char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#3  0x00007ffff788a7b9 in sycl::_V1::detail::ProgramManager::getOrCreateURProgram(sycl::_V1::detail::RTDeviceBinaryImage const&, std::vector<sycl::_V1::detail::RTDeviceBinaryImage const*, std::allocator<sycl::_V1::detail::RTDeviceBinaryImage const*> > const&, sycl::_V1::detail::context_impl&, sycl::_V1::detail::devices_range, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::vector<unsigned char, std::allocator<unsigned char> >) () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#4  0x00007ffff7893f21 in sycl::_V1::detail::ProgramManager::getBuiltURProgram(sycl::_V1::detail::ObjectWithDeps<sycl::_V1::detail::RTDeviceBinaryImage const*> const&, sycl::_V1::detail::context_impl&, sycl::_V1::detail::devices_range, sycl::_V1::detail::ObjectWithDeps<sycl::_V1::detail::device_image_plain> const*, std::vector<unsigned char, std::allocator<unsigned char> > const&)::$_2::operator()() const () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#5  0x00007ffff7892bf2 in sycl::_V1::detail::ProgramManager::getBuiltURProgram(sycl::_V1::detail::ObjectWithDeps<sycl::_V1::detail::RTDeviceBinaryImage const*> const&, sycl::_V1::detail::context_impl&, sycl::_V1::detail::devices_range, sycl::_V1::detail::ObjectWithDeps<sycl::_V1::detail::device_image_plain> const*, std::vector<unsigned char, std::allocator<unsigned char> > const&) () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#6  0x00007ffff788da79 in sycl::_V1::detail::ProgramManager::getBuiltURProgram(sycl::_V1::detail::context_impl&, sycl::_V1::detail::device_impl&, std::basic_string_view<char, std::char_traits<char> >, sycl::_V1::detail::NDRDescT const&) () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#7  0x00007ffff789566d in sycl::_V1::detail::ProgramManager::getOrCreateKernel(sycl::_V1::detail::context_impl&, sycl::_V1::detail::device_impl&, sycl::_V1::detail::DeviceKernelInfo&, sycl::_V1::detail::NDRDescT const&) () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#8  0x00007ffff7913989 in sycl::_V1::detail::enqueueImpKernel(sycl::_V1::detail::queue_impl&, sycl::_V1::detail::NDRDescT&, std::vector<sycl::_V1::detail::ArgDesc, std::allocator<sycl::_V1::detail::ArgDesc> >&, sycl::_V1::detail::kernel_bundle_impl*, sycl::_V1::detail::kernel_impl const*, sycl::_V1::detail::DeviceKernelInfo&, std::vector<ur_event_handle_t_*, std::allocator<ur_event_handle_t_*> >&, sycl::_V1::detail::event_impl*, std::function<void* (sycl::_V1::detail::AccessorImplHost*)> const&, ur_kernel_cache_config_t, bool, bool, unsigned long, sycl::_V1::detail::RTDeviceBinaryImage const*, void*) () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#9  0x00007ffff78d7eeb in sycl::_V1::detail::queue_impl::submit_kernel_scheduler_bypass(sycl::_V1::detail::KernelData&, std::vector<std::shared_ptr<sycl::_V1::detail::event_impl>, std::allocator<std::shared_ptr<sycl::_V1::detail::event_impl> > >&, bool, sycl::_V1::detail::kernel_impl*, sycl::_V1::detail::kernel_bundle_impl*, sycl::_V1::detail::code_location const&, bool)::$_0::operator()() const () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#10 0x00007ffff78d7b69 in sycl::_V1::detail::queue_impl::submit_kernel_scheduler_bypass(sycl::_V1::detail::KernelData&, std::vector<std::shared_ptr<sycl::_V1::detail::event_impl>, std::allocator<std::shared_ptr<sycl::_V1::detail::event_impl> > >&, bool, sycl::_V1::detail::kernel_impl*, sycl::_V1::detail::kernel_bundle_impl*, sycl::_V1::detail::code_location const&, bool) () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#11 0x00007ffff79536a9 in sycl::_V1::handler::finalize() () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#12 0x00007ffff78d6b56 in std::shared_ptr<sycl::_V1::detail::event_impl> sycl::_V1::detail::queue_impl::finalizeHandlerInOrderNoEventsUnlocked<sycl::_V1::handler>(sycl::_V1::handler&) () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#13 0x00007ffff78d618b in sycl::_V1::detail::queue_impl::submit_impl(sycl::_V1::detail::type_erased_cgfo_ty const&, bool, sycl::_V1::detail::code_location const&, bool, sycl::_V1::detail::_V1::SubmissionInfo const&) () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#14 0x00007ffff799c299 in sycl::_V1::queue::submit_with_event_impl(sycl::_V1::detail::type_erased_cgfo_ty const&, sycl::_V1::detail::_V1::SubmissionInfo const&, sycl::_V1::detail::code_location const&, bool) const () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#15 0x0000000000c0abc0 in void dequantize_row_q4_K_sycl<sycl::_V1::detail::half_impl::half>(void const*, sycl::_V1::detail::half_impl::half*, long, sycl::_V1::queue*) ()
+#16 0x0000000000bb4fca in ggml_sycl_op_mul_mat_sycl(ggml_backend_sycl_context&, ggml_tensor const*, ggml_tensor const*, ggml_tensor*, char const*, float const*, char const*, float*, long, long, long, long, sycl::_V1::queue* const&) ()
+#17 0x0000000000b9316d in void ggml_sycl_op_mul_mat<no_quantize_q8_1>(ggml_backend_sycl_context&, ggml_tensor const*, ggml_tensor const*, ggml_tensor*, void (*)(ggml_backend_sycl_context&, ggml_tensor const*, ggml_tensor const*, ggml_tensor*, char const*, float const*, char const*, float*, long, long, long, long, sycl::_V1::queue* const&)) ()
+#18 0x0000000000b88d76 in ggml_sycl_mul_mat(ggml_backend_sycl_context&, ggml_tensor const*, ggml_tensor const*, ggml_tensor*) ()
+#19 0x0000000000b81240 in ggml_backend_sycl_graph_compute_impl(ggml_backend_sycl_context*, ggml_cgraph*) ()
+#20 0x0000000000b7f0a8 in ggml_backend_sycl_graph_compute(ggml_backend*, ggml_cgraph*) ()
+#21 0x00000000017f3966 in ggml_backend_sched_graph_compute_async ()
+#22 0x000000000075cc01 in llama_context::graph_compute(ggml_cgraph*, bool) ()
+#23 0x000000000075c34e in llama_context::process_ubatch(llama_ubatch const&, llm_graph_type, llama_memory_context_i*, ggml_status&) ()
+#24 0x000000000075e3e2 in llama_context::decode(llama_batch_ext const&) ()
+#25 0x000000000043443c in test_prompt(llama_context*, int, int, int) ()
+#26 0x000000000042e8a4 in llama_bench(int, char**) ()
+#27 0x00007fffe61dc1ca in __libc_start_call_main (main=main@entry=0x42c1d0 <main>, argc=argc@entry=23, argv=argv@entry=0x7fffffffce28) at ../sysdeps/nptl/libc_start_call_main.h:58
+#28 0x00007fffe61dc28b in __libc_start_main_impl (main=0x42c1d0 <main>, argc=23, argv=0x7fffffffce28, init=<optimized out>, fini=<optimized out>, rtld_fini=<optimized out>, stack_end=0x7fffffffce18) at ../csu/libc-start.c:360
+#29 0x000000000042c105 in _start ()
+rdi            0x1c02fb0           29372336
+rsi            0x8000000000000000  -9223372036854775808
+rip            0x7fffe633d695      0x7fffe633d695 <__strcmp_avx2+901>

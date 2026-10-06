@@ -1,0 +1,918 @@
+
+/home/yayoi/.local/state/strata-sycl/gpu-stall-diagnosis/20261006-012240/installed-xe.ko:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000003b7b0 <guc_exec_queue_timedout_job>:
+   3b7b0:	e8 00 00 00 00       	call   3b7b5 <guc_exec_queue_timedout_job+0x5>
+			3b7b1: R_X86_64_PLT32	__fentry__-0x4
+   3b7b5:	55                   	push   %rbp
+   3b7b6:	48 89 e5             	mov    %rsp,%rbp
+   3b7b9:	41 57                	push   %r15
+   3b7bb:	41 56                	push   %r14
+   3b7bd:	41 55                	push   %r13
+   3b7bf:	41 54                	push   %r12
+   3b7c1:	53                   	push   %rbx
+   3b7c2:	48 83 ec 60          	sub    $0x60,%rsp
+   3b7c6:	4c 8b bf 90 00 00 00 	mov    0x90(%rdi),%r15
+   3b7cd:	65 48 8b 05 00 00 00 	mov    %gs:0x0(%rip),%rax        # 3b7d5 <guc_exec_queue_timedout_job+0x25>
+   3b7d4:	00
+			3b7d1: R_X86_64_PC32	__ref_stack_chk_guard-0x4
+   3b7d5:	48 89 45 d0          	mov    %rax,-0x30(%rbp)
+   3b7d9:	31 c0                	xor    %eax,%eax
+   3b7db:	4d 8b 6f 08          	mov    0x8(%r15),%r13
+   3b7df:	49 8b 5f 78          	mov    0x78(%r15),%rbx
+   3b7e3:	49 8b 45 00          	mov    0x0(%r13),%rax
+   3b7e7:	4c 8b 30             	mov    (%rax),%r14
+   3b7ea:	48 8b 87 a0 00 00 00 	mov    0xa0(%rdi),%rax
+   3b7f1:	48 8b 40 30          	mov    0x30(%rax),%rax
+   3b7f5:	48 d1 e8             	shr    $1,%rax
+   3b7f8:	83 e0 01             	and    $0x1,%eax
+   3b7fb:	88 45 9c             	mov    %al,-0x64(%rbp)
+   3b7fe:	0f 85 0b 02 00 00    	jne    3ba0f <guc_exec_queue_timedout_job+0x25f>
+   3b804:	41 83 be 18 12 00 00 	cmpl   $0x3,0x1218(%r14)
+   3b80b:	03
+   3b80c:	49 89 fc             	mov    %rdi,%r12
+   3b80f:	0f 84 0e 05 00 00    	je     3bd23 <guc_exec_queue_timedout_job+0x573>
+   3b815:	48 8d 43 18          	lea    0x18(%rbx),%rax
+   3b819:	48 89 c7             	mov    %rax,%rdi
+   3b81c:	48 89 45 a0          	mov    %rax,-0x60(%rbp)
+   3b820:	e8 00 00 00 00       	call   3b825 <guc_exec_queue_timedout_job+0x75>
+			3b821: R_X86_64_PLT32	xe_sched_submission_stop-0x4
+   3b825:	49 8b 47 78          	mov    0x78(%r15),%rax
+   3b829:	c6 45 90 01          	movb   $0x1,-0x70(%rbp)
+   3b82d:	8b 90 f0 02 00 00    	mov    0x2f0(%rax),%edx
+   3b833:	83 e2 40             	and    $0x40,%edx
+   3b836:	0f 84 5d 02 00 00    	je     3ba99 <guc_exec_queue_timedout_job+0x2e9>
+   3b83c:	41 f6 87 9d 00 00 00 	testb  $0x1,0x9d(%r15)
+   3b843:	01
+   3b844:	0f 84 03 02 00 00    	je     3ba4d <guc_exec_queue_timedout_job+0x29d>
+   3b84a:	49 8b 87 80 00 00 00 	mov    0x80(%r15),%rax
+   3b851:	0f b6 40 51          	movzbl 0x51(%rax),%eax
+   3b855:	3c 01                	cmp    $0x1,%al
+   3b857:	0f 87 00 00 00 00    	ja     3b85d <guc_exec_queue_timedout_job+0xad>
+			3b859: R_X86_64_PC32	.text+0x20a7fe
+   3b85d:	83 e0 01             	and    $0x1,%eax
+   3b860:	88 45 88             	mov    %al,-0x78(%rbp)
+   3b863:	0f 84 e4 01 00 00    	je     3ba4d <guc_exec_queue_timedout_job+0x29d>
+   3b869:	4c 89 ff             	mov    %r15,%rdi
+   3b86c:	e8 00 00 00 00       	call   3b871 <guc_exec_queue_timedout_job+0xc1>
+			3b86d: R_X86_64_PLT32	xe_exec_queue_is_lr-0x4
+   3b871:	49 8b 47 78          	mov    0x78(%r15),%rax
+   3b875:	0f b6 4d 88          	movzbl -0x78(%rbp),%ecx
+   3b879:	8b 90 f0 02 00 00    	mov    0x2f0(%rax),%edx
+   3b87f:	81 e2 80 00 00 00    	and    $0x80,%edx
+   3b885:	0f 85 55 05 00 00    	jne    3bde0 <guc_exec_queue_timedout_job+0x630>
+   3b88b:	45 0f b6 b6 88 06 00 	movzbl 0x688(%r14),%r14d
+   3b892:	00
+   3b893:	44 89 f6             	mov    %r14d,%esi
+   3b896:	83 e6 01             	and    $0x1,%esi
+   3b899:	40 88 75 90          	mov    %sil,-0x70(%rbp)
+   3b89d:	41 80 fe 01          	cmp    $0x1,%r14b
+   3b8a1:	0f 87 00 00 00 00    	ja     3b8a7 <guc_exec_queue_timedout_job+0xf7>
+			3b8a3: R_X86_64_PC32	.text+0x20a7e6
+   3b8a7:	40 84 f6             	test   %sil,%sil
+   3b8aa:	0f 85 85 00 00 00    	jne    3b935 <guc_exec_queue_timedout_job+0x185>
+   3b8b0:	4c 89 ff             	mov    %r15,%rdi
+   3b8b3:	88 4d 90             	mov    %cl,-0x70(%rbp)
+   3b8b6:	e8 00 00 00 00       	call   3b8bb <guc_exec_queue_timedout_job+0x10b>
+			3b8b7: R_X86_64_PLT32	xe_guc_capture_get_matching_and_lock-0x4
+   3b8bb:	0f b6 4d 90          	movzbl -0x70(%rbp),%ecx
+   3b8bf:	48 85 c0             	test   %rax,%rax
+   3b8c2:	75 6d                	jne    3b931 <guc_exec_queue_timedout_job+0x181>
+   3b8c4:	88 4d 90             	mov    %cl,-0x70(%rbp)
+   3b8c7:	49 8b 47 08          	mov    0x8(%r15),%rax
+   3b8cb:	be 00 00 01 00       	mov    $0x10000,%esi
+   3b8d0:	48 05 c8 01 00 00    	add    $0x1c8,%rax
+   3b8d6:	48 89 c7             	mov    %rax,%rdi
+   3b8d9:	48 89 45 88          	mov    %rax,-0x78(%rbp)
+   3b8dd:	e8 00 00 00 00       	call   3b8e2 <guc_exec_queue_timedout_job+0x132>
+			3b8de: R_X86_64_PLT32	xe_force_wake_get-0x4
+   3b8e2:	41 89 c6             	mov    %eax,%r14d
+   3b8e5:	a9 00 00 01 00       	test   $0x10000,%eax
+   3b8ea:	75 27                	jne    3b913 <guc_exec_queue_timedout_job+0x163>
+   3b8ec:	49 8b 47 08          	mov    0x8(%r15),%rax
+   3b8f0:	0f b6 48 26          	movzbl 0x26(%rax),%ecx
+   3b8f4:	48 8b 00             	mov    (%rax),%rax
+   3b8f7:	48 8b 38             	mov    (%rax),%rdi
+   3b8fa:	0f b6 50 08          	movzbl 0x8(%rax),%edx
+   3b8fe:	48 85 ff             	test   %rdi,%rdi
+   3b901:	74 04                	je     3b907 <guc_exec_queue_timedout_job+0x157>
+   3b903:	48 8b 7f 08          	mov    0x8(%rdi),%rdi
+   3b907:	48 c7 c6 00 00 00 00 	mov    $0x0,%rsi
+			3b90a: R_X86_64_32S	.rodata+0x408f8
+   3b90e:	e8 00 00 00 00       	call   3b913 <guc_exec_queue_timedout_job+0x163>
+			3b90f: R_X86_64_PLT32	_dev_info-0x4
+   3b913:	4c 89 ff             	mov    %r15,%rdi
+   3b916:	e8 00 00 00 00       	call   3b91b <guc_exec_queue_timedout_job+0x16b>
+			3b917: R_X86_64_PLT32	xe_engine_snapshot_capture_for_queue-0x4
+   3b91b:	48 8b 7d 88          	mov    -0x78(%rbp),%rdi
+   3b91f:	44 89 f6             	mov    %r14d,%esi
+   3b922:	e8 00 00 00 00       	call   3b927 <guc_exec_queue_timedout_job+0x177>
+			3b923: R_X86_64_PLT32	xe_force_wake_put-0x4
+   3b927:	80 7d 90 00          	cmpb   $0x0,-0x70(%rbp)
+   3b92b:	0f 84 9c 01 00 00    	je     3bacd <guc_exec_queue_timedout_job+0x31d>
+   3b931:	49 8b 47 78          	mov    0x78(%r15),%rax
+   3b935:	8b 90 f0 02 00 00    	mov    0x2f0(%rax),%edx
+   3b93b:	81 e2 80 00 00 00    	and    $0x80,%edx
+   3b941:	0f 84 9e 01 00 00    	je     3bae5 <guc_exec_queue_timedout_job+0x335>
+   3b947:	f0 81 88 f0 02 00 00 	lock orl $0x200,0x2f0(%rax)
+   3b94e:	00 02 00 00
+   3b952:	49 8b 4f 78          	mov    0x78(%r15),%rcx
+   3b956:	8b 81 f0 02 00 00    	mov    0x2f0(%rcx),%eax
+   3b95c:	a8 02                	test   $0x2,%al
+   3b95e:	0f 84 53 01 00 00    	je     3bab7 <guc_exec_queue_timedout_job+0x307>
+   3b964:	8b 81 f0 02 00 00    	mov    0x2f0(%rcx),%eax
+   3b96a:	83 e0 40             	and    $0x40,%eax
+   3b96d:	83 f8 01             	cmp    $0x1,%eax
+   3b970:	41 8b 85 5c 05 00 00 	mov    0x55c(%r13),%eax
+   3b977:	45 19 f6             	sbb    %r14d,%r14d
+   3b97a:	41 83 e6 c7          	and    $0xffffffc7,%r14d
+   3b97e:	41 83 ee 05          	sub    $0x5,%r14d
+   3b982:	85 c0                	test   %eax,%eax
+   3b984:	0f 84 68 07 00 00    	je     3c0f2 <guc_exec_queue_timedout_job+0x942>
+   3b98a:	83 f8 09             	cmp    $0x9,%eax
+   3b98d:	0f 8e b1 03 00 00    	jle    3bd44 <guc_exec_queue_timedout_job+0x594>
+   3b993:	e8 00 00 00 00       	call   3b998 <guc_exec_queue_timedout_job+0x1e8>
+			3b994: R_X86_64_PLT32	__SCT__might_resched-0x4
+   3b998:	49 8b 47 78          	mov    0x78(%r15),%rax
+   3b99c:	8b 90 f0 02 00 00    	mov    0x2f0(%rax),%edx
+   3b9a2:	83 e2 04             	and    $0x4,%edx
+   3b9a5:	0f 84 3d 04 00 00    	je     3bde8 <guc_exec_queue_timedout_job+0x638>
+   3b9ab:	49 8b 55 00          	mov    0x0(%r13),%rdx
+   3b9af:	41 8b 85 28 10 00 00 	mov    0x1028(%r13),%eax
+   3b9b6:	48 8b 12             	mov    (%rdx),%rdx
+   3b9b9:	8b 92 18 12 00 00    	mov    0x1218(%rdx),%edx
+   3b9bf:	85 c0                	test   %eax,%eax
+   3b9c1:	0f 84 d4 05 00 00    	je     3bf9b <guc_exec_queue_timedout_job+0x7eb>
+   3b9c7:	83 fa 03             	cmp    $0x3,%edx
+   3b9ca:	0f 84 3a 04 00 00    	je     3be0a <guc_exec_queue_timedout_job+0x65a>
+   3b9d0:	41 b8 88 13 00 00    	mov    $0x1388,%r8d
+   3b9d6:	41 8b 85 28 10 00 00 	mov    0x1028(%r13),%eax
+   3b9dd:	85 c0                	test   %eax,%eax
+   3b9df:	0f 84 53 03 00 00    	je     3bd38 <guc_exec_queue_timedout_job+0x588>
+   3b9e5:	49 8b 4f 78          	mov    0x78(%r15),%rcx
+   3b9e9:	e9 bb 03 00 00       	jmp    3bda9 <guc_exec_queue_timedout_job+0x5f9>
+   3b9ee:	49 8b 47 78          	mov    0x78(%r15),%rax
+   3b9f2:	f0 81 a0 f0 02 00 00 	lock andl $0xfffffdff,0x2f0(%rax)
+   3b9f9:	ff fd ff ff
+   3b9fd:	49 8b 7f 08          	mov    0x8(%r15),%rdi
+   3ba01:	e8 00 00 00 00       	call   3ba06 <guc_exec_queue_timedout_job+0x256>
+			3ba02: R_X86_64_PLT32	xe_gt_reset_async-0x4
+   3ba06:	48 8b 7d a0          	mov    -0x60(%rbp),%rdi
+   3ba0a:	e8 00 00 00 00       	call   3ba0f <guc_exec_queue_timedout_job+0x25f>
+			3ba0b: R_X86_64_PLT32	xe_sched_submission_start-0x4
+   3ba0f:	48 8b 45 d0          	mov    -0x30(%rbp),%rax
+   3ba13:	65 48 2b 05 00 00 00 	sub    %gs:0x0(%rip),%rax        # 3ba1b <guc_exec_queue_timedout_job+0x26b>
+   3ba1a:	00
+			3ba17: R_X86_64_PC32	__ref_stack_chk_guard-0x4
+   3ba1b:	0f 85 90 0a 00 00    	jne    3c4b1 <guc_exec_queue_timedout_job+0xd01>
+   3ba21:	48 8d 65 d8          	lea    -0x28(%rbp),%rsp
+   3ba25:	b8 03 00 00 00       	mov    $0x3,%eax
+   3ba2a:	5b                   	pop    %rbx
+   3ba2b:	41 5c                	pop    %r12
+   3ba2d:	41 5d                	pop    %r13
+   3ba2f:	41 5e                	pop    %r14
+   3ba31:	41 5f                	pop    %r15
+   3ba33:	5d                   	pop    %rbp
+   3ba34:	31 d2                	xor    %edx,%edx
+   3ba36:	31 c9                	xor    %ecx,%ecx
+   3ba38:	31 f6                	xor    %esi,%esi
+   3ba3a:	31 ff                	xor    %edi,%edi
+   3ba3c:	45 31 c0             	xor    %r8d,%r8d
+   3ba3f:	45 31 c9             	xor    %r9d,%r9d
+   3ba42:	45 31 d2             	xor    %r10d,%r10d
+   3ba45:	45 31 db             	xor    %r11d,%r11d
+   3ba48:	e9 00 00 00 00       	jmp    3ba4d <guc_exec_queue_timedout_job+0x29d>
+			3ba49: R_X86_64_PLT32	__x86_return_thunk-0x4
+   3ba4d:	4c 89 ff             	mov    %r15,%rdi
+   3ba50:	e8 00 00 00 00       	call   3ba55 <guc_exec_queue_timedout_job+0x2a5>
+			3ba51: R_X86_64_PLT32	xe_exec_queue_is_lr-0x4
+   3ba55:	49 8b 47 78          	mov    0x78(%r15),%rax
+   3ba59:	8b 80 f0 02 00 00    	mov    0x2f0(%rax),%eax
+   3ba5f:	a8 80                	test   $0x80,%al
+   3ba61:	0f 85 c0 fe ff ff    	jne    3b927 <guc_exec_queue_timedout_job+0x177>
+   3ba67:	45 0f b6 b6 88 06 00 	movzbl 0x688(%r14),%r14d
+   3ba6e:	00
+   3ba6f:	41 80 fe 01          	cmp    $0x1,%r14b
+   3ba73:	0f 87 8c 0a 00 00    	ja     3c505 <guc_exec_queue_timedout_job+0xd55>
+   3ba79:	41 83 e6 01          	and    $0x1,%r14d
+   3ba7d:	0f 85 a4 fe ff ff    	jne    3b927 <guc_exec_queue_timedout_job+0x177>
+   3ba83:	4c 89 ff             	mov    %r15,%rdi
+   3ba86:	e8 00 00 00 00       	call   3ba8b <guc_exec_queue_timedout_job+0x2db>
+			3ba87: R_X86_64_PLT32	xe_guc_capture_get_matching_and_lock-0x4
+   3ba8b:	48 85 c0             	test   %rax,%rax
+   3ba8e:	0f 85 93 fe ff ff    	jne    3b927 <guc_exec_queue_timedout_job+0x177>
+   3ba94:	e9 2e fe ff ff       	jmp    3b8c7 <guc_exec_queue_timedout_job+0x117>
+   3ba99:	8b 80 f0 02 00 00    	mov    0x2f0(%rax),%eax
+   3ba9f:	a9 80 03 00 00       	test   $0x380,%eax
+   3baa4:	0f 95 45 90          	setne  -0x70(%rbp)
+   3baa8:	41 f6 87 9d 00 00 00 	testb  $0x1,0x9d(%r15)
+   3baaf:	01
+   3bab0:	74 9b                	je     3ba4d <guc_exec_queue_timedout_job+0x29d>
+   3bab2:	e9 93 fd ff ff       	jmp    3b84a <guc_exec_queue_timedout_job+0x9a>
+   3bab7:	8b 81 f0 02 00 00    	mov    0x2f0(%rcx),%eax
+   3babd:	a8 08                	test   $0x8,%al
+   3babf:	0f 85 9f fe ff ff    	jne    3b964 <guc_exec_queue_timedout_job+0x1b4>
+   3bac5:	41 be c2 ff ff ff    	mov    $0xffffffc2,%r14d
+   3bacb:	eb 5b                	jmp    3bb28 <guc_exec_queue_timedout_job+0x378>
+   3bacd:	4c 89 e6             	mov    %r12,%rsi
+   3bad0:	4c 89 ff             	mov    %r15,%rdi
+   3bad3:	e8 88 b3 ff ff       	call   36e60 <check_timeout>
+   3bad8:	84 c0                	test   %al,%al
+   3bada:	0f 85 51 fe ff ff    	jne    3b931 <guc_exec_queue_timedout_job+0x181>
+   3bae0:	e9 21 ff ff ff       	jmp    3ba06 <guc_exec_queue_timedout_job+0x256>
+   3bae5:	49 8b 57 08          	mov    0x8(%r15),%rdx
+   3bae9:	48 8b 12             	mov    (%rdx),%rdx
+   3baec:	48 8b 3a             	mov    (%rdx),%rdi
+   3baef:	83 bf 3c 29 00 00 02 	cmpl   $0x2,0x293c(%rdi)
+   3baf6:	0f 85 4b fe ff ff    	jne    3b947 <guc_exec_queue_timedout_job+0x197>
+   3bafc:	8b 97 38 29 00 00    	mov    0x2938(%rdi),%edx
+   3bb02:	85 d2                	test   %edx,%edx
+   3bb04:	75 09                	jne    3bb0f <guc_exec_queue_timedout_job+0x35f>
+   3bb06:	e8 00 00 00 00       	call   3bb0b <guc_exec_queue_timedout_job+0x35b>
+			3bb07: R_X86_64_PLT32	xe_device_declare_wedged-0x4
+   3bb0b:	49 8b 47 78          	mov    0x78(%r15),%rax
+   3bb0f:	f0 81 88 f0 02 00 00 	lock orl $0x200,0x2f0(%rax)
+   3bb16:	00 02 00 00
+   3bb1a:	c6 45 9c 01          	movb   $0x1,-0x64(%rbp)
+   3bb1e:	49 8b 4f 78          	mov    0x78(%r15),%rcx
+   3bb22:	41 be c2 ff ff ff    	mov    $0xffffffc2,%r14d
+   3bb28:	49 8b 47 20          	mov    0x20(%r15),%rax
+   3bb2c:	48 85 c0             	test   %rax,%rax
+   3bb2f:	0f 84 fc 02 00 00    	je     3be31 <guc_exec_queue_timedout_job+0x681>
+   3bb35:	48 8b 90 48 06 00 00 	mov    0x648(%rax),%rdx
+   3bb3c:	48 85 d2             	test   %rdx,%rdx
+   3bb3f:	0f 84 ec 02 00 00    	je     3be31 <guc_exec_queue_timedout_job+0x681>
+   3bb45:	48 8b 82 b0 00 00 00 	mov    0xb0(%rdx),%rax
+   3bb4c:	8b 92 b8 00 00 00    	mov    0xb8(%rdx),%edx
+   3bb52:	8b b1 f0 02 00 00    	mov    0x2f0(%rcx),%esi
+   3bb58:	81 e6 80 00 00 00    	and    $0x80,%esi
+   3bb5e:	75 59                	jne    3bbb9 <guc_exec_queue_timedout_job+0x409>
+   3bb60:	44 0f b7 91 fc 02 00 	movzwl 0x2fc(%rcx),%r10d
+   3bb67:	00
+   3bb68:	49 8b 8c 24 a0 00 00 	mov    0xa0(%r12),%rcx
+   3bb6f:	00
+   3bb70:	45 31 c0             	xor    %r8d,%r8d
+   3bb73:	4d 8b 5f 60          	mov    0x60(%r15),%r11
+   3bb77:	45 8b 8c 24 c0 00 00 	mov    0xc0(%r12),%r9d
+   3bb7e:	00
+   3bb7f:	48 85 c9             	test   %rcx,%rcx
+   3bb82:	74 04                	je     3bb88 <guc_exec_queue_timedout_job+0x3d8>
+   3bb84:	44 8b 41 28          	mov    0x28(%rcx),%r8d
+   3bb88:	49 8b 7d 00          	mov    0x0(%r13),%rdi
+   3bb8c:	41 0f b6 4d 26       	movzbl 0x26(%r13),%ecx
+   3bb91:	0f b6 77 08          	movzbl 0x8(%rdi),%esi
+   3bb95:	48 8b 3f             	mov    (%rdi),%rdi
+   3bb98:	48 85 ff             	test   %rdi,%rdi
+   3bb9b:	74 04                	je     3bba1 <guc_exec_queue_timedout_job+0x3f1>
+   3bb9d:	48 8b 7f 08          	mov    0x8(%rdi),%rdi
+   3bba1:	52                   	push   %rdx
+   3bba2:	89 f2                	mov    %esi,%edx
+   3bba4:	48 c7 c6 00 00 00 00 	mov    $0x0,%rsi
+			3bba7: R_X86_64_32S	.rodata+0x409d0
+   3bbab:	50                   	push   %rax
+   3bbac:	41 53                	push   %r11
+   3bbae:	41 52                	push   %r10
+   3bbb0:	e8 00 00 00 00       	call   3bbb5 <guc_exec_queue_timedout_job+0x405>
+			3bbb1: R_X86_64_PLT32	_dev_notice-0x4
+   3bbb5:	48 83 c4 20          	add    $0x20,%rsp
+   3bbb9:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+   3bbbe:	49 8b 47 78          	mov    0x78(%r15),%rax
+   3bbc2:	8b 90 f0 02 00 00    	mov    0x2f0(%rax),%edx
+   3bbc8:	81 e2 80 00 00 00    	and    $0x80,%edx
+   3bbce:	75 3a                	jne    3bc0a <guc_exec_queue_timedout_job+0x45a>
+   3bbd0:	44 0f b7 88 fc 02 00 	movzwl 0x2fc(%rax),%r9d
+   3bbd7:	00
+   3bbd8:	49 8b 84 24 a0 00 00 	mov    0xa0(%r12),%rax
+   3bbdf:	00
+   3bbe0:	31 c9                	xor    %ecx,%ecx
+   3bbe2:	49 8b 57 60          	mov    0x60(%r15),%rdx
+   3bbe6:	45 8b 84 24 c0 00 00 	mov    0xc0(%r12),%r8d
+   3bbed:	00
+   3bbee:	48 85 c0             	test   %rax,%rax
+   3bbf1:	74 03                	je     3bbf6 <guc_exec_queue_timedout_job+0x446>
+   3bbf3:	8b 48 28             	mov    0x28(%rax),%ecx
+   3bbf6:	52                   	push   %rdx
+   3bbf7:	4c 89 e6             	mov    %r12,%rsi
+   3bbfa:	48 c7 c2 00 00 00 00 	mov    $0x0,%rdx
+			3bbfd: R_X86_64_32S	.rodata+0x40a30
+   3bc01:	4c 89 ff             	mov    %r15,%rdi
+   3bc04:	e8 00 00 00 00       	call   3bc09 <guc_exec_queue_timedout_job+0x459>
+			3bc05: R_X86_64_PLT32	xe_devcoredump-0x4
+   3bc09:	58                   	pop    %rax
+   3bc0a:	80 7d 9c 00          	cmpb   $0x0,-0x64(%rbp)
+   3bc0e:	0f 85 8d 00 00 00    	jne    3bca1 <guc_exec_queue_timedout_job+0x4f1>
+   3bc14:	49 8b 47 60          	mov    0x60(%r15),%rax
+   3bc18:	a8 01                	test   $0x1,%al
+   3bc1a:	0f 85 7b 02 00 00    	jne    3be9b <guc_exec_queue_timedout_job+0x6eb>
+   3bc20:	80 7d 90 00          	cmpb   $0x0,-0x70(%rbp)
+   3bc24:	0f 84 4a 03 00 00    	je     3bf74 <guc_exec_queue_timedout_job+0x7c4>
+   3bc2a:	a8 04                	test   $0x4,%al
+   3bc2c:	74 73                	je     3bca1 <guc_exec_queue_timedout_job+0x4f1>
+   3bc2e:	49 8b 47 78          	mov    0x78(%r15),%rax
+   3bc32:	8b 80 f0 02 00 00    	mov    0x2f0(%rax),%eax
+   3bc38:	a8 80                	test   $0x80,%al
+   3bc3a:	75 65                	jne    3bca1 <guc_exec_queue_timedout_job+0x4f1>
+   3bc3c:	49 8b 47 08          	mov    0x8(%r15),%rax
+   3bc40:	48 8b 00             	mov    (%rax),%rax
+   3bc43:	48 8b 38             	mov    (%rax),%rdi
+   3bc46:	48 85 ff             	test   %rdi,%rdi
+   3bc49:	74 04                	je     3bc4f <guc_exec_queue_timedout_job+0x49f>
+   3bc4b:	48 8b 7f 08          	mov    0x8(%rdi),%rdi
+   3bc4f:	e8 00 00 00 00       	call   3bc54 <guc_exec_queue_timedout_job+0x4a4>
+			3bc50: R_X86_64_PLT32	dev_driver_string-0x4
+   3bc54:	49 8b 47 08          	mov    0x8(%r15),%rax
+   3bc58:	44 0f b6 68 26       	movzbl 0x26(%rax),%r13d
+   3bc5d:	48 8b 00             	mov    (%rax),%rax
+   3bc60:	48 8b 38             	mov    (%rax),%rdi
+   3bc63:	0f b6 48 08          	movzbl 0x8(%rax),%ecx
+   3bc67:	48 85 ff             	test   %rdi,%rdi
+   3bc6a:	74 04                	je     3bc70 <guc_exec_queue_timedout_job+0x4c0>
+   3bc6c:	48 8b 7f 08          	mov    0x8(%rdi),%rdi
+   3bc70:	48 8b 57 50          	mov    0x50(%rdi),%rdx
+   3bc74:	48 85 d2             	test   %rdx,%rdx
+   3bc77:	75 03                	jne    3bc7c <guc_exec_queue_timedout_job+0x4cc>
+   3bc79:	48 8b 17             	mov    (%rdi),%rdx
+   3bc7c:	48 89 55 90          	mov    %rdx,-0x70(%rbp)
+   3bc80:	89 4d 9c             	mov    %ecx,-0x64(%rbp)
+   3bc83:	e8 00 00 00 00       	call   3bc88 <guc_exec_queue_timedout_job+0x4d8>
+			3bc84: R_X86_64_PLT32	dev_driver_string-0x4
+   3bc88:	48 89 c6             	mov    %rax,%rsi
+   3bc8b:	48 8d 3d 00 00 00 00 	lea    0x0(%rip),%rdi        # 3bc92 <guc_exec_queue_timedout_job+0x4e2>
+			3bc8e: R_X86_64_PC32	__bug_table+0xd0c
+   3bc92:	8b 4d 9c             	mov    -0x64(%rbp),%ecx
+   3bc95:	48 8b 55 90          	mov    -0x70(%rbp),%rdx
+   3bc99:	45 89 e8             	mov    %r13d,%r8d
+   3bc9c:	e8 00 00 00 00       	call   3bca1 <guc_exec_queue_timedout_job+0x4f1>
+			3bc9d: R_X86_64_PLT32	__SCT__WARN_trap-0x4
+   3bca1:	4c 89 e7             	mov    %r12,%rdi
+   3bca4:	44 89 f6             	mov    %r14d,%esi
+   3bca7:	e8 00 00 00 00       	call   3bcac <guc_exec_queue_timedout_job+0x4fc>
+			3bca8: R_X86_64_PLT32	xe_sched_job_set_error-0x4
+   3bcac:	48 8b 7d a0          	mov    -0x60(%rbp),%rdi
+   3bcb0:	e8 00 00 00 00       	call   3bcb5 <guc_exec_queue_timedout_job+0x505>
+			3bcb1: R_X86_64_PLT32	drm_sched_is_stopped-0x4
+   3bcb5:	84 c0                	test   %al,%al
+   3bcb7:	0f 84 d7 02 00 00    	je     3bf94 <guc_exec_queue_timedout_job+0x7e4>
+   3bcbd:	48 8b 83 10 01 00 00 	mov    0x110(%rbx),%rax
+   3bcc4:	48 81 c3 10 01 00 00 	add    $0x110,%rbx
+   3bccb:	4c 8d 68 c8          	lea    -0x38(%rax),%r13
+   3bccf:	48 39 c3             	cmp    %rax,%rbx
+   3bcd2:	74 1a                	je     3bcee <guc_exec_queue_timedout_job+0x53e>
+   3bcd4:	4c 89 ef             	mov    %r13,%rdi
+   3bcd7:	be 83 ff ff ff       	mov    $0xffffff83,%esi
+   3bcdc:	e8 00 00 00 00       	call   3bce1 <guc_exec_queue_timedout_job+0x531>
+			3bcdd: R_X86_64_PLT32	xe_sched_job_set_error-0x4
+   3bce1:	49 8b 45 38          	mov    0x38(%r13),%rax
+   3bce5:	4c 8d 68 c8          	lea    -0x38(%rax),%r13
+   3bce9:	48 39 c3             	cmp    %rax,%rbx
+   3bcec:	75 e6                	jne    3bcd4 <guc_exec_queue_timedout_job+0x524>
+   3bcee:	48 8b 7d a0          	mov    -0x60(%rbp),%rdi
+   3bcf2:	e8 00 00 00 00       	call   3bcf7 <guc_exec_queue_timedout_job+0x547>
+			3bcf3: R_X86_64_PLT32	drm_sched_is_stopped-0x4
+   3bcf7:	84 c0                	test   %al,%al
+   3bcf9:	0f 84 8e 02 00 00    	je     3bf8d <guc_exec_queue_timedout_job+0x7dd>
+   3bcff:	48 8b 7d a0          	mov    -0x60(%rbp),%rdi
+   3bd03:	e8 00 00 00 00       	call   3bd08 <guc_exec_queue_timedout_job+0x558>
+			3bd04: R_X86_64_PLT32	xe_sched_submission_start-0x4
+   3bd08:	41 f6 87 9d 00 00 00 	testb  $0x1,0x9d(%r15)
+   3bd0f:	01
+   3bd10:	0f 84 2d 02 00 00    	je     3bf43 <guc_exec_queue_timedout_job+0x793>
+   3bd16:	4c 89 ff             	mov    %r15,%rdi
+   3bd19:	e8 b2 cc ff ff       	call   389d0 <xe_guc_exec_queue_group_trigger_cleanup>
+   3bd1e:	e9 ec fc ff ff       	jmp    3ba0f <guc_exec_queue_timedout_job+0x25f>
+   3bd23:	4c 89 ef             	mov    %r13,%rdi
+   3bd26:	e8 00 00 00 00       	call   3bd2b <guc_exec_queue_timedout_job+0x57b>
+			3bd27: R_X86_64_PLT32	xe_gt_sriov_vf_recovery_pending-0x4
+   3bd2b:	84 c0                	test   %al,%al
+   3bd2d:	0f 85 dc fc ff ff    	jne    3ba0f <guc_exec_queue_timedout_job+0x25f>
+   3bd33:	e9 dd fa ff ff       	jmp    3b815 <guc_exec_queue_timedout_job+0x65>
+   3bd38:	0f b6 75 90          	movzbl -0x70(%rbp),%esi
+   3bd3c:	4c 89 ff             	mov    %r15,%rdi
+   3bd3f:	e8 bc ca ff ff       	call   38800 <disable_scheduling>
+   3bd44:	e8 00 00 00 00       	call   3bd49 <guc_exec_queue_timedout_job+0x599>
+			3bd45: R_X86_64_PLT32	__SCT__might_resched-0x4
+   3bd49:	41 8b 85 5c 05 00 00 	mov    0x55c(%r13),%eax
+   3bd50:	85 c0                	test   %eax,%eax
+   3bd52:	0f 84 6f 03 00 00    	je     3c0c7 <guc_exec_queue_timedout_job+0x917>
+   3bd58:	49 8b 55 00          	mov    0x0(%r13),%rdx
+   3bd5c:	48 8b 12             	mov    (%rdx),%rdx
+   3bd5f:	8b 92 18 12 00 00    	mov    0x1218(%rdx),%edx
+   3bd65:	83 f8 09             	cmp    $0x9,%eax
+   3bd68:	0f 8e b1 00 00 00    	jle    3be1f <guc_exec_queue_timedout_job+0x66f>
+   3bd6e:	49 8b 4f 78          	mov    0x78(%r15),%rcx
+   3bd72:	8b 81 f0 02 00 00    	mov    0x2f0(%rcx),%eax
+   3bd78:	a8 08                	test   $0x8,%al
+   3bd7a:	74 0f                	je     3bd8b <guc_exec_queue_timedout_job+0x5db>
+   3bd7c:	41 8b 85 28 10 00 00 	mov    0x1028(%r13),%eax
+   3bd83:	85 c0                	test   %eax,%eax
+   3bd85:	0f 84 66 04 00 00    	je     3c1f1 <guc_exec_queue_timedout_job+0xa41>
+   3bd8b:	83 fa 03             	cmp    $0x3,%edx
+   3bd8e:	0f 84 49 03 00 00    	je     3c0dd <guc_exec_queue_timedout_job+0x92d>
+   3bd94:	41 b8 88 13 00 00    	mov    $0x1388,%r8d
+   3bd9a:	41 8b 85 28 10 00 00 	mov    0x1028(%r13),%eax
+   3bda1:	85 c0                	test   %eax,%eax
+   3bda3:	0f 84 7f fd ff ff    	je     3bb28 <guc_exec_queue_timedout_job+0x378>
+   3bda9:	45 8b 8d 28 10 00 00 	mov    0x1028(%r13),%r9d
+   3bdb0:	0f b7 89 fc 02 00 00 	movzwl 0x2fc(%rcx),%ecx
+   3bdb7:	4c 89 e6             	mov    %r12,%rsi
+   3bdba:	4c 89 ff             	mov    %r15,%rdi
+   3bdbd:	48 c7 c2 00 00 00 00 	mov    $0x0,%rdx
+			3bdc0: R_X86_64_32S	.rodata+0x40988
+   3bdc4:	e8 00 00 00 00       	call   3bdc9 <guc_exec_queue_timedout_job+0x619>
+			3bdc5: R_X86_64_PLT32	xe_devcoredump-0x4
+   3bdc9:	49 8b 7f 08          	mov    0x8(%r15),%rdi
+   3bdcd:	e8 00 00 00 00       	call   3bdd2 <guc_exec_queue_timedout_job+0x622>
+			3bdce: R_X86_64_PLT32	xe_gt_reset_async-0x4
+   3bdd2:	48 8b 7d a0          	mov    -0x60(%rbp),%rdi
+   3bdd6:	e8 00 00 00 00       	call   3bddb <guc_exec_queue_timedout_job+0x62b>
+			3bdd7: R_X86_64_PLT32	drm_sched_tdr_queue_imm-0x4
+   3bddb:	e9 26 fc ff ff       	jmp    3ba06 <guc_exec_queue_timedout_job+0x256>
+   3bde0:	88 4d 90             	mov    %cl,-0x70(%rbp)
+   3bde3:	e9 4d fb ff ff       	jmp    3b935 <guc_exec_queue_timedout_job+0x185>
+   3bde8:	8b 80 f0 02 00 00    	mov    0x2f0(%rax),%eax
+   3bdee:	a8 08                	test   $0x8,%al
+   3bdf0:	0f 85 b5 fb ff ff    	jne    3b9ab <guc_exec_queue_timedout_job+0x1fb>
+   3bdf6:	49 8b 45 00          	mov    0x0(%r13),%rax
+   3bdfa:	48 8b 00             	mov    (%rax),%rax
+   3bdfd:	83 b8 18 12 00 00 03 	cmpl   $0x3,0x1218(%rax)
+   3be04:	0f 85 c6 fb ff ff    	jne    3b9d0 <guc_exec_queue_timedout_job+0x220>
+   3be0a:	4c 89 ef             	mov    %r13,%rdi
+   3be0d:	e8 00 00 00 00       	call   3be12 <guc_exec_queue_timedout_job+0x662>
+			3be0e: R_X86_64_PLT32	xe_gt_sriov_vf_recovery_pending-0x4
+   3be12:	84 c0                	test   %al,%al
+   3be14:	0f 85 f5 fb ff ff    	jne    3ba0f <guc_exec_queue_timedout_job+0x25f>
+   3be1a:	e9 b1 fb ff ff       	jmp    3b9d0 <guc_exec_queue_timedout_job+0x220>
+   3be1f:	83 fa 03             	cmp    $0x3,%edx
+   3be22:	0f 84 b5 02 00 00    	je     3c0dd <guc_exec_queue_timedout_job+0x92d>
+   3be28:	49 8b 4f 78          	mov    0x78(%r15),%rcx
+   3be2c:	e9 63 ff ff ff       	jmp    3bd94 <guc_exec_queue_timedout_job+0x5e4>
+   3be31:	ba ff ff ff ff       	mov    $0xffffffff,%edx
+   3be36:	48 c7 c0 00 00 00 00 	mov    $0x0,%rax
+			3be39: R_X86_64_32S	.rodata+0x2e2c0
+   3be3d:	e9 10 fd ff ff       	jmp    3bb52 <guc_exec_queue_timedout_job+0x3a2>
+   3be42:	65 8b 05 00 00 00 00 	mov    %gs:0x0(%rip),%eax        # 3be49 <guc_exec_queue_timedout_job+0x699>
+			3be45: R_X86_64_PC32	cpu_number-0x4
+   3be49:	48 0f a3 05 00 00 00 	bt     %rax,0x0(%rip)        # 3be51 <guc_exec_queue_timedout_job+0x6a1>
+   3be50:	00
+			3be4d: R_X86_64_PC32	__cpu_online_mask-0x4
+   3be51:	0f 83 67 fd ff ff    	jae    3bbbe <guc_exec_queue_timedout_job+0x40e>
+   3be57:	4c 8b 2d 00 00 00 00 	mov    0x0(%rip),%r13        # 3be5e <guc_exec_queue_timedout_job+0x6ae>
+			3be5a: R_X86_64_PC32	tracepoint_srcu-0x4
+   3be5e:	65 49 ff 45 00       	incq   %gs:0x0(%r13)
+   3be63:	48 8b 05 00 00 00 00 	mov    0x0(%rip),%rax        # 3be6a <guc_exec_queue_timedout_job+0x6ba>
+			3be66: R_X86_64_PC32	__tracepoint_xe_sched_job_timedout+0x34
+   3be6a:	48 85 c0             	test   %rax,%rax
+   3be6d:	74 0c                	je     3be7b <guc_exec_queue_timedout_job+0x6cb>
+   3be6f:	48 8b 78 08          	mov    0x8(%rax),%rdi
+   3be73:	4c 89 e6             	mov    %r12,%rsi
+   3be76:	e8 00 00 00 00       	call   3be7b <guc_exec_queue_timedout_job+0x6cb>
+			3be77: R_X86_64_PLT32	__SCT__tp_func_xe_sched_job_timedout-0x4
+   3be7b:	48 b8 00 00 00 00 00 	movabs $0x0,%rax
+   3be82:	00 00 00
+			3be7d: R_X86_64_64	tracepoint_srcu-0x1
+   3be85:	48 3d ff ef ff ff    	cmp    $0xffffffffffffefff,%rax
+   3be8b:	0f 87 2d fd ff ff    	ja     3bbbe <guc_exec_queue_timedout_job+0x40e>
+   3be91:	65 49 ff 45 08       	incq   %gs:0x8(%r13)
+   3be96:	e9 23 fd ff ff       	jmp    3bbbe <guc_exec_queue_timedout_job+0x40e>
+   3be9b:	4d 85 e4             	test   %r12,%r12
+   3be9e:	0f 84 4a fb ff ff    	je     3b9ee <guc_exec_queue_timedout_job+0x23e>
+   3bea4:	b8 01 00 00 00       	mov    $0x1,%eax
+   3bea9:	f0 41 0f c1 44 24 2c 	lock xadd %eax,0x2c(%r12)
+   3beb0:	83 c0 01             	add    $0x1,%eax
+   3beb3:	83 f8 02             	cmp    $0x2,%eax
+   3beb6:	0f 8e 32 fb ff ff    	jle    3b9ee <guc_exec_queue_timedout_job+0x23e>
+   3bebc:	41 f6 47 60 01       	testb  $0x1,0x60(%r15)
+   3bec1:	0f 84 da fd ff ff    	je     3bca1 <guc_exec_queue_timedout_job+0x4f1>
+   3bec7:	49 8b 47 08          	mov    0x8(%r15),%rax
+   3becb:	48 8b 00             	mov    (%rax),%rax
+   3bece:	48 8b 38             	mov    (%rax),%rdi
+   3bed1:	48 85 ff             	test   %rdi,%rdi
+   3bed4:	74 04                	je     3beda <guc_exec_queue_timedout_job+0x72a>
+   3bed6:	48 8b 7f 08          	mov    0x8(%rdi),%rdi
+   3beda:	e8 00 00 00 00       	call   3bedf <guc_exec_queue_timedout_job+0x72f>
+			3bedb: R_X86_64_PLT32	dev_driver_string-0x4
+   3bedf:	49 8b 47 08          	mov    0x8(%r15),%rax
+   3bee3:	44 0f b6 40 26       	movzbl 0x26(%rax),%r8d
+   3bee8:	48 8b 00             	mov    (%rax),%rax
+   3beeb:	48 8b 38             	mov    (%rax),%rdi
+   3beee:	44 0f b6 68 08       	movzbl 0x8(%rax),%r13d
+   3bef3:	48 85 ff             	test   %rdi,%rdi
+   3bef6:	74 04                	je     3befc <guc_exec_queue_timedout_job+0x74c>
+   3bef8:	48 8b 7f 08          	mov    0x8(%rdi),%rdi
+   3befc:	48 8b 57 50          	mov    0x50(%rdi),%rdx
+   3bf00:	48 85 d2             	test   %rdx,%rdx
+   3bf03:	75 03                	jne    3bf08 <guc_exec_queue_timedout_job+0x758>
+   3bf05:	48 8b 17             	mov    (%rdi),%rdx
+   3bf08:	48 89 55 90          	mov    %rdx,-0x70(%rbp)
+   3bf0c:	44 89 45 9c          	mov    %r8d,-0x64(%rbp)
+   3bf10:	e8 00 00 00 00       	call   3bf15 <guc_exec_queue_timedout_job+0x765>
+			3bf11: R_X86_64_PLT32	dev_driver_string-0x4
+   3bf15:	48 89 c6             	mov    %rax,%rsi
+   3bf18:	48 8d 3d 00 00 00 00 	lea    0x0(%rip),%rdi        # 3bf1f <guc_exec_queue_timedout_job+0x76f>
+			3bf1b: R_X86_64_PC32	__bug_table+0xd1c
+   3bf1f:	44 8b 45 9c          	mov    -0x64(%rbp),%r8d
+   3bf23:	48 8b 55 90          	mov    -0x70(%rbp),%rdx
+   3bf27:	44 89 e9             	mov    %r13d,%ecx
+   3bf2a:	e8 00 00 00 00       	call   3bf2f <guc_exec_queue_timedout_job+0x77f>
+			3bf2b: R_X86_64_PLT32	__SCT__WARN_trap-0x4
+   3bf2f:	49 8b 47 08          	mov    0x8(%r15),%rax
+   3bf33:	48 8b 00             	mov    (%rax),%rax
+   3bf36:	48 8b 38             	mov    (%rax),%rdi
+   3bf39:	e8 00 00 00 00       	call   3bf3e <guc_exec_queue_timedout_job+0x78e>
+			3bf3a: R_X86_64_PLT32	xe_device_declare_wedged-0x4
+   3bf3e:	e9 5e fd ff ff       	jmp    3bca1 <guc_exec_queue_timedout_job+0x4f1>
+   3bf43:	49 8b 47 08          	mov    0x8(%r15),%rax
+   3bf47:	31 c9                	xor    %ecx,%ecx
+   3bf49:	31 d2                	xor    %edx,%edx
+   3bf4b:	be 03 00 00 00       	mov    $0x3,%esi
+   3bf50:	48 8b 00             	mov    (%rax),%rax
+   3bf53:	48 8b 38             	mov    (%rax),%rdi
+   3bf56:	48 81 c7 18 14 00 00 	add    $0x1418,%rdi
+   3bf5d:	e8 00 00 00 00       	call   3bf62 <guc_exec_queue_timedout_job+0x7b2>
+			3bf5e: R_X86_64_PLT32	__wake_up-0x4
+   3bf62:	49 8b 7f 78          	mov    0x78(%r15),%rdi
+   3bf66:	48 83 c7 18          	add    $0x18,%rdi
+   3bf6a:	e8 00 00 00 00       	call   3bf6f <guc_exec_queue_timedout_job+0x7bf>
+			3bf6b: R_X86_64_PLT32	drm_sched_tdr_queue_imm-0x4
+   3bf6f:	e9 9b fa ff ff       	jmp    3ba0f <guc_exec_queue_timedout_job+0x25f>
+   3bf74:	4c 89 e7             	mov    %r12,%rdi
+   3bf77:	e8 00 00 00 00       	call   3bf7c <guc_exec_queue_timedout_job+0x7cc>
+			3bf78: R_X86_64_PLT32	xe_sched_job_started-0x4
+   3bf7c:	84 c0                	test   %al,%al
+   3bf7e:	0f 84 17 ff ff ff    	je     3be9b <guc_exec_queue_timedout_job+0x6eb>
+   3bf84:	49 8b 47 60          	mov    0x60(%r15),%rax
+   3bf88:	e9 9d fc ff ff       	jmp    3bc2a <guc_exec_queue_timedout_job+0x47a>
+   3bf8d:	0f 0b                	ud2
+   3bf8f:	e9 6b fd ff ff       	jmp    3bcff <guc_exec_queue_timedout_job+0x54f>
+   3bf94:	0f 0b                	ud2
+   3bf96:	e9 22 fd ff ff       	jmp    3bcbd <guc_exec_queue_timedout_job+0x50d>
+   3bf9b:	83 fa 03             	cmp    $0x3,%edx
+   3bf9e:	0f 84 56 03 00 00    	je     3c2fa <guc_exec_queue_timedout_job+0xb4a>
+   3bfa4:	48 8d 45 a8          	lea    -0x58(%rbp),%rax
+   3bfa8:	31 f6                	xor    %esi,%esi
+   3bfaa:	48 c7 45 a8 00 00 00 	movq   $0x0,-0x58(%rbp)
+   3bfb1:	00
+   3bfb2:	48 89 c7             	mov    %rax,%rdi
+   3bfb5:	48 89 45 88          	mov    %rax,-0x78(%rbp)
+   3bfb9:	48 c7 45 b0 00 00 00 	movq   $0x0,-0x50(%rbp)
+   3bfc0:	00
+   3bfc1:	48 c7 45 b8 00 00 00 	movq   $0x0,-0x48(%rbp)
+   3bfc8:	00
+   3bfc9:	48 c7 45 c0 00 00 00 	movq   $0x0,-0x40(%rbp)
+   3bfd0:	00
+   3bfd1:	48 c7 45 c8 00 00 00 	movq   $0x0,-0x38(%rbp)
+   3bfd8:	00
+   3bfd9:	e8 00 00 00 00       	call   3bfde <guc_exec_queue_timedout_job+0x82e>
+			3bfda: R_X86_64_PLT32	init_wait_entry-0x4
+   3bfde:	49 8d 85 50 07 00 00 	lea    0x750(%r13),%rax
+   3bfe5:	b9 88 13 00 00       	mov    $0x1388,%ecx
+   3bfea:	48 89 9d 78 ff ff ff 	mov    %rbx,-0x88(%rbp)
+   3bff1:	48 89 45 80          	mov    %rax,-0x80(%rbp)
+   3bff5:	4c 89 e0             	mov    %r12,%rax
+   3bff8:	48 89 cb             	mov    %rcx,%rbx
+   3bffb:	4d 89 ec             	mov    %r13,%r12
+   3bffe:	49 89 c5             	mov    %rax,%r13
+   3c001:	48 8b 75 88          	mov    -0x78(%rbp),%rsi
+   3c005:	48 8b 7d 80          	mov    -0x80(%rbp),%rdi
+   3c009:	ba 02 00 00 00       	mov    $0x2,%edx
+   3c00e:	e8 00 00 00 00       	call   3c013 <guc_exec_queue_timedout_job+0x863>
+			3c00f: R_X86_64_PLT32	prepare_to_wait_event-0x4
+   3c013:	49 8b 47 78          	mov    0x78(%r15),%rax
+   3c017:	8b 90 f0 02 00 00    	mov    0x2f0(%rax),%edx
+   3c01d:	83 e2 04             	and    $0x4,%edx
+   3c020:	75 0a                	jne    3c02c <guc_exec_queue_timedout_job+0x87c>
+   3c022:	8b 80 f0 02 00 00    	mov    0x2f0(%rax),%eax
+   3c028:	a8 08                	test   $0x8,%al
+   3c02a:	74 10                	je     3c03c <guc_exec_queue_timedout_job+0x88c>
+   3c02c:	41 8b 84 24 28 10 00 	mov    0x1028(%r12),%eax
+   3c033:	00
+   3c034:	85 c0                	test   %eax,%eax
+   3c036:	0f 84 bd 00 00 00    	je     3c0f9 <guc_exec_queue_timedout_job+0x949>
+   3c03c:	4c 89 e8             	mov    %r13,%rax
+   3c03f:	48 89 d9             	mov    %rbx,%rcx
+   3c042:	48 8b 9d 78 ff ff ff 	mov    -0x88(%rbp),%rbx
+   3c049:	4d 89 e5             	mov    %r12,%r13
+   3c04c:	49 89 c4             	mov    %rax,%r12
+   3c04f:	48 8b 75 88          	mov    -0x78(%rbp),%rsi
+   3c053:	48 8b 7d 80          	mov    -0x80(%rbp),%rdi
+   3c057:	48 89 8d 78 ff ff ff 	mov    %rcx,-0x88(%rbp)
+   3c05e:	e8 00 00 00 00       	call   3c063 <guc_exec_queue_timedout_job+0x8b3>
+			3c05f: R_X86_64_PLT32	finish_wait-0x4
+   3c063:	49 8b 45 00          	mov    0x0(%r13),%rax
+   3c067:	48 8b 8d 78 ff ff ff 	mov    -0x88(%rbp),%rcx
+   3c06e:	48 8b 00             	mov    (%rax),%rax
+   3c071:	41 89 c8             	mov    %ecx,%r8d
+   3c074:	83 b8 18 12 00 00 03 	cmpl   $0x3,0x1218(%rax)
+   3c07b:	0f 84 67 04 00 00    	je     3c4e8 <guc_exec_queue_timedout_job+0xd38>
+   3c081:	45 85 c0             	test   %r8d,%r8d
+   3c084:	0f 85 4c f9 ff ff    	jne    3b9d6 <guc_exec_queue_timedout_job+0x226>
+   3c08a:	49 8b 57 78          	mov    0x78(%r15),%rdx
+   3c08e:	49 8b 45 00          	mov    0x0(%r13),%rax
+   3c092:	48 8b 38             	mov    (%rax),%rdi
+   3c095:	44 0f b7 82 fc 02 00 	movzwl 0x2fc(%rdx),%r8d
+   3c09c:	00
+   3c09d:	41 0f b6 4d 26       	movzbl 0x26(%r13),%ecx
+   3c0a2:	0f b6 50 08          	movzbl 0x8(%rax),%edx
+   3c0a6:	48 85 ff             	test   %rdi,%rdi
+   3c0a9:	74 04                	je     3c0af <guc_exec_queue_timedout_job+0x8ff>
+   3c0ab:	48 8b 7f 08          	mov    0x8(%rdi),%rdi
+   3c0af:	48 c7 c6 00 00 00 00 	mov    $0x0,%rsi
+			3c0b2: R_X86_64_32S	.rodata+0x40940
+   3c0b6:	e8 00 00 00 00       	call   3c0bb <guc_exec_queue_timedout_job+0x90b>
+			3c0b7: R_X86_64_PLT32	_dev_warn-0x4
+   3c0bb:	49 8b 4f 78          	mov    0x78(%r15),%rcx
+   3c0bf:	45 31 c0             	xor    %r8d,%r8d
+   3c0c2:	e9 e2 fc ff ff       	jmp    3bda9 <guc_exec_queue_timedout_job+0x5f9>
+   3c0c7:	0f 0b                	ud2
+   3c0c9:	49 8b 45 00          	mov    0x0(%r13),%rax
+   3c0cd:	48 8b 00             	mov    (%rax),%rax
+   3c0d0:	83 b8 18 12 00 00 03 	cmpl   $0x3,0x1218(%rax)
+   3c0d7:	0f 85 4b fd ff ff    	jne    3be28 <guc_exec_queue_timedout_job+0x678>
+   3c0dd:	4c 89 ef             	mov    %r13,%rdi
+   3c0e0:	e8 00 00 00 00       	call   3c0e5 <guc_exec_queue_timedout_job+0x935>
+			3c0e1: R_X86_64_PLT32	xe_gt_sriov_vf_recovery_pending-0x4
+   3c0e5:	84 c0                	test   %al,%al
+   3c0e7:	0f 85 22 f9 ff ff    	jne    3ba0f <guc_exec_queue_timedout_job+0x25f>
+   3c0ed:	e9 36 fd ff ff       	jmp    3be28 <guc_exec_queue_timedout_job+0x678>
+   3c0f2:	0f 0b                	ud2
+   3c0f4:	e9 4b fc ff ff       	jmp    3bd44 <guc_exec_queue_timedout_job+0x594>
+   3c0f9:	49 8b 04 24          	mov    (%r12),%rax
+   3c0fd:	48 8b 00             	mov    (%rax),%rax
+   3c100:	83 b8 18 12 00 00 03 	cmpl   $0x3,0x1218(%rax)
+   3c107:	0f 84 02 02 00 00    	je     3c30f <guc_exec_queue_timedout_job+0xb5f>
+   3c10d:	48 89 df             	mov    %rbx,%rdi
+   3c110:	e8 00 00 00 00       	call   3c115 <guc_exec_queue_timedout_job+0x965>
+			3c111: R_X86_64_PLT32	schedule_timeout-0x4
+   3c115:	48 89 c3             	mov    %rax,%rbx
+   3c118:	49 8b 47 78          	mov    0x78(%r15),%rax
+   3c11c:	8b 90 f0 02 00 00    	mov    0x2f0(%rax),%edx
+   3c122:	83 e2 04             	and    $0x4,%edx
+   3c125:	75 0a                	jne    3c131 <guc_exec_queue_timedout_job+0x981>
+   3c127:	8b 80 f0 02 00 00    	mov    0x2f0(%rax),%eax
+   3c12d:	a8 08                	test   $0x8,%al
+   3c12f:	74 0d                	je     3c13e <guc_exec_queue_timedout_job+0x98e>
+   3c131:	45 8b 84 24 28 10 00 	mov    0x1028(%r12),%r8d
+   3c138:	00
+   3c139:	45 85 c0             	test   %r8d,%r8d
+   3c13c:	74 54                	je     3c192 <guc_exec_queue_timedout_job+0x9e2>
+   3c13e:	4c 89 e8             	mov    %r13,%rax
+   3c141:	48 89 d9             	mov    %rbx,%rcx
+   3c144:	4d 89 e5             	mov    %r12,%r13
+   3c147:	48 8b 9d 78 ff ff ff 	mov    -0x88(%rbp),%rbx
+   3c14e:	49 89 c4             	mov    %rax,%r12
+   3c151:	48 85 c9             	test   %rcx,%rcx
+   3c154:	0f 85 f5 fe ff ff    	jne    3c04f <guc_exec_queue_timedout_job+0x89f>
+   3c15a:	48 8b 75 88          	mov    -0x78(%rbp),%rsi
+   3c15e:	48 8b 7d 80          	mov    -0x80(%rbp),%rdi
+   3c162:	e8 00 00 00 00       	call   3c167 <guc_exec_queue_timedout_job+0x9b7>
+			3c163: R_X86_64_PLT32	finish_wait-0x4
+   3c167:	49 8b 45 00          	mov    0x0(%r13),%rax
+   3c16b:	48 8b 00             	mov    (%rax),%rax
+   3c16e:	83 b8 18 12 00 00 03 	cmpl   $0x3,0x1218(%rax)
+   3c175:	75 10                	jne    3c187 <guc_exec_queue_timedout_job+0x9d7>
+   3c177:	4c 89 ef             	mov    %r13,%rdi
+   3c17a:	e8 00 00 00 00       	call   3c17f <guc_exec_queue_timedout_job+0x9cf>
+			3c17b: R_X86_64_PLT32	xe_gt_sriov_vf_recovery_pending-0x4
+   3c17f:	84 c0                	test   %al,%al
+   3c181:	0f 85 88 f8 ff ff    	jne    3ba0f <guc_exec_queue_timedout_job+0x25f>
+   3c187:	41 b8 01 00 00 00    	mov    $0x1,%r8d
+   3c18d:	e9 44 f8 ff ff       	jmp    3b9d6 <guc_exec_queue_timedout_job+0x226>
+   3c192:	49 8b 04 24          	mov    (%r12),%rax
+   3c196:	48 8b 00             	mov    (%rax),%rax
+   3c199:	83 b8 18 12 00 00 03 	cmpl   $0x3,0x1218(%rax)
+   3c1a0:	0f 84 7e 01 00 00    	je     3c324 <guc_exec_queue_timedout_job+0xb74>
+   3c1a6:	48 85 db             	test   %rbx,%rbx
+   3c1a9:	0f 85 52 fe ff ff    	jne    3c001 <guc_exec_queue_timedout_job+0x851>
+   3c1af:	48 8b 75 88          	mov    -0x78(%rbp),%rsi
+   3c1b3:	48 8b 7d 80          	mov    -0x80(%rbp),%rdi
+   3c1b7:	4d 87 e5             	xchg   %r12,%r13
+   3c1ba:	48 8b 9d 78 ff ff ff 	mov    -0x88(%rbp),%rbx
+   3c1c1:	44 89 85 78 ff ff ff 	mov    %r8d,-0x88(%rbp)
+   3c1c8:	e8 00 00 00 00       	call   3c1cd <guc_exec_queue_timedout_job+0xa1d>
+			3c1c9: R_X86_64_PLT32	finish_wait-0x4
+   3c1cd:	49 8b 45 00          	mov    0x0(%r13),%rax
+   3c1d1:	44 8b 85 78 ff ff ff 	mov    -0x88(%rbp),%r8d
+   3c1d8:	48 8b 10             	mov    (%rax),%rdx
+   3c1db:	83 ba 18 12 00 00 03 	cmpl   $0x3,0x1218(%rdx)
+   3c1e2:	0f 84 00 03 00 00    	je     3c4e8 <guc_exec_queue_timedout_job+0xd38>
+   3c1e8:	49 8b 57 78          	mov    0x78(%r15),%rdx
+   3c1ec:	e9 a1 fe ff ff       	jmp    3c092 <guc_exec_queue_timedout_job+0x8e2>
+   3c1f1:	83 fa 03             	cmp    $0x3,%edx
+   3c1f4:	0f 84 8e 02 00 00    	je     3c488 <guc_exec_queue_timedout_job+0xcd8>
+   3c1fa:	48 8d 45 a8          	lea    -0x58(%rbp),%rax
+   3c1fe:	31 f6                	xor    %esi,%esi
+   3c200:	48 c7 45 a8 00 00 00 	movq   $0x0,-0x58(%rbp)
+   3c207:	00
+   3c208:	48 89 c7             	mov    %rax,%rdi
+   3c20b:	48 89 45 88          	mov    %rax,-0x78(%rbp)
+   3c20f:	48 c7 45 b0 00 00 00 	movq   $0x0,-0x50(%rbp)
+   3c216:	00
+   3c217:	48 c7 45 b8 00 00 00 	movq   $0x0,-0x48(%rbp)
+   3c21e:	00
+   3c21f:	48 c7 45 c0 00 00 00 	movq   $0x0,-0x40(%rbp)
+   3c226:	00
+   3c227:	48 c7 45 c8 00 00 00 	movq   $0x0,-0x38(%rbp)
+   3c22e:	00
+   3c22f:	e8 00 00 00 00       	call   3c234 <guc_exec_queue_timedout_job+0xa84>
+			3c230: R_X86_64_PLT32	init_wait_entry-0x4
+   3c234:	49 8d 85 50 07 00 00 	lea    0x750(%r13),%rax
+   3c23b:	b9 88 13 00 00       	mov    $0x1388,%ecx
+   3c240:	48 89 9d 78 ff ff ff 	mov    %rbx,-0x88(%rbp)
+   3c247:	48 89 45 80          	mov    %rax,-0x80(%rbp)
+   3c24b:	4c 89 e0             	mov    %r12,%rax
+   3c24e:	48 89 cb             	mov    %rcx,%rbx
+   3c251:	4d 89 ec             	mov    %r13,%r12
+   3c254:	49 89 c5             	mov    %rax,%r13
+   3c257:	48 8b 75 88          	mov    -0x78(%rbp),%rsi
+   3c25b:	48 8b 7d 80          	mov    -0x80(%rbp),%rdi
+   3c25f:	ba 02 00 00 00       	mov    $0x2,%edx
+   3c264:	e8 00 00 00 00       	call   3c269 <guc_exec_queue_timedout_job+0xab9>
+			3c265: R_X86_64_PLT32	prepare_to_wait_event-0x4
+   3c269:	41 8b 84 24 5c 05 00 	mov    0x55c(%r12),%eax
+   3c270:	00
+   3c271:	85 c0                	test   %eax,%eax
+   3c273:	0f 84 c8 00 00 00    	je     3c341 <guc_exec_queue_timedout_job+0xb91>
+   3c279:	83 f8 09             	cmp    $0x9,%eax
+   3c27c:	7e 1e                	jle    3c29c <guc_exec_queue_timedout_job+0xaec>
+   3c27e:	49 8b 47 78          	mov    0x78(%r15),%rax
+   3c282:	8b 80 f0 02 00 00    	mov    0x2f0(%rax),%eax
+   3c288:	a8 08                	test   $0x8,%al
+   3c28a:	74 10                	je     3c29c <guc_exec_queue_timedout_job+0xaec>
+   3c28c:	41 8b 84 24 28 10 00 	mov    0x1028(%r12),%eax
+   3c293:	00
+   3c294:	85 c0                	test   %eax,%eax
+   3c296:	0f 84 bf 00 00 00    	je     3c35b <guc_exec_queue_timedout_job+0xbab>
+   3c29c:	4c 89 e8             	mov    %r13,%rax
+   3c29f:	48 89 d9             	mov    %rbx,%rcx
+   3c2a2:	48 8b 9d 78 ff ff ff 	mov    -0x88(%rbp),%rbx
+   3c2a9:	4d 89 e5             	mov    %r12,%r13
+   3c2ac:	49 89 c4             	mov    %rax,%r12
+   3c2af:	48 8b 75 88          	mov    -0x78(%rbp),%rsi
+   3c2b3:	48 8b 7d 80          	mov    -0x80(%rbp),%rdi
+   3c2b7:	48 89 8d 78 ff ff ff 	mov    %rcx,-0x88(%rbp)
+   3c2be:	e8 00 00 00 00       	call   3c2c3 <guc_exec_queue_timedout_job+0xb13>
+			3c2bf: R_X86_64_PLT32	finish_wait-0x4
+   3c2c3:	49 8b 45 00          	mov    0x0(%r13),%rax
+   3c2c7:	48 8b 8d 78 ff ff ff 	mov    -0x88(%rbp),%rcx
+   3c2ce:	48 8b 00             	mov    (%rax),%rax
+   3c2d1:	41 89 c8             	mov    %ecx,%r8d
+   3c2d4:	83 b8 18 12 00 00 03 	cmpl   $0x3,0x1218(%rax)
+   3c2db:	0f 84 8a 01 00 00    	je     3c46b <guc_exec_queue_timedout_job+0xcbb>
+   3c2e1:	49 8b 57 78          	mov    0x78(%r15),%rdx
+   3c2e5:	48 89 d1             	mov    %rdx,%rcx
+   3c2e8:	45 85 c0             	test   %r8d,%r8d
+   3c2eb:	0f 85 a9 fa ff ff    	jne    3bd9a <guc_exec_queue_timedout_job+0x5ea>
+   3c2f1:	49 8b 45 00          	mov    0x0(%r13),%rax
+   3c2f5:	e9 98 fd ff ff       	jmp    3c092 <guc_exec_queue_timedout_job+0x8e2>
+   3c2fa:	4c 89 ef             	mov    %r13,%rdi
+   3c2fd:	e8 00 00 00 00       	call   3c302 <guc_exec_queue_timedout_job+0xb52>
+			3c2fe: R_X86_64_PLT32	xe_gt_sriov_vf_recovery_pending-0x4
+   3c302:	84 c0                	test   %al,%al
+   3c304:	0f 84 9a fc ff ff    	je     3bfa4 <guc_exec_queue_timedout_job+0x7f4>
+   3c30a:	e9 e7 fa ff ff       	jmp    3bdf6 <guc_exec_queue_timedout_job+0x646>
+   3c30f:	4c 89 e7             	mov    %r12,%rdi
+   3c312:	e8 00 00 00 00       	call   3c317 <guc_exec_queue_timedout_job+0xb67>
+			3c313: R_X86_64_PLT32	xe_gt_sriov_vf_recovery_pending-0x4
+   3c317:	84 c0                	test   %al,%al
+   3c319:	0f 85 1d fd ff ff    	jne    3c03c <guc_exec_queue_timedout_job+0x88c>
+   3c31f:	e9 e9 fd ff ff       	jmp    3c10d <guc_exec_queue_timedout_job+0x95d>
+   3c324:	4c 89 e7             	mov    %r12,%rdi
+   3c327:	44 89 45 98          	mov    %r8d,-0x68(%rbp)
+   3c32b:	e8 00 00 00 00       	call   3c330 <guc_exec_queue_timedout_job+0xb80>
+			3c32c: R_X86_64_PLT32	xe_gt_sriov_vf_recovery_pending-0x4
+   3c330:	44 8b 45 98          	mov    -0x68(%rbp),%r8d
+   3c334:	84 c0                	test   %al,%al
+   3c336:	0f 85 02 fe ff ff    	jne    3c13e <guc_exec_queue_timedout_job+0x98e>
+   3c33c:	e9 65 fe ff ff       	jmp    3c1a6 <guc_exec_queue_timedout_job+0x9f6>
+   3c341:	4c 89 e8             	mov    %r13,%rax
+   3c344:	48 89 d9             	mov    %rbx,%rcx
+   3c347:	4d 89 e5             	mov    %r12,%r13
+   3c34a:	48 8b 9d 78 ff ff ff 	mov    -0x88(%rbp),%rbx
+   3c351:	49 89 c4             	mov    %rax,%r12
+   3c354:	0f 0b                	ud2
+   3c356:	e9 54 ff ff ff       	jmp    3c2af <guc_exec_queue_timedout_job+0xaff>
+   3c35b:	49 8b 04 24          	mov    (%r12),%rax
+   3c35f:	48 8b 00             	mov    (%rax),%rax
+   3c362:	83 b8 18 12 00 00 03 	cmpl   $0x3,0x1218(%rax)
+   3c369:	0f 84 64 01 00 00    	je     3c4d3 <guc_exec_queue_timedout_job+0xd23>
+   3c36f:	48 89 df             	mov    %rbx,%rdi
+   3c372:	e8 00 00 00 00       	call   3c377 <guc_exec_queue_timedout_job+0xbc7>
+			3c373: R_X86_64_PLT32	schedule_timeout-0x4
+   3c377:	48 89 c3             	mov    %rax,%rbx
+   3c37a:	41 8b 84 24 5c 05 00 	mov    0x55c(%r12),%eax
+   3c381:	00
+   3c382:	85 c0                	test   %eax,%eax
+   3c384:	74 78                	je     3c3fe <guc_exec_queue_timedout_job+0xc4e>
+   3c386:	83 f8 09             	cmp    $0x9,%eax
+   3c389:	7e 1b                	jle    3c3a6 <guc_exec_queue_timedout_job+0xbf6>
+   3c38b:	49 8b 47 78          	mov    0x78(%r15),%rax
+   3c38f:	8b 80 f0 02 00 00    	mov    0x2f0(%rax),%eax
+   3c395:	a8 08                	test   $0x8,%al
+   3c397:	74 0d                	je     3c3a6 <guc_exec_queue_timedout_job+0xbf6>
+   3c399:	45 8b 84 24 28 10 00 	mov    0x1028(%r12),%r8d
+   3c3a0:	00
+   3c3a1:	45 85 c0             	test   %r8d,%r8d
+   3c3a4:	74 6f                	je     3c415 <guc_exec_queue_timedout_job+0xc65>
+   3c3a6:	4c 89 e8             	mov    %r13,%rax
+   3c3a9:	48 89 d9             	mov    %rbx,%rcx
+   3c3ac:	48 8b 9d 78 ff ff ff 	mov    -0x88(%rbp),%rbx
+   3c3b3:	4d 89 e5             	mov    %r12,%r13
+   3c3b6:	49 89 c4             	mov    %rax,%r12
+   3c3b9:	48 85 c9             	test   %rcx,%rcx
+   3c3bc:	0f 85 ed fe ff ff    	jne    3c2af <guc_exec_queue_timedout_job+0xaff>
+   3c3c2:	48 8b 75 88          	mov    -0x78(%rbp),%rsi
+   3c3c6:	48 8b 7d 80          	mov    -0x80(%rbp),%rdi
+   3c3ca:	e8 00 00 00 00       	call   3c3cf <guc_exec_queue_timedout_job+0xc1f>
+			3c3cb: R_X86_64_PLT32	finish_wait-0x4
+   3c3cf:	49 8b 45 00          	mov    0x0(%r13),%rax
+   3c3d3:	48 8b 00             	mov    (%rax),%rax
+   3c3d6:	83 b8 18 12 00 00 03 	cmpl   $0x3,0x1218(%rax)
+   3c3dd:	75 10                	jne    3c3ef <guc_exec_queue_timedout_job+0xc3f>
+   3c3df:	4c 89 ef             	mov    %r13,%rdi
+   3c3e2:	e8 00 00 00 00       	call   3c3e7 <guc_exec_queue_timedout_job+0xc37>
+			3c3e3: R_X86_64_PLT32	xe_gt_sriov_vf_recovery_pending-0x4
+   3c3e7:	84 c0                	test   %al,%al
+   3c3e9:	0f 85 20 f6 ff ff    	jne    3ba0f <guc_exec_queue_timedout_job+0x25f>
+   3c3ef:	49 8b 4f 78          	mov    0x78(%r15),%rcx
+   3c3f3:	41 b8 01 00 00 00    	mov    $0x1,%r8d
+   3c3f9:	e9 9c f9 ff ff       	jmp    3bd9a <guc_exec_queue_timedout_job+0x5ea>
+   3c3fe:	4c 89 e8             	mov    %r13,%rax
+   3c401:	48 89 d9             	mov    %rbx,%rcx
+   3c404:	4d 89 e5             	mov    %r12,%r13
+   3c407:	48 8b 9d 78 ff ff ff 	mov    -0x88(%rbp),%rbx
+   3c40e:	49 89 c4             	mov    %rax,%r12
+   3c411:	0f 0b                	ud2
+   3c413:	eb a4                	jmp    3c3b9 <guc_exec_queue_timedout_job+0xc09>
+   3c415:	49 8b 04 24          	mov    (%r12),%rax
+   3c419:	48 8b 00             	mov    (%rax),%rax
+   3c41c:	83 b8 18 12 00 00 03 	cmpl   $0x3,0x1218(%rax)
+   3c423:	0f 84 8d 00 00 00    	je     3c4b6 <guc_exec_queue_timedout_job+0xd06>
+   3c429:	48 85 db             	test   %rbx,%rbx
+   3c42c:	0f 85 25 fe ff ff    	jne    3c257 <guc_exec_queue_timedout_job+0xaa7>
+   3c432:	48 8b 75 88          	mov    -0x78(%rbp),%rsi
+   3c436:	48 8b 7d 80          	mov    -0x80(%rbp),%rdi
+   3c43a:	4d 87 e5             	xchg   %r12,%r13
+   3c43d:	48 8b 9d 78 ff ff ff 	mov    -0x88(%rbp),%rbx
+   3c444:	44 89 85 78 ff ff ff 	mov    %r8d,-0x88(%rbp)
+   3c44b:	e8 00 00 00 00       	call   3c450 <guc_exec_queue_timedout_job+0xca0>
+			3c44c: R_X86_64_PLT32	finish_wait-0x4
+   3c450:	49 8b 45 00          	mov    0x0(%r13),%rax
+   3c454:	44 8b 85 78 ff ff ff 	mov    -0x88(%rbp),%r8d
+   3c45b:	48 8b 10             	mov    (%rax),%rdx
+   3c45e:	83 ba 18 12 00 00 03 	cmpl   $0x3,0x1218(%rdx)
+   3c465:	0f 85 7d fd ff ff    	jne    3c1e8 <guc_exec_queue_timedout_job+0xa38>
+   3c46b:	4c 89 ef             	mov    %r13,%rdi
+   3c46e:	44 89 45 88          	mov    %r8d,-0x78(%rbp)
+   3c472:	e8 00 00 00 00       	call   3c477 <guc_exec_queue_timedout_job+0xcc7>
+			3c473: R_X86_64_PLT32	xe_gt_sriov_vf_recovery_pending-0x4
+   3c477:	44 8b 45 88          	mov    -0x78(%rbp),%r8d
+   3c47b:	84 c0                	test   %al,%al
+   3c47d:	0f 84 5e fe ff ff    	je     3c2e1 <guc_exec_queue_timedout_job+0xb31>
+   3c483:	e9 87 f5 ff ff       	jmp    3ba0f <guc_exec_queue_timedout_job+0x25f>
+   3c488:	4c 89 ef             	mov    %r13,%rdi
+   3c48b:	e8 00 00 00 00       	call   3c490 <guc_exec_queue_timedout_job+0xce0>
+			3c48c: R_X86_64_PLT32	xe_gt_sriov_vf_recovery_pending-0x4
+   3c490:	84 c0                	test   %al,%al
+   3c492:	0f 84 62 fd ff ff    	je     3c1fa <guc_exec_queue_timedout_job+0xa4a>
+   3c498:	49 8b 45 00          	mov    0x0(%r13),%rax
+   3c49c:	48 8b 00             	mov    (%rax),%rax
+   3c49f:	83 b8 18 12 00 00 03 	cmpl   $0x3,0x1218(%rax)
+   3c4a6:	0f 85 7c f9 ff ff    	jne    3be28 <guc_exec_queue_timedout_job+0x678>
+   3c4ac:	e9 2c fc ff ff       	jmp    3c0dd <guc_exec_queue_timedout_job+0x92d>
+   3c4b1:	e8 00 00 00 00       	call   3c4b6 <guc_exec_queue_timedout_job+0xd06>
+			3c4b2: R_X86_64_PLT32	__stack_chk_fail-0x4
+   3c4b6:	4c 89 e7             	mov    %r12,%rdi
+   3c4b9:	44 89 45 98          	mov    %r8d,-0x68(%rbp)
+   3c4bd:	e8 00 00 00 00       	call   3c4c2 <guc_exec_queue_timedout_job+0xd12>
+			3c4be: R_X86_64_PLT32	xe_gt_sriov_vf_recovery_pending-0x4
+   3c4c2:	44 8b 45 98          	mov    -0x68(%rbp),%r8d
+   3c4c6:	84 c0                	test   %al,%al
+   3c4c8:	0f 84 5b ff ff ff    	je     3c429 <guc_exec_queue_timedout_job+0xc79>
+   3c4ce:	e9 d3 fe ff ff       	jmp    3c3a6 <guc_exec_queue_timedout_job+0xbf6>
+   3c4d3:	4c 89 e7             	mov    %r12,%rdi
+   3c4d6:	e8 00 00 00 00       	call   3c4db <guc_exec_queue_timedout_job+0xd2b>
+			3c4d7: R_X86_64_PLT32	xe_gt_sriov_vf_recovery_pending-0x4
+   3c4db:	84 c0                	test   %al,%al
+   3c4dd:	0f 85 b9 fd ff ff    	jne    3c29c <guc_exec_queue_timedout_job+0xaec>
+   3c4e3:	e9 87 fe ff ff       	jmp    3c36f <guc_exec_queue_timedout_job+0xbbf>
+   3c4e8:	4c 89 ef             	mov    %r13,%rdi
+   3c4eb:	44 89 45 88          	mov    %r8d,-0x78(%rbp)
+   3c4ef:	e8 00 00 00 00       	call   3c4f4 <guc_exec_queue_timedout_job+0xd44>
+			3c4f0: R_X86_64_PLT32	xe_gt_sriov_vf_recovery_pending-0x4
+   3c4f4:	44 8b 45 88          	mov    -0x78(%rbp),%r8d
+   3c4f8:	84 c0                	test   %al,%al
+   3c4fa:	0f 84 81 fb ff ff    	je     3c081 <guc_exec_queue_timedout_job+0x8d1>
+   3c500:	e9 0a f5 ff ff       	jmp    3ba0f <guc_exec_queue_timedout_job+0x25f>
+   3c505:	e9 00 00 00 00       	jmp    3c50a <guc_exec_queue_timedout_job+0xd5a>
+			3c506: R_X86_64_PC32	.text+0x20a7e9
+
+Disassembly of section .altinstr_replacement:
+
+Disassembly of section .init.text:
+
+Disassembly of section .exit.text:
+
+Disassembly of section .static_call.text:

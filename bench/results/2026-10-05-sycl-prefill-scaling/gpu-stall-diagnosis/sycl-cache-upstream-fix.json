@@ -1,0 +1,8 @@
+{
+  "html_url": "https://github.com/intel/llvm/pull/23200",
+  "state": "closed",
+  "title": "[SYCL] Fix sorting of device images with no entries",
+  "merged_at": "2026-09-18T16:55:14Z",
+  "merge_commit_sha": "49dc9346c2e9efbe171d86117966c52c65501ea7",
+  "body": "Fixes #22853 \r\n\r\nCrash is because in `getSortedImages()` function we assume that every device image has atleast one kernel entry, which might not always hold, for instance, for BF16 device image.\r\nThis PR fixes the handling of device images with no kernel entries."
+}

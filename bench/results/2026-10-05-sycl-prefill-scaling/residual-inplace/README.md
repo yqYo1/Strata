@@ -43,9 +43,19 @@ repeated xe resets. A previously validated immutable control binary also stops
 progressing during model load. No speed or output-equivalence result is claimed.
 The cause has not been established; see `pending-gpu-checks` for raw records.
 
-The control process was not forcibly killed. At the recorded status it was
-still waiting; GPU recovery is required before more measurements. The embedding
-service remains stopped, as requested by the user.
+That status was historical. At the user's request, PID 1074147 was sent
+SIGTERM and exited; SIGKILL was unnecessary. The user later rebound the GPU
+and rebooted. The preserved xe dump identifies a kernel migration-queue
+failure, and the installed module still contains a known recovery-order
+defect. A separate SYCL persistent-cache CPU crash was reproduced in
+llama-bench and avoided by disabling that cache. See
+[the failure investigation](../gpu-stall-diagnosis/README.md) for the evidence
+and the limits of each conclusion. The embedding service remains stopped.
+
+After reboot, the immutable control completed 257-token layer-major prefill
+and decode. Its full head, all residual rows and all dumped persistent state
+match the original reference exactly. Candidate equality and actual full
+256K validation remain pending.
 
 Candidate and control executables, the 256K fixture, original short equality
 references and environment are preserved outside `/tmp` in:
@@ -75,6 +85,11 @@ includes all-GPU, mixed GPU/RAM, all-RAM, a single chunk, a short first chunk an
 an incomplete final chunk. Removed VRAM copies and unchanged RAM traffic are
 checked against transfer counters. Short-first variants compare with a fresh
 same-configuration control rather than a differently chunked reference.
+The checker requires the actual compact-hc layout. It scans all head and
+residual values for NaN/infinity directly: `STRATA_DBG_NAN` would disable the
+layout under test. Persistent device-code caching defaults to zero for this
+checker because of the reproduced oneAPI crash; an explicit inherited
+`SYCL_CACHE_PERSISTENT` value overrides that diagnostic default.
 
 `check_full_context.py` fixes the limit at 262,144, not 262,146. The CLI case
 reads 262,142 input tokens and requests two output tokens. The normal-MTP serve
