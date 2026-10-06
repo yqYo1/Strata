@@ -1,7 +1,7 @@
 # In-place FP32 residual storage and full-context boundary checks
 
-**GPU correctness and performance validation are pending. These changes must
-not be merged on the strength of a successful build or short capacity probe.**
+**Short GPU residual comparisons pass. Full 256K, checkpoint/cancellation and
+warm performance validation are pending; do not merge until they pass.**
 
 The implementation adds `STRATA_PREFILL_LAYER_MAJOR_R_INPLACE=1` (off by
 default). GPU-resident chunks compute directly in their persistent residual
@@ -54,8 +54,17 @@ and the limits of each conclusion. The embedding service remains stopped.
 
 After reboot, the immutable control completed 257-token layer-major prefill
 and decode. Its full head, all residual rows and all dumped persistent state
-match the original reference exactly. Candidate equality and actual full
-256K validation remain pending.
+match the original reference exactly. The candidate then completed all nine
+short validation runs: six original-reference comparisons, a fresh short-first
+control and two comparisons against that control. All head floats, residual
+rows and dumped state bytes match their comparison targets. The new path
+removes all counted VRAM residual copies; RAM residual traffic matches the
+expected byte counts. No new xe events occurred in these runs. Records are in
+[post-reboot-proof](post-reboot-proof/summary.json). An independent run of the
+frozen legacy executable also matches the fresh short-first control; see
+[legacy-short-first-equality](post-reboot-proof/legacy-short-first-equality.json).
+Actual full 256K and warm
+performance validation remain pending.
 
 Candidate and control executables, the 256K fixture, original short equality
 references and environment are preserved outside `/tmp` in:
@@ -84,12 +93,35 @@ dumped persistent state against original same-configuration references. It
 includes all-GPU, mixed GPU/RAM, all-RAM, a single chunk, a short first chunk and
 an incomplete final chunk. Removed VRAM copies and unchanged RAM traffic are
 checked against transfer counters. Short-first variants compare with a fresh
-same-configuration control rather than a differently chunked reference.
+same-configuration control rather than a differently chunked reference. That
+control uses the frozen legacy executable, and generating its reference is
+recorded separately from the eight equality comparisons.
 The checker requires the actual compact-hc layout. It scans all head and
 residual values for NaN/infinity directly: `STRATA_DBG_NAN` would disable the
-layout under test. Persistent device-code caching defaults to zero for this
-checker because of the reproduced oneAPI crash; an explicit inherited
+layout under test. Persistent device-code caching defaults to zero for both
+GPU checkers because of the reproduced oneAPI crash; an explicit inherited
 `SYCL_CACHE_PERSISTENT` value overrides that diagnostic default.
+
+The first real 256-token serve boundary run correctly failed the completion
+guard: the raw coding prefix was an unfinished user message, and the model
+emitted `im_end` after one token. The controller now reserves nine tokens
+inside each requested input length for the verified assistant suffix used by
+the normal-MTP/checkpoint helper. It keeps ordinary EOS handling and the same
+context/request lengths; early EOS still fails. Source-fixture and actual
+request hashes are recorded. The original failure is preserved in
+`post-reboot-proof/serve-256-early-eos.json`.
+
+The corrected real 256-token serve check passes with normal four-token MTP:
+252 input plus four output tokens and 254 input plus two both finish with
+`length` and execute KV cell 255. The two-token case's windows are `(253, 1)`
+and `(254, 2)`. Full-prompt and overflow requests execute no verify window;
+a valid request afterward succeeds. The 55 memory samples peak at
+49,555,352 KiB RSS and 7,921,420 KiB VRAM, with zero process swap and no sampler
+errors. See [serve-256](post-reboot-proof/serve-256.json). These are actual
+small GPU integration results, not a full 262,144-cell pass. A BCS fault
+occurred during the earlier EOS test's shutdown despite caching being disabled;
+[the investigation](../gpu-stall-diagnosis/README.md) keeps that observation
+separate from the cache crash.
 
 `check_full_context.py` fixes the limit at 262,144, not 262,146. The CLI case
 reads 262,142 input tokens and requests two output tokens. The normal-MTP serve
@@ -108,7 +140,8 @@ beyond 262,144; the full request must actually execute KV cell 262,143, the last
 allocated cell. A logical input/output count alone is insufficient for that
 assertion. Normal four-token MTP runs with its default confidence clipping
 disabled. Refused requests must not execute a verify window or emit `REUSED`,
-tokens or logprobs. These trace assertions are pending the actual GPU run.
+tokens or logprobs. These trace assertions pass at limit 256; their full-length
+GPU validation remains pending.
 
 `check_full_context_controller.py` tests the controller with a CPU protocol
 stub at limits 64 and 262,144. It checks request lengths and deliberately emits

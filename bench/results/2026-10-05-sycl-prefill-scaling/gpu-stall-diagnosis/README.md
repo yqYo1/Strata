@@ -39,6 +39,26 @@ same CPU stack but no xe events. Thus a cache crash need not wedge the GPU;
 the 12:23 event also does not prove why an outstanding copy faulted during
 process teardown.
 
+A second BCS fault occurred at 12:41:12, when the first 256-token serve
+boundary check was shutting down after ordinary EOS. That check used
+`SYCL_CACHE_PERSISTENT=0`; its controller correctly rejected the one-token
+answer as insufficient to fill the context. The fault again names
+`0x0000d556aa2e0000`, now with ASID 64, followed by `-ENOENT`, memory CAT
+error 18 and an engine reset. See `serve-eos-shutdown.xe-kernel.txt` and
+[the failed boundary report](../residual-inplace/post-reboot-proof/serve-256-early-eos.json).
+This temporal association does not map the ASID to the process or prove a
+userspace lifetime bug, but shows that the persistent-cache crash alone
+cannot account for all observed GPU faults. The subsequent complete serve
+boundary check and legacy short-first comparison both passed. Shutdown and
+cross-queue resource lifetimes remain under investigation; existing MTP,
+prefill and verifier destructors already include queue waits.
+The serve exit path itself calls `queues_wait_and_throw()` inside a catch-all
+and then `std::_Exit(0)`, so those C++ destructors do not run there. A wait
+exception would be hidden by this path. Exit status zero alone therefore
+does not establish that its last global queue wait succeeded. No such
+exception was captured in the failed EOS run; this is a diagnostic gap to
+test, not an observed exception or a proven cause.
+
 Intel's [issue 21972](https://github.com/intel/llvm/issues/21972) reports the
 same cache-sort crash family. Its
 [fix, PR 23200](https://github.com/intel/llvm/pull/23200), merged September 18,
@@ -135,10 +155,20 @@ every head value directly, without disabling the tested path. The guard
 accepts the frozen 257-row reference and rejects NaN, infinity, a wrong row
 position and trailing bytes.
 
-The nine candidate equality cases, checkpoint/cancellation integration,
-paired warm performance measurements and actual full 262,144-cell CLI/serve
-execution remain separate requirements. A short control recovery does not
-satisfy them. Raw post-reboot per-stage metadata and supervised controllers
+All nine short residual runs subsequently completed: eight candidate equality
+comparisons and one fresh short-first reference run. All compared head,
+residual and persistent-state bytes match, and no stage records a new xe
+event. See [the residual proof](../residual-inplace/post-reboot-proof/summary.json).
+The independently run frozen legacy executable also matches the fresh
+short-first control byte for byte; see
+[the legacy cross-check](../residual-inplace/post-reboot-proof/legacy-short-first-equality.json).
+The corrected real 256-token normal-MTP serve check fills the final KV cell,
+shortens its last verify window to two tokens, refuses both overflowing
+requests and handles a valid request afterward. It is a small boundary
+integration check, not the full 256K result.
+Checkpoint/cancellation integration, paired warm performance measurements and
+actual full 262,144-cell CLI/serve execution remain separate requirements. A
+short recovery check does not satisfy them. Raw per-stage metadata and controllers
 are preserved in
 `~/.local/state/strata-sycl/gpu-stall-diagnosis/post-reboot-20261006`.
 The recorded runner source expects that persistent state directory, including

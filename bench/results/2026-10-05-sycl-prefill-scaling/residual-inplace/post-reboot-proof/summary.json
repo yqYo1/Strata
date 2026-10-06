@@ -1,6 +1,6 @@
 {
   "binary_sha256": "b1a7db41d1225d024d3455b9db58e71aebd13c8f88b8e737ae11049fe257b56d",
-  "completed": false,
+  "completed": true,
   "source_controller": "/home/yayoi/.local/state/strata-sycl/gpu-stall-diagnosis/post-reboot-20261006/check-residual-supervised.py",
   "source_controller_sha256": "e48f89a2fa95bf8958552d31448cb458bcc29fae8cf70fb4a331df5da8bf42a6",
   "additional_saved_counter_shape_checks": true,
@@ -33,7 +33,8 @@
         "residual_gpu_tokens": 257,
         "device_residual_bytes": 0,
         "total_transfer_bytes": 50292326400
-      }
+      },
+      "comparison_kind": "candidate equality against same-configuration reference"
     },
     {
       "name": "mixed-257",
@@ -63,7 +64,8 @@
         "residual_gpu_tokens": 128,
         "device_residual_bytes": 0,
         "total_transfer_bytes": 50789007360
-      }
+      },
+      "comparison_kind": "candidate equality against same-configuration reference"
     },
     {
       "name": "host-257",
@@ -93,7 +95,8 @@
         "residual_gpu_tokens": 0,
         "device_residual_bytes": 0,
         "total_transfer_bytes": 51281838080
-      }
+      },
+      "comparison_kind": "candidate equality against same-configuration reference"
     },
     {
       "name": "single-4096",
@@ -123,7 +126,8 @@
         "residual_gpu_tokens": 4096,
         "device_residual_bytes": 0,
         "total_transfer_bytes": 50292326400
-      }
+      },
+      "comparison_kind": "candidate equality against same-configuration reference"
     },
     {
       "name": "all-8087",
@@ -153,7 +157,192 @@
         "residual_gpu_tokens": 8087,
         "device_residual_bytes": 0,
         "total_transfer_bytes": 50292326400
-      }
+      },
+      "comparison_kind": "candidate equality against same-configuration reference"
+    },
+    {
+      "name": "mixed-8087",
+      "tokens": 8087,
+      "chunk": 4096,
+      "gpu_tokens": 4096,
+      "first": 0,
+      "inplace": 1,
+      "exit_code": 0,
+      "head.bin": {
+        "bytes": 993280,
+        "sha256": "a18cfb315419c79c41f9b6329c07e5b86cee5081e7316800b3614856aa044e20"
+      },
+      "state.bin": {
+        "bytes": 329257544,
+        "sha256": "bab8bd43b0dc99022036853479723630b8023bc4ccd63a3119e1f5898b94b2c3"
+      },
+      "residual.bin": {
+        "bytes": 331308216,
+        "sha256": "fde782acafb4fa258003c6d0f1ba8fd06a6d972f02cf90fa2fc382b80c89a0ca"
+      },
+      "all_head_residual_state_bytes_equal": true,
+      "head_and_all_residual_values_finite": true,
+      "transfer": {
+        "chunks": 2,
+        "activation_bytes": 15366307840,
+        "residual_gpu_tokens": 4096,
+        "device_residual_bytes": 0,
+        "total_transfer_bytes": 65658634240
+      },
+      "comparison_kind": "candidate equality against same-configuration reference"
+    },
+    {
+      "name": "short-first-control",
+      "tokens": 257,
+      "chunk": 128,
+      "gpu_tokens": 257,
+      "first": 32,
+      "inplace": 0,
+      "exit_code": 0,
+      "head.bin": {
+        "bytes": 993280,
+        "sha256": "bb657f5a7f58a28cfd2f9a16160a1b927ac2efa7261e71b5722257181a6840be"
+      },
+      "state.bin": {
+        "bytes": 124852808,
+        "sha256": "3d7a8dfedc37c7757339a59e9d87c0f068b6a33e4f9122bc80ffe922634a5642"
+      },
+      "residual.bin": {
+        "bytes": 10528776,
+        "sha256": "2432e3ebb728115b80542e4c62888926ee59e768b01145765b96779f1da89e6c"
+      },
+      "all_head_residual_state_bytes_equal": null,
+      "head_and_all_residual_values_finite": true,
+      "transfer": {
+        "chunks": 3,
+        "activation_bytes": 0,
+        "residual_gpu_tokens": 257,
+        "device_residual_bytes": 989511680,
+        "total_transfer_bytes": 50292326400
+      },
+      "reference_generated": true,
+      "comparison_kind": "fresh candidate reference, checked independently against frozen legacy executable"
+    },
+    {
+      "name": "short-first-all",
+      "tokens": 257,
+      "chunk": 128,
+      "gpu_tokens": 257,
+      "first": 32,
+      "inplace": 1,
+      "exit_code": 0,
+      "head.bin": {
+        "bytes": 993280,
+        "sha256": "bb657f5a7f58a28cfd2f9a16160a1b927ac2efa7261e71b5722257181a6840be"
+      },
+      "state.bin": {
+        "bytes": 124852808,
+        "sha256": "3d7a8dfedc37c7757339a59e9d87c0f068b6a33e4f9122bc80ffe922634a5642"
+      },
+      "residual.bin": {
+        "bytes": 10528776,
+        "sha256": "2432e3ebb728115b80542e4c62888926ee59e768b01145765b96779f1da89e6c"
+      },
+      "all_head_residual_state_bytes_equal": true,
+      "head_and_all_residual_values_finite": true,
+      "transfer": {
+        "chunks": 3,
+        "activation_bytes": 0,
+        "residual_gpu_tokens": 257,
+        "device_residual_bytes": 0,
+        "total_transfer_bytes": 50292326400
+      },
+      "comparison_kind": "candidate equality against same-configuration reference"
+    },
+    {
+      "name": "short-first-mixed",
+      "tokens": 257,
+      "chunk": 128,
+      "gpu_tokens": 160,
+      "first": 32,
+      "inplace": 1,
+      "exit_code": 0,
+      "head.bin": {
+        "bytes": 993280,
+        "sha256": "bb657f5a7f58a28cfd2f9a16160a1b927ac2efa7261e71b5722257181a6840be"
+      },
+      "state.bin": {
+        "bytes": 124852808,
+        "sha256": "3d7a8dfedc37c7757339a59e9d87c0f068b6a33e4f9122bc80ffe922634a5642"
+      },
+      "residual.bin": {
+        "bytes": 10528776,
+        "sha256": "2432e3ebb728115b80542e4c62888926ee59e768b01145765b96779f1da89e6c"
+      },
+      "all_head_residual_state_bytes_equal": true,
+      "head_and_all_residual_values_finite": true,
+      "transfer": {
+        "chunks": 3,
+        "activation_bytes": 373473280,
+        "residual_gpu_tokens": 160,
+        "device_residual_bytes": 0,
+        "total_transfer_bytes": 50665799680
+      },
+      "comparison_kind": "candidate equality against same-configuration reference"
     }
-  ]
+  ],
+  "stages": [
+    {
+      "name": "all-257",
+      "new_xe_event_count": 0,
+      "elapsed_s": 43.7626991599999,
+      "source_metadata_sha256": "cf451247fe869e797d815d422c3dbb6ae535acfda9cb0ba8fa8846f4f690d70a"
+    },
+    {
+      "name": "mixed-257",
+      "new_xe_event_count": 0,
+      "elapsed_s": 47.40150191700002,
+      "source_metadata_sha256": "f8a1b8893956d48b8fcbe2f86e1759db13c8873ab32c88c1db0025785bbde528"
+    },
+    {
+      "name": "host-257",
+      "new_xe_event_count": 0,
+      "elapsed_s": 44.21516427300003,
+      "source_metadata_sha256": "c2427facc7e5a072d573e635be6f5d95dd2b446efc19eaec1bce4f90301c598c"
+    },
+    {
+      "name": "single-4096",
+      "new_xe_event_count": 0,
+      "elapsed_s": 48.972885631000054,
+      "source_metadata_sha256": "e0fd7329f39a71d86f61e4feddf918a57809ca6225d11956f26e312451994380"
+    },
+    {
+      "name": "all-8087",
+      "new_xe_event_count": 0,
+      "elapsed_s": 67.80840087499996,
+      "source_metadata_sha256": "cc7daa160d1527e81ac3c8fa6df4c8c7aecfc25ad9508cbfedd39b3eb61be58a"
+    },
+    {
+      "name": "mixed-8087",
+      "new_xe_event_count": 0,
+      "elapsed_s": 62.814286136999954,
+      "source_metadata_sha256": "8d716c73815a892acbaa43613a990103e8e5043c64a7dd40c54c833be93a4ef9"
+    },
+    {
+      "name": "short-first-control",
+      "new_xe_event_count": 0,
+      "elapsed_s": 44.01337225300017,
+      "source_metadata_sha256": "617b6d230ec8ae80a3a606b5c8e8d03550f0d34c3f9167da8f8cee276f6afd66"
+    },
+    {
+      "name": "short-first-all",
+      "new_xe_event_count": 0,
+      "elapsed_s": 44.06037400699984,
+      "source_metadata_sha256": "098cc7690bc808ac0a0aa4388fe803340fb432066252b9bd69e09da535c239a9"
+    },
+    {
+      "name": "short-first-mixed",
+      "new_xe_event_count": 0,
+      "elapsed_s": 44.62624454500019,
+      "source_metadata_sha256": "198c3e00af93b62ffdd62384ccba2553a3d37981a74ed92d70e4dd16adae6600"
+    }
+  ],
+  "full_context_verified": false,
+  "whole_engine_speedup_verified": false,
+  "independent_legacy_short_first_cross_check": "legacy-short-first-equality.json"
 }

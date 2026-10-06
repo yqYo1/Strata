@@ -20,11 +20,21 @@ def value(k):return args0[args0.index(k)+1]
 env=dict(os.environ,**ref['env'])
 for k in list(env):
  if k.startswith('STRATA_'):env.pop(k)
-env.update(STRATA_IO_THREADS='16',STRATA_PREFILL_RING='8',STRATA_PREFILL_FIRST='0',STRATA_PREFILL_ATTN_BATCH='128',STRATA_PREFILL_ATTN_LAYOUT='4',STRATA_PREFILL_TOPK_TUNED='1',STRATA_GDN_KEYHEAD='0',STRATA_GDN_KEYHEAD_TUNED='1',STRATA_PREFILL_COMPACT='2',STRATA_PREFILL_LAYER_MAJOR='1',STRATA_PREFILL_LAYER_MAJOR_R_INPLACE='1',STRATA_PREFILL_LAYER_MAJOR_R_GPU=str(a.gpu_rows),STRATA_PREFILL_RELEASE_CACHE='1',STRATA_PREFILL_CACHE_ALLOC='vmm',STRATA_PREFILL_CACHE_RESTORE='ram',SYCL_CACHE_PERSISTENT='1')
+env.update(STRATA_IO_THREADS='16',STRATA_PREFILL_RING='8',STRATA_PREFILL_FIRST='0',STRATA_PREFILL_ATTN_BATCH='128',STRATA_PREFILL_ATTN_LAYOUT='4',STRATA_PREFILL_TOPK_TUNED='1',STRATA_GDN_KEYHEAD='0',STRATA_GDN_KEYHEAD_TUNED='1',STRATA_PREFILL_COMPACT='2',STRATA_PREFILL_LAYER_MAJOR='1',STRATA_PREFILL_LAYER_MAJOR_R_INPLACE='1',STRATA_PREFILL_LAYER_MAJOR_R_GPU=str(a.gpu_rows),STRATA_PREFILL_RELEASE_CACHE='1',STRATA_PREFILL_CACHE_ALLOC='vmm',STRATA_PREFILL_CACHE_RESTORE='ram',SYCL_CACHE_PERSISTENT=os.environ.get('SYCL_CACHE_PERSISTENT','0'))
 source=list(map(int,(recovery/'coding-context-256k-tokens.txt').read_text().split()))
 assert len(source)>=a.context and a.context>=64
+# The raw coding prefix is an unfinished user message and greedily predicts
+# im_end. Use the same verified nine-token assistant suffix as serve_long_check;
+# reserve its space inside the requested length. Keep ordinary EOS handling.
+assistant_suffix=[248046,198,248045,74455,198,248068,198,248069,271]
+def prompt_ids(n):
+ ids=source[:n-len(assistant_suffix)]+assistant_suffix
+ assert len(ids)==n
+ return ids
 out=recovery/(f'{a.stage}-{a.context}'+('-'+exe.stem if a.executable else ''));out.mkdir(exist_ok=True)
 report=dict(stage=a.stage,context=a.context,completed=False,runs=[],binary_sha256=hashlib.sha256(exe.read_bytes()).hexdigest(),env={k:v for k,v in env.items() if k.startswith(('STRATA_','ONEAPI_','SYCL_')) or k=='LD_LIBRARY_PATH'})
+report['assistant_suffix']=assistant_suffix
+report['source_fixture_sha256']=hashlib.sha256((recovery/'coding-context-256k-tokens.txt').read_bytes()).hexdigest()
 def save():(out/'summary.json').write_text(json.dumps(report,indent=2)+'\n')
 def finite_head(path):
  v=array.array('f');v.frombytes(path.read_bytes());assert len(v)==248320 and all(map(math.isfinite,v));return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -35,7 +45,7 @@ try:
  if a.stage in ('boundary','cli'):
   cases=[('full-no-output-room',a.context,1,False),('one-too-many',a.context-2,3,False)] if a.stage=='boundary' else [('fills-context',a.context-2,2,True)]
   for name,n,new,ok in cases:
-   fixture=out/(name+'.tokens.txt');fixture.write_text(' '.join(map(str,source[:n]))+'\n')
+   fixture=out/(name+'.tokens.txt');fixture.write_text(' '.join(map(str,prompt_ids(n)))+'\n')
    head=out/(name+'.head.bin');head.unlink(missing_ok=True);runenv=dict(env,STRATA_DUMP_FIRST_LOGITS=str(head))
    # 1K fits the old 256K capacity probe; normal MTP is tested separately.
    args=common+['--tokens-file',str(fixture),'--max-new',str(new),'--prefill','1024','--stats']
@@ -45,7 +55,7 @@ try:
     observer=MemoryObserver(child.pid,out/(name+'.memory.jsonl'))
     try:rc=child.wait()
     finally:memory=observer.finish()
-   text=(out/(name+'.log')).read_text();r=dict(name=name,args=args,input_tokens=n,max_new=new,exit_code=rc,wall_seconds=time.monotonic()-start,memory=memory);report['runs'].append(r);save()
+   text=(out/(name+'.log')).read_text();r=dict(name=name,args=args,input_tokens=n,max_new=new,exit_code=rc,wall_seconds=time.monotonic()-start,memory=memory,fixture_sha256=hashlib.sha256(fixture.read_bytes()).hexdigest());report['runs'].append(r);save()
    if ok:
     assert rc==0,(name,rc);m=re.search(r'^output\s*:\s*(.*)$',text,re.M);ids=list(map(int,m[1].split()));assert len(ids)==new
     assert f'prefill {n-1} tokens' in text;r.update(ids=ids,logits_sha256=finite_head(head),logical_length=n+len(ids));assert r['logical_length']==a.context
@@ -82,7 +92,7 @@ try:
     for name,n,new,ok in cases:
      trace_start=log.tell()
      if ok:head.unlink(missing_ok=True)
-     ids=source[:n];request=f'GEN {new} logprobs=5 '+','.join(map(str,ids))+'\n';child.stdin.write(request.encode());child.stdin.flush()
+     ids=prompt_ids(n);request=f'GEN {new} logprobs=5 '+','.join(map(str,ids))+'\n';child.stdin.write(request.encode());child.stdin.flush()
      lines=[];output=[];lp=[];start=time.monotonic()
      while True:
       s=line();lines.append(s)
@@ -90,7 +100,7 @@ try:
       if s.startswith('LP '):
        assert all(math.isfinite(float(x.rsplit(':',1)[-1])) for x in s.split()[1:]);lp.append(s)
       if s.startswith(('DONE ','ERR ')):break
-     r=dict(name=name,input_tokens=n,max_new=new,ids=output,protocol=lines,wall_seconds=time.monotonic()-start);report['runs'].append(r);save()
+     r=dict(name=name,input_tokens=n,max_new=new,ids=output,protocol=lines,wall_seconds=time.monotonic()-start,request_sha256=hashlib.sha256(request.encode()).hexdigest());report['runs'].append(r);save()
      with (out/'engine.log').open('rb') as trace:
       trace.seek(trace_start);text=trace.read(log.tell()-trace_start).decode()
      windows=[(int(pos),int(count)) for pos,count in re.findall(r'strata trace: window (-?\d+) (-?\d+)',text)]
