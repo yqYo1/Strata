@@ -1,9 +1,9 @@
 {
-  "scope": "Owned CPU/GDB checks, last-cell CPU controller checks, original unsuccessful full CLI, initial tuning omission and bounded GPU health probes; corrected model diagnostic not included yet",
+  "scope": "Owned CPU/GDB lifecycle and CLI last-cell controller checks; unsuccessful original full CLI; initial tuning omission; corrected 600-second layer-major diagnostic; logged GPU execution probes. Full capacity and prevention remain unvalidated.",
   "files": {
     "README.md": {
-      "sha256": "85733cf308334226200ed4556f91784ce8d0bc51e31e7f1080582ac87ea3dae7",
-      "bytes": 6284
+      "sha256": "7235e9fd17df639b461577eaf162517d358d3aaaa9fd29ebe54724ce4139ff27",
+      "bytes": 7791
     },
     "cli-capacity-trace-cpu/0-cli-valid-64/cli-64-fake-engine/fills-context.log": {
       "sha256": "61db8f9314a98e22df0253c88265452cdb98b99f75086adfe292b265fa49287c",
@@ -224,6 +224,42 @@
     "completed-cli-window-build/record.json": {
       "sha256": "0c876e79e7c441158822659798388a16c73bde309c55f0bb7ade3ea19766ad9a",
       "bytes": 613
+    },
+    "corrected-layer-major-diagnostic/controller.py": {
+      "sha256": "ab9bb1778228fb4f35c10db4ad6767a54cf79fc45900f95ba43999f7045583a2",
+      "bytes": 11481
+    },
+    "corrected-layer-major-diagnostic/debugger/gdb-mi.stdout": {
+      "sha256": "91a7cc8cb54e7e09c4fc75fcd81d26ecd9b4fbac133c11e3431ad2bd5fbb922c",
+      "bytes": 137790
+    },
+    "corrected-layer-major-diagnostic/debugger/inferior-argv.json": {
+      "sha256": "1a234b7be144eac793c5aa77254a4de91b49edcb4d7e88f5bd44b9dfe913ad40",
+      "bytes": 989
+    },
+    "corrected-layer-major-diagnostic/debugger/observation-deadline.mi.txt": {
+      "sha256": "f9f5d1a320ab076f8e4b698e5c820ae6519ad3829024ca1e1ea94af6bc3c016b",
+      "bytes": 65951
+    },
+    "corrected-layer-major-diagnostic/engine.stderr-tail.txt": {
+      "sha256": "0913200d495a648ecc10fd8a5aa233097510c6ebd1d5fbb7571871bf2e72dba0",
+      "bytes": 65536
+    },
+    "corrected-layer-major-diagnostic/log-analysis.json": {
+      "sha256": "1365cc3d3bce7ab741caa4828802c0b962dc971d49666b8a96274736a29403c7",
+      "bytes": 74373
+    },
+    "corrected-layer-major-diagnostic/metrics.jsonl": {
+      "sha256": "34de4ac3b9fa225172b7a90cad7778866aeb2e45b35d2ef032d9f79f38495b65",
+      "bytes": 159271
+    },
+    "corrected-layer-major-diagnostic/read_metrics.py": {
+      "sha256": "564d19246c50962a3d8df16078a59f626a4a504236827ac40be359af6133fba2",
+      "bytes": 695
+    },
+    "corrected-layer-major-diagnostic/record.json": {
+      "sha256": "6f9c19d4ee7537a2973438f2a6be7d5dc178de69e596258ce3490fd877ccfaf0",
+      "bytes": 54771
     },
     "earlier-sources/owned_gdb-before-extended-stack.py": {
       "sha256": "9b363aec745b8596b480e463a25675642db678183bc5abe78c282f195d6cb379",
@@ -760,6 +796,50 @@
     "post-owned-debug-health/record.json": {
       "sha256": "f5637025c9f6ef4a5bac83450ea1ac06b6920d690a6d379170ff6aea07dcb571",
       "bytes": 1996
+    },
+    "post-owned-debug-l0-health/before-health-cursor.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "post-owned-debug-l0-health/before-health-cursor.stdout": {
+      "sha256": "8dcacebf5708e6a3336e464751909845329a58e855f7036692edb76f3e4af13a",
+      "bytes": 155
+    },
+    "post-owned-debug-l0-health/health-environment.json": {
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527",
+      "bytes": 882
+    },
+    "post-owned-debug-l0-health/health-kernel.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "post-owned-debug-l0-health/health-kernel.stdout": {
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e",
+      "bytes": 17
+    },
+    "post-owned-debug-l0-health/health-runtime.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "post-owned-debug-l0-health/health-runtime.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "post-owned-debug-l0-health/health-xe.txt": {
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "bytes": 1
+    },
+    "post-owned-debug-l0-health/health.stderr": {
+      "sha256": "10545ad17ee12748f68d9ff2d7208fa1138605198810477e12aac1cdd8405a45",
+      "bytes": 118983
+    },
+    "post-owned-debug-l0-health/health.stdout": {
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243",
+      "bytes": 155
+    },
+    "post-owned-debug-l0-health/record.json": {
+      "sha256": "1b16bbcce517cfed8db7fe202306075b84bdfc687d44580ffb329f9ba5f6f7f4",
+      "bytes": 2012
     }
   },
   "source_sha256": {

@@ -105,3 +105,28 @@ and checks every tuning value before launch. It retains full Level Zero API
 logging and parameter validation, while disabling the additional verbose UR
 argument/profiling layer to bound log growth. The unchanged original receipts
 remain distinct from this correction.
+
+## Corrected layer-major diagnostic
+
+`corrected-layer-major-diagnostic` overlays all original executed tuning values
+and asserts they match before starting the same 262,142-token fixture at
+262,144 capacity. It keeps Level Zero API tracing and parameter validation,
+with the additional UR argument tracing disabled. The layer-major path is
+confirmed both by progress messages and the actual CPU stack.
+
+The job reaches its finite 600-second observation deadline while device busy
+cycles and processing progress continue. It does not finish the prompt or
+emit the two required outputs. Its incomplete diagnostic receipt remains
+`healthy: false`. The full 5,988,142,559-byte API log remains private; this
+directory preserves its digest, result counts, Strata progress and last 64 KiB.
+The all-thread snapshot includes `Prefill::run_layer_major`, `run_impl`,
+`gather_rows16`, UR submission, the Level Zero validation/logging layer and
+glibc time conversion. This records an active path; it does not establish a
+stalled API or explain the original unlogged wait.
+
+The supervisor resumes its requested interrupt, then closes the diagnostic
+at the declared deadline. Neither GDB nor the inferior survives, and the
+kernel window has no new xe fault. A separate small GPU execution check after
+cleanup passes with complete API logs in `post-owned-debug-l0-health`.
+Full CLI last-cell, normal-MTP serve, repeated correctness and performance
+remain pending. Do not use this diagnostic's timing as normal throughput.
