@@ -24,6 +24,10 @@ else
 fi
 case "$result" in
     4)
+        display_helper="$script_dir/strata-xe-display-recover"
+        if [[ -f "$display_helper" ]]; then
+            exec /bin/bash "$display_helper"
+        fi
         echo 'GPUの利用者が残っているか、安全に操作できない状態です。リセットを中止しました。' >&2
         exit 4
         ;;

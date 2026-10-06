@@ -13,39 +13,62 @@ it tries a bus reset only when the GPU is alone on that secondary bus. It stops
 after the first verified recovery. The installed entry point is built from
 [sycl/tools/recover-gpu.sh](../sycl/tools/recover-gpu.sh).
 
-If clients remain, the GPU drives a display, another recovery is still blocked
-in the kernel, or client inspection is incomplete, it stops rather than trying
-another reset. It also stops when interrupted. It never kills an unrelated
-process or restarts a service. The embedding service stays stopped as requested.
+If the remaining users are exclusively Xorg processes belonging to this host's
+`sddm.service`, the script offers to end the GUI session. Save open GUI work
+first: entering the literal `yes` ends those applications. Enter, any other
+answer, or no interactive terminal cancels without stopping the GUI. This
+path also requires a separate connected boot/display GPU, a disconnected B570,
+inspectable owners and no stuck recovery writer. It rechecks the approved
+process identities before stopping SDDM.
+
+After that confirmation, a transient system service handles the reset outside
+the GUI session and attempts to start the login screen afterward, including
+an `ExecStopPost` backup if the worker exits early. This uses the service-manager
+parent described in [systemd-run 255](https://raw.githubusercontent.com/systemd/systemd/v255/man/systemd-run.xml).
+Starting SDDM is a bounded request, not proof that the login screen appeared.
+Applications are not restored. A still-stuck writer or another ongoing recovery
+prevents competing display startup/reset operations.
+
+Other remaining clients, an attached B570 display, incomplete inspection and
+interruption stop the sequence. The embedding service remains inactive and
+disabled as requested; the script does not change it.
 Client detection uses descriptors, mappings and blocked xe close stacks because
 `xpu-smi ps` does not show every owner.
 
 The result is printed on the terminal and a summary is saved at
 `~/.local/state/strata-sycl/gpu-recovery/latest.json`. Detailed logs stay under
 `/var/log/strata-gpu-recovery`. Exit 0 means the small GPU probe passed without
-new xe fault/reset messages. Exit 4 means recovery was refused because a blocking
-condition remains. Other failures report the step and its log. A successful
+new xe fault/reset messages. Exit 3 means the detached GUI recovery was handed
+off; it does not mean the GPU recovered. Its final receipt must have
+`healthy: true`, after another GPU probe covering the display-start request and
+fresh kernel messages. A queued or interrupted receipt has `healthy: false`.
+Exit 4 means recovery was declined or refused because a blocking condition
+remains. Other failures report the step and its log. A successful
 probe does not establish that a full Strata workload is correct.
 
 The helper does not save devcoredumps, flash firmware, change xe's timeout/reset
-policy, restart a service, or reboot the host. Each sysfs writer and GPU probe
+policy, or reboot the host. The only service it may stop/start is SDDM after the
+interactive GUI-exit confirmation. Each sysfs writer and GPU probe
 runs in a separate process with a deadline. A writer still in uninterruptible
 sleep after KILL is recorded by PID and start time; subsequent runs refuse to
 compete with it. KILL cannot make a kernel D-state wait immediately disappear.
 
 The internal helper is [sycl/tools/recover-xe.sh](../sycl/tools/recover-xe.sh),
 installed alongside the entry point as `strata-xe-recover-core`. Its inspection
-and developer controls are not needed for normal recovery. The probe is
+and developer controls are not needed for normal recovery. The GUI handoff is
+[sycl/tools/recover-xe-display.sh](../sycl/tools/recover-xe-display.sh), installed
+as `strata-xe-display-recover`; its worker controls are internal. The probe is
 [sycl/tools/xe-health.cpp](../sycl/tools/xe-health.cpp), installed as
 `strata-xe-health`. Rebuilding it with oneAPI only compiles it:
 
 ```sh
 icpx -fsycl -fp-model=precise sycl/tools/xe-health.cpp -o ~/.local/bin/strata-xe-health
 install -m 755 sycl/tools/recover-xe.sh ~/.local/bin/strata-xe-recover-core
+install -m 755 sycl/tools/recover-xe-display.sh ~/.local/bin/strata-xe-display-recover
 install -m 755 sycl/tools/recover-gpu.sh ~/.local/bin/strata-gpu-recover
 ```
 
-The host's three installed files are already prepared. The probe selects PCI
+The host's four installed files are already prepared. The probe selects PCI
 `0000:05:00.0`, uses an in-order Level Zero queue and checks all 16,384 integer
 words after H2D, a kernel and D2H in three rounds. It uses no Strata model,
 graphs, virtual memory or mapped polling words. The helper runs it as the
@@ -104,14 +127,29 @@ named `intel-arc-bmg-21.1180.cab` but its release metadata says FWCODE 21.1182.
 
 ## Scope of validation
 
-The [validation record](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/recovery-validation-20261006.json) records 14 passing CPU test methods and the installed file digests.
-The shell syntax, entry sequencing, recovery guards, reset ordering, method restoration, child
-timeouts, and rejection of misleading health results have CPU-only tests:
-`python3 sycl/tools/test_recover_xe.py`. The probe builds with oneAPI 2026.1.1.
+The [original validation record](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/recovery-validation-20261006.json)
+records the earlier 14-test version. The
+[GUI handoff validation](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/display-recovery-20261006/record.json)
+records 38 passing CPU test methods, shell syntax and the current installed
+digests. These cover reset ordering, method restoration, child timeouts,
+misleading health results, no-argument shell sequencing, explicit consent,
+changed/hidden owners, display ownership, borrowed locks, stranded writers,
+service-stop failures and interrupted-worker receipts:
+
+```sh
+python3 sycl/tools/test_recover_xe.py
+python3 sycl/tools/test_recover_xe_display.py
+```
+
+The service/reset backends are harmless fakes. Separately, a real temporary user
+service proved that its launcher exits before the manager-owned worker finishes
+and its `ExecStopPost` runs. That test used no root service, GPU or GUI operation;
+it does not validate the root SDDM recovery transaction. The probe builds with
+oneAPI 2026.1.1.
 Read-only inspection ran on this host. A root recovery attempt was refused
 before reset because Xorg held the B570 open in an active local X11 session.
-Stopping that display service would end the GUI session and requires separate
-authorization. No device reset was performed, so successful no-reboot recovery
-is pending.
+The new entry obtains GUI-exit consent on the terminal for that case. No display
+shutdown or device reset was performed during these tests, so successful
+no-reboot hardware recovery remains pending.
 The full Strata arithmetic/context/cancellation/graph checks remain separate
 from this 64 KiB GPU health check.

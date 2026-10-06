@@ -279,10 +279,11 @@ def journal_cursor(runner, label):
     return match[1]
 
 
-def check_health(device, runner, binary):
+def check_health(device, runner, binary, cursor=None):
     if not binary.is_file() or not os.access(binary, os.X_OK):
         raise RecoveryError(f'Health executable is unavailable: {binary}')
-    cursor = journal_cursor(runner, 'before-health-cursor')
+    if cursor is None:
+        cursor = journal_cursor(runner, 'before-health-cursor')
     # Probe as the invoking user even when resets run under sudo. Clear unrelated
     # tuning flags; use the installed runtime, V2, cache off, no copy offload.
     env = {k: v for k, v in os.environ.items()
@@ -322,7 +323,43 @@ def check_health(device, runner, binary):
         raise RecoveryError(f'Probe data matched, but {len(faults)} new xe fault/reset messages occurred')
 
 
-def main(argv=None):
+def acquire_recovery_lock(base, held_lock=None):
+    path = base / 'recovery.lock'
+    if held_lock is None:
+        lock = path.open('a')
+    else:
+        owned, expected = os.fstat(held_lock.fileno()), path.stat()
+        if (owned.st_dev, owned.st_ino) != (expected.st_dev, expected.st_ino):
+            raise RecoveryRefused('Borrowed recovery lock belongs to another file')
+        lock = os.fdopen(os.dup(held_lock.fileno()), 'a')
+    try:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BaseException:
+        lock.close()
+        raise
+    return lock
+
+
+def publish_summary(report, output, runner):
+    user = os.environ.get('SUDO_USER')
+    if os.geteuid() == 0 and user and user != 'root':
+        # Publish a small summary as the caller, avoiding privileged writes
+        # through home-directory symlinks. Raw root logs remain private.
+        public = {k: v for k, v in report.items() if k != 'steps'}
+        public['steps'] = [{k: v for k, v in s.items() if k != 'argv'} for s in runner.calls]
+        public['root_report'] = str(output / 'report.json')
+        writer = ('from pathlib import Path; import sys; '
+                  'p=Path.home()/".local/state/strata-sycl/gpu-recovery"; '
+                  'p.mkdir(parents=True,exist_ok=True); '
+                  '(p/"latest.json").write_text(sys.argv[1])')
+        try:
+            runner.run('publish-summary', ['/usr/sbin/runuser', '-u', user, '--',
+                       '/usr/bin/python3', '-c', writer, json.dumps(public, indent=2) + '\n'], seconds=5)
+        except (RecoveryError, OSError) as e:
+            print(f'Could not publish unprivileged summary: {e}', file=sys.stderr)
+
+
+def main(argv=None, held_lock=None, publish=True):
     parser = argparse.ArgumentParser(description='Arc xe recovery without host reboot; default: inspect only')
     parser.add_argument('--bdf', default='0000:05:00.0')
     parser.add_argument('--apply', action='store_true', help='perform one recovery attempt (requires sudo)')
@@ -353,8 +390,7 @@ def main(argv=None):
     lock = None
     try:
         # Root-owned log directory also holds the lock; no /tmp symlink targets.
-        lock = (base / 'recovery.lock').open('a')
-        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        lock = acquire_recovery_lock(base, held_lock)
         pending = base / 'stalled-writer.json'
         if args.apply and pending.exists():
             old = json.loads(pending.read_text())
@@ -401,22 +437,8 @@ def main(argv=None):
         report['finished_utc'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
         (output / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
         print(f'Report: {output / "report.json"}')
-        user = os.environ.get('SUDO_USER')
-        if os.geteuid() == 0 and user and user != 'root':
-            # Publish a small summary as the caller, avoiding privileged writes
-            # through home-directory symlinks. Raw root logs remain private.
-            public = {k: v for k, v in report.items() if k != 'steps'}
-            public['steps'] = [{k: v for k, v in s.items() if k != 'argv'} for s in runner.calls]
-            public['root_report'] = str(output / 'report.json')
-            writer = ('from pathlib import Path; import sys; '
-                      'p=Path.home()/".local/state/strata-sycl/gpu-recovery"; '
-                      'p.mkdir(parents=True,exist_ok=True); '
-                      '(p/"latest.json").write_text(sys.argv[1])')
-            try:
-                runner.run('publish-summary', ['/usr/sbin/runuser', '-u', user, '--',
-                           '/usr/bin/python3', '-c', writer, json.dumps(public, indent=2) + '\n'], seconds=5)
-            except (RecoveryError, OSError) as e:
-                print(f'Could not publish unprivileged summary: {e}', file=sys.stderr)
+        if publish:
+            publish_summary(report, output, runner)
         if lock:
             lock.close()
     return code

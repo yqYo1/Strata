@@ -1,0 +1,36 @@
+{
+  "scope": "Harmless real user-manager transient service; no root service, GPU, display or existing service operations",
+  "command": [
+    "/usr/bin/systemd-run",
+    "--user",
+    "--unit=strata-recovery-proof-1292377",
+    "--collect",
+    "--service-type=exec",
+    "--expand-environment=no",
+    "--property=RuntimeMaxSec=12s",
+    "--property=TimeoutStopSec=5s",
+    "--property=Restart=no",
+    "--property=ExecStopPost=/usr/bin/python3 /home/yayoi/.local/state/strata-sycl/gpu-stall-diagnosis/post-reboot-20261006/recovery-audit/display-recovery-20261006/user-unit-proof/post.py /home/yayoi/.local/state/strata-sycl/gpu-stall-diagnosis/post-reboot-20261006/recovery-audit/display-recovery-20261006/user-unit-proof",
+    "/usr/bin/python3",
+    "/home/yayoi/.local/state/strata-sycl/gpu-stall-diagnosis/post-reboot-20261006/recovery-audit/display-recovery-20261006/user-unit-proof/worker.py",
+    "/home/yayoi/.local/state/strata-sycl/gpu-stall-diagnosis/post-reboot-20261006/recovery-audit/display-recovery-20261006/user-unit-proof"
+  ],
+  "launcher_exit_code": 0,
+  "launcher_exited_before_worker_finished": true,
+  "passed": true,
+  "worker": {
+    "uid": 1000,
+    "pid": 1292381,
+    "ppid": 3327,
+    "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/strata-recovery-proof-1292377.service\n",
+    "gpu_or_gui_operations": false
+  },
+  "worker_finished": {
+    "completed": true
+  },
+  "stop_post": {
+    "executed": true,
+    "uid": 1000,
+    "gpu_or_gui_operations": false
+  }
+}

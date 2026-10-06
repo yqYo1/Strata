@@ -148,10 +148,25 @@ class RecoveryTests(unittest.TestCase):
                 with self.assertRaises(recovery.RecoveryError):
                     recovery.check_health(self.device, runner, binary)
 
+    def test_health_uses_provided_cursor_and_includes_display_faults(self):
+        binary = self.directory / 'probe'; binary.write_text(''); binary.chmod(0o755)
+        runner = types.SimpleNamespace(output=self.directory, stranded=False)
+        calls = []
+        def run(label, argv, **kwargs):
+            calls.append((label, argv))
+            self.assertNotIn('before-health-cursor', label)
+            return ('PASS 0000:05:00.0: 3 rounds, 16384 exact words each\n'
+                    if label == 'health' else 'xe 0000:05:00.0: GT0 Engine reset\n')
+        runner.run = run
+        with patch.object(recovery.os, 'geteuid', return_value=1000):
+            with self.assertRaisesRegex(recovery.RecoveryError, 'new xe'):
+                recovery.check_health(self.device, runner, binary, cursor='before-display-start')
+        self.assertIn('before-display-start', calls[-1][1])
+
 
 class RecoveryEntryTests(unittest.TestCase):
     """Run the actual shell entry after escalation, with harmless fake helpers."""
-    def run_entry(self, flr_result, bus_result=0, arguments=()):
+    def run_entry(self, flr_result, bus_result=0, arguments=(), display_result=None):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             entry = Path(__file__).with_name('recover-gpu.sh').read_text()
@@ -171,6 +186,11 @@ class RecoveryEntryTests(unittest.TestCase):
                             '*) exit 99;;\nesac\n')
             probe = root / 'strata-xe-health'
             probe.write_text('#!/bin/bash\nexit 99\n'); probe.chmod(0o755)
+            if display_result is not None:
+                (root / 'strata-xe-display-recover').write_text(
+                    '#!/bin/bash\n(( $# == 0 )) || exit 99\n'
+                    'echo "--apply --method display" >> "$(dirname "$0")/calls"\n'
+                    f'exit {display_result}\n')
             result = subprocess.run(['/bin/bash', str(script), *arguments],
                                     capture_output=True, text=True, timeout=5)
             calls = (root / 'calls').read_text().splitlines() if (root / 'calls').exists() else []
@@ -190,6 +210,12 @@ class RecoveryEntryTests(unittest.TestCase):
 
     def test_options_rejected_before_helpers(self):
         self.assertEqual(self.run_entry(0, arguments=('--apply',)), (2, []))
+
+    def test_refusal_delegates_to_optional_display_helper_without_arguments(self):
+        self.assertEqual(self.run_entry(4, display_result=3), (3, ['flr', 'display']))
+        self.assertEqual(self.run_entry(4, display_result=4), (4, ['flr', 'display']))
+        self.assertEqual(self.run_entry(0, display_result=3), (0, ['flr']))
+        self.assertEqual(self.run_entry(143, display_result=3), (143, ['flr']))
 
 
 if __name__ == '__main__':
