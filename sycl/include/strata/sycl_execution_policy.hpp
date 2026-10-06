@@ -15,4 +15,16 @@ inline bool require_sycl_host_boundaries(std::string& error) {
     }
     return true;
 }
+
+// The interactive VRAM path can destroy physical cache allocations while
+// verifier graphs retain their residency pointers. Its partial-failure path
+// also needs to restore the residency table before another request can run.
+inline bool require_sycl_cache_policy(bool elastic, std::string& error) {
+    if (elastic) {
+        error = "--vram-elastic is temporarily unavailable on SYCL; "
+                "choose --expert-cache at startup";
+        return false;
+    }
+    return true;
+}
 } // namespace strata

@@ -1,0 +1,80 @@
+=================================================================
+==1574661==ERROR: AddressSanitizer: heap-use-after-free on address 0x510000000140 at pc 0x7747f659e42e bp 0x7fffc2999100 sp 0x7fffc29988a8
+READ of size 192 at 0x510000000140 thread T0
+    #0 0x7747f659e42d in memcpy ../../../../src/libsanitizer/sanitizer_common/sanitizer_common_interceptors_memintrinsics.inc:115
+    #1 0x40bd02 in memcpy /usr/include/x86_64-linux-gnu/bits/string_fortified.h:29
+    #2 0x40bd02 in Queue::memcpy(void*, void const*, unsigned long)::{lambda()#1}::operator()() const /home/yayoi/.local/state/strata-sycl/residency-lifetime-audit-20261007/mtp-upload-cpu-v3/control/probe.cpp:27
+    #3 0x40bd02 in void std::__invoke_impl<void, Queue::memcpy(void*, void const*, unsigned long)::{lambda()#1}&>(std::__invoke_other, Queue::memcpy(void*, void const*, unsigned long)::{lambda()#1}&) /usr/include/c++/13/bits/invoke.h:61
+    #4 0x40bd02 in std::enable_if<is_invocable_r_v<void, Queue::memcpy(void*, void const*, unsigned long)::{lambda()#1}&>, void>::type std::__invoke_r<void, Queue::memcpy(void*, void const*, unsigned long)::{lambda()#1}&>(Queue::memcpy(void*, void const*, unsigned long)::{lambda()#1}&) /usr/include/c++/13/bits/invoke.h:111
+    #5 0x40bd02 in std::_Function_handler<void (), Queue::memcpy(void*, void const*, unsigned long)::{lambda()#1}>::_M_invoke(std::_Any_data const&) /usr/include/c++/13/bits/std_function.h:290
+    #6 0x40ce35 in std::function<void ()>::operator()() const /usr/include/c++/13/bits/std_function.h:591
+    #7 0x40ce35 in Queue::wait() /home/yayoi/.local/state/strata-sycl/residency-lifetime-audit-20261007/mtp-upload-cpu-v3/control/probe.cpp:32
+    #8 0x40b238 in Queue::wait_and_throw() /home/yayoi/.local/state/strata-sycl/residency-lifetime-audit-20261007/mtp-upload-cpu-v3/control/probe.cpp:36
+    #9 0x40b238 in main /home/yayoi/.local/state/strata-sycl/residency-lifetime-audit-20261007/mtp-upload-cpu-v3/control/probe.cpp:100
+    #10 0x7747f590d1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #11 0x7747f590d28a in __libc_start_main_impl ../csu/libc-start.c:360
+    #12 0x403954 in _start (/home/yayoi/.local/state/strata-sycl/residency-lifetime-audit-20261007/mtp-upload-cpu-v3/control/probe+0x403954) (BuildId: a09dc50fcbef3d176d6d0a118b022d52e68ae8cf)
+
+0x510000000140 is located 0 bytes inside of 192-byte region [0x510000000140,0x510000000200)
+freed by thread T0 here:
+    #0 0x7747f65a25e8 in operator delete(void*, unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:164
+    #1 0x408428 in std::__new_allocator<int>::deallocate(int*, unsigned long) /usr/include/c++/13/bits/new_allocator.h:172
+    #2 0x408428 in std::allocator<int>::deallocate(int*, unsigned long) /usr/include/c++/13/bits/allocator.h:210
+    #3 0x408428 in std::allocator_traits<std::allocator<int> >::deallocate(std::allocator<int>&, int*, unsigned long) /usr/include/c++/13/bits/alloc_traits.h:517
+    #4 0x408428 in std::_Vector_base<int, std::allocator<int> >::_M_deallocate(int*, unsigned long) /usr/include/c++/13/bits/stl_vector.h:390
+    #5 0x408428 in std::_Vector_base<int, std::allocator<int> >::~_Vector_base() /usr/include/c++/13/bits/stl_vector.h:369
+    #6 0x408428 in std::vector<int, std::allocator<int> >::~vector() /usr/include/c++/13/bits/stl_vector.h:738
+    #7 0x408428 in MtpDrafter::prefill(float const*, int const*, long, long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&) /home/yayoi/.local/state/strata-sycl/residency-lifetime-audit-20261007/mtp-upload-cpu-v3/control/prefill.inc:139
+    #8 0x40b111 in main /home/yayoi/.local/state/strata-sycl/residency-lifetime-audit-20261007/mtp-upload-cpu-v3/control/probe.cpp:90
+    #9 0x7747f590d1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #10 0x7747f590d28a in __libc_start_main_impl ../csu/libc-start.c:360
+    #11 0x403954 in _start (/home/yayoi/.local/state/strata-sycl/residency-lifetime-audit-20261007/mtp-upload-cpu-v3/control/probe+0x403954) (BuildId: a09dc50fcbef3d176d6d0a118b022d52e68ae8cf)
+
+previously allocated by thread T0 here:
+    #0 0x7747f65a1548 in operator new(unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:95
+    #1 0x40f295 in std::__new_allocator<int>::allocate(unsigned long, void const*) /usr/include/c++/13/bits/new_allocator.h:151
+    #2 0x40f295 in std::allocator<int>::allocate(unsigned long) /usr/include/c++/13/bits/allocator.h:198
+    #3 0x40f295 in std::allocator_traits<std::allocator<int> >::allocate(std::allocator<int>&, unsigned long) /usr/include/c++/13/bits/alloc_traits.h:482
+    #4 0x40f295 in std::_Vector_base<int, std::allocator<int> >::_M_allocate(unsigned long) /usr/include/c++/13/bits/stl_vector.h:381
+    #5 0x40f295 in std::_Vector_base<int, std::allocator<int> >::_M_create_storage(unsigned long) /usr/include/c++/13/bits/stl_vector.h:398
+    #6 0x40f295 in std::_Vector_base<int, std::allocator<int> >::_Vector_base(unsigned long, std::allocator<int> const&) /usr/include/c++/13/bits/stl_vector.h:335
+    #7 0x40f295 in std::vector<int, std::allocator<int> >::vector(unsigned long, std::allocator<int> const&) /usr/include/c++/13/bits/stl_vector.h:557
+    #8 0x404f1b in MtpDrafter::prefill(float const*, int const*, long, long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&) /home/yayoi/.local/state/strata-sycl/residency-lifetime-audit-20261007/mtp-upload-cpu-v3/control/prefill.inc:40
+    #9 0x40b111 in main /home/yayoi/.local/state/strata-sycl/residency-lifetime-audit-20261007/mtp-upload-cpu-v3/control/probe.cpp:90
+    #10 0x7747f590d1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #11 0x7747f590d28a in __libc_start_main_impl ../csu/libc-start.c:360
+    #12 0x403954 in _start (/home/yayoi/.local/state/strata-sycl/residency-lifetime-audit-20261007/mtp-upload-cpu-v3/control/probe+0x403954) (BuildId: a09dc50fcbef3d176d6d0a118b022d52e68ae8cf)
+
+SUMMARY: AddressSanitizer: heap-use-after-free ../../../../src/libsanitizer/sanitizer_common/sanitizer_common_interceptors_memintrinsics.inc:115 in memcpy
+Shadow bytes around the buggy address:
+  0x50fffffffe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x50ffffffff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x50ffffffff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x510000000000: fa fa fa fa fa fa fa fa 00 00 00 00 00 00 00 00
+  0x510000000080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x510000000100: fa fa fa fa fa fa fa fa[fd]fd fd fd fd fd fd fd
+  0x510000000180: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x510000000200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x510000000280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x510000000300: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x510000000380: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==1574661==ABORTING

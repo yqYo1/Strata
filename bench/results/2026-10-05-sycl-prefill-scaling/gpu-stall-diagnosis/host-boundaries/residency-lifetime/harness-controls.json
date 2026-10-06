@@ -1,0 +1,21 @@
+{
+  "scope": "Known harness failures before corrected tests; neither is a GPU validation",
+  "runs": [
+    {
+      "name": "first-upload-control",
+      "timeout_seconds": 5,
+      "mode": "capture-failure",
+      "exception": "subprocess.TimeoutExpired",
+      "asan_abort_on_error": 1,
+      "files_private": "/home/yayoi/.local/state/strata-sycl/residency-lifetime-audit-20261007/mtp-upload-cpu",
+      "replacement": "mtp-upload-cpu-v3"
+    },
+    {
+      "name": "malformed-preflight-selector",
+      "selector": "level_zero:gpu:999",
+      "exit_code": -6,
+      "stderr": "terminate called after throwing an instance of 'sycl::_V1::exception'\n  what():  Error parsing selector string \"level_zero:gpu:999\"  Too many colons (:)\n",
+      "replacement": "elastic-preflight-v2"
+    }
+  ]
+}

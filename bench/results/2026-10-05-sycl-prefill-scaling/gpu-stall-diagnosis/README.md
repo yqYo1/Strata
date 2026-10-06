@@ -12,6 +12,15 @@ CPU controller cases. It has not run on the GPU. Further GPU submissions
 stopped when the new fault occurred. The exact invalid allocation and the
 original machine-wide stall remain unresolved.
 
+The [subsequent residency audit](host-boundaries/residency-lifetime/README.md)
+demonstrates the stale recorded-pointer mechanism on CPU, fixes a separate
+MTP prefill host-upload error-path UAF, and rejects unvalidated interactive
+cache resizing before device selection. The new engine builds, but its model
+check was not started: a prerequisite small GPU check exits 1 after 12.8724 s
+with `UR_RESULT_ERROR_OUT_OF_RESOURCES`. GuC ID 0, an internal migration queue,
+fails to start and the kernel records 37 resets. This is post-Strata-fault
+evidence on the same boot, not an independent trigger or recovery success.
+
 The observations distinguish a reproducible CPU-side SYCL cache crash from
 the later xe/GuC failure. The first Strata stall's exact userspace location was
 not captured before termination. Neither a small GPU test nor a successful

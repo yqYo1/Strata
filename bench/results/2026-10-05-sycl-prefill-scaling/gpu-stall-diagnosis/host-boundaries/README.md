@@ -17,6 +17,17 @@ are retained. The
 and CPU validation only. GPU testing stopped after the fault; the lease and
 machine-wide recovery are not marked healthy.
 
+The [October 7 residency audit](residency-lifetime/README.md) traces tagged NEO
+raw residency references through physical destruction and replay. Four CPU
+mechanism cases support retiring and recreating lists, without identifying the
+actual crashing object. A separate extracted MTP prefill control finds a local
+host upload source freed on capture failure; seven candidate cases pass after
+completing that upload and propagating asynchronous errors. The interactive
+SYCL cache-resize feature is rejected before device selection. The updated
+engine builds and passes actual preflight, but has not run on the GPU: its
+small health prerequisite fails on the same boot with internal migration queue
+timeouts and 37 recorded resets. No model comparison or recovery was attempted.
+
 The GPU is the same Arc B570 10 GiB, Ryzen 5 5600X, 128 GiB RAM, kernel
 7.0.0-38-generic, stock NEO 26.31.39395.14 and oneAPI 2026.1.1. Boot ID is
 `ef28c8b7-46f0-4806-9326-36e3158bceb7`. Every positive GPU test here uses

@@ -1615,7 +1615,8 @@ int main(int argc, char **argv) try {
         }
     }
     std::string execution_error;
-    if (!strata::require_sycl_host_boundaries(execution_error)) {
+    if (!strata::require_sycl_host_boundaries(execution_error) ||
+        !strata::require_sycl_cache_policy(o.vram_elastic, execution_error)) {
         std::fprintf(stderr, "strata generate: %s\n", execution_error.c_str());
         return 2;
     }

@@ -1061,14 +1061,11 @@ bool MtpDrafter::prefill(const float *R_rows, const int32_t *next_tokens,
             stp[i * 4 + 3] = (int32_t) (cell + 1);
             for (int64_t h = 0; h < NHp; ++h) ps[i * NHp + h] = (int32_t) cell;
         }
-        /*
-        DPCT1124: cudaMemcpyAsync is migrated to asynchronous memcpy API.
-        While the origin API might be synchronous, it depends on the type of
-        operand memory, so you may need to call wait() on event return by memcpy
-        API to ensure synchronization behavior.
-        */
+        // Capture or submission below can fail before the final queue wait.
+        // Complete this upload while its local source is still alive. This is
+        // one wait per chunk; the device-input groups remain batched.
         if (DPCT_CHECK_ERROR(cs_->memcpy(pf_dev_, rec.data(),
-                                         rec.size() * sizeof(int32_t))) != 0) {
+                                         rec.size() * sizeof(int32_t)).wait_and_throw()) != 0) {
             err = "mtp prefill: the input records upload failed";
             return false;
         }
@@ -1130,7 +1127,7 @@ bool MtpDrafter::prefill(const float *R_rows, const int32_t *next_tokens,
                 return false;
             }
         }
-        if (DPCT_CHECK_ERROR(cs_->wait()) != 0) {
+        if (DPCT_CHECK_ERROR(cs_->wait_and_throw()) != 0) {
             /*
             DPCT1009: SYCL reports errors using exceptions and does not use
             error codes. Please replace the "get_error_string_dummy(...)" with a
@@ -1171,7 +1168,7 @@ bool MtpDrafter::prefill(const float *R_rows, const int32_t *next_tokens,
                                          (size_t)T * HCN * sizeof(float))) !=
                 0 ||
             DPCT_CHECK_ERROR((cs_)->ext_oneapi_graph(*prefill_exec_[T])) != 0 ||
-            DPCT_CHECK_ERROR(cs_->wait()) != 0) {
+            DPCT_CHECK_ERROR(cs_->wait_and_throw()) != 0) {
             /*
             DPCT1009: SYCL reports errors using exceptions and does not use
             error codes. Please replace the "get_error_string_dummy(...)" with a
