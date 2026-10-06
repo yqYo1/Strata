@@ -51,6 +51,7 @@
 #include <thread>
 #include <vector>
 #include "strata/host_completion.hpp"
+#include "strata/host_wait.hpp"
 
 #ifndef STRATA_PREFILL_MMQ
 // A build without the llama.cpp sources (no STRATA_NATIVE_EXPERTS): no MMQ, the FP16 expert path everywhere.
@@ -269,6 +270,7 @@ struct Stager {
     std::atomic<int> issued{0}, active{0};
     uint32_t gen = 0;
     bool quit = false;
+    std::atomic<bool> stopping{false};
     std::mutex mu;
     std::condition_variable cv;
     std::vector<std::thread> threads;
@@ -334,11 +336,15 @@ struct Stager {
                 const int j = claim(seen);
                 if (j < 0) { active.fetch_sub(1, std::memory_order_acq_rel); break; }
                 const int b = j % kRing;
-                if (j >= kRing)   // job j - kRing's DMA from this buffer is queued
-                    while (issued.load(std::memory_order_acquire) <= j - kRing) std::this_thread::yield();
-                // and done (#385) - for a generation's first kRing jobs that is the previous generation's last DMA from
-                // the buffer, which nothing else waits for when a chunk ends without a sync (no MTP)
-                while (!buffer_free(b)) std::this_thread::yield();
+                const auto stopped = [&] { return stopping.load(std::memory_order_acquire); };
+                if ((j >= kRing && !strata::wait_host_ready(
+                        [&] { return issued.load(std::memory_order_acquire) > j - kRing; },
+                        stopped, "expert staging: preceding DMA not issued")) ||
+                    !strata::wait_host_ready([&] { return buffer_free(b); }, stopped,
+                                            "expert staging: DMA acknowledgement")) {
+                    active.fetch_sub(1, std::memory_order_acq_rel);
+                    break; // Never overwrite a buffer whose DMA is still pending.
+                }
                 const Job& jb = jobs[(size_t) j];
                 const auto copy_start = measure_copies ? Clock::now() : Clock::time_point{};
                 if (jb.gsrc != nullptr) {
@@ -383,14 +389,18 @@ struct Stager {
         }
         for (size_t i = 0; i < jobs.size(); ++i) ready[i].store(0, std::memory_order_relaxed);
         issued.store(0);
+        stopping.store(false, std::memory_order_release);
         ++gen;
         head.store((uint64_t) gen << 32 | (uint64_t) jobs.size() << 16, std::memory_order_release);
         cv.notify_all();
     }
     /// Job j's bytes, in a pinned buffer (waits for the copy).
-    const uint8_t* wait(int j) {
-        while (!ready[(size_t) j].load(std::memory_order_acquire)) std::this_thread::yield();
-        return buf[j % kRing];
+    const uint8_t* wait(int j, const std::atomic<bool>* stop = nullptr) {
+        const bool ready_now = strata::wait_host_ready(
+            [&] { return ready[(size_t) j].load(std::memory_order_acquire) != 0; },
+            [&] { return stop && stop->load(std::memory_order_acquire); },
+            "expert staging: host buffer readiness");
+        return ready_now ? buf[j % kRing] : nullptr;
     }
     // The copy queue's host task acknowledges its preceding DMA. Worker polls
     // access CPU atomics only; no GPU-written volatile marker is assumed safe.
@@ -405,9 +415,11 @@ struct Stager {
     }
     /// No job is running after this (the end of a layer, or an early return in the middle of one).
     void finish() {
+        stopping.store(true, std::memory_order_release);
         head.store((uint64_t) gen << 32, std::memory_order_release);   // n = 0: nothing more to claim
         issued.store(1 << 30, std::memory_order_release);
-        while (active.load(std::memory_order_acquire) != 0) std::this_thread::yield();
+        strata::wait_host_ready([&] { return active.load(std::memory_order_acquire) == 0; },
+                                "expert staging: worker completion");
     }
 };
 
@@ -2532,8 +2544,9 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
             if (c0 + T < n) {   // SYCL port: T, this chunk's length (the first chunk can be shorter: chunk_len)
                 // the other buffer's upload (a chunk ago) is done before the SSD thread refills it
                 if (DPCT_CHECK_ERROR([&] {
-                        while (!strata::host_completed(m.ple_done_seq[ple_buf ^ 1], m.ple_want[ple_buf ^ 1]))
-                            std::this_thread::yield();
+                        strata::wait_host_ready([&] {
+                            return strata::host_completed(m.ple_done_seq[ple_buf ^ 1], m.ple_want[ple_buf ^ 1]);
+                        }, "PLE staging: DMA acknowledgement");
                     }()) != 0) {
                     /*
                     DPCT1009: SYCL reports errors using exceptions and does
@@ -2754,8 +2767,10 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
         const bool threaded_issue = stream_all && issuer_on;
         if (threaded_issue) {
             issuer = std::thread([&] {
+                try {
                 const core::OnDevice od(m.device);
                 for (size_t idx = 0; idx < seq.size(); ++idx) {
+                    if (a_stop.load(std::memory_order_acquire)) return;
                     while (idx >= a_consumed.load(std::memory_order_acquire) + (size_t) m.ring) {
                         if (a_stop.load(std::memory_order_acquire)) return;
                         std::this_thread::yield();
@@ -2777,7 +2792,8 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                         transfers.copy(m.copy, m.stage_dev[sl], en.blob, bytes, en.l);
                         ++iss_dma;
                     } else {
-                        const uint8_t* hb = m.stager->wait(en.job);
+                        const uint8_t* hb = m.stager->wait(en.job, &a_stop);
+                        if (!hb) return;
                         /*
                         DPCT1124: cudaMemcpyAsync is migrated to
                         asynchronous memcpy API. While the origin API might be
@@ -2794,6 +2810,15 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                     ++iss_streamed;
                     a_issued.store(idx + 1, std::memory_order_release);
                 }
+                } catch (const std::exception& e) {
+                    std::fprintf(stderr, "strata: prefill issuer failed: %s; ending the process without GPU cleanup\n", e.what());
+                    std::fflush(stderr);
+                    std::_Exit(1);
+                } catch (...) {
+                    std::fprintf(stderr, "strata: prefill issuer failed: unknown exception\n");
+                    std::fflush(stderr);
+                    std::_Exit(1);
+                }
             });
         } else if (stream_all) {
             issue_until((size_t) m.ring);   // layer 0's first experts, behind the embedding and the PLE
@@ -2801,7 +2826,8 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
         // the consumer's side: entry k's copy is on the copy stream (the thread issued it), then k is given back
         auto wait_issued = [&](size_t k) {
             if (!threaded_issue) return;
-            while (a_issued.load(std::memory_order_acquire) <= k) std::this_thread::yield();
+            strata::wait_host_ready([&] { return a_issued.load(std::memory_order_acquire) > k; },
+                                    "prefill: issuer publication");
         };
         auto give_back = [&](size_t upto) {
             if (threaded_issue) a_consumed.store(upto, std::memory_order_release);

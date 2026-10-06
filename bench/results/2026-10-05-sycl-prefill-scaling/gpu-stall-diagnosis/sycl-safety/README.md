@@ -69,8 +69,10 @@ connectors do not imply there are no GPU clients. See
 
 ## Remaining investigation and validation
 
-Stager and PLE polls still need a cancellation/error-aware failure path when
-a DMA never completes. Legacy bounded GPU waits may fall through after their
+[The subsequent host-wait fix](../stager-stop/README.md) bounds Stager/PLE
+polls and propagates issuer/worker stop flags, with an actual old-code CPU
+hang reproduction. Blocking driver/file-I/O and restoration paths still need
+review. Legacy bounded GPU waits may fall through after their
 spin limit without proving that host payload is published. Raw diagnostic
 verifier pointers need a lifetime audit against concurrent destruction.
 Error handling during graph/memory restoration and partial unmap failures

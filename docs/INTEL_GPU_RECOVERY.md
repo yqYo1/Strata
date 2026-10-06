@@ -108,7 +108,10 @@ The [validation record](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-sta
 The shell syntax, entry sequencing, recovery guards, reset ordering, method restoration, child
 timeouts, and rejection of misleading health results have CPU-only tests:
 `python3 sycl/tools/test_recover_xe.py`. The probe builds with oneAPI 2026.1.1.
-Read-only inspection ran on this host. No root recovery action has yet been
-executed by this investigation, so a successful no-reboot recovery is pending.
+Read-only inspection ran on this host. A root recovery attempt was refused
+before reset because Xorg held the B570 open in an active local X11 session.
+Stopping that display service would end the GUI session and requires separate
+authorization. No device reset was performed, so successful no-reboot recovery
+is pending.
 The full Strata arithmetic/context/cancellation/graph checks remain separate
 from this 64 KiB GPU health check.
