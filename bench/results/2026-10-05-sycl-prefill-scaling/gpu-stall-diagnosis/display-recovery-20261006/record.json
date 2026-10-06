@@ -1,23 +1,23 @@
 {
-  "recorded_utc": "2026-10-06T09:25:00.209612+00:00",
+  "recorded_utc": "2026-10-06T09:48:02.711525+00:00",
   "entry_command": "~/.local/bin/strata-gpu-recover",
   "source_and_installed_sha256": {
     "sycl/tools/recover-gpu.sh": "7eb887ba4ec641af3d19767320984557dccfe293ce938c0b5f63bc0279caa1f0",
     "sycl/tools/recover-xe.sh": "6eb3daf8139511b19d2b25371508d9cd17134cef1841ada0a7f48daa640445e8",
-    "sycl/tools/recover-xe-display.sh": "afcec133b3bdeaa7fb623918640bae8a4f6cd4d3528387da8b69fd7cc104d7eb",
+    "sycl/tools/recover-xe-display.sh": "32b93102342812abc4ebb8055773110b27a0609dfd70a5c75704ceaee410ee88",
     "sycl/tools/test_recover_xe.py": "60ae5bbf20f85fc8383c2d387fa5b8c7c7fb22920b7ba5da88d20395ab81f16d",
-    "sycl/tools/test_recover_xe_display.py": "c7c7dfee39d9c40a29b857a94df1dac5361778537d14114bd5b66508d8ce98a4",
+    "sycl/tools/test_recover_xe_display.py": "10147606fa40b779cca4e2f03192a83f45663fe31ad651c7915ba3dc9ac4b52f",
     "sycl/tools/xe-health.cpp": "752b470c40e0a1f5198bca88480406509407cc1ffb5a4abdff2eaadd898fdf02",
     "/home/yayoi/.local/bin/strata-gpu-recover": "7eb887ba4ec641af3d19767320984557dccfe293ce938c0b5f63bc0279caa1f0",
     "/home/yayoi/.local/bin/strata-xe-recover-core": "6eb3daf8139511b19d2b25371508d9cd17134cef1841ada0a7f48daa640445e8",
-    "/home/yayoi/.local/bin/strata-xe-display-recover": "afcec133b3bdeaa7fb623918640bae8a4f6cd4d3528387da8b69fd7cc104d7eb",
+    "/home/yayoi/.local/bin/strata-xe-display-recover": "32b93102342812abc4ebb8055773110b27a0609dfd70a5c75704ceaee410ee88",
     "/home/yayoi/.local/bin/strata-xe-health": "7375211a3a97a2b284215dcdad6ba652fc9af2fa2e1a92bc47361e3893931d3b"
   },
   "shell_syntax": "PASS: bash -n, all three scripts",
   "cpu_tests": {
     "core_and_entry": 16,
-    "display_handoff": 22,
-    "total": 38,
+    "display_handoff": 23,
+    "total": 39,
     "passed": true
   },
   "test_scope": "Harmless fake service/reset/probe backends; real POSIX flock and CPU process deadlines; no sudo, root service, GPU, GUI or PCI sysfs write",
@@ -40,5 +40,7 @@
     "modified_during_this_work": false
   },
   "hardware_recovery": "Not executed; no SDDM shutdown, PCI reset, new GPU probe or firmware/kernel update during validation",
-  "pending": "Actual root recovery and post-display-start strict GPU/kernel-journal health proof"
+  "pending": "Actual root recovery and post-display-start strict GPU/kernel-journal health proof",
+  "real_controlling_terminal": "PASS: actual confirm() with newly created PTY; prompt observed before input; yes -> True, no/Enter -> False; detached process without tty -> False. No root/service/GPU/GUI operation.",
+  "tty_regression": "Previous r+ terminal open reproducibly failed with io.UnsupportedOperation before showing the prompt; fixed separate read/write opens."
 }

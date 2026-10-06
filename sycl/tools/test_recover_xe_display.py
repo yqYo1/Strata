@@ -1,11 +1,16 @@
 """Exercise GUI recovery approval/guards/order with harmless fake backends."""
+import errno
+import fcntl
 import io
 import json
 import os
 from pathlib import Path
 import pwd
+import select
+import subprocess
 import tempfile
 import time
+import termios
 import types
 import unittest
 from unittest.mock import patch
@@ -186,13 +191,53 @@ class DisplayRecoveryTests(unittest.TestCase):
     def test_confirmation_requires_literal_yes_and_a_terminal(self):
         for answer in ['\n', 'no\n', 'y\n', 'YES\n', 'yes\n']:
             with self.subTest(answer=answer):
-                # Writes to a real terminal do not overwrite its input stream.
-                terminal = io.StringIO(answer)
-                terminal.write = lambda text: len(text)
-                with patch('builtins.open', return_value=terminal):
+                with patch('builtins.open', side_effect=[io.StringIO(answer), io.StringIO()]):
                     self.assertEqual(display.confirm(), answer == 'yes\n')
         with patch('builtins.open', side_effect=OSError('no terminal')):
             self.assertFalse(display.confirm())
+
+    def test_real_controlling_terminal_confirmation_and_no_terminal(self):
+        # Execute only the actual confirm() definition, never main/offer/worker.
+        script = ("from pathlib import Path; import sys,types; "
+                  "source=Path(sys.argv[1]).read_text().split(\"<<'PY'\\n\",1)[1].rsplit('\\nPY',1)[0]; "
+                  "module=types.ModuleType('tty_confirmation_test'); exec(compile(source,sys.argv[1],'exec'),module.__dict__); "
+                  "print('CONFIRM_RESULT='+str(module.confirm()),flush=True)")
+        command = ['/usr/bin/python3', '-c', script, str(Path(__file__).with_name('recover-xe-display.sh'))]
+        prompt = 'yes と入力してください'.encode()
+        for answer in [b'yes\n', b'no\n', b'\n']:
+            with self.subTest(answer=answer):
+                master, slave = os.openpty()
+                def controlling_terminal():
+                    os.setsid(); fcntl.ioctl(0, termios.TIOCSCTTY, 0)
+                child = subprocess.Popen(command, stdin=slave, stdout=slave, stderr=slave,
+                                         preexec_fn=controlling_terminal)
+                os.close(slave)
+                text, supplied = b'', False
+                deadline = time.monotonic() + 5
+                try:
+                    while time.monotonic() < deadline:
+                        ready, _, _ = select.select([master], [], [], 0.05)
+                        if ready:
+                            try:
+                                part = os.read(master, 4096)
+                            except OSError as error:
+                                if error.errno == errno.EIO: break
+                                raise
+                            if not part: break
+                            text += part
+                        if not supplied and prompt in text:
+                            os.write(master, answer); supplied = True
+                    self.assertTrue(supplied, text.decode(errors='replace'))
+                    self.assertEqual(child.wait(timeout=1), 0)
+                    result = b'True' if answer == b'yes\n' else b'False'
+                    self.assertIn(b'CONFIRM_RESULT=' + result, text)
+                finally:
+                    os.close(master)
+                    if child.poll() is None: child.kill(); child.wait(timeout=1)
+        detached = subprocess.run(command, stdin=subprocess.DEVNULL, capture_output=True,
+                                  start_new_session=True, timeout=5)
+        self.assertEqual(detached.returncode, 0)
+        self.assertIn(b'CONFIRM_RESULT=False', detached.stdout)
 
     def test_invalid_plan_and_permissions_never_stop(self):
         for field, value in [('approved', False), ('service', 'other.service'), ('bdf', '0000:06:00.0'), ('boot_id', 'old-boot')]:

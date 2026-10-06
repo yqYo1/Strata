@@ -130,7 +130,7 @@ named `intel-arc-bmg-21.1180.cab` but its release metadata says FWCODE 21.1182.
 The [original validation record](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/recovery-validation-20261006.json)
 records the earlier 14-test version. The
 [GUI handoff validation](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/display-recovery-20261006/record.json)
-records 38 passing CPU test methods, shell syntax and the current installed
+records 39 passing CPU test methods, shell syntax and the current installed
 digests. These cover reset ordering, method restoration, child timeouts,
 misleading health results, no-argument shell sequencing, explicit consent,
 changed/hidden owners, display ownership, borrowed locks, stranded writers,
@@ -143,7 +143,11 @@ python3 sycl/tools/test_recover_xe_display.py
 
 The service/reset backends are harmless fakes. Separately, a real temporary user
 service proved that its launcher exits before the manager-owned worker finishes
-and its `ExecStopPost` runs. That test used no root service, GPU or GUI operation;
+and its `ExecStopPost` runs. The confirmation itself is also tested with a real
+private controlling PTY: its prompt appears before input, only `yes` proceeds,
+and no/Enter or a detached process without a terminal cancels. This caught and
+fixed an earlier `r+` open that requires seeking and fails on real terminals.
+Those tests used no root service, GPU or GUI operation;
 it does not validate the root SDDM recovery transaction. The probe builds with
 oneAPI 2026.1.1.
 Read-only inspection ran on this host. A root recovery attempt was refused

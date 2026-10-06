@@ -115,13 +115,14 @@ def admissible(core, runner, expected=None):
 
 def confirm():
     try:
-        with open('/dev/tty', 'r+') as terminal:
-            terminal.write('XorgがB570を使用中です。GUIを終了してGPU復旧を試します。\n'
+        # BufferedRandom (r+) requires seeking, which a real terminal cannot do.
+        with open('/dev/tty', 'r', encoding='utf-8') as reader, open('/dev/tty', 'w', encoding='utf-8') as writer:
+            writer.write('XorgがB570を使用中です。GUIを終了してGPU復旧を試します。\n'
                            '開いているGUIアプリも終了します。未保存の作業を先に保存してください。\n'
                            '処理後はログイン画面の起動を試みます。復旧できない場合は戻らないことがあります。\n'
                            'GUIを終了して続ける場合だけ yes と入力してください（Enterで中止）: ')
-            terminal.flush()
-            return terminal.readline(32).strip() == 'yes'
+            writer.flush()
+            return reader.readline(32).strip() == 'yes'
     except OSError:
         return False
 
