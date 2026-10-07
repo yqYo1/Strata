@@ -27,7 +27,11 @@ graph preparation dominate their request times. The raw timing records remain
 in `results.csv` and `comparison.json` for provenance; they are excluded from
 throughput comparisons and tuning decisions. Meaningful comparisons require
 at least32,768 input tokens and the same prompt, chunk, context and KV settings.
-The first32K logged checks and subsequent separate clean timings are underway.
+The [32K checks and separate clean timings](code32k/README.md) are complete:
+unmodified upstream averages393.65 prompt tok/s and17.14 decode tok/s. The
+integrated fork averages334.93 and16.96, but those are observed times only:
+one of its clean runs changes first-head logprobs and later IDs. Only the
+upstream currently passes the output reproducibility gate for a tuning reference.
 
 All short arms request `--expert-cache 600 --expert-cache-per-layer`. Upstream
 expands that budget into768 mixed-size slots (1498 MiB); the integration retains

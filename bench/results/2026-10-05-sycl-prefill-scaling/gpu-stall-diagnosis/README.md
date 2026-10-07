@@ -5,7 +5,11 @@ adds a clean-source build, eight short functional preflight processes and exact 
 whole-head controls on B570. It fixes a local mixed-slot copy overrun and retains
 the extra-phase-wait watchdog failure. API logging alone completes the default
 prefill control. Short timings are excluded from tuning; comparisons now require
-at least32K inputs. Full256K and long-prefill gates remain open.
+at least32K inputs. The [actual32K comparison](../upstream-v0.1.40.2-20261008/code32k/README.md)
+completes logged controls and two clean repetitions per executable without new
+xe faults. Upstream outputs/logprobs repeat exactly; the integrated fork has an
+output mismatch in one clean run and its timings are not an accepted tuning
+reference. Full256K and long-prefill correctness gates remain open.
 
 The [retained-backing comparison](observed-regular-launch-retained-20261007/README.md)
 also stops on the first 2048-token request, at layer 17/token 256, with both
