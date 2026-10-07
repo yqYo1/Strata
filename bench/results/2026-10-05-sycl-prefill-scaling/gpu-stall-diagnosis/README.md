@@ -347,3 +347,17 @@ repeat that continues progressing, healthy GPU probes after both cleanups,
 and CPU/GDB serving-transport checks. They do not establish full-context
 capacity or a prevention fix. Prefill now identifies its layer range in
 chunk-start logs; the separate build receipt makes no GPU execution claim.
+
+
+The [eager full-context comparison](verifier-eager-full-20261007/README.md)
+completes generation through cell 262143, but all first-head floats and the
+logprob lines differ from the lazy full run. The strict comparison stops
+before repeated-capacity cases. Owned cleanup and the following logged GPU
+health probe pass without reset; this is an output-comparison failure.
+
+The [optional FP16 expert reuse prototype](expanded-fp16-cache-prepared-20261007/README.md)
+built privately without changing production inputs. GPU parity, speed and
+capacity fallback remain untested. The user-supplied
+[B70 offload reference review](b70-offload-reference-20261007/README.md)
+pins source/event-ordering findings and separates exact scheduling ideas
+from masked-expert approximations.
