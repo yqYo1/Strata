@@ -75,3 +75,18 @@ The [actual-DMA candidate with CNR](event-ack-cb-cnr/README.md) matches the
 production control's complete state/head in its logged32K run, then stops in
 native timestamp status queries in the next unlogged run. It remains unadopted;
 owned cleanup and same-boot GPU health pass without a manual recovery action.
+
+
+The [nonprofiling private copy queue](event-ack-no-profile-cb-cnr/README.md)
+completes three32K comparisons with identical prefill state, full head and
+output, without new xe faults. It is not adopted: its directly owned queue is
+outside the existing global-wait registry. A registered factory is separately
+rebuilt and validated before considering any clean timing or production use.
+
+
+The [registered copy-queue candidate](event-ack-registered-copy-cb-cnr/README.md)
+preserves the existing global-wait contract and passes three matched32K full
+state/head/output checks with no new xe faults. Every translation unit uses
+the same changed header and production compile settings match. This is still
+a private correctness candidate; clean timing, default-environment repeats and
+full262,144-cell serving remain separate gates, with no adoption claimed.
