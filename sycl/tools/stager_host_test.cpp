@@ -37,6 +37,7 @@ namespace core {
 struct ExpertSource { bool copy_blob(int32_t, int32_t, uint8_t*) { return false; } };
 struct GgufExpertSource { bool read_into(int32_t, int32_t, uint8_t*, size_t) const { return false; } };
 }
+inline bool force_pageable() { return false; }
 #define DPCT_CHECK_ERROR(...) ([&] { __VA_ARGS__; return 0; }())
 #include "stager-under-test.hpp"
 

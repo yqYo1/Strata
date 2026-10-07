@@ -8,20 +8,131 @@
 #include "strata/sycl_queue.hpp"
 #include "strata/core/expert_cache.hpp"
 
-#if !defined(STRATA_USE_HIP)
+// #533's segmented cache uses CUDA's virtual memory management (cuMem*): not on HIP, neither the RDNA backend nor
+// the gfx906 compat build (PR #638), which compiles this file as HIP without STRATA_USE_HIP
+#define STRATA_EC_NO_VMM 1   // SYCL port: no driver virtual memory management on Level Zero (--vram-elastic is CUDA-only, #533)
+
+#if !defined(STRATA_EC_NO_VMM)
    // #533: the virtual memory management types (the functions come through the
    // runtime's entry points)
 #endif
 
 #include <algorithm>
+#include <atomic>
+#include <set>
 #include <cstdio>
 #include <filesystem>
+#include <cstdlib>
 #include <utility>
 #include <memory>
 #include <sycl/ext/oneapi/virtual_mem/virtual_mem.hpp>
 #include <cstring>
 
 namespace strata::core {
+
+// Local (card) memory this process holds, from the DRM clients' fdinfo (i915: drm-total-local0, xe: drm-total-vram0).
+// Level Zero's free-memory query reads the constant total on an Arc A750 (i915): the engine then sized its caches
+// from the whole card and over-allocated (UR_RESULT_ERROR_OUT_OF_HOST_MEMORY at the first launch). Other processes'
+// memory is not in this number, so it only ever LOWERS the figure the driver gave.  0 = not available.
+static unsigned long long own_drm_local_bytes() {
+#if defined(__linux__)
+    unsigned long long total = 0;
+    std::error_code ec;
+    std::set<unsigned long long> seen;   // one DRM client may appear under several fds
+    for (const auto& e : std::filesystem::directory_iterator("/proc/self/fdinfo", ec)) {
+        std::FILE* f = std::fopen(e.path().string().c_str(), "r");
+        if (f == nullptr) continue;
+        char line[256];
+        bool drm = false;
+        unsigned long long client = 0, bytes = 0;
+        while (std::fgets(line, sizeof line, f)) {
+            unsigned long long v = 0;
+            char unit[8] = {0};
+            if (std::strncmp(line, "drm-driver:", 11) == 0) drm = true;
+            else if (std::sscanf(line, "drm-client-id: %llu", &client) == 1) {}
+            else if ((std::sscanf(line, "drm-total-local0: %llu %7s", &v, unit) >= 1 ||
+                      std::sscanf(line, "drm-total-vram0: %llu %7s", &v, unit) >= 1) && v > 0) {
+                const unsigned long long mul = unit[0] == 'K' ? 1024ull : unit[0] == 'M' ? 1048576ull
+                                             : unit[0] == 'G' ? 1073741824ull : 1ull;
+                bytes += v * mul;
+            }
+        }
+        std::fclose(f);
+        if (drm && bytes > 0 && seen.insert(client).second) total += bytes;
+    }
+    return total;
+#else
+    return 0;
+#endif
+}
+
+// See the header.  NVIDIA's DGX Spark Porting Guide (section 5.5, "Memory reporting on UMA systems") recommends the same:
+// not to rely on cudaMemGetInfo alone but to count the memory the OS can reclaim.  Swap is not counted here (unlike
+// NVIDIA's reference snippet): an expert cache that pushes the system into swap would be far slower than a smaller one.
+size_t device_free_bytes() try {
+    size_t free_b = 0, total_b = 0;
+    /*
+    DPCT1106: 'cudaMemGetInfo' was migrated with the Intel extensions for
+    device information which may not be supported by all compilers or runtimes.
+    You may need to adjust the code.
+    */
+    dpct::get_current_device().get_memory_info(free_b, total_b);
+    if (const unsigned long long own = own_drm_local_bytes(); own > 0 && total_b > own && total_b - own < free_b) {
+        static std::atomic<bool> said{false};
+        if (free_b + (16ull << 20) >= total_b && !said.exchange(true))
+            std::fprintf(stderr, "strata: the driver reports the whole card as free although this process holds %.2f GiB of it (Arc A750/i915 does this); sizing from the DRM fdinfo instead\n", (double) own / 1073741824.0);
+        free_b = (size_t) (total_b - own);
+    }
+#if defined(__linux__) && !defined(STRATA_HIP_GFX906)   // (the gfx906 compat layer has no cudaDevAttrIntegrated; that GPU is discrete)
+    // per device: a box can mix an integrated GPU (an APU) with a discrete one, and the answer is the CURRENT device's
+    static std::atomic<int> uma_cache[64];   // 0 unknown, 1 integrated (unified memory), 2 discrete
+    bool unified_memory = false;
+    {
+        int dev = 0, v = 0;
+        if (DPCT_CHECK_ERROR(dev = dpct::get_current_device_id()) == 0 &&
+            dev >= 0 && dev < 64) {
+            int c = uma_cache[dev].load(std::memory_order_acquire);
+            if (c == 0) {
+                c = DPCT_CHECK_ERROR(
+                        v = dpct::get_device(dev).get_integrated()) == 0 &&
+                            v
+                        ? 1
+                        : 2;
+                uma_cache[dev].store(c, std::memory_order_release);
+            }
+            unified_memory = c == 1;
+        }
+    }
+    if (unified_memory) {
+        if (FILE* m = std::fopen("/proc/meminfo", "r")) {
+            char line[256];
+            unsigned long long kb = 0;
+            while (std::fgets(line, sizeof line, m))
+                if (std::sscanf(line, "MemAvailable: %llu kB", &kb) == 1) break;
+            std::fclose(m);
+            // STRATA_UMA_HEADROOM_GIB: a whole number of GiB, 0..1024; anything else keeps the default 6 (said once)
+            static const long gib = [] {
+                const char* h = std::getenv("STRATA_UMA_HEADROOM_GIB");
+                if (h == nullptr) return 6L;
+                char* end = nullptr;
+                const long v = std::strtol(h, &end, 10);
+                if (end != h && *end == '\0' && v >= 0 && v <= 1024) return v;
+                std::fprintf(stderr, "strata: STRATA_UMA_HEADROOM_GIB=%s is not a whole number of GiB (0-1024): using 6\n", h);
+                return 6L;
+            }();
+            const unsigned long long head = (unsigned long long) gib << 30;
+            const unsigned long long avail = kb << 10;
+            if (avail > head && avail - head > free_b) free_b = (size_t) (avail - head);
+        }
+    }
+#endif
+    return free_b;
+}
+catch (sycl::exception const &exc) {
+  std::cerr << exc.what() << "Exception caught at file:" << __FILE__
+            << ", line:" << __LINE__ << std::endl;
+  std::exit(1);
+}
 
 bool read_expert_profile(const std::string& path, int64_t n_layers, int64_t n_expert,
                          std::vector<std::pair<int32_t, int32_t>>& ranked, int64_t& slots, std::string& err) {
@@ -163,7 +274,7 @@ ExpertCache::~ExpertCache() {
 // ---- #533: the segmented arena (--vram-elastic).  The driver API's virtual memory functions, looked up through the
 // runtime (no link against the driver library): one address range for the whole arena, backed by physical segments,
 // and the tail's segments unmapped / mapped again later.  Nothing here runs unless a segment size was set.
-#if 0   // SYCL port: no driver virtual memory management (--vram-elastic is CUDA-only, #533)
+#if !defined(STRATA_EC_NO_VMM)
 namespace {
 struct Vmm {
     int(CUDAAPI *device_get)(int *, int) = nullptr;
@@ -453,8 +564,14 @@ bool ExpertCache::ensure_blocking_staging(std::size_t bytes, std::string& err) {
 }
 #endif
 
-bool ExpertCache::open(int64_t n_slots, int64_t n_layers, int64_t n_expert,
-                       int64_t blob_bytes, std::string &err) try {
+namespace {
+bool g_cache_vmm = false;   // set_vmm
+}  // namespace
+
+void ExpertCache::set_vmm(bool enabled) { g_cache_vmm = enabled; }
+
+bool ExpertCache::open(int64_t n_slots, int64_t n_layers, int64_t n_expert, int64_t blob_bytes,
+                       std::string& err) {
     close();
     if (n_slots <= 0) {
         err = "ExpertCache: n_slots must be positive";
@@ -481,6 +598,7 @@ bool ExpertCache::open(int64_t n_slots, int64_t n_layers, int64_t n_expert,
     */
     if (DPCT_CHECK_ERROR(
             dpct::get_current_device().get_memory_info(free_b, total_b)) == 0) {
+        free_b = device_free_bytes();   // unified memory: what the OS can give back counts (see the header)
         if ((uint64_t) free_b < want) {
             char buf[320];
             std::snprintf(buf, sizeof buf,
@@ -496,8 +614,20 @@ bool ExpertCache::open(int64_t n_slots, int64_t n_layers, int64_t n_expert,
 
     if (seg_req_ > 0) {   // #533: --vram-elastic: physical segments behind one address range (zeroed below)
         if (!open_segmented(want, err)) return false;
+    } else if (g_cache_vmm && vmm_available()) {
+        // the elastic K/V: every chunk mapped now; the K/V may later take some of them (and give them back)
+        auto r = std::make_unique<VmmRange>();
+        if (!r->reserve(want) || !r->map_range(0, r->chunks(), [] { return (VmmChunk) 0; })) {
+            char buf[256];
+            std::snprintf(buf, sizeof buf, "ExpertCache: mapping %.2f GiB of VRAM failed: out of memory",
+                          (double) want / 1073741824.0);
+            err = buf;
+            return false;
+        }
+        base_ = r->base();
+        vmm_ = std::move(r);
     } else if (DPCT_CHECK_ERROR(
-                   base_ = (uint8_t *)strata::checked_usm(sycl::malloc_device(
+                   base_ = (uint8_t *)strata::checked_usm(strata::malloc_device_guarded(
                        (size_t)want, dpct::get_in_order_queue()))) != 0) {
         base_ = nullptr;
         char buf[256];
@@ -520,7 +650,7 @@ bool ExpertCache::open(int64_t n_slots, int64_t n_layers, int64_t n_expert,
     // Zeroed so a slot read before it is filled is a DETERMINISTIC wrong answer rather than whatever the
     // allocator handed back.  A stale block of a previous process's memory would still sum to finite floats.
     if (DPCT_CHECK_ERROR(
-            dpct::get_in_order_queue().memset(base_, 0, (size_t)want).wait()) !=
+            (strata::big_fill_zero(dpct::get_in_order_queue(), base_, (size_t)want), 0)) !=
         0) {
         err = "ExpertCache: cudaMemset of the slot arena failed";
         close();
@@ -551,11 +681,6 @@ bool ExpertCache::open(int64_t n_slots, int64_t n_layers, int64_t n_expert,
         layer_next_[(size_t) l] = (int32_t) lo;
     }
     return true;
-}
-catch (sycl::exception const &exc) {
-  std::cerr << exc.what() << "Exception caught at file:" << __FILE__
-            << ", line:" << __LINE__ << std::endl;
-  std::exit(1);
 }
 
 bool ExpertCache::open_sized(const std::vector<int64_t>& slot_bytes, int64_t n_layers, int64_t n_expert,
@@ -600,6 +725,9 @@ void ExpertCache::close() {
     off_.clear();
     if (!segs_.empty()) {
         release_segmented();
+    } else if (vmm_) {
+        vmm_.reset();   // unmaps and frees every chunk it still holds
+        base_ = nullptr;
     } else if (base_ != nullptr) {
         // sycl::free does not synchronize like CUDA's ordinary cudaFree.
         // Cache fills/readers can use other queues, so drain every queue on
@@ -669,9 +797,28 @@ const uint8_t* ExpertCache::device_slot(int32_t slot) const {
     return base_ + (size_t) slot * (size_t) blob_;
 }
 
+namespace {
+bool slot_copy_fits(const ExpertCache& cache, int32_t slot, uint64_t bytes,
+                    uint64_t max_blob, std::string& err) {
+    if (!cache.valid() || slot < 0 || slot >= cache.slots()) {
+        err = "ExpertCache: copy slot is outside the backed arena";
+        return false;
+    }
+    const uint64_t begin = cache.slot_offset(slot);
+    const uint64_t end = cache.slot_offset((int64_t) slot + 1);
+    if (bytes == 0 || bytes > max_blob || end < begin || bytes > end - begin) {
+        err = "ExpertCache: copy of " + std::to_string(bytes) +
+              " bytes exceeds slot " + std::to_string(slot) + " capacity";
+        return false;
+    }
+    return true;
+}
+}  // namespace
+
 bool ExpertCache::fill_slot(int32_t slot, const uint8_t *host_blob,
                             void *stream, std::string &err, int64_t bytes) try {
-    const size_t n = (size_t) (bytes > 0 && bytes <= blob_ ? bytes : blob_);
+    const size_t n = (size_t) (bytes > 0 ? bytes : blob_);
+    if (!slot_copy_fits(*this, slot, n, (uint64_t) blob_, err)) return false;
     uint8_t* dst = device_slot(slot);
     if (dst == nullptr) {
         err = "ExpertCache::fill_slot: slot " + std::to_string(slot) + " is outside 0.." +
@@ -718,7 +865,8 @@ catch (sycl::exception const &exc) {
 
 bool ExpertCache::fill_slot_blocking(int32_t slot, const uint8_t *host_blob,
                                      std::string &err, int64_t bytes) try {
-    const size_t n = (size_t) (bytes > 0 && bytes <= blob_ ? bytes : blob_);
+    const size_t n = (size_t) (bytes > 0 ? bytes : blob_);
+    if (!slot_copy_fits(*this, slot, n, (uint64_t) blob_, err)) return false;
     uint8_t* dst = device_slot(slot);
     if (dst == nullptr) {
         err = "ExpertCache::fill_slot_blocking: slot outside the arena";
@@ -775,7 +923,8 @@ catch (sycl::exception const &exc) {
 
 bool ExpertCache::fill_slot_queued(int32_t slot, const uint8_t *host_blob,
                                    std::string &err, int64_t bytes) try {
-    const size_t n = (size_t) (bytes > 0 && bytes <= blob_ ? bytes : blob_);
+    const size_t n = (size_t) (bytes > 0 ? bytes : blob_);
+    if (!slot_copy_fits(*this, slot, n, (uint64_t) blob_, err)) return false;
     uint8_t* dst = device_slot(slot);
     if (dst == nullptr || host_blob == nullptr) {
         err = dst == nullptr ? "ExpertCache::fill_slot_queued: slot outside the arena"
@@ -845,7 +994,9 @@ catch (sycl::exception const &exc) {
 
 bool ExpertCache::verify_slot(int32_t slot, const uint8_t *host_blob,
                               std::string &err, int64_t bytes) try {
-    const int64_t nb = bytes > 0 && bytes <= blob_ ? bytes : blob_;
+    const int64_t nb = bytes > 0 ? bytes : blob_;
+    if (!slot_copy_fits(*this, slot, (uint64_t) nb, (uint64_t) blob_, err)) return false;
+    if (host_blob == nullptr) { err = "ExpertCache::verify_slot: the host blob is null"; return false; }
     const uint8_t* src = device_slot(slot);
     if (src == nullptr) {
         err = "ExpertCache::verify_slot: slot outside the arena";
@@ -877,10 +1028,14 @@ bool ExpertCache::verify_slot(int32_t slot, const uint8_t *host_blob,
     if (std::memcmp(got.data(), host_blob, (size_t) nb) != 0) {
         size_t first = 0;
         while (first < (size_t) nb && got[first] == host_blob[first]) ++first;
-        char buf[256];
+        char buf[384];
         std::snprintf(buf, sizeof buf,
-                      "ExpertCache::verify_slot: slot %d differs from the arena at byte %llu (of %lld)",
-                      (int) slot, (unsigned long long) first, (long long) blob_);
+                      "ExpertCache::verify_slot: slot %d differs from the arena at byte %llu (of %lld): device %02x%02x%02x%02x, arena %02x%02x%02x%02x",
+                      (int) slot, (unsigned long long) first, (long long) blob_, first < (size_t) nb ? got[first] : 0,
+                      first + 1 < (size_t) nb ? got[first + 1] : 0, first + 2 < (size_t) nb ? got[first + 2] : 0,
+                      first + 3 < (size_t) nb ? got[first + 3] : 0, first < (size_t) nb ? host_blob[first] : 0,
+                      first + 1 < (size_t) nb ? host_blob[first + 1] : 0, first + 2 < (size_t) nb ? host_blob[first + 2] : 0,
+                      first + 3 < (size_t) nb ? host_blob[first + 3] : 0);
         err = buf;
         return false;
     }

@@ -96,7 +96,11 @@ public:
         prefill_dev_exec_[t]=&graphs[t]; return true;
     }
     bool capture_prefill(int t,std::string&) { prefill_exec_[t]=&graphs[t]; return true; }
+#if CONTROL
     bool prefill(const float*,const int32_t*,int64_t,int64_t,std::string&);
+#else
+    bool prefill(const float*,const int32_t*,int64_t,int64_t,std::string&,bool=true);
+#endif
     ~MtpDrafter() { assert(cs_->jobs.empty()); delete[] pf_dev_; }
 };
 #include "prefill.inc"

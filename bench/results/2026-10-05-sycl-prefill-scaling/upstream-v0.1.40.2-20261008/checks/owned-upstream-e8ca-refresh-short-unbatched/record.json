@@ -1,0 +1,244 @@
+{
+  "scope": "Updated-upstream e8ca9afd SYCL executable context128 with new decode batching/head-mix/GR/PLE batching switches disabled normal-MTP four-request check with unchanged FP16 path/phase waits, full Level Zero and UR logging/validation; exact whole heads, IDs and LP versus frozen pre-update control; not clean timing or256K capacity",
+  "started_utc": "2026-10-07T14:51:10.038626+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "active": false,
+  "completed": false,
+  "healthy": false,
+  "requests": [
+    {
+      "name": "first",
+      "ids": [
+        760,
+        10849,
+        88851,
+        2272
+      ],
+      "logprobs": [
+        "LP -0.029145 760:-0.029145 57044:-3.590039 92595:-9.030746 6374:-9.052144 36:-9.434512",
+        "LP -0.008154 10849:-0.008154 13071:-6.230088 57040:-6.799935 36600:-7.361659 27163:-7.378159",
+        "LP -0.312555 88851:-0.312555 324:-1.990259 22472:-2.333284 76911:-4.184434 46810:-5.192609",
+        "LP -0.001444 2272:-0.001444 87070:-7.077176 264:-7.626927 35091:-9.535765 66425:-11.475493"
+      ],
+      "protocol": [
+        "RESUME 0",
+        "PP 30 37 24436 1.2",
+        "PP 36 37 44271 0.8",
+        "REUSED 0",
+        "T 760",
+        "LP -0.029145 760:-0.029145 57044:-3.590039 92595:-9.030746 6374:-9.052144 36:-9.434512",
+        "T 10849",
+        "LP -0.008154 10849:-0.008154 13071:-6.230088 57040:-6.799935 36600:-7.361659 27163:-7.378159",
+        "T 88851",
+        "LP -0.312555 88851:-0.312555 324:-1.990259 22472:-2.333284 76911:-4.184434 46810:-5.192609",
+        "T 2272",
+        "LP -0.001444 2272:-0.001444 87070:-7.077176 264:-7.626927 35091:-9.535765 66425:-11.475493",
+        "DONE 4 37 45272.9 3425.5 length 3 6 0 134 2499 0 0 0.0 37 1821"
+      ],
+      "head": {
+        "bytes": 993280,
+        "floats": 248320,
+        "sha256": "c6ab6c31ad809f49f6ec0e7141371730cf500789074be2e42b746cbbaf119cec"
+      },
+      "equality": {
+        "ids": true,
+        "logprobs": false,
+        "head": false
+      }
+    }
+  ],
+  "snapshots": [
+    {
+      "label": "failure",
+      "stop": "*stopped,reason=\"signal-received\",signal-name=\"SIGINT\",signal-meaning=\"Interrupt\",frame={addr=\"0x00007fffdc594e51\",func=\"__futex_abstimed_wait_common64\",args=[{name=\"private\",value=\"32767\"},{name=\"cancel\",value=\"true\"},{name=\"abstime\",value=\"0x0\"},{name=\"op\",value=\"393\"},{name=\"expected\",value=\"0\"},{name=\"futex_word\",value=\"0x7ffffffe124c\"}],file=\"./nptl/futex-internal.c\",fullname=\"./nptl/./nptl/futex-internal.c\",line=\"57\",arch=\"i386:x86-64\"},thread-id=\"1\",stopped-threads=\"all\",core=\"0\"",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-upstream-e8ca-refresh-short-unbatched/debugger/failure.mi.txt",
+      "resumed": false,
+      "register_thread_id": "1",
+      "main_thread_id": "1",
+      "main_registers_captured": true,
+      "main_stack_words_captured": true,
+      "main_instructions_captured": true,
+      "capture_errors": []
+    }
+  ],
+  "steps": [
+    {
+      "label": "kernel-gap",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bf3a4ba;b=0a908c16e292429980ff082da39f4bb9;m=11463c423a;t=65d41359828f7;x=1b8d886298928b84",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "pid": 321619,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05066814699966926
+    },
+    {
+      "label": "embedding-state",
+      "argv": [
+        "/usr/bin/systemctl",
+        "--user",
+        "show",
+        "llama-server-qwen3embed.service",
+        "-p",
+        "ActiveState"
+      ],
+      "pid": 321622,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05076409700268414
+    },
+    {
+      "label": "kernel-before",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "pid": 321639,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050644711998756975
+    },
+    {
+      "label": "kernel-after",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bf3a6e5;b=0a908c16e292429980ff082da39f4bb9;m=114d63c470;t=65d413cbfab2d;x=3a60cfda2b9b1691",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "pid": 326400,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05063995800446719
+    }
+  ],
+  "deadline_seconds": 600,
+  "protocol_timeout_seconds": 180,
+  "log_limit_bytes": 2147483648,
+  "cpu_debugger_guard_sha256": "e9925535b6a1753c89f71c32fe4b67b52c20ae7d423df269cccabe14d3b64d21",
+  "preflight_fault_messages": [],
+  "binary_sha256": "fffe3ce1d63d8fc8ee9b93f692e2b116e1621f1e0860bf9ec55cbe914cf3164e",
+  "environment": {
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/umf/1.1/lib:/usr/lib/x86_64-linux-gnu:/opt/intel/oneapi/mkl/2026.1/lib",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "STRATA_PREFILL_COMPACT": "2",
+    "STRATA_PREFILL_LAYER_MAJOR": "2",
+    "STRATA_PREFILL_RELEASE_DRAFT": "1",
+    "STRATA_PREFILL_DRAFT_VERIFY": "1",
+    "STRATA_PREFILL_EXPERT_WAIT_BATCH": "0",
+    "STRATA_PREFILL_SYNC": "1",
+    "STRATA_PREFILL_FIRST": "256",
+    "STRATA_DEC_BATCH": "0",
+    "STRATA_HEAD_MIX_MULTI": "0",
+    "STRATA_NO_MULTI_GR": "1",
+    "STRATA_PLE_BATCH": "0",
+    "ZEL_ENABLE_LOADER_LOGGING": "1",
+    "ZEL_LOADER_LOG_CONSOLE": "1",
+    "ZEL_LOADER_LOGGING_LEVEL": "trace",
+    "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+    "ZE_ENABLE_VALIDATION_LAYER": "1",
+    "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+    "UR_LOG_LOADER": "level:debug;flush:debug;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:debug;flush:debug;output:stderr",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+    "STRATA_TRACE": "1",
+    "UR_ENABLE_LAYERS": "UR_LAYER_TRACING",
+    "STRATA_DUMP_FIRST_LOGITS": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-upstream-e8ca-refresh-short-unbatched/first-head.bin"
+  },
+  "argv": [
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-e8ca-refresh-20261007/strata",
+    "--pack",
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+    "--native",
+    "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+    "--serve",
+    "--max-context",
+    "128",
+    "--spec",
+    "4",
+    "--spec-min-p",
+    "0",
+    "--mtp",
+    "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+    "--suffix-draft",
+    "0",
+    "--prefill",
+    "32",
+    "--no-prefill-borrow",
+    "--expert-cache",
+    "600",
+    "--expert-profile",
+    "data/expert-profile.bin",
+    "--expert-cache-per-layer",
+    "--pool-workers",
+    "5",
+    "--pcie-frac",
+    "0.55",
+    "--spec-split",
+    "--adapt-swaps",
+    "0",
+    "--conversation-cache-mib",
+    "256",
+    "--conversation-cache-slots",
+    "4",
+    "--greedy",
+    "--short-read",
+    "0"
+  ],
+  "reference_binary_sha256": "79a4b363d33f66f41d910be6274e609b4eb73f62afb0dc49bca72bf2a538d223",
+  "reference_result_sha256": "76ab5a8eeda05824963f8803c8dde7b5b69a7a2768c1fc5f034be7bacef72b62",
+  "source_sha256": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_upstream_e8ca_refresh_short_unbatched.py": "75538b19565439ece6ac49c1c1ff6c3e2627479edd26df194ff7faebfb0f5f2b",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/recover-xe.sh": "2f90005f79d2309747d917cff51dc53d8ee6192d68cb1feca074f84af8b0796c",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/owned_gdb.py": "61e1d206bf57bb320051cdd65943d23722bc523a602d80c54b7e7a2ad0d3f0d1",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/prefill.cpp": "e5cda787d3c6fe4d5c946b0cdea99ff437d7a9797470b3ca47c6ab4828ce92dc"
+  },
+  "elapsed_seconds": 90.69380657399597,
+  "active_request": "first",
+  "startup": [
+    "INFO context=128 kv=fp16 kv_resident=0 expert_slots=768 expert_cache_mib=1498 expert_slots_primary=768 expert_cache_primary_mib=1498 spec=4 mtp_max=0 lookup=0 vram_free_mib=3185 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.55 spec_min_p=0.00 conversation_cache_mib=256 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=0 engine=0.1.40-sycl",
+    "READY 128 stop"
+  ],
+  "inferior": {
+    "pid": 321653,
+    "start_ticks": 7434983,
+    "state": "t"
+  },
+  "debugger": {
+    "pid": 321641,
+    "start_ticks": 7434976,
+    "state": "R"
+  },
+  "error": "AssertionError()",
+  "exit_code": null,
+  "exit_signal": null,
+  "cleanup": {
+    "forced": true,
+    "inferior_survived": false,
+    "gdb_survived": false
+  },
+  "new_fault_messages": [],
+  "finished_utc": "2026-10-07T14:52:40.732585+00:00"
+}

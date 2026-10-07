@@ -6,6 +6,8 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <memory>
+#include <utility>
 
 namespace {
 int current_device = 0, waits = 0, destroys = 0, frees = 0;
@@ -29,6 +31,7 @@ struct Device {
 }
 namespace dpct {
 using queue_ptr = Queue*;
+inline void destroy_event(int* event) { delete event; }
 Queue& get_in_order_queue() { return *default_queue; }
 Device& get_current_device() { return device; }
 }
@@ -37,6 +40,9 @@ void free(void* p, Queue& q) {
     assert(q.marker == 123);
     ++frees; delete[] static_cast<char*>(p);
 }
+}
+namespace strata {
+void host_free_polled(void* p, Queue& q) { sycl::free(p,q); }
 }
 struct OnDevice {
     int saved = current_device;
@@ -48,7 +54,17 @@ class Verifier {
 public:
     int device_ = -1;
 #include "queues.inc"
-    Graph* exec_[9] = {};
+    Queue *sh_cs_ = nullptr, *ext_stream_ = nullptr;
+    Graph* exec_[9] = {}, *exec_nr_[9] = {};
+    struct Boundary {
+        std::unique_ptr<Graph> input,tail;
+        std::vector<std::unique_ptr<Graph>> pre,post;
+    } boundary_graphs_[9];
+    std::vector<std::pair<int,Graph*>> exec_bm_,commit_bm_;
+    void *arena_b_ = nullptr, *h_commitb_ = nullptr, *qcnt_ = nullptr, *prof_pin_ = nullptr,
+         *h_plan_err_ = nullptr;
+    int *commit_done_ = nullptr, *ev_done_ = nullptr, *ev_commit_ = nullptr,
+        *ev_fork_ = nullptr, *ev_join_ = nullptr;
     Graph* commit_exec_ = nullptr;
     void* arena_ = nullptr;
     void* host_staging_ = nullptr;

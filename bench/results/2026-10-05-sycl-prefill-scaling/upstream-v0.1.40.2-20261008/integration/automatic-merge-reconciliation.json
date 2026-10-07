@@ -1,0 +1,26 @@
+[
+  {
+    "path": "sycl/src/prefill/prefill.cpp",
+    "reason": "Dispatch and execution use the same new default for partial-cache first chunks",
+    "before_sha256": "c591d13d60ac9a675eb0c44dbc26063c01e4926fa33959994b8dde84e6cc76de",
+    "after_sha256": "26d5bf1c3c57140f9108acfbde687fa0f58923d11511c3d92f5d7d13a3f8b11a"
+  },
+  {
+    "path": "sycl/src/program/generate.cpp",
+    "reason": "Reject new unvalidated concurrent graph protocols before device initialization",
+    "before_sha256": "45fea878b579fbcb9c25968b14f9fa844773a67cb1eb4ed231eb63f904f9d31b",
+    "after_sha256": "2b7070251a7cc28c4f5bdd0b1290b56aa71569c716865d6db07a8b70a3de03b3"
+  },
+  {
+    "path": "sycl/CMakeLists.txt",
+    "reason": "Preserve reference FP64 sampler accumulation instead of adopting unvalidated rounding changes",
+    "before_sha256": "8d0ccfc5ee37604c30d9a4de79f376a28cd4e191866b80157a5be79c166822fe",
+    "after_sha256": "f2a8635317edd9c5d940e03000f0f648031cfdc1ce8fa0810fb27477d2a9fdff"
+  },
+  {
+    "path": "sycl/src/kernels/cuda/verify_kernels.dp.cpp",
+    "reason": "Existing regeneration fix keeps device spins disabled; host completion is required",
+    "before_sha256": "f62b289508b27a74894b0b488ee7a9017df16b60cb0314ac041b4d9cf4351e88",
+    "after_sha256": "5c87558f9b82ea066164b077c12361c5ec233b8085047262ebddedc5b083d40d"
+  }
+]

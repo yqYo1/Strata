@@ -1883,6 +1883,9 @@ bool fused_gr_read_multi(const FusedGrArgs* a, int n_tok, float* xn_scratch, voi
     return false;  // Caller retains the standalone q8_1 quantization path.
 }
 
+// the bench only (AMD latency-hidden kernels): nothing to switch on the SYCL port
+void fused_gr_set_fast(int) {}
+
 bool fused_gr_supported(int64_t n_embd, int64_t hc, int64_t hc_lr) {
     return n_embd == N && hc == HC && hc_lr == LR;
 }

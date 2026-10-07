@@ -128,7 +128,8 @@ public:
     int device_=0;
     Verifier* next_=nullptr;
     Queue* cs_=&dpct::device, *copy_=&dpct::device;
-    Graph* exec_[9]{};
+    Graph* exec_[9]{}, *exec_nr_[9]{};
+    std::vector<std::pair<int,Graph*>> exec_bm_,commit_bm_;
     Boundary boundary_graphs_[9];
     struct { const uint8_t* cache_base=nullptr; } hits_;
     bool wait_commit(std::string& e) {

@@ -331,3 +331,8 @@ edit("src/program/generate.cpp", sub(
 # into typed words instead of reading int8_t storage through a uint32_t pointer.
 for rel in ('src/kernels/cuda/native_mmvq.dp.cpp', 'src/kernels/cuda/s2_gemv_fast.dp.cpp'):
     edit(rel, lazy_device_tables)
+# A770: only subgroup row zero reaches the native router's synchronization.
+# CUDA's early-exit block pattern must not become a divergent SYCL work-group barrier.
+edit("src/kernels/cuda/native_router.dp.cpp", lambda s: s.replace(
+    "    item_ct1.barrier(sycl::access::fence_space::local_space);",
+    "    sycl::group_barrier(item_ct1.get_sub_group());  // only subgroup row zero participates"))

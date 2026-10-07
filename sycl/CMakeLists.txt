@@ -10,7 +10,7 @@
 #
 # Device code is JIT-compiled from SPIR-V unless STRATA_SYCL_AOT names a device (bmg-g31 for the Arc Pro B70).
 cmake_minimum_required(VERSION 3.24)
-project(strata_sycl VERSION 0.1.39 LANGUAGES C CXX)   # the upstream engine version this port tracks
+project(strata_sycl VERSION 0.1.40 LANGUAGES C CXX)   # the upstream engine version this port tracks
 set(STRATA_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -79,9 +79,12 @@ target_include_directories(strata_includes INTERFACE
   ${CMAKE_CURRENT_SOURCE_DIR}/include      # migrated headers + dpct/ helpers, first
   ${STRATA_ROOT}/include)
 target_compile_options(strata_includes INTERFACE -Wall -Wextra)
+# Preserve the reference sampler precision when integrating upstream FP32-tail tuning.
+target_compile_definitions(strata_includes INTERFACE STRATA_SYCL_SAMPLER_FP64=1)
 
 # --- CPU-side pieces, identical to the top-level build ------------------------------------------------------------
-strata_resolve(_spec src/spec/suffix_drafter.cpp src/spec/controller.cpp src/spec/draft_policy.cpp)
+strata_resolve(_spec src/spec/suffix_drafter.cpp src/spec/controller.cpp src/spec/draft_policy.cpp
+                    src/spec/draft_source.cpp)
 add_library(strata_spec STATIC ${_spec})
 target_link_libraries(strata_spec PUBLIC strata_includes)
 
@@ -129,6 +132,27 @@ add_library(strata_kernels_cpu STATIC ${_cpu})
 set_source_files_properties(${STRATA_ROOT}/src/kernels/cpu/expert.cpp PROPERTIES COMPILE_OPTIONS
   "-mavx512f;-mavx512bw;-mavx512vl;-mavx512dq;-mavx512vnni;-mavx512vbmi;-mf16c;-mfma")
 set_source_files_properties(${STRATA_ROOT}/src/kernels/cpu/q2_avx2.cpp PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c")
+# AVX-VNNI copies of the AVX-2 expert kernels (q2_avx2.cpp, iq_avx2.cpp), taken at run time where the CPU has them
+include(CheckCXXSourceCompiles)
+set(CMAKE_REQUIRED_FLAGS "-mavx2 -mfma -mf16c")
+check_cxx_source_compiles([=[
+#include <immintrin.h>
+#if defined(__GNUC__) || defined(__clang__)
+__attribute__((target("avxvnni")))
+#endif
+static __m256i dots(__m256i a, __m256i b) { return _mm256_dpbusd_avx_epi32(_mm256_dpwssd_avx_epi32(a, a, b), a, b); }
+int main() {
+    volatile int x = 1;
+    return _mm256_extract_epi32(dots(_mm256_set1_epi32(x), _mm256_set1_epi32(x)), 0) == 0;
+}
+]=] STRATA_HAVE_AVXVNNI_INTRINSICS)
+unset(CMAKE_REQUIRED_FLAGS)
+if(STRATA_HAVE_AVXVNNI_INTRINSICS)
+  set(_strata_avxvnni STRATA_AVXVNNI=1)
+else()
+  set(_strata_avxvnni STRATA_AVXVNNI=0)
+endif()
+set_property(SOURCE ${STRATA_ROOT}/src/kernels/cpu/q2_avx2.cpp APPEND PROPERTY COMPILE_DEFINITIONS ${_strata_avxvnni})
 find_package(Threads REQUIRED)
 target_link_libraries(strata_kernels_cpu PUBLIC strata_includes Threads::Threads)
 
@@ -159,13 +183,15 @@ if(STRATA_NATIVE_EXPERTS)
     add_subdirectory(${strata_llamacpp_SOURCE_DIR}/ggml ${CMAKE_BINARY_DIR}/ggml EXCLUDE_FROM_ALL)
   endif()
   strata_resolve(_cpu_native src/kernels/cpu/native_expert.cpp src/kernels/cpu/iq_avx512.cpp src/kernels/cpu/iq_avx2.cpp
-                             src/kernels/cpu/kq_avx2.cpp)   # 0.1.31: the Q4_K/Q5_K/Q5_1/Q8_0 expert rows
+                             src/kernels/cpu/kq_avx2.cpp src/kernels/cpu/kq_avx1.cpp)   # 0.1.31: the Q4_K/Q5_K/Q5_1/Q8_0 expert rows
   target_sources(strata_kernels_cpu PRIVATE ${_cpu_native})
   target_include_directories(strata_kernels_cpu PRIVATE ${STRATA_ROOT}/third_party/ggml)
   set_source_files_properties(${STRATA_ROOT}/src/kernels/cpu/iq_avx512.cpp PROPERTIES COMPILE_OPTIONS
     "-mavx512f;-mavx512bw;-mavx512vl;-mavx512dq;-mavx512vnni;-mavx512vbmi;-mf16c;-mfma")
   set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/kernels/cpu/iq_avx2.cpp PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c")
   set_source_files_properties(${STRATA_ROOT}/src/kernels/cpu/kq_avx2.cpp PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c")
+  set_source_files_properties(${STRATA_ROOT}/src/kernels/cpu/kq_avx1.cpp PROPERTIES COMPILE_OPTIONS "-mavx")
+  set_property(SOURCE ${STRATA_ROOT}/src/kernels/cpu/iq_avx2.cpp APPEND PROPERTY COMPILE_DEFINITIONS ${_strata_avxvnni})
   target_link_libraries(strata_kernels_cpu PUBLIC ggml-cpu ggml-base)
   target_compile_definitions(strata_kernels_cpu PUBLIC STRATA_NATIVE_EXPERTS=1)
   option(STRATA_IQ2S_GCC "Use GCC for IQ2_S AVX2 gate/up groups of two/four tokens (experimental)" OFF)
@@ -182,6 +208,7 @@ if(STRATA_NATIVE_EXPERTS)
         -Diq256_gu_rows_v=iq256_gu_rows_v_gcc -Diq256_rows_v=iq256_rows_v_gcc
         -Diq4nl256_down_rows_v=iq4nl256_down_rows_v_gcc
         -Diq256_supported=iq256_supported_gcc -Diq4nl256_down_rows=iq4nl256_down_rows_gcc
+        -Dq8k_quant_avx2=q8k_quant_avx2_gcc
         -I${STRATA_ROOT}/include -I${STRATA_ROOT}/third_party/ggml
         -MMD -MF ${_iq2s_object}.d -c ${STRATA_ROOT}/src/kernels/cpu/iq_avx2.cpp -o ${_iq2s_object}
       DEPENDS ${STRATA_ROOT}/src/kernels/cpu/iq_avx2.cpp ${STRATA_IQ2S_GXX}
@@ -198,6 +225,11 @@ strata_resolve(_core src/core/device.cu src/core/pinned.cu src/platform/memory.c
                      src/core/weights.cpp src/core/layout.cpp src/core/vmm.cpp)
 add_library(strata_core STATIC ${_core})
 target_link_libraries(strata_core PUBLIC strata_includes)
+# zeMemAllocHost for the host memory a kernel polls (include/strata/sycl_queue.hpp, host_malloc_polled): only when libze-dev's header is there
+find_library(STRATA_ZE_LOADER ze_loader)
+if(STRATA_ZE_LOADER)
+  target_link_libraries(strata_core PUBLIC ${STRATA_ZE_LOADER})
+endif()
 
 set(_kernel_cu dequant_s2 s2_gemv s_gemv s2_gemv_quads s2_gemv_fast router_top10 quantize_act rope sampler s2_gemv_q8
     s2_expert_grouped shared_expert gr gdn qsa elementwise bf16_gemv native_mmvq native_bf16 native_gr_norm native_moe
@@ -218,7 +250,9 @@ strata_resolve(_engine src/core/layer.cpp src/core/session.cpp src/core/expert_s
                        src/core/expert_cache.cpp src/core/native_head.cpp src/core/native_dense.cpp src/core/verify.cpp
                        src/core/mtp.cpp src/core/conversation_snapshot.cpp src/core/conversation_state.cpp
                        src/core/conversation_memory.cpp   # 0.1.31: the conversation snapshots (#216)
-                       src/core/peer_experts.cpp)         # 0.1.36+: --peer-device (a stub in the port: no second GPU tier yet)
+                       src/core/arch_defaults.cpp src/core/vmm.cpp   # vmm.cpp is the port's stub: no driver VMM on Level Zero
+                       src/core/conversation_file.cpp
+                       src/core/peer_experts.cpp src/core/remote_expert_opt_stub.cpp)         # 0.1.36+: --peer-device (a stub in the port: no second GPU tier yet)
 add_library(strata_engine STATIC ${_engine} ${CMAKE_CURRENT_SOURCE_DIR}/src/core/gguf_expert_source.cpp)
 target_include_directories(strata_engine PRIVATE ${STRATA_ROOT}/src/core)   # conversation_checked.hpp (#include "...")
 target_link_libraries(strata_engine PUBLIC strata_core strata_kernels strata_kernels_cpu)
@@ -280,6 +314,18 @@ if(STRATA_SYCL_PARITY)
   add_test(NAME gdn_variant_parity COMMAND gdn_variant_parity)
   set_tests_properties(gdn_variant_parity PROPERTIES TIMEOUT 180
     ENVIRONMENT_MODIFICATION "STRATA_GDN_KEYHEAD_TUNED=set:0;STRATA_GDN_KEYHEAD=set:0;STRATA_GDN_PIPELINE=set:1;STRATA_GDN_REC_HEADS=unset:")
+  # 0.1.40 (#783): the batched verify-window kernels against the ones they replace, bitwise (synthetic, no model)
+  foreach(p IN ITEMS verify native_multi kv_steps resident_plan gr_multi)
+    strata_resolve(_src src/kernels/${p}_parity.cpp)
+    add_executable(${p}_parity ${_src})
+    target_include_directories(${p}_parity PRIVATE ${STRATA_ROOT}/src/kernels)
+    target_link_libraries(${p}_parity PRIVATE strata_kernels)
+    add_test(NAME ${p}_parity COMMAND ${p}_parity)
+  endforeach()
+  # not built here: qsa_topk_parity / qsa_topk_active_parity (the sm_90 thread-block-cluster QSA top-k has no SYCL
+  # counterpart: the callers take the plain kernels), route_window_parity and fused_gr_bench (no migrated copy yet)
+  # (upstream PR #413's gdn_rec_parity is an SM-holding NVIDIA bench - PTX timers, __nanosleep - not built here; the
+  # key-head kernel is checked through the engine: output hashes with STRATA_GDN_KEYHEAD=1 and without)
   # the conversation snapshots (#216) against the engine, as upstream's STRATA_BUILD_CONVERSATION_TESTS
   strata_resolve(_src src/core/conversation_snapshot_test.cpp)
   add_executable(conversation_snapshot_test ${_src})

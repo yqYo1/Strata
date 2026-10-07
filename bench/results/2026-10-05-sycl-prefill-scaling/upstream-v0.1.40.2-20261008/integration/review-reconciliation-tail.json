@@ -1,0 +1,98 @@
+[
+  {
+    "path": "sycl/src/prefill/kernels.dp.cpp",
+    "before_sha256": "8bd664903bacf76544cf753a226587a177524b7906b6ce4431a8ea8cf61b1c4b",
+    "after_sha256": "878bcced6cedf007dd958b8c117dde78ecc1949c8d687c0c284ce1cd9defcd64",
+    "replacements": 1,
+    "old": "__dpct_inline__ void gdn_out_norm_kernel(const float *__restrict__ z,\n                                         const float *__restrict__ gamma,\n                                         float eps, float *__restrict__ y,",
+    "new": "__dpct_inline__ void gdn_out_norm_kernel(const float *__restrict__ z,\n                                         const float *__restrict__ gamma,\n                                         float eps, const float *__restrict__ y,"
+  },
+  {
+    "path": "sycl/src/program/generate.cpp",
+    "before_sha256": "2b7070251a7cc28c4f5bdd0b1290b56aa71569c716865d6db07a8b70a3de03b3",
+    "after_sha256": "1b441ebba25efe8a733eecfc32f424bbaf94eb0ad4f96b4b623fce3fd29520d7",
+    "replacements": 1,
+    "old": "o.pipeline_windows > 1) {",
+    "new": "o.pipeline_windows > 0) {"
+  },
+  {
+    "path": "sycl/src/program/generate.cpp",
+    "before_sha256": "1b441ebba25efe8a733eecfc32f424bbaf94eb0ad4f96b4b623fce3fd29520d7",
+    "after_sha256": "aa4748d9aa47af206efde2e181e98f1e42ef263eb0e375446830c394d29e3392",
+    "replacements": 1,
+    "old": "                     sycl_device.get_info<sycl::info::device::driver_version>().c_str());\n#endif\n#endif",
+    "new": "                     sycl_device.get_info<sycl::info::device::driver_version>().c_str());\n#endif"
+  },
+  {
+    "path": "sycl/CMakeLists.txt",
+    "before_sha256": "f2a8635317edd9c5d940e03000f0f648031cfdc1ce8fa0810fb27477d2a9fdff",
+    "after_sha256": "587a46f89f0085fce21e30e362dd3791e62216182ff2f9f7d09912851c5a458d",
+    "replacements": 1,
+    "old": "        -Diq256_supported=iq256_supported_gcc -Diq4nl256_down_rows=iq4nl256_down_rows_gcc",
+    "new": "        -Diq256_supported=iq256_supported_gcc -Diq4nl256_down_rows=iq4nl256_down_rows_gcc\n        -Dq8k_quant_avx2=q8k_quant_avx2_gcc"
+  },
+  {
+    "path": "sycl/src/core/verify.cpp",
+    "before_sha256": "c1e231afbc3f8fa7fd86d85d7e283768d3c0e4b691030e48cf07c08930c8720d",
+    "after_sha256": "c974a497747376db75da1b59de09ba2abf27e106f1f608ecdc3dabee9087e381",
+    "replacements": 1,
+    "old": "bool sh_stream_on() {\n    static const bool on = [] {\n        if (const char* v = std::getenv(\"STRATA_SH_STREAM\")) return v[0] != '0';\n#if defined(STRATA_USE_HIP)\n        return false;\n#else\n        return true;\n#endif\n    }();\n    return on;\n}",
+    "new": "// SYCL keeps the shared expert on the recording queue until cross-queue\n// graph capture and the host-boundary protocol have been validated together.\nbool sh_stream_on() { return false; }"
+  },
+  {
+    "path": "sycl/src/core/mtp.cpp",
+    "before_sha256": "674d0211bcd698be87b7be927492cef3686dfb38a0f8971b404a34bb15589a42",
+    "after_sha256": "2500e399e23eb0f4baac87b7de7fe47ebe8c556bf76879ae56bb4442f21f4ba9",
+    "replacements": 1,
+    "old": "        static const bool branch_on = [] {\n#if defined(STRATA_USE_HIP)\n            return false;\n#else\n            const char* v = std::getenv(\"STRATA_MTP_SHARED_BRANCH\");\n            return v == nullptr || std::atoi(v) != 0;\n#endif\n        }();",
+    "new": "        // The migrated cross-queue capture has not passed the SYCL lifetime gate.\n        constexpr bool branch_on = false;"
+  },
+  {
+    "path": "sycl/include/strata/sycl_execution_policy.hpp",
+    "before_sha256": "6360f018965b5733f6dd5b5fabd160177f2f5a2369f89242c6114b53b2a4e221",
+    "after_sha256": "f2e01d7b87b65155a173f71bd9c67ffdb4a427ec1877547af923825c3bb15cd1",
+    "replacements": 1,
+    "old": "    return true;\n}\n\n// The interactive",
+    "new": "    for (const char* name : {\"STRATA_SH_STREAM\", \"STRATA_MTP_SHARED_BRANCH\"}) {\n        const char* value = std::getenv(name);\n        if (value && std::atoi(value) != 0) {\n            error = std::string(name) + \"=1 needs SYCL cross-queue graph validation first; use =0\";\n            return false;\n        }\n    }\n    return true;\n}\n\n// The interactive"
+  },
+  {
+    "path": "sycl/include/strata/serve_input.hpp",
+    "before_sha256": "acf855a982056fddf858afa6318ee9d72e61bfda7825268f76ca22cbc50b4687",
+    "after_sha256": "06ce21bcfb1401e3ef074741dfb835854ea447cfd9a76021f79b3a043d4d390b",
+    "replacements": 1,
+    "old": "    bool next_line(std::string& line) {",
+    "new": "    bool try_next_line(std::string& line) {\n        std::lock_guard lock(mutex_);\n        if (lines_.empty()) return false;\n        line = std::move(lines_.front());\n        lines_.pop_front();\n        return true;\n    }\n    template<class Consume>\n    void consume_control_lines(Consume consume) {\n        std::lock_guard lock(mutex_);\n        for (auto it = lines_.begin(); it != lines_.end();) {\n            if (consume(*it)) it = lines_.erase(it);\n            else ++it;\n        }\n    }\n    bool next_line(std::string& line) {"
+  },
+  {
+    "path": "sycl/src/program/generate.cpp",
+    "before_sha256": "aa4748d9aa47af206efde2e181e98f1e42ef263eb0e375446830c394d29e3392",
+    "after_sha256": "e5a29405ffa870a30d52a75f76b2cdc3e884280b60b9b5c9ce420f65f3c4e61a",
+    "replacements": 1,
+    "old": "        auto try_next_line = [&](std::string& out) -> bool {\n            std::lock_guard<std::mutex> lk(in_mu);",
+    "new": "        auto try_next_line = [&](std::string& out) -> bool {\n#if !defined(_WIN32)\n            return input.try_next_line(out);\n#else\n            std::lock_guard<std::mutex> lk(in_mu);"
+  },
+  {
+    "path": "sycl/src/program/generate.cpp",
+    "before_sha256": "e5a29405ffa870a30d52a75f76b2cdc3e884280b60b9b5c9ce420f65f3c4e61a",
+    "after_sha256": "f27696554171d042d522d51f0202fe199f4efac250472c4c6f4a6e564af7a6fd",
+    "replacements": 1,
+    "old": "            in_lines.pop_front();\n            return true;\n        };\n        // the session",
+    "new": "            in_lines.pop_front();\n            return true;\n#endif\n        };\n        // the session"
+  },
+  {
+    "path": "sycl/src/program/generate.cpp",
+    "before_sha256": "f27696554171d042d522d51f0202fe199f4efac250472c4c6f4a6e564af7a6fd",
+    "after_sha256": "660b70738e61982a3571266f9a33f358fb61494ca78e699da2474370250ab998",
+    "replacements": 1,
+    "old": "                    {   // a BSTOP that came meanwhile ends its slot at its next window; a BYIELD is for this read\n                        std::lock_guard<std::mutex> lk(in_mu);",
+    "new": "                    {   // a BSTOP that came meanwhile ends its slot at its next window; a BYIELD is for this read\n#if !defined(_WIN32)\n                        input.consume_control_lines([&](const std::string& control) {\n                            if (control.rfind(\"BSTOP \", 0) == 0) {\n                                const int slot = std::atoi(control.c_str() + 6);\n                                if (slot >= 0 && slot < (int)bs.size()) bs[(size_t)slot].stop = true;\n                                return true;\n                            }\n                            if (control.rfind(\"BYIELD \", 0) == 0) {\n                                ys = std::atoi(control.c_str() + 7);\n                                return true;\n                            }\n                            return false;\n                        });\n#else\n                        std::lock_guard<std::mutex> lk(in_mu);"
+  },
+  {
+    "path": "sycl/src/program/generate.cpp",
+    "before_sha256": "660b70738e61982a3571266f9a33f358fb61494ca78e699da2474370250ab998",
+    "after_sha256": "4ec6d3fc4c2f5f9071a182c7f785af7ca38b5bebcf1fc2775ce9dd38f09353eb",
+    "replacements": 1,
+    "old": "                                ++it;\n                            }\n                        }\n                    }\n                    if (ys >= 0)",
+    "new": "                                ++it;\n                            }\n                        }\n#endif\n                    }\n                    if (ys >= 0)"
+  }
+]

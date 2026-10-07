@@ -1,0 +1,41 @@
+{
+  "active": false,
+  "passed": true,
+  "scope": "Existing upstream CPU Q8_K activation quantizer parity; no GPU",
+  "steps": [
+    {
+      "phase": "build",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-std=c++20",
+        "-O2",
+        "-pthread",
+        "-fno-pie",
+        "-no-pie",
+        "-DSTRATA_NATIVE_EXPERTS=1",
+        "-Iinclude",
+        "-Ithird_party/ggml",
+        "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/include",
+        "src/kernels/cpu/q8k_quant_parity.cpp",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-e8ca-refresh-20261007/libstrata_kernels_cpu.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-e8ca-refresh-20261007/ggml/src/libggml-cpu.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-e8ca-refresh-20261007/ggml/src/libggml-base.a",
+        "-lm",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-e8ca-refresh-20261007/cpu-q8k-quant-parity/q8k_quant_parity"
+      ],
+      "exit_code": 0,
+      "seconds": 1.5801671049994184
+    },
+    {
+      "phase": "run",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-e8ca-refresh-20261007/cpu-q8k-quant-parity/q8k_quant_parity"
+      ],
+      "exit_code": 0,
+      "seconds": 0.0067682100052479655
+    }
+  ],
+  "source_sha256": "f92f1e9c20d82463962981fd28052acfe7cb2fb12488949cf03b4072f20c229c",
+  "cpu_library_sha256": "b47e850690c39b9ea1869fb9057c4f1e3e55e7b2560b219f88c6fa5413f793eb"
+}

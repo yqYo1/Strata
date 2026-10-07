@@ -70,6 +70,21 @@ public:
         reader_.request_stop();
         if (reader_.joinable()) reader_.join();
     }
+    bool try_next_line(std::string& line) {
+        std::lock_guard lock(mutex_);
+        if (lines_.empty()) return false;
+        line = std::move(lines_.front());
+        lines_.pop_front();
+        return true;
+    }
+    template<class Consume>
+    void consume_control_lines(Consume consume) {
+        std::lock_guard lock(mutex_);
+        for (auto it = lines_.begin(); it != lines_.end();) {
+            if (consume(*it)) it = lines_.erase(it);
+            else ++it;
+        }
+    }
     bool next_line(std::string& line) {
         std::unique_lock lock(mutex_);
         ready_.wait(lock, [&] { return !lines_.empty() || eof_; });

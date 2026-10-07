@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <functional>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -34,6 +35,8 @@ void free(uint8_t* address, Queue&) { ++frees; delete[] address; }
 class ExpertCache {
 public:
     uint8_t* base_ = nullptr;
+    struct Vmm { void release() {} };
+    std::unique_ptr<Vmm> vmm_;
     std::vector<int> off_, segs_, residency_, layer_next_;
     int slots_ = 1, live_slots_ = 1, n_layers_ = 1, n_expert_ = 1;
     int blob_ = 1024, next_free_ = 1, fills_ = 1, admitted_ = 1;

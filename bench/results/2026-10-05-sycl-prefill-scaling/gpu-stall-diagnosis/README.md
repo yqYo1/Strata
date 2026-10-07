@@ -1,4 +1,11 @@
-# Arc B570 failure investigation, updated 2026-10-07
+# Arc B570 failure investigation, updated 2026-10-08
+
+The [v0.1.40.2 integration and unmodified upstream preflight](../upstream-v0.1.40.2-20261008/README.md)
+adds a clean-source build, eight short functional preflight processes and exact twelve-request
+whole-head controls on B570. It fixes a local mixed-slot copy overrun and retains
+the extra-phase-wait watchdog failure. API logging alone completes the default
+prefill control. Short timings are excluded from tuning; comparisons now require
+at least32K inputs. Full256K and long-prefill gates remain open.
 
 The [retained-backing comparison](observed-regular-launch-retained-20261007/README.md)
 also stops on the first 2048-token request, at layer 17/token 256, with both

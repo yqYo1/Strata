@@ -13,6 +13,13 @@ inline bool require_sycl_host_boundaries(std::string& error) {
                 "and use STRATA_SYCL_HOST_BOUNDARY=1 (the default)";
         return false;
     }
+    for (const char* name : {"STRATA_SH_STREAM", "STRATA_MTP_SHARED_BRANCH", "STRATA_ONE_TOKEN_COMMIT"}) {
+        const char* value = std::getenv(name);
+        if (value && std::atoi(value) != 0) {
+            error = std::string(name) + "=1 is unavailable in the validated SYCL execution path; use =0";
+            return false;
+        }
+    }
     return true;
 }
 

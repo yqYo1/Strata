@@ -1,0 +1,51 @@
+{
+  "scope": "Unmodified upstream v0.1.40.2 SYCL build, project defaults; no local Strata patches and no GPU invocation",
+  "active": false,
+  "passed": true,
+  "started_utc": "2026-10-07T15:23:23.961248+00:00",
+  "steps": [
+    {
+      "label": "configure",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/bench-upstream-v0.1.40.2-20261008/sycl",
+        "-B",
+        "/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/bench-upstream-v0.1.40.2-20261008/build-sycl-pure-20261008",
+        "-G",
+        "Ninja",
+        "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DCMAKE_C_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icx",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DSTRATA_GGML_DIR=/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 3.169168095002533
+    },
+    {
+      "label": "build",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/bench-upstream-v0.1.40.2-20261008/build-sycl-pure-20261008",
+        "--parallel",
+        "2",
+        "--target",
+        "strata",
+        "--",
+        "-k",
+        "0"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 338.710234794009
+    }
+  ],
+  "commit": "e8ca9afd03d839d4f8dbbe82dffce7f8a3bafd7a",
+  "source_status_before": "",
+  "ggml_commit": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+  "ggml_status": "",
+  "elapsed_seconds": 342.83764760999475,
+  "source_status_after": "",
+  "binary_sha256": "892c1ef92e463ca3372730cb978f8876302b3b221deed2cf17a04dfc66d1c805",
+  "finished_utc": "2026-10-07T15:29:06.798890+00:00"
+}
