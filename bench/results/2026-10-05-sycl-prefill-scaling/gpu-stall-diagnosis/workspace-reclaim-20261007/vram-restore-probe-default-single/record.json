@@ -1,0 +1,112 @@
+{
+  "scope": "Owned B570 allocation-pressure/VMM restoration diagnosis; full Level Zero/UR logs and parameter checks; ordinary cleanup even for allocation failure; no model throughput, full-capacity or hang-cause proof",
+  "active": false,
+  "passed": true,
+  "started_utc": "2026-10-07T04:18:49.570105+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "deadline_seconds": 90,
+  "controller_sha256": "cc84436f1fb5f043fafe1086965d57199e9e14013d4a814bd285edf16e5c96fd",
+  "binary_sha256": "709d1c62c315181b0db487a0487a101dee44a710fe49895533f3f945945aab5f",
+  "case": "default",
+  "mode": "single",
+  "settings": {},
+  "source_sha256": "7c26b3ff7897db9c8af219d606f6d7d23583c81558fed4da25b358ecfd581964",
+  "environment": {
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/umf/1.1/lib:/usr/lib/x86_64-linux-gnu",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "ZEL_ENABLE_LOADER_LOGGING": "1",
+    "ZEL_LOADER_LOG_CONSOLE": "1",
+    "ZEL_LOADER_LOGGING_LEVEL": "trace",
+    "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+    "ZE_ENABLE_VALIDATION_LAYER": "1",
+    "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+    "UR_LOG_LOADER": "level:debug;flush:debug;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:debug;flush:debug;output:stderr",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+    "STRATA_TRACE": "1",
+    "UR_ENABLE_LAYERS": "UR_LAYER_TRACING",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0"
+  },
+  "elapsed_seconds": 1.3603892550017918,
+  "inferior": {
+    "pid": 2207337,
+    "start_ticks": 3640886,
+    "state": "t"
+  },
+  "debugger": {
+    "pid": 2207312,
+    "start_ticks": 3640878,
+    "state": "R"
+  },
+  "result": {
+    "restored": true,
+    "anchors_bytes": 9261023232,
+    "physical_bytes": 1342177280,
+    "temporary_bytes": 1363148800,
+    "split": false
+  },
+  "exit_code": 0,
+  "exit_signal": null,
+  "cleanup": {
+    "forced": false,
+    "inferior_survived": false,
+    "gdb_survived": false
+  },
+  "new_fault_messages": [],
+  "steps": [
+    {
+      "label": "embedding-state",
+      "argv": [
+        "/usr/bin/systemctl",
+        "--user",
+        "show",
+        "llama-server-qwen3embed.service",
+        "-p",
+        "ActiveState"
+      ],
+      "pid": 2207300,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.0505010190026951
+    },
+    {
+      "label": "kernel-before",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "pid": 2207302,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05059615799837047
+    },
+    {
+      "label": "kernel-after",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bf0f732;b=0a908c16e292429980ff082da39f4bb9;m=8788a9fda;t=65d3867e68697;x=95e0f26bd8134ea4",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "pid": 2207420,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05061324000416789
+    }
+  ],
+  "finished_utc": "2026-10-07T04:18:50.930571+00:00"
+}

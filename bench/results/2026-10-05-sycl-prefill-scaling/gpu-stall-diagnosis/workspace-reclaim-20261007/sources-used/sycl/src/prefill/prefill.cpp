@@ -686,7 +686,7 @@ void Prefill::release() {
 
 namespace {
 constexpr int64_t GEMM_SCRATCH = 32ll << 20;        // FP16 elements for the largest dequantized dense weight
-constexpr size_t GEMM_WS = 0; // The SYCL GEMM wrapper does not pass a cuBLAS workspace to oneMKL.
+constexpr size_t GEMM_WS = 32u << 20;               // cuBLAS workspace
 
 // THE ATTENTION HALF AND THE MoE HALF SHARE THEIR BUFFERS.  A layer runs its attention (GDN or QSA), writes it back
 // into the residual, and only then its MoE, so the three sets of scratch are never live at once: one region the size
@@ -1926,18 +1926,6 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const core::OnDevice on_device(m.device);
     const auto& g = *m.g;
     if (n <= 0) return run_impl(tokens, n, pos0, err);
-    auto trace_memory = [](const char* point) {
-        if (!std::getenv("STRATA_TRACE")) return;
-        try {
-            size_t free_bytes = 0, total_bytes = 0;
-            dpct::get_current_device().get_memory_info(free_bytes, total_bytes);
-            std::fprintf(stderr, "strata prefill memory: %s; free=%zu total=%zu bytes\n", point, free_bytes, total_bytes);
-        } catch (const std::exception& e) {
-            std::fprintf(stderr, "strata prefill memory: %s; query failed: %s\n", point, e.what());
-        }
-        std::fflush(stderr);
-    };
-    trace_memory("before decode cache release");
     if (stage_lb_ != 0 || stage_le_ != g.n_layers || next_ || helper_ || m.pp || hand_in_ ||
         !m.compact || !m.src) {
         err = "prefill: layer-major currently requires a full single-GPU compact FP16 path";
@@ -2121,7 +2109,6 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     if (const char* release = std::getenv("STRATA_PREFILL_RELEASE_CACHE"); release && std::atoi(release) != 0)
         if (!cache_lease.suspend(m.cache, m.src, m.host_res, m.cs,
                                 on_cache_suspend, on_cache_restore, err)) return false;
-    trace_memory("main decode cache released");
     struct DecodeLease {
         decltype(on_decode_restore) restore_fn;
         bool active = false;
@@ -2148,14 +2135,12 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         decode_lease.active = true;
         if (!on_decode_suspend(err)) return false;
     }
-    trace_memory("MTP decode weights released");
     // Each chunk reads its old host rows before writing the same range back. In-order
     // compute plus the synchronized callback prevent the download racing its upload.
     core::ExpertCache layer_cache;
     const auto& layout = strata::kernels::cpu::expert_layout();
     if (!layer_cache.open_sized(std::vector<int64_t>((size_t) g.n_expert, MAXBLOB()), 1, g.n_expert, err))
         return false;
-    trace_memory("temporary layer cache allocated");
     const char* gpu_env = std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_GPU");
     int64_t gpu_tokens = gpu_env ? std::clamp<int64_t>(std::atoll(gpu_env), 0, n) : 0;
     const char* first_env = std::getenv("STRATA_PREFILL_FIRST");
@@ -2289,23 +2274,11 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     // Drop temporary VRAM before restoring the exact decode cache bytes. The
     // enclosing prefill timer includes both suspension and restoration.
     m.copy->wait(); m.stager->finish();
-    trace_memory("prefill completed with temporary layer cache");
     layer_cache.close();
     m.R = restore.r;
     device_rows.reset();
-    trace_memory("temporary buffers released");
-    if (!cache_lease.restore(err)) {
-        trace_memory("main decode cache restoration failed");
-        if (std::getenv("STRATA_TRACE")) std::fprintf(stderr, "strata prefill restore failure: main cache: %s\n", err.c_str());
-        return false;
-    }
-    trace_memory("main decode cache restored, verifier graphs rebuilt");
-    if (!decode_lease.restore(err)) {
-        trace_memory("MTP decode restoration failed");
-        if (std::getenv("STRATA_TRACE")) std::fprintf(stderr, "strata prefill restore failure: MTP weights: %s\n", err.c_str());
-        return false;
-    }
-    trace_memory("MTP decode weights restored");
+    if (!cache_lease.restore(err)) return false;
+    if (!decode_lease.restore(err)) return false;
     if (cache_lease.cache)
         std::fprintf(stderr, "strata prefill cache release: %lld physical bytes, %llu restored bytes, source %s, "
                      "suspend %.3f ms, restore %.3f ms, graph %.3f ms, same_address %d, slots restored\n",

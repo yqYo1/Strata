@@ -265,6 +265,16 @@ This covers those helpers and short output parity. It does not establish
 their involvement in a hang, clean throughput, other attention casts or the
 new candidate's full-context gates.
 
+The [unused SYCL workspace check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/workspace-reclaim-20261007/README.md)
+removes 32 MiB from owned prefill storage and adds trace-only free-memory
+queries around release and restoration. Four short normal-MTP requests
+matched all IDs, printed logprobs and complete finite heads; six verified
+release/restore pairs completed without force or new xe faults. Two separate
+allocation-pressure probes freed a 1,300 MiB temporary buffer and restored
+1,280 MiB of physical backing successfully. They did not reproduce the
+full-model failure and do not establish that allocator caching caused it.
+The candidate's full-context and throughput checks remain pending.
+
 The [2026-10-07 logging check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/runtime-tracing-20261007/README.md)
 confirmed Level Zero entry/results and UR traces before the child exited,
 using driver/adapter enumeration without submitting GPU commands. The 48
