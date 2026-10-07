@@ -138,6 +138,16 @@ blocks another GPU job. A debugger pause can affect host-dependent GPU work,
 so record the pause and do not treat a fault during it as an untouched
 reproduction. This helper is for diagnosis, not performance measurements.
 
+Snapshots preserve the initially selected thread's registers and separately
+locate the main LWP by the owned inferior PID. They also read the main
+registers, 24 stack words and 16 instructions, then restore the original
+thread selection. A watchdog abort may select a different thread from the
+blocked submission; its syscall register must not be attributed to the
+main thread. Unavailable memory is recorded without discarding the other
+reads. The [four real CPU/GDB checks](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/main-thread-debug-20261007/README.md)
+cover that distinction, requested-interrupt resume and a partially unreadable
+crash snapshot. These are read-only diagnostic checks, not GPU capacity proof.
+
 A serving diagnostic can pass a newly allocated PTY slave descriptor as
 `inferior_tty_fd`. The caller owns the PTY and its stdin/stdout protocol;
 the helper puts the inferior's stderr in `inferior.stderr`, separate from
@@ -190,6 +200,14 @@ or surviving child was recorded, and the logged small GPU probe passed
 afterward without reset. Waits every 32 experts are insufficient for this
 workload; the full-cell CLI gate remains pending. This is not a prevention
 or performance result.
+
+The [one-expert short comparison](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/expert-wait-one-20261007/README.md)
+then passed the same four actual normal-MTP requests on the same executable,
+with 16,677 waits and matching output IDs, printed logprobs and complete
+finite heads. Detailed API logging and parameter validation were retained;
+the updated owned debugger's CPU checks passed first. This condition still
+needs its own full-cell CLI and normal-MTP serving checks. A short arithmetic
+comparison does not prove long-workload prevention or speed.
 
 The [2026-10-07 logging check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/runtime-tracing-20261007/README.md)
 confirmed Level Zero entry/results and UR traces before the child exited,

@@ -145,50 +145,15 @@ class OwnedGdb:
         if self.exit_code is not None or self.exit_signal is not None:
             return None
         stop = self.stops[-1]
-        threads = self.command('-thread-info')
-        selected = re.search(r'current-thread-id="(\d+)"', threads)
-        selected_id = selected[1] if selected else None
-        main = re.search(r'\{id="(\d+)",target-id="[^"\n]*\bLWP ' +
-                         str(self.inferior['pid']) + r'\b', threads)
-        main_id = main[1] if main else None
-        details = {'register_thread_id': selected_id, 'main_thread_id': main_id,
-                   'main_registers_captured': False, 'main_stack_words_captured': False,
-                   'main_instructions_captured': False, 'capture_errors': []}
+        self.command('-thread-info')
         for text in ['thread apply all bt 48', 'info registers', 'info sharedlibrary']:
             self.command('-interpreter-exec console ' + json.dumps(text))
-        # A watchdog can abort on another thread while the main thread is
-        # blocked in submission. Preserve that crash's original registers,
-        # then select the main LWP explicitly; a backtrace alone can fail to
-        # unwind inside vDSO/assembly code. These commands only read state.
-        if main_id:
-            try:
-                self.command('-thread-select ' + main_id)
-                self.command('-interpreter-exec console ' + json.dumps(
-                    'echo strata diagnostic: main thread ' + main_id + '\\n'))
-                for text, field in [('info registers', 'main_registers_captured'),
-                                    ('x/24gx $sp', 'main_stack_words_captured'),
-                                    ('x/16i $pc', 'main_instructions_captured')]:
-                    try:
-                        self.command('-interpreter-exec console ' + json.dumps(text))
-                        details[field] = True
-                    except RuntimeError as error:
-                        details['capture_errors'].append(str(error))
-            except RuntimeError as error:
-                details['capture_errors'].append(str(error))
-            finally:
-                if selected_id:
-                    try:
-                        self.command('-thread-select ' + selected_id)
-                    except RuntimeError as error:
-                        details['capture_errors'].append(str(error))
-        else:
-            details['capture_errors'].append('Main LWP not present in GDB thread info')
         self.raw.flush()
         path = self.output / f'{label}.mi.txt'
         with (self.output / 'gdb-mi.stdout').open('rb') as source, path.open('wb') as dest:
             source.seek(start)
             shutil.copyfileobj(source, dest)
-        record = {'label': label, 'stop': stop, 'path': str(path), 'resumed': False, **details}
+        record = {'label': label, 'stop': stop, 'path': str(path), 'resumed': False}
         self.snapshots.append(record)
         # Resume only our requested SIGINT. Preserve real crashes at their first
         # stop instead of letting a later cleanup failure conceal the fault.
