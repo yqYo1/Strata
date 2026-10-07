@@ -1,0 +1,123 @@
+{
+  "scope": "Actual 262144-cell normal-MTP serve with 1-expert direct-FP16 host backpressure; baseline full-cell CLI already passed but this candidate CLI remains pending; owned GDB/PTY and warning/validation/progress profile; no throughput or prevention claim",
+  "started_utc": "2026-10-07T01:52:56.199960+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "active": false,
+  "completed": false,
+  "healthy": false,
+  "requests": [],
+  "snapshots": [
+    {
+      "label": "unchanged-progress-0",
+      "stop": "*stopped,reason=\"signal-received\",signal-name=\"SIGINT\",signal-meaning=\"Interrupt\",frame={addr=\"0x00007fec5e0c63b4\",func=\"NEO::CommandStreamReceiver::downloadAllocation\",args=[{name=\"this\",value=\"0x4009ae0\"},{name=\"this@entry\",value=\"0x4009ae0\"},{name=\"gfxAllocation\",value=\"...\"}],file=\"/usr/src/intel-compute-runtime-26.31.39395.14-1~24.04~ppa1/shared/source/command_stream/command_stream_receiver.cpp\",fullname=\"/usr/src/intel-compute-runtime-26.31.39395.14-1~24.04~ppa1/shared/source/command_stream/command_stream_receiver.cpp\",line=\"793\",arch=\"i386:x86-64\"},thread-id=\"1\",stopped-threads=\"all\",core=\"0\"",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-expert-wait-1-serve/debugger/unchanged-progress-0.mi.txt",
+      "resumed": true,
+      "register_thread_id": "1",
+      "main_thread_id": "1",
+      "main_registers_captured": true,
+      "main_stack_words_captured": true,
+      "main_instructions_captured": true,
+      "capture_errors": [],
+      "read_only_csr_dump": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-expert-wait-1-serve/debugger/unchanged-progress-0.csr.mi.txt",
+      "submission_counter": null,
+      "syscall_eagain": false
+    },
+    {
+      "label": "failure",
+      "stop": "*stopped,reason=\"signal-received\",signal-name=\"SIGABRT\",signal-meaning=\"Aborted\",frame={addr=\"0x00007fffdc659c0c\",func=\"__pthread_kill_implementation\",args=[{name=\"no_tid\",value=\"0\"},{name=\"signo\",value=\"6\"},{name=\"threadid\",value=\"<optimized out>\"}],file=\"./nptl/pthread_kill.c\",fullname=\"./nptl/./nptl/pthread_kill.c\",line=\"44\",arch=\"i386:x86-64\"},thread-id=\"34\",stopped-threads=\"all\",core=\"0\"",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-expert-wait-1-serve/debugger/failure.mi.txt",
+      "resumed": false,
+      "register_thread_id": "34",
+      "main_thread_id": "1",
+      "main_registers_captured": true,
+      "main_stack_words_captured": true,
+      "main_instructions_captured": true,
+      "capture_errors": [],
+      "read_only_csr_dump": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-expert-wait-1-serve/debugger/failure.csr.mi.txt",
+      "submission_counter": null,
+      "syscall_eagain": false
+    }
+  ],
+  "deadline_seconds": 10800,
+  "protocol_timeout_seconds": 5400,
+  "write_timeout_seconds": 30,
+  "shutdown_timeout_seconds": 30,
+  "log_limit_bytes": 1610612736,
+  "baseline_cli_binary_sha256": "b81a7d6fbc1c6d524cf3b64e196f5866c91ec56c76e460a66b63b28ce3aed461",
+  "binary_sha256": "a63f66eb289afa8b406434ccd7996b171fa93965e10b06eb7ba5decf528dab1c",
+  "source_fixture_sha256": "cc29e4427bcacb21c9f7df2d1f1a7d41897fce5bd76a8ca43d8c3c34d914dd2a",
+  "source_sha256": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_full_expert_wait_one_serve.py": "dbe3e470d2594a36730b9a620e4a3b1e58617a387e1e03edf190c3369d05de40",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/recover-xe.sh": "2f90005f79d2309747d917cff51dc53d8ee6192d68cb1feca074f84af8b0796c",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/owned_gdb.py": "61e1d206bf57bb320051cdd65943d23722bc523a602d80c54b7e7a2ad0d3f0d1",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/program/generate.cpp": "4e170cf0c06d6100debd3b447991291fb42431afc43fa0c240fe6559dcb1b4fd",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/prefill.cpp": "c7ba0822a4f67b9a308eda8024d684e695c5b7ce5ba359143d790e2b9789243c",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/read-csr.gdb": "e288d9fd4b3f11ca192b9e6097cb9820bb0d912489d5635852356a85f408e651"
+  },
+  "assistant_suffix": [
+    248046,
+    198,
+    248045,
+    74455,
+    198,
+    248068,
+    198,
+    248069,
+    271
+  ],
+  "capacity": 262144,
+  "elapsed_seconds": 543.515780922,
+  "active_request": "fills-context",
+  "preflight_fault_messages": [],
+  "startup": [
+    "INFO context=262144 kv=int8 kv_resident=0 expert_slots=128 expert_cache_mib=325 expert_slots_primary=128 expert_cache_primary_mib=325 spec=4 mtp_max=0 lookup=0 vram_free_mib=29 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.00 spec_min_p=0.00 conversation_cache_mib=0 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=1 engine=0.1.39-sycl",
+    "READY 262144 stop"
+  ],
+  "latest_metrics": {
+    "pid": 1687260,
+    "start_ticks": 2765620,
+    "state": "R",
+    "minor_faults": 15574431,
+    "major_faults": 0,
+    "user_ticks": 32686,
+    "system_ticks": 14308,
+    "io": {
+      "rchar": 59021583916,
+      "wchar": 84004674,
+      "syscr": 1528156,
+      "syscw": 1190104,
+      "read_bytes": 258149358080,
+      "write_bytes": 84004259,
+      "cancelled_write_bytes": 0
+    },
+    "gpu": [
+      {
+        "fd": "5",
+        "raw": "pos:\t0\nflags:\t02100002\nmnt_id:\t30\nino:\t1161\ndrm-driver:\txe\ndrm-client-id:\t601\ndrm-pdev:\t0000:05:00.0\ndrm-total-system:\t125824 KiB\ndrm-shared-system:\t0\ndrm-active-system:\t0\ndrm-resident-system:\t0\ndrm-purgeable-system:\t0\ndrm-total-gtt:\t555048 KiB\ndrm-shared-gtt:\t0\ndrm-active-gtt:\t0\ndrm-resident-gtt:\t555048 KiB\ndrm-total-vram0:\t10376808 KiB\ndrm-shared-vram0:\t0\ndrm-active-vram0:\t0\ndrm-resident-vram0:\t10376808 KiB\ndrm-total-stolen:\t0\ndrm-shared-stolen:\t0\ndrm-active-stolen:\t0\ndrm-resident-stolen:\t0\ndrm-cycles-rcs:\t0\ndrm-total-cycles-rcs:\t541745052036\ndrm-cycles-vcs:\t0\ndrm-total-cycles-vcs:\t541745052036\ndrm-engine-capacity-vcs:\t2\ndrm-cycles-vecs:\t0\ndrm-total-cycles-vecs:\t541745052036\ndrm-engine-capacity-vecs:\t2\ndrm-cycles-bcs:\t0\ndrm-total-cycles-bcs:\t541745052036\ndrm-cycles-ccs:\t5214931598\ndrm-total-cycles-ccs:\t541745052036\n"
+      }
+    ],
+    "elapsed_seconds": 536.9292357919985
+  },
+  "unchanged_progress_seconds": 55.027041433000704,
+  "inferior": {
+    "pid": 1687260,
+    "start_ticks": 2765620,
+    "state": "t"
+  },
+  "debugger": {
+    "pid": 1687244,
+    "start_ticks": 2765611,
+    "state": "R"
+  },
+  "ready_capacity": 262144,
+  "error": "RuntimeError('Inferior stopped: *stopped,reason=\"signal-received\",signal-name=\"SIGABRT\",signal-meaning=\"Aborted\",frame={addr=\"0x00007fffdc659c0c\",func=\"__pthread_kill_implementation\",args=[{name=\"no_tid\",value=\"0\"},{name=\"signo\",value=\"6\"},{name=\"threadid\",value=\"<optimized out>\"}],file=\"./nptl/pthread_kill.c\",fullname=\"./nptl/./nptl/pthread_kill.c\",line=\"44\",arch=\"i386:x86-64\"},thread-id=\"34\",stopped-threads=\"all\",core=\"0\"')",
+  "exit_code": null,
+  "exit_signal": null,
+  "cleanup": {
+    "forced": true,
+    "inferior_survived": false,
+    "gdb_survived": false
+  },
+  "new_fault_messages": [],
+  "finished_utc": "2026-10-07T02:01:59.715784+00:00"
+}

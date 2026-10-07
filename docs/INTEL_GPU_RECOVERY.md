@@ -206,8 +206,26 @@ then passed the same four actual normal-MTP requests on the same executable,
 with 16,677 waits and matching output IDs, printed logprobs and complete
 finite heads. Detailed API logging and parameter validation were retained;
 the updated owned debugger's CPU checks passed first. This condition still
-needs its own full-cell CLI and normal-MTP serving checks. A short arithmetic
-comparison does not prove long-workload prevention or speed.
+needs its own full-cell CLI check. Its subsequent [full normal-MTP diagnostic](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/expert-wait-one-capacity-20261007/README.md)
+stopped at layer 10, token 139,264. The requested main-thread snapshot showed
+NEO waiting for completion target 8,582,366 through UR V2 `queueFinish` and
+the added SYCL wait, without an observed main-register `EAGAIN`. The old
+CSR reader could not select a completion-wait frame, so tag/counter values
+are unavailable. The application watchdog aborted after the resumed pause;
+both children were removed and the logged small GPU probe passed without
+reset or new xe faults. Waiting after every expert is also insufficient.
+This is not a performance or general prevention result.
+
+The [installed legacy-adapter short comparison](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/legacy-l0-20261007/README.md)
+passed the small three-round GPU probe and all four actual normal-MTP
+requests, including complete head equality. The same executable used the
+legacy adapter's documented copy-engine-off setting and no expert waits.
+Its subsequent [full-capacity diagnostic](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/legacy-l0-capacity-20261007/README.md)
+stopped while finishing layer 1's chunk from token 83,968 in an event
+completion wait. The first watchdog abort was inspected without a preceding
+requested pause; no live CSR/tag values were available. Both children were
+removed and the logged V2 small probe passed afterward without reset or new
+xe faults. A backend change alone is also unproven as a prevention method.
 
 The [2026-10-07 logging check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/runtime-tracing-20261007/README.md)
 confirmed Level Zero entry/results and UR traces before the child exited,
