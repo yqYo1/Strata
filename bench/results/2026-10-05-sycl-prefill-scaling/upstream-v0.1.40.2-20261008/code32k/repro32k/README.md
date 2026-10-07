@@ -90,3 +90,17 @@ state/head/output checks with no new xe faults. Every translation unit uses
 the same changed header and production compile settings match. This is still
 a private correctness candidate; clean timing, default-environment repeats and
 full262,144-cell serving remain separate gates, with no adoption claimed.
+
+
+The [no-CNR and prefill scheduling follow-up](registered-copy-no-cnr-and-prefill-scheduling/README.md)
+adds six complete exact32K state/head checks and a clean32K ABBA comparison.
+The registered-copy candidate is reproducible in these checks without MKL CNR;
+the prefill scheduling candidate changes only14 root-sync properties. Both
+remain private while default-backend and full262,144-cell serving gates are open.
+
+
+The [default counter-conversion check](registered-copy-default-counter-conversion/README.md)
+then passes another three exact32K full state/head/output controls on the same
+private scheduling binary, with both implicit-conversion override and MKL CNR
+absent. All exit normally without new xe faults. These captured runs are not
+clean timing evidence; full262,144-cell serving remains unvalidated.

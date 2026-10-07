@@ -31,7 +31,20 @@ The [32K checks and separate clean timings](code32k/README.md) are complete:
 unmodified upstream averages393.65 prompt tok/s and17.14 decode tok/s. The
 integrated fork averages334.93 and16.96, but those are observed times only:
 one of its clean runs changes first-head logprobs and later IDs. Only the
-upstream currently passes the output reproducibility gate for a tuning reference.
+upstream passes the output reproducibility gate in that original comparison.
+The subsequent [private registered-copy32K comparison](code32k/repro32k/registered-copy-no-cnr-and-prefill-scheduling/README.md)
+passes six full state/head/output checks and four clean timing jobs. With
+counter conversion disabled and no MKL CNR, the registered candidate averages
+406.78 prompt /16.96 decode tok/s. Removing14 independent prefill root-sync
+properties gives408.52 /16.06 in a clean ABBA sequence; the prompt difference
+is smaller than the control's repeat spread and decode varies within an arm.
+This does not establish a useful scheduling speed gain. These private timings
+are separate from the original upstream comparison, with no claim that the
+original production fork is fixed or full262,144-cell serving passes.
+The subsequent [default counter-conversion checks](code32k/repro32k/registered-copy-default-counter-conversion/README.md)
+also pass three exact32K full state/head/output comparisons on the same private
+scheduling binary without either the counter override or MKL CNR. Those
+captured runs are excluded from clean timings; full-context gates remain open.
 
 All short arms request `--expert-cache 600 --expert-cache-per-layer`. Upstream
 expands that budget into768 mixed-size slots (1498 MiB); the integration retains

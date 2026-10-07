@@ -1,0 +1,32 @@
+{
+  "active": false,
+  "passed": true,
+  "started_utc": "2026-10-07T20:47:04.973147+00:00",
+  "controller_sha256": "87ec156e96de95b7a1f998b0b14b3cf8a5d30e877a82c071c9686db7ce0d0df4",
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_event_ack_no_root_default_v01402_code32k.py",
+        "event-ack-no-root-prefill-default",
+        "diagnostic",
+        "1"
+      ],
+      "started_utc": "2026-10-07T20:48:27.076166+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T20:52:25.601383+00:00"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_event_ack_no_root_default_v01402_state_sequence.py"
+      ],
+      "started_utc": "2026-10-07T20:52:25.601615+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T20:56:28.759736+00:00"
+    }
+  ],
+  "minimum_comparison_tokens": 32768,
+  "scope": "Wait for clean scheduling ABBA to complete, then logged-first32K and two fresh32K full state/head checks on the same no-root registered-copy binary, changing only implicit counter conversion from forced-off to default. No concurrent GPU jobs, clean timing or full256K claim.",
+  "finished_utc": "2026-10-07T20:56:28.760127+00:00"
+}

@@ -38,7 +38,7 @@ API logs remain private; their sizes and SHA256 are in each record. Logged
 control rates are excluded from the table and retained in the raw CSV.
 
 The table retains observed elapsed times, including the rejected fork rows.
-Only the upstream is currently accepted as a reproducible tuning reference:
+Only the upstream is accepted as a reproducible tuning reference in that sequence:
 its logged control and both clean repetitions match all64 token IDs and every
 protocol logprob. The fork's logged control and second clean repetition agree,
 but its first clean repetition has a different first logprob and diverges in
@@ -64,3 +64,18 @@ Both are cleaned up and subsequent same-boot logged GPU health passes. Disabling
 implicit counter-event conversion permits two completed32K state captures but
 does not make their states/outputs equal. The equality gate prevents clean timing
 jobs from launching. See [full records and limits](repro32k/README.md).
+
+The later [registered nonprofiling-copy comparison](repro32k/registered-copy-no-cnr-and-prefill-scheduling/README.md)
+passes three exact32K state/head/output checks without MKL CNR, then another
+three on a scheduling-only candidate removing14 independent prefill root-sync
+properties. A dump-free32K ABBA comparison passes all four exact-output,
+normal-exit/cleanup and no-new-xe checks. Registered copy averages406.78 PP /
+16.96 TG tok/s; without the prefill root-sync properties it averages408.52 /
+16.06. The prompt difference is smaller than the control's repeat spread;
+the decode results vary within the no-root arm. This does not establish a
+useful speed change. These private candidates are separate from the original
+production/upstream comparison and remain unadopted while full262,144-cell
+serving validation is incomplete. The later [default counter-conversion check](repro32k/registered-copy-default-counter-conversion/README.md)
+passes three exact32K full state/head/output captures on the same scheduling
+binary without either the counter override or MKL CNR. Those captured timings
+are excluded from the speed comparison.

@@ -358,6 +358,33 @@ small GPU execution probe after the unsuccessful two-hour full-context run.
 The probe passed without a reset; full-context correctness remains pending
 for that candidate.
 
+The [v0.1.40.2 32K follow-up](../bench/results/2026-10-05-sycl-prefill-scaling/upstream-v0.1.40.2-20261008/code32k/repro32k/README.md)
+records an original integrated-fork state mismatch and native counter-event
+waits, including one xe CCS reset. A private candidate retains actual DMA
+events until source reuse and uses a registered in-order copy queue without
+profiling unless transfer timing is requested. The registry preserves
+device-wide/default-queue waits. Every translation unit is rebuilt against
+the same header and production compiler/configuration settings match.
+Three fresh32K full state/head/output checks pass both with and without
+MKL CNR. Disabling implicit counter conversion alone had not passed this gate.
+
+The [no-CNR scheduling comparison](../bench/results/2026-10-05-sycl-prefill-scaling/upstream-v0.1.40.2-20261008/code32k/repro32k/registered-copy-no-cnr-and-prefill-scheduling/README.md)
+also checks a candidate removing only14 root-sync properties from independent
+prefill kernels. Three32K full state/head/output checks match the registered
+control. Four subsequent fresh32K timing jobs omit debug logs, validation,
+state/head dumps, transfer profiling and extra waits. On B57010GiB /5600X /
+128GiB, the registered control averages406.78 prompt /16.96 decode tok/s;
+the scheduling candidate averages408.52 /16.06. The prompt difference is
+smaller than the control's repeat spread; decode varies within an arm. These
+two repetitions per arm do not establish a useful gain or an attributable
+decode regression. All ten no-CNR/state/scheduling/timing jobs finish normally
+with exact controls, complete owned cleanup and no new xe fault. Both remain
+private. A subsequent [default counter-conversion check](../bench/results/2026-10-05-sycl-prefill-scaling/upstream-v0.1.40.2-20261008/code32k/repro32k/registered-copy-default-counter-conversion/README.md)
+passes another three exact32K full state/head/output comparisons without either
+the counter-conversion override or MKL CNR. All exit normally without new xe
+faults; captured timings are excluded. Full262,144-cell serving remains a
+separate gate. No short-input timing supports these performance comparisons.
+
 No software reset is guaranteed to recover every firmware/driver wedge. There
 is an [upstream B570 report](https://github.com/intel/compute-runtime/issues/962)
 where both rebind and PCI reset failed; that report is not proof of this host's
