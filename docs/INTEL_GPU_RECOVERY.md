@@ -297,6 +297,28 @@ remained enabled. These profiles do not establish clean throughput or the
 earlier hang's cause; the profiler itself increased that single prompt time
 by 30.0%.
 
+The subsequent [expert-phase pacing checks](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/expert-phase-pacing-20261007/README.md)
+reduced short-input printed phase completion waits from 73,692 to 9,665
+while preserving four complete heads. A quiet 2K repeated-input check with
+every phase wait retained then differed on the third request. The private
+candidate was not adopted and its timings are not accepted as a speed gain.
+An unchanged-binary control with full API logging also stalled in a queue
+completion wait and exited through the application watchdog; the following
+exact-word GPU probe passed without a reset. Four unchanged-binary repeats
+with phase prints and without API logging subsequently matched all outputs.
+The cause of these timing-sensitive failures remains unresolved.
+
+The private [lazy verifier restoration check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/verifier-lazy-restore-20261007/README.md)
+defers eager capture of every verifier window until the existing run path
+needs each window. With all 262,144 KV cells allocated and a 2K input,
+main-cache restoration left 1,008,906,240 bytes free and MTP restoration
+completed, leaving 69,369,856 bytes. Four generated IDs, all printed
+logprobs and the complete finite head matched an unchanged-binary eager
+verifier control at identical settings. Both exited normally without new
+xe faults or a reset. This exercises restoration at the full KV allocation
+size, but does not validate full context occupancy or clean throughput;
+the candidate remains private while the full-occupancy gates run.
+
 The [2026-10-07 logging check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/runtime-tracing-20261007/README.md)
 confirmed Level Zero entry/results and UR traces before the child exited,
 using driver/adapter enumeration without submitting GPU commands. The 48

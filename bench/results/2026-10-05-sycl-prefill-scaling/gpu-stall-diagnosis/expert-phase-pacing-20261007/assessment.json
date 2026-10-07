@@ -1,0 +1,89 @@
+{
+  "scope": "Actual expert-phase pacing 16 short PASS, quiet batch1 repeat mismatch, original-control API-logged stall and phase-log repeat PASS; candidate not adopted",
+  "short": {
+    "batch": 16,
+    "max_positive_mark_gap": 16,
+    "printed_completion_waits": 9665,
+    "baseline_printed_completion_waits": 73692,
+    "phase_counts": {
+      "layer weight preload": 288,
+      "embed+steps": 1434,
+      "hc read": 576,
+      "gdn": 216,
+      "gdn conv+gates": 216,
+      "gdn recurrence": 216,
+      "gdn out proj": 216,
+      "hc write+norm": 576,
+      "router+shared": 288,
+      "host grouping": 288,
+      "gemm gate/up": 4121,
+      "combine": 288,
+      "residual copy": 564,
+      "ple read wait": 6,
+      "ple": 12,
+      "qsa proj": 144,
+      "qsa indexer": 72,
+      "qsa select": 72,
+      "qsa attn": 72
+    },
+    "non_expert_phase_counts_equal": {
+      "layer weight preload": true,
+      "embed+steps": true,
+      "hc read": true,
+      "gdn": true,
+      "gdn conv+gates": true,
+      "gdn recurrence": true,
+      "gdn out proj": true,
+      "hc write+norm": true,
+      "router+shared": true,
+      "host grouping": true,
+      "combine": true,
+      "residual copy": true,
+      "ple read wait": true,
+      "ple": true,
+      "qsa proj": true,
+      "qsa indexer": true,
+      "qsa select": true,
+      "qsa attn": true
+    },
+    "scope": "Finite owned wait-mark schedule evidence; not an upper bound on commands per phase or a throughput/capacity proof"
+  },
+  "quiet_batch1": [
+    {
+      "name": "2048-r1",
+      "done": "DONE 4 2048 33280.3 254.6 length 3 3 0 102 2400 0 0 0.0 2048 0",
+      "equality": {
+        "ids": true,
+        "logprobs": true,
+        "head": true
+      },
+      "head_sha256": "8c5a4ed642a9b60cb96a34cf651e5b31a9e7772af84021123bdc7c8626892b0a"
+    },
+    {
+      "name": "2048-r2",
+      "done": "DONE 4 2048 31110.3 239.9 length 3 3 0 102 2400 0 0 0.0 2048 0",
+      "equality": {
+        "ids": true,
+        "logprobs": true,
+        "head": true
+      },
+      "head_sha256": "8c5a4ed642a9b60cb96a34cf651e5b31a9e7772af84021123bdc7c8626892b0a"
+    },
+    {
+      "name": "2048-r3",
+      "done": "DONE 4 2048 31132.2 393.9 length 4 6 0 180 4320 0 0 0.0 2048 0",
+      "equality": {
+        "ids": false,
+        "logprobs": false,
+        "head": false
+      },
+      "head_sha256": "d6d4306f973e4186e43fc9bc80c7835a0017fbeb1473a5fa74e906be3793374d"
+    }
+  ],
+  "original_repeat": true,
+  "logged_original_stall_exit": -6,
+  "post_stall_health": true,
+  "adopted": false,
+  "phase_batch16_quiet_2k_run": false,
+  "full_capacity_verified": false
+}

@@ -1,0 +1,14 @@
+--- verify.original.cpp
++++ verify.candidate.cpp
+@@ -1991,7 +1991,10 @@
+     hits_.cache_base = address;
+     // Recording submits nodes to a graph, rather than executing the window.
+     // Full-model checks still verify that recapture preserves persistent state.
+-    return warm(err);
++    // The cache address is restored before any window can run. run() already
++    // captures the requested window lazily; do not allocate every unused window
++    // before the MTP physical backing has been restored.
++    return true;
+ } catch (const std::exception& e) {
+     err = std::string("verify cache graph rebuild: ") + e.what();
+     return false;
