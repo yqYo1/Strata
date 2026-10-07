@@ -438,6 +438,27 @@ restore, clipped-tail, refusal and later-valid gates remain open. A fixed
 older second-prefill memory failure remains unresolved. The result is retained
 for tuning; it is not adopted as a production default.
 
+The [main-cache release/restoration controls](../bench/results/2026-10-05-sycl-prefill-scaling/upstream-v0.1.40.2-20261008/code32k/repro32k/main-cache-release-and-restore/README.md)
+add a matched 64 MiB segmented-cache allocation on the same private binary.
+Keeping it backed, releasing half and releasing all with immutable-RAM
+restoration each pass a logged 32K request and two fresh full-state/head
+controls. All nine match the 66 main-state parts, complete first head, all
+64 IDs/logprobs and MTP counts, exit normally and record no new xe fault.
+The half condition unmaps 201,326,592 physical bytes and verifies all
+130,731,008 occupied tail bytes before and after restoration. Full release
+unmaps 402,653,184 bytes and verifies all 281,651,200 occupied bytes. The
+reserved addresses and slot metadata remain stable; graphs are retired
+before unmapping and recaptured after remapping/copying/verification.
+
+CPU checks extract the actual cache-lease struct and pass 19 ASan/UBSan cases
+covering a mid-expert boundary, adaptive residency and rollback/retry paths.
+The same cases also pass with byte-varying payloads; a pinned wrong-offset
+control is rejected by the pre-unmap comparison. These stand-ins do not
+prove SYCL mapping or absence of runtime UB. Snapshot restoration and the
+clean matched four-condition comparison remain pending at this checkpoint.
+Captured times are excluded from speed evidence. The fixed 32K row allocation
+and the older full-context repeat failure remain separate open gates.
+
 No software reset is guaranteed to recover every firmware/driver wedge. There
 is an [upstream B570 report](https://github.com/intel/compute-runtime/issues/962)
 where both rebind and PCI reset failed; that report is not proof of this host's

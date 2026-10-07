@@ -1,0 +1,908 @@
+<LOADER>[DEBUG]: Logger loader initialized successfully!
+<LOADER>[INFO]: loaded adapter 0x0xc0a9980 (/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0) from /opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0
+   ---> urAdapterGet
+<LEVEL_ZERO>[DEBUG]: zeInit with flags value of 1
+[2026-10-08 08:31:20.538] [thread-id: 128246353525952] [info] Loader Version 1.32.0  - No git SHA found, compiled outside git folder.
+[2026-10-08 08:31:20.540] [thread-id: 128246353525952] [info] Validation Layer Enabled
+[2026-10-08 08:31:20.540] [thread-id: 128246353525952] [info] zeInit succeeded
+[2026-10-08 08:31:20.540] [thread-id: 128246353525952] [trace] zeInit(flags)
+[2026-10-08 08:31:20.617] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeInit(flags=1)
+<LEVEL_ZERO>[DEBUG]: Level Zero Loader version: 1.32.0
+<LEVEL_ZERO>[DEBUG]: zeInitDrivers with flags value of 1
+[2026-10-08 08:31:20.617] [thread-id: 128246353525952] [trace] zeInitDrivers(pCount, phDrivers, desc)
+[2026-10-08 08:31:20.617] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeInitDrivers(pCount=1, phDrivers=nullptr, desc={stype=0xc0a8728, flags=1})
+[2026-10-08 08:31:20.617] [thread-id: 128246353525952] [trace] zeInitDrivers(pCount, phDrivers, desc)
+[2026-10-08 08:31:20.617] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeInitDrivers(pCount=1, phDrivers=nullptr, desc={stype=0xc0a8728, flags=1})
+[2026-10-08 08:31:20.617] [thread-id: 128246353525952] [trace] zeDriverGet(pCount, phDrivers)
+[2026-10-08 08:31:20.617] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGet(pCount=1, phDrivers=nullptr)
+[2026-10-08 08:31:20.617] [thread-id: 128246353525952] [trace] zeDriverGet(pCount, phDrivers)
+[2026-10-08 08:31:20.617] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGet(pCount=1, phDrivers=0xc28e980)
+[2026-10-08 08:31:20.617] [thread-id: 128246353525952] [trace] zeDeviceGet(hDriver, pCount, phDevices)
+[2026-10-08 08:31:20.617] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGet(hDriver=0xc28e9c8, pCount=1, phDevices=nullptr)
+[2026-10-08 08:31:20.617] [thread-id: 128246353525952] [trace] zeDeviceGet(hDriver, pCount, phDevices)
+[2026-10-08 08:31:20.617] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGet(hDriver=0xc28e9c8, pCount=1, phDevices=0xc29b2b0)
+[2026-10-08 08:31:20.617] [thread-id: 128246353525952] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 08:31:20.617] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0xc28ef28, pDeviceProperties={stype=0x7ffec53f7e20, type=0x7ffec53f7e30, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+<LEVEL_ZERO>[DEBUG]: 
+zesInit with flags value of 0
+
+[2026-10-08 08:31:20.618] [thread-id: 128246353525952] [trace] zesInit(flags)
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zesInit(flags=0)
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] zeDriverGet(pCount, phDrivers)
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGet(pCount=1, phDrivers=nullptr)
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] zeDriverGet(pCount, phDrivers)
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGet(pCount=1, phDrivers=0xc2a2340)
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] zeInitDrivers(pCount, phDrivers, desc)
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeInitDrivers(pCount=1, phDrivers=0xc2a2410, desc={stype=0xc0a8728, flags=1})
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] zeDriverGetProperties(hDriver, pDriverProperties)
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetProperties(hDriver=0xc28e9c8, pDriverProperties={stype=0x7ffec53f7d70, uuid={id=227}, driverVersion=17013219})
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] zeDriverGetProperties(hDriver, pDriverProperties)
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetProperties(hDriver=0xc28e9c8, pDriverProperties={stype=0x7ffec53f7f40, uuid={id=227}, driverVersion=17013219})
+<LEVEL_ZERO>[DEBUG]: zeDriverHandle 0xc28e9c8 matched between zeDriverGet and zeInitDrivers. Not adding duplicate driver to list
+<LEVEL_ZERO>[DEBUG]: 1 L0 Drivers found.
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] zeDeviceGet(hDriver, pCount, phDevices)
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGet(hDriver=0xc28e9c8, pCount=1, phDevices=nullptr)
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] zeDeviceGet(hDriver, pCount, phDevices)
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGet(hDriver=0xc28e9c8, pCount=1, phDevices=0xc2a26b0)
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0xc28ef28, pDeviceProperties={stype=0x7ffec53f7d70, type=0x7ffec53f7d80, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] zeDriverGetApiVersion(hDriver, version)
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetApiVersion(hDriver=0xc28e9c8, version=65553)
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] zeDriverGetExtensionProperties(hDriver, pCount, pExtensionProperties)
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionProperties(hDriver=0xc28e9c8, pCount=63, pExtensionProperties=nullptr)
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] zeDriverGetExtensionProperties(hDriver, pCount, pExtensionProperties)
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionProperties(hDriver=0xc28e9c8, pCount=63, pExtensionProperties={name="ZE_extension_device_cache_line_size", version=65536})
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0xc28e9c8, name="zeIntelGetDriverVersionString", ppFunctionAddress=0x74a3aa827c00)
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] zeDriverGetProperties(hDriver, pDriverProperties)
+[2026-10-08 08:31:20.619] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetProperties(hDriver=0xc28e9c8, pDriverProperties={stype=0x7ffec53f7c30, uuid={id=227}, driverVersion=17013219})
+<LEVEL_ZERO>[DEBUG]: Level Zero Driver version: 1.17.39395+14
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0xc28e9c8, name="zexDriverImportExternalPointer", ppFunctionAddress=0x74a3aa822a40)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0xc28e9c8, name="zexDriverReleaseImportedPointer", ppFunctionAddress=0x74a3aa82ae30)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0xc28e9c8, name="zeImageGetDeviceOffsetExp", ppFunctionAddress=0x74a3aa82c190)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0xc28e9c8, name="zeMemGetPitchFor2dImage", ppFunctionAddress=0x74a3aa82e550)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0xc28e9c8, name="zeGraphGetIdExt", ppFunctionAddress=0x74a3aa81cdd0)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0xc28e9c8, name="zeCommandListAppendHostFunction", ppFunctionAddress=0x74a3aa800140)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] zesDriverGet(pCount, phDrivers)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zesDriverGet(pCount=1, phDrivers=nullptr)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] zesDriverGet(pCount, phDrivers)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zesDriverGet(pCount=1, phDrivers=0xc2a35b0)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] zesDriverGetDeviceByUuidExp(hDriver, uuid, phDevice, onSubdevice, subdeviceId)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zesDriverGetDeviceByUuidExp(hDriver=0xc29f1c8, uuid={id=134}, phDevice=0xc0cf058, onSubdevice=0, subdeviceId=0)
+<LEVEL_ZERO>[DEBUG]: Initialized 1 platforms
+   <--- urAdapterGet(.NumEntries = 0, .phAdapters = nullptr, .pNumAdapters = 0x7ffec53f8648 (1)) -> UR_RESULT_SUCCESS;
+   ---> urAdapterGet
+   <--- urAdapterGet(.NumEntries = 1, .phAdapters = 0xc2a2690 {0xc0a8700}, .pNumAdapters = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urAdapterGetInfo
+   <--- urAdapterGetInfo(.hAdapter = 0xc0a8700, .propName = UR_ADAPTER_INFO_BACKEND, .propSize = 4, .pPropValue = 0x7ffec53f863c (UR_BACKEND_LEVEL_ZERO), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urAdapterSetLoggerCallback
+   <--- urAdapterSetLoggerCallback(.hAdapter = 0xc0a8700, .pfnLoggerCallback = 0x74a3b1603420, .pUserData = nullptr, .level = UR_LOGGER_LEVEL_WARN) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGet
+   <--- urPlatformGet(.hAdapter = 0xc0a8700, .NumEntries = 0, .phPlatforms = nullptr, .pNumPlatforms = 0x7ffec53f857c (1)) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGet
+   <--- urPlatformGet(.hAdapter = 0xc0a8700, .NumEntries = 1, .phPlatforms = 0xc2a2690 {0xc2a2810}, .pNumPlatforms = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_BACKEND, .propSize = 4, .pPropValue = 0x7ffec53f858c (UR_BACKEND_LEVEL_ZERO), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGet
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] zeDeviceGet(hDriver, pCount, phDevices)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGet(hDriver=0xc28e9c8, pCount=1, phDevices=nullptr)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] zeDeviceGet(hDriver, pCount, phDevices)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGet(hDriver=0xc28e9c8, pCount=1, phDevices=0xc2a4000)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0xc28ef28, pDeviceProperties={stype=0xc2a40e8, type=0xc2a40f8, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=19200000, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0xc28ef28, pDeviceProperties={stype=0x7ffec53f7b88, type=0x7ffec53f7b98, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] zeDeviceGetCommandQueueGroupProperties(hDevice, pCount, pCommandQueueGroupProperties)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetCommandQueueGroupProperties(hDevice=0xc28ef28, pCount=2, pCommandQueueGroupProperties=nullptr)
+<LEVEL_ZERO>[INFO]: Number of queue groups = 2
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] zeDeviceGetCommandQueueGroupProperties(hDevice, pCount, pCommandQueueGroupProperties)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetCommandQueueGroupProperties(hDevice=0xc28ef28, pCount=2, pCommandQueueGroupProperties={stype=0xc0a8610, flags=7, maxMemoryFillPatternSize=18446744073709551615, numQueues=1})
+<LEVEL_ZERO>[INFO]: main blitter/copy engine is available
+<LEVEL_ZERO>[INFO]: link blitter/copy engines are not available
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] zeDeviceGetSubDevices(hDevice, pCount, phSubdevices)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetSubDevices(hDevice=0xc28ef28, pCount=0, phSubdevices=nullptr)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] zeDeviceGetSubDevices(hDevice, pCount, phSubdevices)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetSubDevices(hDevice=0xc28ef28, pCount=0, phSubdevices=0xc2a4020)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] zeDeviceGetRootDevice(hDevice, phRootDevice)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetRootDevice(hDevice=0xc28ef28, phRootDevice=0x7ffec53f7fe0)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] zeDeviceSynchronize(hDevice)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceSynchronize(hDevice=0xc28ef28)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] zeDeviceGetRootDevice(hDevice, phRootDevice)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetRootDevice(hDevice=0xc28ef28, phRootDevice=0x7ffec53f80d0)
+   <--- urDeviceGet(.hPlatform = 0xc2a2810, .DeviceType = UR_DEVICE_TYPE_ALL, .NumEntries = 0, .phDevices = nullptr, .pNumDevices = 0x7ffec53f84fc (1)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGet
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] zeDeviceGetRootDevice(hDevice, phRootDevice)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetRootDevice(hDevice=0xc28ef28, phRootDevice=0x7ffec53f80d0)
+   <--- urDeviceGet(.hPlatform = 0xc2a2810, .DeviceType = UR_DEVICE_TYPE_ALL, .NumEntries = 1, .phDevices = 0xc2a4000 {0xc2a4040}, .pNumDevices = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_VERSION, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f80d0 (5)) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_VERSION, .propSize = 5, .pPropValue = 0x7ffec53f8238 (1.17), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_NAME, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f80d0 (51)) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_NAME, .propSize = 51, .pPropValue = 0xc2a4710 (Intel(R) oneAPI Unified Runtime over Level-Zero V2), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_PARENT_DEVICE, .propSize = 8, .pPropValue = 0x7ffec53f8090 (nullptr), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_TYPE, .propSize = 4, .pPropValue = 0x7ffec53f8030 (UR_DEVICE_TYPE_GPU), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_USE_NATIVE_ASSERT, .propSize = 1, .pPropValue = 0x7ffec53f8030 (true), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] zeDeviceGetModuleProperties(hDevice, pModuleProperties)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetModuleProperties(hDevice=0xc28ef28, pModuleProperties={stype=0xc2a4360, spirvVersionSupported=65541, flags=15, fp16flags=63, fp32flags=127, fp64flags=127, maxArgumentsSize=2048, printfBufferSize=4194304, nativeKernelSupported={id=0}})
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] zeDeviceGetImageProperties(hDevice, pImageProperties)
+[2026-10-08 08:31:20.620] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetImageProperties(hDevice=0xc28ef28, pImageProperties={stype=0xc2a4300, maxImageDims1D=16384, maxImageDims2D=16384, maxImageDims3D=2048, maxImageBufferSize=633300480, maxImageArraySlices=2048, maxSamplers=16, maxReadImageArgs=128, maxWriteImageArgs=128})
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_EXTENSIONS, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f7fb8 (245)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_EXTENSIONS, .propSize = 245, .pPropValue = 0xc15e740 (cl_khr_il_program cl_khr_subgroups cl_intel_subgroups cl_intel_subgroups_short cl_intel_required_subgroup_size cl_khr_fp16 cl_khr_fp64 cl_khr_int64_base_atomics cl_khr_int64_extended_atomics cl_khr_3d_image_writes cl_intel_bfloat16_conversions ), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceRetain
+   <--- urDeviceRetain(.hDevice = 0xc2a4040) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_TYPE, .propSize = 4, .pPropValue = 0x7ffec53f81ac (UR_DEVICE_TYPE_GPU), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_VENDOR_ID, .propSize = 4, .pPropValue = 0x7ffec53f8228 (32902), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_DRIVER_VERSION, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f80d0 (14)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_DRIVER_VERSION, .propSize = 14, .pPropValue = 0x7ffec53f81f8 (1.17.39395+14), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_NAME, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f8010 (31)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_NAME, .propSize = 31, .pPropValue = 0xc2a3fd0 (Intel(R) Arc(TM) B570 Graphics), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_BACKEND, .propSize = 4, .pPropValue = 0x7ffec53f83ec (UR_BACKEND_LEVEL_ZERO), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_TYPE, .propSize = 4, .pPropValue = 0x7ffec53f83e4 (UR_DEVICE_TYPE_GPU), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceRelease
+   <--- urDeviceRelease(.hDevice = 0xc2a4040) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_SUPPORTED_PARTITIONS, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f83d8 (0)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGet
+[2026-10-08 08:31:20.621] [thread-id: 128246353525952] [trace] zeDeviceGetRootDevice(hDevice, phRootDevice)
+[2026-10-08 08:31:20.621] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetRootDevice(hDevice=0xc28ef28, phRootDevice=0x7ffec53f81e0)
+   <--- urDeviceGet(.hPlatform = 0xc2a2810, .DeviceType = UR_DEVICE_TYPE_ALL, .NumEntries = 0, .phDevices = nullptr, .pNumDevices = 0x7ffec53f860c (1)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGet
+[2026-10-08 08:31:20.621] [thread-id: 128246353525952] [trace] zeDeviceGetRootDevice(hDevice, phRootDevice)
+[2026-10-08 08:31:20.621] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetRootDevice(hDevice=0xc28ef28, phRootDevice=0x7ffec53f81e0)
+   <--- urDeviceGet(.hPlatform = 0xc2a2810, .DeviceType = UR_DEVICE_TYPE_ALL, .NumEntries = 1, .phDevices = 0xc2a26b0 {0xc2a4040}, .pNumDevices = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_VERSION, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f81e0 (5)) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_VERSION, .propSize = 5, .pPropValue = 0x7ffec53f8348 (1.17), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_NAME, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f81e0 (51)) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_NAME, .propSize = 51, .pPropValue = 0xc2a4c30 (Intel(R) oneAPI Unified Runtime over Level-Zero V2), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_TYPE, .propSize = 4, .pPropValue = 0x7ffec53f82bc (UR_DEVICE_TYPE_GPU), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_VENDOR_ID, .propSize = 4, .pPropValue = 0x7ffec53f8338 (32902), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_DRIVER_VERSION, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f81e0 (14)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_DRIVER_VERSION, .propSize = 14, .pPropValue = 0x7ffec53f8308 (1.17.39395+14), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_BACKEND, .propSize = 4, .pPropValue = 0x7ffec53f84fc (UR_BACKEND_LEVEL_ZERO), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_TYPE, .propSize = 4, .pPropValue = 0x7ffec53f84f4 (UR_DEVICE_TYPE_GPU), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceRelease
+   <--- urDeviceRelease(.hDevice = 0xc2a4040) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_SUPPORTED_PARTITIONS, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f84e8 (0)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceSelectBinary
+   <--- urDeviceSelectBinary(.hDevice = 0xc2a4040, .pBinaries = 0x7ffec53f8530 ((struct ur_device_binary_t){.stype = UR_STRUCTURE_TYPE_CONTEXT_PROPERTIES, .pNext = nullptr, .pDeviceTargetSpec = 0x74a3b13843c0 (spir64)}), .NumBinaries = 1, .pSelectedBinary = 0x7ffec53f8554 (0)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGet
+[2026-10-08 08:31:20.621] [thread-id: 128246353525952] [trace] zeDeviceGetRootDevice(hDevice, phRootDevice)
+[2026-10-08 08:31:20.621] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetRootDevice(hDevice=0xc28ef28, phRootDevice=0x7ffec53f8170)
+   <--- urDeviceGet(.hPlatform = 0xc2a2810, .DeviceType = UR_DEVICE_TYPE_ALL, .NumEntries = 0, .phDevices = nullptr, .pNumDevices = 0x7ffec53f859c (1)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGet
+[2026-10-08 08:31:20.621] [thread-id: 128246353525952] [trace] zeDeviceGetRootDevice(hDevice, phRootDevice)
+[2026-10-08 08:31:20.621] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetRootDevice(hDevice=0xc28ef28, phRootDevice=0x7ffec53f8170)
+   <--- urDeviceGet(.hPlatform = 0xc2a2810, .DeviceType = UR_DEVICE_TYPE_ALL, .NumEntries = 1, .phDevices = 0xc2a4d00 {0xc2a4040}, .pNumDevices = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_VERSION, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f8170 (5)) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_VERSION, .propSize = 5, .pPropValue = 0x7ffec53f82d8 (1.17), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_NAME, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f8170 (51)) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_NAME, .propSize = 51, .pPropValue = 0xc2a4710 (Intel(R) oneAPI Unified Runtime over Level-Zero V2), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_TYPE, .propSize = 4, .pPropValue = 0x7ffec53f824c (UR_DEVICE_TYPE_GPU), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_VENDOR_ID, .propSize = 4, .pPropValue = 0x7ffec53f82c8 (32902), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_DRIVER_VERSION, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f8170 (14)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_DRIVER_VERSION, .propSize = 14, .pPropValue = 0x7ffec53f8298 (1.17.39395+14), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_BACKEND, .propSize = 4, .pPropValue = 0x7ffec53f848c (UR_BACKEND_LEVEL_ZERO), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_TYPE, .propSize = 4, .pPropValue = 0x7ffec53f8484 (UR_DEVICE_TYPE_GPU), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceRelease
+   <--- urDeviceRelease(.hDevice = 0xc2a4040) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_SUPPORTED_PARTITIONS, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f8478 (0)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGet
+[2026-10-08 08:31:20.621] [thread-id: 128246353525952] [trace] zeDeviceGetRootDevice(hDevice, phRootDevice)
+[2026-10-08 08:31:20.621] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetRootDevice(hDevice=0xc28ef28, phRootDevice=0x7ffec53f8280)
+   <--- urDeviceGet(.hPlatform = 0xc2a2810, .DeviceType = UR_DEVICE_TYPE_GPU, .NumEntries = 0, .phDevices = nullptr, .pNumDevices = 0x7ffec53f86ac (1)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGet
+[2026-10-08 08:31:20.621] [thread-id: 128246353525952] [trace] zeDeviceGetRootDevice(hDevice, phRootDevice)
+[2026-10-08 08:31:20.621] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetRootDevice(hDevice=0xc28ef28, phRootDevice=0x7ffec53f8280)
+   <--- urDeviceGet(.hPlatform = 0xc2a2810, .DeviceType = UR_DEVICE_TYPE_GPU, .NumEntries = 1, .phDevices = 0xc2a4d20 {0xc2a4040}, .pNumDevices = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_VERSION, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f8280 (5)) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_VERSION, .propSize = 5, .pPropValue = 0x7ffec53f83e8 (1.17), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_NAME, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f8280 (51)) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_NAME, .propSize = 51, .pPropValue = 0xc2a4c30 (Intel(R) oneAPI Unified Runtime over Level-Zero V2), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_TYPE, .propSize = 4, .pPropValue = 0x7ffec53f835c (UR_DEVICE_TYPE_GPU), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_VENDOR_ID, .propSize = 4, .pPropValue = 0x7ffec53f83d8 (32902), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_DRIVER_VERSION, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f8280 (14)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_DRIVER_VERSION, .propSize = 14, .pPropValue = 0x7ffec53f83a8 (1.17.39395+14), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_BACKEND, .propSize = 4, .pPropValue = 0x7ffec53f859c (UR_BACKEND_LEVEL_ZERO), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_TYPE, .propSize = 4, .pPropValue = 0x7ffec53f8594 (UR_DEVICE_TYPE_GPU), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceRelease
+   <--- urDeviceRelease(.hDevice = 0xc2a4040) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_SUPPORTED_PARTITIONS, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f8588 (0)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+[2026-10-08 08:31:20.622] [thread-id: 128246353525952] [trace] zeDevicePciGetPropertiesExt(hDevice, pPciProperties)
+[2026-10-08 08:31:20.622] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDevicePciGetPropertiesExt(hDevice=0xc28ef28, pPciProperties={stype=0x7ffec53f8250, address={domain=0, bus=5, device=0, function=0}, maxSpeed={genVersion=4, width=8, maxBandwidth=15753846153}})
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_PCI_ADDRESS, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f86c8 (13)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+[2026-10-08 08:31:20.622] [thread-id: 128246353525952] [trace] zeDevicePciGetPropertiesExt(hDevice, pPciProperties)
+[2026-10-08 08:31:20.622] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDevicePciGetPropertiesExt(hDevice=0xc28ef28, pPciProperties={stype=0x7ffec53f8360, address={domain=0, bus=5, device=0, function=0}, maxSpeed={genVersion=4, width=8, maxBandwidth=15753846153}})
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_PCI_ADDRESS, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f87d0 (13)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+[2026-10-08 08:31:20.622] [thread-id: 128246353525952] [trace] zeDevicePciGetPropertiesExt(hDevice, pPciProperties)
+[2026-10-08 08:31:20.622] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDevicePciGetPropertiesExt(hDevice=0xc28ef28, pPciProperties={stype=0x7ffec53f8360, address={domain=0, bus=5, device=0, function=0}, maxSpeed={genVersion=4, width=8, maxBandwidth=15753846153}})
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_PCI_ADDRESS, .propSize = 13, .pPropValue = 0x7ffec53f8820 (0000:05:00.0), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGet
+[2026-10-08 08:31:20.622] [thread-id: 128246353525952] [trace] zeDeviceGetRootDevice(hDevice, phRootDevice)
+[2026-10-08 08:31:20.622] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetRootDevice(hDevice=0xc28ef28, phRootDevice=0x7ffec53f8180)
+   <--- urDeviceGet(.hPlatform = 0xc2a2810, .DeviceType = UR_DEVICE_TYPE_ALL, .NumEntries = 0, .phDevices = nullptr, .pNumDevices = 0x7ffec53f85ac (1)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGet
+[2026-10-08 08:31:20.622] [thread-id: 128246353525952] [trace] zeDeviceGetRootDevice(hDevice, phRootDevice)
+[2026-10-08 08:31:20.622] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetRootDevice(hDevice=0xc28ef28, phRootDevice=0x7ffec53f8180)
+   <--- urDeviceGet(.hPlatform = 0xc2a2810, .DeviceType = UR_DEVICE_TYPE_ALL, .NumEntries = 1, .phDevices = 0xc2a4d40 {0xc2a4040}, .pNumDevices = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_VERSION, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f8180 (5)) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_VERSION, .propSize = 5, .pPropValue = 0x7ffec53f82e8 (1.17), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_NAME, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f8180 (51)) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_NAME, .propSize = 51, .pPropValue = 0xc2a4c30 (Intel(R) oneAPI Unified Runtime over Level-Zero V2), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_TYPE, .propSize = 4, .pPropValue = 0x7ffec53f825c (UR_DEVICE_TYPE_GPU), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_VENDOR_ID, .propSize = 4, .pPropValue = 0x7ffec53f82d8 (32902), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_DRIVER_VERSION, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f8180 (14)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_DRIVER_VERSION, .propSize = 14, .pPropValue = 0x7ffec53f82a8 (1.17.39395+14), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0xc2a2810, .propName = UR_PLATFORM_INFO_BACKEND, .propSize = 4, .pPropValue = 0x7ffec53f849c (UR_BACKEND_LEVEL_ZERO), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_TYPE, .propSize = 4, .pPropValue = 0x7ffec53f8494 (UR_DEVICE_TYPE_GPU), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceRelease
+   <--- urDeviceRelease(.hDevice = 0xc2a4040) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_SUPPORTED_PARTITIONS, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f8488 (0)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+[2026-10-08 08:31:20.622] [thread-id: 128246353525952] [trace] zeDeviceGetSubDevices(hDevice, pCount, phSubdevices)
+[2026-10-08 08:31:20.622] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetSubDevices(hDevice=0xc28ef28, pCount=0, phSubdevices=nullptr)
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_COMPONENT_DEVICES, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f82a0 (0)) -> UR_RESULT_SUCCESS;
+   ---> urContextCreate
+[2026-10-08 08:31:20.622] [thread-id: 128246353525952] [trace] zeContextCreate(hDriver, desc, phContext)
+[2026-10-08 08:31:20.622] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeContextCreate(hDriver=0xc28e9c8, desc={stype=0x7ffec53f81d0, flags=0}, phContext=0xc2a5738)
+[2026-10-08 08:31:20.622] [thread-id: 128246353525952] [trace] zeMemAllocHost(hContext, host_desc, size, alignment, pptr)
+[2026-10-08 08:31:20.623] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemAllocHost(hContext=0xc2a5738, host_desc={stype=0x7ffec53f7c50, flags=0}, size=1, alignment=0, pptr=0x74a39bdffe00)
+[2026-10-08 08:31:20.623] [thread-id: 128246353525952] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-08 08:31:20.623] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0xc2a5738, ptr=0x74a39bdffe00, pMemAllocProperties={stype=0x7ffec53f7c50, type=0x7ffec53f7c60, id=1, pageSize=2097152}, phDevice=nullptr)
+[2026-10-08 08:31:20.623] [thread-id: 128246353525952] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-08 08:31:20.623] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0xc2a5738, pMemFreeDesc={stype=0x7ffec53f7c30, freePolicy=1}, ptr=0x74a39bdffe00)
+[2026-10-08 08:31:20.623] [thread-id: 128246353525952] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 08:31:20.623] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0xc28ef28, pDeviceProperties={stype=0x74a39c2b9068, type=0x74a39c2b9078, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 08:31:20.623] [thread-id: 128246353525952] [trace] zeMemAllocDevice(hContext, device_desc, size, alignment, hDevice, pptr)
+[2026-10-08 08:31:20.623] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemAllocDevice(hContext=0xc2a5738, device_desc={stype=0x7ffec53f7c10, flags=0, ordinal=0}, size=1, alignment=0, hDevice=0xc28ef28, pptr=0xffffffffff9ffe00)
+[2026-10-08 08:31:20.623] [thread-id: 128246353525952] [trace] zeContextMakeMemoryResident(hContext, hDevice, ptr, size)
+[2026-10-08 08:31:20.623] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeContextMakeMemoryResident(hContext=0xc2a5738, hDevice=0xc28ef28, ptr=0xffffffffff9ffe00, size=1)
+[2026-10-08 08:31:20.623] [thread-id: 128246353525952] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-08 08:31:20.623] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0xc2a5738, ptr=0xffffffffff9ffe00, pMemAllocProperties={stype=0x7ffec53f7c50, type=0x7ffec53f7c60, id=3, pageSize=65536}, phDevice=nullptr)
+[2026-10-08 08:31:20.623] [thread-id: 128246353525952] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-08 08:31:20.623] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0xc2a5738, pMemFreeDesc={stype=0x7ffec53f7c30, freePolicy=1}, ptr=0xffffffffff9ffe00)
+[2026-10-08 08:31:20.623] [thread-id: 128246353525952] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 08:31:20.623] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0xc28ef28, pDeviceProperties={stype=0x74a39c2b1068, type=0x74a39c2b1078, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 08:31:20.623] [thread-id: 128246353525952] [trace] zeMemAllocShared(hContext, device_desc, host_desc, size, alignment, hDevice, pptr)
+[2026-10-08 08:31:20.623] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemAllocShared(hContext=0xc2a5738, device_desc={stype=0x7ffec53f7c50, flags=0, ordinal=0}, host_desc={stype=0x7ffec53f7c30, flags=0}, size=1, alignment=0, hDevice=0xc28ef28, pptr=0x74a39bf30000)
+[2026-10-08 08:31:20.623] [thread-id: 128246353525952] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-08 08:31:20.623] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0xc2a5738, ptr=0x74a39bf30000, pMemAllocProperties={stype=0x7ffec53f7c50, type=0x7ffec53f7c60, id=5, pageSize=65536}, phDevice=nullptr)
+[2026-10-08 08:31:20.623] [thread-id: 128246353525952] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-08 08:31:20.624] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0xc2a5738, pMemFreeDesc={stype=0x7ffec53f7c30, freePolicy=1}, ptr=0x74a39bf30000)
+[2026-10-08 08:31:20.624] [thread-id: 128246353525952] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 08:31:20.624] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0xc28ef28, pDeviceProperties={stype=0x74a39bf43068, type=0x74a39bf43078, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 08:31:20.624] [thread-id: 128246353525952] [trace] zeMemAllocShared(hContext, device_desc, host_desc, size, alignment, hDevice, pptr)
+[2026-10-08 08:31:20.624] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemAllocShared(hContext=0xc2a5738, device_desc={stype=0x7ffec53f7c50, flags=0, ordinal=0}, host_desc={stype=0x7ffec53f7c30, flags=0}, size=1, alignment=0, hDevice=0xc28ef28, pptr=0x74a39bf30000)
+[2026-10-08 08:31:20.624] [thread-id: 128246353525952] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-08 08:31:20.624] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0xc2a5738, ptr=0x74a39bf30000, pMemAllocProperties={stype=0x7ffec53f7c50, type=0x7ffec53f7c60, id=6, pageSize=65536}, phDevice=nullptr)
+[2026-10-08 08:31:20.624] [thread-id: 128246353525952] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-08 08:31:20.624] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0xc2a5738, pMemFreeDesc={stype=0x7ffec53f7c30, freePolicy=1}, ptr=0x74a39bf30000)
+[2026-10-08 08:31:20.624] [thread-id: 128246353525952] [trace] zeMemAllocHost(hContext, host_desc, size, alignment, pptr)
+[2026-10-08 08:31:20.624] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemAllocHost(hContext=0xc2a5738, host_desc={stype=0x7ffec53f7c50, flags=0}, size=1, alignment=0, pptr=0x74a39bdffe00)
+[2026-10-08 08:31:20.624] [thread-id: 128246353525952] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-08 08:31:20.624] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0xc2a5738, ptr=0x74a39bdffe00, pMemAllocProperties={stype=0x7ffec53f7c50, type=0x7ffec53f7c60, id=1, pageSize=2097152}, phDevice=nullptr)
+[2026-10-08 08:31:20.624] [thread-id: 128246353525952] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-08 08:31:20.624] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0xc2a5738, pMemFreeDesc={stype=0x7ffec53f7c30, freePolicy=1}, ptr=0x74a39bdffe00)
+[2026-10-08 08:31:20.624] [thread-id: 128246353525952] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 08:31:20.624] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0xc28ef28, pDeviceProperties={stype=0x74a39bf3b068, type=0x74a39bf3b078, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 08:31:20.624] [thread-id: 128246353525952] [trace] zeMemAllocDevice(hContext, device_desc, size, alignment, hDevice, pptr)
+[2026-10-08 08:31:20.624] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemAllocDevice(hContext=0xc2a5738, device_desc={stype=0x7ffec53f7c10, flags=0, ordinal=0}, size=1, alignment=0, hDevice=0xc28ef28, pptr=0xffffffffff9ffe00)
+[2026-10-08 08:31:20.624] [thread-id: 128246353525952] [trace] zeContextMakeMemoryResident(hContext, hDevice, ptr, size)
+[2026-10-08 08:31:20.624] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeContextMakeMemoryResident(hContext=0xc2a5738, hDevice=0xc28ef28, ptr=0xffffffffff9ffe00, size=1)
+[2026-10-08 08:31:20.624] [thread-id: 128246353525952] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-08 08:31:20.624] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0xc2a5738, ptr=0xffffffffff9ffe00, pMemAllocProperties={stype=0x7ffec53f7c50, type=0x7ffec53f7c60, id=3, pageSize=65536}, phDevice=nullptr)
+[2026-10-08 08:31:20.624] [thread-id: 128246353525952] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-08 08:31:20.625] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0xc2a5738, pMemFreeDesc={stype=0x7ffec53f7c30, freePolicy=1}, ptr=0xffffffffff9ffe00)
+[2026-10-08 08:31:20.625] [thread-id: 128246353525952] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 08:31:20.625] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0xc28ef28, pDeviceProperties={stype=0x74a39bf2e068, type=0x74a39bf2e078, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 08:31:20.625] [thread-id: 128246353525952] [trace] zeMemAllocShared(hContext, device_desc, host_desc, size, alignment, hDevice, pptr)
+[2026-10-08 08:31:20.625] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemAllocShared(hContext=0xc2a5738, device_desc={stype=0x7ffec53f7c50, flags=0, ordinal=0}, host_desc={stype=0x7ffec53f7c30, flags=0}, size=1, alignment=0, hDevice=0xc28ef28, pptr=0x74a39bf10000)
+[2026-10-08 08:31:20.625] [thread-id: 128246353525952] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-08 08:31:20.625] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0xc2a5738, ptr=0x74a39bf10000, pMemAllocProperties={stype=0x7ffec53f7c50, type=0x7ffec53f7c60, id=9, pageSize=65536}, phDevice=nullptr)
+[2026-10-08 08:31:20.625] [thread-id: 128246353525952] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-08 08:31:20.625] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0xc2a5738, pMemFreeDesc={stype=0x7ffec53f7c30, freePolicy=1}, ptr=0x74a39bf10000)
+[2026-10-08 08:31:20.625] [thread-id: 128246353525952] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 08:31:20.625] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0xc28ef28, pDeviceProperties={stype=0x74a39bf2a068, type=0x74a39bf2a078, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 08:31:20.625] [thread-id: 128246353525952] [trace] zeMemAllocShared(hContext, device_desc, host_desc, size, alignment, hDevice, pptr)
+[2026-10-08 08:31:20.625] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemAllocShared(hContext=0xc2a5738, device_desc={stype=0x7ffec53f7c50, flags=0, ordinal=0}, host_desc={stype=0x7ffec53f7c30, flags=0}, size=1, alignment=0, hDevice=0xc28ef28, pptr=0x74a39bf10000)
+[2026-10-08 08:31:20.625] [thread-id: 128246353525952] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-08 08:31:20.625] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0xc2a5738, ptr=0x74a39bf10000, pMemAllocProperties={stype=0x7ffec53f7c50, type=0x7ffec53f7c60, id=10, pageSize=65536}, phDevice=nullptr)
+[2026-10-08 08:31:20.625] [thread-id: 128246353525952] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-08 08:31:20.625] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0xc2a5738, pMemFreeDesc={stype=0x7ffec53f7c30, freePolicy=1}, ptr=0x74a39bf10000)
+   <--- urContextCreate(.DeviceCount = 1, .phDevices = 0xc2a4ce0 {0xc2a4040}, .pProperties = nullptr, .phContext = 0xc2a6d70 (0xc2a8dd0)) -> UR_RESULT_SUCCESS;
+   ---> urQueueCreate
+<LEVEL_ZERO>[INFO]: Copy offload is disabled by the environment variable.
+<LEVEL_ZERO>[DEBUG]: create command list ordinal: 0, type: immediate, device: 0xc28ef28, inOrder: 1
+[2026-10-08 08:31:20.626] [thread-id: 128246353525952] [trace] zeCommandListCreateImmediate(hContext, hDevice, altdesc, phCommandList)
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListCreateImmediate(hContext=0xc2a5738, hDevice=0xc28ef28, altdesc={stype=0x7ffec53f8150, ordinal=0, index=0, flags=2, mode=0x7ffec53f816c, priority=0x7ffec53f8170}, phCommandList=0xc2acf08)
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0xc28e9c8, name="zexCounterBasedEventCreate2", ppFunctionAddress=0x74a3aa404c00)
+   <--- urQueueCreate(.hContext = 0xc2a8dd0, .hDevice = 0xc2a4040, .pProperties = 0x7ffec53f8730 ((struct ur_queue_properties_t){.stype = UR_STRUCTURE_TYPE_QUEUE_PROPERTIES, .pNext = nullptr, .flags = 0}), .phQueue = 0x7ffec53f8748 (0xc2ac150)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] zeDeviceGetMemoryAccessProperties(hDevice, pMemAccessProperties)
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetMemoryAccessProperties(hDevice=0xc28ef28, pMemAccessProperties={stype=0xc2a4420, hostAllocCapabilities=3, deviceAllocCapabilities=3, sharedSingleDeviceAllocCapabilities=3, sharedCrossDeviceAllocCapabilities=0, sharedSystemAllocCapabilities=15})
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_USM_DEVICE_SUPPORT, .propSize = 4, .pPropValue = 0x7ffec53f8594 (UR_DEVICE_USM_ACCESS_CAPABILITY_FLAG_ACCESS | UR_DEVICE_USM_ACCESS_CAPABILITY_FLAG_ATOMIC_ACCESS), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urUSMDeviceAlloc
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] zeMemAllocDevice(hContext, device_desc, size, alignment, hDevice, pptr)
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemAllocDevice(hContext=0xc2a5738, device_desc={stype=0x7ffec53f81a0, flags=0, ordinal=0}, size=65536, alignment=0, hDevice=0xc28ef28, pptr=0xffffffffff600000)
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] zeContextMakeMemoryResident(hContext, hDevice, ptr, size)
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeContextMakeMemoryResident(hContext=0xc2a5738, hDevice=0xc28ef28, ptr=0xffffffffff600000, size=65536)
+   <--- urUSMDeviceAlloc(.hContext = 0xc2a8dd0, .hDevice = 0xc2a4040, .pUSMDesc = 0x7ffec53f8700 ((struct ur_usm_desc_t){.stype = UR_STRUCTURE_TYPE_CONTEXT_PROPERTIES, .pNext = nullptr, .hints = 0, .align = 4}), .pool = nullptr, .size = 65536, .ppMem = 0x7ffec53f8718 (0xffffffffff600000)) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueUSMMemcpy
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2ddc28)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2ddf28)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2de648)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2deb88)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2df288)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2df7e8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2dfee8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e03f8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e0af8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.627] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e1008)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e1708)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e1cb8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e23b8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e28c8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e2fc8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e34d8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e3bd8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e40e8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e47e8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e4cf8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e53f8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e5908)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e6008)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e6518)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e6d58)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e7268)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e7968)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e7e78)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e8578)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e8a88)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e9188)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e9698)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2e9d98)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2ea4b8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2eabb8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2eb0c8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2eb7c8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2ebcd8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2ec3d8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2ec8e8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2ecfe8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.628] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2ed4f8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2edbf8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2ee108)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2ee808)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2eed18)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2ef418)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2ef928)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2f0028)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2f0538)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2f0c38)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2f1148)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2f1ac8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2f1fd8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2f26d8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2f2be8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2f32e8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2f37f8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2f3ef8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2f4408)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2f4b08)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2f5018)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2f5718)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 1
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0xc2a5738, hDevice=0xc28ef28, desc=0x7ffec53f8150, phEvent=0xc2f5c28)
+[2026-10-08 08:31:20.629] [thread-id: 128246353525952] [trace] zeCommandListAppendMemoryCopy(hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-08 08:31:20.632] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0xc2acf08, dstptr=0xffffffffff600000, srcptr=0xc2bda60, size=65536, hSignalEvent=0xc2f5c28, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueUSMMemcpy(.hQueue = 0xc2ac150, .blocking = 0, .pDst = 0xffffffffff600000, .pSrc = 0xc2bda60, .size = 65536, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffec53f8750 (0xc2f5610)) -> UR_RESULT_SUCCESS;
+   ---> urEventWait
+[2026-10-08 08:31:20.632] [thread-id: 128246353525952] [trace] zeEventHostSynchronize(hEvent, timeout)
+[2026-10-08 08:31:20.632] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventHostSynchronize(hEvent=0xc2f5c28, timeout=18446744073709551615)
+   <--- urEventWait(.numEvents = 1, .phEventWaitList = 0x7ffec53f87a0 {0xc2f5610}) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xc2f5610) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+[2026-10-08 08:31:20.632] [thread-id: 128246353525952] [trace] zeDeviceGetComputeProperties(hDevice, pComputeProperties)
+[2026-10-08 08:31:20.632] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetComputeProperties(hDevice=0xc28ef28, pComputeProperties={stype=0xc2a4280, maxTotalGroupSize=1024, maxGroupSizeX=1024, maxGroupSizeY=1024, maxGroupSizeZ=1024, maxGroupCountX=4294967295, maxGroupCountY=4294967295, maxGroupCountZ=4294967295, maxSharedLocalMemory=131072, numSubGroupSizes=2, subGroupSizes=16})
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_MAX_WORK_GROUPS_3D, .propSize = 24, .pPropValue = {4294967295, 4294967295, 4294967295}, .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceSelectBinary
+   <--- urDeviceSelectBinary(.hDevice = 0xc2a4040, .pBinaries = 0xc31ea60 ((struct ur_device_binary_t){.stype = UR_STRUCTURE_TYPE_CONTEXT_PROPERTIES, .pNext = nullptr, .pDeviceTargetSpec = 0x74a3b13843c0 (spir64)}), .NumBinaries = 1, .pSelectedBinary = 0x7ffec53f7cac (0)) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetBackendOption
+   <--- urPlatformGetBackendOption(.hPlatform = 0xc2a2810, .pFrontendOption = 0x7ffec53f77b8 (-O2), .ppPlatformOption = 0x7ffec53f7788 (0x74a3ae3f2975 (-ze-opt-level=2))) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_VENDOR_ID, .propSize = 4, .pPropValue = 0x7ffec53f7708 (32902), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_DEVICE_ID, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffec53f7590 (4)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_DEVICE_ID, .propSize = 4, .pPropValue = 0x7ffec53f76d8 (57868), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_COMPILER_AVAILABLE, .propSize = 1, .pPropValue = 0x7ffec53f7770 (true), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urProgramCreateWithIL
+   <--- urProgramCreateWithIL(.hContext = 0xc2a8dd0, .pIL = 0x415b20, .length = 2080, .pProperties = nullptr, .phProgram = 0x7ffec53f7890 (0xc2e6a20)) -> UR_RESULT_SUCCESS;
+   ---> urProgramBuildExp
+[2026-10-08 08:31:20.632] [thread-id: 128246353525952] [trace] zeModuleCreate(hContext, hDevice, desc, phModule, phBuildLog)
+[2026-10-08 08:31:20.633] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleCreate(hContext=0xc2a5738, hDevice=0xc28ef28, desc={stype=0x7ffec53f7510, format=0x7ffec53f7520, inputSize=2080, pInputModule=3, pBuildFlags=" -ze-opt-level=2", pConstants={numConstants=0, pConstantIds=nullptr, pConstantValues=nullptr}}, phModule=0xc2f9d28, phBuildLog=0xc31f958)
+[2026-10-08 08:31:20.633] [thread-id: 128246353525952] [trace] zeModuleGetProperties(hModule, pModuleProperties)
+[2026-10-08 08:31:20.633] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleGetProperties(hModule=0xc2f9d28, pModuleProperties={stype=0x7ffec53f7480, flags=0})
+   <--- urProgramBuildExp(.hProgram = 0xc2e6a20, .numDevices = 1, .phDevices = 0xc31ea60 {0xc2a4040}, .flags = 0, .pOptions = 0xc31ea80 ( -ze-opt-level=2)) -> UR_RESULT_SUCCESS;
+   ---> urProgramRetain
+   <--- urProgramRetain(.hProgram = 0xc2e6a20) -> UR_RESULT_SUCCESS;
+   ---> urKernelCreate
+[2026-10-08 08:31:20.633] [thread-id: 128246353525952] [trace] zeKernelCreate(hModule, desc, phKernel)
+[2026-10-08 08:31:20.633] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelCreate(hModule=0xc2f9d28, desc={stype=0x7ffec53f7ba0, flags=0, pKernelName="_ZTSZ4mainEUlN4sycl3_V12idILi1EEEE_"}, phKernel=0xc336758)
+[2026-10-08 08:31:20.633] [thread-id: 128246353525952] [trace] zeKernelGetName(hKernel, pSize, pName)
+[2026-10-08 08:31:20.633] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelGetName(hKernel=0xc336758, pSize=36, pName=nullptr)
+[2026-10-08 08:31:20.633] [thread-id: 128246353525952] [trace] zeKernelGetName(hKernel, pSize, pName)
+[2026-10-08 08:31:20.633] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelGetName(hKernel=0xc336758, pSize=36, pName="_ZTSZ4mainEUlN4sycl3_V12idILi1EEEE_")
+[2026-10-08 08:31:20.633] [thread-id: 128246353525952] [trace] zeKernelGetProperties(hKernel, pKernelProperties)
+[2026-10-08 08:31:20.633] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelGetProperties(hKernel=0xc336758, pKernelProperties={stype=0xc317b58, numKernelArgs=1, requiredGroupSizeX=0, requiredGroupSizeY=0, requiredGroupSizeZ=0, requiredNumSubGroups=0, requiredSubgroupSize=0, maxSubgroupSize=32, maxNumSubgroups=32, localMemSize=0, privateMemSize=0, spillMemSize=0, uuid={kid=0, mid=0}})
+   <--- urKernelCreate(.hProgram = 0xc2e6a20, .pKernelName = 0x4131d2 (_ZTSZ4mainEUlN4sycl3_V12idILi1EEEE_), .phKernel = 0x7ffec53f7ec0 (0xc331d50)) -> UR_RESULT_SUCCESS;
+   ---> urKernelSetExecInfo
+[2026-10-08 08:31:20.633] [thread-id: 128246353525952] [trace] zeKernelSetIndirectAccess(hKernel, flags)
+[2026-10-08 08:31:20.633] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetIndirectAccess(hKernel=0xc336758, flags=7)
+   <--- urKernelSetExecInfo(.hKernel = 0xc331d50, .propName = UR_KERNEL_EXEC_INFO_USM_INDIRECT_ACCESS, .propSize = 1, .pProperties = nullptr, .pPropValue = 0x7ffec53f7ebf (true)) -> UR_RESULT_SUCCESS;
+   ---> urKernelRetain
+   <--- urKernelRetain(.hKernel = 0xc331d50) -> UR_RESULT_SUCCESS;
+   ---> urKernelGetGroupInfo
+   <--- urKernelGetGroupInfo(.hKernel = 0xc331d50, .hDevice = 0xc2a4040, .propName = UR_KERNEL_GROUP_INFO_COMPILE_WORK_GROUP_SIZE, .propSize = 24, .pPropValue = {0, 0, 0}, .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueKernelLaunchWithArgsExp
+[2026-10-08 08:31:20.633] [thread-id: 128246353525952] [trace] zeKernelSuggestGroupSize(hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-08 08:31:20.633] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSuggestGroupSize(hKernel=0xc336758, globalSizeX=16384, globalSizeY=1, globalSizeZ=1, groupSizeX=1024, groupSizeY=1, groupSizeZ=1)
+[2026-10-08 08:31:20.633] [thread-id: 128246353525952] [trace] zeKernelSetGroupSize(hKernel, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-08 08:31:20.633] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetGroupSize(hKernel=0xc336758, groupSizeX=1024, groupSizeY=1, groupSizeZ=1)
+[2026-10-08 08:31:20.633] [thread-id: 128246353525952] [trace] zeCommandListAppendLaunchKernelWithArguments(hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-08 08:31:20.634] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernelWithArguments(hCommandList=0xc2acf08, hKernel=0xc336758, groupCounts={groupCountX=16, groupCountY=1, groupCountZ=1}, groupSizes={groupSizeX=1024, groupSizeY=1, groupSizeZ=1}, pArguments=0xc336f60, pNext=nullptr, hSignalEvent=0xc2f5c28, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0xc2ac150, .hKernel = 0xc331d50, .workDim = 1, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7ffec53f8680 (16384), .pLocalWorkSize = nullptr, .numArgs = 1, .pArgs = 0xc332870 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 0, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff600000}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffec53f80a0 (0xc2f5610)) -> UR_RESULT_SUCCESS;
+   ---> urEventWait
+[2026-10-08 08:31:20.634] [thread-id: 128246353525952] [trace] zeEventHostSynchronize(hEvent, timeout)
+[2026-10-08 08:31:20.634] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventHostSynchronize(hEvent=0xc2f5c28, timeout=18446744073709551615)
+   <--- urEventWait(.numEvents = 1, .phEventWaitList = 0x7ffec53f87a0 {0xc2f5610}) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xc2f5610) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueUSMMemcpy
+[2026-10-08 08:31:20.634] [thread-id: 128246353525952] [trace] zeCommandListAppendMemoryCopy(hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0xc2acf08, dstptr=0xc2cda70, srcptr=0xffffffffff600000, size=65536, hSignalEvent=0xc2f5c28, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueUSMMemcpy(.hQueue = 0xc2ac150, .blocking = 0, .pDst = 0xc2cda70, .pSrc = 0xffffffffff600000, .size = 65536, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffec53f8750 (0xc2f5610)) -> UR_RESULT_SUCCESS;
+   ---> urEventWait
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] zeEventHostSynchronize(hEvent, timeout)
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventHostSynchronize(hEvent=0xc2f5c28, timeout=18446744073709551615)
+   <--- urEventWait(.numEvents = 1, .phEventWaitList = 0x7ffec53f87a0 {0xc2f5610}) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xc2f5610) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueUSMMemcpy
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] zeCommandListAppendMemoryCopy(hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0xc2acf08, dstptr=0xffffffffff600000, srcptr=0xc2bda60, size=65536, hSignalEvent=0xc2f5c28, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueUSMMemcpy(.hQueue = 0xc2ac150, .blocking = 0, .pDst = 0xffffffffff600000, .pSrc = 0xc2bda60, .size = 65536, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffec53f8750 (0xc2f5610)) -> UR_RESULT_SUCCESS;
+   ---> urEventWait
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] zeEventHostSynchronize(hEvent, timeout)
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventHostSynchronize(hEvent=0xc2f5c28, timeout=18446744073709551615)
+   <--- urEventWait(.numEvents = 1, .phEventWaitList = 0x7ffec53f87a0 {0xc2f5610}) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xc2f5610) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_MAX_WORK_GROUPS_3D, .propSize = 24, .pPropValue = {4294967295, 4294967295, 4294967295}, .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urKernelGetGroupInfo
+   <--- urKernelGetGroupInfo(.hKernel = 0xc331d50, .hDevice = 0xc2a4040, .propName = UR_KERNEL_GROUP_INFO_COMPILE_WORK_GROUP_SIZE, .propSize = 24, .pPropValue = {0, 0, 0}, .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueKernelLaunchWithArgsExp
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] zeKernelSuggestGroupSize(hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSuggestGroupSize(hKernel=0xc336758, globalSizeX=16384, globalSizeY=1, globalSizeZ=1, groupSizeX=1024, groupSizeY=1, groupSizeZ=1)
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] zeKernelSetGroupSize(hKernel, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetGroupSize(hKernel=0xc336758, groupSizeX=1024, groupSizeY=1, groupSizeZ=1)
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] zeCommandListAppendLaunchKernelWithArguments(hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernelWithArguments(hCommandList=0xc2acf08, hKernel=0xc336758, groupCounts={groupCountX=16, groupCountY=1, groupCountZ=1}, groupSizes={groupSizeX=1024, groupSizeY=1, groupSizeZ=1}, pArguments=0xc336f60, pNext=nullptr, hSignalEvent=0xc2f5c28, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0xc2ac150, .hKernel = 0xc331d50, .workDim = 1, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7ffec53f8680 (16384), .pLocalWorkSize = nullptr, .numArgs = 1, .pArgs = 0xc332870 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 0, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff600000}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffec53f80a0 (0xc2f5610)) -> UR_RESULT_SUCCESS;
+   ---> urEventWait
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] zeEventHostSynchronize(hEvent, timeout)
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventHostSynchronize(hEvent=0xc2f5c28, timeout=18446744073709551615)
+   <--- urEventWait(.numEvents = 1, .phEventWaitList = 0x7ffec53f87a0 {0xc2f5610}) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xc2f5610) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueUSMMemcpy
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] zeCommandListAppendMemoryCopy(hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0xc2acf08, dstptr=0xc2cda70, srcptr=0xffffffffff600000, size=65536, hSignalEvent=0xc2f5c28, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueUSMMemcpy(.hQueue = 0xc2ac150, .blocking = 0, .pDst = 0xc2cda70, .pSrc = 0xffffffffff600000, .size = 65536, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffec53f8750 (0xc2f5610)) -> UR_RESULT_SUCCESS;
+   ---> urEventWait
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] zeEventHostSynchronize(hEvent, timeout)
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventHostSynchronize(hEvent=0xc2f5c28, timeout=18446744073709551615)
+   <--- urEventWait(.numEvents = 1, .phEventWaitList = 0x7ffec53f87a0 {0xc2f5610}) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xc2f5610) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueUSMMemcpy
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] zeCommandListAppendMemoryCopy(hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0xc2acf08, dstptr=0xffffffffff600000, srcptr=0xc2bda60, size=65536, hSignalEvent=0xc2f5c28, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueUSMMemcpy(.hQueue = 0xc2ac150, .blocking = 0, .pDst = 0xffffffffff600000, .pSrc = 0xc2bda60, .size = 65536, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffec53f8750 (0xc2f5610)) -> UR_RESULT_SUCCESS;
+   ---> urEventWait
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] zeEventHostSynchronize(hEvent, timeout)
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventHostSynchronize(hEvent=0xc2f5c28, timeout=18446744073709551615)
+   <--- urEventWait(.numEvents = 1, .phEventWaitList = 0x7ffec53f87a0 {0xc2f5610}) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xc2f5610) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0xc2a4040, .propName = UR_DEVICE_INFO_MAX_WORK_GROUPS_3D, .propSize = 24, .pPropValue = {4294967295, 4294967295, 4294967295}, .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urKernelGetGroupInfo
+   <--- urKernelGetGroupInfo(.hKernel = 0xc331d50, .hDevice = 0xc2a4040, .propName = UR_KERNEL_GROUP_INFO_COMPILE_WORK_GROUP_SIZE, .propSize = 24, .pPropValue = {0, 0, 0}, .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueKernelLaunchWithArgsExp
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] zeKernelSuggestGroupSize(hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSuggestGroupSize(hKernel=0xc336758, globalSizeX=16384, globalSizeY=1, globalSizeZ=1, groupSizeX=1024, groupSizeY=1, groupSizeZ=1)
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] zeKernelSetGroupSize(hKernel, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetGroupSize(hKernel=0xc336758, groupSizeX=1024, groupSizeY=1, groupSizeZ=1)
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] zeCommandListAppendLaunchKernelWithArguments(hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernelWithArguments(hCommandList=0xc2acf08, hKernel=0xc336758, groupCounts={groupCountX=16, groupCountY=1, groupCountZ=1}, groupSizes={groupSizeX=1024, groupSizeY=1, groupSizeZ=1}, pArguments=0xc336f60, pNext=nullptr, hSignalEvent=0xc2f5c28, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0xc2ac150, .hKernel = 0xc331d50, .workDim = 1, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7ffec53f8680 (16384), .pLocalWorkSize = nullptr, .numArgs = 1, .pArgs = 0xc332870 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 0, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff600000}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffec53f80a0 (0xc2f5610)) -> UR_RESULT_SUCCESS;
+   ---> urEventWait
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] zeEventHostSynchronize(hEvent, timeout)
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventHostSynchronize(hEvent=0xc2f5c28, timeout=18446744073709551615)
+   <--- urEventWait(.numEvents = 1, .phEventWaitList = 0x7ffec53f87a0 {0xc2f5610}) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xc2f5610) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueUSMMemcpy
+[2026-10-08 08:31:20.635] [thread-id: 128246353525952] [trace] zeCommandListAppendMemoryCopy(hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0xc2acf08, dstptr=0xc2cda70, srcptr=0xffffffffff600000, size=65536, hSignalEvent=0xc2f5c28, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueUSMMemcpy(.hQueue = 0xc2ac150, .blocking = 0, .pDst = 0xc2cda70, .pSrc = 0xffffffffff600000, .size = 65536, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffec53f8750 (0xc2f5610)) -> UR_RESULT_SUCCESS;
+   ---> urEventWait
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] zeEventHostSynchronize(hEvent, timeout)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventHostSynchronize(hEvent=0xc2f5c28, timeout=18446744073709551615)
+   <--- urEventWait(.numEvents = 1, .phEventWaitList = 0x7ffec53f87a0 {0xc2f5610}) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xc2f5610) -> UR_RESULT_SUCCESS;
+   ---> urQueueFinish
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] zeCommandListHostSynchronize(hCommandList, timeout)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0xc2acf08, timeout=18446744073709551615)
+   <--- urQueueFinish(.hQueue = 0xc2ac150) -> UR_RESULT_SUCCESS;
+   ---> urUSMFree
+   <--- urUSMFree(.hContext = 0xc2a8dd0, .pMem = 0xffffffffff600000) -> UR_RESULT_SUCCESS;
+   ---> urQueueRelease
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] zeCommandListHostSynchronize(hCommandList, timeout)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0xc2acf08, timeout=18446744073709551615)
+   <--- urQueueRelease(.hQueue = 0xc2ac150) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+   <--- urProgramRelease(.hProgram = 0xc2e6a20) -> UR_RESULT_SUCCESS;
+   ---> urKernelRelease
+   <--- urKernelRelease(.hKernel = 0xc331d50) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+   <--- urProgramRelease(.hProgram = 0xc2e6a20) -> UR_RESULT_SUCCESS;
+   ---> urKernelRelease
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] zeKernelDestroy(hKernel)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelDestroy(hKernel=0xc336758)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0xc31f958)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] zeModuleDestroy(hModule)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0xc2f9d28)
+   <--- urKernelRelease(.hKernel = 0xc331d50) -> UR_RESULT_SUCCESS;
+   ---> urContextRelease
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0xc2a5738, pMemFreeDesc={stype=0x7ffec53f84e0, freePolicy=1}, ptr=0xffffffffff600000)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2de648)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2deb88)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2df288)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2df7e8)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2dfee8)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e03f8)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e0af8)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e1008)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e1708)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e1cb8)
+[2026-10-08 08:31:20.636] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e23b8)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e28c8)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e2fc8)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e34d8)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e3bd8)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e40e8)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e47e8)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e4cf8)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e53f8)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e5908)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e6008)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e6518)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e6d58)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e7268)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e7968)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e7e78)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e8578)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e8a88)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e9188)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e9698)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2e9d98)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2ea4b8)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2eabb8)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2eb0c8)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2eb7c8)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2ebcd8)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2ec3d8)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2ec8e8)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2ecfe8)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2ed4f8)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2edbf8)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2ee108)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2ee808)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2eed18)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2ef418)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2ef928)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2f0028)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2f0538)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2f0c38)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2f1148)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2f1ac8)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2f1fd8)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2f26d8)
+[2026-10-08 08:31:20.637] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.638] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2f2be8)
+[2026-10-08 08:31:20.638] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.638] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2f32e8)
+[2026-10-08 08:31:20.638] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.638] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2f37f8)
+[2026-10-08 08:31:20.638] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.638] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2f3ef8)
+[2026-10-08 08:31:20.638] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.638] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2f4408)
+[2026-10-08 08:31:20.638] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.638] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2f4b08)
+[2026-10-08 08:31:20.638] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.638] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2f5018)
+[2026-10-08 08:31:20.638] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.638] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2f5718)
+[2026-10-08 08:31:20.638] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.638] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2f5c28)
+[2026-10-08 08:31:20.638] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.638] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2ddc28)
+[2026-10-08 08:31:20.638] [thread-id: 128246353525952] [trace] zeEventDestroy(hEvent)
+[2026-10-08 08:31:20.638] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xc2ddf28)
+[2026-10-08 08:31:20.638] [thread-id: 128246353525952] [trace] zeCommandListDestroy(hCommandList)
+[2026-10-08 08:31:20.638] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListDestroy(hCommandList=0xc2acf08)
+[2026-10-08 08:31:20.638] [thread-id: 128246353525952] [trace] zeContextDestroy(hContext)
+[2026-10-08 08:31:20.638] [thread-id: 128246353525952] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeContextDestroy(hContext=0xc2a5738)
+   <--- urContextRelease(.hContext = 0xc2a8dd0) -> UR_RESULT_SUCCESS;
+   ---> urDeviceRelease
+   <--- urDeviceRelease(.hDevice = 0xc2a4040) -> UR_RESULT_SUCCESS;
+   ---> urAdapterRelease
+   <--- urAdapterRelease(.hAdapter = 0xc0a8700) -> UR_RESULT_SUCCESS;

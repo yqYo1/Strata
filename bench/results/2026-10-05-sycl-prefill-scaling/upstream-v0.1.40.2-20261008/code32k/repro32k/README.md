@@ -120,3 +120,9 @@ adds nine exact 32K main-state/head/output controls and a clean three-condition
 default/RAM/GPU/GPU/RAM/default comparison. GPU residuals use MTP decode-only
 release and immutable-RAM restoration, with full payload checks before timing.
 All comparisons read 32,768 tokens; full262,144-cell serving remains unvalidated.
+
+
+The [main-cache release/restoration controls](main-cache-release-and-restore/README.md)
+add actual-code ASan/UBSan offset/rollback tests with a patterned negative
+control and completed 32K kept/partial/full lease checks. Clean timing and
+full-context serving remain separate gates; see the checkpoint's completed list.
