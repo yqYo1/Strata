@@ -415,3 +415,26 @@ fixes earlier two-chunk prose: the 2048 input uses 256/1024/767 prefill chunks
 plus one input token in decode. The frozen prior successful trace contains
 144 layer/chunk entries. Test conditions and measured times are unchanged;
 prior archive manifests are preserved.
+
+
+### Completion stress and wider cooperative audit
+
+[Actual-wrapper completion stress and cooperative bounds](completion-stress-and-cooperative-audit-20261007/README.md)
+records four normal diagnostic exits, each with 20,000 real-weight GU/down
+pairs, 40 complete guarded-output comparisons and no new xe fault. Two
+cases also use the unchanged GEMM/SwiGLU consumers; one case per fixture
+retires a consumed 64 MiB virtual mapping before stress. Initial outputs
+match across modes. This bounded component test excludes routing, staging
+threads, decode graphs and complete model requests. Logged durations are
+not accepted as clean throughput.
+
+A separate query submits no kernels and checks 25 original prefill/IQ
+kernel/local-size combinations observed in the failed updated-control trace.
+Twenty-two exceed their measured cooperative limits, including GDN output
+normalization at 49,152 versus 288 groups and broadcast at 40,960 versus 144.
+All 45 observed cooperative combinations map to eight source files. The
+zero-dynamic-local query gives an optimistic bound; source mapping is not a
+complete synchronization proof. Review each function before changing launch
+properties, especially persistent/global kernels in verify_kernels.dp.cpp.
+No production property change is adopted and full-model/256K gates remain
+incomplete.

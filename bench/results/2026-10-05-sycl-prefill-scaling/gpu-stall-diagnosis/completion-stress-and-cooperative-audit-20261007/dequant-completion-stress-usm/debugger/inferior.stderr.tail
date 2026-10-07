@@ -1,0 +1,381 @@
+kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 4, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556b6400080}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffb060 (0xa6dd40)) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xa6dd40) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueKernelLaunchWithArgsExp
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] zeKernelSetGroupSize(hKernel, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetGroupSize(hKernel=0xacbb88, groupSizeX=32, groupSizeY=1, groupSizeZ=1)
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] zeCommandListAppendLaunchKernelWithArguments(hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernelWithArguments(hCommandList=0xa46a88, hKernel=0xacbb88, groupCounts={groupCountX=6400, groupCountY=1, groupCountZ=1}, groupSizes={groupSizeX=32, groupSizeY=1, groupSizeZ=1}, pArguments=0xacc210, pNext=nullptr, hSignalEvent=0xa6e358, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0xa45cd0, .hKernel = 0xb42c60, .workDim = 3, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7fffffffc6e8 (204800), .pLocalWorkSize = 0x7fffffffc700 (32), .numArgs = 3, .pArgs = 0xa3fe30 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 0, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0xacc068}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 1, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556f43f5c00}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff400080}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffb080 (0xa6dd40)) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xa6dd40) -> UR_RESULT_SUCCESS;
+   ---> urQueueFinish
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] zeCommandListHostSynchronize(hCommandList, timeout)
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0xa46a88, timeout=18446744073709551615)
+   <--- urQueueFinish(.hQueue = 0xa45cd0) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueKernelLaunchWithArgsExp
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] zeKernelSetGroupSize(hKernel, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetGroupSize(hKernel=0xac8588, groupSizeX=32, groupSizeY=1, groupSizeZ=1)
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] zeCommandListAppendLaunchKernelWithArguments(hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernelWithArguments(hCommandList=0xa46a88, hKernel=0xac8588, groupCounts={groupCountX=6400, groupCountY=2, groupCountZ=1}, groupSizes={groupSizeX=32, groupSizeY=1, groupSizeZ=1}, pArguments=0xac8bf0, pNext=nullptr, hSignalEvent=0xa6e358, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0xa45cd0, .hKernel = 0xaf25e0, .workDim = 3, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7fffffffc6c8 (204800), .pLocalWorkSize = 0x7fffffffc6e0 (32), .numArgs = 5, .pArgs = 0xa3fe30 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 0, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0xab0378}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 1, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556fa090000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556fa13be00}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 3, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0xab0390}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 4, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556b6400080}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffb060 (0xa6dd40)) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xa6dd40) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueKernelLaunchWithArgsExp
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] zeKernelSetGroupSize(hKernel, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetGroupSize(hKernel=0xacbb88, groupSizeX=32, groupSizeY=1, groupSizeZ=1)
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] zeCommandListAppendLaunchKernelWithArguments(hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernelWithArguments(hCommandList=0xa46a88, hKernel=0xacbb88, groupCounts={groupCountX=6400, groupCountY=1, groupCountZ=1}, groupSizes={groupSizeX=32, groupSizeY=1, groupSizeZ=1}, pArguments=0xacc210, pNext=nullptr, hSignalEvent=0xa6e358, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0xa45cd0, .hKernel = 0xb42c60, .workDim = 3, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7fffffffc6e8 (204800), .pLocalWorkSize = 0x7fffffffc700 (32), .numArgs = 3, .pArgs = 0xa3fe30 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 0, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0xacc068}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 1, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556fa1e7c00}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff400080}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffb080 (0xa6dd40)) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xa6dd40) -> UR_RESULT_SUCCESS;
+   ---> urQueueFinish
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] zeCommandListHostSynchronize(hCommandList, timeout)
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0xa46a88, timeout=18446744073709551615)
+   <--- urQueueFinish(.hQueue = 0xa45cd0) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueKernelLaunchWithArgsExp
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] zeKernelSetGroupSize(hKernel, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetGroupSize(hKernel=0xac8588, groupSizeX=32, groupSizeY=1, groupSizeZ=1)
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] zeCommandListAppendLaunchKernelWithArguments(hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernelWithArguments(hCommandList=0xa46a88, hKernel=0xac8588, groupCounts={groupCountX=6400, groupCountY=2, groupCountZ=1}, groupSizes={groupSizeX=32, groupSizeY=1, groupSizeZ=1}, pArguments=0xac8bf0, pNext=nullptr, hSignalEvent=0xa6e358, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0xa45cd0, .hKernel = 0xaf25e0, .workDim = 3, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7fffffffc6c8 (204800), .pLocalWorkSize = 0x7fffffffc6e0 (32), .numArgs = 5, .pArgs = 0xa3fe30 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 0, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0xab0378}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 1, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556ffe82000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556fff2de00}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 3, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0xab0390}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 4, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556b6400080}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffb060 (0xa6dd40)) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xa6dd40) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueKernelLaunchWithArgsExp
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] zeKernelSetGroupSize(hKernel, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetGroupSize(hKernel=0xacbb88, groupSizeX=32, groupSizeY=1, groupSizeZ=1)
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] zeCommandListAppendLaunchKernelWithArguments(hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernelWithArguments(hCommandList=0xa46a88, hKernel=0xacbb88, groupCounts={groupCountX=6400, groupCountY=1, groupCountZ=1}, groupSizes={groupSizeX=32, groupSizeY=1, groupSizeZ=1}, pArguments=0xacc210, pNext=nullptr, hSignalEvent=0xa6e358, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0xa45cd0, .hKernel = 0xb42c60, .workDim = 3, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7fffffffc6e8 (204800), .pLocalWorkSize = 0x7fffffffc700 (32), .numArgs = 3, .pArgs = 0xa3fe30 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 0, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0xacc068}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 1, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556fffd9c00}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff400080}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffb080 (0xa6dd40)) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xa6dd40) -> UR_RESULT_SUCCESS;
+   ---> urQueueFinish
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] zeCommandListHostSynchronize(hCommandList, timeout)
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0xa46a88, timeout=18446744073709551615)
+   <--- urQueueFinish(.hQueue = 0xa45cd0) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueKernelLaunchWithArgsExp
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] zeKernelSetGroupSize(hKernel, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetGroupSize(hKernel=0xac8588, groupSizeX=32, groupSizeY=1, groupSizeZ=1)
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] zeCommandListAppendLaunchKernelWithArguments(hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernelWithArguments(hCommandList=0xa46a88, hKernel=0xac8588, groupCounts={groupCountX=6400, groupCountY=2, groupCountZ=1}, groupSizes={groupSizeX=32, groupSizeY=1, groupSizeZ=1}, pArguments=0xac8bf0, pNext=nullptr, hSignalEvent=0xa6e358, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0xa45cd0, .hKernel = 0xaf25e0, .workDim = 3, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7fffffffc6c8 (204800), .pLocalWorkSize = 0x7fffffffc6e0 (32), .numArgs = 5, .pArgs = 0xa3fe30 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 0, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0xab0378}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 1, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd55705c74000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd55705d1fe00}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 3, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0xab0390}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 4, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556b6400080}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffb060 (0xa6dd40)) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xa6dd40) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueKernelLaunchWithArgsExp
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] zeKernelSetGroupSize(hKernel, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetGroupSize(hKernel=0xacbb88, groupSizeX=32, groupSizeY=1, groupSizeZ=1)
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] zeCommandListAppendLaunchKernelWithArguments(hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernelWithArguments(hCommandList=0xa46a88, hKernel=0xacbb88, groupCounts={groupCountX=6400, groupCountY=1, groupCountZ=1}, groupSizes={groupSizeX=32, groupSizeY=1, groupSizeZ=1}, pArguments=0xacc210, pNext=nullptr, hSignalEvent=0xa6e358, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0xa45cd0, .hKernel = 0xb42c60, .workDim = 3, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7fffffffc6e8 (204800), .pLocalWorkSize = 0x7fffffffc700 (32), .numArgs = 3, .pArgs = 0xa3fe30 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 0, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0xacc068}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 1, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd55705dcbc00}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff400080}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffb080 (0xa6dd40)) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xa6dd40) -> UR_RESULT_SUCCESS;
+   ---> urQueueFinish
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] zeCommandListHostSynchronize(hCommandList, timeout)
+[2026-10-07 20:33:15.108] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0xa46a88, timeout=18446744073709551615)
+   <--- urQueueFinish(.hQueue = 0xa45cd0) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueKernelLaunchWithArgsExp
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] zeKernelSetGroupSize(hKernel, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetGroupSize(hKernel=0xac8588, groupSizeX=32, groupSizeY=1, groupSizeZ=1)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] zeCommandListAppendLaunchKernelWithArguments(hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernelWithArguments(hCommandList=0xa46a88, hKernel=0xac8588, groupCounts={groupCountX=6400, groupCountY=2, groupCountZ=1}, groupSizes={groupSizeX=32, groupSizeY=1, groupSizeZ=1}, pArguments=0xac8bf0, pNext=nullptr, hSignalEvent=0xa6e358, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0xa45cd0, .hKernel = 0xaf25e0, .workDim = 3, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7fffffffc6c8 (204800), .pLocalWorkSize = 0x7fffffffc6e0 (32), .numArgs = 5, .pArgs = 0xa3fe30 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 0, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0xab0378}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 1, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556ba666000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556ba711e00}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 3, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0xab0390}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 4, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556b6400080}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffb060 (0xa6dd40)) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xa6dd40) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueKernelLaunchWithArgsExp
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] zeKernelSetGroupSize(hKernel, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetGroupSize(hKernel=0xacbb88, groupSizeX=32, groupSizeY=1, groupSizeZ=1)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] zeCommandListAppendLaunchKernelWithArguments(hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernelWithArguments(hCommandList=0xa46a88, hKernel=0xacbb88, groupCounts={groupCountX=6400, groupCountY=1, groupCountZ=1}, groupSizes={groupSizeX=32, groupSizeY=1, groupSizeZ=1}, pArguments=0xacc210, pNext=nullptr, hSignalEvent=0xa6e358, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0xa45cd0, .hKernel = 0xb42c60, .workDim = 3, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7fffffffc6e8 (204800), .pLocalWorkSize = 0x7fffffffc700 (32), .numArgs = 3, .pArgs = 0xa3fe30 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 0, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0xacc068}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 1, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556ba7bdc00}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff400080}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffb080 (0xa6dd40)) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xa6dd40) -> UR_RESULT_SUCCESS;
+   ---> urQueueFinish
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] zeCommandListHostSynchronize(hCommandList, timeout)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0xa46a88, timeout=18446744073709551615)
+   <--- urQueueFinish(.hQueue = 0xa45cd0) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueKernelLaunchWithArgsExp
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] zeKernelSetGroupSize(hKernel, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetGroupSize(hKernel=0xac8588, groupSizeX=32, groupSizeY=1, groupSizeZ=1)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] zeCommandListAppendLaunchKernelWithArguments(hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernelWithArguments(hCommandList=0xa46a88, hKernel=0xac8588, groupCounts={groupCountX=6400, groupCountY=2, groupCountZ=1}, groupSizes={groupSizeX=32, groupSizeY=1, groupSizeZ=1}, pArguments=0xac8bf0, pNext=nullptr, hSignalEvent=0xa6e358, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0xa45cd0, .hKernel = 0xaf25e0, .workDim = 3, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7fffffffc6c8 (204800), .pLocalWorkSize = 0x7fffffffc6e0 (32), .numArgs = 5, .pArgs = 0xa3fe30 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 0, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0xab0378}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 1, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556c0458000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556c0503e00}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 3, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0xab0390}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 4, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556b6400080}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffb060 (0xa6dd40)) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xa6dd40) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueKernelLaunchWithArgsExp
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] zeKernelSetGroupSize(hKernel, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetGroupSize(hKernel=0xacbb88, groupSizeX=32, groupSizeY=1, groupSizeZ=1)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] zeCommandListAppendLaunchKernelWithArguments(hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernelWithArguments(hCommandList=0xa46a88, hKernel=0xacbb88, groupCounts={groupCountX=6400, groupCountY=1, groupCountZ=1}, groupSizes={groupSizeX=32, groupSizeY=1, groupSizeZ=1}, pArguments=0xacc210, pNext=nullptr, hSignalEvent=0xa6e358, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0xa45cd0, .hKernel = 0xb42c60, .workDim = 3, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7fffffffc6e8 (204800), .pLocalWorkSize = 0x7fffffffc700 (32), .numArgs = 3, .pArgs = 0xa3fe30 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 0, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0xacc068}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 1, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556c05afc00}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff400080}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffb080 (0xa6dd40)) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xa6dd40) -> UR_RESULT_SUCCESS;
+   ---> urQueueFinish
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] zeCommandListHostSynchronize(hCommandList, timeout)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0xa46a88, timeout=18446744073709551615)
+   <--- urQueueFinish(.hQueue = 0xa45cd0) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueKernelLaunchWithArgsExp
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] zeKernelSetGroupSize(hKernel, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetGroupSize(hKernel=0xac8588, groupSizeX=32, groupSizeY=1, groupSizeZ=1)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] zeCommandListAppendLaunchKernelWithArguments(hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernelWithArguments(hCommandList=0xa46a88, hKernel=0xac8588, groupCounts={groupCountX=6400, groupCountY=2, groupCountZ=1}, groupSizes={groupSizeX=32, groupSizeY=1, groupSizeZ=1}, pArguments=0xac8bf0, pNext=nullptr, hSignalEvent=0xa6e358, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0xa45cd0, .hKernel = 0xaf25e0, .workDim = 3, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7fffffffc6c8 (204800), .pLocalWorkSize = 0x7fffffffc6e0 (32), .numArgs = 5, .pArgs = 0xa3fe30 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 0, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0xab0378}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 1, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556c624a000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556c62f5e00}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 3, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0xab0390}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 4, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556b6400080}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffb060 (0xa6dd40)) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xa6dd40) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueKernelLaunchWithArgsExp
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] zeKernelSetGroupSize(hKernel, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetGroupSize(hKernel=0xacbb88, groupSizeX=32, groupSizeY=1, groupSizeZ=1)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] zeCommandListAppendLaunchKernelWithArguments(hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernelWithArguments(hCommandList=0xa46a88, hKernel=0xacbb88, groupCounts={groupCountX=6400, groupCountY=1, groupCountZ=1}, groupSizes={groupSizeX=32, groupSizeY=1, groupSizeZ=1}, pArguments=0xacc210, pNext=nullptr, hSignalEvent=0xa6e358, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0xa45cd0, .hKernel = 0xb42c60, .workDim = 3, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7fffffffc6e8 (204800), .pLocalWorkSize = 0x7fffffffc700 (32), .numArgs = 3, .pArgs = 0xa3fe30 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 0, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0xacc068}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 1, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556c63a1c00}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff400080}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffb080 (0xa6dd40)) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xa6dd40) -> UR_RESULT_SUCCESS;
+   ---> urQueueFinish
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] zeCommandListHostSynchronize(hCommandList, timeout)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0xa46a88, timeout=18446744073709551615)
+   <--- urQueueFinish(.hQueue = 0xa45cd0) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueKernelLaunchWithArgsExp
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] zeKernelSetGroupSize(hKernel, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetGroupSize(hKernel=0xac8588, groupSizeX=32, groupSizeY=1, groupSizeZ=1)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] zeCommandListAppendLaunchKernelWithArguments(hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernelWithArguments(hCommandList=0xa46a88, hKernel=0xac8588, groupCounts={groupCountX=6400, groupCountY=2, groupCountZ=1}, groupSizes={groupSizeX=32, groupSizeY=1, groupSizeZ=1}, pArguments=0xac8bf0, pNext=nullptr, hSignalEvent=0xa6e358, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0xa45cd0, .hKernel = 0xaf25e0, .workDim = 3, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7fffffffc6c8 (204800), .pLocalWorkSize = 0x7fffffffc6e0 (32), .numArgs = 5, .pArgs = 0xa3fe30 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 0, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0xab0378}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 1, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556cc03c000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556cc0e7e00}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 3, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0xab0390}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 4, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556b6400080}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffb060 (0xa6dd40)) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xa6dd40) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueKernelLaunchWithArgsExp
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] zeKernelSetGroupSize(hKernel, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetGroupSize(hKernel=0xacbb88, groupSizeX=32, groupSizeY=1, groupSizeZ=1)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] zeCommandListAppendLaunchKernelWithArguments(hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernelWithArguments(hCommandList=0xa46a88, hKernel=0xacbb88, groupCounts={groupCountX=6400, groupCountY=1, groupCountZ=1}, groupSizes={groupSizeX=32, groupSizeY=1, groupSizeZ=1}, pArguments=0xacc210, pNext=nullptr, hSignalEvent=0xa6e358, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0xa45cd0, .hKernel = 0xb42c60, .workDim = 3, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7fffffffc6e8 (204800), .pLocalWorkSize = 0x7fffffffc700 (32), .numArgs = 3, .pArgs = 0xa3fe30 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 0, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0xacc068}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 1, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556cc193c00}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff400080}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffb080 (0xa6dd40)) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xa6dd40) -> UR_RESULT_SUCCESS;
+   ---> urQueueFinish
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] zeCommandListHostSynchronize(hCommandList, timeout)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0xa46a88, timeout=18446744073709551615)
+   <--- urQueueFinish(.hQueue = 0xa45cd0) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueKernelLaunchWithArgsExp
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] zeKernelSetGroupSize(hKernel, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetGroupSize(hKernel=0xac8588, groupSizeX=32, groupSizeY=1, groupSizeZ=1)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] zeCommandListAppendLaunchKernelWithArguments(hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:33:15.109] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernelWithArguments(hCommandList=0xa46a88, hKernel=0xac8588, groupCounts={groupCountX=6400, groupCountY=2, groupCountZ=1}, groupSizes={groupSizeX=32, groupSizeY=1, groupSizeZ=1}, pArguments=0xac8bf0, pNext=nullptr, hSignalEvent=0xa6e358, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0xa45cd0, .hKernel = 0xaf25e0, .workDim = 3, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7fffffffc6c8 (204800), .pLocalWorkSize = 0x7fffffffc6e0 (32), .numArgs = 5, .pArgs = 0xa3fe30 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 0, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0xab0378}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 1, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556d1e2e000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556d1ed9e00}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 3, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0xab0390}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 4, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556b6400080}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffb060 (0xa6dd40)) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xa6dd40) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueKernelLaunchWithArgsExp
+[2026-10-07 20:33:15.110] [thread-id: 140737298451776] [trace] zeKernelSetGroupSize(hKernel, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-07 20:33:15.110] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetGroupSize(hKernel=0xacbb88, groupSizeX=32, groupSizeY=1, groupSizeZ=1)
+[2026-10-07 20:33:15.110] [thread-id: 140737298451776] [trace] zeCommandListAppendLaunchKernelWithArguments(hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:33:15.110] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernelWithArguments(hCommandList=0xa46a88, hKernel=0xacbb88, groupCounts={groupCountX=6400, groupCountY=1, groupCountZ=1}, groupSizes={groupSizeX=32, groupSizeY=1, groupSizeZ=1}, pArguments=0xacc210, pNext=nullptr, hSignalEvent=0xa6e358, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0xa45cd0, .hKernel = 0xb42c60, .workDim = 3, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7fffffffc6e8 (204800), .pLocalWorkSize = 0x7fffffffc700 (32), .numArgs = 3, .pArgs = 0xa3fe30 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 0, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0xacc068}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 1, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556d1f85c00}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff400080}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffb080 (0xa6dd40)) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xa6dd40) -> UR_RESULT_SUCCESS;
+   ---> urQueueFinish
+[2026-10-07 20:33:15.110] [thread-id: 140737298451776] [trace] zeCommandListHostSynchronize(hCommandList, timeout)
+[2026-10-07 20:33:15.110] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0xa46a88, timeout=18446744073709551615)
+   <--- urQueueFinish(.hQueue = 0xa45cd0) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueUSMMemcpy
+[2026-10-07 20:33:15.110] [thread-id: 140737298451776] [trace] zeCommandListAppendMemoryCopy(hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:33:15.111] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0xa46a88, dstptr=0xbdb130, srcptr=0xffffd556b6400000, size=6553856, hSignalEvent=0xa6e358, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueUSMMemcpy(.hQueue = 0xa45cd0, .blocking = 0, .pDst = 0xbdb130, .pSrc = 0xffffd556b6400000, .size = 6553856, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffc7b0 (0xa6dd40)) -> UR_RESULT_SUCCESS;
+   ---> urEventWait
+[2026-10-07 20:33:15.111] [thread-id: 140737298451776] [trace] zeEventHostSynchronize(hEvent, timeout)
+[2026-10-07 20:33:15.111] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventHostSynchronize(hEvent=0xa6e358, timeout=18446744073709551615)
+   <--- urEventWait(.numEvents = 1, .phEventWaitList = 0x7fffffffc800 {0xa6dd40}) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xa6dd40) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueUSMMemcpy
+[2026-10-07 20:33:15.115] [thread-id: 140737298451776] [trace] zeCommandListAppendMemoryCopy(hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:33:15.116] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0xa46a88, dstptr=0x121b240, srcptr=0xffffffffff400000, size=3277056, hSignalEvent=0xa6e358, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueUSMMemcpy(.hQueue = 0xa45cd0, .blocking = 0, .pDst = 0x121b240, .pSrc = 0xffffffffff400000, .size = 3277056, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffc7b0 (0xa6dd40)) -> UR_RESULT_SUCCESS;
+   ---> urEventWait
+[2026-10-07 20:33:15.116] [thread-id: 140737298451776] [trace] zeEventHostSynchronize(hEvent, timeout)
+[2026-10-07 20:33:15.116] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventHostSynchronize(hEvent=0xa6e358, timeout=18446744073709551615)
+   <--- urEventWait(.numEvents = 1, .phEventWaitList = 0x7fffffffc800 {0xa6dd40}) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0xa6dd40) -> UR_RESULT_SUCCESS;
+   ---> urQueueFinish
+[2026-10-07 20:33:15.117] [thread-id: 140737298451776] [trace] zeCommandListHostSynchronize(hCommandList, timeout)
+[2026-10-07 20:33:15.117] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0xa46a88, timeout=18446744073709551615)
+   <--- urQueueFinish(.hQueue = 0xa45cd0) -> UR_RESULT_SUCCESS;
+   ---> urUSMFree
+[2026-10-07 20:33:15.117] [thread-id: 140737298451776] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-07 20:33:15.118] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0xa3f7b8, pMemFreeDesc={stype=0x7fffffffc370, freePolicy=1}, ptr=0xffffd556b6c00000)
+   <--- urUSMFree(.hContext = 0xa42bb0, .pMem = 0xffffd556b6c00000) -> UR_RESULT_SUCCESS;
+   ---> urUSMFree
+   <--- urUSMFree(.hContext = 0xa42bb0, .pMem = 0xffffffffff400000) -> UR_RESULT_SUCCESS;
+   ---> urUSMFree
+[2026-10-07 20:33:15.118] [thread-id: 140737298451776] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-07 20:33:15.118] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0xa3f7b8, pMemFreeDesc={stype=0x7fffffffc370, freePolicy=1}, ptr=0xffffd556b6400000)
+   <--- urUSMFree(.hContext = 0xa42bb0, .pMem = 0xffffd556b6400000) -> UR_RESULT_SUCCESS;
+   ---> urQueueRelease
+[2026-10-07 20:33:15.119] [thread-id: 140737298451776] [trace] zeCommandListHostSynchronize(hCommandList, timeout)
+[2026-10-07 20:33:15.119] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0xa46a88, timeout=18446744073709551615)
+   <--- urQueueRelease(.hQueue = 0xa45cd0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+   <--- urProgramRelease(.hProgram = 0xac90f0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+   <--- urProgramRelease(.hProgram = 0xa5f150) -> UR_RESULT_SUCCESS;
+   ---> urKernelRelease
+   <--- urKernelRelease(.hKernel = 0xb42c60) -> UR_RESULT_SUCCESS;
+   ---> urKernelRelease
+   <--- urKernelRelease(.hKernel = 0xaf25e0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+   <--- urProgramRelease(.hProgram = 0xac90f0) -> UR_RESULT_SUCCESS;
+   ---> urKernelRelease
+[2026-10-07 20:33:15.119] [thread-id: 140737298451776] [trace] zeKernelDestroy(hKernel)
+[2026-10-07 20:33:15.119] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelDestroy(hKernel=0xacbb88)
+[2026-10-07 20:33:15.119] [thread-id: 140737298451776] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-07 20:33:15.119] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0xaf1868)
+[2026-10-07 20:33:15.119] [thread-id: 140737298451776] [trace] zeModuleDestroy(hModule)
+[2026-10-07 20:33:15.119] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0xa91268)
+   <--- urKernelRelease(.hKernel = 0xb42c60) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+   <--- urProgramRelease(.hProgram = 0xa5f150) -> UR_RESULT_SUCCESS;
+   ---> urKernelRelease
+[2026-10-07 20:33:15.119] [thread-id: 140737298451776] [trace] zeKernelDestroy(hKernel)
+[2026-10-07 20:33:15.119] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelDestroy(hKernel=0xac8588)
+[2026-10-07 20:33:15.119] [thread-id: 140737298451776] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-07 20:33:15.119] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0xab4078)
+[2026-10-07 20:33:15.119] [thread-id: 140737298451776] [trace] zeModuleDestroy(hModule)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0xa90dd8)
+   <--- urKernelRelease(.hKernel = 0xaf25e0) -> UR_RESULT_SUCCESS;
+   ---> urContextRelease
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0xa3f7b8, pMemFreeDesc={stype=0x7fffffffc7e0, freePolicy=1}, ptr=0xffffffffff400000)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa56d88)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa572c8)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa579c8)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa57f28)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa58628)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa58b38)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa59238)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa59748)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa59ed8)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa5a3e8)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa5aae8)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa5aff8)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa5b6f8)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa5bc08)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa5c308)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa5c818)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa5cf18)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa5d428)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa5db28)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa5e038)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa5e738)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa5ec48)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa5f488)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa5f998)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.120] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa60098)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa605a8)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa60ca8)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa611b8)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa618b8)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa61dc8)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa624c8)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa62be8)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa632e8)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa637f8)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa63ef8)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa64408)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa64b08)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa65018)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa65718)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa65c28)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa66328)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa66838)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa66f38)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa67448)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa67b48)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa68058)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa68758)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa68c68)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa69368)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa69878)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa6a1f8)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa6a708)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa6ae08)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa6b318)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa6ba18)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa6bf28)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa6c628)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa6cb38)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa6d238)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa6d748)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa6de48)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa6e358)
+[2026-10-07 20:33:15.121] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.122] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa56368)
+[2026-10-07 20:33:15.122] [thread-id: 140737298451776] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:33:15.122] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0xa56668)
+[2026-10-07 20:33:15.122] [thread-id: 140737298451776] [trace] zeCommandListDestroy(hCommandList)
+[2026-10-07 20:33:15.122] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListDestroy(hCommandList=0xa46a88)
+[2026-10-07 20:33:15.122] [thread-id: 140737298451776] [trace] zeContextDestroy(hContext)
+[2026-10-07 20:33:15.122] [thread-id: 140737298451776] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeContextDestroy(hContext=0xa3f7b8)
+   <--- urContextRelease(.hContext = 0xa42bb0) -> UR_RESULT_SUCCESS;
+   ---> urDeviceRelease
+   <--- urDeviceRelease(.hDevice = 0xa3e440) -> UR_RESULT_SUCCESS;
+   ---> urAdapterRelease
+   <--- urAdapterRelease(.hAdapter = 0x843170) -> UR_RESULT_SUCCESS;

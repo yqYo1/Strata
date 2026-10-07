@@ -1,0 +1,63 @@
+{
+  "scope": "Offline regular actual IQ object stress fixture build; no GPU execution",
+  "passed": true,
+  "steps": [
+    {
+      "label": "compile",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../third_party/ggml",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-Wall",
+        "-Wextra",
+        "-MD",
+        "-MT",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-completion-stress-build/probe.o",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-completion-stress-build/probe.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-completion-stress-build/probe.o",
+        "-c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant_completion_stress.cpp"
+      ],
+      "exit_code": 0,
+      "seconds": 4.873867838003207
+    },
+    {
+      "label": "link",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-O3",
+        "-DNDEBUG",
+        "-fsycl",
+        "-Xsycl-target-backend=spir64",
+        "-cl-fp32-correctly-rounded-divide-sqrt",
+        "-fsycl-device-code-split=per_kernel",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-completion-stress-build/probe.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-no-root-refresh-build/iq_kernels.dp.cpp.o",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-completion-stress-build/probe"
+      ],
+      "exit_code": 0,
+      "seconds": 2.069233116999385
+    }
+  ],
+  "source_sha256": "ddca529da357c62e5a09498d649c22637b95799516dce701c22f0591c758e320",
+  "controller_sha256": "80fdb96ce22de68001715e0889f5be3603d81be05b7b5ecff53448c229c08f4a",
+  "kernel_object_sha256": "83e0b92ec642d431e0aa75121535aea0ed8e88d13eb6953e1e703ba6b8476813",
+  "started_utc": "2026-10-07T11:29:35.435182+00:00",
+  "binary_sha256": "9df051b3442c051668a42a61cb0bbfd2928e23f53ba43e6c101af56ad0a2c564",
+  "finished_utc": "2026-10-07T11:29:42.384990+00:00"
+}

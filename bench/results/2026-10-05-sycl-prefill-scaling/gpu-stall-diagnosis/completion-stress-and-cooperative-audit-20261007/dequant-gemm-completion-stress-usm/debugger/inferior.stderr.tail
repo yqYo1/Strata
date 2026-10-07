@@ -1,0 +1,519 @@
+2026-10-07 20:48:29.806] [thread-id: 140736844969472] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-07 20:48:29.806] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0x2dc8ac8, ptr=0xffffffffff220100, pMemAllocProperties={stype=0x7fffffffb3e0, type=0x7fffffffb3f0, id=13, pageSize=65536}, phDevice=0x2db27e8)
+   <--- urUSMGetMemAllocInfo(.hContext = 0x2dcc060, .pMem = 0xffffffffff220100, .propName = UR_USM_ALLOC_INFO_TYPE, .propSize = 4, .pPropValue = 0x7fffffffb774 (UR_USM_TYPE_DEVICE), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urUSMGetMemAllocInfo
+[2026-10-07 20:48:29.806] [thread-id: 140736844969472] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-07 20:48:29.806] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0x2dc8ac8, ptr=0xffffffffff220100, pMemAllocProperties={stype=0x7fffffffb3e0, type=0x7fffffffb3f0, id=13, pageSize=65536}, phDevice=0x2db27e8)
+   <--- urUSMGetMemAllocInfo(.hContext = 0x2dcc060, .pMem = 0xffffffffff220100, .propName = UR_USM_ALLOC_INFO_TYPE, .propSize = 4, .pPropValue = 0x7fffffffb774 (UR_USM_TYPE_DEVICE), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urContextGetNativeHandle
+   <--- urContextGetNativeHandle(.hContext = 0x2dcc060, .phNativeContext = 0x7fffffff6b98 (48007880)) -> UR_RESULT_SUCCESS;
+   ---> urKernelGetInfo
+   <--- urKernelGetInfo(.hKernel = 0x3542e30, .propName = UR_KERNEL_INFO_NUM_ARGS, .propSize = 4, .pPropValue = 0x7fffffffaa38 (17), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueKernelLaunchWithArgsExp
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] zeKernelSetGroupSize(hKernel, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetGroupSize(hKernel=0x3247568, groupSizeX=64, groupSizeY=2, groupSizeZ=4)
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] zeCommandListAppendLaunchKernelWithArguments(hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernelWithArguments(hCommandList=0x2dcff38, hKernel=0x3247568, groupCounts={groupCountX=20, groupCountY=1, groupCountZ=1}, groupSizes={groupSizeX=64, groupSizeY=2, groupSizeZ=4}, pArguments=0x3ba5b00, pNext=nullptr, hSignalEvent=0x2df6c08, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0x2dcf180, .hKernel = 0x3542e30, .workDim = 3, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7fffffffb0d8 (1280), .pLocalWorkSize = 0x7fffffffb0f0 (64), .numArgs = 17, .pArgs = 0x32f9c20 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 0, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556b6400080}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 1, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff200000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff220100}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 3, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0x315b1a0}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 4, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0x3422590}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 5, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0x2d2e110}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 6, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0x3156e70}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 7, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0x3422570}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 8, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0x3ba5ac0}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 9, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0x304f890}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 10, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0x2f72410}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 11, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0x2f2f010}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 12, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0x2d2e0f0}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 13, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0x325fe90}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 14, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0x2dca380}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 15, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0x32477a0}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 16, .size = 32768, .value = (union ur_exp_kernel_arg_value_t){<unknown>}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffff9a70 (0x2df65f0)) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0x2df65f0) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueKernelLaunchWithArgsExp
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] zeKernelSetGroupSize(hKernel, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetGroupSize(hKernel=0x2e2d798, groupSizeX=256, groupSizeY=1, groupSizeZ=1)
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] zeCommandListAppendLaunchKernelWithArguments(hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernelWithArguments(hCommandList=0x2dcff38, hKernel=0x2e2d798, groupCounts={groupCountX=20, groupCountY=1, groupCountZ=1}, groupSizes={groupSizeX=256, groupSizeY=1, groupSizeZ=1}, pArguments=0x2e35ce0, pNext=0x7fffffffb650, hSignalEvent=0x2df6c08, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0x2dcf180, .hKernel = 0x2e2cd50, .workDim = 3, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7fffffffc240 (5120), .pLocalWorkSize = 0x7fffffffc258 (256), .numArgs = 3, .pArgs = 0x32f9c20 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 0, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff220100}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 1, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff210080}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0x7fffffffc480}}}, .launchPropList = 0x7fffffffbc80 ((struct ur_kernel_launch_ext_properties_t){.stype = UR_STRUCTURE_TYPE_KERNEL_LAUNCH_EXT_PROPERTIES, .pNext = nullptr, .flags = UR_KERNEL_LAUNCH_FLAG_COOPERATIVE}), .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffbc60 (0x2df65f0)) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0x2df65f0) -> UR_RESULT_SUCCESS;
+   ---> urQueueFinish
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] zeCommandListHostSynchronize(hCommandList, timeout)
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0x2dcff38, timeout=18446744073709551615)
+   <--- urQueueFinish(.hQueue = 0x2dcf180) -> UR_RESULT_SUCCESS;
+   ---> urUSMGetMemAllocInfo
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0x2dc8ac8, ptr=0x7fffffffc5b8, pMemAllocProperties={stype=0x7fffffffbf50, type=0x7fffffffbf60, id=0, pageSize=0}, phDevice=0x7fff00000008)
+   <--- urUSMGetMemAllocInfo(.hContext = 0x2dcc060, .pMem = 0x7fffffffc5b8, .propName = UR_USM_ALLOC_INFO_TYPE, .propSize = 4, .pPropValue = 0x7fffffffc2e4 (UR_USM_TYPE_UNKNOWN), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urUSMGetMemAllocInfo
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0x2dc8ac8, ptr=0x7fffffffc5bc, pMemAllocProperties={stype=0x7fffffffbf50, type=0x7fffffffbf60, id=0, pageSize=0}, phDevice=0x7fff00000008)
+   <--- urUSMGetMemAllocInfo(.hContext = 0x2dcc060, .pMem = 0x7fffffffc5bc, .propName = UR_USM_ALLOC_INFO_TYPE, .propSize = 4, .pPropValue = 0x7fffffffc2e4 (UR_USM_TYPE_UNKNOWN), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urUSMGetMemAllocInfo
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0x2dc8ac8, ptr=0xffffd556b7be8100, pMemAllocProperties={stype=0x7fffffffb3e0, type=0x7fffffffb3f0, id=17, pageSize=65536}, phDevice=0x2db27e8)
+   <--- urUSMGetMemAllocInfo(.hContext = 0x2dcc060, .pMem = 0xffffd556b7be8100, .propName = UR_USM_ALLOC_INFO_TYPE, .propSize = 4, .pPropValue = 0x7fffffffb774 (UR_USM_TYPE_DEVICE), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urUSMGetMemAllocInfo
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0x2dc8ac8, ptr=0xffffd556b7be8100, pMemAllocProperties={stype=0x7fffffffb3e0, type=0x7fffffffb3f0, id=17, pageSize=65536}, phDevice=0x2db27e8)
+   <--- urUSMGetMemAllocInfo(.hContext = 0x2dcc060, .pMem = 0xffffd556b7be8100, .propName = UR_USM_ALLOC_INFO_TYPE, .propSize = 4, .pPropValue = 0x7fffffffb774 (UR_USM_TYPE_DEVICE), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urUSMGetMemAllocInfo
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0x2dc8ac8, ptr=0xffffd556b7be8100, pMemAllocProperties={stype=0x7fffffffb3e0, type=0x7fffffffb3f0, id=17, pageSize=65536}, phDevice=0x2db27e8)
+   <--- urUSMGetMemAllocInfo(.hContext = 0x2dcc060, .pMem = 0xffffd556b7be8100, .propName = UR_USM_ALLOC_INFO_TYPE, .propSize = 4, .pPropValue = 0x7fffffffb774 (UR_USM_TYPE_DEVICE), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urContextGetNativeHandle
+   <--- urContextGetNativeHandle(.hContext = 0x2dcc060, .phNativeContext = 0x7fffffff6b98 (48007880)) -> UR_RESULT_SUCCESS;
+   ---> urKernelGetInfo
+   <--- urKernelGetInfo(.hKernel = 0x33cb570, .propName = UR_KERNEL_INFO_NUM_ARGS, .propSize = 4, .pPropValue = 0x7fffffffaa38 (15), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueKernelLaunchWithArgsExp
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] zeKernelSetGroupSize(hKernel, groupSizeX, groupSizeY, groupSizeZ)
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetGroupSize(hKernel=0x322c428, groupSizeX=128, groupSizeY=4, groupSizeZ=1)
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] zeCommandListAppendLaunchKernelWithArguments(hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernelWithArguments(hCommandList=0x2dcff38, hKernel=0x322c428, groupCounts={groupCountX=20, groupCountY=1, groupCountZ=1}, groupSizes={groupSizeX=128, groupSizeY=4, groupSizeZ=1}, pArguments=0x3ba5a40, pNext=nullptr, hSignalEvent=0x2df6c08, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0x2dcf180, .hKernel = 0x33cb570, .workDim = 3, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7fffffffb0d8 (2560), .pLocalWorkSize = 0x7fffffffb0f0 (128), .numArgs = 15, .pArgs = 0x32f9c20 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 0, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff400080}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 1, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff210080}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556b7be8100}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 3, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0x3422590}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 4, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0x31e77a0}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 5, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0x32ca870}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 6, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0x32ca850}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 7, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0x2f8f8e0}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 8, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0x32477a0}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 9, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0x3422570}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 10, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0x3ba5ac0}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 11, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0x304f890}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 12, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0x2f72410}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 13, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0x2f2f010}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 14, .size = 4, .value = (union ur_exp_kernel_arg_value_t){.value = 0x325fe90}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffff9a70 (0x2df65f0)) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0x2df65f0) -> UR_RESULT_SUCCESS;
+   ---> urQueueFinish
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] zeCommandListHostSynchronize(hCommandList, timeout)
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0x2dcff38, timeout=18446744073709551615)
+   <--- urQueueFinish(.hQueue = 0x2dcf180) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueUSMMemcpy
+[2026-10-07 20:48:29.807] [thread-id: 140736844969472] [trace] zeCommandListAppendMemoryCopy(hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:48:29.809] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0x2dcff38, dstptr=0x46e5a30, srcptr=0xffffd556b6400000, size=6553856, hSignalEvent=0x2df6c08, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueUSMMemcpy(.hQueue = 0x2dcf180, .blocking = 0, .pDst = 0x46e5a30, .pSrc = 0xffffd556b6400000, .size = 6553856, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffc4d0 (0x2df65f0)) -> UR_RESULT_SUCCESS;
+   ---> urEventWait
+[2026-10-07 20:48:29.809] [thread-id: 140736844969472] [trace] zeEventHostSynchronize(hEvent, timeout)
+[2026-10-07 20:48:29.809] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventHostSynchronize(hEvent=0x2df6c08, timeout=18446744073709551615)
+   <--- urEventWait(.numEvents = 1, .phEventWaitList = 0x7fffffffc520 {0x2df65f0}) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0x2df65f0) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueUSMMemcpy
+[2026-10-07 20:48:29.813] [thread-id: 140736844969472] [trace] zeCommandListAppendMemoryCopy(hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:48:29.813] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0x2dcff38, dstptr=0x4d25b40, srcptr=0xffffffffff400000, size=3277056, hSignalEvent=0x2df6c08, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueUSMMemcpy(.hQueue = 0x2dcf180, .blocking = 0, .pDst = 0x4d25b40, .pSrc = 0xffffffffff400000, .size = 3277056, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffc4d0 (0x2df65f0)) -> UR_RESULT_SUCCESS;
+   ---> urEventWait
+[2026-10-07 20:48:29.813] [thread-id: 140736844969472] [trace] zeEventHostSynchronize(hEvent, timeout)
+[2026-10-07 20:48:29.813] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventHostSynchronize(hEvent=0x2df6c08, timeout=18446744073709551615)
+   <--- urEventWait(.numEvents = 1, .phEventWaitList = 0x7fffffffc520 {0x2df65f0}) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0x2df65f0) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueUSMMemcpy
+[2026-10-07 20:48:29.815] [thread-id: 140736844969472] [trace] zeCommandListAppendMemoryCopy(hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:48:29.815] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0x2dcff38, dstptr=0x3191b50, srcptr=0xffffffffff210000, size=10496, hSignalEvent=0x2df6c08, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueUSMMemcpy(.hQueue = 0x2dcf180, .blocking = 0, .pDst = 0x3191b50, .pSrc = 0xffffffffff210000, .size = 10496, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffc470 (0x2df65f0)) -> UR_RESULT_SUCCESS;
+   ---> urEventWait
+[2026-10-07 20:48:29.815] [thread-id: 140736844969472] [trace] zeEventHostSynchronize(hEvent, timeout)
+[2026-10-07 20:48:29.815] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventHostSynchronize(hEvent=0x2df6c08, timeout=18446744073709551615)
+   <--- urEventWait(.numEvents = 1, .phEventWaitList = 0x7fffffffc4c0 {0x2df65f0}) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0x2df65f0) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueUSMMemcpy
+[2026-10-07 20:48:29.815] [thread-id: 140736844969472] [trace] zeCommandListAppendMemoryCopy(hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:48:29.816] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0x2dcff38, dstptr=0x306c3d0, srcptr=0xffffffffff220000, size=41472, hSignalEvent=0x2df6c08, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueUSMMemcpy(.hQueue = 0x2dcf180, .blocking = 0, .pDst = 0x306c3d0, .pSrc = 0xffffffffff220000, .size = 41472, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffc400 (0x2df65f0)) -> UR_RESULT_SUCCESS;
+   ---> urEventWait
+[2026-10-07 20:48:29.816] [thread-id: 140736844969472] [trace] zeEventHostSynchronize(hEvent, timeout)
+[2026-10-07 20:48:29.816] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventHostSynchronize(hEvent=0x2df6c08, timeout=18446744073709551615)
+   <--- urEventWait(.numEvents = 1, .phEventWaitList = 0x7fffffffc450 {0x2df65f0}) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0x2df65f0) -> UR_RESULT_SUCCESS;
+   ---> urEnqueueUSMMemcpy
+[2026-10-07 20:48:29.816] [thread-id: 140736844969472] [trace] zeCommandListAppendMemoryCopy(hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+[2026-10-07 20:48:29.816] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0x2dcff38, dstptr=0x3336a30, srcptr=0xffffd556b7be8000, size=82432, hSignalEvent=0x2df6c08, numWaitEvents=0, phWaitEvents=nullptr)
+   <--- urEnqueueUSMMemcpy(.hQueue = 0x2dcf180, .blocking = 0, .pDst = 0x3336a30, .pSrc = 0xffffd556b7be8000, .size = 82432, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fffffffc400 (0x2df65f0)) -> UR_RESULT_SUCCESS;
+   ---> urEventWait
+[2026-10-07 20:48:29.816] [thread-id: 140736844969472] [trace] zeEventHostSynchronize(hEvent, timeout)
+[2026-10-07 20:48:29.816] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventHostSynchronize(hEvent=0x2df6c08, timeout=18446744073709551615)
+   <--- urEventWait(.numEvents = 1, .phEventWaitList = 0x7fffffffc450 {0x2df65f0}) -> UR_RESULT_SUCCESS;
+   ---> urEventRelease
+   <--- urEventRelease(.hEvent = 0x2df65f0) -> UR_RESULT_SUCCESS;
+   ---> urQueueFinish
+[2026-10-07 20:48:29.816] [thread-id: 140736844969472] [trace] zeCommandListHostSynchronize(hCommandList, timeout)
+[2026-10-07 20:48:29.816] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0x2dcff38, timeout=18446744073709551615)
+   <--- urQueueFinish(.hQueue = 0x2dcf180) -> UR_RESULT_SUCCESS;
+   ---> urQueueFinish
+[2026-10-07 20:48:29.816] [thread-id: 140736844969472] [trace] zeCommandListHostSynchronize(hCommandList, timeout)
+[2026-10-07 20:48:29.816] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0x2dcff38, timeout=18446744073709551615)
+   <--- urQueueFinish(.hQueue = 0x2dcf180) -> UR_RESULT_SUCCESS;
+   ---> urUSMFree
+   <--- urUSMFree(.hContext = 0x2dcc060, .pMem = 0xffffd556b7be8000) -> UR_RESULT_SUCCESS;
+   ---> urUSMFree
+   <--- urUSMFree(.hContext = 0x2dcc060, .pMem = 0xffffffffff220000) -> UR_RESULT_SUCCESS;
+   ---> urUSMFree
+   <--- urUSMFree(.hContext = 0x2dcc060, .pMem = 0xffffffffff210000) -> UR_RESULT_SUCCESS;
+   ---> urUSMFree
+   <--- urUSMFree(.hContext = 0x2dcc060, .pMem = 0xffffffffff200000) -> UR_RESULT_SUCCESS;
+   ---> urUSMFree
+[2026-10-07 20:48:29.816] [thread-id: 140736844969472] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-07 20:48:29.817] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0x2dc8ac8, pMemFreeDesc={stype=0x7fffffffc090, freePolicy=1}, ptr=0xffffd556b7c00000)
+   <--- urUSMFree(.hContext = 0x2dcc060, .pMem = 0xffffd556b7c00000) -> UR_RESULT_SUCCESS;
+   ---> urUSMFree
+   <--- urUSMFree(.hContext = 0x2dcc060, .pMem = 0xffffffffff400000) -> UR_RESULT_SUCCESS;
+   ---> urUSMFree
+[2026-10-07 20:48:29.817] [thread-id: 140736844969472] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-07 20:48:29.817] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0x2dc8ac8, pMemFreeDesc={stype=0x7fffffffc090, freePolicy=1}, ptr=0xffffd556b6400000)
+   <--- urUSMFree(.hContext = 0x2dcc060, .pMem = 0xffffd556b6400000) -> UR_RESULT_SUCCESS;
+   ---> urQueueRelease
+[2026-10-07 20:48:29.817] [thread-id: 140736844969472] [trace] zeCommandListHostSynchronize(hCommandList, timeout)
+[2026-10-07 20:48:29.817] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0x2dcff38, timeout=18446744073709551615)
+   <--- urQueueRelease(.hQueue = 0x2dcf180) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+   <--- urProgramRelease(.hProgram = 0x2f3b850) -> UR_RESULT_SUCCESS;
+   ---> urKernelRelease
+[2026-10-07 20:48:29.817] [thread-id: 140736844969472] [trace] zeKernelDestroy(hKernel)
+[2026-10-07 20:48:29.817] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelDestroy(hKernel=0x31e8bd8)
+[2026-10-07 20:48:29.817] [thread-id: 140736844969472] [trace] zeModuleDestroy(hModule)
+[2026-10-07 20:48:29.817] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x31477a8)
+   <--- urKernelRelease(.hKernel = 0x3327cf0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+   <--- urProgramRelease(.hProgram = 0x32ed170) -> UR_RESULT_SUCCESS;
+   ---> urKernelRelease
+[2026-10-07 20:48:29.817] [thread-id: 140736844969472] [trace] zeKernelDestroy(hKernel)
+[2026-10-07 20:48:29.817] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelDestroy(hKernel=0x322c428)
+[2026-10-07 20:48:29.817] [thread-id: 140736844969472] [trace] zeModuleDestroy(hModule)
+[2026-10-07 20:48:29.817] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x301e298)
+   <--- urKernelRelease(.hKernel = 0x33cb570) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+   <--- urProgramRelease(.hProgram = 0x32d6e50) -> UR_RESULT_SUCCESS;
+   ---> urKernelRelease
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeKernelDestroy(hKernel)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelDestroy(hKernel=0x3247568)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeModuleDestroy(hModule)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x301e0d8)
+   <--- urKernelRelease(.hKernel = 0x3542e30) -> UR_RESULT_SUCCESS;
+   ---> urQueueRelease
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeCommandListHostSynchronize(hCommandList, timeout)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0x2e64b88, timeout=18446744073709551615)
+   <--- urQueueRelease(.hQueue = 0x2e64820) -> UR_RESULT_SUCCESS;
+   ---> urQueueRelease
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeCommandListHostSynchronize(hCommandList, timeout)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0x2e6c2a8, timeout=18446744073709551615)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeCommandListHostSynchronize(hCommandList, timeout)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0x2e74be8, timeout=18446744073709551615)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeCommandListHostSynchronize(hCommandList, timeout)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0x2e7d6e8, timeout=18446744073709551615)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeCommandListHostSynchronize(hCommandList, timeout)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0x2e862f8, timeout=18446744073709551615)
+   <--- urQueueRelease(.hQueue = 0x2e6bb10) -> UR_RESULT_SUCCESS;
+   ---> urContextRelease
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e8f398)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e8f8d8)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e8ffd8)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e90538)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e90c38)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e91148)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e91848)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e91de8)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e924e8)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e929f8)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e930f8)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e93608)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e93d08)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e94218)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e94918)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e94f38)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e95638)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e95b48)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.818] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e96248)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e96758)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e96e58)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e97368)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e97a68)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e97f78)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e98678)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e98b88)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e99288)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e99798)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e99e98)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e9a3a8)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e9aaa8)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e9b1c8)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e9b8c8)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e9bdd8)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e9c4d8)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e9c9e8)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e9d0e8)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e9d5f8)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e9dcf8)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e9e208)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e9e908)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e9ee18)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e9f518)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e9fa28)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2ea0128)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2ea0638)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2ea0d38)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2ea1248)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2ea1948)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2ea1e58)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2ea27d8)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2ea2ce8)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2ea33e8)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2ea38f8)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2ea3ff8)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2ea4508)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2ea4c08)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2ea5118)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2ea5818)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2ea5d28)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2ea6428)
+[2026-10-07 20:48:29.819] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2ea6938)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e2d328)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2e186f8)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] zeCommandListDestroy(hCommandList)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListDestroy(hCommandList=0x2e64b88)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] zeCommandListDestroy(hCommandList)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListDestroy(hCommandList=0x2e862f8)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] zeCommandListDestroy(hCommandList)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListDestroy(hCommandList=0x2e7d6e8)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] zeCommandListDestroy(hCommandList)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListDestroy(hCommandList=0x2e74be8)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] zeCommandListDestroy(hCommandList)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListDestroy(hCommandList=0x2e6c2a8)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] zeContextDestroy(hContext)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeContextDestroy(hContext=0x2dde598)
+   <--- urContextRelease(.hContext = 0x2e62c90) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+   <--- urProgramRelease(.hProgram = 0x319a490) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+   <--- urProgramRelease(.hProgram = 0x2e2e370) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+   <--- urProgramRelease(.hProgram = 0x2de8610) -> UR_RESULT_SUCCESS;
+   ---> urKernelRelease
+   <--- urKernelRelease(.hKernel = 0x2e2caa0) -> UR_RESULT_SUCCESS;
+   ---> urKernelRelease
+   <--- urKernelRelease(.hKernel = 0x2f0e720) -> UR_RESULT_SUCCESS;
+   ---> urKernelRelease
+   <--- urKernelRelease(.hKernel = 0x2e2cd50) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+   <--- urProgramRelease(.hProgram = 0x2de8610) -> UR_RESULT_SUCCESS;
+   ---> urKernelRelease
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] zeKernelDestroy(hKernel)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelDestroy(hKernel=0x2e2d798)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x2e19458)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] zeModuleDestroy(hModule)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x2dfa928)
+   <--- urKernelRelease(.hKernel = 0x2e2cd50) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+   <--- urProgramRelease(.hProgram = 0x319a490) -> UR_RESULT_SUCCESS;
+   ---> urKernelRelease
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] zeKernelDestroy(hKernel)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelDestroy(hKernel=0x3044b38)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x314f3f8)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] zeModuleDestroy(hModule)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x32be268)
+   <--- urKernelRelease(.hKernel = 0x2e2caa0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+   <--- urProgramRelease(.hProgram = 0x2e2e370) -> UR_RESULT_SUCCESS;
+   ---> urKernelRelease
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] zeKernelDestroy(hKernel)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelDestroy(hKernel=0x3256f78)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x2ea8468)
+[2026-10-07 20:48:29.820] [thread-id: 140736844969472] [trace] zeModuleDestroy(hModule)
+[2026-10-07 20:48:29.821] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x2e3f288)
+   <--- urKernelRelease(.hKernel = 0x2f0e720) -> UR_RESULT_SUCCESS;
+   ---> urContextRelease
+[2026-10-07 20:48:29.821] [thread-id: 140736844969472] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-07 20:48:29.821] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0x2dc8ac8, pMemFreeDesc={stype=0x7fffffffc7a0, freePolicy=1}, ptr=0xffffffffff230000)
+[2026-10-07 20:48:29.821] [thread-id: 140736844969472] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-07 20:48:29.821] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0x2dc8ac8, pMemFreeDesc={stype=0x7fffffffc7a0, freePolicy=1}, ptr=0xffffffffff210000)
+[2026-10-07 20:48:29.821] [thread-id: 140736844969472] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-07 20:48:29.821] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0x2dc8ac8, pMemFreeDesc={stype=0x7fffffffc7a0, freePolicy=1}, ptr=0xffffffffff200000)
+[2026-10-07 20:48:29.821] [thread-id: 140736844969472] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-07 20:48:29.821] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0x2dc8ac8, pMemFreeDesc={stype=0x7fffffffc7a0, freePolicy=1}, ptr=0xffffffffff220000)
+[2026-10-07 20:48:29.821] [thread-id: 140736844969472] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0x2dc8ac8, pMemFreeDesc={stype=0x7fffffffc7a0, freePolicy=1}, ptr=0xffffd556b7be8000)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0x2dc8ac8, pMemFreeDesc={stype=0x7fffffffc7a0, freePolicy=1}, ptr=0xffffffffff400000)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de0128)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de0668)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de0d68)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de12c8)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de19c8)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de1ed8)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de25d8)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de2ae8)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de31e8)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de3798)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de3e98)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de43a8)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de4aa8)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de4fb8)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de56b8)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de5cd8)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de63d8)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de68e8)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de6fe8)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de74f8)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de7bf8)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de8108)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de8948)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de8e58)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de9558)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2de9a68)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2dea168)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2dea678)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2dead78)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2deb288)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2deb988)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2dec0a8)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2dec7a8)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.822] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2deccb8)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2ded3b8)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2ded8c8)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2dedfc8)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2dee4d8)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2deebd8)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2def0e8)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2def7e8)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2defcf8)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2df03f8)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2df0908)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2df1008)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2df1518)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2df1c18)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2df2128)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2df2828)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2df2d38)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2df36b8)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2df3bc8)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2df42c8)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2df47d8)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2df4ed8)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2df53e8)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2df5ae8)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2df5ff8)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2df66f8)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2df6c08)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2df7308)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2df7818)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2ddf708)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeEventDestroy(hEvent)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventDestroy(hEvent=0x2ddfa08)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeCommandListDestroy(hCommandList)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListDestroy(hCommandList=0x2dcff38)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] zeContextDestroy(hContext)
+[2026-10-07 20:48:29.823] [thread-id: 140736844969472] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeContextDestroy(hContext=0x2dc8ac8)
+   <--- urContextRelease(.hContext = 0x2dcc060) -> UR_RESULT_SUCCESS;
+   ---> urDeviceRelease
+   <--- urDeviceRelease(.hDevice = 0x2dc7900) -> UR_RESULT_SUCCESS;
+   ---> urAdapterRelease
+   <--- urAdapterRelease(.hAdapter = 0x2bcc270) -> UR_RESULT_SUCCESS;
