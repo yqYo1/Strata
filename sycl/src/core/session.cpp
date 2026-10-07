@@ -788,7 +788,7 @@ bool SessionLoopScratch::init(size_t parts_bytes_in, std::string &err) try {
     const std::vector<int> cores = strata::kernels::cpu::physical_cores(false);
     if (!cores.empty()) {
         pinned_core = strata::kernels::cpu::pin_current_thread(cores[0]);
-        pinned = true;
+        pinned = pinned_core.valid;
     }
     return true;
 }

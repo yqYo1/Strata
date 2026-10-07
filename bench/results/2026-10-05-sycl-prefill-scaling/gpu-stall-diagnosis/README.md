@@ -361,3 +361,16 @@ capacity fallback remain untested. The user-supplied
 [B70 offload reference review](b70-offload-reference-20261007/README.md)
 pins source/event-ordering findings and separates exact scheduling ideas
 from masked-expert approximations.
+
+
+### Upstream refresh checked on 2026-10-07
+
+[Upstream refresh](upstream-refresh-20261007/README.md) records the merge of
+Niko1221/Strata 82f46a8c after matching the rewritten base by whole-tree SHA.
+The isolated SYCL build, 452 serve tests (eight skips), all 24 setup scripts
+and four standalone CPU tests pass. Four short normal-MTP requests and a
+2048-token/two-chunk request match pre-update IDs, logprobs and all first-head
+bytes; seven total MTP release/restore pairs complete. Both updated-binary
+GPU jobs exit normally with no new xe fault. CUDA-only fused/padded modes
+remain unavailable in SYCL. These checks do not resolve the existing full
+262144-cell failures or establish clean throughput.

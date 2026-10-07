@@ -178,6 +178,9 @@ if(STRATA_NATIVE_EXPERTS)
     add_custom_command(OUTPUT ${_iq2s_object}
       COMMAND ${STRATA_IQ2S_GXX} -O3 -DNDEBUG -std=c++20 -ffp-contract=off -mavx2 -mfma -mf16c
         -Diq256_gu_rows=iq256_gu_rows_gcc -Diq256_rows=iq256_rows_gcc
+        -Diq256_variant=iq256_variant_gcc -Diq256_variants=iq256_variants_gcc
+        -Diq256_gu_rows_v=iq256_gu_rows_v_gcc -Diq256_rows_v=iq256_rows_v_gcc
+        -Diq4nl256_down_rows_v=iq4nl256_down_rows_v_gcc
         -Diq256_supported=iq256_supported_gcc -Diq4nl256_down_rows=iq4nl256_down_rows_gcc
         -I${STRATA_ROOT}/include -I${STRATA_ROOT}/third_party/ggml
         -MMD -MF ${_iq2s_object}.d -c ${STRATA_ROOT}/src/kernels/cpu/iq_avx2.cpp -o ${_iq2s_object}
@@ -192,7 +195,7 @@ endif()
 
 # --- the GPU engine ------------------------------------------------------------------------------------------------
 strata_resolve(_core src/core/device.cu src/core/pinned.cu src/platform/memory.cpp src/core/graph.cpp
-                     src/core/weights.cpp src/core/layout.cpp)
+                     src/core/weights.cpp src/core/layout.cpp src/core/vmm.cpp)
 add_library(strata_core STATIC ${_core})
 target_link_libraries(strata_core PUBLIC strata_includes)
 
