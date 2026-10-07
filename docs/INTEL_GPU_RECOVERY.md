@@ -152,7 +152,16 @@ then completed four normal-MTP requests with the layer-range trace executable.
 All output IDs, printed logprobs and complete finite heads matched the preceding
 released-weight control. Six release/restore pairs and a normal exit were
 recorded, with no new xe faults or surviving processes. This establishes the
-short real-model diagnostic path; full-context correctness remains pending.
+short real-model diagnostic path.
+
+The subsequent [full-cell CLI check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/full-capacity-20261007/README.md)
+completed on the same executable with 262,144 allocated context cells. It
+executed windows `[262141, 1]` and `[262142, 2]`, used the final cell 262143,
+emitted two tokens with a complete finite head and exited normally, without
+new xe faults or surviving processes. It retained warnings, parameter
+validation, Strata progress and an owned debugger; it is not a throughput
+measurement. Full-context normal-MTP serving and general stall prevention
+remain unproven.
 
 The [2026-10-07 logging check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/runtime-tracing-20261007/README.md)
 confirmed Level Zero entry/results and UR traces before the child exited,
