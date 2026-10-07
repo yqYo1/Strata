@@ -1,0 +1,109 @@
+{
+  "scope": "Private optional cache model failures, actual-kernel cooperative resource query and unchanged refreshed control recheck; not clean timing or full capacity",
+  "recorded_utc": "2026-10-07T11:10:21.069517+00:00",
+  "runs": [
+    {
+      "run": "owned-expanded-fp16-refresh-128-2048",
+      "cache_request": 128,
+      "binary_sha256": "291130f1d9aae6161ff578def487cac9ad12480a6d2fe590da92a5225b00da68",
+      "stopped_layer_zero_based": 24,
+      "chunk_offset": 256,
+      "output_requests_completed": 0,
+      "cleanup": {
+        "forced": true,
+        "inferior_survived": false,
+        "gdb_survived": false
+      },
+      "new_fault_messages": [
+        "xe 0000:05:00.0: [drm] Tile0: GT0: Engine reset: engine_class=ccs, logical_mask: 0x1, guc_id=2, state=0x289"
+      ],
+      "subsequent_logged_exact_word_probe_passed": true
+    },
+    {
+      "run": "owned-expanded-fp16-no-root-refresh-128-2048",
+      "cache_request": 128,
+      "binary_sha256": "b8ed53bdeced67a09410d5f66f2dcd3493ebac78b4818e3153b099f59d1cf8f8",
+      "stopped_layer_zero_based": 14,
+      "chunk_offset": 256,
+      "output_requests_completed": 0,
+      "cleanup": {
+        "forced": true,
+        "inferior_survived": false,
+        "gdb_survived": false
+      },
+      "new_fault_messages": [],
+      "subsequent_logged_exact_word_probe_passed": true
+    },
+    {
+      "run": "owned-expanded-fp16-no-root-refresh-zero-2048",
+      "cache_request": 0,
+      "binary_sha256": "b8ed53bdeced67a09410d5f66f2dcd3493ebac78b4818e3153b099f59d1cf8f8",
+      "stopped_layer_zero_based": 3,
+      "chunk_offset": 1280,
+      "output_requests_completed": 0,
+      "cleanup": {
+        "forced": true,
+        "inferior_survived": false,
+        "gdb_survived": false
+      },
+      "new_fault_messages": [],
+      "subsequent_logged_exact_word_probe_passed": true
+    },
+    {
+      "run": "owned-upstream-refresh-2048-recheck",
+      "cache_request": 0,
+      "binary_sha256": "ceff2d8a6d38fc4779a8b6969d4912efedea5dbd4e2c9229f04af49c680c0bd0",
+      "stopped_layer_zero_based": 17,
+      "chunk_offset": 256,
+      "output_requests_completed": 0,
+      "cleanup": {
+        "forced": true,
+        "inferior_survived": false,
+        "gdb_survived": false
+      },
+      "new_fault_messages": [],
+      "subsequent_logged_exact_word_probe_passed": true
+    }
+  ],
+  "cache_zero_context128_four_requests_passed": true,
+  "cache_zero_short_release_pairs": {
+    "release": 6,
+    "restore": 6
+  },
+  "no_manual_reset_rebind_reboot_or_service_package_change": true,
+  "automated_driver_ccs_reset_logged_first_failed_run": true,
+  "first_reset_ordering": "After 60-second watchdog and near owned cleanup; not evidence that reset initiated the stall",
+  "cache_adopted": false,
+  "dequant_property_candidate_adopted": false,
+  "clean_0_128_256_matrix_executed": false,
+  "all262144_cell_capacity_suite_passed": false,
+  "reference_original_prefill_sha256": "bdc0dea41753d345f5b5c329d807d3f9013280e2488e39df1d615a3b84506b92",
+  "private_prefill_sha256": "222dfbfb0cf034d6191d9d9b9067063f763c8bbc6014bf0f0db3d193289ebc5d",
+  "private_header_sha256": "31bf64cd00d696789762b2de1e28b79af619816dd44f4f4db018467958d11425",
+  "actual_kernel_query": {
+    "kernel_count": 2,
+    "local_size": [
+      1,
+      1,
+      32
+    ],
+    "max_cooperative_groups_each": 1152,
+    "observed_original_gu_groups": 12800,
+    "observed_original_down_groups": 6400,
+    "gpu_kernels_submitted_by_query": 0,
+    "installed_api": "kernel_queue_specific::max_num_work_groups",
+    "observed_driver_api": "zeKernelSuggestMaxCooperativeGroupCount",
+    "online_root_specific_api_available_in_installed_headers": false
+  },
+  "main_stack_symbolization": {
+    "library_build_id": "a150ba51180689c9ab166533b5d6503441b9e1c1",
+    "normal_launch_cache128_main_stack_return_address": "0x7fec5e0c6674",
+    "library_text_virtual_address": "0xbc570",
+    "runtime_text_start": "0x7fec5d9f4570",
+    "symbolized_elf_address": "0x78e674",
+    "matching_debug_symbol": "NEO::CommandStreamReceiver::baseWaitFunction(unsigned long volatile*, NEO::WaitParams const&, unsigned long)",
+    "method": "Reconstruct saved main-thread frame-chain return address and use matching build-ID debug ELF; automatic GDB unwind stops in VDSO",
+    "gpu_completion_tag_values_captured": false
+  },
+  "interpretation": "Unnecessary cooperative launch settings exceed the measured limit and need correction. Their removal alone does not prevent model stalls. Disabled-cache and unchanged-control failures exclude optional VRAM allocation as a sufficient explanation. Specific runtime completion failure and any additional application misuse remain unresolved."
+}

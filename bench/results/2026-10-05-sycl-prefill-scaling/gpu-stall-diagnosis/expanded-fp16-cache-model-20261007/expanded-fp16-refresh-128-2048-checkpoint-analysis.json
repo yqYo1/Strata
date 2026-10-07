@@ -1,0 +1,33 @@
+{
+  "scope": "Failure checkpoints; a phase named done marks the preceding wait boundary, not completion of subsequent launches",
+  "trace_entries": 74,
+  "last_trace": [
+    256,
+    2047,
+    24,
+    25
+  ],
+  "memory": [
+    "strata prefill memory: before decode cache release; free=4193325056 total=10666115072 bytes",
+    "strata prefill memory: main decode cache released; free=4595978240 total=10666115072 bytes",
+    "strata prefill memory: MTP decode weights released; free=5535506432 total=10666115072 bytes",
+    "strata prefill memory: temporary layer cache allocated; free=4172353536 total=10666115072 bytes"
+  ],
+  "allocation_reports": [
+    "strata prefill FP16 cache allocation: requested 128, capacity 128, bytes 1258291200"
+  ],
+  "last_phase_marks": [
+    "strata prefill sync: mark 101784 phase gather done (waited 0.1 ms)",
+    "strata prefill sync: mark 101785 phase gemm gate/up done (waited 0.1 ms)",
+    "strata prefill sync: mark 101786 phase gemm down done (waited 0.1 ms)",
+    "strata prefill sync: mark 101787 phase dequant done (waited 0.1 ms)",
+    "strata prefill sync: mark 101788 phase gather done (waited 0.1 ms)",
+    "strata prefill sync: mark 101789 phase gemm gate/up done (waited 0.1 ms)",
+    "strata prefill sync: mark 101790 phase gemm down done (waited 0.1 ms)",
+    "strata prefill sync: mark 101791 phase dequant done (waited 0.1 ms)"
+  ],
+  "watchdog": [
+    "strata serve: no progress for 60 s during a request (reading the prompt (batched): layer 24 of the prompt chunk from token 256) - stopping the engine so the server starts it again (issue #29)"
+  ],
+  "launch_scope_note": "UR cooperative flags are present in the original dequant calls and absent in the regular-launch candidates; no total cooperative count is inferred from the Level Zero function name."
+}

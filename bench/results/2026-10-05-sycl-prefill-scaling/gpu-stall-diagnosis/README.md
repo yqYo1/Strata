@@ -356,8 +356,9 @@ before repeated-capacity cases. Owned cleanup and the following logged GPU
 health probe pass without reset; this is an output-comparison failure.
 
 The [optional FP16 expert reuse prototype](expanded-fp16-cache-prepared-20261007/README.md)
-built privately without changing production inputs. GPU parity, speed and
-capacity fallback remain untested. The user-supplied
+built privately without changing production inputs. The initial preparation
+does not establish GPU parity, speed or capacity fallback; the later model
+checks are recorded below. The user-supplied
 [B70 offload reference review](b70-offload-reference-20261007/README.md)
 pins source/event-ordering findings and separates exact scheduling ideas
 from masked-expert approximations.
@@ -369,8 +370,8 @@ from masked-expert approximations.
 Niko1221/Strata 82f46a8c after matching the rewritten base by whole-tree SHA.
 The isolated SYCL build, 452 serve tests (eight skips), all 24 setup scripts
 and four standalone CPU tests pass. Four short normal-MTP requests and a
-2048-token/two-chunk request match pre-update IDs, logprobs and all first-head
-bytes; seven total MTP release/restore pairs complete. Both updated-binary
+2048-input request with prefill cap1024 match pre-update IDs, logprobs and
+all first-head bytes; seven total MTP release/restore pairs complete. Both updated-binary
 GPU jobs exit normally with no new xe fault. CUDA-only fused/padded modes
 remain unavailable in SYCL. These checks do not resolve the existing full
 262144-cell failures or establish clean throughput.
@@ -382,9 +383,35 @@ remain unavailable in SYCL. These checks do not resolve the existing full
 uses a private candidate changing only two dequant use_root_sync property
 lists. Four logged normal-MTP requests match all IDs/logprobs/head bytes;
 six release/restore pairs complete. With API logging/validation disabled and
-original phase waits/progress retained, the 2048-token/two-chunk control and
+original phase waits/progress retained, the 2048-input control and
 candidate take 35.8242 and 35.6255 seconds for the prompt. Both complete
 normally, match all output values and record no new xe fault. One sample
 per side and a 0.555% time difference do not establish a repeatable speed
 improvement. Production kernel properties are unchanged; full256K gates
 remain incomplete and the candidate is not adopted.
+
+
+### Expanded-FP16 model checks and updated-control recheck
+
+[Model failures and cooperative resource limits](expanded-fp16-cache-model-20261007/README.md)
+record a four-request context-128 cache-zero pass, then three failed 2K
+private-candidate checks and a failed fully logged unchanged-control recheck.
+All stop in dequant completion wait; no failed run completes an output
+request. The first interval logs a CCS engine reset near watchdog cleanup.
+The other three contain no new xe fault. All owned processes are gone, and
+four subsequent logged exact-word GPU probes pass without invoking reset.
+Cache allocation is not a sufficient explanation: the disabled-cache
+candidate and unchanged upstream control also stop. No candidate is adopted
+and the prepared clean timing matrix is not run.
+
+Both actual IQ kernels report a maximum of 1152 cooperative groups at local
+size 32, whereas the original GU/down launches use 12800/6400 groups with the
+cooperative flag. Removing this unnecessary setting alone does not prevent
+the observed waits. A source-only audit finds 317 use_root_sync occurrences
+in 47 files; a complete synchronization/resource audit remains necessary.
+
+The [chunk-label correction](expanded-fp16-cache-model-20261007/prefill-2048-chunk-label-correction.json)
+fixes earlier two-chunk prose: the 2048 input uses 256/1024/767 prefill chunks
+plus one input token in decode. The frozen prior successful trace contains
+144 layer/chunk entries. Test conditions and measured times are unchanged;
+prior archive manifests are preserved.
