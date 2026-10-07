@@ -438,3 +438,24 @@ complete synchronization proof. Review each function before changing launch
 properties, especially persistent/global kernels in verify_kernels.dp.cpp.
 No production property change is adopted and full-model/256K gates remain
 incomplete.
+
+
+### Observed ordinary-launch model candidate
+
+[Integrated 44-property check and zero-flag stall](observed-regular-launch-model-20261007/README.md)
+records a private build with only 44 reviewed cooperative declarations changed
+across eight files. Four short normal-MTP requests match every frozen head
+byte, ID and logprob, complete six release/restore pairs and exit normally.
+The subsequent 2K repeat suite stops on its first request at layer 40/token256;
+the watchdog aborts after a 60-second completion wait. Both owners are gone
+and fresh logged GPU health passes on the same boot without reset.
+
+The failed traced interval contains 258,136 successful kernel enqueue
+associations with zero cooperative UR flags. Submission success does not
+prove device completion, and enqueue accounting is not a blanket audit of
+every recorded command-buffer operation. Removing those flags is insufficient
+to prevent this wait. A separate no-launch query finds four of seven remaining
+short-path cooperative combinations above measured limits; those other paths
+still need correction. The controller retaining main/MTP decode backing and
+graphs is prepared but unexecuted. No property candidate is adopted, no clean
+speed result is claimed and all full-capacity gates remain incomplete.

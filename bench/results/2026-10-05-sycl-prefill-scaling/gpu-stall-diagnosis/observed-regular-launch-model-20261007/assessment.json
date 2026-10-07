@@ -1,0 +1,51 @@
+{
+  "scope": "Private44-property integrated correctness and terminal stall records; no adoption, speed or full capacity claim",
+  "recorded_utc": "2026-10-07T13:06:27.094178+00:00",
+  "binary_sha256": "33bef89feb49a97c152c114c48dd002612215e9b44000f334891b24a3804237b",
+  "production_inputs_unchanged": true,
+  "changed_sources": 8,
+  "removed_property_declarations": 44,
+  "reviewed_kernel_classes": 41,
+  "short": {
+    "requests": 4,
+    "all_heads_IDs_logprobs_equal": true,
+    "release_pairs": {
+      "release": 6,
+      "restore": 6
+    },
+    "normal_exit": true,
+    "new_xe_faults": false
+  },
+  "long": {
+    "requests_completed": 0,
+    "stage": "layer40/token256",
+    "last_completed_phase": "dequant",
+    "last_phase_mark": 170571,
+    "watchdog_seconds": 60,
+    "stop": "SIGABRT",
+    "owned_cleanup": {
+      "forced": true,
+      "inferior_survived": false,
+      "gdb_survived": false
+    },
+    "new_xe_faults": false,
+    "observed_successful_UR_kernel_enqueues": 258136,
+    "observed_cooperative_UR_kernel_enqueues": 0
+  },
+  "post_cleanup_logged_health_pass": true,
+  "remaining_short_cooperative_query": {
+    "queried": 7,
+    "exceed_zero_dynamic_local_bound": 4,
+    "kernels_submitted": 0
+  },
+  "inference": "The traced long path stalls despite zero observed cooperative UR kernel enqueues. Incorrect cooperative settings are independently measured in other paths, but removing them is insufficient to prevent this wait. Cache/recorded-graph lifetime, queue/runtime completion and source/consumer ownership remain open.",
+  "next_control": {
+    "controller": "sources-used/run_owned_observed_regular_launch_2048_retained.py",
+    "scope": "Same privatebinary and longpath settings exceptmain/MTP release disabled; two repeated2048inputs, strict frozen head/IDs/LP and zero MTP release/restores required",
+    "GPU_executed": false
+  },
+  "source_rewrite_adopted": false,
+  "all262144_cell_suite_passed": false,
+  "clean_speed_measured": false,
+  "manual_reset_rebind_reboot_service_or_package_change": false
+}

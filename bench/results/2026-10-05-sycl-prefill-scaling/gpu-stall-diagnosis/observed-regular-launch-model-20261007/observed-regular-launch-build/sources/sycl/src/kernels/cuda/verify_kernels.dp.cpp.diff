@@ -1,0 +1,11 @@
+--- sycl/src/kernels/cuda/verify_kernels.dp.cpp
++++ sycl/src/kernels/cuda/verify_kernels.dp.cpp.regular
+@@ -673,7 +673,7 @@
+     } else if (row_bytes % 4 == 0)
+     {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         s->submit([&](sycl::handler &cgh) {
+             long long row_bytes_ct1 = row_bytes / 4;
