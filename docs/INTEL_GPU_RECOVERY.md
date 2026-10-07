@@ -121,6 +121,14 @@ Prefill's chunk-start trace also identifies its zero-based layer range,
 `[begin, end)`, so repeated positions in layer-major processing are distinguishable.
 These start messages do not establish completed token processing.
 
+After the exact executable passes its short detailed check, a long capacity
+diagnostic can further reduce logging to
+`ZEL_LOADER_LOGGING_LEVEL=warn`, with parameter validation and
+`STRATA_TRACE=1` retained, and UR loggers set to warning without the additional
+UR tracing layer. Save the exact environment and elapsed time. This profile
+does not retain every API entry; an owned debugger can inspect a stopped
+submission. Validation and the debugger still affect timing.
+
 For a wait that needs a CPU backtrace, `sycl/tools/owned_gdb.py` starts a new
 diagnostic process as GDB's child. It can capture all threads and resume its
 own requested interrupt without root or a change to the host's ptrace policy.
@@ -138,6 +146,13 @@ GDB/MI and protocol replies. The
 cover a 1,260,008-byte request, exact replies, stack capture/resume and bounded
 cleanup. These checks establish transport and process ownership, not GPU
 serving correctness.
+
+The [real model PTY check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/layer-trace-20261007/README.md)
+then completed four normal-MTP requests with the layer-range trace executable.
+All output IDs, printed logprobs and complete finite heads matched the preceding
+released-weight control. Six release/restore pairs and a normal exit were
+recorded, with no new xe faults or surviving processes. This establishes the
+short real-model diagnostic path; full-context correctness remains pending.
 
 The [2026-10-07 logging check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/runtime-tracing-20261007/README.md)
 confirmed Level Zero entry/results and UR traces before the child exited,
