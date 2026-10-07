@@ -1,0 +1,38 @@
+{
+  "scope": "Same private44-property executable and longpath settings, with both main/MTP prefill leases disabled; first of two2048 requests stalls; no adoption, performance or fullcapacity result",
+  "recorded_utc": "2026-10-07T13:33:28.858755+00:00",
+  "binary_sha256": "33bef89feb49a97c152c114c48dd002612215e9b44000f334891b24a3804237b",
+  "release_main": false,
+  "release_MTP": false,
+  "completed_requests": 0,
+  "stop_layer": 17,
+  "stop_chunk_token": 256,
+  "last_completed_phase": "dequant",
+  "last_phase_mark": 71177,
+  "watchdog_no_progress_seconds": 60,
+  "stop": "SIGABRT",
+  "successful_native_UR_enqueue_associations": 107755,
+  "observed_cooperative_flags": 0,
+  "new_xe_faults": false,
+  "owned_cleanup": {
+    "forced": true,
+    "inferior_survived": false,
+    "gdb_survived": false
+  },
+  "post_cleanup_logged_health_passed": true,
+  "inference": "Neither cooperative enqueue flags nor main/MTP prefill retirement is necessary for this wait. The verifier release message only polls verifier queues; it does not establish completion of the distinct prefill queue.",
+  "release_message_source": {
+    "path": "sycl/src/core/verify.cpp",
+    "sha256": "238f2203119b40bee66bd367a35be14986a9ea40f04520ac9aadaa0f05b405fc",
+    "function": "Verifier::release_gpu_waits",
+    "queue_predicate": "ext_oneapi_empty()",
+    "queues": [
+      "cs_",
+      "copy_"
+    ]
+  },
+  "API_success_proves_device_completion": false,
+  "all262144_cell_suite_passed": false,
+  "production_changed": false,
+  "reset_rebind_reboot_service_package_or_global_changes": false
+}

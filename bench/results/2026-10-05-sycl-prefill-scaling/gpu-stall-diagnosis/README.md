@@ -1,5 +1,14 @@
 # Arc B570 failure investigation, updated 2026-10-07
 
+The [retained-backing comparison](observed-regular-launch-retained-20261007/README.md)
+also stops on the first 2048-token request, at layer 17/token 256, with both
+main/MTP prefill release flags disabled. Its trace has 107,755 successful
+native/UR enqueue associations and zero cooperative flags. No new xe fault
+is recorded; owned cleanup and a fresh logged GPU health check pass on the
+same boot. This rules out prefill retirement as a necessary condition for
+that wait, without identifying the failing resource. The verify-window
+shutdown message polls different queues and does not prove prefill completion.
+
 After an external reboot, the current lifetime fixes execute four normal-MTP
 processes and all 16 requests with ordinary exits and no new xe faults,
 with direct submission disabled. Both retained-weight controls pass exact
