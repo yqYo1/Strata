@@ -374,3 +374,17 @@ bytes; seven total MTP release/restore pairs complete. Both updated-binary
 GPU jobs exit normally with no new xe fault. CUDA-only fused/padded modes
 remain unavailable in SYCL. These checks do not resolve the existing full
 262144-cell failures or establish clean throughput.
+
+
+### Integrated dequant property check after upstream refresh
+
+[Model parity and paired timing](dequant-model-refresh-20261007/README.md)
+uses a private candidate changing only two dequant use_root_sync property
+lists. Four logged normal-MTP requests match all IDs/logprobs/head bytes;
+six release/restore pairs complete. With API logging/validation disabled and
+original phase waits/progress retained, the 2048-token/two-chunk control and
+candidate take 35.8242 and 35.6255 seconds for the prompt. Both complete
+normally, match all output values and record no new xe fault. One sample
+per side and a 0.555% time difference do not establish a repeatable speed
+improvement. Production kernel properties are unchanged; full256K gates
+remain incomplete and the candidate is not adopted.
