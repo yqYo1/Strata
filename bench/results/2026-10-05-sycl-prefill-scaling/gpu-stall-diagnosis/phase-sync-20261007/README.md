@@ -30,8 +30,10 @@ chunk wait and why the coarser step-sync setting does not cover this case.
 The diagnostic lasted 179.14 seconds. This is output-parity and log-delivery
 evidence, not clean throughput or stall prevention. The configuration needs
 its own full-cell CLI and normal-MTP serving gates. A separate long serving
-diagnostic uses warning/validation/progress logging plus the same phase
-waits after this detailed short check; its result is not established here.
+diagnostic used warning/validation/progress logging plus the same phase
+waits after this detailed short check. Its
+[result](../phase-sync-capacity-20261007/README.md) reached the end of prefill
+but failed during decode-weight restoration; full capacity remains unproven.
 
 `sources-used/` preserves the exact helper, engine source and controllers.
 `sources.json` and `manifest.json` preserve source and receipt digests.

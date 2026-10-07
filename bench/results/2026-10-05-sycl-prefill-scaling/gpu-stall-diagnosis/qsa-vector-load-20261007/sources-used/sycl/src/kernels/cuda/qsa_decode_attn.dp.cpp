@@ -55,11 +55,8 @@ __dpct_inline__ float warp_max(float v) {
 __dpct_inline__ void load8_f16(const QsaAttnPools &p, bool value, long long row,
                                int d0, float *out) {
     const uint16_t* base = (value ? p.v_pool : p.k_pool) + row * HD + d0;
-    sycl::vec<uint16_t, 8> bits;
-    bits.load(0, base);
-    const sycl::half8 halves = bits.as<sycl::half8>();
-    const sycl::half2 h2[] = {halves.template swizzle<0, 1>(), halves.template swizzle<2, 3>(),
-                             halves.template swizzle<4, 5>(), halves.template swizzle<6, 7>()};
+    const sycl::uint4 raw = *reinterpret_cast<const sycl::uint4 *>(base);
+    const sycl::half2 *h2 = reinterpret_cast<const sycl::half2 *>(&raw);
 #pragma unroll
     for (int j = 0; j < 4; ++j) {
         const sycl::float2 f =
@@ -75,8 +72,8 @@ __dpct_inline__ void load8_q8(const QsaAttnPools &p, bool value, long long row,
     const float sc = sycl::vec<sycl::half, 1>(
                          sycl::bit_cast<sycl::half, unsigned short>(sbits))
                          .convert<float, sycl::rounding_mode::automatic>()[0];
-    sycl::vec<int8_t, 8> c;
-    c.load(0, codes);
+    const sycl::uint2 raw = *reinterpret_cast<const sycl::uint2 *>(codes);
+    const int8_t* c = reinterpret_cast<const int8_t*>(&raw);
 #pragma unroll
     for (int j = 0; j < 8; ++j) out[j] = (float) c[j] * sc;
 }

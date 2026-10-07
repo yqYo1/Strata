@@ -241,6 +241,30 @@ full API logging and parameter checks, without new xe faults or surviving
 children. These marks name the next phase after waiting for earlier work;
 they do not establish completion of that next phase's later kernels.
 
+The subsequent [full-prefill phase diagnostic](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/phase-sync-capacity-20261007/README.md)
+processed all 262,139 prefill tokens through all 48 layers. It then failed
+allocating an 8 MiB physical segment when restoring MTP decode weights,
+after verifier graph recapture. The main-thread stack records the lease's
+restoration-failure `std::terminate`, not a completion wait. No requested
+pause preceded the abort and no new xe fault/reset was recorded. Both owned
+children were removed; the logged three-round GPU probe passed without
+reset. This exposes a full-context restoration failure: no generated token,
+complete head or capacity refusal case was verified in that run. Its
+2,680.60 seconds and 20,839,201 synchronization marks are diagnostic data,
+not throughput or general stall prevention.
+
+The [typed K/V vector-load check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/qsa-vector-load-20261007/README.md)
+removes unrelated vector-pointer reads from the FP16 and INT8 eight-value
+helpers. SYCL `vec::load` reads through the element type; `vec::as` provides
+the defined bit conversion before the same pairwise half-to-float conversions.
+CPU and B570 fixtures each passed 6,291,456 comparisons against the original
+helpers and an independent IEEE binary16 reference. Four real normal-MTP
+requests also matched complete finite heads, IDs and logprobs, with six
+verified release/restore pairs, normal exit and no new xe fault/reset.
+This covers those helpers and short output parity. It does not establish
+their involvement in a hang, clean throughput, other attention casts or the
+new candidate's full-context gates.
+
 The [2026-10-07 logging check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/runtime-tracing-20261007/README.md)
 confirmed Level Zero entry/results and UR traces before the child exited,
 using driver/adapter enumeration without submitting GPU commands. The 48
