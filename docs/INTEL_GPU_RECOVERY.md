@@ -297,6 +297,17 @@ remained enabled. These profiles do not establish clean throughput or the
 earlier hang's cause; the profiler itself increased that single prompt time
 by 30.0%.
 
+The [dequant launch-property preparation](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/dequant-launch-properties-20261007/README.md)
+uses that profile to prepare a private comparison with only the flat/GU
+dequant wrappers' `use_root_sync` declarations removed. Their kernel bodies
+use no root-group synchronization; earlier API logs show cooperative launches.
+CPU compile/link passed with unchanged production inputs and only one archive
+member replaced. A shared host fixture was also linked against the original
+and changed kernel objects for 144 guarded whole-FP16-output cases per binary.
+Neither new executable has run on the GPU. The older work-group probe changed
+other wrapper details, so its times do not isolate this property. A stall
+cause, speed gain and full-context correctness remain unproven.
+
 The subsequent [expert-phase pacing checks](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/expert-phase-pacing-20261007/README.md)
 reduced short-input printed phase completion waits from 73,692 to 9,665
 while preserving four complete heads. A quiet 2K repeated-input check with

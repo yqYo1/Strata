@@ -1,0 +1,22 @@
+--- iq_kernels.original.dp.cpp
++++ iq_kernels.dp.cpp
+@@ -2354,8 +2354,7 @@
+     if (n % 256 != 0 || !is_iq(t)) { std::fprintf(stderr, "iq_dequant_f16: bad arguments\n"); std::exit(1); }
+     {
+ 
+-        auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++        auto exp_props = sycl::ext::oneapi::experimental::properties{};
+         dpct::has_capability_or_fail(
+             strata::q_of(stream)->get_device(),
+             {sycl::aspect::fp16});
+@@ -2454,8 +2453,7 @@
+     const int64_t per_row = n_embd / 256;
+     {
+ 
+-        auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++        auto exp_props = sycl::ext::oneapi::experimental::properties{};
+         dpct::has_capability_or_fail(
+             strata::q_of(stream)->get_device(),
+             {sycl::aspect::fp16});

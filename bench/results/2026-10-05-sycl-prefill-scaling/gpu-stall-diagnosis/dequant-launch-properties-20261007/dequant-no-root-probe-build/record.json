@@ -1,0 +1,99 @@
+{
+  "scope": "Offline construction of actual-wrapper FP16-byte/guard fixtures: shared host object, original versus property-only kernel object. No GPU execution or parity result.",
+  "passed": true,
+  "gpu_tested": false,
+  "started_utc": "2026-10-07T07:26:50.582777+00:00",
+  "controller_sha256": "59add713fbee2460a71697874c1d93a0f034696465e1dbc1d3282cb549e5b39d",
+  "source_sha256": "f4e3825297bd1a791bba4bea44884692d803a4c3fd19fb104dcc54aa692da769",
+  "original_kernel_object_sha256": "12523ae0ff6b42b0a8a28d4b783e60f192a185edd7322932e3eb5aa40d471f16",
+  "candidate_kernel_object_sha256": "7fd60ed9d64cf845956d4b1ca016bfd322fcf548a0ed87d0a7aad4ed96ac2204",
+  "steps": [
+    {
+      "label": "compile",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../third_party/ggml",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-Wall",
+        "-Wextra",
+        "-MD",
+        "-MT",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-no-root-probe-build/probe.cpp.o",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-no-root-probe-build/probe.cpp.o.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-no-root-probe-build/probe.cpp.o",
+        "-c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant_actual_wrapper_probe.cpp"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 4.62354126900027
+    },
+    {
+      "label": "link-original",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-O3",
+        "-DNDEBUG",
+        "-fsycl",
+        "-Xsycl-target-backend=spir64",
+        "-cl-fp32-correctly-rounded-divide-sqrt",
+        "-fsycl-device-code-split=per_kernel",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-no-root-probe-build/probe.cpp.o",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-jit/CMakeFiles/strata_kernels.dir/src/kernels/cuda/iq_kernels.dp.cpp.o",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-no-root-probe-build/dequant-original"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 2.3176663890044438
+    },
+    {
+      "label": "link-candidate",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-O3",
+        "-DNDEBUG",
+        "-fsycl",
+        "-Xsycl-target-backend=spir64",
+        "-cl-fp32-correctly-rounded-divide-sqrt",
+        "-fsycl-device-code-split=per_kernel",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-no-root-probe-build/probe.cpp.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-no-root-build/iq_kernels.dp.cpp.o",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-no-root-probe-build/dequant-candidate"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 2.1676600849968963
+    }
+  ],
+  "probe_object_sha256": "41ea41fdf2f07d1b12f0b83af9d30743ba69fba7a506cb2e629f6ac4649f925e",
+  "binaries": {
+    "original": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-no-root-probe-build/dequant-original",
+      "sha256": "a7725e2c53bca8c2aa5840adcfcee32300f24400075896fd53be2fbb7b749c71",
+      "kernel_object_sha256": "12523ae0ff6b42b0a8a28d4b783e60f192a185edd7322932e3eb5aa40d471f16",
+      "probe_object_sha256": "41ea41fdf2f07d1b12f0b83af9d30743ba69fba7a506cb2e629f6ac4649f925e"
+    },
+    "candidate": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-no-root-probe-build/dequant-candidate",
+      "sha256": "1bd31d511eca555ed7bfabb10f1d2492d6ac6bf8e6144f78a1c9ff1c2a1ff652",
+      "kernel_object_sha256": "7fd60ed9d64cf845956d4b1ca016bfd322fcf548a0ed87d0a7aad4ed96ac2204",
+      "probe_object_sha256": "41ea41fdf2f07d1b12f0b83af9d30743ba69fba7a506cb2e629f6ac4649f925e"
+    }
+  },
+  "inputs_unchanged": true,
+  "elapsed_seconds": 9.13362610799959,
+  "finished_utc": "2026-10-07T07:26:59.730690+00:00"
+}
