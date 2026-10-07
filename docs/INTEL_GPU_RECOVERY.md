@@ -304,9 +304,13 @@ use no root-group synchronization; earlier API logs show cooperative launches.
 CPU compile/link passed with unchanged production inputs and only one archive
 member replaced. A shared host fixture was also linked against the original
 and changed kernel objects for 144 guarded whole-FP16-output cases per binary.
-Neither new executable has run on the GPU. The older work-group probe changed
+The subsequent [actual-wrapper check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/dequant-actual-wrappers-20261007/README.md)
+passes all 144 whole-output comparisons with intact guards and finite values.
+Both processes exit normally without new xe faults; API logs show 144
+cooperative launches in the original and zero in the changed wrappers.
+The private engine has not run a model. The older work-group probe changed
 other wrapper details, so its times do not isolate this property. A stall
-cause, speed gain and full-context correctness remain unproven.
+cause, clean speed gain and full-model correctness remain unproven.
 
 The subsequent [expert-phase pacing checks](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/expert-phase-pacing-20261007/README.md)
 reduced short-input printed phase completion waits from 73,692 to 9,665
@@ -328,7 +332,19 @@ logprobs and the complete finite head matched an unchanged-binary eager
 verifier control at identical settings. Both exited normally without new
 xe faults or a reset. This exercises restoration at the full KV allocation
 size, but does not validate full context occupancy or clean throughput;
-the candidate remains private while the full-occupancy gates run.
+the candidate remains private.
+
+The [completed lazy full-context attempt](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/verifier-lazy-full-20261007/README.md)
+then generates four finite outputs from 262,140 input tokens and executes
+through KV cell 262143. Its second prefill fails before the temporary layer
+allocation checkpoint, then aborts while restoring a 64 MiB main-cache
+physical segment. After main/MTP release, only 1,244,880,896 bytes are free,
+less than the preceding successful layer allocation's 1,363,152,896 bytes.
+The earlier return error is obscured by destructor restoration failure;
+the specific retained allocation is not identified. Owned cleanup and the
+logged GPU health probe pass without a reset or new xe faults. The clipped
+tail, refusal and later-valid gates remain incomplete; lazy capture alone
+does not satisfy the full suite.
 
 The [2026-10-07 logging check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/runtime-tracing-20261007/README.md)
 confirmed Level Zero entry/results and UR traces before the child exited,
