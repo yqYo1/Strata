@@ -55,3 +55,12 @@ of larger contexts, repeated/restored conversations, cache release/recreation,
 the unresolved earlier process waits, or the PP1000/TG70 target. Full262144-cell
 normal-MTP gates remain open. Short37-token preflight timings remain excluded
 from performance comparisons.
+
+
+Later32K state/head follow-up localizes an output discrepancy to the prefill
+state, before the first verifier window. An identical head job records a CCS
+reset; a rejected private event-ack candidate stops without a new xe fault.
+Both are cleaned up and subsequent same-boot logged GPU health passes. Disabling
+implicit counter-event conversion permits two completed32K state captures but
+does not make their states/outputs equal. The equality gate prevents clean timing
+jobs from launching. See [full records and limits](repro32k/README.md).

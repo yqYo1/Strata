@@ -1,0 +1,30 @@
+{
+  "installed_neo_version": "26.31.39395.14",
+  "files": {
+    "cmdlist_hw.inl": {
+      "bytes": 284079,
+      "sha256": "dd4fe4eb2fd0bd9c11aa89b75eb6c365b0cc3b83048b6c259b26ccdb8d4a5035"
+    },
+    "debug_variables_base.inl": {
+      "bytes": 114739,
+      "sha256": "09fec54522d21452c436d12085e22bee56ae15fdf086236aadaa0a287c20f0bf"
+    },
+    "event.cpp": {
+      "bytes": 57306,
+      "sha256": "daa5fdf2bf983bff47d3bf9afc3fbe9396fdea9c8c4de98ba9c6a9382d7acda9"
+    },
+    "event_impl.inl": {
+      "bytes": 63227,
+      "sha256": "b1120e8063a9013c44fa752a50826d19a9929990b12687bea166ceb94a7c7023"
+    }
+  },
+  "source_urls": {
+    "event_impl.inl": "https://github.com/intel/compute-runtime/blob/26.31.39395.14/level_zero/core/source/event/event_impl.inl",
+    "event.cpp": "https://github.com/intel/compute-runtime/blob/26.31.39395.14/level_zero/core/source/event/event.cpp",
+    "cmdlist_hw.inl": "https://github.com/intel/compute-runtime/blob/26.31.39395.14/level_zero/core/source/cmdlist/cmdlist_hw.inl",
+    "debug_variables_base.inl": "https://github.com/intel/compute-runtime/blob/26.31.39395.14/shared/source/debug_settings/debug_variables_base.inl"
+  },
+  "observed": "Old fork stopped at prefill.cpp4823 compute queue barrier with a DispatchHostTask waiting for a native event. Private event candidate stopped waiting for CPU ring readiness while three workers queried actual DMA events in queryCounterBasedEventStatus -> synchronizeTimestampCompletionWithTimeout -> assignKernelEventCompletionData. Both traces localize to profiling counter event completion; this alone does not prove the event operation causes all stalls or output mismatch.",
+  "discarded_inference": "Unflushed deferred regular command lists were considered, but the private candidate trace creates immediate command lists and records append SUCCESS. Do not claim unsent batches from SUBMITTED alone.",
+  "experimental_control": "Same production binary, all existing timing/queue properties retained; process-local NEOReadDebugKeys1 and EnableImplicitConvertionToCounterBasedEvents0. The exact installed-source handleCounterBasedEventOperations honors this flag for regular signal events; explicit counter-based events are not disabled by it. No permanent runtime setting or package changes."
+}

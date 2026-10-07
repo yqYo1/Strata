@@ -1,0 +1,986 @@
+
+Thread 84 (Thread 0x7ff3b9ffd6c0 (LWP 844756) "strata"):
+#0  0x00007fec5dc01745 in L0::EventImp<unsigned long>::assignKernelEventCompletionData (this=this@entry=0x611bcd0, address=<optimized out>) at /usr/src/intel-compute-runtime-26.31.39395.14-1~24.04~ppa1/level_zero/core/source/event/event_impl.inl:280
+#1  0x00007fec5dc0df33 in L0::EventImp<unsigned long>::hostSynchronize (this=0x611bcd0, timeout=<optimized out>) at /usr/src/intel-compute-runtime-26.31.39395.14-1~24.04~ppa1/level_zero/core/source/event/event_impl.inl:1004
+#2  0x00007fec6169d0da in ur::level_zero::urEventWait(unsigned int, ur_event_handle_t_* const*) () from /opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0
+#3  0x00007fffdbc90607 in urEventWait () from /opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0
+#4  0x00007fffdca1e606 in sycl::_V1::detail::DispatchHostTask::waitForEvents() const () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#5  0x00007fffdca1d0fe in sycl::_V1::detail::DispatchHostTask::operator()() const () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#6  0x00007fffdc93b6e0 in sycl::_V1::detail::ThreadPool::worker() () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#7  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#8  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#9  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 82 (Thread 0x7ff3bafff6c0 (LWP 844738) "strata"):
+#0  __pthread_kill_implementation (no_tid=0, signo=6, threadid=<optimized out>) at ./nptl/pthread_kill.c:44
+#1  __pthread_kill_internal (signo=6, threadid=<optimized out>) at ./nptl/pthread_kill.c:78
+#2  __GI___pthread_kill (threadid=<optimized out>, signo=signo@entry=6) at ./nptl/pthread_kill.c:89
+#3  0x00007fffdc54127e in __GI_raise (sig=sig@entry=6) at ../sysdeps/posix/raise.c:26
+#4  0x00007fffdc5248ff in __GI_abort () at ./stdlib/abort.c:79
+#5  0x0000000000486f98 in std::thread::_State_impl<std::thread::_Invoker<std::tuple<main::{lambda(std::stop_token)#1}, std::stop_token> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 81 (Thread 0x7ff3d89fc6c0 (LWP 844737) "strata"):
+#0  0x00007fffdc61779d in __GI___poll (fds=0x7ff3d89f01f0, nfds=1, timeout=100) at ../sysdeps/unix/sysv/linux/poll.c:29
+#1  0x00000000004a9132 in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::ServeInput::ServeInput(int)::{lambda(std::stop_token)#1}, std::stop_token> > >::_M_run() ()
+#2  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#3  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#4  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 80 (Thread 0x7ff3da3fd6c0 (LWP 844735) "strata"):
+#0  0x00007fffdc60a90b in __GI_sched_yield () at ../sysdeps/unix/syscall-template.S:120
+#1  0x00000000005b3f15 in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::prefill::Stager::init(unsigned long, int)::{lambda()#2}> > >::_M_run() ()
+#2  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#3  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#4  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 79 (Thread 0x7ff3dabfe6c0 (LWP 844734) "strata"):
+#0  0x00007fffdc60a90b in __GI_sched_yield () at ../sysdeps/unix/syscall-template.S:120
+#1  0x00000000005b3f15 in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::prefill::Stager::init(unsigned long, int)::{lambda()#2}> > >::_M_run() ()
+#2  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#3  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#4  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 78 (Thread 0x7ff3db3ff6c0 (LWP 844733) "strata"):
+#0  0x00007fffdc60a90b in __GI_sched_yield () at ../sysdeps/unix/syscall-template.S:120
+#1  0x00000000005b3f15 in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::prefill::Stager::init(unsigned long, int)::{lambda()#2}> > >::_M_run() ()
+#2  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#3  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#4  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 77 (Thread 0x7fffd8e096c0 (LWP 844731) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x7fffffffca58) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x7fffffffca58) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7fffffffca58, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x7fffffffca08, cond=0x7fffffffca30) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x7fffffffca30, mutex=0x7fffffffca08) at ./nptl/pthread_cond_wait.c:627
+#5  0x000000000078eff0 in strata::kernels::cpu::ExpertPool::worker(int) ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 76 (Thread 0x7fffaf4226c0 (LWP 844730) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x7fffffffca58) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x7fffffffca58) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7fffffffca58, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x7fffffffca08, cond=0x7fffffffca30) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x7fffffffca30, mutex=0x7fffffffca08) at ./nptl/pthread_cond_wait.c:627
+#5  0x000000000078eff0 in strata::kernels::cpu::ExpertPool::worker(int) ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 75 (Thread 0x7fffae28e6c0 (LWP 844729) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x7fffffffca58) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x7fffffffca58) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7fffffffca58, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x7fffffffca08, cond=0x7fffffffca30) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x7fffffffca30, mutex=0x7fffffffca08) at ./nptl/pthread_cond_wait.c:627
+#5  0x000000000078eff0 in strata::kernels::cpu::ExpertPool::worker(int) ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 74 (Thread 0x7fffad28a6c0 (LWP 844728) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x7fffffffca58) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x7fffffffca58) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7fffffffca58, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x7fffffffca08, cond=0x7fffffffca30) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x7fffffffca30, mutex=0x7fffffffca08) at ./nptl/pthread_cond_wait.c:627
+#5  0x000000000078eff0 in strata::kernels::cpu::ExpertPool::worker(int) ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 73 (Thread 0x7fffac2866c0 (LWP 844727) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x7fffffffca58) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x7fffffffca58) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7fffffffca58, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x7fffffffca08, cond=0x7fffffffca30) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x7fffffffca30, mutex=0x7fffffffca08) at ./nptl/pthread_cond_wait.c:627
+#5  0x000000000078eff0 in strata::kernels::cpu::ExpertPool::worker(int) ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 67 (Thread 0x7fffb06d46c0 (LWP 843777) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=78974756, cancel=true, abstime=0x7fffb06c8e30, op=137, expected=0, futex_word=0x4b17c70) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=78974756, abstime=0x7fffb06c8e30, clockid=0, expected=0, futex_word=0x4b17c70) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b17c70, expected=expected@entry=0, clockid=clockid@entry=1, abstime=abstime@entry=0x7fffb06c8e30, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5981f6 in __pthread_cond_wait_common (abstime=<optimized out>, clockid=<optimized out>, mutex=0x4b17c20, cond=0x4b17c48) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_clockwait64 (abstime=<optimized out>, clockid=<optimized out>, mutex=0x4b17c20, cond=0x4b17c48) at ./nptl/pthread_cond_wait.c:691
+#5  ___pthread_cond_clockwait64 (cond=0x4b17c48, mutex=0x4b17c20, clockid=<optimized out>, abstime=<optimized out>) at ./nptl/pthread_cond_wait.c:679
+#6  0x000000000075dff0 in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::ngram::PleReader::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, unsigned long, unsigned long, unsigned int, unsigned long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, bool, unsigned int)::{lambda()#1}> > >::_M_run() ()
+#7  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#8  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#9  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 66 (Thread 0x7fffb6ed96c0 (LWP 843775) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 65 (Thread 0x7fffb76da6c0 (LWP 843774) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 64 (Thread 0x7fffb7edb6c0 (LWP 843773) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 63 (Thread 0x7fffb86dc6c0 (LWP 843772) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef4, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 62 (Thread 0x7fffb8edd6c0 (LWP 843771) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 61 (Thread 0x7fffb96de6c0 (LWP 843770) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef4, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 60 (Thread 0x7fffb9edf6c0 (LWP 843769) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef4, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 59 (Thread 0x7fffba6e06c0 (LWP 843768) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 58 (Thread 0x7fffbaee16c0 (LWP 843767) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 57 (Thread 0x7fffbb6e26c0 (LWP 843766) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 56 (Thread 0x7fffbbee36c0 (LWP 843765) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 55 (Thread 0x7fffbc6e46c0 (LWP 843764) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 54 (Thread 0x7fffbcee56c0 (LWP 843763) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 53 (Thread 0x7fffbd6e66c0 (LWP 843762) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef4, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 52 (Thread 0x7fffbdee76c0 (LWP 843761) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 51 (Thread 0x7fffbe6e86c0 (LWP 843760) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 50 (Thread 0x7fffbeee96c0 (LWP 843759) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 49 (Thread 0x7fffbf6ea6c0 (LWP 843758) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 48 (Thread 0x7fffbfeeb6c0 (LWP 843757) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 47 (Thread 0x7fffc06ec6c0 (LWP 843756) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 46 (Thread 0x7fffc0eed6c0 (LWP 843755) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 45 (Thread 0x7fffc16ee6c0 (LWP 843754) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 44 (Thread 0x7fffc1eef6c0 (LWP 843753) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 43 (Thread 0x7fffc26f06c0 (LWP 843752) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 42 (Thread 0x7fffc2ef16c0 (LWP 843751) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef4, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 41 (Thread 0x7fffc36f26c0 (LWP 843750) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 40 (Thread 0x7fffc3ef36c0 (LWP 843749) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 39 (Thread 0x7fffc46f46c0 (LWP 843748) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 38 (Thread 0x7fffc4ef56c0 (LWP 843747) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 37 (Thread 0x7fffc56f66c0 (LWP 843746) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 36 (Thread 0x7fffc5ef76c0 (LWP 843745) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef4, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 35 (Thread 0x7fffc66f86c0 (LWP 843744) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 34 (Thread 0x7fffc6ef96c0 (LWP 843743) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 33 (Thread 0x7fffc76fa6c0 (LWP 843742) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 32 (Thread 0x7fffc7efb6c0 (LWP 843741) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 31 (Thread 0x7fffc86fc6c0 (LWP 843740) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 30 (Thread 0x7fffc8efd6c0 (LWP 843739) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 29 (Thread 0x7fffc96fe6c0 (LWP 843738) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 28 (Thread 0x7fffc9eff6c0 (LWP 843737) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 27 (Thread 0x7fffca7006c0 (LWP 843736) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 26 (Thread 0x7fffcaf016c0 (LWP 843735) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 25 (Thread 0x7fffcb7026c0 (LWP 843734) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 24 (Thread 0x7fffcbf036c0 (LWP 843733) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef4, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 23 (Thread 0x7fffcc7046c0 (LWP 843732) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 22 (Thread 0x7fffccf056c0 (LWP 843731) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 21 (Thread 0x7fffcd7066c0 (LWP 843730) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 20 (Thread 0x7fffcdf076c0 (LWP 843729) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 19 (Thread 0x7fffce7086c0 (LWP 843728) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 18 (Thread 0x7fffcef096c0 (LWP 843727) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef4, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 17 (Thread 0x7fffcf70a6c0 (LWP 843726) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 16 (Thread 0x7fffcff0b6c0 (LWP 843725) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 15 (Thread 0x7fffd070c6c0 (LWP 843724) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef4, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 14 (Thread 0x7fffd0f0d6c0 (LWP 843723) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 13 (Thread 0x7fffd170e6c0 (LWP 843722) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 12 (Thread 0x7fffd1f0f6c0 (LWP 843721) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 11 (Thread 0x7fffd27106c0 (LWP 843720) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 10 (Thread 0x7fffd2f116c0 (LWP 843719) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef4, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 9 (Thread 0x7fffd37126c0 (LWP 843718) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef4, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 8 (Thread 0x7fffd3f136c0 (LWP 843717) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef4, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 7 (Thread 0x7fffd47146c0 (LWP 843716) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 6 (Thread 0x7fffd4f156c0 (LWP 843715) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef4) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef4, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 5 (Thread 0x7fffd57166c0 (LWP 843714) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 4 (Thread 0x7fffd5f176c0 (LWP 843713) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 3 (Thread 0x7fffd67186c0 (LWP 843712) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x4b50ef0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x4b50ef0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x4b50ea0, cond=0x4b50ec8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x4b50ec8, mutex=0x4b50ea0) at ./nptl/pthread_cond_wait.c:627
+#5  0x0000000000760f8b in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::platform::DirectFile::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda()#1}> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 2 (Thread 0x7fffd73196c0 (LWP 843692) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x48f9c28) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x48f9c28) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x48f9c28, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x48f9bd8, cond=0x48f9c00) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x48f9c00, mutex=0x48f9bd8) at ./nptl/pthread_cond_wait.c:627
+#5  0x00007fec5e119f0e in std::condition_variable::wait<NEO::UnifiedMemoryReuseCleaner::wait(std::unique_lock<std::mutex>&)::{lambda()#1}>(std::unique_lock<std::mutex>&, NEO::UnifiedMemoryReuseCleaner::wait(std::unique_lock<std::mutex>&)::{lambda()#1}) (__p=..., __lock=..., this=0x48f9c00) at /usr/include/c++/13/condition_variable:105
+#6  NEO::UnifiedMemoryReuseCleaner::wait (lock=..., this=0x48f9b80) at /usr/src/intel-compute-runtime-26.31.39395.14-1~24.04~ppa1/shared/source/memory_manager/unified_memory_reuse_cleaner.h:39
+#7  NEO::UnifiedMemoryReuseCleaner::cleanUnifiedMemoryReuse (self=<optimized out>) at /usr/src/intel-compute-runtime-26.31.39395.14-1~24.04~ppa1/shared/source/memory_manager/unified_memory_reuse_cleaner.cpp:41
+#8  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#9  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 1 (Thread 0x7fffd99a9380 (LWP 843418) "strata"):
+#0  0x00007fffdc594e51 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x64e1738) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x64e1738) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x64e1738, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffdc5978cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x64e16e8, cond=0x64e1710) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x64e1710, mutex=0x64e16e8) at ./nptl/pthread_cond_wait.c:627
+#5  0x00007fffdcbe8047 in std::condition_variable::wait(std::unique_lock<std::mutex>&) () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#6  0x00007fffdc93247d in sycl::_V1::detail::event_impl::waitInternal(bool*) () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#7  0x00007fffdca15a9c in sycl::_V1::detail::ExecCGCommand::enqueueImpQueue() () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#8  0x00007fffdca06c90 in sycl::_V1::detail::Command::enqueue(sycl::_V1::detail::EnqueueResultT&, sycl::_V1::detail::BlockingT, std::vector<sycl::_V1::detail::Command*, std::allocator<sycl::_V1::detail::Command*> >&) () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#9  0x00007fffdca2817e in sycl::_V1::detail::Scheduler::GraphProcessor::enqueueCommand(sycl::_V1::detail::Command*, std::shared_lock<std::shared_timed_mutex>&, sycl::_V1::detail::EnqueueResultT&, std::vector<sycl::_V1::detail::Command*, std::allocator<sycl::_V1::detail::Command*> >&, sycl::_V1::detail::Command*, sycl::_V1::detail::BlockingT) () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#10 0x00007fffdca22130 in sycl::_V1::detail::Scheduler::enqueueCommandForCG(sycl::_V1::detail::event_impl&, std::vector<sycl::_V1::detail::Command*, std::allocator<sycl::_V1::detail::Command*> >&, sycl::_V1::detail::BlockingT) () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#11 0x00007fffdca03bf9 in sycl::_V1::detail::Command::getUrEventsBlocking(sycl::_V1::detail::events_range, bool) const () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#12 0x00007fffdca1770b in sycl::_V1::detail::ExecCGCommand::enqueueImpQueue() () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#13 0x00007fffdca06c90 in sycl::_V1::detail::Command::enqueue(sycl::_V1::detail::EnqueueResultT&, sycl::_V1::detail::BlockingT, std::vector<sycl::_V1::detail::Command*, std::allocator<sycl::_V1::detail::Command*> >&) () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#14 0x00007fffdca2817e in sycl::_V1::detail::Scheduler::GraphProcessor::enqueueCommand(sycl::_V1::detail::Command*, std::shared_lock<std::shared_timed_mutex>&, sycl::_V1::detail::EnqueueResultT&, std::vector<sycl::_V1::detail::Command*, std::allocator<sycl::_V1::detail::Command*> >&, sycl::_V1::detail::Command*, sycl::_V1::detail::BlockingT) () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#15 0x00007fffdca22130 in sycl::_V1::detail::Scheduler::enqueueCommandForCG(sycl::_V1::detail::event_impl&, std::vector<sycl::_V1::detail::Command*, std::allocator<sycl::_V1::detail::Command*> >&, sycl::_V1::detail::BlockingT) () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#16 0x00007fffdca21c20 in sycl::_V1::detail::Scheduler::addCG(std::unique_ptr<sycl::_V1::detail::CG, std::default_delete<sycl::_V1::detail::CG> >, sycl::_V1::detail::queue_impl&, bool, ur_exp_command_buffer_handle_t_*, std::vector<unsigned int, std::allocator<unsigned int> > const&) () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#17 0x00007fffdca533e7 in sycl::_V1::handler::finalize() () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#18 0x00007fffdc9d5b56 in std::shared_ptr<sycl::_V1::detail::event_impl> sycl::_V1::detail::queue_impl::finalizeHandlerInOrderNoEventsUnlocked<sycl::_V1::handler>(sycl::_V1::handler&) () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#19 0x00007fffdc9d518b in sycl::_V1::detail::queue_impl::submit_impl(sycl::_V1::detail::type_erased_cgfo_ty const&, bool, sycl::_V1::detail::code_location const&, bool, sycl::_V1::detail::_V1::SubmissionInfo const&) () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#20 0x00007fffdca9b299 in sycl::_V1::queue::submit_with_event_impl(sycl::_V1::detail::type_erased_cgfo_ty const&, sycl::_V1::detail::_V1::SubmissionInfo const&, sycl::_V1::detail::code_location const&, bool) const () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#21 0x00007fffdca9b80c in sycl::_V1::queue::ext_oneapi_submit_barrier(std::vector<sycl::_V1::event, std::allocator<sycl::_V1::event> > const&, sycl::_V1::detail::code_location const&) () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#22 0x000000000059f6b0 in strata::prefill::Prefill::run_impl(long const*, long, long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&) ()
+#23 0x00000000005915b4 in strata::prefill::Prefill::run(long const*, long, long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&) ()
+#24 0x000000000043dae1 in main ()
+rax            0x0                 0
+rbx            0xce3c2             844738
+rcx            0x7fffdc59ac0c      140736890252300
+rdx            0x6                 6
+rsi            0xce3c2             844738
+rdi            0xcde9a             843418
+rbp            0x7ff3baff2e10      0x7ff3baff2e10
+rsp            0x7ff3baff2dd0      0x7ff3baff2dd0
+r8             0x7ff3acee18e0      140684555065568
+r9             0x7                 7
+r10            0x8                 8
+r11            0x246               582
+r12            0x6                 6
+r13            0xc135              49461
+r14            0x16                22
+r15            0x7fffdc7014e0      140736891720928
+rip            0x7fffdc59ac0c      0x7fffdc59ac0c <__GI___pthread_kill+284>
+eflags         0x246               [ PF ZF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+fs_base        0x7ff3bafff6c0      140684791117504
+gs_base        0x0                 0
+From                To                  Syms Read   Shared Object Library
+0x00007ffff7fc6000  0x00007ffff7ff0195  Yes         /lib64/ld-linux-x86-64.so.2
+0x00007ffff7f14d00  0x00007ffff7f99795  Yes         /usr/lib/x86_64-linux-gnu/libze_loader.so.1
+0x00007ffff7e23420  0x00007ffff7ea13a6  Yes         /usr/lib/x86_64-linux-gnu/libm.so.6
+0x00007ffff4cf76a0  0x00007ffff6a7b502  Yes         /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6
+0x00007ffff2c122b0  0x00007ffff3a50c00  Yes         /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_lapack.so.6
+0x00007ffff04202c0  0x00007ffff0787392  Yes         /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_dft.so.6
+0x00007fffed9f7ce0  0x00007fffeeff70e3  Yes         /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_sparse.so.6
+0x00007fffe9e59f40  0x00007fffeb51fe42  Yes         /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_rng.so.6
+0x00007fffe86ad720  0x00007fffe8ab88d0  Yes         /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_stats.so.6
+0x00007fffe534fca0  0x00007fffe6b13eb4  Yes         /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_vm.so.6
+0x00007fffe3e562e0  0x00007fffe3efeac3  Yes         /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_data_fitting.so.6
+0x00007fffe2d4e430  0x00007fffe381243f  Yes         /opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_lp64.so.3
+0x00007fffe1576b70  0x00007fffe28ecdca  Yes         /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3
+0x00007fffdcfbde00  0x00007fffe0e9b03c  Yes         /opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3
+0x00007fffdcbd45c0  0x00007fffdcd13ce2  Yes         /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+0x00007fffdcb05780  0x00007fffdcb28745  Yes         /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+0x00007fffdc820900  0x00007fffdcaf0aae  Yes         /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+0x00007fffdc717b10  0x00007fffdc71fe05  Yes         /opt/intel/oneapi/compiler/2026.1/lib/libOpenCL.so.1
+0x00007fffdc524800  0x00007fffdc6ac039  Yes         /usr/lib/x86_64-linux-gnu/libc.so.6
+0x00007fffdc4f8040  0x00007fffdc4f8105  Yes         /usr/lib/x86_64-linux-gnu/libdl.so.2
+0x00007fffdc4f3040  0x00007fffdc4f3105  Yes         /usr/lib/x86_64-linux-gnu/libpthread.so.0
+0x00007fffdbb25840  0x00007fffdc49fd24  Yes         /opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0
+0x00007fffdab835c0  0x00007fffdb62ba7f  Yes         /opt/intel/oneapi/compiler/2026.1/lib/libsvml.so
+0x00007fffd9f22c80  0x00007fffd9f65f16  Yes         /opt/intel/oneapi/compiler/2026.1/lib/libirng.so
+0x00007fffd9ca2170  0x00007fffd9e30292  Yes         /opt/intel/oneapi/compiler/2026.1/lib/libimf.so
+0x00007fffd99e1240  0x00007fffd9a2c1f0  Yes         /opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5
+0x00007fffd99cc080  0x00007fffd99cc2b1  Yes         /usr/lib/x86_64-linux-gnu/librt.so.1
+0x00007fffd99af260  0x00007fffd99c0c60  Yes         /usr/lib/x86_64-linux-gnu/libz.so.1
+0x00007fec615f0750  0x00007fec6174c822  Yes         /opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0
+0x00007fffd99518f0  0x00007fffd9974470  Yes         /opt/intel/oneapi/umf/1.1/lib/libumf.so.1
+0x00007fec6153fd90  0x00007fec61585d2e  Yes         /usr/lib/x86_64-linux-gnu/libhwloc.so.15
+0x00007fffd991d0f0  0x00007fffd993d4c0  Yes         /usr/lib/x86_64-linux-gnu/libudev.so.1
+0x00007fffd990d9c0  0x00007fffd9912607  Yes         /usr/lib/x86_64-linux-gnu/libcap.so.2
+0x00007fec5d9f4570  0x00007fec5e2ffa32  Yes         /usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1
+0x00007fec5d8692c0  0x00007fec5d92ca89  Yes         /usr/lib/x86_64-linux-gnu/libigdgmm.so.12
+0x00007fec5d799410  0x00007fec5d84a570  Yes         /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1
+0x00007fec5d482ed0  0x00007fec5d5e462d  Yes         /usr/lib/x86_64-linux-gnu/libigdfcl.so.2
+0x00007fec5594d400  0x00007fec59926b62  Yes         /usr/lib/x86_64-linux-gnu/libopencl-clang.so.17
+0x00007fec4facec00  0x00007fec52e6b895  Yes         /usr/lib/x86_64-linux-gnu/libigc.so.2
+0x00007fec4f693e20  0x00007fec4f78e888  Yes         /usr/lib/x86_64-linux-gnu/libigdml.so.1
+0x00007fec4f668780  0x00007fec4f673931  Yes         /usr/lib/x86_64-linux-gnu/libdrm.so.2
+0x00007fec4f48d680  0x00007fec4f48f20c  Yes         /usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200
+0x00007fec4f4718c0  0x00007fec4f47fcb9  Yes         /usr/lib/x86_64-linux-gnu/libnl-3.so.200
+strata diagnostic: main thread 1
+rax            0xfffffffffffffe00  -512
+rbx            0x64e1710           105781008
+rcx            0x7fffdc594e51      140736890228305
+rdx            0x0                 0
+rsi            0x189               393
+rdi            0x64e1738           105781048
+rbp            0x7ffffffdb1f0      0x7ffffffdb1f0
+rsp            0x7ffffffdb1b0      0x7ffffffdb1b0
+r8             0x0                 0
+r9             0xffffffff          4294967295
+r10            0x0                 0
+r11            0x246               582
+r12            0x0                 0
+r13            0x0                 0
+r14            0x64e16e8           105780968
+r15            0x64e1738           105781048
+rip            0x7fffdc594e51      0x7fffdc594e51 <__GI___futex_abstimed_wait_cancelable64+225>
+eflags         0x246               [ PF ZF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+fs_base        0x7fffd99a9380      140736844174208
+gs_base        0x0                 0
+0x7ffffffdb1b0:	0x0000000006085930	0x0000000000000000
+0x7ffffffdb1c0:	0x00000000064e1738	0x00000189dca2811e
+0x7ffffffdb1d0:	0x0000000000000000	0x00000000064e1710
+0x7ffffffdb1e0:	0x00000000064e1734	0x0000000000000000
+0x7ffffffdb1f0:	0x00007ffffffdb2c0	0x00007fffdc5978cd
+0x7ffffffdb200:	0x0000000000000000	0x00000000064e1720
+0x7ffffffdb210:	0x00007ffffffdb240	0x0000000000000000
+0x7ffffffdb220:	0x0000000000000000	0x0000000000000000
+0x7ffffffdb230:	0x0000000000000000	0x0000000000000000
+0x7ffffffdb240:	0x00007fffdc597590	0x00007ffffffdb260
+0x7ffffffdb250:	0x00000000064ea5d0	0x0000000000000000
+0x7ffffffdb260:	0x0000000000000000	0x00000000064e1710
+=> 0x7fffdc594e51 <__GI___futex_abstimed_wait_cancelable64+225>:	mov    %r13d,%edi
+   0x7fffdc594e54 <__GI___futex_abstimed_wait_cancelable64+228>:	mov    %rax,%rbx
+   0x7fffdc594e57 <__GI___futex_abstimed_wait_cancelable64+231>:	call   0x7fffdc5946b0 <__GI___pthread_disable_asynccancel>
+   0x7fffdc594e5c <__GI___futex_abstimed_wait_cancelable64+236>:	jmp    0x7fffdc594dc6 <__GI___futex_abstimed_wait_cancelable64+86>
+   0x7fffdc594e61 <__GI___futex_abstimed_wait_cancelable64+241>:	nopl   0x0(%rax)
+   0x7fffdc594e68 <__GI___futex_abstimed_wait_cancelable64+248>:	cmpq   $0x0,(%rcx)
+   0x7fffdc594e6c <__GI___futex_abstimed_wait_cancelable64+252>:	jns    0x7fffdc594d8d <__GI___futex_abstimed_wait_cancelable64+29>
+   0x7fffdc594e72 <__GI___futex_abstimed_wait_cancelable64+258>:	mov    $0x6e,%eax
+   0x7fffdc594e77 <__GI___futex_abstimed_wait_cancelable64+263>:	jmp    0x7fffdc594de1 <__GI___futex_abstimed_wait_cancelable64+113>
+   0x7fffdc594e7c:	nopl   0x0(%rax)
+   0x7fffdc594e80 <__futex_lock_pi64>:	endbr64
+   0x7fffdc594e84 <__futex_lock_pi64+4>:	mov    %esi,%eax
+   0x7fffdc594e86 <__futex_lock_pi64+6>:	mov    %ecx,%esi
+   0x7fffdc594e88 <__futex_lock_pi64+8>:	mov    %rdx,%r10
+   0x7fffdc594e8b <__futex_lock_pi64+11>:	xor    $0x86,%sil
+   0x7fffdc594e8f <__futex_lock_pi64+15>:	test   %eax,%eax
