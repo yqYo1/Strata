@@ -182,9 +182,14 @@ The [32-expert short check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu
 passed four actual normal-MTP requests. All output IDs, printed logprobs and
 complete finite heads matched the released-weight control; 377 queue waits
 and six release/restore pairs were recorded. Detailed API logging and
-parameter validation were enabled. This candidate still needs its own
-full-cell CLI and normal-MTP serving validation before a prevention or
-performance claim.
+parameter validation were enabled. Its subsequent [full normal-MTP check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/expert-wait-capacity-20261007/README.md)
+passed the preceding stall position but stopped at layer 19, token 216,064,
+and the application watchdog aborted. The main-thread stack was not
+sufficiently resolved to identify the stopped call. No new xe fault/reset
+or surviving child was recorded, and the logged small GPU probe passed
+afterward without reset. Waits every 32 experts are insufficient for this
+workload; the full-cell CLI gate remains pending. This is not a prevention
+or performance result.
 
 The [2026-10-07 logging check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/runtime-tracing-20261007/README.md)
 confirmed Level Zero entry/results and UR traces before the child exited,
