@@ -1,0 +1,28 @@
+{
+  "active": false,
+  "passed": true,
+  "created_utc": "2026-10-07T21:40:13.154683+00:00",
+  "scope": "Source review for an environment-only experiment, not runtime UB proof or speed evidence.",
+  "binary_sha256": "e82fc5de5480b72255b601759497d5810e86bf691350417ed0dc11ed6c429323",
+  "source_sha256": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/prefill/prefill.cpp": "f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/kernels/cuda/qsa_decode_attn.dp.cpp": "41dfb04922276e91c81033ebdf2495d0e7130f04289722ff38ad7bc555d51679",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/kernels/cuda/qsa_prompt_attn.dp.cpp": "f94e9971658821f8e60fb7d45e89fa23fef1487cf43687269526a2d56ee8ffd8"
+  },
+  "changes": {
+    "STRATA_PREFILL_ATTN_BATCH": "128",
+    "STRATA_PREFILL_ATTN_LAYOUT": "1"
+  },
+  "review": [
+    "Batch allocation and execution share prompt_attn_batch(T); batch is bounded1..1024 and min(T), final8191 chunk has127-query tail. Scratch allocation has128 copies of the existing cap-based per-query stride; no cross-query reuse inside a dispatch.",
+    "Layout1 retains required subgroup32 and local range(1,1,256). Query, KV-head and64-cell chunk identify disjoint scratch partitions. Merge uses the same per-query stride and the original ascending chunk loop.",
+    "Transpose initialization maps i to(i%8)*32+(i%256)/8, a bijection of each256-element query head. Each lane reconstructs the same eight scalar operands as the original contiguous layout, preserving the dot expression and XOR16/8/4/2/1 reductions. The transpose branch avoids local float-array to float4 pointer casts.",
+    "Early return n_here<=0 is workgroup-uniform. Cell skip is subgroup-uniform; head loops execute equally inside each subgroup; every workgroup barrier is reached by all remaining items. Local sq/sp/srow initialization precedes use through barriers.",
+    "No global/root-group synchronization is used by this kernel; variant launch has empty experimental properties. Bounds and integer products remain64-bit for per-query offsets. Geometry, supported cap and page table remain those already verified by the baseline32K configuration.",
+    "SG16/layout4 is deliberately outside this experiment. No tensor/XMX attention, changed reduction order, cell masking approximation, prefill retirement or graph update is enabled.",
+    "Full-state/first-head/output comparisons and healthy owned exit are hard gates before timing. Full262144-cell occupancy/repeat/restore remains a separate pending production gate."
+  ],
+  "parent_controller_sha256": "87c23b7f58fd96f55efac3f959ecf0068e9dfa169d18c1d80d3fc0364a9e730e",
+  "controller_sha256": "b7e93d19e9ec1791cd6ee10b2fae304fe037b1ed7cb5316a68bd52ae60fff9f0",
+  "preparer_sha256": "6157a789d334acc9a64d0c54639983f5e6b50e2e3aaa7e71ee89ed38f1f2186f"
+}

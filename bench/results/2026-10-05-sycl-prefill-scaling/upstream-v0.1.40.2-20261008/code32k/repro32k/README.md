@@ -104,3 +104,12 @@ then passes another three exact32K full state/head/output controls on the same
 private scheduling binary, with both implicit-conversion override and MKL CNR
 absent. All exit normally without new xe faults. These captured runs are not
 clean timing evidence; full262,144-cell serving remains unvalidated.
+
+
+The [host-only32K profile](host-api-profile/README.md) then passes three exact
+full-state/head/output checks while capturing native host API counts without
+GPU event instrumentation. Concurrent API durations do not identify PCIe or
+CPU dominance. A separate [attention128/layout1 experiment](qsa-batch128-layout1/README.md)
+passes three full-state/head controls and a clean32K ABBA comparison on the
+unchanged private scheduling binary. Every performance input is32,768 tokens.
+Full262,144-cell serving and production adoption remain separate pending gates.

@@ -1,0 +1,53 @@
+{
+  "active": false,
+  "passed": true,
+  "started_utc": "2026-10-07T21:42:02.650252+00:00",
+  "controller_sha256": "49dd20d4db38cac64b9a5c0ae6b0a144ed91c1b432ab6e4379569a7bba823171",
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_qsa_batch128_layout1_v01402_code32k.py",
+        "qsa-batch128-layout1",
+        "state",
+        "1"
+      ],
+      "started_utc": "2026-10-07T21:44:59.745081+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T21:46:59.983650+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 79929.4,
+        "decode_ms": 3849.5,
+        "wall_seconds": 83.78625471499981,
+        "prefill_tok_s": 409.96179128080536,
+        "decode_tok_s": 16.625535783868035
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_qsa_batch128_layout1_v01402_code32k.py",
+        "qsa-batch128-layout1",
+        "state",
+        "2"
+      ],
+      "started_utc": "2026-10-07T21:46:59.984473+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T21:49:00.777033+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 79865.6,
+        "decode_ms": 3785.9,
+        "wall_seconds": 83.65861360599229,
+        "prefill_tok_s": 410.2892860004808,
+        "decode_tok_s": 16.904831083758154
+      }
+    }
+  ],
+  "minimum_comparison_tokens": 32768,
+  "scope": "Logged32K batch128/layout1 correctness run, then two fresh32K state/head/output repeats. Any mismatch stops the sequence and rejects clean timing. No speed/full256K claim.",
+  "finished_utc": "2026-10-07T21:49:00.777699+00:00"
+}

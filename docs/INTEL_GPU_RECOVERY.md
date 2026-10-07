@@ -385,6 +385,30 @@ the counter-conversion override or MKL CNR. All exit normally without new xe
 faults; captured timings are excluded. Full262,144-cell serving remains a
 separate gate. No short-input timing supports these performance comparisons.
 
+The [host-only32K profile](../bench/results/2026-10-05-sycl-prefill-scaling/upstream-v0.1.40.2-20261008/code32k/repro32k/host-api-profile/README.md)
+uses pinned Intel PTI unitrace with host timing and Chrome call logging only.
+A CPU check of its actual option derivation and callback guards verifies that
+device/kernel tracing and metrics are disabled. The actual engine environment
+is captured after exec. Its first logged run, quiet profile and unprofiled
+control all match the full state/head/output and exit normally without new xe
+faults. The quiet trace records about2.23million native event-status queries
+across three workers and503,650 kernel appends in the request envelope. Native
+wait, query and append intervals overlap GPU work and one another; their sums
+do not measure CPU utilization or PCIe DMA duration. Boot/raw clock alignment
+and its approximate phase boundaries are documented. Captured/profiled times
+are excluded from clean speed comparisons.
+
+The [attention batch128/layout1 experiment](../bench/results/2026-10-05-sycl-prefill-scaling/upstream-v0.1.40.2-20261008/code32k/repro32k/qsa-batch128-layout1/README.md)
+keeps the same private executable, subgroup32 and ordered arithmetic. Three
+fresh32K full-state/head/output checks pass before a clean ABBA comparison.
+On the same B57010GiB /5600X /128GiB host, two repetitions per setting average
+408.30 prompt /16.35 decode tok/s for default32/layout0 and408.36 /16.72 for
+128/layout1. The prompt change is only+0.014%; it does not establish a useful
+gain. Decode varies within the default arm, and a prefill setting does not
+establish the cause of that variation. Every performance input is32,768 tokens;
+all seven runs match output, exit normally and record no new xe fault. The
+candidate remains unadopted, with full262,144-cell serving still a separate gate.
+
 No software reset is guaranteed to recover every firmware/driver wedge. There
 is an [upstream B570 report](https://github.com/intel/compute-runtime/issues/962)
 where both rebind and PCI reset failed; that report is not proof of this host's

@@ -1,0 +1,391 @@
+{
+  "created_utc": "2026-10-07T21:58:22.116940+00:00",
+  "revised_utc": "2026-10-07T21:58:22.116955+00:00",
+  "revision_reason": "Append host-only32K profile and gated attention128/layout1 clean comparison.",
+  "files": {
+    "README.md": {
+      "bytes": 3642,
+      "sha256": "f311f621c9e20c5a3de5365bef2194c9f60d0f8d75464092ec815f68c80d7844"
+    },
+    "analysis/host-profile32k-v01402-analysis.json": {
+      "bytes": 20455,
+      "sha256": "254ea705a1b0106032d1bb82a0ee3791b655a3c3557c7f994dd6ae3bfbfbcdeb"
+    },
+    "analysis/host-profile32k-v01402-sequence.json": {
+      "bytes": 1914,
+      "sha256": "1ef06e4d24583cec3af63191801721b5827e34b59db1afc22e523c549186b4fe"
+    },
+    "analysis/unitrace-host-options-v01402.json": {
+      "bytes": 2688,
+      "sha256": "d6a93c7287fc13b630cdb05ac2e98911391d6ebe95cf5ab794c81c0d0b740be4"
+    },
+    "controllers/analyze_host_profile32k_v01402.py": {
+      "bytes": 8228,
+      "sha256": "d9a2ef6dff3cfcb075ee537b150836864399319e1a76f4e582224e1753a37ca5"
+    },
+    "controllers/archive_v01402_host_profile_and_qsa_batch.py": {
+      "bytes": 13705,
+      "sha256": "1fb41dc523e0fab357adae87bd20b6f7a23a538c3057bc016ac30e3fe38fd83a"
+    },
+    "controllers/audit_unitrace_host_options_v01402.py": {
+      "bytes": 4189,
+      "sha256": "885b53579c479ad0e186f8d60b3bcff876aca4c2e4cebfcd9528814f33c3a469"
+    },
+    "controllers/prepare_host_profile32k_v01402.py": {
+      "bytes": 7393,
+      "sha256": "6e19418aa8d91b1e771f669223822fb0307368fcd93d9aac9abe01fcbdf963bd"
+    },
+    "controllers/run_host_profile32k_v01402_sequence.py": {
+      "bytes": 2529,
+      "sha256": "b14bf015d743717b59fd7dec593f19764a40e7aaea21bebe29f584b513d45f2d"
+    },
+    "controllers/run_owned_host_profile32k_v01402.py": {
+      "bytes": 27166,
+      "sha256": "30b549841de9ec76c987d7edf11ee56a9da48d44678bf30e12ac7e34481b45cd"
+    },
+    "options-audit/compile.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "options-audit/compile.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "options-audit/options.cpp": {
+      "bytes": 1048,
+      "sha256": "3cc52b1ca1fd0790e4758b7b6d3660fd183771f9d64161939b32d4e473f341b1"
+    },
+    "options-audit/options.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "options-audit/options.stdout": {
+      "bytes": 79,
+      "sha256": "bc2225a2b59ee9956cd40b4783a0b9c50025eb99102bbd90c7ef6f17c58cc9a0"
+    },
+    "options-audit/record.json": {
+      "bytes": 2688,
+      "sha256": "d6a93c7287fc13b630cdb05ac2e98911391d6ebe95cf5ab794c81c0d0b740be4"
+    },
+    "private-artifacts.json": {
+      "bytes": 3030,
+      "sha256": "e9507d888427d1228fb6d0e96c93053ecdda7548c64f0bb1c3c7204a9ab1c6f2"
+    },
+    "profiler-build/compile/record.json": {
+      "bytes": 7080,
+      "sha256": "75e167949069029c6a166615fbca6177211b01655306fe00cae7268cf42c55d1"
+    },
+    "profiler-build/compile/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "profiler-build/compile/stdout": {
+      "bytes": 3833,
+      "sha256": "3a7a6dd067af9bf9f0accb7f76769e54de218d4f7950af502305f5596b1d4adb"
+    },
+    "profiler-build/configure/record.json": {
+      "bytes": 3653,
+      "sha256": "1c59654e1d2daaf281ccd82e3b5983f314346683c3a6b567dfe9c1f5a582665a"
+    },
+    "profiler-build/configure/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "profiler-build/configure/stdout": {
+      "bytes": 1430,
+      "sha256": "f79ad05b9dbb5efc2ddb5fbf89ef168e9c382ef3575cc2dddcc62701e1447fed"
+    },
+    "profiler-build/record.json": {
+      "bytes": 12400,
+      "sha256": "b6ec03d083da69c3c3db3f11b07ef6a220e37a7f487b5766cae66066ddf896e4"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-control-r1/debugger/inferior-argv.json": {
+      "bytes": 959,
+      "sha256": "c30284cf4388e6d6b8265c5f05fc8ad4b44bab9d1d313ae815c59f9358fef103"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-control-r1/events.jsonl": {
+      "bytes": 6694,
+      "sha256": "10caa144d1811bf852c311675bc150fb639f644149bf8578735988c74c77fb19"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-control-r1/input-tokens.txt": {
+      "bytes": 142702,
+      "sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-control-r1/probes/before-health-cursor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-control-r1/probes/before-health-cursor.stdout": {
+      "bytes": 155,
+      "sha256": "bf7be105f2c5694f0a1084d27af59cfc766965512c18a382e8e5441dbd840090"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-control-r1/probes/embedding-state.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-control-r1/probes/embedding-state.stdout": {
+      "bytes": 21,
+      "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-control-r1/probes/health-environment.json": {
+      "bytes": 882,
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-control-r1/probes/health-kernel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-control-r1/probes/health-kernel.stdout": {
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-control-r1/probes/health-runtime.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-control-r1/probes/health-runtime.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-control-r1/probes/health-xe.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-control-r1/probes/health.stderr": {
+      "bytes": 118983,
+      "sha256": "fbcb62378f0dc8efcd92807274439b0ec806fa06802ece5c78de5ffa47600e1b"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-control-r1/probes/health.stdout": {
+      "bytes": 155,
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-control-r1/probes/kernel-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-control-r1/probes/kernel-after.stdout": {
+      "bytes": 1473,
+      "sha256": "a41b79981d49ec7b8da5063b59d0424c1c8354c5bdb1d9b3359e6e8ea0c4f093"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-control-r1/probes/kernel-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-control-r1/probes/kernel-before.stdout": {
+      "bytes": 155,
+      "sha256": "bf7be105f2c5694f0a1084d27af59cfc766965512c18a382e8e5441dbd840090"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-control-r1/probes/kernel-gap.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-control-r1/probes/kernel-gap.stdout": {
+      "bytes": 237646,
+      "sha256": "7b363ffd406ae5d9735e98025cf6a855e58a641b8b0f89e492aca261b37cc339"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-control-r1/project-messages.txt": {
+      "bytes": 2982,
+      "sha256": "37775ac2fbaa77c042ad746b21943a759c7233cab63b38661e91489b962e8d54"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-control-r1/protocol.stdout.raw": {
+      "bytes": 6682,
+      "sha256": "de569183ed88bf5829795347f53a992ce29265f47b436b9264758115d740f7be"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-control-r1/record.json": {
+      "bytes": 62223,
+      "sha256": "4788e882bba75a19f2912b188fe0104754b9638b9007408d88bf8a9f62e87032"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-diagnostic-r1/debugger/inferior-argv.json": {
+      "bytes": 1424,
+      "sha256": "11abea387da85d15a365cb74d1e7f7687e99f0bc9edf56bba0b52cb7939c57c9"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-diagnostic-r1/events.jsonl": {
+      "bytes": 6686,
+      "sha256": "d735b157fd50706046663c869ff087a8d13b53319f5cea2cb7a518448e81df35"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-diagnostic-r1/input-tokens.txt": {
+      "bytes": 142702,
+      "sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-diagnostic-r1/probes/before-health-cursor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-diagnostic-r1/probes/before-health-cursor.stdout": {
+      "bytes": 156,
+      "sha256": "a66a1358a8e9ee94a29c4dd23635f50f36a95dbdce3608b21ed4e421524f2341"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-diagnostic-r1/probes/embedding-state.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-diagnostic-r1/probes/embedding-state.stdout": {
+      "bytes": 21,
+      "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-diagnostic-r1/probes/health-environment.json": {
+      "bytes": 882,
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-diagnostic-r1/probes/health-kernel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-diagnostic-r1/probes/health-kernel.stdout": {
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-diagnostic-r1/probes/health-runtime.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-diagnostic-r1/probes/health-runtime.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-diagnostic-r1/probes/health-xe.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-diagnostic-r1/probes/health.stderr": {
+      "bytes": 118983,
+      "sha256": "274db64a588eab85005d26b040cb3492033aaefbe49ad599ae98d97f60b403d0"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-diagnostic-r1/probes/health.stdout": {
+      "bytes": 155,
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-diagnostic-r1/probes/kernel-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-diagnostic-r1/probes/kernel-after.stdout": {
+      "bytes": 3684,
+      "sha256": "3911cb0d61bc74a3a9b285144edbad04a8bcadcfde0a2e0778949cddb7d90bdd"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-diagnostic-r1/probes/kernel-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-diagnostic-r1/probes/kernel-before.stdout": {
+      "bytes": 156,
+      "sha256": "a66a1358a8e9ee94a29c4dd23635f50f36a95dbdce3608b21ed4e421524f2341"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-diagnostic-r1/probes/kernel-gap.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-diagnostic-r1/probes/kernel-gap.stdout": {
+      "bytes": 230047,
+      "sha256": "efec3762e5e56381fcc6f9a3e8179a043900a9eab61d8bd6920318b7b2af7fce"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-diagnostic-r1/project-messages.txt": {
+      "bytes": 4484,
+      "sha256": "ddc9575051ccd0e3a0f0754e990b706fb33888eebcf52e06f9bd7922e047a430"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-diagnostic-r1/protocol.stdout.raw": {
+      "bytes": 6685,
+      "sha256": "93e3c9fe3c8bd71ccb3c061eb4340a0674ade1f94071d45ccfba50cb4986ba4b"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-diagnostic-r1/record.json": {
+      "bytes": 64572,
+      "sha256": "4e15bcfc4d294d540531110ebe48654d970786a47d6e287c430466f5dcd0b888"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-state-r1/debugger/inferior-argv.json": {
+      "bytes": 1414,
+      "sha256": "65037dbeb1825b7b4ef91e1b4705e7c43c125dbd39a23e56dd24b8b1ec343b97"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-state-r1/events.jsonl": {
+      "bytes": 6565,
+      "sha256": "169e34ecf5f262810680fa7cc6476f89d27d7090684f91eb5caec3c755f80520"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-state-r1/input-tokens.txt": {
+      "bytes": 142702,
+      "sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-state-r1/probes/before-health-cursor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-state-r1/probes/before-health-cursor.stdout": {
+      "bytes": 156,
+      "sha256": "3e24179a125d5538cdeec390016e90ec037aaea77fb7c239f90ba376123c7076"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-state-r1/probes/embedding-state.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-state-r1/probes/embedding-state.stdout": {
+      "bytes": 21,
+      "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-state-r1/probes/health-environment.json": {
+      "bytes": 882,
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-state-r1/probes/health-kernel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-state-r1/probes/health-kernel.stdout": {
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-state-r1/probes/health-runtime.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-state-r1/probes/health-runtime.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-state-r1/probes/health-xe.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-state-r1/probes/health.stderr": {
+      "bytes": 118983,
+      "sha256": "130fe96acd1787116b8145ec6894803041a9c3f2fba6a9007b5b8666250d8352"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-state-r1/probes/health.stdout": {
+      "bytes": 155,
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-state-r1/probes/kernel-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-state-r1/probes/kernel-after.stdout": {
+      "bytes": 3915,
+      "sha256": "e046ea5bedad9deb34459aaaa5fd1cf887d5d09a614a446ba3965f5aeff2e4ac"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-state-r1/probes/kernel-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-state-r1/probes/kernel-before.stdout": {
+      "bytes": 156,
+      "sha256": "3e24179a125d5538cdeec390016e90ec037aaea77fb7c239f90ba376123c7076"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-state-r1/probes/kernel-gap.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-state-r1/probes/kernel-gap.stdout": {
+      "bytes": 233731,
+      "sha256": "ff4660f1a3462da6f8434f6d9e2fce910eda1eb806cf8f746b60b65cff405608"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-state-r1/project-messages.txt": {
+      "bytes": 2982,
+      "sha256": "9fcfd5a9ae4ea9d0dd2af9f1209461801768c0c93aa887cab048ee4fb279d5cc"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-state-r1/protocol.stdout.raw": {
+      "bytes": 6682,
+      "sha256": "1461eb67c0da1b95d56f8ac0a4d00440a8423134e879075cae4c7b5279f504b9"
+    },
+    "runs/owned-event-ack-no-root-host-profile-v01402-code32k-state-r1/record.json": {
+      "bytes": 63485,
+      "sha256": "9848c15447bb4022cb4b71ebfcdcc184c17247afce3572d92e2631807a37536c"
+    }
+  }
+}

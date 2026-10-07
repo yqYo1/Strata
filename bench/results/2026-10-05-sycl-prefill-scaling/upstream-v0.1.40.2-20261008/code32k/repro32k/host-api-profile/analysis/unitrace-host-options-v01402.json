@@ -1,0 +1,45 @@
+{
+  "active": false,
+  "passed": true,
+  "scope": "CPU-only check of the pinned unitrace collector options and generated callback guards. No GPU workload, profiler activation or global/system change. Host timing/call trace must not enable kernel tracing or metrics; option-free collection intentionally differs.",
+  "started_utc": "2026-10-07T21:11:41.485658+00:00",
+  "steps": [
+    {
+      "label": "compile",
+      "argv": [
+        "/usr/bin/g++",
+        "-O2",
+        "-std=c++17",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/pti-gpu-profiler-source/tools/unitrace/src",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-host-options-v01402/options.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-host-options-v01402/options"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.46457963199645746
+    },
+    {
+      "label": "options",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-host-options-v01402/options"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.003670600999612361
+    }
+  ],
+  "source_commit": "6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033",
+  "source_sha256": {
+    "tools/unitrace/src/collector_options.h": "538b78a6b641e12942d902a22e4cecc188ab4f4aa398f01d5bc1be083e327480",
+    "tools/unitrace/scripts/gen_tracing_callbacks.py": "bee041666440dcc076257ca5c9f778434e104da6ae2057dbe407d681f968a1d4",
+    "tools/unitrace/src/levelzero/ze_collector.h": "6ee0130e2b03918a5e4bb5d310dacb94e5ba06bf67c21a23d3134dc406aa9122",
+    "tools/unitrace/src/unitrace.cc": "d5a275a78d6d99a4aa82b1e7cb464ff4974c4eb4c46f068f9f1f5b9978d04293",
+    "tools/unitrace/src/tracer.cc": "e770574b66edce42941fd211ae934c10db3eab4dc44a92d05a719099be1eac85"
+  },
+  "observation": "Generated callback invokes the event-pool/append instrumentation only when kernel_tracing is set. Its event-pool callback adds timestamp/host-visible flags. The chosen host-only options leave kernel_tracing false; this is source/option evidence, not proof of model/runtime correctness.",
+  "profiler_sha256": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-build-system-cc/build/unitrace": "5f90c453fbaf0b90a357a065cf4392f1ce3b157d5269af165c7cfe565cef1362",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-build-system-cc/build/libunitrace_tool.so": "c544dd2f6d2f6531cd529a9cc4ab9076b705eca8d63df56505e500942d128266"
+  },
+  "controller_sha256": "885b53579c479ad0e186f8d60b3bcff876aca4c2e4cebfcd9528814f33c3a469",
+  "finished_utc": "2026-10-07T21:11:42.031657+00:00"
+}
