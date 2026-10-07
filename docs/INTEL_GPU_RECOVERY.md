@@ -273,7 +273,29 @@ release/restore pairs completed without force or new xe faults. Two separate
 allocation-pressure probes freed a 1,300 MiB temporary buffer and restored
 1,280 MiB of physical backing successfully. They did not reproduce the
 full-model failure and do not establish that allocator caching caused it.
-The candidate's full-context and throughput checks remain pending.
+The subsequent [completed 256K check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/profiling-20261007/README.md)
+finished prefill but still failed an 8 MiB physical allocation during MTP
+decode restoration. The new trace showed 1,411,559,424 bytes free after
+temporary buffers were released, 131,244,032 after main-cache restoration
+and verifier recapture, and 5,410,816 at the MTP allocation failure. No new
+xe fault/reset occurred, and the exact-word probe passed after owned cleanup
+without a reset. This remains a capacity/restoration failure; its output
+and remaining full-context gates were not reached.
+
+The same [profiler checks](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/profiling-20261007/README.md)
+attempted installed VTune 2026.4. Its CPU software collection refused the
+current ptrace restriction, and XPU Offload refused the Ryzen host's
+microarchitecture. Intel PTI/unitrace was then built privately without
+changing drivers or global settings. A fully logged instrumented GPU smoke
+check passed, followed by exact-head model profiles and unprofiled controls.
+For a 2K input using layer-major mode 1 and 1024-token chunks, explicit H2D
+copies ran at 6.163 GB/s of copy execution time, but transfer intervals alone
+did not account for the observed request duration. Host submission/wait calls
+and expert dequantization are candidates for the next tuning measurements.
+Hardware counters were disabled, and the existing per-phase synchronization
+remained enabled. These profiles do not establish clean throughput or the
+earlier hang's cause; the profiler itself increased that single prompt time
+by 30.0%.
 
 The [2026-10-07 logging check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/runtime-tracing-20261007/README.md)
 confirmed Level Zero entry/results and UR traces before the child exited,

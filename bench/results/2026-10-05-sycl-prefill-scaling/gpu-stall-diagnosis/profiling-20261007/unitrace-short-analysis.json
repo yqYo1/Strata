@@ -1,0 +1,1658 @@
+{
+  "scope": "Protocol-received timestamp envelopes of phase-synchronized context-128/chunk-32/layer-major-2 normal-MTP profile; not evidence for long-prompt transfer dominance",
+  "trace_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-model-short-profile/strata-prefill-.2497671.json",
+  "trace_bytes": 966980342,
+  "trace_sha256": "f8e84c139c21f10744cce29034cfc1dc21b4b30a0dfbb2debe10b0eeec745e90",
+  "event_counts": {
+    "gpu_op": 313911,
+    "cpu_op": 4788441,
+    "flow": 1240316
+  },
+  "requests": [
+    {
+      "name": "first",
+      "profile_done": "DONE 4 37 29745.4 1718.0 length 3 6 0 111 2491 0 0 0.0 37 1829",
+      "clean_done": "DONE 4 37 26919.8 1158.3 length 3 6 0 111 2491 0 0 0.0 37 1829",
+      "exact_head_and_tokens_and_logprobs": true,
+      "whole_request": {
+        "wall_envelope_seconds": 31.46839575,
+        "gpu_event_count": 106376,
+        "gpu_busy_union_seconds": 19.155136,
+        "copy_busy_union_seconds": 17.85320625,
+        "kernel_busy_union_seconds": 1.297922,
+        "fill_busy_union_seconds": 0.003872,
+        "host_wait_union_seconds": 12.71502525,
+        "copy_directions": {
+          "H2D": {
+            "bytes": 103069099520,
+            "calls": 49401,
+            "sum_seconds": 16.700084527000218,
+            "active_time_gb_per_second": 6.171771128065899
+          },
+          "M2D": {
+            "bytes": 2049434956,
+            "calls": 249,
+            "sum_seconds": 0.43350114200000034,
+            "active_time_gb_per_second": 4.727634502978998
+          },
+          "D2M": {
+            "bytes": 4035702868,
+            "calls": 222,
+            "sum_seconds": 0.7195535510000016,
+            "active_time_gb_per_second": 5.608620598691189
+          },
+          "D2D": {
+            "bytes": 1843200,
+            "calls": 11,
+            "sum_seconds": 3.1244e-05,
+            "active_time_gb_per_second": 58.99372679554474
+          }
+        },
+        "top_level_zero_inclusive_api_times": [
+          {
+            "name": "zeEventHostSynchronize",
+            "calls": 49642,
+            "sum_seconds": 11.377876039999972
+          },
+          {
+            "name": "zeEventQueryStatus",
+            "calls": 48924,
+            "sum_seconds": 6.445085884999952
+          },
+          {
+            "name": "zeCommandListHostSynchronize",
+            "calls": 32285,
+            "sum_seconds": 1.3371762819999948
+          },
+          {
+            "name": "zeCommandListAppendMemoryCopy",
+            "calls": 49880,
+            "sum_seconds": 1.3328272790000197
+          },
+          {
+            "name": "zeCommandListAppendLaunchKernelWithArguments",
+            "calls": 44553,
+            "sum_seconds": 0.7539948449999977
+          },
+          {
+            "name": "zeModuleCreate",
+            "calls": 143,
+            "sum_seconds": 0.17320676999999998
+          },
+          {
+            "name": "zeCommandListCreate",
+            "calls": 297,
+            "sum_seconds": 0.16371380000000005
+          },
+          {
+            "name": "zeCommandListAppendLaunchKernel",
+            "calls": 6888,
+            "sum_seconds": 0.041851735000000195
+          },
+          {
+            "name": "zeVirtualMemUnmap",
+            "calls": 224,
+            "sum_seconds": 0.041848526999999996
+          },
+          {
+            "name": "zeVirtualMemMap",
+            "calls": 224,
+            "sum_seconds": 0.040352820000000005
+          },
+          {
+            "name": "zeContextMakeMemoryResident",
+            "calls": 6,
+            "sum_seconds": 0.018216563999999998
+          },
+          {
+            "name": "zeCommandListImmediateAppendCommandListsExp",
+            "calls": 495,
+            "sum_seconds": 0.012430854000000002
+          }
+        ],
+        "top_kernel_duration_sums": [
+          {
+            "name": "dpct_kernel_name<strata::kernels::iq_dequant_gu_f16(int, void const*, void const*, long, long, unsigned short*, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::dequant_gu_kernel_2397ca>[SIMD32 {6400; 2; 1} {32; 1; 1}]",
+            "calls": 6724,
+            "sum_seconds": 0.3697094920000011
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::iq_dequant_f16(int, void const*, long, unsigned short*, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::dequant_flat_kernel_d891c8, sycl::_V1::detail::half_impl::half>[SIMD32 {6400; 1; 1} {32; 1; 1}]",
+            "calls": 6724,
+            "sum_seconds": 0.25337446900000726
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_16x16_4x2x4[SIMD16 {20; 1; 1} {64; 2; 4}]",
+            "calls": 6724,
+            "sum_seconds": 0.09612616299999925
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#8}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<14>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {1920; 1; 1} {256; 1; 1}]",
+            "calls": 108,
+            "sum_seconds": 0.07552724700000002
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#8}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<14>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {3200; 1; 1} {256; 1; 1}]",
+            "calls": 44,
+            "sum_seconds": 0.050449354999999994
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::fused_gr_read_multi(strata::kernels::FusedGrArgs const*, int, float*, void*, unsigned long long*, int)::gr_up_multi_kernel_1a727f>[SIMD32 {160; 1; 1} {256; 1; 1}]",
+            "calls": 494,
+            "sum_seconds": 0.022793654000000014
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_16x16_8x4[SIMD16 {20; 1; 1} {128; 4; 1}]",
+            "calls": 2129,
+            "sum_seconds": 0.019279435000000185
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_16x1_4x1[SIMD16 {1; 40; 1} {16; 4; 1}]",
+            "calls": 3309,
+            "sum_seconds": 0.015659338000000078
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_16x16_4x2x4[SIMD16 {80; 1; 1} {64; 2; 1}]",
+            "calls": 84,
+            "sum_seconds": 0.015376425999999999
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::fused_gr_read_multi(strata::kernels::FusedGrArgs const*, int, float*, void*, unsigned long long*, int)::{lambda(sycl::_V1::handler&)#3}::operator()(sycl::_V1::handler&) const::gr_down_sliced_k>[SIMD32 {80; 1; 1} {256; 1; 1}]",
+            "calls": 494,
+            "sum_seconds": 0.015080938000000002
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#7}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<13>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {3200; 1; 1} {256; 1; 1}]",
+            "calls": 20,
+            "sum_seconds": 0.013779679999999999
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#8}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<14>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {3840; 1; 1} {256; 1; 1}]",
+            "calls": 10,
+            "sum_seconds": 0.013605308999999998
+          }
+        ]
+      },
+      "request_to_last_prefill_progress": {
+        "wall_envelope_seconds": 28.7670795,
+        "gpu_event_count": 93665,
+        "gpu_busy_union_seconds": 18.19725,
+        "copy_busy_union_seconds": 17.094144,
+        "kernel_busy_union_seconds": 1.1010445,
+        "fill_busy_union_seconds": 0.00192575,
+        "host_wait_union_seconds": 12.109173,
+        "copy_directions": {
+          "H2D": {
+            "bytes": 99540541440,
+            "calls": 48674,
+            "sum_seconds": 16.150161170000267,
+            "active_time_gb_per_second": 6.16343950950171
+          },
+          "M2D": {
+            "bytes": 1931365660,
+            "calls": 199,
+            "sum_seconds": 0.4136715770000003,
+            "active_time_gb_per_second": 4.668838197699038
+          },
+          "D2M": {
+            "bytes": 2980417576,
+            "calls": 139,
+            "sum_seconds": 0.5302582730000008,
+            "active_time_gb_per_second": 5.620690383834889
+          },
+          "D2D": {
+            "bytes": 1474560,
+            "calls": 2,
+            "sum_seconds": 1.1457e-05,
+            "active_time_gb_per_second": 128.70384917517674
+          }
+        },
+        "top_level_zero_inclusive_api_times": [
+          {
+            "name": "zeEventHostSynchronize",
+            "calls": 48819,
+            "sum_seconds": 10.798416453999995
+          },
+          {
+            "name": "zeEventQueryStatus",
+            "calls": 48677,
+            "sum_seconds": 6.443226847999952
+          },
+          {
+            "name": "zeCommandListHostSynchronize",
+            "calls": 29605,
+            "sum_seconds": 1.3107515859999936
+          },
+          {
+            "name": "zeCommandListAppendMemoryCopy",
+            "calls": 49014,
+            "sum_seconds": 1.2068609780000186
+          },
+          {
+            "name": "zeCommandListAppendLaunchKernelWithArguments",
+            "calls": 44553,
+            "sum_seconds": 0.7539948449999977
+          },
+          {
+            "name": "zeModuleCreate",
+            "calls": 77,
+            "sum_seconds": 0.12952704
+          },
+          {
+            "name": "zeVirtualMemMap",
+            "calls": 224,
+            "sum_seconds": 0.040352820000000005
+          },
+          {
+            "name": "zeVirtualMemUnmap",
+            "calls": 112,
+            "sum_seconds": 0.021051023
+          },
+          {
+            "name": "zeContextMakeMemoryResident",
+            "calls": 3,
+            "sum_seconds": 0.008731866
+          },
+          {
+            "name": "zeMemGetAllocProperties",
+            "calls": 75120,
+            "sum_seconds": 0.007558188999998428
+          },
+          {
+            "name": "zeKernelSetGroupSize",
+            "calls": 44568,
+            "sum_seconds": 0.004988742000000556
+          },
+          {
+            "name": "zeCommandListCreateImmediate",
+            "calls": 4,
+            "sum_seconds": 0.004874889
+          }
+        ],
+        "top_kernel_duration_sums": [
+          {
+            "name": "dpct_kernel_name<strata::kernels::iq_dequant_gu_f16(int, void const*, void const*, long, long, unsigned short*, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::dequant_gu_kernel_2397ca>[SIMD32 {6400; 2; 1} {32; 1; 1}]",
+            "calls": 6724,
+            "sum_seconds": 0.3697094920000011
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::iq_dequant_f16(int, void const*, long, unsigned short*, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::dequant_flat_kernel_d891c8, sycl::_V1::detail::half_impl::half>[SIMD32 {6400; 1; 1} {32; 1; 1}]",
+            "calls": 6724,
+            "sum_seconds": 0.25337446900000726
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_16x16_4x2x4[SIMD16 {20; 1; 1} {64; 2; 4}]",
+            "calls": 6724,
+            "sum_seconds": 0.09612616299999925
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#8}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<14>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {1920; 1; 1} {256; 1; 1}]",
+            "calls": 108,
+            "sum_seconds": 0.07552724700000002
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#8}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<14>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {3200; 1; 1} {256; 1; 1}]",
+            "calls": 44,
+            "sum_seconds": 0.050449354999999994
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_16x16_8x4[SIMD16 {20; 1; 1} {128; 4; 1}]",
+            "calls": 2129,
+            "sum_seconds": 0.019279435000000185
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_16x1_4x1[SIMD16 {1; 40; 1} {16; 4; 1}]",
+            "calls": 3309,
+            "sum_seconds": 0.015659338000000078
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_16x16_4x2x4[SIMD16 {80; 1; 1} {64; 2; 1}]",
+            "calls": 84,
+            "sum_seconds": 0.015376425999999999
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#7}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<13>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {3200; 1; 1} {256; 1; 1}]",
+            "calls": 20,
+            "sum_seconds": 0.013779679999999999
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#8}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<14>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {3840; 1; 1} {256; 1; 1}]",
+            "calls": 10,
+            "sum_seconds": 0.013605308999999998
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#6}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<12>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {1920; 1; 1} {256; 1; 1}]",
+            "calls": 28,
+            "sum_seconds": 0.011438631999999999
+          },
+          {
+            "name": "dpct_kernel_name<strata::prefill::gather_rows16(unsigned short const*, int const*, unsigned short*, long, long, void*)::gather_rows16_kernel_d9d697>[SIMD32 {2; 1; 1} {256; 1; 1}]",
+            "calls": 3309,
+            "sum_seconds": 0.010777707000000115
+          }
+        ]
+      },
+      "first_token_to_done": {
+        "wall_envelope_seconds": 1.3096315,
+        "gpu_event_count": 3703,
+        "gpu_busy_union_seconds": 0.446016,
+        "copy_busy_union_seconds": 0.388757,
+        "kernel_busy_union_seconds": 0.053474,
+        "fill_busy_union_seconds": 0.00192625,
+        "host_wait_union_seconds": 0.28141325,
+        "copy_directions": {
+          "H2D": {
+            "bytes": 1159825664,
+            "calls": 222,
+            "sum_seconds": 0.18036137300000007,
+            "active_time_gb_per_second": 6.43056572872729
+          },
+          "D2M": {
+            "bytes": 1051312172,
+            "calls": 79,
+            "sum_seconds": 0.18856881999999997,
+            "active_time_gb_per_second": 5.575217429901721
+          },
+          "M2D": {
+            "bytes": 118069296,
+            "calls": 50,
+            "sum_seconds": 0.019829565000000014,
+            "active_time_gb_per_second": 5.954205046858059
+          }
+        },
+        "top_level_zero_inclusive_api_times": [
+          {
+            "name": "zeEventHostSynchronize",
+            "calls": 427,
+            "sum_seconds": 0.275907084
+          },
+          {
+            "name": "zeCommandListAppendMemoryCopy",
+            "calls": 352,
+            "sum_seconds": 0.113620641
+          },
+          {
+            "name": "zeVirtualMemUnmap",
+            "calls": 112,
+            "sum_seconds": 0.020797503999999998
+          },
+          {
+            "name": "zeContextMakeMemoryResident",
+            "calls": 1,
+            "sum_seconds": 0.009482123
+          },
+          {
+            "name": "zeCommandListHostSynchronize",
+            "calls": 134,
+            "sum_seconds": 0.005505076000000002
+          },
+          {
+            "name": "zeCommandListImmediateAppendCommandListsExp",
+            "calls": 144,
+            "sum_seconds": 0.002354475999999999
+          },
+          {
+            "name": "zeEventQueryStatus",
+            "calls": 78,
+            "sum_seconds": 0.001197124
+          },
+          {
+            "name": "zePhysicalMemDestroy",
+            "calls": 112,
+            "sum_seconds": 0.001109769
+          },
+          {
+            "name": "zeCommandListAppendBarrier",
+            "calls": 72,
+            "sum_seconds": 0.000809213
+          },
+          {
+            "name": "zeMemAllocDevice",
+            "calls": 1,
+            "sum_seconds": 0.000226264
+          },
+          {
+            "name": "zeCommandListAppendMemoryFill",
+            "calls": 1,
+            "sum_seconds": 5.4281e-05
+          },
+          {
+            "name": "zeCommandListIsGraphCaptureEnabledExt",
+            "calls": 93,
+            "sum_seconds": 9.628999999999997e-06
+          }
+        ],
+        "top_kernel_duration_sums": [
+          {
+            "name": "dpct_kernel_name<strata::kernels::fused_gr_read_multi(strata::kernels::FusedGrArgs const*, int, float*, void*, unsigned long long*, int)::gr_up_multi_kernel_1a727f>[SIMD32 {160; 1; 1} {256; 1; 1}]",
+            "calls": 140,
+            "sum_seconds": 0.006237647999999996
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::fused_gr_read_multi(strata::kernels::FusedGrArgs const*, int, float*, void*, unsigned long long*, int)::{lambda(sycl::_V1::handler&)#3}::operator()(sycl::_V1::handler&) const::gr_down_sliced_k>[SIMD32 {80; 1; 1} {256; 1; 1}]",
+            "calls": 140,
+            "sum_seconds": 0.004376296
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch_q6k_wide<2>(void const*, void const*, float*, int, int, sycl::_V1::queue*)::native_mmvq_q6k_wide_a2, dpct_kernel_scalar<2> >[SIMD32 {640; 1; 1} {32; 4; 1}]",
+            "calls": 60,
+            "sum_seconds": 0.004284872
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::gdn_step_norm_multi(float*, float const*, int, float const*, float const*, float const*, float const*, float, float*, int, int, int, int const*, void*, int)::gdn_step_norm_multi_kernel_42ae26>[SIMD32 {48; 1; 1} {128; 4; 1}]",
+            "calls": 88,
+            "sum_seconds": 0.0032285040000000005
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch_q6k_wide<2>(void const*, void const*, float*, int, int, sycl::_V1::queue*)::native_mmvq_q6k_wide_a2, dpct_kernel_scalar<2> >[SIMD32 {2560; 1; 1} {32; 4; 1}]",
+            "calls": 30,
+            "sum_seconds": 0.003117281000000001
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch_down_port<20, 8>(unsigned int, sycl::_V1::queue*, unsigned long long const*, int const*, int const*, int const*, block_q8_1 const*, strata::kernels::NativeExpertLayout const&, float*)::native_down_port, dpct_kernel_scalar<20>, dpct_kernel_scalar<8> >[SIMD32 {80; 4; 1} {256; 1; 1}]",
+            "calls": 60,
+            "sum_seconds": 0.002835704
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch_q6k_wide<4>(void const*, void const*, float*, int, int, sycl::_V1::queue*)::native_mmvq_q6k_wide_a2, dpct_kernel_scalar<4> >[SIMD32 {62080; 1; 1} {32; 4; 1}]",
+            "calls": 1,
+            "sum_seconds": 0.002451458
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch_gu_port<18, 8>(unsigned int, sycl::_V1::queue*, unsigned long long const*, int const*, int const*, int const*, block_q8_1 const*, strata::kernels::NativeExpertLayout const&, float*, float*)::native_gu_port, dpct_kernel_scalar<18>, dpct_kernel_scalar<8> >[SIMD32 {40; 4; 1} {256; 1; 1}]",
+            "calls": 30,
+            "sum_seconds": 0.0021860300000000003
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch_gu_port<21, 8>(unsigned int, sycl::_V1::queue*, unsigned long long const*, int const*, int const*, int const*, block_q8_1 const*, strata::kernels::NativeExpertLayout const&, float*, float*)::native_gu_port, dpct_kernel_scalar<21>, dpct_kernel_scalar<8> >[SIMD32 {40; 4; 1} {256; 1; 1}]",
+            "calls": 20,
+            "sum_seconds": 0.0015394719999999994
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::bf16_gemv_fp32_mmvf_multi(float const*, long, unsigned short const*, float*, long, long, long, int, void*)::{lambda(sycl::_V1::handler&)#15}::operator()(sycl::_V1::handler&) const::bf16_f32_mmvf_multi_kernel_c4da69, dpct_kernel_scalar<256>, dpct_kernel_scalar<4> >[SIMD32 {512; 1; 1} {256; 1; 1}]",
+            "calls": 88,
+            "sum_seconds": 0.0015270439999999998
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch_q6k_wide<2>(void const*, void const*, float*, int, int, sycl::_V1::queue*)::native_mmvq_q6k_wide_a2, dpct_kernel_scalar<2> >[SIMD32 {1536; 1; 1} {32; 4; 1}]",
+            "calls": 22,
+            "sum_seconds": 0.0014748869999999998
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch_wide<strata::kernels::(anonymous namespace)::WideQ5K, 2>(void const*, void const*, float*, int, int, sycl::_V1::queue*)::native_mmvq_wide, strata::kernels::(anonymous namespace)::WideQ5K, dpct_kernel_scalar<2> >[SIMD32 {2560; 1; 1} {32; 4; 1}]",
+            "calls": 14,
+            "sum_seconds": 0.001445306
+          }
+        ]
+      }
+    },
+    {
+      "name": "repeat",
+      "profile_done": "DONE 4 37 13770.0 1002.4 length 3 6 30 111 2491 0 0 0.0 7 1829",
+      "clean_done": "DONE 4 37 12915.8 838.7 length 3 6 30 111 2491 0 0 0.0 7 1829",
+      "exact_head_and_tokens_and_logprobs": true,
+      "whole_request": {
+        "wall_envelope_seconds": 14.773319,
+        "gpu_event_count": 49093,
+        "gpu_busy_union_seconds": 9.79516725,
+        "copy_busy_union_seconds": 9.273905,
+        "kernel_busy_union_seconds": 0.518698,
+        "fill_busy_union_seconds": 0.002336,
+        "host_wait_union_seconds": 6.51196625,
+        "copy_directions": {
+          "H2D": {
+            "bytes": 53870993920,
+            "calls": 25327,
+            "sum_seconds": 8.714104060999945,
+            "active_time_gb_per_second": 6.182046202672761
+          },
+          "M2D": {
+            "bytes": 942572076,
+            "calls": 99,
+            "sum_seconds": 0.20299329099999996,
+            "active_time_gb_per_second": 4.643365656848236
+          },
+          "D2M": {
+            "bytes": 1997852712,
+            "calls": 132,
+            "sum_seconds": 0.35707921200000015,
+            "active_time_gb_per_second": 5.5949846556735405
+          },
+          "D2D": {
+            "bytes": 614400,
+            "calls": 10,
+            "sum_seconds": 1.6454e-05,
+            "active_time_gb_per_second": 37.34046432478425
+          }
+        },
+        "top_level_zero_inclusive_api_times": [
+          {
+            "name": "zeEventHostSynchronize",
+            "calls": 25715,
+            "sum_seconds": 6.016705095999984
+          },
+          {
+            "name": "zeEventQueryStatus",
+            "calls": 24847,
+            "sum_seconds": 3.225080209999996
+          },
+          {
+            "name": "zeCommandListAppendMemoryCopy",
+            "calls": 25559,
+            "sum_seconds": 0.6521492799999956
+          },
+          {
+            "name": "zeCommandListHostSynchronize",
+            "calls": 7981,
+            "sum_seconds": 0.4952743229999999
+          },
+          {
+            "name": "zeCommandListAppendLaunchKernelWithArguments",
+            "calls": 11572,
+            "sum_seconds": 0.18719076000000048
+          },
+          {
+            "name": "zeVirtualMemUnmap",
+            "calls": 112,
+            "sum_seconds": 0.025227952000000005
+          },
+          {
+            "name": "zeVirtualMemMap",
+            "calls": 112,
+            "sum_seconds": 0.019877128000000008
+          },
+          {
+            "name": "zeCommandListImmediateAppendCommandListsExp",
+            "calls": 495,
+            "sum_seconds": 0.010168578000000006
+          },
+          {
+            "name": "zeContextMakeMemoryResident",
+            "calls": 1,
+            "sum_seconds": 0.008748338
+          },
+          {
+            "name": "zeCommandListAppendBarrier",
+            "calls": 289,
+            "sum_seconds": 0.004178892999999997
+          },
+          {
+            "name": "zeMemGetAllocProperties",
+            "calls": 19730,
+            "sum_seconds": 0.0020139239999998147
+          },
+          {
+            "name": "zePhysicalMemCreate",
+            "calls": 112,
+            "sum_seconds": 0.0019985149999999998
+          }
+        ],
+        "top_kernel_duration_sums": [
+          {
+            "name": "dpct_kernel_name<strata::kernels::iq_dequant_gu_f16(int, void const*, void const*, long, long, unsigned short*, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::dequant_gu_kernel_2397ca>[SIMD32 {6400; 2; 1} {32; 1; 1}]",
+            "calls": 1579,
+            "sum_seconds": 0.086224669
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::iq_dequant_f16(int, void const*, long, unsigned short*, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::dequant_flat_kernel_d891c8, sycl::_V1::detail::half_impl::half>[SIMD32 {6400; 1; 1} {32; 1; 1}]",
+            "calls": 1579,
+            "sum_seconds": 0.05970662499999997
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#8}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<14>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {1920; 1; 1} {256; 1; 1}]",
+            "calls": 54,
+            "sum_seconds": 0.038101223
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#8}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<14>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {3200; 1; 1} {256; 1; 1}]",
+            "calls": 22,
+            "sum_seconds": 0.025379368999999992
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_16x16_4x2x4[SIMD16 {20; 1; 1} {64; 2; 4}]",
+            "calls": 1579,
+            "sum_seconds": 0.022687435999999978
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::fused_gr_read_multi(strata::kernels::FusedGrArgs const*, int, float*, void*, unsigned long long*, int)::gr_up_multi_kernel_1a727f>[SIMD32 {160; 1; 1} {256; 1; 1}]",
+            "calls": 494,
+            "sum_seconds": 0.021510205000000008
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::fused_gr_read_multi(strata::kernels::FusedGrArgs const*, int, float*, void*, unsigned long long*, int)::{lambda(sycl::_V1::handler&)#3}::operator()(sycl::_V1::handler&) const::gr_down_sliced_k>[SIMD32 {80; 1; 1} {256; 1; 1}]",
+            "calls": 494,
+            "sum_seconds": 0.014864796999999992
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch_q6k_wide<2>(void const*, void const*, float*, int, int, sycl::_V1::queue*)::native_mmvq_q6k_wide_a2, dpct_kernel_scalar<2> >[SIMD32 {640; 1; 1} {32; 4; 1}]",
+            "calls": 160,
+            "sum_seconds": 0.011428887999999998
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::gdn_step_norm_multi(float*, float const*, int, float const*, float const*, float const*, float const*, float, float*, int, int, int, int const*, void*, int)::gdn_step_norm_multi_kernel_42ae26>[SIMD32 {48; 1; 1} {128; 4; 1}]",
+            "calls": 288,
+            "sum_seconds": 0.009926125
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch_q6k_wide<2>(void const*, void const*, float*, int, int, sycl::_V1::queue*)::native_mmvq_q6k_wide_a2, dpct_kernel_scalar<2> >[SIMD32 {2560; 1; 1} {32; 4; 1}]",
+            "calls": 88,
+            "sum_seconds": 0.009104437000000003
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch_down_port<20, 8>(unsigned int, sycl::_V1::queue*, unsigned long long const*, int const*, int const*, int const*, block_q8_1 const*, strata::kernels::NativeExpertLayout const&, float*)::native_down_port, dpct_kernel_scalar<20>, dpct_kernel_scalar<8> >[SIMD32 {80; 4; 1} {256; 1; 1}]",
+            "calls": 195,
+            "sum_seconds": 0.008598666999999994
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_4x16_1x1x16[SIMD16 {2560; 1; 1} {16; 1; 16}]",
+            "calls": 36,
+            "sum_seconds": 0.006849360000000001
+          }
+        ]
+      },
+      "request_to_last_prefill_progress": {
+        "wall_envelope_seconds": 12.759992,
+        "gpu_event_count": 36322,
+        "gpu_busy_union_seconds": 8.85052025,
+        "copy_busy_union_seconds": 8.5179495,
+        "kernel_busy_union_seconds": 0.3323425,
+        "fill_busy_union_seconds": 0.0,
+        "host_wait_union_seconds": 5.88954325,
+        "copy_directions": {
+          "H2D": {
+            "bytes": 50240163840,
+            "calls": 24553,
+            "sum_seconds": 8.146852190999953,
+            "active_time_gb_per_second": 6.1668191176343745
+          },
+          "M2D": {
+            "bytes": 942572076,
+            "calls": 99,
+            "sum_seconds": 0.20299329099999996,
+            "active_time_gb_per_second": 4.643365656848236
+          },
+          "D2M": {
+            "bytes": 942567420,
+            "calls": 49,
+            "sum_seconds": 0.168094351,
+            "active_time_gb_per_second": 5.6073711840560305
+          },
+          "D2D": {
+            "bytes": 245760,
+            "calls": 1,
+            "sum_seconds": 3.02e-06,
+            "active_time_gb_per_second": 81.3774834437086
+          }
+        },
+        "top_level_zero_inclusive_api_times": [
+          {
+            "name": "zeEventHostSynchronize",
+            "calls": 24603,
+            "sum_seconds": 5.419919283999982
+          },
+          {
+            "name": "zeEventQueryStatus",
+            "calls": 24553,
+            "sum_seconds": 3.2156543449999946
+          },
+          {
+            "name": "zeCommandListAppendMemoryCopy",
+            "calls": 24702,
+            "sum_seconds": 0.5399130610000021
+          },
+          {
+            "name": "zeCommandListHostSynchronize",
+            "calls": 7637,
+            "sum_seconds": 0.4696248929999997
+          },
+          {
+            "name": "zeCommandListAppendLaunchKernelWithArguments",
+            "calls": 11572,
+            "sum_seconds": 0.18719076000000048
+          },
+          {
+            "name": "zeVirtualMemMap",
+            "calls": 112,
+            "sum_seconds": 0.019877128000000008
+          },
+          {
+            "name": "zeMemGetAllocProperties",
+            "calls": 19730,
+            "sum_seconds": 0.0020139239999998147
+          },
+          {
+            "name": "zePhysicalMemCreate",
+            "calls": 112,
+            "sum_seconds": 0.0019985149999999998
+          },
+          {
+            "name": "zeKernelSetGroupSize",
+            "calls": 11572,
+            "sum_seconds": 0.001330222999999984
+          },
+          {
+            "name": "zeCommandListIsGraphCaptureEnabledExt",
+            "calls": 24539,
+            "sum_seconds": 0.0012087819999999235
+          },
+          {
+            "name": "zeCommandListAppendBarrier",
+            "calls": 48,
+            "sum_seconds": 0.0005605090000000002
+          },
+          {
+            "name": "zeMemFreeExt",
+            "calls": 1,
+            "sum_seconds": 0.000292749
+          }
+        ],
+        "top_kernel_duration_sums": [
+          {
+            "name": "dpct_kernel_name<strata::kernels::iq_dequant_gu_f16(int, void const*, void const*, long, long, unsigned short*, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::dequant_gu_kernel_2397ca>[SIMD32 {6400; 2; 1} {32; 1; 1}]",
+            "calls": 1579,
+            "sum_seconds": 0.086224669
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::iq_dequant_f16(int, void const*, long, unsigned short*, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::dequant_flat_kernel_d891c8, sycl::_V1::detail::half_impl::half>[SIMD32 {6400; 1; 1} {32; 1; 1}]",
+            "calls": 1579,
+            "sum_seconds": 0.05970662499999997
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#8}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<14>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {1920; 1; 1} {256; 1; 1}]",
+            "calls": 54,
+            "sum_seconds": 0.038101223
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#8}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<14>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {3200; 1; 1} {256; 1; 1}]",
+            "calls": 22,
+            "sum_seconds": 0.025379368999999992
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_16x16_4x2x4[SIMD16 {20; 1; 1} {64; 2; 4}]",
+            "calls": 1579,
+            "sum_seconds": 0.022687435999999978
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_4x16_1x1x16[SIMD16 {2560; 1; 1} {16; 1; 16}]",
+            "calls": 36,
+            "sum_seconds": 0.006849360000000001
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#8}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<14>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {3840; 1; 1} {256; 1; 1}]",
+            "calls": 5,
+            "sum_seconds": 0.006840102000000001
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#7}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<13>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {3200; 1; 1} {256; 1; 1}]",
+            "calls": 10,
+            "sum_seconds": 0.0068308299999999995
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_4x16_1x1x16[SIMD16 {640; 1; 1} {16; 1; 16}]",
+            "calls": 49,
+            "sum_seconds": 0.006595394999999998
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#6}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<12>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {1920; 1; 1} {256; 1; 1}]",
+            "calls": 14,
+            "sum_seconds": 0.005618223
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_4x16_1x1x16[SIMD16 {1536; 1; 1} {16; 1; 16}]",
+            "calls": 36,
+            "sum_seconds": 0.004701757
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_16x1_4x1[SIMD16 {1; 40; 1} {16; 4; 1}]",
+            "calls": 935,
+            "sum_seconds": 0.004405130000000007
+          }
+        ]
+      },
+      "first_token_to_done": {
+        "wall_envelope_seconds": 0.84478175,
+        "gpu_event_count": 197,
+        "gpu_busy_union_seconds": 0.209258,
+        "copy_busy_union_seconds": 0.206935,
+        "kernel_busy_union_seconds": 0.0,
+        "fill_busy_union_seconds": 0.002323,
+        "host_wait_union_seconds": 0.14270175,
+        "copy_directions": {
+          "D2M": {
+            "bytes": 1050318892,
+            "calls": 78,
+            "sum_seconds": 0.18807507099999998,
+            "active_time_gb_per_second": 5.584572619940683
+          },
+          "H2D": {
+            "bytes": 117504000,
+            "calls": 54,
+            "sum_seconds": 0.019150810000000004,
+            "active_time_gb_per_second": 6.135719585751202
+          }
+        },
+        "top_level_zero_inclusive_api_times": [
+          {
+            "name": "zeEventHostSynchronize",
+            "calls": 136,
+            "sum_seconds": 0.14267299500000002
+          },
+          {
+            "name": "zeCommandListAppendMemoryCopy",
+            "calls": 132,
+            "sum_seconds": 0.093145189
+          },
+          {
+            "name": "zeVirtualMemUnmap",
+            "calls": 112,
+            "sum_seconds": 0.025227952000000005
+          },
+          {
+            "name": "zeContextMakeMemoryResident",
+            "calls": 1,
+            "sum_seconds": 0.008748338
+          },
+          {
+            "name": "zeEventQueryStatus",
+            "calls": 54,
+            "sum_seconds": 0.008521242
+          },
+          {
+            "name": "zePhysicalMemDestroy",
+            "calls": 112,
+            "sum_seconds": 0.0011465960000000002
+          },
+          {
+            "name": "zeCommandListAppendMemoryFill",
+            "calls": 64,
+            "sum_seconds": 0.0009055680000000003
+          },
+          {
+            "name": "zeMemAllocDevice",
+            "calls": 1,
+            "sum_seconds": 0.000199394
+          },
+          {
+            "name": "zeCommandListHostSynchronize",
+            "calls": 37,
+            "sum_seconds": 2.9765999999999992e-05
+          },
+          {
+            "name": "zeCommandListAppendBarrier",
+            "calls": 1,
+            "sum_seconds": 1.106e-05
+          },
+          {
+            "name": "zeCommandListIsGraphCaptureEnabledExt",
+            "calls": 68,
+            "sum_seconds": 3.3250000000000008e-06
+          }
+        ],
+        "top_kernel_duration_sums": [
+          {
+            "name": "zeCommandListAppendBarrier",
+            "calls": 1,
+            "sum_seconds": 1.0399999999999999e-07
+          }
+        ]
+      }
+    },
+    {
+      "name": "other",
+      "profile_done": "DONE 4 37 29935.6 999.1 length 3 6 0 110 2499 0 0 0.0 37 1821",
+      "clean_done": "DONE 4 37 27209.3 833.4 length 3 6 0 110 2499 0 0 0.0 37 1821",
+      "exact_head_and_tokens_and_logprobs": true,
+      "whole_request": {
+        "wall_envelope_seconds": 30.94016675,
+        "gpu_event_count": 109253,
+        "gpu_busy_union_seconds": 19.43973,
+        "copy_busy_union_seconds": 18.10996725,
+        "kernel_busy_union_seconds": 1.3258105,
+        "fill_busy_union_seconds": 0.00386575,
+        "host_wait_union_seconds": 12.97838475,
+        "copy_directions": {
+          "H2D": {
+            "bytes": 104615569920,
+            "calls": 50115,
+            "sum_seconds": 16.959800012000052,
+            "active_time_gb_per_second": 6.168443604640288
+          },
+          "M2D": {
+            "bytes": 2168743288,
+            "calls": 336,
+            "sum_seconds": 0.4541496460000003,
+            "active_time_gb_per_second": 4.775393545060693
+          },
+          "D2M": {
+            "bytes": 3916400672,
+            "calls": 145,
+            "sum_seconds": 0.6960313870000004,
+            "active_time_gb_per_second": 5.626758713971612
+          },
+          "D2D": {
+            "bytes": 1843200,
+            "calls": 11,
+            "sum_seconds": 2.489e-05,
+            "active_time_gb_per_second": 74.05383688228204
+          }
+        },
+        "top_level_zero_inclusive_api_times": [
+          {
+            "name": "zeEventHostSynchronize",
+            "calls": 50655,
+            "sum_seconds": 11.571052849999983
+          },
+          {
+            "name": "zeEventQueryStatus",
+            "calls": 49635,
+            "sum_seconds": 6.540239183999987
+          },
+          {
+            "name": "zeCommandListHostSynchronize",
+            "calls": 31388,
+            "sum_seconds": 1.4074279870000015
+          },
+          {
+            "name": "zeCommandListAppendMemoryCopy",
+            "calls": 50598,
+            "sum_seconds": 1.3073617589999922
+          },
+          {
+            "name": "zeCommandListAppendLaunchKernelWithArguments",
+            "calls": 46706,
+            "sum_seconds": 0.7704425370000083
+          },
+          {
+            "name": "zeVirtualMemUnmap",
+            "calls": 224,
+            "sum_seconds": 0.05630601
+          },
+          {
+            "name": "zeVirtualMemMap",
+            "calls": 224,
+            "sum_seconds": 0.03908849599999996
+          },
+          {
+            "name": "zeContextMakeMemoryResident",
+            "calls": 2,
+            "sum_seconds": 0.017443787
+          },
+          {
+            "name": "zeCommandListImmediateAppendCommandListsExp",
+            "calls": 495,
+            "sum_seconds": 0.009102267999999991
+          },
+          {
+            "name": "zeMemGetAllocProperties",
+            "calls": 78710,
+            "sum_seconds": 0.008100709999996392
+          },
+          {
+            "name": "zeKernelSetGroupSize",
+            "calls": 47021,
+            "sum_seconds": 0.005172213000000803
+          },
+          {
+            "name": "zeCommandListAppendBarrier",
+            "calls": 338,
+            "sum_seconds": 0.0045269509999999995
+          }
+        ],
+        "top_kernel_duration_sums": [
+          {
+            "name": "dpct_kernel_name<strata::kernels::iq_dequant_gu_f16(int, void const*, void const*, long, long, unsigned short*, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::dequant_gu_kernel_2397ca>[SIMD32 {6400; 2; 1} {32; 1; 1}]",
+            "calls": 7083,
+            "sum_seconds": 0.3871573220000017
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::iq_dequant_f16(int, void const*, long, unsigned short*, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::dequant_flat_kernel_d891c8, sycl::_V1::detail::half_impl::half>[SIMD32 {6400; 1; 1} {32; 1; 1}]",
+            "calls": 7083,
+            "sum_seconds": 0.26450715100000766
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_16x16_4x2x4[SIMD16 {20; 1; 1} {64; 2; 4}]",
+            "calls": 7083,
+            "sum_seconds": 0.1012966239999988
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#8}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<14>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {1920; 1; 1} {256; 1; 1}]",
+            "calls": 108,
+            "sum_seconds": 0.07624870699999999
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#8}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<14>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {3200; 1; 1} {256; 1; 1}]",
+            "calls": 44,
+            "sum_seconds": 0.050794979
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::fused_gr_read_multi(strata::kernels::FusedGrArgs const*, int, float*, void*, unsigned long long*, int)::gr_up_multi_kernel_1a727f>[SIMD32 {160; 1; 1} {256; 1; 1}]",
+            "calls": 494,
+            "sum_seconds": 0.021547811999999993
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_16x16_8x4[SIMD16 {20; 1; 1} {128; 4; 1}]",
+            "calls": 2157,
+            "sum_seconds": 0.019525435000000174
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_16x1_4x1[SIMD16 {1; 40; 1} {16; 4; 1}]",
+            "calls": 3523,
+            "sum_seconds": 0.016675523000000077
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_16x16_4x2x4[SIMD16 {80; 1; 1} {64; 2; 1}]",
+            "calls": 84,
+            "sum_seconds": 0.015366527000000005
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::fused_gr_read_multi(strata::kernels::FusedGrArgs const*, int, float*, void*, unsigned long long*, int)::{lambda(sycl::_V1::handler&)#3}::operator()(sycl::_V1::handler&) const::gr_down_sliced_k>[SIMD32 {80; 1; 1} {256; 1; 1}]",
+            "calls": 494,
+            "sum_seconds": 0.014866667999999987
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#8}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<14>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {3840; 1; 1} {256; 1; 1}]",
+            "calls": 10,
+            "sum_seconds": 0.013681351000000001
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#7}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<13>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {3200; 1; 1} {256; 1; 1}]",
+            "calls": 20,
+            "sum_seconds": 0.013655721000000001
+          }
+        ]
+      },
+      "request_to_last_prefill_progress": {
+        "wall_envelope_seconds": 28.96215575,
+        "gpu_event_count": 96699,
+        "gpu_busy_union_seconds": 18.4046895,
+        "copy_busy_union_seconds": 17.257402,
+        "kernel_busy_union_seconds": 1.14527025,
+        "fill_busy_union_seconds": 0.00193075,
+        "host_wait_union_seconds": 12.32956075,
+        "copy_directions": {
+          "H2D": {
+            "bytes": 100504266560,
+            "calls": 49108,
+            "sum_seconds": 16.313307704999946,
+            "active_time_gb_per_second": 6.160876039210366
+          },
+          "M2D": {
+            "bytes": 1931365656,
+            "calls": 198,
+            "sum_seconds": 0.4143250150000003,
+            "active_time_gb_per_second": 4.661474895499609
+          },
+          "D2M": {
+            "bytes": 2980417572,
+            "calls": 138,
+            "sum_seconds": 0.5297337850000006,
+            "active_time_gb_per_second": 5.62625540676058
+          },
+          "D2D": {
+            "bytes": 1515520,
+            "calls": 3,
+            "sum_seconds": 1.3228e-05,
+            "active_time_gb_per_second": 114.56909585727246
+          }
+        },
+        "top_level_zero_inclusive_api_times": [
+          {
+            "name": "zeEventHostSynchronize",
+            "calls": 49258,
+            "sum_seconds": 10.947898467999986
+          },
+          {
+            "name": "zeEventQueryStatus",
+            "calls": 49088,
+            "sum_seconds": 6.492890821999988
+          },
+          {
+            "name": "zeCommandListHostSynchronize",
+            "calls": 31035,
+            "sum_seconds": 1.381689058000002
+          },
+          {
+            "name": "zeCommandListAppendMemoryCopy",
+            "calls": 49446,
+            "sum_seconds": 1.1949504229999872
+          },
+          {
+            "name": "zeCommandListAppendLaunchKernelWithArguments",
+            "calls": 46706,
+            "sum_seconds": 0.7704425370000083
+          },
+          {
+            "name": "zeVirtualMemMap",
+            "calls": 224,
+            "sum_seconds": 0.03908849599999996
+          },
+          {
+            "name": "zeVirtualMemUnmap",
+            "calls": 112,
+            "sum_seconds": 0.03365378100000001
+          },
+          {
+            "name": "zeContextMakeMemoryResident",
+            "calls": 1,
+            "sum_seconds": 0.008787692
+          },
+          {
+            "name": "zeMemGetAllocProperties",
+            "calls": 78710,
+            "sum_seconds": 0.008100709999996392
+          },
+          {
+            "name": "zeKernelSetGroupSize",
+            "calls": 46706,
+            "sum_seconds": 0.005151363000000834
+          },
+          {
+            "name": "zePhysicalMemCreate",
+            "calls": 224,
+            "sum_seconds": 0.004166010000000001
+          },
+          {
+            "name": "zeCommandListIsGraphCaptureEnabledExt",
+            "calls": 49073,
+            "sum_seconds": 0.0024484490000006953
+          }
+        ],
+        "top_kernel_duration_sums": [
+          {
+            "name": "dpct_kernel_name<strata::kernels::iq_dequant_gu_f16(int, void const*, void const*, long, long, unsigned short*, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::dequant_gu_kernel_2397ca>[SIMD32 {6400; 2; 1} {32; 1; 1}]",
+            "calls": 7083,
+            "sum_seconds": 0.3871573220000017
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::iq_dequant_f16(int, void const*, long, unsigned short*, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::dequant_flat_kernel_d891c8, sycl::_V1::detail::half_impl::half>[SIMD32 {6400; 1; 1} {32; 1; 1}]",
+            "calls": 7083,
+            "sum_seconds": 0.26450715100000766
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_16x16_4x2x4[SIMD16 {20; 1; 1} {64; 2; 4}]",
+            "calls": 7083,
+            "sum_seconds": 0.1012966239999988
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#8}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<14>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {1920; 1; 1} {256; 1; 1}]",
+            "calls": 108,
+            "sum_seconds": 0.07624870699999999
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#8}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<14>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {3200; 1; 1} {256; 1; 1}]",
+            "calls": 44,
+            "sum_seconds": 0.050794979
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_16x16_8x4[SIMD16 {20; 1; 1} {128; 4; 1}]",
+            "calls": 2157,
+            "sum_seconds": 0.019525435000000174
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_16x1_4x1[SIMD16 {1; 40; 1} {16; 4; 1}]",
+            "calls": 3523,
+            "sum_seconds": 0.016675523000000077
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_16x16_4x2x4[SIMD16 {80; 1; 1} {64; 2; 1}]",
+            "calls": 84,
+            "sum_seconds": 0.015366527000000005
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#8}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<14>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {3840; 1; 1} {256; 1; 1}]",
+            "calls": 10,
+            "sum_seconds": 0.013681351000000001
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#7}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<13>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {3200; 1; 1} {256; 1; 1}]",
+            "calls": 20,
+            "sum_seconds": 0.013655721000000001
+          },
+          {
+            "name": "dpct_kernel_name<strata::prefill::gather_rows16(unsigned short const*, int const*, unsigned short*, long, long, void*)::gather_rows16_kernel_d9d697>[SIMD32 {2; 1; 1} {256; 1; 1}]",
+            "calls": 3523,
+            "sum_seconds": 0.011424783000000096
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#6}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<12>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {1920; 1; 1} {256; 1; 1}]",
+            "calls": 28,
+            "sum_seconds": 0.011229987999999998
+          }
+        ]
+      },
+      "first_token_to_done": {
+        "wall_envelope_seconds": 0.84978125,
+        "gpu_event_count": 321,
+        "gpu_busy_union_seconds": 0.280384,
+        "copy_busy_union_seconds": 0.2784575,
+        "kernel_busy_union_seconds": 0.0,
+        "fill_busy_union_seconds": 0.0019265,
+        "host_wait_union_seconds": 0.20008425,
+        "copy_directions": {
+          "D2M": {
+            "bytes": 931016700,
+            "calls": 2,
+            "sum_seconds": 0.165387811,
+            "active_time_gb_per_second": 5.629294531263855
+          },
+          "H2D": {
+            "bytes": 689792000,
+            "calls": 317,
+            "sum_seconds": 0.11312685499999996,
+            "active_time_gb_per_second": 6.097508854108958
+          }
+        },
+        "top_level_zero_inclusive_api_times": [
+          {
+            "name": "zeEventHostSynchronize",
+            "calls": 324,
+            "sum_seconds": 0.2001308629999998
+          },
+          {
+            "name": "zeCommandListAppendMemoryCopy",
+            "calls": 319,
+            "sum_seconds": 0.06811579100000004
+          },
+          {
+            "name": "zeEventQueryStatus",
+            "calls": 317,
+            "sum_seconds": 0.046494674000000014
+          },
+          {
+            "name": "zeVirtualMemUnmap",
+            "calls": 112,
+            "sum_seconds": 0.02265222899999999
+          },
+          {
+            "name": "zeContextMakeMemoryResident",
+            "calls": 1,
+            "sum_seconds": 0.008656094999999999
+          },
+          {
+            "name": "zePhysicalMemDestroy",
+            "calls": 112,
+            "sum_seconds": 0.0015760019999999993
+          },
+          {
+            "name": "zeMemAllocDevice",
+            "calls": 1,
+            "sum_seconds": 0.000208621
+          },
+          {
+            "name": "zeCommandListAppendMemoryFill",
+            "calls": 1,
+            "sum_seconds": 4.8790999999999994e-05
+          },
+          {
+            "name": "zeCommandListIsGraphCaptureEnabledExt",
+            "calls": 332,
+            "sum_seconds": 1.8535999999999956e-05
+          },
+          {
+            "name": "zeCommandListHostSynchronize",
+            "calls": 25,
+            "sum_seconds": 1.8226e-05
+          },
+          {
+            "name": "zeCommandListAppendBarrier",
+            "calls": 1,
+            "sum_seconds": 1.1161e-05
+          }
+        ],
+        "top_kernel_duration_sums": [
+          {
+            "name": "zeCommandListAppendBarrier",
+            "calls": 1,
+            "sum_seconds": 1.0399999999999999e-07
+          }
+        ]
+      }
+    },
+    {
+      "name": "restored",
+      "profile_done": "DONE 4 37 13612.8 1013.6 length 3 6 30 111 2491 0 0 0.0 7 1829",
+      "clean_done": "DONE 4 37 12786.5 835.2 length 3 6 30 111 2491 0 0 0.0 7 1829",
+      "exact_head_and_tokens_and_logprobs": true,
+      "whole_request": {
+        "wall_envelope_seconds": 14.626641,
+        "gpu_event_count": 48587,
+        "gpu_busy_union_seconds": 9.48694675,
+        "copy_busy_union_seconds": 8.96794875,
+        "kernel_busy_union_seconds": 0.51887,
+        "fill_busy_union_seconds": 1.35e-05,
+        "host_wait_union_seconds": 6.28754525,
+        "copy_directions": {
+          "H2D": {
+            "bytes": 53081105920,
+            "calls": 24964,
+            "sum_seconds": 8.595777523999939,
+            "active_time_gb_per_second": 6.17525357907348
+          },
+          "M2D": {
+            "bytes": 942572076,
+            "calls": 99,
+            "sum_seconds": 0.203714023,
+            "active_time_gb_per_second": 4.626937616366253
+          },
+          "D2M": {
+            "bytes": 947533820,
+            "calls": 54,
+            "sum_seconds": 0.16843059400000002,
+            "active_time_gb_per_second": 5.625663351872997
+          },
+          "D2D": {
+            "bytes": 614400,
+            "calls": 10,
+            "sum_seconds": 1.6976e-05,
+            "active_time_gb_per_second": 36.19227144203581
+          }
+        },
+        "top_level_zero_inclusive_api_times": [
+          {
+            "name": "zeEventHostSynchronize",
+            "calls": 25269,
+            "sum_seconds": 5.791093988000001
+          },
+          {
+            "name": "zeEventQueryStatus",
+            "calls": 24484,
+            "sum_seconds": 3.188439002999991
+          },
+          {
+            "name": "zeCommandListAppendMemoryCopy",
+            "calls": 25118,
+            "sum_seconds": 0.5511333260000048
+          },
+          {
+            "name": "zeCommandListHostSynchronize",
+            "calls": 7933,
+            "sum_seconds": 0.49643649900000025
+          },
+          {
+            "name": "zeCommandListAppendLaunchKernelWithArguments",
+            "calls": 11572,
+            "sum_seconds": 0.1860762530000008
+          },
+          {
+            "name": "zeVirtualMemMap",
+            "calls": 112,
+            "sum_seconds": 0.022524323000000013
+          },
+          {
+            "name": "zeCommandListImmediateAppendCommandListsExp",
+            "calls": 495,
+            "sum_seconds": 0.009952595999999998
+          },
+          {
+            "name": "zeCommandListAppendBarrier",
+            "calls": 288,
+            "sum_seconds": 0.0040395740000000015
+          },
+          {
+            "name": "zePhysicalMemCreate",
+            "calls": 112,
+            "sum_seconds": 0.0021112569999999996
+          },
+          {
+            "name": "zeMemGetAllocProperties",
+            "calls": 19730,
+            "sum_seconds": 0.0020206749999998256
+          },
+          {
+            "name": "zeKernelSetGroupSize",
+            "calls": 11887,
+            "sum_seconds": 0.0013565279999999866
+          },
+          {
+            "name": "zeCommandListIsGraphCaptureEnabledExt",
+            "calls": 24469,
+            "sum_seconds": 0.0012144849999998998
+          }
+        ],
+        "top_kernel_duration_sums": [
+          {
+            "name": "dpct_kernel_name<strata::kernels::iq_dequant_gu_f16(int, void const*, void const*, long, long, unsigned short*, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::dequant_gu_kernel_2397ca>[SIMD32 {6400; 2; 1} {32; 1; 1}]",
+            "calls": 1579,
+            "sum_seconds": 0.08628945600000015
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::iq_dequant_f16(int, void const*, long, unsigned short*, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::dequant_flat_kernel_d891c8, sycl::_V1::detail::half_impl::half>[SIMD32 {6400; 1; 1} {32; 1; 1}]",
+            "calls": 1579,
+            "sum_seconds": 0.059638088000000054
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#8}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<14>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {1920; 1; 1} {256; 1; 1}]",
+            "calls": 54,
+            "sum_seconds": 0.03808841299999999
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#8}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<14>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {3200; 1; 1} {256; 1; 1}]",
+            "calls": 22,
+            "sum_seconds": 0.025363533
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_16x16_4x2x4[SIMD16 {20; 1; 1} {64; 2; 4}]",
+            "calls": 1579,
+            "sum_seconds": 0.02268287199999997
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::fused_gr_read_multi(strata::kernels::FusedGrArgs const*, int, float*, void*, unsigned long long*, int)::gr_up_multi_kernel_1a727f>[SIMD32 {160; 1; 1} {256; 1; 1}]",
+            "calls": 494,
+            "sum_seconds": 0.02160864299999999
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::fused_gr_read_multi(strata::kernels::FusedGrArgs const*, int, float*, void*, unsigned long long*, int)::{lambda(sycl::_V1::handler&)#3}::operator()(sycl::_V1::handler&) const::gr_down_sliced_k>[SIMD32 {80; 1; 1} {256; 1; 1}]",
+            "calls": 494,
+            "sum_seconds": 0.01485447899999999
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch_q6k_wide<2>(void const*, void const*, float*, int, int, sycl::_V1::queue*)::native_mmvq_q6k_wide_a2, dpct_kernel_scalar<2> >[SIMD32 {640; 1; 1} {32; 4; 1}]",
+            "calls": 160,
+            "sum_seconds": 0.011433992
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::gdn_step_norm_multi(float*, float const*, int, float const*, float const*, float const*, float const*, float, float*, int, int, int, int const*, void*, int)::gdn_step_norm_multi_kernel_42ae26>[SIMD32 {48; 1; 1} {128; 4; 1}]",
+            "calls": 288,
+            "sum_seconds": 0.009995186000000003
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch_q6k_wide<2>(void const*, void const*, float*, int, int, sycl::_V1::queue*)::native_mmvq_q6k_wide_a2, dpct_kernel_scalar<2> >[SIMD32 {2560; 1; 1} {32; 4; 1}]",
+            "calls": 88,
+            "sum_seconds": 0.009111320999999999
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch_down_port<20, 8>(unsigned int, sycl::_V1::queue*, unsigned long long const*, int const*, int const*, int const*, block_q8_1 const*, strata::kernels::NativeExpertLayout const&, float*)::native_down_port, dpct_kernel_scalar<20>, dpct_kernel_scalar<8> >[SIMD32 {80; 4; 1} {256; 1; 1}]",
+            "calls": 195,
+            "sum_seconds": 0.008580231
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_4x16_1x1x16[SIMD16 {2560; 1; 1} {16; 1; 16}]",
+            "calls": 36,
+            "sum_seconds": 0.006848214000000003
+          }
+        ]
+      },
+      "request_to_last_prefill_progress": {
+        "wall_envelope_seconds": 12.625558,
+        "gpu_event_count": 36298,
+        "gpu_busy_union_seconds": 8.76158725,
+        "copy_busy_union_seconds": 8.425451,
+        "kernel_busy_union_seconds": 0.336017,
+        "fill_busy_union_seconds": 4.75e-06,
+        "host_wait_union_seconds": 5.82996875,
+        "copy_directions": {
+          "H2D": {
+            "bytes": 49618730400,
+            "calls": 24260,
+            "sum_seconds": 8.055617939999918,
+            "active_time_gb_per_second": 6.159518831400848
+          },
+          "M2D": {
+            "bytes": 942572076,
+            "calls": 99,
+            "sum_seconds": 0.203714023,
+            "active_time_gb_per_second": 4.626937616366253
+          },
+          "D2M": {
+            "bytes": 942567420,
+            "calls": 49,
+            "sum_seconds": 0.167520596,
+            "active_time_gb_per_second": 5.626576328560819
+          },
+          "D2D": {
+            "bytes": 286720,
+            "calls": 2,
+            "sum_seconds": 5.104000000000001e-06,
+            "active_time_gb_per_second": 56.17554858934169
+          }
+        },
+        "top_level_zero_inclusive_api_times": [
+          {
+            "name": "zeEventHostSynchronize",
+            "calls": 24317,
+            "sum_seconds": 5.361689401999995
+          },
+          {
+            "name": "zeEventQueryStatus",
+            "calls": 24250,
+            "sum_seconds": 3.187531331999991
+          },
+          {
+            "name": "zeCommandListAppendMemoryCopy",
+            "calls": 24409,
+            "sum_seconds": 0.5330386560000024
+          },
+          {
+            "name": "zeCommandListHostSynchronize",
+            "calls": 7644,
+            "sum_seconds": 0.4696990510000005
+          },
+          {
+            "name": "zeCommandListAppendLaunchKernelWithArguments",
+            "calls": 11572,
+            "sum_seconds": 0.1860762530000008
+          },
+          {
+            "name": "zeVirtualMemMap",
+            "calls": 112,
+            "sum_seconds": 0.022524323000000013
+          },
+          {
+            "name": "zePhysicalMemCreate",
+            "calls": 112,
+            "sum_seconds": 0.0021112569999999996
+          },
+          {
+            "name": "zeMemGetAllocProperties",
+            "calls": 19730,
+            "sum_seconds": 0.0020206749999998256
+          },
+          {
+            "name": "zeKernelSetGroupSize",
+            "calls": 11572,
+            "sum_seconds": 0.0013384089999999816
+          },
+          {
+            "name": "zeCommandListIsGraphCaptureEnabledExt",
+            "calls": 24235,
+            "sum_seconds": 0.001178299999999901
+          },
+          {
+            "name": "zeCommandListAppendBarrier",
+            "calls": 54,
+            "sum_seconds": 0.000630731
+          },
+          {
+            "name": "zeMemFreeExt",
+            "calls": 1,
+            "sum_seconds": 0.00028560500000000003
+          }
+        ],
+        "top_kernel_duration_sums": [
+          {
+            "name": "dpct_kernel_name<strata::kernels::iq_dequant_gu_f16(int, void const*, void const*, long, long, unsigned short*, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::dequant_gu_kernel_2397ca>[SIMD32 {6400; 2; 1} {32; 1; 1}]",
+            "calls": 1579,
+            "sum_seconds": 0.08628945600000015
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::iq_dequant_f16(int, void const*, long, unsigned short*, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::dequant_flat_kernel_d891c8, sycl::_V1::detail::half_impl::half>[SIMD32 {6400; 1; 1} {32; 1; 1}]",
+            "calls": 1579,
+            "sum_seconds": 0.059638088000000054
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#8}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<14>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {1920; 1; 1} {256; 1; 1}]",
+            "calls": 54,
+            "sum_seconds": 0.03808841299999999
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#8}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<14>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {3200; 1; 1} {256; 1; 1}]",
+            "calls": 22,
+            "sum_seconds": 0.025363533
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_16x16_4x2x4[SIMD16 {20; 1; 1} {64; 2; 4}]",
+            "calls": 1579,
+            "sum_seconds": 0.02268287199999997
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_4x16_1x1x16[SIMD16 {2560; 1; 1} {16; 1; 16}]",
+            "calls": 36,
+            "sum_seconds": 0.006848214000000003
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#8}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<14>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {3840; 1; 1} {256; 1; 1}]",
+            "calls": 5,
+            "sum_seconds": 0.006836977000000001
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#7}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<13>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {3200; 1; 1} {256; 1; 1}]",
+            "calls": 10,
+            "sum_seconds": 0.006824059
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_4x16_1x1x16[SIMD16 {640; 1; 1} {16; 1; 16}]",
+            "calls": 49,
+            "sum_seconds": 0.006602583999999998
+          },
+          {
+            "name": "dpct_kernel_name<strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::H16>(int, void const*, long, long, long, strata::kernels::(anonymous namespace)::H16*, void*)::{lambda(sycl::_V1::handler&)#6}::operator()(sycl::_V1::handler&) const::dequant_kernel_ec9311, dpct_kernel_scalar<12>, strata::kernels::(anonymous namespace)::H16>[SIMD32 {1920; 1; 1} {256; 1; 1}]",
+            "calls": 14,
+            "sum_seconds": 0.005605097999999999
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_4x16_1x1x16[SIMD16 {1536; 1; 1} {16; 1; 16}]",
+            "calls": 36,
+            "sum_seconds": 0.004699673999999999
+          },
+          {
+            "name": "gemm_f16f16f32_nocopy_tn_16x1_4x1[SIMD16 {1; 40; 1} {16; 4; 1}]",
+            "calls": 935,
+            "sum_seconds": 0.00440586000000001
+          }
+        ]
+      },
+      "first_token_to_done": {
+        "wall_envelope_seconds": 0.8537785,
+        "gpu_event_count": 0,
+        "gpu_busy_union_seconds": 0.0,
+        "copy_busy_union_seconds": 0.0,
+        "kernel_busy_union_seconds": 0.0,
+        "fill_busy_union_seconds": 0.0,
+        "host_wait_union_seconds": 0.0,
+        "copy_directions": {},
+        "top_level_zero_inclusive_api_times": [],
+        "top_kernel_duration_sums": []
+      }
+    }
+  ],
+  "notes": [
+    "Explicit copy bytes omit PCIe traffic caused by GPU kernels reading mapped host memory.",
+    "Copy bandwidth uses summed copy durations, not end-to-end elapsed time or an isolated bus benchmark.",
+    "GPU busy is interval union across traced commands, not hardware engine/EU utilization.",
+    "Host API durations are inclusive and overlap GPU work and nested UR/SYCL calls; do not add them.",
+    "Protocol timestamps are observed by an external poller and may lag engine boundaries.",
+    "Existing STRATA_PREFILL_SYNC=1 remains on in both runs; neither is an unsynchronized throughput baseline.",
+    "Single controls are preliminary; trace parsing overlapped part of clean model startup/first request.",
+    "Startup profiling is paused; no hardware performance counters collected."
+  ]
+}

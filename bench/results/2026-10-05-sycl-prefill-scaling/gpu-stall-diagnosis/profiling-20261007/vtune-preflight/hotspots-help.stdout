@@ -1,0 +1,62 @@
+Intel(R) VTune(TM) Profiler Command Line Tool
+Copyright (C) 2009 Intel Corporation. All rights reserved.
+
+ Identify the most time consuming functions and drill down to see time spent 
+ on each line of source code. Focus optimization efforts on hot code for the 
+ greatest performance impact.
+
+ To modify the analysis type, use the configuration options (knobs) as
+ follows:
+ -collect hotspots -knob <knobName>=<knobValue>
+ Multiple -knob options are allowed and can be followed by additional collect
+ action options, as well as global options, if needed. 
+
+
+sampling-mode
+
+  User-Mode Sampling(sw) mode use for: profiles longer than a few seconds,
+  profiling a single process or a process-tree, profiling Python and Intel
+  runtimes. Hardware Event-Based Sampling(hw) mode use for: profiles shorter 
+  than a few seconds, profiling all processes on a system, including kernel. 
+
+  Default value: sw
+  Possible values: sw hw 
+
+
+sampling-interval
+
+  Specify an interval (in milliseconds) between CPU samples for the Hardware 
+  sampling mode. Sampling interval for the Software sampling mode is fixed
+  (10ms).
+
+  Default value: 1
+  Possible values: numbers between 0.01 and 1000 
+
+
+enable-stack-collection
+
+  Enable collection of call stacks.
+
+  Default value: false
+  Possible values: true false
+
+
+stack-size
+
+  Specify the size of a raw stack (in bytes) to process. Zero value in
+  command line means unlimited size. You may set arbitrary stack size value
+  in the custom analysis configuration.
+
+  Default value: 0
+  Possible values: 0 1024 2048 4096 
+
+
+enable-characterization-insights
+
+  Get additional performance insights such as the efficency of hardware usage
+  and vectorization, and learn next steps. Note: this option collects CPU
+  events in the counting mode.
+
+  Default value: true
+  Possible values: true false
+

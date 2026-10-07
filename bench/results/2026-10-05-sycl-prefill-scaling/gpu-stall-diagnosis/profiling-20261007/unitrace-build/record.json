@@ -1,0 +1,55 @@
+{
+  "scope": "Private unitrace build; Level Zero and XPTI enabled; no metric collection, package installation or GPU workload",
+  "source_commit": "6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033",
+  "passed": false,
+  "configure": {
+    "argv": [
+      "/usr/bin/cmake",
+      "-S",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/pti-gpu-profiler-source/tools/unitrace",
+      "-B",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-build/build",
+      "-G",
+      "Ninja",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DBUILD_WITH_MPI=OFF",
+      "-DBUILD_WITH_ITT=0",
+      "-DBUILD_WITH_OMP=0",
+      "-DBUILD_WITH_OPENCL=0",
+      "-DBUILD_WITH_PERFETTO=OFF",
+      "-DBUILD_WITH_L0=1",
+      "-DBUILD_WITH_XPTI=1",
+      "-DONEAPI_COMPILER_HOME=/opt/intel/oneapi/compiler/2026.1",
+      "-DXptifw_INCLUDE_DIR=/opt/intel/oneapi/compiler/2026.1/include",
+      "-DXptifw_LIBRARY=/opt/intel/oneapi/compiler/2026.1/lib/libxptifw.so"
+    ],
+    "root": {
+      "pid": 2477353,
+      "start_ticks": 4083621,
+      "state": "R",
+      "ppid": 2477336,
+      "pgrp": 2477353,
+      "session": 2477353
+    },
+    "started_utc": "2026-10-07T05:32:37.099207+00:00",
+    "active": false,
+    "environment": {
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/usr/lib/x86_64-linux-gnu"
+    },
+    "owned": [
+      {
+        "pid": 2477353,
+        "start_ticks": 4083621,
+        "state": "Z",
+        "ppid": 2477336,
+        "pgrp": 2477353,
+        "session": 2477353
+      }
+    ],
+    "elapsed_seconds": 2.459342112997547,
+    "exit_code": 1,
+    "signals": [],
+    "survivors": [],
+    "finished_utc": "2026-10-07T05:32:39.529249+00:00"
+  }
+}
