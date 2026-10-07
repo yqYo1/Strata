@@ -227,6 +227,20 @@ requested pause; no live CSR/tag values were available. Both children were
 removed and the logged V2 small probe passed afterward without reset or new
 xe faults. A backend change alone is also unproven as a prevention method.
 
+The [CPU-code-matched source mapping](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/prefill-wait-map-20261007/README.md)
+locates that prefill frame at the compute queue wait before its chunk
+callbacks. It does not identify which preceding operation was unfinished.
+In this layer-major case all experts of the layer are loaded and the copy
+queue drained before its chunks; the routed expert-copy ring is inactive.
+The existing phase-mark synchronization can investigate smaller intervals,
+but changes scheduling and needs its own short logged output check.
+The [phase-sync short check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/phase-sync-20261007/README.md)
+completed four actual normal-MTP requests with matching IDs, printed
+logprobs and complete finite heads. It captured 73,692 completed marks with
+full API logging and parameter checks, without new xe faults or surviving
+children. These marks name the next phase after waiting for earlier work;
+they do not establish completion of that next phase's later kernels.
+
 The [2026-10-07 logging check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/runtime-tracing-20261007/README.md)
 confirmed Level Zero entry/results and UR traces before the child exited,
 using driver/adapter enumeration without submitting GPU commands. The 48

@@ -23,6 +23,10 @@ stack words and instructions were saved separately from the watchdog's
 registers. The supervisor's broader I/O/GPU activity did not satisfy its
 unchanged-progress snapshot trigger; only the real abort stop was inspected.
 
+A later [CPU-code-matched line-table mapping](../prefill-wait-map-20261007/README.md)
+locates the prefill frame at `prefill.cpp:4298`, the compute queue wait before
+the chunk callbacks. It does not identify the preceding unfinished operation.
+
 The runtime also logged unsupported `urQueueIsGraphCaptureEnabledExp`
 queries while earlier chunks continued. Those messages are retained, not
 silently classified as successful API queries. They do not by themselves
