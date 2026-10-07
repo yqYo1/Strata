@@ -160,8 +160,31 @@ executed windows `[262141, 1]` and `[262142, 2]`, used the final cell 262143,
 emitted two tokens with a complete finite head and exited normally, without
 new xe faults or surviving processes. It retained warnings, parameter
 validation, Strata progress and an owned debugger; it is not a throughput
-measurement. Full-context normal-MTP serving and general stall prevention
-remain unproven.
+measurement.
+
+The subsequent [normal-MTP full-context diagnostic](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/serve-submission-20261007/README.md)
+stopped in layer 15 at the chunk starting at token 91,136. The first stopped
+main-thread snapshot showed NEO's ioctl retry path returning `EAGAIN`. A
+read-only CSR inspection found a submission counter 1,101 ahead of its
+completion tag. That difference is not the kernel's live job count, and the
+tag was sampled only once. The application watchdog aborted; owned cleanup
+removed the engine and debugger. No new xe fault/reset was recorded, and a
+logged three-round GPU probe passed afterward without a reset. Serving
+capacity and general stall prevention remain unproven.
+
+`STRATA_PREFILL_EXPERT_WAIT_BATCH` optionally waits for the existing in-order
+SYCL queue after groups of direct-FP16 experts, before submitting the next
+group. Values are integers from 0 through 256; the default 0 keeps the
+existing schedule. MMQ grouping is unchanged. This diagnostic setting
+changes submission timing, not the weights, row order or reductions, and
+does not establish a limit on the driver's live jobs.
+The [32-expert short check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/expert-wait-20261007/README.md)
+passed four actual normal-MTP requests. All output IDs, printed logprobs and
+complete finite heads matched the released-weight control; 377 queue waits
+and six release/restore pairs were recorded. Detailed API logging and
+parameter validation were enabled. This candidate still needs its own
+full-cell CLI and normal-MTP serving validation before a prevention or
+performance claim.
 
 The [2026-10-07 logging check](../bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/runtime-tracing-20261007/README.md)
 confirmed Level Zero entry/results and UR traces before the child exited,

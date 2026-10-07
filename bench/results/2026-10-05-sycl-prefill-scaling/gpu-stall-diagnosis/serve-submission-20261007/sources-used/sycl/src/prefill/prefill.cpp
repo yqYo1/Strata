@@ -2313,18 +2313,6 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
     core::SessionState& ss = *m.ss;
     auto t_start = Clock::now();
     const int64_t LB = stage_lb_, LE = stage_le_;
-    // Diagnostic backpressure for the direct FP16 expert path. Bound a group
-    // of asynchronous expert submissions without changing their data or math.
-    // Zero keeps the original submission schedule; MMQ grouping is unchanged.
-    long expert_wait_batch = 0;
-    if (const char* value = std::getenv("STRATA_PREFILL_EXPERT_WAIT_BATCH")) {
-        char* end = nullptr;
-        expert_wait_batch = std::strtol(value, &end, 10);
-        if (!*value || *end || expert_wait_batch < 0 || expert_wait_batch > 256) {
-            err = "STRATA_PREFILL_EXPERT_WAIT_BATCH must be an integer from 0 through 256";
-            return false;
-        }
-    }
     // the next stage reads chunk c on a thread while this one reads chunk c + 1 (declared first: an early return
     // waits for it before anything it reads goes away)
     std::string next_err;
@@ -3971,23 +3959,9 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                         };
                         // one expert's products from its blob on the device; `slot` (a ring slot, or -1 for a resident
                         // expert) is released once the blob is read
-                        size_t submitted_experts = 0;
                         auto compute = [&](size_t j, const uint8_t *blob_dev,
                                            int slot) -> bool {
                             try {
-                            if (!use_mmq && expert_wait_batch > 0) {
-                                if (submitted_experts == (size_t) expert_wait_batch) {
-                                    // The same in-order queue owns these expert
-                                    // reads/products. Wait before issuing the next
-                                    // group; no weights, row order or reductions change.
-                                    m.cs->wait_and_throw();
-                                    submitted_experts = 0;
-                                    if (std::getenv("STRATA_TRACE"))
-                                        std::fprintf(stderr, "strata prefill expert wait: %ld experts completed, layer %lld, chunk %lld\n",
-                                                     expert_wait_batch, (long long) l, (long long) c0);
-                                }
-                                ++submitted_experts;
-                            }
                         const int32_t e = order[j];
                             pt.mark(kPfDequant, cs);
                             if (use_mmq) {

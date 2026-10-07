@@ -1,0 +1,107 @@
+{
+  "scope": "Actual 262144-cell normal-MTP serve correctness, warnings/validation/layer progress, owned GDB/PTY, full and clipped tails, invalid-request refusals and subsequent valid request; not throughput or general hang prevention",
+  "started_utc": "2026-10-07T00:43:57.907593+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "active": false,
+  "completed": false,
+  "healthy": false,
+  "requests": [],
+  "snapshots": [
+    {
+      "label": "unchanged-progress-0",
+      "stop": "*stopped,reason=\"signal-received\",signal-name=\"SIGINT\",signal-meaning=\"Interrupt\",frame={addr=\"0x00007fffdc6e00bd\",func=\"__GI___ioctl\",args=[{name=\"fd\",value=\"5\"},{name=\"request\",value=\"1077437513\"}],file=\"../sysdeps/unix/sysv/linux/ioctl.c\",fullname=\"./misc/../sysdeps/unix/sysv/linux/ioctl.c\",line=\"36\",arch=\"i386:x86-64\"},thread-id=\"1\",stopped-threads=\"all\",core=\"0\"",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-layer-trace-serve/debugger/unchanged-progress-0.mi.txt",
+      "resumed": true,
+      "read_only_csr_dump": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-layer-trace-serve/debugger/unchanged-progress-0.csr.mi.txt",
+      "submission_counter": 10448090,
+      "syscall_eagain": true
+    },
+    {
+      "label": "failure",
+      "stop": "*stopped,reason=\"signal-received\",signal-name=\"SIGABRT\",signal-meaning=\"Aborted\",frame={addr=\"0x00007fffdc659c0c\",func=\"__pthread_kill_implementation\",args=[{name=\"no_tid\",value=\"0\"},{name=\"signo\",value=\"6\"},{name=\"threadid\",value=\"<optimized out>\"}],file=\"./nptl/pthread_kill.c\",fullname=\"./nptl/./nptl/pthread_kill.c\",line=\"44\",arch=\"i386:x86-64\"},thread-id=\"34\",stopped-threads=\"all\",core=\"0\"",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-layer-trace-serve/debugger/failure.mi.txt",
+      "resumed": false
+    }
+  ],
+  "deadline_seconds": 7200,
+  "protocol_timeout_seconds": 3600,
+  "write_timeout_seconds": 30,
+  "shutdown_timeout_seconds": 30,
+  "log_limit_bytes": 536870912,
+  "binary_sha256": "b81a7d6fbc1c6d524cf3b64e196f5866c91ec56c76e460a66b63b28ce3aed461",
+  "source_fixture_sha256": "cc29e4427bcacb21c9f7df2d1f1a7d41897fce5bd76a8ca43d8c3c34d914dd2a",
+  "source_sha256": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_full_layer_trace_serve.py": "22e4d7e621b53b85d94b9de117f4f18a4b3960a3843f5ecfdd59fb0b5b940e46",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/recover-xe.sh": "2f90005f79d2309747d917cff51dc53d8ee6192d68cb1feca074f84af8b0796c",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/owned_gdb.py": "547838e423525c824b7c033f7490153f8174d772e7c8f736c2f9255b50de758c",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/program/generate.cpp": "4e170cf0c06d6100debd3b447991291fb42431afc43fa0c240fe6559dcb1b4fd",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/prefill.cpp": "ebfdf26d292759698b85aa6f219d43345a33b4325b1ba3fcec78171d4b715f51",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/read-csr.gdb": "e288d9fd4b3f11ca192b9e6097cb9820bb0d912489d5635852356a85f408e651"
+  },
+  "assistant_suffix": [
+    248046,
+    198,
+    248045,
+    74455,
+    198,
+    248068,
+    198,
+    248069,
+    271
+  ],
+  "capacity": 262144,
+  "elapsed_seconds": 620.0156357390006,
+  "active_request": "fills-context",
+  "preflight_fault_messages": [],
+  "startup": [
+    "INFO context=262144 kv=int8 kv_resident=0 expert_slots=128 expert_cache_mib=325 expert_slots_primary=128 expert_cache_primary_mib=325 spec=4 mtp_max=0 lookup=0 vram_free_mib=29 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.00 spec_min_p=0.00 conversation_cache_mib=0 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=1 engine=0.1.39-sycl",
+    "READY 262144 stop"
+  ],
+  "latest_metrics": {
+    "pid": 1440936,
+    "start_ticks": 2351872,
+    "state": "R",
+    "minor_faults": 15574400,
+    "major_faults": 0,
+    "user_ticks": 34379,
+    "system_ticks": 18218,
+    "io": {
+      "rchar": 59021596165,
+      "wchar": 237300,
+      "syscr": 1528159,
+      "syscw": 3984,
+      "read_bytes": 257948992512,
+      "write_bytes": 236885,
+      "cancelled_write_bytes": 0
+    },
+    "gpu": [
+      {
+        "fd": "5",
+        "raw": "pos:\t0\nflags:\t02100002\nmnt_id:\t30\nino:\t1161\ndrm-driver:\txe\ndrm-client-id:\t489\ndrm-pdev:\t0000:05:00.0\ndrm-total-system:\t125824 KiB\ndrm-shared-system:\t0\ndrm-active-system:\t0\ndrm-resident-system:\t0\ndrm-purgeable-system:\t0\ndrm-total-gtt:\t550952 KiB\ndrm-shared-gtt:\t0\ndrm-active-gtt:\t0\ndrm-resident-gtt:\t550952 KiB\ndrm-total-vram0:\t10377576 KiB\ndrm-shared-vram0:\t0\ndrm-active-vram0:\t0\ndrm-resident-vram0:\t10377576 KiB\ndrm-total-stolen:\t0\ndrm-shared-stolen:\t0\ndrm-active-stolen:\t0\ndrm-resident-stolen:\t0\ndrm-cycles-rcs:\t0\ndrm-total-cycles-rcs:\t463477404774\ndrm-cycles-vcs:\t0\ndrm-total-cycles-vcs:\t463477404774\ndrm-engine-capacity-vcs:\t2\ndrm-cycles-vecs:\t0\ndrm-total-cycles-vecs:\t463477404774\ndrm-engine-capacity-vecs:\t2\ndrm-cycles-bcs:\t0\ndrm-total-cycles-bcs:\t463477404774\ndrm-cycles-ccs:\t7280295044\ndrm-total-cycles-ccs:\t463477404774\n"
+      }
+    ],
+    "elapsed_seconds": 598.6047091059991
+  },
+  "unchanged_progress_seconds": 60.353022831001,
+  "inferior": {
+    "pid": 1440936,
+    "start_ticks": 2351872,
+    "state": "t"
+  },
+  "debugger": {
+    "pid": 1440925,
+    "start_ticks": 2351865,
+    "state": "R"
+  },
+  "ready_capacity": 262144,
+  "error": "RuntimeError('Inferior stopped: *stopped,reason=\"signal-received\",signal-name=\"SIGABRT\",signal-meaning=\"Aborted\",frame={addr=\"0x00007fffdc659c0c\",func=\"__pthread_kill_implementation\",args=[{name=\"no_tid\",value=\"0\"},{name=\"signo\",value=\"6\"},{name=\"threadid\",value=\"<optimized out>\"}],file=\"./nptl/pthread_kill.c\",fullname=\"./nptl/./nptl/pthread_kill.c\",line=\"44\",arch=\"i386:x86-64\"},thread-id=\"34\",stopped-threads=\"all\",core=\"0\"')",
+  "exit_code": null,
+  "exit_signal": null,
+  "cleanup": {
+    "forced": true,
+    "inferior_survived": false,
+    "gdb_survived": false
+  },
+  "new_fault_messages": [],
+  "finished_utc": "2026-10-07T00:54:17.923275+00:00"
+}
