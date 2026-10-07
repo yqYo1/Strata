@@ -113,3 +113,10 @@ CPU dominance. A separate [attention128/layout1 experiment](qsa-batch128-layout1
 passes three full-state/head controls and a clean32K ABBA comparison on the
 unchanged private scheduling binary. Every performance input is32,768 tokens.
 Full262,144-cell serving and production adoption remain separate pending gates.
+
+
+The [processing-order/GPU-residual follow-up](processing-order-and-gpu-residuals/README.md)
+adds nine exact 32K main-state/head/output controls and a clean three-condition
+default/RAM/GPU/GPU/RAM/default comparison. GPU residuals use MTP decode-only
+release and immutable-RAM restoration, with full payload checks before timing.
+All comparisons read 32,768 tokens; full262,144-cell serving remains unvalidated.

@@ -409,6 +409,35 @@ establish the cause of that variation. Every performance input is32,768 tokens;
 all seven runs match output, exit normally and record no new xe fault. The
 candidate remains unadopted, with full262,144-cell serving still a separate gate.
 
+The [processing-order and GPU-residual comparison](../bench/results/2026-10-05-sycl-prefill-scaling/upstream-v0.1.40.2-20261008/code32k/repro32k/processing-order-and-gpu-residuals/README.md)
+uses the same private executable and 32,768-token fixture on B570 10 GiB /
+5600X / 128 GiB. Compact storage and attention layout 1 first pass three
+full-state/head/output controls. Layer-major processing with residual rows in
+RAM passes another three; keeping all batched rows on GPU while releasing
+MTP decode-only weights passes three more. Each matches all 66 main-prefill
+state parts, the complete first head, all 64 IDs and every logprob. The GPU
+condition also verifies every released MTP expert/head payload byte against
+immutable RAM before and after restoration. These captured timings are excluded.
+
+Six fresh clean runs use default/RAM/GPU/GPU/RAM/default, with two repetitions
+per condition. Prefill averages 408.28 / 338.11 / 422.59 token/s; decode averages
+17.10 / 16.96 / 17.32. GPU residuals average 3.5% above default, but that pair's
+prompt spread is about 11%; this does not establish a reproducible gain. RAM
+residuals add uploads/downloads and measure 17.2% below default. The GPU arm
+unmaps 939,524,096 physical MTP bytes in about 22.5 ms and restores 931,016,700
+payload bytes from RAM in 247.955 and 248.489 ms, including mapping and copying.
+Graphs are retired before unmapping and recaptured when needed; verification
+is off during clean timing. The main decode cache remains backed in all arms.
+This measures MTP restoration, not restoration of all VRAM or a comparison of
+snapshot and RAM sources for the main cache.
+
+All 15 requests match output and MTP acceptance/offered counts, exit normally,
+complete owned cleanup and record no new xe fault. The full-context repeat,
+restore, clipped-tail, refusal and later-valid gates remain open. A fixed
+32,767-row GPU allocation is not validated for 262,144-cell context, and the
+older second-prefill memory failure remains unresolved. The result is retained
+for tuning; it is not adopted as a production default.
+
 No software reset is guaranteed to recover every firmware/driver wedge. There
 is an [upstream B570 report](https://github.com/intel/compute-runtime/issues/962)
 where both rebind and PCI reset failed; that report is not proof of this host's
