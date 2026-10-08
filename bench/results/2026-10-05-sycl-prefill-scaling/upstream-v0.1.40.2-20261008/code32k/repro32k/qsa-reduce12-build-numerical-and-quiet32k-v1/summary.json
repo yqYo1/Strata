@@ -1,0 +1,603 @@
+{
+  "active": false,
+  "completed": true,
+  "passed": true,
+  "adopted": false,
+  "created_utc": "2026-10-08T13:48:40.378655+00:00",
+  "source_commit": "53a092aa8ef7babe71490760534f109023e3be5b",
+  "scope": "Four fresh processes in DD5/QSA/QSA/DD5 order, four full32768 inputs A/B/A/B and64 generated tokens each. Only quiet complete gated jobs are compared.",
+  "minimum_performance_input_tokens": 32768,
+  "fresh_full_reads": 16,
+  "all_ids_logprobs_mtp_equal_and_resume_reused_zero": true,
+  "same_arguments_after_binary": true,
+  "all_normal_quit_no_forced_cleanup_no_new_kernel_fault": true,
+  "first_process_read_separated": true,
+  "first_read_is_not_cold_disk_system_benchmark": true,
+  "rates_computed_from_total_tokens_over_total_engine_time": true,
+  "groups": {
+    "dd5-control": {
+      "first_process_read": {
+        "requests": 2,
+        "input_tokens_per_request": 32768,
+        "total_prompt_ms": 167093.0,
+        "total_decode_ms": 7893.9,
+        "prefill_tok_s": 392.2127198625915,
+        "decode_tok_s": 16.215052128858993,
+        "prefill_range": [
+          390.91429662149267,
+          393.51979728350284
+        ],
+        "decode_range": [
+          15.929511909799139,
+          16.51101594344977
+        ]
+      },
+      "subsequent_full_reads": {
+        "requests": 6,
+        "input_tokens_per_request": 32768,
+        "total_prompt_ms": 460184.5,
+        "total_decode_ms": 22952.6,
+        "prefill_tok_s": 427.2373363292332,
+        "decode_tok_s": 16.730130791282907,
+        "prefill_range": [
+          426.95352606699294,
+          427.321559212491
+        ],
+        "decode_range": [
+          15.29051987767584,
+          19.825289635090765
+        ]
+      },
+      "per_read_slot": {
+        "1": {
+          "requests": 2,
+          "input_tokens_per_request": 32768,
+          "total_prompt_ms": 167093.0,
+          "total_decode_ms": 7893.9,
+          "prefill_tok_s": 392.2127198625915,
+          "decode_tok_s": 16.215052128858993,
+          "prefill_range": [
+            390.91429662149267,
+            393.51979728350284
+          ],
+          "decode_range": [
+            15.929511909799139,
+            16.51101594344977
+          ]
+        },
+        "2": {
+          "requests": 2,
+          "input_tokens_per_request": 32768,
+          "total_prompt_ms": 153378.2,
+          "total_decode_ms": 8072.6,
+          "prefill_tok_s": 427.2836687351918,
+          "decode_tok_s": 15.856105839506478,
+          "prefill_range": [
+            427.26416890286674,
+            427.30317034749675
+          ],
+          "decode_range": [
+            15.83217890362161,
+            15.880105205696989
+          ]
+        },
+        "3": {
+          "requests": 2,
+          "input_tokens_per_request": 32768,
+          "total_prompt_ms": 153436.9,
+          "total_decode_ms": 6693.299999999999,
+          "prefill_tok_s": 427.1202038101656,
+          "decode_tok_s": 19.123601213153453,
+          "prefill_range": [
+            426.95352606699294,
+            427.28701174230815
+          ],
+          "decode_range": [
+            18.469885428991947,
+            19.825289635090765
+          ]
+        },
+        "4": {
+          "requests": 2,
+          "input_tokens_per_request": 32768,
+          "total_prompt_ms": 153369.40000000002,
+          "total_decode_ms": 8186.700000000001,
+          "prefill_tok_s": 427.3081853355362,
+          "decode_tok_s": 15.635115492200763,
+          "prefill_range": [
+            427.29481229567944,
+            427.321559212491
+          ],
+          "decode_range": [
+            15.29051987767584,
+            15.995601209667342
+          ]
+        }
+      }
+    },
+    "qsa-reduce12": {
+      "first_process_read": {
+        "requests": 2,
+        "input_tokens_per_request": 32768,
+        "total_prompt_ms": 165832.6,
+        "total_decode_ms": 8494.6,
+        "prefill_tok_s": 395.1937073892588,
+        "decode_tok_s": 15.068396393002613,
+        "prefill_range": [
+          395.16511240040376,
+          395.2223065168019
+        ],
+        "decode_range": [
+          13.940318013504683,
+          16.395122451070808
+        ]
+      },
+      "subsequent_full_reads": {
+        "requests": 6,
+        "input_tokens_per_request": 32768,
+        "total_prompt_ms": 454076.4,
+        "total_decode_ms": 23400.9,
+        "prefill_tok_s": 432.9844052674836,
+        "decode_tok_s": 16.409625270822914,
+        "prefill_range": [
+          432.83055703422303,
+          433.43055362658146
+        ],
+        "decode_range": [
+          15.394236782604514,
+          18.404025880661393
+        ]
+      },
+      "per_read_slot": {
+        "1": {
+          "requests": 2,
+          "input_tokens_per_request": 32768,
+          "total_prompt_ms": 165832.6,
+          "total_decode_ms": 8494.6,
+          "prefill_tok_s": 395.1937073892588,
+          "decode_tok_s": 15.068396393002613,
+          "prefill_range": [
+            395.16511240040376,
+            395.2223065168019
+          ],
+          "decode_range": [
+            13.940318013504683,
+            16.395122451070808
+          ]
+        },
+        "2": {
+          "requests": 2,
+          "input_tokens_per_request": 32768,
+          "total_prompt_ms": 151296.8,
+          "total_decode_ms": 8053.0,
+          "prefill_tok_s": 433.1618381882499,
+          "decode_tok_s": 15.894697628213088,
+          "prefill_range": [
+            432.8934557363535,
+            433.43055362658146
+          ],
+          "decode_range": [
+            15.698587127158556,
+            16.095769830491424
+          ]
+        },
+        "3": {
+          "requests": 2,
+          "input_tokens_per_request": 32768,
+          "total_prompt_ms": 151406.6,
+          "total_decode_ms": 7040.8,
+          "prefill_tok_s": 432.8477094129318,
+          "decode_tok_s": 18.1797523008749,
+          "prefill_range": [
+            432.83055703422303,
+            432.8648631511368
+          ],
+          "decode_range": [
+            17.96087896051413,
+            18.404025880661393
+          ]
+        },
+        "4": {
+          "requests": 2,
+          "input_tokens_per_request": 32768,
+          "total_prompt_ms": 151373.0,
+          "total_decode_ms": 8307.099999999999,
+          "prefill_tok_s": 432.9437878617719,
+          "decode_tok_s": 15.408505976815016,
+          "prefill_range": [
+            432.92148013486525,
+            432.96609788775754
+          ],
+          "decode_range": [
+            15.394236782604514,
+            15.422801648311927
+          ]
+        }
+      }
+    }
+  },
+  "effects": {
+    "first_process_read": {
+      "prefill_tok_s_change_percent": 0.7600435620016777,
+      "decode_tok_s_change_percent": -7.071551338497406
+    },
+    "subsequent_full_reads": {
+      "prefill_tok_s_change_percent": 1.3451701079377765,
+      "decode_tok_s_change_percent": -1.9157382835703118
+    }
+  },
+  "jobs": [
+    {
+      "ordinal": 1,
+      "mode": "dd5-control",
+      "repetition": 1,
+      "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-qsa-reduce12-matched-dd5-control-v01402-code32k-quiet-r1/record.json",
+      "receipt_sha256": "04a00e836887b0d548eaa9ce30d57b66154b6c3c19ad6e0ffb6820cf20f958df",
+      "binary_sha256": "dd5efb9002167481d180f370b86fb6978d724f37745f7e4a923432296725ad34",
+      "exit_code": 0,
+      "forced_cleanup": false,
+      "new_kernel_fault_messages": []
+    },
+    {
+      "ordinal": 2,
+      "mode": "qsa-reduce12",
+      "repetition": 1,
+      "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-qsa-reduce12-matched-qsa-reduce12-v01402-code32k-quiet-r1/record.json",
+      "receipt_sha256": "05332727e45e4ce5608da12b8816bd94185d34f33c435dbce21e070638fbbd70",
+      "binary_sha256": "26c29c1353c64cef0e81c18bc1f651c9bcc25f977429d71b18052c5d13ecd34e",
+      "exit_code": 0,
+      "forced_cleanup": false,
+      "new_kernel_fault_messages": []
+    },
+    {
+      "ordinal": 3,
+      "mode": "qsa-reduce12",
+      "repetition": 2,
+      "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-qsa-reduce12-matched-qsa-reduce12-v01402-code32k-quiet-r2/record.json",
+      "receipt_sha256": "1fb4f7eacdbf5c4142434085991dcd5985561122c087dc4a1a74b7b523b450b5",
+      "binary_sha256": "26c29c1353c64cef0e81c18bc1f651c9bcc25f977429d71b18052c5d13ecd34e",
+      "exit_code": 0,
+      "forced_cleanup": false,
+      "new_kernel_fault_messages": []
+    },
+    {
+      "ordinal": 4,
+      "mode": "dd5-control",
+      "repetition": 2,
+      "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-qsa-reduce12-matched-dd5-control-v01402-code32k-quiet-r2/record.json",
+      "receipt_sha256": "9bce2ea5f306fafab8383946bb51dd60b08e4981fd4b9954d520d5d4d8d9ab1f",
+      "binary_sha256": "dd5efb9002167481d180f370b86fb6978d724f37745f7e4a923432296725ad34",
+      "exit_code": 0,
+      "forced_cleanup": false,
+      "new_kernel_fault_messages": []
+    }
+  ],
+  "measurements": [
+    {
+      "ordinal": 1,
+      "mode": "dd5-control",
+      "repetition": 1,
+      "input": "A",
+      "name": "control32k-first",
+      "process_read": 1,
+      "first_process_read": true,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 83269.0,
+      "decode_ms": 3876.2,
+      "wall_seconds": 87.32612897199579,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 393.51979728350284,
+      "decode_tok_s": 16.51101594344977
+    },
+    {
+      "ordinal": 1,
+      "mode": "dd5-control",
+      "repetition": 1,
+      "input": "B",
+      "name": "alternate32k-first",
+      "process_read": 2,
+      "first_process_read": false,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 76692.6,
+      "decode_ms": 4030.2,
+      "wall_seconds": 80.91318787599448,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 427.26416890286674,
+      "decode_tok_s": 15.880105205696989
+    },
+    {
+      "ordinal": 1,
+      "mode": "dd5-control",
+      "repetition": 1,
+      "input": "A",
+      "name": "control32k-repeat",
+      "process_read": 3,
+      "first_process_read": false,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 76748.4,
+      "decode_ms": 3228.2,
+      "wall_seconds": 80.16808732098434,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 426.95352606699294,
+      "decode_tok_s": 19.825289635090765
+    },
+    {
+      "ordinal": 1,
+      "mode": "dd5-control",
+      "repetition": 1,
+      "input": "B",
+      "name": "alternate32k-repeat",
+      "process_read": 4,
+      "first_process_read": false,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 76682.3,
+      "decode_ms": 4001.1,
+      "wall_seconds": 80.87362033498357,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 427.321559212491,
+      "decode_tok_s": 15.995601209667342
+    },
+    {
+      "ordinal": 2,
+      "mode": "qsa-reduce12",
+      "repetition": 1,
+      "input": "A",
+      "name": "control32k-first",
+      "process_read": 1,
+      "first_process_read": true,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 82922.3,
+      "decode_ms": 3903.6,
+      "wall_seconds": 87.0051621790044,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 395.16511240040376,
+      "decode_tok_s": 16.395122451070808
+    },
+    {
+      "ordinal": 2,
+      "mode": "qsa-reduce12",
+      "repetition": 1,
+      "input": "B",
+      "name": "alternate32k-first",
+      "process_read": 2,
+      "first_process_read": false,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 75601.5,
+      "decode_ms": 3976.2,
+      "wall_seconds": 79.76916380701005,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 433.43055362658146,
+      "decode_tok_s": 16.095769830491424
+    },
+    {
+      "ordinal": 2,
+      "mode": "qsa-reduce12",
+      "repetition": 1,
+      "input": "A",
+      "name": "control32k-repeat",
+      "process_read": 3,
+      "first_process_read": false,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 75706.3,
+      "decode_ms": 3563.3,
+      "wall_seconds": 79.45854979500291,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 432.83055703422303,
+      "decode_tok_s": 17.96087896051413
+    },
+    {
+      "ordinal": 2,
+      "mode": "qsa-reduce12",
+      "repetition": 1,
+      "input": "B",
+      "name": "alternate32k-repeat",
+      "process_read": 4,
+      "first_process_read": false,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 75682.6,
+      "decode_ms": 4149.7,
+      "wall_seconds": 80.0221470890101,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 432.96609788775754,
+      "decode_tok_s": 15.422801648311927
+    },
+    {
+      "ordinal": 3,
+      "mode": "qsa-reduce12",
+      "repetition": 2,
+      "input": "A",
+      "name": "control32k-first",
+      "process_read": 1,
+      "first_process_read": true,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 82910.3,
+      "decode_ms": 4591.0,
+      "wall_seconds": 87.69186424301006,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 395.2223065168019,
+      "decode_tok_s": 13.940318013504683
+    },
+    {
+      "ordinal": 3,
+      "mode": "qsa-reduce12",
+      "repetition": 2,
+      "input": "B",
+      "name": "alternate32k-first",
+      "process_read": 2,
+      "first_process_read": false,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 75695.3,
+      "decode_ms": 4076.8,
+      "wall_seconds": 79.958863708016,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 432.8934557363535,
+      "decode_tok_s": 15.698587127158556
+    },
+    {
+      "ordinal": 3,
+      "mode": "qsa-reduce12",
+      "repetition": 2,
+      "input": "A",
+      "name": "control32k-repeat",
+      "process_read": 3,
+      "first_process_read": false,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 75700.3,
+      "decode_ms": 3477.5,
+      "wall_seconds": 79.36801490100333,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 432.8648631511368,
+      "decode_tok_s": 18.404025880661393
+    },
+    {
+      "ordinal": 3,
+      "mode": "qsa-reduce12",
+      "repetition": 2,
+      "input": "B",
+      "name": "alternate32k-repeat",
+      "process_read": 4,
+      "first_process_read": false,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 75690.4,
+      "decode_ms": 4157.4,
+      "wall_seconds": 80.03782150699408,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 432.92148013486525,
+      "decode_tok_s": 15.394236782604514
+    },
+    {
+      "ordinal": 4,
+      "mode": "dd5-control",
+      "repetition": 2,
+      "input": "A",
+      "name": "control32k-first",
+      "process_read": 1,
+      "first_process_read": true,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 83824.0,
+      "decode_ms": 4017.7,
+      "wall_seconds": 88.02201705297921,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 390.91429662149267,
+      "decode_tok_s": 15.929511909799139
+    },
+    {
+      "ordinal": 4,
+      "mode": "dd5-control",
+      "repetition": 2,
+      "input": "B",
+      "name": "alternate32k-first",
+      "process_read": 2,
+      "first_process_read": false,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 76685.6,
+      "decode_ms": 4042.4,
+      "wall_seconds": 80.91857973998412,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 427.30317034749675,
+      "decode_tok_s": 15.83217890362161
+    },
+    {
+      "ordinal": 4,
+      "mode": "dd5-control",
+      "repetition": 2,
+      "input": "A",
+      "name": "control32k-repeat",
+      "process_read": 3,
+      "first_process_read": false,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 76688.5,
+      "decode_ms": 3465.1,
+      "wall_seconds": 80.34392358901096,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 427.28701174230815,
+      "decode_tok_s": 18.469885428991947
+    },
+    {
+      "ordinal": 4,
+      "mode": "dd5-control",
+      "repetition": 2,
+      "input": "B",
+      "name": "alternate32k-repeat",
+      "process_read": 4,
+      "first_process_read": false,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 76687.1,
+      "decode_ms": 4185.6,
+      "wall_seconds": 81.06634308499633,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 427.29481229567944,
+      "decode_tok_s": 15.29051987767584
+    }
+  ],
+  "sequence_receipt_sha256": "dd256c1000cffa302f903844ed037faab6cc8b4e878c0b44c1eeba3e187a90dc",
+  "reference_dd5_receipt_sha256": "a96f3686903b63138a827c173e0ea5b1a8beebbee8ef9cdae46459bf9f2c9699",
+  "interpretation": "The QSA SG32/transposed reduction improves prefill in all later read slots in this matched32K sample. Decode is slower in the pooled sample; two processes per mode do not establish a decode benefit or regression. Physical256K qualification is still required before adoption.",
+  "cpu_utilization_or_pcie_dominance_measured": false,
+  "underlying_pending_counter_cause_resolved": false,
+  "physical256k_sequence_passed": false,
+  "pending_before_adoption": [
+    "Physical262144 cells, repeated fresh full prefill, actual disk restore, clipped speculative tail, capacity refusals and later valid fresh32K",
+    "Continue source/lifetime checks and retain owned failure capture; no claim of resolving the earlier native-counter cause"
+  ],
+  "no_reset_rebind_reboot_service_package_global_change": true,
+  "production_and_main_unchanged": true,
+  "qsa_initial_numerical_receipt_sha256": "02c8e8abfccca07aaf1767c8d0ed737c8f0087de08208a6e14e377aff7195d33",
+  "qsa_build_receipt_sha256": "fd35d1f7602a374c0cd0ee96d5bc2e82c6454f9b24402d9d94ba5669f1acaa74",
+  "candidate_engine_compiled": true,
+  "qsa_initial_four_fresh32k_and_actual_disk_continuation_passed": true,
+  "qsa_source_sha256": "c1b0d58f46f0807af10d310320ebe4f9f2b4ad62f1a584abf72a597d7d5f1da1",
+  "only_qsa_decode_archive_member_replaced": true,
+  "numerical_diagnostic_durations_excluded": true,
+  "numerical_engine_log_bytes": 13437101076,
+  "numerical_engine_log_sha256": "7ab2292854fbf6608a964df769152d28b9670dc321ca1f3e419e0e29cc565417",
+  "underlying_stall_cause_resolved": false
+}
