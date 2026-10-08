@@ -168,8 +168,17 @@ separate, and no full-gate/adoption or speed result is claimed here.
 
 The [repaired first full image and profiling preparation](profile-definition-audit-and-poll-rebase-v1/README.md)
 records the first repaired full read/image plus its exact interposed32K
-control. The second full read is active at capture. Actual preprocessing
+control. The second full read is active at that historical capture. Actual preprocessing
 also exposes inconsistent DPCT class/inline definitions across compiled
 translation units. A private uniform-header build replaces only seven
 objects, while a separate polling rebase and local VTune help checks prepare
-later measurements. These CPU candidates are GPU-untested and not adopted.
+later measurements. Those preparation snapshots precede GPU checks and
+do not establish adoption.
+
+The [terminal watchdog abort and separate32K definition check](full256k-watchdog-abort-and-uniform32k-v1/README.md)
+records the subsequent host watchdog stop during the second full read,
+the exact stopped stacks and pending DMA submissions. No new kernel fault
+is recorded; post-exit device/runtime health passes. The cause remains
+unresolved. The uniform-header executable's separate four fresh32K reads,
+actual disk-restored continuation and normal owned exit pass. The complete
+physical256K and quiet speed gates remain pending.

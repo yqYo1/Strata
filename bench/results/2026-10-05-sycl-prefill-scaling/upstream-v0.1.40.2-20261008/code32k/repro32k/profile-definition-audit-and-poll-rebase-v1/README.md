@@ -8,8 +8,9 @@ all13 main/MTP KV layers through262144 cells, with no tensor exclusions.
 All12 saved main indexer spare rows now equal the live idx_dead key. The
 following fresh32768-token input matches the accepted numerical control.
 See [the completed-portion snapshot](full-first-v5-snapshot.json). Its parent
-is still running the second full read; disk roundtrip, restored clipped
-tail, refusals, later32K and owned exit/fault checks remain pending.
+was running the second full read at capture. It subsequently stopped in
+the host watchdog; see [the terminal evidence and separate32K definition check](../full256k-watchdog-abort-and-uniform32k-v1/README.md).
+Disk roundtrip, restored clipped tail, refusals and later32K were not reached.
 
 Actual compiler preprocessing shows that source-local
 DPCT_PROFILING_ENABLED changes two definitions in dpct/device.hpp. The
@@ -35,8 +36,11 @@ device header. Seven users lack the source-local profiling macro. They are
 recompiled with unchanged source, flags and numerical kernels, using the
 uniform shadow header. Only those seven objects in three copied archives
 are replaced; every other member/link input remains unchanged. Compilation
-and link pass. The executable is GPU-untested and is not adopted. Its base
-is the separately running indexer candidate; the polling policy is unchanged.
+and link pass. The executable was GPU-untested at this preparation snapshot
+and is not adopted. Its separate first32K numerical control subsequently
+passes in the follow-up linked above. Its four fresh32K reads, actual disk
+continuation and normal owned exit also pass there; the physical256K gate
+remains pending. Its base is the indexer candidate; the polling policy is unchanged.
 
 A separate executable rebases the CPU-tested polling object onto the
 indexer candidate. Only its prefill archive changes; its header, object

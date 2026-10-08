@@ -1,0 +1,75 @@
+
+Thread 82 (Thread 0x7ffeb1dfb6c0 (LWP 3398358) "strata"):
+#0  __pthread_kill_implementation (no_tid=0, signo=6, threadid=<optimized out>) at ./nptl/pthread_kill.c:44
+#1  __pthread_kill_internal (signo=6, threadid=<optimized out>) at ./nptl/pthread_kill.c:78
+#2  __GI___pthread_kill (threadid=<optimized out>, signo=signo@entry=6) at ./nptl/pthread_kill.c:89
+#3  0x00007fffdc54127e in __GI_raise (sig=sig@entry=6) at ../sysdeps/posix/raise.c:26
+#4  0x00007fffdc5248ff in __GI_abort () at ./stdlib/abort.c:79
+#5  0x0000000000487618 in std::thread::_State_impl<std::thread::_Invoker<std::tuple<main::{lambda(std::stop_token)#1}, std::stop_token> > >::_M_run() ()
+#6  0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+
+Thread 80 (Thread 0x7ffeb3ffd6c0 (LWP 3398355) "strata"):
+#0  0x00007fffdc60a90b in __GI_sched_yield () at ../sysdeps/unix/syscall-template.S:120
+#1  0x00007fec5dc0f0d7 in __gthread_yield () at /usr/include/x86_64-linux-gnu/c++/13/bits/gthr-default.h:693
+#2  std::this_thread::yield () at /usr/include/c++/13/bits/std_thread.h:366
+#3  NEO::WaitUtils::waitFunctionWithPredicate<unsigned long const> (waitPkgThreshold=<optimized out>, counterValue=<optimized out>, timeElapsedSinceWaitStarted=<optimized out>, predicate=..., expectedValue=<optimized out>, pollAddress=0x7fec4f20b000) at /usr/src/intel-compute-runtime-26.31.39395.14-1~24.04~ppa1/shared/source/utilities/wait_util.h:88
+#4  L0::EventImp<unsigned long>::queryCounterBasedEventStatus (timeSinceWait=0, this=0x6724f50) at /usr/src/intel-compute-runtime-26.31.39395.14-1~24.04~ppa1/level_zero/core/source/event/event_impl.inl:339
+#5  L0::EventImp<unsigned long>::queryStatus (this=0x6724f50, timeSinceWait=0) at /usr/src/intel-compute-runtime-26.31.39395.14-1~24.04~ppa1/level_zero/core/source/event/event_impl.inl:733
+#6  0x00007fec5d71a582 in ?? () from /usr/lib/x86_64-linux-gnu/libze_validation_layer.so.1
+#7  0x00007fec6169d51a in ur::level_zero::urEventGetInfo(ur_event_handle_t_*, ur_event_info_t, unsigned long, void*, unsigned long*) () from /opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0
+#8  0x00007fffdbd59cff in ur_tracing_layer::urEventGetInfo(ur_event_handle_t_*, ur_event_info_t, unsigned long, void*, unsigned long*) () from /opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0
+#9  0x00007fffdbc9029f in urEventGetInfo () from /opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0
+#10 0x00007fffdc933f67 in sycl::_V1::info::event::command_execution_status::return_type sycl::_V1::detail::event_impl::get_info<sycl::_V1::info::event::command_execution_status>() () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#11 0x00000000005b4aed in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::prefill::Stager::init(unsigned long, int)::{lambda()#2}> > >::_M_run() ()
+#12 0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#13 0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#14 0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+
+Thread 79 (Thread 0x7ffeb47fe6c0 (LWP 3398354) "strata"):
+#0  0x00007fffdc61887d in __GI___libc_write (nbytes=23, buf=0x7ffea4001010, fd=2) at ../sysdeps/unix/sysv/linux/write.c:26
+#1  __GI___libc_write (fd=2, buf=0x7ffea4001010, nbytes=23) at ../sysdeps/unix/sysv/linux/write.c:24
+#2  0x00007fffdc58fa55 in _IO_new_file_write (f=0x7fffdc7014e0 <_IO_2_1_stderr_>, data=0x7ffea4001010, n=23) at ./libio/fileops.c:1181
+#3  0x00007fffdc58fcba in new_do_write (to_do=<optimized out>, data=0x7ffea4001010 "   ---> urEventGetInfo\n", fp=0x7fffdc7014e0 <_IO_2_1_stderr_>) at ./libio/libioP.h:1030
+#4  _IO_new_file_xsputn (n=23, data=<optimized out>, f=<optimized out>) at ./libio/fileops.c:1255
+#5  _IO_new_file_xsputn (f=0x7fffdc7014e0 <_IO_2_1_stderr_>, data=<optimized out>, n=23) at ./libio/fileops.c:1197
+#6  0x00007fffdc582af2 in __GI__IO_fwrite (buf=0x7ffea4001010, size=1, count=23, fp=0x7fffdc7014e0 <_IO_2_1_stderr_>) at ./libio/libioP.h:1030
+#7  0x00007fffdcc85dc4 in std::basic_ostream<char, std::char_traits<char> >& std::__ostream_insert<char, std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, char const*, long) () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#8  0x00007fffdbc741b0 in void logger::Sink::log<>(ur_logger_level_t, char const*, char const*, char const*) () from /opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0
+#9  0x00007fffdbd59ce4 in ur_tracing_layer::urEventGetInfo(ur_event_handle_t_*, ur_event_info_t, unsigned long, void*, unsigned long*) () from /opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0
+#10 0x00007fffdbc9029f in urEventGetInfo () from /opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0
+#11 0x00007fffdc933f67 in sycl::_V1::info::event::command_execution_status::return_type sycl::_V1::detail::event_impl::get_info<sycl::_V1::info::event::command_execution_status>() () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#12 0x00000000005b4aed in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::prefill::Stager::init(unsigned long, int)::{lambda()#2}> > >::_M_run() ()
+#13 0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#14 0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#15 0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+
+Thread 78 (Thread 0x7ffeb4fff6c0 (LWP 3398353) "strata"):
+#0  0x00007fffdc60a90b in __GI_sched_yield () at ../sysdeps/unix/syscall-template.S:120
+#1  0x00007fec5dc0f0d7 in __gthread_yield () at /usr/include/x86_64-linux-gnu/c++/13/bits/gthr-default.h:693
+#2  std::this_thread::yield () at /usr/include/c++/13/bits/std_thread.h:366
+#3  NEO::WaitUtils::waitFunctionWithPredicate<unsigned long const> (waitPkgThreshold=<optimized out>, counterValue=<optimized out>, timeElapsedSinceWaitStarted=<optimized out>, predicate=..., expectedValue=<optimized out>, pollAddress=0x7fec4f20b000) at /usr/src/intel-compute-runtime-26.31.39395.14-1~24.04~ppa1/shared/source/utilities/wait_util.h:88
+#4  L0::EventImp<unsigned long>::queryCounterBasedEventStatus (timeSinceWait=0, this=0x672bbe0) at /usr/src/intel-compute-runtime-26.31.39395.14-1~24.04~ppa1/level_zero/core/source/event/event_impl.inl:339
+#5  L0::EventImp<unsigned long>::queryStatus (this=0x672bbe0, timeSinceWait=0) at /usr/src/intel-compute-runtime-26.31.39395.14-1~24.04~ppa1/level_zero/core/source/event/event_impl.inl:733
+#6  0x00007fec5d71a582 in ?? () from /usr/lib/x86_64-linux-gnu/libze_validation_layer.so.1
+#7  0x00007fec6169d51a in ur::level_zero::urEventGetInfo(ur_event_handle_t_*, ur_event_info_t, unsigned long, void*, unsigned long*) () from /opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0
+#8  0x00007fffdbd59cff in ur_tracing_layer::urEventGetInfo(ur_event_handle_t_*, ur_event_info_t, unsigned long, void*, unsigned long*) () from /opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0
+#9  0x00007fffdbc9029f in urEventGetInfo () from /opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0
+#10 0x00007fffdc933f67 in sycl::_V1::info::event::command_execution_status::return_type sycl::_V1::detail::event_impl::get_info<sycl::_V1::info::event::command_execution_status>() () from /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9
+#11 0x00000000005b4aed in std::thread::_State_impl<std::thread::_Invoker<std::tuple<strata::prefill::Stager::init(unsigned long, int)::{lambda()#2}> > >::_M_run() ()
+#12 0x00007fffdcc1bdb4 in ?? () from /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+#13 0x00007fffdc598b84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#14 0x00007fffdc625ecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+
+Thread 1 (Thread 0x7fffd99a9380 (LWP 3396925) "strata"):
+#0  0x00007fffdc60a90b in __GI_sched_yield () at ../sysdeps/unix/syscall-template.S:120
+#1  0x00000000005b3985 in strata::prefill::Stager::wait(int, std::atomic<bool> const*) ()
+#2  0x00000000005abc9c in strata::prefill::Prefill::run_impl(long const*, long, long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda(unsigned long)#6}::operator()(unsigned long) const ()
+#3  0x000000000059fe24 in strata::prefill::Prefill::run_impl(long const*, long, long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&) ()
+#4  0x0000000000591e94 in strata::prefill::Prefill::run(long const*, long, long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&) ()
+#5  0x000000000043dd01 in main ()
