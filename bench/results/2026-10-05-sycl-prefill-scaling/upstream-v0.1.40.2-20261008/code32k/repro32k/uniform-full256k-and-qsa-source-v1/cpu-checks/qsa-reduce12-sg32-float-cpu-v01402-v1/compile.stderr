@@ -1,0 +1,8 @@
+/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-reduce12-sg32-float-cpu-v01402-v1/fixture.cpp: In member function ‘void Task::promise_type::unhandled_exception()’:
+/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-reduce12-sg32-float-cpu-v01402-v1/fixture.cpp:17:37: error: ‘terminate’ is not a member of ‘std’
+   17 |   void unhandled_exception() { std::terminate(); }
+      |                                     ^~~~~~~~~
+/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-reduce12-sg32-float-cpu-v01402-v1/fixture.cpp:9:1: note: ‘std::terminate’ is defined in header ‘<exception>’; did you forget to ‘#include <exception>’?
+    8 | #include <utility>
+  +++ |+#include <exception>
+    9 | struct Task {

@@ -1,0 +1,57 @@
+{
+  "active": false,
+  "prepared": true,
+  "compiled": false,
+  "gpu_tested": false,
+  "adopted": false,
+  "created_utc": "2026-10-08T12:00:05.933039+00:00",
+  "controller_sha256": "dacff3b95e6ab3d933f0bea7a0419b88677e6c33b95b738245a7ad8877517745",
+  "original_source": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/kernels/cuda/qsa_decode_attn.dp.cpp",
+  "original_source_sha256": "41dfb04922276e91c81033ebdf2495d0e7130f04289722ff38ad7bc555d51679",
+  "previous_source_sha256": "db113299b7db98025c4fc5ee2a8fb8a9771a7f296fd60f695980cd68e1f64b6a",
+  "candidate_source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-reduce12-sg32-v01402-source-v3/qsa_decode_attn.dp.cpp",
+  "candidate_source_sha256": "c1b0d58f46f0807af10d310320ebe4f9f2b4ad62f1a584abf72a597d7d5f1da1",
+  "source_diff_sha256": "11c7c49276d54254c7ebbbb753904daaee09f11fe0ea6d22a8a1d0d3fdeae809",
+  "actual_helper_body_sha256": "ae727a9cb7a5ef03c44ca9b9eed4f78fc4591117bfca6f763f9e3c471c7b0086",
+  "cpu_receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-reduce12-sg32-float-cpu-v01402-v2/record.json",
+  "cpu_receipt_sha256": "0fa7a0d9713bbec6f48e60aa657788f3a9c1d3f0d42da5ce23f240db0954c71f",
+  "cpu_helper_proof_reused_by_exact_body_identity": true,
+  "cpu_bitwise_equal_outputs": 82176,
+  "cpu_groups": 2568,
+  "cpu_asan_ubsan_passed": true,
+  "actual_subgroup_lane_and_group_ids_used": true,
+  "cpu_semantic_routing_cases": 1024,
+  "counterexample_original_abstract_mapping_nonuniform_groups": 1016,
+  "counterexample_is_actual_gpu_failure": false,
+  "scope": "Private source-only SG32/transposed reduction and explicit subgroup routing. No active process, engine binary or other source was changed.",
+  "primary_sources": [
+    "https://github.khronos.org/SYCL_Reference/iface/sub_group.html",
+    "https://github.khronos.org/SYCL_Reference/iface/group-functions.html",
+    "https://github.khronos.org/SYCL_Reference/iface/group-algorithms-library.html"
+  ],
+  "checks": {
+    "cell_and_head_loops_use_actual_subgroup_group_id": true,
+    "dot_dimensions_and_reduce_scatter_use_actual_subgroup_lane_id": true,
+    "new_arm_valid_cell_skip_subgroup_uniform_independent_of_workgroup_mapping": true,
+    "all32_items_execute_each_exchange_before_lane_dependent_store": true,
+    "other_variant_lane_and_warp_values_retained": true,
+    "dot_expression_scale_softmax_pv_merge_dispatch_text_retained": true,
+    "barrier_count_unchanged": true,
+    "only_one_source_tu_planned": true,
+    "no_event_queue_host_lifetime_memory_layout_or_new_vector_alias_change": true
+  },
+  "limitations": [
+    "Exact-body CPU proof reused, not rerun or presented as a SYCL device result.",
+    "Routing enumeration is a semantic CPU check, not a real GPU mapping measurement.",
+    "Inherited workgroup-derived subgroup mapping remains in the other existing variants.",
+    "Bit identity limited to finite inputs and finite intermediate additions, no arbitrary NaN payload claim.",
+    "Device compiler contraction/register allocation, numerical state, disk restoration and throughput remain untested."
+  ],
+  "minimum_performance_input_tokens": 32768,
+  "pending": [
+    "Compile after the active full256K controller exits; record dependencies/archive member/link inputs.",
+    "Initial logged>=32768 head/used-state/IDs/logprobs/MTP/disk restoration gate.",
+    "Quiet>=32768 matched comparison separating first/later full reads.",
+    "Complete repeated physical256K, actual disk restoration, clipped tail, capacity refusal and later fresh32K before adoption."
+  ]
+}

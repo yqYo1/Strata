@@ -1,0 +1,99 @@
+{
+  "active": false,
+  "created_utc": "2026-10-08T10:55:36.172539+00:00",
+  "scope": "Read-only expected/native host-counter fields at owned failure stop. First host partition only; not a dependency, lifetime, GPU completion or stall-fix proof.",
+  "controller_sha256": "7928a49c52c2bfba52fab0d453127d71954d085a955951a07960fe1db7c9632a",
+  "inferior": {
+    "pid": 7438,
+    "start_ticks": 14661510,
+    "state": "t"
+  },
+  "debugger": {
+    "pid": 7426,
+    "start_ticks": 14661503,
+    "state": "R"
+  },
+  "stop": "*stopped,reason=\"signal-received\",signal-name=\"SIGTRAP\",signal-meaning=\"Trace/breakpoint trap\",frame={addr=\"0x00007ffff7e46c0c\",func=\"__pthread_kill_implementation\",args=[{name=\"no_tid\",value=\"0\"},{name=\"signo\",value=\"5\"},{name=\"threadid\",value=\"<optimized out>\"}],file=\"./nptl/pthread_kill.c\",fullname=\"./nptl/./nptl/pthread_kill.c\",line=\"44\",arch=\"i386:x86-64\"},thread-id=\"1\",stopped-threads=\"all\",core=\"7\"",
+  "snapshot_sha256": "a02fdb08e95eaeb6f3655b1abd79f5f790dc9805ba767d863a25181d9990765d",
+  "inferior_function_calls": false,
+  "resumed": false,
+  "events": [
+    {
+      "thread": 1,
+      "frame": 4,
+      "stack_this": "0x7fffffffd1e0",
+      "stack_poll_address": null,
+      "stack": "#0  __pthread_kill_implementation (no_tid=0, signo=5, threadid=<optimized out>) at ./nptl/pthread_kill.c:44\n#1  __pthread_kill_internal (signo=5, threadid=<optimized out>) at ./nptl/pthread_kill.c:78\n#2  __GI___pthread_kill (threadid=<optimized out>, signo=signo@entry=5) at ./nptl/pthread_kill.c:89\n#3  0x00007ffff7ded27e in __GI_raise (sig=5) at ../sysdeps/posix/raise.c:26\n#4  0x0000555555555268 in L0::EventImp<unsigned long>::queryCounterBasedEventStatus (this=0x7fffffffd1e0, timeSinceWait=0) at /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-counter-v01402-cpu-v1/fixture.cpp:13\n#5  0x0000555555555232 in main (argc=2, argv=0x7fffffffd348) at /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-counter-v01402-cpu-v1/fixture.cpp:20\nrax            0x0                 0\nrbx            0x1d0e              7438\nrcx            0x7ffff7e46c0c      140737352330252\nrdx            0x5                 5\nrsi            0x1d0e              7438\nrdi            0x1d0e              7438\nrbp            0x7fffffffd160      0x7fffffffd160\nrsp            0x7fffffffd120      0x7fffffffd120\nr8             0x1999999999999999  1844674407370955161\nr9             0x0                 0\nr10            0x7ffff7f5afc0      140737353461696\nr11            0x246               582\nr12            0x5                 5\nr13            0x0                 0\nr14            0x16                22\nr15            0x7ffff7ffd000      140737354125312\nrip            0x7ffff7e46c0c      0x7ffff7e46c0c <__GI___pthread_kill+284>\neflags         0x246               [ PF ZF IF ]\ncs             0x33                51\nss             0x2b                43\nds             0x0                 0\nes             0x0                 0\nfs             0x0                 0\ngs             0x0                 0\nfs_base        0x7ffff7da5740      140737351669568\ngs_base        0x0                 0\nFrom                To                  Syms Read   Shared Object Library\n0x00007ffff7fc6000  0x00007ffff7ff0195  Yes         /lib64/ld-linux-x86-64.so.2\n0x00007ffff7dd0800  0x00007ffff7f58039  Yes         /usr/lib/x86_64-linux-gnu/libc.so.6\nstrata diagnostic: main thread 1\nrax            0x0                 0\nrbx            0x1d0e              7438\nrcx            0x7ffff7e46c0c      140737352330252\nrdx            0x5                 5\nrsi            0x1d0e              7438\nrdi            0x1d0e              7438\nrbp            0x7fffffffd160      0x7fffffffd160\nrsp            0x7fffffffd120      0x7fffffffd120\nr8             0x1999999999999999  1844674407370955161\nr9             0x0                 0\nr10            0x7ffff7f5afc0      140737353461696\nr11            0x246               582\nr12            0x5                 5\nr13            0x0                 0\nr14            0x16                22\nr15            0x7ffff7ffd000      140737354125312\nrip            0x7ffff7e46c0c      0x7ffff7e46c0c <__GI___pthread_kill+284>\neflags         0x246               [ PF ZF IF ]\ncs             0x33                51\nss             0x2b                43\nds             0x0                 0\nes             0x0                 0\nfs             0x0                 0\ngs             0x0                 0\nfs_base        0x7ffff7da5740      140737351669568\ngs_base        0x0                 0\n0x7fffffffd120:\t0x00007ffff7fc5000\t0x7945db774e48c800\n0x7fffffffd130:\t0x00007fffffffd230\t0x0000000000000005\n0x7fffffffd140:\t0x0000000000000002\t0x0000000000000000\n0x7fffffffd150:\t0x0000555555557da0\t0x00007ffff7ffd000\n0x7fffffffd160:\t0x00007fffffffd180\t0x00007ffff7ded27e\n0x7fffffffd170:\t0x0000000000000008\t0x00007fffffffd348\n0x7fffffffd180:\t0x00007fffffffd1a0\t0x0000555555555268\n0x7fffffffd190:\t0x0000000000000000\t0x00007fffffffd1e0\n0x7fffffffd1a0:\t0x00007fffffffd220\t0x0000555555555232\n0x7fffffffd1b0:\t0x00007fffffffd348\t0x00000002ffffd1e8\n0x7fffffffd1c0:\t0x0000000000000011\t0x0000000100000008\n0x7fffffffd1d0:\t0x00007fff00000001\t0x0000000000000000\n=> 0x7ffff7e46c0c <__GI___pthread_kill+284>:\tmov    %eax,%r14d\n   0x7ffff7e46c0f <__GI___pthread_kill+287>:\tneg    %r14d\n   0x7ffff7e46c12 <__GI___pthread_kill+290>:\tcmp    $0xfffff000,%eax\n   0x7ffff7e46c17 <__GI___pthread_kill+295>:\tmov    $0x0,%eax\n   0x7ffff7e46c1c <__GI___pthread_kill+300>:\tcmovbe %eax,%r14d\n   0x7ffff7e46c20 <__GI___pthread_kill+304>:\tjmp    0x7ffff7e46ba0 <__GI___pthread_kill+176>\n   0x7ffff7e46c25 <__GI___pthread_kill+309>:\tnopl   (%rax)\n   0x7ffff7e46c28 <__GI___pthread_kill+312>:\tmov    %r13,%rdi\n   0x7ffff7e46c2b <__GI___pthread_kill+315>:\tcall   0x7ffff7e40fc0 <__GI___lll_lock_wait_private>\n   0x7ffff7e46c30 <__GI___pthread_kill+320>:\tjmp    0x7ffff7e46b6e <__GI___pthread_kill+126>\n   0x7ffff7e46c35 <__GI___pthread_kill+325>:\tnopl   (%rax)\n   0x7ffff7e46c38 <__GI___pthread_kill+328>:\tmov    %r13,%rdi\n   0x7ffff7e46c3b <__GI___pthread_kill+331>:\tcall   0x7ffff7e41080 <__GI___lll_lock_wake_private>\n   0x7ffff7e46c40 <__GI___pthread_kill+336>:\tjmp    0x7ffff7e46b89 <__GI___pthread_kill+153>\n   0x7ffff7e46c45 <__GI___pthread_kill+341>:\tcall   0x7ffff7ee0120 <__stack_chk_fail>\n   0x7ffff7e46c4a:\tnopw   0x0(%rax,%rax,1)\n",
+      "raw_commands": [
+        {
+          "name": "event_this",
+          "expression": "this",
+          "result": "done,value=\"140737488343520\""
+        },
+        {
+          "name": "data_pointer",
+          "expression": "this->inOrderExecHelper.sharableEventDataHelper.eventDataPtr",
+          "result": "done,value=\"140737488343488\""
+        },
+        {
+          "name": "data_assigned",
+          "expression": "this->inOrderExecHelper.dataAssigned",
+          "result": "done,value=\"1\""
+        },
+        {
+          "name": "base_host_address",
+          "expression": "this->inOrderExecHelper.baseHostCpuAddress",
+          "result": "done,value=\"140737488343552\""
+        },
+        {
+          "name": "heapfull_profiling",
+          "expression": "this->heapfullCbEventWithProfiling",
+          "result": "done,value=\"0\""
+        },
+        {
+          "name": "expected_counter",
+          "expression": "this->inOrderExecHelper.sharableEventDataHelper.eventDataPtr->counterValue",
+          "result": "done,value=\"17\""
+        },
+        {
+          "name": "counter_offset",
+          "expression": "this->inOrderExecHelper.sharableEventDataHelper.eventDataPtr->counterOffset",
+          "result": "done,value=\"8\""
+        },
+        {
+          "name": "host_partitions",
+          "expression": "this->inOrderExecHelper.sharableEventDataHelper.eventDataPtr->hostPartitions",
+          "result": "done,value=\"1\""
+        },
+        {
+          "name": "device_partitions",
+          "expression": "this->inOrderExecHelper.sharableEventDataHelper.eventDataPtr->devicePartitions",
+          "result": "done,value=\"1\""
+        },
+        {
+          "name": "first_host_counter_memory",
+          "result": "done,memory=[{begin=\"0x00007fffffffd208\",offset=\"0x0000000000000000\",end=\"0x00007fffffffd210\",contents=\"1d00000000000000\"}]"
+        }
+      ],
+      "event_this": 140737488343520,
+      "data_pointer": 140737488343488,
+      "data_assigned": 1,
+      "base_host_address": 140737488343552,
+      "heapfull_profiling": 0,
+      "expected_counter": 17,
+      "counter_offset": 8,
+      "host_partitions": 1,
+      "device_partitions": 1,
+      "first_host_counter_address": "0x7fffffffd208",
+      "first_host_counter": 29,
+      "first_counter_ge_expected": true,
+      "all_host_partitions_read": true,
+      "plain_counter_branch": true,
+      "captured": true
+    }
+  ],
+  "errors": [],
+  "matching_frames": 1,
+  "elapsed_seconds": 0.0066417290072422475,
+  "all_matching_fields_captured": true
+}

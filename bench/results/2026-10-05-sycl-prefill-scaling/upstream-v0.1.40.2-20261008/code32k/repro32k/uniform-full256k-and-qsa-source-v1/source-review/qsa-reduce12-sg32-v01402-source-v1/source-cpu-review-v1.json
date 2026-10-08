@@ -1,0 +1,38 @@
+{
+  "active": false,
+  "passed": true,
+  "created_utc": "2026-10-08T11:41:52.840191+00:00",
+  "scope": "Source-only convergence/mutation review plus direct actual-helper CPU FP32 proof. Not a SYCL compile, GPU subgroup, model-state, bandwidth, throughput or adoption result.",
+  "original_source_sha256": "41dfb04922276e91c81033ebdf2495d0e7130f04289722ff38ad7bc555d51679",
+  "candidate_source_sha256": "410594cafe51989256bbbd4fdc2cfe5d14cb94081f487fb289652dd40c33f467",
+  "source_diff_sha256": "8c7663c3eef9437561cc6d002ab7522c711fa6ff52fc47b79259cc6829955422",
+  "cpu_receipt_sha256": "0fa7a0d9713bbec6f48e60aa657788f3a9c1d3f0d42da5ce23f240db0954c71f",
+  "cpu_bitwise_equal_outputs": 82176,
+  "cpu_groups": 2568,
+  "cpu_asan_ubsan_passed": true,
+  "primary_sources": [
+    "https://github.khronos.org/SYCL_Reference/iface/group-functions.html",
+    "https://github.khronos.org/SYCL_Reference/iface/group-algorithms-library.html"
+  ],
+  "checks": {
+    "exact_dot_operand_expression_and_scale_retained": true,
+    "64_cell_split_softmax_pv_merge_dispatch_unchanged": true,
+    "barrier_count_unchanged": true,
+    "kernel_launch_subgroup32_attribute_retained": true,
+    "all32_items_call_each_exchange_before_lane_dependent_store": true,
+    "masks16_8_4_2_1_in_range": true,
+    "valid_cell_skip_is_subgroup_uniform_shared_srow_c": true,
+    "no_event_queue_host_lifetime_or_global_memory_layout_change": true,
+    "no_new_vector_pointer_cast_or_alias": true,
+    "one_source_tu_planned_only": true
+  },
+  "limitations": [
+    "Finite inputs and finite intermediate FP32 additions only; no arbitrary NaN-payload identity claim.",
+    "C++ CPU coroutine emulation checks actual helper arithmetic and routing; actual device compiler, subgroup execution, occupancy/spills and full-engine output are untested.",
+    "A new source scope can cause different device code despite unchanged expressions; full>=32768 head/live-state/output/logprob/MTP/session gates remain mandatory."
+  ],
+  "adopted": false,
+  "compiled_engine": false,
+  "gpu_tested": false,
+  "minimum_performance_input_tokens": 32768
+}
