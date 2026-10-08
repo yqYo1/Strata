@@ -16,6 +16,7 @@
 #include <functional>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <mutex>
 #include <set>
 #include <sstream>
@@ -25,7 +26,10 @@
 #include "strata/sycl_error.hpp"
 #include <thread>
 #include <vector>
+#include <variant>
 #if defined(__linux__)
+#include <level_zero/ze_api.h>
+#include <sycl/ext/oneapi/backend/level_zero.hpp>
 #include <unistd.h>
 #include <sys/syscall.h>
 #endif
@@ -632,6 +636,94 @@ public:
         : sycl::property_list{sycl::property::queue::in_order()};
     _queues.push_back(std::make_shared<sycl::queue>(_ctx, *this, eh, properties));
     return _queues.back().get();
+  }
+
+  // Private, opt-in expert-copy experiment. Register the imported queue just as
+  // generic queues are registered: device/default-stream waits and destruction
+  // must retain it. No kernel is submitted to this copy-only queue.
+  sycl::queue *create_in_order_native_copy_queue(bool enable_exception_handler,
+                                               uint32_t &selected_ordinal) {
+#if defined(__linux__)
+    std::lock_guard<mutex_type> lock(m_mutex);
+    constexpr auto backend = sycl::backend::ext_oneapi_level_zero;
+    const sycl::device device = *this;
+    if (device.get_backend() != backend || _ctx.get_backend() != backend)
+      throw std::invalid_argument("native expert-copy queue requires Level Zero");
+    auto check = [](ze_result_t result, const char *operation) {
+      if (result != ZE_RESULT_SUCCESS)
+        throw std::runtime_error(std::string(operation) + " failed: " +
+                                 std::to_string(static_cast<uint32_t>(result)));
+    };
+    const auto native_device = sycl::get_native<backend>(device);
+    const auto native_context = sycl::get_native<backend>(_ctx);
+    uint32_t count = 0;
+    check(zeDeviceGetCommandQueueGroupProperties(native_device, &count, nullptr),
+          "zeDeviceGetCommandQueueGroupProperties(count)");
+    if (count == 0) throw std::runtime_error("no native queue groups");
+    std::vector<ze_command_queue_group_properties_t> groups(count);
+    for (auto &group : groups) group.stype = ZE_STRUCTURE_TYPE_COMMAND_QUEUE_GROUP_PROPERTIES;
+    check(zeDeviceGetCommandQueueGroupProperties(native_device, &count, groups.data()),
+          "zeDeviceGetCommandQueueGroupProperties(properties)");
+    if (count > groups.size()) throw std::runtime_error("native queue-group count changed");
+    uint32_t ordinal = count;
+    for (uint32_t i = 0; i < count; ++i) {
+      if ((groups[i].flags & ZE_COMMAND_QUEUE_GROUP_PROPERTY_FLAG_COPY) &&
+          !(groups[i].flags & ZE_COMMAND_QUEUE_GROUP_PROPERTY_FLAG_COMPUTE) &&
+          groups[i].numQueues > 0) {
+        ordinal = i;
+        break;
+      }
+    }
+    if (ordinal == count) throw std::runtime_error("no copy-only native queue group");
+    sycl::async_handler handler = {};
+    if (enable_exception_handler) handler = exception_handler;
+    const sycl::property_list properties{sycl::property::queue::in_order()};
+    sycl::backend_input_t<backend, sycl::queue> input{
+        static_cast<ze_command_list_handle_t>(nullptr), device,
+        sycl::ext::oneapi::level_zero::ownership::transfer, properties};
+    ze_command_queue_desc_t description{};
+    description.stype = ZE_STRUCTURE_TYPE_COMMAND_QUEUE_DESC;
+    description.ordinal = ordinal;
+    description.index = 0;
+    description.flags = ZE_COMMAND_QUEUE_FLAG_IN_ORDER;
+    description.mode = ZE_COMMAND_QUEUE_MODE_ASYNCHRONOUS;
+    description.priority = ZE_COMMAND_QUEUE_PRIORITY_NORMAL;
+    ze_command_list_handle_t native_list = nullptr;
+    check(zeCommandListCreateImmediate(native_context, native_device, &description, &native_list),
+          "zeCommandListCreateImmediate(copy-only)");
+    // This guard owns the empty list only before handing it to make_queue.
+    struct BeforeImport {
+      ze_command_list_handle_t list;
+      ~BeforeImport() { if (list) zeCommandListDestroy(list); }
+    } before_import{native_list};
+    ze_bool_t immediate = false;
+    uint32_t actual_ordinal = 0;
+    ze_command_queue_flags_t flags = 0;
+    check(zeCommandListIsImmediate(native_list, &immediate), "zeCommandListIsImmediate");
+    if (!immediate) throw std::runtime_error("native expert-copy list is not immediate");
+    check(zeCommandListGetOrdinal(native_list, &actual_ordinal), "zeCommandListGetOrdinal");
+    check(zeCommandListImmediateGetFlags(native_list, &flags), "zeCommandListImmediateGetFlags");
+    if (actual_ordinal != ordinal || !(flags & ZE_COMMAND_QUEUE_FLAG_IN_ORDER))
+      throw std::runtime_error("native expert-copy queue is not the requested in-order immediate list");
+    input.NativeHandle = native_list;
+    // Ownership transfers to SYCL, including its retained queue/event references.
+    // Never destroy the handle ourselves after entering make_queue: the adapter
+    // may already own it during exception unwinding. Import failure aborts
+    // initialization, without a fallback/retry on a potentially unhealthy GPU.
+    before_import.list = nullptr;
+    auto queue = std::make_shared<sycl::queue>(sycl::make_queue<backend>(input, _ctx, handler));
+    if (!queue->is_in_order() || queue->get_context() != _ctx || queue->get_device() != device)
+      throw std::runtime_error("native expert-copy queue import changed its context/device/order");
+    const auto imported = sycl::get_native<backend>(*queue);
+    const auto *imported_list = std::get_if<ze_command_list_handle_t>(&imported);
+    if (!imported_list || *imported_list != native_list)
+      throw std::runtime_error("native expert-copy queue import changed its command list");
+    _queues.push_back(std::move(queue));
+    selected_ordinal = ordinal;
+    return _queues.back().get();
+#else
+    throw std::runtime_error("native expert-copy queue experiment requires Linux");
+#endif
   }
 
   sycl::queue *create_out_of_order_queue(bool enable_exception_handler = false) {

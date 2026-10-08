@@ -1106,10 +1106,25 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
     DPCT1025: The SYCL queue is created ignoring the flag and priority
     options.
     */
-    if (DPCT_CHECK_ERROR(
-            m.copy = dpct::get_current_device().create_in_order_queue_with_profiling(
-                true, std::getenv("STRATA_PREFILL_TRANSFER_TIMING") != nullptr)) != 0) {
-        err = "prefill: copy stream"; return false;
+    const char* copy_engine = std::getenv("STRATA_PREFILL_COPY_ENGINE");
+    if (copy_engine && std::strcmp(copy_engine, "0") != 0 && std::strcmp(copy_engine, "1") != 0) {
+        err = "prefill: STRATA_PREFILL_COPY_ENGINE must be0 or1"; return false;
+    }
+    if (copy_engine && std::strcmp(copy_engine, "1") == 0) {
+        if (std::getenv("STRATA_PREFILL_TRANSFER_TIMING") != nullptr) {
+            err = "prefill: native copy-only queue profiling is not qualified"; return false;
+        }
+        uint32_t ordinal = 0;
+        if (DPCT_CHECK_ERROR(m.copy = dpct::get_current_device().create_in_order_native_copy_queue(true, ordinal)) != 0) {
+            err = "prefill: native copy-only stream"; return false;
+        }
+        std::fprintf(stderr, "strata prefill copy queue: native copy-only, ordinal %u, index0, in-order, profiling0\n", ordinal);
+    } else {
+        if (DPCT_CHECK_ERROR(
+                m.copy = dpct::get_current_device().create_in_order_queue_with_profiling(
+                    true, std::getenv("STRATA_PREFILL_TRANSFER_TIMING") != nullptr)) != 0) {
+            err = "prefill: copy stream"; return false;
+        }
     }
     const size_t T = (size_t) chunk;
     m.T_max = chunk;
