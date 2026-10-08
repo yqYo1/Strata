@@ -56,3 +56,5 @@ first request from repeated full reads. Logging/captures and SAVE/RESTORE
 durations are excluded from speed. No candidate is adopted before the
 complete physical256K gate. Production, accepted binaries and main remain
 unchanged; PP1000/TG70 remains unachieved.
+
+The [subsequent GPU timestamp rejection and polling gate](../device-profile-rejection-and-poll32k-v1/README.md) retain the actual earlier VTune startup failure on this Ryzen processor and a failed logged 32768-token unitrace GPU timestamp run. The application watchdog stopped at layer 26 of chunk 16384; no new kernel fault was recorded and post-exit GPU/runtime health passed. Its empty/incomplete trace and durations are excluded from performance conclusions. The DD5-based polling candidate subsequently passed four fresh 32768-token reads, all head/used-state/output/logprob/MTP comparisons, actual disk continuation and normal exit. It is still private: quiet matched inputs of at least 32768 tokens and the complete physical 256K gate remain required. First and repeated full reads must be reported separately; the underlying pending-counter cause is unresolved.

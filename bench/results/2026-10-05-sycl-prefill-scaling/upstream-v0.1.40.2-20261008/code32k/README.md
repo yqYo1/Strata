@@ -79,3 +79,5 @@ serving validation is incomplete. The later [default counter-conversion check](r
 passes three exact32K full state/head/output captures on the same scheduling
 binary without either the counter override or MKL CNR. Those captured timings
 are excluded from the speed comparison.
+
+The [subsequent GPU timestamp rejection and polling gate](repro32k/device-profile-rejection-and-poll32k-v1/README.md) retain the actual earlier VTune startup failure on this Ryzen processor and a failed logged 32768-token unitrace GPU timestamp run. The application watchdog stopped at layer 26 of chunk 16384; no new kernel fault was recorded and post-exit GPU/runtime health passed. Its empty/incomplete trace and durations are excluded from performance conclusions. The DD5-based polling candidate subsequently passed four fresh 32768-token reads, all head/used-state/output/logprob/MTP comparisons, actual disk continuation and normal exit. It is still private: quiet matched inputs of at least 32768 tokens and the complete physical 256K gate remain required. First and repeated full reads must be reported separately; the underlying pending-counter cause is unresolved.

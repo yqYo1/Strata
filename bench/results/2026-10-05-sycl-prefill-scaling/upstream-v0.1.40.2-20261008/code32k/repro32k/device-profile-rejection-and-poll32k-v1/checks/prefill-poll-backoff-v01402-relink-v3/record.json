@@ -1,0 +1,111 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_tested": false,
+  "adopted": false,
+  "steps": [
+    {
+      "label": "link",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-O3",
+        "-DNDEBUG",
+        "-fsycl",
+        "-Xsycl-target-backend=spir64",
+        "-cl-fp32-correctly-rounded-divide-sqrt",
+        "-fsycl-device-code-split=per_kernel",
+        "-qmkl=sequential",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-visible-commit-v1-20261008/generate.cpp.o",
+        "-o",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-prefill-poll-backoff-v3-20261008/strata",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-objects-v1-20261008/libstrata_engine.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-prefill-poll-backoff-v3-20261008/libstrata_prefill.a",
+        "libstrata_spec.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-objects-v1-20261008/libstrata_engine.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-objects-v1-20261008/libstrata_kernels.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-objects-v1-20261008/libstrata_core.a",
+        "/usr/lib/x86_64-linux-gnu/libze_loader.so",
+        "libstrata_kernels_cpu.a",
+        "ggml/src/libggml-cpu.a",
+        "ggml/src/libggml-base.a",
+        "-lm"
+      ],
+      "pid": 3894728,
+      "exit_code": 0
+    }
+  ],
+  "started_utc": "2026-10-08T09:22:52.205049+00:00",
+  "controller_sha256": "94ca81916ba41d5f8d9fdd437694256bc25e788ecbe0497587d939af350f09f5",
+  "scope": "CPU-only link/source inventory: replace only DD5 prefill.cpp.o with the unchanged CPU-tested polling object. Verify every prefill archive member, all baseline link inputs and actual linked host_wait.hpp users. No GPU workload or claim that backoff fixes a pending native event.",
+  "elapsed_seconds": 21.11446653699386,
+  "baseline_binary_sha256": "dd5efb9002167481d180f370b86fb6978d724f37745f7e4a923432296725ad34",
+  "baseline_build_receipt_sha256": "b4e79456dc8222ef6187c1667ce798dc4b3f67d18f9da28aee9ca06adb56d2c0",
+  "poll_build_receipt_sha256": "cf17f2507fb47741a0f6b8c8f0d9fefda6ecfa12ef7970d1c23d63a6b0e1223a",
+  "poll_source_review_sha256": "c078ee4e9dda69763d2799f13cec5c1c5ab1501b7386bd74b02a7fd884e53efb",
+  "actual_prefill_object": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-prefill-poll-backoff-v1-20261008/prefill.cpp.o",
+  "actual_prefill_object_sha256": "22f7302d42384c81cae5e17972a56df176180845b26eb43d323dd8a5c2076699",
+  "actual_shadow_header": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-prefill-poll-backoff-v1-20261008/include/strata/host_wait.hpp",
+  "actual_shadow_header_sha256": "6e2448cbb3c7111dbaea4e02b479d5d41002803d5614ced77e8fa615a8beb9ef",
+  "actual_dependency_file": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-prefill-poll-backoff-v1-20261008/prefill.cpp.o.d",
+  "actual_dependency_file_sha256": "bd2db57e2b9489510005cab361630b2b90cc8c96a9f1489b5e9e94210e9caace",
+  "prefill_source": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/prefill/prefill.cpp",
+  "prefill_source_sha256": "f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77",
+  "prefill_keeps_original_profiled_dpct_definition": true,
+  "actual_linked_compile_commands": 116,
+  "actual_linked_host_wait_header_users": [
+    {
+      "object": "CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o",
+      "source": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/prefill/prefill.cpp"
+    }
+  ],
+  "actual_header_dependency_inventory_sha256": "26f417d3d6e3a2050c07318ebb3bb6099d3ec4880a5d158e2e7e0e026a054064",
+  "poll_template_definition_isolated_to_prefill_tu": true,
+  "prefill_archive_members": [
+    {
+      "member": "gemm.dp.cpp.o",
+      "replaced": false,
+      "before_sha256": "d2941deae1232ca2153881ee9f03d279176bb3b8f32adde0485e45e070b201fd",
+      "after_sha256": "d2941deae1232ca2153881ee9f03d279176bb3b8f32adde0485e45e070b201fd"
+    },
+    {
+      "member": "kernels.dp.cpp.o",
+      "replaced": false,
+      "before_sha256": "0586ebd4b3f62b2133dde0ddd64b7024d978014894c45f936639b346f16917db",
+      "after_sha256": "0586ebd4b3f62b2133dde0ddd64b7024d978014894c45f936639b346f16917db"
+    },
+    {
+      "member": "prefill.cpp.o",
+      "replaced": true,
+      "before_sha256": "fb4292c06752cf3dc3e37dc201dfaabf29a6b20a87aa7d8d50f5ad4817e69271",
+      "after_sha256": "22f7302d42384c81cae5e17972a56df176180845b26eb43d323dd8a5c2076699"
+    },
+    {
+      "member": "moe_fused_stub.cpp.o",
+      "replaced": false,
+      "before_sha256": "0f4ccb811fe0b097b018eaa7c635aa95e10294f2271a899925f66673af2dbe87",
+      "after_sha256": "0f4ccb811fe0b097b018eaa7c635aa95e10294f2271a899925f66673af2dbe87"
+    }
+  ],
+  "baseline_link_input_sha256": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-visible-commit-v1-20261008/generate.cpp.o": "4dd9c24f9ccb705fa0500d14566347186ce55af43e895b44a34dc17cc84730b4",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-objects-v1-20261008/libstrata_engine.a": "2ba779a0122a9ee203b5a61ff2bfd547803855f9d7361ca63196ada39a0efdb6",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-no-root-prefill-20261008/libstrata_prefill.a": "1c4a8d644ce2d5d74d0466e59e109ea902b337bee084151f862b215026b8db1f",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/build/libstrata_spec.a": "ff29f801c00b281aed711354818d5fd319a65751670c62fa100ce0fa752069c5",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-objects-v1-20261008/libstrata_kernels.a": "b0893dad9685e3a19037842ace6684ba351c6bbbff45242f0271494c24f76eff",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-objects-v1-20261008/libstrata_core.a": "40ae8bd4d515720862b994e6e03c9e56cbff12211a38ec6977f6d0b7b2ac2a22",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/build/libstrata_kernels_cpu.a": "b47e850690c39b9ea1869fb9057c4f1e3e55e7b2560b219f88c6fa5413f793eb",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/build/ggml/src/libggml-cpu.a": "e3cefe0cf3c866aec7d9f06b9181ca4263304dd7307af462195a9b869be953f2",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/build/ggml/src/libggml-base.a": "98059baeddf43574e613949b8382d67c088f3f62d1b84c3d47bef31581bcae1c"
+  },
+  "baseline_inputs_unchanged": true,
+  "candidate_binary": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-prefill-poll-backoff-v3-20261008/strata",
+  "candidate_binary_sha256": "44a274d8c699829020abb8a85a331a638f40efdf5d6c959a076a58e818f75391",
+  "candidate_archive_sha256": "0e70adfa393b6692d8205263c9d779e24d06f4b8031e997056821f78b33c09a5",
+  "only_prefill_link_input_replaced": true,
+  "pending": [
+    "First logged32K numerical gate against DD5",
+    "Matched quiet>=32768 full-read comparison",
+    "Complete physical256K, disk restoration, clipped tail, capacity refusal and later32K before adoption"
+  ],
+  "finished_utc": "2026-10-08T09:23:13.319826+00:00"
+}

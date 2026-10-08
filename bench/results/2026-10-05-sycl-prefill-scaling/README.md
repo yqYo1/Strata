@@ -407,3 +407,5 @@ VRAM. They also include actual allocation at a 256K K8/V8 context and
 the 32K/64K comparisons with 4K and 8K chunks. Lower transfer volume does
 not imply a speed gain: the 64K comparison with 8K chunks has no observed
 wall-time improvement.
+
+The [subsequent GPU timestamp rejection and polling gate](upstream-v0.1.40.2-20261008/code32k/repro32k/device-profile-rejection-and-poll32k-v1/README.md) retain the actual earlier VTune startup failure on this Ryzen processor and a failed logged 32768-token unitrace GPU timestamp run. The application watchdog stopped at layer 26 of chunk 16384; no new kernel fault was recorded and post-exit GPU/runtime health passed. Its empty/incomplete trace and durations are excluded from performance conclusions. The DD5-based polling candidate subsequently passed four fresh 32768-token reads, all head/used-state/output/logprob/MTP comparisons, actual disk continuation and normal exit. It is still private: quiet matched inputs of at least 32768 tokens and the complete physical 256K gate remain required. First and repeated full reads must be reported separately; the underlying pending-counter cause is unresolved.
