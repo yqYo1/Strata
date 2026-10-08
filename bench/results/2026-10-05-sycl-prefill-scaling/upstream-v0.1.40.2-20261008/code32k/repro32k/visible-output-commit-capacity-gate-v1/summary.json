@@ -1,0 +1,103 @@
+{
+  "active": false,
+  "completed": true,
+  "capacity_passed": false,
+  "adopted": false,
+  "scope": "Terminal preflight evidence, visible-output commit bug and CPU-tested private fix. No new performance measurement. Active full256K job is separate and not archived as a completed test.",
+  "created_utc": "2026-10-08T05:26:56.864104+00:00",
+  "feature_head_at_start": "ebac0156711ff8176a6cc202a2a1a2d264bd5731",
+  "terminal_runs": [
+    {
+      "name": "owned-full-kv-access-v01402-full256k-diagnostic-r1",
+      "receipt_sha256": "833dcb26548cd298b49f2da746fa48675f04e75d40f47c1409f5a3d3b60caf1d",
+      "healthy": true,
+      "completed": true,
+      "error": null,
+      "math_gate_passed": false
+    },
+    {
+      "name": "owned-full-kv-access-v01402-full256k-diagnostic-r2",
+      "receipt_sha256": "da8657868131392654c034ed6c004176fd624e7bd065f03c4c73aa3b3969a7ac",
+      "healthy": false,
+      "completed": false,
+      "error": "AssertionError()",
+      "math_gate_passed": null
+    },
+    {
+      "name": "owned-full-kv-access-v01402-full256k-diagnostic-r3",
+      "receipt_sha256": "e2003090cf5556999cdc2c0fda31ba29c6e86c6bb1d85836ea9af614765a944f",
+      "healthy": false,
+      "completed": false,
+      "error": "KeyError('mtp_counts')",
+      "math_gate_passed": null
+    }
+  ],
+  "minimum_comparison_input_tokens": 32768,
+  "prior_clean_repeated32k_rates": {
+    "chunk_major_PP": 427.49005816215674,
+    "chunk_major_TG": 18.482686920611084,
+    "layer_major_PP": 429.45223477543465,
+    "layer_major_TG": 17.92215065807897
+  },
+  "prior_rates_source": "../kv-streaming-32k-and-layer-order-v3/summary.json; historical quiet ABBA, not these diagnostic runs",
+  "reproduced_bug": {
+    "input_tokens": 32768,
+    "emitted_tokens": 64,
+    "saved_consumed_tokens": 32833,
+    "expected_consumed_tokens": 32831,
+    "extra_committed_tokens": 2,
+    "head_ids_logprobs_and_live_prefill_state_equal_to_control": true,
+    "legacy_MTP_counts": [
+      43,
+      66
+    ]
+  },
+  "fix": {
+    "sites": [
+      "serial serve",
+      "pipeline serve",
+      "CLI speculative loop"
+    ],
+    "cpu_sanitizer_cases": 12,
+    "verifier_window_T_unchanged": true,
+    "clip_before_commit": true,
+    "limits": [
+      "max_new remaining",
+      "first emitted EOS"
+    ],
+    "expected_32k_visible_MTP_counts": [
+      41,
+      66
+    ],
+    "initial32k_gpu_gate_passed": true,
+    "saved_consumed_tokens": 32831,
+    "saved_token_ids_equal_prompt_plus_outputs_except_last": true,
+    "actual_live_continuation_resume_tokens": 32831,
+    "binary": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-visible-commit-v1-20261008/strata",
+    "binary_sha256": "fdca351f73bd2433d45d9db7962fde7ad1a4b83f5e254751d27782fe9f5f75c6"
+  },
+  "capacity_controller": {
+    "file": "controllers/run_owned_full_visible_commit_v01402_v4.py",
+    "receipt_private": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-full-kv-access-v01402-full256k-diagnostic-r4/record.json",
+    "requirements": [
+      "full physical cell262143",
+      "fresh full reread with RESUME0",
+      "all13 saved KV layers including final cell",
+      "restored32K live continuation",
+      "restored256K-prefix clipped tail",
+      "capacity refusal",
+      "later full32K control"
+    ],
+    "all_inputs_at_least_32768": true,
+    "timings_excluded_from_speed": true
+  },
+  "source_authority": "actual pinned compiled overlay plus explicit private object replacements, not current worktree source",
+  "production_binary_sha256": "c88f94d81bfb22227310ea00d09ecc8ab21a6e670aee9556307746530f5af714",
+  "accepted_binary_sha256": "e82fc5de5480b72255b601759497d5810e86bf691350417ed0dc11ed6c429323",
+  "no_reset_rebind_reboot_service_package_global_change": true,
+  "limitations": [
+    "CPU helper/synthetic codec tests are not GPU or full-capacity proof.",
+    "Unpatched upstream comparison is in the earlier archived32K baseline; this private fix is not applied to it.",
+    "Pipeline/CLI branches are compiled and CPU prefix-tested, not new GPU parity-tested here."
+  ]
+}

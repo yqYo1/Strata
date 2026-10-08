@@ -144,3 +144,9 @@ records defined KV representations/page claims, three exact used-state/head
 reads per configuration, and matched quiet ABBA runs with initial versus
 repeated32768-token measurements. Full262144 occupancy and adoption remain
 pending.
+
+The [visible-output commit follow-up](visible-output-commit-capacity-gate-v1/README.md)
+reproduces two invisible committed tokens at a64-output limit and retains a
+CPU-tested private fix. Its initial32K state/head/output and exact saved-prefix
+gate passes; the same process is continuing full256K repeat/restore/refusal
+checks. Logged correctness durations are excluded from speed comparisons.

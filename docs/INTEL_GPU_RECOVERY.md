@@ -681,3 +681,14 @@ make both builds use the prior recipe; restoring factor 0 reproduces the initial
 reference hash. Neither new engine ran on the GPU. This regression proves a
 possible CPU use-after-free, not the trigger of the original GPU fault or a
 speed improvement. Other source-review and full-context gates remain pending.
+
+The [visible-output commit check](../bench/results/2026-10-05-sycl-prefill-scaling/upstream-v0.1.40.2-20261008/code32k/repro32k/visible-output-commit-capacity-gate-v1/README.md)
+finds a separate saved-state error:64 displayed outputs after32768 input tokens
+leave32833 consumed tokens because commit precedes the output limit. A private
+candidate clips commit at max_new/EOS. Twelve CPU sanitizer cases pass; its
+initial32K GPU state/head/IDs/logprobs remain identical and SAVE now contains
+the correct32831-token prefix. A subsequent request actually resumes that
+prefix. Full262144-cell repeat/restore/refusal checks are still running, so
+the candidate is not adopted. This does not identify the earlier xe fault's
+trigger or establish a speed gain. All performance comparisons use at least
+32768 input tokens and exclude these diagnostic durations.

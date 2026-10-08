@@ -1,12 +1,12 @@
 {
   "created_utc": "2026-10-07T18:30:13.030576+00:00",
   "source_commit": "3437a83322957ca12f951fab04ff3022ff93f0c9",
-  "revised_utc": "2026-10-08T04:07:00.219476+00:00",
-  "revision_reason": "Retain private RAM-KV32K correctness and matched processing-order gates.",
+  "revised_utc": "2026-10-08T05:32:35.307087+00:00",
+  "revision_reason": "Retain visible-output commit reproduction, CPU boundary checks and initial32K GPU correctness; full-capacity job remains separate and active.",
   "files": {
     "README.md": {
-      "bytes": 9112,
-      "sha256": "b0d52c5fc2793785d34ea7fd0399c7c0cd3dc2d5b3a751529868ad59b45d1ab1"
+      "bytes": 9507,
+      "sha256": "24fa5c3700e3841efcd10ca34019298768185e08922e1410605b3d648d844ce6"
     },
     "analysis/cb-off-v01402-state-analysis/cnr-research.json": {
       "bytes": 800,
@@ -10475,6 +10475,710 @@
     "sequences/v01402-code32k-head-sequence/record.json": {
       "bytes": 899,
       "sha256": "004dfa786e077b3d4f3258a4a02eeda65dffdfe592fc222cd730801a6e08f670"
+    },
+    "visible-output-commit-capacity-gate-v1/README.md": {
+      "bytes": 4033,
+      "sha256": "d12c575fcb16dac8685827eace3bf23607c53dbbb378bac9c30efc9f5ec77d0c"
+    },
+    "visible-output-commit-capacity-gate-v1/SHA256SUMS": {
+      "bytes": 23128,
+      "sha256": "8b95fcdd3bc09e4ba26ad63316f18730594e4365a3ec01a10f6fc028ef0d9649"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/full-kv-access-v01402-source-review-v1/controller.diff": {
+      "bytes": 32678,
+      "sha256": "c55011602406e841c96f59545d5f1e5fb162bff1c55a156ad07cadf019da4159"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/full-kv-access-v01402-source-review-v1/record.json": {
+      "bytes": 2483,
+      "sha256": "26dda5921d8dc17aec700731a2b56b010e8e8db25ed4f95292b06b4a54030d9c"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/full-kv-access-v01402-source-review-v2/controller.diff": {
+      "bytes": 7891,
+      "sha256": "7cbe109b22786f936b2ebfd430de103430398c365f986061083a87b36842afff"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/full-kv-access-v01402-source-review-v2/record.json": {
+      "bytes": 2850,
+      "sha256": "047472f0bdad1b74ab80db4a7245df3717cffe3a6bb2423f944929956daae781"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/full-visible-commit-v01402-source-review-v3/controller.diff": {
+      "bytes": 13434,
+      "sha256": "7a798ccc06f08fbe73f4a37c84f60dbb3d0c473e7d33006abcd276425afa3957"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/full-visible-commit-v01402-source-review-v3/record.json": {
+      "bytes": 3758,
+      "sha256": "189a1a1b7e934ccb1f8e6bbdf1aa32d9c9db1114f8cde89738938394103493f8"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/full-visible-commit-v01402-source-review-v4/controller.diff": {
+      "bytes": 8357,
+      "sha256": "601a6ce1dcc049ec5747621d18438f27a1df28b5b9ca1ba95cad134543fb22e5"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/full-visible-commit-v01402-source-review-v4/record.json": {
+      "bytes": 4025,
+      "sha256": "502127e9c2fd34ddbd98a98144c06883362c4ccd9dffe603cee8265f8da90ab8"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/kv-access-safe-v01402-build-v1/candidate.diff": {
+      "bytes": 1588,
+      "sha256": "30ea325f278363219c803f4fbbf1643a7c50fc59fc8746a2533437f60a0b432f"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/kv-access-safe-v01402-build-v1/compile.stderr": {
+      "bytes": 42687,
+      "sha256": "af96f9b9d7aef346e8016fa8ec7ab9de0beb517ad731e63c0ff492125c41c7fc"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/kv-access-safe-v01402-build-v1/compile.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/kv-access-safe-v01402-build-v1/record.json": {
+      "bytes": 4561,
+      "sha256": "192276eb2ad86e879064e7973d1447131e7f9fea07f6b1e14012115cd83bb92e"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/kv-access-safe-v01402-build-v2/archive-index.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/kv-access-safe-v01402-build-v2/archive-index.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/kv-access-safe-v01402-build-v2/archive-replace.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/kv-access-safe-v01402-build-v2/archive-replace.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/kv-access-safe-v01402-build-v2/candidate.diff": {
+      "bytes": 1588,
+      "sha256": "5c8b699bc6771c92fc7c3d71fe6a82bc9b6a6f5722b7ec24ba6556bbd6c59b2f"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/kv-access-safe-v01402-build-v2/compile.stderr": {
+      "bytes": 42687,
+      "sha256": "743c5a3b170deb47c137792f4478f63984520b17498e9628ef7e72367dfc4eaf"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/kv-access-safe-v01402-build-v2/compile.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/kv-access-safe-v01402-build-v2/link.stderr": {
+      "bytes": 638,
+      "sha256": "ded74b9611497b2f4476bc8f50cd38bd4c2e5675866bf0ffd47c6cc25e82a9a0"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/kv-access-safe-v01402-build-v2/link.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/kv-access-safe-v01402-build-v2/record.json": {
+      "bytes": 15054,
+      "sha256": "4747e061b6be00b90d45175015ca775d1a513887ba962d670b0ce6c40e0c9318"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/post-controller-assert-v01402-health-v2/before-health-cursor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/post-controller-assert-v01402-health-v2/before-health-cursor.stdout": {
+      "bytes": 156,
+      "sha256": "91eb518abeffa1a5a42081ab5190e89b182d5a55219d4dc9a5d0430a677a281c"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/post-controller-assert-v01402-health-v2/health-environment.json": {
+      "bytes": 882,
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/post-controller-assert-v01402-health-v2/health-kernel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/post-controller-assert-v01402-health-v2/health-kernel.stdout": {
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/post-controller-assert-v01402-health-v2/health-runtime.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/post-controller-assert-v01402-health-v2/health-runtime.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/post-controller-assert-v01402-health-v2/health-xe.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/post-controller-assert-v01402-health-v2/health.stderr": {
+      "bytes": 118338,
+      "sha256": "21b6f7e3412c541223668b382cd4a837c1a98ae7c8913e623ad8cff53fb32e72"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/post-controller-assert-v01402-health-v2/health.stdout": {
+      "bytes": 155,
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/post-controller-assert-v01402-health-v2/record.json": {
+      "bytes": 2020,
+      "sha256": "72a25bbe8830a4a269e6a5fbf09e0640338c43b48a00161bf08d81d1b4d97a6e"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/post-save-assert-v01402-health-v1/before-health-cursor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/post-save-assert-v01402-health-v1/before-health-cursor.stdout": {
+      "bytes": 156,
+      "sha256": "d24a40c3e74b10f8496e9cc25c4e091896cf269ff53a8ca86c6cebb6b63dc678"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/post-save-assert-v01402-health-v1/health-environment.json": {
+      "bytes": 882,
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/post-save-assert-v01402-health-v1/health-kernel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/post-save-assert-v01402-health-v1/health-kernel.stdout": {
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/post-save-assert-v01402-health-v1/health-runtime.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/post-save-assert-v01402-health-v1/health-runtime.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/post-save-assert-v01402-health-v1/health-xe.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/post-save-assert-v01402-health-v1/health.stderr": {
+      "bytes": 118983,
+      "sha256": "a241e08e5ee35864ec4cb3321cbdf5c8d01f51f69a01573df565b58c9042cb9b"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/post-save-assert-v01402-health-v1/health.stdout": {
+      "bytes": 155,
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/post-save-assert-v01402-health-v1/record.json": {
+      "bytes": 1912,
+      "sha256": "8f0293fa08502d8a70a3002826e0f484b7859d275d980f3becf215f657126d4f"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/saved-session-reader-v01402-host-check-v1/last-physical-byte-changed.bin": {
+      "bytes": 5848,
+      "sha256": "3323394ac8b1322ebc8bafbade22c73c94e10c68feaa471f5efa0853a4e1dcb8"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/saved-session-reader-v01402-host-check-v1/lru-only.bin": {
+      "bytes": 5848,
+      "sha256": "69166ea47f9539a7fdc132486f4ef22c8e3d09a51f3bf9a6997328de2286f799"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/saved-session-reader-v01402-host-check-v1/oversized-count.bin": {
+      "bytes": 5848,
+      "sha256": "b24aaee68e13416cc0d59dfde6e90842d40cde8a18641f3c96d765ada971cbfe"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/saved-session-reader-v01402-host-check-v1/record.json": {
+      "bytes": 859,
+      "sha256": "76365eb83eb4818c6e33032cc370e22c67dd0586141cb2b8375e7916f45043c8"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/saved-session-reader-v01402-host-check-v1/reference.bin": {
+      "bytes": 5848,
+      "sha256": "0fd5170c48fa922f9521ac82db1993369a7f93f8b6d6425f6169a2298824c843"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/saved-session-reader-v01402-host-check-v1/trailer-corrupt.bin": {
+      "bytes": 5848,
+      "sha256": "05e916e85285dd3f1231caecdca07c8995faee9a918a8de7030bae02b0e69581"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/saved-session-reader-v01402-host-check-v1/truncated.bin": {
+      "bytes": 5847,
+      "sha256": "957e3cd2e149df506dfe38d80991226f86dd80be711b21e5df2fd2c1e079db47"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/saved-session-reader-v01402-host-check-v2/last-physical-byte-changed.bin": {
+      "bytes": 5848,
+      "sha256": "55876043016c407ff6f3c51c6768511c1c00f664fc6479e0fd815d6576d176fd"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/saved-session-reader-v01402-host-check-v2/lru-only.bin": {
+      "bytes": 5848,
+      "sha256": "df4e84b53fc8268f38dd6a8c24296657000e3f2b914ac1c8dbc861287351e473"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/saved-session-reader-v01402-host-check-v2/oversized-count.bin": {
+      "bytes": 5848,
+      "sha256": "f19b9bfa78b11b4259d7d3987bd2d3cb18a1ec938b34389525b92c86f54240f1"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/saved-session-reader-v01402-host-check-v2/record.json": {
+      "bytes": 859,
+      "sha256": "d6cfdd300ab547445763a52ee09ba52feacbeb97ff9ed360bd23a75b7ed5f7b9"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/saved-session-reader-v01402-host-check-v2/reference.bin": {
+      "bytes": 5848,
+      "sha256": "e1f81a5143994a99c53f6a6ab77722c4528656d7c6a5c942a7f80dd9a9279950"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/saved-session-reader-v01402-host-check-v2/trailer-corrupt.bin": {
+      "bytes": 5848,
+      "sha256": "05e916e85285dd3f1231caecdca07c8995faee9a918a8de7030bae02b0e69581"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/saved-session-reader-v01402-host-check-v2/truncated.bin": {
+      "bytes": 5847,
+      "sha256": "0114cec67a7424ae3b4f601a165c5d15d4a17c13da63c52f0209ef3c13914ee4"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/saved-session-reader-v01402-real-file-v2/record.json": {
+      "bytes": 20425,
+      "sha256": "194625888b931acff53aee65dd70f48b493cc973700eef709e79b1576476b355"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/visible-commit-v01402-build-v1/candidate.diff": {
+      "bytes": 2903,
+      "sha256": "2ea4bf162b4709e62b7eeafa3ce07f9087b9d5d36403b1ddfa914d7ba8188963"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/visible-commit-v01402-build-v1/compile.stderr": {
+      "bytes": 37159,
+      "sha256": "07fd7de1315b85b7c2d6b5bfc9d249f7531f5a8877a69ba65d686d3f2cd5f76b"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/visible-commit-v01402-build-v1/compile.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/visible-commit-v01402-build-v1/cpu-compile.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/visible-commit-v01402-build-v1/cpu-compile.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/visible-commit-v01402-build-v1/cpu-run.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/visible-commit-v01402-build-v1/cpu-run.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/visible-commit-v01402-build-v1/link.stderr": {
+      "bytes": 638,
+      "sha256": "ded74b9611497b2f4476bc8f50cd38bd4c2e5675866bf0ffd47c6cc25e82a9a0"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/visible-commit-v01402-build-v1/link.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/visible-commit-v01402-build-v1/prefix-check.cpp": {
+      "bytes": 1670,
+      "sha256": "773e202c0acde65595065fab7b63a7902eae6c111b94037334056af645ed6328"
+    },
+    "visible-output-commit-capacity-gate-v1/checks/visible-commit-v01402-build-v1/record.json": {
+      "bytes": 8763,
+      "sha256": "faa339ee880ecb8d95c11e157be7c4c692ae2a84a71c8c8885d87ab1f30a16b6"
+    },
+    "visible-output-commit-capacity-gate-v1/controllers/archive_visible_commit_preflight_v01402_v1.py": {
+      "bytes": 8679,
+      "sha256": "13ceb9c3cf79f7ce0f2b6cd13c5cfd2dfddce80c37d65208aefd756235130820"
+    },
+    "visible-output-commit-capacity-gate-v1/controllers/build_kv_access_safe_v01402_v1.py": {
+      "bytes": 6569,
+      "sha256": "72dc394c02c23200c8f231c1d1922de97a426655cf02b00d92b296e0da5028e6"
+    },
+    "visible-output-commit-capacity-gate-v1/controllers/build_kv_access_safe_v01402_v2.py": {
+      "bytes": 6577,
+      "sha256": "0eadadb8c11ff883db331bbcb9f633da39436dc472257a33005a8a30b732aa66"
+    },
+    "visible-output-commit-capacity-gate-v1/controllers/build_visible_commit_v01402_v1.py": {
+      "bytes": 7816,
+      "sha256": "f69bff52a71f7e7efd419fe2bcf98547490fea474a166322c26fe578de05e773"
+    },
+    "visible-output-commit-capacity-gate-v1/controllers/check_health_after_controller_assert_v01402_v2.py": {
+      "bytes": 1961,
+      "sha256": "09243a581f246c898f26b9ebbbd79b1b88949d30e99b791c86c94680da391bdb"
+    },
+    "visible-output-commit-capacity-gate-v1/controllers/check_health_after_save_assert_v01402_v1.py": {
+      "bytes": 1912,
+      "sha256": "a7596ef4f6457a343bc6d20a2967b8a9f346584e5edfc422423e8a2f4db6ef5c"
+    },
+    "visible-output-commit-capacity-gate-v1/controllers/check_saved_session_reader_v01402_v1.py": {
+      "bytes": 2771,
+      "sha256": "51f65f9283c99bc0b38c46db9ce9150b26a2bdc4cb31a6ddfeb0fd71834c13ee"
+    },
+    "visible-output-commit-capacity-gate-v1/controllers/check_saved_session_reader_v01402_v2.py": {
+      "bytes": 2771,
+      "sha256": "822196a3298b3f40c76032d0bf0223012f183b14ebac1de9cd205f341036a578"
+    },
+    "visible-output-commit-capacity-gate-v1/controllers/prepare_owned_full_kv_access_v01402_v1.py": {
+      "bytes": 19142,
+      "sha256": "94addf236e117f89e07afcd26b6d36a53576a7c6ecba58b01f4c61ebd6cff6ee"
+    },
+    "visible-output-commit-capacity-gate-v1/controllers/prepare_owned_full_kv_access_v01402_v2.py": {
+      "bytes": 4274,
+      "sha256": "f35a7f5a06e64b80fa4b6a5f50f306e6d0caf20329c9dc1a0388c89687540f12"
+    },
+    "visible-output-commit-capacity-gate-v1/controllers/prepare_owned_full_visible_commit_v01402_v3.py": {
+      "bytes": 6373,
+      "sha256": "9004073820a18087dd3a40b8c4ed8130643fd1e7275ff33b7448807f8a000170"
+    },
+    "visible-output-commit-capacity-gate-v1/controllers/prepare_owned_full_visible_commit_v01402_v4.py": {
+      "bytes": 3968,
+      "sha256": "ad91bdfd41441c72cf3e246f783a95da36a355080bbd6c05748028438ab44a7e"
+    },
+    "visible-output-commit-capacity-gate-v1/controllers/prepare_saved_session_reader_v01402_v2.py": {
+      "bytes": 1194,
+      "sha256": "2f94019abed236b7b9096b265560e1037e52d25a18cbcbc73d526476769d95d8"
+    },
+    "visible-output-commit-capacity-gate-v1/controllers/read_saved_session_v01402_v1.py": {
+      "bytes": 5869,
+      "sha256": "7d634ff02fd1b92c9149802c1d9bbde951683a5172ec07a58f7d7f38c3fe0627"
+    },
+    "visible-output-commit-capacity-gate-v1/controllers/read_saved_session_v01402_v2.py": {
+      "bytes": 5869,
+      "sha256": "144c05c949bc5fc14bdd36556fc75f1b08706ae3467642994573e0125e47f2dc"
+    },
+    "visible-output-commit-capacity-gate-v1/controllers/run_owned_full_kv_access_v01402_v1.py": {
+      "bytes": 37722,
+      "sha256": "d7891c104e604860ee18d1f10406f375692c1f0518cc1e2f0b73594285652201"
+    },
+    "visible-output-commit-capacity-gate-v1/controllers/run_owned_full_kv_access_v01402_v2.py": {
+      "bytes": 39177,
+      "sha256": "a1ec6391da4e46c1d109795a4225efa830f4a434e507c9ae94ee2f67df520a91"
+    },
+    "visible-output-commit-capacity-gate-v1/controllers/run_owned_full_visible_commit_v01402_v3.py": {
+      "bytes": 41288,
+      "sha256": "4e5366992d4bcabfb8a13d7d4b52d4c54590d7117c45d003631d34dd9a99ab3e"
+    },
+    "visible-output-commit-capacity-gate-v1/controllers/run_owned_full_visible_commit_v01402_v4.py": {
+      "bytes": 41476,
+      "sha256": "d00776406bbb237af0ced779f6fc4f48f8b23c1c67e54f9fe7ed8e983f6f8f12"
+    },
+    "visible-output-commit-capacity-gate-v1/initial32k-v4-snapshot.json": {
+      "bytes": 96430,
+      "sha256": "086b4080c4b16e1bfe93219c8fc21bfab88cad1b8d16c4c1edc762e48aa3b838"
+    },
+    "visible-output-commit-capacity-gate-v1/manifest.json": {
+      "bytes": 32823,
+      "sha256": "246aac1e239ce70f3987567af83a369f0ab490a27c927690718d93548b4aec52"
+    },
+    "visible-output-commit-capacity-gate-v1/private-artifacts.json": {
+      "bytes": 2165,
+      "sha256": "4ab4d155a32770b552154e2cce92c08cb406b4a073be09dd76a67653cbc4757c"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/control32k-before.input-tokens.txt": {
+      "bytes": 142702,
+      "sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/debugger/engine-and-gdb.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/debugger/gdb-mi.stdout": {
+      "bytes": 34743,
+      "sha256": "9160f330a6ea3e59df35c1b9c56d9ce919256b859caf329cda1a960075882b3e"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/debugger/inferior-argv.json": {
+      "bytes": 1047,
+      "sha256": "399f4f68b8e150e3243e6487f5ba81e6659bed04866f05155bf15d814e7e05d3"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/events.jsonl": {
+      "bytes": 5120,
+      "sha256": "ab990c7299aecd28a9154b5eb4aced0a6ed15c376d58d4f551f402bd040bdda4"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/probes/before-health-cursor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/probes/before-health-cursor.stdout": {
+      "bytes": 156,
+      "sha256": "8dd9d165f7969c8b8097a187723669e6f0e5cd96fde1f49a107e53dbda6794b1"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/probes/embedding-state.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/probes/embedding-state.stdout": {
+      "bytes": 21,
+      "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/probes/health-environment.json": {
+      "bytes": 882,
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/probes/health-kernel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/probes/health-kernel.stdout": {
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/probes/health-runtime.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/probes/health-runtime.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/probes/health-xe.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/probes/health.stderr": {
+      "bytes": 118983,
+      "sha256": "fa03058f27cb9d3a2d52926da0a26941b6a8c0d9f51f80216349d2601e80ff64"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/probes/health.stdout": {
+      "bytes": 155,
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/probes/kernel-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/probes/kernel-after.stdout": {
+      "bytes": 10776,
+      "sha256": "16026f132517158f5853f9bebb78f5b623a10150efa33f270206d0e4199125d7"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/probes/kernel-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/probes/kernel-before.stdout": {
+      "bytes": 156,
+      "sha256": "8dd9d165f7969c8b8097a187723669e6f0e5cd96fde1f49a107e53dbda6794b1"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/probes/kernel-gap.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/probes/kernel-gap.stdout": {
+      "bytes": 381621,
+      "sha256": "f006d3d5b60295270ad179847c5c340d2302608844696a5bbc8009217eaf01ba"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/project-messages.txt": {
+      "bytes": 4930,
+      "sha256": "0eaa9bc2a1802069d426fee1ad407f09ed0a12c4fa7823c33d1ab7010b9075cb"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/protocol.stdout.raw": {
+      "bytes": 6711,
+      "sha256": "3c246879ccf4faffeda448ef955fe044402859b9599b89ce3835df1db5e444e4"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r1/record.json": {
+      "bytes": 77004,
+      "sha256": "833dcb26548cd298b49f2da746fa48675f04e75d40f47c1409f5a3d3b60caf1d"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/control32k-before.input-tokens.txt": {
+      "bytes": 142702,
+      "sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/debugger/engine-and-gdb.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/debugger/failure.mi.txt": {
+      "bytes": 154154,
+      "sha256": "d6ea98e0ba5f42f94779f789b112de0b0a8087e7e35714fa4363316f3d7b8a9c"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/debugger/gdb-mi.stdout": {
+      "bytes": 181932,
+      "sha256": "0b13587521578a254341be301b52aca05edee05ce4f7d79c11949ae1de5d6fb0"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/debugger/inferior-argv.json": {
+      "bytes": 1078,
+      "sha256": "8c288550c6e92c9215d70af4a112476993e3bfc6c06a29845ea1fcdd85312708"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/events.jsonl": {
+      "bytes": 8598,
+      "sha256": "f9252c65c344b10fb0f93bacbec6300d8e7e1590eba85ca9049144faf144ef5f"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/probes/before-health-cursor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/probes/before-health-cursor.stdout": {
+      "bytes": 156,
+      "sha256": "9df33d11fde85ffcf4be8d651543d10b8b8e7cc4a10de870cdb63d49b93d6720"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/probes/embedding-state.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/probes/embedding-state.stdout": {
+      "bytes": 21,
+      "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/probes/health-environment.json": {
+      "bytes": 882,
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/probes/health-kernel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/probes/health-kernel.stdout": {
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/probes/health-runtime.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/probes/health-runtime.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/probes/health-xe.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/probes/health.stderr": {
+      "bytes": 118983,
+      "sha256": "881e0dcfdf659a6ca5e28e31e648fefc8494bd6275e404a599c10c5e1d64946f"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/probes/health.stdout": {
+      "bytes": 155,
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/probes/kernel-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/probes/kernel-after.stdout": {
+      "bytes": 10047,
+      "sha256": "5ed1035d762deaf96fdaee6512bbdec25cf88119bf3f5475343c4a4ab0fa4eed"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/probes/kernel-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/probes/kernel-before.stdout": {
+      "bytes": 156,
+      "sha256": "9df33d11fde85ffcf4be8d651543d10b8b8e7cc4a10de870cdb63d49b93d6720"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/probes/kernel-gap.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/probes/kernel-gap.stdout": {
+      "bytes": 398539,
+      "sha256": "0beed9c3aec2a26622bab88b39917c13bdfbffca90b894771dfb94ef7b9f44bd"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/protocol.stdout.raw": {
+      "bytes": 8096,
+      "sha256": "f935c13051ce0e72f24ac50e1eebbfa1db7c0dc9cbf7ae6031ad4cda4a50b444"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r2/record.json": {
+      "bytes": 69261,
+      "sha256": "da8657868131392654c034ed6c004176fd624e7bd065f03c4c73aa3b3969a7ac"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r3/debugger/engine-and-gdb.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r3/debugger/failure.mi.txt": {
+      "bytes": 153895,
+      "sha256": "b490f3041434aea95b659a192dc45f10d0cb30141a44b5f1c3c1775db37389fe"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r3/debugger/gdb-mi.stdout": {
+      "bytes": 184021,
+      "sha256": "72d8672a79390b69d0d74c8d60efdfe09fad492e2eced0050bdf0341660ab917"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r3/debugger/inferior-argv.json": {
+      "bytes": 1078,
+      "sha256": "4f3a762878e05e84e21d92522147ba81d76a54346efeea7da374ac0a60a4851b"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r3/events.jsonl": {
+      "bytes": 180,
+      "sha256": "e2081268cc7f8ffe56e09cc8824d70c7c67021a8cab5e38f1a52535309d1afdc"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r3/probes/before-health-cursor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r3/probes/before-health-cursor.stdout": {
+      "bytes": 155,
+      "sha256": "bc9f68174b5aa298e86d174d866dd5dcd7a3900edfaedef753b42d01fd76127c"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r3/probes/embedding-state.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r3/probes/embedding-state.stdout": {
+      "bytes": 21,
+      "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r3/probes/health-environment.json": {
+      "bytes": 882,
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r3/probes/health-kernel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r3/probes/health-kernel.stdout": {
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r3/probes/health-runtime.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r3/probes/health-runtime.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r3/probes/health-xe.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r3/probes/health.stderr": {
+      "bytes": 118983,
+      "sha256": "a96dd6500635e85e138854a418780b719cc6ce44cfe78e418277fc943c4f5b4c"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r3/probes/health.stdout": {
+      "bytes": 155,
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r3/probes/kernel-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r3/probes/kernel-after.stdout": {
+      "bytes": 739,
+      "sha256": "29647ee4312b4f69cbaafbcc40953c3debce75e099a2d9fbbbd9c0ee188ca4e5"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r3/probes/kernel-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r3/probes/kernel-before.stdout": {
+      "bytes": 155,
+      "sha256": "bc9f68174b5aa298e86d174d866dd5dcd7a3900edfaedef753b42d01fd76127c"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r3/probes/kernel-gap.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r3/probes/kernel-gap.stdout": {
+      "bytes": 2955,
+      "sha256": "26f53a9e82cba24b29e5f2e7f3cb25f2cc75e3925422e4cdbdf5276589998e56"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r3/protocol.stdout.raw": {
+      "bytes": 412,
+      "sha256": "6c3bb46121d9526e61dbdbc69fb9c2b2555944d75251da19b45fe01384c9cb53"
+    },
+    "visible-output-commit-capacity-gate-v1/runs/owned-full-kv-access-v01402-full256k-diagnostic-r3/record.json": {
+      "bytes": 16217,
+      "sha256": "e2003090cf5556999cdc2c0fda31ba29c6e86c6bb1d85836ea9af614765a944f"
+    },
+    "visible-output-commit-capacity-gate-v1/source/generate.cpp": {
+      "bytes": 817496,
+      "sha256": "88d37897159803b1e8f9c378b8a1614ea882532316b007b258a78eadae5c6076"
+    },
+    "visible-output-commit-capacity-gate-v1/source/kv_stream.dp.cpp": {
+      "bytes": 23741,
+      "sha256": "02801fe89965fd9df0c68b58b5f2be1f8443551c2a39533b54efddd0385846e9"
+    },
+    "visible-output-commit-capacity-gate-v1/source/layer.cpp": {
+      "bytes": 120961,
+      "sha256": "6b443fc1df1c812ee4811b46ebde315cfe30356a448ac10f0e56332c763416a7"
+    },
+    "visible-output-commit-capacity-gate-v1/source/prefill.cpp": {
+      "bytes": 319850,
+      "sha256": "f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77"
+    },
+    "visible-output-commit-capacity-gate-v1/summary.json": {
+      "bytes": 4094,
+      "sha256": "b2ffde2a8b1ecefb7c1308fe0a5825f165871fe8b745f18ae973657937aeb0f8"
     }
   }
 }
