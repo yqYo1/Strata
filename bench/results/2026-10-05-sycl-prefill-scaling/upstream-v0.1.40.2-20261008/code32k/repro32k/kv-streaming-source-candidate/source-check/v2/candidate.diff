@@ -1,0 +1,113 @@
+--- /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/kernels/cuda/kv_stream.dp.cpp
++++ /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-kv-stream-safe-v2-20261008/source/kv_stream.dp.cpp
+@@ -10,6 +10,7 @@
+ #include <algorithm>
+ #include <cstdio>
+ #include <cstdlib>
++#include <cstring>
+ #include <cmath>
+ 
+ namespace strata::kernels {
+@@ -154,8 +155,16 @@
+             ++lookups;
+             const int sl = m.page_table[b];
+             if (sl >= 0) {
+-                m.slot_stamp[sl] = epoch;
+-                m.slot_ref[sl] = 1;
++                // Queries can hit the same page from different work-items.
++                // Publish identical hit metadata through atomic stores too.
++                sycl::atomic_ref<int32_t, sycl::memory_order::relaxed,
++                                 sycl::memory_scope::device,
++                                 sycl::access::address_space::global_space>(
++                    m.slot_stamp[sl]).store(epoch);
++                sycl::atomic_ref<int32_t, sycl::memory_order::relaxed,
++                                 sycl::memory_scope::device,
++                                 sycl::access::address_space::global_space>(
++                    m.slot_ref[sl]).store(1);
+             } else if (sl == -1 &&
+                        dpct::atomic_compare_exchange_strong<
+                            sycl::access::address_space::generic_space>(
+@@ -319,15 +328,12 @@
+ 
+ void kv_stream_reset(const KvStreamMap& m, void* stream) {
+     {
+-        auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
+-
+         strata::q_of(stream)
+             ->parallel_for<dpct_kernel_name<class reset_kernel_f02a82>>(
+                 sycl::nd_range<3>(sycl::range(1, 1, 128) *
+                                       sycl::range(1, 1, 256),
+                                   sycl::range(1, 1, 256)),
+-                exp_props, [=](sycl::nd_item<3> item_ct1) {
++                [=](sycl::nd_item<3> item_ct1) {
+                     reset_kernel(m);
+                 });
+     }
+@@ -356,13 +362,9 @@
+     Adjust the work-group size if needed.
+     */
+     {
+-        auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
+-
+         strata::q_of(stream)
+             ->parallel_for<dpct_kernel_name<class resolve_kernel_148a81>>(
+                 sycl::nd_range<3>(sycl::range(1, 1, RT), sycl::range(1, 1, RT)),
+-                exp_props,
+                 [=](sycl::nd_item<3> item_ct1)
+                     [[sycl::reqd_sub_group_size(32)]] {
+                         resolve_kernel(m, ids, steps, (int)n_q, (int)cap,
+@@ -371,9 +373,6 @@
+     }
+     check("resolve");
+     {
+-        auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
+-
+         strata::q_of(stream)
+             ->submit([&](sycl::handler &cgh) {
+                 auto runs_of_slots_host_fmt_s_ct1 =
+@@ -383,7 +382,7 @@
+                     sycl::nd_range<3>(sycl::range(1, 1, 96) *
+                                           sycl::range(1, 1, 128),
+                                       sycl::range(1, 1, 128)),
+-                    exp_props, [=](sycl::nd_item<3> item_ct1) {
++                    [=](sycl::nd_item<3> item_ct1) {
+                         copy_kernel(m, runs_of_slots_host_fmt_s_ct1);
+                     });
+             });
+@@ -393,15 +392,12 @@
+ 
+ void kv_ring_table(int32_t* page_table, int64_t n_blocks, int64_t n_slots, void* stream) {
+     {
+-        auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
+-
+         strata::q_of(stream)
+             ->parallel_for<dpct_kernel_name<class ring_kernel_f9df1d>>(
+                 sycl::nd_range<3>(sycl::range(1, 1, 64) *
+                                       sycl::range(1, 1, 256),
+                                   sycl::range(1, 1, 256)),
+-                exp_props, [=](sycl::nd_item<3> item_ct1) {
++                [=](sycl::nd_item<3> item_ct1) {
+                     ring_kernel(page_table, n_blocks, n_slots);
+                 });
+     }
+@@ -486,10 +482,12 @@
+         DPCT_CHECK_ERROR(
+             dpct::get_in_order_queue().memcpy(c, m.ctl, sizeof(c)).wait()) !=
+             0) return r;
+-    const unsigned long long* u = reinterpret_cast<const unsigned long long*>(c + 4);
+-    r.misses = u[0];
+-    r.lookups = u[1];
+-    r.calls = u[2];
++    // The protocol packs 64-bit counters into this int32_t byte copy.
++    // memcpy reads their representation without type-punning or alignment assumptions.
++    static_assert(sizeof(r.misses) == 8 && sizeof(r.lookups) == 8 && sizeof(r.calls) == 8);
++    std::memcpy(&r.misses, c + 4, sizeof(r.misses));
++    std::memcpy(&r.lookups, c + 6, sizeof(r.lookups));
++    std::memcpy(&r.calls, c + 8, sizeof(r.calls));
+     r.overflow = c[3] != 0;
+     return r;
+ }

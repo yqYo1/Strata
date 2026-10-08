@@ -131,3 +131,9 @@ The [same-process full-RAM repeats](same-process-main-cache-repeat-32k/README.md
 pass nine complete32K raw-state/head/output checks and trace release of
 already-used UR command buffers before physical unmap. Capture durations
 are excluded from speed comparisons; full262,144-cell gates remain open.
+
+
+The [private KV-streaming source candidate](kv-streaming-source-candidate/README.md)
+fixes possible shared hit writes and host-counter type-punning before
+exercising the existing RAM-KV route. It compiles/links but is not GPU-tested;
+no speed, full-context or adoption result is claimed.

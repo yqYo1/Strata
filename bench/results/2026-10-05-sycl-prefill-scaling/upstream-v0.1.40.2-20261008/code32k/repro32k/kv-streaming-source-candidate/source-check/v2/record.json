@@ -1,0 +1,50 @@
+{
+  "active": false,
+  "source_prepared": true,
+  "compiled": false,
+  "gpu_tested": false,
+  "adopted": false,
+  "created_utc": "2026-10-08T02:33:30.545698+00:00",
+  "controller_sha256": "9ae2815968b359fbc3ed0c03a2192b5fe1f093e41909e33d052850867eea3a90",
+  "original_source": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/kernels/cuda/kv_stream.dp.cpp",
+  "original_sha256": "777a7fa3fea47d98ec993cfa810114bd47bdb1febdec9ddf97822df2815374eb",
+  "candidate_source": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-kv-stream-safe-v2-20261008/source/kv_stream.dp.cpp",
+  "candidate_sha256": "46834183d98305f6e7da834b9b5f33bb7279236d3e0e3873d3b416650124c5d4",
+  "scope": "Private source-only fixes before exercising existing KV streaming for full context. No existing binary, production source/default or runtime is changed. Performance inputs remain >=32768; full262144 gates mandatory.",
+  "changes": [
+    "Use relaxed device-scope global atomic stores for hit stamps/reference bits that different query lanes can share. The following full work-group barrier separates later victim scanning.",
+    "Read packed64-bit host counters with memcpy instead of aliasing an int32_t array as unsigned long long.",
+    "Remove four unused root-sync properties from reset/resolve/copy/ring launches. Preserve kernel bodies/arithmetic, WG1024 resolve and required SG32, and queue/order/ownership."
+  ],
+  "sorted_hit_counterexample": {
+    "cell_ids": [
+      [
+        16,
+        32
+      ],
+      [
+        4,
+        16
+      ]
+    ],
+    "conflicting_page_owners": {
+      "4": [
+        {
+          "query": 0,
+          "lane": 0
+        },
+        {
+          "query": 1,
+          "lane": 1
+        }
+      ]
+    },
+    "scope": "Static possible competing same-value stores across queries without an inter-query barrier. Not a claim this caused previous hangs: earlier32K records used KV mode0."
+  },
+  "next_gates": [
+    "Pin actual compiled source/archive/build command; compile only the candidate KV translation unit against accepted e82fc5 objects in a new private output.",
+    "Audit host-USM lifetime, arena cleanup, ring restore, staging/clipping and snapshot identity reconstruction before model use.",
+    "First bounded owned normal-MTP32K run with max-context262144, kv-resident32768 and flushed UR/LevelZero validation. All live/raw main state, complete first head,64IDs/logprobs and MTP counts must match hard control; record true physical residency and bytes.",
+    "Do not count diagnostics/captures as speed. Then matched clean32K-or-longer and full262144 occupancy/repeat/restore/clipped-tail/refusal/later-valid. No unsupported cache switch or global change."
+  ]
+}
