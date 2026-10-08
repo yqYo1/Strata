@@ -1,0 +1,184 @@
+strata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)
+strata generate: native pack: /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s experts (largest blob 2.66 MB), token embedding IQ4_XS in mapped host memory (322 MiB, 2.9 s)
+strata generate: 1466 MiB of weights loaded from /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s in 1.2 s (302 canonical tensors skipped: served natively)
+strata generate: 300 native projection matrices, 2018.88 MiB of weights, in 0.8 s
+strata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)
+strata generate: profile data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots
+strata generate: KV streaming: 32768 of 262144 cells per QSA layer in VRAM, the K/V in 3.09 GiB of pinned RAM
+strata generate: PLE on, table 320001536 rows of /home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf
+strata mtp: draft layer loaded, 834 MiB of VRAM (experts 675, dense 111), files read in 1.12 s (700 MiB/s)
+strata generate: experimental native Q5_K head, 521472000 bytes, in 0.2 s
+strata generate: GPU 0: Intel(R) Arc(TM) B570 Graphics, SYCL driver 1.17.39395+14
+strata generate: expert arena read through the file cache (buffered (not Windows))
+strata generate: expert arena: SYCL pageable host arena (queue copies); MAP_HUGETLB unavailable (needed 23983 2 MiB pages, vm.nr_hugepages=0); using 4 KB pages
+strata generate: loaded 46.84 GiB at 1.63 GiB/s
+strata generate: 5 pool workers on logical processors 1,2,3,4,5, the host thread on 0 (draining too) (--host-core first)
+strata trace: 4221 MiB free after the weights, the session and the drafter
+strata generate: expert cache 128 slots, 0.32 GiB of VRAM; policy is
+strata trace: 3896 MiB free after opening the expert cache
+strata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,
+strata generate: profile fill: 0.26 GiB in 0.1 s (3.45 GB/s, serial)
+strata trace: 3896 MiB free after the profile fill
+strata generate: pre-filled 128 of 128 slots from the profile in 0.1 s (3453 MB/s); slot 0 verified
+strata trace: 3896 MiB free after the R4 hit path
+strata generate: R4 hit path ON - resident experts are computed on the GPU
+strata generate: 5 expert-pool workers + the host thread
+strata trace: 3896 MiB free after the expert cache and the graphs
+strata generate: session is up (engine 0.1.41)
+strata generate: token graph hit path: 128 resident experts, decided on the device
+strata serve: the prompt path allocates its own buffers (too few cache slots to borrow)
+strata prefill: compact-hc layout for 8192 tokens: 1861857536 accounted bytes, 1166147584 shared workspace bytes
+strata trace: 1852 MiB free after the head and the prompt path
+strata verify: window up to 4 tokens, 64.5 MiB of device buffers
+strata mtp: draft head over 106299 tokens (212.9 MiB)
+strata trace: 1567 MiB free after the verifier and the drafter's binding
+strata serve: 1565 MiB of VRAM free with everything loaded
+strata trace: request 32768 0
+strata trace: prompt start 32767 -1
+strata trace: prompt chunk 0 of 32767, layers [0, 48)
+strata trace: prompt chunk 8192 of 32767, layers [0, 48)
+strata trace: prompt chunk 16384 of 32767, layers [0, 48)
+strata trace: prompt chunk 24576 of 32767, layers [0, 48)
+strata prefill host: {"tokens":32767,"chunks":4,"expert_copies":92998,"expert_bytes":190240998400,"expert_submit_host_ms":6447.210238,"group_gpu_wait_host_ms":23594.600018,"group_cpu_ms":47.253895,"group_profiler_host_ms":0.059179,"issuer_publication_wait_host_ms":0.000000,"host_copy_worker_ms":10558.416252,"wall_ms":200430.796356,"layers":[{"layer":0,"copies":1966,"bytes":4278016000},{"layer":1,"copies":2005,"bytes":3028352000},{"layer":2,"copies":1984,"bytes":3910860800},{"layer":3,"copies":1974,"bytes":3891148800},{"layer":4,"copies":1948,"bytes":3839897600},{"layer":5,"copies":1926,"bytes":3796531200},{"layer":6,"copies":1939,"bytes":3822156800},{"layer":7,"copies":1906,"bytes":4147456000},{"layer":8,"copies":1871,"bytes":2825958400},{"layer":9,"copies":1852,"bytes":3650662400},{"layer":10,"copies":1907,"bytes":2880332800},{"layer":11,"copies":1846,"bytes":3638835200},{"layer":12,"copies":1812,"bytes":3107942400},{"layer":13,"copies":1903,"bytes":2874291200},{"layer":14,"copies":1886,"bytes":4103936000},{"layer":15,"copies":1848,"bytes":3642777600},{"layer":16,"copies":1895,"bytes":4123520000},{"layer":17,"copies":1911,"bytes":4451865600},{"layer":18,"copies":1949,"bytes":4241024000},{"layer":19,"copies":1975,"bytes":3893120000},{"layer":20,"copies":1991,"bytes":3414963200},{"layer":21,"copies":1997,"bytes":3731993600},{"layer":22,"copies":2019,"bytes":4393344000},{"layer":23,"copies":2015,"bytes":3971968000},{"layer":24,"copies":1976,"bytes":3895091200},{"layer":25,"copies":1951,"bytes":4545049600},{"layer":26,"copies":1971,"bytes":3885235200},{"layer":27,"copies":1951,"bytes":4545049600},{"layer":28,"copies":1986,"bytes":4626585600},{"layer":29,"copies":1993,"bytes":4642892800},{"layer":30,"copies":1974,"bytes":3385804800},{"layer":31,"copies":1966,"bytes":4278016000},{"layer":32,"copies":1966,"bytes":3875379200},{"layer":33,"copies":1979,"bytes":4306304000},{"layer":34,"copies":1987,"bytes":3916774400},{"layer":35,"copies":1962,"bytes":4570675200},{"layer":36,"copies":1941,"bytes":2931686400},{"layer":37,"copies":1903,"bytes":4140928000},{"layer":38,"copies":1968,"bytes":4282368000},{"layer":39,"copies":1944,"bytes":3832012800},{"layer":40,"copies":1989,"bytes":4633574400},{"layer":41,"copies":1953,"bytes":4249728000},{"layer":42,"copies":1926,"bytes":4190976000},{"layer":43,"copies":1971,"bytes":4288896000},{"layer":44,"copies":1937,"bytes":4512435200},{"layer":45,"copies":1882,"bytes":4384307200},{"layer":46,"copies":1884,"bytes":4099584000},{"layer":47,"copies":1713,"bytes":4560691200}]}
+strata trace: read 32767 tokens (batched) in 200837.5 ms
+strata trace: prompt done (slots refilled) -1 -1
+strata trace: window 32767 1
+strata verify: captured 1-token window with 48 host expert boundaries
+strata trace: window 32768 4
+strata verify: captured 4-token window with 96 host expert boundaries
+strata trace: window 32772 4
+strata trace: window 32775 4
+strata trace: window 32778 4
+strata trace: window 32780 4
+strata trace: window 32784 4
+strata trace: window 32787 4
+strata trace: window 32791 4
+strata trace: window 32794 4
+strata trace: window 32797 4
+strata trace: window 32801 4
+strata trace: window 32803 4
+strata trace: window 32806 4
+strata trace: window 32809 4
+strata trace: window 32810 4
+strata trace: window 32811 4
+strata trace: window 32812 4
+strata trace: window 32814 4
+strata trace: window 32818 4
+strata trace: window 32822 4
+strata trace: window 32825 4
+strata trace: window 32829 4
+strata serve: prompt 32768 tokens = 0 reused + 32768 read in 200885 ms (163.1 tok/s), 64 generated in 7239 ms (8.8 tok/s), drafts accepted 41 of 66, 0 checkpoints
+strata serve: decode expert cache hit rate: 5.0% (2116 hits / 42720 lookups)
+strata serve: KV streaming: 92.32% of 548412 block reads hit VRAM, 169.6 MiB read from RAM
+strata trace: request 32768 0
+strata trace: prompt start 32767 -1
+strata trace: prompt chunk 0 of 32767, layers [0, 48)
+strata trace: prompt chunk 8192 of 32767, layers [0, 48)
+strata trace: prompt chunk 16384 of 32767, layers [0, 48)
+strata trace: prompt chunk 24576 of 32767, layers [0, 48)
+strata prefill host: {"tokens":32767,"chunks":4,"expert_copies":92979,"expert_bytes":190199219200,"expert_submit_host_ms":6426.350274,"group_gpu_wait_host_ms":23790.933505,"group_cpu_ms":47.138561,"group_profiler_host_ms":0.059058,"issuer_publication_wait_host_ms":0.000000,"host_copy_worker_ms":10465.668762,"wall_ms":193568.563434,"layers":[{"layer":0,"copies":1966,"bytes":4278016000},{"layer":1,"copies":2005,"bytes":3028352000},{"layer":2,"copies":1984,"bytes":3910860800},{"layer":3,"copies":1976,"bytes":3895091200},{"layer":4,"copies":1948,"bytes":3839897600},{"layer":5,"copies":1925,"bytes":3794560000},{"layer":6,"copies":1938,"bytes":3820185600},{"layer":7,"copies":1906,"bytes":4147456000},{"layer":8,"copies":1871,"bytes":2825958400},{"layer":9,"copies":1854,"bytes":3654604800},{"layer":10,"copies":1907,"bytes":2880332800},{"layer":11,"copies":1848,"bytes":3642777600},{"layer":12,"copies":1812,"bytes":3107942400},{"layer":13,"copies":1900,"bytes":2869760000},{"layer":14,"copies":1885,"bytes":4101760000},{"layer":15,"copies":1848,"bytes":3642777600},{"layer":16,"copies":1893,"bytes":4119168000},{"layer":17,"copies":1912,"bytes":4454195200},{"layer":18,"copies":1946,"bytes":4234496000},{"layer":19,"copies":1973,"bytes":3889177600},{"layer":20,"copies":1989,"bytes":3411532800},{"layer":21,"copies":1998,"bytes":3733862400},{"layer":22,"copies":2018,"bytes":4391168000},{"layer":23,"copies":2016,"bytes":3973939200},{"layer":24,"copies":1976,"bytes":3895091200},{"layer":25,"copies":1951,"bytes":4545049600},{"layer":26,"copies":1971,"bytes":3885235200},{"layer":27,"copies":1946,"bytes":4533401600},{"layer":28,"copies":1985,"bytes":4624256000},{"layer":29,"copies":1992,"bytes":4640563200},{"layer":30,"copies":1976,"bytes":3389235200},{"layer":31,"copies":1967,"bytes":4280192000},{"layer":32,"copies":1964,"bytes":3871436800},{"layer":33,"copies":1978,"bytes":4304128000},{"layer":34,"copies":1986,"bytes":3914803200},{"layer":35,"copies":1961,"bytes":4568345600},{"layer":36,"copies":1941,"bytes":2931686400},{"layer":37,"copies":1904,"bytes":4143104000},{"layer":38,"copies":1969,"bytes":4284544000},{"layer":39,"copies":1946,"bytes":3835955200},{"layer":40,"copies":1990,"bytes":4635904000},{"layer":41,"copies":1952,"bytes":4247552000},{"layer":42,"copies":1922,"bytes":4182272000},{"layer":43,"copies":1971,"bytes":4288896000},{"layer":44,"copies":1937,"bytes":4512435200},{"layer":45,"copies":1880,"bytes":4379648000},{"layer":46,"copies":1884,"bytes":4099584000},{"layer":47,"copies":1712,"bytes":4558028800}]}
+strata trace: read 32767 tokens (batched) in 193981.5 ms
+strata trace: prompt done (slots refilled) -1 -1
+strata trace: window 32767 1
+strata trace: window 32768 4
+strata trace: window 32769 4
+strata trace: window 32771 4
+strata trace: window 32773 4
+strata trace: window 32777 4
+strata trace: window 32781 4
+strata trace: window 32783 4
+strata trace: window 32784 4
+strata trace: window 32788 4
+strata trace: window 32792 4
+strata trace: window 32796 4
+strata trace: window 32797 4
+strata trace: window 32798 4
+strata trace: window 32800 4
+strata trace: window 32804 4
+strata trace: window 32808 4
+strata trace: window 32810 4
+strata trace: window 32812 4
+strata trace: window 32813 4
+strata trace: window 32814 4
+strata trace: window 32815 4
+strata trace: window 32817 4
+strata trace: window 32821 4
+strata trace: window 32825 4
+strata trace: window 32829 4
+strata serve: prompt 32768 tokens = 0 reused + 32768 read in 193998 ms (168.9 tok/s), 64 generated in 5089 ms (12.6 tok/s), drafts accepted 38 of 75, 0 checkpoints
+strata serve: decode expert cache hit rate: 3.9% (1874 hits / 48480 lookups)
+strata serve: KV streaming: 93.60% of 622356 block reads hit VRAM, 160.4 MiB read from RAM
+strata trace: request 32768 0
+strata trace: prompt start 32767 -1
+strata trace: prompt chunk 0 of 32767, layers [0, 48)
+strata trace: prompt chunk 8192 of 32767, layers [0, 48)
+strata trace: prompt chunk 16384 of 32767, layers [0, 48)
+strata trace: prompt chunk 24576 of 32767, layers [0, 48)
+strata prefill host: {"tokens":32767,"chunks":4,"expert_copies":92998,"expert_bytes":190240998400,"expert_submit_host_ms":6398.758177,"group_gpu_wait_host_ms":23773.135722,"group_cpu_ms":48.337657,"group_profiler_host_ms":0.059789,"issuer_publication_wait_host_ms":0.000000,"host_copy_worker_ms":10479.475522,"wall_ms":193031.999066,"layers":[{"layer":0,"copies":1966,"bytes":4278016000},{"layer":1,"copies":2005,"bytes":3028352000},{"layer":2,"copies":1984,"bytes":3910860800},{"layer":3,"copies":1974,"bytes":3891148800},{"layer":4,"copies":1948,"bytes":3839897600},{"layer":5,"copies":1926,"bytes":3796531200},{"layer":6,"copies":1939,"bytes":3822156800},{"layer":7,"copies":1906,"bytes":4147456000},{"layer":8,"copies":1871,"bytes":2825958400},{"layer":9,"copies":1852,"bytes":3650662400},{"layer":10,"copies":1907,"bytes":2880332800},{"layer":11,"copies":1846,"bytes":3638835200},{"layer":12,"copies":1812,"bytes":3107942400},{"layer":13,"copies":1903,"bytes":2874291200},{"layer":14,"copies":1886,"bytes":4103936000},{"layer":15,"copies":1848,"bytes":3642777600},{"layer":16,"copies":1895,"bytes":4123520000},{"layer":17,"copies":1911,"bytes":4451865600},{"layer":18,"copies":1949,"bytes":4241024000},{"layer":19,"copies":1975,"bytes":3893120000},{"layer":20,"copies":1991,"bytes":3414963200},{"layer":21,"copies":1997,"bytes":3731993600},{"layer":22,"copies":2019,"bytes":4393344000},{"layer":23,"copies":2015,"bytes":3971968000},{"layer":24,"copies":1976,"bytes":3895091200},{"layer":25,"copies":1951,"bytes":4545049600},{"layer":26,"copies":1971,"bytes":3885235200},{"layer":27,"copies":1951,"bytes":4545049600},{"layer":28,"copies":1986,"bytes":4626585600},{"layer":29,"copies":1993,"bytes":4642892800},{"layer":30,"copies":1974,"bytes":3385804800},{"layer":31,"copies":1966,"bytes":4278016000},{"layer":32,"copies":1966,"bytes":3875379200},{"layer":33,"copies":1979,"bytes":4306304000},{"layer":34,"copies":1987,"bytes":3916774400},{"layer":35,"copies":1962,"bytes":4570675200},{"layer":36,"copies":1941,"bytes":2931686400},{"layer":37,"copies":1903,"bytes":4140928000},{"layer":38,"copies":1968,"bytes":4282368000},{"layer":39,"copies":1944,"bytes":3832012800},{"layer":40,"copies":1989,"bytes":4633574400},{"layer":41,"copies":1953,"bytes":4249728000},{"layer":42,"copies":1926,"bytes":4190976000},{"layer":43,"copies":1971,"bytes":4288896000},{"layer":44,"copies":1937,"bytes":4512435200},{"layer":45,"copies":1882,"bytes":4384307200},{"layer":46,"copies":1884,"bytes":4099584000},{"layer":47,"copies":1713,"bytes":4560691200}]}
+strata trace: read 32767 tokens (batched) in 193412.2 ms
+strata trace: prompt done (slots refilled) -1 -1
+strata trace: window 32767 1
+strata trace: window 32768 4
+strata trace: window 32772 4
+strata trace: window 32775 4
+strata trace: window 32778 4
+strata trace: window 32780 4
+strata trace: window 32784 4
+strata trace: window 32787 4
+strata trace: window 32791 4
+strata trace: window 32794 4
+strata trace: window 32797 4
+strata trace: window 32801 4
+strata trace: window 32803 4
+strata trace: window 32806 4
+strata trace: window 32809 4
+strata trace: window 32810 4
+strata trace: window 32811 4
+strata trace: window 32812 4
+strata trace: window 32814 4
+strata trace: window 32818 4
+strata trace: window 32822 4
+strata trace: window 32825 4
+strata trace: window 32829 4
+strata serve: prompt 32768 tokens = 0 reused + 32768 read in 193428 ms (169.4 tok/s), 64 generated in 4484 ms (14.3 tok/s), drafts accepted 41 of 66, 0 checkpoints
+strata serve: decode expert cache hit rate: 5.0% (2116 hits / 42720 lookups)
+strata serve: KV streaming: 92.32% of 548412 block reads hit VRAM, 169.6 MiB read from RAM
+strata trace: request 32768 0
+strata trace: prompt start 32767 -1
+strata trace: prompt chunk 0 of 32767, layers [0, 48)
+strata trace: prompt chunk 8192 of 32767, layers [0, 48)
+strata trace: prompt chunk 16384 of 32767, layers [0, 48)
+strata trace: prompt chunk 24576 of 32767, layers [0, 48)
+strata prefill host: {"tokens":32767,"chunks":4,"expert_copies":92979,"expert_bytes":190199219200,"expert_submit_host_ms":6401.110978,"group_gpu_wait_host_ms":23795.507854,"group_cpu_ms":47.170339,"group_profiler_host_ms":0.059735,"issuer_publication_wait_host_ms":0.000000,"host_copy_worker_ms":10498.452071,"wall_ms":193347.606764,"layers":[{"layer":0,"copies":1966,"bytes":4278016000},{"layer":1,"copies":2005,"bytes":3028352000},{"layer":2,"copies":1984,"bytes":3910860800},{"layer":3,"copies":1976,"bytes":3895091200},{"layer":4,"copies":1948,"bytes":3839897600},{"layer":5,"copies":1925,"bytes":3794560000},{"layer":6,"copies":1938,"bytes":3820185600},{"layer":7,"copies":1906,"bytes":4147456000},{"layer":8,"copies":1871,"bytes":2825958400},{"layer":9,"copies":1854,"bytes":3654604800},{"layer":10,"copies":1907,"bytes":2880332800},{"layer":11,"copies":1848,"bytes":3642777600},{"layer":12,"copies":1812,"bytes":3107942400},{"layer":13,"copies":1900,"bytes":2869760000},{"layer":14,"copies":1885,"bytes":4101760000},{"layer":15,"copies":1848,"bytes":3642777600},{"layer":16,"copies":1893,"bytes":4119168000},{"layer":17,"copies":1912,"bytes":4454195200},{"layer":18,"copies":1946,"bytes":4234496000},{"layer":19,"copies":1973,"bytes":3889177600},{"layer":20,"copies":1989,"bytes":3411532800},{"layer":21,"copies":1998,"bytes":3733862400},{"layer":22,"copies":2018,"bytes":4391168000},{"layer":23,"copies":2016,"bytes":3973939200},{"layer":24,"copies":1976,"bytes":3895091200},{"layer":25,"copies":1951,"bytes":4545049600},{"layer":26,"copies":1971,"bytes":3885235200},{"layer":27,"copies":1946,"bytes":4533401600},{"layer":28,"copies":1985,"bytes":4624256000},{"layer":29,"copies":1992,"bytes":4640563200},{"layer":30,"copies":1976,"bytes":3389235200},{"layer":31,"copies":1967,"bytes":4280192000},{"layer":32,"copies":1964,"bytes":3871436800},{"layer":33,"copies":1978,"bytes":4304128000},{"layer":34,"copies":1986,"bytes":3914803200},{"layer":35,"copies":1961,"bytes":4568345600},{"layer":36,"copies":1941,"bytes":2931686400},{"layer":37,"copies":1904,"bytes":4143104000},{"layer":38,"copies":1969,"bytes":4284544000},{"layer":39,"copies":1946,"bytes":3835955200},{"layer":40,"copies":1990,"bytes":4635904000},{"layer":41,"copies":1952,"bytes":4247552000},{"layer":42,"copies":1922,"bytes":4182272000},{"layer":43,"copies":1971,"bytes":4288896000},{"layer":44,"copies":1937,"bytes":4512435200},{"layer":45,"copies":1880,"bytes":4379648000},{"layer":46,"copies":1884,"bytes":4099584000},{"layer":47,"copies":1712,"bytes":4558028800}]}
+strata trace: read 32767 tokens (batched) in 193725.5 ms
+strata trace: prompt done (slots refilled) -1 -1
+strata trace: window 32767 1
+strata trace: window 32768 4
+strata trace: window 32769 4
+strata trace: window 32771 4
+strata trace: window 32773 4
+strata trace: window 32777 4
+strata trace: window 32781 4
+strata trace: window 32783 4
+strata trace: window 32784 4
+strata trace: window 32788 4
+strata trace: window 32792 4
+strata trace: window 32796 4
+strata trace: window 32797 4
+strata trace: window 32798 4
+strata trace: window 32800 4
+strata trace: window 32804 4
+strata trace: window 32808 4
+strata trace: window 32810 4
+strata trace: window 32812 4
+strata trace: window 32813 4
+strata trace: window 32814 4
+strata trace: window 32815 4
+strata trace: window 32817 4
+strata trace: window 32821 4
+strata trace: window 32825 4
+strata trace: window 32829 4
+strata serve: prompt 32768 tokens = 0 reused + 32768 read in 193741 ms (169.1 tok/s), 64 generated in 5004 ms (12.8 tok/s), drafts accepted 38 of 75, 0 checkpoints
+strata serve: decode expert cache hit rate: 3.9% (1874 hits / 48480 lookups)
+strata serve: KV streaming: 93.60% of 622356 block reads hit VRAM, 160.4 MiB read from RAM
+strata SYCL shutdown: all queues completed

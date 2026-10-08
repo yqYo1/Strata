@@ -1,0 +1,104 @@
+{
+  "scope": "Exact paired UR/L0 expert-copy calls in the first 32 MiB of an already completed logged run. No new GPU execution or healthy-process attachment.",
+  "original_log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-host-accounting-v0141-code32k-diagnostic-r1/debugger/inferior.stderr",
+  "original_log_bytes": 13416476935,
+  "original_log_sha256_from_terminal_receipt": "83164c09893a4a17ed79478e7442b3fde3a7d29ce579499cb81dd603295d1e65",
+  "prefix_bytes": 33554432,
+  "prefix_sha256": "1ed6dd71474005f2659bea3571eebe6987538baa8b382fca693781dd2759237b",
+  "command_list": "0x4ce3ae8",
+  "ur_queue": "0x4cc05c0",
+  "ordinal": 0,
+  "index": 0,
+  "command_queue_flags": 2,
+  "ur_queue_flags": 0,
+  "group0_flags": 7,
+  "group0_physical_queues": 1,
+  "paired_memcpy_count": 880,
+  "paired_bytes": 1653299200,
+  "maximum_interleaved_lines_between_native_append_and_ur_return": 5,
+  "copy_size_histogram": {
+    "2176000": 487,
+    "1510400": 393
+  },
+  "destination_count": 8,
+  "interpretation": "The captured ring copies use ordinal0, which reports COMPUTE|COPY|COOPERATIVE_KERNELS. A main blitter is reported available. The sample does not prove all later transfers use this handle, quantify compute/transfer overlap, or prove native-copy-queue safety/performance.",
+  "line_numbers_zero_based": true,
+  "evidence": [
+    {
+      "line": 105,
+      "text": "[2026-10-09 07:06:15.459] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetCommandQueueGroupProperties(hDevice=0x4a0a548, pCount=2, pCommandQueueGroupProperties={stype=0x48409e0, flags=7, maxMemoryFillPatternSize=18446744073709551615, numQueues=1})"
+    },
+    {
+      "line": 20990,
+      "text": "[2026-10-09 07:06:48.316] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListCreateImmediate(hContext=0x4a21038, hDevice=0x4a0a548, altdesc={stype=0x7ffffffdd640, ordinal=0, index=0, flags=2, mode=0x7ffffffdd65c, priority=0x7ffffffdd660}, phCommandList=0x4ce3ae8)"
+    },
+    {
+      "line": 20993,
+      "text": "   <--- urQueueCreate(.hContext = 0x4a23dc0, .hDevice = 0x4a1f660, .pProperties = 0x7ffffffddc20 ((struct ur_queue_properties_t){.stype = UR_STRUCTURE_TYPE_QUEUE_PROPERTIES, .pNext = nullptr, .flags = 0}), .phQueue = 0x7ffffffddc38 (0x4cc05c0)) -> UR_RESULT_SUCCESS;"
+    },
+    {
+      "line": 25781,
+      "text": "[2026-10-09 07:06:49.201] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0x4ce3ae8, dstptr=0xffffd558ac800000, srcptr=0x7fffd7e00000, size=2176000, hSignalEvent=0x5b30a98, numWaitEvents=0, phWaitEvents=nullptr)"
+    },
+    {
+      "line": 25789,
+      "text": "[2026-10-09 07:06:49.206] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0x4ce3ae8, dstptr=0xffffd558aca8a000, srcptr=0x7fffd7800000, size=2176000, hSignalEvent=0x5b2fe88, numWaitEvents=0, phWaitEvents=nullptr)"
+    },
+    {
+      "line": 25797,
+      "text": "[2026-10-09 07:06:49.206] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0x4ce3ae8, dstptr=0xffffd558acd14000, srcptr=0x7ffed0e00000, size=2176000, hSignalEvent=0x5b2f278, numWaitEvents=0, phWaitEvents=nullptr)"
+    },
+    {
+      "line": 25805,
+      "text": "[2026-10-09 07:06:49.206] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0x4ce3ae8, dstptr=0xffffd558acf9e000, srcptr=0x7ffecf600000, size=2176000, hSignalEvent=0x5b2e668, numWaitEvents=0, phWaitEvents=nullptr)"
+    },
+    {
+      "line": 25813,
+      "text": "[2026-10-09 07:06:49.206] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0x4ce3ae8, dstptr=0xffffd558ad228000, srcptr=0x7ffecf000000, size=2176000, hSignalEvent=0x5b2da58, numWaitEvents=0, phWaitEvents=nullptr)"
+    },
+    {
+      "line": 25821,
+      "text": "[2026-10-09 07:06:49.206] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0x4ce3ae8, dstptr=0xffffd558ad4b2000, srcptr=0x7ffecdc00000, size=2176000, hSignalEvent=0x5b2ce48, numWaitEvents=0, phWaitEvents=nullptr)"
+    },
+    {
+      "line": 25829,
+      "text": "[2026-10-09 07:06:49.206] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0x4ce3ae8, dstptr=0xffffd558ad73c000, srcptr=0x7ffeccc00000, size=2176000, hSignalEvent=0x5b2c238, numWaitEvents=0, phWaitEvents=nullptr)"
+    },
+    {
+      "line": 25837,
+      "text": "[2026-10-09 07:06:49.206] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0x4ce3ae8, dstptr=0xffffd558ad9c6000, srcptr=0x7ffecc600000, size=2176000, hSignalEvent=0x5b2b628, numWaitEvents=0, phWaitEvents=nullptr)"
+    },
+    {
+      "line": 25782,
+      "text": "   <--- urEnqueueUSMMemcpy(.hQueue = 0x4cc05c0, .blocking = 0, .pDst = 0xffffd558ac800000, .pSrc = 0x7fffd7e00000, .size = 2176000, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffffffdce20 (0x5b30480)) -> UR_RESULT_SUCCESS;"
+    },
+    {
+      "line": 25790,
+      "text": "   <--- urEnqueueUSMMemcpy(.hQueue = 0x4cc05c0, .blocking = 0, .pDst = 0xffffd558aca8a000, .pSrc = 0x7fffd7800000, .size = 2176000, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffffffdce20 (0x5b2f870)) -> UR_RESULT_SUCCESS;"
+    },
+    {
+      "line": 25798,
+      "text": "   <--- urEnqueueUSMMemcpy(.hQueue = 0x4cc05c0, .blocking = 0, .pDst = 0xffffd558acd14000, .pSrc = 0x7ffed0e00000, .size = 2176000, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffffffdce20 (0x5b2ec60)) -> UR_RESULT_SUCCESS;"
+    },
+    {
+      "line": 25806,
+      "text": "   <--- urEnqueueUSMMemcpy(.hQueue = 0x4cc05c0, .blocking = 0, .pDst = 0xffffd558acf9e000, .pSrc = 0x7ffecf600000, .size = 2176000, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffffffdce20 (0x5b2e050)) -> UR_RESULT_SUCCESS;"
+    },
+    {
+      "line": 25814,
+      "text": "   <--- urEnqueueUSMMemcpy(.hQueue = 0x4cc05c0, .blocking = 0, .pDst = 0xffffd558ad228000, .pSrc = 0x7ffecf000000, .size = 2176000, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffffffdce20 (0x5b2d440)) -> UR_RESULT_SUCCESS;"
+    },
+    {
+      "line": 25822,
+      "text": "   <--- urEnqueueUSMMemcpy(.hQueue = 0x4cc05c0, .blocking = 0, .pDst = 0xffffd558ad4b2000, .pSrc = 0x7ffecdc00000, .size = 2176000, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffffffdce20 (0x5b2c830)) -> UR_RESULT_SUCCESS;"
+    },
+    {
+      "line": 25830,
+      "text": "   <--- urEnqueueUSMMemcpy(.hQueue = 0x4cc05c0, .blocking = 0, .pDst = 0xffffd558ad73c000, .pSrc = 0x7ffeccc00000, .size = 2176000, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffffffdce20 (0x5b2bc20)) -> UR_RESULT_SUCCESS;"
+    },
+    {
+      "line": 25838,
+      "text": "   <--- urEnqueueUSMMemcpy(.hQueue = 0x4cc05c0, .blocking = 0, .pDst = 0xffffd558ad9c6000, .pSrc = 0x7ffecc600000, .size = 2176000, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffffffdce20 (0x5b2b010)) -> UR_RESULT_SUCCESS;"
+    }
+  ]
+}
