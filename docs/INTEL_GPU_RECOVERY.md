@@ -450,7 +450,8 @@ unmaps 402,653,184 bytes and verifies all 281,651,200 occupied bytes. The
 reserved addresses and slot metadata remain stable; graphs are retired
 before unmapping and recaptured after remapping/copying/verification.
 These are fresh processes: retirement is called before the first graph use.
-Repeated release of already-used graphs remains a separate open gate.
+The later [same-process full-RAM checks](../bench/results/2026-10-05-sycl-prefill-scaling/upstream-v0.1.40.2-20261008/code32k/repro32k/same-process-main-cache-repeat-32k/README.md)
+exercise already-used graphs across three complete 32K rereads per process.
 
 CPU checks extract the actual cache-lease struct and pass 19 ASan/UBSan cases
 covering a mid-expert boundary, adaptive residency and rollback/retry paths.
@@ -499,8 +500,36 @@ weights. Main restore/capture requests 384 MiB of physical mapping and only
 native logs show 680 new command lists and 61 modules. All logged device USM
 and native modules/kernels/command lists are destroyed at process exit.
 This does not establish a leak, an isolated allocation cause or a solution
-to the older full-context repeat failure. Warm-process repeated capture and
-full 262,144-cell capacity/lifetime gates remain open.
+to the older full-context repeat failure.
+
+The same-process full-RAM checks pass all nine 32,768-token requests across
+three fresh processes. Every raw 66-part main state, complete first head,
+64 IDs/logprobs and MTP counts43/66 matches the hard control. Every request
+reports resume0; each new dump is renamed and must be absent before the next
+request. All processes exit0 normally without forced cleanup, survivors or
+new xe faults. Captures, payload checks and phase tracing remain enabled,
+so these durations are excluded from performance comparisons.
+
+Successful UR calls release680 main command buffers and6 MTP buffers before
+the second and third physical unmaps; main restoration creates/finalizes680
+buffers each time. Native LevelZero command-list counts remain704 across
+those releases, while all UR references and tracked native resources reach
+zero at normal exit. Thus native object counts alone do not establish that
+old executable graphs remain live. Source checks separately cover queue
+drain, stable-address remapping and recapture after payload restoration.
+
+The two processes without API logs have identical reported-free markers,
+within64 KiB of the logged process at matching later phases. Their prefill
+entry drops from2153.496 MiB on read1 to1131.254 MiB on read2 and1120.297 MiB
+on read3. Main warm initially creates61 modules and680 regular command lists;
+later main warm creates no new native module/kernel/list/device-USM objects,
+but384 MiB remapping accompanies reported-free drops of394.707 and389.449 MiB.
+These counts and requested sizes do not attribute resident runtime heaps,
+prove a leak or establish steady state after more requests. Only the captured
+full-RAM32K repeat gate is closed. Matched quiet repeated performance and
+full262,144-cell occupancy/repeat/restore/clipped-tail/refusal/later-valid
+gates remain open. All performance comparisons use at least32,768 input
+tokens; first-use loading/capture and later full rereads must be distinguished.
 
 No software reset is guaranteed to recover every firmware/driver wedge. There
 is an [upstream B570 report](https://github.com/intel/compute-runtime/issues/962)

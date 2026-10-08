@@ -134,3 +134,8 @@ This tag has not completed the full262144-cell normal-MTP serving, repeated
 restoration, clipped tail, refusal and later-valid-request gates. The earlier
 2048/long-prefill waits with zero cooperative flags remain unresolved. These
 short checks do not establish PP1000/TG70, the maximum context or a driver fix.
+
+The [same-process full-RAM repeats](code32k/repro32k/same-process-main-cache-repeat-32k/README.md)
+pass nine full32K raw-state/head/output checks and verify UR graph retirement
+before physical unmap. They retain phase-memory/native-resource evidence,
+with no clean timing, steady-state or full-context claim.

@@ -126,3 +126,8 @@ The [main-cache release/restoration controls](main-cache-release-and-restore/REA
 add actual-code ASan/UBSan offset/rollback tests with a patterned negative
 control and completed 32K kept/partial/full lease checks. Clean timing and
 full-context serving remain separate gates; see the checkpoint's completed list.
+
+The [same-process full-RAM repeats](same-process-main-cache-repeat-32k/README.md)
+pass nine complete32K raw-state/head/output checks and trace release of
+already-used UR command buffers before physical unmap. Capture durations
+are excluded from speed comparisons; full262,144-cell gates remain open.

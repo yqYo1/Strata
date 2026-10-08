@@ -1,0 +1,314 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_access": false,
+  "created_utc": "2026-10-08T01:44:51.605563+00:00",
+  "controller_sha256": "e0a55bb1a56c3424fa8c77c9d60ab7a1a85570a0e13e3a18b45e78047a958ce7",
+  "job_record_sha256": "83f9f86cbf70b64ab952e9acbd99721a713cceffe8f7a4f70a8d788d74cb964d",
+  "scope": "Successful UR command-buffer creation/retention/release/finalization references around three full32K rereads. Native LevelZero command-list objects can outlive released UR buffers in runtime pools. This is not resident heap attribution, speed or a complete SYCL correctness proof.",
+  "markers": [
+    {
+      "line": 24624,
+      "request": 1,
+      "phase": "before decode cache release",
+      "live_ur_command_buffers": 0,
+      "total_references": 0
+    },
+    {
+      "line": 24849,
+      "request": 1,
+      "phase": "main decode cache released",
+      "live_ur_command_buffers": 0,
+      "total_references": 0
+    },
+    {
+      "line": 25969,
+      "request": 1,
+      "phase": "MTP decode weights released",
+      "live_ur_command_buffers": 0,
+      "total_references": 0
+    },
+    {
+      "line": 26344,
+      "request": 1,
+      "phase": "temporary layer cache allocated",
+      "live_ur_command_buffers": 0,
+      "total_references": 0
+    },
+    {
+      "line": 11010095,
+      "request": 1,
+      "phase": "prefill completed with temporary layer cache",
+      "live_ur_command_buffers": 0,
+      "total_references": 0
+    },
+    {
+      "line": 11010210,
+      "request": 1,
+      "phase": "temporary buffers released",
+      "live_ur_command_buffers": 0,
+      "total_references": 0
+    },
+    {
+      "line": 11417069,
+      "request": 1,
+      "phase": "main decode cache restored, verifier graphs rebuilt",
+      "live_ur_command_buffers": 680,
+      "total_references": 680
+    },
+    {
+      "line": 11418295,
+      "request": 1,
+      "phase": "MTP decode weights restored",
+      "live_ur_command_buffers": 680,
+      "total_references": 680
+    },
+    {
+      "line": 11539367,
+      "request": 2,
+      "phase": "before decode cache release",
+      "live_ur_command_buffers": 687,
+      "total_references": 687
+    },
+    {
+      "line": 11541536,
+      "request": 2,
+      "phase": "main decode cache released",
+      "live_ur_command_buffers": 7,
+      "total_references": 7
+    },
+    {
+      "line": 11542680,
+      "request": 2,
+      "phase": "MTP decode weights released",
+      "live_ur_command_buffers": 1,
+      "total_references": 1
+    },
+    {
+      "line": 11543055,
+      "request": 2,
+      "phase": "temporary layer cache allocated",
+      "live_ur_command_buffers": 1,
+      "total_references": 1
+    },
+    {
+      "line": 22520604,
+      "request": 2,
+      "phase": "prefill completed with temporary layer cache",
+      "live_ur_command_buffers": 1,
+      "total_references": 1
+    },
+    {
+      "line": 22520719,
+      "request": 2,
+      "phase": "temporary buffers released",
+      "live_ur_command_buffers": 1,
+      "total_references": 1
+    },
+    {
+      "line": 22922020,
+      "request": 2,
+      "phase": "main decode cache restored, verifier graphs rebuilt",
+      "live_ur_command_buffers": 681,
+      "total_references": 681
+    },
+    {
+      "line": 22923246,
+      "request": 2,
+      "phase": "MTP decode weights restored",
+      "live_ur_command_buffers": 681,
+      "total_references": 681
+    },
+    {
+      "line": 23039288,
+      "request": 3,
+      "phase": "before decode cache release",
+      "live_ur_command_buffers": 687,
+      "total_references": 687
+    },
+    {
+      "line": 23041457,
+      "request": 3,
+      "phase": "main decode cache released",
+      "live_ur_command_buffers": 7,
+      "total_references": 7
+    },
+    {
+      "line": 23042601,
+      "request": 3,
+      "phase": "MTP decode weights released",
+      "live_ur_command_buffers": 1,
+      "total_references": 1
+    },
+    {
+      "line": 23042976,
+      "request": 3,
+      "phase": "temporary layer cache allocated",
+      "live_ur_command_buffers": 1,
+      "total_references": 1
+    },
+    {
+      "line": 34016657,
+      "request": 3,
+      "phase": "prefill completed with temporary layer cache",
+      "live_ur_command_buffers": 1,
+      "total_references": 1
+    },
+    {
+      "line": 34016772,
+      "request": 3,
+      "phase": "temporary buffers released",
+      "live_ur_command_buffers": 1,
+      "total_references": 1
+    },
+    {
+      "line": 34417881,
+      "request": 3,
+      "phase": "main decode cache restored, verifier graphs rebuilt",
+      "live_ur_command_buffers": 681,
+      "total_references": 681
+    },
+    {
+      "line": 34419107,
+      "request": 3,
+      "phase": "MTP decode weights restored",
+      "live_ur_command_buffers": 681,
+      "total_references": 681
+    }
+  ],
+  "counts": {
+    "read-1/temporary buffers released": {
+      "urCommandBufferCreateExp": 680,
+      "urCommandBufferFinalizeExp": 680
+    },
+    "read-1/MTP decode weights restored": {
+      "urCommandBufferCreateExp": 7,
+      "urCommandBufferFinalizeExp": 7
+    },
+    "read-2/before decode cache release": {
+      "urCommandBufferReleaseExp": 680
+    },
+    "read-2/main decode cache released": {
+      "urCommandBufferReleaseExp": 6
+    },
+    "read-2/temporary buffers released": {
+      "urCommandBufferCreateExp": 680,
+      "urCommandBufferFinalizeExp": 680
+    },
+    "read-2/MTP decode weights restored": {
+      "urCommandBufferCreateExp": 6,
+      "urCommandBufferFinalizeExp": 6
+    },
+    "read-3/before decode cache release": {
+      "urCommandBufferReleaseExp": 680
+    },
+    "read-3/main decode cache released": {
+      "urCommandBufferReleaseExp": 6
+    },
+    "read-3/temporary buffers released": {
+      "urCommandBufferCreateExp": 680,
+      "urCommandBufferFinalizeExp": 680
+    },
+    "read-3/MTP decode weights restored": {
+      "urCommandBufferCreateExp": 6,
+      "urCommandBufferFinalizeExp": 6,
+      "urCommandBufferReleaseExp": 687
+    }
+  },
+  "first_examples": {
+    "read-1/temporary buffers released": {
+      "urCommandBufferCreateExp": {
+        "line": 11011568,
+        "raw": "   <--- urCommandBufferCreateExp(.hContext = 0x4a43280, .hDevice = 0x4a3eb20, .pCommandBufferDesc = 0x7ffffffdd3a8 ((struct ur_exp_command_buffer_desc_t){.stype = UR_STRUCTURE_TYPE_EXP_COMMAND_BUFFER_DESC, .pNext = nullptr, .isUpdatable = false, .isInOrder = true, .enableProfiling = false}), .phCommandBuffer = 0x7ffffffdd3c0 (0x4c84920)) -> UR_RESULT_SUCCESS;"
+      },
+      "urCommandBufferFinalizeExp": {
+        "line": 11012032,
+        "raw": "   <--- urCommandBufferFinalizeExp(.hCommandBuffer = 0x4c84920) -> UR_RESULT_SUCCESS;"
+      }
+    },
+    "read-1/MTP decode weights restored": {
+      "urCommandBufferCreateExp": {
+        "line": 11419524,
+        "raw": "   <--- urCommandBufferCreateExp(.hContext = 0x4a43280, .hDevice = 0x4a3eb20, .pCommandBufferDesc = 0x7ffffffdda28 ((struct ur_exp_command_buffer_desc_t){.stype = UR_STRUCTURE_TYPE_EXP_COMMAND_BUFFER_DESC, .pNext = nullptr, .isUpdatable = false, .isInOrder = true, .enableProfiling = false}), .phCommandBuffer = 0x7ffffffdda40 (0xbbdf850)) -> UR_RESULT_SUCCESS;"
+      },
+      "urCommandBufferFinalizeExp": {
+        "line": 11422918,
+        "raw": "   <--- urCommandBufferFinalizeExp(.hCommandBuffer = 0xbbdf850) -> UR_RESULT_SUCCESS;"
+      }
+    },
+    "read-2/before decode cache release": {
+      "urCommandBufferReleaseExp": {
+        "line": 11539441,
+        "raw": "   <--- urCommandBufferReleaseExp(.hCommandBuffer = 0x4c84920) -> UR_RESULT_SUCCESS;"
+      }
+    },
+    "read-2/main decode cache released": {
+      "urCommandBufferReleaseExp": {
+        "line": 11541610,
+        "raw": "   <--- urCommandBufferReleaseExp(.hCommandBuffer = 0xbbe7ad0) -> UR_RESULT_SUCCESS;"
+      }
+    },
+    "read-2/temporary buffers released": {
+      "urCommandBufferCreateExp": {
+        "line": 22521863,
+        "raw": "   <--- urCommandBufferCreateExp(.hContext = 0x4a43280, .hDevice = 0x4a3eb20, .pCommandBufferDesc = 0x7ffffffdd3a8 ((struct ur_exp_command_buffer_desc_t){.stype = UR_STRUCTURE_TYPE_EXP_COMMAND_BUFFER_DESC, .pNext = nullptr, .isUpdatable = false, .isInOrder = true, .enableProfiling = false}), .phCommandBuffer = 0x7ffffffdd3c0 (0x5febb80)) -> UR_RESULT_SUCCESS;"
+      },
+      "urCommandBufferFinalizeExp": {
+        "line": 22522201,
+        "raw": "   <--- urCommandBufferFinalizeExp(.hCommandBuffer = 0x5febb80) -> UR_RESULT_SUCCESS;"
+      }
+    },
+    "read-2/MTP decode weights restored": {
+      "urCommandBufferCreateExp": {
+        "line": 22926473,
+        "raw": "   <--- urCommandBufferCreateExp(.hContext = 0x4a43280, .hDevice = 0x4a3eb20, .pCommandBufferDesc = 0x7ffffffddc78 ((struct ur_exp_command_buffer_desc_t){.stype = UR_STRUCTURE_TYPE_EXP_COMMAND_BUFFER_DESC, .pNext = nullptr, .isUpdatable = false, .isInOrder = true, .enableProfiling = false}), .phCommandBuffer = 0x7ffffffddc90 (0xc1a0880)) -> UR_RESULT_SUCCESS;"
+      },
+      "urCommandBufferFinalizeExp": {
+        "line": 22927941,
+        "raw": "   <--- urCommandBufferFinalizeExp(.hCommandBuffer = 0xc1a0880) -> UR_RESULT_SUCCESS;"
+      }
+    },
+    "read-3/before decode cache release": {
+      "urCommandBufferReleaseExp": {
+        "line": 23039362,
+        "raw": "   <--- urCommandBufferReleaseExp(.hCommandBuffer = 0x5febb80) -> UR_RESULT_SUCCESS;"
+      }
+    },
+    "read-3/main decode cache released": {
+      "urCommandBufferReleaseExp": {
+        "line": 23041531,
+        "raw": "   <--- urCommandBufferReleaseExp(.hCommandBuffer = 0xc1a0880) -> UR_RESULT_SUCCESS;"
+      }
+    },
+    "read-3/temporary buffers released": {
+      "urCommandBufferCreateExp": {
+        "line": 34017916,
+        "raw": "   <--- urCommandBufferCreateExp(.hContext = 0x4a43280, .hDevice = 0x4a3eb20, .pCommandBufferDesc = 0x7ffffffdd3a8 ((struct ur_exp_command_buffer_desc_t){.stype = UR_STRUCTURE_TYPE_EXP_COMMAND_BUFFER_DESC, .pNext = nullptr, .isUpdatable = false, .isInOrder = true, .enableProfiling = false}), .phCommandBuffer = 0x7ffffffdd3c0 (0x7df0a30)) -> UR_RESULT_SUCCESS;"
+      },
+      "urCommandBufferFinalizeExp": {
+        "line": 34018062,
+        "raw": "   <--- urCommandBufferFinalizeExp(.hCommandBuffer = 0x7df0a30) -> UR_RESULT_SUCCESS;"
+      }
+    },
+    "read-3/MTP decode weights restored": {
+      "urCommandBufferCreateExp": {
+        "line": 34422334,
+        "raw": "   <--- urCommandBufferCreateExp(.hContext = 0x4a43280, .hDevice = 0x4a3eb20, .pCommandBufferDesc = 0x7ffffffddc78 ((struct ur_exp_command_buffer_desc_t){.stype = UR_STRUCTURE_TYPE_EXP_COMMAND_BUFFER_DESC, .pNext = nullptr, .isUpdatable = false, .isInOrder = true, .enableProfiling = false}), .phCommandBuffer = 0x7ffffffddc90 (0xc239d30)) -> UR_RESULT_SUCCESS;"
+      },
+      "urCommandBufferFinalizeExp": {
+        "line": 34423802,
+        "raw": "   <--- urCommandBufferFinalizeExp(.hCommandBuffer = 0xc239d30) -> UR_RESULT_SUCCESS;"
+      },
+      "urCommandBufferReleaseExp": {
+        "line": 34534119,
+        "raw": "   <--- urCommandBufferReleaseExp(.hCommandBuffer = 0xbbdf850) -> UR_RESULT_SUCCESS;"
+      }
+    }
+  },
+  "command_buffer_references_at_exit": {},
+  "limitations": [
+    "Returned UR reference-count operations are recorded, not internal C++ graph implementation ownership. Queue drain and private compiled-source destruction order are audited separately.",
+    "Neither object counts nor requested allocation sizes explain runtime-private resident heaps or prove that reported free VRAM stops declining after more requests."
+  ],
+  "finished_utc": "2026-10-08T01:45:07.857465+00:00"
+}
