@@ -1,0 +1,3 @@
+# Host prefill accounting on the updated0.1.41 engine
+
+[The first logged diagnostic](first-diagnostic/README.md) passes four fresh32K full live-state/head/output checks and records about190 GB of expert H2D transfers per input. [The quiet baseline/off/on comparison](quiet32k/README.md) passes24 fresh32K reads and measures449.923 baseline versus449.748 counter-on later prefill tokens/s, a difference of-0.03887%. The host durations expose little CPU grouping/submission time; GPU grouping waits do not distinguish compute from transfer. The counter code and a separately prepared copy-engine experiment remain unadopted. The counter binary has not passed its full262144 lifecycle.
