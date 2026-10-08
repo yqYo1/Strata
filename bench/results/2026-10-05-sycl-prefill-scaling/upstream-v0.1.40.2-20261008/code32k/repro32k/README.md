@@ -165,3 +165,11 @@ last pooled indexer row differs in each main layer. The process exits0
 normally without a kernel fault. A private kernel candidate restores the
 spare after partial speculative commit; its new capacity sequence is
 separate, and no full-gate/adoption or speed result is claimed here.
+
+The [repaired first full image and profiling preparation](profile-definition-audit-and-poll-rebase-v1/README.md)
+records the first repaired full read/image plus its exact interposed32K
+control. The second full read is active at capture. Actual preprocessing
+also exposes inconsistent DPCT class/inline definitions across compiled
+translation units. A private uniform-header build replaces only seven
+objects, while a separate polling rebase and local VTune help checks prepare
+later measurements. These CPU candidates are GPU-untested and not adopted.

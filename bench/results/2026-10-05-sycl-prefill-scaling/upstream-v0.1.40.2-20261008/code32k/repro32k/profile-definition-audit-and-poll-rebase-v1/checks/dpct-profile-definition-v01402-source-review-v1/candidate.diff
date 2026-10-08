@@ -1,0 +1,24 @@
+--- /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/include/dpct/device.hpp
++++ /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-v1-20261008/include/dpct/device.hpp
+@@ -698,9 +698,7 @@
+     _queues.push_back(std::make_shared<sycl::queue>(
+         _ctx, *this, eh,
+         sycl::property_list(
+-#ifdef DPCT_PROFILING_ENABLED
+             sycl::property::queue::enable_profiling(),
+-#endif
+             properties...)));
+ 
+     return _queues.back().get();
+@@ -1000,11 +998,7 @@
+   }
+ #endif
+ 
+-#ifdef DPCT_PROFILING_ENABLED
+   *event_ptr = queue->ext_oneapi_submit_barrier();
+-#else
+-  *event_ptr = queue->single_task([=]() {});
+-#endif
+ }
+ 
+ static inline unsigned int push_device_for_curr_thread(unsigned int id) {

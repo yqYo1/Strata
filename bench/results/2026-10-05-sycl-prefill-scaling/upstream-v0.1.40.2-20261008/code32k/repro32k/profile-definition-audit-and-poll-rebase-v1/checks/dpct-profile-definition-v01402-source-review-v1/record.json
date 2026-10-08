@@ -1,0 +1,82 @@
+{
+  "active": false,
+  "passed": false,
+  "gpu_tested": false,
+  "adopted": false,
+  "started_utc": "2026-10-08T07:14:35.055464+00:00",
+  "controller_sha256": "0fcb386aca3ae5bd7b180135b545f2ea28118716d095470815e303c2a7f8dbda",
+  "original_header_sha256": "bf6a6fb6788fdcc18a532564edcee7b4bc2374b0336f74ca517946f471d4c0a1",
+  "candidate_header_sha256": "adbcbd0ac45995348e37ac3f5ca42d9f3d4b0555031aeb1781a1e2166a74ed52",
+  "steps": [
+    {
+      "label": "translated-original",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-E",
+        "-P",
+        "-DSTRATA_NATIVE_EXPERTS=1",
+        "-DSTRATA_SYCL_SAMPLER_FP64=1",
+        "-DSTRATA_VERSION=\"0.1.40-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/../src/core",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/../include",
+        "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-Wall",
+        "-Wextra",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/core/verify.cpp"
+      ],
+      "pid": 3477908,
+      "exit_code": 0
+    }
+  ],
+  "scope": "Preprocess actual compiler commands for translated verifier and hand-written conversation state. Compare class-inline queue factory and external-inline sync_barrier token definitions with/without source-local DPCT_PROFILING_ENABLED. This is C++ definition/lifetime correctness evidence, not a runtime fault attribution. Candidate keeps the existing profiling branch uniformly and keeps explicit copy-queue property selection unchanged; no GPU execution or binary adoption.",
+  "original_commands": {
+    "translated": [
+      "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+      "-DSTRATA_NATIVE_EXPERTS=1",
+      "-DSTRATA_SYCL_SAMPLER_FP64=1",
+      "-DSTRATA_VERSION=\"0.1.40-sycl\"",
+      "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/../src/core",
+      "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/include",
+      "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/../include",
+      "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include",
+      "-O3",
+      "-DNDEBUG",
+      "-std=c++20",
+      "-fsycl",
+      "-fsycl-default-sub-group-size=32",
+      "-fsycl-device-code-split=per_kernel",
+      "-fp-model=precise",
+      "-Wno-unused-parameter",
+      "-Wno-unused-variable",
+      "-Wno-deprecated-declarations",
+      "-Wall",
+      "-Wextra",
+      "-MD",
+      "-MT",
+      "CMakeFiles/strata_engine.dir/src/core/verify.cpp.o",
+      "-MF",
+      "CMakeFiles/strata_engine.dir/src/core/verify.cpp.o.d",
+      "-o",
+      "CMakeFiles/strata_engine.dir/src/core/verify.cpp.o",
+      "-c",
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/core/verify.cpp"
+    ]
+  },
+  "actual_source_sha256": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/core/verify.cpp": "e0deec57d957df79f39555840a70a316067113b18b6789d2b4e4d511607586f6"
+  },
+  "elapsed_seconds": 7.872419021994574,
+  "error": "ValueError('substring not found')",
+  "finished_utc": "2026-10-08T07:14:42.930668+00:00"
+}
