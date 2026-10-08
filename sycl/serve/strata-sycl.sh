@@ -10,7 +10,8 @@
 # Passed into the container: every variable of this script's environment that starts with STRATA_ (the config's
 # "env" block arrives that way: the server puts it in the engine's environment), ONEAPI_ (level_zero:* for a
 # two-card split, #423), UR_, IGC_, SYCL_ or ZES_. The port's own defaults (below) are overridden the same way,
-# e.g. "env": {"STRATA_VERIFY_NO_HOST": "0"} in the config.
+# e.g. "env": {"STRATA_PREFILL_FIRST": "0"} in the config.
+# EnableDirectSubmission and NEOReadDebugKeys are forwarded too; driver/runtime values of 0 are retained.
 set -euo pipefail
 # Reject the retired path before removing a container or opening the GPU.
 if [ -n "${STRATA_VERIFY_NO_HOST+x}" ] ||
@@ -30,13 +31,22 @@ declare -A setting=([STRATA_VERIFY_DEVICE_PLAN]=1 [STRATA_STAGER_THREADS]=12)
 while IFS= read -r k; do
     case "$k" in
         STRATA_SYCL_*) ;;                                 # this script's own settings
-        STRATA_*|ONEAPI_*|UR_*|IGC_*|SYCL_*|ZES_*|NEOReadDebugKeys|OverrideDefaultFP64Settings) setting[$k]=${!k} ;;
+        STRATA_*|ONEAPI_*|UR_*|IGC_*|SYCL_*|ZES_*|NEOReadDebugKeys|EnableDirectSubmission|OverrideDefaultFP64Settings) setting[$k]=${!k} ;;
     esac
 done < <(compgen -e)
 envs=()
 for k in "${!setting[@]}"; do
-    # the engine tests the switches by presence: a value of 0 (or empty) means "not set", so it is not passed on
-    case "${setting[$k]}" in 0|"") ;; *) envs+=(-e "$k=${setting[$k]}") ;; esac
+    case "$k" in
+        STRATA_PREFILL_FIRST|STRATA_STAGER_THREADS)
+            # Numeric controls: explicit 0 differs from an omitted value.
+            envs+=(-e "$k=${setting[$k]}") ;;
+        STRATA_*)
+            # Keep the established handling of Strata switches tested by presence.
+            case "${setting[$k]}" in 0|"") ;; *) envs+=(-e "$k=${setting[$k]}") ;; esac ;;
+        *)
+            # SYCL, UR and driver settings interpret their values, including 0.
+            envs+=(-e "$k=${setting[$k]}") ;;
+    esac
 done
 exec docker run --rm -i --name "$name" --device /dev/dri --oom-score-adj 1000 --stop-timeout 30 --no-healthcheck \
     -v "$root:/work" \
