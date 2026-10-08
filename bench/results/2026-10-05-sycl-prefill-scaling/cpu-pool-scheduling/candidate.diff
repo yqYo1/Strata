@@ -1,0 +1,50 @@
+--- original/src/kernels/cpu/pool.cpp
++++ candidate/src/kernels/cpu/pool.cpp
+@@ -558,6 +558,12 @@
+             const int e = (int) i / parts_b_, part = (int) i % parts_b_;
+             const int r0 = H * part / parts_b_, r1 = H * (part + 1) / parts_b_;
+             s2_expert_down_rows(jobs_[e].blob, split_[(size_t) e].a2, jobs_[e].out, r0, r1);
++        } else if (mode_ == 7) {
++            // Independent expert intermediates; retain each quantizer and its operation order.
++            SplitBufMulti& sb = split_multi_[(size_t) i];
++            for (int t = 0; t < mjobs_[i].nt; ++t)
++                if (q2_native_kernels(nfmt_->d_type)) act_quant_any(sb.ff[t], FF, sb.a2[t]);
++                else native_quant_h(*nfmt_, sb.ff[t], sb.hq[t]);
+         } else if (mode_ >= 5) {
+             // plan v0.3 P6: native layers, 5 = gate/up rows, 6 = down rows
+             const int per = mode_ == 5 ? FF : H;
+@@ -688,6 +694,14 @@
+ 
+ void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n) {
+     if (n <= 0) return;
++    static const int tasks_per_thread = [] {
++        const char* value = std::getenv("STRATA_POOL_NATIVE_TASK_FACTOR");
++        return value ? std::clamp(std::atoi(value), 1, 16) : 3;
++    }();
++    static const bool parallel_quant = [] {
++        const char* value = std::getenv("STRATA_POOL_NATIVE_PARALLEL_QUANT");
++        return value && std::atoi(value) != 0;
++    }();
+     const auto t0 = std::chrono::steady_clock::now();
+     // more distinct experts than buffers: run them in batches
+     for (int b0 = 0; b0 < n; b0 += kMaxSplitMulti) {
+@@ -695,15 +709,18 @@
+         mjobs_ = jobs + b0;
+         nfmt_ = &f;
+         const int threads = n_ + (host_works_ ? 1 : 0);
+-        mtasks_ = 3 * threads;
++        mtasks_ = tasks_per_thread * threads;
+         mrows_ = (int64_t) nb * FF;
+         const auto a = std::chrono::steady_clock::now();
+         run_phase(5, mtasks_);
+         const auto b = std::chrono::steady_clock::now();
++        if (parallel_quant) run_phase(7, nb);
++        else {
+         for (int e = 0; e < nb; ++e)
+             for (int t = 0; t < mjobs_[e].nt; ++t)
+                 if (q2_native_kernels(f.d_type)) act_quant_any(split_multi_[(size_t) e].ff[t], FF, split_multi_[(size_t) e].a2[t]);
+                 else native_quant_h(f, split_multi_[(size_t) e].ff[t], split_multi_[(size_t) e].hq[t]);
++        }
+         const auto c = std::chrono::steady_clock::now();
+         mrows_ = (int64_t) nb * H;
+         run_phase(6, mtasks_);

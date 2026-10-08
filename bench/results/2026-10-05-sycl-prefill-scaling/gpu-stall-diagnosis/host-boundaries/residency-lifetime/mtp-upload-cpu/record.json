@@ -1,0 +1,73 @@
+{
+  "scope": "Check actual MTP prefill source lifetime and async error handling on CPU.\n\nThe queue defers copies, while capture and submission failures are injected.\nNo kernels, GPU, driver calls or model arithmetic are exercised.\n",
+  "control_commit": "990a631d0f2b7a14670d0808fd9572f0eefa7712",
+  "started_utc": "2026-10-06T16:53:27.007891+00:00",
+  "source_sha256": "e3fdbe0280074ff973f087eb0e14266f5183aeeae496a572699239c251b1a0fb",
+  "runs": [
+    {
+      "variant": "control",
+      "mode": "capture-failure",
+      "exit_code": 1,
+      "expected_uaf": true,
+      "passed": true
+    },
+    {
+      "variant": "control",
+      "mode": "async-final-error",
+      "exit_code": 0,
+      "expected_uaf": false,
+      "passed": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "healthy",
+      "exit_code": 0,
+      "expected_uaf": false,
+      "passed": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "capture-failure",
+      "exit_code": 0,
+      "expected_uaf": false,
+      "passed": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "launch-failure",
+      "exit_code": 0,
+      "expected_uaf": false,
+      "passed": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "upload-rejected",
+      "exit_code": 0,
+      "expected_uaf": false,
+      "passed": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "async-final-error",
+      "exit_code": 0,
+      "expected_uaf": false,
+      "passed": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "healthy",
+      "per_group_sync": true,
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "async-final-error",
+      "per_group_sync": true,
+      "exit_code": 0,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "finished_utc": "2026-10-06T16:53:31.222488+00:00"
+}

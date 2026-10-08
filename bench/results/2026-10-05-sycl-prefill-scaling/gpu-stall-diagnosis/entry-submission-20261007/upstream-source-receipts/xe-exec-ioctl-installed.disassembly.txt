@@ -1,0 +1,833 @@
+
+/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/submit-stall-sources/xe-installed.ko:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000010cd0 <xe_exec_ioctl>:
+   10cd0:	e8 00 00 00 00       	call   10cd5 <xe_exec_ioctl+0x5>
+   10cd5:	55                   	push   %rbp
+   10cd6:	b9 09 00 00 00       	mov    $0x9,%ecx
+   10cdb:	48 89 e5             	mov    %rsp,%rbp
+   10cde:	41 57                	push   %r15
+   10ce0:	41 56                	push   %r14
+   10ce2:	41 55                	push   %r13
+   10ce4:	41 54                	push   %r12
+   10ce6:	53                   	push   %rbx
+   10ce7:	48 81 ec 28 01 00 00 	sub    $0x128,%rsp
+   10cee:	48 89 bd f0 fe ff ff 	mov    %rdi,-0x110(%rbp)
+   10cf5:	48 8d 7d 88          	lea    -0x78(%rbp),%rdi
+   10cf9:	4c 8b 66 10          	mov    0x10(%rsi),%r12
+   10cfd:	65 48 8b 05 00 00 00 	mov    %gs:0x0(%rip),%rax        # 10d05 <xe_exec_ioctl+0x35>
+   10d04:	00 
+   10d05:	48 89 45 d0          	mov    %rax,-0x30(%rbp)
+   10d09:	48 8b 82 88 00 00 00 	mov    0x88(%rdx),%rax
+   10d10:	48 c7 85 00 ff ff ff 	movq   $0x0,-0x100(%rbp)
+   10d17:	00 00 00 00 
+   10d1b:	48 c7 85 08 ff ff ff 	movq   $0x0,-0xf8(%rbp)
+   10d22:	00 00 00 00 
+   10d26:	48 c7 85 10 ff ff ff 	movq   $0x0,-0xf0(%rbp)
+   10d2d:	00 00 00 00 
+   10d31:	48 c7 85 18 ff ff ff 	movq   $0x0,-0xe8(%rbp)
+   10d38:	00 00 00 00 
+   10d3c:	c7 85 fc fe ff ff 00 	movl   $0x0,-0x104(%rbp)
+   10d43:	00 00 00 
+   10d46:	48 89 85 e8 fe ff ff 	mov    %rax,-0x118(%rbp)
+   10d4d:	48 8b 46 18          	mov    0x18(%rsi),%rax
+   10d51:	48 89 85 d0 fe ff ff 	mov    %rax,-0x130(%rbp)
+   10d58:	31 c0                	xor    %eax,%eax
+   10d5a:	48 83 3e 00          	cmpq   $0x0,(%rsi)
+   10d5e:	f3 48 ab             	rep stos %rax,%es:(%rdi)
+   10d61:	b9 0d 00 00 00       	mov    $0xd,%ecx
+   10d66:	48 8d bd 20 ff ff ff 	lea    -0xe0(%rbp),%rdi
+   10d6d:	f3 48 ab             	rep stos %rax,%es:(%rdi)
+   10d70:	48 c7 85 78 ff ff ff 	movq   $0x0,-0x88(%rbp)
+   10d77:	00 00 00 00 
+   10d7b:	0f 85 6a 09 00 00    	jne    116eb <xe_exec_ioctl+0xa1b>
+   10d81:	48 81 7e 20 ff ff 00 	cmpq   $0xffff,0x20(%rsi)
+   10d88:	00 
+   10d89:	49 89 f6             	mov    %rsi,%r14
+   10d8c:	0f 87 8b 09 00 00    	ja     1171d <xe_exec_ioctl+0xa4d>
+   10d92:	48 83 7e 28 00       	cmpq   $0x0,0x28(%rsi)
+   10d97:	0f 85 73 08 00 00    	jne    11610 <xe_exec_ioctl+0x940>
+   10d9d:	48 83 7e 30 00       	cmpq   $0x0,0x30(%rsi)
+   10da2:	0f 85 68 08 00 00    	jne    11610 <xe_exec_ioctl+0x940>
+   10da8:	81 7e 0c 00 04 00 00 	cmpl   $0x400,0xc(%rsi)
+   10daf:	0f 87 9c 08 00 00    	ja     11651 <xe_exec_ioctl+0x981>
+   10db5:	8b 76 08             	mov    0x8(%rsi),%esi
+   10db8:	48 8b bd e8 fe ff ff 	mov    -0x118(%rbp),%rdi
+   10dbf:	e8 00 00 00 00       	call   10dc4 <xe_exec_ioctl+0xf4>
+   10dc4:	49 89 c7             	mov    %rax,%r15
+   10dc7:	48 85 c0             	test   %rax,%rax
+   10dca:	0f 84 4a 0a 00 00    	je     1181a <xe_exec_ioctl+0xb4a>
+   10dd0:	f6 40 60 04          	testb  $0x4,0x60(%rax)
+   10dd4:	0f 85 23 01 00 00    	jne    10efd <xe_exec_ioctl+0x22d>
+   10dda:	41 0f b7 46 20       	movzwl 0x20(%r14),%eax
+   10ddf:	66 85 c0             	test   %ax,%ax
+   10de2:	0f 85 ea 00 00 00    	jne    10ed2 <xe_exec_ioctl+0x202>
+   10de8:	49 8b 87 28 01 00 00 	mov    0x128(%r15),%rax
+   10def:	4c 89 ff             	mov    %r15,%rdi
+   10df2:	48 8b 40 58          	mov    0x58(%rax),%rax
+   10df6:	e8 00 00 00 00       	call   10dfb <xe_exec_ioctl+0x12b>
+   10dfb:	84 c0                	test   %al,%al
+   10dfd:	0f 85 73 02 00 00    	jne    11076 <xe_exec_ioctl+0x3a6>
+   10e03:	41 8b 87 40 01 00 00 	mov    0x140(%r15),%eax
+   10e0a:	3d e7 03 00 00       	cmp    $0x3e7,%eax
+   10e0f:	0f 8f c5 06 00 00    	jg     114da <xe_exec_ioctl+0x80a>
+   10e15:	41 8b 46 0c          	mov    0xc(%r14),%eax
+   10e19:	85 c0                	test   %eax,%eax
+   10e1b:	0f 85 76 01 00 00    	jne    10f97 <xe_exec_ioctl+0x2c7>
+   10e21:	48 c7 85 c8 fe ff ff 	movq   $0x0,-0x138(%rbp)
+   10e28:	00 00 00 00 
+   10e2c:	4d 8b 6f 20          	mov    0x20(%r15),%r13
+   10e30:	c7 85 c0 fe ff ff ff 	movl   $0xffffffff,-0x140(%rbp)
+   10e37:	ff ff ff 
+   10e3a:	45 31 db             	xor    %r11d,%r11d
+   10e3d:	c7 85 e0 fe ff ff 00 	movl   $0x0,-0x120(%rbp)
+   10e44:	00 00 00 
+   10e47:	66 41 83 7e 20 00    	cmpw   $0x0,0x20(%r14)
+   10e4d:	0f 84 2e 03 00 00    	je     11181 <xe_exec_ioctl+0x4b1>
+   10e53:	41 0f b7 47 48       	movzwl 0x48(%r15),%eax
+   10e58:	66 83 f8 01          	cmp    $0x1,%ax
+   10e5c:	0f 86 1f 03 00 00    	jbe    11181 <xe_exec_ioctl+0x4b1>
+   10e62:	48 8d 1c c5 00 00 00 	lea    0x0(,%rax,8),%rbx
+   10e69:	00 
+   10e6a:	48 83 f8 09          	cmp    $0x9,%rax
+   10e6e:	0f 87 04 0d 00 00    	ja     11b78 <xe_exec_ioctl+0xea8>
+   10e74:	66 90                	xchg   %ax,%ax
+   10e76:	31 d2                	xor    %edx,%edx
+   10e78:	48 89 de             	mov    %rbx,%rsi
+   10e7b:	48 8d 7d 88          	lea    -0x78(%rbp),%rdi
+   10e7f:	44 89 9d e8 fe ff ff 	mov    %r11d,-0x118(%rbp)
+   10e86:	e8 00 00 00 00       	call   10e8b <xe_exec_ioctl+0x1bb>
+   10e8b:	44 8b 9d e8 fe ff ff 	mov    -0x118(%rbp),%r11d
+   10e92:	48 8b b5 d0 fe ff ff 	mov    -0x130(%rbp),%rsi
+   10e99:	48 89 da             	mov    %rbx,%rdx
+   10e9c:	48 8d 7d 88          	lea    -0x78(%rbp),%rdi
+   10ea0:	44 89 9d e8 fe ff ff 	mov    %r11d,-0x118(%rbp)
+   10ea7:	e8 00 00 00 00       	call   10eac <xe_exec_ioctl+0x1dc>
+   10eac:	44 8b 9d e8 fe ff ff 	mov    -0x118(%rbp),%r11d
+   10eb3:	85 c0                	test   %eax,%eax
+   10eb5:	0f 84 c6 02 00 00    	je     11181 <xe_exec_ioctl+0x4b1>
+   10ebb:	8b 85 c0 fe ff ff    	mov    -0x140(%rbp),%eax
+   10ec1:	bb f2 ff ff ff       	mov    $0xfffffff2,%ebx
+   10ec6:	44 89 9d c0 fe ff ff 	mov    %r11d,-0x140(%rbp)
+   10ecd:	e9 f9 01 00 00       	jmp    110cb <xe_exec_ioctl+0x3fb>
+   10ed2:	66 41 3b 47 48       	cmp    0x48(%r15),%ax
+   10ed7:	0f 84 0b ff ff ff    	je     10de8 <xe_exec_ioctl+0x118>
+   10edd:	48 8b 85 f0 fe ff ff 	mov    -0x110(%rbp),%rax
+   10ee4:	48 89 c6             	mov    %rax,%rsi
+   10ee7:	48 85 c0             	test   %rax,%rax
+   10eea:	74 04                	je     10ef0 <xe_exec_ioctl+0x220>
+   10eec:	48 8b 70 08          	mov    0x8(%rax),%rsi
+   10ef0:	68 00 00 00 00       	push   $0x0
+   10ef5:	41 b9 93 00 00 00    	mov    $0x93,%r9d
+   10efb:	eb 1b                	jmp    10f18 <xe_exec_ioctl+0x248>
+   10efd:	48 8b b5 f0 fe ff ff 	mov    -0x110(%rbp),%rsi
+   10f04:	48 85 f6             	test   %rsi,%rsi
+   10f07:	74 04                	je     10f0d <xe_exec_ioctl+0x23d>
+   10f09:	48 8b 76 08          	mov    0x8(%rsi),%rsi
+   10f0d:	68 00 00 00 00       	push   $0x0
+   10f12:	41 b9 8e 00 00 00    	mov    $0x8e,%r9d
+   10f18:	49 c7 c0 00 00 00 00 	mov    $0x0,%r8
+   10f1f:	48 c7 c1 00 00 00 00 	mov    $0x0,%rcx
+   10f26:	ba 01 00 00 00       	mov    $0x1,%edx
+   10f2b:	31 ff                	xor    %edi,%edi
+   10f2d:	e8 00 00 00 00       	call   10f32 <xe_exec_ioctl+0x262>
+   10f32:	bb ea ff ff ff       	mov    $0xffffffea,%ebx
+   10f37:	41 5b                	pop    %r11
+   10f39:	49 8d 7f 18          	lea    0x18(%r15),%rdi
+   10f3d:	b8 ff ff ff ff       	mov    $0xffffffff,%eax
+   10f42:	f0 41 0f c1 47 18    	lock xadd %eax,0x18(%r15)
+   10f48:	83 f8 01             	cmp    $0x1,%eax
+   10f4b:	74 43                	je     10f90 <xe_exec_ioctl+0x2c0>
+   10f4d:	85 c0                	test   %eax,%eax
+   10f4f:	0f 8e b7 01 00 00    	jle    1110c <xe_exec_ioctl+0x43c>
+   10f55:	48 8b 45 d0          	mov    -0x30(%rbp),%rax
+   10f59:	65 48 2b 05 00 00 00 	sub    %gs:0x0(%rip),%rax        # 10f61 <xe_exec_ioctl+0x291>
+   10f60:	00 
+   10f61:	0f 85 31 0c 00 00    	jne    11b98 <xe_exec_ioctl+0xec8>
+   10f67:	48 8d 65 d8          	lea    -0x28(%rbp),%rsp
+   10f6b:	89 d8                	mov    %ebx,%eax
+   10f6d:	5b                   	pop    %rbx
+   10f6e:	41 5c                	pop    %r12
+   10f70:	41 5d                	pop    %r13
+   10f72:	41 5e                	pop    %r14
+   10f74:	41 5f                	pop    %r15
+   10f76:	5d                   	pop    %rbp
+   10f77:	31 d2                	xor    %edx,%edx
+   10f79:	31 c9                	xor    %ecx,%ecx
+   10f7b:	31 f6                	xor    %esi,%esi
+   10f7d:	31 ff                	xor    %edi,%edi
+   10f7f:	45 31 c0             	xor    %r8d,%r8d
+   10f82:	45 31 c9             	xor    %r9d,%r9d
+   10f85:	45 31 d2             	xor    %r10d,%r10d
+   10f88:	45 31 db             	xor    %r11d,%r11d
+   10f8b:	e9 00 00 00 00       	jmp    10f90 <xe_exec_ioctl+0x2c0>
+   10f90:	e8 00 00 00 00       	call   10f95 <xe_exec_ioctl+0x2c5>
+   10f95:	eb be                	jmp    10f55 <xe_exec_ioctl+0x285>
+   10f97:	48 8d 3c 80          	lea    (%rax,%rax,4),%rdi
+   10f9b:	be c0 0d 00 00       	mov    $0xdc0,%esi
+   10fa0:	48 c1 e7 04          	shl    $0x4,%rdi
+   10fa4:	e8 00 00 00 00       	call   10fa9 <xe_exec_ioctl+0x2d9>
+   10fa9:	48 89 85 c8 fe ff ff 	mov    %rax,-0x138(%rbp)
+   10fb0:	48 89 c2             	mov    %rax,%rdx
+   10fb3:	48 85 c0             	test   %rax,%rax
+   10fb6:	0f 84 03 0c 00 00    	je     11bbf <xe_exec_ioctl+0xeef>
+   10fbc:	45 8b 4e 0c          	mov    0xc(%r14),%r9d
+   10fc0:	4d 8b 6f 20          	mov    0x20(%r15),%r13
+   10fc4:	45 85 c9             	test   %r9d,%r9d
+   10fc7:	0f 84 63 fe ff ff    	je     10e30 <xe_exec_ioctl+0x160>
+   10fcd:	31 c0                	xor    %eax,%eax
+   10fcf:	31 db                	xor    %ebx,%ebx
+   10fd1:	4c 89 bd c0 fe ff ff 	mov    %r15,-0x140(%rbp)
+   10fd8:	4c 89 b5 d8 fe ff ff 	mov    %r14,-0x128(%rbp)
+   10fdf:	41 89 c7             	mov    %eax,%r15d
+   10fe2:	49 89 d6             	mov    %rdx,%r14
+   10fe5:	c7 85 e0 fe ff ff 00 	movl   $0x0,-0x120(%rbp)
+   10fec:	00 00 00 
+   10fef:	eb 20                	jmp    11011 <xe_exec_ioctl+0x341>
+   10ff1:	48 8b 85 d8 fe ff ff 	mov    -0x128(%rbp),%rax
+   10ff8:	44 8d 5b 01          	lea    0x1(%rbx),%r11d
+   10ffc:	49 83 c6 50          	add    $0x50,%r14
+   11000:	49 83 c4 30          	add    $0x30,%r12
+   11004:	44 3b 58 0c          	cmp    0xc(%rax),%r11d
+   11008:	0f 83 0d 01 00 00    	jae    1111b <xe_exec_ioctl+0x44b>
+   1100e:	44 89 db             	mov    %r11d,%ebx
+   11011:	49 8b 85 e0 04 00 00 	mov    0x4e0(%r13),%rax
+   11018:	4c 89 e1             	mov    %r12,%rcx
+   1101b:	4c 89 f2             	mov    %r14,%rdx
+   1101e:	83 e0 02             	and    $0x2,%eax
+   11021:	48 83 f8 01          	cmp    $0x1,%rax
+   11025:	19 c0                	sbb    %eax,%eax
+   11027:	45 31 c0             	xor    %r8d,%r8d
+   1102a:	45 31 c9             	xor    %r9d,%r9d
+   1102d:	83 e0 fe             	and    $0xfffffffe,%eax
+   11030:	83 c0 03             	add    $0x3,%eax
+   11033:	50                   	push   %rax
+   11034:	48 8b b5 e8 fe ff ff 	mov    -0x118(%rbp),%rsi
+   1103b:	48 8b bd f0 fe ff ff 	mov    -0x110(%rbp),%rdi
+   11042:	e8 00 00 00 00       	call   11047 <xe_exec_ioctl+0x377>
+   11047:	41 58                	pop    %r8
+   11049:	85 c0                	test   %eax,%eax
+   1104b:	75 6a                	jne    110b7 <xe_exec_ioctl+0x3e7>
+   1104d:	8b bd e0 fe ff ff    	mov    -0x120(%rbp),%edi
+   11053:	49 83 7e 28 01       	cmpq   $0x1,0x28(%r14)
+   11058:	41 83 df ff          	sbb    $0xffffffff,%r15d
+   1105c:	85 ff                	test   %edi,%edi
+   1105e:	75 91                	jne    10ff1 <xe_exec_ioctl+0x321>
+   11060:	4c 89 f7             	mov    %r14,%rdi
+   11063:	e8 00 00 00 00       	call   11068 <xe_exec_ioctl+0x398>
+   11068:	0f b6 c0             	movzbl %al,%eax
+   1106b:	89 85 e0 fe ff ff    	mov    %eax,-0x120(%rbp)
+   11071:	e9 7b ff ff ff       	jmp    10ff1 <xe_exec_ioctl+0x321>
+   11076:	48 8b b5 f0 fe ff ff 	mov    -0x110(%rbp),%rsi
+   1107d:	48 85 f6             	test   %rsi,%rsi
+   11080:	74 04                	je     11086 <xe_exec_ioctl+0x3b6>
+   11082:	48 8b 76 08          	mov    0x8(%rsi),%rsi
+   11086:	68 00 00 00 00       	push   $0x0
+   1108b:	41 b9 99 00 00 00    	mov    $0x99,%r9d
+   11091:	31 ff                	xor    %edi,%edi
+   11093:	49 c7 c0 00 00 00 00 	mov    $0x0,%r8
+   1109a:	48 c7 c1 00 00 00 00 	mov    $0x0,%rcx
+   110a1:	ba 01 00 00 00       	mov    $0x1,%edx
+   110a6:	bb 83 ff ff ff       	mov    $0xffffff83,%ebx
+   110ab:	e8 00 00 00 00       	call   110b0 <xe_exec_ioctl+0x3e0>
+   110b0:	41 5a                	pop    %r10
+   110b2:	e9 82 fe ff ff       	jmp    10f39 <xe_exec_ioctl+0x269>
+   110b7:	89 d9                	mov    %ebx,%ecx
+   110b9:	4c 8b bd c0 fe ff ff 	mov    -0x140(%rbp),%r15
+   110c0:	89 9d c0 fe ff ff    	mov    %ebx,-0x140(%rbp)
+   110c6:	89 c3                	mov    %eax,%ebx
+   110c8:	8d 41 ff             	lea    -0x1(%rcx),%eax
+   110cb:	8b 95 c0 fe ff ff    	mov    -0x140(%rbp),%edx
+   110d1:	85 d2                	test   %edx,%edx
+   110d3:	74 26                	je     110fb <xe_exec_ioctl+0x42b>
+   110d5:	4c 8b ad c8 fe ff ff 	mov    -0x138(%rbp),%r13
+   110dc:	4c 8d 24 80          	lea    (%rax,%rax,4),%r12
+   110e0:	49 c1 e4 04          	shl    $0x4,%r12
+   110e4:	4d 01 ec             	add    %r13,%r12
+   110e7:	4c 89 e7             	mov    %r12,%rdi
+   110ea:	e8 00 00 00 00       	call   110ef <xe_exec_ioctl+0x41f>
+   110ef:	4c 89 e0             	mov    %r12,%rax
+   110f2:	49 83 ec 50          	sub    $0x50,%r12
+   110f6:	49 39 c5             	cmp    %rax,%r13
+   110f9:	75 ec                	jne    110e7 <xe_exec_ioctl+0x417>
+   110fb:	48 8b bd c8 fe ff ff 	mov    -0x138(%rbp),%rdi
+   11102:	e8 00 00 00 00       	call   11107 <xe_exec_ioctl+0x437>
+   11107:	e9 2d fe ff ff       	jmp    10f39 <xe_exec_ioctl+0x269>
+   1110c:	be 03 00 00 00       	mov    $0x3,%esi
+   11111:	e8 00 00 00 00       	call   11116 <xe_exec_ioctl+0x446>
+   11116:	e9 3a fe ff ff       	jmp    10f55 <xe_exec_ioctl+0x285>
+   1111b:	44 89 f8             	mov    %r15d,%eax
+   1111e:	4c 8b b5 d8 fe ff ff 	mov    -0x128(%rbp),%r14
+   11125:	4c 8b bd c0 fe ff ff 	mov    -0x140(%rbp),%r15
+   1112c:	89 9d c0 fe ff ff    	mov    %ebx,-0x140(%rbp)
+   11132:	83 f8 01             	cmp    $0x1,%eax
+   11135:	0f 86 0c fd ff ff    	jbe    10e47 <xe_exec_ioctl+0x177>
+   1113b:	48 8b b5 f0 fe ff ff 	mov    -0x110(%rbp),%rsi
+   11142:	48 85 f6             	test   %rsi,%rsi
+   11145:	74 04                	je     1114b <xe_exec_ioctl+0x47b>
+   11147:	48 8b 76 08          	mov    0x8(%rsi),%rsi
+   1114b:	68 00 00 00 00       	push   $0x0
+   11150:	41 b9 be 00 00 00    	mov    $0xbe,%r9d
+   11156:	31 ff                	xor    %edi,%edi
+   11158:	49 c7 c0 00 00 00 00 	mov    $0x0,%r8
+   1115f:	48 c7 c1 00 00 00 00 	mov    $0x0,%rcx
+   11166:	ba 01 00 00 00       	mov    $0x1,%edx
+   1116b:	bb ea ff ff ff       	mov    $0xffffffea,%ebx
+   11170:	e8 00 00 00 00       	call   11175 <xe_exec_ioctl+0x4a5>
+   11175:	8b 85 c0 fe ff ff    	mov    -0x140(%rbp),%eax
+   1117b:	5e                   	pop    %rsi
+   1117c:	e9 54 ff ff ff       	jmp    110d5 <xe_exec_ioctl+0x405>
+   11181:	49 8b 47 10          	mov    0x10(%r15),%rax
+   11185:	4c 89 ff             	mov    %r15,%rdi
+   11188:	44 89 9d e8 fe ff ff 	mov    %r11d,-0x118(%rbp)
+   1118f:	48 8b 80 a8 00 00 00 	mov    0xa8(%rax),%rax
+   11196:	48 89 85 d0 fe ff ff 	mov    %rax,-0x130(%rbp)
+   1119d:	e8 00 00 00 00       	call   111a2 <xe_exec_ioctl+0x4d2>
+   111a2:	44 8b 9d e8 fe ff ff 	mov    -0x118(%rbp),%r11d
+   111a9:	83 f8 01             	cmp    $0x1,%eax
+   111ac:	89 85 d8 fe ff ff    	mov    %eax,-0x128(%rbp)
+   111b2:	0f 84 80 03 00 00    	je     11538 <xe_exec_ioctl+0x868>
+   111b8:	49 8d 85 e8 04 00 00 	lea    0x4e8(%r13),%rax
+   111bf:	44 89 db             	mov    %r11d,%ebx
+   111c2:	48 89 85 e8 fe ff ff 	mov    %rax,-0x118(%rbp)
+   111c9:	41 f6 85 e0 04 00 00 	testb  $0x2,0x4e0(%r13)
+   111d0:	02 
+   111d1:	75 10                	jne    111e3 <xe_exec_ioctl+0x513>
+   111d3:	4c 89 ef             	mov    %r13,%rdi
+   111d6:	e8 00 00 00 00       	call   111db <xe_exec_ioctl+0x50b>
+   111db:	85 c0                	test   %eax,%eax
+   111dd:	0f 85 31 01 00 00    	jne    11314 <xe_exec_ioctl+0x644>
+   111e3:	48 8b bd e8 fe ff ff 	mov    -0x118(%rbp),%rdi
+   111ea:	e8 00 00 00 00       	call   111ef <xe_exec_ioctl+0x51f>
+   111ef:	41 89 c4             	mov    %eax,%r12d
+   111f2:	85 c0                	test   %eax,%eax
+   111f4:	0f 85 63 01 00 00    	jne    1135d <xe_exec_ioctl+0x68d>
+   111fa:	66 41 83 7e 20 00    	cmpw   $0x0,0x20(%r14)
+   11200:	0f 85 62 01 00 00    	jne    11368 <xe_exec_ioctl+0x698>
+   11206:	be 01 00 00 00       	mov    $0x1,%esi
+   1120b:	4c 89 ef             	mov    %r13,%rdi
+   1120e:	e8 00 00 00 00       	call   11213 <xe_exec_ioctl+0x543>
+   11213:	41 89 c4             	mov    %eax,%r12d
+   11216:	85 c0                	test   %eax,%eax
+   11218:	0f 85 29 01 00 00    	jne    11347 <xe_exec_ioctl+0x677>
+   1121e:	41 f6 85 e0 04 00 00 	testb  $0x2,0x4e0(%r13)
+   11225:	02 
+   11226:	0f 85 76 03 00 00    	jne    115a2 <xe_exec_ioctl+0x8d2>
+   1122c:	48 8b bd c8 fe ff ff 	mov    -0x138(%rbp),%rdi
+   11233:	4c 89 e9             	mov    %r13,%rcx
+   11236:	4c 89 fa             	mov    %r15,%rdx
+   11239:	89 de                	mov    %ebx,%esi
+   1123b:	e8 00 00 00 00       	call   11240 <xe_exec_ioctl+0x570>
+   11240:	48 3d 00 f0 ff ff    	cmp    $0xfffffffffffff000,%rax
+   11246:	0f 87 f1 04 00 00    	ja     1173d <xe_exec_ioctl+0xa6d>
+   1124c:	41 89 db             	mov    %ebx,%r11d
+   1124f:	48 89 c3             	mov    %rax,%rbx
+   11252:	45 85 db             	test   %r11d,%r11d
+   11255:	74 40                	je     11297 <xe_exec_ioctl+0x5c7>
+   11257:	44 89 d8             	mov    %r11d,%eax
+   1125a:	48 8b 95 c8 fe ff ff 	mov    -0x138(%rbp),%rdx
+   11261:	4c 89 ad f0 fe ff ff 	mov    %r13,-0x110(%rbp)
+   11268:	45 89 de             	mov    %r11d,%r14d
+   1126b:	4c 8d 24 80          	lea    (%rax,%rax,4),%r12
+   1126f:	49 c1 e4 04          	shl    $0x4,%r12
+   11273:	49 89 d5             	mov    %rdx,%r13
+   11276:	49 01 d4             	add    %rdx,%r12
+   11279:	4c 89 ef             	mov    %r13,%rdi
+   1127c:	48 89 de             	mov    %rbx,%rsi
+   1127f:	49 83 c5 50          	add    $0x50,%r13
+   11283:	e8 00 00 00 00       	call   11288 <xe_exec_ioctl+0x5b8>
+   11288:	4d 39 ec             	cmp    %r13,%r12
+   1128b:	75 ec                	jne    11279 <xe_exec_ioctl+0x5a9>
+   1128d:	4c 8b ad f0 fe ff ff 	mov    -0x110(%rbp),%r13
+   11294:	45 89 f3             	mov    %r14d,%r11d
+   11297:	48 89 da             	mov    %rbx,%rdx
+   1129a:	4c 89 ee             	mov    %r13,%rsi
+   1129d:	4c 89 ff             	mov    %r15,%rdi
+   112a0:	44 89 9d f0 fe ff ff 	mov    %r11d,-0x110(%rbp)
+   112a7:	e8 00 00 00 00       	call   112ac <xe_exec_ioctl+0x5dc>
+   112ac:	48 85 db             	test   %rbx,%rbx
+   112af:	44 8b 9d f0 fe ff ff 	mov    -0x110(%rbp),%r11d
+   112b6:	74 33                	je     112eb <xe_exec_ioctl+0x61b>
+   112b8:	48 8d 7b 38          	lea    0x38(%rbx),%rdi
+   112bc:	b8 ff ff ff ff       	mov    $0xffffffff,%eax
+   112c1:	f0 0f c1 43 38       	lock xadd %eax,0x38(%rbx)
+   112c6:	83 f8 01             	cmp    $0x1,%eax
+   112c9:	0f 84 9f 03 00 00    	je     1166e <xe_exec_ioctl+0x99e>
+   112cf:	85 c0                	test   %eax,%eax
+   112d1:	7f 18                	jg     112eb <xe_exec_ioctl+0x61b>
+   112d3:	be 03 00 00 00       	mov    $0x3,%esi
+   112d8:	44 89 9d f0 fe ff ff 	mov    %r11d,-0x110(%rbp)
+   112df:	e8 00 00 00 00       	call   112e4 <xe_exec_ioctl+0x614>
+   112e4:	44 8b 9d f0 fe ff ff 	mov    -0x110(%rbp),%r11d
+   112eb:	4c 89 ef             	mov    %r13,%rdi
+   112ee:	44 89 9d f0 fe ff ff 	mov    %r11d,-0x110(%rbp)
+   112f5:	31 db                	xor    %ebx,%ebx
+   112f7:	e8 00 00 00 00       	call   112fc <xe_exec_ioctl+0x62c>
+   112fc:	48 8b bd e8 fe ff ff 	mov    -0x118(%rbp),%rdi
+   11303:	e8 00 00 00 00       	call   11308 <xe_exec_ioctl+0x638>
+   11308:	44 8b 9d f0 fe ff ff 	mov    -0x110(%rbp),%r11d
+   1130f:	e9 a7 01 00 00       	jmp    114bb <xe_exec_ioctl+0x7eb>
+   11314:	48 8b bd e8 fe ff ff 	mov    -0x118(%rbp),%rdi
+   1131b:	e8 00 00 00 00       	call   11320 <xe_exec_ioctl+0x650>
+   11320:	41 89 c4             	mov    %eax,%r12d
+   11323:	85 c0                	test   %eax,%eax
+   11325:	75 36                	jne    1135d <xe_exec_ioctl+0x68d>
+   11327:	4c 89 ef             	mov    %r13,%rdi
+   1132a:	e8 00 00 00 00       	call   1132f <xe_exec_ioctl+0x65f>
+   1132f:	48 8b bd e8 fe ff ff 	mov    -0x118(%rbp),%rdi
+   11336:	41 89 c4             	mov    %eax,%r12d
+   11339:	e8 00 00 00 00       	call   1133e <xe_exec_ioctl+0x66e>
+   1133e:	45 85 e4             	test   %r12d,%r12d
+   11341:	0f 84 b3 fe ff ff    	je     111fa <xe_exec_ioctl+0x52a>
+   11347:	48 8b bd e8 fe ff ff 	mov    -0x118(%rbp),%rdi
+   1134e:	e8 00 00 00 00       	call   11353 <xe_exec_ioctl+0x683>
+   11353:	41 83 fc f5          	cmp    $0xfffffff5,%r12d
+   11357:	0f 84 6c fe ff ff    	je     111c9 <xe_exec_ioctl+0x4f9>
+   1135d:	41 89 db             	mov    %ebx,%r11d
+   11360:	44 89 e3             	mov    %r12d,%ebx
+   11363:	e9 53 01 00 00       	jmp    114bb <xe_exec_ioctl+0x7eb>
+   11368:	48 8b bd f0 fe ff ff 	mov    -0x110(%rbp),%rdi
+   1136f:	e8 00 00 00 00       	call   11374 <xe_exec_ioctl+0x6a4>
+   11374:	41 89 c4             	mov    %eax,%r12d
+   11377:	85 c0                	test   %eax,%eax
+   11379:	75 cc                	jne    11347 <xe_exec_ioctl+0x677>
+   1137b:	41 f6 85 e0 04 00 00 	testb  $0x2,0x4e0(%r13)
+   11382:	02 
+   11383:	0f 84 21 02 00 00    	je     115aa <xe_exec_ioctl+0x8da>
+   11389:	49 8b 7f 20          	mov    0x20(%r15),%rdi
+   1138d:	48 83 bf 88 04 00 00 	cmpq   $0x0,0x488(%rdi)
+   11394:	00 
+   11395:	0f 84 c6 00 00 00    	je     11461 <xe_exec_ioctl+0x791>
+   1139b:	f6 87 e0 04 00 00 20 	testb  $0x20,0x4e0(%rdi)
+   113a2:	0f 85 b9 00 00 00    	jne    11461 <xe_exec_ioctl+0x791>
+   113a8:	41 80 bf f8 00 00 00 	cmpb   $0x0,0xf8(%r15)
+   113af:	00 
+   113b0:	0f 85 55 03 00 00    	jne    1170b <xe_exec_ioctl+0xa3b>
+   113b6:	66 41 83 7f 48 01    	cmpw   $0x1,0x48(%r15)
+   113bc:	48 8d 75 88          	lea    -0x78(%rbp),%rsi
+   113c0:	77 04                	ja     113c6 <xe_exec_ioctl+0x6f6>
+   113c2:	49 8d 76 18          	lea    0x18(%r14),%rsi
+   113c6:	4c 89 ff             	mov    %r15,%rdi
+   113c9:	e8 00 00 00 00       	call   113ce <xe_exec_ioctl+0x6fe>
+   113ce:	49 89 c1             	mov    %rax,%r9
+   113d1:	48 3d 00 f0 ff ff    	cmp    $0xfffffffffffff000,%rax
+   113d7:	0f 87 0f 06 00 00    	ja     119ec <xe_exec_ioctl+0xd1c>
+   113dd:	41 f6 85 e0 04 00 00 	testb  $0x2,0x4e0(%r13)
+   113e4:	02 
+   113e5:	0f 85 9b 02 00 00    	jne    11686 <xe_exec_ioctl+0x9b6>
+   113eb:	49 8b 85 d0 00 00 00 	mov    0xd0(%r13),%rax
+   113f2:	31 d2                	xor    %edx,%edx
+   113f4:	4c 89 cf             	mov    %r9,%rdi
+   113f7:	4c 89 8d e0 fe ff ff 	mov    %r9,-0x120(%rbp)
+   113fe:	48 8b b0 f8 00 00 00 	mov    0xf8(%rax),%rsi
+   11405:	e8 00 00 00 00       	call   1140a <xe_exec_ioctl+0x73a>
+   1140a:	4c 8b 8d e0 fe ff ff 	mov    -0x120(%rbp),%r9
+   11411:	85 c0                	test   %eax,%eax
+   11413:	0f 84 f4 03 00 00    	je     1180d <xe_exec_ioctl+0xb3d>
+   11419:	49 8d b9 98 00 00 00 	lea    0x98(%r9),%rdi
+   11420:	ba ff ff ff ff       	mov    $0xffffffff,%edx
+   11425:	f0 41 0f c1 91 98 00 	lock xadd %edx,0x98(%r9)
+   1142c:	00 00 
+   1142e:	83 fa 01             	cmp    $0x1,%edx
+   11431:	0f 84 16 03 00 00    	je     1174d <xe_exec_ioctl+0xa7d>
+   11437:	85 d2                	test   %edx,%edx
+   11439:	0f 8e 92 05 00 00    	jle    119d1 <xe_exec_ioctl+0xd01>
+   1143f:	41 89 c4             	mov    %eax,%r12d
+   11442:	41 f6 85 e0 04 00 00 	testb  $0x2,0x4e0(%r13)
+   11449:	02 
+   1144a:	0f 85 f7 fe ff ff    	jne    11347 <xe_exec_ioctl+0x677>
+   11450:	48 8d bd 00 ff ff ff 	lea    -0x100(%rbp),%rdi
+   11457:	e8 00 00 00 00       	call   1145c <xe_exec_ioctl+0x78c>
+   1145c:	e9 e6 fe ff ff       	jmp    11347 <xe_exec_ioctl+0x677>
+   11461:	48 8b bd f0 fe ff ff 	mov    -0x110(%rbp),%rdi
+   11468:	41 89 db             	mov    %ebx,%r11d
+   1146b:	48 85 ff             	test   %rdi,%rdi
+   1146e:	74 04                	je     11474 <xe_exec_ioctl+0x7a4>
+   11470:	48 8b 7f 08          	mov    0x8(%rdi),%rdi
+   11474:	48 c7 c6 00 00 00 00 	mov    $0x0,%rsi
+   1147b:	44 89 9d f0 fe ff ff 	mov    %r11d,-0x110(%rbp)
+   11482:	e8 00 00 00 00       	call   11487 <xe_exec_ioctl+0x7b7>
+   11487:	41 f6 85 e0 04 00 00 	testb  $0x2,0x4e0(%r13)
+   1148e:	02 
+   1148f:	44 8b 9d f0 fe ff ff 	mov    -0x110(%rbp),%r11d
+   11496:	0f 84 50 01 00 00    	je     115ec <xe_exec_ioctl+0x91c>
+   1149c:	48 8b bd e8 fe ff ff 	mov    -0x118(%rbp),%rdi
+   114a3:	44 89 9d f0 fe ff ff 	mov    %r11d,-0x110(%rbp)
+   114aa:	e8 00 00 00 00       	call   114af <xe_exec_ioctl+0x7df>
+   114af:	44 8b 9d f0 fe ff ff 	mov    -0x110(%rbp),%r11d
+   114b6:	bb 83 ff ff ff       	mov    $0xffffff83,%ebx
+   114bb:	83 bd d8 fe ff ff 01 	cmpl   $0x1,-0x128(%rbp)
+   114c2:	0f 84 bb 00 00 00    	je     11583 <xe_exec_ioctl+0x8b3>
+   114c8:	8b 85 c0 fe ff ff    	mov    -0x140(%rbp),%eax
+   114ce:	44 89 9d c0 fe ff ff 	mov    %r11d,-0x140(%rbp)
+   114d5:	e9 f1 fb ff ff       	jmp    110cb <xe_exec_ioctl+0x3fb>
+   114da:	66 90                	xchg   %ax,%ax
+   114dc:	eb 50                	jmp    1152e <xe_exec_ioctl+0x85e>
+   114de:	65 8b 05 00 00 00 00 	mov    %gs:0x0(%rip),%eax        # 114e5 <xe_exec_ioctl+0x815>
+   114e5:	48 0f a3 05 00 00 00 	bt     %rax,0x0(%rip)        # 114ed <xe_exec_ioctl+0x81d>
+   114ec:	00 
+   114ed:	73 3f                	jae    1152e <xe_exec_ioctl+0x85e>
+   114ef:	48 8b 1d 00 00 00 00 	mov    0x0(%rip),%rbx        # 114f6 <xe_exec_ioctl+0x826>
+   114f6:	65 48 ff 03          	incq   %gs:(%rbx)
+   114fa:	48 8b 05 00 00 00 00 	mov    0x0(%rip),%rax        # 11501 <xe_exec_ioctl+0x831>
+   11501:	48 85 c0             	test   %rax,%rax
+   11504:	74 11                	je     11517 <xe_exec_ioctl+0x847>
+   11506:	48 8b 78 08          	mov    0x8(%rax),%rdi
+   1150a:	ba e8 03 00 00       	mov    $0x3e8,%edx
+   1150f:	4c 89 fe             	mov    %r15,%rsi
+   11512:	e8 00 00 00 00       	call   11517 <xe_exec_ioctl+0x847>
+   11517:	48 b8 00 00 00 00 00 	movabs $0x0,%rax
+   1151e:	00 00 00 
+   11521:	48 3d ff ef ff ff    	cmp    $0xffffffffffffefff,%rax
+   11527:	77 05                	ja     1152e <xe_exec_ioctl+0x85e>
+   11529:	65 48 ff 43 08       	incq   %gs:0x8(%rbx)
+   1152e:	bb f5 ff ff ff       	mov    $0xfffffff5,%ebx
+   11533:	e9 01 fa ff ff       	jmp    10f39 <xe_exec_ioctl+0x269>
+   11538:	8b 85 e0 fe ff ff    	mov    -0x120(%rbp),%eax
+   1153e:	48 8b 8d c8 fe ff ff 	mov    -0x138(%rbp),%rcx
+   11545:	48 8d 95 fc fe ff ff 	lea    -0x104(%rbp),%rdx
+   1154c:	be 01 00 00 00       	mov    $0x1,%esi
+   11551:	48 8b bd d0 fe ff ff 	mov    -0x130(%rbp),%rdi
+   11558:	44 89 9d e8 fe ff ff 	mov    %r11d,-0x118(%rbp)
+   1155f:	85 c0                	test   %eax,%eax
+   11561:	41 0f 45 c3          	cmovne %r11d,%eax
+   11565:	41 89 c0             	mov    %eax,%r8d
+   11568:	e8 00 00 00 00       	call   1156d <xe_exec_ioctl+0x89d>
+   1156d:	44 8b 9d e8 fe ff ff 	mov    -0x118(%rbp),%r11d
+   11574:	85 c0                	test   %eax,%eax
+   11576:	89 c3                	mov    %eax,%ebx
+   11578:	0f 84 3a fc ff ff    	je     111b8 <xe_exec_ioctl+0x4e8>
+   1157e:	e9 45 ff ff ff       	jmp    114c8 <xe_exec_ioctl+0x7f8>
+   11583:	48 8b bd d0 fe ff ff 	mov    -0x130(%rbp),%rdi
+   1158a:	44 89 9d f0 fe ff ff 	mov    %r11d,-0x110(%rbp)
+   11591:	e8 00 00 00 00       	call   11596 <xe_exec_ioctl+0x8c6>
+   11596:	44 8b 9d f0 fe ff ff 	mov    -0x110(%rbp),%r11d
+   1159d:	e9 26 ff ff ff       	jmp    114c8 <xe_exec_ioctl+0x7f8>
+   115a2:	41 89 db             	mov    %ebx,%r11d
+   115a5:	e9 41 fd ff ff       	jmp    112eb <xe_exec_ioctl+0x61b>
+   115aa:	48 8b 85 f0 fe ff ff 	mov    -0x110(%rbp),%rax
+   115b1:	48 8d b5 20 ff ff ff 	lea    -0xe0(%rbp),%rsi
+   115b8:	48 8d bd 00 ff ff ff 	lea    -0x100(%rbp),%rdi
+   115bf:	4c 89 ad 68 ff ff ff 	mov    %r13,-0x98(%rbp)
+   115c6:	c7 85 60 ff ff ff 01 	movl   $0x1,-0xa0(%rbp)
+   115cd:	00 00 00 
+   115d0:	48 8d 90 e8 2a 00 00 	lea    0x2ae8(%rax),%rdx
+   115d7:	e8 00 00 00 00       	call   115dc <xe_exec_ioctl+0x90c>
+   115dc:	85 c0                	test   %eax,%eax
+   115de:	0f 84 a5 fd ff ff    	je     11389 <xe_exec_ioctl+0x6b9>
+   115e4:	41 89 c4             	mov    %eax,%r12d
+   115e7:	e9 5b fd ff ff       	jmp    11347 <xe_exec_ioctl+0x677>
+   115ec:	48 8d bd 00 ff ff ff 	lea    -0x100(%rbp),%rdi
+   115f3:	e8 00 00 00 00       	call   115f8 <xe_exec_ioctl+0x928>
+   115f8:	48 8b bd e8 fe ff ff 	mov    -0x118(%rbp),%rdi
+   115ff:	e8 00 00 00 00       	call   11604 <xe_exec_ioctl+0x934>
+   11604:	44 8b 9d f0 fe ff ff 	mov    -0x110(%rbp),%r11d
+   1160b:	e9 a6 fe ff ff       	jmp    114b6 <xe_exec_ioctl+0x7e6>
+   11610:	48 8b b5 f0 fe ff ff 	mov    -0x110(%rbp),%rsi
+   11617:	48 85 f6             	test   %rsi,%rsi
+   1161a:	74 04                	je     11620 <xe_exec_ioctl+0x950>
+   1161c:	48 8b 76 08          	mov    0x8(%rsi),%rsi
+   11620:	68 00 00 00 00       	push   $0x0
+   11625:	41 b9 86 00 00 00    	mov    $0x86,%r9d
+   1162b:	49 c7 c0 00 00 00 00 	mov    $0x0,%r8
+   11632:	48 c7 c1 00 00 00 00 	mov    $0x0,%rcx
+   11639:	ba 01 00 00 00       	mov    $0x1,%edx
+   1163e:	31 ff                	xor    %edi,%edi
+   11640:	e8 00 00 00 00       	call   11645 <xe_exec_ioctl+0x975>
+   11645:	bb ea ff ff ff       	mov    $0xffffffea,%ebx
+   1164a:	41 5c                	pop    %r12
+   1164c:	e9 04 f9 ff ff       	jmp    10f55 <xe_exec_ioctl+0x285>
+   11651:	48 8b b5 f0 fe ff ff 	mov    -0x110(%rbp),%rsi
+   11658:	48 85 f6             	test   %rsi,%rsi
+   1165b:	74 04                	je     11661 <xe_exec_ioctl+0x991>
+   1165d:	48 8b 76 08          	mov    0x8(%rsi),%rsi
+   11661:	68 00 00 00 00       	push   $0x0
+   11666:	41 b9 87 00 00 00    	mov    $0x87,%r9d
+   1166c:	eb bd                	jmp    1162b <xe_exec_ioctl+0x95b>
+   1166e:	44 89 9d f0 fe ff ff 	mov    %r11d,-0x110(%rbp)
+   11675:	e8 00 00 00 00       	call   1167a <xe_exec_ioctl+0x9aa>
+   1167a:	44 8b 9d f0 fe ff ff 	mov    -0x110(%rbp),%r11d
+   11681:	e9 65 fc ff ff       	jmp    112eb <xe_exec_ioctl+0x61b>
+   11686:	85 db                	test   %ebx,%ebx
+   11688:	0f 84 11 04 00 00    	je     11a9f <xe_exec_ioctl+0xdcf>
+   1168e:	48 8b bd c8 fe ff ff 	mov    -0x138(%rbp),%rdi
+   11695:	31 d2                	xor    %edx,%edx
+   11697:	4c 89 ad e0 fe ff ff 	mov    %r13,-0x120(%rbp)
+   1169e:	44 89 a5 b0 fe ff ff 	mov    %r12d,-0x150(%rbp)
+   116a5:	41 89 d5             	mov    %edx,%r13d
+   116a8:	4d 89 cc             	mov    %r9,%r12
+   116ab:	4c 89 b5 b8 fe ff ff 	mov    %r14,-0x148(%rbp)
+   116b2:	49 89 fe             	mov    %rdi,%r14
+   116b5:	4c 89 f7             	mov    %r14,%rdi
+   116b8:	4c 89 e6             	mov    %r12,%rsi
+   116bb:	41 83 c5 01          	add    $0x1,%r13d
+   116bf:	49 83 c6 50          	add    $0x50,%r14
+   116c3:	e8 00 00 00 00       	call   116c8 <xe_exec_ioctl+0x9f8>
+   116c8:	41 39 dd             	cmp    %ebx,%r13d
+   116cb:	0f 83 92 00 00 00    	jae    11763 <xe_exec_ioctl+0xa93>
+   116d1:	85 c0                	test   %eax,%eax
+   116d3:	74 e0                	je     116b5 <xe_exec_ioctl+0x9e5>
+   116d5:	4c 8b ad e0 fe ff ff 	mov    -0x120(%rbp),%r13
+   116dc:	4c 8b b5 b8 fe ff ff 	mov    -0x148(%rbp),%r14
+   116e3:	4d 89 e1             	mov    %r12,%r9
+   116e6:	e9 2e fd ff ff       	jmp    11419 <xe_exec_ioctl+0x749>
+   116eb:	48 8b b5 f0 fe ff ff 	mov    -0x110(%rbp),%rsi
+   116f2:	48 85 f6             	test   %rsi,%rsi
+   116f5:	74 04                	je     116fb <xe_exec_ioctl+0xa2b>
+   116f7:	48 8b 76 08          	mov    0x8(%rsi),%rsi
+   116fb:	68 00 00 00 00       	push   $0x0
+   11700:	41 b9 84 00 00 00    	mov    $0x84,%r9d
+   11706:	e9 20 ff ff ff       	jmp    1162b <xe_exec_ioctl+0x95b>
+   1170b:	e8 00 00 00 00       	call   11710 <xe_exec_ioctl+0xa40>
+   11710:	85 c0                	test   %eax,%eax
+   11712:	0f 84 9e fc ff ff    	je     113b6 <xe_exec_ioctl+0x6e6>
+   11718:	e9 22 fd ff ff       	jmp    1143f <xe_exec_ioctl+0x76f>
+   1171d:	48 8b b5 f0 fe ff ff 	mov    -0x110(%rbp),%rsi
+   11724:	48 85 f6             	test   %rsi,%rsi
+   11727:	74 04                	je     1172d <xe_exec_ioctl+0xa5d>
+   11729:	48 8b 76 08          	mov    0x8(%rsi),%rsi
+   1172d:	68 00 00 00 00       	push   $0x0
+   11732:	41 b9 85 00 00 00    	mov    $0x85,%r9d
+   11738:	e9 ee fe ff ff       	jmp    1162b <xe_exec_ioctl+0x95b>
+   1173d:	4c 89 ef             	mov    %r13,%rdi
+   11740:	41 89 c4             	mov    %eax,%r12d
+   11743:	e8 00 00 00 00       	call   11748 <xe_exec_ioctl+0xa78>
+   11748:	e9 fa fb ff ff       	jmp    11347 <xe_exec_ioctl+0x677>
+   1174d:	89 85 e0 fe ff ff    	mov    %eax,-0x120(%rbp)
+   11753:	e8 00 00 00 00       	call   11758 <xe_exec_ioctl+0xa88>
+   11758:	8b 85 e0 fe ff ff    	mov    -0x120(%rbp),%eax
+   1175e:	e9 dc fc ff ff       	jmp    1143f <xe_exec_ioctl+0x76f>
+   11763:	4d 89 e1             	mov    %r12,%r9
+   11766:	4c 8b ad e0 fe ff ff 	mov    -0x120(%rbp),%r13
+   1176d:	44 8b a5 b0 fe ff ff 	mov    -0x150(%rbp),%r12d
+   11774:	4c 8b b5 b8 fe ff ff 	mov    -0x148(%rbp),%r14
+   1177b:	85 c0                	test   %eax,%eax
+   1177d:	0f 85 96 fc ff ff    	jne    11419 <xe_exec_ioctl+0x749>
+   11783:	41 f6 85 e0 04 00 00 	testb  $0x2,0x4e0(%r13)
+   1178a:	02 
+   1178b:	0f 85 c9 00 00 00    	jne    1185a <xe_exec_ioctl+0xb8a>
+   11791:	49 8d 85 68 01 00 00 	lea    0x168(%r13),%rax
+   11798:	4c 89 8d e0 fe ff ff 	mov    %r9,-0x120(%rbp)
+   1179f:	48 89 c7             	mov    %rax,%rdi
+   117a2:	48 89 85 b8 fe ff ff 	mov    %rax,-0x148(%rbp)
+   117a9:	e8 00 00 00 00       	call   117ae <xe_exec_ioctl+0xade>
+   117ae:	4c 8b 8d e0 fe ff ff 	mov    -0x120(%rbp),%r9
+   117b5:	85 c0                	test   %eax,%eax
+   117b7:	0f 85 5c fc ff ff    	jne    11419 <xe_exec_ioctl+0x749>
+   117bd:	4c 89 ef             	mov    %r13,%rdi
+   117c0:	e8 00 00 00 00       	call   117c5 <xe_exec_ioctl+0xaf5>
+   117c5:	4c 8b 8d e0 fe ff ff 	mov    -0x120(%rbp),%r9
+   117cc:	85 c0                	test   %eax,%eax
+   117ce:	0f 84 86 00 00 00    	je     1185a <xe_exec_ioctl+0xb8a>
+   117d4:	41 f6 85 e0 04 00 00 	testb  $0x2,0x4e0(%r13)
+   117db:	02 
+   117dc:	0f 85 37 fc ff ff    	jne    11419 <xe_exec_ioctl+0x749>
+   117e2:	48 8b bd b8 fe ff ff 	mov    -0x148(%rbp),%rdi
+   117e9:	4c 89 8d b0 fe ff ff 	mov    %r9,-0x150(%rbp)
+   117f0:	89 85 e0 fe ff ff    	mov    %eax,-0x120(%rbp)
+   117f6:	e8 00 00 00 00       	call   117fb <xe_exec_ioctl+0xb2b>
+   117fb:	8b 85 e0 fe ff ff    	mov    -0x120(%rbp),%eax
+   11801:	4c 8b 8d b0 fe ff ff 	mov    -0x150(%rbp),%r9
+   11808:	e9 0c fc ff ff       	jmp    11419 <xe_exec_ioctl+0x749>
+   1180d:	85 db                	test   %ebx,%ebx
+   1180f:	0f 85 79 fe ff ff    	jne    1168e <xe_exec_ioctl+0x9be>
+   11815:	e9 69 ff ff ff       	jmp    11783 <xe_exec_ioctl+0xab3>
+   1181a:	48 8b b5 f0 fe ff ff 	mov    -0x110(%rbp),%rsi
+   11821:	48 85 f6             	test   %rsi,%rsi
+   11824:	74 04                	je     1182a <xe_exec_ioctl+0xb5a>
+   11826:	48 8b 76 08          	mov    0x8(%rsi),%rsi
+   1182a:	68 00 00 00 00       	push   $0x0
+   1182f:	41 b9 8b 00 00 00    	mov    $0x8b,%r9d
+   11835:	31 ff                	xor    %edi,%edi
+   11837:	49 c7 c0 00 00 00 00 	mov    $0x0,%r8
+   1183e:	48 c7 c1 00 00 00 00 	mov    $0x0,%rcx
+   11845:	ba 01 00 00 00       	mov    $0x1,%edx
+   1184a:	e8 00 00 00 00       	call   1184f <xe_exec_ioctl+0xb7f>
+   1184f:	5b                   	pop    %rbx
+   11850:	bb fe ff ff ff       	mov    $0xfffffffe,%ebx
+   11855:	e9 fb f6 ff ff       	jmp    10f55 <xe_exec_ioctl+0x285>
+   1185a:	41 89 db             	mov    %ebx,%r11d
+   1185d:	4c 89 cf             	mov    %r9,%rdi
+   11860:	4c 89 8d e0 fe ff ff 	mov    %r9,-0x120(%rbp)
+   11867:	44 89 e3             	mov    %r12d,%ebx
+   1186a:	44 89 9d b8 fe ff ff 	mov    %r11d,-0x148(%rbp)
+   11871:	e8 00 00 00 00       	call   11876 <xe_exec_ioctl+0xba6>
+   11876:	41 f6 85 e0 04 00 00 	testb  $0x2,0x4e0(%r13)
+   1187d:	02 
+   1187e:	4c 8b 8d e0 fe ff ff 	mov    -0x120(%rbp),%r9
+   11885:	44 8b 9d b8 fe ff ff 	mov    -0x148(%rbp),%r11d
+   1188c:	0f 84 45 02 00 00    	je     11ad7 <xe_exec_ioctl+0xe07>
+   11892:	45 85 db             	test   %r11d,%r11d
+   11895:	0f 84 9c 00 00 00    	je     11937 <xe_exec_ioctl+0xc67>
+   1189b:	45 31 f6             	xor    %r14d,%r14d
+   1189e:	4c 8b a5 c8 fe ff ff 	mov    -0x138(%rbp),%r12
+   118a5:	4c 89 bd e0 fe ff ff 	mov    %r15,-0x120(%rbp)
+   118ac:	4d 89 cf             	mov    %r9,%r15
+   118af:	4c 89 ad b8 fe ff ff 	mov    %r13,-0x148(%rbp)
+   118b6:	45 89 f5             	mov    %r14d,%r13d
+   118b9:	41 89 de             	mov    %ebx,%r14d
+   118bc:	44 89 db             	mov    %r11d,%ebx
+   118bf:	49 8b 47 10          	mov    0x10(%r15),%rax
+   118c3:	4c 89 e7             	mov    %r12,%rdi
+   118c6:	41 83 c5 01          	add    $0x1,%r13d
+   118ca:	48 8d 70 40          	lea    0x40(%rax),%rsi
+   118ce:	e8 00 00 00 00       	call   118d3 <xe_exec_ioctl+0xc03>
+   118d3:	4c 89 e6             	mov    %r12,%rsi
+   118d6:	4c 89 ff             	mov    %r15,%rdi
+   118d9:	49 83 c4 50          	add    $0x50,%r12
+   118dd:	e8 00 00 00 00       	call   118e2 <xe_exec_ioctl+0xc12>
+   118e2:	41 39 dd             	cmp    %ebx,%r13d
+   118e5:	72 d8                	jb     118bf <xe_exec_ioctl+0xbef>
+   118e7:	4d 89 f9             	mov    %r15,%r9
+   118ea:	4c 8b ad b8 fe ff ff 	mov    -0x148(%rbp),%r13
+   118f1:	4c 8b bd e0 fe ff ff 	mov    -0x120(%rbp),%r15
+   118f8:	41 89 db             	mov    %ebx,%r11d
+   118fb:	44 89 f3             	mov    %r14d,%ebx
+   118fe:	41 f6 85 e0 04 00 00 	testb  $0x2,0x4e0(%r13)
+   11905:	02 
+   11906:	75 2f                	jne    11937 <xe_exec_ioctl+0xc67>
+   11908:	49 8b 41 10          	mov    0x10(%r9),%rax
+   1190c:	4c 89 ee             	mov    %r13,%rsi
+   1190f:	4c 89 ff             	mov    %r15,%rdi
+   11912:	44 89 9d b8 fe ff ff 	mov    %r11d,-0x148(%rbp)
+   11919:	4c 89 8d e0 fe ff ff 	mov    %r9,-0x120(%rbp)
+   11920:	48 8d 50 40          	lea    0x40(%rax),%rdx
+   11924:	e8 00 00 00 00       	call   11929 <xe_exec_ioctl+0xc59>
+   11929:	44 8b 9d b8 fe ff ff 	mov    -0x148(%rbp),%r11d
+   11930:	4c 8b 8d e0 fe ff ff 	mov    -0x120(%rbp),%r9
+   11937:	4c 89 cf             	mov    %r9,%rdi
+   1193a:	44 89 9d e0 fe ff ff 	mov    %r11d,-0x120(%rbp)
+   11941:	e8 00 00 00 00       	call   11946 <xe_exec_ioctl+0xc76>
+   11946:	49 8b 85 e0 04 00 00 	mov    0x4e0(%r13),%rax
+   1194d:	44 8b 9d e0 fe ff ff 	mov    -0x120(%rbp),%r11d
+   11954:	a8 02                	test   $0x2,%al
+   11956:	0f 85 98 00 00 00    	jne    119f4 <xe_exec_ioctl+0xd24>
+   1195c:	4c 8b a5 f0 fe ff ff 	mov    -0x110(%rbp),%r12
+   11963:	44 89 9d e0 fe ff ff 	mov    %r11d,-0x120(%rbp)
+   1196a:	49 81 c4 18 11 00 00 	add    $0x1118,%r12
+   11971:	4c 89 e7             	mov    %r12,%rdi
+   11974:	e8 00 00 00 00       	call   11979 <xe_exec_ioctl+0xca9>
+   11979:	49 8d bd 38 02 00 00 	lea    0x238(%r13),%rdi
+   11980:	e8 00 00 00 00       	call   11985 <xe_exec_ioctl+0xcb5>
+   11985:	4c 89 e7             	mov    %r12,%rdi
+   11988:	e8 00 00 00 00       	call   1198d <xe_exec_ioctl+0xcbd>
+   1198d:	44 8b 9d e0 fe ff ff 	mov    -0x120(%rbp),%r11d
+   11994:	8b 8d d8 fe ff ff    	mov    -0x128(%rbp),%ecx
+   1199a:	85 c9                	test   %ecx,%ecx
+   1199c:	0f 84 b6 00 00 00    	je     11a58 <xe_exec_ioctl+0xd88>
+   119a2:	41 f6 85 e0 04 00 00 	testb  $0x2,0x4e0(%r13)
+   119a9:	02 
+   119aa:	0f 84 73 01 00 00    	je     11b23 <xe_exec_ioctl+0xe53>
+   119b0:	48 8b bd e8 fe ff ff 	mov    -0x118(%rbp),%rdi
+   119b7:	44 89 9d f0 fe ff ff 	mov    %r11d,-0x110(%rbp)
+   119be:	31 db                	xor    %ebx,%ebx
+   119c0:	e8 00 00 00 00       	call   119c5 <xe_exec_ioctl+0xcf5>
+   119c5:	44 8b 9d f0 fe ff ff 	mov    -0x110(%rbp),%r11d
+   119cc:	e9 ea fa ff ff       	jmp    114bb <xe_exec_ioctl+0x7eb>
+   119d1:	be 03 00 00 00       	mov    $0x3,%esi
+   119d6:	89 85 e0 fe ff ff    	mov    %eax,-0x120(%rbp)
+   119dc:	e8 00 00 00 00       	call   119e1 <xe_exec_ioctl+0xd11>
+   119e1:	8b 85 e0 fe ff ff    	mov    -0x120(%rbp),%eax
+   119e7:	e9 53 fa ff ff       	jmp    1143f <xe_exec_ioctl+0x76f>
+   119ec:	41 89 c4             	mov    %eax,%r12d
+   119ef:	e9 4e fa ff ff       	jmp    11442 <xe_exec_ioctl+0x772>
+   119f4:	a8 10                	test   $0x10,%al
+   119f6:	75 9c                	jne    11994 <xe_exec_ioctl+0xcc4>
+   119f8:	45 0f b6 a5 dc 05 00 	movzbl 0x5dc(%r13),%r12d
+   119ff:	00 
+   11a00:	41 80 fc 01          	cmp    $0x1,%r12b
+   11a04:	0f 87 00 00 00 00    	ja     11a0a <xe_exec_ioctl+0xd3a>
+   11a0a:	41 83 e4 01          	and    $0x1,%r12d
+   11a0e:	74 84                	je     11994 <xe_exec_ioctl+0xcc4>
+   11a10:	49 8b 85 20 02 00 00 	mov    0x220(%r13),%rax
+   11a17:	41 c6 85 dc 05 00 00 	movb   $0x0,0x5dc(%r13)
+   11a1e:	00 
+   11a1f:	49 8d 95 e0 05 00 00 	lea    0x5e0(%r13),%rdx
+   11a26:	bf 00 20 00 00       	mov    $0x2000,%edi
+   11a2b:	44 89 9d e0 fe ff ff 	mov    %r11d,-0x120(%rbp)
+   11a32:	48 8b b0 38 14 00 00 	mov    0x1438(%rax),%rsi
+   11a39:	e8 00 00 00 00       	call   11a3e <xe_exec_ioctl+0xd6e>
+   11a3e:	44 8b 9d e0 fe ff ff 	mov    -0x120(%rbp),%r11d
+   11a45:	41 f6 85 e0 04 00 00 	testb  $0x2,0x4e0(%r13)
+   11a4c:	02 
+   11a4d:	0f 85 41 ff ff ff    	jne    11994 <xe_exec_ioctl+0xcc4>
+   11a53:	e9 04 ff ff ff       	jmp    1195c <xe_exec_ioctl+0xc8c>
+   11a58:	48 8b bd d0 fe ff ff 	mov    -0x130(%rbp),%rdi
+   11a5f:	44 89 9d f0 fe ff ff 	mov    %r11d,-0x110(%rbp)
+   11a66:	e8 00 00 00 00       	call   11a6b <xe_exec_ioctl+0xd9b>
+   11a6b:	41 f6 85 e0 04 00 00 	testb  $0x2,0x4e0(%r13)
+   11a72:	02 
+   11a73:	44 8b 9d f0 fe ff ff 	mov    -0x110(%rbp),%r11d
+   11a7a:	0f 84 1d 01 00 00    	je     11b9d <xe_exec_ioctl+0xecd>
+   11a80:	48 8b bd e8 fe ff ff 	mov    -0x118(%rbp),%rdi
+   11a87:	44 89 9d f0 fe ff ff 	mov    %r11d,-0x110(%rbp)
+   11a8e:	e8 00 00 00 00       	call   11a93 <xe_exec_ioctl+0xdc3>
+   11a93:	44 8b 9d f0 fe ff ff 	mov    -0x110(%rbp),%r11d
+   11a9a:	e9 29 fa ff ff       	jmp    114c8 <xe_exec_ioctl+0x7f8>
+   11a9f:	41 89 db             	mov    %ebx,%r11d
+   11aa2:	4c 89 cf             	mov    %r9,%rdi
+   11aa5:	4c 89 8d e0 fe ff ff 	mov    %r9,-0x120(%rbp)
+   11aac:	44 89 e3             	mov    %r12d,%ebx
+   11aaf:	44 89 9d b8 fe ff ff 	mov    %r11d,-0x148(%rbp)
+   11ab6:	e8 00 00 00 00       	call   11abb <xe_exec_ioctl+0xdeb>
+   11abb:	41 f6 85 e0 04 00 00 	testb  $0x2,0x4e0(%r13)
+   11ac2:	02 
+   11ac3:	4c 8b 8d e0 fe ff ff 	mov    -0x120(%rbp),%r9
+   11aca:	44 8b 9d b8 fe ff ff 	mov    -0x148(%rbp),%r11d
+   11ad1:	0f 85 60 fe ff ff    	jne    11937 <xe_exec_ioctl+0xc67>
+   11ad7:	49 8b 41 10          	mov    0x10(%r9),%rax
+   11adb:	41 b8 03 00 00 00    	mov    $0x3,%r8d
+   11ae1:	b9 03 00 00 00       	mov    $0x3,%ecx
+   11ae6:	4c 89 ef             	mov    %r13,%rdi
+   11ae9:	48 8d b5 20 ff ff ff 	lea    -0xe0(%rbp),%rsi
+   11af0:	44 89 9d b8 fe ff ff 	mov    %r11d,-0x148(%rbp)
+   11af7:	48 8d 50 40          	lea    0x40(%rax),%rdx
+   11afb:	4c 89 8d e0 fe ff ff 	mov    %r9,-0x120(%rbp)
+   11b02:	e8 00 00 00 00       	call   11b07 <xe_exec_ioctl+0xe37>
+   11b07:	44 8b 9d b8 fe ff ff 	mov    -0x148(%rbp),%r11d
+   11b0e:	4c 8b 8d e0 fe ff ff 	mov    -0x120(%rbp),%r9
+   11b15:	45 85 db             	test   %r11d,%r11d
+   11b18:	0f 85 7d fd ff ff    	jne    1189b <xe_exec_ioctl+0xbcb>
+   11b1e:	e9 db fd ff ff       	jmp    118fe <xe_exec_ioctl+0xc2e>
+   11b23:	49 8d bd 68 01 00 00 	lea    0x168(%r13),%rdi
+   11b2a:	44 89 9d f0 fe ff ff 	mov    %r11d,-0x110(%rbp)
+   11b31:	e8 00 00 00 00       	call   11b36 <xe_exec_ioctl+0xe66>
+   11b36:	41 f6 85 e0 04 00 00 	testb  $0x2,0x4e0(%r13)
+   11b3d:	02 
+   11b3e:	44 8b 9d f0 fe ff ff 	mov    -0x110(%rbp),%r11d
+   11b45:	0f 85 65 fe ff ff    	jne    119b0 <xe_exec_ioctl+0xce0>
+   11b4b:	48 8d bd 00 ff ff ff 	lea    -0x100(%rbp),%rdi
+   11b52:	44 89 9d f0 fe ff ff 	mov    %r11d,-0x110(%rbp)
+   11b59:	31 db                	xor    %ebx,%ebx
+   11b5b:	e8 00 00 00 00       	call   11b60 <xe_exec_ioctl+0xe90>
+   11b60:	48 8b bd e8 fe ff ff 	mov    -0x118(%rbp),%rdi
+   11b67:	e8 00 00 00 00       	call   11b6c <xe_exec_ioctl+0xe9c>
+   11b6c:	44 8b 9d f0 fe ff ff 	mov    -0x110(%rbp),%r11d
+   11b73:	e9 43 f9 ff ff       	jmp    114bb <xe_exec_ioctl+0x7eb>
+   11b78:	48 89 de             	mov    %rbx,%rsi
+   11b7b:	bf 48 00 00 00       	mov    $0x48,%edi
+   11b80:	44 89 9d f0 fe ff ff 	mov    %r11d,-0x110(%rbp)
+   11b87:	e8 00 00 00 00       	call   11b8c <xe_exec_ioctl+0xebc>
+   11b8c:	44 8b 9d f0 fe ff ff 	mov    -0x110(%rbp),%r11d
+   11b93:	e9 23 f3 ff ff       	jmp    10ebb <xe_exec_ioctl+0x1eb>
+   11b98:	e8 00 00 00 00       	call   11b9d <xe_exec_ioctl+0xecd>
+   11b9d:	49 8d bd 68 01 00 00 	lea    0x168(%r13),%rdi
+   11ba4:	e8 00 00 00 00       	call   11ba9 <xe_exec_ioctl+0xed9>
+   11ba9:	41 f6 85 e0 04 00 00 	testb  $0x2,0x4e0(%r13)
+   11bb0:	02 
+   11bb1:	44 8b 9d f0 fe ff ff 	mov    -0x110(%rbp),%r11d
+   11bb8:	74 91                	je     11b4b <xe_exec_ioctl+0xe7b>
+   11bba:	e9 c1 fe ff ff       	jmp    11a80 <xe_exec_ioctl+0xdb0>
+   11bbf:	bb f4 ff ff ff       	mov    $0xfffffff4,%ebx
+   11bc4:	e9 70 f3 ff ff       	jmp    10f39 <xe_exec_ioctl+0x269>
+
+Disassembly of section .altinstr_replacement:
+
+Disassembly of section .init.text:
+
+Disassembly of section .exit.text:
+
+Disassembly of section .static_call.text:

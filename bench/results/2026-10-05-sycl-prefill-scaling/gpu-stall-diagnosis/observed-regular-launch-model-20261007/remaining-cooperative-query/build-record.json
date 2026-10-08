@@ -1,0 +1,76 @@
+{
+  "scope": "Offline actual unchanged remaining observed object resource query build; no GPU execution",
+  "passed": true,
+  "steps": [
+    {
+      "label": "compile",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../third_party/ggml",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-Wall",
+        "-Wextra",
+        "-MD",
+        "-MT",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/remaining-cooperative-query/query.o",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/remaining-cooperative-query/query.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/remaining-cooperative-query/query.o",
+        "-c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill_cooperative_query.cpp"
+      ],
+      "exit_code": 0,
+      "seconds": 3.9205321069894126
+    },
+    {
+      "label": "link",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-O3",
+        "-DNDEBUG",
+        "-fsycl",
+        "-Xsycl-target-backend=spir64",
+        "-cl-fp32-correctly-rounded-divide-sqrt",
+        "-fsycl-device-code-split=per_kernel",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/remaining-cooperative-query/query.o",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/CMakeFiles/strata_prefill.dir/src/prefill/kernels.dp.cpp.o",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/CMakeFiles/strata_kernels.dir/src/kernels/cuda/qsa_decode_attn.dp.cpp.o",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/CMakeFiles/strata_kernels.dir/src/kernels/cuda/qsa_select.dp.cpp.o",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/CMakeFiles/strata_kernels.dir/src/kernels/cuda/verify_kernels.dp.cpp.o",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/libstrata_kernels.a",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/remaining-cooperative-query/query"
+      ],
+      "exit_code": 0,
+      "seconds": 1.8673084100009874
+    }
+  ],
+  "source_sha256": "1cc00a5820a35d50f282c168fafacf22844bb1d4775c9f5bb8701d507582de25",
+  "controller_sha256": "806ad84c9977c7b4a0e96ea4c1f91955522950ac5cc8ab5a8dbb63cc5418f92b",
+  "targets_sha256": "a0602daf4464276af035ebffbe9a9d2d1c77dcdc33fb6a30b6d4db027c608eac",
+  "target_count": 7,
+  "production_inputs_sha256": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/CMakeFiles/strata_prefill.dir/src/prefill/kernels.dp.cpp.o": "01621905884c8e1c9c6369f93af0ec1e8ce22dd0f6aba243528a85f3ceb0361f",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/CMakeFiles/strata_kernels.dir/src/kernels/cuda/qsa_decode_attn.dp.cpp.o": "51341ff09c93189e479bb2311f246224760947c60af29e1970477e00c97b17ef",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/CMakeFiles/strata_kernels.dir/src/kernels/cuda/qsa_select.dp.cpp.o": "9661a195d7936eea8ed2b4017040c48ce42a333e52d857cfe1963144312e41cc",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/CMakeFiles/strata_kernels.dir/src/kernels/cuda/verify_kernels.dp.cpp.o": "543287aa9f4f2595ea6f7b78cafcde8ec4f3faf7da48fa73542c53cbda109ceb",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/libstrata_kernels.a": "5a290f0c71b0e90a02a477519ee3c55a6e15e13a314d2e78b8f10b2e3b09dd92"
+  },
+  "started_utc": "2026-10-07T12:57:56.487773+00:00",
+  "binary_sha256": "357c3fe8ca79b44381c6758790d8416dfa4fe2972c5eccb892d373501d3aa2b3",
+  "production_inputs_unchanged": true,
+  "finished_utc": "2026-10-07T12:58:02.290689+00:00"
+}

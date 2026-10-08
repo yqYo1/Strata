@@ -1,0 +1,26 @@
+{
+  "active": false,
+  "passed": true,
+  "created_utc": "2026-10-07T22:21:21.242732+00:00",
+  "scope": "Source/lifetime review for all-GPU residuals and MTP decode-only release. Not full-context memory-budget or runtime UB proof.",
+  "binary_sha256": "e82fc5de5480b72255b601759497d5810e86bf691350417ed0dc11ed6c429323",
+  "parent_source_review_sha256": "3555b655840b8fccbf2a06459f93f98fc8d52be0ebc36be347305bb2f413e919",
+  "added_environment": {
+    "STRATA_PREFILL_RELEASE_DRAFT": "1",
+    "STRATA_PREFILL_DRAFT_VERIFY": "1",
+    "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "32767",
+    "STRATA_PREFILL_LAYER_MAJOR_R_INPLACE": "1"
+  },
+  "review": [
+    "Exactly32767 batched rows precede the held-out input token for the fixed32768-token request. All rows fit one of the four original chunks, including8191 tail. Inplace reuses original residual scratch for the8192 first rows; remaining24575 rows receive a distinct allocation. Partial GPU prefixes are chunk-rounded, though none is used here.",
+    "For all-GPU rows, hand_in points to device data and run_impl chooses its matching GPU row. Inplace R is the same row, so input upload/output download are skipped; embedding and child scratch stay separate. No memcpy is submitted with overlapping source/destination for the same rows.",
+    "Last-layer MTP inputs are copied into stable Rin before replay. Graphs do not capture the changing R_rows address. Prefill::draft_kv binds stable drafter K/V, and its queued work is ordered/drained before temporary residual storage is reclaimed.",
+    "MTP release verifies complete immutable host sources, waits all registered device queues, discards backend graphs before physical unmap, and marks partially successful suspension as suspended. Expert/head VAs remain reserved; dense weights, persistent state and KV remain backed.",
+    "Restoration remaps full expert/head backing, checks same virtual addresses, copies immutable bytes, waits, optionally checks every payload byte and then clears suspended state. Decode recaptures graphs against live backing. The temporary layer cache/device residual allocation are freed before MTP restore.",
+    "Main cache release is absent in this step; snapshot-vs-RAM and partial main-cache release remain separate experiments. Required device residual size is checked against free VRAM, and all first-use/state runs compare complete persistent state/head/output before timing.",
+    "An older full262144 repeated-prefill budget failure can mask its primary error with destructor restoration failure. No claim that this32K experiment fixes that path; full occupancy/repeats/restore/clipped tail/refusal/later-valid remain pending."
+  ],
+  "parent_controller_sha256": "8d0ea4fe1e055905e719f3c7411fe776f52cbb9f86fd23d48e75282f641d740b",
+  "controller_sha256": "28a03babdea6ae3b68ef43b9b7c64241e9627f9c55e480d1463d7dbcec5dbd79",
+  "preparer_sha256": "ce11b2e8226366abec794c9a211b3730fe3a9de844b3e166ccfb30f3827209a5"
+}

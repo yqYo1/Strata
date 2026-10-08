@@ -1,0 +1,11 @@
+--- src/kernels/cpu/pool.cpp
++++ build/native-pool-task-factor.cpp
+@@ -695,7 +695,7 @@
+         mjobs_ = jobs + b0;
+         nfmt_ = &f;
+         const int threads = n_ + (host_works_ ? 1 : 0);
+-        mtasks_ = 3 * threads;
++        mtasks_ = 9 * threads;
+         mrows_ = (int64_t) nb * FF;
+         const auto a = std::chrono::steady_clock::now();
+         run_phase(5, mtasks_);

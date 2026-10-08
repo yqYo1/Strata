@@ -1,0 +1,23 @@
+{
+  "scope": "One logged32K fresh server. Source and native API evidence distinguish first verifier capture from repeated-recapture/lifetime claims. Not clean timing or isolated driver allocation attribution.",
+  "compiled_generate_sha256": "0437a6e9da9c9c3f4478eb3fc7b04dc45e4599728939c7828202aa9a970e012b",
+  "serve_has_startup_verifier_warm": false,
+  "only_generate_warm_call_is_in_nonserve_path": true,
+  "before_prefill_free_bytes": 1381425152,
+  "after_restore_free_bytes": 415526912,
+  "reported_free_reduction_bytes": 965898240,
+  "main_restore_and_first_capture_reported_free_reduction_bytes": 1280651264,
+  "main_physical_restore_bytes": 402653184,
+  "callback_reported_free_reduction_beyond_main_mapping_bytes": 877998080,
+  "new_device_usm_requested_in_callback_bytes": 1114112,
+  "callback_new_command_lists": 680,
+  "callback_new_modules": 61,
+  "all_logged_device_usm_freed_at_exit": true,
+  "all_native_modules_kernels_command_lists_destroyed_at_exit": true,
+  "limitations": [
+    "First capture/JIT/command resources coexist in the callback. Do not attribute the unexplained reported-free difference solely to recapture, byte-copying or a proven leak.",
+    "Physical mapping/API requested sizes are different from resident VRAM, runtime-private heaps, pooling and allocation rounding.",
+    "The older second-full-prefill capacity failure is not proven solved or explained by this32K observation.",
+    "Fresh kept-fraction-zero arms defer capture to first verifier use; released arms warm all legal sizes before that use. Quiet means include these differing capture schedules."
+  ]
+}

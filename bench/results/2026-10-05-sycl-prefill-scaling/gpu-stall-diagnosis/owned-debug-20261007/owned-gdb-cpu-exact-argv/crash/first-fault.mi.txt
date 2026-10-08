@@ -1,0 +1,39 @@
+9^done,threads=[{id="1",target-id="Thread 0x7ffff7da5740 (LWP 820551)",name="probe",frame={level="0",addr="0x00007ffff7e46c0c",func="__pthread_kill_implementation",args=[{name="no_tid",value="0"},{name="signo",value="11"},{name="threadid",value="<optimized out>"}],file="./nptl/pthread_kill.c",fullname="./nptl/./nptl/pthread_kill.c",line="44",arch="i386:x86-64"},state="stopped",core="2"}],current-thread-id="1"
+(gdb) 
+~"\nThread 1 (Thread 0x7ffff7da5740 (LWP 820551) \"probe\"):\n"
+~"#0  __pthread_kill_implementation (no_tid=0, signo=11, threadid=<optimized out>) at ./nptl/pthread_kill.c:44\n#1  __pthread_kill_internal (signo=11, threadid=<optimized out>) at ./nptl/pthread_kill.c:78\n#2  __GI___pthread_kill (threadid=<optimized out>, signo=signo@entry=11) at ./nptl/pthread_kill.c:89\n#3  0x00007ffff7ded27e in __GI_raise (sig=11) at ../sysdeps/posix/raise.c:26\n#4  0x00005555555553ff in main (n=2, v=0x7fffffffd9c8) at /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-gdb-cpu-exact-argv/probe.c:21\n"
+10^done
+(gdb) 
+~"rax            0x0                 0\n"
+~"rbx            0xc8547             820551\n"
+~"rcx            0x7ffff7e46c0c      140737352330252\n"
+~"rdx            0xb                 11\n"
+~"rsi            0xc8547             820551\n"
+~"rdi            0xc8547             820551\n"
+~"rbp            0x7fffffffd860      0x7fffffffd860\n"
+~"rsp            0x7fffffffd820      0x7fffffffd820\n"
+~"r8             0x7ffff7facb20      140737353796384\n"
+~"r9             0x0                 0\n"
+~"r10            0x1                 1\n"
+~"r11            0x246               582\n"
+~"r12            0xb                 11\n"
+~"r13            0x0                 0\n"
+~"r14            0x16                22\n"
+~"r15            0x7ffff7ffd000      140737354125312\n"
+~"rip            0x7ffff7e46c0c      0x7ffff7e46c0c <__GI___pthread_kill+284>\n"
+~"eflags         0x246               [ PF ZF IF ]\n"
+~"cs             0x33                51\n"
+~"ss             0x2b                43\n"
+~"ds             0x0                 0\n"
+~"es             0x0                 0\n"
+~"fs             0x0                 0\n"
+~"gs             0x0                 0\n"
+~"fs_base        0x7ffff7da5740      140737351669568\n"
+~"gs_base        0x0                 0\n"
+11^done
+(gdb) 
+~"From                To                  Syms Read   Shared Object Library\n"
+~"0x00007ffff7fc6000  0x00007ffff7ff0195  Yes         /lib64/ld-linux-x86-64.so.2\n"
+~"0x00007ffff7dd0800  0x00007ffff7f58039  Yes         /usr/lib/x86_64-linux-gnu/libc.so.6\n"
+12^done
+(gdb) 

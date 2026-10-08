@@ -1,0 +1,25 @@
+{
+  "scope": "Source preparation only: expert-phase pacing with identical wait schedule in logged and quiet modes. No CPU/GPU parity, capacity, throughput or prevention proof.",
+  "passed": true,
+  "started_utc": "2026-10-07T05:18:28.089986+00:00",
+  "original_source_sha256": "bdc0dea41753d345f5b5c329d807d3f9013280e2488e39df1d615a3b84506b92",
+  "candidate_source_sha256": "aa5b22052e88312ea4f1f6eed566d53b0728e32d0c8e504713fc90a837a4a541",
+  "environment_variable": "STRATA_PREFILL_SYNC_EXPERT_PHASE_BATCH",
+  "default_batch": 1,
+  "range": [
+    1,
+    256
+  ],
+  "batched_phases": [
+    "gather",
+    "wait copy",
+    "dequant",
+    "gemm gate/up",
+    "gemm down"
+  ],
+  "all_other_phases": "wait unconditionally when STRATA_PREFILL_SYNC is present",
+  "default_schedule": "unchanged wait calls and formatted marks",
+  "new_schedule": "mark numbers count every phase; only completion-boundary marks are printed",
+  "full_context_guard": "all 262144-cell gates required; do not weaken them",
+  "logging": "STRATA_PREFILL_SYNC preserves completion-boundary logs; pacing environment alone enables the same waits without logs; no new logging-off switch"
+}

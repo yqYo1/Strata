@@ -8,6 +8,7 @@
 // here.  A parity test whose two sides were written together would show neither.
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/artifact/dequant.hpp"
 #include "strata/kernels/dequant_s2.hpp"
@@ -77,14 +78,14 @@ int main(int argc, char** argv) {
 
     uint8_t* d_codes = nullptr;
     float *d_scales = nullptr, *d_out = nullptr;
-    check(DPCT_CHECK_ERROR(d_codes = (uint8_t *)sycl::malloc_device(
-                               codes.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_codes = (uint8_t *)strata::checked_usm(sycl::malloc_device(
+                               codes.size(), dpct::get_in_order_queue()))),
           "cudaMalloc codes");
-    check(DPCT_CHECK_ERROR(d_scales = sycl::malloc_device<float>(
-                               scales.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_scales = strata::checked_usm(sycl::malloc_device<float>(
+                               scales.size(), dpct::get_in_order_queue()))),
           "cudaMalloc scales");
-    check(DPCT_CHECK_ERROR(d_out = sycl::malloc_device<float>(
-                               cpu.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_out = strata::checked_usm(sycl::malloc_device<float>(
+                               cpu.size(), dpct::get_in_order_queue()))),
           "cudaMalloc out");
     /*
     DPCT1114: cudaMemcpy is migrated to asynchronization memcpy, assuming in

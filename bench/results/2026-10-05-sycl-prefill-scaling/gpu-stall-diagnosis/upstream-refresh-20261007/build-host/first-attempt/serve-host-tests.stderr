@@ -1,0 +1,136 @@
+..sssssEEE....../home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/serve/telemetry.py:230: ResourceWarning: unclosed file <_io.TextIOWrapper name='/proc/stat' mode='r' encoding='UTF-8'>
+  f = [int(x) for x in open("/proc/stat").readline().split()[1:]]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/serve/telemetry.py:213: ResourceWarning: unclosed file <_io.TextIOWrapper name='/proc/cpuinfo' mode='r' encoding='utf-8'>
+  return line.split(":", 1)[1].strip()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/serve/telemetry.py:257: ResourceWarning: unclosed file <_io.TextIOWrapper name='/proc/meminfo' mode='r' encoding='UTF-8'>
+  info = dict(line.split(":", 1) for line in open("/proc/meminfo"))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+...................../home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/serve/telemetry.py:230: ResourceWarning: unclosed file <_io.TextIOWrapper name='/proc/stat' mode='r' encoding='UTF-8'>
+  f = [int(x) for x in open("/proc/stat").readline().split()[1:]]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/serve/telemetry.py:257: ResourceWarning: unclosed file <_io.TextIOWrapper name='/proc/meminfo' mode='r' encoding='UTF-8'>
+  info = dict(line.split(":", 1) for line in open("/proc/meminfo"))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.........../home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/serve/telemetry.py:213: ResourceWarning: unclosed file <_io.TextIOWrapper name='/proc/cpuinfo' mode='r' encoding='utf-8'>
+  return line.split(":", 1)[1].strip()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+............................................................................................E.........................................................................................................................................E..E....E............................/usr/lib/python3.12/unittest/case.py:589: ResourceWarning: unclosed <socket.socket fd=5, family=2, type=1, proto=0, laddr=('127.0.0.1', 36147)>
+  if method() is not None:
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+......................................................................................................................FFFF..............sss
+======================================================================
+ERROR: test_speed_synthetic (serve.test_detok.HeapBpe.test_speed_synthetic)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/serve/test_detok.py", line 244, in test_speed_synthetic
+    self.check_speed(synthetic_tokenizer())
+                     ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/serve/test_detok.py", line 166, in synthetic_tokenizer
+    import strata_tokenizer as ST
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/tools/strata_tokenizer.py", line 22, in <module>
+    import regex
+ModuleNotFoundError: No module named 'regex'
+
+======================================================================
+ERROR: test_synthetic_vocab (serve.test_detok.HeapBpe.test_synthetic_vocab)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/serve/test_detok.py", line 219, in test_synthetic_vocab
+    tok = synthetic_tokenizer()
+          ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/serve/test_detok.py", line 166, in synthetic_tokenizer
+    import strata_tokenizer as ST
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/tools/strata_tokenizer.py", line 22, in <module>
+    import regex
+ModuleNotFoundError: No module named 'regex'
+
+======================================================================
+ERROR: test_words_directly (serve.test_detok.HeapBpe.test_words_directly)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/serve/test_detok.py", line 205, in test_words_directly
+    tok = synthetic_tokenizer()
+          ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/serve/test_detok.py", line 166, in synthetic_tokenizer
+    import strata_tokenizer as ST
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/tools/strata_tokenizer.py", line 22, in <module>
+    import regex
+ModuleNotFoundError: No module named 'regex'
+
+======================================================================
+ERROR: test_json_schema_text_format (serve.test_responses.OverHttp.test_json_schema_text_format)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/serve/test_responses.py", line 302, in test_json_schema_text_format
+    self.assertEqual((code, r["error"]["code"]), (502, "structured_output_failed"))
+                            ~~~~~~~~~~^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+======================================================================
+ERROR: test_a_literal_inside_a_longer_one (serve.test_server.LiteralControlTokens.test_a_literal_inside_a_longer_one)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/serve/test_server.py", line 701, in test_a_literal_inside_a_longer_one
+    import strata_tokenizer as ST
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/tools/strata_tokenizer.py", line 22, in <module>
+    import regex
+ModuleNotFoundError: No module named 'regex'
+
+======================================================================
+ERROR: test_the_real_tokenizer_names_its_control_tokens (serve.test_server.LiteralControlTokens.test_the_real_tokenizer_names_its_control_tokens)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/serve/test_server.py", line 713, in test_the_real_tokenizer_names_its_control_tokens
+    import strata_tokenizer as ST
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/tools/strata_tokenizer.py", line 22, in <module>
+    import regex
+ModuleNotFoundError: No module named 'regex'
+
+======================================================================
+ERROR: test_the_real_tokenizer_reads_the_tag_as_text (serve.test_server.LiteralThinkTags.test_the_real_tokenizer_reads_the_tag_as_text)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/serve/test_server.py", line 628, in test_the_real_tokenizer_reads_the_tag_as_text
+    import strata_tokenizer as ST
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/tools/strata_tokenizer.py", line 22, in <module>
+    import regex
+ModuleNotFoundError: No module named 'regex'
+
+======================================================================
+FAIL: test_invalid_generation_is_an_error_and_never_streams_content (serve.test_structured.Structured.test_invalid_generation_is_an_error_and_never_streams_content) (script='{"title":"Only a title"}')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/serve/test_structured.py", line 96, in test_invalid_generation_is_an_error_and_never_streams_content
+    self.assertEqual(code, 502)
+AssertionError: 200 != 502
+
+======================================================================
+FAIL: test_invalid_generation_is_an_error_and_never_streams_content (serve.test_structured.Structured.test_invalid_generation_is_an_error_and_never_streams_content) (script='{"title": "Photobooth", "sheet": "A single continuous shot.", "cast": [], "boxes": [{"box": 1, "duration_ms": 15000, "new_shot": true, "beat": "Hailee changes poses.", "on_screen": ["Hailee"], "references": [], "ends": "She smiles."}], "suggestions": [], "extra": true}')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/serve/test_structured.py", line 96, in test_invalid_generation_is_an_error_and_never_streams_content
+    self.assertEqual(code, 502)
+AssertionError: 200 != 502
+
+======================================================================
+FAIL: test_invalid_generation_is_an_error_and_never_streams_content (serve.test_structured.Structured.test_invalid_generation_is_an_error_and_never_streams_content) (script='{"title": "Photobooth", "sheet": "A single continuous shot.", "cast": [], "boxes": [{"box": 1, "duration_ms": "15000", "new_shot": true, "beat": "Hailee changes poses.", "on_screen": ["Hailee"], "references": [], "ends": "She smiles."}], "suggestions": []}')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/serve/test_structured.py", line 96, in test_invalid_generation_is_an_error_and_never_streams_content
+    self.assertEqual(code, 502)
+AssertionError: 200 != 502
+
+======================================================================
+FAIL: test_invalid_schema_is_400_and_local_refs_work (serve.test_structured.Structured.test_invalid_schema_is_400_and_local_refs_work)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/serve/test_structured.py", line 130, in test_invalid_schema_is_400_and_local_refs_work
+    self.assertEqual(self.chat(response_format=fmt)[0], 400)
+AssertionError: 200 != 400
+
+----------------------------------------------------------------------
+Ran 452 tests in 157.612s
+
+FAILED (failures=4, errors=7, skipped=8)

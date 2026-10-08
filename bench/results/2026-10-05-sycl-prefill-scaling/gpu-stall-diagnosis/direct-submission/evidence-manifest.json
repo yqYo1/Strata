@@ -1,0 +1,102 @@
+{
+  "scope": "Small healthy GPU allocation observations and source audit; no unsafe-exit reproduction, full model, PCI reset or GUI operation",
+  "files": {
+    "no-copy-offload/record.json": {
+      "raw_sha256": "404cc2b3bc2ef244c1bb277bd2433dc08e1320c7c4dd6562085029eedab442aa",
+      "public_sha256": "404cc2b3bc2ef244c1bb277bd2433dc08e1320c7c4dd6562085029eedab442aa",
+      "normalization": "trailing whitespace only"
+    },
+    "no-copy-offload/probe.stdout": {
+      "raw_sha256": "37dad2f1cc3b37d9e89d03ddfaed521d23d15b7d05e2ed7fc2946538a2eb3f39",
+      "public_sha256": "37dad2f1cc3b37d9e89d03ddfaed521d23d15b7d05e2ed7fc2946538a2eb3f39",
+      "normalization": "trailing whitespace only"
+    },
+    "no-copy-offload/probe.stderr": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "public_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "normalization": "trailing whitespace only"
+    },
+    "no-copy-offload/kernel-xe.json": {
+      "raw_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "public_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "normalization": "trailing whitespace only"
+    },
+    "default-copy-offload/record.json": {
+      "raw_sha256": "e2a4f9d49623fc52a08e7e8d938f7b514bf8ec6dbe6d8aa55e700c0f657d702e",
+      "public_sha256": "e2a4f9d49623fc52a08e7e8d938f7b514bf8ec6dbe6d8aa55e700c0f657d702e",
+      "normalization": "trailing whitespace only"
+    },
+    "default-copy-offload/probe.stdout": {
+      "raw_sha256": "ee6d16c7aa0d8555f95f6945870332eec9efc988f089fc24755bc25883385a8d",
+      "public_sha256": "ee6d16c7aa0d8555f95f6945870332eec9efc988f089fc24755bc25883385a8d",
+      "normalization": "trailing whitespace only"
+    },
+    "default-copy-offload/probe.stderr": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "public_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "normalization": "trailing whitespace only"
+    },
+    "default-copy-offload/kernel-xe.json": {
+      "raw_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "public_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "normalization": "trailing whitespace only"
+    },
+    "no-direct-submission/record.json": {
+      "raw_sha256": "5b3875eab0423e8403e2fbe2ad753b30ce1f161a452c1dd6133fb1b6402f8455",
+      "public_sha256": "5b3875eab0423e8403e2fbe2ad753b30ce1f161a452c1dd6133fb1b6402f8455",
+      "normalization": "trailing whitespace only"
+    },
+    "no-direct-submission/probe.stdout": {
+      "raw_sha256": "e3b79e9fc7dba3c6a743ef196af13b98b1ff540a779addad7715c0d5dae9275b",
+      "public_sha256": "e3b79e9fc7dba3c6a743ef196af13b98b1ff540a779addad7715c0d5dae9275b",
+      "normalization": "trailing whitespace only"
+    },
+    "no-direct-submission/probe.stderr": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "public_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "normalization": "trailing whitespace only"
+    },
+    "no-direct-submission/kernel-xe.json": {
+      "raw_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "public_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "normalization": "trailing whitespace only"
+    }
+  },
+  "sources": [
+    {
+      "url": "https://raw.githubusercontent.com/intel/compute-runtime/26.31.39395.14/shared/source/direct_submission/linux/drm_direct_submission.inl",
+      "sha256": "24acc792a861b6d4e7d6f96cbe65bfe763c55585c8015e56a2ba839b23565673",
+      "private_path": "/home/yayoi/.local/state/strata-sycl/gpu-hang-trigger-audit-20261006/neo-source/26.31.39395.14-drm_direct_submission.inl"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/intel/compute-runtime/26.31.39395.14/shared/source/direct_submission/direct_submission_hw.inl",
+      "sha256": "b9cb1a00714b7565fb9f1cc6f7429373a2bb7e315d4437652609c2e161632afc",
+      "private_path": "/home/yayoi/.local/state/strata-sycl/gpu-hang-trigger-audit-20261006/neo-source/26.31.39395.14-direct_submission_hw.inl"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/intel/compute-runtime/26.31.39395.14/shared/source/debug_settings/debug_variables_base.inl",
+      "sha256": "09fec54522d21452c436d12085e22bee56ae15fdf086236aadaa0a287c20f0bf",
+      "private_path": "/home/yayoi/.local/state/strata-sycl/gpu-hang-trigger-audit-20261006/neo-source/26.31.39395.14-debug_variables_base.inl"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/intel/compute-runtime/26.35.39758.10/shared/source/direct_submission/linux/drm_direct_submission.inl",
+      "sha256": "24acc792a861b6d4e7d6f96cbe65bfe763c55585c8015e56a2ba839b23565673",
+      "private_path": "/home/yayoi/.local/state/strata-sycl/gpu-hang-trigger-audit-20261006/neo-source/26.35.39758.10-drm_direct_submission.inl"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/intel/compute-runtime/26.35.39758.10/shared/source/direct_submission/direct_submission_hw.inl",
+      "sha256": "03032050c021ecba534944a41e9b0a40711d39ffdfa6347051db39d0cdec05a0",
+      "private_path": "/home/yayoi/.local/state/strata-sycl/gpu-hang-trigger-audit-20261006/neo-source/26.35.39758.10-direct_submission_hw.inl"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/intel/compute-runtime/26.35.39758.10/shared/source/debug_settings/debug_variables_base.inl",
+      "sha256": "8f36fe266294ba85b598c8f80c620926a1e7ca7e55d1e6ce8cfca5ef884193a2",
+      "private_path": "/home/yayoi/.local/state/strata-sycl/gpu-hang-trigger-audit-20261006/neo-source/26.35.39758.10-debug_variables_base.inl"
+    }
+  ],
+  "external_report": {
+    "url": "https://github.com/intel/compute-runtime/issues/948#issuecomment-5536265115",
+    "private_snapshot_sha256": "f485b2adbe458c6c6d1702230fd19850d2446fdc640e56c0c5e1032c274dcc0b",
+    "local_attribution_limit": "The earlier faulting process had no allocation log. Current healthy default-copy probe maps the same address to SEMAPHORE_BUFFER; it does not map the old ASID/PID."
+  }
+}

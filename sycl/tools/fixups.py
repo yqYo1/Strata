@@ -4,6 +4,8 @@
 Each entry is a thing dpct 2025.3 got wrong or could not do, with the reason. Upstream files are never touched.
 """
 import re, sys, pathlib
+from disable_device_waits import disable_device_waits
+from lazy_device_tables import lazy_device_tables
 root = pathlib.Path(__file__).resolve().parents[1]
 changed = 0
 
@@ -25,6 +27,14 @@ def all_sources():
 # 1. dpct's helper headers predate the 2026.1 compiler: the non-uniform group API was renamed.
 edit("include/dpct/util.hpp", lambda s: s.replace("experimental::get_tangle_group(", "experimental::entangle(")
      .replace("experimental::get_fixed_size_group<", "experimental::chunked_partition<"))
+
+# The saved BLAS queue is unused until requested. Its static initializer must
+# not select/create a GPU before main can validate options and catch failures.
+edit("include/dpct/blas_utils.hpp", lambda s: s.replace(
+    "  static inline ::dpct::cs::queue_ptr _saved_queue_ptr =\n      &::dpct::cs::get_default_queue();",
+    "  static inline ::dpct::cs::queue_ptr _saved_queue_ptr = nullptr;").replace(
+    "  static inline sycl::queue &get_saved_queue() noexcept {\n    return *_saved_queue_ptr;",
+    "  static inline sycl::queue &get_saved_queue() {\n    return _saved_queue_ptr ? *_saved_queue_ptr : ::dpct::cs::get_default_queue();"))
 
 for rel in all_sources():
     rel = str(rel)
@@ -53,6 +63,10 @@ for rel in all_sources():
     edit(rel, sub(r"__nanosleep\(\d+\);", "/* spin (no __nanosleep on SYCL) */;"))
     # 7. `__fadd_rn(a, b ? c : d)` lost its parentheses.
     edit(rel, sub(r"= (\w+) \+ (\w+) \? (\w+\[\w+\]) : 0\.0f;", r"= \1 + (\2 ? \3 : 0.0f);"))
+    # 8. cudaStreamQuery(s): dpct writes `DPCT_CHECK_ERROR(s->ext_oneapi_empty())`, which is 0 whenever the call does not
+    #    throw, so the ring waits' `q != 1` guard (1 = still running) was always true and any wait over 2 ms "never rang".
+    edit(rel, sub(r"(const dpct::err0 q =)\s*DPCT_CHECK_ERROR\(\(+(\w+)\)*->ext_oneapi_empty\(\)\)+;",
+                  r"\1 \2->ext_oneapi_empty() ? 0 : 1;"))
 
 # 2b. every `(dpct::queue_ptr) stream` cast goes through strata::q_of(), which maps CUDA's null stream to the
 #     default in-order queue instead of dereferencing a null sycl::queue* (include/strata/sycl_queue.hpp).
@@ -83,22 +97,12 @@ def doorbell(s):
     s = s.replace("    if (*skip == value) return;", "    if (strata::sys_load(skip) == value) return;")
     s = s.replace("    *skip = ring;\n}", "    strata::sys_store(skip, ring);\n}")
     s = s.replace("        *(volatile uint32_t*) seq = *(volatile uint32_t*) seq + 1u;", "        strata::sys_store(seq, strata::sys_load(seq) + 1u);")
-    # bounded spins (see kSpinMax in sycl_doorbell.hpp)
-    s = s.replace("    while (strata::sys_load(flag) != want) /* spin (no __nanosleep on SYCL) */;",
-                  "    for (uint32_t spin = 0; spin < strata::kSpinMax && strata::sys_load(flag) != want; ++spin) {}")
-    s = s.replace("    while (strata::sys_load(flag) < value) /* spin (no __nanosleep on SYCL) */;",
-                  "    for (uint32_t spin = 0; spin < strata::kSpinMax && strata::sys_load(flag) < value; ++spin) {}")
-    # upstream 0.1.31 spells the waits `while (*flag ...) strata_spin_pause();` and the ring with 4-space indent:
-    # same treatment (system-scope loads/stores, bounded: an unbounded orphaned spin wedges the B70's GT)
+    # Retire both bounded fall-through and unbounded waits after any migration.
     s = s.replace("    *(volatile uint32_t*) seq = *(volatile uint32_t*) seq + 1u;", "    strata::sys_store(seq, strata::sys_load(seq) + 1u);")
-    s = s.replace("    while (*flag != want) strata_spin_pause();",
-                  "    for (uint32_t spin = 0; spin < strata::kSpinMax && strata::sys_load(flag) != want; ++spin) strata_spin_pause();")
-    s = s.replace("    while (*flag < value) strata_spin_pause();",
-                  "    for (uint32_t spin = 0; spin < strata::kSpinMax && strata::sys_load(flag) < value; ++spin) strata_spin_pause();")
-    return s
-# 0.1.31: dp4a.hpp's spin pause is __nanosleep, which SYCL lacks: the bounded spin (kSpinMax) is the backoff
+    return disable_device_waits(s)
+# SYCL has no __nanosleep; dependent work is submitted after host completion.
 edit("include/strata/kernels/dp4a.hpp", lambda s: s.replace("    __nanosleep(100);\n",
-     "    // SYCL port: no __nanosleep; the doorbell waits are bounded by strata::kSpinMax instead\n"))
+     "    // SYCL has no __nanosleep; device doorbell waits are disabled in this port.\n"))
 # 0.1.31/0.1.32: fused_gr's per-block shared-memory query stays CUDA (dpct leaves the attribute untranslated)
 edit("src/kernels/cuda/fused_gr.dp.cpp", lambda s: s.replace(
     "        cudaDeviceGetAttribute(&per_block, cudaDevAttrMaxSharedMemoryPerBlock, dev);\n",
@@ -125,8 +129,29 @@ def gr_kernel_names(s):
     return pat.sub(lambda m: (">>(" if m.group(2) == "gr_down_staged_kernel" else f", dpct_kernel_scalar<{m.group(3)}>>>(")
                    + m.group(1) + m.group(2) + "(", s)
 edit("src/kernels/cuda/fused_gr.dp.cpp", gr_kernel_names)
-edit("src/kernels/cuda/elementwise.dp.cpp", doorbell)
-edit("src/kernels/cuda/verify_kernels.dp.cpp", doorbell)
+# 7c'. #1397: the bound of those spins is chosen per device at run time (strata::spin_max(queue), sycl_doorbell.hpp), not the
+#      build's constant kSpinMax: each waiting kernel takes it as a `uint32_t spin_max` argument and its launcher passes
+#      strata::spin_max(*strata::q_of(stream)). Idempotent: a file that already has the argument is left alone.
+def spin_bound_at_run_time(s):
+    for kernel, launcher in (("doorbell_wait_kernel", "doorbell_wait"), ("wait_flag_ge_or_kernel", "wait_flag_ge_or"),
+                             ("wait_flag_ge_kernel", "wait_flag_ge")):
+        sig = re.compile(r"(__dpct_inline__ void " + kernel + r"\([^)]*?)\)(\s*\{)")
+        m = sig.search(s)
+        if m and "spin_max" not in m.group(1):
+            s = s[:m.start()] + m.group(1) + ", uint32_t spin_max)" + m.group(2) + s[m.end():]
+        call = re.compile(r"(\b" + kernel + r"\((?:[^()]|\([^()]*\))*?)\);")
+        s = call.sub(lambda c: c.group(0) if "spin_max" in c.group(1) else c.group(1) + ", spin_max);", s)
+        head = re.compile(r"^(void " + launcher + r"\([^)]*\)(?: try)? \{\n)", re.M)
+        h = head.search(s)
+        if h and "strata::spin_max(" not in s[h.end():h.end() + 200]:
+            at = h.end()
+            guard = re.match(r"    if \([^\n]*\) return;\n", s[at:])   # a null-argument guard stays first
+            if guard:
+                at += guard.end()
+            s = s[:at] + "    const uint32_t spin_max = strata::spin_max(*strata::q_of(stream));\n" + s[at:]
+    return s.replace("strata::kSpinMax", "spin_max")
+edit("src/kernels/cuda/elementwise.dp.cpp", lambda s: spin_bound_at_run_time(doorbell(s)))
+edit("src/kernels/cuda/verify_kernels.dp.cpp", lambda s: spin_bound_at_run_time(doorbell(s)))
 
 # 7d. cudaMemcpy / cudaMemset are synchronous; dpct emitted `get_in_order_queue().memcpy(...)` with no wait where
 #     the source was pageable ("call wait() if needed"). The streaming expert source hands out ring-buffer blobs,
@@ -322,3 +347,13 @@ for p in sorted((root / "src" / "kernels").glob("*_parity.cpp")):
 edit("src/program/generate.cpp", sub(
     r"(    const strata::core::OnDevice on\(dev\);\n        size_t fb = 0, tb = 0;\n)(?!        dpct::get_current_device)",
     r"\1        dpct::get_current_device().get_memory_info(fb, tb);   // #423 (tmking01): dpct dropped cudaMemGetInfo here\n"))
+
+# Keep retained codebooks out of pre-main initialization. Their bytes are copied
+# into typed words instead of reading int8_t storage through a uint32_t pointer.
+for rel in ('src/kernels/cuda/native_mmvq.dp.cpp', 'src/kernels/cuda/s2_gemv_fast.dp.cpp'):
+    edit(rel, lazy_device_tables)
+# A770: only subgroup row zero reaches the native router's synchronization.
+# CUDA's early-exit block pattern must not become a divergent SYCL work-group barrier.
+edit("src/kernels/cuda/native_router.dp.cpp", lambda s: s.replace(
+    "    item_ct1.barrier(sycl::access::fence_space::local_space);",
+    "    sycl::group_barrier(item_ct1.get_sub_group());  // only subgroup row zero participates"))

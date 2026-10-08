@@ -1,0 +1,144 @@
+=thread-group-added,id="i1"
+(gdb) 
+1^done
+(gdb) 
+2^done
+(gdb) 
+3^done
+(gdb) 
+4^done
+(gdb) 
+5^done
+(gdb) 
+6^done
+(gdb) 
+7^done
+(gdb) 
+=thread-group-started,id="i1",pid="1037492"
+=thread-created,id="1",group-id="i1"
+=library-loaded,id="/lib64/ld-linux-x86-64.so.2",target-name="/lib64/ld-linux-x86-64.so.2",host-name="/lib64/ld-linux-x86-64.so.2",symbols-loaded="0",thread-group="i1",ranges=[{from="0x00007ffff7fc6000",to="0x00007ffff7ff0195"}]
+8^running
+*running,thread-id="all"
+(gdb) 
+=library-loaded,id="/usr/lib/x86_64-linux-gnu/libm.so.6",target-name="/usr/lib/x86_64-linux-gnu/libm.so.6",host-name="/usr/lib/x86_64-linux-gnu/libm.so.6",symbols-loaded="0",thread-group="i1",ranges=[{from="0x00007ffff7ee2420",to="0x00007ffff7f603a6"}]
+=library-loaded,id="/usr/lib/x86_64-linux-gnu/libz.so.1",target-name="/usr/lib/x86_64-linux-gnu/libz.so.1",host-name="/usr/lib/x86_64-linux-gnu/libz.so.1",symbols-loaded="0",thread-group="i1",ranges=[{from="0x00007ffff7eb8260",to="0x00007ffff7ec9c60"}]
+=library-loaded,id="/usr/lib/x86_64-linux-gnu/libexpat.so.1",target-name="/usr/lib/x86_64-linux-gnu/libexpat.so.1",host-name="/usr/lib/x86_64-linux-gnu/libexpat.so.1",symbols-loaded="0",thread-group="i1",ranges=[{from="0x00007ffff7e8c210",to="0x00007ffff7eaa473"}]
+=library-loaded,id="/usr/lib/x86_64-linux-gnu/libc.so.6",target-name="/usr/lib/x86_64-linux-gnu/libc.so.6",host-name="/usr/lib/x86_64-linux-gnu/libc.so.6",symbols-loaded="0",thread-group="i1",ranges=[{from="0x00007ffff7c9d800",to="0x00007ffff7e25039"}]
+~"[Thread debugging using libthread_db enabled]\n"
+~"Using host libthread_db library \"/usr/lib/x86_64-linux-gnu/libthread_db.so.1\".\n"
+=library-loaded,id="/usr/lib/python3.12/lib-dynload/_json.cpython-312-x86_64-linux-gnu.so",target-name="/usr/lib/python3.12/lib-dynload/_json.cpython-312-x86_64-linux-gnu.so",host-name="/usr/lib/python3.12/lib-dynload/_json.cpython-312-x86_64-linux-gnu.so",symbols-loaded="0",thread-group="i1",ranges=[{from="0x00007ffff75b06a0",to="0x00007ffff75b660d"}]
+~"process 1037492 is executing new program: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-gdb-with-tty-cli-cpu/probe\n"
+=library-unloaded,id="/lib64/ld-linux-x86-64.so.2",target-name="/lib64/ld-linux-x86-64.so.2",host-name="/lib64/ld-linux-x86-64.so.2",thread-group="i1"
+=library-unloaded,id="/usr/lib/x86_64-linux-gnu/libm.so.6",target-name="/usr/lib/x86_64-linux-gnu/libm.so.6",host-name="/usr/lib/x86_64-linux-gnu/libm.so.6",thread-group="i1"
+=library-unloaded,id="/usr/lib/x86_64-linux-gnu/libz.so.1",target-name="/usr/lib/x86_64-linux-gnu/libz.so.1",host-name="/usr/lib/x86_64-linux-gnu/libz.so.1",thread-group="i1"
+=library-unloaded,id="/usr/lib/x86_64-linux-gnu/libexpat.so.1",target-name="/usr/lib/x86_64-linux-gnu/libexpat.so.1",host-name="/usr/lib/x86_64-linux-gnu/libexpat.so.1",thread-group="i1"
+=library-unloaded,id="/usr/lib/x86_64-linux-gnu/libc.so.6",target-name="/usr/lib/x86_64-linux-gnu/libc.so.6",host-name="/usr/lib/x86_64-linux-gnu/libc.so.6",thread-group="i1"
+=library-unloaded,id="/usr/lib/python3.12/lib-dynload/_json.cpython-312-x86_64-linux-gnu.so",target-name="/usr/lib/python3.12/lib-dynload/_json.cpython-312-x86_64-linux-gnu.so",host-name="/usr/lib/python3.12/lib-dynload/_json.cpython-312-x86_64-linux-gnu.so",thread-group="i1"
+=library-loaded,id="/lib64/ld-linux-x86-64.so.2",target-name="/lib64/ld-linux-x86-64.so.2",host-name="/lib64/ld-linux-x86-64.so.2",symbols-loaded="0",thread-group="i1",ranges=[{from="0x00007ffff7fc6000",to="0x00007ffff7ff0195"}]
+=library-loaded,id="/usr/lib/x86_64-linux-gnu/libc.so.6",target-name="/usr/lib/x86_64-linux-gnu/libc.so.6",host-name="/usr/lib/x86_64-linux-gnu/libc.so.6",symbols-loaded="0",thread-group="i1",ranges=[{from="0x00007ffff7dd0800",to="0x00007ffff7f58039"}]
+~"[Thread debugging using libthread_db enabled]\n"
+~"Using host libthread_db library \"/usr/lib/x86_64-linux-gnu/libthread_db.so.1\".\n"
+READY
+9^done
+(gdb) 
+~"\nProgram"
+~" received signal SIGINT, Interrupt.\n"
+~"0x00007ffff7e94b7a in __GI___clock_nanosleep (clock_id=clock_id@entry=0, flags=flags@entry=0, req=req@entry=0x7fffffffd810, rem=rem@entry=0x0) at ../sysdeps/unix/sysv/linux/clock_nanosleep.c:78\n"
+&"warning: 78\t../sysdeps/unix/sysv/linux/clock_nanosleep.c: No such file or directory\n"
+*stopped,reason="signal-received",signal-name="SIGINT",signal-meaning="Interrupt",frame={addr="0x00007ffff7e94b7a",func="__GI___clock_nanosleep",args=[{name="clock_id",value="0"},{name="clock_id@entry",value="0"},{name="flags",value="0"},{name="flags@entry",value="0"},{name="req",value="0x7fffffffd810"},{name="req@entry",value="0x7fffffffd810"},{name="rem",value="0x0"},{name="rem@entry",value="0x0"}],file="../sysdeps/unix/sysv/linux/clock_nanosleep.c",fullname="./time/../sysdeps/unix/sysv/linux/clock_nanosleep.c",line="78",arch="i386:x86-64"},thread-id="1",stopped-threads="all",core="4"
+10^done,threads=[{id="1",target-id="Thread 0x7ffff7da5740 (LWP 1037492)",name="probe",frame={level="0",addr="0x00007ffff7e94b7a",func="__GI___clock_nanosleep",args=[{name="clock_id",value="0"},{name="clock_id@entry",value="0"},{name="flags",value="0"},{name="flags@entry",value="0"},{name="req",value="0x7fffffffd810"},{name="req@entry",value="0x7fffffffd810"},{name="rem",value="0x0"},{name="rem@entry",value="0x0"}],file="../sysdeps/unix/sysv/linux/clock_nanosleep.c",fullname="./time/../sysdeps/unix/sysv/linux/clock_nanosleep.c",line="78",arch="i386:x86-64"},state="stopped",core="4"}],current-thread-id="1"
+(gdb) 
+~"\nThread 1 (Thread 0x7ffff7da5740 (LWP 1037492) \"probe\"):\n"
+~"#0  0x00007ffff7e94b7a in __GI___clock_nanosleep (clock_id=clock_id@entry=0, flags=flags@entry=0, req=req@entry=0x7fffffffd810, rem=rem@entry=0x0) at ../sysdeps/unix/sysv/linux/clock_nanosleep.c:78\n#1  0x00007ffff7ea1b27 in __GI___nanosleep (req=req@entry=0x7fffffffd810, rem=rem@entry=0x0) at ../sysdeps/unix/sysv/linux/nanosleep.c:25\n#2  0x00007ffff7ed19bc in usleep (useconds=<optimized out>) at ../sysdeps/posix/usleep.c:31\n#3  0x0000555555555264 in waiting_probe (seconds=3) at /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-gdb-with-tty-cli-cpu/probe.c:10\n#4  0x000055555555543b in main (n=2, v=0x7fffffffd9c8) at /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-gdb-with-tty-cli-cpu/probe.c:22\n"
+11^done
+(gdb) 
+~"rax            0xfffffffffffffdfc  -516\n"
+~"rbx            0x7fffffffd9c8      140737488345544\n"
+~"rcx            0x7ffff7e94b7a      140737352649594\n"
+~"rdx            0x7fffffffd810      140737488345104\n"
+~"rsi            0x0                 0\n"
+~"rdi            0x0                 0\n"
+~"rbp            0x7fffffffd7f0      0x7fffffffd7f0\n"
+~"rsp            0x7fffffffd780      0x7fffffffd780\n"
+~"r8             0x0                 0\n"
+~"r9             0x0                 0\n"
+~"r10            0x0                 0\n"
+~"r11            0x202               514\n"
+~"r12            0x7fffffffd810      140737488345104\n"
+~"r13            0x0                 0\n"
+~"r14            0x555555557d01      93824992247041\n"
+~"r15            0x0                 0\n"
+~"rip            0x7ffff7e94b7a      0x7ffff7e94b7a <__GI___clock_nanosleep+90>\n"
+~"eflags         0x202               [ IF ]\n"
+~"cs             0x33                51\n"
+~"ss             0x2b                43\n"
+~"ds             0x0                 0\n"
+~"es             0x0                 0\n"
+~"fs             0x0                 0\n"
+~"gs             0x0                 0\n"
+~"fs_base        0x7ffff7da5740      140737351669568\n"
+~"gs_base        0x0                 0\n"
+12^done
+(gdb) 
+~"From                To                  Syms Read   Shared Object Library\n"
+~"0x00007ffff7fc6000  0x00007ffff7ff0195  Yes         /lib64/ld-linux-x86-64.so.2\n"
+~"0x00007ffff7dd0800  0x00007ffff7f58039  Yes         /usr/lib/x86_64-linux-gnu/libc.so.6\n"
+13^done
+(gdb) 
+14^running
+*running,thread-id="all"
+(gdb) 
+15^done
+(gdb) 
+~"\nProgram"
+~" received signal SIGINT, Interrupt.\n"
+~"0x00007ffff7e94b7a in __GI___clock_nanosleep (clock_id=clock_id@entry=0, flags=flags@entry=0, req=req@entry=0x7fffffffd810, rem=rem@entry=0x0) at ../sysdeps/unix/sysv/linux/clock_nanosleep.c:78\n"
+~"78\tin ../sysdeps/unix/sysv/linux/clock_nanosleep.c\n"
+*stopped,reason="signal-received",signal-name="SIGINT",signal-meaning="Interrupt",frame={addr="0x00007ffff7e94b7a",func="__GI___clock_nanosleep",args=[{name="clock_id",value="0"},{name="clock_id@entry",value="0"},{name="flags",value="0"},{name="flags@entry",value="0"},{name="req",value="0x7fffffffd810"},{name="req@entry",value="0x7fffffffd810"},{name="rem",value="0x0"},{name="rem@entry",value="0x0"}],file="../sysdeps/unix/sysv/linux/clock_nanosleep.c",fullname="./time/../sysdeps/unix/sysv/linux/clock_nanosleep.c",line="78",arch="i386:x86-64"},thread-id="1",stopped-threads="all",core="4"
+16^done,threads=[{id="1",target-id="Thread 0x7ffff7da5740 (LWP 1037492)",name="probe",frame={level="0",addr="0x00007ffff7e94b7a",func="__GI___clock_nanosleep",args=[{name="clock_id",value="0"},{name="clock_id@entry",value="0"},{name="flags",value="0"},{name="flags@entry",value="0"},{name="req",value="0x7fffffffd810"},{name="req@entry",value="0x7fffffffd810"},{name="rem",value="0x0"},{name="rem@entry",value="0x0"}],file="../sysdeps/unix/sysv/linux/clock_nanosleep.c",fullname="./time/../sysdeps/unix/sysv/linux/clock_nanosleep.c",line="78",arch="i386:x86-64"},state="stopped",core="4"}],current-thread-id="1"
+(gdb) 
+~"\nThread 1 (Thread 0x7ffff7da5740 (LWP 1037492) \"probe\"):\n"
+~"#0  0x00007ffff7e94b7a in __GI___clock_nanosleep (clock_id=clock_id@entry=0, flags=flags@entry=0, req=req@entry=0x7fffffffd810, rem=rem@entry=0x0) at ../sysdeps/unix/sysv/linux/clock_nanosleep.c:78\n#1  0x00007ffff7ea1b27 in __GI___nanosleep (req=req@entry=0x7fffffffd810, rem=rem@entry=0x0) at ../sysdeps/unix/sysv/linux/nanosleep.c:25\n#2  0x00007ffff7ed19bc in usleep (useconds=<optimized out>) at ../sysdeps/posix/usleep.c:31\n#3  0x0000555555555264 in waiting_probe (seconds=3) at /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-gdb-with-tty-cli-cpu/probe.c:10\n#4  0x000055555555543b in main (n=2, v=0x7fffffffd9c8) at /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-gdb-with-tty-cli-cpu/probe.c:22\n"
+17^done
+(gdb) 
+~"rax            0xfffffffffffffdfc  -516\n"
+~"rbx            0x7fffffffd9c8      140737488345544\n"
+~"rcx            0x7ffff7e94b7a      140737352649594\n"
+~"rdx            0x7fffffffd810      140737488345104\n"
+~"rsi            0x0                 0\n"
+~"rdi            0x0                 0\n"
+~"rbp            0x7fffffffd7f0      0x7fffffffd7f0\n"
+~"rsp            0x7fffffffd780      0x7fffffffd780\n"
+~"r8             0x0                 0\n"
+~"r9             0x0                 0\n"
+~"r10            0x0                 0\n"
+~"r11            0x202               514\n"
+~"r12            0x7fffffffd810      140737488345104\n"
+~"r13            0x0                 0\n"
+~"r14            0x555555557d01      93824992247041\n"
+~"r15            0x0                 0\n"
+~"rip            0x7ffff7e94b7a      0x7ffff7e94b7a <__GI___clock_nanosleep+90>\n"
+~"eflags         0x202               [ IF ]\n"
+~"cs             0x33                51\n"
+~"ss             0x2b                43\n"
+~"ds             0x0                 0\n"
+~"es             0x0                 0\n"
+~"fs             0x0                 0\n"
+~"gs             0x0                 0\n"
+~"fs_base        0x7ffff7da5740      140737351669568\n"
+~"gs_base        0x0                 0\n"
+18^done
+(gdb) 
+~"From                To                  Syms Read   Shared Object Library\n"
+~"0x00007ffff7fc6000  0x00007ffff7ff0195  Yes         /lib64/ld-linux-x86-64.so.2\n"
+~"0x00007ffff7dd0800  0x00007ffff7f58039  Yes         /usr/lib/x86_64-linux-gnu/libc.so.6\n"
+19^done
+(gdb) 
+20^running
+*running,thread-id="all"
+(gdb) 
+~"[Inferior 1 (process 1037492) exited normally]\n"
+=thread-exited,id="1",group-id="i1"
+=thread-group-exited,id="i1",exit-code="0"
+*stopped,reason="exited-normally"
+21^exit

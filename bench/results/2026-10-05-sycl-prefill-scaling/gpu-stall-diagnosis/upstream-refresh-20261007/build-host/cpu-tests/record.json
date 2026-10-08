@@ -1,0 +1,137 @@
+{
+  "active": false,
+  "passed": true,
+  "scope": "Existing standalone CPU tests only",
+  "cases": [
+    {
+      "name": "message_boundary",
+      "source_sha256": {
+        "src/program/message_boundary_test.cpp": "0ea5a682eb01ad3f6407617897b428eb8bc1111ba6cd04b2f8fc6b7995799951"
+      },
+      "steps": [
+        {
+          "phase": "build",
+          "argv": [
+            "/usr/bin/g++",
+            "-std=c++20",
+            "-O2",
+            "-pthread",
+            "-Iinclude",
+            "src/program/message_boundary_test.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-refresh-20261007/cpu-tests/message_boundary"
+          ],
+          "exit_code": 0,
+          "elapsed_seconds": 0.4645813530005398
+        },
+        {
+          "phase": "run",
+          "argv": [
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-refresh-20261007/cpu-tests/message_boundary"
+          ],
+          "exit_code": 0,
+          "elapsed_seconds": 0.003689288001623936
+        }
+      ]
+    },
+    {
+      "name": "exchange_storage",
+      "source_sha256": {
+        "tests/core/exchange_storage_test.cpp": "b0544885907c08b49cfac0277d2362f228a266ea7d7f008b4f84a7c385876e40"
+      },
+      "steps": [
+        {
+          "phase": "build",
+          "argv": [
+            "/usr/bin/g++",
+            "-std=c++20",
+            "-O2",
+            "-pthread",
+            "-Iinclude",
+            "tests/core/exchange_storage_test.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-refresh-20261007/cpu-tests/exchange_storage"
+          ],
+          "exit_code": 0,
+          "elapsed_seconds": 1.4662300249983673
+        },
+        {
+          "phase": "run",
+          "argv": [
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-refresh-20261007/cpu-tests/exchange_storage"
+          ],
+          "exit_code": 0,
+          "elapsed_seconds": 0.514745901004062
+        }
+      ]
+    },
+    {
+      "name": "draft_policy",
+      "source_sha256": {
+        "src/spec/draft_policy_test.cpp": "bc61c48e38e72a89203bdba71fafff7d0dbf49badbe372a08e5e2d392dbd4937",
+        "src/spec/draft_policy.cpp": "815e3d141418791d58064e129960958f5d5a005acbc3a4475d8500a07730e25e"
+      },
+      "steps": [
+        {
+          "phase": "build",
+          "argv": [
+            "/usr/bin/g++",
+            "-std=c++20",
+            "-O2",
+            "-pthread",
+            "-Iinclude",
+            "src/spec/draft_policy_test.cpp",
+            "src/spec/draft_policy.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-refresh-20261007/cpu-tests/draft_policy"
+          ],
+          "exit_code": 0,
+          "elapsed_seconds": 0.5147248209977988
+        },
+        {
+          "phase": "run",
+          "argv": [
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-refresh-20261007/cpu-tests/draft_policy"
+          ],
+          "exit_code": 0,
+          "elapsed_seconds": 0.001599012000951916
+        }
+      ]
+    },
+    {
+      "name": "suffix_drafter",
+      "source_sha256": {
+        "src/spec/suffix_drafter_test.cpp": "f3bcb731e7afae5350e849116d115def713507e5d1e636f90b35966ed59fe9ae",
+        "src/spec/suffix_drafter.cpp": "aeee3eb16627642e9e07c9765fd4946938b5c764f51304500403908d75e67325"
+      },
+      "steps": [
+        {
+          "phase": "build",
+          "argv": [
+            "/usr/bin/g++",
+            "-std=c++20",
+            "-O2",
+            "-pthread",
+            "-Iinclude",
+            "src/spec/suffix_drafter_test.cpp",
+            "src/spec/suffix_drafter.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-refresh-20261007/cpu-tests/suffix_drafter"
+          ],
+          "exit_code": 0,
+          "elapsed_seconds": 1.2171555989989429
+        },
+        {
+          "phase": "run",
+          "argv": [
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-refresh-20261007/cpu-tests/suffix_drafter"
+          ],
+          "exit_code": 0,
+          "elapsed_seconds": 0.1140554770026938
+        }
+      ]
+    }
+  ],
+  "started_utc": "2026-10-07T09:48:46.902860+00:00",
+  "finished_utc": "2026-10-07T09:48:51.205385+00:00"
+}

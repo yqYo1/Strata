@@ -10,7 +10,15 @@
 #
 # Device code is JIT-compiled from SPIR-V unless STRATA_SYCL_AOT names a device (bmg-g31 for the Arc Pro B70).
 cmake_minimum_required(VERSION 3.24)
-project(strata_sycl VERSION 0.1.39 LANGUAGES C CXX)   # the upstream engine version this port tracks
+# the engine's version is the project's (../CMakeLists.txt): the log line and BUILD.json say 0.1.40.2, not a number of the port's own
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../CMakeLists.txt _strata_proj REGEX "^project\\(strata VERSION [0-9.]+")
+string(REGEX MATCH "VERSION ([0-9.]+)" _m "${_strata_proj}")
+if(CMAKE_MATCH_1)
+  set(STRATA_SYCL_VERSION ${CMAKE_MATCH_1})
+else()
+  set(STRATA_SYCL_VERSION 0.1.40.2)
+endif()
+project(strata_sycl VERSION ${STRATA_SYCL_VERSION} LANGUAGES C CXX)
 set(STRATA_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -18,9 +26,16 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
 endif()
-add_compile_definitions(STRATA_VERSION="${PROJECT_VERSION}-sycl")
+add_compile_definitions(STRATA_VERSION="${PROJECT_VERSION}")
 
 set(STRATA_SYCL_AOT "" CACHE STRING "AOT device for the GPU code, e.g. bmg-g31 (empty: SPIR-V, JIT at run time)")
+# The device spins on host flags are bounded (include/strata/sycl_doorbell.hpp). The bound is chosen per device at run
+# time (20,000 reads on a B-series card, 2,000,000 elsewhere; STRATA_SPIN_MAX overrides). STRATA_SYCL_SPIN_MAX fixes one
+# bound for every device in this build.
+set(STRATA_SYCL_SPIN_MAX "" CACHE STRING "fixed bound of the device's spins on host flags, in reads (empty: chosen per device at run time)")
+if(STRATA_SYCL_SPIN_MAX)
+  add_compile_definitions(STRATA_SYCL_SPIN_MAX=${STRATA_SYCL_SPIN_MAX}u)
+endif()
 set(_sycl_flags -fsycl)
 if(STRATA_SYCL_AOT)
   list(APPEND _sycl_flags -fsycl-targets=spir64_gen)
@@ -79,18 +94,80 @@ target_include_directories(strata_includes INTERFACE
   ${CMAKE_CURRENT_SOURCE_DIR}/include      # migrated headers + dpct/ helpers, first
   ${STRATA_ROOT}/include)
 target_compile_options(strata_includes INTERFACE -Wall -Wextra)
+# Preserve the reference sampler precision when integrating upstream FP32-tail tuning.
+target_compile_definitions(strata_includes INTERFACE STRATA_SYCL_SAMPLER_FP64=1)
 
 # --- CPU-side pieces, identical to the top-level build ------------------------------------------------------------
-strata_resolve(_spec src/spec/suffix_drafter.cpp src/spec/controller.cpp src/spec/draft_policy.cpp)
+strata_resolve(_spec src/spec/suffix_drafter.cpp src/spec/controller.cpp src/spec/draft_policy.cpp
+                    src/spec/draft_source.cpp)
 add_library(strata_spec STATIC ${_spec})
 target_link_libraries(strata_spec PUBLIC strata_includes)
 
 strata_resolve(_cpu src/kernels/cpu/expert.cpp src/kernels/cpu/pool.cpp src/kernels/cpu/expert_layout.cpp
                     src/kernels/cpu/q2_avx2.cpp)
+# Experimental CPU work distribution. Zero compiles the original source.
+# A nonzero factor changes only the native pool's number of row tasks;
+# quantizers, dot products, reductions and the pool protocol remain original.
+set(STRATA_NATIVE_POOL_TASK_FACTOR "0" CACHE STRING "Native CPU pool row tasks per participating thread (0: original, 1-16: experimental)")
+if(NOT STRATA_NATIVE_POOL_TASK_FACTOR MATCHES "^(0|[1-9]|1[0-6])$")
+  message(FATAL_ERROR "STRATA_NATIVE_POOL_TASK_FACTOR must be an integer from 0 through 16")
+endif()
+if(NOT STRATA_NATIVE_POOL_TASK_FACTOR STREQUAL "0")
+  set(_pool_source "")
+  foreach(_source IN LISTS _cpu)
+    if(_source MATCHES "/src/kernels/cpu/pool\\.cpp$")
+      set(_pool_source "${_source}")
+    endif()
+  endforeach()
+  if(NOT _pool_source)
+    message(FATAL_ERROR "Cannot locate the original native CPU pool source")
+  endif()
+  file(READ "${_pool_source}" _pool_original)
+  set(_pool_needle "        mtasks_ = 3 * threads;\n        mrows_ = (int64_t) nb * FF;")
+  string(REPLACE "${_pool_needle}" "" _pool_without "${_pool_original}")
+  string(LENGTH "${_pool_original}" _pool_original_length)
+  string(LENGTH "${_pool_without}" _pool_without_length)
+  string(LENGTH "${_pool_needle}" _pool_needle_length)
+  math(EXPR _pool_removed "${_pool_original_length} - ${_pool_without_length}")
+  if(NOT _pool_removed EQUAL _pool_needle_length)
+    message(FATAL_ERROR "Native CPU pool task site changed; review the experiment before building")
+  endif()
+  string(REPLACE "${_pool_needle}"
+    "        mtasks_ = ${STRATA_NATIVE_POOL_TASK_FACTOR} * threads;\n        mrows_ = (int64_t) nb * FF;"
+    _pool_experiment "${_pool_original}")
+  set(_pool_generated "${CMAKE_CURRENT_BINARY_DIR}/native-pool-task-factor.cpp")
+  file(WRITE "${_pool_generated}" "${_pool_experiment}")
+  set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${_pool_source}")
+  get_filename_component(_pool_source_directory "${_pool_source}" DIRECTORY)
+  set_source_files_properties("${_pool_generated}" PROPERTIES INCLUDE_DIRECTORIES "${_pool_source_directory}")
+  list(REMOVE_ITEM _cpu "${_pool_source}")
+  list(APPEND _cpu "${_pool_generated}")
+endif()
 add_library(strata_kernels_cpu STATIC ${_cpu})
 set_source_files_properties(${STRATA_ROOT}/src/kernels/cpu/expert.cpp PROPERTIES COMPILE_OPTIONS
   "-mavx512f;-mavx512bw;-mavx512vl;-mavx512dq;-mavx512vnni;-mavx512vbmi;-mf16c;-mfma")
 set_source_files_properties(${STRATA_ROOT}/src/kernels/cpu/q2_avx2.cpp PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c")
+# AVX-VNNI copies of the AVX-2 expert kernels (q2_avx2.cpp, iq_avx2.cpp), taken at run time where the CPU has them
+include(CheckCXXSourceCompiles)
+set(CMAKE_REQUIRED_FLAGS "-mavx2 -mfma -mf16c")
+check_cxx_source_compiles([=[
+#include <immintrin.h>
+#if defined(__GNUC__) || defined(__clang__)
+__attribute__((target("avxvnni")))
+#endif
+static __m256i dots(__m256i a, __m256i b) { return _mm256_dpbusd_avx_epi32(_mm256_dpwssd_avx_epi32(a, a, b), a, b); }
+int main() {
+    volatile int x = 1;
+    return _mm256_extract_epi32(dots(_mm256_set1_epi32(x), _mm256_set1_epi32(x)), 0) == 0;
+}
+]=] STRATA_HAVE_AVXVNNI_INTRINSICS)
+unset(CMAKE_REQUIRED_FLAGS)
+if(STRATA_HAVE_AVXVNNI_INTRINSICS)
+  set(_strata_avxvnni STRATA_AVXVNNI=1)
+else()
+  set(_strata_avxvnni STRATA_AVXVNNI=0)
+endif()
+set_property(SOURCE ${STRATA_ROOT}/src/kernels/cpu/q2_avx2.cpp APPEND PROPERTY COMPILE_DEFINITIONS ${_strata_avxvnni})
 find_package(Threads REQUIRED)
 target_link_libraries(strata_kernels_cpu PUBLIC strata_includes Threads::Threads)
 
@@ -121,22 +198,53 @@ if(STRATA_NATIVE_EXPERTS)
     add_subdirectory(${strata_llamacpp_SOURCE_DIR}/ggml ${CMAKE_BINARY_DIR}/ggml EXCLUDE_FROM_ALL)
   endif()
   strata_resolve(_cpu_native src/kernels/cpu/native_expert.cpp src/kernels/cpu/iq_avx512.cpp src/kernels/cpu/iq_avx2.cpp
-                             src/kernels/cpu/kq_avx2.cpp)   # 0.1.31: the Q4_K/Q5_K/Q5_1/Q8_0 expert rows
+                             src/kernels/cpu/kq_avx2.cpp src/kernels/cpu/kq_avx1.cpp)   # 0.1.31: the Q4_K/Q5_K/Q5_1/Q8_0 expert rows
   target_sources(strata_kernels_cpu PRIVATE ${_cpu_native})
   target_include_directories(strata_kernels_cpu PRIVATE ${STRATA_ROOT}/third_party/ggml)
   set_source_files_properties(${STRATA_ROOT}/src/kernels/cpu/iq_avx512.cpp PROPERTIES COMPILE_OPTIONS
     "-mavx512f;-mavx512bw;-mavx512vl;-mavx512dq;-mavx512vnni;-mavx512vbmi;-mf16c;-mfma")
-  set_source_files_properties(${STRATA_ROOT}/src/kernels/cpu/iq_avx2.cpp PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c")
+  set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/kernels/cpu/iq_avx2.cpp PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c")
   set_source_files_properties(${STRATA_ROOT}/src/kernels/cpu/kq_avx2.cpp PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c")
+  set_source_files_properties(${STRATA_ROOT}/src/kernels/cpu/kq_avx1.cpp PROPERTIES COMPILE_OPTIONS "-mavx")
+  set_property(SOURCE ${STRATA_ROOT}/src/kernels/cpu/iq_avx2.cpp APPEND PROPERTY COMPILE_DEFINITIONS ${_strata_avxvnni})
   target_link_libraries(strata_kernels_cpu PUBLIC ggml-cpu ggml-base)
   target_compile_definitions(strata_kernels_cpu PUBLIC STRATA_NATIVE_EXPERTS=1)
+  option(STRATA_IQ2S_GCC "Use GCC for IQ2_S AVX2 gate/up groups of two/four tokens (experimental)" OFF)
+  if(STRATA_IQ2S_GCC)
+    if(NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
+      message(FATAL_ERROR "STRATA_IQ2S_GCC currently supports Linux builds only")
+    endif()
+    find_program(STRATA_IQ2S_GXX NAMES g++ REQUIRED)
+    set(_iq2s_object ${CMAKE_CURRENT_BINARY_DIR}/iq2s_gcc.o)
+    add_custom_command(OUTPUT ${_iq2s_object}
+      COMMAND ${STRATA_IQ2S_GXX} -O3 -DNDEBUG -std=c++20 -ffp-contract=off -mavx2 -mfma -mf16c
+        -Diq256_gu_rows=iq256_gu_rows_gcc -Diq256_rows=iq256_rows_gcc
+        -Diq256_variant=iq256_variant_gcc -Diq256_variants=iq256_variants_gcc
+        -Diq256_gu_rows_v=iq256_gu_rows_v_gcc -Diq256_rows_v=iq256_rows_v_gcc
+        -Diq4nl256_down_rows_v=iq4nl256_down_rows_v_gcc
+        -Diq256_supported=iq256_supported_gcc -Diq4nl256_down_rows=iq4nl256_down_rows_gcc
+        -Dq8k_quant_avx2=q8k_quant_avx2_gcc
+        -I${STRATA_ROOT}/include -I${STRATA_ROOT}/third_party/ggml
+        -MMD -MF ${_iq2s_object}.d -c ${STRATA_ROOT}/src/kernels/cpu/iq_avx2.cpp -o ${_iq2s_object}
+      DEPENDS ${STRATA_ROOT}/src/kernels/cpu/iq_avx2.cpp ${STRATA_IQ2S_GXX}
+      DEPFILE ${_iq2s_object}.d
+      VERBATIM)
+    set_source_files_properties(${_iq2s_object} PROPERTIES GENERATED TRUE EXTERNAL_OBJECT TRUE)
+    target_sources(strata_kernels_cpu PRIVATE ${_iq2s_object})
+    target_compile_definitions(strata_kernels_cpu PRIVATE STRATA_IQ2S_GCC=1)
+  endif()
 endif()
 
 # --- the GPU engine ------------------------------------------------------------------------------------------------
 strata_resolve(_core src/core/device.cu src/core/pinned.cu src/platform/memory.cpp src/core/graph.cpp
-                     src/core/weights.cpp src/core/layout.cpp)
+                     src/core/weights.cpp src/core/layout.cpp src/core/vmm.cpp)
 add_library(strata_core STATIC ${_core})
 target_link_libraries(strata_core PUBLIC strata_includes)
+# zeMemAllocHost for the host memory a kernel polls (include/strata/sycl_queue.hpp, host_malloc_polled): only when libze-dev's header is there
+find_library(STRATA_ZE_LOADER ze_loader)
+if(STRATA_ZE_LOADER)
+  target_link_libraries(strata_core PUBLIC ${STRATA_ZE_LOADER})
+endif()
 
 set(_kernel_cu dequant_s2 s2_gemv s_gemv s2_gemv_quads s2_gemv_fast router_top10 quantize_act rope sampler s2_gemv_q8
     s2_expert_grouped shared_expert gr gdn qsa elementwise bf16_gemv native_mmvq native_bf16 native_gr_norm native_moe
@@ -157,7 +265,9 @@ strata_resolve(_engine src/core/layer.cpp src/core/session.cpp src/core/expert_s
                        src/core/expert_cache.cpp src/core/native_head.cpp src/core/native_dense.cpp src/core/verify.cpp
                        src/core/mtp.cpp src/core/conversation_snapshot.cpp src/core/conversation_state.cpp
                        src/core/conversation_memory.cpp   # 0.1.31: the conversation snapshots (#216)
-                       src/core/peer_experts.cpp)         # 0.1.36+: --peer-device (a stub in the port: no second GPU tier yet)
+                       src/core/arch_defaults.cpp src/core/vmm.cpp   # vmm.cpp is the port's stub: no driver VMM on Level Zero
+                       src/core/conversation_file.cpp
+                       src/core/peer_experts.cpp src/core/remote_expert_opt_stub.cpp)         # 0.1.36+: --peer-device (a stub in the port: no second GPU tier yet)
 add_library(strata_engine STATIC ${_engine} ${CMAKE_CURRENT_SOURCE_DIR}/src/core/gguf_expert_source.cpp)
 target_include_directories(strata_engine PRIVATE ${STRATA_ROOT}/src/core)   # conversation_checked.hpp (#include "...")
 target_link_libraries(strata_engine PUBLIC strata_core strata_kernels strata_kernels_cpu)
@@ -219,6 +329,18 @@ if(STRATA_SYCL_PARITY)
   add_test(NAME gdn_variant_parity COMMAND gdn_variant_parity)
   set_tests_properties(gdn_variant_parity PROPERTIES TIMEOUT 180
     ENVIRONMENT_MODIFICATION "STRATA_GDN_KEYHEAD_TUNED=set:0;STRATA_GDN_KEYHEAD=set:0;STRATA_GDN_PIPELINE=set:1;STRATA_GDN_REC_HEADS=unset:")
+  # 0.1.40 (#783): the batched verify-window kernels against the ones they replace, bitwise (synthetic, no model)
+  foreach(p IN ITEMS verify native_multi kv_steps resident_plan gr_multi)
+    strata_resolve(_src src/kernels/${p}_parity.cpp)
+    add_executable(${p}_parity ${_src})
+    target_include_directories(${p}_parity PRIVATE ${STRATA_ROOT}/src/kernels)
+    target_link_libraries(${p}_parity PRIVATE strata_kernels)
+    add_test(NAME ${p}_parity COMMAND ${p}_parity)
+  endforeach()
+  # not built here: qsa_topk_parity / qsa_topk_active_parity (the sm_90 thread-block-cluster QSA top-k has no SYCL
+  # counterpart: the callers take the plain kernels), route_window_parity and fused_gr_bench (no migrated copy yet)
+  # (upstream PR #413's gdn_rec_parity is an SM-holding NVIDIA bench - PTX timers, __nanosleep - not built here; the
+  # key-head kernel is checked through the engine: output hashes with STRATA_GDN_KEYHEAD=1 and without)
   # the conversation snapshots (#216) against the engine, as upstream's STRATA_BUILD_CONVERSATION_TESTS
   strata_resolve(_src src/core/conversation_snapshot_test.cpp)
   add_executable(conversation_snapshot_test ${_src})
@@ -245,6 +367,8 @@ if(STRATA_SYCL_PARITY)
   add_executable(kv_hybrid_parity ${_src})
   target_include_directories(kv_hybrid_parity PRIVATE ${STRATA_ROOT}/src/kernels)
   target_link_libraries(kv_hybrid_parity PRIVATE strata_kernels)
+  add_executable(dequant_bench ${CMAKE_CURRENT_SOURCE_DIR}/src/kernels/dequant_bench.cpp)   # prompt-path expert dequant timing + output hash
+  target_link_libraries(dequant_bench PRIVATE strata_kernels)
   add_executable(mmvq_bench ${CMAKE_CURRENT_SOURCE_DIR}/src/kernels/mmvq_bench.cpp)   # dense mmvq timing
   target_link_libraries(mmvq_bench PRIVATE strata_kernels)
   add_executable(mmvq_sg_bench ${CMAKE_CURRENT_SOURCE_DIR}/src/kernels/mmvq_sg_bench.cpp)   # SIMD16 vs 32 decode mmvq

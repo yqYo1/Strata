@@ -1,0 +1,38 @@
+{
+  "started_utc": "2026-10-07T09:01:21.019050+00:00",
+  "before_head": "ac4fba321bf0e19a240fcf35221392961cee5646",
+  "old_upstream": "6f32ec070f23ced9f50e704d854d775da52591ab",
+  "equivalent_rewritten_upstream": "a1641e9f77aacad4d201b53c8a7ae8fa21059ebb",
+  "identical_base_tree": "27b0e86ffc000d325a9fbf0bd753ee5817eddaa7",
+  "latest_upstream": "82f46a8c8f475f001ad76d92f58f4a4f8ffb0253",
+  "goal": "Integrate and test upstream update while preserving existing SYCL lifetime/progress fixes and tuning evidence",
+  "tested": true,
+  "gpu_jobs_active": false,
+  "finished_utc": "2026-10-07T09:52:01.110383+00:00",
+  "binary_sha256": "ceff2d8a6d38fc4779a8b6969d4912efedea5dbd4e2c9229f04af49c680c0bd0",
+  "gpu_runs": [
+    {
+      "name": "owned-upstream-refresh-short",
+      "requests": 4,
+      "release_pairs": {
+        "release": 6,
+        "restore": 6
+      },
+      "binary_sha256": "ceff2d8a6d38fc4779a8b6969d4912efedea5dbd4e2c9229f04af49c680c0bd0"
+    },
+    {
+      "name": "owned-upstream-refresh-2048",
+      "requests": 1,
+      "release_pairs": {
+        "release": 1,
+        "restore": 1
+      },
+      "binary_sha256": "ceff2d8a6d38fc4779a8b6969d4912efedea5dbd4e2c9229f04af49c680c0bd0"
+    }
+  ],
+  "host_setup_scripts_passed": 24,
+  "serve_tests_run": 452,
+  "serve_tests_skipped": 8,
+  "standalone_cpu_tests_passed": 4,
+  "scope": "Upstream source/server/shared headers incorporated, existing SYCL math and phase waits retained; CPU build/host tests and short/multichunk GPU exact-head regression only. New CUDA-only fused/padded/VMM modes are not enabled in SYCL. Full262144-cell gates remain unresolved and incomplete."
+}

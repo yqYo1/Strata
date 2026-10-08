@@ -1,0 +1,24 @@
+{
+  "active": false,
+  "passed": true,
+  "created_utc": "2026-10-08T13:28:38.037318+00:00",
+  "scope": "Source-only applicability review of existing HC/dense knobs during independent quiet QSA timing. No flag was enabled, no engine compiled, GPU job launched or performance conclusion made.",
+  "actual_compiled_source_sha256": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/prefill/prefill.cpp": "f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/prefill/kernels.dp.cpp": "bad70072be3f00708c75ae671ad3a2e6dbfdff7a75eb51ff98280c02c292a447",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/prefill/gemm.dp.cpp": "11a2c943ccc323c328b58d99119d77b3b4ed95c92a0f680480bf5ede96bcb705"
+  },
+  "observations": [
+    "gr_upmix is implemented only under __HIPCC__; this SYCL compilation takes its explicit false return and the existing separate projection/mix fallback.",
+    "bf16_hcd_exact relies on a calibrated HIP/hipBLASLt 1176/1177 path; SYCL returns false. It is not an Intel exact-order implementation.",
+    "Default BF16/F16 projections call dpct::blas::gemm with oneMKL transpose and f32 compute descriptors. The names of HIP WMMA flags do not establish Intel implementation or speed.",
+    "gr_write_norm_rs explicitly rejects padded rows on SYCL; enabling the existing HC padding flags without a port is not a supported tuning step.",
+    "Existing HC shape is N2560,HC4,D10240,LR320 in this actual compiled source; B70 or another hardware result cannot be substituted for its measurement."
+  ],
+  "next_constraints": [
+    "A future HC fusion needs an actual SYCL implementation and exact-order/device numerical gates, not only an environment flag.",
+    "Machine-specific register/AOT settings may be studied without floating-point reassociation, then logged>=32K checks and clean>=32K comparisons."
+  ],
+  "minimum_performance_input_tokens": 32768,
+  "adopted": false
+}

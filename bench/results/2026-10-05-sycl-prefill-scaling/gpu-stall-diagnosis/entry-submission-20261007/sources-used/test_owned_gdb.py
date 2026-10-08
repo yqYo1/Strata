@@ -1,0 +1,133 @@
+"""Real GDB/child lifecycle checks without a GPU, root or driver calls."""
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import time
+
+from owned_gdb import OwnedGdb, process_identity
+
+
+out = Path(sys.argv[1])
+out.mkdir()
+out.chmod(0o700)
+source = out / 'probe.c'
+source.write_text(r'''#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
+__attribute__((noinline)) static void waiting_probe(double seconds) {
+    struct timespec start, now; clock_gettime(CLOCK_MONOTONIC, &start);
+    for (;;) {
+        usleep(10000); clock_gettime(CLOCK_MONOTONIC, &now);
+        if (seconds > 0 && (now.tv_sec-start.tv_sec) +
+            (now.tv_nsec-start.tv_nsec)*1e-9 >= seconds) return;
+    }
+}
+int main(int n, char **v) {
+    puts("READY"); fflush(stdout);
+    if (!strcmp(v[1], "argv")) return n == 6 &&
+        !strcmp(v[2], "two words") && !strcmp(v[3], "quote\"tail") &&
+        !strcmp(v[4], "backslash\\tail") &&
+        !strcmp(v[5], "literal $STRATA_TEST_LITERAL") ? 0 : 89;
+    if (!strcmp(v[1], "crash")) { raise(SIGSEGV); return 99; }
+    if (!strcmp(v[1], "resume")) { waiting_probe(3); return 0; }
+    if (!strcmp(v[1], "blocked")) { waiting_probe(0); return 99; }
+    return atoi(v[1]);
+}
+''')
+binary = out / 'probe'
+env = dict(os.environ)
+env['LD_LIBRARY_PATH'] = '/usr/lib/x86_64-linux-gnu'
+env['PATH'] = '/usr/bin:/bin'
+env.pop('LD_PRELOAD', None)
+compile_argv = ['/usr/bin/gcc', '-g', '-O0', str(source), '-o', str(binary)]
+record = {'scope': 'Actual GDB as parent of CPU-only fixtures; no GPU runtime, sudo, services or reset',
+          'compile_argv': compile_argv, 'cases': [], 'passed': False}
+compiled = subprocess.run(compile_argv, env=env, capture_output=True, timeout=10)
+(out / 'compile.stdout').write_bytes(compiled.stdout)
+(out / 'compile.stderr').write_bytes(compiled.stderr)
+record['compile_exit_code'] = compiled.returncode
+(out / 'record.json').write_text(json.dumps(record, indent=2) + '\n')
+assert compiled.returncode == 0
+
+
+def save():
+    (out / 'record.json').write_text(json.dumps(record, indent=2) + '\n')
+
+
+def wait(g, condition, seconds=6):
+    deadline = time.monotonic() + seconds
+    while not condition() and time.monotonic() < deadline:
+        g.poll(.05)
+    assert condition(), 'CPU fixture did not reach expected state'
+
+
+def absent_or_zombie(identity):
+    if identity is None:
+        return True
+    current = process_identity(identity['pid'])
+    return not current or current['start_ticks'] != identity['start_ticks'] or current['state'] == 'Z'
+
+
+save()
+try:
+    for mode in ['0', '7', '127', 'argv', 'resume', 'crash', 'blocked']:
+        case = {'mode': mode, 'passed': False}
+        record['cases'].append(case)
+        args = [str(binary), mode]
+        if mode == 'argv':
+            args += ['two words', 'quote"tail', 'backslash\\tail', 'literal $STRATA_TEST_LITERAL']
+        g = OwnedGdb(args, out / mode, env)
+        try:
+            g.run()
+            if mode in ['resume', 'blocked']:
+                wait(g, lambda: g.inferior is not None and 'READY' in (out / mode / 'gdb-mi.stdout').read_text())
+                for label in (['snapshot-1', 'snapshot-2'] if mode == 'resume' else ['snapshot']):
+                    snap = g.snapshot(label, resume=mode == 'resume')
+                    assert snap and snap['resumed'] == (mode == 'resume')
+                    assert 'waiting_probe' in Path(snap['path']).read_text()
+                if mode == 'resume':
+                    wait(g, lambda: g.exit_code is not None)
+                    assert g.exit_code == 0
+            elif mode == 'crash':
+                wait(g, lambda: any('signal-name="SIGSEGV"' in s for s in g.stops))
+                snap = g.snapshot('first-fault')
+                assert snap and not snap['resumed'] and 'signal-name="SIGSEGV"' in snap['stop']
+                assert 'main' in Path(snap['path']).read_text()
+                assert g.exit_code is None
+            else:
+                wait(g, lambda: g.exit_code is not None)
+                assert g.exit_code == (0 if mode == 'argv' else int(mode))
+            case.update(inferior=g.inferior, debugger=g.debugger_identity,
+                        exit_code=g.exit_code, exit_signal=g.exit_signal,
+                        stops=g.stops, snapshots=g.snapshots)
+        finally:
+            case['cleanup'] = g.close()
+            assert not case['cleanup']['inferior_survived'] and not case['cleanup']['gdb_survived']
+            assert absent_or_zombie(g.inferior) and absent_or_zombie(g.debugger_identity)
+            save()
+        case['passed'] = True
+        save()
+    before = (out / '0/gdb-mi.stdout').read_bytes()
+    try:
+        OwnedGdb([str(binary), '0'], out / '0', env)
+    except FileExistsError:
+        pass
+    else:
+        raise AssertionError('debugger log was overwritten')
+    assert (out / '0/gdb-mi.stdout').read_bytes() == before
+    record['overwrite_refused'] = True
+    record['source_sha256'] = {str(p): hashlib.sha256(p.read_bytes()).hexdigest()
+                               for p in [Path(__file__), Path(__file__).with_name('owned_gdb.py'), source]}
+    record['passed'] = True
+except BaseException as error:
+    record['error'] = repr(error)
+    raise
+finally:
+    save()
+print(json.dumps(record, indent=2))

@@ -1,0 +1,57 @@
+{
+  "scope": "CPU stub/GDB/PTY only; no model, GPU, kernel-journal or service operation",
+  "controller_sha256": "22e4d7e621b53b85d94b9de117f4f18a4b3960a3843f5ecfdd59fb0b5b940e46",
+  "stub_sha256": "3d55ae40bb63273e670709c1fd6ef68664f136804247d6c196183c8d2ddb7bea",
+  "checks": [
+    {
+      "mode": "quit-writes",
+      "expected": true,
+      "observed": true,
+      "exit_code": 0,
+      "error": null,
+      "cleanup": {
+        "forced": false,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    },
+    {
+      "mode": "ignores-quit",
+      "expected": false,
+      "observed": false,
+      "exit_code": 1,
+      "error": "AssertionError()",
+      "cleanup": {
+        "forced": true,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    },
+    {
+      "mode": "no-ready",
+      "expected": false,
+      "observed": false,
+      "exit_code": 1,
+      "error": "TimeoutError('Engine protocol deadline')",
+      "cleanup": {
+        "forced": true,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    },
+    {
+      "mode": "does-not-read",
+      "expected": false,
+      "observed": false,
+      "exit_code": 1,
+      "error": "TimeoutError('Protocol request-write deadline')",
+      "cleanup": {
+        "forced": true,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    }
+  ],
+  "completed": true,
+  "preceding_checks": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-layer-trace-serve-cpu-fixed-fixture/record.json"
+}

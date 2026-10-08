@@ -1,0 +1,48 @@
+{
+  "action": "recover",
+  "method": "flr",
+  "started_utc": "2026-10-06T08:08:31.938588+00:00",
+  "healthy": false,
+  "recovery_completed": false,
+  "dump_saved": false,
+  "device_before": {
+    "bdf": "0000:05:00.0",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "subsystem_vendor": "0x172f",
+    "subsystem_device": "0x0102",
+    "driver": "xe",
+    "boot_vga": "0",
+    "connectors": {
+      "card1-HDMI-A-3": "disconnected",
+      "card1-HDMI-A-1": "disconnected",
+      "card1-DP-2": "disconnected",
+      "card1-HDMI-A-4": "disconnected",
+      "card1-HDMI-A-2": "disconnected",
+      "card1-DP-3": "disconnected",
+      "card1-DP-1": "disconnected"
+    },
+    "reset_methods": "flr bus",
+    "survivability_mode": "unavailable",
+    "runtime_status": "suspended"
+  },
+  "clients": [
+    {
+      "pid": 4330,
+      "comm": "Xorg",
+      "state": "S",
+      "start_ticks": 3692,
+      "reasons": [
+        "DRM PCI descriptor",
+        "GPU memory mapping",
+        "open GPU descriptor"
+      ]
+    }
+  ],
+  "uninspectable_pids": [],
+  "error": "GPU clients or uninspectable processes remain; see report.json",
+  "refused": true,
+  "finished_utc": "2026-10-06T08:08:33.245984+00:00",
+  "steps": [],
+  "root_report": "/var/log/strata-gpu-recovery/20261006-170831-7wepcenl/report.json"
+}

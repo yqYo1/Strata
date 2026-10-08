@@ -1,0 +1,53 @@
+{
+  "scope": "Recorded CPU SIGSEGV precedes BCS fault; no GPU execution during collection",
+  "collected_utc": "2026-10-06T15:58:50.414620+00:00",
+  "pid": 1183420,
+  "signal": 11,
+  "cpu_crash_realtime_us": 1791299439203062,
+  "gpu_fault_realtime_us": 1791299443491993,
+  "observed_gpu_fault_delay_seconds": 4.288931,
+  "instruction_pointer": "0x0000713e61fcc4d9",
+  "module_mapping_base": "0x0000713e61802000",
+  "module_offset": "0x7ca4d9",
+  "module_build_id": "a150ba51180689c9ab166533b5d6503441b9e1c1",
+  "module_path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+  "module_sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c",
+  "resolved_symbol": "NEO::GraphicsAllocation::prepareHostPtrForResidency(NEO::CommandStreamReceiver*) [clone .part.0]",
+  "source_tag": "26.31.39395.14",
+  "source_commit": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+  "upstream_fix_ancestry": {
+    "64ad4a0f37213f6c01e4ba88dee995645aa4d364": {
+      "26.31.39395.14": false,
+      "26.35.39758.10": false
+    },
+    "3efe60fca42a8b7da186d6b21d0677e02d1e9c51": {
+      "26.31.39395.14": false,
+      "26.35.39758.10": false
+    }
+  },
+  "core_available": false,
+  "core_limit_at_crash": 0,
+  "apport_ignored_nonpackaged_executable": true,
+  "exact_crashing_allocation_identified": false,
+  "full_call_stack_available": false,
+  "old_controller_recorded_wait_status": false,
+  "old_controller_preserved_raw_stdout": false,
+  "failed_process_allocation_type_for_fault_address_confirmed": false,
+  "first_request_generated_ids": [
+    760,
+    10849,
+    88851,
+    2272
+  ],
+  "completed_requests": 1,
+  "failing_request": "repeat after checkpoint restore and second prefill request",
+  "release_restore_pairs": 3,
+  "physical_release_bytes": 939524096,
+  "restored_payload_bytes": 931016700,
+  "restore_copy_ms": [
+    176.085,
+    175.987,
+    176.243
+  ],
+  "gpu_reset_or_rebind_performed": false
+}

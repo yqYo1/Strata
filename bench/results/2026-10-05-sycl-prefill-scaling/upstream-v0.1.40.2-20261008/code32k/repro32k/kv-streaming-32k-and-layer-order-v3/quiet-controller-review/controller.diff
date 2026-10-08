@@ -1,0 +1,140 @@
+--- /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_kv_layer_major32k_v01402_v1.py
++++ /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_kv_matched_quiet32k_v01402_v1.py
+@@ -19,7 +19,7 @@
+ base = Path(__file__).parent
+ observer = Path('/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05')
+ mode=sys.argv[1]; phase=sys.argv[2]; repetition=int(sys.argv[3])
+-assert mode=='kv-layer-major32k' and phase in ['diagnostic','state'] and repetition in [1,2,3]
++assert mode in ['kv-stream32k-quiet','kv-layer-major32k-quiet'] and phase=='quiet' and repetition in [1,2]
+ previous=json.loads((base/'v01402-code32k-sequence/record.json').read_text());assert previous['passed'] and not previous['active']
+ default_gate=json.loads((base/'event-ack-no-root-default-v01402-gated-checks/record.json').read_text())
+ assert default_gate['passed'] and not default_gate['active']
+@@ -157,18 +157,29 @@
+         old=first[k];now=process_identity(old['pid'])
+         assert not now or now['start_ticks']!=old['start_ticks']
+     record['chunk_major_stream_gate_sha256']=hashlib.sha256(stream_gate.read_bytes()).hexdigest()
+-    binary=root/'build-sycl-kv-layer-major-v1-20261008/strata'
+-    kv_receipt=base/'kv-layer-major-v01402-build-v1/record.json'
++    layer_gate_path=base/'owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/record.json'
++    completed_layer=json.loads(layer_gate_path.read_text())
++    assert completed_layer['healthy'] and completed_layer['completed'] and completed_layer['math_gate_passed'] and not completed_layer['active']
++    assert len(completed_layer['requests'])==3 and all(x['math_gate_passed'] for x in completed_layer['requests'])
++    assert completed_layer['exit_code']==0 and not completed_layer['new_fault_messages']
++    assert not any(completed_layer['cleanup'][x] for x in ['inferior_survived','gdb_survived'])
++    for key in ['inferior','debugger']:
++        old=completed_layer[key];now=process_identity(old['pid'])
++        assert not now or now['start_ticks']!=old['start_ticks']
++    record['layer_major_stream_gate_sha256']=hashlib.sha256(layer_gate_path.read_bytes()).hexdigest()
++    is_layer=mode=='kv-layer-major32k-quiet'
++    binary=root/('build-sycl-kv-layer-major-v1-20261008/strata' if is_layer else 'build-sycl-kv-stream-safe-v3-20261008/strata')
++    kv_receipt=base/('kv-layer-major-v01402-build-v1/record.json' if is_layer else 'kv-stream-safe-v01402-build-v3/record.json')
+     kv_build=json.loads(kv_receipt.read_text())
+     assert kv_build['passed'] and not kv_build['active'] and kv_build['baseline_inputs_unchanged']
+     assert kv_build['candidate_binary_sha256']==hashlib.sha256(binary.read_bytes()).hexdigest()
+     assert kv_build['baseline_binary_sha256']=='e82fc5de5480b72255b601759497d5810e86bf691350417ed0dc11ed6c429323'
+     assert all(hashlib.sha256(Path(p).read_bytes()).hexdigest()==sha for p,sha in kv_build['link_input_sha256'].items())
+-    kv_source=binary.parent/'source/prefill.cpp'
++    kv_source=binary.parent/('source/prefill.cpp' if is_layer else 'source/kv_stream.dp.cpp')
+     assert hashlib.sha256(kv_source.read_bytes()).hexdigest()==kv_build['candidate_source_sha256']
+     record['kv_build_receipt_sha256']=hashlib.sha256(kv_receipt.read_bytes()).hexdigest()
+     record['kv_source_sha256']=kv_build['candidate_source_sha256']
+-    review=base/'kv-layer-major32k-v01402-source-review-v1/record.json'
++    review=base/('kv-layer-major32k-v01402-source-review-v1/record.json' if is_layer else 'kv-stream32k-v01402-source-review-v2/record.json')
+     audit=json.loads(review.read_text());assert audit['passed'] and not audit['active']
+     assert audit['candidate_sha256']==record['kv_source_sha256']
+     record['kv_source_review_sha256']=hashlib.sha256(review.read_bytes()).hexdigest()
+@@ -201,7 +212,7 @@
+         record['prefill_kernel_candidate']={'file':str(candidate),'sha256':expected['candidate_source_sha256'],'removed_sites':expected['removed_sites']}
+         assert len(expected['removed_sites'])==14
+     final=json.loads((base/'owned-upstream-e8ca-refresh-short-final-float-storage/record.json').read_text());assert final['healthy'] and not final['active']
+-    for previous_path in list(base.glob('clean-v01402-short-*/record.json'))+list(base.glob('clean-v01402-default-*/record.json'))+list(base.glob('owned-v01402*-*/record.json'))+list(base.glob('owned-event-ack-v01402-code32k-*/record.json'))+list(base.glob('owned-cb-off-v01402-code32k-*/record.json'))+list(base.glob('owned-cnr-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-cb-cnr-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-no-profile-cb-cnr-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-registered-copy-cb-cnr-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-registered-copy-cb-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-no-root-prefill-cb-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-no-root-prefill-default-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-no-root-host-profile-v01402-code32k-*/record.json'))+list(base.glob('owned-qsa-*-v01402-code32k-*/record.json'))+list(base.glob('owned-compact2-layout1-v01402-code32k-*/record.json'))+list(base.glob('owned-layer2-ram-layout1-v01402-code32k-*/record.json'))+list(base.glob('owned-layer2-gpu-release-layout1-v01402-code32k-*/record.json'))+list(base.glob('owned-processing-default-v01402-code32k-*/record.json'))+list(base.glob('owned-main-vmm-*-v01402-code32k-*/record.json'))+list(base.glob('owned-kv-stream32k-v01402-code32k-*/record.json'))+list(base.glob('owned-kv-layer-major32k-v01402-code32k-*/record.json')):
++    for previous_path in list(base.glob('clean-v01402-short-*/record.json'))+list(base.glob('clean-v01402-default-*/record.json'))+list(base.glob('owned-v01402*-*/record.json'))+list(base.glob('owned-event-ack-v01402-code32k-*/record.json'))+list(base.glob('owned-cb-off-v01402-code32k-*/record.json'))+list(base.glob('owned-cnr-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-cb-cnr-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-no-profile-cb-cnr-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-registered-copy-cb-cnr-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-registered-copy-cb-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-no-root-prefill-cb-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-no-root-prefill-default-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-no-root-host-profile-v01402-code32k-*/record.json'))+list(base.glob('owned-qsa-*-v01402-code32k-*/record.json'))+list(base.glob('owned-compact2-layout1-v01402-code32k-*/record.json'))+list(base.glob('owned-layer2-ram-layout1-v01402-code32k-*/record.json'))+list(base.glob('owned-layer2-gpu-release-layout1-v01402-code32k-*/record.json'))+list(base.glob('owned-processing-default-v01402-code32k-*/record.json'))+list(base.glob('owned-main-vmm-*-v01402-code32k-*/record.json'))+list(base.glob('owned-kv-stream32k-v01402-code32k-*/record.json'))+list(base.glob('owned-kv-layer-major32k-v01402-code32k-*/record.json'))+list(base.glob('owned-kv-*-quiet-v01402-code32k-quiet-*/record.json')):
+         if previous_path.parent==out:continue
+         previous=json.loads(previous_path.read_text());assert not previous['active']
+         known_failures={'owned-v01402-code32k-patched-default-head-r2': '74e4b01947b304ce63400cf41930dffcbcaa7482d4342770557da4a00520fae6', 'owned-event-ack-v01402-code32k-diagnostic-r1': 'b1d072a15ceaf7b30c35c6599b7df4a91f62caeb0fa8469000a980f6c3c8ed46', 'owned-event-ack-cb-cnr-v01402-code32k-state-r1': '073f0a2081f333c21254c7f1388681473bada935cacf5db56ee3d7994f856f95', 'owned-main-vmm-full-ram-chunk12k-v01402-code32k-diagnostic-r1': '3de5e40d7a9bb390112c8de7bc6ee29604e62f8fed45e516cbf57ffe8cb0dfdb'}
+@@ -222,23 +233,23 @@
+     env.update(NEOReadDebugKeys='1',EnableDirectSubmission='0')
+     env.update(STRATA_PREFILL_FIRST='0',STRATA_PREFILL_RING='8')
+     env.update(STRATA_PREFILL_COMPACT='2',STRATA_PREFILL_ATTN_LAYOUT='1')
+-    env.update(STRATA_PREFILL_LAYER_MAJOR='2',STRATA_KV_STAGE_OWN='1',STRATA_KV_PREFETCH='0',
+-               STRATA_PREFILL_RELEASE_DRAFT='1',STRATA_PREFILL_DRAFT_VERIFY='1',
+-               STRATA_PREFILL_LAYER_MAJOR_R_GPU='0',STRATA_PREFILL_LAYER_MAJOR_R_INPLACE='1',
+-               STRATA_PREFILL_RELEASE_CACHE='1',STRATA_PREFILL_CACHE_ALLOC='vmm',
+-               STRATA_PREFILL_CACHE_RESTORE='ram',STRATA_PREFILL_CACHE_RELEASE_FRAC='1',
+-               STRATA_PREFILL_CACHE_VERIFY='1')
+-    assert env['STRATA_PREFILL_LAYER_MAJOR_R_GPU']=='0'
++    env.update(STRATA_PREFILL_LAYER_MAJOR='2' if is_layer else '0',STRATA_KV_STAGE_OWN='1',STRATA_KV_PREFETCH='0')
++    if is_layer:
++        env.update(STRATA_PREFILL_RELEASE_DRAFT='1',
++                   STRATA_PREFILL_LAYER_MAJOR_R_GPU='0',STRATA_PREFILL_LAYER_MAJOR_R_INPLACE='1',
++                   STRATA_PREFILL_RELEASE_CACHE='1',STRATA_PREFILL_CACHE_ALLOC='vmm',
++                   STRATA_PREFILL_CACHE_RESTORE='ram',STRATA_PREFILL_CACHE_RELEASE_FRAC='1')
+     assert env['STRATA_KV_STAGE_OWN']=='1' and env['STRATA_KV_PREFETCH']=='0'
+     assert not any(k in env for k in ['STRATA_PREFILL_ATTN_BATCH','STRATA_GDN_KEYHEAD','STRATA_GDN_KEYHEAD_TUNED','STRATA_PROMPT_ATTN_XMX'])
+     assert 'EnableImplicitConvertionToCounterBasedEvents' not in env
+     assert 'MKL_CBWR' not in env
+     if mode=='patched-tuned':env.update(STRATA_PREFILL_COMPACT='2',STRATA_PREFILL_LAYER_MAJOR='2',STRATA_PREFILL_RELEASE_DRAFT='1',STRATA_PREFILL_DRAFT_VERIFY='1',STRATA_PREFILL_EXPERT_WAIT_BATCH='0')
+-    env['STRATA_TRACE']='1'
++    assert 'STRATA_TRACE' not in env
+     if phase=='diagnostic':env=m.diagnostic_environment(env)
+     if phase!='diagnostic':assert not any(k.startswith(('UR_LOG_','ZE_ENABLE_','ZEL_')) for k in env)
+-    env['STRATA_DUMP_FIRST_LOGITS']=str(out/'first-head.bin')
+-    env['STRATA_PREFILL_DUMP_STATE']=str(out/'prefill-state.bin')
++    assert not any(k in env for k in [
++        'STRATA_DUMP_FIRST_LOGITS','STRATA_PREFILL_DUMP_STATE','STRATA_PREFILL_CACHE_VERIFY',
++        'STRATA_PREFILL_DRAFT_VERIFY','STRATA_PREFILL_TIMING','STRATA_PROFILE','STRATA_VERIFY_PROFILE'])
+     assert 'STRATA_PREFILL_SYNC' not in env
+     assert 'STRATA_PREFILL_TRANSFER_TIMING' not in env
+     record['environment']={k:v for k,v in env.items() if k.startswith(('STRATA_','SYCL_','UR_','ZE_','ZEL_','ONEAPI_')) or k in ['LD_LIBRARY_PATH','NEOReadDebugKeys','EnableDirectSubmission','EnableImplicitConvertionToCounterBasedEvents','MKL_CBWR']}
+@@ -261,6 +272,9 @@
+     assert live_gate['passed'] and not live_gate['active']
+     record['live_state_comparator_sha256']=hashlib.sha256((base/'compare_live_prefill_state_v01402_v2.py').read_bytes()).hexdigest()
+     record['host_lease_check_sha256']=hashlib.sha256((base/'main-cache-lease-v01402-host-check/record.json').read_bytes()).hexdigest()
++    record['scope']='Matched quiet controls: context262144, kv-resident32768, same8192/int8/cache128/workers5/pcie0/MTP4/GEN64/32768 fixture. Compare existing chunk-major versus streamed layer-major with RAM residual/main+MTP leases. Three completely fresh reads per process; first startup/JIT/capture separate from reads2/3. No model API logs, state/head/payload validation, trace/profiler, extra waits or prompt reuse. All64IDs/logprobs/MTP43/66 still exact. Prior logged full-state/head correctness required. Not full262144 occupancy or production adoption.'
++    record['configuration_note']=record['scope']
++    record['previous_goal_turn']='Progress: defined KV representation/page-claim candidate and both streamed processing-order configurations must have terminal3x32K math/noXE/no-survivor receipts before quiet comparison.'
+     cursor=m.journal_cursor(r,'kernel-before');save()
+     master,slave=os.openpty();tty.setraw(slave);os.set_blocking(master,False)
+     g=OwnedGdb(argv,out/'debugger',env,inferior_tty_fd=slave)
+@@ -299,37 +313,14 @@
+         mm=result['measurement'];assert mm['prompt_ms']>0 and mm['decode_ms']>0
+         mm['prefill_tok_s']=1000*mm['prompt_tokens']/mm['prompt_ms'];mm['decode_tok_s']=1000*mm['generated_tokens']/mm['decode_ms']
+         result['finite_logprobs']=True
+-        head=out/'first-head.bin';assert head.exists(), 'missing fresh head capture'
+-        preserved=out/f'{current}.head.bin';assert not preserved.exists();head.rename(preserved);head=preserved
+-        data=head.read_bytes();floats=array.array('f');floats.frombytes(data)
+-        assert len(floats)==248320 and all(map(math.isfinite,floats))
+-        result['first_head']={'file':str(head),'sha256':hashlib.sha256(data).hexdigest(),'floats':len(floats),'finite':True,'captured_at':'first verifier window row0, after32767 batched prompt tokens and held-out input token, before first-window commit'}
+-        state=out/'prefill-state.bin';assert state.exists(), 'missing fresh state capture'
+-        preserved=out/f'{current}.state.bin';assert not preserved.exists();state.rename(preserved);state=preserved
+-        parts=[]
+-        with state.open('rb') as stream:
+-            while header:=stream.read(8):
+-                assert len(header)==8
+-                size=struct.unpack('=Q',header)[0];offset=stream.tell();left=size;digest=hashlib.sha256()
+-                while left:
+-                    data=stream.read(min(left,1048576));assert data;digest.update(data);left-=len(data)
+-                parts.append({'index':len(parts),'offset':offset,'bytes':size,'sha256':digest.hexdigest()})
+-        assert len(parts)==66 and parts[0]['bytes']==8
+-        result['prefill_state']={'file':str(state),'bytes':state.stat().st_size,'parts':parts,'captured_at':'after32767 batched prompt tokens, before the held-out input token and first verifier window'}
+         baseline=json.loads((base/'owned-event-ack-no-root-prefill-default-v01402-code32k-diagnostic-r1/record.json').read_text())['requests'][0]
+         result['comparison_to_default_counter_control']={
+-            'first_head_equal':result['first_head']['sha256']==baseline['first_head']['sha256'],
+-            'ids_equal':result['ids']==baseline['ids'],'logprobs_equal':result['logprobs']==baseline['logprobs'],
+-            'different_prefill_state_parts':[i for i,(a,c) in enumerate(zip(result['prefill_state']['parts'],baseline['prefill_state']['parts'])) if a['bytes']!=c['bytes'] or a['sha256']!=c['sha256']]}
+-        record['requests'].append(result);save()
+-        c=result['comparison_to_default_counter_control']
+-        live=compare_states(result['prefill_state'],baseline['prefill_state'],32767)
+-        result['live_prefill_comparison']=live
++            'ids_equal':result['ids']==baseline['ids'],
++            'logprobs_equal':result['logprobs']==baseline['logprobs']}
+         result['mtp_counts']=list(map(int,result['protocol'][-1].split()[6:8]))
+         result['no_prompt_reuse']=any(line in ['RESUME 0','REUSED 0'] for line in result['protocol']) and not any(line.startswith(('RESUME ','REUSED ')) and line.split()[1]!='0' for line in result['protocol'])
+-        result['math_gate_passed']=not live['different_live_parts'] and all(c[k] for k in ['first_head_equal','ids_equal','logprobs_equal']) and result['mtp_counts']==[43,66] and result['no_prompt_reuse']
+-        # Rounded future cells are unwritten in streaming; every used byte and moving spare must match.
+-        save()
++        result['math_gate_passed']=all(result['comparison_to_default_counter_control'].values()) and result['mtp_counts']==[43,66] and result['no_prompt_reuse']
++        record['requests'].append(result);save()
+         if not result['math_gate_passed']:break
+ 
+     current=None;send(b'QUIT\n');event('quit')

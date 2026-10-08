@@ -1,0 +1,666 @@
+{
+  "active": false,
+  "passed": true,
+  "created_utc": "2026-10-08T19:34:23.823126+00:00",
+  "scope": "Read-only comparator/fixture admission checks and classification of the mismatched-history run; not a physical-capacity or adoption pass.",
+  "comparator_sha256": "0260db007151cde044651208dc531249985d3afb1212b1b19500b883c2eba8e0",
+  "cases": [
+    {
+      "name": "actual_different_history_MTP_bytes_still_rejected",
+      "passed": true
+    },
+    {
+      "name": "only_known_engine_version_identity_metadata_fixture",
+      "passed": true,
+      "note": "CPU schema fixture; not updated GPU qualification."
+    },
+    {
+      "name": "inactive_mtp_k_rejected",
+      "passed": true
+    },
+    {
+      "name": "main_last_layer_scale_rejected",
+      "passed": true
+    },
+    {
+      "name": "gdn_rejected",
+      "passed": true
+    },
+    {
+      "name": "main_spare_rejected",
+      "passed": true
+    },
+    {
+      "name": "unknown_version_identity_rejected",
+      "passed": true
+    },
+    {
+      "name": "geometry_rejected",
+      "passed": true
+    }
+  ],
+  "config_version_binding": {
+    "old_engine": "0.1.40-sycl",
+    "new_engine": "0.1.41",
+    "old_config": 9380593023437872391,
+    "new_config": 643052213586580166,
+    "resolved_config_construction_block_identical": true,
+    "config_block_sha256": "debf1bd4422e809197c87d1ba4698901a1d7eb73336022555c43fdfe88694e80",
+    "fingerprint_implementation_and_schema_unchanged": true,
+    "source": "src/core/conversation_file.cpp:878 deliberately hashes engine_version"
+  },
+  "history_binding": {
+    "old_before_full": [
+      "control32k-before",
+      "resume32k-reference"
+    ],
+    "new_before_full": [
+      "control32k-before",
+      "resume32k-reference",
+      "alternate32k-first",
+      "control32k-repeat",
+      "alternate32k-repeat"
+    ],
+    "changed_tensor_parts": "Only4 MTP KV parts. Every main KV part, pooled spare and GDN/PLE/state/IDs identical.",
+    "mtp_prefill_first_needed": 229308,
+    "all_changed_MTP_bytes_below_skipped_boundary": true,
+    "source": "sycl/src/prefill/prefill.cpp:1476 uses mtp.first_needed and skips earlier chunks; MtpDrafter::first_needed is prompt_len-window-64. These cells retain prior request history.",
+    "conclusion": "Cross-version fingerprint equality is invalid; all-byte MTP comparison must use the same preceding request history. No tensor bytes will be ignored. Rerun the owned new binary with the original DD5 physical lifecycle, using the separate completed4fresh32K numerical subset."
+  },
+  "differences": {
+    "k": {
+      "bytes": 134217728,
+      "different_bytes": 1569423,
+      "first": [
+        {
+          "offset": 12583107,
+          "old": 203,
+          "new": 204
+        },
+        {
+          "offset": 12583137,
+          "old": 16,
+          "new": 17
+        },
+        {
+          "offset": 12583147,
+          "old": 51,
+          "new": 50
+        },
+        {
+          "offset": 12583149,
+          "old": 190,
+          "new": 189
+        },
+        {
+          "offset": 12583152,
+          "old": 139,
+          "new": 140
+        },
+        {
+          "offset": 12583155,
+          "old": 172,
+          "new": 173
+        },
+        {
+          "offset": 12583187,
+          "old": 6,
+          "new": 7
+        },
+        {
+          "offset": 12583209,
+          "old": 247,
+          "new": 248
+        },
+        {
+          "offset": 12583214,
+          "old": 241,
+          "new": 242
+        },
+        {
+          "offset": 12583392,
+          "old": 41,
+          "new": 40
+        },
+        {
+          "offset": 12583399,
+          "old": 205,
+          "new": 204
+        },
+        {
+          "offset": 12583445,
+          "old": 36,
+          "new": 37
+        }
+      ],
+      "last": [
+        {
+          "offset": 16809716,
+          "old": 176,
+          "new": 68
+        },
+        {
+          "offset": 16809717,
+          "old": 45,
+          "new": 248
+        },
+        {
+          "offset": 16809718,
+          "old": 243,
+          "new": 198
+        },
+        {
+          "offset": 16809719,
+          "old": 22,
+          "new": 237
+        },
+        {
+          "offset": 16809720,
+          "old": 250,
+          "new": 237
+        },
+        {
+          "offset": 16809721,
+          "old": 206,
+          "new": 53
+        },
+        {
+          "offset": 16809722,
+          "old": 242,
+          "new": 9
+        },
+        {
+          "offset": 16809723,
+          "old": 228,
+          "new": 250
+        },
+        {
+          "offset": 16809724,
+          "old": 231,
+          "new": 225
+        },
+        {
+          "offset": 16809725,
+          "old": 1,
+          "new": 37
+        },
+        {
+          "offset": 16809726,
+          "old": 4,
+          "new": 12
+        },
+        {
+          "offset": 16809727,
+          "old": 53,
+          "new": 252
+        }
+      ],
+      "changed_chunks": [
+        {
+          "offset": 12582912,
+          "differences": 343846,
+          "first": 12583107,
+          "last": 13631487
+        },
+        {
+          "offset": 13631488,
+          "differences": 375124,
+          "first": 13631488,
+          "last": 14680062
+        },
+        {
+          "offset": 14680064,
+          "differences": 408656,
+          "first": 14680064,
+          "last": 15728639
+        },
+        {
+          "offset": 15728640,
+          "differences": 413806,
+          "first": 15728640,
+          "last": 16777215
+        },
+        {
+          "offset": 16777216,
+          "differences": 27991,
+          "first": 16777216,
+          "last": 16809727
+        }
+      ]
+    },
+    "v": {
+      "bytes": 134217728,
+      "different_bytes": 2823255,
+      "first": [
+        {
+          "offset": 12582933,
+          "old": 12,
+          "new": 11
+        },
+        {
+          "offset": 12582946,
+          "old": 226,
+          "new": 227
+        },
+        {
+          "offset": 12582970,
+          "old": 117,
+          "new": 118
+        },
+        {
+          "offset": 12583022,
+          "old": 41,
+          "new": 42
+        },
+        {
+          "offset": 12583180,
+          "old": 5,
+          "new": 4
+        },
+        {
+          "offset": 12583261,
+          "old": 249,
+          "new": 248
+        },
+        {
+          "offset": 12583277,
+          "old": 15,
+          "new": 14
+        },
+        {
+          "offset": 12583349,
+          "old": 205,
+          "new": 206
+        },
+        {
+          "offset": 12583358,
+          "old": 253,
+          "new": 254
+        },
+        {
+          "offset": 12583444,
+          "old": 200,
+          "new": 201
+        },
+        {
+          "offset": 12583445,
+          "old": 0,
+          "new": 1
+        },
+        {
+          "offset": 12583464,
+          "old": 254,
+          "new": 255
+        }
+      ],
+      "last": [
+        {
+          "offset": 16809716,
+          "old": 34,
+          "new": 4
+        },
+        {
+          "offset": 16809717,
+          "old": 185,
+          "new": 30
+        },
+        {
+          "offset": 16809718,
+          "old": 192,
+          "new": 219
+        },
+        {
+          "offset": 16809719,
+          "old": 36,
+          "new": 25
+        },
+        {
+          "offset": 16809720,
+          "old": 199,
+          "new": 211
+        },
+        {
+          "offset": 16809721,
+          "old": 238,
+          "new": 20
+        },
+        {
+          "offset": 16809722,
+          "old": 232,
+          "new": 69
+        },
+        {
+          "offset": 16809723,
+          "old": 236,
+          "new": 247
+        },
+        {
+          "offset": 16809724,
+          "old": 253,
+          "new": 252
+        },
+        {
+          "offset": 16809725,
+          "old": 34,
+          "new": 252
+        },
+        {
+          "offset": 16809726,
+          "old": 199,
+          "new": 251
+        },
+        {
+          "offset": 16809727,
+          "old": 56,
+          "new": 89
+        }
+      ],
+      "changed_chunks": [
+        {
+          "offset": 12582912,
+          "differences": 635207,
+          "first": 12582933,
+          "last": 13631487
+        },
+        {
+          "offset": 13631488,
+          "differences": 681586,
+          "first": 13631488,
+          "last": 14680063
+        },
+        {
+          "offset": 14680064,
+          "differences": 739494,
+          "first": 14680065,
+          "last": 15728639
+        },
+        {
+          "offset": 15728640,
+          "differences": 735293,
+          "first": 15728640,
+          "last": 16777215
+        },
+        {
+          "offset": 16777216,
+          "differences": 31675,
+          "first": 16777216,
+          "last": 16809727
+        }
+      ]
+    },
+    "k_scale": {
+      "bytes": 4194304,
+      "different_bytes": 52267,
+      "first": [
+        {
+          "offset": 393232,
+          "old": 135,
+          "new": 134
+        },
+        {
+          "offset": 393238,
+          "old": 198,
+          "new": 197
+        },
+        {
+          "offset": 393240,
+          "old": 31,
+          "new": 25
+        },
+        {
+          "offset": 393246,
+          "old": 174,
+          "new": 175
+        },
+        {
+          "offset": 393248,
+          "old": 140,
+          "new": 139
+        },
+        {
+          "offset": 393256,
+          "old": 56,
+          "new": 55
+        },
+        {
+          "offset": 393270,
+          "old": 246,
+          "new": 245
+        },
+        {
+          "offset": 393272,
+          "old": 70,
+          "new": 64
+        },
+        {
+          "offset": 393278,
+          "old": 200,
+          "new": 199
+        },
+        {
+          "offset": 393280,
+          "old": 100,
+          "new": 99
+        },
+        {
+          "offset": 393286,
+          "old": 241,
+          "new": 235
+        },
+        {
+          "offset": 393288,
+          "old": 213,
+          "new": 211
+        }
+      ],
+      "last": [
+        {
+          "offset": 525287,
+          "old": 38,
+          "new": 35
+        },
+        {
+          "offset": 525288,
+          "old": 243,
+          "new": 7
+        },
+        {
+          "offset": 525289,
+          "old": 39,
+          "new": 37
+        },
+        {
+          "offset": 525290,
+          "old": 162,
+          "new": 150
+        },
+        {
+          "offset": 525292,
+          "old": 5,
+          "new": 48
+        },
+        {
+          "offset": 525294,
+          "old": 3,
+          "new": 58
+        },
+        {
+          "offset": 525295,
+          "old": 40,
+          "new": 37
+        },
+        {
+          "offset": 525296,
+          "old": 98,
+          "new": 228
+        },
+        {
+          "offset": 525298,
+          "old": 145,
+          "new": 149
+        },
+        {
+          "offset": 525300,
+          "old": 6,
+          "new": 32
+        },
+        {
+          "offset": 525302,
+          "old": 229,
+          "new": 219
+        },
+        {
+          "offset": 525303,
+          "old": 40,
+          "new": 37
+        }
+      ],
+      "changed_chunks": [
+        {
+          "offset": 0,
+          "differences": 52267,
+          "first": 393232,
+          "last": 525303
+        }
+      ]
+    },
+    "v_scale": {
+      "bytes": 4194304,
+      "different_bytes": 68555,
+      "first": [
+        {
+          "offset": 393220,
+          "old": 0,
+          "new": 1
+        },
+        {
+          "offset": 393222,
+          "old": 141,
+          "new": 142
+        },
+        {
+          "offset": 393226,
+          "old": 50,
+          "new": 49
+        },
+        {
+          "offset": 393228,
+          "old": 70,
+          "new": 71
+        },
+        {
+          "offset": 393230,
+          "old": 93,
+          "new": 92
+        },
+        {
+          "offset": 393232,
+          "old": 84,
+          "new": 85
+        },
+        {
+          "offset": 393234,
+          "old": 182,
+          "new": 181
+        },
+        {
+          "offset": 393236,
+          "old": 75,
+          "new": 76
+        },
+        {
+          "offset": 393240,
+          "old": 206,
+          "new": 205
+        },
+        {
+          "offset": 393242,
+          "old": 21,
+          "new": 18
+        },
+        {
+          "offset": 393244,
+          "old": 150,
+          "new": 157
+        },
+        {
+          "offset": 393246,
+          "old": 12,
+          "new": 14
+        }
+      ],
+      "last": [
+        {
+          "offset": 525291,
+          "old": 37,
+          "new": 38
+        },
+        {
+          "offset": 525292,
+          "old": 128,
+          "new": 201
+        },
+        {
+          "offset": 525293,
+          "old": 38,
+          "new": 37
+        },
+        {
+          "offset": 525294,
+          "old": 140,
+          "new": 203
+        },
+        {
+          "offset": 525295,
+          "old": 40,
+          "new": 37
+        },
+        {
+          "offset": 525296,
+          "old": 28,
+          "new": 144
+        },
+        {
+          "offset": 525298,
+          "old": 84,
+          "new": 169
+        },
+        {
+          "offset": 525299,
+          "old": 38,
+          "new": 37
+        },
+        {
+          "offset": 525300,
+          "old": 162,
+          "new": 25
+        },
+        {
+          "offset": 525301,
+          "old": 37,
+          "new": 38
+        },
+        {
+          "offset": 525302,
+          "old": 38,
+          "new": 241
+        },
+        {
+          "offset": 525303,
+          "old": 40,
+          "new": 37
+        }
+      ],
+      "changed_chunks": [
+        {
+          "offset": 0,
+          "differences": 68555,
+          "first": 393220,
+          "last": 525303
+        }
+      ]
+    }
+  },
+  "source_full_receipt_sha256": "2cabcde178049b9c3479632e299f54f8b2d262c3270c15dd60772babaa9e7be7",
+  "tensor_bytes_ignored_by_new_comparator": 0
+}

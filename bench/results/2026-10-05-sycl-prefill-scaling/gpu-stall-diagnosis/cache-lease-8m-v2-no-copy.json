@@ -1,0 +1,139 @@
+{
+  "start": "2026-10-06T14:40:36.113891+09:00",
+  "boot_id": "f0f32621-752d-415c-9056-9f7459e9ac01",
+  "command": [
+    "/usr/bin/gdb",
+    "--batch",
+    "-x",
+    "/home/yayoi/.local/state/strata-sycl/gpu-stall-diagnosis/post-reboot-20261006/first-fault.gdb",
+    "--args",
+    "/home/yayoi/.local/state/strata-sycl/mtp-decode-release/cache-lease-probe"
+  ],
+  "runtime": "custom",
+  "adapter": "v2",
+  "env": {
+    "LD_LIBRARY_PATH": "/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/lib/x86_64-linux-gnu:/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/local/lib:/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/dal/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/:/usr/local/cuda/lib64:/usr/local/cuda/lib64:/nix/store/mj9klbkhzal0vc1aazsajrydkimhc0h2-libglvnd-1.7.0/lib",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1"
+  },
+  "binary_sha256": "b4cfb86d1718b4b29951e9678e6fcb3ae3831cc5018a1f8e5fe300e07454befd",
+  "binary_path": "/home/yayoi/.local/state/strata-sycl/mtp-decode-release/cache-lease-probe",
+  "binary_mtime_ns": 1791263243912114467,
+  "pid": 511874,
+  "exit_code": 0,
+  "elapsed_s": 3.2385320400007913,
+  "end": "2026-10-06T14:40:39.354758+09:00",
+  "kernel_journal_exit": 0,
+  "binary_sha256_after": "b4cfb86d1718b4b29951e9678e6fcb3ae3831cc5018a1f8e5fe300e07454befd",
+  "dump_identity_before": {
+    "present": true,
+    "inode": 77213,
+    "resolved_directory": "/sys/devices/virtual/devcoredump/devcd1"
+  },
+  "dump_identity_after": {
+    "present": true,
+    "inode": 77213,
+    "resolved_directory": "/sys/devices/virtual/devcoredump/devcd1"
+  },
+  "dump_identity_unchanged": true,
+  "xe_event_count": 188,
+  "probe_completed": false,
+  "parsed_cases": 0,
+  "inferior_signal": "SIGABRT",
+  "gdb_exit_does_not_prove_inferior_success": true,
+  "debugger_exit_code": 0,
+  "inferior_pid": 511887,
+  "inferior_present_at_observation": false,
+  "kernel_summary": {
+    "events": 188,
+    "first": {
+      "utc_microseconds": "1791265237889894",
+      "message": "xe 0000:05:00.0: [drm] Tile0: GT0: Check job timeout: seqno=46312, lrc_seqno=46312, guc_id=0, not started"
+    },
+    "last": {
+      "utc_microseconds": "1791265238381272",
+      "message": "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=4294967169, lrc_seqno=4294967169, guc_id=6, flags=0x20 in cache-lease-pro [511887]"
+    },
+    "message_counts": {
+      "xe 0000:05:00.0: [drm] Tile0: GT0: trying reset from guc_exec_queue_timedout_job [xe]": 34,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: reset queued": 34,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: reset started": 34,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: reset done": 34,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46317, lrc_seqno=46317, guc_id=0, flags=0x73 in no process [-1]": 2,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Check job timeout: seqno=46312, lrc_seqno=46312, guc_id=0, not started": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46312, lrc_seqno=46312, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Check job timeout: seqno=46313, lrc_seqno=46313, guc_id=0, not started": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46313, lrc_seqno=46313, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Check job timeout: seqno=46317, lrc_seqno=46317, guc_id=0, not started": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46318, lrc_seqno=46318, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46320, lrc_seqno=46320, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46327, lrc_seqno=46327, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46329, lrc_seqno=46329, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46331, lrc_seqno=46331, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46333, lrc_seqno=46333, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46337, lrc_seqno=46337, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46340, lrc_seqno=46340, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46341, lrc_seqno=46341, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46342, lrc_seqno=46342, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46343, lrc_seqno=46343, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46344, lrc_seqno=46344, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Check job timeout: seqno=46345, lrc_seqno=46345, guc_id=0, not started": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46345, lrc_seqno=46345, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Check job timeout: seqno=46346, lrc_seqno=46346, guc_id=0, not started": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46346, lrc_seqno=46346, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Check job timeout: seqno=46348, lrc_seqno=46348, guc_id=0, not started": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46348, lrc_seqno=46348, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46352, lrc_seqno=46352, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Check job timeout: seqno=46353, lrc_seqno=46353, guc_id=0, not started": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46353, lrc_seqno=46353, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Check job timeout: seqno=46354, lrc_seqno=46354, guc_id=0, not started": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46354, lrc_seqno=46354, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Check job timeout: seqno=46361, lrc_seqno=46361, guc_id=0, not started": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46361, lrc_seqno=46361, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Check job timeout: seqno=46363, lrc_seqno=46363, guc_id=0, not started": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46363, lrc_seqno=46363, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46367, lrc_seqno=46367, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Check job timeout: seqno=46373, lrc_seqno=46373, guc_id=0, not started": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46373, lrc_seqno=46373, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Check job timeout: seqno=46376, lrc_seqno=46376, guc_id=0, not started": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46376, lrc_seqno=46376, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Check job timeout: seqno=46380, lrc_seqno=46380, guc_id=0, not started": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46380, lrc_seqno=46380, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46384, lrc_seqno=46384, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46393, lrc_seqno=46393, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Check job timeout: seqno=46407, lrc_seqno=46407, guc_id=0, not started": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46407, lrc_seqno=46407, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Check job timeout: seqno=46411, lrc_seqno=46411, guc_id=0, not started": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46411, lrc_seqno=46411, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Check job timeout: seqno=46414, lrc_seqno=46414, guc_id=0, not started": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46414, lrc_seqno=46414, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Check job timeout: seqno=46420, lrc_seqno=46420, guc_id=0, not started": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=46420, lrc_seqno=46420, guc_id=0, flags=0x73 in no process [-1]": 1,
+      "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=4294967169, lrc_seqno=4294967169, guc_id=6, flags=0x20 in cache-lease-pro [511887]": 1
+    }
+  },
+  "private_evidence": {
+    "json": {
+      "path": "/home/yayoi/.local/state/strata-sycl/gpu-stall-diagnosis/post-reboot-20261006/cache-lease-8m-v2-no-copy.json",
+      "sha256": "456cf92c517a905b3e45f4eb56136b4539208eed6109e566cd721a50ab50b79e",
+      "bytes": 2464
+    },
+    "stdout": {
+      "path": "/home/yayoi/.local/state/strata-sycl/gpu-stall-diagnosis/post-reboot-20261006/cache-lease-8m-v2-no-copy.stdout",
+      "sha256": "40fc2eb3da632d22ad2e2da80be4573f099905728f9d41a43ec276cccf08b352",
+      "bytes": 8937
+    },
+    "stderr": {
+      "path": "/home/yayoi/.local/state/strata-sycl/gpu-stall-diagnosis/post-reboot-20261006/cache-lease-8m-v2-no-copy.stderr",
+      "sha256": "4a38fdb66911e63a5866cacadc3bb83067de2853d1b30a423b2a200a4897d644",
+      "bytes": 391
+    },
+    "xe-kernel.json": {
+      "path": "/home/yayoi/.local/state/strata-sycl/gpu-stall-diagnosis/post-reboot-20261006/cache-lease-8m-v2-no-copy.xe-kernel.json",
+      "sha256": "d1e86c030902736bb1ec872fc5b5561e93ada0cc3da9dd228f32f9e27f6c1e6e",
+      "bytes": 25619
+    }
+  }
+}

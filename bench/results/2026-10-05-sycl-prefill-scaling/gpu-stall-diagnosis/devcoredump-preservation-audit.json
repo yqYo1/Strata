@@ -1,0 +1,25 @@
+{
+  "kernel": "7.0.0-38-generic",
+  "module_sha256": "f0405334d27deb38f6da791d2ff61a0057e07c9679f5cf557f80dfcf4ebf94ae",
+  "matches_disassembled_module": true,
+  "first_failure_guard": "xe_devcoredump holds mutex and tests captured byte at xe+0x688; nonzero exits without devcoredump_snapshot; zero sets it to one before snapshot",
+  "guard_instruction_addresses": [
+    "0x989a",
+    "0x989f",
+    "0x98ae",
+    "0x98b0",
+    "0x98d4",
+    "0x990f",
+    "0x9953"
+  ],
+  "retention_argument_hex": "0x36ee80",
+  "retention_jiffies": 3600000,
+  "source": "https://raw.githubusercontent.com/torvalds/linux/v7.0/drivers/gpu/drm/xe/xe_devcoredump.c",
+  "dump_before_gpu_test": {
+    "present": true,
+    "inode": 77213,
+    "resolved_directory": "/sys/devices/virtual/devcoredump/devcd1"
+  },
+  "config_hz": 1000,
+  "installed_timeout_seconds": 3600.0
+}

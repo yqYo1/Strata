@@ -1,0 +1,221 @@
+{
+  "candidate": "GCC CPU compilation",
+  "adopted": "selected IQ2_S two/four-token dispatch only; whole-engine validation pending",
+  "whole_engine_not_measured": true,
+  "measurements": [
+    {
+      "type": 21,
+      "nt": 1,
+      "experts": 1,
+      "pairs": 9,
+      "original_median_ms": 42.753874,
+      "candidate_median_ms": 47.140690003,
+      "paired_speed_ratio_median": 0.939319312
+    },
+    {
+      "type": 21,
+      "nt": 1,
+      "experts": 96,
+      "pairs": 9,
+      "original_median_ms": 62.901955999,
+      "candidate_median_ms": 68.197974999,
+      "paired_speed_ratio_median": 0.928564428
+    },
+    {
+      "type": 21,
+      "nt": 2,
+      "experts": 1,
+      "pairs": 9,
+      "original_median_ms": 47.452135999,
+      "candidate_median_ms": 52.299017999,
+      "paired_speed_ratio_median": 0.902893435
+    },
+    {
+      "type": 21,
+      "nt": 2,
+      "experts": 96,
+      "pairs": 9,
+      "original_median_ms": 71.447666999,
+      "candidate_median_ms": 79.550424002,
+      "paired_speed_ratio_median": 0.896820384
+    },
+    {
+      "type": 21,
+      "nt": 3,
+      "experts": 1,
+      "pairs": 9,
+      "original_median_ms": 59.037485,
+      "candidate_median_ms": 66.164743003,
+      "paired_speed_ratio_median": 0.88630073
+    },
+    {
+      "type": 21,
+      "nt": 3,
+      "experts": 96,
+      "pairs": 9,
+      "original_median_ms": 86.952130001,
+      "candidate_median_ms": 96.700847,
+      "paired_speed_ratio_median": 0.904213031
+    },
+    {
+      "type": 21,
+      "nt": 4,
+      "experts": 1,
+      "pairs": 9,
+      "original_median_ms": 61.482450001,
+      "candidate_median_ms": 66.450272001,
+      "paired_speed_ratio_median": 0.926711548
+    },
+    {
+      "type": 21,
+      "nt": 4,
+      "experts": 96,
+      "pairs": 9,
+      "original_median_ms": 92.555056002,
+      "candidate_median_ms": 102.698426999,
+      "paired_speed_ratio_median": 0.919968504
+    },
+    {
+      "type": 22,
+      "nt": 1,
+      "experts": 1,
+      "pairs": 9,
+      "original_median_ms": 30.584213998,
+      "candidate_median_ms": 34.523136001,
+      "paired_speed_ratio_median": 0.885879073
+    },
+    {
+      "type": 22,
+      "nt": 1,
+      "experts": 96,
+      "pairs": 9,
+      "original_median_ms": 46.395654999,
+      "candidate_median_ms": 52.128577001,
+      "paired_speed_ratio_median": 0.897209184
+    },
+    {
+      "type": 22,
+      "nt": 2,
+      "experts": 1,
+      "pairs": 9,
+      "original_median_ms": 40.874762997,
+      "candidate_median_ms": 37.946716998,
+      "paired_speed_ratio_median": 1.076322374
+    },
+    {
+      "type": 22,
+      "nt": 2,
+      "experts": 96,
+      "pairs": 9,
+      "original_median_ms": 62.663525,
+      "candidate_median_ms": 57.457888003,
+      "paired_speed_ratio_median": 1.078914903
+    },
+    {
+      "type": 22,
+      "nt": 3,
+      "experts": 1,
+      "pairs": 9,
+      "original_median_ms": 45.080678001,
+      "candidate_median_ms": 43.495701998,
+      "paired_speed_ratio_median": 1.028672605
+    },
+    {
+      "type": 22,
+      "nt": 3,
+      "experts": 96,
+      "pairs": 9,
+      "original_median_ms": 68.932737999,
+      "candidate_median_ms": 68.856403999,
+      "paired_speed_ratio_median": 0.973791473
+    },
+    {
+      "type": 22,
+      "nt": 4,
+      "experts": 1,
+      "pairs": 9,
+      "original_median_ms": 52.855516002,
+      "candidate_median_ms": 47.959101003,
+      "paired_speed_ratio_median": 1.086423654
+    },
+    {
+      "type": 22,
+      "nt": 4,
+      "experts": 96,
+      "pairs": 9,
+      "original_median_ms": 80.148549002,
+      "candidate_median_ms": 72.405580997,
+      "paired_speed_ratio_median": 1.093052231
+    }
+  ],
+  "proofs": [
+    {
+      "type": 21,
+      "records": [
+        {
+          "kind": "synthetic",
+          "sign_patterns": 165602,
+          "checked_floats": 218880,
+          "all_bits_equal": true
+        },
+        {
+          "kind": "real",
+          "expert_cases": 90,
+          "checked_floats": 7591680,
+          "all_bits_equal": true
+        },
+        {
+          "kind": "completed",
+          "cpu": 2,
+          "streaming_bytes": 135168000,
+          "n_embd": 2560,
+          "n_ff": 640,
+          "all_bits_equal": true
+        }
+      ]
+    },
+    {
+      "type": 22,
+      "records": [
+        {
+          "kind": "synthetic",
+          "sign_patterns": 165602,
+          "checked_floats": 218880,
+          "all_bits_equal": true
+        },
+        {
+          "kind": "real",
+          "expert_cases": 90,
+          "checked_floats": 7591680,
+          "all_bits_equal": true
+        },
+        {
+          "kind": "completed",
+          "cpu": 2,
+          "streaming_bytes": 100761600,
+          "n_embd": 2560,
+          "n_ff": 640,
+          "all_bits_equal": true
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "Same engine source, different candidate compile flags/compiler.",
+    "Ryzen 5 5600X, CPU 2, one thread, nine alternating-order pairs.",
+    "Both runs check 90 affected-format expert samples and 7,591,680 finite exact float comparisons including guards.",
+    "All observations and outliers are retained. Some IQ2_S four-token observations show substantial scheduling noise."
+  ],
+  "source_sha256": {
+    "probe.cpp": "394a832c4f4c1d740a2f6911bb2792ab3960d366bca1f26095c82533e8b3cd8f",
+    "original.cpp": "719c38fa6d790ea984920cccfb5b1cea6918a5e953f7a9a2e0d5317eba8a857a",
+    "type22.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build.sh": "4d6d10503af531802383dc0696d4132a0eb023f89286171c70ee12431cf28f26",
+    "gcc.cpp": "22fd4a24e1595c5b44cb013237de561ce11866c8dd427e074cce5ccbc11b69e9",
+    "build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "type22.jsonl": "a2dc1d6bb2de9c9601c592c3bf5760dc8d00a2a562710c5f19d5cbf97c03a40b",
+    "manifest.json": "49f2c11a19d6dd660b15640523fbea21b6aa7f6136761acc2afc9ebbff18b48f",
+    "type21.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "type21.jsonl": "e4d2efe2fd38dbecf52189132f4a560fe916117d63b07c3785f5bb82f9e2a2f8"
+  }
+}

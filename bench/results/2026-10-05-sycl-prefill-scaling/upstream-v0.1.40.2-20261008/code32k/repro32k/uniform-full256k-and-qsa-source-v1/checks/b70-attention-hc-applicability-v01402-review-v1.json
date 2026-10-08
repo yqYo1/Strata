@@ -1,0 +1,77 @@
+{
+  "active": false,
+  "passed": true,
+  "created_utc": "2026-10-08T11:18:07.011970+00:00",
+  "scope": "Primary-source applicability review and existing>=32K evidence; no new GPU benchmark, kernel change or speed/adoption proof.",
+  "reference_commit": "557f80fe0f4235a76d4cf835f89e108d599b5e94",
+  "reference_capture_sha256": "662613eb5cdd90be8828452bc5272f8c164ad580862c57414fb5f75b8d090eac",
+  "reference_code_executed": false,
+  "actual_compiled_prefill": {
+    "file": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/prefill/prefill.cpp",
+    "sha256": "f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77"
+  },
+  "compiled_selection_source": {
+    "file": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/kernels/cuda/qsa_select.dp.cpp",
+    "sha256": "f1f52a1256bd17a0acc6300a1ecbc6238e989435bc56a60b76a869cffed157a3"
+  },
+  "compiled_attention_source": {
+    "file": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/kernels/cuda/qsa_decode_attn.dp.cpp",
+    "sha256": "41dfb04922276e91c81033ebdf2495d0e7130f04289722ff38ad7bc555d51679"
+  },
+  "findings": [
+    {
+      "item": "B70 per-cell broadcast attention",
+      "source": "https://github.com/0xSero/qwen38-flash-next-b70-offload/blob/557f80fe0f4235a76d4cf835f89e108d599b5e94/kernels/n107-qsa/csrc/qsa_row_sycl.sycl",
+      "lines": [
+        300,
+        362,
+        404,
+        408
+      ],
+      "fact": "A lane owns a cell and accumulates the dot in dimension order with subgroup query broadcasts. SG16/SG32, single-work-group all-chunk and split-K choices exist. Softmax/merge and fp8 storage differ from the accepted B570 int8 paged/stateful path.",
+      "implication": "Promising memory/launch strategy, not an exact-arithmetic drop-in. A new B570 candidate must preserve quantized scale/page semantics, check subgroup uniformity, avoid typed-vector alias assumptions, and qualify full>=32K math/state before speed."
+    },
+    {
+      "item": "Selection",
+      "source": "https://github.com/0xSero/qwen38-flash-next-b70-offload/blob/557f80fe0f4235a76d4cf835f89e108d599b5e94/kernels/n107-qsa/csrc/qsa_select_sycl.sycl",
+      "lines": [
+        1,
+        7,
+        173,
+        187,
+        188
+      ],
+      "fact": "Reference explicitly ports Strata block scores/radix top-k, with ascending lowest-index threshold ties. BF16 contiguous key/indexer geometry and FP32 scores differ from the engine FP32 pooled/dead representation.",
+      "implication": "Its improvement over a PyTorch einsum/topk baseline is not an independent speed improvement over this existing native selector. Do not replace key representation/rounding based only on author timing."
+    },
+    {
+      "item": "Hyperconnections",
+      "source": "https://github.com/0xSero/qwen38-flash-next-b70-offload/blob/557f80fe0f4235a76d4cf835f89e108d599b5e94/kernels/n107-hc/hc_xpu.py",
+      "lines": [
+        97,
+        159,
+        233
+      ],
+      "fact": "Reference fuses grouped norm and mix/combine epilogues around BF16 projections. Existing compiled Strata already uses gr_norm_rs and gr_write_norm_rs, with optional gr_upmix.",
+      "implication": "Audit remaining projection/epilogue launches and actual numerical order before importing a fusion idea; no claim that these full-engine paths were measured or copied."
+    },
+    {
+      "item": "Existing attention batching control",
+      "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batch128-layout1-v01402-clean-sequence/record.json",
+      "receipt_sha256": "c572c90566c340d23fd816a4ed941040ce1792b84ace6515d3f615927c5cd79b",
+      "minimum_input_tokens": 32768,
+      "fact": "Previous ABBA jobs on their historical base compared fresh-process32K default/batch128-layout1 at408.300/408.357 mean PP tok/s, relative+0.01385%. Only one input per process in that older comparison.",
+      "implication": "No useful evidence for a batch-only prefill gain; do not repeat it merely after rebasing DD5. Current DD5 qualification keeps the accepted batch32/layout1 geometry."
+    }
+  ],
+  "future_candidate_constraints": [
+    "Do not use masked expert misses or no-victim-writeback quality changes as exact-math optimizations.",
+    "No additional GPU job or CPU-heavy build during the active full DD5 gate.",
+    "Any new performance comparison must have>=32768 fresh input tokens, separate process first/later full reads, no profiler/diagnostic logs.",
+    "Before adoption complete physical262144 occupancy/repeated full/session restore/clipped/refusal/later valid>=32K."
+  ],
+  "minimum_performance_input_tokens": 32768,
+  "new_gpu_test": false,
+  "adopted": false,
+  "pending_native_counter_cause_resolved": false
+}

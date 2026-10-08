@@ -42,6 +42,7 @@
 //    argument in this file for keeping both.
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/sycl_queue.hpp"
 #include "strata/core/emulate.hpp"
@@ -791,8 +792,8 @@ int32_t *step_scratch() try {
     static int32_t* d_step = nullptr;
     if (d_step == nullptr) {
         if (DPCT_CHECK_ERROR(
-                d_step = (int32_t *)sycl::malloc_device(
-                    qsa_step_bytes(), dpct::get_in_order_queue())) != 0) {
+                d_step = (int32_t *)strata::checked_usm(sycl::malloc_device(
+                    qsa_step_bytes(), dpct::get_in_order_queue()))) != 0) {
             std::fprintf(stderr, "qsa: step upload: cudaMalloc failed\n");
             std::exit(1);
         }

@@ -1,0 +1,7 @@
+inline void sync_barrier(sycl::event *event_ptr,
+                         sycl::queue *queue = &get_default_queue()) {
+  if (*queue == get_default_queue()) {
+    dpct::get_current_device().queues_wait_and_throw();
+  }
+  *event_ptr = queue->ext_oneapi_submit_barrier();
+}

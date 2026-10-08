@@ -1,0 +1,116 @@
+{
+  "active": false,
+  "passed": true,
+  "started_utc": "2026-10-07T22:13:53.648157+00:00",
+  "controller_sha256": "5b5c6a9cc99cf65d16953af1dd187a86617d6612b9b7f468256ffca08c785975",
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_compact_layer_v01402_code32k.py",
+        "compact2-layout1",
+        "state",
+        "1"
+      ],
+      "started_utc": "2026-10-07T22:16:58.739684+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T22:19:04.432535+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 82377.5,
+        "decode_ms": 3866.8,
+        "wall_seconds": 86.24980902500101,
+        "prefill_tok_s": 397.7785196200419,
+        "decode_tok_s": 16.551153408503154
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_compact_layer_v01402_code32k.py",
+        "compact2-layout1",
+        "state",
+        "2"
+      ],
+      "started_utc": "2026-10-07T22:19:04.433182+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T22:21:06.588643+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 81735.7,
+        "decode_ms": 4009.8,
+        "wall_seconds": 85.7521859210101,
+        "prefill_tok_s": 400.901931469358,
+        "decode_tok_s": 15.96089580527707
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_compact_layer_v01402_code32k.py",
+        "layer2-ram-layout1",
+        "diagnostic",
+        "1"
+      ],
+      "started_utc": "2026-10-07T22:21:06.589734+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T22:25:06.163138+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 189925.9,
+        "decode_ms": 6681.6,
+        "wall_seconds": 196.61375652899733,
+        "prefill_tok_s": 172.53044476819645,
+        "decode_tok_s": 9.578544061302681
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_compact_layer_v01402_code32k.py",
+        "layer2-ram-layout1",
+        "state",
+        "1"
+      ],
+      "started_utc": "2026-10-07T22:25:06.164036+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T22:27:25.912566+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 96107.0,
+        "decode_ms": 3694.3,
+        "wall_seconds": 99.80853156499506,
+        "prefill_tok_s": 340.9533124538275,
+        "decode_tok_s": 17.32398559943697
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_compact_layer_v01402_code32k.py",
+        "layer2-ram-layout1",
+        "state",
+        "2"
+      ],
+      "started_utc": "2026-10-07T22:27:25.913498+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T22:29:44.698094+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 97157.1,
+        "decode_ms": 3781.6,
+        "wall_seconds": 100.9480842310004,
+        "prefill_tok_s": 337.2681975892652,
+        "decode_tok_s": 16.924053310767928
+      }
+    }
+  ],
+  "minimum_comparison_tokens": 32768,
+  "scope": "Three fresh32K full-state/head/output controls of compact2/layout1, then three controls adding layer-major2 with RAM residuals. Any mismatch/fault rejects timing; no release/restore/full256K or speed claim.",
+  "finished_utc": "2026-10-07T22:29:44.699101+00:00"
+}

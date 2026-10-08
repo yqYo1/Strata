@@ -1,0 +1,233 @@
+{
+  "scope": "First unitrace Level Zero/SYCL timeline instrumentation smoke with exact integer health check; diagnostic logging and validation; no metrics or throughput claim",
+  "passed": true,
+  "source_commit": "6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033",
+  "unitrace_sha256": "5f90c453fbaf0b90a357a065cf4392f1ce3b157d5269af165c7cfe565cef1362",
+  "job": {
+    "argv": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-build-system-cc/build/unitrace",
+      "-h",
+      "-d",
+      "-s",
+      "--chrome-kernel-logging",
+      "--chrome-call-logging",
+      "--chrome-sycl-logging",
+      "--output-dir-path",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-smoke",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-smoke/summary.csv",
+      "/home/yayoi/.local/bin/strata-xe-health",
+      "0000:05:00.0"
+    ],
+    "root": {
+      "pid": 2491270,
+      "start_ticks": 4106615,
+      "state": "D",
+      "ppid": 2491265,
+      "pgrp": 2491270,
+      "session": 2491270
+    },
+    "started_utc": "2026-10-07T05:36:27.039830+00:00",
+    "active": false,
+    "environment": {
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/umf/1.1/lib:/usr/lib/x86_64-linux-gnu",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "ZEL_ENABLE_LOADER_LOGGING": "1",
+      "ZEL_LOADER_LOG_CONSOLE": "1",
+      "ZEL_LOADER_LOGGING_LEVEL": "trace",
+      "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+      "ZE_ENABLE_VALIDATION_LAYER": "1",
+      "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+      "UR_LOG_LOADER": "level:debug;flush:debug;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:debug;flush:debug;output:stderr",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "STRATA_TRACE": "1",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING"
+    },
+    "owned": [
+      {
+        "pid": 2491270,
+        "start_ticks": 4106615,
+        "state": "R",
+        "ppid": 2491265,
+        "pgrp": 2491270,
+        "session": 2491270
+      }
+    ],
+    "elapsed_seconds": 0.442613455998071,
+    "exit_code": 0,
+    "signals": [],
+    "survivors": [],
+    "finished_utc": "2026-10-07T05:36:27.459178+00:00"
+  },
+  "traces": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-smoke/strata-xe-healt.2491270.json",
+      "bytes": 61796,
+      "sha256": "2546461f2dacb51e8bcbf72a10d209d93430521fb5e023678df4a43a627f1b9b",
+      "events": 411,
+      "categories": [
+        "",
+        "Flow_D2H_1_2491270",
+        "Flow_D2H_2_2491270",
+        "Flow_D2H_3_2491270",
+        "Flow_D2H_4_2491270",
+        "Flow_D2H_5_2491270",
+        "Flow_D2H_6_2491270",
+        "Flow_D2H_7_2491270",
+        "Flow_D2H_8_2491270",
+        "Flow_D2H_9_2491270",
+        "Flow_H2D_1_2491270",
+        "Flow_H2D_2_2491270",
+        "Flow_H2D_3_2491270",
+        "Flow_H2D_4_2491270",
+        "Flow_H2D_5_2491270",
+        "Flow_H2D_6_2491270",
+        "Flow_H2D_7_2491270",
+        "Flow_H2D_8_2491270",
+        "Flow_H2D_9_2491270",
+        "cpu_op",
+        "gpu_op"
+      ],
+      "first_complete_events": [
+        {
+          "ph": "X",
+          "tid": 4215246655,
+          "pid": 4215246655,
+          "name": "zeCommandListAppendMemoryCopy(M2D)[65536]",
+          "cat": "gpu_op",
+          "ts": 1791351386244842.2,
+          "dur": 20.104,
+          "args": {
+            "id": "1"
+          }
+        },
+        {
+          "ph": "X",
+          "tid": 4215246655,
+          "pid": 4215246655,
+          "name": "main::{lambda(sycl::_V1::id<1>)#1}[SIMD32 {16; 1; 1} {1024; 1; 1}]",
+          "cat": "gpu_op",
+          "ts": 1791351386297873.0,
+          "dur": 5.52,
+          "args": {
+            "id": "2"
+          }
+        },
+        {
+          "ph": "X",
+          "tid": 4215246655,
+          "pid": 4215246655,
+          "name": "zeCommandListAppendMemoryCopy(D2M)[65536]",
+          "cat": "gpu_op",
+          "ts": 1791351386298311.0,
+          "dur": 16.77,
+          "args": {
+            "id": "3"
+          }
+        },
+        {
+          "ph": "X",
+          "tid": 4215246655,
+          "pid": 4215246655,
+          "name": "zeCommandListAppendMemoryCopy(M2D)[65536]",
+          "cat": "gpu_op",
+          "ts": 1791351386298920.0,
+          "dur": 16.979,
+          "args": {
+            "id": "4"
+          }
+        },
+        {
+          "ph": "X",
+          "tid": 4215246655,
+          "pid": 4215246655,
+          "name": "main::{lambda(sycl::_V1::id<1>)#1}[SIMD32 {16; 1; 1} {1024; 1; 1}]",
+          "cat": "gpu_op",
+          "ts": 1791351386299445.0,
+          "dur": 4.895,
+          "args": {
+            "id": "5"
+          }
+        },
+        {
+          "ph": "X",
+          "tid": 4215246655,
+          "pid": 4215246655,
+          "name": "zeCommandListAppendMemoryCopy(D2M)[65536]",
+          "cat": "gpu_op",
+          "ts": 1791351386299862.2,
+          "dur": 15.729,
+          "args": {
+            "id": "6"
+          }
+        },
+        {
+          "ph": "X",
+          "tid": 4215246655,
+          "pid": 4215246655,
+          "name": "zeCommandListAppendMemoryCopy(M2D)[65536]",
+          "cat": "gpu_op",
+          "ts": 1791351386300405.8,
+          "dur": 17.083,
+          "args": {
+            "id": "7"
+          }
+        },
+        {
+          "ph": "X",
+          "tid": 4215246655,
+          "pid": 4215246655,
+          "name": "main::{lambda(sycl::_V1::id<1>)#1}[SIMD32 {16; 1; 1} {1024; 1; 1}]",
+          "cat": "gpu_op",
+          "ts": 1791351386301000.8,
+          "dur": 4.895,
+          "args": {
+            "id": "8"
+          }
+        }
+      ]
+    }
+  ],
+  "new_fault_messages": [],
+  "steps": [
+    {
+      "label": "kernel-before",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "pid": 2491268,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05060629599756794
+    },
+    {
+      "label": "kernel-after",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bf14e2a;b=0a908c16e292429980ff082da39f4bb9;m=98ed393ca;t=65d397e2f7a87;x=225d5494b31e4675",
+        "--no-pager",
+        "-o",
+        "short-iso-precise"
+      ],
+      "pid": 2491372,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05053221700654831
+    }
+  ]
+}

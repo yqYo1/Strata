@@ -1,0 +1,165 @@
+{
+  "scope": "CPU-only owned-GDB main-thread register attribution, crash preservation, partial unreadable memory and SIGINT resume; no GPU loading/submission",
+  "passed": true,
+  "cases": [
+    {
+      "name": "previous-worker-abort",
+      "helper_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned_gdb-before-main-registers.py",
+      "helper_sha256": "547838e423525c824b7c033f7490153f8174d772e7c8f736c2f9255b50de758c",
+      "mode": "worker-abort",
+      "expected": "missing-main-registers",
+      "passed": true,
+      "snapshot": {
+        "label": "snapshot",
+        "stop": "*stopped,reason=\"signal-received\",signal-name=\"SIGABRT\",signal-meaning=\"Aborted\",frame={addr=\"0x00007ffff7b7dc0c\",func=\"__pthread_kill_implementation\",args=[{name=\"no_tid\",value=\"0\"},{name=\"signo\",value=\"6\"},{name=\"threadid\",value=\"<optimized out>\"}],file=\"./nptl/pthread_kill.c\",fullname=\"./nptl/./nptl/pthread_kill.c\",line=\"44\",arch=\"i386:x86-64\"},thread-id=\"2\",stopped-threads=\"all\",core=\"3\"",
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-main-thread-cpu/previous-worker-abort/snapshot.mi.txt",
+        "resumed": false
+      },
+      "inferior": {
+        "pid": 1662998,
+        "start_ticks": 2723707,
+        "state": "t"
+      },
+      "debugger": {
+        "pid": 1662986,
+        "start_ticks": 2723696,
+        "state": "R"
+      },
+      "selected_thread_after_snapshot": "2",
+      "register_dump_count": 1,
+      "cleanup": {
+        "forced": true,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    },
+    {
+      "name": "current-worker-abort",
+      "helper_path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/owned_gdb.py",
+      "helper_sha256": "61e1d206bf57bb320051cdd65943d23722bc523a602d80c54b7e7a2ad0d3f0d1",
+      "mode": "worker-abort",
+      "expected": "captures-main-registers",
+      "passed": true,
+      "snapshot": {
+        "label": "snapshot",
+        "stop": "*stopped,reason=\"signal-received\",signal-name=\"SIGABRT\",signal-meaning=\"Aborted\",frame={addr=\"0x00007ffff7b7dc0c\",func=\"__pthread_kill_implementation\",args=[{name=\"no_tid\",value=\"0\"},{name=\"signo\",value=\"6\"},{name=\"threadid\",value=\"<optimized out>\"}],file=\"./nptl/pthread_kill.c\",fullname=\"./nptl/./nptl/pthread_kill.c\",line=\"44\",arch=\"i386:x86-64\"},thread-id=\"2\",stopped-threads=\"all\",core=\"3\"",
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-main-thread-cpu/current-worker-abort/snapshot.mi.txt",
+        "resumed": false,
+        "register_thread_id": "2",
+        "main_thread_id": "1",
+        "main_registers_captured": true,
+        "main_stack_words_captured": true,
+        "main_instructions_captured": true,
+        "capture_errors": []
+      },
+      "inferior": {
+        "pid": 1663044,
+        "start_ticks": 2723766,
+        "state": "t"
+      },
+      "debugger": {
+        "pid": 1663022,
+        "start_ticks": 2723758,
+        "state": "R"
+      },
+      "selected_thread_after_snapshot": "2",
+      "register_dump_count": 2,
+      "cleanup": {
+        "forced": true,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    },
+    {
+      "name": "current-interrupt-resume",
+      "helper_path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/owned_gdb.py",
+      "helper_sha256": "61e1d206bf57bb320051cdd65943d23722bc523a602d80c54b7e7a2ad0d3f0d1",
+      "mode": "sleep",
+      "expected": "captures-main-registers",
+      "passed": true,
+      "snapshot": {
+        "label": "snapshot",
+        "stop": "*stopped,reason=\"signal-received\",signal-name=\"SIGINT\",signal-meaning=\"Interrupt\",frame={addr=\"0x00007ffff7bd94f6\",func=\"__libc_pause\",args=[],file=\"../sysdeps/unix/sysv/linux/pause.c\",fullname=\"./posix/../sysdeps/unix/sysv/linux/pause.c\",line=\"29\",arch=\"i386:x86-64\"},thread-id=\"1\",stopped-threads=\"all\",core=\"9\"",
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-main-thread-cpu/current-interrupt-resume/snapshot.mi.txt",
+        "resumed": true,
+        "register_thread_id": "1",
+        "main_thread_id": "1",
+        "main_registers_captured": true,
+        "main_stack_words_captured": true,
+        "main_instructions_captured": true,
+        "capture_errors": []
+      },
+      "inferior": {
+        "pid": 1663090,
+        "start_ticks": 2723825,
+        "state": "t"
+      },
+      "debugger": {
+        "pid": 1663079,
+        "start_ticks": 2723818,
+        "state": "R"
+      },
+      "selected_thread_after_snapshot": "1",
+      "register_dump_count": 2,
+      "cleanup": {
+        "forced": true,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    },
+    {
+      "name": "current-unreadable-pc",
+      "helper_path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/owned_gdb.py",
+      "helper_sha256": "61e1d206bf57bb320051cdd65943d23722bc523a602d80c54b7e7a2ad0d3f0d1",
+      "mode": "bad-pc",
+      "expected": "captures-main-registers",
+      "passed": true,
+      "snapshot": {
+        "label": "snapshot",
+        "stop": "*stopped,reason=\"signal-received\",signal-name=\"SIGSEGV\",signal-meaning=\"Segmentation fault\",frame={addr=\"0x0000000000000001\",func=\"??\",args=[],arch=\"i386:x86-64\"},thread-id=\"1\",stopped-threads=\"all\",core=\"9\"",
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-main-thread-cpu/current-unreadable-pc/snapshot.mi.txt",
+        "resumed": false,
+        "register_thread_id": "1",
+        "main_thread_id": "1",
+        "main_registers_captured": true,
+        "main_stack_words_captured": true,
+        "main_instructions_captured": false,
+        "capture_errors": [
+          "GDB command failed: -interpreter-exec console \"x/16i $pc\": error,msg=\"Cannot access memory at address 0x1\""
+        ]
+      },
+      "inferior": {
+        "pid": 1663121,
+        "start_ticks": 2723866,
+        "state": "t"
+      },
+      "debugger": {
+        "pid": 1663104,
+        "start_ticks": 2723858,
+        "state": "R"
+      },
+      "selected_thread_after_snapshot": "1",
+      "register_dump_count": 2,
+      "cleanup": {
+        "forced": true,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    }
+  ],
+  "started_utc": "2026-10-07T01:45:53.201779+00:00",
+  "source_sha256": "dbe6648cafcb0ee04d747edef1a6e8689b768e5fd73a8928a4fd1d93deaba746",
+  "compiler_argv": [
+    "/usr/bin/g++",
+    "-std=c++17",
+    "-O0",
+    "-g",
+    "-pthread",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-main-thread-cpu/thread-fixture.cpp",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-main-thread-cpu/thread-fixture"
+  ],
+  "fixture_sha256": "91d576e1c4e12825e9b948a8f7cedae809a056cab8d36e20f8d54e4e7336e542",
+  "binary_sha256": "48f09034199bb15e965bd4d0660798706d9dd1d820abb1c2ab037fb2a575c2e1",
+  "finished_utc": "2026-10-07T01:45:59.882024+00:00"
+}

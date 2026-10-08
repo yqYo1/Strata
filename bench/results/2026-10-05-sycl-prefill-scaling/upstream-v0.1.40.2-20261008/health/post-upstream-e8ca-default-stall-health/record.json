@@ -1,0 +1,75 @@
+{
+  "scope": "One logged B570 H2D/kernel/D2H probe after the patched default prefill path was stopped by its CPU watchdog; no output tokens, owned cleanup complete; no new xe fault, both owned processes gone; no reset or service/driver change",
+  "healthy": true,
+  "started_utc": "2026-10-07T16:04:31.596480+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "helper_sha256": "2f90005f79d2309747d917cff51dc53d8ee6192d68cb1feca074f84af8b0796c",
+  "source_sha256": "04c3da0d3f0974660c0bd6d8304f681bd827d2241fddd91a7e545f6b5a184e7c",
+  "NEO_environment": {
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0"
+  },
+  "binary_sha256": "7375211a3a97a2b284215dcdad6ba652fc9af2fa2e1a92bc47361e3893931d3b",
+  "steps": [
+    {
+      "label": "health-runtime",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import ctypes,sys; ctypes.CDLL(sys.argv[1])",
+        "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0"
+      ],
+      "pid": 576804,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05094571098743472
+    },
+    {
+      "label": "before-health-cursor",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "pid": 576808,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050574231005157344
+    },
+    {
+      "label": "health",
+      "argv": [
+        "/home/yayoi/.local/bin/strata-xe-health",
+        "0000:05:00.0"
+      ],
+      "pid": 576810,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.15088049600308295
+    },
+    {
+      "label": "health-kernel",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bf3f432;b=0a908c16e292429980ff082da39f4bb9;m=12528b0d52;t=65d4241e6f40e;x=19d3a1415c056048",
+        "--no-pager",
+        "-o",
+        "short-iso-precise"
+      ],
+      "pid": 576825,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05065549400751479
+    }
+  ],
+  "finished_utc": "2026-10-07T16:04:31.904978+00:00"
+}

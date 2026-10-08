@@ -1,0 +1,8 @@
+{
+  "path": "sycl/src/program/generate.cpp",
+  "before_sha256": "4ec6d3fc4c2f5f9071a182c7f785af7ca38b5bebcf1fc2775ce9dd38f09353eb",
+  "after_sha256": "b7fbdba74d024bdf43e9eb8a684e3b080a56e7c1897542335352ab5cd1a145f2",
+  "old": "    if (native_pack && o.expert_cache > 0 && o.expert_cache_per_layer) {",
+  "new": "    // Explicit SYCL counts retain the same CPU/GPU expert placement as before.\n    // The new mixed-size expansion is used when the caller asks for auto sizing.\n    if (native_pack && o.expert_cache > 0 && o.expert_cache_per_layer && auto_cache) {",
+  "reason": "Matched numerical comparisons require identical residency; upstream #369 expands explicit N-largest-blob budget to a different number of per-layer slots. Keep existing explicit count semantics on SYCL, retain new auto sizing."
+}

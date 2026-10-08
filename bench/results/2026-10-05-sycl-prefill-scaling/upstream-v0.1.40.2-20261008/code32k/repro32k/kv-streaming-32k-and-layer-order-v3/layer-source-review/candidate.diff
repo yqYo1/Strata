@@ -1,0 +1,28 @@
+--- /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/prefill/prefill.cpp
++++ /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-kv-layer-major-v1-20261008/source/prefill.cpp
+@@ -2402,9 +2402,23 @@
+         return false;
+     }
+     for (int64_t i = 0; i < m.ss->qsa_alloc; ++i) {
+-        if (m.ss->qsa_states[m.ss->qsa_ord0 + i].kv_mode != 0) {
+-            err = "prefill: layer-major requires all K/V pages resident in VRAM";
++        const auto& state = m.ss->qsa_states[m.ss->qsa_ord0 + i];
++        if (state.kv_mode != 0 && state.kv_mode != 1) {
++            err = "prefill: layer-major requires resident or streamed main K/V";
+             return false;
++        }
++        if (state.kv_mode == 1 &&
++            (!stage_own() || !m.ident_table || !m.stage.present() ||
++             !state.host.present())) {
++            err = "prefill: streamed layer-major requires owned identity staging";
++            return false;
++        }
++        if (state.kv_mode == 1) {
++            const char* prefetch = std::getenv("STRATA_KV_PREFETCH");
++            if (prefetch && std::atoi(prefetch) != 0) {
++                err = "prefill: streamed layer-major requires KV prefetch disabled";
++                return false;
++            }
+         }
+     }
+     if (const char* preload = std::getenv("STRATA_PREFILL_PRELOAD_PLE"); preload && preload[0] == '1') {

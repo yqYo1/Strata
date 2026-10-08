@@ -1,0 +1,473 @@
+{
+  "scope": "Offline private change of only iq_dequant_f16 and iq_dequant_gu_f16 launch properties; original kernel names, bodies, device capability checks, ND-ranges and all engine objects retained. No GPU execution, parity, capacity, speed or hang-cause proof.",
+  "passed": true,
+  "gpu_tested": false,
+  "adopted": false,
+  "started_utc": "2026-10-07T09:58:42.243105+00:00",
+  "controller_sha256": "24e5c46cd7cb95b1a56ad49c05cc89996bd032de685a305ad7361d461b4ffa54",
+  "production_source_sha256": "7d14a2b16c6d081edfcd2943cb044ad4ebe711687971ac4fe53b39c1797d66bd",
+  "production_object_sha256": "2a1044fb353760e80647be1307286cb822420d70a1db79350d047a4c15b03f20",
+  "production_archive_sha256": "5a290f0c71b0e90a02a477519ee3c55a6e15e13a314d2e78b8f10b2e3b09dd92",
+  "production_binary_sha256": "ceff2d8a6d38fc4779a8b6969d4912efedea5dbd4e2c9229f04af49c680c0bd0",
+  "environment": {
+    "PATH": "/usr/bin:/bin:/opt/intel/oneapi/compiler/2026.1/bin",
+    "LD_LIBRARY_PATH": null,
+    "LD_PRELOAD": null,
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+    "LIBRARY_PATH": "/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/lib:/usr/lib/x86_64-linux-gnu"
+  },
+  "steps": [
+    {
+      "label": "compile",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../third_party/ggml",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-Wall",
+        "-Wextra",
+        "-MD",
+        "-MT",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-no-root-refresh-build/iq_kernels.dp.cpp.o",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-no-root-refresh-build/iq_kernels.dp.cpp.o.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-no-root-refresh-build/iq_kernels.dp.cpp.o",
+        "-c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-no-root-refresh-build/iq_kernels.dp.cpp"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 12.134561591003148
+    },
+    {
+      "label": "archive-replace",
+      "argv": [
+        "/usr/bin/ar",
+        "r",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-no-root-refresh-build/libstrata_kernels.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-no-root-refresh-build/iq_kernels.dp.cpp.o"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.06398639799590455
+    },
+    {
+      "label": "archive-index",
+      "argv": [
+        "/usr/bin/ranlib",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-no-root-refresh-build/libstrata_kernels.a"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0641663070055074
+    },
+    {
+      "label": "link",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-O3",
+        "-DNDEBUG",
+        "-fsycl",
+        "-Xsycl-target-backend=spir64",
+        "-cl-fp32-correctly-rounded-divide-sqrt",
+        "-fsycl-device-code-split=per_kernel",
+        "-qmkl=sequential",
+        "CMakeFiles/strata.dir/src/program/generate.cpp.o",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/strata-dequant-no-root-refresh-candidate",
+        "libstrata_engine.a",
+        "libstrata_prefill.a",
+        "libstrata_spec.a",
+        "libstrata_engine.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-no-root-refresh-build/libstrata_kernels.a",
+        "libstrata_core.a",
+        "libstrata_kernels_cpu.a",
+        "ggml/src/libggml-cpu.a",
+        "ggml/src/libggml-base.a",
+        "-lm"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 14.04362310400029
+    }
+  ],
+  "changed_functions": [
+    {
+      "function": "iq_dequant_f16",
+      "original_sha256": "0b51ccc95a1171a17f626744c1642b56d081f72ecb116cf203cec139b42d9e38",
+      "candidate_sha256": "73acc78ea7ce99c35e3c2cc19e30fcdc1cacd96d33ec91d61aa4a490f6802aa5"
+    },
+    {
+      "function": "iq_dequant_gu_f16",
+      "original_sha256": "ad9bacca2829c1eaf0c8db0db81549d085e44c50418c5a23ceb6f485a582e0fe",
+      "candidate_sha256": "572d62c1e0f9723394340b7e6d4e8026abd3fded3f4eadd83ec3641daf437bf0"
+    }
+  ],
+  "candidate_source_sha256": "a5ece3f84fcb5618d0801ff420e9ee1ba3735d5d6ee4802b943a48bd17d0063d",
+  "original_compile_argv": [
+    "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+    "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+    "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../third_party/ggml",
+    "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+    "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+    "-O3",
+    "-DNDEBUG",
+    "-std=c++20",
+    "-fsycl",
+    "-fsycl-default-sub-group-size=32",
+    "-fsycl-device-code-split=per_kernel",
+    "-fp-model=precise",
+    "-Wno-unused-parameter",
+    "-Wno-unused-variable",
+    "-Wno-deprecated-declarations",
+    "-Wall",
+    "-Wextra",
+    "-MD",
+    "-MT",
+    "CMakeFiles/strata_kernels.dir/src/kernels/cuda/iq_kernels.dp.cpp.o",
+    "-MF",
+    "CMakeFiles/strata_kernels.dir/src/kernels/cuda/iq_kernels.dp.cpp.o.d",
+    "-o",
+    "CMakeFiles/strata_kernels.dir/src/kernels/cuda/iq_kernels.dp.cpp.o",
+    "-c",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/kernels/cuda/iq_kernels.dp.cpp"
+  ],
+  "archive_members": [
+    {
+      "member": "dequant_s2.dp.cpp.o",
+      "original_sha256": "98f1b7973dc4f0cf19401bfc7b1333d5c8208e50c076f1f8736b0f10bdfa323f",
+      "candidate_sha256": "98f1b7973dc4f0cf19401bfc7b1333d5c8208e50c076f1f8736b0f10bdfa323f",
+      "replaced": false
+    },
+    {
+      "member": "s2_gemv.dp.cpp.o",
+      "original_sha256": "6baaa9c77d51a431e75a298a2ad27f5190b9b3b31987bf2979c7d4d3c5372fd0",
+      "candidate_sha256": "6baaa9c77d51a431e75a298a2ad27f5190b9b3b31987bf2979c7d4d3c5372fd0",
+      "replaced": false
+    },
+    {
+      "member": "s_gemv.dp.cpp.o",
+      "original_sha256": "757dbdecf755f7e648df614b4d102827a2c0c78bbab076d9f91a218198abf687",
+      "candidate_sha256": "757dbdecf755f7e648df614b4d102827a2c0c78bbab076d9f91a218198abf687",
+      "replaced": false
+    },
+    {
+      "member": "s2_gemv_quads.dp.cpp.o",
+      "original_sha256": "24b7736eb9d972c4c5345a0dd29d3d3bbc191801b7535938b78d0d1dca9506c8",
+      "candidate_sha256": "24b7736eb9d972c4c5345a0dd29d3d3bbc191801b7535938b78d0d1dca9506c8",
+      "replaced": false
+    },
+    {
+      "member": "s2_gemv_fast.dp.cpp.o",
+      "original_sha256": "a4b7e9393f75af80a71f36c40cf1f5b5fc437086577f47c0178385ea21a19cfb",
+      "candidate_sha256": "a4b7e9393f75af80a71f36c40cf1f5b5fc437086577f47c0178385ea21a19cfb",
+      "replaced": false
+    },
+    {
+      "member": "router_top10.dp.cpp.o",
+      "original_sha256": "5c8fed8bf9c37286b4dc7f655350b492fbb157d22fa53f32222c4357d1ed40c4",
+      "candidate_sha256": "5c8fed8bf9c37286b4dc7f655350b492fbb157d22fa53f32222c4357d1ed40c4",
+      "replaced": false
+    },
+    {
+      "member": "quantize_act.dp.cpp.o",
+      "original_sha256": "f3e69c1b9057eb266b11818a8d7c4d47b827cd900b42c9be9f7845d34b7b7eec",
+      "candidate_sha256": "f3e69c1b9057eb266b11818a8d7c4d47b827cd900b42c9be9f7845d34b7b7eec",
+      "replaced": false
+    },
+    {
+      "member": "rope.dp.cpp.o",
+      "original_sha256": "7587ee7af62e856ae06d81632dc96763a754e92eeae5c9fb300bc53f9610504e",
+      "candidate_sha256": "7587ee7af62e856ae06d81632dc96763a754e92eeae5c9fb300bc53f9610504e",
+      "replaced": false
+    },
+    {
+      "member": "sampler.dp.cpp.o",
+      "original_sha256": "968fb94cdb51450f7f0f8ec6bd01e866e239b5d96dc7ea2c601ab6fafebd46e5",
+      "candidate_sha256": "968fb94cdb51450f7f0f8ec6bd01e866e239b5d96dc7ea2c601ab6fafebd46e5",
+      "replaced": false
+    },
+    {
+      "member": "s2_gemv_q8.dp.cpp.o",
+      "original_sha256": "4d14d90756d7d8504f8428fe730565023c893d6ad2439eaf9a36bac2c3c07b30",
+      "candidate_sha256": "4d14d90756d7d8504f8428fe730565023c893d6ad2439eaf9a36bac2c3c07b30",
+      "replaced": false
+    },
+    {
+      "member": "s2_expert_grouped.dp.cpp.o",
+      "original_sha256": "3e5dee265b8be3b14c031417593f60f5c50e33e34584e607a164e7baf2b33047",
+      "candidate_sha256": "3e5dee265b8be3b14c031417593f60f5c50e33e34584e607a164e7baf2b33047",
+      "replaced": false
+    },
+    {
+      "member": "shared_expert.dp.cpp.o",
+      "original_sha256": "a9e0bdaf9da4d1734a3a556f5fe00b95b8be1ed83a9a4cb10c1165da8470982b",
+      "candidate_sha256": "a9e0bdaf9da4d1734a3a556f5fe00b95b8be1ed83a9a4cb10c1165da8470982b",
+      "replaced": false
+    },
+    {
+      "member": "gr.dp.cpp.o",
+      "original_sha256": "ad90f25d7de3b4b895fc0f6fa14aba7350d9eaee7a251d118977e31a642d4089",
+      "candidate_sha256": "ad90f25d7de3b4b895fc0f6fa14aba7350d9eaee7a251d118977e31a642d4089",
+      "replaced": false
+    },
+    {
+      "member": "gdn.dp.cpp.o",
+      "original_sha256": "cda5d8a904502eb6b8158498f72425ae3eeee2e1bb0986fb3c652d398bdebc9b",
+      "candidate_sha256": "cda5d8a904502eb6b8158498f72425ae3eeee2e1bb0986fb3c652d398bdebc9b",
+      "replaced": false
+    },
+    {
+      "member": "qsa.dp.cpp.o",
+      "original_sha256": "97f80bb771b261f93376d6d340d040d87e00afa2dddaca99d0207b295f346d25",
+      "candidate_sha256": "97f80bb771b261f93376d6d340d040d87e00afa2dddaca99d0207b295f346d25",
+      "replaced": false
+    },
+    {
+      "member": "elementwise.dp.cpp.o",
+      "original_sha256": "dd1cf530a715710c924c1cfc142fd60023c9220b55df2ff26336c1d6ad9e41e5",
+      "candidate_sha256": "dd1cf530a715710c924c1cfc142fd60023c9220b55df2ff26336c1d6ad9e41e5",
+      "replaced": false
+    },
+    {
+      "member": "bf16_gemv.dp.cpp.o",
+      "original_sha256": "3eb07c81e02ce501e8b4d064d58fbbe8b18e492f0bb9a6d63dd3ad464af7e5d1",
+      "candidate_sha256": "3eb07c81e02ce501e8b4d064d58fbbe8b18e492f0bb9a6d63dd3ad464af7e5d1",
+      "replaced": false
+    },
+    {
+      "member": "native_mmvq.dp.cpp.o",
+      "original_sha256": "b811413e503f7cd00e362a6881a8cb608caf46c68f397f086181fd5809ae51ea",
+      "candidate_sha256": "b811413e503f7cd00e362a6881a8cb608caf46c68f397f086181fd5809ae51ea",
+      "replaced": false
+    },
+    {
+      "member": "native_bf16.dp.cpp.o",
+      "original_sha256": "4ef8adcd4edf606146b5eb307701c055f84e9d7d5514915c7fe9e4b398ec5929",
+      "candidate_sha256": "4ef8adcd4edf606146b5eb307701c055f84e9d7d5514915c7fe9e4b398ec5929",
+      "replaced": false
+    },
+    {
+      "member": "native_gr_norm.dp.cpp.o",
+      "original_sha256": "8c386f99543eb6b6fe1decc5dbcfe328aa492be1a98ebb48436170de8579f0dc",
+      "candidate_sha256": "8c386f99543eb6b6fe1decc5dbcfe328aa492be1a98ebb48436170de8579f0dc",
+      "replaced": false
+    },
+    {
+      "member": "native_moe.dp.cpp.o",
+      "original_sha256": "b49795d339335120e4186050f6ca942ccfe79606d8fba4b7c961e3c9f3bf971f",
+      "candidate_sha256": "b49795d339335120e4186050f6ca942ccfe79606d8fba4b7c961e3c9f3bf971f",
+      "replaced": false
+    },
+    {
+      "member": "native_gdn.dp.cpp.o",
+      "original_sha256": "b26e4d5e6d4025185057ea41a69b14542f2e6c8a9b696661303264ca4606eb07",
+      "candidate_sha256": "b26e4d5e6d4025185057ea41a69b14542f2e6c8a9b696661303264ca4606eb07",
+      "replaced": false
+    },
+    {
+      "member": "native_gr_postops.dp.cpp.o",
+      "original_sha256": "550ad90a51314e58f5ab42429caa0e4a47065aeb125d6c11a8d15a804205f8bf",
+      "candidate_sha256": "550ad90a51314e58f5ab42429caa0e4a47065aeb125d6c11a8d15a804205f8bf",
+      "replaced": false
+    },
+    {
+      "member": "native_router.dp.cpp.o",
+      "original_sha256": "c6f5824fe992b7869ca968b46521e9cedd3153138903458e6be203473fd5ebe4",
+      "candidate_sha256": "c6f5824fe992b7869ca968b46521e9cedd3153138903458e6be203473fd5ebe4",
+      "replaced": false
+    },
+    {
+      "member": "native_gdn_preprocess.dp.cpp.o",
+      "original_sha256": "073593eb724b5ae16ecdf1b0c6c543e0a0424391b53cf79ec504dfca6e6650a1",
+      "candidate_sha256": "073593eb724b5ae16ecdf1b0c6c543e0a0424391b53cf79ec504dfca6e6650a1",
+      "replaced": false
+    },
+    {
+      "member": "native_qsa.dp.cpp.o",
+      "original_sha256": "5f3f871dee1c108e3000b7e3fd2c176d58458830a4dfb17acb33c27dfa3fced5",
+      "candidate_sha256": "5f3f871dee1c108e3000b7e3fd2c176d58458830a4dfb17acb33c27dfa3fced5",
+      "replaced": false
+    },
+    {
+      "member": "native_rope.dp.cpp.o",
+      "original_sha256": "d57c19d17511231f1ab72fbbc445cdec6217b741a93136b00ce58dd9e9ae052d",
+      "candidate_sha256": "d57c19d17511231f1ab72fbbc445cdec6217b741a93136b00ce58dd9e9ae052d",
+      "replaced": false
+    },
+    {
+      "member": "native_ple_postops.dp.cpp.o",
+      "original_sha256": "bbaed79e24b050ff2909e4038fb5143883a74592d611d57c3d64fd9dd5e7496c",
+      "candidate_sha256": "bbaed79e24b050ff2909e4038fb5143883a74592d611d57c3d64fd9dd5e7496c",
+      "replaced": false
+    },
+    {
+      "member": "native_flash_attn.dp.cpp.o",
+      "original_sha256": "0bfb1b858676597e8688ea411a2ae556a8121273ad1aa1370bf5fe28d9c9d609",
+      "candidate_sha256": "0bfb1b858676597e8688ea411a2ae556a8121273ad1aa1370bf5fe28d9c9d609",
+      "replaced": false
+    },
+    {
+      "member": "native_qsa_indexer.dp.cpp.o",
+      "original_sha256": "95a5a2c71c81afb9394f28097defce1c47c12b553bdc812dbb28874a96a23a77",
+      "candidate_sha256": "95a5a2c71c81afb9394f28097defce1c47c12b553bdc812dbb28874a96a23a77",
+      "replaced": false
+    },
+    {
+      "member": "native_qsa_score.dp.cpp.o",
+      "original_sha256": "6107457f1d28aa29cef616fe15d3a46a16cd142d31b44718946cfeab2d536897",
+      "candidate_sha256": "6107457f1d28aa29cef616fe15d3a46a16cd142d31b44718946cfeab2d536897",
+      "replaced": false
+    },
+    {
+      "member": "ple.dp.cpp.o",
+      "original_sha256": "c46004b931fb7093e145fa66ff2be85e913ee84111dbabab36f6b851cfe35763",
+      "candidate_sha256": "c46004b931fb7093e145fa66ff2be85e913ee84111dbabab36f6b851cfe35763",
+      "replaced": false
+    },
+    {
+      "member": "kv_q8.dp.cpp.o",
+      "original_sha256": "8437d7b6ce23f6f19234aed0a474920ceee7e96ff60b6305b68ad38b9b02406f",
+      "candidate_sha256": "8437d7b6ce23f6f19234aed0a474920ceee7e96ff60b6305b68ad38b9b02406f",
+      "replaced": false
+    },
+    {
+      "member": "kv_stream.dp.cpp.o",
+      "original_sha256": "916ccc757cc56770ab71b6259cdf2af97a3c4fa3f308529dbcd52b1bb7b91ccd",
+      "candidate_sha256": "916ccc757cc56770ab71b6259cdf2af97a3c4fa3f308529dbcd52b1bb7b91ccd",
+      "replaced": false
+    },
+    {
+      "member": "kv_q4.dp.cpp.o",
+      "original_sha256": "9adf8175f25bfdbf5c1db4ec974f0dcd026fd2d152b819a13583bd6f4e872927",
+      "candidate_sha256": "9adf8175f25bfdbf5c1db4ec974f0dcd026fd2d152b819a13583bd6f4e872927",
+      "replaced": false
+    },
+    {
+      "member": "fused_gr.dp.cpp.o",
+      "original_sha256": "4e281002f12deeedbab3a30af7ceba7efe56bd3bcb60e3835a0162933fc194f8",
+      "candidate_sha256": "4e281002f12deeedbab3a30af7ceba7efe56bd3bcb60e3835a0162933fc194f8",
+      "replaced": false
+    },
+    {
+      "member": "cvec.dp.cpp.o",
+      "original_sha256": "9be7ee02e29cce854a7ba85444ef303beeee542e6fc1345c8eed9ff03a3d60f6",
+      "candidate_sha256": "9be7ee02e29cce854a7ba85444ef303beeee542e6fc1345c8eed9ff03a3d60f6",
+      "replaced": false
+    },
+    {
+      "member": "qsa_decode_attn.dp.cpp.o",
+      "original_sha256": "51341ff09c93189e479bb2311f246224760947c60af29e1970477e00c97b17ef",
+      "candidate_sha256": "51341ff09c93189e479bb2311f246224760947c60af29e1970477e00c97b17ef",
+      "replaced": false
+    },
+    {
+      "member": "qsa_prompt_attn.dp.cpp.o",
+      "original_sha256": "f1b9f7363f29c9c1856184cdc0914269e0df9402c1ae6a69f5150e9d4a36f3d8",
+      "candidate_sha256": "f1b9f7363f29c9c1856184cdc0914269e0df9402c1ae6a69f5150e9d4a36f3d8",
+      "replaced": false
+    },
+    {
+      "member": "fused_gdn.dp.cpp.o",
+      "original_sha256": "09de9b3d76b590c82ebc66b5a548a5e50aea3f1a6fedb1a4e947923299d79dcb",
+      "candidate_sha256": "09de9b3d76b590c82ebc66b5a548a5e50aea3f1a6fedb1a4e947923299d79dcb",
+      "replaced": false
+    },
+    {
+      "member": "dequant_bf16.dp.cpp.o",
+      "original_sha256": "2ceee5edb471a89c26a2d261542827f7f90e699899df64ef7b572fb12f9a8e76",
+      "candidate_sha256": "2ceee5edb471a89c26a2d261542827f7f90e699899df64ef7b572fb12f9a8e76",
+      "replaced": false
+    },
+    {
+      "member": "qsa_select.dp.cpp.o",
+      "original_sha256": "9661a195d7936eea8ed2b4017040c48ce42a333e52d857cfe1963144312e41cc",
+      "candidate_sha256": "9661a195d7936eea8ed2b4017040c48ce42a333e52d857cfe1963144312e41cc",
+      "replaced": false
+    },
+    {
+      "member": "verify_kernels.dp.cpp.o",
+      "original_sha256": "543287aa9f4f2595ea6f7b78cafcde8ec4f3faf7da48fa73542c53cbda109ceb",
+      "candidate_sha256": "543287aa9f4f2595ea6f7b78cafcde8ec4f3faf7da48fa73542c53cbda109ceb",
+      "replaced": false
+    },
+    {
+      "member": "iq_kernels.dp.cpp.o",
+      "original_sha256": "2a1044fb353760e80647be1307286cb822420d70a1db79350d047a4c15b03f20",
+      "candidate_sha256": "83e0b92ec642d431e0aa75121535aea0ed8e88d13eb6953e1e703ba6b8476813",
+      "replaced": true
+    },
+    {
+      "member": "ngram.cpp.o",
+      "original_sha256": "84f5304900b759c94b8eb448ea16c04adef02a20f2457bdbf5c53802ca631f5f",
+      "candidate_sha256": "84f5304900b759c94b8eb448ea16c04adef02a20f2457bdbf5c53802ca631f5f",
+      "replaced": false
+    },
+    {
+      "member": "ple_reader.cpp.o",
+      "original_sha256": "00209f2ec8716ca2b11d9327bba75f3ff186aa6c70274dedd53e29c3bfffbfe3",
+      "candidate_sha256": "00209f2ec8716ca2b11d9327bba75f3ff186aa6c70274dedd53e29c3bfffbfe3",
+      "replaced": false
+    },
+    {
+      "member": "direct_file.cpp.o",
+      "original_sha256": "c630512f14c1175f58acaa5d1771a9142746d9c5f2dba23d09b1ec4c1d8a3906",
+      "candidate_sha256": "c630512f14c1175f58acaa5d1771a9142746d9c5f2dba23d09b1ec4c1d8a3906",
+      "replaced": false
+    },
+    {
+      "member": "qsa_prompt_attn_xmx.dp.cpp.o",
+      "original_sha256": "d4887ba855ac3ef637928aec10ce100f8bc72532e94d5d7413fa4ae9bcaf5850",
+      "candidate_sha256": "d4887ba855ac3ef637928aec10ce100f8bc72532e94d5d7413fa4ae9bcaf5850",
+      "replaced": false
+    }
+  ],
+  "original_link_argv": [
+    "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+    "-O3",
+    "-DNDEBUG",
+    "-fsycl",
+    "-Xsycl-target-backend=spir64",
+    "-cl-fp32-correctly-rounded-divide-sqrt",
+    "-fsycl-device-code-split=per_kernel",
+    "-qmkl=sequential",
+    "CMakeFiles/strata.dir/src/program/generate.cpp.o",
+    "-o",
+    "strata",
+    "libstrata_engine.a",
+    "libstrata_prefill.a",
+    "libstrata_spec.a",
+    "libstrata_engine.a",
+    "libstrata_kernels.a",
+    "libstrata_core.a",
+    "libstrata_kernels_cpu.a",
+    "ggml/src/libggml-cpu.a",
+    "ggml/src/libggml-base.a",
+    "-lm"
+  ],
+  "link_input_sha256": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/CMakeFiles/strata.dir/src/program/generate.cpp.o": "c4ace9bd498bdcd21d809f416c53e2876d4658947d616af4fb1dfb772171fb22",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/libstrata_engine.a": "6e2572af7a4354400e4f8629483737f71a7ccc8c6a0453409e5b4bb6b5815149",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/libstrata_prefill.a": "b55448618f42e51a7838705e01245e46e8d2555fbc412ce95a8b6412b3e06d8c",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/libstrata_spec.a": "7182950031d3ba96484a1a4c733b76c2351950ee0e6e857aa97dbb8d615f3e0c",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/libstrata_kernels.a": "5a290f0c71b0e90a02a477519ee3c55a6e15e13a314d2e78b8f10b2e3b09dd92",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/libstrata_core.a": "28925bf3665cb568b7429d06cfdec87058ec11819e4c25647f45ad9bdce905d6",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/libstrata_kernels_cpu.a": "5f621ed71503b353c48a6225d0716ace7cc38ab394c3a74c3c22dc594a036055",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/ggml/src/libggml-cpu.a": "e3cefe0cf3c866aec7d9f06b9181ca4263304dd7307af462195a9b869be953f2",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/ggml/src/libggml-base.a": "98059baeddf43574e613949b8382d67c088f3f62d1b84c3d47bef31581bcae1c"
+  },
+  "production_inputs_unchanged": true,
+  "candidate_object_sha256": "83e0b92ec642d431e0aa75121535aea0ed8e88d13eb6953e1e703ba6b8476813",
+  "candidate_archive_sha256": "bb6796dc666beb9ede79c16066656c56abc7d6e087ab6bb2557a71a752941ce2",
+  "candidate_binary_sha256": "9f43b89e1adcde7f1dbf73a78e9523af1f9dfa0780851e05c3912bcf02766ecf",
+  "elapsed_seconds": 26.807205795004847,
+  "finished_utc": "2026-10-07T09:59:09.265815+00:00"
+}

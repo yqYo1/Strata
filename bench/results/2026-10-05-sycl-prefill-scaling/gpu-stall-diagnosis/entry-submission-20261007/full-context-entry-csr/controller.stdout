@@ -1,0 +1,1040 @@
+{
+  "scope": "Actual 262144-cell CLI diagnostic with owned GDB, Level Zero and UR tracing; 300-second diagnostic deadline; read-only CSR inspection; original tuning; L0 API entries/error results without successful argument dumps, not a timing run or completed capacity proof",
+  "started_utc": "2026-10-06T23:15:44.772763+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "healthy": false,
+  "completed": false,
+  "active": false,
+  "diagnostic_deadline_seconds": 300,
+  "log_limit_bytes": 2147483648,
+  "snapshots": [
+    {
+      "label": "observation-deadline",
+      "stop": "*stopped,reason=\"signal-received\",signal-name=\"SIGINT\",signal-meaning=\"Interrupt\",frame={addr=\"0x00007fffdc627047\",func=\"__vfscanf_internal\",args=[{name=\"s\",value=\"0x7ffffffde8b0\"},{name=\"s@entry\",value=\"0x7ffffffde8b0\"},{name=\"format\",value=\"0x7fffdc7889f9 \\\"%hu%n:%hu%n:%hu%n\\\"\"},{name=\"format@entry\",value=\"0x7fffdc7889f9 \\\"%hu%n:%hu%n:%hu%n\\\"\"},{name=\"argptr\",value=\"0x7ffffffde898\"},{name=\"argptr@entry\",value=\"0x7ffffffde898\"},{name=\"mode_flags\",value=\"6\"},{name=\"mode_flags@entry\",value=\"6\"}],file=\"./stdio-common/vfscanf-internal.c\",fullname=\"./stdio-common/./stdio-common/vfscanf-internal.c\",line=\"679\",arch=\"i386:x86-64\"},thread-id=\"1\",stopped-threads=\"all\",core=\"0\"",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/debugger/observation-deadline.mi.txt",
+      "resumed": true
+    }
+  ],
+  "steps": [
+    {
+      "label": "embedding-state",
+      "argv": [
+        "/usr/bin/systemctl",
+        "--user",
+        "show",
+        "llama-server-qwen3embed.service",
+        "-p",
+        "ActiveState"
+      ],
+      "pid": 1119965,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050595233999047196
+    },
+    {
+      "label": "kernel-before",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "pid": 1119967,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05066553700089571
+    },
+    {
+      "label": "metrics-2",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1119991,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05054578199997195
+    },
+    {
+      "label": "metrics-3",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1120329,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050779401000909274
+    },
+    {
+      "label": "metrics-4",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1120550,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.45142648099863436
+    },
+    {
+      "label": "metrics-5",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1120760,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.15113281199955964
+    },
+    {
+      "label": "metrics-6",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1120930,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.9019234560000768
+    },
+    {
+      "label": "metrics-7",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1121139,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.2510680939994927
+    },
+    {
+      "label": "metrics-8",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1121351,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050689079998846864
+    },
+    {
+      "label": "metrics-9",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1121671,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05080994900345104
+    },
+    {
+      "label": "metrics-10",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1121926,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050622414997633314
+    },
+    {
+      "label": "metrics-11",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1122290,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05059219800023129
+    },
+    {
+      "label": "metrics-12",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1122546,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05064399500042782
+    },
+    {
+      "label": "metrics-13",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1122897,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05066525599977467
+    },
+    {
+      "label": "metrics-14",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1123155,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.10068903299907106
+    },
+    {
+      "label": "metrics-15",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1123476,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05061530099919764
+    },
+    {
+      "label": "metrics-16",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1123820,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05059188700033701
+    },
+    {
+      "label": "metrics-17",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1124090,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05066909200104419
+    },
+    {
+      "label": "metrics-18",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1124429,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.0506120549980551
+    },
+    {
+      "label": "metrics-19",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1124686,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050631451998924604
+    },
+    {
+      "label": "metrics-20",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1125014,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05058596600065357
+    },
+    {
+      "label": "metrics-21",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1125256,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.10076835099971504
+    },
+    {
+      "label": "metrics-22",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1125509,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.10067074700054945
+    },
+    {
+      "label": "metrics-23",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1125710,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.10089521999907447
+    },
+    {
+      "label": "metrics-24",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1126027,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.10070471000290127
+    },
+    {
+      "label": "metrics-25",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1126243,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.10058582599958754
+    },
+    {
+      "label": "metrics-26",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1126456,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.3010623280024447
+    },
+    {
+      "label": "metrics-27",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1126649,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.10076345099878381
+    },
+    {
+      "label": "metrics-28",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1126884,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.1007382330026303
+    },
+    {
+      "label": "metrics-29",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1127136,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.10068422100084717
+    },
+    {
+      "label": "metrics-30",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1127374,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.10081246299887425
+    },
+    {
+      "label": "metrics-31",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1127615,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.10070636300224578
+    },
+    {
+      "label": "metrics-32",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1127813,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.30090063199895667
+    },
+    {
+      "label": "metrics-33",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1128063,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.10080248300073436
+    },
+    {
+      "label": "metrics-34",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1128276,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.10071746300309314
+    },
+    {
+      "label": "metrics-35",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1128545,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.10075789899929077
+    },
+    {
+      "label": "metrics-36",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1128819,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.10074654900017777
+    },
+    {
+      "label": "metrics-37",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1129042,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05071824400147307
+    },
+    {
+      "label": "metrics-38",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1129264,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.10068447099911282
+    },
+    {
+      "label": "metrics-39",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1129457,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.1006511279992992
+    },
+    {
+      "label": "metrics-40",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1129678,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.10169065700029023
+    },
+    {
+      "label": "metrics-41",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1129884,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.10196781899867347
+    },
+    {
+      "label": "metrics-42",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1130163,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.10070602900304948
+    },
+    {
+      "label": "metrics-43",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1130371,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.10071038399837562
+    },
+    {
+      "label": "metrics-44",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1130605,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.10071226499712793
+    },
+    {
+      "label": "metrics-45",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1130841,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.10082400999817764
+    },
+    {
+      "label": "metrics-46",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1131071,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.10207352999714203
+    },
+    {
+      "label": "metrics-47",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1131366,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05059181499746046
+    },
+    {
+      "label": "metrics-48",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1131623,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050848541999584995
+    },
+    {
+      "label": "metrics-49",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1131954,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050590548999025486
+    },
+    {
+      "label": "metrics-50",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1132213,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05060837999917567
+    },
+    {
+      "label": "metrics-51",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1132576,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05060321800192469
+    },
+    {
+      "label": "metrics-52",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1132878,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050652297999477014
+    },
+    {
+      "label": "metrics-53",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1133198,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050581464001879795
+    },
+    {
+      "label": "metrics-54",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1133476,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05085717700058012
+    },
+    {
+      "label": "metrics-55",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1133824,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05064723300165497
+    },
+    {
+      "label": "metrics-56",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1134091,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050603689000126906
+    },
+    {
+      "label": "metrics-57",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1134416,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050824928999645635
+    },
+    {
+      "label": "metrics-58",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1134704,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05066473999977461
+    },
+    {
+      "label": "metrics-59",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1134992,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050598262998391874
+    },
+    {
+      "label": "metrics-60",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/read_metrics.py",
+        "1119988",
+        "1822445"
+      ],
+      "pid": 1135321,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05066696900030365
+    },
+    {
+      "label": "kernel-after",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=befa616;b=0a908c16e292429980ff082da39f4bb9;m=43ca638e6;t=65d342c021fa3;x=d14322258f405143",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "pid": 1135999,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05065776799892774
+    }
+  ],
+  "binary_sha256": "3a83e2c0c8b916225669275217b9a194ebabbe6101faf0ea7a110913d061e9b9",
+  "fixture_sha256": "abe9aec864f8bb457701ff994bcc9da390bc131d3c386bbc3a3d6fdc26a9ee1e",
+  "diagnostic_profile": "Level Zero API entries and error results with parameter validation; successful result dumps and per-call date formatting disabled; parent metrics retain monotonic elapsed time",
+  "capacity_deadline_seconds": 7200,
+  "diagnostic_only_deadline_seconds": 300,
+  "original_tuning_environment_matches": true,
+  "environment": {
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/umf/1.1/lib:/usr/lib/x86_64-linux-gnu:/opt/intel/oneapi/mkl/2026.1/lib",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "STRATA_IO_THREADS": "16",
+    "STRATA_PREFILL_RING": "8",
+    "STRATA_PREFILL_FIRST": "0",
+    "STRATA_PREFILL_ATTN_BATCH": "128",
+    "STRATA_PREFILL_ATTN_LAYOUT": "4",
+    "STRATA_PREFILL_TOPK_TUNED": "1",
+    "STRATA_GDN_KEYHEAD": "0",
+    "STRATA_GDN_KEYHEAD_TUNED": "1",
+    "STRATA_PREFILL_COMPACT": "2",
+    "STRATA_PREFILL_LAYER_MAJOR": "1",
+    "STRATA_PREFILL_LAYER_MAJOR_R_INPLACE": "1",
+    "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "0",
+    "STRATA_PREFILL_RELEASE_CACHE": "1",
+    "STRATA_PREFILL_CACHE_ALLOC": "vmm",
+    "STRATA_PREFILL_CACHE_RESTORE": "ram",
+    "STRATA_PREFILL_RELEASE_DRAFT": "1",
+    "STRATA_PREFILL_DRAFT_VERIFY": "1",
+    "ZEL_ENABLE_LOADER_LOGGING": "1",
+    "ZEL_LOADER_LOG_CONSOLE": "1",
+    "ZEL_LOADER_LOGGING_LEVEL": "trace",
+    "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "0",
+    "ZE_ENABLE_VALIDATION_LAYER": "1",
+    "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_TRACING": "level:warning;flush:warning;output:stderr",
+    "STRATA_TRACE": "1",
+    "UR_ENABLE_LAYERS": "",
+    "ZEL_LOADER_LOG_PATTERN": "[thread-id:%t] [%l] %v",
+    "STRATA_DUMP_FIRST_LOGITS": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/first-head.bin"
+  },
+  "source_sha256": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_full_entry_csr.py": "e905398b7cce06c9958956970f2faf0321b1c46fa81a26b450aaf6369ff67248",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/read-csr.gdb": "e288d9fd4b3f11ca192b9e6097cb9820bb0d912489d5635852356a85f408e651",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/recover-xe.sh": "2f90005f79d2309747d917cff51dc53d8ee6192d68cb1feca074f84af8b0796c",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/owned_gdb.py": "547838e423525c824b7c033f7490153f8174d772e7c8f736c2f9255b50de758c",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/program/generate.cpp": "4e170cf0c06d6100debd3b447991291fb42431afc43fa0c240fe6559dcb1b4fd"
+  },
+  "argv": [
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/strata-residency-trace-candidate",
+    "--pack",
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+    "--native",
+    "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+    "--max-context",
+    "262144",
+    "--kv",
+    "int8",
+    "--spec",
+    "4",
+    "--spec-min-p",
+    "0",
+    "--suffix-draft",
+    "0",
+    "--no-prefill-borrow",
+    "--expert-cache",
+    "128",
+    "--expert-profile",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/data/expert-profile.bin",
+    "--expert-cache-per-layer",
+    "--pool-workers",
+    "5",
+    "--pcie-frac",
+    "0",
+    "--adapt-swaps",
+    "0",
+    "--ple-io",
+    "direct",
+    "--greedy",
+    "--tokens-file",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-entry-csr/fills-context.tokens.txt",
+    "--max-new",
+    "2",
+    "--prefill",
+    "1024",
+    "--stats"
+  ],
+  "inferior": {
+    "pid": 1119988,
+    "start_ticks": 1822445,
+    "state": "t"
+  },
+  "debugger": {
+    "pid": 1119971,
+    "start_ticks": 1822436,
+    "state": "R"
+  },
+  "elapsed_seconds": 300.04942174900134,
+  "latest_metrics": {
+    "pid": 1119988,
+    "start_ticks": 1822445,
+    "state": "R",
+    "minor_faults": 15066590,
+    "major_faults": 0,
+    "user_ticks": 8622,
+    "system_ticks": 19420,
+    "io": {
+      "rchar": 58197310753,
+      "wchar": 1084878949,
+      "syscr": 1527875,
+      "syscw": 16771024,
+      "read_bytes": 257071998464,
+      "write_bytes": 1084878949,
+      "cancelled_write_bytes": 0
+    },
+    "gpu": [
+      {
+        "fd": "5",
+        "busy_cycles": {
+          "rcs": 0,
+          "vcs": 0,
+          "vecs": 0,
+          "bcs": 0,
+          "ccs": 1476594262
+        },
+        "raw": "pos:\t0\nflags:\t02100002\nmnt_id:\t30\nino:\t1161\ndrm-driver:\txe\ndrm-client-id:\t424\ndrm-pdev:\t0000:05:00.0\ndrm-total-system:\t125824 KiB\ndrm-shared-system:\t0\ndrm-active-system:\t0\ndrm-resident-system:\t0\ndrm-purgeable-system:\t0\ndrm-total-gtt:\t507944 KiB\ndrm-shared-gtt:\t0\ndrm-active-gtt:\t0\ndrm-resident-gtt:\t507944 KiB\ndrm-total-vram0:\t9869384 KiB\ndrm-shared-vram0:\t0\ndrm-active-vram0:\t0\ndrm-resident-vram0:\t9869384 KiB\ndrm-total-stolen:\t0\ndrm-shared-stolen:\t0\ndrm-active-stolen:\t0\ndrm-resident-stolen:\t0\ndrm-cycles-rcs:\t0\ndrm-total-cycles-rcs:\t356090092710\ndrm-cycles-vcs:\t0\ndrm-total-cycles-vcs:\t356090092710\ndrm-engine-capacity-vcs:\t2\ndrm-cycles-vecs:\t0\ndrm-total-cycles-vecs:\t356090092710\ndrm-engine-capacity-vecs:\t2\ndrm-cycles-bcs:\t0\ndrm-total-cycles-bcs:\t356090092710\ndrm-cycles-ccs:\t1476594262\ndrm-total-cycles-ccs:\t356090092710\n"
+      }
+    ],
+    "elapsed_seconds": 297.8362240960014
+  },
+  "unchanged_progress_seconds": 5.410001904238015e-07,
+  "stop_reason": "finite diagnostic observation deadline; not proof of hang",
+  "exit_code": null,
+  "exit_signal": null,
+  "cleanup": {
+    "forced": true,
+    "inferior_survived": false,
+    "gdb_survived": false
+  },
+  "new_fault_messages": [],
+  "finished_utc": "2026-10-06T23:20:54.970132+00:00"
+}

@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/home/yayoi/.local/state/strata-sycl/cpu-down-scales-pool-check/run.py", line 65, in <module>
+    same_bytes(out / "validation-default.bin", out / "validation-gcc.bin")
+  File "/home/yayoi/.local/state/strata-sycl/cpu-down-scales-pool-check/run.py", line 28, in same_bytes
+    assert a.stat().st_size == b.stat().st_size
+           ^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 842, in stat
+    return os.stat(self, follow_symlinks=follow_symlinks)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/yayoi/.local/state/strata-sycl/cpu-down-scales-pool-check/validation-default.bin'

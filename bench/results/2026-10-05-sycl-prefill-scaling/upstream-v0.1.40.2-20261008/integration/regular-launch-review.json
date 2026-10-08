@@ -1,0 +1,439 @@
+{
+  "scope": "Selective ordinary launch properties on reviewed independent element/row/local-reduction kernels; no kernel-body, range, name, subgroup, arithmetic or queue-order edits. Persistent/global coordination kernels retain their properties. Prior zero-cooperative long jobs still stalled; this is not a hang-resolution claim.",
+  "sources": [
+    {
+      "path": "sycl/src/prefill/kernels.dp.cpp",
+      "before_sha256": "1d6de93886c2b6dac9c94450c2f2c2ba901339518d2dcf7a257d0016682441a2",
+      "after_sha256": "11938f14d41a60ae3f46797692b0b1747d3239c1c612b345b4630ee567f580ab",
+      "changed_classes": [
+        "copy_i32_kernel_1c95ea",
+        "gate_attn_kernel_3fc329",
+        "gather_rows16_kernel_d9d697",
+        "gdn_conv_hist_kernel_e391a1",
+        "gdn_conv_tiled_kernel_532f01",
+        "gdn_gates_kernel_e66d35",
+        "gdn_l2_kernel_d82250",
+        "gdn_out_norm_kernel_43e92c",
+        "gdn_out_norm_keyhead_kernel_43e92c",
+        "gr_broadcast_kernel_3dedc6",
+        "gr_mix_r_kernel_a64dc1",
+        "gr_norm_rs_kernel_6c01ba",
+        "gr_silu_kernel_f26d34",
+        "gr_write_kernel_b96cec",
+        "gr_write_norm_rs_kernel_85f8e9",
+        "kv_append_kernel_850222",
+        "moe_combine_kernel_60f865",
+        "rms_rows_kernel_c88408",
+        "rope_kernel_4d58b9",
+        "route_kernel_4c3133",
+        "route_kernel_ceb296",
+        "split_q_kernel_83c16c",
+        "swiglu_il_kernel_98d495",
+        "swiglu_pair_kernel_ab28da",
+        "to_bf16_kernel_44d81a",
+        "to_f16_kernel_c8575f"
+      ],
+      "removed_properties": [
+        {
+          "line": 2142,
+          "classes": [
+            "kv_append_kernel_850222"
+          ]
+        },
+        {
+          "line": 2187,
+          "classes": [
+            "to_f16_kernel_c8575f"
+          ]
+        },
+        {
+          "line": 2227,
+          "classes": [
+            "to_bf16_kernel_44d81a"
+          ]
+        },
+        {
+          "line": 2269,
+          "classes": [
+            "gr_norm_rs_kernel_6c01ba"
+          ]
+        },
+        {
+          "line": 2294,
+          "classes": [
+            "gr_mix_r_kernel_a64dc1"
+          ]
+        },
+        {
+          "line": 2334,
+          "classes": [
+            "gr_write_norm_rs_kernel_85f8e9"
+          ]
+        },
+        {
+          "line": 2387,
+          "classes": [
+            "gr_silu_kernel_f26d34"
+          ]
+        },
+        {
+          "line": 2425,
+          "classes": [
+            "gr_write_kernel_b96cec"
+          ]
+        },
+        {
+          "line": 2441,
+          "classes": [
+            "gr_broadcast_kernel_3dedc6"
+          ]
+        },
+        {
+          "line": 2457,
+          "classes": [
+            "gdn_gates_kernel_e66d35"
+          ]
+        },
+        {
+          "line": 2509,
+          "classes": [
+            "gdn_conv_hist_kernel_e391a1"
+          ]
+        },
+        {
+          "line": 2526,
+          "classes": [
+            "gdn_conv_tiled_kernel_532f01"
+          ]
+        },
+        {
+          "line": 2558,
+          "classes": [
+            "gdn_l2_kernel_d82250"
+          ]
+        },
+        {
+          "line": 2576,
+          "classes": [
+            "gdn_out_norm_keyhead_kernel_43e92c"
+          ]
+        },
+        {
+          "line": 2723,
+          "classes": [
+            "gdn_out_norm_kernel_43e92c"
+          ]
+        },
+        {
+          "line": 2753,
+          "classes": [
+            "route_kernel_ceb296"
+          ]
+        },
+        {
+          "line": 2769,
+          "classes": [
+            "route_kernel_4c3133"
+          ]
+        },
+        {
+          "line": 2826,
+          "classes": [
+            "swiglu_il_kernel_98d495"
+          ]
+        },
+        {
+          "line": 2842,
+          "classes": [
+            "swiglu_pair_kernel_ab28da"
+          ]
+        },
+        {
+          "line": 2908,
+          "classes": [
+            "copy_i32_kernel_1c95ea"
+          ]
+        },
+        {
+          "line": 2926,
+          "classes": [
+            "gather_rows16_kernel_d9d697"
+          ]
+        },
+        {
+          "line": 2968,
+          "classes": [
+            "moe_combine_kernel_60f865"
+          ]
+        },
+        {
+          "line": 2985,
+          "classes": [
+            "rms_rows_kernel_c88408"
+          ]
+        },
+        {
+          "line": 3014,
+          "classes": [
+            "rope_kernel_4d58b9"
+          ]
+        },
+        {
+          "line": 3035,
+          "classes": [
+            "rope_kernel_4d58b9"
+          ]
+        },
+        {
+          "line": 3060,
+          "classes": [
+            "split_q_kernel_83c16c"
+          ]
+        },
+        {
+          "line": 3078,
+          "classes": [
+            "gate_attn_kernel_3fc329"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "sycl/src/kernels/cuda/native_ple_postops.dp.cpp",
+      "before_sha256": "e5b568486c577fe8a52b870ab067333b27bab9876fc6ef336cfac628626072d1",
+      "after_sha256": "ef73a08ba09ab6913807ace47ba06230bd23406437a839f408d0d145030beb27",
+      "changed_classes": [
+        "broadcast_batch_kernel_24ebaf",
+        "conv_residual_batch_kernel_3906fe",
+        "gate_kernel_558e90",
+        "history_batch_kernel_8243c6",
+        "rms_rep_kernel_9b5d94",
+        "rms_rep_kernel_dde36c",
+        "rms_rep_kernel_e4e0bd"
+      ],
+      "removed_properties": [
+        {
+          "line": 408,
+          "classes": [
+            "rms_rep_kernel_dde36c"
+          ]
+        },
+        {
+          "line": 425,
+          "classes": [
+            "rms_rep_kernel_9b5d94"
+          ]
+        },
+        {
+          "line": 442,
+          "classes": [
+            "gate_kernel_558e90"
+          ]
+        },
+        {
+          "line": 461,
+          "classes": [
+            "broadcast_batch_kernel_24ebaf"
+          ]
+        },
+        {
+          "line": 478,
+          "classes": [
+            "rms_rep_kernel_e4e0bd"
+          ]
+        },
+        {
+          "line": 490,
+          "classes": [
+            "conv_residual_batch_kernel_3906fe"
+          ]
+        },
+        {
+          "line": 504,
+          "classes": [
+            "history_batch_kernel_8243c6"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "sycl/src/kernels/cuda/qsa_select.dp.cpp",
+      "before_sha256": "1cbed70641ec944dfa3cf3dd45c7c33ad231343c842af66873389ba6f36d60e5",
+      "after_sha256": "f1f52a1256bd17a0acc6300a1ecbc6238e989435bc56a60b76a869cffed157a3",
+      "changed_classes": [
+        "block_scores_kernel_925c9d"
+      ],
+      "removed_properties": [
+        {
+          "line": 1630,
+          "classes": [
+            "block_scores_kernel_925c9d"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "sycl/src/kernels/cuda/iq_kernels.dp.cpp",
+      "before_sha256": "367e96c804208224923a35a5aa0507da711cd6e98b8c9b294915473505cccb4e",
+      "after_sha256": "9860957079c45f6e9c3dd998f0517d9c25f711c914e0820391ac0e1eaee05f38",
+      "changed_classes": [
+        "dequant_flat_kernel_c7cec2",
+        "dequant_gu_kernel_2397ca",
+        "embed_rows_kernel_284a43"
+      ],
+      "removed_properties": [
+        {
+          "line": 4297,
+          "classes": [
+            "dequant_flat_kernel_c7cec2"
+          ]
+        },
+        {
+          "line": 4339,
+          "classes": [
+            "embed_rows_kernel_284a43"
+          ]
+        },
+        {
+          "line": 4397,
+          "classes": [
+            "dequant_gu_kernel_2397ca"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "sycl/src/kernels/cuda/qsa_decode_attn.dp.cpp",
+      "before_sha256": "c1902e84a4b05d2d74ce36c58428a13b2d26c5cd60c43ffe23070c2350ffbf6c",
+      "after_sha256": "41dfb04922276e91c81033ebdf2495d0e7130f04289722ff38ad7bc555d51679",
+      "changed_classes": [
+        "attn_chunk_kernel_5c04f7",
+        "attn_merge_kernel_338175",
+        "qsa_attn_chunk_variant",
+        "qsa_attn_merge_variant"
+      ],
+      "removed_properties": [
+        {
+          "line": 612,
+          "classes": [
+            "qsa_attn_chunk_variant"
+          ]
+        },
+        {
+          "line": 781,
+          "classes": [
+            "attn_chunk_kernel_5c04f7"
+          ]
+        },
+        {
+          "line": 797,
+          "classes": [
+            "attn_merge_kernel_338175"
+          ]
+        },
+        {
+          "line": 840,
+          "classes": [
+            "qsa_attn_merge_variant"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "sycl/src/kernels/cuda/dequant_bf16.dp.cpp",
+      "before_sha256": "d038d9df5599614ee1fdee5dbabccaca2df7201ca492424a141722e7165551ca",
+      "after_sha256": "af62aba821491b6b1e1f52325736be6b01c2fbbb612b402a94e9b03a8624b79b",
+      "changed_classes": [
+        "dequant_kernel_ec9311"
+      ],
+      "removed_properties": [
+        {
+          "line": 236,
+          "classes": [
+            "dequant_kernel_ec9311"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "sycl/src/kernels/cuda/verify_kernels.dp.cpp",
+      "before_sha256": "5c87558f9b82ea066164b077c12361c5ec233b8085047262ebddedc5b083d40d",
+      "after_sha256": "9f32d3bb4fa4eeec8aa9d9f6425b8807cfcd2259c5abe87816bd8c7a59f8dfc9",
+      "changed_classes": [
+        "add_streams_broadcast_kernel_7de8f5",
+        "gather_rows_kernel_b3ae5a",
+        "gather_rows_kernel_c5b171",
+        "gather_rows_kernel_f256ac"
+      ],
+      "removed_properties": [
+        {
+          "line": 1053,
+          "classes": [
+            "add_streams_broadcast_kernel_7de8f5"
+          ]
+        },
+        {
+          "line": 1171,
+          "classes": [
+            "gather_rows_kernel_b3ae5a"
+          ]
+        },
+        {
+          "line": 1189,
+          "classes": [
+            "gather_rows_kernel_f256ac"
+          ]
+        },
+        {
+          "line": 1206,
+          "classes": [
+            "gather_rows_kernel_c5b171"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "sycl/src/kernels/cuda/native_qsa_indexer.dp.cpp",
+      "before_sha256": "39185e707d42c844880488aa6e6c5e9ceafaeb0feef7f6b50fd4c7fa8517da36",
+      "after_sha256": "2aed193a1301e88d26c4f208462748f73f5d6857497b4b94dfb6f8aa350242ac",
+      "changed_classes": [
+        "append_blocks_a6c94e",
+        "append_first_ea2d1f",
+        "append_tail_e0658e"
+      ],
+      "removed_properties": [
+        {
+          "line": 490,
+          "classes": [
+            "append_first_ea2d1f"
+          ]
+        },
+        {
+          "line": 505,
+          "classes": [
+            "append_first_ea2d1f"
+          ]
+        },
+        {
+          "line": 526,
+          "classes": [
+            "append_blocks_a6c94e"
+          ]
+        },
+        {
+          "line": 543,
+          "classes": [
+            "append_blocks_a6c94e"
+          ]
+        },
+        {
+          "line": 560,
+          "classes": [
+            "append_tail_e0658e"
+          ]
+        }
+      ]
+    }
+  ],
+  "removed_property_count": 52
+}

@@ -1,0 +1,185 @@
+{
+  "hardware": {
+    "gpu": "Intel Arc B570 10 GiB",
+    "cpu": "AMD Ryzen 5 5600X",
+    "ram_gib": 128,
+    "kernel": "7.0.0-38-generic",
+    "compute_runtime": "26.31.39395.14",
+    "oneapi": "2026.1.1",
+    "adapter": "Level Zero V2",
+    "direct_submission": false,
+    "persistent_sycl_cache": false,
+    "copy_offload": false
+  },
+  "upstream_tag": "v0.1.40.2",
+  "upstream_commit": "e8ca9afd03d839d4f8dbbe82dffce7f8a3bafd7a",
+  "fork_before_merge": "186409e8ab2bef5db065a6cce2e57c238afb2753",
+  "scope": "Two cold first requests per configuration: 37 prompt tokens, 64 generated tokens, context128, chunk32, normal MTP4, greedy, five CPU workers. Engine DONE timing includes per-request JIT/graph preparation; excludes process startup. No runtime tracing/validation or extra phase synchronization in timing runs. Owned GDB/PTY observes without interrupts. Not long-prefill/steady-state/262144-cell validation.",
+  "rows": [
+    {
+      "case": "clean-v01402-default-patched-default-r1",
+      "mode": "patched-default",
+      "repetition": 1,
+      "generated_tokens": 64,
+      "prompt_tokens": 37,
+      "prompt_ms": 4833.3,
+      "decode_ms": 4581.3,
+      "wall_seconds": 9.415909164003097,
+      "prefill_tok_s": 7.655225208449713,
+      "decode_tok_s": 13.969833889943901,
+      "binary_sha256": "c88f94d81bfb22227310ea00d09ecc8ab21a6e670aee9556307746530f5af714",
+      "info": "INFO context=128 kv=fp16 kv_resident=0 expert_slots=600 expert_cache_mib=1523 expert_slots_primary=600 expert_cache_primary_mib=1523 spec=4 mtp_max=0 lookup=0 vram_free_mib=3168 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.00 spec_min_p=0.00 conversation_cache_mib=0 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=0 engine=0.1.40-sycl"
+    },
+    {
+      "case": "clean-v01402-default-patched-default-r2",
+      "mode": "patched-default",
+      "repetition": 2,
+      "generated_tokens": 64,
+      "prompt_tokens": 37,
+      "prompt_ms": 4839.8,
+      "decode_ms": 4545.0,
+      "wall_seconds": 9.392116489005275,
+      "prefill_tok_s": 7.644944005950659,
+      "decode_tok_s": 14.081408140814082,
+      "binary_sha256": "c88f94d81bfb22227310ea00d09ecc8ab21a6e670aee9556307746530f5af714",
+      "info": "INFO context=128 kv=fp16 kv_resident=0 expert_slots=600 expert_cache_mib=1523 expert_slots_primary=600 expert_cache_primary_mib=1523 spec=4 mtp_max=0 lookup=0 vram_free_mib=3168 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.00 spec_min_p=0.00 conversation_cache_mib=0 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=0 engine=0.1.40-sycl"
+    },
+    {
+      "case": "clean-v01402-short-patched-cpu-r1",
+      "mode": "patched-cpu",
+      "repetition": 1,
+      "generated_tokens": 64,
+      "prompt_tokens": 37,
+      "prompt_ms": 25088.6,
+      "decode_ms": 4556.3,
+      "wall_seconds": 29.65222112101037,
+      "prefill_tok_s": 1.474773403059557,
+      "decode_tok_s": 14.046485086583411,
+      "binary_sha256": "c88f94d81bfb22227310ea00d09ecc8ab21a6e670aee9556307746530f5af714",
+      "info": "INFO context=128 kv=fp16 kv_resident=0 expert_slots=600 expert_cache_mib=1523 expert_slots_primary=600 expert_cache_primary_mib=1523 spec=4 mtp_max=0 lookup=0 vram_free_mib=3160 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.00 spec_min_p=0.00 conversation_cache_mib=0 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=0 engine=0.1.40-sycl"
+    },
+    {
+      "case": "clean-v01402-short-patched-cpu-r2",
+      "mode": "patched-cpu",
+      "repetition": 2,
+      "generated_tokens": 64,
+      "prompt_tokens": 37,
+      "prompt_ms": 25141.7,
+      "decode_ms": 4616.7,
+      "wall_seconds": 29.766253391004284,
+      "prefill_tok_s": 1.4716586388350827,
+      "decode_tok_s": 13.862715792665757,
+      "binary_sha256": "c88f94d81bfb22227310ea00d09ecc8ab21a6e670aee9556307746530f5af714",
+      "info": "INFO context=128 kv=fp16 kv_resident=0 expert_slots=600 expert_cache_mib=1523 expert_slots_primary=600 expert_cache_primary_mib=1523 spec=4 mtp_max=0 lookup=0 vram_free_mib=3160 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.00 spec_min_p=0.00 conversation_cache_mib=0 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=0 engine=0.1.40-sycl"
+    },
+    {
+      "case": "clean-v01402-short-patched-dma-r1",
+      "mode": "patched-dma",
+      "repetition": 1,
+      "generated_tokens": 64,
+      "prompt_tokens": 37,
+      "prompt_ms": 25160.3,
+      "decode_ms": 10432.4,
+      "wall_seconds": 35.600530238996726,
+      "prefill_tok_s": 1.4705707006673212,
+      "decode_tok_s": 6.134734097618956,
+      "binary_sha256": "c88f94d81bfb22227310ea00d09ecc8ab21a6e670aee9556307746530f5af714",
+      "info": "INFO context=128 kv=fp16 kv_resident=0 expert_slots=600 expert_cache_mib=1523 expert_slots_primary=600 expert_cache_primary_mib=1523 spec=4 mtp_max=0 lookup=0 vram_free_mib=3160 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.55 spec_min_p=0.00 conversation_cache_mib=0 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=0 engine=0.1.40-sycl"
+    },
+    {
+      "case": "clean-v01402-short-patched-dma-r2",
+      "mode": "patched-dma",
+      "repetition": 2,
+      "generated_tokens": 64,
+      "prompt_tokens": 37,
+      "prompt_ms": 25203.9,
+      "decode_ms": 10387.3,
+      "wall_seconds": 35.59871464599564,
+      "prefill_tok_s": 1.4680267736342392,
+      "decode_tok_s": 6.1613701346837,
+      "binary_sha256": "c88f94d81bfb22227310ea00d09ecc8ab21a6e670aee9556307746530f5af714",
+      "info": "INFO context=128 kv=fp16 kv_resident=0 expert_slots=600 expert_cache_mib=1523 expert_slots_primary=600 expert_cache_primary_mib=1523 spec=4 mtp_max=0 lookup=0 vram_free_mib=3160 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.55 spec_min_p=0.00 conversation_cache_mib=0 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=0 engine=0.1.40-sycl"
+    },
+    {
+      "case": "clean-v01402-short-pure-r1",
+      "mode": "pure",
+      "repetition": 1,
+      "generated_tokens": 64,
+      "prompt_tokens": 37,
+      "prompt_ms": 3588.3,
+      "decode_ms": 4429.2,
+      "wall_seconds": 8.024990910998895,
+      "prefill_tok_s": 10.311289468550566,
+      "decode_tok_s": 14.449561997651946,
+      "binary_sha256": "892c1ef92e463ca3372730cb978f8876302b3b221deed2cf17a04dfc66d1c805",
+      "info": "INFO context=128 kv=fp16 kv_resident=0 expert_slots=768 expert_cache_mib=1498 expert_slots_primary=768 expert_cache_primary_mib=1498 spec=4 mtp_max=0 lookup=0 vram_free_mib=3154 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.00 spec_min_p=0.00 conversation_cache_mib=0 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=0 engine=0.1.40-sycl"
+    },
+    {
+      "case": "clean-v01402-short-pure-r2",
+      "mode": "pure",
+      "repetition": 2,
+      "generated_tokens": 64,
+      "prompt_tokens": 37,
+      "prompt_ms": 3595.6,
+      "decode_ms": 4449.0,
+      "wall_seconds": 8.052025469005457,
+      "prefill_tok_s": 10.290354878184448,
+      "decode_tok_s": 14.385255113508654,
+      "binary_sha256": "892c1ef92e463ca3372730cb978f8876302b3b221deed2cf17a04dfc66d1c805",
+      "info": "INFO context=128 kv=fp16 kv_resident=0 expert_slots=768 expert_cache_mib=1498 expert_slots_primary=768 expert_cache_primary_mib=1498 spec=4 mtp_max=0 lookup=0 vram_free_mib=3154 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.00 spec_min_p=0.00 conversation_cache_mib=0 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=0 engine=0.1.40-sycl"
+    }
+  ],
+  "means": {
+    "patched-cpu": {
+      "prefill_tok_s": {
+        "mean": 1.4732160209473197,
+        "min": 1.4716586388350827,
+        "max": 1.474773403059557
+      },
+      "decode_tok_s": {
+        "mean": 13.954600439624585,
+        "min": 13.862715792665757,
+        "max": 14.046485086583411
+      }
+    },
+    "patched-default": {
+      "prefill_tok_s": {
+        "mean": 7.650084607200187,
+        "min": 7.644944005950659,
+        "max": 7.655225208449713
+      },
+      "decode_tok_s": {
+        "mean": 14.025621015378992,
+        "min": 13.969833889943901,
+        "max": 14.081408140814082
+      }
+    },
+    "patched-dma": {
+      "prefill_tok_s": {
+        "mean": 1.4692987371507802,
+        "min": 1.4680267736342392,
+        "max": 1.4705707006673212
+      },
+      "decode_tok_s": {
+        "mean": 6.148052116151328,
+        "min": 6.134734097618956,
+        "max": 6.1613701346837
+      }
+    },
+    "pure": {
+      "prefill_tok_s": {
+        "mean": 10.300822173367507,
+        "min": 10.290354878184448,
+        "max": 10.311289468550566
+      },
+      "decode_tok_s": {
+        "mean": 14.4174085555803,
+        "min": 14.385255113508654,
+        "max": 14.449561997651946
+      }
+    }
+  },
+  "performance_comparison_eligible": false,
+  "minimum_comparison_prompt_tokens": 32768,
+  "interpretation": "37-token functional preflight only; startup/request preparation dominates. Do not use these rows or means for throughput comparison or tuning."
+}

@@ -1,0 +1,72 @@
+{
+  "scope": "CPU-only preparation of opt-in unchanged-FP16 expert reuse within a layer-major request; GPU parity, allocation/lifetime diagnostics, timings and 256K fallback untested",
+  "created_utc": "2026-10-07T08:39:16.658650+00:00",
+  "passed": true,
+  "original_source_sha256": "bdc0dea41753d345f5b5c329d807d3f9013280e2488e39df1d615a3b84506b92",
+  "candidate_source_sha256": "222dfbfb0cf034d6191d9d9b9067063f763c8bbc6014bf0f0db3d193289ebc5d",
+  "header_sha256": "31bf64cd00d696789762b2de1e28b79af619816dd44f4f4db018467958d11425",
+  "patches": [
+    {
+      "old": "#include \"strata/host_wait.hpp\"",
+      "new": "#include \"strata/host_wait.hpp\"\n#include \"expanded_fp16_layer_cache.hpp\""
+    },
+    {
+      "old": "    PfTimer* phase_context = nullptr;",
+      "new": "    PfTimer* phase_context = nullptr;\n    ExpandedFp16LayerCache* fp16_cache = nullptr;"
+    },
+    {
+      "old": "    PfTimer phases;\n    // Restore decode's cache",
+      "new": "    PfTimer phases;\n    ExpandedFp16LayerCache expanded_cache;\n    const int expanded_request = ExpandedFp16LayerCache::requested(g.n_expert);\n    if (expanded_request && n > first_len && layout.native) {\n        size_t free_bytes = 0, total_bytes = 0;\n        dpct::get_current_device().get_memory_info(free_bytes, total_bytes);\n        expanded_cache.initialize(*m.cs, g.n_expert, expanded_request, free_bytes);\n    }\n    if (expanded_request)\n        std::fprintf(stderr, \"strata prefill FP16 cache allocation: requested %d, capacity %d, bytes %llu\\n\",\n                     expanded_request, expanded_cache.capacity(), (unsigned long long) expanded_cache.bytes());\n    // Restore decode's cache"
+    },
+    {
+      "old": "        decltype(on_chunk) chunk; decltype(on_stage_chunk) stage;\n        ~Restore()",
+      "new": "        decltype(on_chunk) chunk; decltype(on_stage_chunk) stage;\n        ExpandedFp16LayerCache* fp16_cache;\n        ~Restore()"
+    },
+    {
+      "old": "            m.cache = cache; m.host_res = residency; m.transfer_context = timer;",
+      "new": "            m.cache = cache; m.host_res = residency; m.transfer_context = timer;\n            m.fp16_cache = fp16_cache;"
+    },
+    {
+      "old": "              m.residual_reused_tokens, m.residual_inplace, m.phase_context, on_chunk, on_stage_chunk};",
+      "new": "              m.residual_reused_tokens, m.residual_inplace, m.phase_context, on_chunk, on_stage_chunk, m.fp16_cache};"
+    },
+    {
+      "old": "    m.cache = &layer_cache; m.host_res = residency.data(); m.transfer_context = &transfers;",
+      "new": "    m.cache = &layer_cache; m.host_res = residency.data(); m.transfer_context = &transfers;\n    m.fp16_cache = expanded_cache.enabled() ? &expanded_cache : nullptr;"
+    },
+    {
+      "old": "    trace_memory(\"prefill completed with temporary layer cache\");\n    layer_cache.close();",
+      "new": "    trace_memory(\"prefill completed with temporary layer cache\");\n    if (expanded_request) expanded_cache.report();\n    m.fp16_cache = restore.fp16_cache;\n    expanded_cache.reset();\n    layer_cache.close();"
+    },
+    {
+      "old": "                            const int q = (int) (j % DQ);\n                            if (lay.native) {\n                                // plan v0.3 P6: a native pack's layer, dequantized by llama.cpp's own formulas\n                                const auto& f = lay.fmt[(size_t) l];\n                                strata::kernels::iq_dequant_gu_f16(f.gu_type, blob_dev, blob_dev + f.up_off, f.n_ff, f.n_embd,\n                                                                   m.dq_gu[q], m.cs);\n                                strata::kernels::iq_dequant_f16(f.d_type, blob_dev + f.down_off, f.n_embd * f.n_ff, m.dq_d[q], m.cs);\n                            } else {\n                                blob_dequant_f16(blob_dev, m.dq_gu[q], m.dq_d[q], m.cs);\n                            }",
+      "new": "                            const int q = (int) (j % DQ);\n                            ExpandedFp16LayerCache::Entry expanded;\n                            if (m.fp16_cache && lay.native) {\n                                const auto& f = lay.fmt[(size_t) l];\n                                if (f.n_ff == 640 && f.n_embd == 2560)\n                                    expanded = m.fp16_cache->acquire(l, e);\n                            }\n                            uint16_t* const dq_gu = expanded.gu ? expanded.gu : m.dq_gu[q];\n                            uint16_t* const dq_d = expanded.down ? expanded.down : m.dq_d[q];\n                            if (!expanded.hit) {\n                                if (lay.native) {\n                                    // Same formulas, launch geometry and FP16 outputs as the uncached path.\n                                    const auto& f = lay.fmt[(size_t) l];\n                                    strata::kernels::iq_dequant_gu_f16(f.gu_type, blob_dev, blob_dev + f.up_off, f.n_ff, f.n_embd,\n                                                                       dq_gu, m.cs);\n                                    strata::kernels::iq_dequant_f16(f.d_type, blob_dev + f.down_off, f.n_embd * f.n_ff, dq_d, m.cs);\n                                } else {\n                                    blob_dequant_f16(blob_dev, dq_gu, dq_d, m.cs);\n                                }\n                                if (expanded.slot >= 0) m.fp16_cache->publish(expanded);\n                            }"
+    },
+    {
+      "old": "m.gemm.f16(m.Xs + scratch_row * N, m.dq_gu[q], m.GU + scratch_row * 1280, ne, 1280, N);",
+      "new": "m.gemm.f16(m.Xs + scratch_row * N, dq_gu, m.GU + scratch_row * 1280, ne, 1280, N);"
+    },
+    {
+      "old": "m.gemm.f16(m.Hh + scratch_row * 640, m.dq_d[q], m.Dm + o0 * N, ne, N, 640);",
+      "new": "m.gemm.f16(m.Hh + scratch_row * 640, dq_d, m.Dm + o0 * N, ne, N, 640);"
+    }
+  ],
+  "default_experts": 0,
+  "reserve_bytes": 268435456,
+  "bytes_per_expert": 9830400,
+  "preserved": [
+    "IQ dequant bodies and wrappers",
+    "FP16 values",
+    "GEMM dimensions/row counts/activation operands",
+    "phase waits",
+    "layer loading and residual transfers",
+    "main/MTP release/restore callbacks"
+  ],
+  "required": [
+    "same in-order queue for allocation/producers/GEMMs and wait before free",
+    "reset expert tags before reuse for a new layer",
+    "publish only after both producers enqueue",
+    "free optional allocation before main/MTP restore",
+    "normal-MTP repeated heads and full capacity gates"
+  ]
+}

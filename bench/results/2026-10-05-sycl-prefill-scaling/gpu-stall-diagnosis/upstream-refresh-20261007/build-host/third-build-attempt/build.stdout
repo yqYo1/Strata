@@ -1,0 +1,686 @@
+[1/11] Generating iq2s_gcc.o
+[2/11] Linking CXX static library libstrata_kernels_cpu.a
+[3/11] Building CXX object CMakeFiles/strata_prefill.dir/src/prefill/gemm.dp.cpp.o
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/gemm.dp.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:53:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/image.hpp:14:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:112:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/detail/memory_detail.hpp:343:30: warning: unused parameter 'direction' [-Wunused-parameter]
+  343 |             memcpy_direction direction,
+      |                              ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/detail/memory_detail.hpp:901:29: warning: unused parameter 'cgh' [-Wunused-parameter]
+  901 |   get_access(sycl::handler &cgh) {
+      |                             ^
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/gemm.dp.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:53:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/image.hpp:14:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:816:23: warning: comparison of integers of different signs: 'int' and 'unsigned int' [-Wsign-compare]
+  816 |     for (int i = 0; i < numAttributes; i++) {
+      |                     ~ ^ ~~~~~~~~~~~~~
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/gemm.dp.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:53:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/image.hpp:15:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:466:38: warning: unused parameter 'member_mask' [-Wunused-parameter]
+  466 | T select_from_sub_group(unsigned int member_mask,
+      |                                      ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:507:37: warning: unused parameter 'member_mask' [-Wunused-parameter]
+  507 | T shift_sub_group_left(unsigned int member_mask,
+      |                                     ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:551:38: warning: unused parameter 'member_mask' [-Wunused-parameter]
+  551 | T shift_sub_group_right(unsigned int member_mask,
+      |                                      ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:671:41: warning: unused parameter 'member_mask' [-Wunused-parameter]
+  671 | T permute_sub_group_by_xor(unsigned int member_mask,
+      |                                         ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:680:47: warning: comparison of integers of different signs: 'unsigned int' and 'int' [-Wsign-compare]
+  680 |   unsigned logical_remote_id = (target_offset < logical_sub_group_size) ? start_index + target_offset : id;
+      |                                 ~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:959:15: warning: comparison of integers of different signs: 'int' and 'size_t' (aka 'unsigned long') [-Wsign-compare]
+  959 |   if (wg_size > max_wg_size) {
+      |       ~~~~~~~ ^ ~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1021:35: warning: comparison of integers of different signs: 'int' and 'size_t' (aka 'unsigned long') [-Wsign-compare]
+ 1021 |       max_ws_size_for_device_code >= max_wg_size)
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1291:17: warning: '&' within '|' [-Wbitwise-op-parentheses]
+ 1291 |     result = (a & b | c) ^ a;
+      |               ~~^~~ ~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1291:17: note: place parentheses around the '&' expression to silence this warning
+ 1291 |     result = (a & b | c) ^ a;
+      |                 ^
+      |               (    )
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1315:16: warning: '&' within '|' [-Wbitwise-op-parentheses]
+ 1315 |     result = a & (b | c) | (b & c);
+      |              ~~^~~~~~~~~ ~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1315:16: note: place parentheses around the '&' expression to silence this warning
+ 1315 |     result = a & (b | c) | (b & c);
+      |                ^
+      |              (          )
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1318:16: warning: '&' within '|' [-Wbitwise-op-parentheses]
+ 1318 |     result = a & b | c;
+      |              ~~^~~ ~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1318:16: note: place parentheses around the '&' expression to silence this warning
+ 1318 |     result = a & b | c;
+      |                ^
+      |              (    )
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/gemm.dp.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:54:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/kernel.hpp:50:57: warning: unused parameter 'function' [-Wunused-parameter]
+   50 |                                             const void *function) {
+      |                                                         ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/kernel.hpp:57:38: warning: unused parameter 'function' [-Wunused-parameter]
+   57 | get_kernel_function_info(const void *function) {
+      |                                      ^
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/gemm.dp.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:59:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/bindless_images.hpp:629:35: warning: unused parameter 'q' [-Wunused-parameter]
+  629 |   void unmap_resource(sycl::queue q) {
+      |                                   ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/bindless_images.hpp:656:9: warning: field '_res_external_mem' will be initialized after field '_res_reg_flags' [-Wreorder-ctor]
+  656 |       : _res_external_mem(external_mem), _res_reg_flags(reg_flags) {}
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~~~~~~~~~~
+      |         _res_reg_flags(reg_flags)        _res_external_mem(external_mem)
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/bindless_images.hpp:1163:24: warning: comparison of integers of different signs: 'size_t' (aka 'unsigned long') and 'int' [-Wsign-compare]
+ 1163 |   for (size_t i = 0; i < count; ++i) {
+      |                      ~ ^ ~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/bindless_images.hpp:1350:21: warning: comparison of integers of different signs: 'int' and 'unsigned int' [-Wsign-compare]
+ 1350 |   for (int i = 0; i < numExtSems; i++) {
+      |                   ~ ^ ~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/bindless_images.hpp:1393:21: warning: comparison of integers of different signs: 'int' and 'unsigned int' [-Wsign-compare]
+ 1393 |   for (int i = 0; i < numExtSems; i++) {
+      |                   ~ ^ ~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/bindless_images.hpp:1686:60: warning: unused parameter 'channel' [-Wunused-parameter]
+ 1686 |   void attach(image_mem_wrapper *mem, const image_channel &channel,
+      |                                                            ^
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/gemm.dp.cpp:9:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/blas_utils.hpp:761:61: warning: unused parameter 'm' [-Wunused-parameter]
+  761 | inline void geqrf_batch_wrapper(sycl::queue exec_queue, int m, int n, T *a[],
+      |                                                             ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/blas_utils.hpp:1753:33: warning: unused parameter 'alpha_type' [-Wunused-parameter]
+ 1753 |                  library_data_t alpha_type, void *x, library_data_t x_type,
+      |                                 ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/blas_utils.hpp:1806:33: warning: unused parameter 'y_type' [-Wunused-parameter]
+ 1806 |                  library_data_t y_type, std::int64_t incy) {
+      |                                 ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/blas_utils.hpp:1863:32: warning: unused parameter 'y_type' [-Wunused-parameter]
+ 1863 |                 library_data_t y_type, std::int64_t incy, const void *c,
+      |                                ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/blas_utils.hpp:1937:33: warning: unused parameter 'y_type' [-Wunused-parameter]
+ 1937 |                  library_data_t y_type, int64_t incy, const void *param,
+      |                                 ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/gemm.dp.cpp:314:50: warning: unused parameter 'ws_bytes' [-Wunused-parameter]
+  314 |                          void *workspace, size_t ws_bytes,
+      |                                                  ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/gemm.dp.cpp:348:85: warning: unused parameter 'ws_bytes' [-Wunused-parameter]
+  348 | void Gemm::rebind(uint16_t* scratch, int64_t scratch_elems, void* workspace, size_t ws_bytes) {
+      |                                                                                     ^
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/gemm.dp.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:52:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/device.hpp:86:13: warning: unused function 'destroy_event' [-Wunused-function]
+   86 | static void destroy_event(event_ptr event) {
+      |             ^~~~~~~~~~~~~
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/gemm.dp.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:53:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/image.hpp:14:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:165:17: warning: 'static' function 'get_buffer' declared in header file should be declared 'static inline' [-Wunneeded-internal-declaration]
+  165 | static buffer_t get_buffer(const void *ptr) {
+      |                 ^~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:141:36: warning: 'static' function 'get_buffer_and_offset' declared in header file should be declared 'static inline' [-Wunneeded-internal-declaration]
+  141 | static std::pair<buffer_t, size_t> get_buffer_and_offset(const void *ptr) {
+      |                                    ^~~~~~~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:304:13: warning: unused function 'dpct_memcpy' [-Wunused-function]
+  304 | static void dpct_memcpy(void *to_ptr, const void *from_ptr, size_t size,
+      |             ^~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:322:13: warning: unused function 'dpct_memcpy' [-Wunused-function]
+  322 | static void dpct_memcpy(void *to_ptr, int to_dev_id, const void *from_ptr,
+      |             ^~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:340:13: warning: unused function 'async_dpct_memcpy' [-Wunused-function]
+  340 | static void async_dpct_memcpy(void *to_ptr, const void *from_ptr, size_t size,
+      |             ^~~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:358:13: warning: unused function 'async_dpct_memcpy' [-Wunused-function]
+  358 | static void async_dpct_memcpy(void *to_ptr, int to_dev_id, const void *from_ptr,
+      |             ^~~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:494:13: warning: unused function 'dpct_memset' [-Wunused-function]
+  494 | static void dpct_memset(void *dev_ptr, int value, size_t size,
+      |             ^~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:507:13: warning: unused function 'dpct_memset_d16' [-Wunused-function]
+  507 | static void dpct_memset_d16(void *dev_ptr, unsigned short value, size_t size,
+      |             ^~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:519:13: warning: unused function 'dpct_memset_d32' [-Wunused-function]
+  519 | static void dpct_memset_d32(void *dev_ptr, unsigned int value, size_t size,
+      |             ^~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:532:13: warning: unused function 'async_dpct_memset' [-Wunused-function]
+  532 | static void async_dpct_memset(void *dev_ptr, int value, size_t size,
+      |             ^~~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:544:13: warning: unused function 'async_dpct_memset_d16' [-Wunused-function]
+  544 | static void async_dpct_memset_d16(void *dev_ptr, unsigned short value, size_t size,
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:556:13: warning: unused function 'async_dpct_memset_d32' [-Wunused-function]
+  556 | static void async_dpct_memset_d32(void *dev_ptr, unsigned int value, size_t size,
+      |             ^~~~~~~~~~~~~~~~~~~~~
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/gemm.dp.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:60:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/graph.hpp:136:1: warning: unused function 'add_empty_node' [-Wunused-function]
+  136 | add_empty_node(dpct::experimental::node_ptr *newNode,
+      | ^~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/graph.hpp:162:13: warning: unused function 'add_dependencies' [-Wunused-function]
+  162 | static void add_dependencies(dpct::experimental::command_graph_ptr graph,
+      |             ^~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/graph.hpp:176:13: warning: unused function 'get_nodes' [-Wunused-function]
+  176 | static void get_nodes(dpct::experimental::command_graph_ptr graph,
+      |             ^~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/graph.hpp:187:13: warning: unused function 'get_root_nodes' [-Wunused-function]
+  187 | static void get_root_nodes(dpct::experimental::command_graph_ptr graph,
+      |             ^~~~~~~~~~~~~~
+45 warnings generated.
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/gemm.dp.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:53:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/image.hpp:14:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:112:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/detail/memory_detail.hpp:343:30: warning: unused parameter 'direction' [-Wunused-parameter]
+  343 |             memcpy_direction direction,
+      |                              ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/detail/memory_detail.hpp:901:29: warning: unused parameter 'cgh' [-Wunused-parameter]
+  901 |   get_access(sycl::handler &cgh) {
+      |                             ^
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/gemm.dp.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:53:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/image.hpp:14:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:816:23: warning: comparison of integers of different signs: 'int' and 'unsigned int' [-Wsign-compare]
+  816 |     for (int i = 0; i < numAttributes; i++) {
+      |                     ~ ^ ~~~~~~~~~~~~~
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/gemm.dp.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:53:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/image.hpp:15:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:959:15: warning: comparison of integers of different signs: 'int' and 'size_t' (aka 'unsigned long') [-Wsign-compare]
+  959 |   if (wg_size > max_wg_size) {
+      |       ~~~~~~~ ^ ~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1021:35: warning: comparison of integers of different signs: 'int' and 'size_t' (aka 'unsigned long') [-Wsign-compare]
+ 1021 |       max_ws_size_for_device_code >= max_wg_size)
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1291:17: warning: '&' within '|' [-Wbitwise-op-parentheses]
+ 1291 |     result = (a & b | c) ^ a;
+      |               ~~^~~ ~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1291:17: note: place parentheses around the '&' expression to silence this warning
+ 1291 |     result = (a & b | c) ^ a;
+      |                 ^
+      |               (    )
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1315:16: warning: '&' within '|' [-Wbitwise-op-parentheses]
+ 1315 |     result = a & (b | c) | (b & c);
+      |              ~~^~~~~~~~~ ~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1315:16: note: place parentheses around the '&' expression to silence this warning
+ 1315 |     result = a & (b | c) | (b & c);
+      |                ^
+      |              (          )
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1318:16: warning: '&' within '|' [-Wbitwise-op-parentheses]
+ 1318 |     result = a & b | c;
+      |              ~~^~~ ~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1318:16: note: place parentheses around the '&' expression to silence this warning
+ 1318 |     result = a & b | c;
+      |                ^
+      |              (    )
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/gemm.dp.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:54:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/kernel.hpp:50:57: warning: unused parameter 'function' [-Wunused-parameter]
+   50 |                                             const void *function) {
+      |                                                         ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/kernel.hpp:57:38: warning: unused parameter 'function' [-Wunused-parameter]
+   57 | get_kernel_function_info(const void *function) {
+      |                                      ^
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/gemm.dp.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:59:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/bindless_images.hpp:629:35: warning: unused parameter 'q' [-Wunused-parameter]
+  629 |   void unmap_resource(sycl::queue q) {
+      |                                   ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/bindless_images.hpp:656:9: warning: field '_res_external_mem' will be initialized after field '_res_reg_flags' [-Wreorder-ctor]
+  656 |       : _res_external_mem(external_mem), _res_reg_flags(reg_flags) {}
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~~~~~~~~~~
+      |         _res_reg_flags(reg_flags)        _res_external_mem(external_mem)
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/bindless_images.hpp:1163:24: warning: comparison of integers of different signs: 'size_t' (aka 'unsigned long') and 'int' [-Wsign-compare]
+ 1163 |   for (size_t i = 0; i < count; ++i) {
+      |                      ~ ^ ~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/bindless_images.hpp:1350:21: warning: comparison of integers of different signs: 'int' and 'unsigned int' [-Wsign-compare]
+ 1350 |   for (int i = 0; i < numExtSems; i++) {
+      |                   ~ ^ ~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/bindless_images.hpp:1393:21: warning: comparison of integers of different signs: 'int' and 'unsigned int' [-Wsign-compare]
+ 1393 |   for (int i = 0; i < numExtSems; i++) {
+      |                   ~ ^ ~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/bindless_images.hpp:1686:60: warning: unused parameter 'channel' [-Wunused-parameter]
+ 1686 |   void attach(image_mem_wrapper *mem, const image_channel &channel,
+      |                                                            ^
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/gemm.dp.cpp:9:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/blas_utils.hpp:761:61: warning: unused parameter 'm' [-Wunused-parameter]
+  761 | inline void geqrf_batch_wrapper(sycl::queue exec_queue, int m, int n, T *a[],
+      |                                                             ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/blas_utils.hpp:1753:33: warning: unused parameter 'alpha_type' [-Wunused-parameter]
+ 1753 |                  library_data_t alpha_type, void *x, library_data_t x_type,
+      |                                 ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/blas_utils.hpp:1806:33: warning: unused parameter 'y_type' [-Wunused-parameter]
+ 1806 |                  library_data_t y_type, std::int64_t incy) {
+      |                                 ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/blas_utils.hpp:1863:32: warning: unused parameter 'y_type' [-Wunused-parameter]
+ 1863 |                 library_data_t y_type, std::int64_t incy, const void *c,
+      |                                ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/blas_utils.hpp:1937:33: warning: unused parameter 'y_type' [-Wunused-parameter]
+ 1937 |                  library_data_t y_type, int64_t incy, const void *param,
+      |                                 ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/gemm.dp.cpp:314:50: warning: unused parameter 'ws_bytes' [-Wunused-parameter]
+  314 |                          void *workspace, size_t ws_bytes,
+      |                                                  ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/gemm.dp.cpp:348:85: warning: unused parameter 'ws_bytes' [-Wunused-parameter]
+  348 | void Gemm::rebind(uint16_t* scratch, int64_t scratch_elems, void* workspace, size_t ws_bytes) {
+      |                                                                                     ^
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/gemm.dp.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:52:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/device.hpp:86:13: warning: unused function 'destroy_event' [-Wunused-function]
+   86 | static void destroy_event(event_ptr event) {
+      |             ^~~~~~~~~~~~~
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/gemm.dp.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:53:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/image.hpp:14:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:165:17: warning: 'static' function 'get_buffer' declared in header file should be declared 'static inline' [-Wunneeded-internal-declaration]
+  165 | static buffer_t get_buffer(const void *ptr) {
+      |                 ^~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:141:36: warning: 'static' function 'get_buffer_and_offset' declared in header file should be declared 'static inline' [-Wunneeded-internal-declaration]
+  141 | static std::pair<buffer_t, size_t> get_buffer_and_offset(const void *ptr) {
+      |                                    ^~~~~~~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:304:13: warning: unused function 'dpct_memcpy' [-Wunused-function]
+  304 | static void dpct_memcpy(void *to_ptr, const void *from_ptr, size_t size,
+      |             ^~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:322:13: warning: unused function 'dpct_memcpy' [-Wunused-function]
+  322 | static void dpct_memcpy(void *to_ptr, int to_dev_id, const void *from_ptr,
+      |             ^~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:340:13: warning: unused function 'async_dpct_memcpy' [-Wunused-function]
+  340 | static void async_dpct_memcpy(void *to_ptr, const void *from_ptr, size_t size,
+      |             ^~~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:358:13: warning: unused function 'async_dpct_memcpy' [-Wunused-function]
+  358 | static void async_dpct_memcpy(void *to_ptr, int to_dev_id, const void *from_ptr,
+      |             ^~~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:494:13: warning: unused function 'dpct_memset' [-Wunused-function]
+  494 | static void dpct_memset(void *dev_ptr, int value, size_t size,
+      |             ^~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:507:13: warning: unused function 'dpct_memset_d16' [-Wunused-function]
+  507 | static void dpct_memset_d16(void *dev_ptr, unsigned short value, size_t size,
+      |             ^~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:519:13: warning: unused function 'dpct_memset_d32' [-Wunused-function]
+  519 | static void dpct_memset_d32(void *dev_ptr, unsigned int value, size_t size,
+      |             ^~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:532:13: warning: unused function 'async_dpct_memset' [-Wunused-function]
+  532 | static void async_dpct_memset(void *dev_ptr, int value, size_t size,
+      |             ^~~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:544:13: warning: unused function 'async_dpct_memset_d16' [-Wunused-function]
+  544 | static void async_dpct_memset_d16(void *dev_ptr, unsigned short value, size_t size,
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:556:13: warning: unused function 'async_dpct_memset_d32' [-Wunused-function]
+  556 | static void async_dpct_memset_d32(void *dev_ptr, unsigned int value, size_t size,
+      |             ^~~~~~~~~~~~~~~~~~~~~
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/gemm.dp.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:60:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/graph.hpp:136:1: warning: unused function 'add_empty_node' [-Wunused-function]
+  136 | add_empty_node(dpct::experimental::node_ptr *newNode,
+      | ^~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/graph.hpp:162:13: warning: unused function 'add_dependencies' [-Wunused-function]
+  162 | static void add_dependencies(dpct::experimental::command_graph_ptr graph,
+      |             ^~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/graph.hpp:176:13: warning: unused function 'get_nodes' [-Wunused-function]
+  176 | static void get_nodes(dpct::experimental::command_graph_ptr graph,
+      |             ^~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/graph.hpp:187:13: warning: unused function 'get_root_nodes' [-Wunused-function]
+  187 | static void get_root_nodes(dpct::experimental::command_graph_ptr graph,
+      |             ^~~~~~~~~~~~~~
+40 warnings generated.
+[4/11] Building CXX object CMakeFiles/strata_engine.dir/src/core/expert_source.cpp.o
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/core/expert_source.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:53:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/image.hpp:14:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:112:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/detail/memory_detail.hpp:343:30: warning: unused parameter 'direction' [-Wunused-parameter]
+  343 |             memcpy_direction direction,
+      |                              ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/detail/memory_detail.hpp:901:29: warning: unused parameter 'cgh' [-Wunused-parameter]
+  901 |   get_access(sycl::handler &cgh) {
+      |                             ^
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/core/expert_source.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:53:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/image.hpp:14:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:816:23: warning: comparison of integers of different signs: 'int' and 'unsigned int' [-Wsign-compare]
+  816 |     for (int i = 0; i < numAttributes; i++) {
+      |                     ~ ^ ~~~~~~~~~~~~~
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/core/expert_source.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:53:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/image.hpp:15:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:466:38: warning: unused parameter 'member_mask' [-Wunused-parameter]
+  466 | T select_from_sub_group(unsigned int member_mask,
+      |                                      ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:507:37: warning: unused parameter 'member_mask' [-Wunused-parameter]
+  507 | T shift_sub_group_left(unsigned int member_mask,
+      |                                     ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:551:38: warning: unused parameter 'member_mask' [-Wunused-parameter]
+  551 | T shift_sub_group_right(unsigned int member_mask,
+      |                                      ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:671:41: warning: unused parameter 'member_mask' [-Wunused-parameter]
+  671 | T permute_sub_group_by_xor(unsigned int member_mask,
+      |                                         ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:680:47: warning: comparison of integers of different signs: 'unsigned int' and 'int' [-Wsign-compare]
+  680 |   unsigned logical_remote_id = (target_offset < logical_sub_group_size) ? start_index + target_offset : id;
+      |                                 ~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:959:15: warning: comparison of integers of different signs: 'int' and 'size_t' (aka 'unsigned long') [-Wsign-compare]
+  959 |   if (wg_size > max_wg_size) {
+      |       ~~~~~~~ ^ ~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1021:35: warning: comparison of integers of different signs: 'int' and 'size_t' (aka 'unsigned long') [-Wsign-compare]
+ 1021 |       max_ws_size_for_device_code >= max_wg_size)
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1291:17: warning: '&' within '|' [-Wbitwise-op-parentheses]
+ 1291 |     result = (a & b | c) ^ a;
+      |               ~~^~~ ~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1291:17: note: place parentheses around the '&' expression to silence this warning
+ 1291 |     result = (a & b | c) ^ a;
+      |                 ^
+      |               (    )
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1315:16: warning: '&' within '|' [-Wbitwise-op-parentheses]
+ 1315 |     result = a & (b | c) | (b & c);
+      |              ~~^~~~~~~~~ ~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1315:16: note: place parentheses around the '&' expression to silence this warning
+ 1315 |     result = a & (b | c) | (b & c);
+      |                ^
+      |              (          )
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1318:16: warning: '&' within '|' [-Wbitwise-op-parentheses]
+ 1318 |     result = a & b | c;
+      |              ~~^~~ ~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1318:16: note: place parentheses around the '&' expression to silence this warning
+ 1318 |     result = a & b | c;
+      |                ^
+      |              (    )
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/core/expert_source.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:54:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/kernel.hpp:50:57: warning: unused parameter 'function' [-Wunused-parameter]
+   50 |                                             const void *function) {
+      |                                                         ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/kernel.hpp:57:38: warning: unused parameter 'function' [-Wunused-parameter]
+   57 | get_kernel_function_info(const void *function) {
+      |                                      ^
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/core/expert_source.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:59:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/bindless_images.hpp:629:35: warning: unused parameter 'q' [-Wunused-parameter]
+  629 |   void unmap_resource(sycl::queue q) {
+      |                                   ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/bindless_images.hpp:656:9: warning: field '_res_external_mem' will be initialized after field '_res_reg_flags' [-Wreorder-ctor]
+  656 |       : _res_external_mem(external_mem), _res_reg_flags(reg_flags) {}
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~~~~~~~~~~
+      |         _res_reg_flags(reg_flags)        _res_external_mem(external_mem)
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/bindless_images.hpp:1163:24: warning: comparison of integers of different signs: 'size_t' (aka 'unsigned long') and 'int' [-Wsign-compare]
+ 1163 |   for (size_t i = 0; i < count; ++i) {
+      |                      ~ ^ ~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/bindless_images.hpp:1350:21: warning: comparison of integers of different signs: 'int' and 'unsigned int' [-Wsign-compare]
+ 1350 |   for (int i = 0; i < numExtSems; i++) {
+      |                   ~ ^ ~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/bindless_images.hpp:1393:21: warning: comparison of integers of different signs: 'int' and 'unsigned int' [-Wsign-compare]
+ 1393 |   for (int i = 0; i < numExtSems; i++) {
+      |                   ~ ^ ~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/bindless_images.hpp:1686:60: warning: unused parameter 'channel' [-Wunused-parameter]
+ 1686 |   void attach(image_mem_wrapper *mem, const image_channel &channel,
+      |                                                            ^
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/core/expert_source.cpp:8:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include/strata/core/expert_source.hpp:721:13: warning: 'reads' overrides a member function but is not marked 'override' [-Winconsistent-missing-override]
+  721 |     int64_t reads() const { return reads_; }
+      |             ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include/strata/core/expert_source.hpp:136:21: note: overridden virtual function is here
+  136 |     virtual int64_t reads() const { return 0; }
+      |                     ^
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/core/expert_source.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:52:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/device.hpp:86:13: warning: unused function 'destroy_event' [-Wunused-function]
+   86 | static void destroy_event(event_ptr event) {
+      |             ^~~~~~~~~~~~~
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/core/expert_source.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:53:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/image.hpp:14:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:165:17: warning: 'static' function 'get_buffer' declared in header file should be declared 'static inline' [-Wunneeded-internal-declaration]
+  165 | static buffer_t get_buffer(const void *ptr) {
+      |                 ^~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:141:36: warning: 'static' function 'get_buffer_and_offset' declared in header file should be declared 'static inline' [-Wunneeded-internal-declaration]
+  141 | static std::pair<buffer_t, size_t> get_buffer_and_offset(const void *ptr) {
+      |                                    ^~~~~~~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:304:13: warning: unused function 'dpct_memcpy' [-Wunused-function]
+  304 | static void dpct_memcpy(void *to_ptr, const void *from_ptr, size_t size,
+      |             ^~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:322:13: warning: unused function 'dpct_memcpy' [-Wunused-function]
+  322 | static void dpct_memcpy(void *to_ptr, int to_dev_id, const void *from_ptr,
+      |             ^~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:340:13: warning: unused function 'async_dpct_memcpy' [-Wunused-function]
+  340 | static void async_dpct_memcpy(void *to_ptr, const void *from_ptr, size_t size,
+      |             ^~~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:358:13: warning: unused function 'async_dpct_memcpy' [-Wunused-function]
+  358 | static void async_dpct_memcpy(void *to_ptr, int to_dev_id, const void *from_ptr,
+      |             ^~~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:494:13: warning: unused function 'dpct_memset' [-Wunused-function]
+  494 | static void dpct_memset(void *dev_ptr, int value, size_t size,
+      |             ^~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:507:13: warning: unused function 'dpct_memset_d16' [-Wunused-function]
+  507 | static void dpct_memset_d16(void *dev_ptr, unsigned short value, size_t size,
+      |             ^~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:519:13: warning: unused function 'dpct_memset_d32' [-Wunused-function]
+  519 | static void dpct_memset_d32(void *dev_ptr, unsigned int value, size_t size,
+      |             ^~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:532:13: warning: unused function 'async_dpct_memset' [-Wunused-function]
+  532 | static void async_dpct_memset(void *dev_ptr, int value, size_t size,
+      |             ^~~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:544:13: warning: unused function 'async_dpct_memset_d16' [-Wunused-function]
+  544 | static void async_dpct_memset_d16(void *dev_ptr, unsigned short value, size_t size,
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:556:13: warning: unused function 'async_dpct_memset_d32' [-Wunused-function]
+  556 | static void async_dpct_memset_d32(void *dev_ptr, unsigned int value, size_t size,
+      |             ^~~~~~~~~~~~~~~~~~~~~
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/core/expert_source.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:60:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/graph.hpp:136:1: warning: unused function 'add_empty_node' [-Wunused-function]
+  136 | add_empty_node(dpct::experimental::node_ptr *newNode,
+      | ^~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/graph.hpp:162:13: warning: unused function 'add_dependencies' [-Wunused-function]
+  162 | static void add_dependencies(dpct::experimental::command_graph_ptr graph,
+      |             ^~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/graph.hpp:176:13: warning: unused function 'get_nodes' [-Wunused-function]
+  176 | static void get_nodes(dpct::experimental::command_graph_ptr graph,
+      |             ^~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/graph.hpp:187:13: warning: unused function 'get_root_nodes' [-Wunused-function]
+  187 | static void get_root_nodes(dpct::experimental::command_graph_ptr graph,
+      |             ^~~~~~~~~~~~~~
+39 warnings generated.
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/core/expert_source.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:53:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/image.hpp:14:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:112:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/detail/memory_detail.hpp:343:30: warning: unused parameter 'direction' [-Wunused-parameter]
+  343 |             memcpy_direction direction,
+      |                              ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/detail/memory_detail.hpp:901:29: warning: unused parameter 'cgh' [-Wunused-parameter]
+  901 |   get_access(sycl::handler &cgh) {
+      |                             ^
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/core/expert_source.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:53:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/image.hpp:14:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:816:23: warning: comparison of integers of different signs: 'int' and 'unsigned int' [-Wsign-compare]
+  816 |     for (int i = 0; i < numAttributes; i++) {
+      |                     ~ ^ ~~~~~~~~~~~~~
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/core/expert_source.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:53:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/image.hpp:15:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:959:15: warning: comparison of integers of different signs: 'int' and 'size_t' (aka 'unsigned long') [-Wsign-compare]
+  959 |   if (wg_size > max_wg_size) {
+      |       ~~~~~~~ ^ ~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1021:35: warning: comparison of integers of different signs: 'int' and 'size_t' (aka 'unsigned long') [-Wsign-compare]
+ 1021 |       max_ws_size_for_device_code >= max_wg_size)
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1291:17: warning: '&' within '|' [-Wbitwise-op-parentheses]
+ 1291 |     result = (a & b | c) ^ a;
+      |               ~~^~~ ~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1291:17: note: place parentheses around the '&' expression to silence this warning
+ 1291 |     result = (a & b | c) ^ a;
+      |                 ^
+      |               (    )
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1315:16: warning: '&' within '|' [-Wbitwise-op-parentheses]
+ 1315 |     result = a & (b | c) | (b & c);
+      |              ~~^~~~~~~~~ ~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1315:16: note: place parentheses around the '&' expression to silence this warning
+ 1315 |     result = a & (b | c) | (b & c);
+      |                ^
+      |              (          )
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1318:16: warning: '&' within '|' [-Wbitwise-op-parentheses]
+ 1318 |     result = a & b | c;
+      |              ~~^~~ ~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/util.hpp:1318:16: note: place parentheses around the '&' expression to silence this warning
+ 1318 |     result = a & b | c;
+      |                ^
+      |              (    )
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/core/expert_source.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:54:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/kernel.hpp:50:57: warning: unused parameter 'function' [-Wunused-parameter]
+   50 |                                             const void *function) {
+      |                                                         ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/kernel.hpp:57:38: warning: unused parameter 'function' [-Wunused-parameter]
+   57 | get_kernel_function_info(const void *function) {
+      |                                      ^
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/core/expert_source.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:59:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/bindless_images.hpp:629:35: warning: unused parameter 'q' [-Wunused-parameter]
+  629 |   void unmap_resource(sycl::queue q) {
+      |                                   ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/bindless_images.hpp:656:9: warning: field '_res_external_mem' will be initialized after field '_res_reg_flags' [-Wreorder-ctor]
+  656 |       : _res_external_mem(external_mem), _res_reg_flags(reg_flags) {}
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~~~~~~~~~~
+      |         _res_reg_flags(reg_flags)        _res_external_mem(external_mem)
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/bindless_images.hpp:1163:24: warning: comparison of integers of different signs: 'size_t' (aka 'unsigned long') and 'int' [-Wsign-compare]
+ 1163 |   for (size_t i = 0; i < count; ++i) {
+      |                      ~ ^ ~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/bindless_images.hpp:1350:21: warning: comparison of integers of different signs: 'int' and 'unsigned int' [-Wsign-compare]
+ 1350 |   for (int i = 0; i < numExtSems; i++) {
+      |                   ~ ^ ~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/bindless_images.hpp:1393:21: warning: comparison of integers of different signs: 'int' and 'unsigned int' [-Wsign-compare]
+ 1393 |   for (int i = 0; i < numExtSems; i++) {
+      |                   ~ ^ ~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/bindless_images.hpp:1686:60: warning: unused parameter 'channel' [-Wunused-parameter]
+ 1686 |   void attach(image_mem_wrapper *mem, const image_channel &channel,
+      |                                                            ^
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/core/expert_source.cpp:8:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include/strata/core/expert_source.hpp:721:13: warning: 'reads' overrides a member function but is not marked 'override' [-Winconsistent-missing-override]
+  721 |     int64_t reads() const { return reads_; }
+      |             ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include/strata/core/expert_source.hpp:136:21: note: overridden virtual function is here
+  136 |     virtual int64_t reads() const { return 0; }
+      |                     ^
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/core/expert_source.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:52:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/device.hpp:86:13: warning: unused function 'destroy_event' [-Wunused-function]
+   86 | static void destroy_event(event_ptr event) {
+      |             ^~~~~~~~~~~~~
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/core/expert_source.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:53:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/image.hpp:14:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:165:17: warning: 'static' function 'get_buffer' declared in header file should be declared 'static inline' [-Wunneeded-internal-declaration]
+  165 | static buffer_t get_buffer(const void *ptr) {
+      |                 ^~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:141:36: warning: 'static' function 'get_buffer_and_offset' declared in header file should be declared 'static inline' [-Wunneeded-internal-declaration]
+  141 | static std::pair<buffer_t, size_t> get_buffer_and_offset(const void *ptr) {
+      |                                    ^~~~~~~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:304:13: warning: unused function 'dpct_memcpy' [-Wunused-function]
+  304 | static void dpct_memcpy(void *to_ptr, const void *from_ptr, size_t size,
+      |             ^~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:322:13: warning: unused function 'dpct_memcpy' [-Wunused-function]
+  322 | static void dpct_memcpy(void *to_ptr, int to_dev_id, const void *from_ptr,
+      |             ^~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:340:13: warning: unused function 'async_dpct_memcpy' [-Wunused-function]
+  340 | static void async_dpct_memcpy(void *to_ptr, const void *from_ptr, size_t size,
+      |             ^~~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:358:13: warning: unused function 'async_dpct_memcpy' [-Wunused-function]
+  358 | static void async_dpct_memcpy(void *to_ptr, int to_dev_id, const void *from_ptr,
+      |             ^~~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:494:13: warning: unused function 'dpct_memset' [-Wunused-function]
+  494 | static void dpct_memset(void *dev_ptr, int value, size_t size,
+      |             ^~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:507:13: warning: unused function 'dpct_memset_d16' [-Wunused-function]
+  507 | static void dpct_memset_d16(void *dev_ptr, unsigned short value, size_t size,
+      |             ^~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:519:13: warning: unused function 'dpct_memset_d32' [-Wunused-function]
+  519 | static void dpct_memset_d32(void *dev_ptr, unsigned int value, size_t size,
+      |             ^~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:532:13: warning: unused function 'async_dpct_memset' [-Wunused-function]
+  532 | static void async_dpct_memset(void *dev_ptr, int value, size_t size,
+      |             ^~~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:544:13: warning: unused function 'async_dpct_memset_d16' [-Wunused-function]
+  544 | static void async_dpct_memset_d16(void *dev_ptr, unsigned short value, size_t size,
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/memory.hpp:556:13: warning: unused function 'async_dpct_memset_d32' [-Wunused-function]
+  556 | static void async_dpct_memset_d32(void *dev_ptr, unsigned int value, size_t size,
+      |             ^~~~~~~~~~~~~~~~~~~~~
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/core/expert_source.cpp:5:
+In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/dpct.hpp:60:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/graph.hpp:136:1: warning: unused function 'add_empty_node' [-Wunused-function]
+  136 | add_empty_node(dpct::experimental::node_ptr *newNode,
+      | ^~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/graph.hpp:162:13: warning: unused function 'add_dependencies' [-Wunused-function]
+  162 | static void add_dependencies(dpct::experimental::command_graph_ptr graph,
+      |             ^~~~~~~~~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/graph.hpp:176:13: warning: unused function 'get_nodes' [-Wunused-function]
+  176 | static void get_nodes(dpct::experimental::command_graph_ptr graph,
+      |             ^~~~~~~~~
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/graph.hpp:187:13: warning: unused function 'get_root_nodes' [-Wunused-function]
+  187 | static void get_root_nodes(dpct::experimental::command_graph_ptr graph,
+      |             ^~~~~~~~~~~~~~
+34 warnings generated.
+[5/11] Linking CXX static library libstrata_engine.a
+[6/11] Linking CXX static library libstrata_prefill.a
+[7/11] Linking CXX executable native_expert_parity
+[8/11] Linking CXX executable gdn_variant_parity
+FAILED: gdn_variant_parity 
+: && /opt/intel/oneapi/compiler/2026.1/bin/icpx -O3 -DNDEBUG -fsycl -Xsycl-target-backend=spir64 -cl-fp32-correctly-rounded-divide-sqrt -fsycl-device-code-split=per_kernel -qmkl=sequential CMakeFiles/gdn_variant_parity.dir/src/prefill/gdn_variant_parity.cpp.o -o gdn_variant_parity  libstrata_prefill.a  libstrata_engine.a  libstrata_kernels.a  libstrata_core.a  libstrata_kernels_cpu.a  ggml/src/libggml-cpu.a  ggml/src/libggml-base.a  -lm && :
+/usr/bin/ld: warning: libsvml.so, needed by /opt/intel/oneapi/compiler/2026.1/bin/compiler/../../lib/libOpenCL.so, not found (try using -rpath or -rpath-link)
+/usr/bin/ld: warning: libirng.so, needed by /opt/intel/oneapi/compiler/2026.1/bin/compiler/../../lib/libOpenCL.so, not found (try using -rpath or -rpath-link)
+/usr/bin/ld: warning: libimf.so, needed by /opt/intel/oneapi/compiler/2026.1/bin/compiler/../../lib/libOpenCL.so, not found (try using -rpath or -rpath-link)
+/usr/bin/ld: warning: libintlc.so.5, needed by /opt/intel/oneapi/compiler/2026.1/bin/compiler/../../lib/libOpenCL.so, not found (try using -rpath or -rpath-link)
+/usr/bin/ld: /tmp/icpx-c43328ed89/gdn_variant_parity-88b8f5.o: in function `(anonymous namespace)::run(sycl::_V1::queue&, long)':
+gdn_variant_parity.cpp:(.text+0x21a3): undefined reference to `strata::prefill::gdn_recurrence(float*, float const*, float const*, float const*, float const*, float const*, float, float*, unsigned short*, long, void*, long)'
+/usr/bin/ld: /tmp/icpx-c43328ed89/gdn_variant_parity-88b8f5.o: in function `(anonymous namespace)::run(sycl::_V1::queue&, long)::{lambda()#2}::operator()() const':
+gdn_variant_parity.cpp:(.text+0x4443): undefined reference to `strata::prefill::gdn_recurrence(float*, float const*, float const*, float const*, float const*, float const*, float, float*, unsigned short*, long, void*, long)'
+/usr/bin/ld: /tmp/icpx-c43328ed89/gdn_variant_parity-88b8f5.o: in function `auto (anonymous namespace)::run(sycl::_V1::queue&, long)::{lambda(auto:1)#1}::operator()<(anonymous namespace)::run(sycl::_V1::queue&, long)::{lambda()#1}>((anonymous namespace)::run(sycl::_V1::queue&, long)::{lambda()#1}) const':
+gdn_variant_parity.cpp:(.text+0x4c61): undefined reference to `strata::prefill::gdn_recurrence(float*, float const*, float const*, float const*, float const*, float const*, float, float*, unsigned short*, long, void*, long)'
+/usr/bin/ld: gdn_variant_parity.cpp:(.text+0x4cc0): undefined reference to `strata::prefill::gdn_recurrence(float*, float const*, float const*, float const*, float const*, float const*, float, float*, unsigned short*, long, void*, long)'
+/usr/bin/ld: gdn_variant_parity.cpp:(.text+0x4d1f): undefined reference to `strata::prefill::gdn_recurrence(float*, float const*, float const*, float const*, float const*, float const*, float, float*, unsigned short*, long, void*, long)'
+/usr/bin/ld: /tmp/icpx-c43328ed89/gdn_variant_parity-88b8f5.o:gdn_variant_parity.cpp:(.text+0x4d7e): more undefined references to `strata::prefill::gdn_recurrence(float*, float const*, float const*, float const*, float const*, float const*, float, float*, unsigned short*, long, void*, long)' follow
+icpx: error: linker command failed with exit code 1 (use -v to see invocation)
+[9/11] Linking CXX executable strata
+FAILED: strata 
+: && /opt/intel/oneapi/compiler/2026.1/bin/icpx -O3 -DNDEBUG -fsycl -Xsycl-target-backend=spir64 -cl-fp32-correctly-rounded-divide-sqrt -fsycl-device-code-split=per_kernel -qmkl=sequential CMakeFiles/strata.dir/src/program/generate.cpp.o -o strata  libstrata_engine.a  libstrata_prefill.a  libstrata_spec.a  libstrata_engine.a  libstrata_kernels.a  libstrata_core.a  libstrata_kernels_cpu.a  ggml/src/libggml-cpu.a  ggml/src/libggml-base.a  -lm && :
+/usr/bin/ld: warning: libsvml.so, needed by /opt/intel/oneapi/compiler/2026.1/bin/compiler/../../lib/libOpenCL.so, not found (try using -rpath or -rpath-link)
+/usr/bin/ld: warning: libirng.so, needed by /opt/intel/oneapi/compiler/2026.1/bin/compiler/../../lib/libOpenCL.so, not found (try using -rpath or -rpath-link)
+/usr/bin/ld: warning: libimf.so, needed by /opt/intel/oneapi/compiler/2026.1/bin/compiler/../../lib/libOpenCL.so, not found (try using -rpath or -rpath-link)
+/usr/bin/ld: warning: libintlc.so.5, needed by /opt/intel/oneapi/compiler/2026.1/bin/compiler/../../lib/libOpenCL.so, not found (try using -rpath or -rpath-link)
+/usr/bin/ld: libstrata_engine.a(expert_source.cpp.o): in function `strata::core::ArenaExpertSource::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, long, long, int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, unsigned long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)':
+expert_source.cpp:(.text+0x1b554): undefined reference to `strata::core::load_experts_direct(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, unsigned char*, std::vector<unsigned long, std::allocator<unsigned long> > const&, std::vector<unsigned long, std::allocator<unsigned long> > const&, int, unsigned long, std::atomic<int> const*)'
+/usr/bin/ld: expert_source.cpp:(.text+0x1b5cc): undefined reference to `strata::core::load_experts_ranges(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, unsigned char*, std::vector<unsigned long, std::allocator<unsigned long> > const&, std::vector<unsigned long, std::allocator<unsigned long> > const&, int, unsigned long, std::atomic<int> const*)'
+/usr/bin/ld: libstrata_engine.a(expert_source.cpp.o):(.rodata+0x1e8): undefined reference to `strata::core::FileExpertSource::release(long, long)'
+/usr/bin/ld: libstrata_engine.a(expert_source.cpp.o):(.rodata+0x208): undefined reference to `strata::core::FileExpertSource::advise_pairs(std::pair<int, int> const*, long) const'
+/usr/bin/ld: libstrata_engine.a(expert_cache.cpp.o): in function `strata::core::ExpertCache::~ExpertCache()':
+expert_cache.cpp:(.text+0x1a85): undefined reference to `strata::core::VmmRange::release()'
+/usr/bin/ld: libstrata_engine.a(verify.cpp.o): in function `strata::core::Verifier::record_window(int, sycl::_V1::queue*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)::{lambda(long, int)#1}::operator()(long, int) const':
+verify.cpp:(.text+0x8985): undefined reference to `strata::kernels::gdn_conv_l2_multi(float const*, float const*, float const*, float*, int, int, float, int, void*, int, bool)'
+/usr/bin/ld: verify.cpp:(.text+0x8b31): undefined reference to `strata::kernels::gdn_step_norm_multi(float*, float const*, int, float const*, float const*, float const*, float const*, float, float*, int, int, int, int const*, void*, int, void*)'
+/usr/bin/ld: verify.cpp:(.text+0x9f3e): undefined reference to `strata::kernels::resident_plan(int const*, int, int, int const*, int, unsigned char const*, unsigned long long const*, long long, int*, long long, unsigned int*, unsigned int, void*, unsigned int*)'
+/usr/bin/ld: verify.cpp:(.text+0xa31c): undefined reference to `strata::kernels::shared_expert_multi(int, float const*, unsigned short const*, strata::kernels::NativeSharedWeights const&, unsigned short const*, float*, float*, float*, float*, long, long, void*, void const*, int)'
+/usr/bin/ld: libstrata_engine.a(verify.cpp.o): in function `strata::core::Verifier::capture_commit(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)':
+verify.cpp:(.text+0xfba0): undefined reference to `strata::kernels::gdn_step_norm_multi(float*, float const*, int, float const*, float const*, float const*, float const*, float, float*, int, int, int, int const*, void*, int, void*)'
+/usr/bin/ld: libstrata_prefill.a(prefill.cpp.o): in function `strata::prefill::Prefill::draft_kv(strata::core::MtpDrafter&, float const*, int const*, long, long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)':
+prefill.cpp:(.text+0x7110): undefined reference to `strata::prefill::gr_norm_rs(float const*, float const*, float, float*, unsigned short*, long, void*, unsigned short*, long)'
+/usr/bin/ld: libstrata_prefill.a(prefill.cpp.o): in function `strata::prefill::Prefill::run_impl(long const*, long, long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)':
+prefill.cpp:(.text+0xfdc1): undefined reference to `strata::prefill::gr_norm_rs(float const*, float const*, float, float*, unsigned short*, long, void*, unsigned short*, long)'
+/usr/bin/ld: prefill.cpp:(.text+0x11063): undefined reference to `strata::prefill::gdn_recurrence(float*, float const*, float const*, float const*, float const*, float const*, float, float*, unsigned short*, long, void*, long)'
+/usr/bin/ld: prefill.cpp:(.text+0x13edf): undefined reference to `strata::prefill::gate_attn(float const*, float const*, unsigned short*, long, void*, long)'
+/usr/bin/ld: prefill.cpp:(.text+0x166d7): undefined reference to `strata::prefill::gr_write_norm_rs(float*, float const*, float const*, long, float const*, float, float*, unsigned short*, long, void*, unsigned short*, long)'
+/usr/bin/ld: libstrata_core.a(pinned.dp.cpp.o): in function `strata::core::load_experts(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, unsigned char*, unsigned long, unsigned long, unsigned long, int, unsigned long)':
+pinned.dp.cpp:(.text+0x2904): undefined reference to `strata::core::load_experts_ranges(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, unsigned char*, std::vector<unsigned long, std::allocator<unsigned long> > const&, std::vector<unsigned long, std::allocator<unsigned long> > const&, int, unsigned long, std::atomic<int> const*)'
+icpx: error: linker command failed with exit code 1 (use -v to see invocation)
+[10/11] Linking CXX executable conversation_snapshot_test
+[11/11] Linking CXX executable xmx_gemm_bench
+/usr/bin/ld: warning: libsvml.so, needed by /opt/intel/oneapi/compiler/2026.1/bin/compiler/../../lib/libOpenCL.so, not found (try using -rpath or -rpath-link)
+/usr/bin/ld: warning: libirng.so, needed by /opt/intel/oneapi/compiler/2026.1/bin/compiler/../../lib/libOpenCL.so, not found (try using -rpath or -rpath-link)
+/usr/bin/ld: warning: libimf.so, needed by /opt/intel/oneapi/compiler/2026.1/bin/compiler/../../lib/libOpenCL.so, not found (try using -rpath or -rpath-link)
+/usr/bin/ld: warning: libintlc.so.5, needed by /opt/intel/oneapi/compiler/2026.1/bin/compiler/../../lib/libOpenCL.so, not found (try using -rpath or -rpath-link)
+ninja: build stopped: cannot make progress due to previous errors.

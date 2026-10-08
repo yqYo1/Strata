@@ -1,0 +1,17 @@
+{
+  "active": false,
+  "passed": true,
+  "created_utc": "2026-10-08T00:33:06.575463+00:00",
+  "scope": "Source/accounting review only before one logged32K model check. No arithmetic rewrite, extra GPU allocation helper, runtime capacity guarantee or speed claim.",
+  "source_controller_sha256": "a85471aae94f08920f61612c6d9e6dde0f1d907d46bb3835b90d34c051dd319f",
+  "controller_sha256": "5414a801e7ebf859ad5567d60bf9602027b3ffdacf483edce31d38cfbbe1baa9",
+  "preparer_sha256": "f0d467a0828a8f736f16f094fe88b590f582e4ab67b3bbdd9fd4dfbb3a0fdb9e",
+  "budget_sha256": "4ceea654f713a1f37070bffcf165cfe52f3fcb6d1640f849b049bd224b51c68e",
+  "review": [
+    "Actual helper accounting matches the completed8192 owned carve after accounting for its single contiguous ring, rather than the borrowed-ring per-slot guard padding. TwoMiB owned estimates are engine budget arithmetic, not measured SYCL granularity.",
+    "12288 compact-hc accounted bytes2738729216; all-GPU residual new bytes838819840 because first12288 scratch rows are reused. Engine estimated net increment708837376B over8192.16K estimates an increment1417674752B and is not launched.",
+    "Run-layer-major validates all KV residency and available GPU residual capacity before allocation. Its existing RAII callbacks drain queues/staging, free temporary layer/residual buffers and restore main/MTP mappings on exit.",
+    "The changed chunk boundaries preserve token/layer/PLE ordering but may select different GEMM numerical accumulation. All66 main-state parts and248320 first-head floats must match the hard8192 baseline before timing.",
+    "One logged diagnostic uses existing immutable payload checks and memory phase logs. Its duration is excluded from performance comparison. On mismatch receive the full reply and QUIT before marking the gate rejected; no reset/rebind/service changes."
+  ]
+}

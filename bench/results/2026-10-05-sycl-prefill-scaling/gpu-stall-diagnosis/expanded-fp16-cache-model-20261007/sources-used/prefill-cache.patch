@@ -1,0 +1,115 @@
+--- production/prefill.cpp
++++ private/prefill.candidate.cpp
+@@ -52,6 +52,7 @@
+ #include <vector>
+ #include "strata/host_completion.hpp"
+ #include "strata/host_wait.hpp"
++#include "expanded_fp16_layer_cache.hpp"
+ 
+ #ifndef STRATA_PREFILL_MMQ
+ // A build without the llama.cpp sources (no STRATA_NATIVE_EXPERTS): no MMQ, the FP16 expert path everywhere.
+@@ -518,6 +519,7 @@
+     const int32_t* host_res = nullptr;
+     ExpertTransferTimer* transfer_context = nullptr;
+     PfTimer* phase_context = nullptr;
++    ExpandedFp16LayerCache* fp16_cache = nullptr;
+     float* residual_gpu = nullptr;
+     int64_t residual_gpu_tokens = 0;
+     float* residual_scratch = nullptr;
+@@ -2189,6 +2191,16 @@
+     ExpertTransferTimer transfers;
+     transfers.residual_gpu_tokens = gpu_tokens;
+     PfTimer phases;
++    ExpandedFp16LayerCache expanded_cache;
++    const int expanded_request = ExpandedFp16LayerCache::requested(g.n_expert);
++    if (expanded_request && n > first_len && layout.native) {
++        size_t free_bytes = 0, total_bytes = 0;
++        dpct::get_current_device().get_memory_info(free_bytes, total_bytes);
++        expanded_cache.initialize(*m.cs, g.n_expert, expanded_request, free_bytes);
++    }
++    if (expanded_request)
++        std::fprintf(stderr, "strata prefill FP16 cache allocation: requested %d, capacity %d, bytes %llu\n",
++                     expanded_request, expanded_cache.capacity(), (unsigned long long) expanded_cache.bytes());
+     // Restore decode's cache and all public callbacks on every exit, including cancellation.
+     struct Restore {
+         Prefill& p; Impl& m;
+@@ -2196,19 +2208,22 @@
+         const core::ExpertCache* cache; const int32_t* residency; ExpertTransferTimer* timer;
+         float *gpu, *scratch, *r; int64_t gpu_tokens, reused_tokens; bool inplace; PfTimer* phases;
+         decltype(on_chunk) chunk; decltype(on_stage_chunk) stage;
++        ExpandedFp16LayerCache* fp16_cache;
+         ~Restore() {
+             m.cs->wait(); m.copy->wait(); m.stager->finish();
+             p.stage_lb_ = lb; p.stage_le_ = le; p.hand_in_ = input; p.checkpoint_ready_ = ready;
+             p.on_chunk = std::move(chunk); p.on_stage_chunk = std::move(stage);
+             m.cache = cache; m.host_res = residency; m.transfer_context = timer;
++            m.fp16_cache = fp16_cache;
+             m.residual_gpu = gpu; m.residual_gpu_tokens = gpu_tokens; m.phase_context = phases;
+             m.residual_scratch = scratch; m.residual_reused_tokens = reused_tokens;
+             m.residual_inplace = inplace; m.R = r;
+         }
+     } restore{*this, m, stage_lb_, stage_le_, hand_in_, checkpoint_ready_, m.cache, m.host_res,
+               m.transfer_context, m.residual_gpu, m.residual_scratch, m.R, m.residual_gpu_tokens,
+-              m.residual_reused_tokens, m.residual_inplace, m.phase_context, on_chunk, on_stage_chunk};
++              m.residual_reused_tokens, m.residual_inplace, m.phase_context, on_chunk, on_stage_chunk, m.fp16_cache};
+     m.cache = &layer_cache; m.host_res = residency.data(); m.transfer_context = &transfers;
++    m.fp16_cache = expanded_cache.enabled() ? &expanded_cache : nullptr;
+     m.residual_gpu = device_rows.get(); m.residual_gpu_tokens = gpu_tokens; m.phase_context = &phases;
+     m.residual_scratch = restore.r; m.residual_reused_tokens = reused_tokens; m.residual_inplace = inplace;
+     checkpoint_ready_ = false;
+@@ -2290,6 +2305,9 @@
+     // enclosing prefill timer includes both suspension and restoration.
+     m.copy->wait(); m.stager->finish();
+     trace_memory("prefill completed with temporary layer cache");
++    if (expanded_request) expanded_cache.report();
++    m.fp16_cache = restore.fp16_cache;
++    expanded_cache.reset();
+     layer_cache.close();
+     m.R = restore.r;
+     device_rows.reset();
+@@ -4068,14 +4086,25 @@
+                                 return true;
+                             }
+                             const int q = (int) (j % DQ);
+-                            if (lay.native) {
+-                                // plan v0.3 P6: a native pack's layer, dequantized by llama.cpp's own formulas
++                            ExpandedFp16LayerCache::Entry expanded;
++                            if (m.fp16_cache && lay.native) {
+                                 const auto& f = lay.fmt[(size_t) l];
+-                                strata::kernels::iq_dequant_gu_f16(f.gu_type, blob_dev, blob_dev + f.up_off, f.n_ff, f.n_embd,
+-                                                                   m.dq_gu[q], m.cs);
+-                                strata::kernels::iq_dequant_f16(f.d_type, blob_dev + f.down_off, f.n_embd * f.n_ff, m.dq_d[q], m.cs);
+-                            } else {
+-                                blob_dequant_f16(blob_dev, m.dq_gu[q], m.dq_d[q], m.cs);
++                                if (f.n_ff == 640 && f.n_embd == 2560)
++                                    expanded = m.fp16_cache->acquire(l, e);
++                            }
++                            uint16_t* const dq_gu = expanded.gu ? expanded.gu : m.dq_gu[q];
++                            uint16_t* const dq_d = expanded.down ? expanded.down : m.dq_d[q];
++                            if (!expanded.hit) {
++                                if (lay.native) {
++                                    // Same formulas, launch geometry and FP16 outputs as the uncached path.
++                                    const auto& f = lay.fmt[(size_t) l];
++                                    strata::kernels::iq_dequant_gu_f16(f.gu_type, blob_dev, blob_dev + f.up_off, f.n_ff, f.n_embd,
++                                                                       dq_gu, m.cs);
++                                    strata::kernels::iq_dequant_f16(f.d_type, blob_dev + f.down_off, f.n_embd * f.n_ff, dq_d, m.cs);
++                                } else {
++                                    blob_dequant_f16(blob_dev, dq_gu, dq_d, m.cs);
++                                }
++                                if (expanded.slot >= 0) m.fp16_cache->publish(expanded);
+                             }
+                             if (slot >= 0) {
+                                 dpct::sync_barrier(m.used[slot], m.cs);
+@@ -4089,10 +4118,10 @@
+                             }
+                             const int64_t scratch_row = m.compact ? 0 : o0;
+                             pt.mark(kPfGemmGU, cs);
+-                            m.gemm.f16(m.Xs + scratch_row * N, m.dq_gu[q], m.GU + scratch_row * 1280, ne, 1280, N);
++                            m.gemm.f16(m.Xs + scratch_row * N, dq_gu, m.GU + scratch_row * 1280, ne, 1280, N);
+                             swiglu_interleaved(m.GU + scratch_row * 1280, m.Hh + scratch_row * 640, ne, m.cs);
+                             pt.mark(kPfGemmD, cs);
+-                            m.gemm.f16(m.Hh + scratch_row * 640, m.dq_d[q], m.Dm + o0 * N, ne, N, 640);
++                            m.gemm.f16(m.Hh + scratch_row * 640, dq_d, m.Dm + o0 * N, ne, N, 640);
+                             return true;
+                         }
+                         catch (sycl::exception const &exc) {

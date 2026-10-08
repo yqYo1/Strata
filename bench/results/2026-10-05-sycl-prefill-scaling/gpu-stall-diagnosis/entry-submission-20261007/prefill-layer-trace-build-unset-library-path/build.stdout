@@ -1,0 +1,19 @@
+ninja: Entering directory `build-sycl-upstream-jit'
+[1/3] Linking CXX static library ggml/src/libggml-base.a
+[2/3] Linking CXX static library libstrata_prefill.a
+[3/3] Linking CXX executable strata
+FAILED: strata 
+: && /opt/intel/oneapi/compiler/2026.1/bin/icpx -O3 -DNDEBUG -fsycl -Xsycl-target-backend=spir64 -cl-fp32-correctly-rounded-divide-sqrt -fsycl-device-code-split=per_kernel -qmkl=sequential CMakeFiles/strata.dir/src/program/generate.cpp.o -o strata  libstrata_engine.a  libstrata_prefill.a  libstrata_spec.a  libstrata_engine.a  libstrata_kernels.a  libstrata_core.a  libstrata_kernels_cpu.a  ggml/src/libggml-cpu.a  ggml/src/libggml-base.a  -lm && :
+/usr/bin/ld: cannot find -lmkl_sycl_blas: No such file or directory
+/usr/bin/ld: cannot find -lmkl_sycl_lapack: No such file or directory
+/usr/bin/ld: cannot find -lmkl_sycl_dft: No such file or directory
+/usr/bin/ld: cannot find -lmkl_sycl_sparse: No such file or directory
+/usr/bin/ld: cannot find -lmkl_sycl_rng: No such file or directory
+/usr/bin/ld: cannot find -lmkl_sycl_stats: No such file or directory
+/usr/bin/ld: cannot find -lmkl_sycl_vm: No such file or directory
+/usr/bin/ld: cannot find -lmkl_sycl_data_fitting: No such file or directory
+/usr/bin/ld: cannot find -lmkl_intel_lp64: No such file or directory
+/usr/bin/ld: cannot find -lmkl_sequential: No such file or directory
+/usr/bin/ld: cannot find -lmkl_core: No such file or directory
+icpx: error: linker command failed with exit code 1 (use -v to see invocation)
+ninja: build stopped: subcommand failed.

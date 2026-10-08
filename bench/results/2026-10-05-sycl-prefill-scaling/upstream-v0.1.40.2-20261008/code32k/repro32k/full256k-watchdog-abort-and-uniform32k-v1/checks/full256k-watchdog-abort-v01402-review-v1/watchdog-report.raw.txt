@@ -1,0 +1,35 @@
+strata serve: no progress for 60 s during a request (reading the prompt (batched): layer 33 of the prompt chunk from token 196608) - stopping the engine so the server starts it again (issue #29)
+strata serve: stall report (engine 0.1.40-sycl): stage "reading the prompt (batched): layer 33 of the prompt chunk from token 196608" for 60 s; 0 layers served since the last finished step (0 = stopped, more = slow)
+  expert pool: epoch 12480, batch epoch 12480: 18 of 18 jobs claimed, 18 done; 5 of 5 workers parked, 5 sleeping; mode 0
+  expert pool threads: w0=sleeping w1=sleeping w2=sleeping w3=sleeping w4=sleeping; host idle for 1379939 ms
+   ---> urEventGetInfo
+[2026-10-08 16:49:11.539] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:11.539] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:11.539] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:11.539] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:11.539] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+  verify window (last window, not the current stage): 4 tokens at position 32829, host at layer step 96; the GPU rang 96; flags: served 96, plan (A) 96, copies (B) 96
+   ---> urEventGetInfo
+[2026-10-08 16:49:11.539] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:11.539] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:11.539] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:11.539] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:11.539] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:11.540] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+  threads waiting on the disk (state D): 0 of 77
+  memory: 48540 MiB resident, 0 MiB in swap, 43592 MiB RAM available; 2646 major page faults so far
+   ---> urEventGetInfo
+[2026-10-08 16:49:11.540] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:11.541] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:11.541] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b

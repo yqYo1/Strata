@@ -1,0 +1,204 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_access": false,
+  "created_utc": "2026-10-08T00:47:26.797541+00:00",
+  "controller_sha256": "3640311a3b13e2c1a635ec244abe48503fdffcd970de8b66854a7e40d0de19a5",
+  "scope": "Successful LevelZero resource API results counted by preceding phase marker, from one32K debug/validation run. Sizes are requested API inputs, not resident memory; no timing, leak or isolated root-cause conclusion.",
+  "counts": {
+    "startup": {
+      "zeCommandListCreateImmediate": 13,
+      "zeModuleCreate": 8,
+      "zeKernelCreate": 7,
+      "zePhysicalMemCreate": 118,
+      "zeVirtualMemMap": 118
+    },
+    "before decode cache release": {
+      "zeVirtualMemUnmap": 6,
+      "zePhysicalMemDestroy": 6
+    },
+    "main decode cache released": {
+      "zeVirtualMemUnmap": 112,
+      "zePhysicalMemDestroy": 112
+    },
+    "temporary layer cache allocated": {
+      "zeModuleCreate": 70,
+      "zeKernelCreate": 70
+    },
+    "temporary buffers released": {
+      "zePhysicalMemCreate": 6,
+      "zeVirtualMemMap": 6,
+      "zeCommandListCreateImmediate": 4,
+      "zeCommandListCreate": 680,
+      "zeModuleCreate": 61,
+      "zeKernelCreate": 61
+    },
+    "main decode cache restored, verifier graphs rebuilt": {
+      "zePhysicalMemCreate": 112,
+      "zeVirtualMemMap": 112
+    },
+    "MTP decode weights restored": {
+      "zeCommandListCreate": 7,
+      "zeModuleCreate": 23,
+      "zeKernelCreate": 23,
+      "zeVirtualMemUnmap": 118,
+      "zePhysicalMemDestroy": 118,
+      "zeKernelDestroy": 161,
+      "zeModuleDestroy": 162,
+      "zeCommandListDestroy": 704
+    }
+  },
+  "requested_sizes": {
+    "startup": {
+      "zeModuleCreate": 12560,
+      "zePhysicalMemCreate": 1342177280,
+      "zeVirtualMemMap": 1342177280
+    },
+    "before decode cache release": {
+      "zeVirtualMemUnmap": 402653184
+    },
+    "main decode cache released": {
+      "zeVirtualMemUnmap": 939524096
+    },
+    "temporary layer cache allocated": {
+      "zeModuleCreate": 1336724
+    },
+    "temporary buffers released": {
+      "zePhysicalMemCreate": 402653184,
+      "zeVirtualMemMap": 402653184,
+      "zeModuleCreate": 686064
+    },
+    "main decode cache restored, verifier graphs rebuilt": {
+      "zePhysicalMemCreate": 939524096,
+      "zeVirtualMemMap": 939524096
+    },
+    "MTP decode weights restored": {
+      "zeModuleCreate": 161768,
+      "zeVirtualMemUnmap": 1342177280
+    }
+  },
+  "first_example": {
+    "startup": {
+      "zeCommandListCreateImmediate": {
+        "line": 280,
+        "raw": "[2026-10-08 09:33:32.334] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListCreateImmediate(hContext=0x4a404f8, hDevice=0x4a29a08, altdesc={stype=0x7ffffffdd6d0, ordinal=0, index=0, flags=2, mode=0x7ffffffdd6ec, priority=0x7ffffffdd6f0}, phCommandList=0x4a470a8)"
+      },
+      "zeModuleCreate": {
+        "line": 817,
+        "raw": "[2026-10-08 09:33:32.505] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleCreate(hContext=0x4a404f8, hDevice=0x4a29a08, desc={stype=0x7ffffffdcb70, format=0x7ffffffdcb80, inputSize=1920, pInputModule=3, pBuildFlags=\" -cl-fp32-correctly-rounded-divide-sqrt -ze-opt-level=2\", pConstants={numConstants=0, pConstantIds=nullptr, pConstantValues=nullptr}}, phModule=0x4831eb8, phBuildLog=0x4824468)"
+      },
+      "zeKernelCreate": {
+        "line": 825,
+        "raw": "[2026-10-08 09:33:32.505] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelCreate(hModule=0x4831eb8, desc={stype=0x7ffffffdd200, flags=0, pKernelName=\"_ZTSN4sycl3_V16detail18RoundedRangeKernelINS0_4itemILi1ELb1EEELi1EZN6strata17arena_alias_checkERNS0_5queueEPvmPmEUlNS0_2idILi1EEEE_EE\"}, phKernel=0x4801b58)"
+      },
+      "zePhysicalMemCreate": {
+        "line": 17912,
+        "raw": "[2026-10-08 09:33:34.742] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zePhysicalMemCreate(hContext=0x4a404f8, hDevice=0x4a29a08, desc={stype=0x7ffffffdd2d0, flags=0, size=8388608}, phPhysicalMemory=0x4c707d0)"
+      },
+      "zeVirtualMemMap": {
+        "line": 17916,
+        "raw": "[2026-10-08 09:33:34.742] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeVirtualMemMap(hContext=0x4a404f8, ptr=0x7fff7be00000, size=8388608, hPhysicalMemory=0x4c707d0, offset=0, access=1)"
+      }
+    },
+    "before decode cache release": {
+      "zeVirtualMemUnmap": {
+        "line": 24743,
+        "raw": "[2026-10-08 09:34:00.016] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeVirtualMemUnmap(hContext=0x4a404f8, ptr=0x7ff373e00000, size=67108864)"
+      },
+      "zePhysicalMemDestroy": {
+        "line": 24747,
+        "raw": "[2026-10-08 09:34:00.016] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zePhysicalMemDestroy(hContext=0x4a404f8, hPhysicalMemory=0x4d18280)"
+      }
+    },
+    "main decode cache released": {
+      "zeVirtualMemUnmap": {
+        "line": 24968,
+        "raw": "[2026-10-08 09:34:00.804] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeVirtualMemUnmap(hContext=0x4a404f8, ptr=0x7fffa5e00000, size=8388608)"
+      },
+      "zePhysicalMemDestroy": {
+        "line": 24972,
+        "raw": "[2026-10-08 09:34:00.804] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zePhysicalMemDestroy(hContext=0x4a404f8, hPhysicalMemory=0x4cbcac0)"
+      }
+    },
+    "temporary layer cache allocated": {
+      "zeModuleCreate": {
+        "line": 36292,
+        "raw": "[2026-10-08 09:34:01.065] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleCreate(hContext=0x4a404f8, hDevice=0x4a29a08, desc={stype=0x7ffffffda680, format=0x7ffffffda690, inputSize=130616, pInputModule=3, pBuildFlags=\" -cl-fp32-correctly-rounded-divide-sqrt -ze-opt-level=2\", pConstants={numConstants=0, pConstantIds=nullptr, pConstantValues=nullptr}}, phModule=0x4c83248, phBuildLog=0x5fdff38)"
+      },
+      "zeKernelCreate": {
+        "line": 36300,
+        "raw": "[2026-10-08 09:34:01.065] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelCreate(hModule=0x4c83248, desc={stype=0x7ffffffdad10, flags=0, pKernelName=\"_ZTS16dpct_kernel_nameIJZZN6strata7kernels13iq_embed_rowsEiPKvmPKillPfPvENKUlRN4sycl3_V17handlerEE_clESB_E24embed_rows_kernel_284a43EE\"}, phKernel=0x5b84c58)"
+      }
+    },
+    "temporary buffers released": {
+      "zePhysicalMemCreate": {
+        "line": 8535863,
+        "raw": "[2026-10-08 09:36:20.850] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zePhysicalMemCreate(hContext=0x4a404f8, hDevice=0x4a29a08, desc={stype=0x7ffffffdd2e0, flags=0, size=67108864}, phPhysicalMemory=0x6cd1ec0)"
+      },
+      "zeVirtualMemMap": {
+        "line": 8535867,
+        "raw": "[2026-10-08 09:36:20.851] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeVirtualMemMap(hContext=0x4a404f8, ptr=0x7ff35fe00000, size=67108864, hPhysicalMemory=0x6cd1ec0, offset=0, access=1)"
+      },
+      "zeCommandListCreateImmediate": {
+        "line": 8536983,
+        "raw": "[2026-10-08 09:36:21.160] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListCreateImmediate(hContext=0x4a404f8, hDevice=0x4a29a08, altdesc={stype=0x7ffffffdc940, ordinal=0, index=0, flags=2, mode=0x7ffffffdc95c, priority=0x7ffffffdc960}, phCommandList=0x65678a8)"
+      },
+      "zeCommandListCreate": {
+        "line": 8537213,
+        "raw": "[2026-10-08 09:36:21.167] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListCreate(hContext=0x4a404f8, hDevice=0x4a29a08, desc={stype=0x7ffffffdce38, commandQueueGroupOrdinal=0, flags=8}, phCommandList=0x6847cd8)"
+      },
+      "zeModuleCreate": {
+        "line": 8537435,
+        "raw": "[2026-10-08 09:36:21.169] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleCreate(hContext=0x4a404f8, hDevice=0x4a29a08, desc={stype=0x7ffffffdc4f0, format=0x7ffffffdc500, inputSize=1460, pInputModule=3, pBuildFlags=\" -cl-fp32-correctly-rounded-divide-sqrt -ze-opt-level=2\", pConstants={numConstants=0, pConstantIds=nullptr, pConstantValues=nullptr}}, phModule=0x6d1d2a8, phBuildLog=0x6855fa8)"
+      },
+      "zeKernelCreate": {
+        "line": 8537443,
+        "raw": "[2026-10-08 09:36:21.170] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelCreate(hModule=0x6d1d2a8, desc={stype=0x7ffffffdcb80, flags=0, pKernelName=\"_ZTS16dpct_kernel_nameIJZN6strata7kernels20copy_i32_from_mappedEPiPKilPvE34copy_i32_from_mapped_kernel_a44accEE\"}, phKernel=0x6c67bf8)"
+      }
+    },
+    "main decode cache restored, verifier graphs rebuilt": {
+      "zePhysicalMemCreate": {
+        "line": 8942722,
+        "raw": "[2026-10-08 09:36:25.688] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zePhysicalMemCreate(hContext=0x4a404f8, hDevice=0x4a29a08, desc={stype=0x7ffffffdd290, flags=0, size=8388608}, phPhysicalMemory=0xbb8c320)"
+      },
+      "zeVirtualMemMap": {
+        "line": 8942726,
+        "raw": "[2026-10-08 09:36:25.689] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeVirtualMemMap(hContext=0x4a404f8, ptr=0x7fff7be00000, size=8388608, hPhysicalMemory=0xbb8c320, offset=0, access=1)"
+      }
+    },
+    "MTP decode weights restored": {
+      "zeCommandListCreate": {
+        "line": 8945169,
+        "raw": "[2026-10-08 09:36:27.023] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListCreate(hContext=0x4a404f8, hDevice=0x4a29a08, desc={stype=0x7ffffffdd4b8, commandQueueGroupOrdinal=0, flags=8}, phCommandList=0xbce7968)"
+      },
+      "zeModuleCreate": {
+        "line": 8945213,
+        "raw": "[2026-10-08 09:36:27.024] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleCreate(hContext=0x4a404f8, hDevice=0x4a29a08, desc={stype=0x7ffffffdcb70, format=0x7ffffffdcb80, inputSize=2992, pInputModule=3, pBuildFlags=\" -cl-fp32-correctly-rounded-divide-sqrt -ze-opt-level=2\", pConstants={numConstants=0, pConstantIds=nullptr, pConstantValues=nullptr}}, phModule=0xbcef338, phBuildLog=0xbcef2d8)"
+      },
+      "zeKernelCreate": {
+        "line": 8945221,
+        "raw": "[2026-10-08 09:36:27.024] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelCreate(hModule=0xbcef338, desc={stype=0x7ffffffdd200, flags=0, pKernelName=\"_ZTS16dpct_kernel_nameIJZN6strata7kernels15gdn_conv_commitEPfPKfiPKiPvE29gdn_conv_commit_kernel_dc1d7fEE\"}, phKernel=0xbcf0178)"
+      },
+      "zeVirtualMemUnmap": {
+        "line": 9080001,
+        "raw": "[2026-10-08 09:36:33.593] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeVirtualMemUnmap(hContext=0x4a404f8, ptr=0x7ff35fe00000, size=67108864)"
+      },
+      "zePhysicalMemDestroy": {
+        "line": 9080005,
+        "raw": "[2026-10-08 09:36:33.593] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zePhysicalMemDestroy(hContext=0x4a404f8, hPhysicalMemory=0x6cd1ec0)"
+      },
+      "zeKernelDestroy": {
+        "line": 9082277,
+        "raw": "[2026-10-08 09:36:36.721] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelDestroy(hKernel=0x4c87f68)"
+      },
+      "zeModuleDestroy": {
+        "line": 9082279,
+        "raw": "[2026-10-08 09:36:36.721] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x4c87d28)"
+      },
+      "zeCommandListDestroy": {
+        "line": 9084969,
+        "raw": "[2026-10-08 09:36:36.760] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListDestroy(hCommandList=0x71c7128)"
+      }
+    }
+  }
+}

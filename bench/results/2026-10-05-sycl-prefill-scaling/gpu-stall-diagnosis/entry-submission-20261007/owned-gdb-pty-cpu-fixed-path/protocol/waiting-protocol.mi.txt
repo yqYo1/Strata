@@ -1,0 +1,46 @@
+10^done
+(gdb) 
+~"\nProgram"
+~" received signal SIGINT, Interrupt.\n"
+~"0x00007ffff7ec3d31 in __GI___libc_read (fd=0, buf=0x555555559730, nbytes=1024) at ../sysdeps/unix/sysv/linux/read.c:26\n"
+&"warning: 26\t../sysdeps/unix/sysv/linux/read.c: No such file or directory\n"
+*stopped,reason="signal-received",signal-name="SIGINT",signal-meaning="Interrupt",frame={addr="0x00007ffff7ec3d31",func="__GI___libc_read",args=[{name="fd",value="0"},{name="buf",value="0x555555559730"},{name="nbytes",value="1024"}],file="../sysdeps/unix/sysv/linux/read.c",fullname="./io/../sysdeps/unix/sysv/linux/read.c",line="26",arch="i386:x86-64"},thread-id="1",stopped-threads="all",core="5"
+11^done,threads=[{id="1",target-id="Thread 0x7ffff7da5740 (LWP 1045496)",name="protocol-probe",frame={level="0",addr="0x00007ffff7ec3d31",func="__GI___libc_read",args=[{name="fd",value="0"},{name="buf",value="0x555555559730"},{name="nbytes",value="1024"}],file="../sysdeps/unix/sysv/linux/read.c",fullname="./io/../sysdeps/unix/sysv/linux/read.c",line="26",arch="i386:x86-64"},state="stopped",core="5"}],current-thread-id="1"
+(gdb) 
+~"\nThread 1 (Thread 0x7ffff7da5740 (LWP 1045496) \"protocol-probe\"):\n"
+~"#0  0x00007ffff7ec3d31 in __GI___libc_read (fd=0, buf=0x555555559730, nbytes=1024) at ../sysdeps/unix/sysv/linux/read.c:26\n#1  0x00007ffff7e3a885 in _IO_new_file_underflow (fp=0x7ffff7fac8e0 <_IO_2_1_stdin_>) at ./libio/libioP.h:1030\n#2  0x00007ffff7e2eef0 in __GI___getdelim (lineptr=0x7fffffffd850, n=0x7fffffffd858, delimiter=10, fp=0x7ffff7fac8e0 <_IO_2_1_stdin_>) at ./libio/iogetdelim.c:77\n#3  0x0000555555555330 in main (argc=2, argv=0x7fffffffd9a8) at /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-gdb-pty-cpu-fixed-path/protocol.c:11\n"
+12^done
+(gdb) 
+~"rax            0xfffffffffffffe00  -512\n"
+~"rbx            0x7ffff7fac8e0      140737353795808\n"
+~"rcx            0x7ffff7ec3d31      140737352842545\n"
+~"rdx            0x400               1024\n"
+~"rsi            0x555555559730      93824992253744\n"
+~"rdi            0x0                 0\n"
+~"rbp            0x7fffffffd7d0      0x7fffffffd7d0\n"
+~"rsp            0x7fffffffd798      0x7fffffffd798\n"
+~"r8             0x7ffff7facb20      140737353796384\n"
+~"r9             0x410               1040\n"
+~"r10            0x1                 1\n"
+~"r11            0x246               582\n"
+~"r12            0x7ffff7fab030      140737353789488\n"
+~"r13            0x7ffff7faaee0      140737353789152\n"
+~"r14            0x555555558020      93824992247840\n"
+~"r15            0x7ffff7fab030      140737353789488\n"
+~"rip            0x7ffff7ec3d31      0x7ffff7ec3d31 <__GI___libc_read+17>\n"
+~"eflags         0x246               [ PF ZF IF ]\n"
+~"cs             0x33                51\n"
+~"ss             0x2b                43\n"
+~"ds             0x0                 0\n"
+~"es             0x0                 0\n"
+~"fs             0x0                 0\n"
+~"gs             0x0                 0\n"
+~"fs_base        0x7ffff7da5740      140737351669568\n"
+~"gs_base        0x0                 0\n"
+13^done
+(gdb) 
+~"From                To                  Syms Read   Shared Object Library\n"
+~"0x00007ffff7fc6000  0x00007ffff7ff0195  Yes         /lib64/ld-linux-x86-64.so.2\n"
+~"0x00007ffff7dd0800  0x00007ffff7f58039  Yes         /usr/lib/x86_64-linux-gnu/libc.so.6\n"
+14^done
+(gdb) 

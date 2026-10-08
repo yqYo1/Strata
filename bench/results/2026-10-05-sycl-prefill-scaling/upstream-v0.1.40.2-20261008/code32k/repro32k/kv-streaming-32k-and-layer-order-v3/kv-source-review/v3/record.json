@@ -1,0 +1,19 @@
+{
+  "active": false,
+  "source_prepared": true,
+  "compiled": false,
+  "gpu_tested": false,
+  "adopted": false,
+  "created_utc": "2026-10-08T03:12:52.715500+00:00",
+  "original_sha256": "777a7fa3fea47d98ec993cfa810114bd47bdb1febdec9ddf97822df2815374eb",
+  "previous_sha256": "46834183d98305f6e7da834b9b5f33bb7279236d3e0e3873d3b416650124c5d4",
+  "candidate_sha256": "02801fe89965fd9df0c68b58b5f2be1f8443551c2a39533b54efddd0385846e9",
+  "controller_sha256": "956992a9bf646abf97bfbf1316b9e85eebb6f2c86996b01817a351d817cc1d74",
+  "changes": [
+    "Inherit v2 hit metadata atomics, host counter memcpy and four root property removals.",
+    "Atomic page-table load paired with the existing atomic claim across concurrent query lanes.",
+    "Device counter and 16-byte KV copy representation transfers through memcpy.",
+    "Before resolve require host USM, WG1024 and subgroup32 capabilities. Runtime validates kernel-specific launch limits."
+  ],
+  "scope": "Candidate source only; no GPU or performance claim. Initial model gate must use chunk-major: existing layer-major rejects kv_mode1 before processing."
+}

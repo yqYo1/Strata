@@ -1,0 +1,248 @@
+{
+  "stage": "serve",
+  "context": 262144,
+  "ple_io": "ram",
+  "completed": true,
+  "runs": [
+    {
+      "name": "fills-context",
+      "input_tokens": 262140,
+      "max_new": 4,
+      "ids": [
+        100,
+        101,
+        102,
+        103
+      ],
+      "protocol": [
+        "REUSED 0",
+        "T 100",
+        "LP -0.5 100:-0.5",
+        "T 101",
+        "LP -0.5 101:-0.5",
+        "T 102",
+        "LP -0.5 102:-0.5",
+        "T 103",
+        "LP -0.5 103:-0.5",
+        "DONE 4 262140 1.0 1.0 length 0 0 0 0 0 0 0 0.0 262140 0"
+      ],
+      "wall_seconds": 0.015216220999718644,
+      "request_sha256": "ad6f45a39782ff99d0e3447a3b569d4d6eae10e521b3b028d3d9d3c3ccc6a759",
+      "verify_windows": [
+        [
+          262139,
+          1
+        ],
+        [
+          262140,
+          4
+        ]
+      ],
+      "finish": "length",
+      "logits_sha256": "895365e27ed4255bccdcabe85bebf7c22aaaeebab375264d8e90eae30dc28399",
+      "logical_length": 262144,
+      "last_executed_kv_cell": 262143
+    },
+    {
+      "name": "fills-context-tail-2",
+      "input_tokens": 262142,
+      "max_new": 2,
+      "ids": [
+        100,
+        101
+      ],
+      "protocol": [
+        "REUSED 0",
+        "T 100",
+        "LP -0.5 100:-0.5",
+        "T 101",
+        "LP -0.5 101:-0.5",
+        "DONE 2 262142 1.0 1.0 length 0 0 0 0 0 0 0 0.0 262142 0"
+      ],
+      "wall_seconds": 0.012207198999931279,
+      "request_sha256": "135f12877e94f3c264d2e592b33200d2494740a2350645f7a33dabe12c022df3",
+      "verify_windows": [
+        [
+          262141,
+          1
+        ],
+        [
+          262142,
+          2
+        ]
+      ],
+      "finish": "length",
+      "logits_sha256": "895365e27ed4255bccdcabe85bebf7c22aaaeebab375264d8e90eae30dc28399",
+      "logical_length": 262144,
+      "last_executed_kv_cell": 262143,
+      "clipped_verify_tail": 2
+    },
+    {
+      "name": "no-room",
+      "input_tokens": 262144,
+      "max_new": 1,
+      "ids": [],
+      "protocol": [
+        "ERR prompt (262144 tokens) + max_new (1) exceeds the context (262144)"
+      ],
+      "wall_seconds": 0.012585202000082063,
+      "request_sha256": "02ca84ff65f144eb74946a55d3d96dfaa8a288912f75f9bee2d039b209b8468d",
+      "verify_windows": []
+    },
+    {
+      "name": "one-too-many",
+      "input_tokens": 262142,
+      "max_new": 3,
+      "ids": [],
+      "protocol": [
+        "ERR prompt (262142 tokens) + max_new (3) exceeds the context (262144)"
+      ],
+      "wall_seconds": 0.010989798999617051,
+      "request_sha256": "e4e0dcb26c867c8d62aa154dc9864ecaf978841d50e0feb669b8885849330de3",
+      "verify_windows": []
+    },
+    {
+      "name": "works-after-refusal",
+      "input_tokens": 37,
+      "max_new": 2,
+      "ids": [
+        100,
+        101
+      ],
+      "protocol": [
+        "REUSED 0",
+        "T 100",
+        "LP -0.5 100:-0.5",
+        "T 101",
+        "LP -0.5 101:-0.5",
+        "DONE 2 37 1.0 1.0 length 0 0 0 0 0 0 0 0.0 37 0"
+      ],
+      "wall_seconds": 0.0005236189999777707,
+      "request_sha256": "248464d66cd8ccd017f2d0ab9b13141cdfc3f0d5c9fbcadb9e9ab32f4272be46",
+      "verify_windows": [
+        [
+          36,
+          1
+        ],
+        [
+          37,
+          4
+        ]
+      ],
+      "finish": "length",
+      "logits_sha256": "895365e27ed4255bccdcabe85bebf7c22aaaeebab375264d8e90eae30dc28399"
+    }
+  ],
+  "binary_sha256": "12a66e85ff5198c79c743f8374d5eb9e243a1752faa50f611126f4823ab6fac0",
+  "controller_sha256": "0f0f51bf6e6b9c778005da8123ea30b022f7b96925873cea523b5d0446d8d9b3",
+  "env": {
+    "LD_LIBRARY_PATH": "/usr/local/cuda/lib64:/nix/store/mj9klbkhzal0vc1aazsajrydkimhc0h2-libglvnd-1.7.0/lib",
+    "STRATA_IO_THREADS": "16",
+    "STRATA_PREFILL_RING": "8",
+    "STRATA_PREFILL_FIRST": "0",
+    "STRATA_PREFILL_ATTN_BATCH": "128",
+    "STRATA_PREFILL_ATTN_LAYOUT": "4",
+    "STRATA_PREFILL_TOPK_TUNED": "1",
+    "STRATA_GDN_KEYHEAD": "0",
+    "STRATA_GDN_KEYHEAD_TUNED": "1",
+    "STRATA_PREFILL_COMPACT": "2",
+    "STRATA_PREFILL_LAYER_MAJOR": "1",
+    "STRATA_PREFILL_LAYER_MAJOR_R_INPLACE": "1",
+    "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "0",
+    "STRATA_PREFILL_RELEASE_CACHE": "1",
+    "STRATA_PREFILL_CACHE_ALLOC": "vmm",
+    "STRATA_PREFILL_CACHE_RESTORE": "ram",
+    "SYCL_CACHE_PERSISTENT": "0"
+  },
+  "assistant_suffix": [
+    248046,
+    198,
+    248045,
+    74455,
+    198,
+    248068,
+    198,
+    248069,
+    271
+  ],
+  "source_fixture_sha256": "6709b7517b97c268efc2ed31fe1e21c7f522d2c8ccc4a7e714b39c9f28449090",
+  "environment_file_sha256": null,
+  "timeouts": {
+    "job_seconds": 7200,
+    "protocol_seconds": 7200,
+    "shutdown_seconds": 30
+  },
+  "processes": [
+    {
+      "pid": 480625,
+      "start_ticks": 764251,
+      "started_monotonic": 7642.517726736,
+      "exit_code": 0,
+      "still_alive": false,
+      "cleanup_actions": [
+        "QUIT"
+      ]
+    }
+  ],
+  "args": [
+    "/tmp/strata-context-controller-gofh34vt/protocol-stub",
+    "--pack",
+    "unused",
+    "--native",
+    "unused",
+    "--max-context",
+    "262144",
+    "--kv",
+    "int8",
+    "--spec",
+    "4",
+    "--spec-min-p",
+    "0",
+    "--suffix-draft",
+    "0",
+    "--no-prefill-borrow",
+    "--expert-cache",
+    "128",
+    "--expert-profile",
+    "unused",
+    "--expert-cache-per-layer",
+    "--pool-workers",
+    "5",
+    "--pcie-frac",
+    "0",
+    "--adapt-swaps",
+    "0",
+    "--ple-io",
+    "ram",
+    "--greedy",
+    "--serve",
+    "--mtp",
+    "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+    "--spec-split",
+    "--prefill",
+    "128",
+    "--prompt-cache",
+    "0"
+  ],
+  "startup": [
+    "READY 262144 stop"
+  ],
+  "ple_table_locked": false,
+  "ple_table_startup_seconds": 1.5,
+  "active_request": null,
+  "exit_code": 0,
+  "memory": {
+    "path": "/tmp/strata-context-controller-gofh34vt/serve-262144-protocol-stub-ple-ram/engine.memory.jsonl",
+    "samples": 1,
+    "peak": {
+      "VmRSS_kib": 1248,
+      "VmSwap_kib": 0,
+      "VmPeak_kib": 11736,
+      "vram_total_kib": 0,
+      "vram_resident_kib": 0
+    },
+    "sample_interval_seconds": 1.0,
+    "errors": [],
+    "observer_still_alive": false
+  }
+}

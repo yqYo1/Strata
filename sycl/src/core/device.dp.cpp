@@ -1,7 +1,9 @@
 // src/core/device.cu - P2.S1: the CUDA side of the runtime core.
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
+#include "strata/sycl_queue.hpp"
 #include "strata/core/device.hpp"
 
 #include <algorithm>
@@ -199,8 +201,28 @@ IDXGIAdapter3* budget_adapter(int device) {
 }
 }  // namespace
 
+// #873 / #654: on some Windows setups the first hipMemGetInfo of a process fails with hipErrorInvalidValue because the ROCm
+// runtime has not finished initialising against the Adrenalin WDDM driver, and the first kernel launch after that
+// crashes (0xC0000005 in amdhip64_7.dll).  A hipFree(0) before the first query initialises the context, and one
+// failed query gets one retry after 250 ms.  Both happen once per process, before the DXGI budget below; any other
+// error, and a failure of the retry, are returned as they are (a real failure is never retried).
+static hipError_t first_mem_get_info(size_t* free_bytes, size_t* total_bytes) {
+    static std::atomic<bool> warmed{false}, retried{false};
+    if (!warmed.exchange(true)) (void) hipFree(nullptr);
+    hipError_t e = hipMemGetInfo(free_bytes, total_bytes);
+    if (e == hipErrorInvalidValue && !retried.exchange(true)) {
+        (void) hipGetLastError();
+        std::fprintf(stderr, "strata: hipMemGetInfo failed (%s); retrying once after 250 ms\n", hipGetErrorString(e));
+        Sleep(250);
+        e = hipMemGetInfo(free_bytes, total_bytes);
+        std::fprintf(stderr, "strata: hipMemGetInfo retry: %s\n", e == hipSuccess ? "ok" : hipGetErrorString(e));
+    }
+    return e;
+}
+
 hipError_t mem_get_info(size_t* free_bytes, size_t* total_bytes) {
-    const hipError_t e = hipMemGetInfo(free_bytes, total_bytes);
+    if (free_bytes == nullptr || total_bytes == nullptr) return hipMemGetInfo(free_bytes, total_bytes);
+    const hipError_t e = first_mem_get_info(free_bytes, total_bytes);
     static const bool off = [] {
         const char* v = std::getenv("STRATA_WDDM_BUDGET");
         return v != nullptr && std::atoi(v) == 0;
@@ -251,7 +273,7 @@ std::string gpu_arch_problem(int ordinal) {
 }
 
 std::string device_code_error() try {
-#if defined(STRATA_USE_HIP)
+#if defined(STRATA_USE_HIP) || defined(STRATA_HIP_GFX906)
     return "";   // gpu_arch_problem() checks the HIP architectures against STRATA_HIP_ARCHS, before this point
 #else
     const auto& q = dpct::get_in_order_queue();
@@ -331,8 +353,8 @@ DeviceArena::DeviceArena(uint64_t bytes, int ordinal, bool poison)
     check(DPCT_CHECK_ERROR(dpct::select_device(ordinal)), "cudaSetDevice");
     // One allocation for the whole region.  cudaMalloc of a large block is the thing that can fail late, so it
     // happens once, here, before anything depends on it.
-    check(DPCT_CHECK_ERROR(base_ = (void *)sycl::malloc_device(
-                               (size_t)bytes, dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(base_ = (void *)strata::checked_usm(strata::malloc_device_guarded(
+                               (size_t)bytes, dpct::get_in_order_queue()))),
           "cudaMalloc");
     if (poison_) {
         const int threads = 256;

@@ -1,0 +1,19 @@
+Traceback (most recent call last):
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/residual-inplace/check_full_context.py", line 165, in <module>
+    s=line();startup.append(s)
+      ^^^^^^
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/residual-inplace/check_full_context.py", line 146, in line
+    if remaining<=0 or not sel.select(remaining):raise TimeoutError('engine protocol/job deadline exceeded')
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TimeoutError: engine protocol/job deadline exceeded
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/residual-inplace/check_full_context.py", line 221, in <module>
+    try:report['exit_code']=cleanup(child,proc,sel,raw)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/residual-inplace/check_full_context.py", line 88, in cleanup
+    if actions and actions!=['QUIT']:raise RuntimeError(f'engine required forced cleanup: {actions}')
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: engine required forced cleanup: ['QUIT', 'SIGTERM']

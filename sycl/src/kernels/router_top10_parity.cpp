@@ -11,6 +11,7 @@
 // model's geometry - see below - so the absence of a clamp test is a proven fact rather than an omission.
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/kernels/router_top10.hpp"
 
@@ -69,14 +70,14 @@ int run_case(const char* name, const std::vector<float>& logits, int n_tokens, i
     float* d_l = nullptr;
     int* d_ids = nullptr;
     float* d_w = nullptr;
-    check(DPCT_CHECK_ERROR(d_l = sycl::malloc_device<float>(
-                               logits.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_l = strata::checked_usm(sycl::malloc_device<float>(
+                               logits.size(), dpct::get_in_order_queue()))),
           "malloc logits");
-    check(DPCT_CHECK_ERROR(d_ids = sycl::malloc_device<int>(
-                               h_ids.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_ids = strata::checked_usm(sycl::malloc_device<int>(
+                               h_ids.size(), dpct::get_in_order_queue()))),
           "malloc ids");
-    check(DPCT_CHECK_ERROR(d_w = sycl::malloc_device<float>(
-                               h_w.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_w = strata::checked_usm(sycl::malloc_device<float>(
+                               h_w.size(), dpct::get_in_order_queue()))),
           "malloc w");
     /*
     DPCT1114: cudaMemcpy is migrated to asynchronization memcpy, assuming

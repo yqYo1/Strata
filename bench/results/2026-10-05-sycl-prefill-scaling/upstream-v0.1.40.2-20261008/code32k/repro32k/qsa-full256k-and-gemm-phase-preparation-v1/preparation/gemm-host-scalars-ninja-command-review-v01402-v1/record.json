@@ -1,0 +1,12 @@
+{
+  "active": false,
+  "passed": true,
+  "created_utc": "2026-10-08T14:25:50.467843+00:00",
+  "scope": "CPU-only Ninja command enumeration. No command listed was executed; no compiler or GPU job launched. The initial v1 recipe review was rejected at its single-command assertion before compile or run.",
+  "recursive_command_count": 28,
+  "single_target_command_count": 1,
+  "single_target_command": "/opt/intel/oneapi/compiler/2026.1/bin/icpx -DSTRATA_NATIVE_EXPERTS=1 -DSTRATA_SYCL_SAMPLER_FP64=1 -DSTRATA_VERSION=\\\"0.1.40-sycl\\\" -I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/include -I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/../include -I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include -O3 -DNDEBUG -std=c++20 -fsycl -fsycl-default-sub-group-size=32 -fsycl-device-code-split=per_kernel -fp-model=precise -Wno-unused-parameter -Wno-unused-variable -Wno-deprecated-declarations -qmkl=sequential -Wall -Wextra -MD -MT CMakeFiles/strata_prefill.dir/src/prefill/gemm.dp.cpp.o -MF CMakeFiles/strata_prefill.dir/src/prefill/gemm.dp.cpp.o.d -o CMakeFiles/strata_prefill.dir/src/prefill/gemm.dp.cpp.o -c /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/prefill/gemm.dp.cpp\n",
+  "recursive_stdout_sha256": "ecadf05a349e8d6cd5dc8a8b6828a11b99883906720e8cb8acb86a6c1cb3992e",
+  "single_target_stdout_sha256": "67ca4775f3b358082b5023db77de5ad16512d49e59c100dec169c12862c82288",
+  "fix": "ninja -t commands -s TARGET limits enumeration to the selected object instead of also listing order-only build dependencies."
+}

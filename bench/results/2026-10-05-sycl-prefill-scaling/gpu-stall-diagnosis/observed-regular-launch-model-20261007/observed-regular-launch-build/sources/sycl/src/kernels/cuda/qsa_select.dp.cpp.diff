@@ -1,0 +1,11 @@
+--- sycl/src/kernels/cuda/qsa_select.dp.cpp
++++ sycl/src/kernels/cuda/qsa_select.dp.cpp.regular
+@@ -1340,7 +1340,7 @@
+                           (unsigned)nq);
+     {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         strata::q_of(stream)
+             ->parallel_for<dpct_kernel_name<class block_scores_kernel_925c9d>>(

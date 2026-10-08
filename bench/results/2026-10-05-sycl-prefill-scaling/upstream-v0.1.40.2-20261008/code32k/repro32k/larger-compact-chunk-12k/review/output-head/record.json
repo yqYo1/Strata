@@ -1,0 +1,27 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_launched": false,
+  "adopted": false,
+  "created_utc": "2026-10-08T00:37:15.019511+00:00",
+  "source_sha256": {
+    "include/strata/core/native_head.hpp": "d80052035aeba3dbbc90cf84549d8424a10335d28fb04140e2265ba7819d27dc",
+    "sycl/src/core/native_head.cpp": "21b4fbd052bad321e39ddee401a3cb7b478ae8719c8fa46541b29d733c7d5806",
+    "sycl/src/prefill/prefill.cpp": "f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77",
+    "sycl/src/core/mtp.cpp": "2500e399e23eb0f4baac87b7de7fe47ebe8c556bf76879ae56bb4442f21f4ba9",
+    "sycl/src/core/verify.cpp": "e0deec57d957df79f39555840a70a316067113b18b6789d2b4e4d511607586f6",
+    "sycl/src/program/generate.cpp": "0437a6e9da9c9c3f4478eb3fc7b04dc45e4599728939c7828202aa9a970e012b",
+    "sycl/src/kernels/cuda/native_mmvq.dp.cpp": "9366b383dff7aae3d703a77f2cfc0d4cb9bb50fe31247118bfa1837730e5100f"
+  },
+  "scope": "Offline review for a possible later private main-output-head phase lease; no code change, universal UB proof or root-cause conclusion. Current32K normal exits already have measured evidence.",
+  "findings": [
+    "The executed native output head owns521472000 unchanged GGUF bytes in device USM plus activation scratch. Its startup Q5_K log label is generic and does not establish the actual tensor type. Current loader releases the GGUF mapping after upload and retains no immutable host copy of the complete head.",
+    "The batched main prefill translation unit contains no native-head call or native-head weight use; the held-out first verifier window and decode need that pointer. MTP binding gathers its separate vocabulary subset, waits all registered queues, and keeps that exact subset in RAM when decode release is enabled.",
+    "Main output weights are borrowed by verifier command graphs; direct NativeHead::run is asynchronous on its explicit stream. NativeHead destruction itself does not drain queues. Normal serve exit explicitly drains registered device queues before owned destructors, and verifier/MTP destructors drain their own consumer queues. These facts do not prove every error/cancellation path safe.",
+    "The outer MTP object is declared before NativeHead; reverse declaration order alone is not a safety argument. A phase lease must retire every graph borrowing output weights and drain every queue using them before any physical unmap/free.",
+    "STRATA_Q6_PACKED is absent in every current clean environment, so its opt-in packed registry is inactive. Do not attribute retained memory or a second packed-head allocation to that inactive path.",
+    "Current successful layer-major restoration grows/recopies main cache and rebuilds verifier graphs before restoring MTP decode weights. Adding an output-head lease must restore output backing before verifier warm/capture, including early-return rollback. Rebuilding graphs while output backing is unmapped is not acceptable.",
+    "One possible ordering for a later prototype is main-cache retirement/unmap, output-head suspension, then MTP suspension. On normal exit free temporary layer/residual buffers, restore output backing, restore main cache/graphs, then MTP. Declare the output lease after the main cache lease so reverse cleanup restores output before main-cache recapture; audit all partial-failure paths with extracted lifetime tests.",
+    "An output lease would need an immutable GGUF byte image established at load and a stable reserved address. Preserve all math, require logged32K full-state/head/IDs/logprob gates before quiet timings, then full262144 occupancy/repeat/restore/clipped-tail/refusal/later-valid gates before adoption."
+  ]
+}

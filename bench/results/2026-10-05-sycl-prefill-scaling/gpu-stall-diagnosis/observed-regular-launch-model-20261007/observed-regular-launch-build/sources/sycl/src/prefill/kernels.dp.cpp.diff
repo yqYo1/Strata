@@ -1,0 +1,218 @@
+--- sycl/src/prefill/kernels.dp.cpp
++++ sycl/src/prefill/kernels.dp.cpp.regular
+@@ -1394,7 +1394,7 @@
+     if (T <= 0) return;
+     {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         strata::q_of(stream)
+             ->submit([&](sycl::handler &cgh) {
+@@ -1467,7 +1467,7 @@
+     if (n <= 0) return;
+     {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         strata::q_of(stream)
+             ->parallel_for<dpct_kernel_name<class to_bf16_kernel_44d81a>>(
+@@ -1509,7 +1509,7 @@
+         throw std::invalid_argument("gr_norm_rs: padded output rows are not supported by SYCL");
+     {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         strata::q_of(stream)
+             ->parallel_for<dpct_kernel_name<class gr_norm_rs_kernel_6c01ba>>(
+@@ -1528,7 +1528,7 @@
+               int64_t T, void* stream, uint16_t* mixed_h, uint16_t* mixed16_lo) {
+     {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         strata::q_of(stream)
+             ->parallel_for<dpct_kernel_name<class gr_mix_r_kernel_a64dc1>>(
+@@ -1548,7 +1548,7 @@
+         throw std::invalid_argument("gr_write_norm_rs: padded output rows are not supported by SYCL");
+     {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         strata::q_of(stream)
+             ->parallel_for<
+@@ -1568,7 +1568,7 @@
+ void gr_silu(const float* lo, uint16_t* lo16, int64_t T, void* stream, uint16_t* lo16_lo) {
+     {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         strata::q_of(stream)
+             ->submit([&](sycl::handler &cgh) {
+@@ -1606,7 +1606,7 @@
+ void gr_write(float* R, const float* bo, const float* inj, int64_t inj_ld, int64_t T, void* stream) {
+     {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         strata::q_of(stream)
+             ->parallel_for<dpct_kernel_name<class gr_write_kernel_b96cec>>(
+@@ -1622,7 +1622,7 @@
+ void gr_broadcast(const float* e, float* R, int64_t T, void* stream) {
+     {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         strata::q_of(stream)
+             ->parallel_for<dpct_kernel_name<class gr_broadcast_kernel_3dedc6>>(
+@@ -1638,7 +1638,7 @@
+ void gdn_gates(const float* ab, const float* dt, const float* ssm_a, float* gate, float* beta, int64_t T, void* stream) {
+     {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         strata::q_of(stream)
+             ->parallel_for<dpct_kernel_name<class gdn_gates_kernel_e66d35>>(
+@@ -1668,7 +1668,7 @@
+     } else {
+         {
+             auto exp_props = sycl::ext::oneapi::experimental::properties{
+-                sycl::ext::oneapi::experimental::use_root_sync};
++                };
+ 
+             strata::q_of(stream)
+                 ->parallel_for<
+@@ -1685,7 +1685,7 @@
+         }
+         {
+             auto exp_props = sycl::ext::oneapi::experimental::properties{
+-                sycl::ext::oneapi::experimental::use_root_sync};
++                };
+ 
+             strata::q_of(stream)
+                 ->parallel_for<
+@@ -1700,7 +1700,7 @@
+     }
+     {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         strata::q_of(stream)
+             ->parallel_for<dpct_kernel_name<class gdn_l2_kernel_d82250>>(
+@@ -1718,7 +1718,7 @@
+ namespace {
+ void launch_gdn_out_norm(const float *z, const float *gamma, float eps, const float *y, uint16_t *y16, int64_t T,
+                          void *stream) {
+-    auto exp_props = sycl::ext::oneapi::experimental::properties{sycl::ext::oneapi::experimental::use_root_sync};
++    auto exp_props = sycl::ext::oneapi::experimental::properties{};
+ 
+     strata::q_of(stream)->parallel_for<dpct_kernel_name<class gdn_out_norm_kernel_43e92c>>(
+         sycl::nd_range<3>(sycl::range(1, HV, (unsigned)T) * sycl::range(1, 1, S), sycl::range(1, 1, S)), exp_props,
+@@ -1826,7 +1826,7 @@
+     if (n_expert == 512)
+     {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         strata::q_of(stream)
+             ->parallel_for<dpct_kernel_name<class route_kernel_4f80f3,
+@@ -1899,7 +1899,7 @@
+     if (n <= 0) return;
+     {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         strata::q_of(stream)
+             ->parallel_for<dpct_kernel_name<class swiglu_il_kernel_98d495>>(
+@@ -1915,7 +1915,7 @@
+ void swiglu_pair(const float* g, const float* u, uint16_t* h16, int64_t n, void* stream) {
+     {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         strata::q_of(stream)
+             ->parallel_for<dpct_kernel_name<class swiglu_pair_kernel_ab28da>>(
+@@ -1947,7 +1947,7 @@
+     const int64_t b = (n + 255) / 256;
+     {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         strata::q_of(stream)
+             ->parallel_for<dpct_kernel_name<class copy_i32_kernel_1c95ea>>(
+@@ -1965,7 +1965,7 @@
+     if (n <= 0) return;
+     {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         strata::q_of(stream)
+             ->parallel_for<dpct_kernel_name<class gather_rows16_kernel_d9d697>>(
+@@ -1983,7 +1983,7 @@
+                  int64_t T, void* stream) {
+     {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         strata::q_of(stream)
+             ->parallel_for<dpct_kernel_name<class moe_combine_kernel_60f865>>(
+@@ -2000,7 +2000,7 @@
+     if (rows <= 0) return;
+     {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         strata::q_of(stream)
+             ->parallel_for<dpct_kernel_name<class rms_rows_kernel_c88408>>(
+@@ -2029,7 +2029,7 @@
+     if (rt.cos != nullptr)
+     {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         strata::q_of(stream)
+             ->submit([&](sycl::handler &cgh) {
+@@ -2050,7 +2050,7 @@
+             });
+     } else {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         strata::q_of(stream)
+             ->submit([&](sycl::handler &cgh) {
+@@ -2075,7 +2075,7 @@
+ void split_q(const float* q_full, float* q, int64_t T, void* stream) {
+     {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         strata::q_of(stream)
+             ->parallel_for<dpct_kernel_name<class split_q_kernel_83c16c>>(
+@@ -2093,7 +2093,7 @@
+         throw std::invalid_argument("gate_attn: padded output rows are not supported by SYCL");
+     {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         strata::q_of(stream)
+             ->parallel_for<dpct_kernel_name<class gate_attn_kernel_3fc329>>(

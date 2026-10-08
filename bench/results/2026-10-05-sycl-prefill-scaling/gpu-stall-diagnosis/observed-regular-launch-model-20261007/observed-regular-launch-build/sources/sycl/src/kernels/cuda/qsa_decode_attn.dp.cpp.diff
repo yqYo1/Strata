@@ -1,0 +1,20 @@
+--- sycl/src/kernels/cuda/qsa_decode_attn.dp.cpp
++++ sycl/src/kernels/cuda/qsa_decode_attn.dp.cpp.regular
+@@ -358,7 +358,7 @@
+     const float scale = 1.0f / sqrtf((float) HD);
+     const int n_kv_heads = (int) s.n_head_kv, page_size = (int) s.page_size;
+     const auto properties = sycl::ext::oneapi::experimental::properties{
+-        sycl::ext::oneapi::experimental::use_root_sync};
++        };
+     st->parallel_for<dpct_kernel_name<class qsa_attn_chunk_variant,
+                                      dpct_kernel_scalar<KV_MODE>, dpct_kernel_scalar<SG>,
+                                      dpct_kernel_scalar<TRANSPOSE_Q>, dpct_kernel_scalar<QUERY_FAST>>>(
+@@ -513,7 +513,7 @@
+     const float* part_l = part_m + (size_t) n_chunks * s.n_head;
+     const int n_head = (int) s.n_head;
+     const auto properties = sycl::ext::oneapi::experimental::properties{
+-        sycl::ext::oneapi::experimental::use_root_sync};
++        };
+     st->parallel_for<dpct_kernel_name<class qsa_attn_merge_variant>>(
+         sycl::nd_range<3>(sycl::range<3>(1, (size_t) n_q, (size_t) n_head * HD),
+                           sycl::range<3>(1, 1, HD)), properties,

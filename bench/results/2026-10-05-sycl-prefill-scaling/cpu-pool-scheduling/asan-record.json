@@ -1,0 +1,40 @@
+{
+  "scope": "CPU production constant-9 pool instrumentation only; external quantization libraries remain uninstrumented; no GPU",
+  "started_utc": "2026-10-06T07:45:37.511290+00:00",
+  "compile": [
+    "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+    "-DSTRATA_IQ2S_GCC=1",
+    "-DSTRATA_NATIVE_EXPERTS=1",
+    "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+    "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../third_party/ggml",
+    "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+    "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+    "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include",
+    "-O3",
+    "-DNDEBUG",
+    "-std=c++20",
+    "-fp-model=precise",
+    "-Wno-unused-parameter",
+    "-Wno-unused-variable",
+    "-Wno-deprecated-declarations",
+    "-Wall",
+    "-Wextra",
+    "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/src/kernels/cpu",
+    "-fsanitize=address,undefined",
+    "-fno-omit-frame-pointer",
+    "-g"
+  ],
+  "passed": true,
+  "exit_code": 0,
+  "finished_utc": "2026-10-06T07:45:47.784117+00:00",
+  "validation": {
+    "kind": "completed",
+    "cases": 396,
+    "finite_guard_checked_floats": 34412784
+  },
+  "all_output_bytes_identical": true,
+  "bytes": 137651136,
+  "output_sha256": "092acfb9cb9d0b96931490e96d709afd53b56f95fff07e9e33da252555489482",
+  "binary_sha256": "a0c196dc987f66b84b6350aadc0497b1f77b8b086549fb2f328e3cdcbf66415b",
+  "pool_source_sha256": "29328836ebd05794fccdbd97988349b9db904099a57f57248cb68710ae739889"
+}

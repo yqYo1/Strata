@@ -1,0 +1,28 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_tested": false,
+  "adopted": false,
+  "created_utc": "2026-10-08T03:31:35.914461+00:00",
+  "candidate_sha256": "87ceba8ba1de98122879c8ef37b46d5e0487e75d064d5da28f56e0a70aef6800",
+  "controller_sha256": "ff3b79e6cbbc555d38cce00e41bf510f5771b326c90d50b7d441fcbde15b45b4",
+  "prior_audit_sha256": "f10de3767f1495233d5b959821204ab817687a9c138c5b035fc17936a4f7cf8f",
+  "source_scope": "Only replace mode0-only layer-major rejection with mode0/mode1 and owned stage/no-prefetch requirements. Existing same-order stage/upload/append/attention and RAM-authoritative mirror are unchanged. No prefix-retention optimization yet.",
+  "source_basis": "run_layer_major selects each single layer and calls run_impl over all prompt chunks. The already allocated full-context identity stage services its QSA; each prefix upload remains on the same in-order compute queue. Main-cache/MTP releases use previously validated graph retirement/restore callbacks. First candidate uses RAM residuals (R_GPU0) to leave enough room at256K geometry and across repeats.",
+  "unchanged_reviewed_paths": [
+    "layer.cpp kv_plan/qsa_state_init: mode1 main resident8192pages, full-context host-USM identity backing; MTP mode2 fixed ring. checked_usm rejects null. Host backing allocated once at startup and not freed/reused while captured graphs run. Serve drains all registered queues then _Exit; no session rebuild in this gate.",
+    "prefill.cpp run_layer_major rejects mode1: select existing run_impl chunk-major0, no layer-major cache leases or GPU residual allocation.",
+    "take_stage: one full-context identity layer (264MiB int8 at256K); STAGE_OWN=1 avoids borrowed expert placement changes and shares tracked owned allocation list. Identity upload completes before temporary host vector dies.",
+    "prefetch0: staging/upload/append/attention on the same in-order compute queue. Prefix is immutable and every used new row is appended to host and stage before attention. No cross-queue prefetch enabled in initial gate.",
+    "Prefill release drains compute/copy/stager/KV queues before tracked owned buffers. Snapshot occurs after compute/copy drains; no concurrent host CPU reads of device-written authoritative host USM.",
+    "conversation_snapshot selects authoritative host pools for mode1/2. Restore invalidates streaming map or restores bounded MTP ring before later attention. Full restore is a later required gate, not proven by initial prefill captures.",
+    "v3 resolver keeps1024WG/SG32, atomically loads page claims and stores shared hit metadata. Full group barriers separate victim phases; minimum slots>=1024 keeps sweep IDs unique. Byte representation copies remove device/host type-punning. First execution requires device capabilities and runtime launch validation.",
+    "Initial capture compares all66 main-state parts using the existing fail-closed positive-geometry comparator; only unwritten page-rounded future cells may differ. Pooled spare row is live. First full head/all64IDs/logprobs and MTP43/66 unchanged. Full256K occupancy permits no padding exclusions."
+  ],
+  "limits": [
+    "GPU starts only after chunk-major3x32K terminal math/noXE/no-survivor gate.",
+    "Owned full-context staging is264MiB/layer reused on in-order queue. Prefix upload retained unchanged; no persistent prefix cache optimization.",
+    "R_GPU0 avoids full-context/repeated temporary VRAM exhaustion; full256K physical occupancy and restore/tail/refusal are pending.",
+    "Cache and MTP leases retire prior graphs and restore before recapture with source-verified callbacks; repeated retirement is validated by first3x32K candidate gate."
+  ]
+}

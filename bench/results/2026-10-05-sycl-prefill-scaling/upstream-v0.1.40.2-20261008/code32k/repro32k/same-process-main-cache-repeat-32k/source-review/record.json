@@ -1,0 +1,28 @@
+{
+  "active": false,
+  "passed": true,
+  "created_utc": "2026-10-08T01:12:00.128558+00:00",
+  "source_sha256": {
+    "sycl/src/program/generate.cpp": "0437a6e9da9c9c3f4478eb3fc7b04dc45e4599728939c7828202aa9a970e012b",
+    "sycl/src/core/conversation_snapshot.cpp": "8aad8aa2615b28b8f579ef725f99c79cf994ffd95dc7fd931dec300082d745a5",
+    "sycl/src/core/session.cpp": "939e49516eb8586b51bfd686261a2cae167ca3e1e9af375d00618940a7df9158",
+    "include/strata/kernels/qsa.hpp": "87c02222284f842fcecb46a422b119af769c72c3914edc8da5b2ee782456dc74",
+    "sycl/src/prefill/prefill.cpp": "f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77",
+    "sycl/src/core/verify.cpp": "e0deec57d957df79f39555840a70a316067113b18b6789d2b4e4d511607586f6",
+    "sycl/src/core/mtp.cpp": "2500e399e23eb0f4baac87b7de7fe47ebe8c556bf76879ae56bb4442f21f4ba9"
+  },
+  "host_comparator_check_sha256": "532f04072d6af0b011d44ea92175bc4400bf78f1df281c094e2a0da8dc798fae",
+  "source_controller_sha256": "a85471aae94f08920f61612c6d9e6dde0f1d907d46bb3835b90d34c051dd319f",
+  "controller_sha256": "9bc414b20edad26861e9e6d649aa474732de7b3fc0d45a17d3acaf7749f84ee0",
+  "preparer_sha256": "4ae77b483a26cd754f4bc940ea5ef9ad8ec262fb8b4c28fdb1c430c396fc0237",
+  "scope": "Source/lifetime/comparison review before first same-process32K repeated main-cache lease. No source/binary mutation or speed/fullcontext claim.",
+  "review": [
+    "GEN64 ckpt=0 with prompt-cache0 and conversation-cache0 sets resume0. The serve path calls session_zero and waits before a full reread; each request initializes first_window=true and writes its head at that first window.",
+    "Consume/rename the fixed dump paths after every reply and require absence before next request. Never reuse a prior first-head/state file as repeated-request evidence.",
+    "conversation_snapshot::layout rounds upto to whole four-cell pages. Its include_index argument controls pooled/indexer state, not whole-capacity capture. Pooled includes its moving spare row and must match. For32767 cells the final page has one future cell per KV head; only those data/scales bytes are excluded from live comparison. Raw hashes and every excluded range are retained. GDN/PLE/tails/dead/block positions and all pooled rows remain exact. At262144 cells there is no rounded future-cell exclusion.",
+    "CPU34 controls check both head tail cells, changed preceding live cells and previous-page cells, pooled spare, wrong metadata, and full occupancy. V1 incorrect page-count units are caught before GPU use; only corrected v2 is imported.",
+    "All previous ownership/fault/embedding/runtime/source/binary guards remain. The sole newly audited terminal rejection has exact hash3de5e40..., normal exit/no XE/no survivors, followed by pinned same-boot exact-word health.",
+    "Keep accepted8192 geometry and complete main/MTP payload verification. Queue drains and verifier graph destruction precede main unmap; subsequent requests now exercise already-used graph retirement. Restore frees temporary layer/residual VRAM first, remaps exact addresses/payloads and captures legal verifier windows before decode.",
+    "First same-process configuration uses flushed UR/LevelZero API/validation logs and STRATA_TRACE phase memory. It has bounded1800s process,600s per-reply and20GiB log deadlines. No diagnostic duration enters a speed comparison; terminate normally on a mathematical rejection before sending another request."
+  ]
+}

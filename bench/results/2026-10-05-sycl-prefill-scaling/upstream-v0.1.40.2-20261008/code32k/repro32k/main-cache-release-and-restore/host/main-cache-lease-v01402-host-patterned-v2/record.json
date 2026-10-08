@@ -1,0 +1,143 @@
+{
+  "active": false,
+  "passed": true,
+  "started_utc": "2026-10-07T23:23:57.252705+00:00",
+  "patterned_data_and_negative_control": true,
+  "parent_controller_sha256": "e9b972a9b0ec9ced6aea4fec90fe83dc1e733edf1e1da39336af03fd2a5b9217",
+  "scope": "Byte-varying expert fixtures and a pinned wrong-intra-expert-offset control. Actual private CacheLease struct, byte-copy queues and segmented-cache/graph stand-ins under ASan/UBSan. Tests mixed profile order, a mid-expert64-byte release boundary, immutable-RAM/snapshot/control/adaptive restoration, validation failures, partial-shrink rollback and retry after grow/refresh failure. This is CPU ownership/offset/error evidence, not SYCL mapping or GPU arithmetic/hang/full-context proof.",
+  "source_sha256": "f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77",
+  "lease_sha256": "158426978b6b9f61618f41a63c686e847eeac15b5aba2851e05f0a280b4693ae",
+  "controller_sha256": "4d4816331b2098e4ce1e18514b10717cf313fc18c78173aa646f55933aa13b57",
+  "cases": [
+    {
+      "name": "control-ram",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "name": "half-ram",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "name": "full-ram",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "name": "half-snapshot",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "name": "full-snapshot",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "name": "adaptive-half-ram",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "name": "adaptive-full-ram",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "name": "invalid-nan",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "name": "invalid-trailing",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "name": "invalid-low",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "name": "invalid-high",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "name": "unmapped-source",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "name": "missing-blob",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "name": "wrong-span",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "name": "pre-mismatch",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "name": "retire-failure",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "name": "partial-shrink-rollback",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "name": "grow-retry",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "name": "callback-retry",
+      "exit_code": 0,
+      "passed": true
+    }
+  ],
+  "build_argv": [
+    "g++",
+    "-std=c++20",
+    "-O1",
+    "-g",
+    "-fno-pie",
+    "-no-pie",
+    "-fsanitize=address,undefined",
+    "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-cache-lease-v01402-host-patterned-v2",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-cache-lease-v01402-host-patterned-v2/probe.cpp",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-cache-lease-v01402-host-patterned-v2/probe"
+  ],
+  "build_exit_code": 0,
+  "wrong_offset_control": {
+    "mutation": "Remove intra-expert source offset for a mid-expert partial release",
+    "lease_sha256": "4c139833de6c18ae9e29afcbe917e4578bfb11b700029d0bd81d589c4de07a56",
+    "build_argv": [
+      "g++",
+      "-std=c++20",
+      "-O1",
+      "-g",
+      "-fno-pie",
+      "-no-pie",
+      "-fsanitize=address,undefined",
+      "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-cache-lease-v01402-host-patterned-v2/wrong-offset-control",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-cache-lease-v01402-host-patterned-v2/wrong-offset-control/probe.cpp",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-cache-lease-v01402-host-patterned-v2/wrong-offset-control/probe"
+    ],
+    "build_exit_code": 0,
+    "exit_code": -6,
+    "expected_failure_detected": true
+  },
+  "finished_utc": "2026-10-07T23:24:09.992262+00:00"
+}

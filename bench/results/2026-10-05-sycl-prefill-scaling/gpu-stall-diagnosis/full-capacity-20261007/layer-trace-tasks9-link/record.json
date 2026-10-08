@@ -1,0 +1,117 @@
+{
+  "scope": "Build only: same current objects and libraries, exact baseline relink, then the measured task-factor-9 CPU archive substitution; no GPU execution",
+  "started_utc": "2026-10-07T00:29:24.697256+00:00",
+  "source_revision": "380e43014ac19659f463d8a8ea083f399af4dd40",
+  "baseline_binary_sha256": "b81a7d6fbc1c6d524cf3b64e196f5866c91ec56c76e460a66b63b28ce3aed461",
+  "controller_sha256": "c6cc7ce3a1302a1ef56cce6ed91b7fdac2bfff55750805a2aa04eecca00666fb",
+  "build_passed": true,
+  "gpu_verified": false,
+  "link_input_sha256_before": {
+    "CMakeFiles/strata.dir/src/program/generate.cpp.o": "4ecbaad6b776e1a0c39f7bf09361a19bade7c2d1c40cdd49d55b2dcf4ab01a22",
+    "libstrata_engine.a": "1a962c5500e9cead88af3cca29e37ffe682bf0900ea1a184dd7d30cfbf3526eb",
+    "libstrata_prefill.a": "b83f56bc55c67b85fd0e5b60016fed46fe44a3dad4e01cfe897fab3474efa823",
+    "libstrata_spec.a": "1bab66063a4fcf29e34237bf2c6683b1d9b2413db96f4dfbebcd0b9ff26411f2",
+    "libstrata_kernels.a": "6e2db9c1632cb3f6cb1b81868adc4b3cb9f03bc7c8d2bb89d7a03a9189af6975",
+    "libstrata_core.a": "adaf24c7d7bc1a6563fac8fa4f1035d881f3f5701357eac54d82bb5bfff5c8b4",
+    "libstrata_kernels_cpu.a": "766e388d445dc0da3627f1eae91c8a2575785ac739cdeffebce16b2237f8220f",
+    "ggml/src/libggml-cpu.a": "e3cefe0cf3c866aec7d9f06b9181ca4263304dd7307af462195a9b869be953f2",
+    "ggml/src/libggml-base.a": "51db6cad079d54c99975a86ac3d9c8077c6fdf7f1aee88f28bb9825b212a146e"
+  },
+  "source_sha256": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/src/kernels/cpu/pool.cpp": "41a2be640f1d1823f7ba88107beba4815cb3ad6f7ffc39e6f34575b8b1b1cd32",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/program/generate.cpp": "4e170cf0c06d6100debd3b447991291fb42431afc43fa0c240fe6559dcb1b4fd",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/prefill.cpp": "ebfdf26d292759698b85aa6f219d43345a33b4325b1ba3fcec78171d4b715f51"
+  },
+  "original_cpu_archive_sha256": "766e388d445dc0da3627f1eae91c8a2575785ac739cdeffebce16b2237f8220f",
+  "candidate_cpu_archive_sha256": "ac0a17a817eef883083214efa941ff2d6ead3e4549c0306e91b3bf78b038577c",
+  "build_environment": {
+    "PATH": "/usr/bin:/bin:/opt/intel/oneapi/compiler/2026.1/bin",
+    "LD_LIBRARY_PATH": null,
+    "LD_PRELOAD": null,
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+    "LIBRARY_PATH": "/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/lib:/usr/lib/x86_64-linux-gnu"
+  },
+  "links": [
+    {
+      "name": "control",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-O3",
+        "-DNDEBUG",
+        "-fsycl",
+        "-Xsycl-target-backend=spir64",
+        "-cl-fp32-correctly-rounded-divide-sqrt",
+        "-fsycl-device-code-split=per_kernel",
+        "-qmkl=sequential",
+        "CMakeFiles/strata.dir/src/program/generate.cpp.o",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/strata-layer-trace-relink-control",
+        "libstrata_engine.a",
+        "libstrata_prefill.a",
+        "libstrata_spec.a",
+        "libstrata_engine.a",
+        "libstrata_kernels.a",
+        "libstrata_core.a",
+        "libstrata_kernels_cpu.a",
+        "ggml/src/libggml-cpu.a",
+        "ggml/src/libggml-base.a",
+        "-lm"
+      ],
+      "exit_code": 0,
+      "binary_sha256": "b81a7d6fbc1c6d524cf3b64e196f5866c91ec56c76e460a66b63b28ce3aed461",
+      "binary_bytes": 26328504
+    },
+    {
+      "name": "tasks9",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-O3",
+        "-DNDEBUG",
+        "-fsycl",
+        "-Xsycl-target-backend=spir64",
+        "-cl-fp32-correctly-rounded-divide-sqrt",
+        "-fsycl-device-code-split=per_kernel",
+        "-qmkl=sequential",
+        "CMakeFiles/strata.dir/src/program/generate.cpp.o",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/strata-layer-trace-tasks9",
+        "libstrata_engine.a",
+        "libstrata_prefill.a",
+        "libstrata_spec.a",
+        "libstrata_engine.a",
+        "libstrata_kernels.a",
+        "libstrata_core.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/layer-trace-tasks9-link/libstrata_kernels_cpu.a",
+        "ggml/src/libggml-cpu.a",
+        "ggml/src/libggml-base.a",
+        "-lm"
+      ],
+      "exit_code": 0,
+      "binary_sha256": "f5ef7bce303a7123819357eb86e5d9461c4073acbffb205650fc2546b510457d",
+      "binary_bytes": 26328520
+    }
+  ],
+  "link_input_sha256_after_control": {
+    "CMakeFiles/strata.dir/src/program/generate.cpp.o": "4ecbaad6b776e1a0c39f7bf09361a19bade7c2d1c40cdd49d55b2dcf4ab01a22",
+    "libstrata_engine.a": "1a962c5500e9cead88af3cca29e37ffe682bf0900ea1a184dd7d30cfbf3526eb",
+    "libstrata_prefill.a": "b83f56bc55c67b85fd0e5b60016fed46fe44a3dad4e01cfe897fab3474efa823",
+    "libstrata_spec.a": "1bab66063a4fcf29e34237bf2c6683b1d9b2413db96f4dfbebcd0b9ff26411f2",
+    "libstrata_kernels.a": "6e2db9c1632cb3f6cb1b81868adc4b3cb9f03bc7c8d2bb89d7a03a9189af6975",
+    "libstrata_core.a": "adaf24c7d7bc1a6563fac8fa4f1035d881f3f5701357eac54d82bb5bfff5c8b4",
+    "libstrata_kernels_cpu.a": "766e388d445dc0da3627f1eae91c8a2575785ac739cdeffebce16b2237f8220f",
+    "ggml/src/libggml-cpu.a": "e3cefe0cf3c866aec7d9f06b9181ca4263304dd7307af462195a9b869be953f2",
+    "ggml/src/libggml-base.a": "51db6cad079d54c99975a86ac3d9c8077c6fdf7f1aee88f28bb9825b212a146e"
+  },
+  "link_input_sha256_after_tasks9": {
+    "CMakeFiles/strata.dir/src/program/generate.cpp.o": "4ecbaad6b776e1a0c39f7bf09361a19bade7c2d1c40cdd49d55b2dcf4ab01a22",
+    "libstrata_engine.a": "1a962c5500e9cead88af3cca29e37ffe682bf0900ea1a184dd7d30cfbf3526eb",
+    "libstrata_prefill.a": "b83f56bc55c67b85fd0e5b60016fed46fe44a3dad4e01cfe897fab3474efa823",
+    "libstrata_spec.a": "1bab66063a4fcf29e34237bf2c6683b1d9b2413db96f4dfbebcd0b9ff26411f2",
+    "libstrata_kernels.a": "6e2db9c1632cb3f6cb1b81868adc4b3cb9f03bc7c8d2bb89d7a03a9189af6975",
+    "libstrata_core.a": "adaf24c7d7bc1a6563fac8fa4f1035d881f3f5701357eac54d82bb5bfff5c8b4",
+    "libstrata_kernels_cpu.a": "766e388d445dc0da3627f1eae91c8a2575785ac739cdeffebce16b2237f8220f",
+    "ggml/src/libggml-cpu.a": "e3cefe0cf3c866aec7d9f06b9181ca4263304dd7307af462195a9b869be953f2",
+    "ggml/src/libggml-base.a": "51db6cad079d54c99975a86ac3d9c8077c6fdf7f1aee88f28bb9825b212a146e"
+  },
+  "finished_utc": "2026-10-07T00:29:56.136853+00:00"
+}

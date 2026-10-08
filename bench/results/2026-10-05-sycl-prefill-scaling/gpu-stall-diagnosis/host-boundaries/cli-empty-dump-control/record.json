@@ -1,0 +1,99 @@
+{
+  "started_utc": "2026-10-06T14:50:38.391828+00:00",
+  "scope": "Short real CLI shutdown and actual VM cache/captured graph replay; no full context or model lease equivalence proof",
+  "boot_id": "ef28c8b7-46f0-4806-9326-36e3158bceb7",
+  "binary_sha256": "9a2da2252d50b0a594f891490816fbf8f2f6bb385a972c0bbf599fdc07cbd74f",
+  "healthy": false,
+  "steps": [
+    {
+      "label": "cli-kernel-before",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "pid": 1112657,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.0506418949989893
+    },
+    {
+      "label": "cli",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/orderly-serve-shutdown-20261006/strata-host-boundaries-final",
+        "--pack",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "--native",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--max-context",
+        "128",
+        "--spec",
+        "4",
+        "--spec-min-p",
+        "0",
+        "--mtp",
+        "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+        "--suffix-draft",
+        "0",
+        "--prefill",
+        "32",
+        "--no-prefill-borrow",
+        "--expert-cache",
+        "600",
+        "--expert-profile",
+        "data/expert-profile.bin",
+        "--expert-cache-per-layer",
+        "--pool-workers",
+        "5",
+        "--pcie-frac",
+        "0.55",
+        "--spec-split",
+        "--adapt-swaps",
+        "0",
+        "--greedy",
+        "--tokens",
+        "248045,846,198,7734,264,220,18,15,15,36093,2716,3255,883,449,22839,64969,264,8598,383,264,60643,11129,13,28763,264,2708,13004,13,248046,198,248045,74455,198,248068,198,248069,271",
+        "--max-new",
+        "4",
+        "--dump-logits",
+        "/home/yayoi/.local/state/strata-sycl/orderly-serve-shutdown-20261006/followup-host-boundaries-final/cli-logits.f32"
+      ],
+      "pid": 1112659,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 36.91544993599746
+    },
+    {
+      "label": "cli-kernel-after",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=e355ca6a3a6b432f871ba77ded093209;i=bed1a3e;b=ef28c8b746f04806932636e3158bceb7;m=3f92ea2e2;t=65d2d1d840229;x=9a39e6ecad5fad94",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "pid": 1114558,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050602991999767255
+    }
+  ],
+  "environment": {
+    "SYCL_CACHE_PERSISTENT": "0",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": null,
+    "EnableDirectSubmission": null
+  },
+  "cli_new_faults": [],
+  "error": "RuntimeError('AssertionError()')",
+  "finished_utc": "2026-10-06T14:51:15.608789+00:00"
+}

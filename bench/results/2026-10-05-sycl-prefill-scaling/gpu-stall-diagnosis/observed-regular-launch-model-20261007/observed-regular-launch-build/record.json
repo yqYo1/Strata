@@ -1,0 +1,1381 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_tested": false,
+  "adopted": false,
+  "started_utc": "2026-10-07T12:34:44.930723+00:00",
+  "controller_sha256": "3c6c2616f4c8a463679260abd5c560172797dfc71c0d8da5dfdadf6b88848f6c",
+  "sources": [
+    {
+      "source": "sycl/src/prefill/kernels.dp.cpp",
+      "original_source_sha256": "276a7139129deca73f221c97ddeb61b6fa226e8e6eed4ff26de22192bfc88d48",
+      "original_object_sha256": "01621905884c8e1c9c6369f93af0ec1e8ce22dd0f6aba243528a85f3ceb0361f",
+      "candidate_source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/sources/sycl/src/prefill/kernels.dp.cpp",
+      "candidate_source_sha256": "5b46ec642facde74dbe9a9e5cd4ad3aad9b63b5007bbaed4a3eab74eec250413",
+      "original_compile_argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_NATIVE_EXPERTS=1",
+        "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+        "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-qmkl=sequential",
+        "-Wall",
+        "-Wextra",
+        "-MD",
+        "-MT",
+        "CMakeFiles/strata_prefill.dir/src/prefill/kernels.dp.cpp.o",
+        "-MF",
+        "CMakeFiles/strata_prefill.dir/src/prefill/kernels.dp.cpp.o.d",
+        "-o",
+        "CMakeFiles/strata_prefill.dir/src/prefill/kernels.dp.cpp.o",
+        "-c",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/kernels.dp.cpp"
+      ],
+      "original_object": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/CMakeFiles/strata_prefill.dir/src/prefill/kernels.dp.cpp.o",
+      "changed_classes": [
+        "copy_i32_kernel_1c95ea",
+        "gate_attn_kernel_3fc329",
+        "gather_rows16_kernel_d9d697",
+        "gdn_conv_hist_kernel_e391a1",
+        "gdn_conv_tiled_kernel_532f01",
+        "gdn_gates_kernel_e66d35",
+        "gdn_l2_kernel_d82250",
+        "gdn_out_norm_kernel_43e92c",
+        "gr_broadcast_kernel_3dedc6",
+        "gr_mix_r_kernel_a64dc1",
+        "gr_norm_rs_kernel_6c01ba",
+        "gr_silu_kernel_f26d34",
+        "gr_write_kernel_b96cec",
+        "gr_write_norm_rs_kernel_85f8e9",
+        "kv_append_kernel_850222",
+        "moe_combine_kernel_60f865",
+        "rms_rows_kernel_c88408",
+        "rope_kernel_4d58b9",
+        "route_kernel_4f80f3",
+        "split_q_kernel_83c16c",
+        "swiglu_il_kernel_98d495",
+        "swiglu_pair_kernel_ab28da",
+        "to_bf16_kernel_44d81a"
+      ],
+      "removed_property_tokens": [
+        {
+          "line": 1397,
+          "classes": [
+            "kv_append_kernel_850222"
+          ]
+        },
+        {
+          "line": 1470,
+          "classes": [
+            "to_bf16_kernel_44d81a"
+          ]
+        },
+        {
+          "line": 1512,
+          "classes": [
+            "gr_norm_rs_kernel_6c01ba"
+          ]
+        },
+        {
+          "line": 1531,
+          "classes": [
+            "gr_mix_r_kernel_a64dc1"
+          ]
+        },
+        {
+          "line": 1551,
+          "classes": [
+            "gr_write_norm_rs_kernel_85f8e9"
+          ]
+        },
+        {
+          "line": 1571,
+          "classes": [
+            "gr_silu_kernel_f26d34"
+          ]
+        },
+        {
+          "line": 1609,
+          "classes": [
+            "gr_write_kernel_b96cec"
+          ]
+        },
+        {
+          "line": 1625,
+          "classes": [
+            "gr_broadcast_kernel_3dedc6"
+          ]
+        },
+        {
+          "line": 1641,
+          "classes": [
+            "gdn_gates_kernel_e66d35"
+          ]
+        },
+        {
+          "line": 1671,
+          "classes": [
+            "gdn_conv_tiled_kernel_532f01"
+          ]
+        },
+        {
+          "line": 1688,
+          "classes": [
+            "gdn_conv_hist_kernel_e391a1"
+          ]
+        },
+        {
+          "line": 1703,
+          "classes": [
+            "gdn_l2_kernel_d82250"
+          ]
+        },
+        {
+          "line": 1721,
+          "classes": [
+            "gdn_out_norm_kernel_43e92c"
+          ]
+        },
+        {
+          "line": 1829,
+          "classes": [
+            "route_kernel_4f80f3"
+          ]
+        },
+        {
+          "line": 1902,
+          "classes": [
+            "swiglu_il_kernel_98d495"
+          ]
+        },
+        {
+          "line": 1918,
+          "classes": [
+            "swiglu_pair_kernel_ab28da"
+          ]
+        },
+        {
+          "line": 1950,
+          "classes": [
+            "copy_i32_kernel_1c95ea"
+          ]
+        },
+        {
+          "line": 1968,
+          "classes": [
+            "gather_rows16_kernel_d9d697"
+          ]
+        },
+        {
+          "line": 1986,
+          "classes": [
+            "moe_combine_kernel_60f865"
+          ]
+        },
+        {
+          "line": 2003,
+          "classes": [
+            "rms_rows_kernel_c88408"
+          ]
+        },
+        {
+          "line": 2032,
+          "classes": [
+            "rope_kernel_4d58b9"
+          ]
+        },
+        {
+          "line": 2053,
+          "classes": [
+            "rope_kernel_4d58b9"
+          ]
+        },
+        {
+          "line": 2078,
+          "classes": [
+            "split_q_kernel_83c16c"
+          ]
+        },
+        {
+          "line": 2096,
+          "classes": [
+            "gate_attn_kernel_3fc329"
+          ]
+        }
+      ],
+      "candidate_object_sha256": "25d17c55442358277061e5e34966e655cec3398ea55777a61fb29c37fd63abb3"
+    },
+    {
+      "source": "sycl/src/kernels/cuda/native_ple_postops.dp.cpp",
+      "original_source_sha256": "e5b568486c577fe8a52b870ab067333b27bab9876fc6ef336cfac628626072d1",
+      "original_object_sha256": "bbaed79e24b050ff2909e4038fb5143883a74592d611d57c3d64fd9dd5e7496c",
+      "candidate_source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/sources/sycl/src/kernels/cuda/native_ple_postops.dp.cpp",
+      "candidate_source_sha256": "ef73a08ba09ab6913807ace47ba06230bd23406437a839f408d0d145030beb27",
+      "original_compile_argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../third_party/ggml",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-Wall",
+        "-Wextra",
+        "-MD",
+        "-MT",
+        "CMakeFiles/strata_kernels.dir/src/kernels/cuda/native_ple_postops.dp.cpp.o",
+        "-MF",
+        "CMakeFiles/strata_kernels.dir/src/kernels/cuda/native_ple_postops.dp.cpp.o.d",
+        "-o",
+        "CMakeFiles/strata_kernels.dir/src/kernels/cuda/native_ple_postops.dp.cpp.o",
+        "-c",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/kernels/cuda/native_ple_postops.dp.cpp"
+      ],
+      "original_object": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/CMakeFiles/strata_kernels.dir/src/kernels/cuda/native_ple_postops.dp.cpp.o",
+      "changed_classes": [
+        "broadcast_batch_kernel_24ebaf",
+        "conv_residual_batch_kernel_3906fe",
+        "gate_kernel_558e90",
+        "history_batch_kernel_8243c6",
+        "rms_rep_kernel_9b5d94",
+        "rms_rep_kernel_dde36c",
+        "rms_rep_kernel_e4e0bd"
+      ],
+      "removed_property_tokens": [
+        {
+          "line": 408,
+          "classes": [
+            "rms_rep_kernel_dde36c"
+          ]
+        },
+        {
+          "line": 425,
+          "classes": [
+            "rms_rep_kernel_9b5d94"
+          ]
+        },
+        {
+          "line": 442,
+          "classes": [
+            "gate_kernel_558e90"
+          ]
+        },
+        {
+          "line": 461,
+          "classes": [
+            "broadcast_batch_kernel_24ebaf"
+          ]
+        },
+        {
+          "line": 478,
+          "classes": [
+            "rms_rep_kernel_e4e0bd"
+          ]
+        },
+        {
+          "line": 490,
+          "classes": [
+            "conv_residual_batch_kernel_3906fe"
+          ]
+        },
+        {
+          "line": 504,
+          "classes": [
+            "history_batch_kernel_8243c6"
+          ]
+        }
+      ],
+      "candidate_object_sha256": "b98f9e55413629dfa65c382e42ad1a49b6cb1806496cda38aa76ab052d55511e"
+    },
+    {
+      "source": "sycl/src/kernels/cuda/qsa_select.dp.cpp",
+      "original_source_sha256": "1999b6e9089a0f25060dc30a3668d25862612a1c2440d9d660979c42000f3673",
+      "original_object_sha256": "9661a195d7936eea8ed2b4017040c48ce42a333e52d857cfe1963144312e41cc",
+      "candidate_source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/sources/sycl/src/kernels/cuda/qsa_select.dp.cpp",
+      "candidate_source_sha256": "da95fd702adce9c9fce086db56d50193600ba19deb828b5aa0a14addd0acf403",
+      "original_compile_argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../third_party/ggml",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-Wall",
+        "-Wextra",
+        "-MD",
+        "-MT",
+        "CMakeFiles/strata_kernels.dir/src/kernels/cuda/qsa_select.dp.cpp.o",
+        "-MF",
+        "CMakeFiles/strata_kernels.dir/src/kernels/cuda/qsa_select.dp.cpp.o.d",
+        "-o",
+        "CMakeFiles/strata_kernels.dir/src/kernels/cuda/qsa_select.dp.cpp.o",
+        "-c",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/kernels/cuda/qsa_select.dp.cpp"
+      ],
+      "original_object": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/CMakeFiles/strata_kernels.dir/src/kernels/cuda/qsa_select.dp.cpp.o",
+      "changed_classes": [
+        "block_scores_kernel_925c9d"
+      ],
+      "removed_property_tokens": [
+        {
+          "line": 1343,
+          "classes": [
+            "block_scores_kernel_925c9d"
+          ]
+        }
+      ],
+      "candidate_object_sha256": "70c2614ee5c09ec58403cb0c6fb33f9f850cb098b2cd6baf62b22346e3237c36"
+    },
+    {
+      "source": "sycl/src/kernels/cuda/iq_kernels.dp.cpp",
+      "original_source_sha256": "7d14a2b16c6d081edfcd2943cb044ad4ebe711687971ac4fe53b39c1797d66bd",
+      "original_object_sha256": "2a1044fb353760e80647be1307286cb822420d70a1db79350d047a4c15b03f20",
+      "candidate_source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/sources/sycl/src/kernels/cuda/iq_kernels.dp.cpp",
+      "candidate_source_sha256": "1855959509b0773157a5cfc0b704dc7d4425accd0f5a2480c834f9ee4e6a3680",
+      "original_compile_argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../third_party/ggml",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-Wall",
+        "-Wextra",
+        "-MD",
+        "-MT",
+        "CMakeFiles/strata_kernels.dir/src/kernels/cuda/iq_kernels.dp.cpp.o",
+        "-MF",
+        "CMakeFiles/strata_kernels.dir/src/kernels/cuda/iq_kernels.dp.cpp.o.d",
+        "-o",
+        "CMakeFiles/strata_kernels.dir/src/kernels/cuda/iq_kernels.dp.cpp.o",
+        "-c",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/kernels/cuda/iq_kernels.dp.cpp"
+      ],
+      "original_object": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/CMakeFiles/strata_kernels.dir/src/kernels/cuda/iq_kernels.dp.cpp.o",
+      "changed_classes": [
+        "dequant_flat_kernel_d891c8",
+        "dequant_gu_kernel_2397ca",
+        "embed_rows_kernel_284a43"
+      ],
+      "removed_property_tokens": [
+        {
+          "line": 2358,
+          "classes": [
+            "dequant_flat_kernel_d891c8"
+          ]
+        },
+        {
+          "line": 2400,
+          "classes": [
+            "embed_rows_kernel_284a43"
+          ]
+        },
+        {
+          "line": 2458,
+          "classes": [
+            "dequant_gu_kernel_2397ca"
+          ]
+        }
+      ],
+      "candidate_object_sha256": "b4605694e1f8ef5a05a8b98c5126b1ca41ee7b74f725b888db737c1cd0334cd9"
+    },
+    {
+      "source": "sycl/src/kernels/cuda/qsa_decode_attn.dp.cpp",
+      "original_source_sha256": "8158c41c70901f91cf750515f62c84d44db8131eb737f7fb2b20f2770e99588c",
+      "original_object_sha256": "51341ff09c93189e479bb2311f246224760947c60af29e1970477e00c97b17ef",
+      "candidate_source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/sources/sycl/src/kernels/cuda/qsa_decode_attn.dp.cpp",
+      "candidate_source_sha256": "152842b518118b7e2c6f79280f93b6db10b879837f6c340583cd574ecce51f0f",
+      "original_compile_argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../third_party/ggml",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-Wall",
+        "-Wextra",
+        "-MD",
+        "-MT",
+        "CMakeFiles/strata_kernels.dir/src/kernels/cuda/qsa_decode_attn.dp.cpp.o",
+        "-MF",
+        "CMakeFiles/strata_kernels.dir/src/kernels/cuda/qsa_decode_attn.dp.cpp.o.d",
+        "-o",
+        "CMakeFiles/strata_kernels.dir/src/kernels/cuda/qsa_decode_attn.dp.cpp.o",
+        "-c",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/kernels/cuda/qsa_decode_attn.dp.cpp"
+      ],
+      "original_object": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/CMakeFiles/strata_kernels.dir/src/kernels/cuda/qsa_decode_attn.dp.cpp.o",
+      "changed_classes": [
+        "qsa_attn_chunk_variant",
+        "qsa_attn_merge_variant"
+      ],
+      "removed_property_tokens": [
+        {
+          "line": 361,
+          "classes": [
+            "qsa_attn_chunk_variant"
+          ]
+        },
+        {
+          "line": 516,
+          "classes": [
+            "qsa_attn_merge_variant"
+          ]
+        }
+      ],
+      "candidate_object_sha256": "7f8cf03b7383cd9e3732305ded687c40c4056ec905d88c3516d5cc635da57a78"
+    },
+    {
+      "source": "sycl/src/kernels/cuda/dequant_bf16.dp.cpp",
+      "original_source_sha256": "222c8123ec3242950ae33ffa72c264bde3a9ed6f8b813295202b7493cb78cd0a",
+      "original_object_sha256": "2ceee5edb471a89c26a2d261542827f7f90e699899df64ef7b572fb12f9a8e76",
+      "candidate_source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/sources/sycl/src/kernels/cuda/dequant_bf16.dp.cpp",
+      "candidate_source_sha256": "d2c5fc438c2fc6dca8831f5dbe604a4b47103d697b9ae0d46fd007e4d02d99cc",
+      "original_compile_argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../third_party/ggml",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-Wall",
+        "-Wextra",
+        "-MD",
+        "-MT",
+        "CMakeFiles/strata_kernels.dir/src/kernels/cuda/dequant_bf16.dp.cpp.o",
+        "-MF",
+        "CMakeFiles/strata_kernels.dir/src/kernels/cuda/dequant_bf16.dp.cpp.o.d",
+        "-o",
+        "CMakeFiles/strata_kernels.dir/src/kernels/cuda/dequant_bf16.dp.cpp.o",
+        "-c",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/kernels/cuda/dequant_bf16.dp.cpp"
+      ],
+      "original_object": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/CMakeFiles/strata_kernels.dir/src/kernels/cuda/dequant_bf16.dp.cpp.o",
+      "changed_classes": [
+        "dequant_kernel_ec9311"
+      ],
+      "removed_property_tokens": [
+        {
+          "line": 234,
+          "classes": [
+            "dequant_kernel_ec9311"
+          ]
+        }
+      ],
+      "candidate_object_sha256": "e97519cc381bae966730081515a260ac519a0a94fd518be04803b8700f5ad5ae"
+    },
+    {
+      "source": "sycl/src/kernels/cuda/verify_kernels.dp.cpp",
+      "original_source_sha256": "58b7ef8005680dbba0fed15b8bb1f6f761da53a1a08801e1417d13a8cb827131",
+      "original_object_sha256": "543287aa9f4f2595ea6f7b78cafcde8ec4f3faf7da48fa73542c53cbda109ceb",
+      "candidate_source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/sources/sycl/src/kernels/cuda/verify_kernels.dp.cpp",
+      "candidate_source_sha256": "e342035921af62f8faaee6d5924e83bb3b91a120b273a3ad35fef32bfd16a96f",
+      "original_compile_argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../third_party/ggml",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-Wall",
+        "-Wextra",
+        "-MD",
+        "-MT",
+        "CMakeFiles/strata_kernels.dir/src/kernels/cuda/verify_kernels.dp.cpp.o",
+        "-MF",
+        "CMakeFiles/strata_kernels.dir/src/kernels/cuda/verify_kernels.dp.cpp.o.d",
+        "-o",
+        "CMakeFiles/strata_kernels.dir/src/kernels/cuda/verify_kernels.dp.cpp.o",
+        "-c",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/kernels/cuda/verify_kernels.dp.cpp"
+      ],
+      "original_object": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/CMakeFiles/strata_kernels.dir/src/kernels/cuda/verify_kernels.dp.cpp.o",
+      "changed_classes": [
+        "gather_rows_kernel_7960b2"
+      ],
+      "removed_property_tokens": [
+        {
+          "line": 676,
+          "classes": [
+            "gather_rows_kernel_7960b2"
+          ]
+        }
+      ],
+      "candidate_object_sha256": "48a987f46d71d1cec9e18e9766f846f53ab906526aa4471feeaea074a8a2ccd6"
+    },
+    {
+      "source": "sycl/src/kernels/cuda/native_qsa_indexer.dp.cpp",
+      "original_source_sha256": "92cd45f344b7c8c3522e5ae3b0e5476dc5ed9ec4882058bd79bcc6fa19589a90",
+      "original_object_sha256": "95a5a2c71c81afb9394f28097defce1c47c12b553bdc812dbb28874a96a23a77",
+      "candidate_source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/sources/sycl/src/kernels/cuda/native_qsa_indexer.dp.cpp",
+      "candidate_source_sha256": "701c5edc61a8b8471438a63afe981276f97b09ab263ebfbbd2ba1539d2249117",
+      "original_compile_argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../third_party/ggml",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-Wall",
+        "-Wextra",
+        "-MD",
+        "-MT",
+        "CMakeFiles/strata_kernels.dir/src/kernels/cuda/native_qsa_indexer.dp.cpp.o",
+        "-MF",
+        "CMakeFiles/strata_kernels.dir/src/kernels/cuda/native_qsa_indexer.dp.cpp.o.d",
+        "-o",
+        "CMakeFiles/strata_kernels.dir/src/kernels/cuda/native_qsa_indexer.dp.cpp.o",
+        "-c",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/kernels/cuda/native_qsa_indexer.dp.cpp"
+      ],
+      "original_object": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/CMakeFiles/strata_kernels.dir/src/kernels/cuda/native_qsa_indexer.dp.cpp.o",
+      "changed_classes": [
+        "append_blocks_a6c94e",
+        "append_first_ea2d1f",
+        "append_tail_e0658e"
+      ],
+      "removed_property_tokens": [
+        {
+          "line": 447,
+          "classes": [
+            "append_first_ea2d1f"
+          ]
+        },
+        {
+          "line": 462,
+          "classes": [
+            "append_first_ea2d1f"
+          ]
+        },
+        {
+          "line": 483,
+          "classes": [
+            "append_blocks_a6c94e"
+          ]
+        },
+        {
+          "line": 500,
+          "classes": [
+            "append_blocks_a6c94e"
+          ]
+        },
+        {
+          "line": 517,
+          "classes": [
+            "append_tail_e0658e"
+          ]
+        }
+      ],
+      "candidate_object_sha256": "7c2bed8522518092b80a6abfa8bb2501480020f7b71f10927cc92e944305d548"
+    }
+  ],
+  "steps": [
+    {
+      "label": "compile-0-kernels.dp.cpp",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_NATIVE_EXPERTS=1",
+        "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+        "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-qmkl=sequential",
+        "-Wall",
+        "-Wextra",
+        "-MD",
+        "-MT",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/kernels.dp.cpp.o",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/kernels.dp.cpp.o.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/kernels.dp.cpp.o",
+        "-c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/sources/sycl/src/prefill/kernels.dp.cpp"
+      ],
+      "active": false,
+      "exit_code": 0,
+      "elapsed_seconds": 7.025639159997809
+    },
+    {
+      "label": "compile-1-native_ple_postops.dp.cpp",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../third_party/ggml",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-Wall",
+        "-Wextra",
+        "-MD",
+        "-MT",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/native_ple_postops.dp.cpp.o",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/native_ple_postops.dp.cpp.o.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/native_ple_postops.dp.cpp.o",
+        "-c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/sources/sycl/src/kernels/cuda/native_ple_postops.dp.cpp"
+      ],
+      "active": false,
+      "exit_code": 0,
+      "elapsed_seconds": 5.87425210600486
+    },
+    {
+      "label": "compile-2-qsa_select.dp.cpp",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../third_party/ggml",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-Wall",
+        "-Wextra",
+        "-MD",
+        "-MT",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/qsa_select.dp.cpp.o",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/qsa_select.dp.cpp.o.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/qsa_select.dp.cpp.o",
+        "-c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/sources/sycl/src/kernels/cuda/qsa_select.dp.cpp"
+      ],
+      "active": false,
+      "exit_code": 0,
+      "elapsed_seconds": 6.224651309996261
+    },
+    {
+      "label": "compile-3-iq_kernels.dp.cpp",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../third_party/ggml",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-Wall",
+        "-Wextra",
+        "-MD",
+        "-MT",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/iq_kernels.dp.cpp.o",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/iq_kernels.dp.cpp.o.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/iq_kernels.dp.cpp.o",
+        "-c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/sources/sycl/src/kernels/cuda/iq_kernels.dp.cpp"
+      ],
+      "active": false,
+      "exit_code": 0,
+      "elapsed_seconds": 12.035806054991554
+    },
+    {
+      "label": "compile-4-qsa_decode_attn.dp.cpp",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../third_party/ggml",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-Wall",
+        "-Wextra",
+        "-MD",
+        "-MT",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/qsa_decode_attn.dp.cpp.o",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/qsa_decode_attn.dp.cpp.o.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/qsa_decode_attn.dp.cpp.o",
+        "-c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/sources/sycl/src/kernels/cuda/qsa_decode_attn.dp.cpp"
+      ],
+      "active": false,
+      "exit_code": 0,
+      "elapsed_seconds": 7.17587347299559
+    },
+    {
+      "label": "compile-5-dequant_bf16.dp.cpp",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../third_party/ggml",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-Wall",
+        "-Wextra",
+        "-MD",
+        "-MT",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/dequant_bf16.dp.cpp.o",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/dequant_bf16.dp.cpp.o.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/dequant_bf16.dp.cpp.o",
+        "-c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/sources/sycl/src/kernels/cuda/dequant_bf16.dp.cpp"
+      ],
+      "active": false,
+      "exit_code": 0,
+      "elapsed_seconds": 6.575256769006955
+    },
+    {
+      "label": "compile-6-verify_kernels.dp.cpp",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../third_party/ggml",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-Wall",
+        "-Wextra",
+        "-MD",
+        "-MT",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/verify_kernels.dp.cpp.o",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/verify_kernels.dp.cpp.o.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/verify_kernels.dp.cpp.o",
+        "-c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/sources/sycl/src/kernels/cuda/verify_kernels.dp.cpp"
+      ],
+      "active": false,
+      "exit_code": 0,
+      "elapsed_seconds": 6.475097727001412
+    },
+    {
+      "label": "compile-7-native_qsa_indexer.dp.cpp",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../third_party/ggml",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-Wall",
+        "-Wextra",
+        "-MD",
+        "-MT",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/native_qsa_indexer.dp.cpp.o",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/native_qsa_indexer.dp.cpp.o.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/native_qsa_indexer.dp.cpp.o",
+        "-c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/sources/sycl/src/kernels/cuda/native_qsa_indexer.dp.cpp"
+      ],
+      "active": false,
+      "exit_code": 0,
+      "elapsed_seconds": 5.77466680300131
+    },
+    {
+      "label": "replace-libstrata_prefill.a",
+      "argv": [
+        "/usr/bin/ar",
+        "r",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/libstrata_prefill.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/kernels.dp.cpp.o"
+      ],
+      "active": false,
+      "exit_code": 0,
+      "elapsed_seconds": 0.015755259999423288
+    },
+    {
+      "label": "index-libstrata_prefill.a",
+      "argv": [
+        "/usr/bin/ranlib",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/libstrata_prefill.a"
+      ],
+      "active": false,
+      "exit_code": 0,
+      "elapsed_seconds": 0.007687933000852354
+    },
+    {
+      "label": "replace-libstrata_kernels.a",
+      "argv": [
+        "/usr/bin/ar",
+        "r",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/libstrata_kernels.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/native_ple_postops.dp.cpp.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/qsa_select.dp.cpp.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/iq_kernels.dp.cpp.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/qsa_decode_attn.dp.cpp.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/dequant_bf16.dp.cpp.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/verify_kernels.dp.cpp.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/objects/native_qsa_indexer.dp.cpp.o"
+      ],
+      "active": false,
+      "exit_code": 0,
+      "elapsed_seconds": 0.11418186100490857
+    },
+    {
+      "label": "index-libstrata_kernels.a",
+      "argv": [
+        "/usr/bin/ranlib",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/libstrata_kernels.a"
+      ],
+      "active": false,
+      "exit_code": 0,
+      "elapsed_seconds": 0.06402235799760092
+    },
+    {
+      "label": "link",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-O3",
+        "-DNDEBUG",
+        "-fsycl",
+        "-Xsycl-target-backend=spir64",
+        "-cl-fp32-correctly-rounded-divide-sqrt",
+        "-fsycl-device-code-split=per_kernel",
+        "-qmkl=sequential",
+        "CMakeFiles/strata.dir/src/program/generate.cpp.o",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/strata-observed-regular-launch-candidate",
+        "libstrata_engine.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/libstrata_prefill.a",
+        "libstrata_spec.a",
+        "libstrata_engine.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observed-regular-launch-build/libstrata_kernels.a",
+        "libstrata_core.a",
+        "libstrata_kernels_cpu.a",
+        "ggml/src/libggml-cpu.a",
+        "ggml/src/libggml-base.a",
+        "-lm"
+      ],
+      "active": false,
+      "exit_code": 0,
+      "elapsed_seconds": 15.139671461001853
+    }
+  ],
+  "archive_members": {
+    "libstrata_prefill.a": [
+      {
+        "member": "gemm.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "1ace289d9c502e8cf4cb3fb525f9865f3e235b58a6b9a3d884da009adb94c87d",
+        "candidate_sha256": "1ace289d9c502e8cf4cb3fb525f9865f3e235b58a6b9a3d884da009adb94c87d"
+      },
+      {
+        "member": "kernels.dp.cpp.o",
+        "replaced": true,
+        "original_sha256": "01621905884c8e1c9c6369f93af0ec1e8ce22dd0f6aba243528a85f3ceb0361f",
+        "candidate_sha256": "25d17c55442358277061e5e34966e655cec3398ea55777a61fb29c37fd63abb3"
+      },
+      {
+        "member": "prefill.cpp.o",
+        "replaced": false,
+        "original_sha256": "b9b2409cf59a90a1f7e091e302ca5a72d518f6dd3478681e961da7f4d2bc6898",
+        "candidate_sha256": "b9b2409cf59a90a1f7e091e302ca5a72d518f6dd3478681e961da7f4d2bc6898"
+      },
+      {
+        "member": "moe_fused_stub.cpp.o",
+        "replaced": false,
+        "original_sha256": "0f4ccb811fe0b097b018eaa7c635aa95e10294f2271a899925f66673af2dbe87",
+        "candidate_sha256": "0f4ccb811fe0b097b018eaa7c635aa95e10294f2271a899925f66673af2dbe87"
+      }
+    ],
+    "libstrata_kernels.a": [
+      {
+        "member": "dequant_s2.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "98f1b7973dc4f0cf19401bfc7b1333d5c8208e50c076f1f8736b0f10bdfa323f",
+        "candidate_sha256": "98f1b7973dc4f0cf19401bfc7b1333d5c8208e50c076f1f8736b0f10bdfa323f"
+      },
+      {
+        "member": "s2_gemv.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "6baaa9c77d51a431e75a298a2ad27f5190b9b3b31987bf2979c7d4d3c5372fd0",
+        "candidate_sha256": "6baaa9c77d51a431e75a298a2ad27f5190b9b3b31987bf2979c7d4d3c5372fd0"
+      },
+      {
+        "member": "s_gemv.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "757dbdecf755f7e648df614b4d102827a2c0c78bbab076d9f91a218198abf687",
+        "candidate_sha256": "757dbdecf755f7e648df614b4d102827a2c0c78bbab076d9f91a218198abf687"
+      },
+      {
+        "member": "s2_gemv_quads.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "24b7736eb9d972c4c5345a0dd29d3d3bbc191801b7535938b78d0d1dca9506c8",
+        "candidate_sha256": "24b7736eb9d972c4c5345a0dd29d3d3bbc191801b7535938b78d0d1dca9506c8"
+      },
+      {
+        "member": "s2_gemv_fast.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "a4b7e9393f75af80a71f36c40cf1f5b5fc437086577f47c0178385ea21a19cfb",
+        "candidate_sha256": "a4b7e9393f75af80a71f36c40cf1f5b5fc437086577f47c0178385ea21a19cfb"
+      },
+      {
+        "member": "router_top10.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "5c8fed8bf9c37286b4dc7f655350b492fbb157d22fa53f32222c4357d1ed40c4",
+        "candidate_sha256": "5c8fed8bf9c37286b4dc7f655350b492fbb157d22fa53f32222c4357d1ed40c4"
+      },
+      {
+        "member": "quantize_act.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "f3e69c1b9057eb266b11818a8d7c4d47b827cd900b42c9be9f7845d34b7b7eec",
+        "candidate_sha256": "f3e69c1b9057eb266b11818a8d7c4d47b827cd900b42c9be9f7845d34b7b7eec"
+      },
+      {
+        "member": "rope.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "7587ee7af62e856ae06d81632dc96763a754e92eeae5c9fb300bc53f9610504e",
+        "candidate_sha256": "7587ee7af62e856ae06d81632dc96763a754e92eeae5c9fb300bc53f9610504e"
+      },
+      {
+        "member": "sampler.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "968fb94cdb51450f7f0f8ec6bd01e866e239b5d96dc7ea2c601ab6fafebd46e5",
+        "candidate_sha256": "968fb94cdb51450f7f0f8ec6bd01e866e239b5d96dc7ea2c601ab6fafebd46e5"
+      },
+      {
+        "member": "s2_gemv_q8.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "4d14d90756d7d8504f8428fe730565023c893d6ad2439eaf9a36bac2c3c07b30",
+        "candidate_sha256": "4d14d90756d7d8504f8428fe730565023c893d6ad2439eaf9a36bac2c3c07b30"
+      },
+      {
+        "member": "s2_expert_grouped.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "3e5dee265b8be3b14c031417593f60f5c50e33e34584e607a164e7baf2b33047",
+        "candidate_sha256": "3e5dee265b8be3b14c031417593f60f5c50e33e34584e607a164e7baf2b33047"
+      },
+      {
+        "member": "shared_expert.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "a9e0bdaf9da4d1734a3a556f5fe00b95b8be1ed83a9a4cb10c1165da8470982b",
+        "candidate_sha256": "a9e0bdaf9da4d1734a3a556f5fe00b95b8be1ed83a9a4cb10c1165da8470982b"
+      },
+      {
+        "member": "gr.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "ad90f25d7de3b4b895fc0f6fa14aba7350d9eaee7a251d118977e31a642d4089",
+        "candidate_sha256": "ad90f25d7de3b4b895fc0f6fa14aba7350d9eaee7a251d118977e31a642d4089"
+      },
+      {
+        "member": "gdn.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "cda5d8a904502eb6b8158498f72425ae3eeee2e1bb0986fb3c652d398bdebc9b",
+        "candidate_sha256": "cda5d8a904502eb6b8158498f72425ae3eeee2e1bb0986fb3c652d398bdebc9b"
+      },
+      {
+        "member": "qsa.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "97f80bb771b261f93376d6d340d040d87e00afa2dddaca99d0207b295f346d25",
+        "candidate_sha256": "97f80bb771b261f93376d6d340d040d87e00afa2dddaca99d0207b295f346d25"
+      },
+      {
+        "member": "elementwise.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "dd1cf530a715710c924c1cfc142fd60023c9220b55df2ff26336c1d6ad9e41e5",
+        "candidate_sha256": "dd1cf530a715710c924c1cfc142fd60023c9220b55df2ff26336c1d6ad9e41e5"
+      },
+      {
+        "member": "bf16_gemv.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "3eb07c81e02ce501e8b4d064d58fbbe8b18e492f0bb9a6d63dd3ad464af7e5d1",
+        "candidate_sha256": "3eb07c81e02ce501e8b4d064d58fbbe8b18e492f0bb9a6d63dd3ad464af7e5d1"
+      },
+      {
+        "member": "native_mmvq.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "b811413e503f7cd00e362a6881a8cb608caf46c68f397f086181fd5809ae51ea",
+        "candidate_sha256": "b811413e503f7cd00e362a6881a8cb608caf46c68f397f086181fd5809ae51ea"
+      },
+      {
+        "member": "native_bf16.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "4ef8adcd4edf606146b5eb307701c055f84e9d7d5514915c7fe9e4b398ec5929",
+        "candidate_sha256": "4ef8adcd4edf606146b5eb307701c055f84e9d7d5514915c7fe9e4b398ec5929"
+      },
+      {
+        "member": "native_gr_norm.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "8c386f99543eb6b6fe1decc5dbcfe328aa492be1a98ebb48436170de8579f0dc",
+        "candidate_sha256": "8c386f99543eb6b6fe1decc5dbcfe328aa492be1a98ebb48436170de8579f0dc"
+      },
+      {
+        "member": "native_moe.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "b49795d339335120e4186050f6ca942ccfe79606d8fba4b7c961e3c9f3bf971f",
+        "candidate_sha256": "b49795d339335120e4186050f6ca942ccfe79606d8fba4b7c961e3c9f3bf971f"
+      },
+      {
+        "member": "native_gdn.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "b26e4d5e6d4025185057ea41a69b14542f2e6c8a9b696661303264ca4606eb07",
+        "candidate_sha256": "b26e4d5e6d4025185057ea41a69b14542f2e6c8a9b696661303264ca4606eb07"
+      },
+      {
+        "member": "native_gr_postops.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "550ad90a51314e58f5ab42429caa0e4a47065aeb125d6c11a8d15a804205f8bf",
+        "candidate_sha256": "550ad90a51314e58f5ab42429caa0e4a47065aeb125d6c11a8d15a804205f8bf"
+      },
+      {
+        "member": "native_router.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "c6f5824fe992b7869ca968b46521e9cedd3153138903458e6be203473fd5ebe4",
+        "candidate_sha256": "c6f5824fe992b7869ca968b46521e9cedd3153138903458e6be203473fd5ebe4"
+      },
+      {
+        "member": "native_gdn_preprocess.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "073593eb724b5ae16ecdf1b0c6c543e0a0424391b53cf79ec504dfca6e6650a1",
+        "candidate_sha256": "073593eb724b5ae16ecdf1b0c6c543e0a0424391b53cf79ec504dfca6e6650a1"
+      },
+      {
+        "member": "native_qsa.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "5f3f871dee1c108e3000b7e3fd2c176d58458830a4dfb17acb33c27dfa3fced5",
+        "candidate_sha256": "5f3f871dee1c108e3000b7e3fd2c176d58458830a4dfb17acb33c27dfa3fced5"
+      },
+      {
+        "member": "native_rope.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "d57c19d17511231f1ab72fbbc445cdec6217b741a93136b00ce58dd9e9ae052d",
+        "candidate_sha256": "d57c19d17511231f1ab72fbbc445cdec6217b741a93136b00ce58dd9e9ae052d"
+      },
+      {
+        "member": "native_ple_postops.dp.cpp.o",
+        "replaced": true,
+        "original_sha256": "bbaed79e24b050ff2909e4038fb5143883a74592d611d57c3d64fd9dd5e7496c",
+        "candidate_sha256": "b98f9e55413629dfa65c382e42ad1a49b6cb1806496cda38aa76ab052d55511e"
+      },
+      {
+        "member": "native_flash_attn.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "0bfb1b858676597e8688ea411a2ae556a8121273ad1aa1370bf5fe28d9c9d609",
+        "candidate_sha256": "0bfb1b858676597e8688ea411a2ae556a8121273ad1aa1370bf5fe28d9c9d609"
+      },
+      {
+        "member": "native_qsa_indexer.dp.cpp.o",
+        "replaced": true,
+        "original_sha256": "95a5a2c71c81afb9394f28097defce1c47c12b553bdc812dbb28874a96a23a77",
+        "candidate_sha256": "7c2bed8522518092b80a6abfa8bb2501480020f7b71f10927cc92e944305d548"
+      },
+      {
+        "member": "native_qsa_score.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "6107457f1d28aa29cef616fe15d3a46a16cd142d31b44718946cfeab2d536897",
+        "candidate_sha256": "6107457f1d28aa29cef616fe15d3a46a16cd142d31b44718946cfeab2d536897"
+      },
+      {
+        "member": "ple.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "c46004b931fb7093e145fa66ff2be85e913ee84111dbabab36f6b851cfe35763",
+        "candidate_sha256": "c46004b931fb7093e145fa66ff2be85e913ee84111dbabab36f6b851cfe35763"
+      },
+      {
+        "member": "kv_q8.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "8437d7b6ce23f6f19234aed0a474920ceee7e96ff60b6305b68ad38b9b02406f",
+        "candidate_sha256": "8437d7b6ce23f6f19234aed0a474920ceee7e96ff60b6305b68ad38b9b02406f"
+      },
+      {
+        "member": "kv_stream.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "916ccc757cc56770ab71b6259cdf2af97a3c4fa3f308529dbcd52b1bb7b91ccd",
+        "candidate_sha256": "916ccc757cc56770ab71b6259cdf2af97a3c4fa3f308529dbcd52b1bb7b91ccd"
+      },
+      {
+        "member": "kv_q4.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "9adf8175f25bfdbf5c1db4ec974f0dcd026fd2d152b819a13583bd6f4e872927",
+        "candidate_sha256": "9adf8175f25bfdbf5c1db4ec974f0dcd026fd2d152b819a13583bd6f4e872927"
+      },
+      {
+        "member": "fused_gr.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "4e281002f12deeedbab3a30af7ceba7efe56bd3bcb60e3835a0162933fc194f8",
+        "candidate_sha256": "4e281002f12deeedbab3a30af7ceba7efe56bd3bcb60e3835a0162933fc194f8"
+      },
+      {
+        "member": "cvec.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "9be7ee02e29cce854a7ba85444ef303beeee542e6fc1345c8eed9ff03a3d60f6",
+        "candidate_sha256": "9be7ee02e29cce854a7ba85444ef303beeee542e6fc1345c8eed9ff03a3d60f6"
+      },
+      {
+        "member": "qsa_decode_attn.dp.cpp.o",
+        "replaced": true,
+        "original_sha256": "51341ff09c93189e479bb2311f246224760947c60af29e1970477e00c97b17ef",
+        "candidate_sha256": "7f8cf03b7383cd9e3732305ded687c40c4056ec905d88c3516d5cc635da57a78"
+      },
+      {
+        "member": "qsa_prompt_attn.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "f1b9f7363f29c9c1856184cdc0914269e0df9402c1ae6a69f5150e9d4a36f3d8",
+        "candidate_sha256": "f1b9f7363f29c9c1856184cdc0914269e0df9402c1ae6a69f5150e9d4a36f3d8"
+      },
+      {
+        "member": "fused_gdn.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "09de9b3d76b590c82ebc66b5a548a5e50aea3f1a6fedb1a4e947923299d79dcb",
+        "candidate_sha256": "09de9b3d76b590c82ebc66b5a548a5e50aea3f1a6fedb1a4e947923299d79dcb"
+      },
+      {
+        "member": "dequant_bf16.dp.cpp.o",
+        "replaced": true,
+        "original_sha256": "2ceee5edb471a89c26a2d261542827f7f90e699899df64ef7b572fb12f9a8e76",
+        "candidate_sha256": "e97519cc381bae966730081515a260ac519a0a94fd518be04803b8700f5ad5ae"
+      },
+      {
+        "member": "qsa_select.dp.cpp.o",
+        "replaced": true,
+        "original_sha256": "9661a195d7936eea8ed2b4017040c48ce42a333e52d857cfe1963144312e41cc",
+        "candidate_sha256": "70c2614ee5c09ec58403cb0c6fb33f9f850cb098b2cd6baf62b22346e3237c36"
+      },
+      {
+        "member": "verify_kernels.dp.cpp.o",
+        "replaced": true,
+        "original_sha256": "543287aa9f4f2595ea6f7b78cafcde8ec4f3faf7da48fa73542c53cbda109ceb",
+        "candidate_sha256": "48a987f46d71d1cec9e18e9766f846f53ab906526aa4471feeaea074a8a2ccd6"
+      },
+      {
+        "member": "iq_kernels.dp.cpp.o",
+        "replaced": true,
+        "original_sha256": "2a1044fb353760e80647be1307286cb822420d70a1db79350d047a4c15b03f20",
+        "candidate_sha256": "b4605694e1f8ef5a05a8b98c5126b1ca41ee7b74f725b888db737c1cd0334cd9"
+      },
+      {
+        "member": "ngram.cpp.o",
+        "replaced": false,
+        "original_sha256": "84f5304900b759c94b8eb448ea16c04adef02a20f2457bdbf5c53802ca631f5f",
+        "candidate_sha256": "84f5304900b759c94b8eb448ea16c04adef02a20f2457bdbf5c53802ca631f5f"
+      },
+      {
+        "member": "ple_reader.cpp.o",
+        "replaced": false,
+        "original_sha256": "00209f2ec8716ca2b11d9327bba75f3ff186aa6c70274dedd53e29c3bfffbfe3",
+        "candidate_sha256": "00209f2ec8716ca2b11d9327bba75f3ff186aa6c70274dedd53e29c3bfffbfe3"
+      },
+      {
+        "member": "direct_file.cpp.o",
+        "replaced": false,
+        "original_sha256": "c630512f14c1175f58acaa5d1771a9142746d9c5f2dba23d09b1ec4c1d8a3906",
+        "candidate_sha256": "c630512f14c1175f58acaa5d1771a9142746d9c5f2dba23d09b1ec4c1d8a3906"
+      },
+      {
+        "member": "qsa_prompt_attn_xmx.dp.cpp.o",
+        "replaced": false,
+        "original_sha256": "d4887ba855ac3ef637928aec10ce100f8bc72532e94d5d7413fa4ae9bcaf5850",
+        "candidate_sha256": "d4887ba855ac3ef637928aec10ce100f8bc72532e94d5d7413fa4ae9bcaf5850"
+      }
+    ]
+  },
+  "scope": "Only remove use_root_sync from44 reviewed observed property declarations across8 source files; no arithmetic/range/name/wait changes or blanket persistent-kernel rewrite; no GPU, parity/speed/capacity proof",
+  "manual_review": {
+    "prefill/kernels.dp.cpp": "Selected element/row ownership, local-memory reductions, subgroup shuffles and work-group barriers; routing uses independent subgroups; KV writes are separated by token/head/64-value group. The recurrence launch properties are retained.",
+    "native_ple_postops.dp.cpp": "Gate and RMS reduce within one work-group; broadcast/conv/history own separate elements/channels. History kernel follows its producer in the same in-order queue.",
+    "native_qsa_indexer.dp.cpp": "Each complete block owns its pooled row; only final block writes spare/block_pos; norm/rotation use subgroup and work-group local memory; tail kernel owns channel/slot. Host enabled atomic is not device coordination.",
+    "qsa_decode_attn.dp.cpp": "Each chunk owns distinct scratch slots; chunk uses work-group local sq/sp/srow. The subsequent merge reads completed scratch through queue ordering and owns distinct query/head output.",
+    "qsa_select.dp.cpp": "Only block_scores: independent query/block score per subgroup; local XOR reduction, no atomic/global waits. Other selector kernels and cluster paths retained.",
+    "iq_kernels.dp.cpp": "Only FP16 flat/GU dequant and embedding: distinct256-value destinations, inline dq_dispatch conversion/codebook reads; no inter-group synchronization. Other IQ launches retained.",
+    "dequant_bf16.dp.cpp": "group32 conversion owns disjoint32-value output, quantization metadata/codebook reads; shared template launcher flag removed with macro continuations retained.",
+    "verify_kernels.dp.cpp": "Only observed uint32 gather_rows specialization: distinct strided output elements, read-only IDs/source. Other row formats and all persistent/global/doorbell functions retained."
+  },
+  "environment": {
+    "PATH": "/usr/bin:/bin:/opt/intel/oneapi/compiler/2026.1/bin",
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+    "LIBRARY_PATH": "/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/lib:/usr/lib/x86_64-linux-gnu",
+    "LD_LIBRARY_PATH": null,
+    "LD_PRELOAD": null
+  },
+  "elapsed_seconds": 73.8874032300082,
+  "production_link_inputs_sha256": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/CMakeFiles/strata.dir/src/program/generate.cpp.o": "c4ace9bd498bdcd21d809f416c53e2876d4658947d616af4fb1dfb772171fb22",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/libstrata_engine.a": "6e2572af7a4354400e4f8629483737f71a7ccc8c6a0453409e5b4bb6b5815149",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/libstrata_prefill.a": "b55448618f42e51a7838705e01245e46e8d2555fbc412ce95a8b6412b3e06d8c",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/libstrata_spec.a": "7182950031d3ba96484a1a4c733b76c2351950ee0e6e857aa97dbb8d615f3e0c",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/libstrata_kernels.a": "5a290f0c71b0e90a02a477519ee3c55a6e15e13a314d2e78b8f10b2e3b09dd92",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/libstrata_core.a": "28925bf3665cb568b7429d06cfdec87058ec11819e4c25647f45ad9bdce905d6",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/libstrata_kernels_cpu.a": "5f621ed71503b353c48a6225d0716ace7cc38ab394c3a74c3c22dc594a036055",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/ggml/src/libggml-cpu.a": "e3cefe0cf3c866aec7d9f06b9181ca4263304dd7307af462195a9b869be953f2",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/ggml/src/libggml-base.a": "98059baeddf43574e613949b8382d67c088f3f62d1b84c3d47bef31581bcae1c"
+  },
+  "production_binary_sha256": "ceff2d8a6d38fc4779a8b6969d4912efedea5dbd4e2c9229f04af49c680c0bd0",
+  "observed_mapping_sha256": "006c6ead215b1f761706b25883aa85a79cb352731a553e4725a8567a70e9ac98",
+  "removed_property_declarations": 44,
+  "original_link_argv": [
+    "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+    "-O3",
+    "-DNDEBUG",
+    "-fsycl",
+    "-Xsycl-target-backend=spir64",
+    "-cl-fp32-correctly-rounded-divide-sqrt",
+    "-fsycl-device-code-split=per_kernel",
+    "-qmkl=sequential",
+    "CMakeFiles/strata.dir/src/program/generate.cpp.o",
+    "-o",
+    "strata",
+    "libstrata_engine.a",
+    "libstrata_prefill.a",
+    "libstrata_spec.a",
+    "libstrata_engine.a",
+    "libstrata_kernels.a",
+    "libstrata_core.a",
+    "libstrata_kernels_cpu.a",
+    "ggml/src/libggml-cpu.a",
+    "ggml/src/libggml-base.a",
+    "-lm"
+  ],
+  "production_inputs_unchanged": true,
+  "candidate_binary_sha256": "33bef89feb49a97c152c114c48dd002612215e9b44000f334891b24a3804237b",
+  "candidate_archive_sha256": {
+    "libstrata_prefill.a": "60210c419dec408cd902e05c410086e6c5c352debe26a276bcca9541da9bcf71",
+    "libstrata_kernels.a": "ba93a5f8507e7a15192902e26c230ddb3162232e8320f77fc6731877af451e3f"
+  },
+  "finished_utc": "2026-10-07T12:35:58.818108+00:00"
+}

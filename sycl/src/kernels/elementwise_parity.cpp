@@ -14,6 +14,7 @@
 //      last bits, and the test measures that rather than asserting it away.
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/kernels/dequant_bf16.hpp"
 #include "strata/kernels/elementwise.hpp"
@@ -96,17 +97,17 @@ int main(int argc, char** argv) {
         if (positive) ++bad;
 
         float *d_a = nullptr, *d_dt = nullptr, *d_sa = nullptr, *d_g = nullptr;
-        check(DPCT_CHECK_ERROR(d_a = (float *)sycl::malloc_device(
-                                   n * 4, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_a = (float *)strata::checked_usm(sycl::malloc_device(
+                                   n * 4, dpct::get_in_order_queue()))),
               "a");
-        check(DPCT_CHECK_ERROR(d_dt = (float *)sycl::malloc_device(
-                                   n * 4, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_dt = (float *)strata::checked_usm(sycl::malloc_device(
+                                   n * 4, dpct::get_in_order_queue()))),
               "dt");
-        check(DPCT_CHECK_ERROR(d_sa = (float *)sycl::malloc_device(
-                                   n * 4, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_sa = (float *)strata::checked_usm(sycl::malloc_device(
+                                   n * 4, dpct::get_in_order_queue()))),
               "sa");
-        check(DPCT_CHECK_ERROR(d_g = (float *)sycl::malloc_device(
-                                   n * 4, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_g = (float *)strata::checked_usm(sycl::malloc_device(
+                                   n * 4, dpct::get_in_order_queue()))),
               "g");
         /*
         DPCT1114: cudaMemcpy is migrated to asynchronization memcpy,
@@ -202,8 +203,8 @@ int main(int argc, char** argv) {
             want[(size_t) i] = (float) (v / (1.0 + std::exp(-v)));
         }
         float* d_x = nullptr;
-        check(DPCT_CHECK_ERROR(d_x = (float *)sycl::malloc_device(
-                                   n * 4, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_x = (float *)strata::checked_usm(sycl::malloc_device(
+                                   n * 4, dpct::get_in_order_queue()))),
               "sx");
         /*
         DPCT1114: cudaMemcpy is migrated to asynchronization memcpy,
@@ -236,11 +237,11 @@ int main(int argc, char** argv) {
 
         float* d_x = nullptr;
         uint16_t* d_h = nullptr;
-        check(DPCT_CHECK_ERROR(d_x = (float *)sycl::malloc_device(
-                                   n * 4, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_x = (float *)strata::checked_usm(sycl::malloc_device(
+                                   n * 4, dpct::get_in_order_queue()))),
               "ex");
-        check(DPCT_CHECK_ERROR(d_h = (uint16_t *)sycl::malloc_device(
-                                   n * 2, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_h = (uint16_t *)strata::checked_usm(sycl::malloc_device(
+                                   n * 2, dpct::get_in_order_queue()))),
               "eh");
         /*
         DPCT1114: cudaMemcpy is migrated to asynchronization memcpy,
@@ -332,11 +333,11 @@ int main(int argc, char** argv) {
 
         float* d_x = nullptr;
         float* d_w = nullptr;
-        check(DPCT_CHECK_ERROR(d_x = (float *)sycl::malloc_device(
-                                   x.size() * 4, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_x = (float *)strata::checked_usm(sycl::malloc_device(
+                                   x.size() * 4, dpct::get_in_order_queue()))),
               "m rmsx");
-        check(DPCT_CHECK_ERROR(d_w = (float *)sycl::malloc_device(
-                                   w.size() * 4, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_w = (float *)strata::checked_usm(sycl::malloc_device(
+                                   w.size() * 4, dpct::get_in_order_queue()))),
               "m rmsw");
         /*
         DPCT1114: cudaMemcpy is migrated to asynchronization memcpy,
@@ -448,20 +449,20 @@ int main(int argc, char** argv) {
                     uint8_t* dc = nullptr;
                     float *ds = nullptr, *dof = nullptr, *out = nullptr;
                     check(DPCT_CHECK_ERROR(
-                              dc = (uint8_t *)sycl::malloc_device(
-                                  codes.size(), dpct::get_in_order_queue())),
+                              dc = (uint8_t *)strata::checked_usm(sycl::malloc_device(
+                                  codes.size(), dpct::get_in_order_queue()))),
                           "embedding codes");
                     check(DPCT_CHECK_ERROR(
-                              ds = sycl::malloc_device<float>(
-                                  scales.size(), dpct::get_in_order_queue())),
+                              ds = strata::checked_usm(sycl::malloc_device<float>(
+                                  scales.size(), dpct::get_in_order_queue()))),
                           "embedding scales");
                     check(DPCT_CHECK_ERROR(
-                              dof = sycl::malloc_device<float>(
-                                  offsets.size(), dpct::get_in_order_queue())),
+                              dof = strata::checked_usm(sycl::malloc_device<float>(
+                                  offsets.size(), dpct::get_in_order_queue()))),
                           "embedding offsets");
                     check(DPCT_CHECK_ERROR(
-                              out = sycl::malloc_device<float>(
-                                  ((size_t)n + 2), dpct::get_in_order_queue())),
+                              out = strata::checked_usm(sycl::malloc_device<float>(
+                                  ((size_t)n + 2), dpct::get_in_order_queue()))),
                           "embedding output");
                     /*
                     DPCT1124: cudaMemcpyAsync is migrated to asynchronous
@@ -634,11 +635,11 @@ int main(int argc, char** argv) {
         const size_t n = bits.size();
         float* dx = nullptr;
         uint16_t* dy = nullptr;
-        check(DPCT_CHECK_ERROR(dx = (float *)sycl::malloc_device(
-                                   n * 4, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(dx = (float *)strata::checked_usm(sycl::malloc_device(
+                                   n * 4, dpct::get_in_order_queue()))),
               "bf16 x");
-        check(DPCT_CHECK_ERROR(dy = (uint16_t *)sycl::malloc_device(
-                                   n * 2, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(dy = (uint16_t *)strata::checked_usm(sycl::malloc_device(
+                                   n * 2, dpct::get_in_order_queue()))),
               "bf16 y");
         /*
         DPCT1114: cudaMemcpy is migrated to asynchronization memcpy,
@@ -669,11 +670,11 @@ int main(int argc, char** argv) {
         }
         uint8_t* db = nullptr;
         uint16_t* dq = nullptr;
-        check(DPCT_CHECK_ERROR(db = (uint8_t *)sycl::malloc_device(
-                                   blk.size(), dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(db = (uint8_t *)strata::checked_usm(sycl::malloc_device(
+                                   blk.size(), dpct::get_in_order_queue()))),
               "q8 blk");
-        check(DPCT_CHECK_ERROR(dq = (uint16_t *)sycl::malloc_device(
-                                   64 * 2, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(dq = (uint16_t *)strata::checked_usm(sycl::malloc_device(
+                                   64 * 2, dpct::get_in_order_queue()))),
               "q8 out");
         /*
         DPCT1114: cudaMemcpy is migrated to asynchronization memcpy,

@@ -1,0 +1,52 @@
+{
+  "active": false,
+  "passed": true,
+  "scope": "CPU-only pinned unitrace timestamp option/source review. No GPU run and no proof of model correctness. No metrics, KMD, sampling, forked target or pause/resume transitions selected.",
+  "steps": [
+    {
+      "label": "compile",
+      "argv": [
+        "/usr/bin/g++",
+        "-O2",
+        "-std=c++17",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/pti-gpu-profiler-source/tools/unitrace/src",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-device-options-v01402-v1/options.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-device-options-v01402-v1/options"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.5148462509969249
+    },
+    {
+      "label": "options",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-device-options-v01402-v1/options"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0036091009969823062
+    }
+  ],
+  "started_utc": "2026-10-08T09:09:33.297880+00:00",
+  "source_commit": "6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033",
+  "source_sha256": {
+    "tools/unitrace/src/collector_options.h": "538b78a6b641e12942d902a22e4cecc188ab4f4aa398f01d5bc1be083e327480",
+    "tools/unitrace/scripts/gen_tracing_callbacks.py": "bee041666440dcc076257ca5c9f778434e104da6ae2057dbe407d681f968a1d4",
+    "tools/unitrace/src/levelzero/ze_collector.h": "6ee0130e2b03918a5e4bb5d310dacb94e5ba06bf67c21a23d3134dc406aa9122",
+    "tools/unitrace/src/unitrace.cc": "d5a275a78d6d99a4aa82b1e7cb464ff4974c4eb4c46f068f9f1f5b9978d04293",
+    "tools/unitrace/src/tracer.cc": "e770574b66edce42941fd211ae934c10db3eab4dc44a92d05a719099be1eac85",
+    "tools/unitrace/src/levelzero/ze_event_cache.h": "f3ed0148ab59665b42a5ebdb5b85e5ef39f9454356c6d5313aec5b0b0a8589e0"
+  },
+  "profiler_sha256": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-build-system-cc/build/unitrace": "5f90c453fbaf0b90a357a065cf4392f1ce3b157d5269af165c7cfe565cef1362",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-build-system-cc/build/libunitrace_tool.so": "c544dd2f6d2f6531cd529a9cc4ab9076b705eca8d63df56505e500942d128266"
+  },
+  "source_observations": [
+    "Timestamp instrumentation includes the modern LaunchKernelWithArguments API used by this installed UR adapter.",
+    "Counter-based event pools bypass timestamp flag rewriting; in-order app counter signals are replaced for profiling by a cached timestamp event and the original counter is signaled afterward on the same command list.",
+    "ReleaseEvent returns for events outside the profiler-owned cache. Enter/exit callbacks retain the enter-time instrumentation decision.",
+    "No metrics/KMD means the launcher uses execvp without the forked-supervisor branch; existing owned host-only run validated the same wrapper PID/executable transition.",
+    "These source facts do not establish absence of profiler defects. All32K heads, live state, outputs and restore continuation must pass; timings with logging/instrumentation are excluded from speed comparisons."
+  ],
+  "controller_sha256": "2e28fc58090db5a1a9c2b62b48b64fb9171dcecf442ace54372f7f5327334441",
+  "finished_utc": "2026-10-08T09:09:33.872510+00:00"
+}

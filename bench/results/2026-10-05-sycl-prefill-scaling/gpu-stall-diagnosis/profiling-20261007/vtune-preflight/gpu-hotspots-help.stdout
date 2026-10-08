@@ -1,0 +1,123 @@
+Intel(R) VTune(TM) Profiler Command Line Tool
+Copyright (C) 2009 Intel Corporation. All rights reserved.
+
+ Analyze the most time-consuming GPU kernels, characterize GPU utilization
+ based on GPU hardware metrics, identify performance issues caused by memory 
+ latency or inefficient kernel algorithms, and analyze GPU instruction
+ frequency per certain instruction types.
+
+ To modify the analysis type, use the configuration options (knobs) as
+ follows:
+ -collect gpu-hotspots -knob <knobName>=<knobValue>
+ Multiple -knob options are allowed and can be followed by additional collect
+ action options, as well as global options, if needed. 
+
+
+dump-compute-task-binaries
+
+  Enable dumping of compute task binary files. By default, this option is set
+  to "true". If in-kernel profiling or viewing compute task source-assembler 
+  code is not needed, disabling this option can reduce runtime overhead and
+  save disk space.
+
+  Default value: true
+  Possible values: true false
+
+
+gpu-profiling-mode
+
+  Select a profiling mode to either characterize GPU performance issues based
+  on GPU hardware metric presets or enable a source analysis to identify
+  basic blocks latency due to algorithm inefficiencies, or memory latency due
+  to memory access issues.
+
+  Default value: characterization
+  Possible values: characterization source-analysis 
+
+
+characterization-mode
+
+  Select a predefined GPU metric group to characterize code performance on
+  Intel Graphics: <ul> <li><b>Overview</b> metrics to analyze sampler,
+  general memory and cache accesses;</li> <li><b>Global Memory Accesses</b>
+  metrics to track accesses to different types of GPU memory;</li>
+  <li><b>Compute Extended</b> to analyze additional metrics;</li>
+  <li><b>Video Codec Activity</b> metrics to analyze video decoder
+  activity;</li> <li><b>Video Enhancement Activity</b> metrics to analyze
+  video processor activity;</li> <li><b>Dynamic Instruction Count</b> to
+  analyze the frequency of executing GPU instructions, sorted by instruction 
+  type.</li> </ul>
+
+  Default value: overview
+  Possible values: overview global-memory-accesses compute-extended video-decode video-enhancement instruction-count 
+
+
+collect-memory-bandwidth
+
+  Collect the data required to compute memory bandwidth.
+
+  Default value: false
+  Possible values: true false
+
+
+collect-programming-api
+
+  Analyze DPC++, OpenCL, and Intel Media SDK programs running on Intel
+  Processor Graphics. This option may affect the performance of your
+  application on the CPU side.
+
+  Default value: true
+  Possible values: true false
+
+
+gpu-sampling-interval
+
+  Specify an interval (in milliseconds) between GPU samples.
+
+  Default value: 1
+  Possible values: numbers between 0.1 and 10 
+
+
+stall-reasons-sampling-interval
+
+  Specifies sampling interval (in milliseconds) for stall reasons collection.
+  Applicable only for Source Analysis mode Stall reasons.
+
+  Default value: 0.0005
+  Possible values: numbers between 0.0001 and 2 
+
+
+source-analysis
+
+  Select a profiling mode: <ul> <li><b>Basic Blocks Latency</b> to identify
+  basic blocks latency due to algorithm inefficiencies;</li> <li><b>Memory
+  Latency</b> to explore memory access issues;</li> <li><b>Stall Reasons</b> 
+  to explore stall issues;</li> </ul>
+
+  Default value: bb-latency
+  Possible values: bb-latency mem-latency stall-sampling 
+
+
+computing-tasks-of-interest
+
+  Specify comma-separated list of GPU computing task names. Use search
+  strings if necessary (* and . are supported). Invocations happen in this
+  format: <b>computing_task_name[#start_idx#step#stop_idx] </b>Default value:
+  *#1#1#4294967295 where computing_task_name : Name of GPU computing
+  task(default value *) start_idx : Number of the first invocation to be
+  profiled (default value 1) step_idx : Number of step idx invocation
+  (default value 1) stop_idx : Number of the last invocation to be profiled
+  (default value 4294967295, UNIT_MAX) 
+
+  Default value: 
+  
+
+
+analyze-power-usage
+
+  Enable energy consumption characterization and overtime tracking, with
+  breakdown by devices.
+
+  Default value: false
+  Possible values: true false
+

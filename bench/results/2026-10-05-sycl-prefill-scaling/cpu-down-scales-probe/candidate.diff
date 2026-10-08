@@ -1,0 +1,41 @@
+--- upstream/iq_avx2.cpp
++++ probe/candidate.cpp
+@@ -22,7 +22,7 @@
+ #include <cstdlib>
+ #include <cstring>
+ 
+-namespace strata::kernels::cpu {
++namespace strata::kernels::cpu_scales {
+ namespace {
+ 
+ inline float h2f(uint16_t h) { return _mm_cvtss_f32(_mm_cvtph_ps(_mm_cvtsi32_si128((int) h))); }
+@@ -449,6 +449,14 @@
+     const __m128i m4b = _mm_set1_epi8(0x0f);
+     const __m256i ones = _mm256_set1_epi16(1);
+     const int nb = n / QK4_NL;
++    // Native down activations are read-only across rows. Preserve the exact
++    // half conversion and dx * dy product; cache only the repeated conversion.
++    // Larger reductions retain the original path without exceeding this array.
++    float activation_scales[NT][80];
++    if (nb <= 80)
++        for (int t = 0; t < NT; ++t)
++            for (int ib = 0; ib < nb; ++ib)
++                activation_scales[t][ib] = h2f(y[t][ib].d);
+     for (int r = r0; r < r1; ++r) {
+         const uint8_t* row = w + (size_t) r * row_bytes;
+         __m256 accf[NT];
+@@ -467,7 +475,7 @@
+                 const block_q8_0& b = y[t][ib];
+                 const __m256i q8 = _mm256_loadu_si256((const __m256i*) b.qs);
+                 const __m256i p = _mm256_madd_epi16(_mm256_maddubs_epi16(aq, _mm256_sign_epi8(q8, q4)), ones);
+-                accf[t] = _mm256_fmadd_ps(_mm256_set1_ps(dx * h2f(b.d)), _mm256_cvtepi32_ps(p), accf[t]);
++                accf[t] = _mm256_fmadd_ps(_mm256_set1_ps(dx * (nb <= 80 ? activation_scales[t][ib] : h2f(b.d))), _mm256_cvtepi32_ps(p), accf[t]);
+             }
+         }
+         for (int t = 0; t < NT; ++t) out[t][r] = hsum8(accf[t]);
+@@ -490,4 +498,4 @@
+     }
+ }
+ 
+-}  // namespace strata::kernels::cpu
++}  // namespace strata::kernels::cpu_scales

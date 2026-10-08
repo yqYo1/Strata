@@ -1,0 +1,114 @@
+{
+  "started_utc": "2026-10-06T09:43:45.528458+00:00",
+  "scope": "Compile/link only; no GPU execution",
+  "source_sha256": "4784e341ade1d7d775265766781c345da44c1e3602eef7bc63eb15b11de323fa",
+  "original_cpu_pool_sha256": "41a2be640f1d1823f7ba88107beba4815cb3ad6f7ffc39e6f34575b8b1b1cd32",
+  "environment": {
+    "LIBRARY_PATH": "/opt/intel/oneapi/mkl/2026.1/lib",
+    "ONEAPI_ROOT": "/opt/intel/oneapi"
+  },
+  "commands": [
+    {
+      "label": "normalized-reference-configure",
+      "command": [
+        "cmake",
+        "-S",
+        "sycl",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-jit",
+        "-DSTRATA_NATIVE_POOL_TASK_FACTOR=0"
+      ],
+      "exit_code": 0
+    },
+    {
+      "label": "normalized-reference-build",
+      "command": [
+        "cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-jit",
+        "--target",
+        "strata",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0
+    },
+    {
+      "label": "normalized-tasks9-configure",
+      "command": [
+        "cmake",
+        "-S",
+        "sycl",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-jit",
+        "-DSTRATA_NATIVE_POOL_TASK_FACTOR=9"
+      ],
+      "exit_code": 0
+    },
+    {
+      "label": "normalized-tasks9-build",
+      "command": [
+        "cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-jit",
+        "--target",
+        "strata",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0
+    },
+    {
+      "label": "normalized-restore-configure",
+      "command": [
+        "cmake",
+        "-S",
+        "sycl",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-jit",
+        "-DSTRATA_NATIVE_POOL_TASK_FACTOR=0"
+      ],
+      "exit_code": 0
+    },
+    {
+      "label": "normalized-restore-build",
+      "command": [
+        "cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-jit",
+        "--target",
+        "strata",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "builds": [
+    {
+      "task_factor": 0,
+      "binary": "/home/yayoi/.local/state/strata-sycl/verifier-registry-20261006-v3/strata-registry-guard-normalized-jit",
+      "sha256": "43ad474d17a51a27841d1bb0d536ac4e27fa95af83a4aecebd06f78fd1f4eaf3",
+      "production_cpu_archive_sha256": {
+        "libstrata_kernels_cpu.a": "766e388d445dc0da3627f1eae91c8a2575785ac739cdeffebce16b2237f8220f",
+        "ggml/src/libggml-cpu.a": "e3cefe0cf3c866aec7d9f06b9181ca4263304dd7307af462195a9b869be953f2",
+        "ggml/src/libggml-base.a": "98059baeddf43574e613949b8382d67c088f3f62d1b84c3d47bef31581bcae1c"
+      },
+      "gpu_executed": false
+    },
+    {
+      "task_factor": 9,
+      "binary": "/home/yayoi/.local/state/strata-sycl/verifier-registry-20261006-v3/strata-registry-guard-normalized-tasks9-jit",
+      "sha256": "798a7fb4bff8216f268fc798d3e75267df02dc5243e55d9b4b11eb5359b2e124",
+      "production_cpu_archive_sha256": {
+        "libstrata_kernels_cpu.a": "ac0a17a817eef883083214efa941ff2d6ead3e4549c0306e91b3bf78b038577c",
+        "ggml/src/libggml-cpu.a": "e3cefe0cf3c866aec7d9f06b9181ca4263304dd7307af462195a9b869be953f2",
+        "ggml/src/libggml-base.a": "98059baeddf43574e613949b8382d67c088f3f62d1b84c3d47bef31581bcae1c"
+      },
+      "gpu_executed": false
+    }
+  ],
+  "passed": true,
+  "earlier_attempt": "engine-build.json retains the failed identity check: configuration without ONEAPI_ROOT added -lm. Environment normalized here to match the existing oneAPI configuration.",
+  "restored_reference_sha256": "43ad474d17a51a27841d1bb0d536ac4e27fa95af83a4aecebd06f78fd1f4eaf3"
+}

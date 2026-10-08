@@ -2,6 +2,7 @@
 #define NOMINMAX
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/artifact/gguf_reader.hpp"
 #include "strata/kernels/dequant_bf16.hpp"
@@ -30,14 +31,14 @@ int main(int argc, char **argv) try {
     const size_t elements = (size_t) rows * (size_t) cols;
     const uint8_t* source = gguf.tensor_data(*t);
     void *dweight = nullptr, *dfloat = nullptr, *dbf16 = nullptr;
-    if (DPCT_CHECK_ERROR(dweight = (void *)sycl::malloc_device(
-                             weight_bytes, dpct::get_in_order_queue())) != 0 ||
+    if (DPCT_CHECK_ERROR(dweight = (void *)strata::checked_usm(sycl::malloc_device(
+                             weight_bytes, dpct::get_in_order_queue()))) != 0 ||
         DPCT_CHECK_ERROR(
-            dfloat = (void *)sycl::malloc_device(
-                elements * sizeof(float), dpct::get_in_order_queue())) != 0 ||
-        DPCT_CHECK_ERROR(dbf16 = (void *)sycl::malloc_device(
+            dfloat = (void *)strata::checked_usm(sycl::malloc_device(
+                elements * sizeof(float), dpct::get_in_order_queue()))) != 0 ||
+        DPCT_CHECK_ERROR(dbf16 = (void *)strata::checked_usm(sycl::malloc_device(
                              elements * sizeof(uint16_t),
-                             dpct::get_in_order_queue())) != 0) {
+                             dpct::get_in_order_queue()))) != 0) {
         std::fprintf(stderr, "CUDA allocation failed\n");
         return 1;
     }

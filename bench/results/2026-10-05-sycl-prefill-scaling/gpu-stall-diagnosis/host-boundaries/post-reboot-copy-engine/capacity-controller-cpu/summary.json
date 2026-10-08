@@ -1,0 +1,514 @@
+{
+  "scope": "CPU protocol stub only; no real model or GPU execution",
+  "controller_sha256": "0f0f51bf6e6b9c778005da8123ea30b022f7b96925873cea523b5d0446d8d9b3",
+  "stub_sha256": "12a66e85ff5198c79c743f8374d5eb9e243a1752faa50f611126f4823ab6fac0",
+  "checks": [
+    {
+      "name": "valid-64",
+      "exit_code": 0,
+      "ple_io": "direct",
+      "expected_completion": true,
+      "completed": true,
+      "terminal_error": null,
+      "processes": [
+        {
+          "pid": 480330,
+          "start_ticks": 763901,
+          "started_monotonic": 7639.013615445,
+          "exit_code": 0,
+          "still_alive": false,
+          "cleanup_actions": [
+            "QUIT"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "valid-262144",
+      "exit_code": 0,
+      "ple_io": "direct",
+      "expected_completion": true,
+      "completed": true,
+      "terminal_error": null,
+      "processes": [
+        {
+          "pid": 480347,
+          "start_ticks": 763942,
+          "started_monotonic": 7639.421128388,
+          "exit_code": 0,
+          "still_alive": false,
+          "cleanup_actions": [
+            "QUIT"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "overrun-64",
+      "exit_code": 1,
+      "ple_io": "direct",
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError([(61, 1), (62, 4)])",
+      "processes": [
+        {
+          "pid": 480376,
+          "start_ticks": 763999,
+          "started_monotonic": 7639.998884269,
+          "exit_code": 0,
+          "still_alive": false,
+          "cleanup_actions": [
+            "QUIT"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "last-cell-missing-64",
+      "exit_code": 1,
+      "ple_io": "direct",
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError([(61, 1), (62, 1)])",
+      "processes": [
+        {
+          "pid": 480405,
+          "start_ticks": 764047,
+          "started_monotonic": 7640.47140733,
+          "exit_code": 0,
+          "still_alive": false,
+          "cleanup_actions": [
+            "QUIT"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "wrong-tail-64",
+      "exit_code": 1,
+      "ple_io": "direct",
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError([(61, 1), (63, 1)])",
+      "processes": [
+        {
+          "pid": 480451,
+          "start_ticks": 764070,
+          "started_monotonic": 7640.708579089,
+          "exit_code": 0,
+          "still_alive": false,
+          "cleanup_actions": [
+            "QUIT"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "early-eos-64",
+      "exit_code": 1,
+      "ple_io": "direct",
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError(['REUSED 0', 'T 100', 'LP -0.5 100:-0.5', 'DONE 1 62 1.0 1.0 stop 0 0 0 0 0 0 0 0.0 62 0'])",
+      "processes": [
+        {
+          "pid": 480465,
+          "start_ticks": 764095,
+          "started_monotonic": 7640.954991835,
+          "exit_code": 0,
+          "still_alive": false,
+          "cleanup_actions": [
+            "QUIT"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "wrong-count-64",
+      "exit_code": 1,
+      "ple_io": "direct",
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError(['DONE', '2', '61', '1.0', '1.0', 'length', '0', '0', '0', '0', '0', '0', '0', '0.0', '62', '0'])",
+      "processes": [
+        {
+          "pid": 480477,
+          "start_ticks": 764118,
+          "started_monotonic": 7641.185674197,
+          "exit_code": 0,
+          "still_alive": false,
+          "cleanup_actions": [
+            "QUIT"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "wrong-finish-64",
+      "exit_code": 1,
+      "ple_io": "direct",
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError(['DONE', '2', '62', '1.0', '1.0', 'stop', '0', '0', '0', '0', '0', '0', '0', '0.0', '62', '0'])",
+      "processes": [
+        {
+          "pid": 480491,
+          "start_ticks": 764140,
+          "started_monotonic": 7641.405296539,
+          "exit_code": 0,
+          "still_alive": false,
+          "cleanup_actions": [
+            "QUIT"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "nan-logprob-64",
+      "exit_code": 1,
+      "ple_io": "direct",
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError()",
+      "processes": [
+        {
+          "pid": 480552,
+          "start_ticks": 764164,
+          "started_monotonic": 7641.64256905,
+          "exit_code": 0,
+          "still_alive": false,
+          "cleanup_actions": [
+            "QUIT"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "stale-head-64",
+      "exit_code": 1,
+      "ple_io": "direct",
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "FileNotFoundError(2, 'No such file or directory')",
+      "processes": [
+        {
+          "pid": 480592,
+          "start_ticks": 764187,
+          "started_monotonic": 7641.878950027,
+          "exit_code": 0,
+          "still_alive": false,
+          "cleanup_actions": [
+            "QUIT"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "refusal-executes-64",
+      "exit_code": 1,
+      "ple_io": "direct",
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError(['ERR prompt (64 tokens) + max_new (1) exceeds the context (64)'])",
+      "processes": [
+        {
+          "pid": 480601,
+          "start_ticks": 764211,
+          "started_monotonic": 7642.112526697,
+          "exit_code": 0,
+          "still_alive": false,
+          "cleanup_actions": [
+            "QUIT"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "valid-64-ple-ram",
+      "exit_code": 0,
+      "ple_io": "ram",
+      "expected_completion": true,
+      "completed": true,
+      "terminal_error": null,
+      "processes": [
+        {
+          "pid": 480613,
+          "start_ticks": 764235,
+          "started_monotonic": 7642.354335688,
+          "exit_code": 0,
+          "still_alive": false,
+          "cleanup_actions": [
+            "QUIT"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "valid-262144-ple-ram",
+      "exit_code": 0,
+      "ple_io": "ram",
+      "expected_completion": true,
+      "completed": true,
+      "terminal_error": null,
+      "processes": [
+        {
+          "pid": 480625,
+          "start_ticks": 764251,
+          "started_monotonic": 7642.517726736,
+          "exit_code": 0,
+          "still_alive": false,
+          "cleanup_actions": [
+            "QUIT"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "missing-ram-startup-64-ple-ram",
+      "exit_code": 1,
+      "ple_io": "ram",
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError('RAM PLE startup record missing')",
+      "processes": [
+        {
+          "pid": 480635,
+          "start_ticks": 764282,
+          "started_monotonic": 7642.824487043,
+          "exit_code": 0,
+          "still_alive": false,
+          "cleanup_actions": [
+            "QUIT"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "no-ready-64",
+      "exit_code": 1,
+      "ple_io": "direct",
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "RuntimeError(\"engine required forced cleanup: ['QUIT', 'SIGTERM']\")",
+      "processes": [
+        {
+          "pid": 480647,
+          "start_ticks": 764304,
+          "started_monotonic": 7643.046368082,
+          "exit_code": -15,
+          "still_alive": false,
+          "cleanup_actions": [
+            "QUIT",
+            "SIGTERM"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "does-not-read-262144",
+      "exit_code": 1,
+      "ple_io": "direct",
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "RuntimeError(\"engine required forced cleanup: ['SIGTERM']\")",
+      "processes": [
+        {
+          "pid": 480697,
+          "start_ticks": 764385,
+          "started_monotonic": 7643.852703314,
+          "exit_code": -15,
+          "still_alive": false,
+          "cleanup_actions": [
+            "SIGTERM"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ignores-quit-64",
+      "exit_code": 1,
+      "ple_io": "direct",
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "RuntimeError(\"engine required forced cleanup: ['QUIT', 'SIGTERM', 'SIGKILL']\")",
+      "processes": [
+        {
+          "pid": 480734,
+          "start_ticks": 764470,
+          "started_monotonic": 7644.701404595,
+          "exit_code": -9,
+          "still_alive": false,
+          "cleanup_actions": [
+            "QUIT",
+            "SIGTERM",
+            "SIGKILL"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "exit-fails-64",
+      "exit_code": 1,
+      "ple_io": "direct",
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "AssertionError()",
+      "processes": [
+        {
+          "pid": 480833,
+          "start_ticks": 764605,
+          "started_monotonic": 7646.059589252,
+          "exit_code": 7,
+          "still_alive": false,
+          "cleanup_actions": [
+            "QUIT"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "quit-writes-64",
+      "exit_code": 0,
+      "ple_io": "direct",
+      "expected_completion": true,
+      "completed": true,
+      "terminal_error": null,
+      "processes": [
+        {
+          "pid": 480846,
+          "start_ticks": 764630,
+          "started_monotonic": 7646.306287722,
+          "exit_code": 0,
+          "still_alive": false,
+          "cleanup_actions": [
+            "QUIT"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "environment-file-64",
+      "exit_code": 0,
+      "ple_io": "direct",
+      "expected_completion": true,
+      "completed": true,
+      "terminal_error": null,
+      "processes": [
+        {
+          "pid": 480898,
+          "start_ticks": 764710,
+          "started_monotonic": 7647.108370441,
+          "exit_code": 0,
+          "still_alive": false,
+          "cleanup_actions": [
+            "QUIT"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "boundary-valid-64",
+      "exit_code": 0,
+      "expected_completion": true,
+      "completed": true,
+      "terminal_error": null,
+      "processes": [
+        {
+          "pid": 480908,
+          "start_ticks": 764725,
+          "started_monotonic": 7647.258988686,
+          "exit_code": 2,
+          "still_alive": false,
+          "cleanup_actions": []
+        },
+        {
+          "pid": 480911,
+          "start_ticks": 764729,
+          "started_monotonic": 7647.293278095,
+          "exit_code": 2,
+          "still_alive": false,
+          "cleanup_actions": []
+        }
+      ]
+    },
+    {
+      "name": "boundary-valid-262144",
+      "exit_code": 0,
+      "expected_completion": true,
+      "completed": true,
+      "terminal_error": null,
+      "processes": [
+        {
+          "pid": 480922,
+          "start_ticks": 764743,
+          "started_monotonic": 7647.438081666,
+          "exit_code": 2,
+          "still_alive": false,
+          "cleanup_actions": []
+        },
+        {
+          "pid": 480926,
+          "start_ticks": 764753,
+          "started_monotonic": 7647.535386937,
+          "exit_code": 2,
+          "still_alive": false,
+          "cleanup_actions": []
+        }
+      ]
+    },
+    {
+      "name": "cli-valid-64",
+      "exit_code": 0,
+      "expected_completion": true,
+      "completed": true,
+      "terminal_error": null,
+      "processes": [
+        {
+          "pid": 480937,
+          "start_ticks": 764767,
+          "started_monotonic": 7647.677939406,
+          "exit_code": 0,
+          "still_alive": false,
+          "cleanup_actions": []
+        }
+      ]
+    },
+    {
+      "name": "cli-valid-262144",
+      "exit_code": 0,
+      "expected_completion": true,
+      "completed": true,
+      "terminal_error": null,
+      "processes": [
+        {
+          "pid": 480945,
+          "start_ticks": 764782,
+          "started_monotonic": 7647.827310013,
+          "exit_code": 0,
+          "still_alive": false,
+          "cleanup_actions": []
+        }
+      ]
+    },
+    {
+      "name": "cli-cli-hangs-64",
+      "exit_code": 1,
+      "expected_completion": false,
+      "completed": false,
+      "terminal_error": "RuntimeError(\"engine required forced cleanup: ['SIGTERM']\")",
+      "processes": [
+        {
+          "pid": 480956,
+          "start_ticks": 764797,
+          "started_monotonic": 7647.977428965,
+          "exit_code": -15,
+          "still_alive": false,
+          "cleanup_actions": [
+            "SIGTERM"
+          ]
+        }
+      ]
+    }
+  ],
+  "completed": true
+}

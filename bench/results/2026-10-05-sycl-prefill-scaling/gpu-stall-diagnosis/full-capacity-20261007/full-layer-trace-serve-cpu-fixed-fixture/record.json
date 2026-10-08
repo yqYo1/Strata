@@ -1,0 +1,80 @@
+{
+  "scope": "CPU stub/GDB/PTY only; no model, GPU, kernel-journal or service operation",
+  "controller_sha256": "22e4d7e621b53b85d94b9de117f4f18a4b3960a3843f5ecfdd59fb0b5b940e46",
+  "stub_sha256": "3d55ae40bb63273e670709c1fd6ef68664f136804247d6c196183c8d2ddb7bea",
+  "checks": [
+    {
+      "mode": "valid",
+      "expected": true,
+      "observed": true,
+      "exit_code": 0,
+      "error": null,
+      "cleanup": {
+        "forced": false,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    },
+    {
+      "mode": "overrun",
+      "expected": false,
+      "observed": false,
+      "exit_code": 1,
+      "error": "AssertionError()",
+      "cleanup": {
+        "forced": true,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    },
+    {
+      "mode": "last-cell-missing",
+      "expected": false,
+      "observed": false,
+      "exit_code": 1,
+      "error": "AssertionError()",
+      "cleanup": {
+        "forced": true,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    },
+    {
+      "mode": "early-eos",
+      "expected": false,
+      "observed": false,
+      "exit_code": 1,
+      "error": "AssertionError()",
+      "cleanup": {
+        "forced": true,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    },
+    {
+      "mode": "stale-head",
+      "expected": false,
+      "observed": false,
+      "exit_code": 1,
+      "error": "FileNotFoundError(2, 'No such file or directory')",
+      "cleanup": {
+        "forced": true,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    },
+    {
+      "mode": "refusal-executes",
+      "expected": false,
+      "observed": false,
+      "exit_code": 1,
+      "error": "AssertionError()",
+      "cleanup": {
+        "forced": true,
+        "inferior_survived": false,
+        "gdb_survived": false
+      }
+    }
+  ],
+  "completed": false
+}

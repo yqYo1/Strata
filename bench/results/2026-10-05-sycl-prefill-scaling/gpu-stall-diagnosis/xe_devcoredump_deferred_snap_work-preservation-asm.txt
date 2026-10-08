@@ -1,0 +1,141 @@
+
+/home/yayoi/.local/state/strata-sycl/gpu-stall-diagnosis/20261006-012240/installed-xe.ko:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000009680 <xe_devcoredump_deferred_snap_work>:
+    9680:	e8 00 00 00 00       	call   9685 <xe_devcoredump_deferred_snap_work+0x5>
+			9681: R_X86_64_PLT32	__fentry__-0x4
+    9685:	55                   	push   %rbp
+    9686:	31 c9                	xor    %ecx,%ecx
+    9688:	49 c7 c1 00 00 00 00 	mov    $0x0,%r9
+			968b: R_X86_64_32S	.text+0x9080
+    968f:	41 b8 c0 0c 00 00    	mov    $0xcc0,%r8d
+    9695:	48 c7 c6 00 00 00 00 	mov    $0x0,%rsi
+			9698: R_X86_64_32S	__this_module
+    969c:	48 89 e5             	mov    %rsp,%rbp
+    969f:	41 57                	push   %r15
+    96a1:	41 56                	push   %r14
+    96a3:	41 55                	push   %r13
+    96a5:	4c 8d 6f a0          	lea    -0x60(%rdi),%r13
+    96a9:	41 54                	push   %r12
+    96ab:	4c 8d a7 38 f9 ff ff 	lea    -0x6c8(%rdi),%r12
+    96b2:	4c 89 ea             	mov    %r13,%rdx
+    96b5:	53                   	push   %rbx
+    96b6:	48 8b 47 f8          	mov    -0x8(%rdi),%rax
+    96ba:	48 89 fb             	mov    %rdi,%rbx
+    96bd:	48 8b 00             	mov    (%rax),%rax
+    96c0:	48 8b 00             	mov    (%rax),%rax
+    96c3:	48 8b 78 08          	mov    0x8(%rax),%rdi
+    96c7:	68 80 ee 36 00       	push   $0x36ee80
+    96cc:	68 00 00 00 00       	push   $0x0
+			96cd: R_X86_64_32S	.text+0x93b0
+    96d1:	e8 00 00 00 00       	call   96d6 <xe_devcoredump_deferred_snap_work+0x56>
+			96d2: R_X86_64_PLT32	dev_coredumpm_timeout-0x4
+    96d6:	4c 89 e7             	mov    %r12,%rdi
+    96d9:	e8 00 00 00 00       	call   96de <xe_devcoredump_deferred_snap_work+0x5e>
+			96da: R_X86_64_PLT32	xe_pm_runtime_get-0x4
+    96de:	48 8b 43 f8          	mov    -0x8(%rbx),%rax
+    96e2:	be 00 00 01 00       	mov    $0x10000,%esi
+    96e7:	4c 8d b0 c8 01 00 00 	lea    0x1c8(%rax),%r14
+    96ee:	4c 89 f7             	mov    %r14,%rdi
+    96f1:	e8 00 00 00 00       	call   96f6 <xe_devcoredump_deferred_snap_work+0x76>
+			96f2: R_X86_64_PLT32	xe_force_wake_get-0x4
+    96f6:	5a                   	pop    %rdx
+    96f7:	59                   	pop    %rcx
+    96f8:	41 89 c7             	mov    %eax,%r15d
+    96fb:	a9 00 00 01 00       	test   $0x10000,%eax
+    9700:	75 27                	jne    9729 <xe_devcoredump_deferred_snap_work+0xa9>
+    9702:	48 8b 43 f8          	mov    -0x8(%rbx),%rax
+    9706:	0f b6 48 26          	movzbl 0x26(%rax),%ecx
+    970a:	48 8b 00             	mov    (%rax),%rax
+    970d:	48 8b 38             	mov    (%rax),%rdi
+    9710:	0f b6 50 08          	movzbl 0x8(%rax),%edx
+    9714:	48 85 ff             	test   %rdi,%rdi
+    9717:	74 04                	je     971d <xe_devcoredump_deferred_snap_work+0x9d>
+    9719:	48 8b 7f 08          	mov    0x8(%rdi),%rdi
+    971d:	48 c7 c6 00 00 00 00 	mov    $0x0,%rsi
+			9720: R_X86_64_32S	.rodata+0x3a9a0
+    9724:	e8 00 00 00 00       	call   9729 <xe_devcoredump_deferred_snap_work+0xa9>
+			9725: R_X86_64_PLT32	_dev_info-0x4
+    9729:	48 8b bb 20 01 00 00 	mov    0x120(%rbx),%rdi
+    9730:	e8 00 00 00 00       	call   9735 <xe_devcoredump_deferred_snap_work+0xb5>
+			9731: R_X86_64_PLT32	xe_vm_snapshot_capture_delayed-0x4
+    9735:	48 8b 7b 30          	mov    0x30(%rbx),%rdi
+    9739:	e8 00 00 00 00       	call   973e <xe_devcoredump_deferred_snap_work+0xbe>
+			973a: R_X86_64_PLT32	xe_guc_exec_queue_snapshot_capture_delayed-0x4
+    973e:	44 89 fe             	mov    %r15d,%esi
+    9741:	4c 89 f7             	mov    %r14,%rdi
+    9744:	e8 00 00 00 00       	call   9749 <xe_devcoredump_deferred_snap_work+0xc9>
+			9745: R_X86_64_PLT32	xe_force_wake_put-0x4
+    9749:	4c 89 e9             	mov    %r13,%rcx
+    974c:	31 d2                	xor    %edx,%edx
+    974e:	31 ff                	xor    %edi,%edi
+    9750:	48 c7 83 30 01 00 00 	movq   $0x0,0x130(%rbx)
+    9757:	00 00 00 00
+    975b:	48 be ff ff ff ff ff 	movabs $0x7fffffffffffffff,%rsi
+    9762:	ff ff 7f
+    9765:	e8 56 f6 ff ff       	call   8dc0 <__xe_devcoredump_read>
+    976a:	41 b8 ff ff ff ff    	mov    $0xffffffff,%r8d
+    9770:	b9 c0 0c 10 00       	mov    $0x100cc0,%ecx
+    9775:	31 f6                	xor    %esi,%esi
+    9777:	48 89 83 28 01 00 00 	mov    %rax,0x128(%rbx)
+    977e:	ba 01 00 00 00       	mov    $0x1,%edx
+    9783:	48 3d 00 00 00 60    	cmp    $0x60000000,%rax
+    9789:	7e 60                	jle    97eb <xe_devcoredump_deferred_snap_work+0x16b>
+    978b:	bf 00 00 00 60       	mov    $0x60000000,%edi
+    9790:	e8 00 00 00 00       	call   9795 <xe_devcoredump_deferred_snap_work+0x115>
+			9791: R_X86_64_PLT32	__kvmalloc_node_noprof-0x4
+    9795:	48 89 83 38 01 00 00 	mov    %rax,0x138(%rbx)
+    979c:	48 89 c7             	mov    %rax,%rdi
+    979f:	48 85 c0             	test   %rax,%rax
+    97a2:	74 0f                	je     97b3 <xe_devcoredump_deferred_snap_work+0x133>
+    97a4:	4c 89 e9             	mov    %r13,%rcx
+    97a7:	31 d2                	xor    %edx,%edx
+    97a9:	be 00 00 00 60       	mov    $0x60000000,%esi
+    97ae:	e8 0d f6 ff ff       	call   8dc0 <__xe_devcoredump_read>
+    97b3:	49 8d 44 24 ff       	lea    -0x1(%r12),%rax
+    97b8:	48 3d ff ef ff ff    	cmp    $0xffffffffffffefff,%rax
+    97be:	77 08                	ja     97c8 <xe_devcoredump_deferred_snap_work+0x148>
+    97c0:	4c 89 e7             	mov    %r12,%rdi
+    97c3:	e8 00 00 00 00       	call   97c8 <xe_devcoredump_deferred_snap_work+0x148>
+			97c4: R_X86_64_PLT32	xe_pm_runtime_put-0x4
+    97c8:	48 8d 65 d8          	lea    -0x28(%rbp),%rsp
+    97cc:	5b                   	pop    %rbx
+    97cd:	41 5c                	pop    %r12
+    97cf:	41 5d                	pop    %r13
+    97d1:	41 5e                	pop    %r14
+    97d3:	41 5f                	pop    %r15
+    97d5:	5d                   	pop    %rbp
+    97d6:	31 c0                	xor    %eax,%eax
+    97d8:	31 d2                	xor    %edx,%edx
+    97da:	31 c9                	xor    %ecx,%ecx
+    97dc:	31 f6                	xor    %esi,%esi
+    97de:	31 ff                	xor    %edi,%edi
+    97e0:	45 31 c0             	xor    %r8d,%r8d
+    97e3:	45 31 c9             	xor    %r9d,%r9d
+    97e6:	e9 00 00 00 00       	jmp    97eb <xe_devcoredump_deferred_snap_work+0x16b>
+			97e7: R_X86_64_PLT32	__x86_return_thunk-0x4
+    97eb:	48 89 c7             	mov    %rax,%rdi
+    97ee:	e8 00 00 00 00       	call   97f3 <xe_devcoredump_deferred_snap_work+0x173>
+			97ef: R_X86_64_PLT32	__kvmalloc_node_noprof-0x4
+    97f3:	48 89 83 38 01 00 00 	mov    %rax,0x138(%rbx)
+    97fa:	48 89 c7             	mov    %rax,%rdi
+    97fd:	48 85 c0             	test   %rax,%rax
+    9800:	74 b1                	je     97b3 <xe_devcoredump_deferred_snap_work+0x133>
+    9802:	48 8b b3 28 01 00 00 	mov    0x128(%rbx),%rsi
+    9809:	4c 89 e9             	mov    %r13,%rcx
+    980c:	31 d2                	xor    %edx,%edx
+    980e:	e8 ad f5 ff ff       	call   8dc0 <__xe_devcoredump_read>
+    9813:	48 8d 7b c8          	lea    -0x38(%rbx),%rdi
+    9817:	e8 54 fa ff ff       	call   9270 <xe_devcoredump_snapshot_free>
+    981c:	eb 95                	jmp    97b3 <xe_devcoredump_deferred_snap_work+0x133>
+
+Disassembly of section .altinstr_replacement:
+
+Disassembly of section .init.text:
+
+Disassembly of section .exit.text:
+
+Disassembly of section .static_call.text:

@@ -1,0 +1,13 @@
+{
+  "references": [
+    {
+      "url": "https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-c/2026-0/reproducibility-conditions.html",
+      "finding": "GPU CNR covers all-precision BLAS level3 including GEMM for both SYCL and OpenMP offload on the same GPU."
+    },
+    {
+      "url": "https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-c/2026-0/getting-started-with-conditional-numerical.html",
+      "finding": "MKL_CBWR=AUTO enables Intel GPU CNR, and AUTO is a supported branch on a non-Intel CPU."
+    }
+  ],
+  "inference": "First differing GDN ordinal11 (layer14), small float deltas, and QSA ordinal3 (layer15) in the second8K block motivate testing reproducible BLAS reductions. This does not prove those reductions cause the observed difference."
+}

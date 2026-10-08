@@ -1,0 +1,327 @@
+{
+  "scope": "One normal-MTP assistant-suffix 2048-token context-4096/chunk-1024/layer-major-1/int8 request; clean diagnostic environment, existing per-phase synchronization retained; compare all logits/IDs/logprobs between control and unitrace; not unsynchronized throughput or full capacity",
+  "mode": "clean",
+  "active": false,
+  "passed": true,
+  "requests": [
+    {
+      "name": "2048",
+      "start_epoch_us": 1791352224802477.0,
+      "ids": [
+        2,
+        9988,
+        314,
+        1510
+      ],
+      "logprobs": [
+        "LP -1.227371 2:-1.227371 40:-1.332550 1919:-1.678836 8160:-2.901873 760:-3.109806",
+        "LP -0.680524 9988:-0.680524 5927:-0.964070 17775:-2.479280 36593:-4.530006 733:-5.136003",
+        "LP -0.037686 314:-0.037686 25:-3.332997 321:-7.521450 286:-8.951688 17775:-9.017626",
+        "LP -0.003111 1510:-0.003111 279:-6.633730 4361:-8.024593 6707:-8.093692 387:-8.297028"
+      ],
+      "protocol": [
+        {
+          "text": "RESUME 0",
+          "epoch_us": 1791352224807868.2
+        },
+        {
+          "text": "PP 256 2048 34611 7.4",
+          "epoch_us": 1791352259418451.8
+        },
+        {
+          "text": "PP 1280 2048 34794 36.8",
+          "epoch_us": 1791352259597744.2
+        },
+        {
+          "text": "PP 2047 2048 34972 58.5",
+          "epoch_us": 1791352259777199.5
+        },
+        {
+          "text": "REUSED 0",
+          "epoch_us": 1791352261405599.8
+        },
+        {
+          "text": "T 2",
+          "epoch_us": 1791352261488175.8
+        },
+        {
+          "text": "LP -1.227371 2:-1.227371 40:-1.332550 1919:-1.678836 8160:-2.901873 760:-3.109806",
+          "epoch_us": 1791352261488184.5
+        },
+        {
+          "text": "T 9988",
+          "epoch_us": 1791352261674414.2
+        },
+        {
+          "text": "LP -0.680524 9988:-0.680524 5927:-0.964070 17775:-2.479280 36593:-4.530006 733:-5.136003",
+          "epoch_us": 1791352261674422.0
+        },
+        {
+          "text": "T 314",
+          "epoch_us": 1791352261674425.2
+        },
+        {
+          "text": "LP -0.037686 314:-0.037686 25:-3.332997 321:-7.521450 286:-8.951688 17775:-9.017626",
+          "epoch_us": 1791352261674428.5
+        },
+        {
+          "text": "T 1510",
+          "epoch_us": 1791352261674430.8
+        },
+        {
+          "text": "LP -0.003111 1510:-0.003111 279:-6.633730 4361:-8.024593 6707:-8.093692 387:-8.297028",
+          "epoch_us": 1791352261679577.0
+        },
+        {
+          "text": "DONE 4 2048 36599.5 273.9 length 3 3 0 102 2400 0 0 0.0 2048 0",
+          "epoch_us": 1791352261679580.8
+        }
+      ],
+      "done": "DONE 4 2048 36599.5 273.9 length 3 3 0 102 2400 0 0 0.0 2048 0",
+      "end_epoch_us": 1791352261679582.5,
+      "equality": {
+        "control_finite_head_and_four_tokens": true
+      },
+      "head_sha256": "8c5a4ed642a9b60cb96a34cf651e5b31a9e7772af84021123bdc7c8626892b0a"
+    }
+  ],
+  "protocol": [
+    {
+      "text": "INFO context=4096 kv=int8 kv_resident=0 expert_slots=128 expert_cache_mib=325 expert_slots_primary=128 expert_cache_primary_mib=325 spec=4 mtp_max=0 lookup=0 vram_free_mib=3999 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.00 spec_min_p=0.00 conversation_cache_mib=256 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=1 engine=0.1.39-sycl",
+      "epoch_us": 1791352224802287.0
+    },
+    {
+      "text": "READY 4096 stop",
+      "epoch_us": 1791352224802296.8
+    },
+    {
+      "text": "RESUME 0",
+      "epoch_us": 1791352224807866.2
+    },
+    {
+      "text": "PP 256 2048 34611 7.4",
+      "epoch_us": 1791352259418447.0
+    },
+    {
+      "text": "PP 1280 2048 34794 36.8",
+      "epoch_us": 1791352259597739.2
+    },
+    {
+      "text": "PP 2047 2048 34972 58.5",
+      "epoch_us": 1791352259777196.0
+    },
+    {
+      "text": "REUSED 0",
+      "epoch_us": 1791352261405595.5
+    },
+    {
+      "text": "T 2",
+      "epoch_us": 1791352261488171.8
+    },
+    {
+      "text": "LP -1.227371 2:-1.227371 40:-1.332550 1919:-1.678836 8160:-2.901873 760:-3.109806",
+      "epoch_us": 1791352261488183.8
+    },
+    {
+      "text": "T 9988",
+      "epoch_us": 1791352261674410.2
+    },
+    {
+      "text": "LP -0.680524 9988:-0.680524 5927:-0.964070 17775:-2.479280 36593:-4.530006 733:-5.136003",
+      "epoch_us": 1791352261674421.5
+    },
+    {
+      "text": "T 314",
+      "epoch_us": 1791352261674424.8
+    },
+    {
+      "text": "LP -0.037686 314:-0.037686 25:-3.332997 321:-7.521450 286:-8.951688 17775:-9.017626",
+      "epoch_us": 1791352261674427.8
+    },
+    {
+      "text": "T 1510",
+      "epoch_us": 1791352261674430.2
+    },
+    {
+      "text": "LP -0.003111 1510:-0.003111 279:-6.633730 4361:-8.024593 6707:-8.093692 387:-8.297028",
+      "epoch_us": 1791352261679574.5
+    },
+    {
+      "text": "DONE 4 2048 36599.5 273.9 length 3 3 0 102 2400 0 0 0.0 2048 0",
+      "epoch_us": 1791352261679580.2
+    }
+  ],
+  "deadline_seconds": 600,
+  "profiler_source_commit": "6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033",
+  "binary_sha256": "3f3ed0526848f6c7273a70da8802cbe00389b67791629c000c26399bc50823f2",
+  "started_utc": "2026-10-07T05:49:58.012466+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "source_sha256": "2017baa9b514d75fe2ca7ad49fea7c8f1acbd0895bb8b3015739bb89dc05fdcf",
+  "startup": [
+    "INFO context=4096 kv=int8 kv_resident=0 expert_slots=128 expert_cache_mib=325 expert_slots_primary=128 expert_cache_primary_mib=325 spec=4 mtp_max=0 lookup=0 vram_free_mib=3999 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.00 spec_min_p=0.00 conversation_cache_mib=256 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=1 engine=0.1.39-sycl",
+    "READY 4096 stop"
+  ],
+  "target_environment": {
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/umf/1.1/lib:/usr/lib/x86_64-linux-gnu:/opt/intel/oneapi/mkl/2026.1/lib",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "STRATA_PREFILL_COMPACT": "2",
+    "STRATA_PREFILL_LAYER_MAJOR": "1",
+    "STRATA_PREFILL_RELEASE_DRAFT": "1",
+    "STRATA_PREFILL_DRAFT_VERIFY": "1",
+    "STRATA_PREFILL_EXPERT_WAIT_BATCH": "0",
+    "STRATA_PREFILL_SYNC": "1",
+    "STRATA_PREFILL_RELEASE_CACHE": "1",
+    "STRATA_PREFILL_CACHE_ALLOC": "vmm",
+    "STRATA_PREFILL_CACHE_RESTORE": "ram",
+    "STRATA_PREFILL_LAYER_MAJOR_R_INPLACE": "1",
+    "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "0",
+    "STRATA_PREFILL_ATTN_BATCH": "128",
+    "STRATA_PREFILL_ATTN_LAYOUT": "4",
+    "STRATA_PREFILL_TOPK_TUNED": "1",
+    "STRATA_GDN_KEYHEAD": "0",
+    "STRATA_GDN_KEYHEAD_TUNED": "1",
+    "STRATA_DUMP_FIRST_LOGITS": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-model-2048-suffix-clean/first-head.bin"
+  },
+  "active_request": null,
+  "job": {
+    "argv": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/strata-prefill-workspace-reclaim-candidate",
+      "--pack",
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+      "--native",
+      "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "--serve",
+      "--max-context",
+      "4096",
+      "--spec",
+      "4",
+      "--spec-min-p",
+      "0",
+      "--mtp",
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+      "--suffix-draft",
+      "0",
+      "--prefill",
+      "1024",
+      "--no-prefill-borrow",
+      "--expert-cache",
+      "128",
+      "--expert-profile",
+      "data/expert-profile.bin",
+      "--expert-cache-per-layer",
+      "--pool-workers",
+      "5",
+      "--pcie-frac",
+      "0",
+      "--spec-split",
+      "--adapt-swaps",
+      "0",
+      "--conversation-cache-mib",
+      "256",
+      "--conversation-cache-slots",
+      "4",
+      "--greedy",
+      "--short-read",
+      "0",
+      "--kv",
+      "int8",
+      "--ple-io",
+      "direct",
+      "--prompt-cache",
+      "0"
+    ],
+    "root": {
+      "pid": 2538079,
+      "start_ticks": 4187717,
+      "state": "R",
+      "ppid": 2538049,
+      "pgrp": 2538079,
+      "session": 2538079
+    },
+    "started_utc": "2026-10-07T05:49:58.064257+00:00",
+    "active": false,
+    "environment": {
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/umf/1.1/lib:/usr/lib/x86_64-linux-gnu:/opt/intel/oneapi/mkl/2026.1/lib",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_PREFILL_COMPACT": "2",
+      "STRATA_PREFILL_LAYER_MAJOR": "1",
+      "STRATA_PREFILL_RELEASE_DRAFT": "1",
+      "STRATA_PREFILL_DRAFT_VERIFY": "1",
+      "STRATA_PREFILL_EXPERT_WAIT_BATCH": "0",
+      "STRATA_PREFILL_SYNC": "1",
+      "STRATA_PREFILL_RELEASE_CACHE": "1",
+      "STRATA_PREFILL_CACHE_ALLOC": "vmm",
+      "STRATA_PREFILL_CACHE_RESTORE": "ram",
+      "STRATA_PREFILL_LAYER_MAJOR_R_INPLACE": "1",
+      "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "0",
+      "STRATA_PREFILL_ATTN_BATCH": "128",
+      "STRATA_PREFILL_ATTN_LAYOUT": "4",
+      "STRATA_PREFILL_TOPK_TUNED": "1",
+      "STRATA_GDN_KEYHEAD": "0",
+      "STRATA_GDN_KEYHEAD_TUNED": "1",
+      "STRATA_DUMP_FIRST_LOGITS": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-model-2048-suffix-clean/first-head.bin"
+    },
+    "owned": [
+      {
+        "pid": 2538079,
+        "start_ticks": 4187717,
+        "state": "S",
+        "ppid": 2538049,
+        "pgrp": 2538079,
+        "session": 2538079
+      }
+    ],
+    "elapsed_seconds": 67.39580500600277,
+    "exit_code": 0,
+    "signals": [],
+    "survivors": [],
+    "finished_utc": "2026-10-07T05:51:05.426886+00:00"
+  },
+  "elapsed_seconds": 67.39600733800035,
+  "new_fault_messages": [],
+  "steps": [
+    {
+      "label": "kernel-before",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "pid": 2538077,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050600811999174766
+    },
+    {
+      "label": "kernel-after",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bf15c6f;b=0a908c16e292429980ff082da39f4bb9;m=9be118c0d;t=65d39ad6d72ca;x=49f482c48228646",
+        "--no-pager",
+        "-o",
+        "short-iso-precise"
+      ],
+      "pid": 2541637,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05057131800276693
+    }
+  ],
+  "finished_utc": "2026-10-07T05:51:05.510313+00:00"
+}

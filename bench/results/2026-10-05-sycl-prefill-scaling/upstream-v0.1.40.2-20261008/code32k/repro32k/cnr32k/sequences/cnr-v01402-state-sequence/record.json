@@ -1,0 +1,60 @@
+{
+  "active": false,
+  "passed": false,
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_cnr_v01402_code32k.py",
+        "patched-default",
+        "state",
+        "1"
+      ],
+      "started_utc": "2026-10-07T18:29:55.837064+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T18:32:16.109253+00:00",
+      "comparison_to_logged": {
+        "prefill_state_different_parts": [],
+        "first_head_equal": true,
+        "ids_equal": true,
+        "logprobs_equal": true
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_cnr_v01402_code32k.py",
+        "patched-default",
+        "state",
+        "2"
+      ],
+      "started_utc": "2026-10-07T18:32:16.109883+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T18:34:36.076914+00:00",
+      "comparison_to_logged": {
+        "prefill_state_different_parts": [
+          1,
+          3,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65
+        ],
+        "first_head_equal": false,
+        "ids_equal": false,
+        "logprobs_equal": false
+      }
+    }
+  ],
+  "started_utc": "2026-10-07T18:26:00.730105+00:00",
+  "controller_sha256": "85f308b8930e9658c33458df5e4e5d640cec49a2f0c716a2708f092b3fed21df",
+  "scope": "Logged production32K with implicit counter conversion disabled and documented MKL_CBWR=AUTO, first use followed by two fresh32K state/head captures without API logging. Compare all66 state parts, all248320 first-head float bytes, generated IDs and protocol logprobs. No speed/full256K claim.",
+  "error": "AssertionError('candidate state/head not reproducible; do not use its timings for tuning')",
+  "finished_utc": "2026-10-07T18:34:36.077564+00:00"
+}

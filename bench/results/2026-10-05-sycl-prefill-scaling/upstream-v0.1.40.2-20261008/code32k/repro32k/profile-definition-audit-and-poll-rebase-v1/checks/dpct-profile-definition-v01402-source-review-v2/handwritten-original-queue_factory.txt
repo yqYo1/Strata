@@ -1,0 +1,12 @@
+sycl::queue *create_queue_impl(bool enable_exception_handler,
+                                 Properties... properties) {
+    sycl::async_handler eh = {};
+    if (enable_exception_handler) {
+      eh = exception_handler;
+    }
+    _queues.push_back(std::make_shared<sycl::queue>(
+        _ctx, *this, eh,
+        sycl::property_list(
+            properties...)));
+    return _queues.back().get();
+  }

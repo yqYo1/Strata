@@ -1,0 +1,16 @@
+--- /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/include/strata/host_wait.hpp
++++ /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-prefill-poll-backoff-v1-20261008/include/strata/host_wait.hpp
+@@ -23,7 +23,12 @@
+             std::fflush(stderr);
+             std::_Exit(1);
+         }
+-        std::this_thread::yield();
++        // Keep the first readiness checks responsive, then stop driving an
++        // event-status query on every scheduler yield while a DMA is pending.
++        // This changes only host polling cadence; readiness still requires the
++        // same operation's completion, and cancellation never frees its buffer.
++        if (polls <= 32) std::this_thread::yield();
++        else std::this_thread::sleep_for(std::chrono::microseconds(10));
+     }
+ }
+ template<class Ready>

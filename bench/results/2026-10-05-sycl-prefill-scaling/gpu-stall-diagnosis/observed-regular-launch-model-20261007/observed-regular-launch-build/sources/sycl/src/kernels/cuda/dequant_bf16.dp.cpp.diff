@@ -1,0 +1,11 @@
+--- sycl/src/kernels/cuda/dequant_bf16.dp.cpp
++++ sycl/src/kernels/cuda/dequant_bf16.dp.cpp.regular
+@@ -231,7 +231,7 @@
+ #define STRATA_DQ(TY)                                                          \
+     {                                                                          \
+         auto exp_props = sycl::ext::oneapi::experimental::properties{          \
+-            sycl::ext::oneapi::experimental::use_root_sync};                   \
++            };                   \
+                                                                                \
+         st->submit([&](sycl::handler &cgh) {                                   \
+             auto p_ct0 = p;                                                    \

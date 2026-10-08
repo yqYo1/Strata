@@ -1,0 +1,55 @@
+{
+  "started_utc": "2026-10-06T11:46:50.353378+00:00",
+  "control_commit": "fde2eed5524034a94b30c5fb8e870ccebddbea90",
+  "scope": "Actual production close method; CPU queue/USM stubs, no SYCL/Level Zero/GPU",
+  "sources": {
+    "control": "658039738d9ff68e28eb193cdf464e9625e9d52a25784d73aebdf136659b50b9",
+    "candidate": "9d9401733fb5b4922ed53896711e464a9b8e3b0e8965f9894c8b1194d487790d"
+  },
+  "runs": [
+    {
+      "variant": "control",
+      "mode": "read",
+      "exit_code": -6,
+      "expected_result": true
+    },
+    {
+      "variant": "control",
+      "mode": "write",
+      "exit_code": -6,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "read",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "write",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "two-queues",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "failed-drain",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "repeat-close",
+      "exit_code": 0,
+      "expected_result": true
+    }
+  ],
+  "passed": true,
+  "finished_utc": "2026-10-06T11:47:05.093432+00:00"
+}

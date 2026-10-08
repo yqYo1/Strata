@@ -1,0 +1,25 @@
+{
+  "scope": "CPU fake recovery backends only; no services, GPU submissions or sysfs writes",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "sycl/tools/test_recover_xe.py"
+      ],
+      "tests": 18,
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "python3",
+        "sycl/tools/test_recover_xe_display.py"
+      ],
+      "tests": 30,
+      "exit_code": 0
+    }
+  ],
+  "shell_syntax_passed": true,
+  "debug_wrapper_python_syntax_passed": true,
+  "source_sha256": "2f90005f79d2309747d917cff51dc53d8ee6192d68cb1feca074f84af8b0796c",
+  "note": "Counts and exit codes reported by the executed terminal checks; not a GPU arithmetic check."
+}

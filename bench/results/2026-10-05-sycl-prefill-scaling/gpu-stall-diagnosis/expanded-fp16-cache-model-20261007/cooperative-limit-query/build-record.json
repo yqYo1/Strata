@@ -1,0 +1,61 @@
+{
+  "passed": true,
+  "steps": [
+    {
+      "label": "compile",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../third_party/ggml",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-Wall",
+        "-Wextra",
+        "-MD",
+        "-MT",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-cooperative-limit-query/query.o",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-cooperative-limit-query/query.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-cooperative-limit-query/query.o",
+        "-c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-cooperative-limit-query/query.cpp"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 4.221317789997556
+    },
+    {
+      "label": "link",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-O3",
+        "-DNDEBUG",
+        "-fsycl",
+        "-Xsycl-target-backend=spir64",
+        "-cl-fp32-correctly-rounded-divide-sqrt",
+        "-fsycl-device-code-split=per_kernel",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-cooperative-limit-query/query.o",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/CMakeFiles/strata_kernels.dir/src/kernels/cuda/iq_kernels.dp.cpp.o",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-cooperative-limit-query/query"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 2.1178434940011357
+    }
+  ],
+  "scope": "Actual dequant object offline query build; no kernel executed",
+  "started_utc": "2026-10-07T10:38:02.649305+00:00",
+  "binary_sha256": "140ce1e7e91862cf7fa5ef0b3948dd50cffbb2327975c7e605aa4de94aea736e",
+  "iq_object_sha256": "2a1044fb353760e80647be1307286cb822420d70a1db79350d047a4c15b03f20",
+  "finished_utc": "2026-10-07T10:38:08.994977+00:00"
+}

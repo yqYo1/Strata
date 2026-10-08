@@ -1,0 +1,65 @@
+{
+  "scope": "Actual extracted CPU Stager; fake allocation/device selection/deferred DMA queue; no SYCL runtime or GPU",
+  "source_sha256": "c6efc220e751587b2e7d4c82d7e8262b68fdfab7978e1f2365992dfc501ecdc4",
+  "tests": [
+    {
+      "mode": "finish-before-dma",
+      "exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 0.012874964999355143
+    },
+    {
+      "mode": "cancel-issuer",
+      "exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 0.01010867099830648
+    },
+    {
+      "mode": "reuse",
+      "exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 0.018206631997600198
+    },
+    {
+      "mode": "timeout",
+      "exit_code": 1,
+      "passed": true,
+      "elapsed_seconds": 0.01484863400037284
+    }
+  ],
+  "passed": true,
+  "sanitizer_options": {
+    "ASAN_OPTIONS": "detect_leaks=1:abort_on_error=1",
+    "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+  },
+  "compile": [
+    "g++",
+    "-std=c++20",
+    "-O1",
+    "-g",
+    "-pthread",
+    "-fsanitize=address,undefined",
+    "-fno-omit-frame-pointer",
+    "-DSTRATA_STOP_WAIT=1",
+    "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+    "-I/home/yayoi/.local/state/strata-sycl/stager-stop-20261006/cpu-test-strict",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/stager_host_test.cpp",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/stager-stop-20261006/cpu-test-strict/stager-test"
+  ],
+  "old_control": {
+    "revision": "f1dde98021477b11d39a69556cc08fbbd85928b7",
+    "source_sha256": "d4cd075ced143ed0ec55a791b88d99f08719f1a1e09211dd88635385e39b7772",
+    "expected_timeout_seconds": 2,
+    "reproduced": true,
+    "process_killed_by_test_runner": true
+  },
+  "helper_sha256": {
+    "sycl/tools/stager_host_test.cpp": "5b81aac5ac027244014b1e1599a8a0ac260af4917596e3131fd880ea86bfbc5a",
+    "sycl/tools/test_stager_host.py": "1f68a0e635feaf6172a3411df9f1d9e7293929898f8b5d4b1668ee22b2a6ea41",
+    "sycl/include/strata/host_wait.hpp": "eea1e5a18d3b4610df15269737ed1e0a3c2bf9335cebec856911467f6c0c8b73",
+    "sycl/include/strata/host_completion.hpp": "a93bc4423ad3c6d18ef86f427b776826a0617fd24705c6780b6b1df08615abf6"
+  },
+  "fragment_sha256": "e4bd0af86d9afec2ac617740b67148de4b4836f605472098f43a884d845f5d91",
+  "binary_sha256": "1fa3d3c45e03addae8825f846508541939a8acc7a3abda83c91e4593c4c3948d"
+}

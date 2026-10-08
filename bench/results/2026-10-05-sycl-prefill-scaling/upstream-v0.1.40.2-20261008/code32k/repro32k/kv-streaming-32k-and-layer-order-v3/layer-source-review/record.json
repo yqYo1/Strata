@@ -1,0 +1,18 @@
+{
+  "active": false,
+  "source_prepared": true,
+  "compiled": false,
+  "gpu_tested": false,
+  "adopted": false,
+  "created_utc": "2026-10-08T03:27:07.835918+00:00",
+  "original_sha256": "f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77",
+  "candidate_sha256": "87ceba8ba1de98122879c8ef37b46d5e0487e75d064d5da28f56e0a70aef6800",
+  "controller_sha256": "8222909d14ba5130011759c6246f3653988efd6877f7aab96aeeb1596a8b5820",
+  "scope": "Only replace mode0-only layer-major rejection with mode0/mode1 and owned stage/no-prefetch requirements. Existing same-order stage/upload/append/attention and RAM-authoritative mirror are unchanged. No prefix-retention optimization yet.",
+  "source_basis": "run_layer_major selects each single layer and calls run_impl over all prompt chunks. The already allocated full-context identity stage services its QSA; each prefix upload remains on the same in-order compute queue. Main-cache/MTP releases use previously validated graph retirement/restore callbacks. First candidate uses RAM residuals (R_GPU0) to leave enough room at256K geometry and across repeats.",
+  "required_gates": [
+    "Before candidate GPU use, complete current v3 chunk-major3x32K state/head/IDs/logprobs/MTP and normal shutdown/noXE.",
+    "First layer-major0-residual3x32K uses full main RAM release and MTP lease with actual graph retirement, flushed UR/L0 validation; compare all live main bytes/full head/output/counts.",
+    "Captures/diagnostics excluded from speed. Matched clean inputs>=32K, full262144 occupancy/repeat/restore/tail/refusals/later>=32K before adoption."
+  ]
+}

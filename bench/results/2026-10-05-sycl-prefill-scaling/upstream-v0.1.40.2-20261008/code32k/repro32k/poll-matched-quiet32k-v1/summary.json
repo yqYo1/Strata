@@ -1,0 +1,593 @@
+{
+  "active": false,
+  "completed": true,
+  "passed": true,
+  "adopted": false,
+  "created_utc": "2026-10-08T10:35:24.976630+00:00",
+  "source_commit": "523ecdd0d8b18cd83eeec2c937c1b5db1a9bf4a8",
+  "scope": "Four fresh processes in DD5/poll/poll/DD5 order, four full32768 inputs A/B/A/B and64 generated tokens each. Only quiet complete gated jobs are compared.",
+  "minimum_performance_input_tokens": 32768,
+  "fresh_full_reads": 16,
+  "all_ids_logprobs_mtp_equal_and_resume_reused_zero": true,
+  "same_arguments_after_binary": true,
+  "all_normal_quit_no_forced_cleanup_no_new_kernel_fault": true,
+  "first_process_read_separated": true,
+  "first_read_is_not_cold_disk_system_benchmark": true,
+  "rates_computed_from_total_tokens_over_total_engine_time": true,
+  "groups": {
+    "dd5-control": {
+      "first_process_read": {
+        "requests": 2,
+        "input_tokens_per_request": 32768,
+        "total_prompt_ms": 166456.2,
+        "total_decode_ms": 7901.1,
+        "prefill_tok_s": 393.7131810049731,
+        "decode_tok_s": 16.200275910949106,
+        "prefill_range": [
+          393.69331377361914,
+          393.73305024157725
+        ],
+        "decode_range": [
+          15.610517586223718,
+          16.83634546076342
+        ]
+      },
+      "subsequent_full_reads": {
+        "requests": 6,
+        "input_tokens_per_request": 32768,
+        "total_prompt_ms": 459891.4,
+        "total_decode_ms": 23292.1,
+        "prefill_tok_s": 427.50962509844715,
+        "decode_tok_s": 16.48627646283504,
+        "prefill_range": [
+          427.23297287289665,
+          427.8722859724536
+        ],
+        "decode_range": [
+          15.19684665431923,
+          18.319212273872225
+        ]
+      },
+      "per_read_slot": {
+        "1": {
+          "requests": 2,
+          "input_tokens_per_request": 32768,
+          "total_prompt_ms": 166456.2,
+          "total_decode_ms": 7901.1,
+          "prefill_tok_s": 393.7131810049731,
+          "decode_tok_s": 16.200275910949106,
+          "prefill_range": [
+            393.69331377361914,
+            393.73305024157725
+          ],
+          "decode_range": [
+            15.610517586223718,
+            16.83634546076342
+          ]
+        },
+        "2": {
+          "requests": 2,
+          "input_tokens_per_request": 32768,
+          "total_prompt_ms": 153330.1,
+          "total_decode_ms": 8149.1,
+          "prefill_tok_s": 427.41770859081157,
+          "decode_tok_s": 15.707256016001766,
+          "prefill_range": [
+            427.3421789130213,
+            427.4932649719836
+          ],
+          "decode_range": [
+            15.365777532352164,
+            16.06425702811245
+          ]
+        },
+        "3": {
+          "requests": 2,
+          "input_tokens_per_request": 32768,
+          "total_prompt_ms": 153279.5,
+          "total_decode_ms": 7001.7,
+          "prefill_tok_s": 427.5588059720967,
+          "decode_tok_s": 18.28127454760987,
+          "prefill_range": [
+            427.41854486212077,
+            427.6991591680959
+          ],
+          "decode_range": [
+            18.24349362902996,
+            18.319212273872225
+          ]
+        },
+        "4": {
+          "requests": 2,
+          "input_tokens_per_request": 32768,
+          "total_prompt_ms": 153281.8,
+          "total_decode_ms": 8141.299999999999,
+          "prefill_tok_s": 427.55239043382846,
+          "decode_tok_s": 15.722304791618047,
+          "prefill_range": [
+            427.23297287289665,
+            427.8722859724536
+          ],
+          "decode_range": [
+            15.19684665431923,
+            16.285401664164482
+          ]
+        }
+      }
+    },
+    "dd5-poll-backoff": {
+      "first_process_read": {
+        "requests": 2,
+        "input_tokens_per_request": 32768,
+        "total_prompt_ms": 167944.40000000002,
+        "total_decode_ms": 7819.6,
+        "prefill_tok_s": 390.22438378415706,
+        "decode_tok_s": 16.369123740344772,
+        "prefill_range": [
+          387.19770857606056,
+          393.298750057012
+        ],
+        "decode_range": [
+          16.23664916152929,
+          16.503777817891127
+        ]
+      },
+      "subsequent_full_reads": {
+        "requests": 6,
+        "input_tokens_per_request": 32768,
+        "total_prompt_ms": 460197.80000000005,
+        "total_decode_ms": 23453.0,
+        "prefill_tok_s": 427.2249889069439,
+        "decode_tok_s": 16.373171875666227,
+        "prefill_range": [
+          427.09097710355474,
+          427.3148721693715
+        ],
+        "decode_range": [
+          14.636600649499153,
+          18.59654220543368
+        ]
+      },
+      "per_read_slot": {
+        "1": {
+          "requests": 2,
+          "input_tokens_per_request": 32768,
+          "total_prompt_ms": 167944.40000000002,
+          "total_decode_ms": 7819.6,
+          "prefill_tok_s": 390.22438378415706,
+          "decode_tok_s": 16.369123740344772,
+          "prefill_range": [
+            387.19770857606056,
+            393.298750057012
+          ],
+          "decode_range": [
+            16.23664916152929,
+            16.503777817891127
+          ]
+        },
+        "2": {
+          "requests": 2,
+          "input_tokens_per_request": 32768,
+          "total_prompt_ms": 153403.90000000002,
+          "total_decode_ms": 8114.900000000001,
+          "prefill_tok_s": 427.21208522077984,
+          "decode_tok_s": 15.77345377022514,
+          "prefill_range": [
+            427.14887770438764,
+            427.27531144625283
+          ],
+          "decode_range": [
+            15.561931624762922,
+            15.990805286959997
+          ]
+        },
+        "3": {
+          "requests": 2,
+          "input_tokens_per_request": 32768,
+          "total_prompt_ms": 153415.8,
+          "total_decode_ms": 7013.6,
+          "prefill_tok_s": 427.1789476703182,
+          "decode_tok_s": 18.25025664423406,
+          "prefill_range": [
+            427.09097710355474,
+            427.26695448422976
+          ],
+          "decode_range": [
+            17.91663167324543,
+            18.59654220543368
+          ]
+        },
+        "4": {
+          "requests": 2,
+          "input_tokens_per_request": 32768,
+          "total_prompt_ms": 153378.1,
+          "total_decode_ms": 8324.5,
+          "prefill_tok_s": 427.28394731712024,
+          "decode_tok_s": 15.376298876809418,
+          "prefill_range": [
+            427.253026940619,
+            427.3148721693715
+          ],
+          "decode_range": [
+            14.636600649499153,
+            16.194741769781622
+          ]
+        }
+      }
+    }
+  },
+  "effects": {
+    "first_process_read": {
+      "prefill_tok_s_change_percent": -0.8861265990411371,
+      "decode_tok_s_change_percent": 1.0422528006547749
+    },
+    "subsequent_full_reads": {
+      "prefill_tok_s_change_percent": -0.06658006622369816,
+      "decode_tok_s_change_percent": -0.6860529569777896
+    }
+  },
+  "jobs": [
+    {
+      "ordinal": 1,
+      "mode": "dd5-control",
+      "repetition": 1,
+      "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-poll-matched-dd5-control-v01402-code32k-quiet-r1/record.json",
+      "receipt_sha256": "b02733fc0e363f8616a4aa6efb0468f60dde82672dedd95f33bded6b0f8c10b8",
+      "binary_sha256": "dd5efb9002167481d180f370b86fb6978d724f37745f7e4a923432296725ad34",
+      "exit_code": 0,
+      "forced_cleanup": false,
+      "new_kernel_fault_messages": []
+    },
+    {
+      "ordinal": 2,
+      "mode": "dd5-poll-backoff",
+      "repetition": 1,
+      "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-poll-matched-dd5-poll-backoff-v01402-code32k-quiet-r1/record.json",
+      "receipt_sha256": "eb2be73950cd2372aca066114d672c7aafe07af3c6216648d86b3e316d3b427e",
+      "binary_sha256": "44a274d8c699829020abb8a85a331a638f40efdf5d6c959a076a58e818f75391",
+      "exit_code": 0,
+      "forced_cleanup": false,
+      "new_kernel_fault_messages": []
+    },
+    {
+      "ordinal": 3,
+      "mode": "dd5-poll-backoff",
+      "repetition": 2,
+      "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-poll-matched-dd5-poll-backoff-v01402-code32k-quiet-r2/record.json",
+      "receipt_sha256": "b756d371e19d9985bb8f64531a17172712fe551a06a1a00af8d6d1fd04790f07",
+      "binary_sha256": "44a274d8c699829020abb8a85a331a638f40efdf5d6c959a076a58e818f75391",
+      "exit_code": 0,
+      "forced_cleanup": false,
+      "new_kernel_fault_messages": []
+    },
+    {
+      "ordinal": 4,
+      "mode": "dd5-control",
+      "repetition": 2,
+      "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-poll-matched-dd5-control-v01402-code32k-quiet-r2/record.json",
+      "receipt_sha256": "d5c5204155e1353ee33daedf973f7fc358867da9c24ed75dad45eab9bcaac2cd",
+      "binary_sha256": "dd5efb9002167481d180f370b86fb6978d724f37745f7e4a923432296725ad34",
+      "exit_code": 0,
+      "forced_cleanup": false,
+      "new_kernel_fault_messages": []
+    }
+  ],
+  "measurements": [
+    {
+      "ordinal": 1,
+      "mode": "dd5-control",
+      "repetition": 1,
+      "input": "A",
+      "name": "control32k-first",
+      "process_read": 1,
+      "first_process_read": true,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 83223.9,
+      "decode_ms": 3801.3,
+      "wall_seconds": 87.20871455199085,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 393.73305024157725,
+      "decode_tok_s": 16.83634546076342
+    },
+    {
+      "ordinal": 1,
+      "mode": "dd5-control",
+      "repetition": 1,
+      "input": "B",
+      "name": "alternate32k-first",
+      "process_read": 2,
+      "first_process_read": false,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 76678.6,
+      "decode_ms": 4165.1,
+      "wall_seconds": 81.03631100401981,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 427.3421789130213,
+      "decode_tok_s": 15.365777532352164
+    },
+    {
+      "ordinal": 1,
+      "mode": "dd5-control",
+      "repetition": 1,
+      "input": "A",
+      "name": "control32k-repeat",
+      "process_read": 3,
+      "first_process_read": false,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 76614.6,
+      "decode_ms": 3493.6,
+      "wall_seconds": 80.29365415501525,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 427.6991591680959,
+      "decode_tok_s": 18.319212273872225
+    },
+    {
+      "ordinal": 1,
+      "mode": "dd5-control",
+      "repetition": 1,
+      "input": "B",
+      "name": "alternate32k-repeat",
+      "process_read": 4,
+      "first_process_read": false,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 76698.2,
+      "decode_ms": 3929.9,
+      "wall_seconds": 80.82360734301619,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 427.23297287289665,
+      "decode_tok_s": 16.285401664164482
+    },
+    {
+      "ordinal": 2,
+      "mode": "dd5-poll-backoff",
+      "repetition": 1,
+      "input": "A",
+      "name": "control32k-first",
+      "process_read": 1,
+      "first_process_read": true,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 84628.6,
+      "decode_ms": 3941.7,
+      "wall_seconds": 88.76125032399432,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 387.19770857606056,
+      "decode_tok_s": 16.23664916152929
+    },
+    {
+      "ordinal": 2,
+      "mode": "dd5-poll-backoff",
+      "repetition": 1,
+      "input": "B",
+      "name": "alternate32k-first",
+      "process_read": 2,
+      "first_process_read": false,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 76690.6,
+      "decode_ms": 4002.3,
+      "wall_seconds": 80.88400224299403,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 427.27531144625283,
+      "decode_tok_s": 15.990805286959997
+    },
+    {
+      "ordinal": 2,
+      "mode": "dd5-poll-backoff",
+      "repetition": 1,
+      "input": "A",
+      "name": "control32k-repeat",
+      "process_read": 3,
+      "first_process_read": false,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 76692.1,
+      "decode_ms": 3441.5,
+      "wall_seconds": 80.32486182899447,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 427.26695448422976,
+      "decode_tok_s": 18.59654220543368
+    },
+    {
+      "ordinal": 2,
+      "mode": "dd5-poll-backoff",
+      "repetition": 1,
+      "input": "B",
+      "name": "alternate32k-repeat",
+      "process_read": 4,
+      "first_process_read": false,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 76683.5,
+      "decode_ms": 4372.6,
+      "wall_seconds": 81.24628592299996,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 427.3148721693715,
+      "decode_tok_s": 14.636600649499153
+    },
+    {
+      "ordinal": 3,
+      "mode": "dd5-poll-backoff",
+      "repetition": 2,
+      "input": "A",
+      "name": "control32k-first",
+      "process_read": 1,
+      "first_process_read": true,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 83315.8,
+      "decode_ms": 3877.9,
+      "wall_seconds": 87.38468955099233,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 393.298750057012,
+      "decode_tok_s": 16.503777817891127
+    },
+    {
+      "ordinal": 3,
+      "mode": "dd5-poll-backoff",
+      "repetition": 2,
+      "input": "B",
+      "name": "alternate32k-first",
+      "process_read": 2,
+      "first_process_read": false,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 76713.3,
+      "decode_ms": 4112.6,
+      "wall_seconds": 81.0166860090103,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 427.14887770438764,
+      "decode_tok_s": 15.561931624762922
+    },
+    {
+      "ordinal": 3,
+      "mode": "dd5-poll-backoff",
+      "repetition": 2,
+      "input": "A",
+      "name": "control32k-repeat",
+      "process_read": 3,
+      "first_process_read": false,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 76723.7,
+      "decode_ms": 3572.1,
+      "wall_seconds": 80.48479455398046,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 427.09097710355474,
+      "decode_tok_s": 17.91663167324543
+    },
+    {
+      "ordinal": 3,
+      "mode": "dd5-poll-backoff",
+      "repetition": 2,
+      "input": "B",
+      "name": "alternate32k-repeat",
+      "process_read": 4,
+      "first_process_read": false,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 76694.6,
+      "decode_ms": 3951.9,
+      "wall_seconds": 80.83769675900112,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 427.253026940619,
+      "decode_tok_s": 16.194741769781622
+    },
+    {
+      "ordinal": 4,
+      "mode": "dd5-control",
+      "repetition": 2,
+      "input": "A",
+      "name": "control32k-first",
+      "process_read": 1,
+      "first_process_read": true,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 83232.3,
+      "decode_ms": 4099.8,
+      "wall_seconds": 87.5121746439836,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 393.69331377361914,
+      "decode_tok_s": 15.610517586223718
+    },
+    {
+      "ordinal": 4,
+      "mode": "dd5-control",
+      "repetition": 2,
+      "input": "B",
+      "name": "alternate32k-first",
+      "process_read": 2,
+      "first_process_read": false,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 76651.5,
+      "decode_ms": 3984.0,
+      "wall_seconds": 80.82618054197519,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 427.4932649719836,
+      "decode_tok_s": 16.06425702811245
+    },
+    {
+      "ordinal": 4,
+      "mode": "dd5-control",
+      "repetition": 2,
+      "input": "A",
+      "name": "control32k-repeat",
+      "process_read": 3,
+      "first_process_read": false,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 76664.9,
+      "decode_ms": 3508.1,
+      "wall_seconds": 80.36504579000757,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 427.41854486212077,
+      "decode_tok_s": 18.24349362902996
+    },
+    {
+      "ordinal": 4,
+      "mode": "dd5-control",
+      "repetition": 2,
+      "input": "B",
+      "name": "alternate32k-repeat",
+      "process_read": 4,
+      "first_process_read": false,
+      "input_tokens": 32768,
+      "ids_logprobs_mtp_and_fresh_read_equal": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 76583.6,
+      "decode_ms": 4211.4,
+      "wall_seconds": 80.98614189200453,
+      "purpose": "quiet matched full32K comparison",
+      "prefill_tok_s": 427.8722859724536,
+      "decode_tok_s": 15.19684665431923
+    }
+  ],
+  "sequence_receipt_sha256": "c1708225b8a6ef3a5e1d874fa9ac3b608a692edce087d963e7090ee4350d94e9",
+  "reference_dd5_receipt_sha256": "a96f3686903b63138a827c173e0ea5b1a8beebbee8ef9cdae46459bf9f2c9699",
+  "interpretation": "No useful prefill improvement in this32K sample; no polling speed adoption. Two processes per mode are insufficient to establish a decode speed benefit or regression.",
+  "cpu_utilization_or_pcie_dominance_measured": false,
+  "underlying_pending_counter_cause_resolved": false,
+  "physical256k_sequence_passed": false,
+  "pending_before_adoption": [
+    "Physical262144 cells, repeated fresh full prefill, actual disk restore, clipped speculative tail, capacity refusals and later valid fresh32K",
+    "Resolve or safely avoid pending native copy counter stalls"
+  ],
+  "no_reset_rebind_reboot_service_package_global_change": true,
+  "production_and_main_unchanged": true
+}

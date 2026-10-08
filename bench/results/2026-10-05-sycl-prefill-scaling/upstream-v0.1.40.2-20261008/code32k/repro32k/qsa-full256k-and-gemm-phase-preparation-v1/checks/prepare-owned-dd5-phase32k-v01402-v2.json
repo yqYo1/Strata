@@ -1,0 +1,148 @@
+{
+  "active": false,
+  "prepared": true,
+  "gpu_launched": false,
+  "engine_built": false,
+  "AST_passed": true,
+  "created_utc": "2026-10-08T15:16:07.161988+00:00",
+  "preparer_sha256": "c2d54bb6db4ba5c09c22c37509e79194770beff90eadbc5c3521f27cc839c712",
+  "parent_controller_sha256": "49f191e74cd85e81a6cd7711d6e5a71f6d60d147a097472430c9d304f062b877",
+  "controller": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_dd5_phase32k_v01402_v2.py",
+  "controller_sha256": "0a2b2901447fd90c904406aaf54e4d948498c77c11cdd6907d2eaa25bbded944",
+  "CPU_validation_cases": [
+    {
+      "name": "valid",
+      "expected_accept": true,
+      "checks": {
+        "reported_complete_prefill_prefix": true,
+        "phase_reports_present": true,
+        "no_profiling_errors": true,
+        "complete_finite_nonnegative_consistent_timeline": true,
+        "timeline_not_exceed_request_wall": true
+      },
+      "passed": true
+    },
+    {
+      "name": "missing",
+      "expected_accept": false,
+      "checks": {
+        "reported_complete_prefill_prefix": true,
+        "phase_reports_present": false,
+        "no_profiling_errors": true,
+        "complete_finite_nonnegative_consistent_timeline": true,
+        "timeline_not_exceed_request_wall": true
+      },
+      "passed": true
+    },
+    {
+      "name": "nonobject",
+      "expected_accept": false,
+      "checks": {
+        "reported_complete_prefill_prefix": true,
+        "phase_reports_present": true,
+        "no_profiling_errors": true,
+        "complete_finite_nonnegative_consistent_timeline": false,
+        "timeline_not_exceed_request_wall": false
+      },
+      "passed": true
+    },
+    {
+      "name": "badphase",
+      "expected_accept": false,
+      "checks": {
+        "reported_complete_prefill_prefix": true,
+        "phase_reports_present": true,
+        "no_profiling_errors": true,
+        "complete_finite_nonnegative_consistent_timeline": false,
+        "timeline_not_exceed_request_wall": true
+      },
+      "passed": true
+    },
+    {
+      "name": "missingphase",
+      "expected_accept": false,
+      "checks": {
+        "reported_complete_prefill_prefix": true,
+        "phase_reports_present": true,
+        "no_profiling_errors": true,
+        "complete_finite_nonnegative_consistent_timeline": false,
+        "timeline_not_exceed_request_wall": true
+      },
+      "passed": true
+    },
+    {
+      "name": "nan",
+      "expected_accept": false,
+      "checks": {
+        "reported_complete_prefill_prefix": true,
+        "phase_reports_present": true,
+        "no_profiling_errors": true,
+        "complete_finite_nonnegative_consistent_timeline": false,
+        "timeline_not_exceed_request_wall": false
+      },
+      "passed": true
+    },
+    {
+      "name": "negative",
+      "expected_accept": false,
+      "checks": {
+        "reported_complete_prefill_prefix": true,
+        "phase_reports_present": true,
+        "no_profiling_errors": true,
+        "complete_finite_nonnegative_consistent_timeline": false,
+        "timeline_not_exceed_request_wall": true
+      },
+      "passed": true
+    },
+    {
+      "name": "inconsistent",
+      "expected_accept": false,
+      "checks": {
+        "reported_complete_prefill_prefix": true,
+        "phase_reports_present": true,
+        "no_profiling_errors": true,
+        "complete_finite_nonnegative_consistent_timeline": false,
+        "timeline_not_exceed_request_wall": true
+      },
+      "passed": true
+    },
+    {
+      "name": "too_long",
+      "expected_accept": false,
+      "checks": {
+        "reported_complete_prefill_prefix": true,
+        "phase_reports_present": true,
+        "no_profiling_errors": true,
+        "complete_finite_nonnegative_consistent_timeline": true,
+        "timeline_not_exceed_request_wall": false
+      },
+      "passed": true
+    },
+    {
+      "name": "wrongprefix",
+      "expected_accept": false,
+      "checks": {
+        "reported_complete_prefill_prefix": false,
+        "phase_reports_present": true,
+        "no_profiling_errors": true,
+        "complete_finite_nonnegative_consistent_timeline": true,
+        "timeline_not_exceed_request_wall": true
+      },
+      "passed": true
+    },
+    {
+      "name": "api_error",
+      "expected_accept": false,
+      "checks": {
+        "reported_complete_prefill_prefix": true,
+        "phase_reports_present": true,
+        "no_profiling_errors": false,
+        "complete_finite_nonnegative_consistent_timeline": true,
+        "timeline_not_exceed_request_wall": true
+      },
+      "passed": true
+    }
+  ],
+  "minimum_performance_input_tokens": 32768,
+  "scope": "Prepared only; malformed, incomplete, error and invalid phase timelines rejected without exceptions. Same DD5 binary, no GPU invocation. Initial logged numerical/instrumentation run still required."
+}

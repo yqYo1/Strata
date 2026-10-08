@@ -1,0 +1,21 @@
+Traceback (most recent call last):
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/residual-inplace/check_full_context.py", line 120, in <module>
+    args=common+['--tokens-file',str(fixture),'--max-new',str(new),'--prefill','1024','--stats']
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 1264, in wait
+    return self._wait(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 2045, in _wait
+    raise TimeoutExpired(self.args, timeout)
+subprocess.TimeoutExpired: Command '['/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/strata-residency-candidate', '--pack', '/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s', '--native', '/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf', '--max-context', '262144', '--kv', 'int8', '--spec', '4', '--spec-min-p', '0', '--suffix-draft', '0', '--no-prefill-borrow', '--expert-cache', '128', '--expert-profile', '/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/data/expert-profile.bin', '--expert-cache-per-layer', '--pool-workers', '5', '--pcie-frac', '0', '--adapt-swaps', '0', '--ple-io', 'direct', '--greedy', '--tokens-file', '/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-copy-off/cli-262144-strata-residency-candidate-draft-lease-verified/fills-context.tokens.txt', '--max-new', '2', '--prefill', '1024', '--stats']' timed out after 7200.0 seconds
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/residual-inplace/check_full_context.py", line 121, in <module>
+    start=time.monotonic()
+              ^^^^^^^^^^^^^
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/residual-inplace/check_full_context.py", line 87, in cleanup
+    drain(sel,child,raw)
+                         
+RuntimeError: engine PID 428740 survived SIGKILL; do not start another GPU job

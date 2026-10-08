@@ -10,6 +10,7 @@
 //      bounded against the fp32-true attention from the unquantized K/V.
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/kernels/kv_q4.hpp"
@@ -39,8 +40,8 @@ void ck(dpct::err0 e, const char *w) {
 }
 template <typename T> T* dalloc(size_t n) {
     T* p = nullptr;
-    ck(DPCT_CHECK_ERROR(p = (T *)sycl::malloc_device(
-                            n * sizeof(T) + 64, dpct::get_in_order_queue())),
+    ck(DPCT_CHECK_ERROR(p = (T *)strata::checked_usm(sycl::malloc_device(
+                            n * sizeof(T) + 64, dpct::get_in_order_queue()))),
        "malloc");
     ck(DPCT_CHECK_ERROR(
            (dpct::get_current_device().queues_wait_and_throw(), dpct::get_in_order_queue()).memset(p, 0, n * sizeof(T) + 64).wait()),
@@ -101,9 +102,9 @@ int main() {
     for (int i = 0; i < pages; ++i) table[i] = (i * 5 + 3) % pages;
     int32_t* d_table = dalloc<int32_t>(pages);
     /*
-    DPCT1114: cudaMemcpy is migrated to asynchronization memcpy, assuming in
-    the original code the source host memory is pageable memory. If the memory
-    is not pageable, call wait() on event return by memcpy API to ensure
+    DPCT1114: cudaMemcpy is migrated to asynchronization memcpy, assuming
+    in the original code the source host memory is pageable memory. If the
+    memory is not pageable, call wait() on event return by memcpy API to ensure
     synchronization behavior.
     */
     ck(DPCT_CHECK_ERROR(
@@ -181,9 +182,9 @@ int main() {
         k::kv_append_q8_step(d_kq, d_kq, d_ks, d_ks, d_table, d_step, d_kcur, d_kcur, s, nullptr, nullptr);
         k::kv_append_q4_step(d_v4, d_v4, d_table, d_step, d_vcur, d_vcur, s, nullptr, nullptr);
         /*
-        DPCT1010: SYCL uses exceptions to report errors and does not use the
-        error codes. The cudaGetLastError function call was replaced with 0. You
-        need to rewrite this code.
+        DPCT1010: SYCL uses exceptions to report errors and does not use
+        the error codes. The cudaGetLastError function call was replaced with 0.
+        You need to rewrite this code.
         */
         ck(0 != 0 ? 0 : 0, "append");
     }
@@ -230,9 +231,9 @@ int main() {
     for (int i = 0; i < cells; ++i) ids[i] = i;
     int32_t* d_ids = dalloc<int32_t>(cells);
     /*
-    DPCT1114: cudaMemcpy is migrated to asynchronization memcpy, assuming in
-    the original code the source host memory is pageable memory. If the memory
-    is not pageable, call wait() on event return by memcpy API to ensure
+    DPCT1114: cudaMemcpy is migrated to asynchronization memcpy, assuming
+    in the original code the source host memory is pageable memory. If the
+    memory is not pageable, call wait() on event return by memcpy API to ensure
     synchronization behavior.
     */
     ck(DPCT_CHECK_ERROR(
@@ -242,9 +243,9 @@ int main() {
     k::qsa_step_fill(step, cells - 1, s);
     step[k::kStepWidth] = cells;   // select everything
     /*
-    DPCT1114: cudaMemcpy is migrated to asynchronization memcpy, assuming in
-    the original code the source host memory is pageable memory. If the memory
-    is not pageable, call wait() on event return by memcpy API to ensure
+    DPCT1114: cudaMemcpy is migrated to asynchronization memcpy, assuming
+    in the original code the source host memory is pageable memory. If the
+    memory is not pageable, call wait() on event return by memcpy API to ensure
     synchronization behavior.
     */
     ck(DPCT_CHECK_ERROR(
@@ -283,9 +284,9 @@ int main() {
     for (auto& x : q) x = nd(rng);
     float* d_q = dalloc<float>(q.size());
     /*
-    DPCT1114: cudaMemcpy is migrated to asynchronization memcpy, assuming in
-    the original code the source host memory is pageable memory. If the memory
-    is not pageable, call wait() on event return by memcpy API to ensure
+    DPCT1114: cudaMemcpy is migrated to asynchronization memcpy, assuming
+    in the original code the source host memory is pageable memory. If the
+    memory is not pageable, call wait() on event return by memcpy API to ensure
     synchronization behavior.
     */
     ck(DPCT_CHECK_ERROR(
@@ -444,7 +445,7 @@ int main() {
         float* d_at4 = dalloc<float>((size_t) QH * D);
         const bool took = k::qsa_prompt_attn_batch(d_q, pools, d_ids, d_step, cells, s, d_at4, 1, nullptr);
         if (!took) {
-#if defined(STRATA_USE_HIP)
+#if defined(STRATA_USE_HIP) || defined(STRATA_HIP_GFX906)
             // AMD: the tensor-core prompt path is CUDA-only, so it refuses every pool and the old kernel runs
             std::printf("[5/5] qsa_prompt_attn mode 3: PASS (refused on HIP - the old kernel runs)\n");
 #else

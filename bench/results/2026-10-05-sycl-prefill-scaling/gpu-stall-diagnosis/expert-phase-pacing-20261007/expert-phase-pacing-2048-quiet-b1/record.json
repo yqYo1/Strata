@@ -1,0 +1,613 @@
+{
+  "expert_phase_batch": 1,
+  "warmup_requests": 1,
+  "scope": "Four fresh normal-MTP assistant-suffix 2048-token context-4096/chunk-1024/layer-major-1/int8 requests; private phase-pacing binary; batch1 or16 with no per-wait logs, profiler, API logging or validation; all IDs/LP/full heads compared to original SYNC1 control; first warmup excluded from medians; not full-context or general hang prevention",
+  "mode": "clean",
+  "active": false,
+  "passed": false,
+  "requests": [
+    {
+      "name": "2048-r1",
+      "start_epoch_us": 1791353732496948.8,
+      "ids": [
+        2,
+        9988,
+        314,
+        1510
+      ],
+      "logprobs": [
+        "LP -1.227371 2:-1.227371 40:-1.332550 1919:-1.678836 8160:-2.901873 760:-3.109806",
+        "LP -0.680524 9988:-0.680524 5927:-0.964070 17775:-2.479280 36593:-4.530006 733:-5.136003",
+        "LP -0.037686 314:-0.037686 25:-3.332997 321:-7.521450 286:-8.951688 17775:-9.017626",
+        "LP -0.003111 1510:-0.003111 279:-6.633730 4361:-8.024593 6707:-8.093692 387:-8.297028"
+      ],
+      "protocol": [
+        {
+          "text": "RESUME 0",
+          "epoch_us": 1791353732502531.5
+        },
+        {
+          "text": "PP 256 2048 31304 8.2",
+          "epoch_us": 1791353763804901.5
+        },
+        {
+          "text": "PP 1280 2048 31464 40.7",
+          "epoch_us": 1791353763964481.5
+        },
+        {
+          "text": "PP 2047 2048 31635 64.7",
+          "epoch_us": 1791353764134134.5
+        },
+        {
+          "text": "REUSED 0",
+          "epoch_us": 1791353765778808.2
+        },
+        {
+          "text": "T 2",
+          "epoch_us": 1791353765861236.8
+        },
+        {
+          "text": "LP -1.227371 2:-1.227371 40:-1.332550 1919:-1.678836 8160:-2.901873 760:-3.109806",
+          "epoch_us": 1791353765870442.5
+        },
+        {
+          "text": "T 9988",
+          "epoch_us": 1791353766027887.8
+        },
+        {
+          "text": "LP -0.680524 9988:-0.680524 5927:-0.964070 17775:-2.479280 36593:-4.530006 733:-5.136003",
+          "epoch_us": 1791353766027895.0
+        },
+        {
+          "text": "T 314",
+          "epoch_us": 1791353766027898.2
+        },
+        {
+          "text": "LP -0.037686 314:-0.037686 25:-3.332997 321:-7.521450 286:-8.951688 17775:-9.017626",
+          "epoch_us": 1791353766033062.8
+        },
+        {
+          "text": "T 1510",
+          "epoch_us": 1791353766033065.8
+        },
+        {
+          "text": "LP -0.003111 1510:-0.003111 279:-6.633730 4361:-8.024593 6707:-8.093692 387:-8.297028",
+          "epoch_us": 1791353766033069.5
+        },
+        {
+          "text": "DONE 4 2048 33280.3 254.6 length 3 3 0 102 2400 0 0 0.0 2048 0",
+          "epoch_us": 1791353766033072.5
+        }
+      ],
+      "done": "DONE 4 2048 33280.3 254.6 length 3 3 0 102 2400 0 0 0.0 2048 0",
+      "end_epoch_us": 1791353766033074.0,
+      "equality": {
+        "ids": true,
+        "logprobs": true,
+        "head": true
+      },
+      "head_sha256": "8c5a4ed642a9b60cb96a34cf651e5b31a9e7772af84021123bdc7c8626892b0a"
+    },
+    {
+      "name": "2048-r2",
+      "start_epoch_us": 1791353766040241.5,
+      "ids": [
+        2,
+        9988,
+        314,
+        1510
+      ],
+      "logprobs": [
+        "LP -1.227371 2:-1.227371 40:-1.332550 1919:-1.678836 8160:-2.901873 760:-3.109806",
+        "LP -0.680524 9988:-0.680524 5927:-0.964070 17775:-2.479280 36593:-4.530006 733:-5.136003",
+        "LP -0.037686 314:-0.037686 25:-3.332997 321:-7.521450 286:-8.951688 17775:-9.017626",
+        "LP -0.003111 1510:-0.003111 279:-6.633730 4361:-8.024593 6707:-8.093692 387:-8.297028"
+      ],
+      "protocol": [
+        {
+          "text": "RESUME 0",
+          "epoch_us": 1791353766045701.0
+        },
+        {
+          "text": "PP 256 2048 29634 8.6",
+          "epoch_us": 1791353795679095.2
+        },
+        {
+          "text": "PP 1280 2048 29792 43.0",
+          "epoch_us": 1791353795833926.5
+        },
+        {
+          "text": "PP 2047 2048 29964 68.3",
+          "epoch_us": 1791353796009635.2
+        },
+        {
+          "text": "REUSED 0",
+          "epoch_us": 1791353797151097.5
+        },
+        {
+          "text": "T 2",
+          "epoch_us": 1791353797233698.0
+        },
+        {
+          "text": "LP -1.227371 2:-1.227371 40:-1.332550 1919:-1.678836 8160:-2.901873 760:-3.109806",
+          "epoch_us": 1791353797233705.0
+        },
+        {
+          "text": "T 9988",
+          "epoch_us": 1791353797388843.0
+        },
+        {
+          "text": "LP -0.680524 9988:-0.680524 5927:-0.964070 17775:-2.479280 36593:-4.530006 733:-5.136003",
+          "epoch_us": 1791353797388851.2
+        },
+        {
+          "text": "T 314",
+          "epoch_us": 1791353797388854.2
+        },
+        {
+          "text": "LP -0.037686 314:-0.037686 25:-3.332997 321:-7.521450 286:-8.951688 17775:-9.017626",
+          "epoch_us": 1791353797388857.5
+        },
+        {
+          "text": "T 1510",
+          "epoch_us": 1791353797388860.2
+        },
+        {
+          "text": "LP -0.003111 1510:-0.003111 279:-6.633730 4361:-8.024593 6707:-8.093692 387:-8.297028",
+          "epoch_us": 1791353797394049.8
+        },
+        {
+          "text": "DONE 4 2048 31110.3 239.9 length 3 3 0 102 2400 0 0 0.0 2048 0",
+          "epoch_us": 1791353797394054.5
+        }
+      ],
+      "done": "DONE 4 2048 31110.3 239.9 length 3 3 0 102 2400 0 0 0.0 2048 0",
+      "end_epoch_us": 1791353797394056.2,
+      "equality": {
+        "ids": true,
+        "logprobs": true,
+        "head": true
+      },
+      "head_sha256": "8c5a4ed642a9b60cb96a34cf651e5b31a9e7772af84021123bdc7c8626892b0a"
+    },
+    {
+      "name": "2048-r3",
+      "start_epoch_us": 1791353797400650.8,
+      "ids": [
+        40,
+        3172,
+        1151,
+        539
+      ],
+      "logprobs": [
+        "LP -1.269789 40:-1.269789 2:-1.300282 1919:-1.664271 8160:-2.923609 760:-3.063922",
+        "LP -0.391457 3172:-0.391457 628:-1.694166 2908:-2.628935 1144:-4.158659 1459:-4.738539",
+        "LP -0.832718 1151:-0.832718 22903:-1.419121 3286:-1.477762 12804:-3.795250 1301:-4.293461",
+        "LP -0.000565 539:-0.000565 23218:-8.305180 440:-9.042734 5122:-10.788281 264:-10.989187"
+      ],
+      "protocol": [
+        {
+          "text": "RESUME 0",
+          "epoch_us": 1791353797406127.5
+        },
+        {
+          "text": "PP 256 2048 29655 8.6",
+          "epoch_us": 1791353827058456.5
+        },
+        {
+          "text": "PP 1280 2048 29817 42.9",
+          "epoch_us": 1791353827222703.0
+        },
+        {
+          "text": "PP 2047 2048 29978 68.3",
+          "epoch_us": 1791353827382896.2
+        },
+        {
+          "text": "REUSED 0",
+          "epoch_us": 1791353828536245.8
+        },
+        {
+          "text": "T 40",
+          "epoch_us": 1791353828618943.0
+        },
+        {
+          "text": "LP -1.269789 40:-1.269789 2:-1.300282 1919:-1.664271 8160:-2.923609 760:-3.063922",
+          "epoch_us": 1791353828618950.0
+        },
+        {
+          "text": "T 3172",
+          "epoch_us": 1791353828768146.2
+        },
+        {
+          "text": "LP -0.391457 3172:-0.391457 628:-1.694166 2908:-2.628935 1144:-4.158659 1459:-4.738539",
+          "epoch_us": 1791353828768152.0
+        },
+        {
+          "text": "T 1151",
+          "epoch_us": 1791353828768154.5
+        },
+        {
+          "text": "LP -0.832718 1151:-0.832718 22903:-1.419121 3286:-1.477762 12804:-3.795250 1301:-4.293461",
+          "epoch_us": 1791353828768156.8
+        },
+        {
+          "text": "T 539",
+          "epoch_us": 1791353828928590.5
+        },
+        {
+          "text": "LP -0.000565 539:-0.000565 23218:-8.305180 440:-9.042734 5122:-10.788281 264:-10.989187",
+          "epoch_us": 1791353828928597.8
+        },
+        {
+          "text": "DONE 4 2048 31132.2 393.9 length 4 6 0 180 4320 0 0 0.0 2048 0",
+          "epoch_us": 1791353828928600.5
+        }
+      ],
+      "done": "DONE 4 2048 31132.2 393.9 length 4 6 0 180 4320 0 0 0.0 2048 0",
+      "end_epoch_us": 1791353828928601.8,
+      "equality": {
+        "ids": false,
+        "logprobs": false,
+        "head": false
+      },
+      "head_sha256": "d6d4306f973e4186e43fc9bc80c7835a0017fbeb1473a5fa74e906be3793374d"
+    }
+  ],
+  "protocol": [
+    {
+      "text": "INFO context=4096 kv=int8 kv_resident=0 expert_slots=128 expert_cache_mib=325 expert_slots_primary=128 expert_cache_primary_mib=325 spec=4 mtp_max=0 lookup=0 vram_free_mib=3999 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.00 spec_min_p=0.00 conversation_cache_mib=256 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=1 engine=0.1.39-sycl",
+      "epoch_us": 1791353732496683.2
+    },
+    {
+      "text": "READY 4096 stop",
+      "epoch_us": 1791353732496698.2
+    },
+    {
+      "text": "RESUME 0",
+      "epoch_us": 1791353732502529.5
+    },
+    {
+      "text": "PP 256 2048 31304 8.2",
+      "epoch_us": 1791353763804893.0
+    },
+    {
+      "text": "PP 1280 2048 31464 40.7",
+      "epoch_us": 1791353763964473.0
+    },
+    {
+      "text": "PP 2047 2048 31635 64.7",
+      "epoch_us": 1791353764134130.5
+    },
+    {
+      "text": "REUSED 0",
+      "epoch_us": 1791353765778803.8
+    },
+    {
+      "text": "T 2",
+      "epoch_us": 1791353765861233.0
+    },
+    {
+      "text": "LP -1.227371 2:-1.227371 40:-1.332550 1919:-1.678836 8160:-2.901873 760:-3.109806",
+      "epoch_us": 1791353765870438.8
+    },
+    {
+      "text": "T 9988",
+      "epoch_us": 1791353766027884.2
+    },
+    {
+      "text": "LP -0.680524 9988:-0.680524 5927:-0.964070 17775:-2.479280 36593:-4.530006 733:-5.136003",
+      "epoch_us": 1791353766027894.2
+    },
+    {
+      "text": "T 314",
+      "epoch_us": 1791353766027897.8
+    },
+    {
+      "text": "LP -0.037686 314:-0.037686 25:-3.332997 321:-7.521450 286:-8.951688 17775:-9.017626",
+      "epoch_us": 1791353766033061.0
+    },
+    {
+      "text": "T 1510",
+      "epoch_us": 1791353766033065.2
+    },
+    {
+      "text": "LP -0.003111 1510:-0.003111 279:-6.633730 4361:-8.024593 6707:-8.093692 387:-8.297028",
+      "epoch_us": 1791353766033069.0
+    },
+    {
+      "text": "DONE 4 2048 33280.3 254.6 length 3 3 0 102 2400 0 0 0.0 2048 0",
+      "epoch_us": 1791353766033071.5
+    },
+    {
+      "text": "RESUME 0",
+      "epoch_us": 1791353766045697.2
+    },
+    {
+      "text": "PP 256 2048 29634 8.6",
+      "epoch_us": 1791353795679091.0
+    },
+    {
+      "text": "PP 1280 2048 29792 43.0",
+      "epoch_us": 1791353795833920.8
+    },
+    {
+      "text": "PP 2047 2048 29964 68.3",
+      "epoch_us": 1791353796009628.8
+    },
+    {
+      "text": "REUSED 0",
+      "epoch_us": 1791353797151093.8
+    },
+    {
+      "text": "T 2",
+      "epoch_us": 1791353797233694.2
+    },
+    {
+      "text": "LP -1.227371 2:-1.227371 40:-1.332550 1919:-1.678836 8160:-2.901873 760:-3.109806",
+      "epoch_us": 1791353797233704.5
+    },
+    {
+      "text": "T 9988",
+      "epoch_us": 1791353797388839.2
+    },
+    {
+      "text": "LP -0.680524 9988:-0.680524 5927:-0.964070 17775:-2.479280 36593:-4.530006 733:-5.136003",
+      "epoch_us": 1791353797388850.0
+    },
+    {
+      "text": "T 314",
+      "epoch_us": 1791353797388853.8
+    },
+    {
+      "text": "LP -0.037686 314:-0.037686 25:-3.332997 321:-7.521450 286:-8.951688 17775:-9.017626",
+      "epoch_us": 1791353797388856.8
+    },
+    {
+      "text": "T 1510",
+      "epoch_us": 1791353797388859.5
+    },
+    {
+      "text": "LP -0.003111 1510:-0.003111 279:-6.633730 4361:-8.024593 6707:-8.093692 387:-8.297028",
+      "epoch_us": 1791353797394046.2
+    },
+    {
+      "text": "DONE 4 2048 31110.3 239.9 length 3 3 0 102 2400 0 0 0.0 2048 0",
+      "epoch_us": 1791353797394054.0
+    },
+    {
+      "text": "RESUME 0",
+      "epoch_us": 1791353797406125.5
+    },
+    {
+      "text": "PP 256 2048 29655 8.6",
+      "epoch_us": 1791353827058450.0
+    },
+    {
+      "text": "PP 1280 2048 29817 42.9",
+      "epoch_us": 1791353827222699.0
+    },
+    {
+      "text": "PP 2047 2048 29978 68.3",
+      "epoch_us": 1791353827382891.5
+    },
+    {
+      "text": "REUSED 0",
+      "epoch_us": 1791353828536240.5
+    },
+    {
+      "text": "T 40",
+      "epoch_us": 1791353828618939.0
+    },
+    {
+      "text": "LP -1.269789 40:-1.269789 2:-1.300282 1919:-1.664271 8160:-2.923609 760:-3.063922",
+      "epoch_us": 1791353828618949.5
+    },
+    {
+      "text": "T 3172",
+      "epoch_us": 1791353828768143.0
+    },
+    {
+      "text": "LP -0.391457 3172:-0.391457 628:-1.694166 2908:-2.628935 1144:-4.158659 1459:-4.738539",
+      "epoch_us": 1791353828768151.5
+    },
+    {
+      "text": "T 1151",
+      "epoch_us": 1791353828768154.0
+    },
+    {
+      "text": "LP -0.832718 1151:-0.832718 22903:-1.419121 3286:-1.477762 12804:-3.795250 1301:-4.293461",
+      "epoch_us": 1791353828768156.2
+    },
+    {
+      "text": "T 539",
+      "epoch_us": 1791353828928586.2
+    },
+    {
+      "text": "LP -0.000565 539:-0.000565 23218:-8.305180 440:-9.042734 5122:-10.788281 264:-10.989187",
+      "epoch_us": 1791353828928597.0
+    },
+    {
+      "text": "DONE 4 2048 31132.2 393.9 length 4 6 0 180 4320 0 0 0.0 2048 0",
+      "epoch_us": 1791353828928600.0
+    }
+  ],
+  "deadline_seconds": 600,
+  "profiler_source_commit": "6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033",
+  "binary_sha256": "08cf63a3642242307372860ca6d09cc2971f8acc8f367e70d119fb8ac3d65ac1",
+  "started_utc": "2026-10-07T06:15:06.283270+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "source_sha256": "0a7740bbf31984c2d26d4aaf1bad0395be5bc90246555f8d62562c369da0918c",
+  "startup": [
+    "INFO context=4096 kv=int8 kv_resident=0 expert_slots=128 expert_cache_mib=325 expert_slots_primary=128 expert_cache_primary_mib=325 spec=4 mtp_max=0 lookup=0 vram_free_mib=3999 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.00 spec_min_p=0.00 conversation_cache_mib=256 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=1 engine=0.1.39-sycl",
+    "READY 4096 stop"
+  ],
+  "target_environment": {
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/umf/1.1/lib:/usr/lib/x86_64-linux-gnu:/opt/intel/oneapi/mkl/2026.1/lib",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "STRATA_PREFILL_COMPACT": "2",
+    "STRATA_PREFILL_LAYER_MAJOR": "1",
+    "STRATA_PREFILL_RELEASE_DRAFT": "1",
+    "STRATA_PREFILL_DRAFT_VERIFY": "1",
+    "STRATA_PREFILL_EXPERT_WAIT_BATCH": "0",
+    "STRATA_PREFILL_SYNC_EXPERT_PHASE_BATCH": "1",
+    "STRATA_PREFILL_RELEASE_CACHE": "1",
+    "STRATA_PREFILL_CACHE_ALLOC": "vmm",
+    "STRATA_PREFILL_CACHE_RESTORE": "ram",
+    "STRATA_PREFILL_LAYER_MAJOR_R_INPLACE": "1",
+    "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "0",
+    "STRATA_PREFILL_ATTN_BATCH": "128",
+    "STRATA_PREFILL_ATTN_LAYOUT": "4",
+    "STRATA_PREFILL_TOPK_TUNED": "1",
+    "STRATA_GDN_KEYHEAD": "0",
+    "STRATA_GDN_KEYHEAD_TUNED": "1",
+    "STRATA_DUMP_FIRST_LOGITS": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/expert-phase-pacing-2048-quiet-b1/first-head.bin"
+  },
+  "active_request": "2048-r3",
+  "error": "AssertionError()",
+  "job": {
+    "argv": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/strata-expert-phase-pacing-candidate",
+      "--pack",
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+      "--native",
+      "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "--serve",
+      "--max-context",
+      "4096",
+      "--spec",
+      "4",
+      "--spec-min-p",
+      "0",
+      "--mtp",
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+      "--suffix-draft",
+      "0",
+      "--prefill",
+      "1024",
+      "--no-prefill-borrow",
+      "--expert-cache",
+      "128",
+      "--expert-profile",
+      "data/expert-profile.bin",
+      "--expert-cache-per-layer",
+      "--pool-workers",
+      "5",
+      "--pcie-frac",
+      "0",
+      "--spec-split",
+      "--adapt-swaps",
+      "0",
+      "--conversation-cache-mib",
+      "256",
+      "--conversation-cache-slots",
+      "4",
+      "--greedy",
+      "--short-read",
+      "0",
+      "--kv",
+      "int8",
+      "--ple-io",
+      "direct",
+      "--prompt-cache",
+      "0"
+    ],
+    "root": {
+      "pid": 2627420,
+      "start_ticks": 4338544,
+      "state": "R",
+      "ppid": 2627363,
+      "pgrp": 2627420,
+      "session": 2627420
+    },
+    "started_utc": "2026-10-07T06:15:06.335471+00:00",
+    "active": false,
+    "environment": {
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/umf/1.1/lib:/usr/lib/x86_64-linux-gnu:/opt/intel/oneapi/mkl/2026.1/lib",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_PREFILL_COMPACT": "2",
+      "STRATA_PREFILL_LAYER_MAJOR": "1",
+      "STRATA_PREFILL_RELEASE_DRAFT": "1",
+      "STRATA_PREFILL_DRAFT_VERIFY": "1",
+      "STRATA_PREFILL_EXPERT_WAIT_BATCH": "0",
+      "STRATA_PREFILL_SYNC_EXPERT_PHASE_BATCH": "1",
+      "STRATA_PREFILL_RELEASE_CACHE": "1",
+      "STRATA_PREFILL_CACHE_ALLOC": "vmm",
+      "STRATA_PREFILL_CACHE_RESTORE": "ram",
+      "STRATA_PREFILL_LAYER_MAJOR_R_INPLACE": "1",
+      "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "0",
+      "STRATA_PREFILL_ATTN_BATCH": "128",
+      "STRATA_PREFILL_ATTN_LAYOUT": "4",
+      "STRATA_PREFILL_TOPK_TUNED": "1",
+      "STRATA_GDN_KEYHEAD": "0",
+      "STRATA_GDN_KEYHEAD_TUNED": "1",
+      "STRATA_DUMP_FIRST_LOGITS": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/expert-phase-pacing-2048-quiet-b1/first-head.bin"
+    },
+    "owned": [
+      {
+        "pid": 2627420,
+        "start_ticks": 4338544,
+        "state": "Z",
+        "ppid": 2627363,
+        "pgrp": 2627420,
+        "session": 2627420
+      }
+    ],
+    "elapsed_seconds": 122.67616444700252,
+    "exit_code": null,
+    "signals": [
+      [
+        2627420,
+        15
+      ]
+    ],
+    "survivors": [],
+    "finished_utc": "2026-10-07T06:17:08.986299+00:00"
+  },
+  "elapsed_seconds": 122.67641293500492,
+  "new_fault_messages": [],
+  "steps": [
+    {
+      "label": "kernel-before",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "pid": 2627418,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.0507586160019855
+    },
+    {
+      "label": "kernel-after",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bf17848;b=0a908c16e292429980ff082da39f4bb9;m=a1800d272;t=65d3a075cb92f;x=9016de530ed10c46",
+        "--no-pager",
+        "-o",
+        "short-iso-precise"
+      ],
+      "pid": 2634202,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050755463998939376
+    }
+  ],
+  "finished_utc": "2026-10-07T06:17:09.062073+00:00"
+}

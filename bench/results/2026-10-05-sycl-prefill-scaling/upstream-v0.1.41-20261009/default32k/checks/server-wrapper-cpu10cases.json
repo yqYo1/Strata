@@ -1,0 +1,67 @@
+{
+  "active": false,
+  "passed": true,
+  "created_utc": "2026-10-08T18:48:19.744164+00:00",
+  "scope": "CPU-only execution of the actual wrapper with a recording Docker stub. Original failure reproduced, corrected behavior and retired-path admission checked. No real Docker/container/GPU run.",
+  "source_sha256": "0d9b15bfb3f2dcf212c2ac7cabc64756fd84d3223f1c6a588f97b51d9d350eed",
+  "candidate_sha256": "1fdb7837a0ae7b0f99c03c63e879889476be5287c7770aaa9516310200eeb497",
+  "test_source_sha256": "7d1ec96f7126105a777bca31573fe184875afe0091fc2f8275f2906ac5223b6b",
+  "cases": [
+    {
+      "name": "existing_host_completion_defaults",
+      "passed": true
+    },
+    {
+      "name": "actual_original_reproduces_missing_runtime_zeros",
+      "passed": true,
+      "original_forwarded_settings": {
+        "NEOReadDebugKeys": "1",
+        "STRATA_VERIFY_DEVICE_PLAN": "1",
+        "STRATA_STAGER_THREADS": "12"
+      }
+    },
+    {
+      "name": "runtime_and_driver_zeros_retained",
+      "passed": true,
+      "forwarded": {
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "0",
+        "IGC_TestSetting": "0",
+        "ZES_TestSetting": "0",
+        "OverrideDefaultFP64Settings": "0"
+      }
+    },
+    {
+      "name": "numeric_zeros_retained_presence_switches_disabled",
+      "passed": true
+    },
+    {
+      "name": "upstream_environment_support_and_literal_arguments_preserved",
+      "passed": true
+    },
+    {
+      "name": "explicit_empty_runtime_value_retained",
+      "passed": true
+    },
+    {
+      "name": "retired_no_host_'0'_rejected_before_docker",
+      "passed": true
+    },
+    {
+      "name": "retired_no_host_'1'_rejected_before_docker",
+      "passed": true
+    },
+    {
+      "name": "retired_no_host_''_rejected_before_docker",
+      "passed": true
+    },
+    {
+      "name": "disabled_host_boundaries_rejected_before_docker",
+      "passed": true
+    }
+  ],
+  "shell_syntax_exit_code": 0,
+  "tracked_source_modified": false
+}

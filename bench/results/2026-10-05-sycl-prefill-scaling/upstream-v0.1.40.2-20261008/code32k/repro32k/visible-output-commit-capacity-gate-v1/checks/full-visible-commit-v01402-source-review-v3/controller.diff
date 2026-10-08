@@ -1,0 +1,119 @@
+--- /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_full_kv_access_v01402_v2.py
++++ /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_full_visible_commit_v01402_v3.py
+@@ -19,7 +19,7 @@
+ base = Path(__file__).parent
+ observer = Path('/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05')
+ mode=sys.argv[1]; phase=sys.argv[2]; repetition=int(sys.argv[3])
+-assert mode=='full-kv-access' and phase=='diagnostic' and repetition==2
++assert mode=='full-kv-access' and phase=='diagnostic' and repetition==3
+ previous=json.loads((base/'v01402-code32k-sequence/record.json').read_text());assert previous['passed'] and not previous['active']
+ default_gate=json.loads((base/'event-ack-no-root-default-v01402-gated-checks/record.json').read_text())
+ assert default_gate['passed'] and not default_gate['active']
+@@ -118,8 +118,8 @@
+             now=process_identity(v[key]['pid'])
+             assert not now or now['start_ticks']!=v[key]['start_ticks'] or now['state']=='Z'
+     record['cpu_debugger_guard_sha256']=hashlib.sha256((base/'owned-main-thread-cpu/record.json').read_bytes()).hexdigest()
+-    health_path=base/'post-chunk12k-v01402-health/record.json'
+-    assert hashlib.sha256(health_path.read_bytes()).hexdigest()=='bfb8b9fd6f525c716e8998732e1694268b2af80c90640a1d38c42b272dc536bf'
++    health_path=base/'post-save-assert-v01402-health-v1/record.json'
++    assert hashlib.sha256(health_path.read_bytes()).hexdigest()=='8f0293fa08502d8a70a3002826e0f484b7859d275d980f3becf215f657126d4f'
+     health=json.loads(health_path.read_text())
+     full=json.loads((base/'full-context-eager-verifier-serve/record.json').read_text())
+     assert not full['active'] and not full['new_fault_messages']
+@@ -147,13 +147,23 @@
+     assert r.run('embedding-state',['/usr/bin/systemctl','--user','show','llama-server-qwen3embed.service','-p','ActiveState'],seconds=5).strip()=='ActiveState=inactive'
+     reference=json.loads((base/'model-lease-copy-off/normal-mtp.json').read_text())
+     assert reference['exit_code']==0 and len(reference['requests'])==4
+-    binary=root/'build-sycl-kv-access-safe-v2-20261008/strata'
++    binary=root/'build-sycl-visible-commit-v1-20261008/strata'
++    visible_receipt=base/'visible-commit-v01402-build-v1/record.json'
++    visible_build=json.loads(visible_receipt.read_text())
++    assert visible_build['passed'] and not visible_build['active'] and visible_build['baseline_inputs_unchanged']
++    assert visible_build['cpu_cases_passed']==12
++    assert visible_build['candidate_binary_sha256']==hashlib.sha256(binary.read_bytes()).hexdigest()
++    assert visible_build['candidate_source_sha256']==hashlib.sha256((binary.parent/'source/generate.cpp').read_bytes()).hexdigest()
++    assert all(hashlib.sha256(Path(p).read_bytes()).hexdigest()==sha for p,sha in visible_build['link_input_sha256'].items())
++    record['visible_commit_build_receipt_sha256']=hashlib.sha256(visible_receipt.read_bytes()).hexdigest()
++    record['visible_commit_source_sha256']=visible_build['candidate_source_sha256']
+     access_receipt=base/'kv-access-safe-v01402-build-v2/record.json'
+     access_build=json.loads(access_receipt.read_text())
+     assert access_build['passed'] and not access_build['active'] and access_build['baseline_inputs_unchanged']
+     assert access_build['baseline_binary_sha256']=='1441ad556cb1d8ecddf42e525a1462cc53f9251fae4734c008046e10e8b0e599'
+-    assert access_build['candidate_binary_sha256']==hashlib.sha256(binary.read_bytes()).hexdigest()
+-    assert access_build['candidate_source_sha256']==hashlib.sha256((binary.parent/'source/layer.cpp').read_bytes()).hexdigest()
++    assert access_build['candidate_binary_sha256']==visible_build['baseline_binary_sha256']
++    assert visible_build['access_build_receipt_sha256']==hashlib.sha256(access_receipt.read_bytes()).hexdigest()
++    assert access_build['candidate_source_sha256']==hashlib.sha256((Path(access_build['candidate_binary']).parent/'source/layer.cpp').read_bytes()).hexdigest()
+     assert all(hashlib.sha256(Path(p).read_bytes()).hexdigest()==sha for p,sha in access_build['link_input_sha256'].items())
+     record['access_build_receipt_sha256']=hashlib.sha256(access_receipt.read_bytes()).hexdigest()
+     record['access_source_sha256']=access_build['candidate_source_sha256']
+@@ -205,7 +215,7 @@
+     for previous_path in list(base.glob('clean-v01402-short-*/record.json'))+list(base.glob('clean-v01402-default-*/record.json'))+list(base.glob('owned-v01402*-*/record.json'))+list(base.glob('owned-event-ack-v01402-code32k-*/record.json'))+list(base.glob('owned-cb-off-v01402-code32k-*/record.json'))+list(base.glob('owned-cnr-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-cb-cnr-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-no-profile-cb-cnr-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-registered-copy-cb-cnr-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-registered-copy-cb-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-no-root-prefill-cb-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-no-root-prefill-default-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-no-root-host-profile-v01402-code32k-*/record.json'))+list(base.glob('owned-qsa-*-v01402-code32k-*/record.json'))+list(base.glob('owned-compact2-layout1-v01402-code32k-*/record.json'))+list(base.glob('owned-layer2-ram-layout1-v01402-code32k-*/record.json'))+list(base.glob('owned-layer2-gpu-release-layout1-v01402-code32k-*/record.json'))+list(base.glob('owned-processing-default-v01402-code32k-*/record.json'))+list(base.glob('owned-main-vmm-*-v01402-code32k-*/record.json'))+list(base.glob('owned-kv-stream32k-v01402-code32k-*/record.json'))+list(base.glob('owned-kv-layer-major32k-*-*/record.json'))+list(base.glob('owned-kv-stream32k-quiet-*/record.json'))+list(base.glob('owned-full-kv-access-*/record.json')):
+         if previous_path.parent==out:continue
+         previous=json.loads(previous_path.read_text());assert not previous['active']
+-        known_failures={'owned-v01402-code32k-patched-default-head-r2': '74e4b01947b304ce63400cf41930dffcbcaa7482d4342770557da4a00520fae6', 'owned-event-ack-v01402-code32k-diagnostic-r1': 'b1d072a15ceaf7b30c35c6599b7df4a91f62caeb0fa8469000a980f6c3c8ed46', 'owned-event-ack-cb-cnr-v01402-code32k-state-r1': '073f0a2081f333c21254c7f1388681473bada935cacf5db56ee3d7994f856f95', 'owned-main-vmm-full-ram-chunk12k-v01402-code32k-diagnostic-r1': '3de5e40d7a9bb390112c8de7bc6ee29604e62f8fed45e516cbf57ffe8cb0dfdb'}
++        known_failures={'owned-v01402-code32k-patched-default-head-r2': '74e4b01947b304ce63400cf41930dffcbcaa7482d4342770557da4a00520fae6', 'owned-event-ack-v01402-code32k-diagnostic-r1': 'b1d072a15ceaf7b30c35c6599b7df4a91f62caeb0fa8469000a980f6c3c8ed46', 'owned-event-ack-cb-cnr-v01402-code32k-state-r1': '073f0a2081f333c21254c7f1388681473bada935cacf5db56ee3d7994f856f95', 'owned-main-vmm-full-ram-chunk12k-v01402-code32k-diagnostic-r1': '3de5e40d7a9bb390112c8de7bc6ee29604e62f8fed45e516cbf57ffe8cb0dfdb', 'owned-full-kv-access-v01402-full256k-diagnostic-r2': 'da8657868131392654c034ed6c004176fd624e7bd065f03c4c73aa3b3969a7ac'}
+         if previous_path.parent.name in known_failures:
+             assert hashlib.sha256(previous_path.read_bytes()).hexdigest()==known_failures[previous_path.parent.name]
+             assert not any(previous['cleanup'][key] for key in ['inferior_survived','gdb_survived'])
+@@ -246,7 +256,7 @@
+     args[args.index('--conversation-cache-mib')+1]='0'
+     argv=[str(binary)]+args;record['argv']=argv
+     record['mode']=mode;record['phase']=phase;record['repetition']=repetition
+-    record['scope']='Full256K occupancy/repeat/session restore/clipped verify tail/refusal/later32K correctness gate. All inputs >=32768. Diagnostic timing excluded from speed. KV streaming candidate, chunk-major, context262144, resident32768, own staging, no prefetch or layer-major cache leases. Three fresh full32768-token requests in one logged/validated normal-MTP process on private v3 KV binary. Accepted8192 chunks. Each64-output reply has a newly written head and complete raw66-part state; used cells, recurrent/PLE/indexer state, complete head/IDs/logprobs and MTP43/66 must match the accepted baseline. Only page-rounded future cells may differ and are retained separately; no exclusions at full262144 occupancy. Trace phase memory and existing-graph retirement/restoration. Diagnostic durations excluded from speed; not full256K/adoption proof.'
++    record['scope']='Visible-output commit fix plus Full256K occupancy/repeat/session restore/clipped verify tail/refusal/later32K correctness gate. All inputs >=32768. Diagnostic timing excluded from speed. KV streaming candidate, chunk-major, context262144, resident32768, own staging, no prefetch or layer-major cache leases. Three fresh full32768-token requests in one logged/validated normal-MTP process on private v3 KV binary. Accepted8192 chunks. Each64-output reply has a newly written head and complete raw66-part state; used cells, recurrent/PLE/indexer state, complete head/IDs/logprobs and MTP43/66 must match the accepted baseline. Only page-rounded future cells may differ and are retained separately; no exclusions at full262144 occupancy. Trace phase memory and existing-graph retirement/restoration. Diagnostic durations excluded from speed; not full256K/adoption proof.'
+     previous_cnr=json.loads((base/'event-ack-registered-copy-cb-v01402-state-sequence/record.json').read_text())
+     assert previous_cnr['passed'] and not previous_cnr['active']
+     record['previous_goal_turn']='progress: nine exact32K main-state/head/output controls and six clean processing-order jobs archived in86e13c1b17104e3f53b45c56f85c35c74c2a4099. All owned identities absent; production unchanged. GPU-row pair varies about11%, MTP RAM restoration repeats at248ms. Proceed to matched main-cache release/restore conditions.'
+@@ -259,10 +269,10 @@
+     assert live_gate['passed'] and not live_gate['active']
+     record['live_state_comparator_sha256']=hashlib.sha256((base/'compare_live_prefill_state_v01402_v2.py').read_bytes()).hexdigest()
+     record['host_lease_check_sha256']=hashlib.sha256((base/'main-cache-lease-v01402-host-check/record.json').read_bytes()).hexdigest()
+-    reader_check=base/'saved-session-reader-v01402-host-check-v1/record.json'
++    reader_check=base/'saved-session-reader-v01402-host-check-v2/record.json'
+     cpu_reader=json.loads(reader_check.read_text())
+     assert cpu_reader['passed'] and not cpu_reader['active']
+-    assert cpu_reader['reader_sha256']==hashlib.sha256((base/'read_saved_session_v01402_v1.py').read_bytes()).hexdigest()
++    assert cpu_reader['reader_sha256']==hashlib.sha256((base/'read_saved_session_v01402_v2.py').read_bytes()).hexdigest()
+     record['session_reader_cpu_check_sha256']=hashlib.sha256(reader_check.read_bytes()).hexdigest()
+     earlier=base/'owned-full-kv-access-v01402-full256k-diagnostic-r1/record.json'
+     assert hashlib.sha256(earlier.read_bytes()).hexdigest()=='833dcb26548cd298b49f2da746fa48675f04e75d40f47c1409f5a3d3b60caf1d'
+@@ -284,7 +294,7 @@
+     os.close(slave);slave=None;save()
+     from compare_live_prefill_state_v01402_v2 import compare_states
+ 
+-    from read_saved_session_v01402_v1 import read_session, full_kv_gate
++    from read_saved_session_v01402_v2 import read_session, full_kv_gate
+     fixture=base/'coding-review-32k-tokens.txt'
+     full_fixture=base/'full-context-copy-off/coding-context-256k-tokens.txt'
+     assert hashlib.sha256(fixture.read_bytes()).hexdigest()=='137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449'
+@@ -304,6 +314,13 @@
+                         'full_sha256':hashlib.sha256(full_fixture.read_bytes()).hexdigest(),
+                         'common_prefix_tokens':common}
+     baseline=json.loads((base/'owned-event-ack-no-root-prefill-default-v01402-code32k-diagnostic-r1/record.json').read_text())['requests'][0]
++    assert baseline['mtp_counts']==[43,66]
++    record['legacy_control_mtp_counts']=baseline['mtp_counts']
++    # The preserved actual SAVE and final window prove two invisible tokens were
++    # counted/committed. The fixed code keeps the same66 offered drafts and all
++    #64 IDs/logprobs, but counts41 visible accepted drafts.
++    baseline['mtp_counts']=[41,66]
++    record['expected_visible_control_mtp_counts']=[41,66]
+     stderr=out/'debugger/inferior.stderr'
+     record['sessions']=[]
+     math_ok=True
+@@ -415,6 +432,15 @@
+         if command=='SAVE':
+             result['image']=read_session(path)
+             assert result['image']['semantic']['live']['ids']['count']==expected_tokens
++            if name=='save-control32k':
++                visible_ids=control+control_first['ids'][:-1]
++            elif name in ['save-full256k-first','save-full256k-repeat']:
++                visible_ids=full+full_first['ids'][:-1]
++            else:visible_ids=None
++            if visible_ids is not None:
++                exact=hashlib.sha256(array.array('i',visible_ids).tobytes()).hexdigest()
++                assert result['image']['semantic']['live']['ids']['sha256']==exact
++                result['saved_ids_match_exact_consumed_visible_prefix']=True
+         else:result['engine_checksum_and_compatibility_validated']=True
+         result['passed']=True;save();return result
+ 

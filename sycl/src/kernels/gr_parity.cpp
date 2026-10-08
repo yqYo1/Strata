@@ -21,9 +21,11 @@
 //      Asserted as a property, not as a value, because that is what the source comment claims.
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
 #include "strata/kernels/gr.hpp"
 #include "strata/kernels/fused_gr.hpp"
+#include "strata/kernels/native_mmvq.hpp"
 
 #include <cmath>
 #include <cstdio>
@@ -171,23 +173,23 @@ int scalar_activation_contract() {
     uint16_t* d_weights = nullptr;
     void* d_scratch = nullptr;
     check(DPCT_CHECK_ERROR(
-              d_R = sycl::malloc_device<float>(2, dpct::get_in_order_queue())),
+              d_R = strata::checked_usm(sycl::malloc_device<float>(2, dpct::get_in_order_queue()))),
           "scalar R");
-    check(DPCT_CHECK_ERROR(d_norm = sycl::malloc_device<float>(
-                               2, dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_norm = strata::checked_usm(sycl::malloc_device<float>(
+                               2, dpct::get_in_order_queue()))),
           "scalar norm");
-    check(DPCT_CHECK_ERROR(d_mixed = sycl::malloc_device<float>(
-                               2, dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_mixed = strata::checked_usm(sycl::malloc_device<float>(
+                               2, dpct::get_in_order_queue()))),
           "scalar mixed");
-    check(DPCT_CHECK_ERROR(d_inject = sycl::malloc_device<float>(
-                               1, dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_inject = strata::checked_usm(sycl::malloc_device<float>(
+                               1, dpct::get_in_order_queue()))),
           "scalar inject");
-    check(DPCT_CHECK_ERROR(d_weights = sycl::malloc_device<uint16_t>(
-                               10, dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_weights = strata::checked_usm(sycl::malloc_device<uint16_t>(
+                               10, dpct::get_in_order_queue()))),
           "scalar weights");
     check(DPCT_CHECK_ERROR(
-              d_scratch = (void *)sycl::malloc_device(
-                  gr_workspace_bytes(sh), dpct::get_in_order_queue())),
+              d_scratch = (void *)strata::checked_usm(sycl::malloc_device(
+                  gr_workspace_bytes(sh), dpct::get_in_order_queue()))),
           "scalar scratch");
     GrWorkspace ws;
     gr_workspace_init(sh, d_scratch, ws);
@@ -363,32 +365,32 @@ int fused_multi_lds_parity(const float* d_norm, const uint16_t* d_down, const ui
 
     float *d_r = nullptr, *d_r_out = nullptr, *d_bo = nullptr, *d_inj = nullptr;
     float *d_lo = nullptr, *d_rs = nullptr, *d_inj_out = nullptr, *d_mixed = nullptr, *d_xn = nullptr;
-    check(DPCT_CHECK_ERROR(d_r = sycl::malloc_device<float>(
-                               r.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_r = strata::checked_usm(sycl::malloc_device<float>(
+                               r.size(), dpct::get_in_order_queue()))),
           "multi R");
-    check(DPCT_CHECK_ERROR(d_r_out = sycl::malloc_device<float>(
-                               r.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_r_out = strata::checked_usm(sycl::malloc_device<float>(
+                               r.size(), dpct::get_in_order_queue()))),
           "multi R_out");
-    check(DPCT_CHECK_ERROR(d_bo = sycl::malloc_device<float>(
-                               bo.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_bo = strata::checked_usm(sycl::malloc_device<float>(
+                               bo.size(), dpct::get_in_order_queue()))),
           "multi bo");
-    check(DPCT_CHECK_ERROR(d_inj = sycl::malloc_device<float>(
-                               inj.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_inj = strata::checked_usm(sycl::malloc_device<float>(
+                               inj.size(), dpct::get_in_order_queue()))),
           "multi inj");
-    check(DPCT_CHECK_ERROR(d_lo = sycl::malloc_device<float>(
-                               (size_t)T * LR, dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_lo = strata::checked_usm(sycl::malloc_device<float>(
+                               (size_t)T * LR, dpct::get_in_order_queue()))),
           "multi lo");
-    check(DPCT_CHECK_ERROR(d_rs = sycl::malloc_device<float>(
-                               (size_t)T * HC, dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_rs = strata::checked_usm(sycl::malloc_device<float>(
+                               (size_t)T * HC, dpct::get_in_order_queue()))),
           "multi rs");
-    check(DPCT_CHECK_ERROR(d_inj_out = sycl::malloc_device<float>(
-                               (size_t)T * HC, dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_inj_out = strata::checked_usm(sycl::malloc_device<float>(
+                               (size_t)T * HC, dpct::get_in_order_queue()))),
           "multi injection");
-    check(DPCT_CHECK_ERROR(d_mixed = sycl::malloc_device<float>(
-                               (size_t)T * N, dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_mixed = strata::checked_usm(sycl::malloc_device<float>(
+                               (size_t)T * N, dpct::get_in_order_queue()))),
           "multi mixed");
-    check(DPCT_CHECK_ERROR(d_xn = sycl::malloc_device<float>(
-                               (size_t)T * D, dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_xn = strata::checked_usm(sycl::malloc_device<float>(
+                               (size_t)T * D, dpct::get_in_order_queue()))),
           "multi xn");
     /*
     DPCT1114: cudaMemcpy is migrated to asynchronization memcpy, assuming in
@@ -592,6 +594,88 @@ int fused_multi_lds_parity(const float* d_norm, const uint16_t* d_down, const ui
         ++bad;
     }
 
+
+    // S26 STRATA_QFUSE: the read's own q8_1 image of `mixed` must be the bytes native_quantize_q8_1 writes from it -
+    // for every T (1..8), directly and through a captured graph replayed twice (the group counters must reset)
+    {
+        uint8_t *d_q = nullptr, *d_ref = nullptr;
+        unsigned* d_cnt = nullptr;
+        const size_t qbytes = (size_t) T * (N / 32) * 36;
+        check(DPCT_CHECK_ERROR(d_q = (uint8_t *)sycl::malloc_device(
+                                   qbytes, dpct::get_in_order_queue())),
+              "qfuse q8");
+        check(DPCT_CHECK_ERROR(d_ref = (uint8_t *)sycl::malloc_device(
+                                   qbytes, dpct::get_in_order_queue())),
+              "qfuse ref");
+        check(DPCT_CHECK_ERROR(d_cnt = sycl::malloc_device<unsigned int>(
+                                   (N / 32), dpct::get_in_order_queue())),
+              "qfuse counters");
+        check(
+            DPCT_CHECK_ERROR((dpct::get_current_device().queues_wait_and_throw(), dpct::get_in_order_queue())
+                                 .memset(d_cnt, 0, (N / 32) * sizeof(unsigned))
+                                 .wait()),
+            "qfuse counters zero");
+        int qbad = 0;
+        std::vector<uint8_t> hq(qbytes), hr(qbytes);
+        for (int tt = 1; tt <= T && !qbad; ++tt) {
+            std::vector<FusedGrArgs> qa(args.begin(), args.begin() + tt);
+            for (int t = 0; t < tt; ++t) { qa[t].q8_mixed = d_q + (size_t) t * (N / 32) * 36; qa[t].q8_cnt = d_cnt; }
+            for (int rep = 0; rep < 3 && !qbad; ++rep) {
+                check(DPCT_CHECK_ERROR(stream->memset(d_q, 0x5a, qbytes)),
+                      "qfuse poison");
+                bool wrote = false;
+                dpct::experimental::command_graph_ptr qg = nullptr;
+                dpct::experimental::command_graph_exec_ptr qx = nullptr;
+                if (rep == 0) {
+                    wrote = fused_gr_read_multi(qa.data(), tt, d_xn, stream);
+                } else {   // a captured read, replayed (twice: rep 1 and 2 use fresh captures, each replayed twice)
+                    check(DPCT_CHECK_ERROR(
+                              dpct::experimental::begin_recording(stream)),
+                          "qfuse begin");
+                    wrote = fused_gr_read_multi(qa.data(), tt, d_xn, stream);
+                    check(DPCT_CHECK_ERROR(
+                              dpct::experimental::end_recording(stream, &qg)),
+                          "qfuse end");
+                    check(
+                        DPCT_CHECK_ERROR(
+                            qx = new sycl::ext::oneapi::experimental::
+                                command_graph<sycl::ext::oneapi::experimental::
+                                                  graph_state::executable>(
+                                    qg->finalize())),
+                        "qfuse instantiate");
+                    check(DPCT_CHECK_ERROR(stream->ext_oneapi_graph(*qx)),
+                          "qfuse replay 1");
+                    check(DPCT_CHECK_ERROR(stream->memset(d_q, 0x5a, qbytes)),
+                          "qfuse poison 2");
+                    check(DPCT_CHECK_ERROR(stream->ext_oneapi_graph(*qx)),
+                          "qfuse replay 2");
+                }
+                strata::kernels::native_quantize_q8_1(d_mixed, d_ref, N, tt, stream);
+                check(DPCT_CHECK_ERROR(stream->wait()), "qfuse sync");
+                if (qx) { delete (qx); delete (qg); }
+                if (v3) { std::printf("  QFUSE: the v3 read writes no q8_1 (%s)\n", wrote ? "WRONG: it says it did" : "ok"); qbad += wrote; break; }
+                check(DPCT_CHECK_ERROR((dpct::get_current_device().queues_wait_and_throw(), dpct::get_in_order_queue())
+                                           .memcpy(hq.data(), d_q,
+                                                   (size_t)tt * (N / 32) * 36)
+                                           .wait()),
+                      "qfuse read");
+                check(DPCT_CHECK_ERROR((dpct::get_current_device().queues_wait_and_throw(), dpct::get_in_order_queue())
+                                           .memcpy(hr.data(), d_ref,
+                                                   (size_t)tt * (N / 32) * 36)
+                                           .wait()),
+                      "qfuse ref read");
+                if (!wrote || std::memcmp(hq.data(), hr.data(), (size_t) tt * (N / 32) * 36) != 0) {
+                    std::printf("  QFUSE: T=%d rep %d: %s\n", tt, rep, wrote ? "q8_1 bytes differ" : "not written");
+                    ++qbad;
+                }
+            }
+        }
+        std::printf("  fused GR read + q8_1 (STRATA_QFUSE), T 1..8, direct and graph replays: %s\n", qbad ? "FAIL" : "pass");
+        bad += qbad;
+        sycl::free(d_q, dpct::get_in_order_queue());
+            sycl::free(d_ref, dpct::get_in_order_queue());
+            sycl::free(d_cnt, dpct::get_in_order_queue());
+    }
     std::printf("  fused GR multi max-T=8 LDS launch and changing graph replay %s\n",
                 bad == 0 ? "pass" : "FAIL");
     check(DPCT_CHECK_ERROR(delete (graph_exec)), "multi graph exec destroy");
@@ -671,26 +755,26 @@ int main(int argc, char** argv) {
     // ---- device side
     float *d_R = nullptr, *d_norm = nullptr, *d_mixed = nullptr, *d_inject = nullptr;
     uint16_t *d_down = nullptr, *d_up = nullptr, *d_inj = nullptr;
-    check(DPCT_CHECK_ERROR(d_R = sycl::malloc_device<float>(
-                               R.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_R = strata::checked_usm(sycl::malloc_device<float>(
+                               R.size(), dpct::get_in_order_queue()))),
           "m R");
-    check(DPCT_CHECK_ERROR(d_norm = sycl::malloc_device<float>(
-                               w_norm.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_norm = strata::checked_usm(sycl::malloc_device<float>(
+                               w_norm.size(), dpct::get_in_order_queue()))),
           "m norm");
-    check(DPCT_CHECK_ERROR(d_down = sycl::malloc_device<uint16_t>(
-                               q_down.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_down = strata::checked_usm(sycl::malloc_device<uint16_t>(
+                               q_down.size(), dpct::get_in_order_queue()))),
           "m down");
-    check(DPCT_CHECK_ERROR(d_up = sycl::malloc_device<uint16_t>(
-                               q_up.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_up = strata::checked_usm(sycl::malloc_device<uint16_t>(
+                               q_up.size(), dpct::get_in_order_queue()))),
           "m up");
-    check(DPCT_CHECK_ERROR(d_inj = sycl::malloc_device<uint16_t>(
-                               q_inject.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_inj = strata::checked_usm(sycl::malloc_device<uint16_t>(
+                               q_inject.size(), dpct::get_in_order_queue()))),
           "m inj");
-    check(DPCT_CHECK_ERROR(d_mixed = sycl::malloc_device<float>(
-                               (size_t)n_embd, dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_mixed = strata::checked_usm(sycl::malloc_device<float>(
+                               (size_t)n_embd, dpct::get_in_order_queue()))),
           "m mixed");
-    check(DPCT_CHECK_ERROR(d_inject = sycl::malloc_device<float>(
-                               (size_t)hc, dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_inject = strata::checked_usm(sycl::malloc_device<float>(
+                               (size_t)hc, dpct::get_in_order_queue()))),
           "m inject");
     /*
     DPCT1114: cudaMemcpy is migrated to asynchronization memcpy, assuming in
@@ -741,9 +825,9 @@ int main(int argc, char** argv) {
     const strata::kernels::GrShapes sh{n_embd, hc, hc_lr};
     // DEVICE memory: the workspace is written by the kernel.
     void* d_ws_raw = nullptr;
-    check(DPCT_CHECK_ERROR(d_ws_raw = (void *)sycl::malloc_device(
+    check(DPCT_CHECK_ERROR(d_ws_raw = (void *)strata::checked_usm(sycl::malloc_device(
                                strata::kernels::gr_workspace_bytes(sh),
-                               dpct::get_in_order_queue())),
+                               dpct::get_in_order_queue()))),
           "m ws");
     strata::kernels::GrWorkspace ws;
     strata::kernels::gr_workspace_init(sh, d_ws_raw, ws);
@@ -862,11 +946,11 @@ int main(int argc, char** argv) {
     // output.  Feed transposed copies through the same code path and require the answer to differ.
     {
         uint16_t *d_down_bad = nullptr, *d_up_bad = nullptr;
-        check(DPCT_CHECK_ERROR(d_down_bad = sycl::malloc_device<uint16_t>(
-                                   q_down.size(), dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_down_bad = strata::checked_usm(sycl::malloc_device<uint16_t>(
+                                   q_down.size(), dpct::get_in_order_queue()))),
               "m down_bad");
-        check(DPCT_CHECK_ERROR(d_up_bad = sycl::malloc_device<uint16_t>(
-                                   q_up.size(), dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(d_up_bad = strata::checked_usm(sycl::malloc_device<uint16_t>(
+                                   q_up.size(), dpct::get_in_order_queue()))),
               "m up_bad");
         std::vector<uint16_t> tr_down(q_down.size()), tr_up(q_up.size());
         for (long long k = 0; k < hc_lr; ++k)
@@ -896,8 +980,8 @@ int main(int argc, char** argv) {
         std::vector<float> bad_mixed((size_t) n_embd);
         float* d_bad = nullptr;
         check(
-            DPCT_CHECK_ERROR(d_bad = sycl::malloc_device<float>(
-                                 bad_mixed.size(), dpct::get_in_order_queue())),
+            DPCT_CHECK_ERROR(d_bad = strata::checked_usm(sycl::malloc_device<float>(
+                                 bad_mixed.size(), dpct::get_in_order_queue()))),
             "m bad");
         strata::kernels::gr_read(d_R, d_norm, d_down_bad, d_up_bad, d_inj, eps, sh, ws, d_bad, d_inject,
                                  nullptr);
@@ -937,17 +1021,17 @@ int main(int argc, char** argv) {
     for (auto& x : block_out) x = gauss(rng);
     std::vector<float> zero_inj((size_t) hc, 0.0f);
     float *d_Rw = nullptr, *d_bo = nullptr, *d_zi = nullptr, *d_outw = nullptr;
-    check(DPCT_CHECK_ERROR(d_Rw = sycl::malloc_device<float>(
-                               R.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_Rw = strata::checked_usm(sycl::malloc_device<float>(
+                               R.size(), dpct::get_in_order_queue()))),
           "m Rw");
-    check(DPCT_CHECK_ERROR(d_bo = sycl::malloc_device<float>(
-                               block_out.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_bo = strata::checked_usm(sycl::malloc_device<float>(
+                               block_out.size(), dpct::get_in_order_queue()))),
           "m bo");
-    check(DPCT_CHECK_ERROR(d_zi = sycl::malloc_device<float>(
-                               zero_inj.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_zi = strata::checked_usm(sycl::malloc_device<float>(
+                               zero_inj.size(), dpct::get_in_order_queue()))),
           "m zi");
-    check(DPCT_CHECK_ERROR(d_outw = sycl::malloc_device<float>(
-                               R.size(), dpct::get_in_order_queue())),
+    check(DPCT_CHECK_ERROR(d_outw = strata::checked_usm(sycl::malloc_device<float>(
+                               R.size(), dpct::get_in_order_queue()))),
           "m outw");
     /*
     DPCT1114: cudaMemcpy is migrated to asynchronization memcpy, assuming in
@@ -1082,28 +1166,28 @@ int main(int argc, char** argv) {
 
         float *dR = nullptr, *dN = nullptr, *dM = nullptr, *dI = nullptr;
         uint16_t *dD = nullptr, *dU = nullptr, *dJ = nullptr;
-        check(DPCT_CHECK_ERROR(dR = (float *)sycl::malloc_device(
-                                   rR.size() * 4, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(dR = (float *)strata::checked_usm(sycl::malloc_device(
+                                   rR.size() * 4, dpct::get_in_order_queue()))),
               "rR");
         check(
-            DPCT_CHECK_ERROR(dN = (float *)sycl::malloc_device(
-                                 rnorm.size() * 4, dpct::get_in_order_queue())),
+            DPCT_CHECK_ERROR(dN = (float *)strata::checked_usm(sycl::malloc_device(
+                                 rnorm.size() * 4, dpct::get_in_order_queue()))),
             "rN");
-        check(DPCT_CHECK_ERROR(dD = (uint16_t *)sycl::malloc_device(
-                                   qd.size() * 2, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(dD = (uint16_t *)strata::checked_usm(sycl::malloc_device(
+                                   qd.size() * 2, dpct::get_in_order_queue()))),
               "rD");
-        check(DPCT_CHECK_ERROR(dU = (uint16_t *)sycl::malloc_device(
-                                   qu.size() * 2, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(dU = (uint16_t *)strata::checked_usm(sycl::malloc_device(
+                                   qu.size() * 2, dpct::get_in_order_queue()))),
               "rU");
-        check(DPCT_CHECK_ERROR(dJ = (uint16_t *)sycl::malloc_device(
-                                   qi.size() * 2, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(dJ = (uint16_t *)strata::checked_usm(sycl::malloc_device(
+                                   qi.size() * 2, dpct::get_in_order_queue()))),
               "rJ");
-        check(DPCT_CHECK_ERROR(dM = (float *)sycl::malloc_device(
-                                   (size_t)rn * 4, dpct::get_in_order_queue())),
+        check(DPCT_CHECK_ERROR(dM = (float *)strata::checked_usm(sycl::malloc_device(
+                                   (size_t)rn * 4, dpct::get_in_order_queue()))),
               "rM");
         check(
-            DPCT_CHECK_ERROR(dI = (float *)sycl::malloc_device(
-                                 (size_t)rhc * 4, dpct::get_in_order_queue())),
+            DPCT_CHECK_ERROR(dI = (float *)strata::checked_usm(sycl::malloc_device(
+                                 (size_t)rhc * 4, dpct::get_in_order_queue()))),
             "rI");
         /*
         DPCT1114: cudaMemcpy is migrated to asynchronization memcpy,
@@ -1153,9 +1237,9 @@ int main(int argc, char** argv) {
 
         const strata::kernels::GrShapes rsh{rn, rhc, rlr};
         void* rws_raw = nullptr;
-        check(DPCT_CHECK_ERROR(rws_raw = (void *)sycl::malloc_device(
+        check(DPCT_CHECK_ERROR(rws_raw = (void *)strata::checked_usm(sycl::malloc_device(
                                    strata::kernels::gr_workspace_bytes(rsh),
-                                   dpct::get_in_order_queue())),
+                                   dpct::get_in_order_queue()))),
               "m rws");
         strata::kernels::GrWorkspace rws;
         strata::kernels::gr_workspace_init(rsh, rws_raw, rws);

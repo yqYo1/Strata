@@ -1,0 +1,35 @@
+{
+  "scope": "CPU debugger exit classification; no GPU execution",
+  "script_sha256": "f5b31fb5a80add70993969305b54ed5f859f04faaea2ed4c7f00f020ea25124c",
+  "checks": [
+    {
+      "name": "normal",
+      "command": [
+        "/bin/true"
+      ],
+      "expected_debugger_exit": 0,
+      "actual_debugger_exit": 0,
+      "passed": true
+    },
+    {
+      "name": "nonzero",
+      "command": [
+        "/bin/false"
+      ],
+      "expected_debugger_exit": 1,
+      "actual_debugger_exit": 1,
+      "passed": true
+    },
+    {
+      "name": "abort",
+      "command": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/gpu-stall-diagnosis/post-reboot-20261006/cpu-debugger-abort.py"
+      ],
+      "expected_debugger_exit": 1,
+      "actual_debugger_exit": 1,
+      "passed": true
+    }
+  ],
+  "completed": true
+}

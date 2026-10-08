@@ -1,0 +1,35 @@
+{
+  "scope": "Actual candidate valid nonexistent-selector preflight; no GPU submission",
+  "selector": "level_zero:999",
+  "binary": "/home/yayoi/.local/state/strata-sycl/residency-lifetime-audit-20261007/strata-residency-audit-candidate",
+  "runs": [
+    {
+      "name": "elastic",
+      "args": [
+        "--vram-elastic"
+      ],
+      "exit_code": 2,
+      "passed": true
+    },
+    {
+      "name": "full-context-elastic",
+      "args": [
+        "--max-context",
+        "262144",
+        "--vram-elastic"
+      ],
+      "exit_code": 2,
+      "passed": true
+    },
+    {
+      "name": "help",
+      "args": [
+        "--help"
+      ],
+      "exit_code": 0,
+      "passed": true
+    }
+  ],
+  "utc": "2026-10-06T16:55:03.975384+00:00",
+  "binary_sha256": "79a4b363d33f66f41d910be6274e609b4eb73f62afb0dc49bca72bf2a538d223"
+}

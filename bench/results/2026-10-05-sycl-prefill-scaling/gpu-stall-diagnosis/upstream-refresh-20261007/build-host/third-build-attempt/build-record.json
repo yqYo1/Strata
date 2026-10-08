@@ -1,0 +1,48 @@
+{
+  "mode": "build",
+  "active": false,
+  "passed": false,
+  "steps": [
+    {
+      "label": "configure",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007",
+        "-G",
+        "Ninja",
+        "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DCMAKE_C_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icx",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DSTRATA_GGML_DIR=/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned",
+        "-DSTRATA_SYCL_PARITY=ON",
+        "-DSTRATA_IQ2S_GCC=ON",
+        "-DSTRATA_IQ_FIXTURE_DIR=/tmp/strata-upstream-arc-iq-fixtures",
+        "-DSTRATA_PLE_FIXTURE_DIR=/tmp/strata-upstream-arc-ple-fixtures"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.31445320999773685
+    },
+    {
+      "label": "build",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007",
+        "--parallel",
+        "2",
+        "--",
+        "-k",
+        "0"
+      ],
+      "exit_code": 1,
+      "elapsed_seconds": 32.87861674099986
+    }
+  ],
+  "started_utc": "2026-10-07T09:23:36.757925+00:00",
+  "scope": "Existing host tests or isolated SYCL compilation only; no GPU model/parity/performance/capacity proof",
+  "elapsed_seconds": 33.193862061998516,
+  "finished_utc": "2026-10-07T09:24:09.951787+00:00"
+}

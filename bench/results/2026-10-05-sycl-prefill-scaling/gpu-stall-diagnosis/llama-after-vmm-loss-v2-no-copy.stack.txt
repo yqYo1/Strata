@@ -1,0 +1,26 @@
+Thread 1 "llama-bench" received signal SIGABRT, Aborted.
+__pthread_kill_implementation (no_tid=0, signo=6, threadid=<optimized out>) at ./nptl/pthread_kill.c:44
+
+Thread 2 (Thread 0x7fffcdef76c0 (LWP 531595) "llama-bench"):
+#0  0x00007fffe624ae51 in __futex_abstimed_wait_common64 (private=32767, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x5ba4d10) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=32767, abstime=0x0, clockid=0, expected=0, futex_word=0x5ba4d10) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x5ba4d10, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007fffe624d8cd in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x5ba4d18, cond=0x5ba4ce8) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x5ba4ce8, mutex=0x5ba4d18) at ./nptl/pthread_cond_wait.c:627
+#5  0x00007fffdf08a2ca in ?? () from /home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1
+#6  0x00007fffe624eb84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#7  0x00007fffe62dbecc in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 1 (Thread 0x7ffff1aaa680 (LWP 531521) "llama-bench"):
+#0  __pthread_kill_implementation (no_tid=0, signo=6, threadid=<optimized out>) at ./nptl/pthread_kill.c:44
+#1  __pthread_kill_internal (signo=6, threadid=<optimized out>) at ./nptl/pthread_kill.c:78
+#2  __GI___pthread_kill (threadid=<optimized out>, signo=signo@entry=6) at ./nptl/pthread_kill.c:89
+#3  0x00007fffe61f727e in __GI_raise (sig=sig@entry=6) at ../sysdeps/posix/raise.c:26
+#4  0x00007fffe61da8ff in __GI_abort () at ./stdlib/abort.c:79
+#5  0x000000000041beb4 in ggml_abort ()
+#6  0x000000000041b50a in ggml_sycl_error(char const*, char const*, char const*, int, char const*) ()
+#7  0x0000000000b784bc in ggml_backend_sycl_buffer_clear(ggml_backend_buffer*, unsigned char) ()
+#8  0x0000000000786034 in llama_kv_cache::llama_kv_cache(llama_model const&, llama_hparams const&, ggml_type, ggml_type, bool, bool, bool, unsigned int, unsigned int, unsigned int, unsigned int, llama_swa_type, llama_memory_i*, std::function<bool (int)> const&, std::function<int (int)> const&, std::function<int (int)> const&, char const*) ()
+#9  0x0000000000803b4c in llama_model::create_memory(llama_memory_params const&, llama_cparams const&) const ()
+#10 0x0000000000755951 in llama_context::llama_context(llama_model const&, llama_context_params) ()
+#11 0x0000000000762733 in llama_init_from_model ()

@@ -1,0 +1,527 @@
+{
+  "scope": "First logged unitrace GPU timestamp gate on DD5: four fresh32768-token reads alternating two inputs, full head/used-state/output/logprob/MTP comparisons against the completed unprofiled DD5 run, actual32K SAVE/RESTORE continuation. Diagnostic/profiled durations excluded; no full-capacity, speed or stall-fix claim.",
+  "started_utc": "2026-10-08T09:10:40.776265+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "active": false,
+  "completed": false,
+  "healthy": false,
+  "requests": [
+    {
+      "name": "control32k-before",
+      "input_tokens": 32768,
+      "max_new": 64,
+      "ids": [],
+      "logprobs": [],
+      "protocol": [
+        "RESUME 0",
+        "PP 8192 32768 105101 77.9",
+        "PP 16384 32768 205722 79.6"
+      ],
+      "request_sha256": "c37cf998a9d0ce13d103ec83a6dfcf5482ad9c039466f71e400599e275a19799",
+      "allowed": true,
+      "start_epoch_us": 1791450682299478.8
+    }
+  ],
+  "snapshots": [
+    {
+      "label": "failure",
+      "stop": "*stopped,reason=\"signal-received\",signal-name=\"SIGABRT\",signal-meaning=\"Aborted\",frame={addr=\"0x00001555398d7c0c\",func=\"__pthread_kill_implementation\",args=[{name=\"no_tid\",value=\"0\"},{name=\"signo\",value=\"6\"},{name=\"threadid\",value=\"<optimized out>\"}],file=\"./nptl/pthread_kill.c\",fullname=\"./nptl/./nptl/pthread_kill.c\",line=\"44\",arch=\"i386:x86-64\"},thread-id=\"82\",stopped-threads=\"all\",core=\"0\"",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-device-profile-v01402-code32k-diagnostic-r1/debugger/failure.mi.txt",
+      "resumed": false,
+      "register_thread_id": "82",
+      "main_thread_id": "1",
+      "main_registers_captured": true,
+      "main_stack_words_captured": true,
+      "main_instructions_captured": true,
+      "capture_errors": []
+    }
+  ],
+  "steps": [
+    {
+      "label": "kernel-gap",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bf7cda3;b=0a908c16e292429980ff082da39f4bb9;m=1fc3d7d0f1;t=65d4fb333b7ae;x=69d4ef0a26026ddf",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "pid": 3854982,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05064442701404914
+    },
+    {
+      "label": "embedding-state",
+      "argv": [
+        "/usr/bin/systemctl",
+        "--user",
+        "show",
+        "llama-server-qwen3embed.service",
+        "-p",
+        "ActiveState"
+      ],
+      "pid": 3854984,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05068100499920547
+    },
+    {
+      "label": "health-runtime",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import ctypes,sys; ctypes.CDLL(sys.argv[1])",
+        "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0"
+      ],
+      "pid": 3855189,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050769371999194846
+    },
+    {
+      "label": "before-health-cursor",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "pid": 3855191,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05059058501501568
+    },
+    {
+      "label": "health",
+      "argv": [
+        "/home/yayoi/.local/bin/strata-xe-health",
+        "0000:05:00.0"
+      ],
+      "pid": 3855196,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.15091659501194954
+    },
+    {
+      "label": "health-kernel",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bf81052;b=0a908c16e292429980ff082da39f4bb9;m=20a8cae284;t=65d509826c940;x=47bf851b5032b591",
+        "--no-pager",
+        "-o",
+        "short-iso-precise"
+      ],
+      "pid": 3855211,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050773588998708874
+    },
+    {
+      "label": "kernel-before",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "pid": 3855214,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05064113999833353
+    },
+    {
+      "label": "kernel-after",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bf81052;b=0a908c16e292429980ff082da39f4bb9;m=20a8cae284;t=65d509826c940;x=47bf851b5032b591",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "pid": 3874905,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05070178199093789
+    }
+  ],
+  "deadline_seconds": 3600,
+  "protocol_timeout_seconds": 900,
+  "log_limit_bytes": 68719476736,
+  "cpu_debugger_guard_sha256": "e9925535b6a1753c89f71c32fe4b67b52c20ae7d423df269cccabe14d3b64d21",
+  "preflight_fault_messages": [],
+  "visible_commit_build_receipt_sha256": "faa339ee880ecb8d95c11e157be7c4c692ae2a84a71c8c8885d87ab1f30a16b6",
+  "visible_commit_source_sha256": "88d37897159803b1e8f9c378b8a1614ea882532316b007b258a78eadae5c6076",
+  "indexer_spare_build_receipt_sha256": "2080d54305435c0e92afc3f1065acb9f346c257ab684040998489c797247cdae",
+  "indexer_spare_source_sha256": "3002de2ac4de387df05d430296bd5cc94dc1a41c904675075f365e5360919efb",
+  "indexer_spare_source_review_sha256": "2f7b91a32ea9b79894d7f0c0934b1acbf33c299ad36af42ec352f757374c7bc6",
+  "access_build_receipt_sha256": "4747e061b6be00b90d45175015ca775d1a513887ba962d670b0ce6c40e0c9318",
+  "access_source_sha256": "6b443fc1df1c812ee4811b46ebde315cfe30356a448ac10f0e56332c763416a7",
+  "kv_build_receipt_sha256": "68bb1ebdcb1dc2397753cf1f79a75f07f94017699d587eecb950515701a86da7",
+  "kv_source_sha256": "02801fe89965fd9df0c68b58b5f2be1f8443551c2a39533b54efddd0385846e9",
+  "kv_source_review_sha256": "f10de3767f1495233d5b959821204ab817687a9c138c5b035fc17936a4f7cf8f",
+  "binary_sha256": "dd5efb9002167481d180f370b86fb6978d724f37745f7e4a923432296725ad34",
+  "candidate_build_receipt_sha256": "739db06773277f99583bf5e1fdf11e12e5d9c2a8f4c6cd14b046fef82383b19c",
+  "candidate_sources": {
+    "sycl/src/prefill/prefill.cpp": "f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77",
+    "sycl/include/dpct/device.hpp": "bf6a6fb6788fdcc18a532564edcee7b4bc2374b0336f74ca517946f471d4c0a1",
+    "sycl/include/strata/event_completion.hpp": "e2216317759266525b0f7e1ffc26ec95a7ae081fbe8d4be9fe7d5a57e8d39664"
+  },
+  "prefill_kernel_candidate": {
+    "file": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-no-root-prefill-20261008/source/kernels.dp.cpp",
+    "sha256": "3a5077a284048b4fde24a4146e3b02e8d84d259480f755e4b0e94cfc52e54f1c",
+    "removed_sites": [
+      {
+        "line": 2209,
+        "kernel": "round_f16_kernel_877aa1"
+      },
+      {
+        "line": 2250,
+        "kernel": "gr_norm_kernel_f38542"
+      },
+      {
+        "line": 2363,
+        "kernel": "gr_write_cvec_norm_rs_kernel_abf888"
+      },
+      {
+        "line": 2410,
+        "kernel": "gr_mix_kernel_d9dd98"
+      },
+      {
+        "line": 2476,
+        "kernel": "gdn_conv_kernel_df787b"
+      },
+      {
+        "line": 2491,
+        "kernel": "gdn_conv_l2_kernel_8e7204"
+      },
+      {
+        "line": 2545,
+        "kernel": "gdn_conv_hist_kernel_e391a2"
+      },
+      {
+        "line": 2658,
+        "kernel": "gdn_rec_kernel_923fed"
+      },
+      {
+        "line": 2682,
+        "kernel": "gdn_rec_kh_kernel_c88399"
+      },
+      {
+        "line": 2698,
+        "kernel": "gdn_rec_cols_pipe_kernel_c6cea3"
+      },
+      {
+        "line": 2711,
+        "kernel": "gdn_rec_cols_kernel_496541"
+      },
+      {
+        "line": 2791,
+        "kernel": "blob_dequant_kernel_252bb1"
+      },
+      {
+        "line": 2809,
+        "kernel": "blob_dequant_kernel_1d812a"
+      },
+      {
+        "line": 2890,
+        "kernel": "copy_f4_kernel_bb4110"
+      }
+    ]
+  },
+  "uniform_candidate_link_input_sha256": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-visible-commit-v1-20261008/generate.cpp.o": "4dd9c24f9ccb705fa0500d14566347186ce55af43e895b44a34dc17cc84730b4",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-objects-v1-20261008/libstrata_engine.a": "2ba779a0122a9ee203b5a61ff2bfd547803855f9d7361ca63196ada39a0efdb6",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-no-root-prefill-20261008/libstrata_prefill.a": "1c4a8d644ce2d5d74d0466e59e109ea902b337bee084151f862b215026b8db1f",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/build/libstrata_spec.a": "ff29f801c00b281aed711354818d5fd319a65751670c62fa100ce0fa752069c5",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-objects-v1-20261008/libstrata_kernels.a": "b0893dad9685e3a19037842ace6684ba351c6bbbff45242f0271494c24f76eff",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-objects-v1-20261008/libstrata_core.a": "40ae8bd4d515720862b994e6e03c9e56cbff12211a38ec6977f6d0b7b2ac2a22",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/build/libstrata_kernels_cpu.a": "b47e850690c39b9ea1869fb9057c4f1e3e55e7b2560b219f88c6fa5413f793eb",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/build/ggml/src/libggml-cpu.a": "e3cefe0cf3c866aec7d9f06b9181ca4263304dd7307af462195a9b869be953f2",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/build/ggml/src/libggml-base.a": "98059baeddf43574e613949b8382d67c088f3f62d1b84c3d47bef31581bcae1c"
+  },
+  "uniform_header_build_receipt_sha256": "b4e79456dc8222ef6187c1667ce798dc4b3f67d18f9da28aee9ca06adb56d2c0",
+  "uniform_header_source_review_sha256": "4792d85fcb703b857ad5ee53c6a9e112318e4c79f3e64755bb172c19253c6ba6",
+  "uniform_header_linked_review_sha256": "6be5523e40a5ad6ddf3c3f00ba24b042e1c98f2de1241e577fb76c57b315fbca",
+  "previous_watchdog_abort_review_sha256": "e32c9bc723228966e78022e334e6d4b3c099800ef8fb41fb8aff09fd2b71cc91",
+  "compatibility_change": "Only seven originally unprofiled TUs recompiled with the uniform DPCT header; translated profiling branches and explicit copy-queue factory unchanged. No polling change or claimed stall fix.",
+  "adopted": false,
+  "known_terminal_failures": {
+    "owned-v01402-code32k-patched-default-head-r2": "74e4b01947b304ce63400cf41930dffcbcaa7482d4342770557da4a00520fae6",
+    "owned-event-ack-v01402-code32k-diagnostic-r1": "b1d072a15ceaf7b30c35c6599b7df4a91f62caeb0fa8469000a980f6c3c8ed46",
+    "owned-event-ack-cb-cnr-v01402-code32k-state-r1": "073f0a2081f333c21254c7f1388681473bada935cacf5db56ee3d7994f856f95",
+    "owned-main-vmm-full-ram-chunk12k-v01402-code32k-diagnostic-r1": "3de5e40d7a9bb390112c8de7bc6ee29604e62f8fed45e516cbf57ffe8cb0dfdb",
+    "owned-full-kv-access-v01402-full256k-diagnostic-r2": "da8657868131392654c034ed6c004176fd624e7bd065f03c4c73aa3b3969a7ac",
+    "owned-full-kv-access-v01402-full256k-diagnostic-r3": "e2003090cf5556999cdc2c0fda31ba29c6e86c6bb1d85836ea9af614765a944f",
+    "owned-full-kv-access-v01402-full256k-diagnostic-r5": "e7e541f91ef053acebaa6b9ed2bc3139010e269f0b671d23f423869e2c7a882f"
+  },
+  "known_mathematical_rejection": "owned-main-vmm-full-ram-chunk12k-v01402-code32k-diagnostic-r1",
+  "profiler_options_review_sha256": "eafcfd7c222dcca92a19fcb76a821c00ba4ead3b266f88951ddfa84c1e516b65",
+  "profiler_sha256": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-build-system-cc/build/unitrace": "5f90c453fbaf0b90a357a065cf4392f1ce3b157d5269af165c7cfe565cef1362",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-build-system-cc/build/libunitrace_tool.so": "c544dd2f6d2f6531cd529a9cc4ab9076b705eca8d63df56505e500942d128266"
+  },
+  "unprofiled_same_binary_numerical_gate_sha256": "a96f3686903b63138a827c173e0ea5b1a8beebbee8ef9cdae46459bf9f2c9699",
+  "environment": {
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/umf/1.1/lib:/usr/lib/x86_64-linux-gnu:/opt/intel/oneapi/mkl/2026.1/lib",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "STRATA_PREFILL_FIRST": "0",
+    "STRATA_PREFILL_RING": "8",
+    "STRATA_PREFILL_COMPACT": "2",
+    "STRATA_PREFILL_ATTN_LAYOUT": "1",
+    "STRATA_PREFILL_LAYER_MAJOR": "0",
+    "STRATA_KV_STAGE_OWN": "1",
+    "STRATA_KV_PREFETCH": "0",
+    "STRATA_TRACE": "1",
+    "ZEL_ENABLE_LOADER_LOGGING": "1",
+    "ZEL_LOADER_LOG_CONSOLE": "1",
+    "ZEL_LOADER_LOGGING_LEVEL": "trace",
+    "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+    "ZE_ENABLE_VALIDATION_LAYER": "1",
+    "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+    "UR_LOG_LOADER": "level:debug;flush:debug;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:debug;flush:debug;output:stderr",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+    "UR_ENABLE_LAYERS": "UR_LAYER_TRACING",
+    "STRATA_DUMP_FIRST_LOGITS": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-device-profile-v01402-code32k-diagnostic-r1/first-head.bin",
+    "STRATA_PREFILL_DUMP_STATE": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-device-profile-v01402-code32k-diagnostic-r1/prefill-state.bin"
+  },
+  "model_argv": [
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-objects-v1-20261008/strata",
+    "--pack",
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+    "--native",
+    "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+    "--serve",
+    "--max-context",
+    "262144",
+    "--spec",
+    "4",
+    "--spec-min-p",
+    "0",
+    "--mtp",
+    "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+    "--suffix-draft",
+    "0",
+    "--prefill",
+    "8192",
+    "--no-prefill-borrow",
+    "--expert-cache",
+    "128",
+    "--expert-profile",
+    "data/expert-profile.bin",
+    "--expert-cache-per-layer",
+    "--pool-workers",
+    "5",
+    "--pcie-frac",
+    "0",
+    "--spec-split",
+    "--adapt-swaps",
+    "0",
+    "--conversation-cache-mib",
+    "0",
+    "--conversation-cache-slots",
+    "4",
+    "--greedy",
+    "--short-read",
+    "0",
+    "--kv",
+    "int8",
+    "--kv-resident",
+    "32768",
+    "--prompt-cache",
+    "1",
+    "--prompt-cache-every",
+    "262139",
+    "--prompt-cache-root",
+    "0",
+    "--turn-token",
+    "-1"
+  ],
+  "argv": [
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-build-system-cc/build/unitrace",
+    "-d",
+    "--chrome-device-logging",
+    "--output-dir-path",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-device-profile-v01402-code32k-diagnostic-r1",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-device-profile-v01402-code32k-diagnostic-r1/device-summary.txt",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-objects-v1-20261008/strata",
+    "--pack",
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+    "--native",
+    "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+    "--serve",
+    "--max-context",
+    "262144",
+    "--spec",
+    "4",
+    "--spec-min-p",
+    "0",
+    "--mtp",
+    "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+    "--suffix-draft",
+    "0",
+    "--prefill",
+    "8192",
+    "--no-prefill-borrow",
+    "--expert-cache",
+    "128",
+    "--expert-profile",
+    "data/expert-profile.bin",
+    "--expert-cache-per-layer",
+    "--pool-workers",
+    "5",
+    "--pcie-frac",
+    "0",
+    "--spec-split",
+    "--adapt-swaps",
+    "0",
+    "--conversation-cache-mib",
+    "0",
+    "--conversation-cache-slots",
+    "4",
+    "--greedy",
+    "--short-read",
+    "0",
+    "--kv",
+    "int8",
+    "--kv-resident",
+    "32768",
+    "--prompt-cache",
+    "1",
+    "--prompt-cache-every",
+    "262139",
+    "--prompt-cache-root",
+    "0",
+    "--turn-token",
+    "-1"
+  ],
+  "profile_changes_target_gpu_event_properties": true,
+  "profiling_collection": "Always enabled from process initialization through QUIT; no pause/resume transitions, metrics, KMD, sampling or added application waits. GPU timestamp events alter append/event handling; numerical gate required. Recorded durations are not clean throughput.",
+  "mode": "device-profile32k",
+  "phase": "diagnostic",
+  "repetition": 1,
+  "previous_goal_turn": "progress: first repaired full image passed; repeated full aborted in host watchdog at layer33/chunk196608. Post-exit device health passes; cause of pending counter events unresolved. Test separate standard-definition repair before profiling.",
+  "configuration_note": "PC1/ckpt1 for real SAVE/RESTORE; turn-token=-1 and root=0 preserve the accepted chunk geometry. A single periodic checkpoint at262139 is taken after the existing final full-input chunk; no checkpoint is taken in32K controls; fresh full reads must report RESUME0 after an interposed different32K prompt. Context262144/kv-resident32768 (main mode1, MTP ring), own stage, chunk-major0, no cache release or prefetch; identical math gates on32768/GEN64. State and head capture are after the prompt computation and are not performance evidence. 32768 prompt tokens from the same expanded real-code fixture with a completed review question and assistant prefix, up to64 output tokens, context33024, chunk8192, int8 KV, normal MTP4, five CPU workers, cache128 requested, pcie0. FIRST0 and RING8 common to both. No prompt/decode retirement tuning for pure/patched-default. Diagnostic logs do not count as performance results. Prompt caching disabled and ckpt0 for a complete fresh read; actual cache count/workspaces/chunks/freeVRAM are captured from engine logs; upstream mixed packing differs from explicit-count fork contract.",
+  "reference_binary_sha256": "79a4b363d33f66f41d910be6274e609b4eb73f62afb0dc49bca72bf2a538d223",
+  "reference_result_sha256": "76ab5a8eeda05824963f8803c8dde7b5b69a7a2768c1fc5f034be7bacef72b62",
+  "source_sha256": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_device_profile32k_v01402_v1.py": "20b5f9df4455eac3015ad2569badb882996efe686c07d380232091b7bcae0508",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/recover-xe.sh": "2f90005f79d2309747d917cff51dc53d8ee6192d68cb1feca074f84af8b0796c",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/owned_gdb.py": "61e1d206bf57bb320051cdd65943d23722bc523a602d80c54b7e7a2ad0d3f0d1",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/prefill.cpp": "e5cda787d3c6fe4d5c946b0cdea99ff437d7a9797470b3ca47c6ab4828ce92dc"
+  },
+  "source_review_sha256": "cfc3d4657053b042641f3605a4b9ac6b1fd3912f188900682c1e0eaec90d0787",
+  "live_state_comparator_sha256": "9a4f55a4760d316045c1ec5179a946de9a9024f7e42fe09032012ceae2475a72",
+  "host_lease_check_sha256": "2cfa09b8e2ebb23b70b3def6c4f739416574f91a0ab1795ead2e875d662fdc9e",
+  "session_reader_cpu_check_sha256": "d6cfdd300ab547445763a52ee09ba52feacbeb97ff9ed360bd23a75b7ed5f7b9",
+  "previous_config_rejection": {
+    "receipt_sha256": "833dcb26548cd298b49f2da746fa48675f04e75d40f47c1409f5a3d3b60caf1d",
+    "reason": "PC1/default turn-token split the32K final chunk at32761+6, unlike the accepted PC0 geometry32767. Same64 IDs but different intermediate state/head/logprobs and42/69 rather than43/66 MTP counts. Normal exit, no GPU fault. Not a source-change attribution."
+  },
+  "fixtures": {
+    "control_sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449",
+    "full_sha256": "cc29e4427bcacb21c9f7df2d1f1a7d41897fce5bd76a8ca43d8c3c34d914dd2a",
+    "common_prefix_tokens": 32719
+  },
+  "legacy_control_mtp_counts": [
+    43,
+    66
+  ],
+  "expected_visible_control_mtp_counts": [
+    41,
+    66
+  ],
+  "elapsed_seconds": 373.3019593550125,
+  "active_request": "control32k-before",
+  "startup": [
+    "INFO context=262144 kv=int8 kv_resident=32768 expert_slots=128 expert_cache_mib=325 expert_slots_primary=128 expert_cache_primary_mib=325 spec=4 mtp_max=0 lookup=0 vram_free_mib=1565 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.00 spec_min_p=0.00 conversation_cache_mib=0 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=0 engine=0.1.40-sycl",
+    "READY 262144 stop"
+  ],
+  "inferior": {
+    "pid": 3855228,
+    "start_ticks": 14032359,
+    "state": "t"
+  },
+  "debugger": {
+    "pid": 3855216,
+    "start_ticks": 14032351,
+    "state": "R"
+  },
+  "actual_target_environment": {
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/umf/1.1/lib:/usr/lib/x86_64-linux-gnu:/opt/intel/oneapi/mkl/2026.1/lib",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "STRATA_PREFILL_FIRST": "0",
+    "STRATA_PREFILL_RING": "8",
+    "STRATA_PREFILL_COMPACT": "2",
+    "STRATA_PREFILL_ATTN_LAYOUT": "1",
+    "STRATA_PREFILL_LAYER_MAJOR": "0",
+    "STRATA_KV_STAGE_OWN": "1",
+    "STRATA_KV_PREFETCH": "0",
+    "STRATA_TRACE": "1",
+    "ZEL_ENABLE_LOADER_LOGGING": "1",
+    "ZEL_LOADER_LOG_CONSOLE": "1",
+    "ZEL_LOADER_LOGGING_LEVEL": "trace",
+    "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+    "ZE_ENABLE_VALIDATION_LAYER": "1",
+    "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+    "UR_LOG_LOADER": "level:debug;flush:debug;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:debug;flush:debug;output:stderr",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+    "UR_ENABLE_LAYERS": "UR_LAYER_TRACING",
+    "STRATA_DUMP_FIRST_LOGITS": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-device-profile-v01402-code32k-diagnostic-r1/first-head.bin",
+    "STRATA_PREFILL_DUMP_STATE": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-device-profile-v01402-code32k-diagnostic-r1/prefill-state.bin",
+    "UNITRACE_VERSION": "2.4.0 ()",
+    "UNITRACE_DeviceTiming": "1",
+    "UNITRACE_ChromeDeviceLogging": "1",
+    "UNITRACE_TraceOutputDirPath": "1",
+    "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-device-profile-v01402-code32k-diagnostic-r1",
+    "UNITRACE_LogToFile": "1",
+    "UNITRACE_LogFilename": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-device-profile-v01402-code32k-diagnostic-r1/device-summary.txt",
+    "UNITRACE_FollowChildProcess": "1",
+    "UNITRACE_ChromeEventBufferSize": "-1",
+    "UNITRACE_LD_PRELOAD_OLD": "",
+    "ZE_ENABLE_TRACING_LAYER": "1",
+    "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-build-system-cc/build/libunitrace_tool.so"
+  },
+  "sessions": [],
+  "error": "RuntimeError('inferior stopped: *stopped,reason=\"signal-received\",signal-name=\"SIGABRT\",signal-meaning=\"Aborted\",frame={addr=\"0x00001555398d7c0c\",func=\"__pthread_kill_implementation\",args=[{name=\"no_tid\",value=\"0\"},{name=\"signo\",value=\"6\"},{name=\"threadid\",value=\"<optimized out>\"}],file=\"./nptl/pthread_kill.c\",fullname=\"./nptl/./nptl/pthread_kill.c\",line=\"44\",arch=\"i386:x86-64\"},thread-id=\"82\",stopped-threads=\"all\",core=\"0\"')",
+  "exit_code": null,
+  "exit_signal": null,
+  "cleanup": {
+    "forced": true,
+    "inferior_survived": false,
+    "gdb_survived": false
+  },
+  "new_fault_messages": [],
+  "finished_utc": "2026-10-08T09:16:54.078380+00:00"
+}

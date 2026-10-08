@@ -1,0 +1,21 @@
+To enable execution of this file add
+	add-auto-load-safe-path /opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9.0.0-gdb.py
+line to your configuration file "/home/yayoi/.config/gdb/gdbinit".
+To completely disable this security protection add
+	set auto-load safe-path /
+line to your configuration file "/home/yayoi/.config/gdb/gdbinit".
+For more information about this security protection see the
+"Auto-loading safe path" section in the GDB manual.  E.g., run from the shell:
+	info "(gdb)Auto-loading safe path"
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+queue creation start
+[New Thread 0x7fffdfda36c0 (LWP 323072)]
+device: Intel(R) Arc(TM) B570 Graphics
+64 KiB allocated
+H2D complete
+kernel complete
+D2H complete
+PASS: 16384 exact words, checksum 35926276399104
+[Thread 0x7fffdfda36c0 (LWP 323072) exited]
+[Inferior 1 (process 322390) exited normally]

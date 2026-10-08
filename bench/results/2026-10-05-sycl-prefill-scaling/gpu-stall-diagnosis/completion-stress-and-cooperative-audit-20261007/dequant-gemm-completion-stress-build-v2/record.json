@@ -1,0 +1,66 @@
+{
+  "scope": "Offline actual regular IQ wrappers plus unchanged production GEMM/SwiGLU fixture build; no GPU execution",
+  "passed": true,
+  "steps": [
+    {
+      "label": "compile",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../third_party/ggml",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-Wall",
+        "-Wextra",
+        "-MD",
+        "-MT",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-gemm-completion-stress-build-v2/probe.o",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-gemm-completion-stress-build-v2/probe.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-gemm-completion-stress-build-v2/probe.o",
+        "-c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant_gemm_completion_stress.cpp"
+      ],
+      "exit_code": 0,
+      "seconds": 6.676935912000772
+    },
+    {
+      "label": "link",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-O3",
+        "-DNDEBUG",
+        "-fsycl",
+        "-Xsycl-target-backend=spir64",
+        "-cl-fp32-correctly-rounded-divide-sqrt",
+        "-fsycl-device-code-split=per_kernel",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-gemm-completion-stress-build-v2/probe.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-no-root-refresh-build/iq_kernels.dp.cpp.o",
+        "-qmkl=sequential",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/libstrata_prefill.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-refresh-20261007/libstrata_kernels.a",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dequant-gemm-completion-stress-build-v2/probe"
+      ],
+      "exit_code": 0,
+      "seconds": 4.672038872995472
+    }
+  ],
+  "source_sha256": "95502817bb2bbe0487ecac1f93255da32e78a002ea63244ceaa3b196ad1e8cb4",
+  "controller_sha256": "29fb1656be32538e171994588e688f986bf238a350e87ba502f4af8c6c4489a0",
+  "kernel_object_sha256": "83e0b92ec642d431e0aa75121535aea0ed8e88d13eb6953e1e703ba6b8476813",
+  "started_utc": "2026-10-07T11:46:10.322046+00:00",
+  "binary_sha256": "ae5a92ace0bcd78b9c53738d83db1edb8902c6c97f3675c6f60c694ef7ebbca9",
+  "finished_utc": "2026-10-07T11:46:21.678820+00:00"
+}

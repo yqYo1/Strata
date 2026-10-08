@@ -1,0 +1,91 @@
+=================================================================
+==758831==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000018 at pc 0x6525519c2f66 bp 0x77529c7feb30 sp 0x77529c7feb20
+READ of size 8 at 0x502000000018 thread T1
+    #0 0x6525519c2f65 in strata::core::Verifier::read_payload() const /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/verifier_registry_host_test.cpp:39
+    #1 0x6525519c2f65 in strata::core::Verifier::release_gpu_waits(int) /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/verifier_registry_host_test.cpp:47
+    #2 0x6525519c2f65 in release_live_verifiers /home/yayoi/.local/state/strata-sycl/orderly-serve-shutdown-20261006/registry-after-queue-fix/control/registry-under-test.hpp:14
+    #3 0x6525519c3e61 in operator() /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/verifier_registry_host_test.cpp:65
+    #4 0x6525519c3e61 in __invoke_impl<void, strata::core::race(bool)::<lambda()> > /usr/include/c++/13/bits/invoke.h:61
+    #5 0x6525519c3e61 in __invoke<strata::core::race(bool)::<lambda()> > /usr/include/c++/13/bits/invoke.h:96
+    #6 0x6525519c3e61 in _M_invoke<0> /usr/include/c++/13/bits/std_thread.h:292
+    #7 0x6525519c3e61 in operator() /usr/include/c++/13/bits/std_thread.h:299
+    #8 0x6525519c3e61 in _M_run /usr/include/c++/13/bits/std_thread.h:244
+    #9 0x7752a03ebdb3  (/usr/lib/x86_64-linux-gnu/libstdc++.so.6+0xecdb3) (BuildId: 753c6c8608b61d4e67be8f0c890e03e0aa046b8b)
+    #10 0x7752a05dba41 in asan_thread_start ../../../../src/libsanitizer/asan/asan_interceptors.cpp:234
+    #11 0x77529fa59b83 in start_thread nptl/pthread_create.c:447
+    #12 0x77529fae6ecb in clone3 ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+0x502000000018 is located 8 bytes inside of 16-byte region [0x502000000010,0x502000000020)
+freed by thread T2 here:
+    #0 0x7752a067c5e8 in operator delete(void*, unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:164
+    #1 0x6525519c26f3 in operator() /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/verifier_registry_host_test.cpp:71
+    #2 0x6525519c26f3 in __invoke_impl<void, strata::core::race(bool)::<lambda()> > /usr/include/c++/13/bits/invoke.h:61
+    #3 0x6525519c26f3 in __invoke<strata::core::race(bool)::<lambda()> > /usr/include/c++/13/bits/invoke.h:96
+    #4 0x6525519c26f3 in _M_invoke<0> /usr/include/c++/13/bits/std_thread.h:292
+    #5 0x6525519c26f3 in operator() /usr/include/c++/13/bits/std_thread.h:299
+    #6 0x6525519c26f3 in _M_run /usr/include/c++/13/bits/std_thread.h:244
+    #7 0x7752a03ebdb3  (/usr/lib/x86_64-linux-gnu/libstdc++.so.6+0xecdb3) (BuildId: 753c6c8608b61d4e67be8f0c890e03e0aa046b8b)
+    #8 0x7752a05dba41 in asan_thread_start ../../../../src/libsanitizer/asan/asan_interceptors.cpp:234
+    #9 0x77529fa59b83 in start_thread nptl/pthread_create.c:447
+
+previously allocated by thread T0 here:
+    #0 0x7752a067b548 in operator new(unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:95
+    #1 0x6525519c4381 in strata::core::race(bool) /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/verifier_registry_host_test.cpp:62
+    #2 0x6525519c7610 in main /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/verifier_registry_host_test.cpp:151
+    #3 0x77529f9e71c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #4 0x77529f9e728a in __libc_start_main_impl ../csu/libc-start.c:360
+    #5 0x6525519c07a4 in _start (/home/yayoi/.local/state/strata-sycl/orderly-serve-shutdown-20261006/registry-after-queue-fix/control/registry-test+0x147a4) (BuildId: d638fdc23226eff4a7d2b01ea25063e654a81795)
+
+Thread T1 created by T0 here:
+    #0 0x7752a06721f9 in pthread_create ../../../../src/libsanitizer/asan/asan_interceptors.cpp:245
+    #1 0x7752a03ebeb0 in std::thread::_M_start_thread(std::unique_ptr<std::thread::_State, std::default_delete<std::thread::_State> >, void (*)()) (/usr/lib/x86_64-linux-gnu/libstdc++.so.6+0xeceb0) (BuildId: 753c6c8608b61d4e67be8f0c890e03e0aa046b8b)
+    #2 0x6525519c4770 in thread<strata::core::race(bool)::<lambda()> > /usr/include/c++/13/bits/std_thread.h:164
+    #3 0x6525519c4770 in strata::core::race(bool) /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/verifier_registry_host_test.cpp:67
+    #4 0x6525519c7610 in main /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/verifier_registry_host_test.cpp:151
+    #5 0x77529f9e71c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #6 0x77529f9e728a in __libc_start_main_impl ../csu/libc-start.c:360
+    #7 0x6525519c07a4 in _start (/home/yayoi/.local/state/strata-sycl/orderly-serve-shutdown-20261006/registry-after-queue-fix/control/registry-test+0x147a4) (BuildId: d638fdc23226eff4a7d2b01ea25063e654a81795)
+
+Thread T2 created by T0 here:
+    #0 0x7752a06721f9 in pthread_create ../../../../src/libsanitizer/asan/asan_interceptors.cpp:245
+    #1 0x7752a03ebeb0 in std::thread::_M_start_thread(std::unique_ptr<std::thread::_State, std::default_delete<std::thread::_State> >, void (*)()) (/usr/lib/x86_64-linux-gnu/libstdc++.so.6+0xeceb0) (BuildId: 753c6c8608b61d4e67be8f0c890e03e0aa046b8b)
+    #2 0x6525519c5583 in thread<strata::core::race(bool)::<lambda()> > /usr/include/c++/13/bits/std_thread.h:164
+    #3 0x6525519c5583 in strata::core::race(bool) /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/verifier_registry_host_test.cpp:73
+    #4 0x6525519c7610 in main /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/verifier_registry_host_test.cpp:151
+    #5 0x77529f9e71c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #6 0x77529f9e728a in __libc_start_main_impl ../csu/libc-start.c:360
+    #7 0x6525519c07a4 in _start (/home/yayoi/.local/state/strata-sycl/orderly-serve-shutdown-20261006/registry-after-queue-fix/control/registry-test+0x147a4) (BuildId: d638fdc23226eff4a7d2b01ea25063e654a81795)
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/verifier_registry_host_test.cpp:39 in strata::core::Verifier::read_payload() const
+Shadow bytes around the buggy address:
+  0x501ffffffd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x501ffffffe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x501ffffffe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x501fffffff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x501fffffff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x502000000000: fa fa fd[fd]fa fa fd fa fa fa 00 00 fa fa fa fa
+  0x502000000080: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x502000000100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x502000000180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x502000000200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x502000000280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==758831==ABORTING

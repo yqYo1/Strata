@@ -1,0 +1,70 @@
+strata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)
+strata generate: native pack: /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s experts (largest blob 2.66 MB), token embedding IQ4_XS in mapped host memory (322 MiB, 3.0 s)
+strata generate: 1466 MiB of weights loaded from /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s in 0.9 s (302 canonical tensors skipped: served natively)
+strata generate: 300 native projection matrices, 2018.88 MiB of weights, in 0.8 s
+strata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)
+strata generate: profile data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots
+strata generate: PLE on, table 320001536 rows of /home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf
+strata mtp: draft layer loaded, 838 MiB of VRAM (experts 675, dense 111), files read in 1.02 s (774 MiB/s)
+strata generate: experimental native Q5_K head, 521472000 bytes, in 0.2 s
+strata generate: GPU 0: Intel(R) Arc(TM) B570 Graphics, SYCL driver 1.17.39395+14
+strata generate: expert arena read through the file cache (buffered (not Windows))
+strata generate: expert arena: SYCL pageable host arena (queue copies); MAP_HUGETLB unavailable (needed 23983 2 MiB pages, vm.nr_hugepages=0); using 4 KB pages
+strata generate: loaded 46.84 GiB at 2.01 GiB/s
+strata generate: 5 pool workers on logical processors 1,2,3,4,5, the host thread on 0 (draining too) (--host-core first)
+strata trace: 4611 MiB free after the weights, the session and the drafter
+strata generate: expert cache 128 slots, 0.32 GiB of VRAM; policy is
+strata trace: 4286 MiB free after opening the expert cache
+strata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,
+strata generate: profile fill: 0.26 GiB in 0.1 s (3.46 GB/s, serial)
+strata trace: 4286 MiB free after the profile fill
+strata generate: pre-filled 128 of 128 slots from the profile in 0.1 s (3457 MB/s); slot 0 verified
+strata trace: 4286 MiB free after the R4 hit path
+strata generate: R4 hit path ON - resident experts are computed on the GPU
+strata generate: 5 expert-pool workers + the host thread
+strata trace: 4286 MiB free after the expert cache and the graphs
+strata generate: session is up (engine 0.1.40-sycl)
+strata generate: token graph hit path: 128 resident experts, decided on the device
+strata serve: the prompt path allocates its own buffers (too few cache slots to borrow)
+strata trace: 1116 MiB free after the head and the prompt path
+strata verify: window up to 4 tokens, 63.6 MiB of device buffers
+strata mtp: draft head over 106299 tokens (212.9 MiB)
+strata trace: 831 MiB free after the verifier and the drafter's binding
+strata serve: 830 MiB of VRAM free with everything loaded
+strata trace: request 32768 0
+strata trace: prompt start 32767 -1
+strata trace: prompt chunk 0 of 32767, layers [0, 48)
+strata trace: prompt chunk 8192 of 32767, layers [0, 48)
+strata trace: prompt chunk 16384 of 32767, layers [0, 48)
+strata trace: prompt chunk 24576 of 32767, layers [0, 48)
+strata trace: read 32767 tokens (batched) in 190925.3 ms
+strata trace: prompt done (slots refilled) -1 -1
+strata trace: window 32767 1
+strata verify: captured 1-token window with 48 host expert boundaries
+strata trace: window 32768 4
+strata verify: captured 4-token window with 96 host expert boundaries
+strata trace: window 32771 4
+strata trace: window 32775 4
+strata trace: window 32779 4
+strata trace: window 32782 4
+strata trace: window 32784 4
+strata trace: window 32785 4
+strata trace: window 32787 4
+strata trace: window 32791 4
+strata trace: window 32792 4
+strata trace: window 32795 4
+strata trace: window 32797 4
+strata trace: window 32800 4
+strata trace: window 32801 4
+strata trace: window 32804 4
+strata trace: window 32808 4
+strata trace: window 32811 4
+strata trace: window 32812 4
+strata trace: window 32816 4
+strata trace: window 32819 4
+strata trace: window 32820 4
+strata trace: window 32824 4
+strata trace: window 32828 4
+strata serve: prompt 32768 tokens = 0 reused + 32768 read in 190941 ms (171.6 tok/s), 64 generated in 7065 ms (9.1 tok/s), drafts accepted 41 of 69, 0 checkpoints
+strata serve: decode expert cache hit rate: 4.5% (2001 hits / 44640 lookups)
+strata SYCL shutdown: all queues completed

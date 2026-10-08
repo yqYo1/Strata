@@ -1,0 +1,74 @@
+{
+  "argv": [
+    "/opt/intel/oneapi/vtune/2026.4/bin64/vtune",
+    "-collect",
+    "xpu-offload",
+    "-knob",
+    "enable-characterization-insights=false",
+    "-knob",
+    "collect-cpu-sampling=false",
+    "-knob",
+    "collect-programming-api=true",
+    "-data-limit",
+    "128",
+    "-no-summary",
+    "-result-dir",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/vtune-smoke/gpu-result",
+    "--",
+    "/home/yayoi/.local/bin/strata-xe-health",
+    "0000:05:00.0"
+  ],
+  "root": {
+    "pid": 2464875,
+    "start_ticks": 4063062,
+    "state": "R",
+    "ppid": 2464794,
+    "pgrp": 2464875,
+    "session": 2464875
+  },
+  "started_utc": "2026-10-07T05:29:11.510625+00:00",
+  "active": false,
+  "environment": {
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/umf/1.1/lib:/usr/lib/x86_64-linux-gnu",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "ZEL_ENABLE_LOADER_LOGGING": "1",
+    "ZEL_LOADER_LOG_CONSOLE": "1",
+    "ZEL_LOADER_LOGGING_LEVEL": "trace",
+    "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+    "ZE_ENABLE_VALIDATION_LAYER": "1",
+    "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+    "UR_LOG_LOADER": "level:debug;flush:debug;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:debug;flush:debug;output:stderr",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+    "STRATA_TRACE": "1",
+    "UR_ENABLE_LAYERS": "UR_LAYER_TRACING"
+  },
+  "owned": [
+    {
+      "pid": 2464875,
+      "start_ticks": 4063062,
+      "state": "S",
+      "ppid": 2464794,
+      "pgrp": 2464875,
+      "session": 2464875
+    },
+    {
+      "pid": 2464900,
+      "start_ticks": 4063080,
+      "state": "S",
+      "ppid": 2464875,
+      "pgrp": 2464875,
+      "session": 2464875
+    }
+  ],
+  "elapsed_seconds": 1.06826890699449,
+  "exit_code": 1,
+  "signals": [],
+  "survivors": [],
+  "finished_utc": "2026-10-07T05:29:12.556213+00:00"
+}

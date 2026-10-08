@@ -1,10 +1,13 @@
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
+#include "strata/sycl_allocation.hpp"
 #include <dpct/dpct.hpp>
+#include "strata/sycl_queue.hpp"
 #include "strata/core/native_head.hpp"
 #include "strata/artifact/gguf_reader.hpp"
 #include "strata/kernels/iq_kernels.hpp"
 #include "strata/kernels/native_mmvq.hpp"
+#include "strata/platform/memory.hpp"
 
 #include <climits>
 #include <cstdio>
@@ -14,6 +17,7 @@
 namespace strata::core {
 
 NativeHead::~NativeHead() {
+    if (weights_) strata::kernels::native_q6_k_unpack(weights_);
     if (scratch_) sycl::free(scratch_, dpct::get_in_order_queue());
     if (weights_) sycl::free(weights_, dpct::get_in_order_queue());
 }
@@ -48,13 +52,14 @@ bool NativeHead::load(const std::vector<std::string> &shards, int64_t n_in,
         void* weights = nullptr;
         void* scratch = nullptr;
         dpct::err0 status =
-            DPCT_CHECK_ERROR(weights = (void *)sycl::malloc_device(
-                                 bytes, dpct::get_in_order_queue()));
+            DPCT_CHECK_ERROR(weights = (void *)strata::checked_usm(strata::malloc_device_guarded(
+                                 bytes, dpct::get_in_order_queue())));
         if (status == 0)
             status = DPCT_CHECK_ERROR(
-                scratch = (void *)sycl::malloc_device(
+                scratch = (void *)strata::checked_usm(strata::malloc_device_guarded(
                     strata::kernels::native_q8_1_bytes((int)n_in, 1),
-                    dpct::get_in_order_queue()));
+                    dpct::get_in_order_queue())));
+        strata::platform::advise_willneed(gguf.tensor_data(*tensor), bytes);
         if (status == 0)
             status = DPCT_CHECK_ERROR(
                 dpct::get_in_order_queue()
@@ -85,6 +90,8 @@ bool NativeHead::load(const std::vector<std::string> &shards, int64_t n_in,
         n_in_ = (int) n_in;
         n_out_ = (int) n_out;
         type_ = (int) tensor->type;
+        if (type_ == 14 && strata::kernels::native_q6_k_packed_enabled())   // STRATA_Q6_PACKED=1
+            strata::kernels::native_q6_k_pack(weights_, n_in_, n_out_, "output head");
         return true;
     } catch (const std::exception& error) {
         err = std::string("native head: ") + error.what();
@@ -185,6 +192,7 @@ bool NativeEmbed::load(const std::vector<std::string> &shards, int64_t n_embd,
             bytes_ = 0;
             return false;
         }
+        strata::platform::advise_willneed(gguf.tensor_data(*t), bytes_);   // copied out of the mapping below
         /*
         DPCT1048: The original value cudaHostAllocMapped is not meaningful in
         the migrated code and was removed or replaced with 0. You may need to
@@ -195,8 +203,8 @@ bool NativeEmbed::load(const std::vector<std::string> &shards, int64_t n_embd,
         in the migrated code and was removed or replaced with 0. You may need to
         check the migrated code.
         */
-        if (DPCT_CHECK_ERROR(host_ = (void *)sycl::malloc_host(
-                                 bytes_, dpct::get_in_order_queue())) != 0) {
+        if (DPCT_CHECK_ERROR(host_ = (void *)strata::checked_usm(sycl::malloc_host(
+                                 bytes_, dpct::get_in_order_queue()))) != 0) {
             // Under WSL2 the driver's pinned/mapped host budget (~1 GiB) can be spent by the GPU contexts
             // themselves (three cards). The table is only gathered from, so keep it in the current device's VRAM
             // instead: it costs its size there and reads faster than over PCIe.
@@ -206,8 +214,8 @@ bool NativeEmbed::load(const std::vector<std::string> &shards, int64_t n_embd,
             */
             host_ = nullptr;
             void* d = nullptr;
-            if (DPCT_CHECK_ERROR(d = (void *)sycl::malloc_device(
-                                     bytes_, dpct::get_in_order_queue())) !=
+            if (DPCT_CHECK_ERROR(d = (void *)strata::checked_usm(strata::malloc_device_guarded(
+                                     bytes_, dpct::get_in_order_queue()))) !=
                     0 ||
                 /*
                 DPCT1114: cudaMemcpy is migrated to asynchronization memcpy,

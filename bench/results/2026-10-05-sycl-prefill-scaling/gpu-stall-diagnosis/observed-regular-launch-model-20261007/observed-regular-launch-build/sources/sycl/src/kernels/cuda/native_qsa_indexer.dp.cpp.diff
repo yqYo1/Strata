@@ -1,0 +1,47 @@
+--- sycl/src/kernels/cuda/native_qsa_indexer.dp.cpp
++++ sycl/src/kernels/cuda/native_qsa_indexer.dp.cpp.regular
+@@ -444,7 +444,7 @@
+         if (rt.cos != nullptr)
+         {
+             auto exp_props = sycl::ext::oneapi::experimental::properties{
+-                sycl::ext::oneapi::experimental::use_root_sync};
++                };
+ 
+             st->parallel_for<dpct_kernel_name<class append_first_ea2d1f,
+                                               dpct_kernel_scalar<true>>>(
+@@ -459,7 +459,7 @@
+                     });
+         } else {
+             auto exp_props = sycl::ext::oneapi::experimental::properties{
+-                sycl::ext::oneapi::experimental::use_root_sync};
++                };
+ 
+             st->parallel_for<dpct_kernel_name<class append_first_ea2d1f,
+                                               dpct_kernel_scalar<false>>>(
+@@ -480,7 +480,7 @@
+     if (hi >= first && rt.cos != nullptr)
+     {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         st->parallel_for<dpct_kernel_name<class append_blocks_a6c94e,
+                                           dpct_kernel_scalar<true>>>(
+@@ -497,7 +497,7 @@
+     } else if (hi >= first)
+     {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         st->parallel_for<dpct_kernel_name<class append_blocks_a6c94e,
+                                           dpct_kernel_scalar<false>>>(
+@@ -514,7 +514,7 @@
+     }
+     {
+         auto exp_props = sycl::ext::oneapi::experimental::properties{
+-            sycl::ext::oneapi::experimental::use_root_sync};
++            };
+ 
+         st->parallel_for<dpct_kernel_name<class append_tail_e0658e>>(
+             sycl::nd_range<3>(sycl::range(1, 1, R - 1) * sycl::range(1, 1, D),

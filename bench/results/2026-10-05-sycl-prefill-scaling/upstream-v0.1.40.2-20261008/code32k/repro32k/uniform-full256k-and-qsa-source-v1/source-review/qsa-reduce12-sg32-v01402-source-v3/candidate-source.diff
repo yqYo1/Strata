@@ -1,0 +1,82 @@
+--- /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/kernels/cuda/qsa_decode_attn.dp.cpp
++++ /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-reduce12-sg32-v01402-source-v3/qsa_decode_attn.dp.cpp
+@@ -35,6 +35,34 @@
+             o);
+     return v;
+ }
++// Upstream pre75 reduce-scatter, confined to the SG32/transposed prompt arm.
++// All32 subgroup items execute each XOR exchange; masks16/8/4/2/1 are in range.
++// Keep the existing eight-product expression, pairing tree, scales,64-cell split and merge.
++__dpct_inline__ float reduce12_sg32(const float (&part)[16], int lane) {
++    const auto sg = sycl::ext::oneapi::this_work_item::get_sub_group();
++    float r8[8];
++#pragma unroll
++    for (int i = 0; i < 8; ++i) {
++        const bool hi = (lane & 16) != 0;
++        r8[i] = (hi ? part[i + 8] : part[i]) + sycl::permute_group_by_xor(sg, hi ? part[i] : part[i + 8], 16);
++    }
++    float r4[4];
++#pragma unroll
++    for (int i = 0; i < 4; ++i) {
++        const bool hi = (lane & 8) != 0;
++        r4[i] = (hi ? r8[i + 4] : r8[i]) + sycl::permute_group_by_xor(sg, hi ? r8[i] : r8[i + 4], 8);
++    }
++    float r2[2];
++#pragma unroll
++    for (int i = 0; i < 2; ++i) {
++        const bool hi = (lane & 4) != 0;
++        r2[i] = (hi ? r4[i + 2] : r4[i]) + sycl::permute_group_by_xor(sg, hi ? r4[i] : r4[i + 2], 4);
++    }
++    const bool hi2 = (lane & 2) != 0;
++    const float r1 = (hi2 ? r2[1] : r2[0]) + sycl::permute_group_by_xor(sg, hi2 ? r2[0] : r2[1], 2);
++    return r1 + sycl::permute_group_by_xor(sg, r1, 1);
++}
++
+ template <int SG = 32>
+ __dpct_inline__ float warp_max(float v) {
+ #pragma unroll
+@@ -158,7 +186,14 @@
+     const int n_ids = *(step + kStepWidth);
+     const int chunk = QUERY_FAST ? item_ct1.get_group(0) : item_ct1.get_group(2);
+     const int kvh = item_ct1.get_group(1);
+-    const int t = item_ct1.get_local_id(2), lane = t % SG, warp = t / SG;
++    const int t = item_ct1.get_local_id(2);
++    // Only the new SG32/transposed arm changes its routing. Work-item grouping
++    // is implementation-defined: use subgroup IDs for uniform cell/head loops.
++    const auto score_sg = item_ct1.get_sub_group();
++    const int lane = (SG == 32 && TRANSPOSE_Q)
++                         ? (int) score_sg.get_local_linear_id() : t % SG;
++    const int warp = (SG == 32 && TRANSPOSE_Q)
++                         ? (int) score_sg.get_group_linear_id() : t / SG;
+     const int c0 = chunk * CHUNK;
+     const int n_here = sycl::min(CHUNK, n_ids - c0);
+     const int slot = kvh * n_chunks + chunk;
+@@ -236,6 +271,7 @@
+         load8<KV_MODE>(p, false, srow[c], lane * 8, k8);
+         float upper_k[8];
+         if constexpr (SG == 16) load8<KV_MODE>(p, false, srow[c], (lane + 16) * 8, upper_k);
++        float qk_part[16] = {}; // four unused heads are neutral; SG16 keeps its original reduction
+ #pragma unroll
+         for (int h = 0; h < G; ++h) {
+             sycl::float4 qa, qb;
+@@ -266,8 +302,18 @@
+                                       upper_k[6] * upper_qb.z() + upper_k[7] * upper_qb.w();
+                 s += upper_s;
+             }
+-            s = warp_sum<SG>(s);
+-            if (lane == 0) sp[h][c] = s * scale;
++            if constexpr (SG == 32 && TRANSPOSE_Q) {
++                qk_part[h] = s;
++            } else {
++                s = warp_sum<SG>(s);
++                if (lane == 0) sp[h][c] = s * scale;
++            }
++        }
++        if constexpr (SG == 32 && TRANSPOSE_Q) {
++            // The valid-cell branch and this template condition are subgroup-uniform.
++            const float score = reduce12_sg32(qk_part, lane);
++            const int h = lane >> 1;
++            if ((lane & 1) == 0 && h < G) sp[h][c] = score * scale;
+         }
+     }
+     /*
