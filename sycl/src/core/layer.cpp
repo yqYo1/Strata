@@ -920,7 +920,7 @@ uint64_t qsa_state_init(const ModelGeometry& g, int64_t max_cells, void* base, Q
         */
         if (DPCT_CHECK_ERROR(h = (uint8_t *)strata::checked_usm(sycl::malloc_host(
                                  bytes, dpct::get_in_order_queue()))) != 0 ||
-            DPCT_CHECK_ERROR(*(void **)&d = (uint8_t *)h) != 0) {
+            DPCT_CHECK_ERROR(d = h) != 0) {
             // under WSL the NVIDIA driver pins only ~1 GiB in all, which is less than 128K of 8-bit KV needs
             if (p.mode == 1) std::fprintf(stderr, "strata: KV streaming: cannot pin %.2f GiB of RAM for a layer's KV copy "
                                  "(%.2f GiB pinned so far) - lower the context, or run without --kv-resident (under "
@@ -1218,9 +1218,9 @@ if (!w_attnk->native_data || !w_attnv->native_data || !w_attnq->native_data) {
         int32_t* m_step = nullptr;
         int32_t* m_pos = nullptr;
         if (g_publish_kernel &&
-            DPCT_CHECK_ERROR(*(void **)&m_step = (int32_t *)st.host_step) ==
+            DPCT_CHECK_ERROR(m_step = st.host_step) ==
                 0 &&
-            DPCT_CHECK_ERROR(*(void **)&m_pos = (int32_t *)st.host_pos) == 0) {
+            DPCT_CHECK_ERROR(m_pos = st.host_pos) == 0) {
             strata::kernels::copy_i32_from_mapped(st.step, m_step, strata::kernels::kStepCount, stream);
             strata::kernels::copy_i32_from_mapped(st.pos_dev, m_pos, g.n_head, stream);
         } else

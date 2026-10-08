@@ -620,6 +620,20 @@ public:
                              sycl::property::queue::in_order());
   }
 
+  // Register the queue so default-stream/device-wide waits include its work.
+  // Existing factories retain their original profiling properties.
+  sycl::queue *create_in_order_queue_with_profiling(bool enable_exception_handler,
+                                                  bool enable_profiling) {
+    std::lock_guard<mutex_type> lock(m_mutex);
+    sycl::async_handler eh = {};
+    if (enable_exception_handler) eh = exception_handler;
+    const auto properties = enable_profiling
+        ? sycl::property_list{sycl::property::queue::in_order(), sycl::property::queue::enable_profiling()}
+        : sycl::property_list{sycl::property::queue::in_order()};
+    _queues.push_back(std::make_shared<sycl::queue>(_ctx, *this, eh, properties));
+    return _queues.back().get();
+  }
+
   sycl::queue *create_out_of_order_queue(bool enable_exception_handler = false) {
     std::lock_guard<mutex_type> lock(m_mutex);
     return create_queue_impl(enable_exception_handler);
@@ -684,9 +698,7 @@ private:
     _queues.push_back(std::make_shared<sycl::queue>(
         _ctx, *this, eh,
         sycl::property_list(
-#ifdef DPCT_PROFILING_ENABLED
             sycl::property::queue::enable_profiling(),
-#endif
             properties...)));
 
     return _queues.back().get();
@@ -986,11 +998,7 @@ inline void sync_barrier(sycl::event *event_ptr,
   }
 #endif
 
-#ifdef DPCT_PROFILING_ENABLED
   *event_ptr = queue->ext_oneapi_submit_barrier();
-#else
-  *event_ptr = queue->single_task([=]() {});
-#endif
 }
 
 static inline unsigned int push_device_for_curr_thread(unsigned int id) {

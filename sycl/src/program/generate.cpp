@@ -1608,6 +1608,22 @@ double pcie_frac_for_gbps(double gbps, double base) {
     return gbps <= 0.0 ? base : base * std::min(1.0, gbps / 20.0);
 }
 
+// A verifier may accept past max_new or an EOS. Only the predictions that
+// reach the caller may advance the saved running state; the final emitted
+// prediction remains the next input and is not itself consumed.
+int visible_output_prefix(int accepted, int64_t remaining, const int32_t* targets,
+                          const std::vector<int64_t>& eos_ids) {
+    if (accepted < 0 || remaining < 1 || targets == nullptr) return 0;
+    int keep = (int) std::min<int64_t>((int64_t) accepted + 1, remaining);
+    for (int i = 0; i < keep; ++i) {
+        if (std::find(eos_ids.begin(), eos_ids.end(), (int64_t) targets[i]) != eos_ids.end()) {
+            keep = i + 1;
+            break;
+        }
+    }
+    return keep;
+}
+
 }  // namespace
 
 int main(int argc, char **argv) try {
@@ -4691,10 +4707,15 @@ int main(int argc, char **argv) try {
     unsigned long long* mirror_table_d = nullptr;   // [n_layers][n_expert] device-readable mirror addresses (0 = none)
     int64_t unmirrored_misses = 0;
     if (o.stream_experts && srcp == &gguf_src && o.expert_cache > 0) {
+        // #1054, #1440: with a layer split the mirror holds only the first GPU's layers. The pinned memory belongs to
+        // this GPU's context, and the later stages' caches do not exist yet (every later-stage expert would count as a
+        // miss: 20 GiB of RAM for experts the other card then holds, or one 39 GiB pinned allocation that fails).
+        const int64_t mirror_end = multi_gpu && !split_at.empty() ? split_at[0] : g.n_layers;
         std::vector<std::pair<int64_t, int64_t>> miss;
         for (const auto& pr : profile)   // the profile's order: the most-routed misses first, if the cap is reached
-            if (xcache.slot_of(pr.first, pr.second) == strata::core::kNotResident) miss.push_back({pr.first, pr.second});
-        for (int64_t l = 0; l < g.n_layers; ++l)                     // pairs the profile does not list at all
+            if (pr.first < mirror_end && xcache.slot_of(pr.first, pr.second) == strata::core::kNotResident)
+                miss.push_back({pr.first, pr.second});
+        for (int64_t l = 0; l < mirror_end; ++l)                     // pairs the profile does not list at all
             for (int64_t e = 0; e < g.n_expert; ++e)
                 if (xcache.slot_of(l, e) == strata::core::kNotResident &&
                     std::find(miss.begin(), miss.end(), std::pair<int64_t, int64_t>{l, e}) == miss.end())
@@ -4732,7 +4753,7 @@ int main(int argc, char **argv) try {
         }
         unmirrored_misses = (int64_t) miss.size() - (int64_t) (gguf_src.mirrored_bytes() ? std::count_if(miss.begin(), miss.end(),
             [&](const std::pair<int64_t, int64_t>& pr) { return gguf_src.pinned(pr.first, pr.second); }) : 0);
-        if (unmirrored_misses > 0 && std::getenv("STRATA_VERIFY_NO_HOST") != nullptr) {
+        if (unmirrored_misses > 0 && [] { const char* v = std::getenv("STRATA_VERIFY_NO_HOST"); return v && *v && std::strcmp(v, "0") != 0; }()) {
             std::fprintf(stderr, "strata generate: REFUSED: %lld experts are neither in VRAM nor mirrored; with STRATA_VERIFY_NO_HOST "
                                  "the device plan cannot run them and generation would lack a safe host fallback - raise "
                                  "STRATA_MIRROR_MIB or the free RAM, or lower --max-context\n", (long long) unmirrored_misses);
@@ -10924,6 +10945,7 @@ int main(int argc, char **argv) try {
                     chain_kind = 0;
                     int a = 0;
                     while (a < A.T - 1 && A.tok[a + 1] == outp[(size_t) a]) ++a;
+                    a = visible_output_prefix(a, max_new - produced_n, outp.data(), o.eos_ids) - 1;
                     if (!V1(A).pl_commit_async(a + 1, err)) return die(err);
                     for (int i = 0; i <= a; ++i) consumed.push_back(A.tok[i]);
                     draft_offered += A.T - 1;
@@ -11156,6 +11178,7 @@ int main(int argc, char **argv) try {
                 }
                 int a = 0;
                 while (a < T - 1 && window[(size_t) a + 1] == outv[(size_t) a]) ++a;
+                a = visible_output_prefix(a, max_new - produced_n, outv.data(), o.eos_ids) - 1;
                 if (from_sfx) { ++sfx_windows; sfx_drafts += T - 1; sfx_ok += a; }
                 if (chain_n > 0) { ++chain_windows; chain_drafts += chain_n; chain_ok += std::max(0, a - (T_mtp - 1)); }
                 if (strata::core::MtpDrafter::top2_env() && !from_sfx && !first_window && a < T_mtp - 1 && a < 8) {
@@ -12406,6 +12429,7 @@ int main(int argc, char **argv) try {
             }
             int a = 0;
             while (a < T - 1 && window[(size_t) a + 1] == outv[(size_t) a]) ++a;
+            a = visible_output_prefix(a, max_new - (int64_t) produced.size(), outv.data(), o.eos_ids) - 1;
             if (std::getenv("STRATA_DBG_DRAFT") != nullptr) {   // the window the drafter built and what the target said
                 std::fprintf(stderr, "draftdbg: window"); for (int i = 0; i < T; ++i) std::fprintf(stderr, " %d", (int) window[(size_t) i]);
                 std::fprintf(stderr, " | target"); for (int i = 0; i < T; ++i) std::fprintf(stderr, " %d", (int) outv[(size_t) i]);

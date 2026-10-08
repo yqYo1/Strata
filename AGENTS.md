@@ -26,3 +26,16 @@ offers the same steps as tools.
   `sycl/tools/recover-xe.sh`. Capture stderr: it contains flushed UR API calls, Level Zero API entry/results
   and Strata progress. Record the environment and keep these logs with the result. Use a clean environment
   without these logging/validation settings for timing; see [docs/INTEL_GPU_RECOVERY.md](docs/INTEL_GPU_RECOVERY.md).
+
+## Contributing a change or report
+
+- Search the open issues and pull requests first, and add to a thread that already covers your point.
+- Open an issue with the form that fits (bug report, feature request or question).
+- One change per pull request. Say what it changes and what it leaves alone.
+- A new feature is opt-in, and the default path stays byte-identical to the last release. Say how you checked.
+- Build every backend a file touches (CUDA, HIP, SYCL) before asking for review.
+- Change a default only where you measured it faster, and show the numbers with what they were measured on.
+- A report from hardware the maintainers do not have is welcome. Follow
+  [docs/COMMUNITY_BENCHMARKS.md](docs/COMMUNITY_BENCHMARKS.md), compare against a same-day run of the build you are
+  testing, and say what you did not test.
+- Open test requests and the hardware that is wanted are listed in [docs/TEST_REQUESTS.md](docs/TEST_REQUESTS.md).

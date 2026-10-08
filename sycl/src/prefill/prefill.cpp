@@ -53,7 +53,15 @@
 #include <mutex>
 #include <thread>
 #include <vector>
-#include "strata/host_completion.hpp"
+#include "strata/event_completion.hpp"
+namespace strata {
+inline bool dma_completed(const EventCompletion<sycl::event>& state, uint64_t value) {
+    return event_completed(state, value, [](const sycl::event& event) {
+        return event.get_info<sycl::info::event::command_execution_status>() ==
+               sycl::info::event_command_status::complete;
+    });
+}
+} // namespace strata
 #include "strata/host_wait.hpp"
 
 #ifndef STRATA_PREFILL_MMQ
@@ -360,7 +368,7 @@ struct Stager {
     std::vector<uint8_t*> buf;
     std::vector<char> pinned;
     std::vector<std::vector<uint8_t>> pageable;   // the fallback when no more RAM can be pinned
-    std::vector<strata::HostCompletion> done_seq;
+    std::vector<strata::EventCompletion<sycl::event>> done_seq;
     std::vector<uint64_t> want;              // the sequence number each buffer's last DMA writes
     uint64_t issue_seq = 0;
     bool measure_copies = false;
@@ -388,7 +396,7 @@ struct Stager {
         pinned.assign((size_t) kRing, 0);
         want.assign((size_t) kRing, 0);
         done_seq.resize((size_t) kRing);
-        for (auto& done : done_seq) done = strata::make_host_completion();
+        for (auto& done : done_seq) done = strata::make_event_completion<sycl::event>();
         pageable.resize(kRing);
         for (int i = 0; i < kRing; ++i) {
             /*
@@ -507,16 +515,16 @@ struct Stager {
             "expert staging: host buffer readiness");
         return ready_now ? buf[j % kRing] : nullptr;
     }
-    // The copy queue's host task acknowledges its preceding DMA. Worker polls
-    // access CPU atomics only; no GPU-written volatile marker is assumed safe.
-    void issued_one(int j, dpct::queue_ptr copy) {
+    // Retain this DMA's event and check its actual completion before reuse.
+    // No CPU host task is inserted into the copy queue's dependency chain.
+    void issued_one(int j, const sycl::event& dma) {
         const uint64_t s = ++issue_seq;
         want[(size_t) (j % kRing)] = s;
-        strata::enqueue_host_completion(*copy, done_seq[(size_t) (j % kRing)], s);
+        strata::record_event_completion(done_seq[(size_t) (j % kRing)], s, dma);
         issued.store(j + 1, std::memory_order_release);
     }
     bool buffer_free(int b) const {
-        return strata::host_completed(done_seq[(size_t) b], want[(size_t) b]);
+        return strata::dma_completed(done_seq[(size_t) b], want[(size_t) b]);
     }
     /// No job is running after this (the end of a layer, or an early return in the middle of one).
     void finish() {
@@ -721,7 +729,7 @@ struct Prefill::Impl {
         {}; // one runs; the event marks that buffer's upload done
     std::vector<uint32_t> ple_rows[2];
     // CPU-only acknowledgements run as host tasks after the preceding upload.
-    strata::HostCompletion ple_done_seq[2];
+    strata::EventCompletion<sycl::event> ple_done_seq[2];
     uint64_t ple_want[2] = {};
     uint64_t ple_seq = 0;
     float* ple_norm = nullptr;
@@ -1099,7 +1107,8 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
     options.
     */
     if (DPCT_CHECK_ERROR(
-            m.copy = dpct::get_current_device().create_in_order_queue(true)) != 0) {
+            m.copy = dpct::get_current_device().create_in_order_queue_with_profiling(
+                true, std::getenv("STRATA_PREFILL_TRANSFER_TIMING") != nullptr)) != 0) {
         err = "prefill: copy stream"; return false;
     }
     const size_t T = (size_t) chunk;
@@ -1183,7 +1192,7 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
         if (!m.ple_copied[b] &&
             DPCT_CHECK_ERROR(m.ple_copied[b] = new sycl::event()) != 0)
             ok = false;
-        if (!m.ple_done_seq[b]) m.ple_done_seq[b] = strata::make_host_completion();
+        if (!m.ple_done_seq[b]) m.ple_done_seq[b] = strata::make_event_completion<sycl::event>();
         m.ple_rows[b].resize(T * strata::kernels::PLE_N_HEADS);
     }
     if (ss.qsa_states[ss.qsa_primary()].kv_mode == 1) {   // KV streaming: the staging pool's identity page table
@@ -2692,8 +2701,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         }
         m.stager->start(std::move(jobs));
         for (int32_t e = 0; e < g.n_expert; ++e) {
-            transfers.copy(m.copy, const_cast<uint8_t*>(layer_cache.device_slot(e)), m.stager->wait(e), bytes, layer);
-            m.stager->issued_one(e, m.copy);
+            const auto dma = transfers.copy(m.copy, const_cast<uint8_t*>(layer_cache.device_slot(e)), m.stager->wait(e), bytes, layer);
+            m.stager->issued_one(e, dma);
         }
         m.copy->wait(); m.stager->finish();
         transfers.serial_layer_load_ms += ms_since(load_started);
@@ -3071,17 +3080,11 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
             type of operand memory, so you may need to call wait() on event
             return by memcpy API to ensure synchronization behavior.
             */
-            if (DPCT_CHECK_ERROR(m.cs->memcpy(m.ple_emb,
-                                              m.ple_emb_host[ple_buf],
-                                              (size_t)T * N * 4)) != 0 ||
-                /*
-                DPCT1024: The original code returned the error code that was
-                further consumed by the program logic. This original code was
-                replaced with 0. You may need to rewrite the program logic
-                consuming the error code.
-                */
-                DPCT_CHECK_ERROR((m.ple_want[ple_buf] = ++m.ple_seq,
-                                  strata::enqueue_host_completion(*m.cs, m.ple_done_seq[ple_buf], m.ple_want[ple_buf]))) != 0) {
+            if (DPCT_CHECK_ERROR([&] {
+                    const auto dma = m.cs->memcpy(m.ple_emb, m.ple_emb_host[ple_buf], (size_t)T * N * 4);
+                    m.ple_want[ple_buf] = ++m.ple_seq;
+                    strata::record_event_completion(m.ple_done_seq[ple_buf], m.ple_want[ple_buf], dma);
+                }()) != 0) {
                 /*
                 DPCT1009: SYCL reports errors using exceptions and does not
                 use error codes. Please replace the
@@ -3101,7 +3104,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                 // the other buffer's upload (a chunk ago) is done before the SSD thread refills it
                 if (DPCT_CHECK_ERROR([&] {
                         strata::wait_host_ready([&] {
-                            return strata::host_completed(m.ple_done_seq[ple_buf ^ 1], m.ple_want[ple_buf ^ 1]);
+                            return strata::dma_completed(m.ple_done_seq[ple_buf ^ 1], m.ple_want[ple_buf ^ 1]);
                         }, "PLE staging: DMA acknowledgement");
                     }()) != 0) {
                     /*
@@ -3342,8 +3345,8 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                     call wait() on event return by memcpy API to ensure
                     synchronization behavior.
                     */
-                    transfers.copy(m.copy, m.stage_dev[sl], hb, bytes, en.l);
-                    m.stager->issued_one(en.job, m.copy);
+                    const auto dma = transfers.copy(m.copy, m.stage_dev[sl], hb, bytes, en.l);
+                    m.stager->issued_one(en.job, dma);
                 }
                 dpct::sync_barrier(m.copied[sl], m.copy);
                 m.stage_live[sl] = true;
@@ -3413,8 +3416,8 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                         so you may need to call wait() on event return by memcpy
                         API to ensure synchronization behavior.
                         */
-                        transfers.copy(m.copy, m.stage_dev[sl], hb, bytes, en.l);
-                        m.stager->issued_one(en.job, m.copy);
+                        const auto dma = transfers.copy(m.copy, m.stage_dev[sl], hb, bytes, en.l);
+                        m.stager->issued_one(en.job, dma);
                     }
                     dpct::sync_barrier(m.copied[sl], m.copy);
                     m.stage_live[sl] = true;
@@ -4633,9 +4636,9 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                                 on event return by memcpy API to ensure
                                 synchronization behavior.
                                 */
-                                transfers.copy(m.copy, m.stage_dev[sl], hb,
+                                const auto dma = transfers.copy(m.copy, m.stage_dev[sl], hb,
                                                (size_t)lay.blob_bytes(l), l);
-                                m.stager->issued_one(job_of[j], m.copy);
+                                m.stager->issued_one(job_of[j], dma);
                             }
                             dpct::sync_barrier(m.copied[sl], m.copy);
                             m.stage_live[sl] = true;
