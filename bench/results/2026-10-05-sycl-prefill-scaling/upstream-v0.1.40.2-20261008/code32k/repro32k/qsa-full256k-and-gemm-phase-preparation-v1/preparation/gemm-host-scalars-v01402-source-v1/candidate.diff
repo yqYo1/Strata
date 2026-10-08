@@ -1,0 +1,74 @@
+--- /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/prefill/gemm.dp.cpp
++++ /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gemm-host-scalars-v01402-source-v1/gemm.dp.cpp
+@@ -82,6 +82,27 @@
+         d[i] = __float2half(isnan(f) ? f : fminf(fmaxf(f, -65504.0f), 65504.0f));   // as hf_sat: a NaN stays NaN
+     }
+ }
++#endif
++
++#if defined(__INTEL_MKL__) && !defined(DPCT_USM_LEVEL_NONE) && !defined(__HIPCC__)
++// These two callers own ordinary host FP32 alpha/beta values. Keep the
++// DPCT descriptor's queue, compute mode and oneMKL call; skip scalar USM lookup.
++namespace {
++template <typename Input>
++void gemm_host_scalars(dpct::blas::descriptor_ptr desc,
++                       oneapi::mkl::transpose a_trans,
++                       oneapi::mkl::transpose b_trans, int m, int n, int k,
++                       float alpha, const void* a, int lda, const void* b,
++                       int ldb, float beta, float* c, int ldc) {
++    sycl::queue q = desc->get_queue();
++    const auto cm = dpct::blas::deduce_compute_mode(
++        dpct::compute_type::f32, desc->get_math_mode(), false);
++    oneapi::mkl::blas::column_major::gemm(
++        q, a_trans, b_trans, m, n, k, alpha,
++        reinterpret_cast<const Input*>(a), lda,
++        reinterpret_cast<const Input*>(b), ldb, beta, c, ldc, cm);
++}
++}  // namespace
+ #endif
+ 
+ void ck(int s, const char *what) {
+@@ -736,6 +757,13 @@
+ #endif
+ #endif
+     // Column-major view: Y^T[N, T] = W[N, K] (stored K x N col-major, transposed) . X^T[K, T].
++#if defined(__INTEL_MKL__) && !defined(DPCT_USM_LEVEL_NONE) && !defined(__HIPCC__)
++    ck(DPCT_CHECK_ERROR(gemm_host_scalars<oneapi::mkl::bfloat16>(
++           (dpct::blas::descriptor_ptr)handle_, oneapi::mkl::transpose::trans,
++           oneapi::mkl::transpose::nontrans, (int)N, (int)T, (int)K, alpha, W,
++           (int)K, X, (int)ldx, beta, Y, (int)ldy)),
++       "cublasGemmEx");
++#else
+     ck(DPCT_CHECK_ERROR(dpct::blas::gemm(
+            (dpct::blas::descriptor_ptr)handle_, oneapi::mkl::transpose::trans,
+            oneapi::mkl::transpose::nontrans, (int)N, (int)T, (int)K, &alpha, W,
+@@ -744,6 +772,7 @@
+            dpct::library_data_t::real_float, (int)ldy,
+            dpct::compute_type::f32)),
+        "cublasGemmEx");
++#endif
+     STRATA_ABSORB_HIPBLAS_STICKY("cublasGemmEx");
+ }
+ 
+@@ -773,6 +802,13 @@
+         return;
+     }
+ #endif
++#if defined(__INTEL_MKL__) && !defined(DPCT_USM_LEVEL_NONE) && !defined(__HIPCC__)
++    ck(DPCT_CHECK_ERROR(gemm_host_scalars<sycl::half>(
++           (dpct::blas::descriptor_ptr)handle_, oneapi::mkl::transpose::trans,
++           oneapi::mkl::transpose::nontrans, (int)N, (int)T, (int)K, alpha, W,
++           (int)K, X, (int)K, beta, Y, (int)ldy)),
++       "cublasGemmEx f16");
++#else
+     ck(DPCT_CHECK_ERROR(dpct::blas::gemm(
+            (dpct::blas::descriptor_ptr)handle_, oneapi::mkl::transpose::trans,
+            oneapi::mkl::transpose::nontrans, (int)N, (int)T, (int)K, &alpha, W,
+@@ -781,6 +817,7 @@
+            dpct::library_data_t::real_float, (int)ldy,
+            dpct::compute_type::f32)),
+        "cublasGemmEx f16");
++#endif
+     STRATA_ABSORB_HIPBLAS_STICKY("cublasGemmEx f16");
+ }
+ 

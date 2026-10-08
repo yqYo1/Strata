@@ -1,0 +1,39 @@
+{
+  "active": false,
+  "passed": true,
+  "source_only": true,
+  "created_utc": "2026-10-08T15:01:48.944771+00:00",
+  "scope": "Feasibility review only; no flags enabled, engine compiled or GPU profiler launched alongside the current full256K job.",
+  "source_sha256": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/prefill/prefill.cpp": "f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-v3-20261008/include/dpct/device.hpp": "adbcbd0ac45995348e37ac3f5ca42d9f3d4b0555031aeb1781a1e2166a74ed52",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/program/generate.cpp": "0437a6e9da9c9c3f4478eb3fc7b04dc45e4599728939c7828202aa9a970e012b"
+  },
+  "existing_facilities": {
+    "STRATA_PREFILL_TIMING": "Compute-queue intervals between event/barrier end timestamps; includes host and copy gaps. Mark events fold after existing MoE synchronization, with a final fold.",
+    "STRATA_PREFILL_TRANSFER_TIMING": "Actual memcpy event timestamps; the copy queue factory opts into enable_profiling at initial creation when this variable is present."
+  },
+  "findings": [
+    "Current normal copy queue has profiling disabled; enabling transfer timing at next process startup changes that queue property. It is implemented, not an unsupported flag.",
+    "The benchmark program creates main_stream separately and passes main_cs to Prefill::init. The timer is therefore scoped to that source-created compute queue in this path.",
+    "dpct::sync_barrier has an additional all-queues wait only when given the default queue; other callers using null/default streams can have different timing and synchronization behavior.",
+    "STRATA_PREFILL_TIMING adds markers and two profiling-only compute waits per chunk. Its totals must not be treated as clean benchmark speed or pure device-busy time.",
+    "The current fold can suppress profiling errors through DPCT_CHECK_ERROR and still print partial totals. A controller must retain and reject profiling errors, nonfinite/negative/inconsistent or wall-exceeding timelines.",
+    "Profiling getters can block for incomplete commands and require profiling-enabled queues. Recorded graph events cannot be queried for status or timestamps."
+  ],
+  "primary_sources": [
+    {
+      "url": "https://registry.khronos.org/SYCL/specs/sycl-2020/pdf/sycl-2020.pdf",
+      "supports": "Event profiling requires queue profiling; getters can block until data is available."
+    },
+    {
+      "url": "https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_oneapi_graph.asciidoc",
+      "supports": "Recorded events cannot be queried for status or profiling; graph-execution profiling has separate requirements."
+    }
+  ],
+  "next_safe_step": "After current owned full job terminal/healthy/absent, use qualified DD5 with existing compute-phase timing only, initial logged fresh>=32768 head/state/output gate before a separate profile-only>=32768 run. Do not enable copy timing or repeat rejected unitrace GPU timestamps blindly.",
+  "minimum_performance_input_tokens": 32768,
+  "underlying_pending_counter_cause_resolved": false,
+  "measured_GPU_or_DMA_durations": false,
+  "adopted": false
+}
