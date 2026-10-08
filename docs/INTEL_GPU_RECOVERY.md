@@ -454,10 +454,26 @@ CPU checks extract the actual cache-lease struct and pass 19 ASan/UBSan cases
 covering a mid-expert boundary, adaptive residency and rollback/retry paths.
 The same cases also pass with byte-varying payloads; a pinned wrong-offset
 control is rejected by the pre-unmap comparison. These stand-ins do not
-prove SYCL mapping or absence of runtime UB. Snapshot restoration and the
-clean matched four-condition comparison remain pending at this checkpoint.
-Captured times are excluded from speed evidence. The fixed 32K row allocation
-and the older full-context repeat failure remain separate open gates.
+prove SYCL mapping or absence of runtime UB. Snapshot restoration also passes
+three complete state/head/output controls. All 12 captured checks precede
+eight fresh clean 32K timings, ordered kept/half-RAM/full-RAM/full-snapshot
+and reverse. No payload checks, diagnostics, validation, dumps, profiler,
+transfer timing or extra waits are enabled. Two-run prompt/decode means are
+443.28 / 16.89, 443.76 / 17.70, 433.31 / 17.36 and 442.24 / 17.83 token/s.
+Half release is only 0.11% above kept backing; full RAM is 2.25% below and
+snapshot is 0.23% below. This fixed-chunk comparison establishes no useful
+prompt gain from release alone. Decode varies within an arm, so these
+prefill settings do not establish its cause.
+
+Clean full-RAM restoration takes 51.588 and 52.091 ms excluding its graph
+callback; this interval includes remapping, copying, zero fill and waiting,
+not only PCIe DMA. Graph callbacks range from 537.714 to 1004.037 ms in the
+release arms. Full-snapshot suspension takes 220.314 / 221.539 ms, while
+restore excluding graphs takes 61.198 / 60.502 ms. These measured intervals
+must not be substituted for full-VRAM bandwidth. All 20 jobs retain exact
+output and MTP counts, exit normally and record no new xe fault. Larger
+chunks using freed memory remain a separate comparison. The fixed 32K row
+allocation and the older full-context repeat failure remain open gates.
 
 No software reset is guaranteed to recover every firmware/driver wedge. There
 is an [upstream B570 report](https://github.com/intel/compute-runtime/issues/962)

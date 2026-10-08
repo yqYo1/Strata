@@ -1,14 +1,26 @@
 {
-  "revised_utc": "2026-10-07T23:37:58.044885+00:00",
-  "revision_reason": "Append CPU lease checks and completed32K main-cache release controls; no speed/full-context claim.",
+  "revised_utc": "2026-10-08T00:03:57.683722+00:00",
+  "revision_reason": "Complete12 gated32K main-cache lease captures and8 clean matched timing jobs.",
   "files": {
     "README.md": {
-      "bytes": 4233,
-      "sha256": "f128cfe85dea897ecb9541fbdc3017d48247859ff8264da790a1e26cae127a19"
+      "bytes": 5602,
+      "sha256": "8a461d4776c9156a5fe2c92b2c807b72790a676676f67a66ae372fcb51ba08e1"
+    },
+    "all20-controls.json": {
+      "bytes": 6829,
+      "sha256": "3c69c59339f463ef6877339e3140fe4b1bea96a926ce4ecaca61697675719fb3"
+    },
+    "analysis/clean-sequence.json": {
+      "bytes": 6966,
+      "sha256": "56e947fe92d418c29b358c197c67c16073046cf701ac100ea87b8cc1703cf64c"
     },
     "analysis/main-vmm-full-ram-state-sequence.json": {
       "bytes": 4842,
       "sha256": "149221683d8e8f1715a315bd4ae38b226f336232b1b3ee5d3bd5cae5e56f6023"
+    },
+    "analysis/main-vmm-full-snapshot-state-sequence.json": {
+      "bytes": 4868,
+      "sha256": "cc2b670f8086172092e625195d5d1d2f76fe65e979158b06958c69fb5aa9d37b"
     },
     "analysis/main-vmm-half-ram-state-sequence.json": {
       "bytes": 4838,
@@ -22,9 +34,17 @@
       "bytes": 4935,
       "sha256": "68051d9fbe3112fc18108e5e0ff3805b57589ea4e2130a1db03e29a073a2b57d"
     },
+    "analysis/state-sequence.json": {
+      "bytes": 17794,
+      "sha256": "6e9a0bcc4077f4a31b858d8cb4af017c9ba09e64a8ea41a9d346b77a1b7b6810"
+    },
     "captured-release-messages.json": {
       "bytes": 7531,
       "sha256": "801e3879a85f53dd474dc8f115665e9fc1efd34de8ca3641b334fe4e1e10ee32"
+    },
+    "clean-release-messages.json": {
+      "bytes": 6672,
+      "sha256": "d1d61ac46490948dd185ebdf81b179832039553692437169deb798a02941e700"
     },
     "completed-state-controls.json": {
       "bytes": 3432,
@@ -33,6 +53,10 @@
     "controllers/archive_main_cache_release_v01402_controls.py": {
       "bytes": 10702,
       "sha256": "e40f897772e3c41ebe1fe0664e63797da78b431479a130bde64bbe1694190b75"
+    },
+    "controllers/archive_main_cache_release_v01402_final.py": {
+      "bytes": 8463,
+      "sha256": "269025eae0ea77d351a9ccf99f186ea63cf9a7bf06444616a3700f5f14cefc0f"
     },
     "controllers/prepare_main_cache_release_v01402_clean.py": {
       "bytes": 3070,
@@ -435,8 +459,200 @@
       "sha256": "7577770602d10b23500af0cbb1929d3ca474fb90fac4fef4b9779b5413d4ecda"
     },
     "private-artifacts.json": {
-      "bytes": 7050,
-      "sha256": "bad5703e344b1a54901f5e5b53a20803cdd589c9f95aa1885bc72cbfb9c1239b"
+      "bytes": 11550,
+      "sha256": "6db9d084d2bfdfdfb494e6506b5b2f49814ab4782519919cb055b528089ac21f"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r1/debugger/inferior-argv.json": {
+      "bytes": 959,
+      "sha256": "c30284cf4388e6d6b8265c5f05fc8ad4b44bab9d1d313ae815c59f9358fef103"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r1/events.jsonl": {
+      "bytes": 4759,
+      "sha256": "192a60f467dc876226ff7fd9b1cd05aea61344de198da661ecb27d7f29db4b7b"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r1/input-tokens.txt": {
+      "bytes": 142702,
+      "sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r1/probes/before-health-cursor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r1/probes/before-health-cursor.stdout": {
+      "bytes": 156,
+      "sha256": "59641e480e9a5a130be4176301896cda59dd8a8257177556e3cdc62ab23debe8"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r1/probes/embedding-state.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r1/probes/embedding-state.stdout": {
+      "bytes": 21,
+      "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r1/probes/health-environment.json": {
+      "bytes": 882,
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r1/probes/health-kernel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r1/probes/health-kernel.stdout": {
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r1/probes/health-runtime.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r1/probes/health-runtime.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r1/probes/health-xe.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r1/probes/health.stderr": {
+      "bytes": 118983,
+      "sha256": "efaed23a667fcd5c88caa9694a6aedf445d29c41156b0d3541e3552685fc36e4"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r1/probes/health.stdout": {
+      "bytes": 155,
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r1/probes/kernel-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r1/probes/kernel-after.stdout": {
+      "bytes": 739,
+      "sha256": "899e65b0a04316f34206f63fe34315c3591e360ebfa0e860680da946e85ec2e3"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r1/probes/kernel-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r1/probes/kernel-before.stdout": {
+      "bytes": 156,
+      "sha256": "59641e480e9a5a130be4176301896cda59dd8a8257177556e3cdc62ab23debe8"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r1/probes/kernel-gap.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r1/probes/kernel-gap.stdout": {
+      "bytes": 469862,
+      "sha256": "98eea0a62e81a345003b72e2214c7fcd6081e7fb616ace938a6e18fc0e25d1ed"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r1/project-messages.txt": {
+      "bytes": 3991,
+      "sha256": "bbc65c063b27b45ae6420a82a1662cdab68cdf8013e89ac7471758e6430a91c4"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r1/protocol.stdout.raw": {
+      "bytes": 6683,
+      "sha256": "c51e93f8de7f25b583841ddb0b7a69f471df025e3de354158734c91a290f40fb"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r1/record.json": {
+      "bytes": 27967,
+      "sha256": "81b5258257bba35b83b141875edbb0df6aa34268334524deaccd0f106df4a5e8"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r2/debugger/inferior-argv.json": {
+      "bytes": 959,
+      "sha256": "c30284cf4388e6d6b8265c5f05fc8ad4b44bab9d1d313ae815c59f9358fef103"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r2/events.jsonl": {
+      "bytes": 4847,
+      "sha256": "af19f9bd9c107fc8f3f6d92658cd41aa32a421fa1ae3f51c6c4f94f1c96c2b87"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r2/input-tokens.txt": {
+      "bytes": 142702,
+      "sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r2/probes/before-health-cursor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r2/probes/before-health-cursor.stdout": {
+      "bytes": 155,
+      "sha256": "6be613ab4c9801de94b099179543e720493a6565596a5f131b943fb55456a1bf"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r2/probes/embedding-state.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r2/probes/embedding-state.stdout": {
+      "bytes": 21,
+      "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r2/probes/health-environment.json": {
+      "bytes": 882,
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r2/probes/health-kernel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r2/probes/health-kernel.stdout": {
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r2/probes/health-runtime.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r2/probes/health-runtime.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r2/probes/health-xe.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r2/probes/health.stderr": {
+      "bytes": 118983,
+      "sha256": "30da070549b51fa695af0d1b1b9b5459e8784631ab2865af4be1af71545c7169"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r2/probes/health.stdout": {
+      "bytes": 155,
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r2/probes/kernel-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r2/probes/kernel-after.stdout": {
+      "bytes": 1478,
+      "sha256": "fe0785dd92d5fc2b575be60e700e568d41a3e167141a996dc4eff61d05700f75"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r2/probes/kernel-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r2/probes/kernel-before.stdout": {
+      "bytes": 155,
+      "sha256": "6be613ab4c9801de94b099179543e720493a6565596a5f131b943fb55456a1bf"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r2/probes/kernel-gap.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r2/probes/kernel-gap.stdout": {
+      "bytes": 476004,
+      "sha256": "8e7d76aa393b5a5ae2d9d4f96a4d8a2593d0a0adfda8c54a3e005d651d158f58"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r2/project-messages.txt": {
+      "bytes": 3989,
+      "sha256": "28b141420dea54f0a3eed51dbaec1801da6f3f1340949d18971d3a5e9f339c0c"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r2/protocol.stdout.raw": {
+      "bytes": 6683,
+      "sha256": "656292c69816d5a22b4885679e42b36614f3a63291a0044f6fc66b4cd7874735"
+    },
+    "runs/owned-main-vmm-full-ram-v01402-code32k-clean-r2/record.json": {
+      "bytes": 27961,
+      "sha256": "dd092dd83b70a9f8c49e91e1573fa44d5cf8f258e142e74c00461783674dc139"
     },
     "runs/owned-main-vmm-full-ram-v01402-code32k-diagnostic-r1/debugger/inferior-argv.json": {
       "bytes": 959,
@@ -726,6 +942,678 @@
       "bytes": 42569,
       "sha256": "f3ccf69320faca774d9346c48ee6e0a60274cae8b036800d063122bd74d3864e"
     },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r1/debugger/inferior-argv.json": {
+      "bytes": 959,
+      "sha256": "c30284cf4388e6d6b8265c5f05fc8ad4b44bab9d1d313ae815c59f9358fef103"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r1/events.jsonl": {
+      "bytes": 4756,
+      "sha256": "3253adece947d86cbcd706441a6cc86f11bda34dec9f8dd18f1d220248f86108"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r1/input-tokens.txt": {
+      "bytes": 142702,
+      "sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r1/probes/before-health-cursor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r1/probes/before-health-cursor.stdout": {
+      "bytes": 156,
+      "sha256": "5c22815f9cb66c9997fde85136aa74ac3891507dbf940742520d15ffdf42a8f7"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r1/probes/embedding-state.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r1/probes/embedding-state.stdout": {
+      "bytes": 21,
+      "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r1/probes/health-environment.json": {
+      "bytes": 882,
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r1/probes/health-kernel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r1/probes/health-kernel.stdout": {
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r1/probes/health-runtime.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r1/probes/health-runtime.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r1/probes/health-xe.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r1/probes/health.stderr": {
+      "bytes": 118983,
+      "sha256": "6c069166484024cb132dd192e4e418642e54b333337439ddaa133a136b3db62f"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r1/probes/health.stdout": {
+      "bytes": 155,
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r1/probes/kernel-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r1/probes/kernel-after.stdout": {
+      "bytes": 3187,
+      "sha256": "826f367e8d8ab7d71b12a8214331acf0b7e77ddd68da5f8b3c4ff0669e164b38"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r1/probes/kernel-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r1/probes/kernel-before.stdout": {
+      "bytes": 156,
+      "sha256": "5c22815f9cb66c9997fde85136aa74ac3891507dbf940742520d15ffdf42a8f7"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r1/probes/kernel-gap.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r1/probes/kernel-gap.stdout": {
+      "bytes": 471340,
+      "sha256": "8cf283d7414617919611e882d2fc03f0bf2ca97fd97c88d5867e5fffac5bc2c3"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r1/project-messages.txt": {
+      "bytes": 3996,
+      "sha256": "8831dd5da2fe2d450a8c189390854162d6cc279b6b9fb39d0f37808ec29f5c83"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r1/protocol.stdout.raw": {
+      "bytes": 6683,
+      "sha256": "5f4d8ed84b8725efde964d03a70340db26ec7f71f1be3d35645475887ca83e41"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r1/record.json": {
+      "bytes": 27981,
+      "sha256": "db8d6da67094c8c4d1d504d745daca10bbc45eb4e965c1a45441662fb843ed8f"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r2/debugger/inferior-argv.json": {
+      "bytes": 959,
+      "sha256": "c30284cf4388e6d6b8265c5f05fc8ad4b44bab9d1d313ae815c59f9358fef103"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r2/events.jsonl": {
+      "bytes": 4755,
+      "sha256": "6ddde0a1c23f164e9079447fea6a970031838d61156fb4859fbf4f7e7c28b8f9"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r2/input-tokens.txt": {
+      "bytes": 142702,
+      "sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r2/probes/before-health-cursor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r2/probes/before-health-cursor.stdout": {
+      "bytes": 156,
+      "sha256": "f2ecd3be3aa02273d1b1a7fc193de09fc96b3ada7c015e51a9772e6c4ecc8a41"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r2/probes/embedding-state.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r2/probes/embedding-state.stdout": {
+      "bytes": 21,
+      "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r2/probes/health-environment.json": {
+      "bytes": 882,
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r2/probes/health-kernel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r2/probes/health-kernel.stdout": {
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r2/probes/health-runtime.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r2/probes/health-runtime.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r2/probes/health-xe.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r2/probes/health.stderr": {
+      "bytes": 118983,
+      "sha256": "7a5f297cb28066a44c3e6879d3dba0cf8107a4f84eb7177321f9223932decf3e"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r2/probes/health.stdout": {
+      "bytes": 155,
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r2/probes/kernel-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r2/probes/kernel-after.stdout": {
+      "bytes": 1477,
+      "sha256": "7edd0f9c4eda06571e2e6906731a8b511faa3bcafa5ffd4c6fe480588f35ebf3"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r2/probes/kernel-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r2/probes/kernel-before.stdout": {
+      "bytes": 156,
+      "sha256": "f2ecd3be3aa02273d1b1a7fc193de09fc96b3ada7c015e51a9772e6c4ecc8a41"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r2/probes/kernel-gap.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r2/probes/kernel-gap.stdout": {
+      "bytes": 474527,
+      "sha256": "922260032f068771693441aff3fe18cc1708d852e48786b8761ca4d219358bd7"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r2/project-messages.txt": {
+      "bytes": 3996,
+      "sha256": "a843600a754c1534128a5c3ef0a36b888adefe2d2ce5c66b4d527c9bfd040d16"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r2/protocol.stdout.raw": {
+      "bytes": 6683,
+      "sha256": "4aa17905f0509b4e8513a2d7b7154aaf91802e21ab9d6e7cb88d79071b8902f2"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-clean-r2/record.json": {
+      "bytes": 27979,
+      "sha256": "fd7a66f7fb2420597fd90eead148a53ec015b828490284248479b284c043a830"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-diagnostic-r1/debugger/inferior-argv.json": {
+      "bytes": 959,
+      "sha256": "c30284cf4388e6d6b8265c5f05fc8ad4b44bab9d1d313ae815c59f9358fef103"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-diagnostic-r1/events.jsonl": {
+      "bytes": 4926,
+      "sha256": "581d173082405923c842661bbfd09ec0ea2ba08652702cebb8833dc805be7ac7"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-diagnostic-r1/input-tokens.txt": {
+      "bytes": 142702,
+      "sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-diagnostic-r1/probes/before-health-cursor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-diagnostic-r1/probes/before-health-cursor.stdout": {
+      "bytes": 156,
+      "sha256": "2095aba830370c285a8b1f37bd512ac55e43b27f8feff1f657af305e780adf8b"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-diagnostic-r1/probes/embedding-state.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-diagnostic-r1/probes/embedding-state.stdout": {
+      "bytes": 21,
+      "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-diagnostic-r1/probes/health-environment.json": {
+      "bytes": 882,
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-diagnostic-r1/probes/health-kernel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-diagnostic-r1/probes/health-kernel.stdout": {
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-diagnostic-r1/probes/health-runtime.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-diagnostic-r1/probes/health-runtime.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-diagnostic-r1/probes/health-xe.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-diagnostic-r1/probes/health.stderr": {
+      "bytes": 118370,
+      "sha256": "4ccace01bd6472841dbfbedea324eda66d45ca6a89c7b9c8940dd794fb999dd7"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-diagnostic-r1/probes/health.stdout": {
+      "bytes": 155,
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-diagnostic-r1/probes/kernel-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-diagnostic-r1/probes/kernel-after.stdout": {
+      "bytes": 2956,
+      "sha256": "1d2f7798a420d3722798fb5a6ed44afa69a1c1fdff4ffd8a11bbb4d61b9c8ac5"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-diagnostic-r1/probes/kernel-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-diagnostic-r1/probes/kernel-before.stdout": {
+      "bytes": 156,
+      "sha256": "2095aba830370c285a8b1f37bd512ac55e43b27f8feff1f657af305e780adf8b"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-diagnostic-r1/probes/kernel-gap.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-diagnostic-r1/probes/kernel-gap.stdout": {
+      "bytes": 453165,
+      "sha256": "87a8a417cc01a83408bf30f620c8fe7ad9134eb518627f93a02fdf12b8818e48"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-diagnostic-r1/project-messages.txt": {
+      "bytes": 17216,
+      "sha256": "bd4ba9e42d0d5902c1f8697f35f019f57e4a6e15b2e2724d25c4db28f726d705"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-diagnostic-r1/protocol.stdout.raw": {
+      "bytes": 6686,
+      "sha256": "6d5a97d39f8af508c07b0812a48cc4de07137150acbcb5632cacc56f1dc897e1"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-diagnostic-r1/record.json": {
+      "bytes": 43155,
+      "sha256": "e8bac178c3bafd7023186eb1e5d6bef4b5e13e02eb295ff9b558d1106bf145f1"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r1/debugger/inferior-argv.json": {
+      "bytes": 959,
+      "sha256": "c30284cf4388e6d6b8265c5f05fc8ad4b44bab9d1d313ae815c59f9358fef103"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r1/events.jsonl": {
+      "bytes": 4753,
+      "sha256": "f250b1ac6a4ab52552d1efa30882bf8fac31e0cc5aff236e7800783bf83949a8"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r1/input-tokens.txt": {
+      "bytes": 142702,
+      "sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r1/probes/before-health-cursor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r1/probes/before-health-cursor.stdout": {
+      "bytes": 156,
+      "sha256": "fd6e2eda17d445943e922a0a1d521cc6a163784e3cf479ae11f9c39a455641c5"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r1/probes/embedding-state.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r1/probes/embedding-state.stdout": {
+      "bytes": 21,
+      "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r1/probes/health-environment.json": {
+      "bytes": 882,
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r1/probes/health-kernel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r1/probes/health-kernel.stdout": {
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r1/probes/health-runtime.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r1/probes/health-runtime.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r1/probes/health-xe.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r1/probes/health.stderr": {
+      "bytes": 118338,
+      "sha256": "4a7a725f505b0df51a97f7205bf063d8c2478bd8f798fbf6fed97c52a3be55b5"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r1/probes/health.stdout": {
+      "bytes": 155,
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r1/probes/kernel-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r1/probes/kernel-after.stdout": {
+      "bytes": 1478,
+      "sha256": "ab0f55f759ea1d03ce59e234045d7b7571e0363fad26e785501d1cefb3c3a6c4"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r1/probes/kernel-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r1/probes/kernel-before.stdout": {
+      "bytes": 156,
+      "sha256": "fd6e2eda17d445943e922a0a1d521cc6a163784e3cf479ae11f9c39a455641c5"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r1/probes/kernel-gap.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r1/probes/kernel-gap.stdout": {
+      "bytes": 456121,
+      "sha256": "7c089a77a61a323a0ded9e769e83d5d4a60704255f554b194033cd195fe88cec"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r1/project-messages.txt": {
+      "bytes": 4146,
+      "sha256": "5a23a8c64d794bf44286a6eca843e1a39b53d09e5e2c481154c0cbced0f3484b"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r1/protocol.stdout.raw": {
+      "bytes": 6683,
+      "sha256": "f54a842c9eebd96243306765729406af01a43d9081fc53b94d3674689a47f132"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r1/record.json": {
+      "bytes": 42603,
+      "sha256": "b05c95acb366a9e64a6a1bde871fc1d6abce00a2079ea177db350247333f5aba"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r2/debugger/inferior-argv.json": {
+      "bytes": 959,
+      "sha256": "c30284cf4388e6d6b8265c5f05fc8ad4b44bab9d1d313ae815c59f9358fef103"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r2/events.jsonl": {
+      "bytes": 5023,
+      "sha256": "a9d729f5e91672a3aa77babe34755f29fec86430d7ac1bc6bc33c21fdf5f4101"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r2/input-tokens.txt": {
+      "bytes": 142702,
+      "sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r2/probes/before-health-cursor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r2/probes/before-health-cursor.stdout": {
+      "bytes": 156,
+      "sha256": "7304a88d1d0619fc0a728176bfae2a81023bc1618ccef537c4951570954acf56"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r2/probes/embedding-state.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r2/probes/embedding-state.stdout": {
+      "bytes": 21,
+      "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r2/probes/health-environment.json": {
+      "bytes": 882,
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r2/probes/health-kernel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r2/probes/health-kernel.stdout": {
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r2/probes/health-runtime.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r2/probes/health-runtime.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r2/probes/health-xe.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r2/probes/health.stderr": {
+      "bytes": 118983,
+      "sha256": "34a11ce206c4db75b828124a84fe74eb5a02683051eac69722439f2e0e293b97"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r2/probes/health.stdout": {
+      "bytes": 155,
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r2/probes/kernel-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r2/probes/kernel-after.stdout": {
+      "bytes": 1478,
+      "sha256": "99fcdb21c4c487209fc9333de29efd6e7cbcd4c59a4911070b6b77d9f971344a"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r2/probes/kernel-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r2/probes/kernel-before.stdout": {
+      "bytes": 156,
+      "sha256": "7304a88d1d0619fc0a728176bfae2a81023bc1618ccef537c4951570954acf56"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r2/probes/kernel-gap.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r2/probes/kernel-gap.stdout": {
+      "bytes": 457599,
+      "sha256": "4e1e3baf8b34d7f77b825df9ba3a41b0b01d2ed2b2810479e16a021b3bd0128e"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r2/project-messages.txt": {
+      "bytes": 4146,
+      "sha256": "99482c97384acd8e872874d51c0c604814dd1ea8d6d267c2c8cdbf938c3091eb"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r2/protocol.stdout.raw": {
+      "bytes": 6683,
+      "sha256": "24108a19f00e54109cfa45f117a7650ab91c2287636e3caffca8cca42d12b57f"
+    },
+    "runs/owned-main-vmm-full-snapshot-v01402-code32k-state-r2/record.json": {
+      "bytes": 42604,
+      "sha256": "dcf1ef8b16ba05c52fa1a58a200e5299c0514b0086c096187a95d05dbfb72dce"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r1/debugger/inferior-argv.json": {
+      "bytes": 959,
+      "sha256": "c30284cf4388e6d6b8265c5f05fc8ad4b44bab9d1d313ae815c59f9358fef103"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r1/events.jsonl": {
+      "bytes": 4835,
+      "sha256": "7af72231f7a2e4aa51feb30cd82b6a278e8055a432ce9b302890b1d5d7bef4ae"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r1/input-tokens.txt": {
+      "bytes": 142702,
+      "sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r1/probes/before-health-cursor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r1/probes/before-health-cursor.stdout": {
+      "bytes": 156,
+      "sha256": "a62e7bfc55c9ad50362bc2c38c79fdf4508199bbeb355b4cd1c36c5a77059fc4"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r1/probes/embedding-state.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r1/probes/embedding-state.stdout": {
+      "bytes": 21,
+      "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r1/probes/health-environment.json": {
+      "bytes": 882,
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r1/probes/health-kernel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r1/probes/health-kernel.stdout": {
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r1/probes/health-runtime.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r1/probes/health-runtime.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r1/probes/health-xe.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r1/probes/health.stderr": {
+      "bytes": 118983,
+      "sha256": "90a4bab7545387202da48d27a9b70bb919e0f1436d1dbe0bf4a57b74c0009233"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r1/probes/health.stdout": {
+      "bytes": 155,
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r1/probes/kernel-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r1/probes/kernel-after.stdout": {
+      "bytes": 9307,
+      "sha256": "d3f010589be506ceac6f639ebb62233bdb43e504e96e8996f896b3147718f450"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r1/probes/kernel-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r1/probes/kernel-before.stdout": {
+      "bytes": 156,
+      "sha256": "a62e7bfc55c9ad50362bc2c38c79fdf4508199bbeb355b4cd1c36c5a77059fc4"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r1/probes/kernel-gap.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r1/probes/kernel-gap.stdout": {
+      "bytes": 460555,
+      "sha256": "729c35f62f88095d0de2047f2b1684aac05d9a8510202a56bdbdca16d2a3b049"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r1/project-messages.txt": {
+      "bytes": 3989,
+      "sha256": "58a268f609be3f85ca7e7d7d1583c4c9decefcfabe012a2d7d6ecbdd4d8a4a11"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r1/protocol.stdout.raw": {
+      "bytes": 6683,
+      "sha256": "ea16c8250e3dab92b62e17414d3cb50550d5a9ce55f68a3c014c86e12fe18c68"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r1/record.json": {
+      "bytes": 27969,
+      "sha256": "6502a1e58ae840213dbdde1891c10924dacf789cbb412418f48fbe6e09e3a4af"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r2/debugger/inferior-argv.json": {
+      "bytes": 959,
+      "sha256": "c30284cf4388e6d6b8265c5f05fc8ad4b44bab9d1d313ae815c59f9358fef103"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r2/events.jsonl": {
+      "bytes": 4838,
+      "sha256": "06eff8ac73e4df030d479faeaa0393ff0d2228b22b94f53e69949fd6fdc8a9d4"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r2/input-tokens.txt": {
+      "bytes": 142702,
+      "sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r2/probes/before-health-cursor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r2/probes/before-health-cursor.stdout": {
+      "bytes": 156,
+      "sha256": "5919b42cdc55e437da02ae28002b550aec7c97db0edd01fa07eaa59cbc4c8177"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r2/probes/embedding-state.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r2/probes/embedding-state.stdout": {
+      "bytes": 21,
+      "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r2/probes/health-environment.json": {
+      "bytes": 882,
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r2/probes/health-kernel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r2/probes/health-kernel.stdout": {
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r2/probes/health-runtime.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r2/probes/health-runtime.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r2/probes/health-xe.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r2/probes/health.stderr": {
+      "bytes": 118983,
+      "sha256": "205dc7f69a7b35fcd80f65ee7fe3735e4dcf29a0ed1a181c729d9505d01845b6"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r2/probes/health.stdout": {
+      "bytes": 155,
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r2/probes/kernel-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r2/probes/kernel-after.stdout": {
+      "bytes": 8549,
+      "sha256": "cd95754520769d6481c08da5c8546d3db454c06197bc6454d92861b57a76a97a"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r2/probes/kernel-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r2/probes/kernel-before.stdout": {
+      "bytes": 156,
+      "sha256": "5919b42cdc55e437da02ae28002b550aec7c97db0edd01fa07eaa59cbc4c8177"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r2/probes/kernel-gap.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r2/probes/kernel-gap.stdout": {
+      "bytes": 477482,
+      "sha256": "052ffff99e5daf39a3512bcf21f9c0347575a065b1fc90eeec744036b6b7bdce"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r2/project-messages.txt": {
+      "bytes": 3989,
+      "sha256": "053661fc1b17f0bb174dc78ba1a7ec93d70e34a02e322ba507da711a79f9f3bf"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r2/protocol.stdout.raw": {
+      "bytes": 6683,
+      "sha256": "86a796aca611b66c8ceee38791130bdb0ced1fcf18869250fbfc47fbf3093871"
+    },
+    "runs/owned-main-vmm-half-ram-v01402-code32k-clean-r2/record.json": {
+      "bytes": 27969,
+      "sha256": "aa1019363d8fc13de6b2f1b9444e44454dae5c6a25a90f5312caa752ea6ba1d4"
+    },
     "runs/owned-main-vmm-half-ram-v01402-code32k-diagnostic-r1/debugger/inferior-argv.json": {
       "bytes": 959,
       "sha256": "c30284cf4388e6d6b8265c5f05fc8ad4b44bab9d1d313ae815c59f9358fef103"
@@ -1013,6 +1901,198 @@
     "runs/owned-main-vmm-half-ram-v01402-code32k-state-r2/record.json": {
       "bytes": 42571,
       "sha256": "95a18e1c123fc208aa813d5b0379dd99e8344b8d1c8094f935c79e98239c19b5"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r1/debugger/inferior-argv.json": {
+      "bytes": 959,
+      "sha256": "c30284cf4388e6d6b8265c5f05fc8ad4b44bab9d1d313ae815c59f9358fef103"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r1/events.jsonl": {
+      "bytes": 5114,
+      "sha256": "3d914e2ea7246d462a7c82efbc63cdb63fd3bd5a3b5c8924ba3e8664b3e3be0a"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r1/input-tokens.txt": {
+      "bytes": 142702,
+      "sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r1/probes/before-health-cursor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r1/probes/before-health-cursor.stdout": {
+      "bytes": 156,
+      "sha256": "d37f813e172ddccafe31e35467cdf7c26c5c029ae46d1ef489263533c6182e92"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r1/probes/embedding-state.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r1/probes/embedding-state.stdout": {
+      "bytes": 21,
+      "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r1/probes/health-environment.json": {
+      "bytes": 882,
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r1/probes/health-kernel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r1/probes/health-kernel.stdout": {
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r1/probes/health-runtime.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r1/probes/health-runtime.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r1/probes/health-xe.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r1/probes/health.stderr": {
+      "bytes": 118983,
+      "sha256": "dbcb1c81ccc8f442ae42099e6a796ced38da7f32486431041bf17ca5eb3753e0"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r1/probes/health.stdout": {
+      "bytes": 155,
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r1/probes/kernel-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r1/probes/kernel-after.stdout": {
+      "bytes": 1478,
+      "sha256": "be9dd1311ef87c63c89fea4c2a6fecebe0bbec9f211825e05c7f0f1e42a25373"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r1/probes/kernel-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r1/probes/kernel-before.stdout": {
+      "bytes": 156,
+      "sha256": "d37f813e172ddccafe31e35467cdf7c26c5c029ae46d1ef489263533c6182e92"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r1/probes/kernel-gap.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r1/probes/kernel-gap.stdout": {
+      "bytes": 459077,
+      "sha256": "f838ae8b8201f330dc9a4879553b5c1f7d9e7b490c3872deefeb10864e7d0dbe"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r1/project-messages.txt": {
+      "bytes": 3829,
+      "sha256": "fe8fee71dc1af744f144e882acc2a1ce28e37fbe489aceb419ddfbbb44f5c1ec"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r1/protocol.stdout.raw": {
+      "bytes": 6683,
+      "sha256": "796ba5494eea96c1e9e15cf2ae0550d1d8cfc0529b6d18e701399dac82f97288"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r1/record.json": {
+      "bytes": 27966,
+      "sha256": "2d521c13cc91227f6c000b95f82253888dac4da41bf927d050ac562d93680a40"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r2/debugger/inferior-argv.json": {
+      "bytes": 959,
+      "sha256": "c30284cf4388e6d6b8265c5f05fc8ad4b44bab9d1d313ae815c59f9358fef103"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r2/events.jsonl": {
+      "bytes": 4661,
+      "sha256": "d89b3873dd30d69d72566bbc6f5a003beb0d7c05fb5771ceab7617a97ae958e8"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r2/input-tokens.txt": {
+      "bytes": 142702,
+      "sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r2/probes/before-health-cursor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r2/probes/before-health-cursor.stdout": {
+      "bytes": 156,
+      "sha256": "85e3bbd54ba304ac360ab36c3f953922a05c747452066d496634ecfdcd7857d5"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r2/probes/embedding-state.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r2/probes/embedding-state.stdout": {
+      "bytes": 21,
+      "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r2/probes/health-environment.json": {
+      "bytes": 882,
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r2/probes/health-kernel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r2/probes/health-kernel.stdout": {
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r2/probes/health-runtime.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r2/probes/health-runtime.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r2/probes/health-xe.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r2/probes/health.stderr": {
+      "bytes": 118338,
+      "sha256": "dcea986bec490229cb2e80f3a8cd818f94c226f8e884ca94b3985d0f86682745"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r2/probes/health.stdout": {
+      "bytes": 155,
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r2/probes/kernel-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r2/probes/kernel-after.stdout": {
+      "bytes": 1478,
+      "sha256": "7fe4730dbceb85c6e15b1eef96e0d84acd95ee84826873dd3c22e45cae448a24"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r2/probes/kernel-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r2/probes/kernel-before.stdout": {
+      "bytes": 156,
+      "sha256": "85e3bbd54ba304ac360ab36c3f953922a05c747452066d496634ecfdcd7857d5"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r2/probes/kernel-gap.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r2/probes/kernel-gap.stdout": {
+      "bytes": 486031,
+      "sha256": "6cc4e3a23612307fa1dd6782d9861823bb90956d505958cedfb06ecd750e70f8"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r2/project-messages.txt": {
+      "bytes": 3829,
+      "sha256": "917dc4bd052145f5a8e3b0fe8ec9db77d709835d2289410fc965ab540626c24a"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r2/protocol.stdout.raw": {
+      "bytes": 6683,
+      "sha256": "ad7f28ac334a810792666eb2f1d9d1ba2d7c767d3afcf95a7fd3ef80cdb360c0"
+    },
+    "runs/owned-main-vmm-kept-ram-v01402-code32k-clean-r2/record.json": {
+      "bytes": 27966,
+      "sha256": "ecdcfc346d723c06ac91b9de91f74a6aaaa514ee87e3d74dc293347b457913e6"
     },
     "runs/owned-main-vmm-kept-ram-v01402-code32k-diagnostic-r1/debugger/inferior-argv.json": {
       "bytes": 959,

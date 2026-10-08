@@ -1,9 +1,9 @@
 # Main-cache release and restoration controls
 
 Arc B570 10 GiB / Ryzen 5 5600X / 128 GiB RAM, kernel 7.0.0-38,
-NEO 26.31.39395.14 and oneAPI 2026.1.1. This checkpoint retains completed
-correctness controls; clean timing remains pending. No speed claim or
-production adoption follows from diagnostic/state-capture durations.
+NEO 26.31.39395.14 and oneAPI 2026.1.1. This result retains twelve complete
+correctness controls followed by eight clean32K timing jobs. Diagnostic and
+state-capture durations are excluded; the candidate remains unadopted.
 
 The same private scheduling binary
 e82fc5de5480b72255b601759497d5810e86bf691350417ed0dc11ed6c429323
@@ -36,7 +36,7 @@ all 19 pass. Its pinned negative control removes the intra-expert RAM offset
 and is rejected by the actual pre-unmap payload check. These CPU resource
 stand-ins do not prove SYCL mapping, GPU arithmetic or absence of runtime UB.
 
-Completed three-run arms at this checkpoint: main-vmm-kept-ram, main-vmm-half-ram, main-vmm-full-ram.
+Completed three-run arms: main-vmm-kept-ram, main-vmm-half-ram, main-vmm-full-ram, main-vmm-full-snapshot.
 Each has a first logged/validated 32K request and two fresh state/head captures.
 All completed requests match every one of the 66 main-prefill state parts,
 all 248,320 first-head floats (993,280 bytes), all 64 IDs and every logprob
@@ -48,10 +48,39 @@ The [captured messages](captured-release-messages.json) distinguish physical,
 logical-tail and occupied payload bytes. Half release unmaps 201,326,592 B,
 with 139,460,608 logical tail bytes and 130,731,008 occupied expert bytes;
 the retained/released boundary may split a slot. Both sides of restoration
-check the entire occupied payload. Full-RAM/snapshot and the clean matched
-kept/half-RAM/full-RAM/full-snapshot/reverse comparison are pending unless
-their completed controls appear above. No captured duration enters a speed
-comparison. Graph recapture overhead will be included in clean prefill time.
+check the entire occupied payload. The full-snapshot arm also passes all
+three state/head/output captures and complete payload verification. No captured
+duration enters a speed comparison. Graph recapture overhead is included in
+clean prefill time.
+
+Eight fresh clean jobs run kept/half-RAM/full-RAM/full-snapshot and reverse.
+Payload checks, validation, debug/API logs, state/head dumps, profiler,
+transfer profiling and extra waits are absent. The owned GDB/PTY observer
+is common. All20 jobs match output and MTP counts, exit normally and record
+no new xe fault.
+
+| Setting | Run | Prefill token/s | Decode token/s |
+| --- | --- | ---: | ---: |
+| Kept backing | 1 | 443.277 | 16.708 |
+| Kept backing | 2 | 443.282 | 17.064 |
+| Kept backing | mean | 443.280 | 16.886 |
+| Half / RAM | 1 | 443.918 | 17.914 |
+| Half / RAM | 2 | 443.595 | 17.490 |
+| Half / RAM | mean | 443.757 | 17.702 |
+| All / RAM | 1 | 433.249 | 16.802 |
+| All / RAM | 2 | 433.361 | 17.916 |
+| All / RAM | mean | 433.305 | 17.359 |
+| All / snapshot | 1 | 442.411 | 17.776 |
+| All / snapshot | 2 | 442.078 | 17.884 |
+| All / snapshot | mean | 442.245 | 17.830 |
+
+The [clean sequence](analysis/clean-sequence.json) preserves durations, means
+and relative changes. The [release messages](clean-release-messages.json)
+separate physical backing, logical payload, suspend/restore and graph time.
+Two repetitions per setting do not establish small differences beyond
+observed variation or attribute decode variation to a prefill-only setting.
+These measurements hold fixed the8192-token chunk and residual geometry;
+release alone does not test the benefit of enlarging chunks with freed VRAM.
 
 Full 262,144-cell occupancy/repeat/restore/clipped-tail/refusal/later-valid
 gates remain open. A full 262,143-row residual image alone would require
