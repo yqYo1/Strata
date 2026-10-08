@@ -1,0 +1,87 @@
+--- /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_kv_stream32k_v01402_v2.py
++++ /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_kv_layer_major32k_v01402_v1.py
+@@ -19,7 +19,7 @@
+ base = Path(__file__).parent
+ observer = Path('/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05')
+ mode=sys.argv[1]; phase=sys.argv[2]; repetition=int(sys.argv[3])
+-assert mode=='kv-stream32k' and phase in ['diagnostic','state'] and repetition in [1,2,3]
++assert mode=='kv-layer-major32k' and phase in ['diagnostic','state'] and repetition in [1,2,3]
+ previous=json.loads((base/'v01402-code32k-sequence/record.json').read_text());assert previous['passed'] and not previous['active']
+ default_gate=json.loads((base/'event-ack-no-root-default-v01402-gated-checks/record.json').read_text())
+ assert default_gate['passed'] and not default_gate['active']
+@@ -147,18 +147,28 @@
+     assert r.run('embedding-state',['/usr/bin/systemctl','--user','show','llama-server-qwen3embed.service','-p','ActiveState'],seconds=5).strip()=='ActiveState=inactive'
+     reference=json.loads((base/'model-lease-copy-off/normal-mtp.json').read_text())
+     assert reference['exit_code']==0 and len(reference['requests'])==4
+-    binary=root/'build-sycl-kv-stream-safe-v3-20261008/strata'
+-    kv_receipt=base/'kv-stream-safe-v01402-build-v3/record.json'
++    stream_gate=base/'owned-kv-stream32k-v01402-code32k-diagnostic-r1/record.json'
++    first=json.loads(stream_gate.read_text())
++    assert first['healthy'] and first['completed'] and first['math_gate_passed'] and not first['active']
++    assert len(first['requests'])==3 and all(x['math_gate_passed'] for x in first['requests'])
++    assert first['exit_code']==0 and not first['new_fault_messages']
++    assert not any(first['cleanup'][x] for x in ['inferior_survived','gdb_survived'])
++    for k in ['inferior','debugger']:
++        old=first[k];now=process_identity(old['pid'])
++        assert not now or now['start_ticks']!=old['start_ticks']
++    record['chunk_major_stream_gate_sha256']=hashlib.sha256(stream_gate.read_bytes()).hexdigest()
++    binary=root/'build-sycl-kv-layer-major-v1-20261008/strata'
++    kv_receipt=base/'kv-layer-major-v01402-build-v1/record.json'
+     kv_build=json.loads(kv_receipt.read_text())
+     assert kv_build['passed'] and not kv_build['active'] and kv_build['baseline_inputs_unchanged']
+     assert kv_build['candidate_binary_sha256']==hashlib.sha256(binary.read_bytes()).hexdigest()
+     assert kv_build['baseline_binary_sha256']=='e82fc5de5480b72255b601759497d5810e86bf691350417ed0dc11ed6c429323'
+     assert all(hashlib.sha256(Path(p).read_bytes()).hexdigest()==sha for p,sha in kv_build['link_input_sha256'].items())
+-    kv_source=binary.parent/'source/kv_stream.dp.cpp'
++    kv_source=binary.parent/'source/prefill.cpp'
+     assert hashlib.sha256(kv_source.read_bytes()).hexdigest()==kv_build['candidate_source_sha256']
+     record['kv_build_receipt_sha256']=hashlib.sha256(kv_receipt.read_bytes()).hexdigest()
+     record['kv_source_sha256']=kv_build['candidate_source_sha256']
+-    review=base/'kv-stream32k-v01402-source-review-v2/record.json'
++    review=base/'kv-layer-major32k-v01402-source-review-v1/record.json'
+     audit=json.loads(review.read_text());assert audit['passed'] and not audit['active']
+     assert audit['candidate_sha256']==record['kv_source_sha256']
+     record['kv_source_review_sha256']=hashlib.sha256(review.read_bytes()).hexdigest()
+@@ -191,7 +201,7 @@
+         record['prefill_kernel_candidate']={'file':str(candidate),'sha256':expected['candidate_source_sha256'],'removed_sites':expected['removed_sites']}
+         assert len(expected['removed_sites'])==14
+     final=json.loads((base/'owned-upstream-e8ca-refresh-short-final-float-storage/record.json').read_text());assert final['healthy'] and not final['active']
+-    for previous_path in list(base.glob('clean-v01402-short-*/record.json'))+list(base.glob('clean-v01402-default-*/record.json'))+list(base.glob('owned-v01402*-*/record.json'))+list(base.glob('owned-event-ack-v01402-code32k-*/record.json'))+list(base.glob('owned-cb-off-v01402-code32k-*/record.json'))+list(base.glob('owned-cnr-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-cb-cnr-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-no-profile-cb-cnr-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-registered-copy-cb-cnr-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-registered-copy-cb-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-no-root-prefill-cb-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-no-root-prefill-default-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-no-root-host-profile-v01402-code32k-*/record.json'))+list(base.glob('owned-qsa-*-v01402-code32k-*/record.json'))+list(base.glob('owned-compact2-layout1-v01402-code32k-*/record.json'))+list(base.glob('owned-layer2-ram-layout1-v01402-code32k-*/record.json'))+list(base.glob('owned-layer2-gpu-release-layout1-v01402-code32k-*/record.json'))+list(base.glob('owned-processing-default-v01402-code32k-*/record.json'))+list(base.glob('owned-main-vmm-*-v01402-code32k-*/record.json'))+list(base.glob('owned-kv-stream32k-v01402-code32k-*/record.json')):
++    for previous_path in list(base.glob('clean-v01402-short-*/record.json'))+list(base.glob('clean-v01402-default-*/record.json'))+list(base.glob('owned-v01402*-*/record.json'))+list(base.glob('owned-event-ack-v01402-code32k-*/record.json'))+list(base.glob('owned-cb-off-v01402-code32k-*/record.json'))+list(base.glob('owned-cnr-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-cb-cnr-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-no-profile-cb-cnr-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-registered-copy-cb-cnr-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-registered-copy-cb-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-no-root-prefill-cb-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-no-root-prefill-default-v01402-code32k-*/record.json'))+list(base.glob('owned-event-ack-no-root-host-profile-v01402-code32k-*/record.json'))+list(base.glob('owned-qsa-*-v01402-code32k-*/record.json'))+list(base.glob('owned-compact2-layout1-v01402-code32k-*/record.json'))+list(base.glob('owned-layer2-ram-layout1-v01402-code32k-*/record.json'))+list(base.glob('owned-layer2-gpu-release-layout1-v01402-code32k-*/record.json'))+list(base.glob('owned-processing-default-v01402-code32k-*/record.json'))+list(base.glob('owned-main-vmm-*-v01402-code32k-*/record.json'))+list(base.glob('owned-kv-stream32k-v01402-code32k-*/record.json'))+list(base.glob('owned-kv-layer-major32k-v01402-code32k-*/record.json')):
+         if previous_path.parent==out:continue
+         previous=json.loads(previous_path.read_text());assert not previous['active']
+         known_failures={'owned-v01402-code32k-patched-default-head-r2': '74e4b01947b304ce63400cf41930dffcbcaa7482d4342770557da4a00520fae6', 'owned-event-ack-v01402-code32k-diagnostic-r1': 'b1d072a15ceaf7b30c35c6599b7df4a91f62caeb0fa8469000a980f6c3c8ed46', 'owned-event-ack-cb-cnr-v01402-code32k-state-r1': '073f0a2081f333c21254c7f1388681473bada935cacf5db56ee3d7994f856f95', 'owned-main-vmm-full-ram-chunk12k-v01402-code32k-diagnostic-r1': '3de5e40d7a9bb390112c8de7bc6ee29604e62f8fed45e516cbf57ffe8cb0dfdb'}
+@@ -212,11 +222,14 @@
+     env.update(NEOReadDebugKeys='1',EnableDirectSubmission='0')
+     env.update(STRATA_PREFILL_FIRST='0',STRATA_PREFILL_RING='8')
+     env.update(STRATA_PREFILL_COMPACT='2',STRATA_PREFILL_ATTN_LAYOUT='1')
+-    env.update(STRATA_PREFILL_LAYER_MAJOR='0',STRATA_KV_STAGE_OWN='1',STRATA_KV_PREFETCH='0')
+-    # Streaming uses its existing chunk-major path; no dormant layer-major leases.
+-    assert not any(k in env for k in [
+-        'STRATA_PREFILL_RELEASE_CACHE','STRATA_PREFILL_RELEASE_DRAFT',
+-        'STRATA_PREFILL_CACHE_ALLOC','STRATA_PREFILL_LAYER_MAJOR_R_GPU'])
++    env.update(STRATA_PREFILL_LAYER_MAJOR='2',STRATA_KV_STAGE_OWN='1',STRATA_KV_PREFETCH='0',
++               STRATA_PREFILL_RELEASE_DRAFT='1',STRATA_PREFILL_DRAFT_VERIFY='1',
++               STRATA_PREFILL_LAYER_MAJOR_R_GPU='0',STRATA_PREFILL_LAYER_MAJOR_R_INPLACE='1',
++               STRATA_PREFILL_RELEASE_CACHE='1',STRATA_PREFILL_CACHE_ALLOC='vmm',
++               STRATA_PREFILL_CACHE_RESTORE='ram',STRATA_PREFILL_CACHE_RELEASE_FRAC='1',
++               STRATA_PREFILL_CACHE_VERIFY='1')
++    assert env['STRATA_PREFILL_LAYER_MAJOR_R_GPU']=='0'
++    assert env['STRATA_KV_STAGE_OWN']=='1' and env['STRATA_KV_PREFETCH']=='0'
+     assert not any(k in env for k in ['STRATA_PREFILL_ATTN_BATCH','STRATA_GDN_KEYHEAD','STRATA_GDN_KEYHEAD_TUNED','STRATA_PROMPT_ATTN_XMX'])
+     assert 'EnableImplicitConvertionToCounterBasedEvents' not in env
+     assert 'MKL_CBWR' not in env
+@@ -235,11 +248,11 @@
+     args[args.index('--conversation-cache-mib')+1]='0'
+     argv=[str(binary)]+args;record['argv']=argv
+     record['mode']=mode;record['phase']=phase;record['repetition']=repetition
+-    record['scope']='KV streaming candidate, chunk-major, context262144, resident32768, own staging, no prefetch or layer-major cache leases. Three fresh full32768-token requests in one logged/validated normal-MTP process on private v3 KV binary. Accepted8192 chunks. Each64-output reply has a newly written head and complete raw66-part state; used cells, recurrent/PLE/indexer state, complete head/IDs/logprobs and MTP43/66 must match the accepted baseline. Only page-rounded future cells may differ and are retained separately; no exclusions at full262144 occupancy. Trace phase memory and existing-graph retirement/restoration. Diagnostic durations excluded from speed; not full256K/adoption proof.'
++    record['scope']='KV streaming plus layer-major candidate, context262144, resident32768, own staging, no prefetch, RAM residuals, full RAM main-cache/MTP leases. Three fresh full32768-token requests in one logged/validated normal-MTP process on private v1 streamed layer-major +v3 KV binary. Accepted8192 chunks. Each64-output reply has a newly written head and complete raw66-part state; used cells, recurrent/PLE/indexer state, complete head/IDs/logprobs and MTP43/66 must match the accepted baseline. Only page-rounded future cells may differ and are retained separately; no exclusions at full262144 occupancy. Trace phase memory and existing-graph retirement/restoration. Diagnostic durations excluded from speed; not full256K/adoption proof.'
+     previous_cnr=json.loads((base/'event-ack-registered-copy-cb-v01402-state-sequence/record.json').read_text())
+     assert previous_cnr['passed'] and not previous_cnr['active']
+     record['previous_goal_turn']='progress: nine exact32K main-state/head/output controls and six clean processing-order jobs archived in86e13c1b17104e3f53b45c56f85c35c74c2a4099. All owned identities absent; production unchanged. GPU-row pair varies about11%, MTP RAM restoration repeats at248ms. Proceed to matched main-cache release/restore conditions.'
+-    record['configuration_note']='Context262144/kv-resident32768 (main mode1, MTP ring), own stage, chunk-major0, no cache release or prefetch; identical math gates on32768/GEN64. State and head capture are after the prompt computation and are not performance evidence. 32768 prompt tokens from the same expanded real-code fixture with a completed review question and assistant prefix, up to64 output tokens, context33024, chunk8192, int8 KV, normal MTP4, five CPU workers, cache128 requested, pcie0. FIRST0 and RING8 common to both. No prompt/decode retirement tuning for pure/patched-default. Diagnostic logs do not count as performance results. Prompt caching disabled and ckpt0 for a complete fresh read; actual cache count/workspaces/chunks/freeVRAM are captured from engine logs; upstream mixed packing differs from explicit-count fork contract.'
++    record['configuration_note']='Context262144/kv-resident32768 (main mode1, MTP ring), own stage, layer-major2, full RAM main/MTP release, R_GPU0, no prefetch; identical math gates on32768/GEN64. State and head capture are after the prompt computation and are not performance evidence. 32768 prompt tokens from the same expanded real-code fixture with a completed review question and assistant prefix, up to64 output tokens, context33024, chunk8192, int8 KV, normal MTP4, five CPU workers, cache128 requested, pcie0. FIRST0 and RING8 common to both. No prompt/decode retirement tuning for pure/patched-default. Diagnostic logs do not count as performance results. Prompt caching disabled and ckpt0 for a complete fresh read; actual cache count/workspaces/chunks/freeVRAM are captured from engine logs; upstream mixed packing differs from explicit-count fork contract.'
+     record['reference_binary_sha256']='79a4b363d33f66f41d910be6274e609b4eb73f62afb0dc49bca72bf2a538d223'
+     record['reference_result_sha256']=hashlib.sha256((base/'model-lease-copy-off/normal-mtp.json').read_bytes()).hexdigest()
+     record['source_sha256']={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in [Path(__file__),source,observer/'sycl/tools/owned_gdb.py',root/'sycl/src/prefill/prefill.cpp']}

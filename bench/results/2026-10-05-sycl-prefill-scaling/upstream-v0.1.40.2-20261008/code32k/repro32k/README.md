@@ -137,3 +137,10 @@ The [private KV-streaming source candidate](kv-streaming-source-candidate/README
 fixes possible shared hit writes and host-counter type-punning before
 exercising the existing RAM-KV route. It compiles/links but is not GPU-tested;
 no speed, full-context or adoption result is claimed.
+
+
+The [RAM-KV32K processing-order comparison](kv-streaming-32k-and-layer-order-v3/README.md)
+records defined KV representations/page claims, three exact used-state/head
+reads per configuration, and matched quiet ABBA runs with initial versus
+repeated32768-token measurements. Full262144 occupancy and adoption remain
+pending.

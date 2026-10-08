@@ -1,12 +1,12 @@
 {
   "created_utc": "2026-10-07T18:30:13.030576+00:00",
   "source_commit": "3437a83322957ca12f951fab04ff3022ff93f0c9",
-  "revised_utc": "2026-10-08T02:49:26.546080+00:00",
-  "revision_reason": "Use tracked compile-link-receipt evidence path; no controller/private artifact/source change.",
+  "revised_utc": "2026-10-08T04:07:00.219476+00:00",
+  "revision_reason": "Retain private RAM-KV32K correctness and matched processing-order gates.",
   "files": {
     "README.md": {
-      "bytes": 8786,
-      "sha256": "2e70cc9a13285dc9cf35c1bb6429d0af1f6d8e6fc23778d3dad3af44120db965"
+      "bytes": 9112,
+      "sha256": "b0d52c5fc2793785d34ea7fd0399c7c0cd3dc2d5b3a751529868ad59b45d1ab1"
     },
     "analysis/cb-off-v01402-state-analysis/cnr-research.json": {
       "bytes": 800,
@@ -2103,6 +2103,870 @@
     "host-api-profile/runs/owned-event-ack-no-root-host-profile-v01402-code32k-state-r1/record.json": {
       "bytes": 63485,
       "sha256": "9848c15447bb4022cb4b71ebfcdcc184c17247afce3572d92e2631807a37536c"
+    },
+    "kv-streaming-32k-and-layer-order-v3/README.md": {
+      "bytes": 3603,
+      "sha256": "53dd7d053ab654ff1fafc43d033222bdc9ea97fc83287fcc9491ed3acee963ab"
+    },
+    "kv-streaming-32k-and-layer-order-v3/controllers/archive_kv_streaming32k_v01402_v3.py": {
+      "bytes": 11345,
+      "sha256": "66703984ae21c1539475b72ce5b8412edd1fea83388beb9352b854ebe77fb842"
+    },
+    "kv-streaming-32k-and-layer-order-v3/controllers/build_kv_layer_major_v01402_v1.py": {
+      "bytes": 6611,
+      "sha256": "fa1906909b08ac8aa782de14a11f0db51c83372fd1cc579a4471b544ad401a5f"
+    },
+    "kv-streaming-32k-and-layer-order-v3/controllers/build_kv_stream_safe_v01402_v3.py": {
+      "bytes": 6183,
+      "sha256": "ff4c369c84a311d3e31a7e342d772fefda3317a97f5ea1d1b2314fdf9ddbdabd"
+    },
+    "kv-streaming-32k-and-layer-order-v3/controllers/prepare_kv_layer_major_v01402_v1.py": {
+      "bytes": 3474,
+      "sha256": "8222909d14ba5130011759c6246f3653988efd6877f7aab96aeeb1596a8b5820"
+    },
+    "kv-streaming-32k-and-layer-order-v3/controllers/prepare_kv_stream_safe_v01402_source_v3.py": {
+      "bytes": 4934,
+      "sha256": "956992a9bf646abf97bfbf1316b9e85eebb6f2c86996b01817a351d817cc1d74"
+    },
+    "kv-streaming-32k-and-layer-order-v3/controllers/prepare_owned_kv_layer_major32k_v01402_v1.py": {
+      "bytes": 5453,
+      "sha256": "b70b15733f2bde9dff62d890a2687ffe43215a3841d80b5a35712dd0b01725b8"
+    },
+    "kv-streaming-32k-and-layer-order-v3/controllers/prepare_owned_kv_matched_quiet32k_v01402_v1.py": {
+      "bytes": 6965,
+      "sha256": "2607015c74d3cb34b761ec865a19f8512a4e23797c1894cb5dbf4cae25235345"
+    },
+    "kv-streaming-32k-and-layer-order-v3/controllers/prepare_owned_kv_stream32k_v01402.py": {
+      "bytes": 8502,
+      "sha256": "00b706fc94b9049fe1868eaf2b12758a109e0d7d897d728633a9dd550c073ba5"
+    },
+    "kv-streaming-32k-and-layer-order-v3/controllers/prepare_owned_kv_stream32k_v01402_v2.py": {
+      "bytes": 9015,
+      "sha256": "9cf7dd15a16f6f56fe156c5b1c3f7540ceb9c43ed6e077e92999dd2fd333c42d"
+    },
+    "kv-streaming-32k-and-layer-order-v3/controllers/run_kv_matched_quiet32k_v01402_sequence_v1.py": {
+      "bytes": 4007,
+      "sha256": "e7b551f49123c11003f11f01b234cd4d0729e6421233dd95cae12ef33cf96b3c"
+    },
+    "kv-streaming-32k-and-layer-order-v3/controllers/run_owned_kv_layer_major32k_v01402_v1.py": {
+      "bytes": 30880,
+      "sha256": "ff3b79e6cbbc555d38cce00e41bf510f5771b326c90d50b7d441fcbde15b45b4"
+    },
+    "kv-streaming-32k-and-layer-order-v3/controllers/run_owned_kv_matched_quiet32k_v01402_v1.py": {
+      "bytes": 30806,
+      "sha256": "5782618abb49b096cb2be49afabe5c4d11681c6a9a6391f69b5921a82ca7ce0c"
+    },
+    "kv-streaming-32k-and-layer-order-v3/controllers/run_owned_kv_stream32k_v01402.py": {
+      "bytes": 29734,
+      "sha256": "9b0c5a0a3f68aeae7bb45706998177b12962b5373a77049d7a5431e41fc66a96"
+    },
+    "kv-streaming-32k-and-layer-order-v3/controllers/run_owned_kv_stream32k_v01402_v2.py": {
+      "bytes": 29737,
+      "sha256": "684bb264d3bfb348859cae3a973bad644384d32bd5f6ce13169e60afc92328b6"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/debugger/engine-and-gdb.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/debugger/gdb-mi.stdout": {
+      "bytes": 35808,
+      "sha256": "4596ec4a50154596eb032b285f01c3feedd2d8bec8261b069e33ab0445239ef1"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/debugger/inferior-argv.json": {
+      "bytes": 982,
+      "sha256": "1426113fa5749635b02447324542d746caee8adbb671b8f9b644424c977d64b3"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/debugger/inferior.stderr": {
+      "bytes": 7086,
+      "sha256": "636cf39e2ebbde8b27d5a7039565e3995c1d2863c8df32654ae236dc18dc9c78"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/events.jsonl": {
+      "bytes": 14112,
+      "sha256": "3c9462206e349bc906d57701e5a1aa994222bd4c1b65c1a5dabefa367c1fd684"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/input-tokens.txt": {
+      "bytes": 142702,
+      "sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/probes/before-health-cursor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/probes/before-health-cursor.stdout": {
+      "bytes": 156,
+      "sha256": "e7dc998f2f9461b9c0da0fa1fa583398404e115f1cad12a054660a3cdfabb372"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/probes/embedding-state.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/probes/embedding-state.stdout": {
+      "bytes": 21,
+      "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/probes/health-environment.json": {
+      "bytes": 882,
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/probes/health-kernel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/probes/health-kernel.stdout": {
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/probes/health-runtime.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/probes/health-runtime.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/probes/health-xe.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/probes/health.stderr": {
+      "bytes": 118983,
+      "sha256": "65f3e25d09d6de05b9bef8a5c9a1cb19d95d89d00ebe8b32f0e2854bf0d40428"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/probes/health.stdout": {
+      "bytes": 155,
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/probes/kernel-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/probes/kernel-after.stdout": {
+      "bytes": 11524,
+      "sha256": "94060de620253a37825a9930f90b53ac9295b5caca7fe30b31eeafe94d3feffa"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/probes/kernel-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/probes/kernel-before.stdout": {
+      "bytes": 156,
+      "sha256": "e7dc998f2f9461b9c0da0fa1fa583398404e115f1cad12a054660a3cdfabb372"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/probes/kernel-gap.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/probes/kernel-gap.stdout": {
+      "bytes": 286095,
+      "sha256": "c78d6307d91a6e8bca64f0298796cea7a0b9d55e150adbc5c33333e22631d803"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/project-messages.txt": {
+      "bytes": 6871,
+      "sha256": "b5e340d39c40c41b0319d072f6da252dce2b75445a99fcc358174e5f58bf2f9a"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/protocol.stdout.raw": {
+      "bytes": 19247,
+      "sha256": "8fe9275c6ec68cd9a28cefdfa951e896661c490d10495190056b376a737651f9"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/record.json": {
+      "bytes": 60155,
+      "sha256": "ef5dccb9b330493bd617a5845a05721b9131f7117df9b12b6848b607e23aec86"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/debugger/engine-and-gdb.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/debugger/gdb-mi.stdout": {
+      "bytes": 35808,
+      "sha256": "bf778ed0cb6bf1bfcec70ef70cf6801dba764ba7f585a65a420921f6a0a50cac"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/debugger/inferior-argv.json": {
+      "bytes": 982,
+      "sha256": "1426113fa5749635b02447324542d746caee8adbb671b8f9b644424c977d64b3"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/debugger/inferior.stderr": {
+      "bytes": 7086,
+      "sha256": "4b8fc3390f13aee7e00db34bd89e37fef1cc8d30c333541677bbdcf2d22d6930"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/events.jsonl": {
+      "bytes": 13832,
+      "sha256": "df74a7bfb9fc5caae15f5d4bee12b0aa05ecfe6be22ec4176f52533e58e6dda4"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/input-tokens.txt": {
+      "bytes": 142702,
+      "sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/probes/before-health-cursor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/probes/before-health-cursor.stdout": {
+      "bytes": 156,
+      "sha256": "4a504c213ec7574b333fc066c537f09f6cf11ed0fdc3f5995b39fff83740a74f"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/probes/embedding-state.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/probes/embedding-state.stdout": {
+      "bytes": 21,
+      "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/probes/health-environment.json": {
+      "bytes": 882,
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/probes/health-kernel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/probes/health-kernel.stdout": {
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/probes/health-runtime.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/probes/health-runtime.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/probes/health-xe.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/probes/health.stderr": {
+      "bytes": 118338,
+      "sha256": "31fe55ffc2eaa98efc8d5e7f2d56514634e53666ce4d3f5f4ab20a5466c3eb34"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/probes/health.stdout": {
+      "bytes": 155,
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/probes/kernel-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/probes/kernel-after.stdout": {
+      "bytes": 3695,
+      "sha256": "fd2b959e41550768e141d0582a62e78358988c38b3bcdf5bcf3317c523687488"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/probes/kernel-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/probes/kernel-before.stdout": {
+      "bytes": 156,
+      "sha256": "4a504c213ec7574b333fc066c537f09f6cf11ed0fdc3f5995b39fff83740a74f"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/probes/kernel-gap.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/probes/kernel-gap.stdout": {
+      "bytes": 297619,
+      "sha256": "0b511b0dbf4d57f5590d98ed71edd20c9798d07219af6a971aa34fa3759aa262"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/project-messages.txt": {
+      "bytes": 6871,
+      "sha256": "a76ce3eb51dc14117583cad90992e150e62c320a59b865dcb1a85e9d4e6e7317"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/protocol.stdout.raw": {
+      "bytes": 19242,
+      "sha256": "c3a90923b34fe86011612e4c93d364d9da1d73489e68d6829ab9d625102595c2"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/record.json": {
+      "bytes": 60148,
+      "sha256": "1cc3102c01717e35b1cc10716b48b8266a9f23f57da46332365306a0ff6a8cf3"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/debugger/engine-and-gdb.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/debugger/gdb-mi.stdout": {
+      "bytes": 36115,
+      "sha256": "0169f65ee3174662a42ab6aef1c97a6c33bd06d0ce796c111d893208266e2428"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/debugger/inferior-argv.json": {
+      "bytes": 982,
+      "sha256": "1426113fa5749635b02447324542d746caee8adbb671b8f9b644424c977d64b3"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/events.jsonl": {
+      "bytes": 13714,
+      "sha256": "3262e28ef5341e46efec26682d95bad8f48acf2bbc998c461982ded5ec632e62"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/input-tokens.txt": {
+      "bytes": 142702,
+      "sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/probes/before-health-cursor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/probes/before-health-cursor.stdout": {
+      "bytes": 156,
+      "sha256": "99424fb21bb4f58053081997d72565706d83e254dc04b4e9e186a73bcc17c634"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/probes/embedding-state.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/probes/embedding-state.stdout": {
+      "bytes": 21,
+      "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/probes/health-environment.json": {
+      "bytes": 882,
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/probes/health-kernel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/probes/health-kernel.stdout": {
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/probes/health-runtime.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/probes/health-runtime.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/probes/health-xe.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/probes/health.stderr": {
+      "bytes": 118983,
+      "sha256": "da8fd3ff539979c8eacc1a1c8cfdf71030368c24e7076fa9c17466da2868edfc"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/probes/health.stdout": {
+      "bytes": 155,
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/probes/kernel-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/probes/kernel-after.stdout": {
+      "bytes": 15218,
+      "sha256": "092e3d7b88e5389523785a7aba1ac194770ed53ca76b5cb1e4f21b3248231593"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/probes/kernel-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/probes/kernel-before.stdout": {
+      "bytes": 156,
+      "sha256": "99424fb21bb4f58053081997d72565706d83e254dc04b4e9e186a73bcc17c634"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/probes/kernel-gap.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/probes/kernel-gap.stdout": {
+      "bytes": 266443,
+      "sha256": "f7f4c9bba47da9d357505529c640ec9c0acb1d955e33501c5eca13aaff60660f"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/project-messages.txt": {
+      "bytes": 45654,
+      "sha256": "6bd730f5914ab973806e623e9a389d53935b7eecf73a9ffadae889cdd45f4bd9"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/protocol.stdout.raw": {
+      "bytes": 19252,
+      "sha256": "6e7e4c79e19613295f760dd05e7153a42d05362fd0b246061b452e95d5fe9d7e"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/record.json": {
+      "bytes": 187939,
+      "sha256": "689950cb1177d1ee83459210af14bf3a474a2d32879e12cda5cc4abee6a08d1e"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/debugger/engine-and-gdb.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/debugger/gdb-mi.stdout": {
+      "bytes": 35808,
+      "sha256": "6977c45aac8e0ef81426da62520b7b604b29649a896e51ac1b2377d37ac43281"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/debugger/inferior-argv.json": {
+      "bytes": 982,
+      "sha256": "179696e2e529d58cbbd151736553f9d7662fd2e68be5d2235f0f5bb16546608d"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/debugger/inferior.stderr": {
+      "bytes": 4174,
+      "sha256": "f08326f5bebf35d50c16b8a986ab8fac1dd81ccfc6fad7da4d7c02bcd3fa17a3"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/events.jsonl": {
+      "bytes": 13666,
+      "sha256": "733f7ee379f67393f114e368d3727adaffbfadd1c28a63dbca9a0910dc84ef46"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/input-tokens.txt": {
+      "bytes": 142702,
+      "sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/probes/before-health-cursor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/probes/before-health-cursor.stdout": {
+      "bytes": 156,
+      "sha256": "312ea6a74b8cd9dd1ae800cda79c54fc25959a443d734b028530d287f5e9a750"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/probes/embedding-state.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/probes/embedding-state.stdout": {
+      "bytes": 21,
+      "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/probes/health-environment.json": {
+      "bytes": 882,
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/probes/health-kernel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/probes/health-kernel.stdout": {
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/probes/health-runtime.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/probes/health-runtime.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/probes/health-xe.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/probes/health.stderr": {
+      "bytes": 118983,
+      "sha256": "359a2bb16c27c13288f4a6b5ed4ce7adab28554194db55ec6e5949ba762d3f37"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/probes/health.stdout": {
+      "bytes": 155,
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/probes/kernel-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/probes/kernel-after.stdout": {
+      "bytes": 3695,
+      "sha256": "3880035b0e108ed32cf8f4c377dd55b9570477feeac72d56a4ec442924dfda8c"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/probes/kernel-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/probes/kernel-before.stdout": {
+      "bytes": 156,
+      "sha256": "312ea6a74b8cd9dd1ae800cda79c54fc25959a443d734b028530d287f5e9a750"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/probes/kernel-gap.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/probes/kernel-gap.stdout": {
+      "bytes": 282400,
+      "sha256": "4b9fb7338aa04c814c671f069af2e66a0c4ded443af3063ffad612566b110ee5"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/project-messages.txt": {
+      "bytes": 3959,
+      "sha256": "dcddc389f4ec764c9c24410ccdc593176e10c2a0f2b22f40508d79feb02b3b12"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/protocol.stdout.raw": {
+      "bytes": 19243,
+      "sha256": "94d741357b89932d87ec6be42215287af05e57bf5e1731c50b8ae7116e07e9b7"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/record.json": {
+      "bytes": 59832,
+      "sha256": "9dd4682b96f471af5c16d59aea3ce05f3d46f3b379b0e6d60eb4c0b8a0b010ae"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/debugger/engine-and-gdb.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/debugger/gdb-mi.stdout": {
+      "bytes": 35808,
+      "sha256": "740b0549c466764b31056167f32b1276bd226fc9db5cd90948c9df8719d349d3"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/debugger/inferior-argv.json": {
+      "bytes": 982,
+      "sha256": "179696e2e529d58cbbd151736553f9d7662fd2e68be5d2235f0f5bb16546608d"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/debugger/inferior.stderr": {
+      "bytes": 4174,
+      "sha256": "43f6a2aa1be88956ef907928d23e50d2fbe2da8e2dc96f264676b9fbd13838d6"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/events.jsonl": {
+      "bytes": 13772,
+      "sha256": "9625063fce84ce7738f643d81e75c74a40cc68c1cbbb69c2853ea798f54e3343"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/input-tokens.txt": {
+      "bytes": 142702,
+      "sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/probes/before-health-cursor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/probes/before-health-cursor.stdout": {
+      "bytes": 156,
+      "sha256": "0a64db594191729a97f9f991be91f6db91a23af4a7223ebecd320469a0a2f1ad"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/probes/embedding-state.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/probes/embedding-state.stdout": {
+      "bytes": 21,
+      "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/probes/health-environment.json": {
+      "bytes": 882,
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/probes/health-kernel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/probes/health-kernel.stdout": {
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/probes/health-runtime.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/probes/health-runtime.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/probes/health-xe.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/probes/health.stderr": {
+      "bytes": 118983,
+      "sha256": "544dbd7a316a9789829082e0e605c24550927d38a13c42540fbad81e5b37c0dc"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/probes/health.stdout": {
+      "bytes": 155,
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/probes/kernel-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/probes/kernel-after.stdout": {
+      "bytes": 13190,
+      "sha256": "07d5f8708ee7c20d991a8ad7ac18c2148cfeedac433bb8411ce7d15c2aff6358"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/probes/kernel-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/probes/kernel-before.stdout": {
+      "bytes": 156,
+      "sha256": "0a64db594191729a97f9f991be91f6db91a23af4a7223ebecd320469a0a2f1ad"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/probes/kernel-gap.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/probes/kernel-gap.stdout": {
+      "bytes": 301314,
+      "sha256": "3a89c5098dc1e05dd59e43bd6ebec34eb812fe1d9e5661a9f2b81d6277f63646"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/project-messages.txt": {
+      "bytes": 3959,
+      "sha256": "82a1dc08473131ee5c731220254498cabfbb0bfb5a1197fafa83f359fced4862"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/protocol.stdout.raw": {
+      "bytes": 19243,
+      "sha256": "2ff37598146165e82ca4d6b0f2557395b15623a83bc45044d612f5c28fc9b16d"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/record.json": {
+      "bytes": 59830,
+      "sha256": "af2e035464c27f88f217844a1f83e5b7f71d13a3f062e08e65d7e1a2a829037f"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/debugger/engine-and-gdb.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/debugger/gdb-mi.stdout": {
+      "bytes": 36115,
+      "sha256": "21a7dc29ac0be877cf3866e315cd2284a09ed008a8727aea3df1683f7642d087"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/debugger/inferior-argv.json": {
+      "bytes": 982,
+      "sha256": "179696e2e529d58cbbd151736553f9d7662fd2e68be5d2235f0f5bb16546608d"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/events.jsonl": {
+      "bytes": 13533,
+      "sha256": "bd648253d0c75ba56bfa6d9b5dd217c81bae9342133c996c78c16c468ece4fee"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/input-tokens.txt": {
+      "bytes": 142702,
+      "sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/probes/before-health-cursor.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/probes/before-health-cursor.stdout": {
+      "bytes": 154,
+      "sha256": "0de5a20fbe955a5f88d6a46ddd2dc73d01f68fd36d2b4ebfcd0c2b236c134eca"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/probes/embedding-state.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/probes/embedding-state.stdout": {
+      "bytes": 21,
+      "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/probes/health-environment.json": {
+      "bytes": 882,
+      "sha256": "8f230f2d1c585abbd8a52712865790d2ce6d9642b1758d95460281e89f5d6527"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/probes/health-kernel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/probes/health-kernel.stdout": {
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/probes/health-runtime.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/probes/health-runtime.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/probes/health-xe.txt": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/probes/health.stderr": {
+      "bytes": 118983,
+      "sha256": "41a33774ab279996b6ef75b92dfc0997574c14f2ad959ca8c38329302ba30c3e"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/probes/health.stdout": {
+      "bytes": 155,
+      "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/probes/kernel-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/probes/kernel-after.stdout": {
+      "bytes": 23005,
+      "sha256": "17ecb8d0c292dd1e63be656d718c27606455ff1c0e37ca69e27c9a5f6332541a"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/probes/kernel-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/probes/kernel-before.stdout": {
+      "bytes": 154,
+      "sha256": "0de5a20fbe955a5f88d6a46ddd2dc73d01f68fd36d2b4ebfcd0c2b236c134eca"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/probes/kernel-gap.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/probes/kernel-gap.stdout": {
+      "bytes": 239512,
+      "sha256": "3015644126ebbeee0784cb93cb487a20e9c307e54fe4781c3cd35aa06d9a934a"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/project-messages.txt": {
+      "bytes": 7596,
+      "sha256": "fe00d19654d27331b0fc689bd05845ebb7dc750e68449f5429b55628f5e64955"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/protocol.stdout.raw": {
+      "bytes": 19253,
+      "sha256": "fee8c6e2681dcbe45fa55f94695c42a20e2a55cc837a65775f3b467465abf15d"
+    },
+    "kv-streaming-32k-and-layer-order-v3/jobs/owned-kv-stream32k-v01402-code32k-diagnostic-r1/record.json": {
+      "bytes": 187326,
+      "sha256": "1b2361414f883650ab25f3bec1ae457d77f8a9aaef37b7b2cbebb8c3eea17f48"
+    },
+    "kv-streaming-32k-and-layer-order-v3/kv-compile-link-receipt/archive-index.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/kv-compile-link-receipt/archive-index.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/kv-compile-link-receipt/archive-replace.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/kv-compile-link-receipt/archive-replace.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/kv-compile-link-receipt/compile.stderr": {
+      "bytes": 38295,
+      "sha256": "9f84ab092cf4678a3f770a1b0244791db0f299a10b5d0b6185032b4459f274e8"
+    },
+    "kv-streaming-32k-and-layer-order-v3/kv-compile-link-receipt/compile.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/kv-compile-link-receipt/link.stderr": {
+      "bytes": 638,
+      "sha256": "ded74b9611497b2f4476bc8f50cd38bd4c2e5675866bf0ffd47c6cc25e82a9a0"
+    },
+    "kv-streaming-32k-and-layer-order-v3/kv-compile-link-receipt/link.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/kv-compile-link-receipt/record.json": {
+      "bytes": 22255,
+      "sha256": "68bb1ebdcb1dc2397753cf1f79a75f07f94017699d587eecb950515701a86da7"
+    },
+    "kv-streaming-32k-and-layer-order-v3/kv-source-review/v3/candidate.diff": {
+      "bytes": 8471,
+      "sha256": "5b5d78eac096227c96ce16780595d6c66a0fcc1c04cabb5b0be94e1e390ecb83"
+    },
+    "kv-streaming-32k-and-layer-order-v3/kv-source-review/v3/record.json": {
+      "bytes": 1108,
+      "sha256": "c4080b307a75f58fe0d6f5d30f863cee6c94399482efba7b14cafa56220732ca"
+    },
+    "kv-streaming-32k-and-layer-order-v3/layer-compile-link-receipt/archive-index.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/layer-compile-link-receipt/archive-index.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/layer-compile-link-receipt/archive-replace.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/layer-compile-link-receipt/archive-replace.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/layer-compile-link-receipt/compile.stderr": {
+      "bytes": 60445,
+      "sha256": "ed9ead74a80d10d71412f85e20e47ec234bc57ddc4d7dac9c057602d7d1af1f0"
+    },
+    "kv-streaming-32k-and-layer-order-v3/layer-compile-link-receipt/compile.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/layer-compile-link-receipt/link.stderr": {
+      "bytes": 638,
+      "sha256": "ded74b9611497b2f4476bc8f50cd38bd4c2e5675866bf0ffd47c6cc25e82a9a0"
+    },
+    "kv-streaming-32k-and-layer-order-v3/layer-compile-link-receipt/link.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "kv-streaming-32k-and-layer-order-v3/layer-compile-link-receipt/record.json": {
+      "bytes": 11200,
+      "sha256": "bb4ffad7564c08b23a0b983614f73af95bd3cb16bbd00cb18671eefcac856489"
+    },
+    "kv-streaming-32k-and-layer-order-v3/layer-ownership-review/controller.diff": {
+      "bytes": 13272,
+      "sha256": "e0e297f905cbd961f1ad12ce2aec2bd431cea6494f29873efd0afe8e67ae6d91"
+    },
+    "kv-streaming-32k-and-layer-order-v3/layer-ownership-review/record.json": {
+      "bytes": 3681,
+      "sha256": "338f0d458793cc806f7c31ecddb1195a0bf88fa9ef5b6ec40faaff6f6db55137"
+    },
+    "kv-streaming-32k-and-layer-order-v3/layer-source-review/candidate.diff": {
+      "bytes": 1485,
+      "sha256": "d5b07902a868eeee23ba57a33165c8a2f27fb93f784695a59f414b5427dcd7e5"
+    },
+    "kv-streaming-32k-and-layer-order-v3/layer-source-review/record.json": {
+      "bytes": 1604,
+      "sha256": "7b0a99af6fb4089b7bd455a15e52a16736d61ba301268dda19bcd38983abba52"
+    },
+    "kv-streaming-32k-and-layer-order-v3/manifest.json": {
+      "bytes": 41120,
+      "sha256": "8547437521956bc2527ed7db8c5195fb59abadf5433bd5dc9617facd1a7d5bb1"
+    },
+    "kv-streaming-32k-and-layer-order-v3/ownership-review/v1-negative/negative-preparer.json": {
+      "bytes": 369,
+      "sha256": "0bf687937bbd844a9bf9f7bbdd83879668d59dc791ed6e13347ad64832e201f0"
+    },
+    "kv-streaming-32k-and-layer-order-v3/ownership-review/v2/controller.diff": {
+      "bytes": 15117,
+      "sha256": "61a5ce6fc34c6829cf11c8f1f70f6c394aea3c019e032ff2440e927f01ec6904"
+    },
+    "kv-streaming-32k-and-layer-order-v3/ownership-review/v2/record.json": {
+      "bytes": 3992,
+      "sha256": "f10de3767f1495233d5b959821204ab817687a9c138c5b035fc17936a4f7cf8f"
+    },
+    "kv-streaming-32k-and-layer-order-v3/private-artifacts.json": {
+      "bytes": 5700,
+      "sha256": "36397ccaeddef70afc9d0dc8ffde02131a87aab7d8c62555b9868ab438a02e0b"
+    },
+    "kv-streaming-32k-and-layer-order-v3/quiet-controller-review/controller.diff": {
+      "bytes": 15819,
+      "sha256": "dd417e78066f0d8082f12deb56014e9b64505c774af76be81a4b96c19b2e3734"
+    },
+    "kv-streaming-32k-and-layer-order-v3/quiet-controller-review/record.json": {
+      "bytes": 421,
+      "sha256": "aec9f187526a7b199ec89d77ccda872ccff8e0b9e15687b58c50f7594474a0ca"
+    },
+    "kv-streaming-32k-and-layer-order-v3/quiet-sequence/kv-layer-major32k-quiet-r1.stdout": {
+      "bytes": 1087,
+      "sha256": "ad2a67754449316ccfcd15c73e60dac4148c5506435cacf389d6996928106bba"
+    },
+    "kv-streaming-32k-and-layer-order-v3/quiet-sequence/kv-layer-major32k-quiet-r2.stdout": {
+      "bytes": 1085,
+      "sha256": "79777ad8df2c83943d1824c1cf1239d09e6b0a9f381a3613ba56a474e518abb5"
+    },
+    "kv-streaming-32k-and-layer-order-v3/quiet-sequence/kv-stream32k-quiet-r1.stdout": {
+      "bytes": 1079,
+      "sha256": "2395da35f9efda3d010ec7d01f58bb6bf01556b03ad0d5a49437f71e7279e62d"
+    },
+    "kv-streaming-32k-and-layer-order-v3/quiet-sequence/kv-stream32k-quiet-r2.stdout": {
+      "bytes": 1077,
+      "sha256": "5de382a665c4729b0d32c99efcfa20a1bf65be7c758495689bcda1a54678ec3c"
+    },
+    "kv-streaming-32k-and-layer-order-v3/quiet-sequence/record.json": {
+      "bytes": 7500,
+      "sha256": "2fe9085811a4dc08d5a2f80d25a61a93b8936ceb5d9934f44a903b29ef3b3e39"
+    },
+    "kv-streaming-32k-and-layer-order-v3/source/kv_stream.original.dp.cpp": {
+      "bytes": 22118,
+      "sha256": "777a7fa3fea47d98ec993cfa810114bd47bdb1febdec9ddf97822df2815374eb"
+    },
+    "kv-streaming-32k-and-layer-order-v3/source/kv_stream.v3.dp.cpp": {
+      "bytes": 23741,
+      "sha256": "02801fe89965fd9df0c68b58b5f2be1f8443551c2a39533b54efddd0385846e9"
+    },
+    "kv-streaming-32k-and-layer-order-v3/source/prefill.original.cpp": {
+      "bytes": 319850,
+      "sha256": "f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77"
+    },
+    "kv-streaming-32k-and-layer-order-v3/source/prefill.stream-layer-v1.cpp": {
+      "bytes": 320466,
+      "sha256": "87ceba8ba1de98122879c8ef37b46d5e0487e75d064d5da28f56e0a70aef6800"
+    },
+    "kv-streaming-32k-and-layer-order-v3/summary.json": {
+      "bytes": 6400,
+      "sha256": "6e0b7c66f1f8de2e37c670e821dd5db61787a58769fcf88be2c342599441136f"
     },
     "kv-streaming-source-candidate/README.md": {
       "bytes": 2872,
