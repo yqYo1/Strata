@@ -1,0 +1,57 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_access": false,
+  "controller_sha256": "08d0600def48c6b508058882404c7ba185fb2388c49197a11ef936dd7fc3307e",
+  "created_utc": "2026-10-08T02:12:11.057589+00:00",
+  "scope": "Offline source/API scope review. No new runtime, environment, GPU run or production adoption.",
+  "native_v2_limitation": "Tracking only zeEventCreate misses counter-event extension creation. The unknown zeEventDestroy is a parser coverage failure, not evidence of an unowned event, GPU fault or code bug. No complete event-handle balance is claimed.",
+  "native_v3_scope": "Track successful native standard EventPool create/destroy separately; there are zero such creations/objects at all24 markers. This does not assert no counter events/internal allocations.",
+  "official_source_revision": "95ed2199718412903ef28d5c9c1c51af2efe15b2",
+  "official_source_version_warning": "Current source is pinned and retained but not proven identical to installed oneAPI2026.1.1/UR0.12.0.",
+  "source_facts": [
+    "Regular command-list release returns native handles to a per-context descriptor cache; borrow resets a regular list. addCommandList has a TODO for a size limit.",
+    "The examined v2 event providers retain freelist events and borrowed event pools. The reviewed v2 cache/provider files do not read UR_L0_DISABLE_EVENTS_CACHING; an installed-library string alone does not prove it affects this path.",
+    "Current provider_counter uses the core counter-event API when available, with a legacy zexCounterBasedEventCreate2 fallback. The recorded run resolves that extension; standard pool counts cannot cover its creation."
+  ],
+  "external_report": {
+    "url": "https://github.com/intel/llvm/issues/23073",
+    "scope": "Windows A770 host-process private memory under graph finalization, not Linux B570 VRAM; no source-match/root-cause/mitigation claim for this host."
+  },
+  "older_full_context": {
+    "full-context-eager-verifier-serve": {
+      "record_sha256": "a3f4644bf32d5d69c7a70f5deb9ce4e04f09cc5d1ae679f96e38fedc9d9acd8b",
+      "binary_sha256": "3f3ed0526848f6c7273a70da8802cbe00389b67791629c000c26399bc50823f2",
+      "error": "AssertionError()",
+      "main_release_was_enabled": true,
+      "mtp_release_was_enabled": true,
+      "requests": [
+        [
+          "fills-context",
+          262140,
+          {
+            "ids": true,
+            "logprobs": false,
+            "whole_head": false
+          }
+        ]
+      ]
+    },
+    "full-context-verifier-lazy-restore-serve": {
+      "record_sha256": "0f3215d52b92ba8bbc74478cda3892f5b2c666749af6903f44172b116e574fe6",
+      "binary_sha256": "882858b2e3b6c14986694a824c6a1093456d895b355ee00472573c341903d4d9",
+      "error": "RuntimeError('Inferior stopped: *stopped,reason=\"signal-received\",signal-name=\"SIGABRT\",signal-meaning=\"Aborted\",frame={addr=\"0x00007fffdc659c0c\",func=\"__pthread_kill_implementation\",args=[{name=\"no_tid\",value=\"0\"},{name=\"signo\",value=\"6\"},{name=\"threadid\",value=\"<optimized out>\"}],file=\"./nptl/pthread_kill.c\",fullname=\"./nptl/./nptl/pthread_kill.c\",line=\"44\",arch=\"i386:x86-64\"},thread-id=\"1\",stopped-threads=\"all\",core=\"0\"')",
+      "main_release_was_enabled": true,
+      "mtp_release_was_enabled": true,
+      "requests": [
+        [
+          "fills-context",
+          262140,
+          null
+        ]
+      ]
+    }
+  },
+  "capacity_limitation": "Both older full-context attempts already enabled main-cache and MTP release. Adding the same release cannot be claimed to solve their capacity/math failures. The eager case produces4IDs but differs in logprobs/whole head; the lazy case aborts. They use older distinct binaries and are not gold controls for the integrated candidate.",
+  "next_work": "Obtain source matching the installed UR adapter and evaluate a narrowly scoped private regular-command-list cache limit or graph footprint reduction, with bounded logged32K correctness and matched quiet32K comparisons before full262144 gates. No unsupported cache switch is adopted."
+}

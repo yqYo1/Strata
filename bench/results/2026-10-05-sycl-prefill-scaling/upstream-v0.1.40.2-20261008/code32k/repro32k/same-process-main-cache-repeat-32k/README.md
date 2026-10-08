@@ -72,3 +72,28 @@ The fixed32K GPU-row allocation is not a full-context default. Production
 binaries/defaults remain unchanged; no reset, rebind, reboot, service, package
 or global change occurs. Large API/state/head files remain private with exact
 hashes. This candidate remains unadopted and the PP1000/TG70 goal stays active.
+
+
+The [offline runtime-cache follow-up](source-review/runtime-cache-conclusions.json)
+retains official Intel UR source at95ed2199, with explicit installed-version
+uncertainty. Its regular-list deleter returns a native list to a per-context
+cache; borrowing resets it, and addCommandList has a TODO for a size limit.
+This is consistent with the measured distinction between released UR buffers
+and retained native objects, but does not attribute their resident size.
+
+The [event-pool-only count](analysis/native-v3-event-pools/record.json) has zero
+successful standard zeEventPoolCreate calls. The intermediate event-handle
+parser stops at a destroy whose extension creation it did not cover; this is
+an offline coverage failure, not a GPU/code fault. Counter-event extensions
+are a separate path, so neither complete event balance nor no internal event
+allocation is claimed. The [Windows A770 report](https://github.com/intel/llvm/issues/23073)
+measures host private memory; it does not establish this B570 VRAM cause or a
+cache-disable remedy. The examined v2 cache/provider source does not read that
+switch, and an installed-library string is insufficient to adopt it.
+
+Both older full-context attempts already enabled main and MTP cache release.
+The eager attempt fails whole-head/logprob equality after four outputs; the
+lazy attempt aborts. Their distinct older binaries remain negative evidence,
+not integrated-candidate gold controls. Main release alone therefore cannot
+be presented as resolving the full-context failure. Reducing retained native
+graph/list resources remains an implementation candidate, not a measured fix.
