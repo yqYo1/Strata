@@ -449,6 +449,8 @@ The half condition unmaps 201,326,592 physical bytes and verifies all
 unmaps 402,653,184 bytes and verifies all 281,651,200 occupied bytes. The
 reserved addresses and slot metadata remain stable; graphs are retired
 before unmapping and recaptured after remapping/copying/verification.
+These are fresh processes: retirement is called before the first graph use.
+Repeated release of already-used graphs remains a separate open gate.
 
 CPU checks extract the actual cache-lease struct and pass 19 ASan/UBSan cases
 covering a mid-expert boundary, adaptive residency and rollback/retry paths.
@@ -474,6 +476,31 @@ must not be substituted for full-VRAM bandwidth. All 20 jobs retain exact
 output and MTP counts, exit normally and record no new xe fault. Larger
 chunks using freed memory remain a separate comparison. The fixed 32K row
 allocation and the older full-context repeat failure remain open gates.
+
+The [larger compact-chunk control](../bench/results/2026-10-05-sycl-prefill-scaling/upstream-v0.1.40.2-20261008/code32k/repro32k/larger-compact-chunk-12k/README.md)
+keeps input at 32,768 tokens and increases the chunk to 12,288 on the same
+private executable. Its measured accounted workspace is 2,738,729,216 B;
+reusing the first chunk's residual scratch leaves 838,819,840 B of new GPU
+rows. The request fits, receives 64 outputs, exits normally and records no
+new xe fault, but fails the mathematical gate: 63 of 66 main-state parts and
+all 248,320 head floats differ. The first generated ID differs at index 2;
+MTP counts are 38/75 versus the accepted reference's 43/66. No clean timing
+follows. Chunk/GEMM/callback boundaries have not been isolated as the cause.
+The subsequent exact-word health probe passes without recovery actions.
+
+Source and native API logs also clarify the fresh-process comparison above:
+the serve path does not warm verifier graphs at startup. Release arms capture
+all legal window sizes at restoration, while kept backing captures on first
+use. The callback interval includes initial capture/kernel loading, and the
+means include these different capture schedules. In the 12K diagnostic,
+reported free VRAM drops by 921.152 MiB between prefill entry and restored
+weights. Main restore/capture requests 384 MiB of physical mapping and only
+1,114,112 B of new device USM, while reported free drops by 1,221.324 MiB;
+native logs show 680 new command lists and 61 modules. All logged device USM
+and native modules/kernels/command lists are destroyed at process exit.
+This does not establish a leak, an isolated allocation cause or a solution
+to the older full-context repeat failure. Warm-process repeated capture and
+full 262,144-cell capacity/lifetime gates remain open.
 
 No software reset is guaranteed to recover every firmware/driver wedge. There
 is an [upstream B570 report](https://github.com/intel/compute-runtime/issues/962)

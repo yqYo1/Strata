@@ -50,8 +50,11 @@ with 139,460,608 logical tail bytes and 130,731,008 occupied expert bytes;
 the retained/released boundary may split a slot. Both sides of restoration
 check the entire occupied payload. The full-snapshot arm also passes all
 three state/head/output captures and complete payload verification. No captured
-duration enters a speed comparison. Graph recapture overhead is included in
-clean prefill time.
+duration enters a speed comparison. The graph callback is included in clean prefill time. These fresh serve
+processes do not warm verifier graphs at startup: release arms capture all
+legal window sizes at restoration, while kept backing captures on first use.
+Initial capture/kernel loading is part of this comparison, so it does not
+isolate repeated recapture. See the [later source/API audit](../larger-compact-chunk-12k/README.md).
 
 Eight fresh clean jobs run kept/half-RAM/full-RAM/full-snapshot and reverse.
 Payload checks, validation, debug/API logs, state/head dumps, profiler,
@@ -79,8 +82,10 @@ and relative changes. The [release messages](clean-release-messages.json)
 separate physical backing, logical payload, suspend/restore and graph time.
 Two repetitions per setting do not establish small differences beyond
 observed variation or attribute decode variation to a prefill-only setting.
-These measurements hold fixed the8192-token chunk and residual geometry;
+These measurements hold fixed the 8192-token chunk and residual geometry;
 release alone does not test the benefit of enlarging chunks with freed VRAM.
+A later logged 32K/12288-chunk attempt has enough measured capacity but fails
+state/head/output equality and is rejected before clean timing.
 
 Full 262,144-cell occupancy/repeat/restore/clipped-tail/refusal/later-valid
 gates remain open. A full 262,143-row residual image alone would require
