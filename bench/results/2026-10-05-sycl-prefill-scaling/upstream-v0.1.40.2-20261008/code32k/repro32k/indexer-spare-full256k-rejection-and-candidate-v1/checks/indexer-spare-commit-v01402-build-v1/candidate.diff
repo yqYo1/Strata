@@ -1,0 +1,28 @@
+--- /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/kernels/cuda/native_qsa_indexer.dp.cpp
++++ /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-indexer-spare-commit-v1-20261008/source/native_qsa_indexer.dp.cpp
+@@ -67,9 +67,11 @@
+         *sycl::ext::oneapi::group_local_memory_for_overwrite<float[32]>(
+             sycl::ext::oneapi::this_work_item::get_work_group<3>());
+     const int d = item_ct1.get_local_id(2);
++    int last_valid_pos = -1;
+     for (int step_idx = 0; step_idx < n_steps; ++step_idx) {
+         const int pos = pos_dev[(std::size_t) step_idx * pos_stride];
+         if (pos >= 0 && pos < max_cells) {
++            last_valid_pos = pos;
+             const float* raw_step = raw + (std::size_t) step_idx * D;
+             const int slot = pos % R;
+             float incoming = 0.0f;
+@@ -177,6 +179,13 @@
+         */
+         if (n_steps > 1) item_ct1.barrier();
+     }
++    // A speculative window may complete this block before commit replays
++    // fewer valid positions. Restore its spare key from the live first key;
++    // trailing negative positions must not retain the rejected block key.
++    // No completed block is changed, and the existing final barrier orders
++    // the append stores before this per-lane copy.
++    if (last_valid_pos >= 0 && d < D)
++        pooled[(std::size_t(last_valid_pos) + 1) / R * D + d] = dead[d];
+ }
+ // ---- C-2: the batched append.  The pooled key of a completed block b (its last cell pos = 4b+3), computed with
+ // the single append's arithmetic: keys rounded through F16, summed tail[0]+tail[1]+tail[2]+incoming in that order,

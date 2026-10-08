@@ -1,0 +1,290 @@
+strata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)
+strata generate: native pack: /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s experts (largest blob 2.66 MB), token embedding IQ4_XS in mapped host memory (322 MiB, 2.8 s)
+strata generate: 1466 MiB of weights loaded from /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s in 0.9 s (302 canonical tensors skipped: served natively)
+strata generate: 300 native projection matrices, 2018.88 MiB of weights, in 0.8 s
+strata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)
+strata generate: profile data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots
+strata generate: KV streaming: 32768 of 262144 cells per QSA layer in VRAM, the K/V in 3.09 GiB of pinned RAM
+strata generate: PLE on, table 320001536 rows of /home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf
+strata mtp: draft layer loaded, 834 MiB of VRAM (experts 675, dense 111), files read in 0.79 s (995 MiB/s)
+strata generate: experimental native Q5_K head, 521472000 bytes, in 0.2 s
+strata generate: GPU 0: Intel(R) Arc(TM) B570 Graphics, SYCL driver 1.17.39395+14
+strata generate: expert arena read through the file cache (buffered (not Windows))
+strata generate: expert arena: SYCL pageable host arena (queue copies); MAP_HUGETLB unavailable (needed 23983 2 MiB pages, vm.nr_hugepages=0); using 4 KB pages
+strata generate: loaded 46.84 GiB at 2.01 GiB/s
+strata generate: 5 pool workers on logical processors 1,2,3,4,5, the host thread on 0 (draining too) (--host-core first)
+strata trace: 4221 MiB free after the weights, the session and the drafter
+strata generate: expert cache 128 slots, 0.32 GiB of VRAM; policy is
+strata trace: 3896 MiB free after opening the expert cache
+strata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,
+strata generate: profile fill: 0.26 GiB in 0.1 s (3.43 GB/s, serial)
+strata trace: 3896 MiB free after the profile fill
+strata generate: pre-filled 128 of 128 slots from the profile in 0.1 s (3434 MB/s); slot 0 verified
+strata trace: 3896 MiB free after the R4 hit path
+strata generate: R4 hit path ON - resident experts are computed on the GPU
+strata generate: 5 expert-pool workers + the host thread
+strata trace: 3896 MiB free after the expert cache and the graphs
+strata generate: session is up (engine 0.1.40-sycl)
+strata generate: token graph hit path: 128 resident experts, decided on the device
+strata serve: the prompt path allocates its own buffers (too few cache slots to borrow)
+strata prefill: compact-hc layout for 8192 tokens: 1861857536 accounted bytes, 1166147584 shared workspace bytes
+strata trace: 1852 MiB free after the head and the prompt path
+strata verify: window up to 4 tokens, 64.5 MiB of device buffers
+strata mtp: draft head over 106299 tokens (212.9 MiB)
+strata trace: 1567 MiB free after the verifier and the drafter's binding
+strata serve: 1565 MiB of VRAM free with everything loaded
+strata trace: request 32768 0
+strata trace: prompt start 32767 -1
+strata trace: prompt chunk 0 of 32767, layers [0, 48)
+strata trace: prompt chunk 8192 of 32767, layers [0, 48)
+strata trace: prompt chunk 16384 of 32767, layers [0, 48)
+strata trace: prompt chunk 24576 of 32767, layers [0, 48)
+strata trace: read 32767 tokens (batched) in 202845.5 ms
+strata trace: prompt done (slots refilled) -1 -1
+strata trace: window 32767 1
+strata verify: captured 1-token window with 48 host expert boundaries
+strata trace: window 32768 4
+strata verify: captured 4-token window with 96 host expert boundaries
+strata trace: window 32772 4
+strata trace: window 32775 4
+strata trace: window 32778 4
+strata trace: window 32780 4
+strata trace: window 32784 4
+strata trace: window 32787 4
+strata trace: window 32791 4
+strata trace: window 32794 4
+strata trace: window 32797 4
+strata trace: window 32801 4
+strata trace: window 32803 4
+strata trace: window 32806 4
+strata trace: window 32809 4
+strata trace: window 32810 4
+strata trace: window 32811 4
+strata trace: window 32812 4
+strata trace: window 32814 4
+strata trace: window 32818 4
+strata trace: window 32822 4
+strata trace: window 32825 4
+strata trace: window 32829 4
+strata serve: prompt 32768 tokens = 0 reused + 32768 read in 202866 ms (161.5 tok/s), 64 generated in 6869 ms (9.3 tok/s), drafts accepted 41 of 66, 0 checkpoints
+strata serve: decode expert cache hit rate: 5.0% (2116 hits / 42720 lookups)
+strata serve: KV streaming: 92.32% of 548412 block reads hit VRAM, 169.6 MiB read from RAM
+strata serve: session saved 32831 tokens, 0 of 0 checkpoints, 619343700 bytes to /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-full-kv-access-v01402-full256k-diagnostic-r4/control32k.session.bin in 786.7 ms (state 112.0 ms)
+strata trace: request 32832 0
+strata trace: prompt start 32831 -1
+strata trace: prompt done (slots refilled) -1 -1
+strata trace: window 32831 1
+strata trace: window 32832 4
+strata trace: window 32836 4
+strata trace: window 32840 4
+strata trace: window 32843 4
+strata trace: window 32847 4
+strata trace: window 32851 4
+strata trace: window 32854 4
+strata trace: window 32858 4
+strata trace: window 32862 4
+strata trace: window 32865 4
+strata trace: window 32869 4
+strata trace: window 32873 4
+strata trace: window 32877 4
+strata trace: window 32881 4
+strata trace: window 32885 4
+strata trace: window 32889 4
+strata trace: window 32892 4
+strata serve: prompt 32832 tokens = 32831 reused + 1 read in 6 ms (173.9 tok/s), 64 generated in 3627 ms (17.6 tok/s), drafts accepted 46 of 51, 0 checkpoints
+strata serve: decode expert cache hit rate: 4.3% (1412 hits / 33120 lookups)
+strata serve: KV streaming: 94.49% of 973584 block reads hit VRAM, 216.0 MiB read from RAM
+strata trace: request 262140 0
+strata trace: prompt start 262139 -1
+strata trace: prompt chunk 0 of 262139, layers [0, 48)
+strata trace: prompt chunk 8192 of 262139, layers [0, 48)
+strata trace: prompt chunk 16384 of 262139, layers [0, 48)
+strata trace: prompt chunk 24576 of 262139, layers [0, 48)
+strata trace: prompt chunk 32768 of 262139, layers [0, 48)
+strata trace: prompt chunk 40960 of 262139, layers [0, 48)
+strata trace: prompt chunk 49152 of 262139, layers [0, 48)
+strata trace: prompt chunk 57344 of 262139, layers [0, 48)
+strata trace: prompt chunk 65536 of 262139, layers [0, 48)
+strata trace: prompt chunk 73728 of 262139, layers [0, 48)
+strata trace: prompt chunk 81920 of 262139, layers [0, 48)
+strata trace: prompt chunk 90112 of 262139, layers [0, 48)
+strata trace: prompt chunk 98304 of 262139, layers [0, 48)
+strata trace: prompt chunk 106496 of 262139, layers [0, 48)
+strata trace: prompt chunk 114688 of 262139, layers [0, 48)
+strata trace: prompt chunk 122880 of 262139, layers [0, 48)
+strata trace: prompt chunk 131072 of 262139, layers [0, 48)
+strata trace: prompt chunk 139264 of 262139, layers [0, 48)
+strata trace: prompt chunk 147456 of 262139, layers [0, 48)
+strata trace: prompt chunk 155648 of 262139, layers [0, 48)
+strata trace: prompt chunk 163840 of 262139, layers [0, 48)
+strata trace: prompt chunk 172032 of 262139, layers [0, 48)
+strata trace: prompt chunk 180224 of 262139, layers [0, 48)
+strata trace: prompt chunk 188416 of 262139, layers [0, 48)
+strata trace: prompt chunk 196608 of 262139, layers [0, 48)
+strata trace: prompt chunk 204800 of 262139, layers [0, 48)
+strata trace: prompt chunk 212992 of 262139, layers [0, 48)
+strata trace: prompt chunk 221184 of 262139, layers [0, 48)
+strata trace: prompt chunk 229376 of 262139, layers [0, 48)
+strata trace: prompt chunk 237568 of 262139, layers [0, 48)
+strata trace: prompt chunk 245760 of 262139, layers [0, 48)
+strata trace: prompt chunk 253952 of 262139, layers [0, 48)
+strata trace: read 262139 tokens (batched) in 1743179.8 ms
+strata trace: prompt done (slots refilled) -1 -1
+strata trace: window 262139 1
+strata trace: window 262140 4
+strata trace: window 262141 3
+strata verify: captured 3-token window with 96 host expert boundaries
+strata serve: prompt 262140 tokens = 0 reused + 262140 read in 1743195 ms (150.4 tok/s), 4 generated in 1751 ms (2.3 tok/s), drafts accepted 1 of 5, 1 checkpoints
+strata serve: decode expert cache hit rate: 3.7% (143 hits / 3840 lookups)
+strata serve: KV streaming: 71.21% of 49284 block reads hit VRAM, 57.1 MiB read from RAM
+strata serve: session saved 262143 tokens, 1 of 1 checkpoints, 4239591088 bytes to /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-full-kv-access-v01402-full256k-diagnostic-r4/full256k-first.session.bin in 8108.3 ms (state 194.7 ms)
+strata trace: request 32768 0
+strata trace: prompt start 32767 -1
+strata trace: prompt chunk 0 of 32767, layers [0, 48)
+strata trace: prompt chunk 8192 of 32767, layers [0, 48)
+strata trace: prompt chunk 16384 of 32767, layers [0, 48)
+strata trace: prompt chunk 24576 of 32767, layers [0, 48)
+strata trace: read 32767 tokens (batched) in 200605.7 ms
+strata trace: prompt done (slots refilled) -1 -1
+strata trace: window 32767 1
+strata trace: window 32768 4
+strata trace: window 32772 4
+strata trace: window 32775 4
+strata trace: window 32778 4
+strata trace: window 32780 4
+strata trace: window 32784 4
+strata trace: window 32787 4
+strata trace: window 32791 4
+strata trace: window 32794 4
+strata trace: window 32797 4
+strata trace: window 32801 4
+strata trace: window 32803 4
+strata trace: window 32806 4
+strata trace: window 32809 4
+strata trace: window 32810 4
+strata trace: window 32811 4
+strata trace: window 32812 4
+strata trace: window 32814 4
+strata trace: window 32818 4
+strata trace: window 32822 4
+strata trace: window 32825 4
+strata trace: window 32829 4
+strata serve: prompt 32768 tokens = 0 reused + 32768 read in 200632 ms (163.3 tok/s), 64 generated in 4628 ms (13.8 tok/s), drafts accepted 41 of 66, 0 checkpoints
+strata serve: decode expert cache hit rate: 5.0% (2116 hits / 42720 lookups)
+strata serve: KV streaming: 92.32% of 548412 block reads hit VRAM, 169.6 MiB read from RAM
+strata trace: request 262140 0
+strata trace: prompt start 262139 -1
+strata trace: prompt chunk 0 of 262139, layers [0, 48)
+strata trace: prompt chunk 8192 of 262139, layers [0, 48)
+strata trace: prompt chunk 16384 of 262139, layers [0, 48)
+strata trace: prompt chunk 24576 of 262139, layers [0, 48)
+strata trace: prompt chunk 32768 of 262139, layers [0, 48)
+strata trace: prompt chunk 40960 of 262139, layers [0, 48)
+strata trace: prompt chunk 49152 of 262139, layers [0, 48)
+strata trace: prompt chunk 57344 of 262139, layers [0, 48)
+strata trace: prompt chunk 65536 of 262139, layers [0, 48)
+strata trace: prompt chunk 73728 of 262139, layers [0, 48)
+strata trace: prompt chunk 81920 of 262139, layers [0, 48)
+strata trace: prompt chunk 90112 of 262139, layers [0, 48)
+strata trace: prompt chunk 98304 of 262139, layers [0, 48)
+strata trace: prompt chunk 106496 of 262139, layers [0, 48)
+strata trace: prompt chunk 114688 of 262139, layers [0, 48)
+strata trace: prompt chunk 122880 of 262139, layers [0, 48)
+strata trace: prompt chunk 131072 of 262139, layers [0, 48)
+strata trace: prompt chunk 139264 of 262139, layers [0, 48)
+strata trace: prompt chunk 147456 of 262139, layers [0, 48)
+strata trace: prompt chunk 155648 of 262139, layers [0, 48)
+strata trace: prompt chunk 163840 of 262139, layers [0, 48)
+strata trace: prompt chunk 172032 of 262139, layers [0, 48)
+strata trace: prompt chunk 180224 of 262139, layers [0, 48)
+strata trace: prompt chunk 188416 of 262139, layers [0, 48)
+strata trace: prompt chunk 196608 of 262139, layers [0, 48)
+strata trace: prompt chunk 204800 of 262139, layers [0, 48)
+strata trace: prompt chunk 212992 of 262139, layers [0, 48)
+strata trace: prompt chunk 221184 of 262139, layers [0, 48)
+strata trace: prompt chunk 229376 of 262139, layers [0, 48)
+strata trace: prompt chunk 237568 of 262139, layers [0, 48)
+strata trace: prompt chunk 245760 of 262139, layers [0, 48)
+strata trace: prompt chunk 253952 of 262139, layers [0, 48)
+strata trace: read 262139 tokens (batched) in 1741841.7 ms
+strata trace: prompt done (slots refilled) -1 -1
+strata trace: window 262139 1
+strata trace: window 262140 4
+strata trace: window 262141 3
+strata serve: prompt 262140 tokens = 0 reused + 262140 read in 1741856 ms (150.5 tok/s), 4 generated in 942 ms (4.2 tok/s), drafts accepted 1 of 5, 1 checkpoints
+strata serve: decode expert cache hit rate: 3.7% (143 hits / 3840 lookups)
+strata serve: KV streaming: 71.21% of 49284 block reads hit VRAM, 57.1 MiB read from RAM
+strata serve: session saved 262143 tokens, 1 of 1 checkpoints, 4239591088 bytes to /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-full-kv-access-v01402-full256k-diagnostic-r4/full256k-repeat.session.bin in 15731.7 ms (state 195.3 ms)
+strata trace: request 262142 0
+strata trace: prompt start 262141 -1
+strata trace: prompt chunk 0 of 2, layers [0, 48)
+strata trace: read 2 tokens (batched) in 6148.4 ms
+strata trace: prompt done (slots refilled) -1 -1
+strata trace: window 262141 1
+strata trace: window 262142 2
+strata verify: captured 2-token window with 96 host expert boundaries
+strata serve: prompt 262142 tokens = 262139 reused + 3 read in 6182 ms (0.5 tok/s), 2 generated in 2622 ms (0.8 tok/s), drafts accepted 0 of 1, 1 checkpoints
+strata serve: decode expert cache hit rate: 3.3% (48 hits / 1440 lookups)
+strata serve: KV streaming: 78.88% of 67764 block reads hit VRAM, 57.7 MiB read from RAM
+strata trace: request 32768 0
+strata trace: prompt start 32767 -1
+strata trace: prompt chunk 0 of 32767, layers [0, 48)
+strata trace: prompt chunk 8192 of 32767, layers [0, 48)
+strata trace: prompt chunk 16384 of 32767, layers [0, 48)
+strata trace: prompt chunk 24576 of 32767, layers [0, 48)
+strata trace: read 32767 tokens (batched) in 203044.9 ms
+strata trace: prompt done (slots refilled) -1 -1
+strata trace: window 32767 1
+strata trace: window 32768 4
+strata trace: window 32772 4
+strata trace: window 32775 4
+strata trace: window 32778 4
+strata trace: window 32780 4
+strata trace: window 32784 4
+strata trace: window 32787 4
+strata trace: window 32791 4
+strata trace: window 32794 4
+strata trace: window 32797 4
+strata trace: window 32801 4
+strata trace: window 32803 4
+strata trace: window 32806 4
+strata trace: window 32809 4
+strata trace: window 32810 4
+strata trace: window 32811 4
+strata trace: window 32812 4
+strata trace: window 32814 4
+strata trace: window 32818 4
+strata trace: window 32822 4
+strata trace: window 32825 4
+strata trace: window 32829 4
+strata serve: prompt 32768 tokens = 0 reused + 32768 read in 203069 ms (161.4 tok/s), 64 generated in 4603 ms (13.9 tok/s), drafts accepted 41 of 66, 0 checkpoints
+strata serve: decode expert cache hit rate: 5.0% (2116 hits / 42720 lookups)
+strata serve: KV streaming: 92.32% of 548412 block reads hit VRAM, 169.6 MiB read from RAM
+strata serve: session restored 32831 tokens, 0 checkpoints, 619343700 bytes from /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-full-kv-access-v01402-full256k-diagnostic-r4/control32k.session.bin in 826.6 ms (read+check 613.7 ms)
+strata trace: request 32832 0
+strata trace: prompt start 32831 -1
+strata trace: prompt done (slots refilled) -1 -1
+strata trace: window 32831 1
+strata trace: window 32832 4
+strata trace: window 32836 4
+strata trace: window 32840 4
+strata trace: window 32843 4
+strata trace: window 32847 4
+strata trace: window 32851 4
+strata trace: window 32854 4
+strata trace: window 32858 4
+strata trace: window 32862 4
+strata trace: window 32865 4
+strata trace: window 32869 4
+strata trace: window 32873 4
+strata trace: window 32877 4
+strata trace: window 32881 4
+strata trace: window 32885 4
+strata trace: window 32889 4
+strata trace: window 32892 4
+strata serve: prompt 32832 tokens = 32831 reused + 1 read in 6 ms (173.3 tok/s), 64 generated in 3687 ms (17.4 tok/s), drafts accepted 46 of 51, 0 checkpoints
+strata serve: decode expert cache hit rate: 4.3% (1412 hits / 33120 lookups)
+strata serve: KV streaming: 91.22% of 425172 block reads hit VRAM, 150.4 MiB read from RAM
+strata serve: session restored 262143 tokens, 1 checkpoints, 4239591088 bytes from /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-full-kv-access-v01402-full256k-diagnostic-r4/full256k-first.session.bin in 5814.3 ms (read+check 4420.0 ms)
+strata serve: session saved 262143 tokens, 1 of 1 checkpoints, 4239591088 bytes to /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-full-kv-access-v01402-full256k-diagnostic-r4/full256k-restored.session.bin in 16008.3 ms (state 203.7 ms)
+strata SYCL shutdown: all queues completed

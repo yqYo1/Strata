@@ -5,8 +5,7 @@
 #include <thread>
 
 namespace strata {
-// Cancellation and the budget are checked on the host. A readiness callback
-// may query runtime event status; this loop cannot preempt a query that blocks.
+// A host-only deadline: no driver call is made while testing readiness.
 // Lost DMA completion leaves queued buffer accesses of unknown lifetime.
 // End the failing process without running GPU destructors or returning a
 // buffer to its producer. This cannot unblock a kernel-side D-state close.
@@ -24,7 +23,12 @@ bool wait_host_ready(Ready ready, Stop stop, const char* what,
             std::fflush(stderr);
             std::_Exit(1);
         }
-        std::this_thread::yield();
+        // Keep the first readiness checks responsive, then stop driving an
+        // event-status query on every scheduler yield while a DMA is pending.
+        // This changes only host polling cadence; readiness still requires the
+        // same operation's completion, and cancellation never frees its buffer.
+        if (polls <= 32) std::this_thread::yield();
+        else std::this_thread::sleep_for(std::chrono::microseconds(10));
     }
 }
 template<class Ready>

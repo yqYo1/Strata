@@ -5,8 +5,7 @@
 #include <thread>
 
 namespace strata {
-// Cancellation and the budget are checked on the host. A readiness callback
-// may query runtime event status; this loop cannot preempt a query that blocks.
+// A host-only deadline: no driver call is made while testing readiness.
 // Lost DMA completion leaves queued buffer accesses of unknown lifetime.
 // End the failing process without running GPU destructors or returning a
 // buffer to its producer. This cannot unblock a kernel-side D-state close.

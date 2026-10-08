@@ -1,0 +1,66 @@
+{
+  "active": false,
+  "completed": true,
+  "adopted": false,
+  "full_capacity_sequence_passed": false,
+  "created_utc": "2026-10-08T06:08:45.166290+00:00",
+  "hardware": "ArcB57010GiB, Ryzen5600X,128GiB; pinned oneAPI2026.1.1/UR0.12/NEO26.31.39395.14",
+  "first_full_read": {
+    "input_tokens": 262140,
+    "output_tokens": 4,
+    "resume_tokens": [
+      0,
+      0
+    ],
+    "verify_windows": [
+      [
+        262139,
+        1
+      ],
+      [
+        262140,
+        4
+      ],
+      [
+        262141,
+        3
+      ]
+    ],
+    "last_physical_cell": 262143,
+    "saved_consumed_tokens": 262143,
+    "saved_bytes": 4239591088,
+    "kv_layers": 13,
+    "physical_cells_per_saved_layer": 262144,
+    "ignored_saved_tensor_bytes": 0,
+    "exact_saved_consumed_ids": true
+  },
+  "interposed_fresh32k_complete_math_gate_passed": true,
+  "parent_status_at_capture": "second fresh full256K read active, no error; no restart/other GPU experiment",
+  "pending": [
+    "repeated full-image byte equality",
+    "actual disk32K/full restore",
+    "clipped-tail parity",
+    "refusals",
+    "later32K parity",
+    "owned normal exit and fault audit"
+  ],
+  "polling_candidate": {
+    "binary_sha256": "5eda5039a8c3864f27aa7534ca5c8e1d2d77e4bcb53bd16d5fa746fb986399ba",
+    "gpu_tested": false,
+    "adopted": false,
+    "cpu_sanitizer_ownership_deadline_cancellation_checks": true,
+    "actual_shadow_header_dependency_verified": true,
+    "only_prefill_object_replaced": true,
+    "readiness_query_generation_lifetime_unchanged": true,
+    "policy": "first32 failures yield, then request10us host sleep; standard completion query still required"
+  },
+  "minimum_performance_input_tokens": 32768,
+  "diagnostic_durations_excluded_from_speed": true,
+  "source_authority": "Actual compiled overlay plus pinned private layer/generate object replacements. Shadow header applies only to the next prefill TU.",
+  "limits": [
+    "First full read proves physical bounds and readable full image, not cross-engine numerical accuracy or repeated/disk restoration.",
+    "Synthetic polling counts do not measure CPU utilization, DMA or inference speed.",
+    "Host deadline cannot preempt a blocked runtime status query. The public comment is corrected, with no behavior change to the running binary."
+  ],
+  "no_reset_rebind_reboot_service_package_global_change": true
+}

@@ -1,0 +1,137 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_tested": false,
+  "adopted": false,
+  "created_utc": "2026-10-08T06:47:42.292131+00:00",
+  "rejection_receipt_sha256": "3ba1f08a4e0d11b81a90aa7119b5f1dc2a4c3cf31eb2b5d95b314f1fa9271b95",
+  "candidate_source_sha256": "3002de2ac4de387df05d430296bd5cc94dc1a41c904675075f365e5360919efb",
+  "original_source_sha256": "2aed193a1301e88d26c4f208462748f73f5d6857497b4b94dfb6f8aa350242ac",
+  "scope": "Observed full-capacity roundtrip difference is precisely the main indexer spare. No byte exclusion or source adoption. Kernel candidate restores the invariant after partial valid-prefix replay, including trailing negative commit positions.",
+  "layers": [
+    {
+      "layer": 0,
+      "pooled_bytes": 33554432,
+      "different_row": 65535,
+      "changed_bytes": 476,
+      "saved_spare_matches_dead": false,
+      "restored_spare_matches_dead": true,
+      "all_other_pooled_bytes_equal": true
+    },
+    {
+      "layer": 1,
+      "pooled_bytes": 33554432,
+      "different_row": 65535,
+      "changed_bytes": 474,
+      "saved_spare_matches_dead": false,
+      "restored_spare_matches_dead": true,
+      "all_other_pooled_bytes_equal": true
+    },
+    {
+      "layer": 2,
+      "pooled_bytes": 33554432,
+      "different_row": 65535,
+      "changed_bytes": 468,
+      "saved_spare_matches_dead": false,
+      "restored_spare_matches_dead": true,
+      "all_other_pooled_bytes_equal": true
+    },
+    {
+      "layer": 3,
+      "pooled_bytes": 33554432,
+      "different_row": 65535,
+      "changed_bytes": 467,
+      "saved_spare_matches_dead": false,
+      "restored_spare_matches_dead": true,
+      "all_other_pooled_bytes_equal": true
+    },
+    {
+      "layer": 4,
+      "pooled_bytes": 33554432,
+      "different_row": 65535,
+      "changed_bytes": 474,
+      "saved_spare_matches_dead": false,
+      "restored_spare_matches_dead": true,
+      "all_other_pooled_bytes_equal": true
+    },
+    {
+      "layer": 5,
+      "pooled_bytes": 33554432,
+      "different_row": 65535,
+      "changed_bytes": 482,
+      "saved_spare_matches_dead": false,
+      "restored_spare_matches_dead": true,
+      "all_other_pooled_bytes_equal": true
+    },
+    {
+      "layer": 6,
+      "pooled_bytes": 33554432,
+      "different_row": 65535,
+      "changed_bytes": 478,
+      "saved_spare_matches_dead": false,
+      "restored_spare_matches_dead": true,
+      "all_other_pooled_bytes_equal": true
+    },
+    {
+      "layer": 7,
+      "pooled_bytes": 33554432,
+      "different_row": 65535,
+      "changed_bytes": 481,
+      "saved_spare_matches_dead": false,
+      "restored_spare_matches_dead": true,
+      "all_other_pooled_bytes_equal": true
+    },
+    {
+      "layer": 8,
+      "pooled_bytes": 33554432,
+      "different_row": 65535,
+      "changed_bytes": 485,
+      "saved_spare_matches_dead": false,
+      "restored_spare_matches_dead": true,
+      "all_other_pooled_bytes_equal": true
+    },
+    {
+      "layer": 9,
+      "pooled_bytes": 33554432,
+      "different_row": 65535,
+      "changed_bytes": 477,
+      "saved_spare_matches_dead": false,
+      "restored_spare_matches_dead": true,
+      "all_other_pooled_bytes_equal": true
+    },
+    {
+      "layer": 10,
+      "pooled_bytes": 33554432,
+      "different_row": 65535,
+      "changed_bytes": 488,
+      "saved_spare_matches_dead": false,
+      "restored_spare_matches_dead": true,
+      "all_other_pooled_bytes_equal": true
+    },
+    {
+      "layer": 11,
+      "pooled_bytes": 33554432,
+      "different_row": 65535,
+      "changed_bytes": 482,
+      "saved_spare_matches_dead": false,
+      "restored_spare_matches_dead": true,
+      "all_other_pooled_bytes_equal": true
+    }
+  ],
+  "source_review": {
+    "valid_position_uniform_across_work_group": true,
+    "trailing_invalid_positions_leave_last_valid_position": true,
+    "existing_final_loop_barrier_preserved": true,
+    "each_lane_reads_its_own_dead_component": true,
+    "no_added_barriers_or_divergent_group_operation": true,
+    "same_arithmetic_and_allocations": true,
+    "maximum_row_is_floor_max_cells_over_4_with_plus_one_allocation": true,
+    "full_capacity_partial_commit_spare_row": 65535,
+    "full_capacity_last_valid_position_spare_row": 65536
+  },
+  "pending": [
+    "logged32K full math gate",
+    "new complete256K repeat/image/restore/clipped/refusal/later32K gate",
+    "quiet matched32K performance if correctness passes"
+  ]
+}

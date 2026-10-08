@@ -1,0 +1,71 @@
+{
+  "active": false,
+  "healthy": true,
+  "started_utc": "2026-10-08T06:45:50.235908+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "controller_sha256": "8e2ca945d0af88501b5637b6a0014eaa555f2af8e0501de987d6d0dc3792c4a3",
+  "scope": "Read-only exact-word device/driver/runtime health; no recovery/reset/rebind/service action.",
+  "terminal_controller_receipt_sha256": "3ba1f08a4e0d11b81a90aa7119b5f1dc2a4c3cf31eb2b5d95b314f1fa9271b95",
+  "steps": [
+    {
+      "label": "health-runtime",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import ctypes,sys; ctypes.CDLL(sys.argv[1])",
+        "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0"
+      ],
+      "pid": 3389145,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05078383200452663
+    },
+    {
+      "label": "before-health-cursor",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "pid": 3389150,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05050779099110514
+    },
+    {
+      "label": "health",
+      "argv": [
+        "/home/yayoi/.local/bin/strata-xe-health",
+        "0000:05:00.0"
+      ],
+      "pid": 3389153,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.10081159800756723
+    },
+    {
+      "label": "health-kernel",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bf77c32;b=0a908c16e292429980ff082da39f4bb9;m=1ea5a90780;t=65d4e9504ee3c;x=e172f57fada06d32",
+        "--no-pager",
+        "-o",
+        "short-iso-precise"
+      ],
+      "pid": 3389165,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05067152000265196
+    }
+  ],
+  "finished_utc": "2026-10-08T06:45:50.493835+00:00"
+}

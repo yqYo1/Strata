@@ -150,3 +150,18 @@ reproduces two invisible committed tokens at a64-output limit and retains a
 CPU-tested private fix. Its initial32K state/head/output and exact saved-prefix
 gate passes; the same process is continuing full256K repeat/restore/refusal
 checks. Logged correctness durations are excluded from speed comparisons.
+
+The [first full-capacity image and polling candidate](visible-output-commit-full-first-and-poll-backoff-v2/README.md)
+freezes the completed first262140-input/4-output read through cell262143,
+all13 saved KV layers through262144 cells, and its following exact32K
+control. The parent sequence was active at capture. A separately compiled
+host polling candidate passes CPU sanitizer checks but is not GPU-tested;
+neither this partial archive nor synthetic polling counts claim speed.
+
+The [full-capacity repeat and indexer spare follow-up](indexer-spare-full256k-rejection-and-candidate-v1/README.md)
+records two matching fresh full reads and every saved state/KV byte, plus
+actual32K disk-resume parity. Full disk roundtrip is rejected because the
+last pooled indexer row differs in each main layer. The process exits0
+normally without a kernel fault. A private kernel candidate restores the
+spare after partial speculative commit; its new capacity sequence is
+separate, and no full-gate/adoption or speed result is claimed here.
