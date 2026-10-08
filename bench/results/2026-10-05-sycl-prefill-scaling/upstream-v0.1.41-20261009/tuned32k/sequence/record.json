@@ -1,0 +1,381 @@
+{
+  "active": false,
+  "passed": true,
+  "started_utc": "2026-10-08T21:02:32.267690+00:00",
+  "scope": "Separate previous tuning configuration control/integrated/integrated/control,4 fresh32K A/B/A/B per process, context262144, actualchunk8192, int8/resident32768, compact2/attention-layout1/own-KV-stage1/prefetch0, PC1/ckpt1/every262139/root0/turn-token-1, MTP4,128 actual cache slots. Initial physical/head/state/disk gate required before launch. First vs later fresh reads separate; no adoption claim.",
+  "controller_sha256": "80fe9ba0ee4127ded95c0fd5a09e25f4ad754badde381253746ea022b04c11ac",
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_upstream_v0141_tuned32k_v3.py",
+        "control",
+        "clean",
+        "1"
+      ],
+      "mode": "control",
+      "phase": "clean",
+      "repetition": 1,
+      "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-tuned32k-control-clean-r1/record.json",
+      "started_utc": "2026-10-08T21:02:32.269478+00:00",
+      "controller_identity": {
+        "pid": 1953988,
+        "start_ticks": 18303138,
+        "state": "R"
+      },
+      "exit_code": 0,
+      "receipt_sha256": "0acd594238eb6b5f24146c0d2cfe50885cafe207e970ccdfe9ae9365af86dda0",
+      "finished_utc": "2026-10-08T21:08:47.856520+00:00"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_upstream_v0141_tuned32k_v3.py",
+        "integrated",
+        "clean",
+        "1"
+      ],
+      "mode": "integrated",
+      "phase": "clean",
+      "repetition": 1,
+      "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-tuned32k-integrated-clean-r1/record.json",
+      "started_utc": "2026-10-08T21:08:52.316567+00:00",
+      "controller_identity": {
+        "pid": 1972904,
+        "start_ticks": 18341142,
+        "state": "R"
+      },
+      "exit_code": 0,
+      "receipt_sha256": "277066203cf961640aa22f32eed59f6ff7ad7d818f1edfb81334679a9190ca35",
+      "finished_utc": "2026-10-08T21:14:51.271421+00:00"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_upstream_v0141_tuned32k_v3.py",
+        "integrated",
+        "clean",
+        "2"
+      ],
+      "mode": "integrated",
+      "phase": "clean",
+      "repetition": 2,
+      "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-tuned32k-integrated-clean-r2/record.json",
+      "started_utc": "2026-10-08T21:14:52.357991+00:00",
+      "controller_identity": {
+        "pid": 1991212,
+        "start_ticks": 18377147,
+        "state": "R"
+      },
+      "exit_code": 0,
+      "receipt_sha256": "8aa58bf15f1b8dce4945f510c018e902207dd1a718a16e864e1334e84fe3346a",
+      "finished_utc": "2026-10-08T21:20:54.548006+00:00"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_upstream_v0141_tuned32k_v3.py",
+        "control",
+        "clean",
+        "2"
+      ],
+      "mode": "control",
+      "phase": "clean",
+      "repetition": 2,
+      "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-tuned32k-control-clean-r2/record.json",
+      "started_utc": "2026-10-08T21:20:57.407541+00:00",
+      "controller_identity": {
+        "pid": 2009438,
+        "start_ticks": 18413652,
+        "state": "R"
+      },
+      "exit_code": 0,
+      "receipt_sha256": "dc539fe25fa1ad35b97fed17e1855dd4f55c958ae4dacf970da5828f791a0d18",
+      "finished_utc": "2026-10-08T21:27:10.522308+00:00"
+    }
+  ],
+  "active_stage": "control-clean-r2",
+  "deadline_seconds": 3600,
+  "elapsed_seconds": 1480.19468679899,
+  "new_full_receipt_sha256": "168d7896cbe3a60dfc604a08b6fe310f16d823a17d13d8a013260bfc7facb0a4",
+  "default_comparison_receipt_sha256": "01383f1d0118250de479af457a0d40ffa0d321943ea543c54d34cf165393caa9",
+  "summary": {
+    "control": {
+      "first_process_read": {
+        "count": 2,
+        "prefill_tok_s": 393.22913385307066,
+        "decode_tok_s": 12.315981910901568,
+        "reads": [
+          {
+            "name": "A-read0",
+            "measurement": {
+              "generated_tokens": 64,
+              "prompt_tokens": 32768,
+              "prompt_ms": 83254.5,
+              "decode_ms": 6520.4,
+              "wall_seconds": 89.97042583001894,
+              "purpose": "quiet timing",
+              "prefill_tok_s": 393.58833456449804,
+              "decode_tok_s": 9.815348751610331
+            }
+          },
+          {
+            "name": "A-read0",
+            "measurement": {
+              "generated_tokens": 64,
+              "prompt_tokens": 32768,
+              "prompt_ms": 83406.6,
+              "decode_ms": 3872.6,
+              "wall_seconds": 87.46394222599338,
+              "purpose": "quiet timing",
+              "prefill_tok_s": 392.8705881788731,
+              "decode_tok_s": 16.526364716211333
+            }
+          }
+        ]
+      },
+      "later_fresh_reads": {
+        "count": 6,
+        "prefill_tok_s": 427.45246306741404,
+        "decode_tok_s": 16.585896804623317,
+        "reads": [
+          {
+            "name": "B-read1",
+            "measurement": {
+              "generated_tokens": 64,
+              "prompt_tokens": 32768,
+              "prompt_ms": 76670.6,
+              "decode_ms": 4261.6,
+              "wall_seconds": 81.12599580100505,
+              "purpose": "quiet timing",
+              "prefill_tok_s": 427.3867688527284,
+              "decode_tok_s": 15.017833677492021
+            }
+          },
+          {
+            "name": "A-read2",
+            "measurement": {
+              "generated_tokens": 64,
+              "prompt_tokens": 32768,
+              "prompt_ms": 76662.3,
+              "decode_ms": 3489.3,
+              "wall_seconds": 80.3449260769994,
+              "purpose": "quiet timing",
+              "prefill_tok_s": 427.4330407514515,
+              "decode_tok_s": 18.341787751124865
+            }
+          },
+          {
+            "name": "B-read3",
+            "measurement": {
+              "generated_tokens": 64,
+              "prompt_tokens": 32768,
+              "prompt_ms": 76645.8,
+              "decode_ms": 3978.6,
+              "wall_seconds": 80.81852288299706,
+              "purpose": "quiet timing",
+              "prefill_tok_s": 427.5250568198127,
+              "decode_tok_s": 16.086060423264467
+            }
+          },
+          {
+            "name": "B-read1",
+            "measurement": {
+              "generated_tokens": 64,
+              "prompt_tokens": 32768,
+              "prompt_ms": 76696.5,
+              "decode_ms": 3931.4,
+              "wall_seconds": 80.82208607398206,
+              "purpose": "quiet timing",
+              "prefill_tok_s": 427.24244261472165,
+              "decode_tok_s": 16.279188075494734
+            }
+          },
+          {
+            "name": "A-read2",
+            "measurement": {
+              "generated_tokens": 64,
+              "prompt_tokens": 32768,
+              "prompt_ms": 76618.6,
+              "decode_ms": 3551.4,
+              "wall_seconds": 80.36367807499482,
+              "purpose": "quiet timing",
+              "prefill_tok_s": 427.67683043020884,
+              "decode_tok_s": 18.02106211634848
+            }
+          },
+          {
+            "name": "B-read3",
+            "measurement": {
+              "generated_tokens": 64,
+              "prompt_tokens": 32768,
+              "prompt_ms": 76659.1,
+              "decode_ms": 3939.9,
+              "wall_seconds": 80.79268939999747,
+              "purpose": "quiet timing",
+              "prefill_tok_s": 427.4508831958632,
+              "decode_tok_s": 16.24406710830224
+            }
+          }
+        ]
+      }
+    },
+    "integrated": {
+      "first_process_read": {
+        "count": 2,
+        "prefill_tok_s": 408.6478505083156,
+        "decode_tok_s": 16.087880044744416,
+        "reads": [
+          {
+            "name": "A-read0",
+            "measurement": {
+              "generated_tokens": 64,
+              "prompt_tokens": 32768,
+              "prompt_ms": 80848.6,
+              "decode_ms": 4111.4,
+              "wall_seconds": 85.14255297198542,
+              "purpose": "quiet timing",
+              "prefill_tok_s": 405.3007720603696,
+              "decode_tok_s": 15.566473707253005
+            }
+          },
+          {
+            "name": "A-read0",
+            "measurement": {
+              "generated_tokens": 64,
+              "prompt_tokens": 32768,
+              "prompt_ms": 79524.2,
+              "decode_ms": 3844.9,
+              "wall_seconds": 83.5556666959892,
+              "purpose": "quiet timing",
+              "prefill_tok_s": 412.05067136796094,
+              "decode_tok_s": 16.645426409009335
+            }
+          }
+        ]
+      },
+      "later_fresh_reads": {
+        "count": 6,
+        "prefill_tok_s": 449.6984901175573,
+        "decode_tok_s": 16.635403083614563,
+        "reads": [
+          {
+            "name": "B-read1",
+            "measurement": {
+              "generated_tokens": 64,
+              "prompt_tokens": 32768,
+              "prompt_ms": 72900.2,
+              "decode_ms": 4107.6,
+              "wall_seconds": 77.2012431389885,
+              "purpose": "quiet timing",
+              "prefill_tok_s": 449.4912222463039,
+              "decode_tok_s": 15.580874476579996
+            }
+          },
+          {
+            "name": "A-read2",
+            "measurement": {
+              "generated_tokens": 64,
+              "prompt_tokens": 32768,
+              "prompt_ms": 72875.4,
+              "decode_ms": 3357.9,
+              "wall_seconds": 76.42655406499398,
+              "purpose": "quiet timing",
+              "prefill_tok_s": 449.64418720171693,
+              "decode_tok_s": 19.059531254653205
+            }
+          },
+          {
+            "name": "B-read3",
+            "measurement": {
+              "generated_tokens": 64,
+              "prompt_tokens": 32768,
+              "prompt_ms": 72890.3,
+              "decode_ms": 4076.3,
+              "wall_seconds": 77.15842580801109,
+              "purpose": "quiet timing",
+              "prefill_tok_s": 449.5522723874096,
+              "decode_tok_s": 15.700512719868508
+            }
+          },
+          {
+            "name": "B-read1",
+            "measurement": {
+              "generated_tokens": 64,
+              "prompt_tokens": 32768,
+              "prompt_ms": 72865.8,
+              "decode_ms": 3981.2,
+              "wall_seconds": 77.04098160899593,
+              "purpose": "quiet timing",
+              "prefill_tok_s": 449.7034273966662,
+              "decode_tok_s": 16.07555510901236
+            }
+          },
+          {
+            "name": "A-read2",
+            "measurement": {
+              "generated_tokens": 64,
+              "prompt_tokens": 32768,
+              "prompt_ms": 72804.3,
+              "decode_ms": 3631.1,
+              "wall_seconds": 76.62912226098706,
+              "purpose": "quiet timing",
+              "prefill_tok_s": 450.08330551904214,
+              "decode_tok_s": 17.625512929966128
+            }
+          },
+          {
+            "name": "B-read3",
+            "measurement": {
+              "generated_tokens": 64,
+              "prompt_tokens": 32768,
+              "prompt_ms": 72863.6,
+              "decode_ms": 3929.2,
+              "wall_seconds": 76.98459824497695,
+              "purpose": "quiet timing",
+              "prefill_tok_s": 449.71700547324036,
+              "decode_tok_s": 16.2883029624351
+            }
+          }
+        ]
+      }
+    }
+  },
+  "cross_version_output_comparison": [
+    {
+      "mode": "integrated",
+      "read_index": 0,
+      "ids_equal_control": true,
+      "logprobs_equal_control": true,
+      "mtp_counts_equal_control": true,
+      "note": "Cross-version differences are reported, not silently accepted as numerical equivalence. Matched actual8192 chunks/128 slots and qualified per-mode numerical references are required. Own logged/repeated-output checks are mandatory."
+    },
+    {
+      "mode": "integrated",
+      "read_index": 1,
+      "ids_equal_control": true,
+      "logprobs_equal_control": true,
+      "mtp_counts_equal_control": true,
+      "note": "Cross-version differences are reported, not silently accepted as numerical equivalence. Matched actual8192 chunks/128 slots and qualified per-mode numerical references are required. Own logged/repeated-output checks are mandatory."
+    },
+    {
+      "mode": "integrated",
+      "read_index": 2,
+      "ids_equal_control": true,
+      "logprobs_equal_control": true,
+      "mtp_counts_equal_control": true,
+      "note": "Cross-version differences are reported, not silently accepted as numerical equivalence. Matched actual8192 chunks/128 slots and qualified per-mode numerical references are required. Own logged/repeated-output checks are mandatory."
+    },
+    {
+      "mode": "integrated",
+      "read_index": 3,
+      "ids_equal_control": true,
+      "logprobs_equal_control": true,
+      "mtp_counts_equal_control": true,
+      "note": "Cross-version differences are reported, not silently accepted as numerical equivalence. Matched actual8192 chunks/128 slots and qualified per-mode numerical references are required. Own logged/repeated-output checks are mandatory."
+    }
+  ],
+  "paired_requested_configuration": true,
+  "actual_geometry_note": "Actual8192 chunks and128 slots enforced for both modes; same requested argv and runtime settings.",
+  "finished_utc": "2026-10-08T21:27:12.462378+00:00"
+}
