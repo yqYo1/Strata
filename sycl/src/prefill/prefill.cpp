@@ -53,6 +53,12 @@
 #include <mutex>
 #include <thread>
 #include <vector>
+#if defined(__linux__)
+#include <cerrno>
+#include <cstdlib>
+#include <pthread.h>
+#include <sched.h>
+#endif
 #include "strata/event_completion.hpp"
 namespace strata {
 inline bool dma_completed(const EventCompletion<sycl::event>& state, uint64_t value) {
@@ -417,6 +423,50 @@ struct Stager {
             }
         }
         device = dpct::get_current_device_id();
+#if defined(__linux__)
+        // Opt-in: the launching thread can be pinned to the decode host core.
+        // Give the RAM-copy workers their requested CPUs before any work starts.
+        if (const char* list = std::getenv("STRATA_STAGER_CPU_LIST")) {
+            std::vector<int> cpus;
+            const char* at = list;
+            for (;;) {
+                char* end = nullptr;
+                errno = 0;
+                const long cpu = std::strtol(at, &end, 10);
+                if (end == at || errno == ERANGE || cpu < 0 || cpu >= CPU_SETSIZE ||
+                    (*end != '\0' && *end != ',') || (*end == ',' && end[1] == '\0')) {
+                    std::fprintf(stderr, "prefill: invalid STRATA_STAGER_CPU_LIST: %s\n", list);
+                    return false;
+                }
+                cpus.push_back((int) cpu);
+                if (*end == '\0') break;
+                at = end + 1;
+            }
+            std::vector<std::future<int>> started;
+            for (int t = 0; t < nthreads; ++t) {
+                const int cpu = cpus[(size_t) t % cpus.size()];
+                auto result = std::make_shared<std::promise<int>>();
+                started.push_back(result->get_future());
+                threads.emplace_back([this, cpu, result] {
+                    cpu_set_t mask;
+                    CPU_ZERO(&mask);
+                    CPU_SET(cpu, &mask);
+                    const int status = pthread_setaffinity_np(pthread_self(), sizeof(mask), &mask);
+                    result->set_value(status);
+                    if (status == 0) work();
+                });
+            }
+            for (auto& ready : started) {
+                const int status = ready.get();
+                if (status != 0) {
+                    std::fprintf(stderr, "prefill: setting stager CPU affinity failed: %s\n", std::strerror(status));
+                    return false;
+                }
+            }
+            std::fprintf(stderr, "strata prefill stager affinity: %d workers, requested CPUs %s\n", nthreads, list);
+            return true;
+        }
+#endif
         for (int t = 0; t < nthreads; ++t) threads.emplace_back([this] { work(); });
         return true;
     }

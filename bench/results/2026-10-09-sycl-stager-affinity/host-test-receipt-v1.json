@@ -1,0 +1,97 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_executed": false,
+  "source_sha256": "e14edcee574a88684de6dd4d46ccce80f975857178865b78aa05a10f966fb00f",
+  "started_utc": "2026-10-09T07:11:04.634918+00:00",
+  "default_guard_removed_entire_original_prefill_source_byte_identical": true,
+  "scope": "Actual Stager source: inherit single host CPU with opt-in off; distribute workers with opt-in on; invalid/nonexistent CPUs reject; delayed CPU DMA reuse across128 generations. CPU only; no SYCL/runtime arithmetic proof.",
+  "harness_sha256": "2d34003ed0a9dd88baf3bad6e7daf3e69e98eb1d6a6511df79f1f6b4b30f5b33",
+  "main_cpu": 0,
+  "spread_cpus": [
+    1,
+    2,
+    3
+  ],
+  "tests": [
+    {
+      "name": "default",
+      "setting": null,
+      "expected_rejection": false,
+      "exit_code": 0,
+      "stdout": "PASS ring=16 workers=3 generations=128 DMA_reads=6144\n",
+      "elapsed_seconds": 0.6178061609971337
+    },
+    {
+      "name": "spread",
+      "setting": "1,2,3",
+      "expected_rejection": false,
+      "exit_code": 0,
+      "stdout": "PASS ring=16 workers=3 generations=128 DMA_reads=6144\n",
+      "elapsed_seconds": 0.6196665859897621
+    },
+    {
+      "name": "empty",
+      "setting": "",
+      "expected_rejection": true,
+      "exit_code": 0,
+      "stdout": "PASS rejected affinity safely\n",
+      "elapsed_seconds": 0.01214581000385806
+    },
+    {
+      "name": "negative",
+      "setting": "-1",
+      "expected_rejection": true,
+      "exit_code": 0,
+      "stdout": "PASS rejected affinity safely\n",
+      "elapsed_seconds": 0.011991390027105808
+    },
+    {
+      "name": "trailing-comma",
+      "setting": "1,",
+      "expected_rejection": true,
+      "exit_code": 0,
+      "stdout": "PASS rejected affinity safely\n",
+      "elapsed_seconds": 0.01016196099226363
+    },
+    {
+      "name": "nonnumeric",
+      "setting": "x",
+      "expected_rejection": true,
+      "exit_code": 0,
+      "stdout": "PASS rejected affinity safely\n",
+      "elapsed_seconds": 0.011741098016500473
+    },
+    {
+      "name": "oversized",
+      "setting": "1024",
+      "expected_rejection": true,
+      "exit_code": 0,
+      "stdout": "PASS rejected affinity safely\n",
+      "elapsed_seconds": 0.011893163988133892
+    },
+    {
+      "name": "offline-cpu",
+      "setting": "1023",
+      "expected_rejection": true,
+      "exit_code": 0,
+      "stdout": "PASS rejected affinity safely\n",
+      "elapsed_seconds": 0.011212530982447788
+    }
+  ],
+  "compile": [
+    "/usr/bin/g++",
+    "-std=c++20",
+    "-O1",
+    "-g",
+    "-pthread",
+    "-fsanitize=address,undefined",
+    "-fno-omit-frame-pointer",
+    "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-stager-affinity-v0141-20261009/sycl/include",
+    "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/stager-affinity-host-v1",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/stager-affinity-host-v1/host-test.cpp",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/stager-affinity-host-v1/host-test"
+  ],
+  "finished_utc": "2026-10-09T07:11:10.815660+00:00"
+}
