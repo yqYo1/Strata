@@ -1,0 +1,145 @@
+# Experimental SYCL layer-major streamed INT8 KV implementation — 2026-10-09
+
+Status: code-only, unqualified, opt-in. No measured speed claim. No build, test,
+model execution, GPU run, profiler, service/reset, commit, push or fetch was run
+by this implementation agent. All executable qualification belongs exclusively
+to root; the active root measurement was left alone.
+
+Worktree: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-layer-major-streamed-kv-v0141-20261009
+Branch: perf/sycl-layer-major-streamed-kv-v0141-2026-10-09
+Base supplied by root: 23268953314d12588fd3f496414a46bd426a7306
+Only modified repository file: sycl/src/prefill/prefill.cpp
+No headers, CUDA/HIP files, controllers, other worktrees or docs changed.
+
+Read: local AGENTS.md, relevant docs/DETAILS.md prompt/KV passages,
+report-registry-v5.json and layer-major-streamed-kv-round3.txt in full,
+prefill-code-audit-addendum.txt and prefill-xmx-existing-code-audit.txt.
+The header-referenced docs/kv-streaming-design.md is absent in this checkout;
+contracts were checked against include/strata/kernels/kv_stream.hpp and active
+SYCL kv_stream.dp.cpp, kernels.dp.cpp and prefill.cpp instead.
+
+Activation and admission (prefill.cpp:2406–2452)
+
+Set STRATA_PREFILL_LAYER_MAJOR_STREAMED_KV=1 together with existing
+STRATA_PREFILL_LAYER_MAJOR=1 (multi-chunk) or =2 (forced, including one chunk).
+The new variable alone never selects layer-major. Existing full single-GPU,
+compact FP16, source, full stage range, no next/helper/peer/hand-in and no PLE
+preload restrictions remain. Existing source checks and leases remain intact.
+
+Each nonresident QSA must be mode1, INT8, non-Q4, non-hybrid, non-rotated; the
+primary QSA must also be this format because it sizes the shared stage and
+identity table. Streamed siblings must have the same max_cells and n_pages.
+Admission checks positive max_cells through262144, full four-cell-page geometry,
+nonnegative pos0, n <= max_cells-pos0, all four host/resident/stage INT8 arrays,
+resident page_table, separate identity table, head_dim256 and two KV heads.
+All QSA states must be allocated locally from ordinal0 and the compute queue
+must report its in_order property. The subtraction check avoids overflowing
+pos0+n. Capacity is never shortened or reconfigured.
+
+Resident mode0 siblings retain their ordinary resident path. The shared stage
+is owned only by streamed QSA invocations; a resident sibling has no owner and
+no streamed trace. Mixed-format streamed/ring/Q4/hybrid/rotated/missing-stage/
+wrong-capacity/non-in-order configurations return a clear admission error,
+before cache suspension, MTP suspension, expert load, residual allocation or
+session KV mutation. This matches existing explicit layer-major failure rather
+than mutating and falling back. The pre-existing STRATA_TRACE memory query can
+still run before admission; it is read-only.
+
+Ownership and scheduling (prefill.cpp:743, 2689–2713, 2793–2798,
+2874–2924, 3765–3804, 3850–3856, 5373–5380)
+
+The only Impl addition is a bool selecting retained-stage behavior. The existing
+layer-major Restore RAII snapshots/restores it on every return and exception,
+restores it before cleanup waits, and preserves all prior callback/cache/
+residual restoration. On success the flag is restored before explicit decode
+cache/MTP restoration callbacks too. No owner or valid-prefix state is stored
+in Impl, session, SAVE/RESTORE or the decode graph.
+
+Each run_impl creates its own StageOwner {ordinal, scheduled_cells, chunks,
+seed_bytes}. The scoped experimental flag requires exactly one layer per
+invocation. For a streamed QSA it counts preceding QSA layers to establish the
+expected ordinal and initializes its scheduled extent to pos0. Every streamed
+chunk verifies its ordinal and contiguous p0 plus capacity before seeding or
+append. No stage can leak between requests or QSA layers.
+
+Only the first chunk seeds [0,pos0), on the existing compute queue. Full pages
+use the unchanged kv_stage_from_host helper. A partial page copies only its
+valid rows for each KV head and each of K/V codes/scales, using the same
+[page][head][cell][feature/group] layout as kv_append_kernel. A fresh prompt
+has no actual seed DMA. No invalid tail cells are copied. At most eight small
+partial-page memcpys supplement the four full-prefix array copies; no copy
+waits or new events are introduced.
+
+The unchanged kv_append then enqueues exactly the same writes to canonical
+host KV, resident slots named by the resident page map, and the full identity
+stage. After enqueue the owner advances scheduled_cells=p0+T and chunks++.
+This is explicitly a scheduled extent, not a claim of completion. Seed,
+append and exact selection/attention remain ordered on the admitted in-order
+compute queue. Subsequent chunks reuse the prefix and skip only redundant
+host-to-stage seed copies. Attention still receives pools_of(m.stage,
+m.ident_table), never the resident map as an identity map. Sparse selection,
+indexer append/dead/tail/pooled state and GDN/PLE state are untouched.
+
+Ordinary next-QSA prefetch is disabled only when the scoped new flag is true.
+Existing STRATA_KV_PREFETCH behavior/queues/events remain for every other path.
+A stale kv_copy is drained before setting the flag/starting the layer loop.
+Existing outer compute/copy/stager waits separate layers. Existing run_impl
+end waits cover last readers; its KvDrain additionally drains the retained
+compute queue on early return/cancellation/unwind before local ownership dies.
+The outer Restore additionally drains stale kv_copy when leaving active mode.
+No per-copy waits, GPU timestamp events, profiling, or queue factories added.
+Underlying migrated helpers sometimes terminate on a SYCL exception; that
+existing process-fatal behavior cannot promise recoverable session reuse and
+was not broadened into an exception-system redesign here.
+
+Resources and default preservation
+
+Uses precisely the existing one full max_cells stage plus existing host
+residual and per-chunk buffers; no new per-layer KV/residual allocation, no
+changes to T8192, n, max_cells, arithmetic, selected IDs or math precision.
+All host KV, resident pools/maps, indexers, GDN/PLE state and leases persist.
+Existing cache restoration modes/fractions and MTP suspension are unchanged.
+
+Without the new variable, the all-resident guard retains its exact previous
+error and resident/default call paths use the old stage copy/prefetch/append/
+attention branches. New waits are conditional on the scoped mode. New protocol
+output is absent. Existing output/timing/diagnostics remain; new tracing is
+only two flushed CPU lines per streamed QSA run under STRATA_TRACE: first seed
+scheduled extent/actual enqueued byte count and successful post-existing-drain
+extent/chunk/retained-chunk counters. For this geometry seed bytes=1056*pos0.
+These counters do not introduce timing/synchronization and are not throughput
+measurements. Source review supports default preservation; byte-identical
+runtime results are not yet tested.
+
+Source review performed
+
+Inspected final diff and git status (one changed file); checked aggregate Restore
+field ordering, expected QSA ordinal, guard-before-lease ordering, full capacity
+subtraction, code/scale row offsets against kv_append_kernel and runs_of,
+identity attention pool selection, and successful/early-exit drain scopes.
+No automated syntax/compiler/test/whitespace check was run under root's
+exclusive execution policy. Root must still qualify compilation and runtime.
+
+Root qualification checklist (not performed here)
+
+1. Inspect final diff; build all115 SYCL objects using root's qualified flags.
+2. First correctness through debug-run.py or diagnostic_environment(), retaining
+   flushed stderr/env. Compare unchanged chunk-major state/logits/selections.
+3. Exercise forced one-chunk and 8K boundaries, short first chunk, resumed pos0
+   at page tails1/2/3, fresh32K,32K+8K, and just over32768 resident capacity.
+   Trace should show one seed per streamed QSA and retained subsequent chunks.
+4. Toggle ordinary KV prefetch, prove it resumes unchanged outside opt-in, and
+   test the opt-in variable without layer-major selection. Verify admission
+   errors for unsupported modes, preload, stage/multiGPU/helper configurations
+   happen without cache/session mutation. Recheck all-resident diagnostics.
+5. Cancellation/error at multiple chunks/layers, then session/cache reuse; SAVE/
+   RESTORE and resumed prefill; compare host KV, resident state/page map,
+   all12 indexers/dead/tails, all GDN recurrence/conv and PLE state.
+6. Physically qualify all262144 cells/all layers with unchanged chunk arithmetic,
+   peak device/host memory, and final state capture. Check262143 then one token,
+   SAVE/RESTORE at262143/262144, and rejection of append at position262144.
+7. Verify cache release snapshot/ram/fraction and MTP suspend/restore with decode
+   graph rebuilding; quiet cold/restored decode separately from prefill.
+8. Only after correctness, repeat quiet paired prefill timing and separate quiet
+   cold/restored decode. Measure full end-to-end262144 behavior; no speed or
+   memory-fit conclusion follows from fewer prefix copies alone.

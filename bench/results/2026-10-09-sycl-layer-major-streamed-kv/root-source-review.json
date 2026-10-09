@@ -1,0 +1,35 @@
+{
+  "active": false,
+  "passed": true,
+  "compiled": false,
+  "tests_executed": false,
+  "gpu_executed": false,
+  "adopted": false,
+  "created_utc": "2026-10-09T09:16:49.997537+00:00",
+  "scope": "Root review after separate Sol code-only implementation and completed independent Luna review. Default zero-QSA access and successful duplicated compute wait corrected. No engine execution/qualification/speed claim.",
+  "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-layer-major-streamed-kv-v0141-20261009",
+  "base": "23268953314d12588fd3f496414a46bd426a7306",
+  "submitted_source_sha256": "40f1f20cc0e99409047ece425b6731395f86809da19cbd0ffb8bdfd94614bf0f",
+  "source_sha256": "92b849df3e19ad77a8a56927cae48cd91d4be0f73f4edc1ff189d2177c0cd8c1",
+  "implementation_report_sha256": "e29f367994f19ac60341e5d3caea90e8689b939c9a63d92d7b416aaf5e909cb2",
+  "independent_review_sha256": "ebf2c96e2deda24d21e624474c83566fdf17db5b0c22ebffc62ba0b044fe2f72",
+  "root_corrections": [
+    "Primary QSA read now occurs only inside a streamed-state opt-in branch, after existing no-opt-in rejection. Zero-QSA/default resident loop never reads a primary state.",
+    "After the existing successful m.cs wait, retained_compute fallback is disarmed. It remains active on early return/error/cancellation until that fence. No new successful per-layer compute wait."
+  ],
+  "static_review": [
+    "Only sycl/src/prefill/prefill.cpp changed; all append/attention/indexer/GR/GDN/PLE kernels and canonical session state source unchanged.",
+    "New mode alone never selects layer-major; current all-resident error retained without it. Full capacity/geometry/source/queue admission precedes leases or state mutation.",
+    "One existing identity stage; per-run_impl scoped ordinal and enqueue extent; one exact prefix seed with page/head/cell code-scale offsets; original host/resident/stage append unchanged.",
+    "Compute seed/append/readers on admitted in-order m.cs. Other-layer prefetch disabled only in scoped mode and previous kv_copy drained.",
+    "Existing successful end compute/copy fences and outer Restore keep scratch/cache alive through every reader. Error fallback remains, standard errors in migrated helpers may still be process-fatal.",
+    "No profiling/time events/new queue factory/USM import/cache-release algorithm. Geometry does not establish memory fit or speed."
+  ],
+  "must_complete_before_adoption": [
+    "Uniform115object build with qualified flags.",
+    "CPU exact prefix-layout and owner/extent boundary checks, including page tails1/2/3,262143/262144 and zero-QSA/default gates.",
+    "Logged integrated32K/head/all66-state/LP/MTP and resumed/overresident/ordinary prefetch/cancellation cases.",
+    "Physical full262144 and exact session boundaries/restore/graph/MTP state.",
+    "Separate repeated quiet prefill/colddecode/restoreddecode."
+  ]
+}

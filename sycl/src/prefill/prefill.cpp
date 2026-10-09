@@ -739,6 +739,8 @@ struct Prefill::Impl {
     // KV streaming: one layer's whole K/V, staged from the host copy per layer and chunk (identity layout)
     strata::kernels::KvHostPools stage;
     int32_t* ident_table = nullptr;
+    // Scoped by run_layer_major; stage ownership/extent itself stays run_impl-local.
+    bool layer_major_streamed_kv = false;
     dpct::queue_ptr kv_copy = nullptr;
     dpct::event_ptr kv_released = nullptr, kv_ready = nullptr;
     // layer split: the device, and the hand-off to the next stage (two pinned chunk buffers, used in turn)
@@ -2401,9 +2403,41 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         err = "prefill: layer-major currently requires a full single-GPU compact FP16 path";
         return false;
     }
+    const char* streamed_env = std::getenv("STRATA_PREFILL_LAYER_MAJOR_STREAMED_KV");
+    const bool streamed_opt_in = streamed_env && streamed_env[0] == '1';
+    bool streamed_layer_major = false;
     for (int64_t i = 0; i < m.ss->qsa_alloc; ++i) {
-        if (m.ss->qsa_states[m.ss->qsa_ord0 + i].kv_mode != 0) {
+        const core::QsaState& state = m.ss->qsa_states[m.ss->qsa_ord0 + i];
+        if (state.kv_mode == 0) continue;
+        if (!streamed_opt_in) {
             err = "prefill: layer-major requires all K/V pages resident in VRAM";
+            return false;
+        }
+        const core::QsaState& primary = m.ss->qsa_states[m.ss->qsa_primary()];
+        // take_stage/ident_table are sized from the primary QSA, not the resident slots.
+        // Admit only the same full identity geometry and plain streamed INT8 storage.
+        if (state.kv_mode != 1 || !state.kv_int8 || state.kv_q4 || state.kv_hybrid || state.kv_rot ||
+            primary.kv_mode != 1 || !primary.kv_int8 || primary.kv_q4 || primary.kv_hybrid || primary.kv_rot ||
+            state.max_cells != primary.max_cells || state.n_pages != primary.n_pages ||
+            state.max_cells <= 0 || state.max_cells > 262144 ||
+            state.n_pages != (state.max_cells + 3) / 4 ||
+            pos0 < 0 || pos0 > state.max_cells || n > state.max_cells - pos0 ||
+            !state.host.k_q || !state.host.v_q || !state.host.k_scale || !state.host.v_scale ||
+            !state.k_q || !state.v_q || !state.k_scale || !state.v_scale || !state.page_table ||
+            !m.stage.k_q || !m.stage.v_q || !m.stage.k_scale || !m.stage.v_scale || !m.ident_table ||
+            g.head_dim != 256 || g.n_head_kv != 2) {
+            err = "prefill: streamed layer-major requires plain INT8 KV, full identity staging and capacity through 262144";
+            return false;
+        }
+        streamed_layer_major = true;
+    }
+    if (streamed_layer_major) {
+        int64_t qsa_count = 0;
+        for (int64_t layer = 0; layer < g.n_layers; ++layer)
+            qsa_count += core::is_qsa_layer(g, layer);
+        if (m.ss->qsa_ord0 != 0 || m.ss->qsa_alloc != qsa_count ||
+            !m.cs->has_property<sycl::property::queue::in_order>()) {
+            err = "prefill: streamed layer-major requires every QSA state on one GPU and an in-order compute queue";
             return false;
         }
     }
@@ -2654,10 +2688,13 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         Prefill& p; Impl& m;
         int64_t lb, le; const float* input; bool ready;
         const core::ExpertCache* cache; const int32_t* residency; ExpertTransferTimer* timer;
-        float *gpu, *scratch, *r; int64_t gpu_tokens, reused_tokens; bool inplace; PfTimer* phases;
+        float *gpu, *scratch, *r; int64_t gpu_tokens, reused_tokens; bool inplace; PfTimer* phases; bool streamed_kv;
         decltype(on_chunk) chunk; decltype(on_stage_chunk) stage;
         ~Restore() {
+            const bool retained = m.layer_major_streamed_kv;
+            m.layer_major_streamed_kv = streamed_kv;
             m.cs->wait(); m.copy->wait(); m.stager->finish();
+            if (retained && m.kv_copy) m.kv_copy->wait();
             p.stage_lb_ = lb; p.stage_le_ = le; p.hand_in_ = input; p.checkpoint_ready_ = ready;
             p.on_chunk = std::move(chunk); p.on_stage_chunk = std::move(stage);
             m.cache = cache; m.host_res = residency; m.transfer_context = timer;
@@ -2667,7 +2704,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         }
     } restore{*this, m, stage_lb_, stage_le_, hand_in_, checkpoint_ready_, m.cache, m.host_res,
               m.transfer_context, m.residual_gpu, m.residual_scratch, m.R, m.residual_gpu_tokens,
-              m.residual_reused_tokens, m.residual_inplace, m.phase_context, on_chunk, on_stage_chunk};
+              m.residual_reused_tokens, m.residual_inplace, m.phase_context, m.layer_major_streamed_kv, on_chunk, on_stage_chunk};
+    // A previous ordinary prefetch can still own this single scratch plane.
+    if (streamed_layer_major && m.kv_copy) m.kv_copy->wait();
+    m.layer_major_streamed_kv = streamed_layer_major;
     m.cache = &layer_cache; m.host_res = residency.data(); m.transfer_context = &transfers;
     m.residual_gpu = device_rows.get(); m.residual_gpu_tokens = gpu_tokens; m.phase_context = &phases;
     m.residual_scratch = restore.r; m.residual_reused_tokens = reused_tokens; m.residual_inplace = inplace;
@@ -2750,6 +2790,9 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     // enclosing prefill timer includes both suspension and restoration.
     m.copy->wait(); m.stager->finish();
     trace_memory("prefill completed with temporary layer cache");
+    // No retained stage owner survives the last run_impl/drain. Restore the mode
+    // before callbacks rebuild decode resources on the successful path too.
+    m.layer_major_streamed_kv = restore.streamed_kv;
     layer_cache.close();
     m.R = restore.r;
     device_rows.reset();
@@ -2828,7 +2871,29 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
         const char* e = std::getenv("STRATA_KV_PREFETCH");
         return e ? std::atoi(e) != 0 : false;
     }();
-    const bool kv_prefetch = kv_prefetch_on;
+    const bool retained_stage = m.layer_major_streamed_kv;
+    // Each invocation processes exactly one layer; never prefetch another QSA into its plane.
+    const bool kv_prefetch = kv_prefetch_on && !retained_stage;
+    struct StageOwner {
+        int64_t ordinal = -1;
+        int64_t scheduled_cells = 0; // enqueue-order extent, NOT a host completion acknowledgement
+        int64_t chunks = 0;
+        uint64_t seed_bytes = 0;
+    } stage_owner;
+    if (retained_stage) {
+        if (LE != LB + 1 || LB < 0 || LE > g.n_layers) {
+            err = "prefill: streamed layer-major stage must process exactly one layer";
+            return false;
+        }
+        if (core::is_qsa_layer(g, LB)) {
+            stage_owner.ordinal = 0;
+            for (int64_t layer = 0; layer < LB; ++layer)
+                stage_owner.ordinal += core::is_qsa_layer(g, layer);
+            if (ss.qsa_states[stage_owner.ordinal].kv_mode == 1)
+                stage_owner.scheduled_cells = pos0;
+            else stage_owner.ordinal = -1;
+        }
+    }
     if (kv_prefetch) {
         /*
         DPCT1025: The SYCL queue is created ignoring the flag and priority
@@ -2849,8 +2914,14 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
     // An early return must drain DMA before the caller refills the borrowed expert slots.
     struct KvDrain {
         dpct::queue_ptr stream;
-        ~KvDrain() { if (stream) stream->wait(); }
-    } kv_drain{kv_prefetch ? m.kv_copy : &dpct::get_in_order_queue()};
+        dpct::queue_ptr retained_compute;
+        ~KvDrain() {
+            if (stream) stream->wait();
+            // In the experimental path, all seeds/appends/readers share this in-order queue.
+            // Drain on cancellation/error too, before run_impl-local ownership disappears.
+            if (retained_compute) retained_compute->wait();
+        }
+    } kv_drain{kv_prefetch ? m.kv_copy : &dpct::get_in_order_queue(), retained_stage ? m.cs : nullptr};
     int64_t kv_prefetches = 0;
     const uint64_t gdn_floats = (uint64_t) g.ssm_state_size * g.ssm_v_heads * g.ssm_state_size +
                                 (uint64_t) g.ssm_conv_channels * (g.ssm_d_conv - 1);
@@ -3691,7 +3762,37 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                     const bool staged = st.kv_mode == 1;
                     if (staged) {
                         pt.mark(kPfKvStage, cs);
-                        if (kv_pending == qsa_index) {
+                        if (retained_stage) {
+                            if (stage_owner.ordinal != qsa_index || stage_owner.scheduled_cells != p0 ||
+                                p0 < 0 || p0 > st.max_cells || T > st.max_cells - p0) {
+                                err = "prefill: streamed layer-major stage owner or contiguous extent mismatch";
+                                return false;
+                            }
+                            if (stage_owner.chunks == 0) {
+                                // Only [0,pos0) is valid on resume. Copy full pages then the valid
+                                // cells of the partial page, retaining its earlier cells on append.
+                                const int64_t pages = p0 / s.page_size, tail = p0 % s.page_size;
+                                strata::kernels::kv_stage_from_host(pools_of(m.stage, m.ident_table), st.host,
+                                    strata::kernels::kKvInt8, pages, s, m.cs);
+                                for (int64_t head = 0; tail && head < s.n_head_kv; ++head) {
+                                    const size_t row = (size_t) (pages * s.n_head_kv + head) * s.page_size;
+                                    const size_t code = row * s.head_dim, scale = row * (s.head_dim / 64);
+                                    m.cs->memcpy(m.stage.k_q + code, st.host.k_q + code, (size_t) tail * s.head_dim);
+                                    m.cs->memcpy(m.stage.v_q + code, st.host.v_q + code, (size_t) tail * s.head_dim);
+                                    m.cs->memcpy(m.stage.k_scale + scale, st.host.k_scale + scale,
+                                                 (size_t) tail * (s.head_dim / 64) * sizeof(uint16_t));
+                                    m.cs->memcpy(m.stage.v_scale + scale, st.host.v_scale + scale,
+                                                 (size_t) tail * (s.head_dim / 64) * sizeof(uint16_t));
+                                }
+                                stage_owner.seed_bytes = (uint64_t) p0 * s.n_head_kv *
+                                    (2 * s.head_dim + 4 * (s.head_dim / 64));
+                                if (std::getenv("STRATA_TRACE")) {
+                                    std::fprintf(stderr, "strata trace: streamed layer-major QSA %lld seed scheduled_cells=%lld bytes=%llu (enqueue order)\n",
+                                        (long long) qsa_index, (long long) p0, (unsigned long long) stage_owner.seed_bytes);
+                                    std::fflush(stderr);
+                                }
+                            }
+                        } else if (kv_pending == qsa_index) {
                             if (DPCT_CHECK_ERROR(cs->ext_oneapi_submit_barrier(
                                     {*m.kv_ready})) != 0) {
                                 err = "prefill: waiting for KV prefetch";
@@ -3745,6 +3846,12 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                             strata::kernels::kv_unstage_to_host(pools_of(m.stage, m.ident_table), st.host,
                                                                 core::qsa_kv_format(st), p0 / s.page_size,
                                                                 (p0 + T + s.page_size - 1) / s.page_size, s, m.cs);
+                    }
+                    if (staged && retained_stage) {
+                        // kv_append has enqueued writes to host authority, resident slots and the
+                        // identity stage. Attention follows on the same in-order compute queue.
+                        stage_owner.scheduled_cells = p0 + T;
+                        ++stage_owner.chunks;
                     }
                     if (staged) pf_step("reading the prompt (batched, step sync): the K/V append at layer", l);
                     split_q(m.Qf, m.q, T, m.cs);
@@ -5223,6 +5330,9 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
         err = std::string("prefill: ") + dpct::get_error_string_dummy(0);
         return false;
     }
+    // The existing successful compute fence retires the retained stage. Keep
+    // KvDrain fallback only for exits that have not reached this fence.
+    if (retained_stage) kv_drain.retained_compute = nullptr;
     // (PR #121) an expert copy that failed on the copy stream surfaces here, not in the next request
     /*
     DPCT1000: Error handling if-stmt was detected but could not be
@@ -5262,6 +5372,13 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
         }
         std::fprintf(stderr, "strata KV prefetch: %lld layer prefixes, single existing staging pool\n",
                      (long long) kv_prefetches);
+    }
+    if (retained_stage && stage_owner.ordinal >= 0 && std::getenv("STRATA_TRACE")) {
+        std::fprintf(stderr, "strata trace: streamed layer-major QSA %lld drained_cells=%lld chunks=%lld seed_bytes=%llu retained_chunks=%lld\n",
+            (long long) stage_owner.ordinal, (long long) stage_owner.scheduled_cells,
+            (long long) stage_owner.chunks, (unsigned long long) stage_owner.seed_bytes,
+            (long long) std::max<int64_t>(0, stage_owner.chunks - 1));
+        std::fflush(stderr);
     }
     stats_.ms_total += ms_since(t_start);
     if (!m.transfer_context) transfers.report(n, stats_.chunks - chunks_start, g.n_layers, ms_since(t_start),
