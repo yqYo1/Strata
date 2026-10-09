@@ -1,0 +1,72 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_tested": false,
+  "adopted": false,
+  "compiled_engine": true,
+  "started_utc": "2026-10-08T23:10:58.635592+00:00",
+  "scope": "CPU-only configure and full rebuild of all engine translation units against one native-copy candidate header; same production compiler flags/settings. No GPU command or adoption.",
+  "source_head": "6caa1421f9212750a425fe1729139ffdde6e9f9a",
+  "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-prefill-native-copy-v0141-20261009",
+  "controller_sha256": "f2fafea865291596eb055c7d1cc812206fdcd541a3785fe05e25c59f1082d8d2",
+  "source_sha256": {
+    "sycl/include/dpct/device.hpp": "8805874ecb1d58d7acea8ca931154a38d0ad3d623f7c5ee8d599fa2ba56a841b",
+    "sycl/src/prefill/prefill.cpp": "6399d65feea884f932a5a1079a91c80228293bfc3be371732b48413977229f84",
+    "sycl/CMakeLists.txt": "d8fc6c99428f96021c0d986bcad77680dbe66f4fa6a64490166ff58f24e274b1"
+  },
+  "admission_deadline_seconds": 2400,
+  "steps": [
+    {
+      "label": "configure",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-prefill-native-copy-v0141-20261009/sycl",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-prefill-native-copy-v0141-20261009/build-sycl-native-expert-copy-v0141-v1",
+        "-G",
+        "Ninja",
+        "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DCMAKE_C_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icx",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DSTRATA_GGML_DIR=/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned",
+        "-DSTRATA_NATIVE_EXPERTS=ON",
+        "-DSTRATA_SYCL_PARITY=ON",
+        "-DSTRATA_IQ2S_GCC=OFF",
+        "-DSTRATA_SYCL_AOT=",
+        "-DSTRATA_SYCL_SPIN_MAX=",
+        "-DSTRATA_NATIVE_POOL_TASK_FACTOR=0"
+      ],
+      "timeout_seconds": 180,
+      "pid": 2362804,
+      "exit_code": 0,
+      "elapsed_seconds": 4.0010715310054366
+    },
+    {
+      "label": "build-strata",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-prefill-native-copy-v0141-20261009/build-sycl-native-expert-copy-v0141-v1",
+        "--target",
+        "strata",
+        "--parallel",
+        "4"
+      ],
+      "timeout_seconds": 1800,
+      "pid": 2363382,
+      "exit_code": 0,
+      "elapsed_seconds": 196.05374662400573
+    }
+  ],
+  "elapsed_seconds": 316.2314733599778,
+  "active_stage": null,
+  "quiet_sequence_sha256": "d57fba6b0826ad8402505571b8cdc92eee4e0fa5bbd1c1a9b779531bd2f4bc83",
+  "binary": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-prefill-native-copy-v0141-20261009/build-sycl-native-expert-copy-v0141-v1/strata",
+  "binary_sha256": "2721f8ef417456c8a549cf438292ce34955a078d30974ed0200e1115ab8a3f5f",
+  "compile_commands_sha256": "1f926574be7d85cbd80fca1dc0885134931f276f8ae4fcdbb95d2e06c19930b1",
+  "CMakeCache_sha256": "f8188c221ebd5c1c93e48b3cc6c1148a0c41ee8e711383db40d388d459158338",
+  "build_ninja_sha256": "8681051e22ad20af8b97c586c457ab85905bba1e25ee724b4006fe37b5dc89ff",
+  "finished_utc": "2026-10-08T23:16:14.867044+00:00"
+}
