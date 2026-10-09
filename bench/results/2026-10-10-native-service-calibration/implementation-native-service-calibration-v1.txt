@@ -1,0 +1,64 @@
+Native CPU streaming service calibration v1 — implementation handoff
+2026-10-10. SOURCE ONLY. UNEXECUTED BY IMPLEMENTATION AGENT.
+
+Assigned worktree:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010
+Only new assigned files written; no existing source/reader/collector/pool/CMake/v1/report/receipt/AGENTS modified. No Git command/action, configure/build/Ninja/import/syntax/test/run, payload/tokenizer/model access, CPU/GPU/device query, profiling or cleanup performed. Root owns all review/build/test/payload/qualification under shared serial lock.
+
+New files, SHA256, bytes:
+sycl/tools/native-service-calibration/CMakeLists.txt
+6768f6e7d21c598c32999ef52e16d02b42cd63c545e430745d39ae19e9c131ac 3806
+sycl/tools/native-service-calibration/native_service_calibration.cpp
+02a7db57d22f3f340dfd78670dc157463e62187967c055dcda01fcd128be01b9 24476
+sycl/tools/native-service-calibration/README.md
+3057f7ab34f4a89543d0e1bfcc2946af384ea51bae0f2c1ae5de973312627ca6 11554
+
+Reviewed evidence/contracts: R46 actual service protocol; both relevant R63 route-ID sufficiency and prompt-independence boundaries; R64 activation/FFN oracle; R70 host build closure; R71 public pool seam; R74 profiler admission; R78 runtime boundary and complete withdrawal of R77 false buffer blocker. Prior closed root v1 build/smoke receipts were read as metadata only, never executed. The currently observed v1 CMake/source still hash bc4f40ea2134c15954f3505ef2d79fefae07b70222bdb17af404771f28cf3664 / f4ce8e3d5c43f469533d79f25d2d183ff9d62eeaa4d8849368a97bf4f48bcd3a. Root's later README updates were left untouched.
+
+Prior results remain separate: native-service-host-cpu-build-v1 receipt SHA c8227c12ea5701da507bf87ed54d7a20e3b4286c50c75b01837e6409294ff92c; binary ade1ade63df665b55908fcb6cc0822d7f7769960088b180797fce7bc3817bc9a. Actual smoke receipt607b3e3f47d81e2642285df36bcadfa43e78852cac06e1ac237ed3931bc3b2ac records14IDs/7pairs/280samples, exact NT1 GGML GU/Down20/direct-pool/repeats, normal0/no cleanup/survivors, narrowly observed no-device runtime boundary. Those are root actual results, not new calibration/build evidence. V1 tight-repeat timing is never reused as R46 streaming samples.
+
+Interface/admission
+
+native_service_calibration PACK PRIMARY TSV GU DOWN NT TASKS BATCH SEED [--correctness-only]
+One exact GU18/21/22/23, Down20/42, NT1/2 cell. TASKS0/6 and BATCH1/6 root selects; separate fresh process for each profile. SEED decimal checked uint64. Optional correctness-only performs initial direct/reference/pool checks and exits before timing; allows only LD_DEBUG=libs loader observation and still forbids preload/audit. Normal timing refuses LD_DEBUG, LD_PRELOAD, LD_AUDIT, fake feature environments and dispatch histogram. No tracer/profiler is started; root must prevent external instrumentation during timing.
+
+TSV <=16384B, final LF, header literal cohort TAB layer TAB expert; exactly192train +192holdout, labels literal train/holdout, layer0..47 expert0..511, globally unique IDs (no overlaps). Reject malformed columns, CR/blank/nondecimal/overflow/missing/extra rows. Root alone freezes eligibility/split/seed from route/source evidence; no auto-selection/replacement or holdout promotion. R79 is not presumed returned or sufficient. Down-only route sufficiency cannot certify exact GU/Down cells. Trusted immutable owner-provided files remain required; regular-file/size/short-read checks are not descriptor-relative no-follow source sealing.
+
+Production expert_layout_load(48,512) and NativeRolePlan, no copied engine parser. Plan validates all role extents before assembly; selected blobs must match exact H2560/FF640, GU/Down/activation types/sizes and identical row geometry. Each cohort Gate+Up >64MiB AND Down >64MiB; all384full owned blobs <=1GiB combined. Refuse infeasible cells; never silently lower IDs/bytes. Assembly/hash/firsttouch/preallocation/init/independent references outside clocks; mappings close before service. No raw expert dump saved. Emit selected extent paths/tensor/offset/bytes, ID mapping and FNV fingerprints; root cryptographically pins original pack/shards/metadata/selected extents separately and rechecks source identity afterward. FNV is not SHA256.
+
+Build policy
+
+New CMake duplicates the reviewed v1 standalone CPU closure and per-TU ISA, not parent SYCL CMake or fsycl archive. Roleplan/layout/native_expert/pool/expert/q2_avx2/SYCLiq_avx2wrapper/iq_avx512/kq_avx2/kq_avx1. IntelLLVM C/C++, C++20, precise FP, no global Strata march/SYCL. Pinned static native GGML3cf03257f219afbe7334045ff7c6a06ac68c627d; CPU-only/Threads; no GPU backends/OpenMP/dynamic backends/tests/examples. IQ wrapper AVX-VNNI=0, IQ2S GCC absent. Q2 compile probe MUST equal1 (fatal if0), matching actual frozen host. Root still verifies clean compiled ggml/source hashes, compiler/compile flags/link/imports and new binary: prior build does not qualify a new target automatically. Existing nullable release callback required null; no engine registration/dependency introduced.
+
+Fixed math and reference gates
+
+Finite deterministic x uses only layer/token, never expert or cohort: ((i*37+layer*11+token*101)%509-254)/257.0f. Same-layer experts share prepared input bytes, NT2tokens distinct. Production input quantized once per used layer/token and checked vs GGML meaningfulbytes/canaries, outside service. Independent NT1GGML GU and Down20 must be bitexact; NT2/Q2 differences reported perID and aggregate maximum as characterization only, no new tolerance. Independent Down row control uses actual direct FF quantized into ggml representation; Q2 actual route uses ActQ and is different. No independent NT2/Q2 whole-FFN acceptance claimed.
+
+Down20 native_quant_h/native_down_rows; Down42 act_quant_any/q2_rows_any exactly as pool, not native_down_rows42. Full ActQ buffers with guards; compare meaningful q/scale/sum/hx and active bitplanefields both vs selected productionquantizer and initial reference, excluding padding. Finite FF/output/allrows/tails and meaningfulbytes checked; initial reference buffers immutable. Direct GU/quant/Down/full repeats and pool outputs require byte-exact expected results, independently pertoken. All384 initial direct/GGML and actualbatch pool parity gates precede timed rounds. Input bytes reverified after rounds. Pool scratch is not exposed; direct-pool comparison tests resulting partition output, not internal worker write-count instrumentation or an independent arithmetic oracle.
+
+Round timing
+
+2cohorts *5arms *28rounds,3warmup +25measurement,192IDs once per round. Five independent arms: GUonly; fullFFquantonly on referenceFF; Downonly on referencequant; directcomplete GU+Q+Down exactlyonce; poolwholebatch API. No unnecessary GU/Down/Q work injected into component intervals. Whole-round monotonic start/end only. No harness perexpert clock/check/hash/print/alloc inside intervals. Production pool internal phase clocks/joins remain unchanged. Buffer resets/references, job-array construction, validation, FNV and CSV/diag outside boundaries.
+
+One production pool lifetime fiveworkers+host, callerTASKS0/6, homogeneousjobbatch1/6. Actual rounds consist192calls for batch1 or32calls forbatch6. Retain whole-round outer and cumulative ms_multi_gu/Q/Down deltas. Never divide batch time byjobs or subtract scheduling to fabricate directservice. No mixedNT callback replay or GPU overlap claim. Same cellformat geometry acrossalljobs ensures public f/jobs,n call valid; unique buffers perexpert/token, stable prepared layerinputs, phasejoin unchanged.
+
+Orders are precomputed outside timing: SplitMix64 wrapping uint64 state initialized seed; visit cohorts0then1, rounds0..27; Fisher-Yates i191..1, j=next64%(i+1). Modulo shuffle is bounded deterministic, not asserted unbiased sampling. Train/holdout grouped preserving withincohort TSVorder. Identical perround order reused allarms; canonical FNV globalindex as4LEbytes ties IDmapping. Arm sequence GU/Q/Down/full/pool is rotated by (arm_index+round_index+seed%5)%5, coveringfivephase startingpositions over25rounds. Root additionally counterbalances process/cellprofile order and records thermal/frequency/load observations.
+
+Host affinity productionpin+RAII restoration afterpool destruction. PlannedworkerCPUs, observedhostCPU, Linux /proc task allowedCPUlists outside intervals, bounded128threads/<16KiBstatus. Lists do not map workerindex toTID or prove residency; root reconciles actualplacement. Pooldiag afterinitial admission and eachpoolround. Finite program exceptions normalexit1; production60sstall abort maysignal. Root owns deadline/exit/fault/cleanupreceipt, requires normal0+complete verifiedoutputs; parseableRESULT alone cannot admit finalwrite/close errors.
+
+Output/owner postprocessing
+
+CSV tags META/ENV/EXTENT/ID/REFERENCE/WORKING_SET/PLACEMENT/ROUTE/TASK_PLAN/WARMUP/ROUND/RESULT. ROUND cohort/arm/round0..24/GU/Down/NT/tasks/batchjobs/batches/logicaljobs192/orderFNV/outerms/poolGU/Q/Downms/outputFNV/hostCPU. 250ROUND +30WARMUP timing rows expected. Direct batches field means number ofcalls, notpoolbatch jobs. Zero pooldeltas directarms. REFERENCE preserves individual GGML deltas. RESULT correctness_pass only finite/reference/quantizer/repeat/partition checks, not performance/CI/holdout/full lifecycle pass.
+
+Root R46 bootstrap95%/relativeCI<=5%/holdout-overlap/variation gates and uncertainty interpretation remain external. This binary fixes25samples; any authorized extension to50 must be separately frozen source/recipe, never inferred to pass. Expert holdout is disjointIDs, not independent workload; source/A/B dependentprompt limits preserved. No policy/LRU/traffic/service-to-decode-latency/adoption/full262144 changes or claims. C/D/r5 and prior numerical/physical/reference statuses untouched.
+
+Root-only recipe (UNEXECUTED)
+
+WROLE assigned worktree; CAL_BUILD newisolated builddir; PRIVATE_RUN newprivate outputdir; PACK/PRIMARY/COHORT_TSV/GU/DOWN/NT/TASKS/BATCH/FROZEN_SEED frozen beforehand.
+cmake -S "$WROLE/sycl/tools/native-service-calibration" -B "$CAL_BUILD" -DCMAKE_C_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icx -DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icpx -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DSTRATA_ROOT="$WROLE" -DGGML_SOURCE_DIR=/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml
+cmake --build "$CAL_BUILD" --target native_service_calibration --parallel 6
+"$CAL_BUILD/native_service_calibration" "$PACK" "$PRIMARY" "$COHORT_TSV" "$GU" "$DOWN" "$NT" "$TASKS" "$BATCH" "$FROZEN_SEED" > "$PRIVATE_RUN/rounds.csv" 2> "$PRIVATE_RUN/pool-diag.txt"
+
+Separate correctnessprocess append --correctness-only, root R78 loader/syscall observation under frozen binary/environment, never use those instrumented outputs as timing. First rootsource-negative cases: missing/wrongheader/short/extra/duplicate/overlap/range/nondecimal/oversized TSV, wrongcell/NT/tasks/batch/seedoverflow, mismatched format/dims/geometry/bytes and insufficientworking sets. Existing syntheticroleplan negatives remain preserved. Root tests both Downroutes/NT/0-or6/taskprofile in separatefreshprocesses aftersource review, not by agent.
+
+Suggested finite root supervision wall1800s (reviseexplicitly ifownerbudgetrequires), CPU/RSS/AS/NOFILE/FSize, stdout2MiB/stderr2MiB. Ownedblobs<=1GiB plus tensMiB references/pool/ggml overhead; assemblymaps fullshards soASlimit mustaccommodate maps. SourcecapsnotRSSguarantees. Shared lock and privatewrites ownedroot. Retain compact source/env/IDs/extentSHA/individualrounds/correctness/affinity/fault/exit evidence. Profiler only separate admitted R74 process; no rawweights or automaticcleanup. Review point afterroot qualification/statistical decision. No v1repair from falseR77 blocker; R78 withdrawal retained.
