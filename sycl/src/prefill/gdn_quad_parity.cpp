@@ -49,12 +49,18 @@ struct Buffers {
   // All allocations happen before any recurrence submission; fixed cap<=2048.
   require(cap>0&&cap<=2048,"allocation chunk cap");owned.reserve(11);
   try{as=alloc<float>(NS+2*G);bs=alloc<float>(NS+2*G);h=alloc<float>(cap*10240);g=alloc<float>(cap*48);b=alloc<float>(cap*48);z=alloc<float>(cap*6144);gamma=alloc<float>(128);ay=alloc<float>(cap*6144+2*G);by=alloc<float>(cap*6144+2*G);ah=alloc<uint16_t>(cap*6144+2*G);bh=alloc<uint16_t>(cap*6144+2*G);}
-  catch(...){auto error=std::current_exception();for(auto p:owned)try{sycl::free(p,q);}catch(...){}std::rethrow_exception(error);}
+  catch(...){auto error=std::current_exception();for(auto p:owned)try{sycl::free(p,q);}catch(...){std::fprintf(stderr,"partial-allocation cleanup failed; original allocation failure retained\n");}std::rethrow_exception(error);}
  }
  ~Buffers() noexcept(false){// Normal calls drain before destruction; never retry a failed recurrence.
+  // An unclassified failed wait does not prove that commands retired. Keep all
+  // possibly referenced allocations until this failing process exits.
+  try{q.wait_and_throw();}catch(...){
+   std::fprintf(stderr,"queue drain failed; completion unknown; explicit USM release skipped for %zu allocations\n",owned.size());
+   if(std::uncaught_exceptions()==0)throw;
+   return; // Preserve the original exception; main exits with failure.
+  }
   std::exception_ptr error;
-  try{q.wait_and_throw();}catch(...){error=std::current_exception();}
-  for(auto p:owned)try{sycl::free(p,q);}catch(...){if(!error)error=std::current_exception();}
+  for(auto p:owned)try{sycl::free(p,q);}catch(...){std::fprintf(stderr,"USM release failed after successful drain\n");if(!error)error=std::current_exception();}
   if(error){if(std::uncaught_exceptions()==0)std::rethrow_exception(error);else std::fprintf(stderr,"teardown failure during original error; result remains failed\n");}
  }
  Buffers(const Buffers&)=delete;
@@ -135,8 +141,14 @@ void call(Buffers& d,size_t T,size_t prefix,bool cancel,bool force_deny=false){
 size_t decimal(const char* text){require(text&&*text,"empty argument");size_t n=0;for(const char* p=text;*p;++p){require(*p>='0'&&*p<='9',"nondecimal argument");require(n<=262144/10,"argument overflow/bound");n=n*10+size_t(*p-'0');require(n<=262144,"argument bound");}return n;}
 } // namespace
 int main(int argc,char** argv){try{
+ if(argc==2&&std::string(argv[1])=="--host-only"){
+  early_contract();
+  std::puts("PASS host-only empty/denial/negative/ordered-partial contracts; queue_lookup=false GPU_submission=false");
+  require(std::fflush(stdout)==0&&std::ferror(stdout)==0&&std::fflush(stderr)==0&&std::ferror(stderr)==0,"final output failure");
+  return 0;
+ }
  size_t total=0,chunk=2048;
- if(argc!=1){require(argc==5&&std::string(argv[1])=="--prefix"&&std::string(argv[3])=="--chunk","usage: gdn_quad_parity [--prefix 32768|262144 --chunk 1..2048]");total=decimal(argv[2]);chunk=decimal(argv[4]);require((total==32768||total==262144)&&chunk>0&&chunk<=2048&&(total+chunk-1)/chunk<=2048,"bounded prefix/chunk admission");}
+ if(argc!=1){require(argc==5&&std::string(argv[1])=="--prefix"&&std::string(argv[3])=="--chunk","usage: gdn_quad_parity [--host-only | --prefix 32768|262144 --chunk 1..2048]");total=decimal(argv[2]);chunk=decimal(argv[4]);require((total==32768||total==262144)&&chunk>0&&chunk<=2048&&(total+chunk-1)/chunk<=2048,"bounded prefix/chunk admission");}
  early_contract();auto& q=*strata::q_of(nullptr);require(q.has_property<sycl::property::queue::in_order>(),"parity requires same in-order queue");
  std::printf("device=%s prefix=%zu chunk_cap=%zu numerical_gate=bitwise model=false performance=false\n",q.get_device().get_info<sycl::info::device::name>().c_str(),total,chunk);
  if(total){Buffers d(q,chunk);initialize(d,false,false);size_t prefix=0;while(prefix<total){size_t live=std::min(chunk,total-prefix);call(d,live,prefix,false);prefix+=live;}require(prefix==total,"prefix carry length");}
