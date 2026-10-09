@@ -1,0 +1,15 @@
+diff --git a/sycl/src/prefill/prefill.cpp b/sycl/src/prefill/prefill.cpp
+index 0dddde51..9f48cb11 100644
+--- a/sycl/src/prefill/prefill.cpp
++++ b/sycl/src/prefill/prefill.cpp
+@@ -4852,6 +4852,10 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
+                                 try {
+                             while (k < kend && seq[k].e < e_stop) {
+                                     if (gg_nslots > 0) flush();   // the open group's slots get their event first
++                                    // Even an unrouted entry must finish publishing its copy before
++                                    // the consumer replaces this slot's event and used_of mapping.
++                                    // Otherwise skip-ahead can race the issuer reading a reused slot.
++                                    wait_issued(k);
+                                     const int sl = (int) (k % (size_t) m.ring);
+                                     dpct::sync_barrier(m.used[sl], m.cs);
+                                     m.used_of[sl] = sl;

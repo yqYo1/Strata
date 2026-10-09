@@ -1,0 +1,2067 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_executed": false,
+  "compiled_engine": false,
+  "runtime_race_detector_executed": false,
+  "created_utc": "2026-10-09T00:58:27.052598+00:00",
+  "checker_sha256": "9966dd93db9cc8c59bd1f2ce1b87f1c389b62c5fee5aba411687a8b1b333ee38",
+  "old_source_sha256": "6399d65feea884f932a5a1079a91c80228293bfc3be371732b48413977229f84",
+  "new_source_sha256": "2b37d84a973dbb11b78cd76bdba74e7632cd1bfb8695da4b772067b9dcc32109",
+  "exact_delta_only_skip_publication_acquire": true,
+  "source_bound_plain_index_counterexamples": 12,
+  "replacement_source_closes_all_checked_counterexamples": true,
+  "all_cases_have_legal_copy_credit_admission": true,
+  "supersedes_rejected_model_v1": "The earlier v1 warm start pretended entries beyond ring capacity were issued before receiving credit for nonzero target slots. This v2 explicitly admits every initial/wrapped copy and keeps v1 as rejected historical evidence.",
+  "limits": [
+    "This deterministic C++ happens-before model checks twelve valid paused-issuer/skipped-prefix schedules. It is not exhaustive and does not execute SYCL, UR or the GPU.",
+    "The conflicting object is the project plain int used_of field; no claim about SYCL API thread-safety is required.",
+    "The native copy-only routedSTAGE8 full256K process does not enable this stream-all path and remains unchanged.",
+    "This does not prove the cause of any observed hang or numerical correctness/performance of the new source. Full engine build and bounded logged GPU checks remain pending."
+  ],
+  "full_private_receipt_sha256": "ed483f8504ead436eae657242064443329a73384c3e335e96101eeabef18f3aa",
+  "cases": [
+    {
+      "ring": 16,
+      "slot": 0,
+      "paused_copy_entry": 16,
+      "variant": "original-skip-release",
+      "read_clock": [
+        3,
+        50
+      ],
+      "replacement_clock": [
+        34,
+        0
+      ],
+      "unordered_plain_index_access": true,
+      "consumer_waited_for_paused_copy_publication": false,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true
+    },
+    {
+      "ring": 16,
+      "slot": 0,
+      "paused_copy_entry": 16,
+      "variant": "with-publication-acquire",
+      "read_clock": [
+        4,
+        50
+      ],
+      "replacement_clock": [
+        52,
+        52
+      ],
+      "unordered_plain_index_access": false,
+      "consumer_waited_for_paused_copy_publication": true,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true
+    },
+    {
+      "ring": 16,
+      "slot": 8,
+      "paused_copy_entry": 24,
+      "variant": "original-skip-release",
+      "read_clock": [
+        19,
+        74
+      ],
+      "replacement_clock": [
+        50,
+        0
+      ],
+      "unordered_plain_index_access": true,
+      "consumer_waited_for_paused_copy_publication": false,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true
+    },
+    {
+      "ring": 16,
+      "slot": 8,
+      "paused_copy_entry": 24,
+      "variant": "with-publication-acquire",
+      "read_clock": [
+        28,
+        74
+      ],
+      "replacement_clock": [
+        76,
+        76
+      ],
+      "unordered_plain_index_access": false,
+      "consumer_waited_for_paused_copy_publication": true,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true
+    },
+    {
+      "ring": 16,
+      "slot": 15,
+      "paused_copy_entry": 31,
+      "variant": "original-skip-release",
+      "read_clock": [
+        33,
+        95
+      ],
+      "replacement_clock": [
+        64,
+        0
+      ],
+      "unordered_plain_index_access": true,
+      "consumer_waited_for_paused_copy_publication": false,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true
+    },
+    {
+      "ring": 16,
+      "slot": 15,
+      "paused_copy_entry": 31,
+      "variant": "with-publication-acquire",
+      "read_clock": [
+        49,
+        95
+      ],
+      "replacement_clock": [
+        97,
+        97
+      ],
+      "unordered_plain_index_access": false,
+      "consumer_waited_for_paused_copy_publication": true,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true
+    },
+    {
+      "ring": 32,
+      "slot": 0,
+      "paused_copy_entry": 32,
+      "variant": "original-skip-release",
+      "read_clock": [
+        3,
+        98
+      ],
+      "replacement_clock": [
+        66,
+        0
+      ],
+      "unordered_plain_index_access": true,
+      "consumer_waited_for_paused_copy_publication": false,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true
+    },
+    {
+      "ring": 32,
+      "slot": 0,
+      "paused_copy_entry": 32,
+      "variant": "with-publication-acquire",
+      "read_clock": [
+        4,
+        98
+      ],
+      "replacement_clock": [
+        100,
+        100
+      ],
+      "unordered_plain_index_access": false,
+      "consumer_waited_for_paused_copy_publication": true,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true
+    },
+    {
+      "ring": 32,
+      "slot": 16,
+      "paused_copy_entry": 48,
+      "variant": "original-skip-release",
+      "read_clock": [
+        35,
+        146
+      ],
+      "replacement_clock": [
+        98,
+        0
+      ],
+      "unordered_plain_index_access": true,
+      "consumer_waited_for_paused_copy_publication": false,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true
+    },
+    {
+      "ring": 32,
+      "slot": 16,
+      "paused_copy_entry": 48,
+      "variant": "with-publication-acquire",
+      "read_clock": [
+        52,
+        146
+      ],
+      "replacement_clock": [
+        148,
+        148
+      ],
+      "unordered_plain_index_access": false,
+      "consumer_waited_for_paused_copy_publication": true,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true
+    },
+    {
+      "ring": 32,
+      "slot": 31,
+      "paused_copy_entry": 63,
+      "variant": "original-skip-release",
+      "read_clock": [
+        65,
+        191
+      ],
+      "replacement_clock": [
+        128,
+        0
+      ],
+      "unordered_plain_index_access": true,
+      "consumer_waited_for_paused_copy_publication": false,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true
+    },
+    {
+      "ring": 32,
+      "slot": 31,
+      "paused_copy_entry": 63,
+      "variant": "with-publication-acquire",
+      "read_clock": [
+        97,
+        191
+      ],
+      "replacement_clock": [
+        193,
+        193
+      ],
+      "unordered_plain_index_access": false,
+      "consumer_waited_for_paused_copy_publication": true,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true
+    },
+    {
+      "ring": 64,
+      "slot": 0,
+      "paused_copy_entry": 64,
+      "variant": "original-skip-release",
+      "read_clock": [
+        3,
+        194
+      ],
+      "replacement_clock": [
+        130,
+        0
+      ],
+      "unordered_plain_index_access": true,
+      "consumer_waited_for_paused_copy_publication": false,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true
+    },
+    {
+      "ring": 64,
+      "slot": 0,
+      "paused_copy_entry": 64,
+      "variant": "with-publication-acquire",
+      "read_clock": [
+        4,
+        194
+      ],
+      "replacement_clock": [
+        196,
+        196
+      ],
+      "unordered_plain_index_access": false,
+      "consumer_waited_for_paused_copy_publication": true,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true
+    },
+    {
+      "ring": 64,
+      "slot": 32,
+      "paused_copy_entry": 96,
+      "variant": "original-skip-release",
+      "read_clock": [
+        67,
+        290
+      ],
+      "replacement_clock": [
+        194,
+        0
+      ],
+      "unordered_plain_index_access": true,
+      "consumer_waited_for_paused_copy_publication": false,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true
+    },
+    {
+      "ring": 64,
+      "slot": 32,
+      "paused_copy_entry": 96,
+      "variant": "with-publication-acquire",
+      "read_clock": [
+        100,
+        290
+      ],
+      "replacement_clock": [
+        292,
+        292
+      ],
+      "unordered_plain_index_access": false,
+      "consumer_waited_for_paused_copy_publication": true,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true
+    },
+    {
+      "ring": 64,
+      "slot": 63,
+      "paused_copy_entry": 127,
+      "variant": "original-skip-release",
+      "read_clock": [
+        129,
+        383
+      ],
+      "replacement_clock": [
+        256,
+        0
+      ],
+      "unordered_plain_index_access": true,
+      "consumer_waited_for_paused_copy_publication": false,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true
+    },
+    {
+      "ring": 64,
+      "slot": 63,
+      "paused_copy_entry": 127,
+      "variant": "with-publication-acquire",
+      "read_clock": [
+        193,
+        383
+      ],
+      "replacement_clock": [
+        385,
+        385
+      ],
+      "unordered_plain_index_access": false,
+      "consumer_waited_for_paused_copy_publication": true,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true
+    },
+    {
+      "ring": 128,
+      "slot": 0,
+      "paused_copy_entry": 128,
+      "variant": "original-skip-release",
+      "read_clock": [
+        3,
+        386
+      ],
+      "replacement_clock": [
+        258,
+        0
+      ],
+      "unordered_plain_index_access": true,
+      "consumer_waited_for_paused_copy_publication": false,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true
+    },
+    {
+      "ring": 128,
+      "slot": 0,
+      "paused_copy_entry": 128,
+      "variant": "with-publication-acquire",
+      "read_clock": [
+        4,
+        386
+      ],
+      "replacement_clock": [
+        388,
+        388
+      ],
+      "unordered_plain_index_access": false,
+      "consumer_waited_for_paused_copy_publication": true,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true
+    },
+    {
+      "ring": 128,
+      "slot": 64,
+      "paused_copy_entry": 192,
+      "variant": "original-skip-release",
+      "read_clock": [
+        131,
+        578
+      ],
+      "replacement_clock": [
+        386,
+        0
+      ],
+      "unordered_plain_index_access": true,
+      "consumer_waited_for_paused_copy_publication": false,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true
+    },
+    {
+      "ring": 128,
+      "slot": 64,
+      "paused_copy_entry": 192,
+      "variant": "with-publication-acquire",
+      "read_clock": [
+        196,
+        578
+      ],
+      "replacement_clock": [
+        580,
+        580
+      ],
+      "unordered_plain_index_access": false,
+      "consumer_waited_for_paused_copy_publication": true,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true
+    },
+    {
+      "ring": 128,
+      "slot": 127,
+      "paused_copy_entry": 255,
+      "variant": "original-skip-release",
+      "read_clock": [
+        257,
+        767
+      ],
+      "replacement_clock": [
+        512,
+        0
+      ],
+      "unordered_plain_index_access": true,
+      "consumer_waited_for_paused_copy_publication": false,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true
+    },
+    {
+      "ring": 128,
+      "slot": 127,
+      "paused_copy_entry": 255,
+      "variant": "with-publication-acquire",
+      "read_clock": [
+        385,
+        767
+      ],
+      "replacement_clock": [
+        769,
+        769
+      ],
+      "unordered_plain_index_access": false,
+      "consumer_waited_for_paused_copy_publication": true,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true
+    }
+  ],
+  "representative_complete_traces": [
+    {
+      "ring": 16,
+      "slot": 0,
+      "paused_copy_entry": 16,
+      "variant": "original-skip-release",
+      "read_clock": [
+        3,
+        50
+      ],
+      "replacement_clock": [
+        34,
+        0
+      ],
+      "unordered_plain_index_access": true,
+      "consumer_waited_for_paused_copy_publication": false,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true,
+      "trace": [
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(0)",
+          "clock": [
+            1,
+            0
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            1
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry0; copied[0]; stage_live = true",
+          "clock": [
+            1,
+            2
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(1)",
+          "clock": [
+            1,
+            3
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            4
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry1; copied[1]; stage_live = true",
+          "clock": [
+            1,
+            5
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(2)",
+          "clock": [
+            1,
+            6
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            7
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry2; copied[2]; stage_live = true",
+          "clock": [
+            1,
+            8
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(3)",
+          "clock": [
+            1,
+            9
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            10
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry3; copied[3]; stage_live = true",
+          "clock": [
+            1,
+            11
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(4)",
+          "clock": [
+            1,
+            12
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            13
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry4; copied[4]; stage_live = true",
+          "clock": [
+            1,
+            14
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(5)",
+          "clock": [
+            1,
+            15
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            16
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry5; copied[5]; stage_live = true",
+          "clock": [
+            1,
+            17
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(6)",
+          "clock": [
+            1,
+            18
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            19
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry6; copied[6]; stage_live = true",
+          "clock": [
+            1,
+            20
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(7)",
+          "clock": [
+            1,
+            21
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            22
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry7; copied[7]; stage_live = true",
+          "clock": [
+            1,
+            23
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(8)",
+          "clock": [
+            1,
+            24
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            25
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry8; copied[8]; stage_live = true",
+          "clock": [
+            1,
+            26
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(9)",
+          "clock": [
+            1,
+            27
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            28
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry9; copied[9]; stage_live = true",
+          "clock": [
+            1,
+            29
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(10)",
+          "clock": [
+            1,
+            30
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            31
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry10; copied[10]; stage_live = true",
+          "clock": [
+            1,
+            32
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(11)",
+          "clock": [
+            1,
+            33
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            34
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry11; copied[11]; stage_live = true",
+          "clock": [
+            1,
+            35
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(12)",
+          "clock": [
+            1,
+            36
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            37
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry12; copied[12]; stage_live = true",
+          "clock": [
+            1,
+            38
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(13)",
+          "clock": [
+            1,
+            39
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            40
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry13; copied[13]; stage_live = true",
+          "clock": [
+            1,
+            41
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(14)",
+          "clock": [
+            1,
+            42
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            43
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry14; copied[14]; stage_live = true",
+          "clock": [
+            1,
+            44
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(15)",
+          "clock": [
+            1,
+            45
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            46
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry15; copied[15]; stage_live = true",
+          "clock": [
+            1,
+            47
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(16)",
+          "clock": [
+            1,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[0] = 0 (skipped entry0)",
+          "clock": [
+            2,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(1)",
+          "clock": [
+            3,
+            0
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 1",
+          "clock": [
+            3,
+            49
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "read used_of[0] for wrapped copy entry16",
+          "clock": [
+            3,
+            50
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[1] = 1 (skipped entry1)",
+          "clock": [
+            4,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(2)",
+          "clock": [
+            5,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[2] = 2 (skipped entry2)",
+          "clock": [
+            6,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(3)",
+          "clock": [
+            7,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[3] = 3 (skipped entry3)",
+          "clock": [
+            8,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(4)",
+          "clock": [
+            9,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[4] = 4 (skipped entry4)",
+          "clock": [
+            10,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(5)",
+          "clock": [
+            11,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[5] = 5 (skipped entry5)",
+          "clock": [
+            12,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(6)",
+          "clock": [
+            13,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[6] = 6 (skipped entry6)",
+          "clock": [
+            14,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(7)",
+          "clock": [
+            15,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[7] = 7 (skipped entry7)",
+          "clock": [
+            16,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(8)",
+          "clock": [
+            17,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[8] = 8 (skipped entry8)",
+          "clock": [
+            18,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(9)",
+          "clock": [
+            19,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[9] = 9 (skipped entry9)",
+          "clock": [
+            20,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(10)",
+          "clock": [
+            21,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[10] = 10 (skipped entry10)",
+          "clock": [
+            22,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(11)",
+          "clock": [
+            23,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[11] = 11 (skipped entry11)",
+          "clock": [
+            24,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(12)",
+          "clock": [
+            25,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[12] = 12 (skipped entry12)",
+          "clock": [
+            26,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(13)",
+          "clock": [
+            27,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[13] = 13 (skipped entry13)",
+          "clock": [
+            28,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(14)",
+          "clock": [
+            29,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[14] = 14 (skipped entry14)",
+          "clock": [
+            30,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(15)",
+          "clock": [
+            31,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[15] = 15 (skipped entry15)",
+          "clock": [
+            32,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(16)",
+          "clock": [
+            33,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[0] = 0 (skipped entry16)",
+          "clock": [
+            34,
+            0
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(17)",
+          "clock": [
+            35,
+            0
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "copy entry16; copied[0] barrier; slot-live publication",
+          "clock": [
+            3,
+            51
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(17)",
+          "clock": [
+            3,
+            52
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 17",
+          "clock": [
+            35,
+            53
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "read released used_of[0] on next wrap",
+          "clock": [
+            35,
+            54
+          ]
+        }
+      ]
+    },
+    {
+      "ring": 16,
+      "slot": 0,
+      "paused_copy_entry": 16,
+      "variant": "with-publication-acquire",
+      "read_clock": [
+        4,
+        50
+      ],
+      "replacement_clock": [
+        52,
+        52
+      ],
+      "unordered_plain_index_access": false,
+      "consumer_waited_for_paused_copy_publication": true,
+      "next_wrap_acquires_replacement": true,
+      "all_initial_and_wrapped_copies_obey_credit": true,
+      "trace": [
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(0)",
+          "clock": [
+            1,
+            0
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            1
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry0; copied[0]; stage_live = true",
+          "clock": [
+            1,
+            2
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(1)",
+          "clock": [
+            1,
+            3
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            4
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry1; copied[1]; stage_live = true",
+          "clock": [
+            1,
+            5
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(2)",
+          "clock": [
+            1,
+            6
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            7
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry2; copied[2]; stage_live = true",
+          "clock": [
+            1,
+            8
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(3)",
+          "clock": [
+            1,
+            9
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            10
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry3; copied[3]; stage_live = true",
+          "clock": [
+            1,
+            11
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(4)",
+          "clock": [
+            1,
+            12
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            13
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry4; copied[4]; stage_live = true",
+          "clock": [
+            1,
+            14
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(5)",
+          "clock": [
+            1,
+            15
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            16
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry5; copied[5]; stage_live = true",
+          "clock": [
+            1,
+            17
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(6)",
+          "clock": [
+            1,
+            18
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            19
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry6; copied[6]; stage_live = true",
+          "clock": [
+            1,
+            20
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(7)",
+          "clock": [
+            1,
+            21
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            22
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry7; copied[7]; stage_live = true",
+          "clock": [
+            1,
+            23
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(8)",
+          "clock": [
+            1,
+            24
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            25
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry8; copied[8]; stage_live = true",
+          "clock": [
+            1,
+            26
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(9)",
+          "clock": [
+            1,
+            27
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            28
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry9; copied[9]; stage_live = true",
+          "clock": [
+            1,
+            29
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(10)",
+          "clock": [
+            1,
+            30
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            31
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry10; copied[10]; stage_live = true",
+          "clock": [
+            1,
+            32
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(11)",
+          "clock": [
+            1,
+            33
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            34
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry11; copied[11]; stage_live = true",
+          "clock": [
+            1,
+            35
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(12)",
+          "clock": [
+            1,
+            36
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            37
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry12; copied[12]; stage_live = true",
+          "clock": [
+            1,
+            38
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(13)",
+          "clock": [
+            1,
+            39
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            40
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry13; copied[13]; stage_live = true",
+          "clock": [
+            1,
+            41
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(14)",
+          "clock": [
+            1,
+            42
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            43
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry14; copied[14]; stage_live = true",
+          "clock": [
+            1,
+            44
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(15)",
+          "clock": [
+            1,
+            45
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 0",
+          "clock": [
+            1,
+            46
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "initial copy entry15; copied[15]; stage_live = true",
+          "clock": [
+            1,
+            47
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(16)",
+          "clock": [
+            1,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "issued.acquire() -> 16",
+          "clock": [
+            2,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[0] = 0 (skipped entry0)",
+          "clock": [
+            3,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(1)",
+          "clock": [
+            4,
+            48
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 1",
+          "clock": [
+            4,
+            49
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "read used_of[0] for wrapped copy entry16",
+          "clock": [
+            4,
+            50
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "issued.acquire() -> 16",
+          "clock": [
+            5,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[1] = 1 (skipped entry1)",
+          "clock": [
+            6,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(2)",
+          "clock": [
+            7,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "issued.acquire() -> 16",
+          "clock": [
+            8,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[2] = 2 (skipped entry2)",
+          "clock": [
+            9,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(3)",
+          "clock": [
+            10,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "issued.acquire() -> 16",
+          "clock": [
+            11,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[3] = 3 (skipped entry3)",
+          "clock": [
+            12,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(4)",
+          "clock": [
+            13,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "issued.acquire() -> 16",
+          "clock": [
+            14,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[4] = 4 (skipped entry4)",
+          "clock": [
+            15,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(5)",
+          "clock": [
+            16,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "issued.acquire() -> 16",
+          "clock": [
+            17,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[5] = 5 (skipped entry5)",
+          "clock": [
+            18,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(6)",
+          "clock": [
+            19,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "issued.acquire() -> 16",
+          "clock": [
+            20,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[6] = 6 (skipped entry6)",
+          "clock": [
+            21,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(7)",
+          "clock": [
+            22,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "issued.acquire() -> 16",
+          "clock": [
+            23,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[7] = 7 (skipped entry7)",
+          "clock": [
+            24,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(8)",
+          "clock": [
+            25,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "issued.acquire() -> 16",
+          "clock": [
+            26,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[8] = 8 (skipped entry8)",
+          "clock": [
+            27,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(9)",
+          "clock": [
+            28,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "issued.acquire() -> 16",
+          "clock": [
+            29,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[9] = 9 (skipped entry9)",
+          "clock": [
+            30,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(10)",
+          "clock": [
+            31,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "issued.acquire() -> 16",
+          "clock": [
+            32,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[10] = 10 (skipped entry10)",
+          "clock": [
+            33,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(11)",
+          "clock": [
+            34,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "issued.acquire() -> 16",
+          "clock": [
+            35,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[11] = 11 (skipped entry11)",
+          "clock": [
+            36,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(12)",
+          "clock": [
+            37,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "issued.acquire() -> 16",
+          "clock": [
+            38,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[12] = 12 (skipped entry12)",
+          "clock": [
+            39,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(13)",
+          "clock": [
+            40,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "issued.acquire() -> 16",
+          "clock": [
+            41,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[13] = 13 (skipped entry13)",
+          "clock": [
+            42,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(14)",
+          "clock": [
+            43,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "issued.acquire() -> 16",
+          "clock": [
+            44,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[14] = 14 (skipped entry14)",
+          "clock": [
+            45,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(15)",
+          "clock": [
+            46,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "issued.acquire() -> 16",
+          "clock": [
+            47,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[15] = 15 (skipped entry15)",
+          "clock": [
+            48,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(16)",
+          "clock": [
+            49,
+            48
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "issued.acquire() -> 16",
+          "clock": [
+            50,
+            48
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "copy entry16; copied[0] barrier; slot-live publication",
+          "clock": [
+            4,
+            51
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "issued.release(17)",
+          "clock": [
+            4,
+            52
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "issued.acquire() -> 17",
+          "clock": [
+            51,
+            52
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "used_of[0] = 0 (skipped entry16)",
+          "clock": [
+            52,
+            52
+          ]
+        },
+        {
+          "thread": "consumer",
+          "operation": "consumed.release(17)",
+          "clock": [
+            53,
+            52
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "consumed.acquire() -> 17",
+          "clock": [
+            53,
+            53
+          ]
+        },
+        {
+          "thread": "issuer",
+          "operation": "read released used_of[0] on next wrap",
+          "clock": [
+            53,
+            54
+          ]
+        }
+      ]
+    }
+  ]
+}
