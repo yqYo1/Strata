@@ -5,8 +5,8 @@ had returned and no research agent was active. Root resumed multiple independent
 read-only researchers and continued its own execution. The recurring assignment,
 shared-history, separate implementation and root-only testing rules are now in
 AGENTS.md. Returned reports remain files with exact hashes; they are reviewed
-before adoption. Registryv35 has100 completed Luna reports and preserves v34's
-previous snapshot in the Git history.
+before adoption. Registryv36 has102 completed Luna reports and preserves prior
+immutable snapshots in the Git history.
 
 ## Division of work
 
@@ -21,12 +21,12 @@ fixtures and pure byte-framing helper. Root owns every actual execution and
 serializes builds, tests, inference, profiling and cleanup with the measurement
 lock. Research does not hold up independent main work.
 
-| Latest registryv35 assignment | Model | Scope | State at snapshot |
+| Latest registryv36 assignment | Model | Scope | State at snapshot |
 | --- | --- | --- | --- |
-| Expert payload adapter | gpt-6-luna | Exact production sample extents, format geometry and read-only calibration input contract | Returned and reviewed |
-| Protocol review | gpt-6-luna | Independent byte-framer/oracle and controller integration conditions | Returned and reviewed |
-| Implementation agent | gpt-6.1-sol | New controller protocol/final-budget integration and CPU fixture source | Running, source only; root tests |
-| Main agent | Root | Source review, actual build/tests, durable archive and next admission gates | No live execution process |
+| Shape join review | gpt-6-luna | Independent per-pair NT/type join and scalar fixture oracle | Running, read only |
+| External cache research | gpt-6-luna | Cost-aware decode cache scheduling in other implementations and blogs | Running, read only |
+| Implementation agent | gpt-6.1-sol | v4 EOF origin/order and final compact receipt size, independent fixture source | Running, source only; root tests |
+| Main agent | Root | Shape join implementation and actual CPU tests, archive and next admission gates | CPU run closed; no live GPU process |
 
 Every assignment receives the past-report directory and reviewed decisions.
 R45 found no distinct external exact-weight AVX2 NT1/2 candidate; this is a
@@ -40,11 +40,16 @@ run has no matching free-memory snapshot; fit and grouped slot maps remain
 unqualified. R48 corrects the raw-mmap input assumption: separate GGUF gate/up/down slices
 require the production reader to assemble a logical expert blob; the standalone
 CPU harness currently lacks that reader link. It also reviews framing limits and
-tail ownership. A separate Sol is preparing protocol integration. The next two
-Luna scopes specifically await that returned immutable v3/fixture source, then
-review byte ownership/budgets and independent fake-engine/admission oracles
-while root prepares/runs serial tests. This dependency is recorded explicitly;
-research is not considered finished.
+tail ownership. The separate Sol returned v3 protocol integration. Two independent R49 Luna
+reviews retained its admission/math gates but found transport EOF evidence and
+final failure-receipt reserve gaps. Root ran the nine fake-source CPU fixtures;
+they passed in .463s, which does not qualify actual controller/PTY/model behavior.
+Root implemented static per-pair NT1/NT2 and per-format native-cell reconciliation;
+eight independent scalar job-list and metadata fixtures passed in .374s. Root
+then assigned R50 independent join/oracle review and a separate external-cache
+screen, while the Sol implements v4 transport/budget fixes. All three assignments
+received the shared history and reviewed R49 gaps. Root continues its own work;
+new-source inference is held until the required controller gates are qualified.
 
 ## Closed model diagnostic and numerical limits
 
@@ -140,13 +145,13 @@ build is retained for the named controller-integration consumer. Successful32K
 raw duplicates can be retired after evidence extraction; no cleanup ran here.
 No separate resume checkpoint exists. Follow docs/ARTIFACT_RETENTION.md.
 
-Next root work is strict protocol-boundary/final-budget integration and CPU
-negative cases, then independent per-type/NT counter joining. Only after those
-passes is the fourfresh32K route diagnostic eligible. This independent baseline-
+Next root work is review and CPU qualification of returned v4 transport/final
+receipt fixes, then integration of the independently reviewed NT/type helper.
+Only after those passes is the fourfresh32K route diagnostic eligible. This independent baseline-
 derived decode diagnostic does not adopt C/D prefill. Review the new Luna scopes
 before choosing a separate implementation; root manages all execution.
 
-The two archived pinned controller snapshots retain their original trailing
+The archived pinned controller snapshots retain their original trailing
 spaces so source hashes match actual qualification. Whitespace validation
-checks other changes normally; those two byte-preserved sources exempt only
+checks other changes normally; those byte-preserved sources exempt only
 end-of-line/end-of-file whitespace. All archive hashes were verified.
