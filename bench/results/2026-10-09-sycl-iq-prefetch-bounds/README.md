@@ -23,3 +23,26 @@ actual helper/parser boundary cases and native CPU row output parity, build all
 115 engine objects with the qualified flags, and then run logged 32K correctness
 and separate repeated decode timing. Physical 262144-cell/session qualification
 is required before adoption. No performance improvement is claimed.
+
+
+## CPU boundary validation
+
+The actual parser and hint helper extracted from this source passed 24 separate
+ASan/UBSan processes on the Ryzen 5600X. Across 745920 cases, the address oracle
+checked 582238 hint targets with volatile reads. Logical bounds include empty
+ranges, final bytes, page/cacheline boundaries and assigned-row ends, with
+prefix/suffix sentinels outside the allowed range. Environment cases cover the
+unset default, valid distances, negative/zero values, INT_MAX, overflow, huge
+integers, leading zeros, spaces, plus signs and trailing junk. Every target was
+strictly inside its supplied logical range; interior distance and T0 policy
+were preserved. These are CPU helper checks, without GPU/model execution or
+whole-kernel math/performance qualification.
+
+See [CPU receipt](host-test-receipt-v1.json),
+[actual-source harness](actual-hint-host-test-v1.cpp),
+[controller](run-hint-host-test-v1.py) and
+[independent source review](independent-source-review-round6.txt).
+The independent report has a SHA spelling error in its header: the actual
+rows.inl SHA is `290e479093fcdcd3ba162f448bc9f422a7d85efbcd1917a7f11423937adb43c5`.
+The original report is preserved. No causal link to a GPU fault is established.
+Full native row, 32K/session/full 256K and performance checks remain pending.

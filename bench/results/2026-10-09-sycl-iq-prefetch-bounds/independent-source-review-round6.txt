@@ -1,0 +1,41 @@
+# Independent review: bounded IQ AVX2 prefetch fix (round 6)
+
+Reviewed read-only at candidate HEAD `154685d5da671efb936e1fd36e04cf9a57037e9e`, based on `23268953314d12588fd3f496414a46bd426a7306`. Verified SHA-256 against the supplied receipt: `src/kernels/cpu/iq_avx2.cpp` = `6b12af8b57c12698de6a240c85706fdcfadccb67fb4aa72b2baa715cc3f00d4e`; `src/kernels/cpu/iq_avx2_rows.inl` = `290e479093fcdcdcd3ba162f448bc9f422a7d85efbcd1917a7f11423937adb43c5`.
+
+No source edits, build, tests, model/GPU execution, profiler, or fetch were performed.
+
+## Review result
+
+The guard in `rows_ahead` is correct under its caller contract: `blk` and `end` designate positions in the same byte array, with `blk <= end`. It computes `remaining = end - blk` before forming hint pointers, returns when `distance >= remaining`, then forms `blk + distance`; it forms the second target only if `remaining - distance > 64`, which ensures `distance + 64 < remaining`. Equality cases therefore do not form one-past pointers. The resulting prefetch target addresses are strictly inside the passed byte range. The x86 T0 hint policy and default distance are retained.
+
+All three call sites pass compatible bounds:
+
+- GU rows pass `gate_end = blob + up_off`; the Up side passes `up_end = blob + up_off + up_off`. The matrix geometry comes from `native_fmt` in `native_expert.cpp`: `up_off = gu_row * n_ff`, the full GU/Up matrices have `n_ff` rows, and `bytes = 2*up_off + down_bytes`. The loop's rows use offsets `r*gu_row`, so their blocks are before the corresponding matrix end. This assumes the documented/actual native expert blob has at least `f.bytes` readable bytes, as the existing dot code already requires.
+- The regular GU-format dot path passes `w + r1*row_bytes`; `r1` is the end of the current row partition. Its rows are generated for `r0 <= r < r1`, so all block starts are before that end.
+- IQ4_NL Down uses the same partition-end rule with `row_bytes`; the byte blocks stay within each row and the end covers the assigned rows.
+
+Each of those row functions now returns before forming an end pointer when `r0 >= r1`. This covers empty pool partitions without evaluating the newly added range-end arithmetic. Pool partitions are nonnegative, clipped half-open row ranges. IQ2_XS takes the same `end` through `row_dot_any`; TY-based gathered/non-gathered GU variants and both plain/VNNI template copies use the same edited row definitions, so there is no separate unbounded variant. IQ4_NL uses its own bounded Down loop. The MAXT/token grouping changes no row endpoint.
+
+The endpoint expressions do use ordinary `size_t` products (`r1 * row_bytes`, `r * gu_row`) and `up_off + up_off`. No new overflow guard was added. For valid `NativeFmt` dimensions and a valid blob extent these are representable by the existing model/blob contract; if that contract permits adversarial dimensions or malformed blob lengths, the pointer arithmetic remains conditional on those upstream checks. This review did not establish an unchecked externally callable path that violates the contract. One useful future hardening step would be to keep explicit byte lengths in the API and validate multiplication/addition before forming all matrix endpoints, but it is not a demonstrated defect in this patch's normal caller path.
+
+`end - blk` is defined only when both point into the same array object (or one-past) and are ordered. The production callers satisfy this for a well-formed contiguous expert blob: the GU endpoints and block pointers are in the same blob, and Down's `w` and endpoint are in the same contiguous Down matrix. The contract should remain explicit if these helpers are reused with segmented/non-array-backed storage.
+
+## Parser review
+
+`prefetch_distance` now uses `std::from_chars` over the complete environment string, with the end checked against the terminating NUL. `v` is checked for null before `strlen`; `strlen`'s end points at the valid NUL byte, so reading `*parsed.ptr` is valid for success and parse-error results. `from_chars` reports out-of-range input without overflowing `int`. Missing variable still means 2048. Only a fully parsed positive `int` is enabled; malformed, overflowing, zero, and negative values disable prefetch.
+
+Intentional differences from `atoi`: leading `+` is rejected by integer `from_chars`; leading/trailing whitespace is rejected; trailing junk (`"2048x"`) is rejected instead of accepting the numeric prefix; empty and nonnumeric strings disable as before; a leading minus parses but is disabled by the positive check; out-of-range decimal input now disables rather than invoking `atoi`'s nonportable overflow behavior. Leading zeros remain accepted. These are parsing-policy changes only, not arithmetic/dot changes.
+
+## Preservation and qualification
+
+The source diff changes the helper signature, end propagation, empty-range guards, and parser. The IQ lookup, quantization, integer intrinsics, FMA sequence/order, row output, ISA selection, gather selection, dispatch thresholds, and pool queues are unchanged. This supports a source-level conclusion that arithmetic semantics are preserved, but does not replace byte-parity or compilation tests across AVX2/VNNI and gather variants.
+
+The fix addresses the identified out-of-array pointer-formation hazard for positive prefetch distances, conditional on the stated valid contiguous blob/range contract. It does not establish that the prior code caused any GPU fault. No runtime or performance conclusion is available because this candidate was not compiled or executed. Default-distance hint suppression at range tails may alter cache behavior; that is a performance hypothesis and requires measurement.
+
+## Evidence inspected
+
+- Candidate `src/kernels/cpu/iq_avx2.cpp:184-207` (`from_chars`, bounded helper).
+- Candidate `src/kernels/cpu/iq_avx2_rows.inl:31-57,67-105,148-181,249-265` (GU/Down bounds and all three hint sites).
+- Candidate `src/kernels/cpu/native_expert.cpp:46-82,125-175,178-205` (`NativeFmt` geometry and dispatch/caller paths; native activation uses ggml traits `from_float` at lines 96-103).
+- Candidate `src/kernels/cpu/pool.cpp:632-662` (nonnegative clipped row partitions).
+- Candidate root review receipt `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-v0141-source-review-v1.json` and registry v8.
