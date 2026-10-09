@@ -10386,18 +10386,21 @@ int main(int argc, char **argv) try {
             for (int64_t i = 0; i < n - 1; ++i) consumed.push_back((int32_t) ids[(size_t) i]);
             const char* finish = "length";
             const Clock::time_point d0 = Clock::now();
-            // STRATA_DECODE_TIMING=1: where a request's decode time goes (one line per request)
+            // STRATA_DECODE_TIMING=1: where a request's decode time goes
             static const bool dec_timing = std::getenv("STRATA_DECODE_TIMING") != nullptr;
             struct DecSnap {
                 double wait, pool, host, plan, actq, jobs, run;
                 int64_t misses, entries, hits, pcie;
+                double multi_gu, multi_q, multi_down;
+                int64_t multi_bytes;
             };
             auto dec_snap = [&]() {
                 return DecSnap{ver.ms_wait, ver.ms_pool, ver.ms_host, drive.d.ms_plan, drive.d.ms_actq, drive.d.ms_jobs,
                                drive.d.ms_run, drive.d.multi_misses, drive.d.multi_entries, drive.d.cache_hits,
-                               drive.d.pcie_experts};
+                               drive.d.pcie_experts, pool.ms_multi_gu, pool.ms_multi_q, pool.ms_multi_down,
+                               pool.multi_bytes};
             };
-            const DecSnap ds0 = dec_snap();
+            const DecSnap ds0 = dec_timing ? dec_snap() : DecSnap{};
             double dt_run = 0, dt_commit = 0, dt_draft = 0;
             int64_t dec_windows = 0, dec_T = 0;
             const int64_t decode_hits0 = drive.d.cache_hits;
@@ -11296,8 +11299,9 @@ int main(int argc, char **argv) try {
                 std::printf("ERR %s\n", err.c_str());
                 return 1;
             }
+            const DecSnap ds1 = dec_timing ? dec_snap() : DecSnap{};
             if (dec_timing && dec_windows > 0) {
-                const DecSnap d1 = dec_snap();
+                const DecSnap d1 = ds1;
                 const double w = (double) dec_windows, L = (double) g.n_layers;
                 std::fprintf(stderr, "strata decode timing: %lld windows, avg T %.2f, %.2f tokens/window, %.2f ms/window = "
                                      "verify %.2f (GPU-reach wait %.2f + per-layer host %.2f [plan %.2f actq %.2f jobs %.2f "
@@ -11314,6 +11318,26 @@ int main(int argc, char **argv) try {
                     if (st == 0) std::fprintf(stderr, "strata decode GPU stages (ms/window):%s\n", pr.c_str());   // text as before
                     else std::fprintf(stderr, "strata decode GPU stages, stage %d (ms/window):%s\n", st, pr.c_str());
                 }
+            }
+            if (dec_timing) {
+                const double gu = ds1.multi_gu - ds0.multi_gu;
+                const double q = ds1.multi_q - ds0.multi_q;
+                const double down = ds1.multi_down - ds0.multi_down;
+                const int64_t bytes = ds1.multi_bytes - ds0.multi_bytes;
+                if (dec_windows > 0) {
+                    const double w = (double) dec_windows;
+                    std::fprintf(stderr, "strata decode CPU pool phases: %lld windows; GU %.3f, FF-quant %.3f, Down %.3f "
+                                         "ms/window (host phase elapsed nested with GPU work; not additive serial latency); "
+                                         "packed expert-blob submitted bytes %.2f/window (not measured DRAM traffic)\n",
+                                 (long long) dec_windows, gu / w, q / w, down / w, (double) bytes / w);
+                } else {
+                    std::fprintf(stderr, "strata decode CPU pool phases: 0 windows; per-window rates unavailable; "
+                                         "request deltas GU %.3f, FF-quant %.3f, Down %.3f ms "
+                                         "(host phase elapsed nested with GPU work; not additive serial latency); "
+                                         "packed expert-blob submitted bytes %lld (not measured DRAM traffic)\n",
+                                 gu, q, down, (long long) bytes);
+                }
+                std::fflush(stderr);
             }
             if (!cancelled) {
                 // a prompt stopped halfway leaves the session somewhere between two chunks: nothing to continue from

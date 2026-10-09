@@ -1,0 +1,30 @@
+Serve decode CPU pool phase timing implementation — code only
+
+Agent: /root/implement_decode_pool_phase_timing (gpt-6.1-sol)
+Worktree: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009
+Branch: perf/sycl-decode-pool-phase-timing-v0141-2026-10-09
+HEAD/base: a2c884672d00ea57e55a44862868ce273ab2b171
+Changed source: sycl/src/program/generate.cpp
+Exact changed-source SHA256: 8bb78a21e3cbb9f03e40db3699d056225181e9ebb638d7eea04fadb41d852ced
+
+Read AGENTS.md, decode-pool-phase-critical-path-round7.txt, report-registry-v10.json, and the existing serve snapshot/output and ExpertPool definitions/accumulation sites. This implements the round-7 minimal existing-counter diagnostic only. No rejected kernel, compiler, prefetch, scheduling, or workspace proposal is repeated.
+
+Diff summary
+- Extend serve DecSnap with double multi_gu/multi_q/multi_down and int64_t multi_bytes, matching the ExpertPool public counter types.
+- Read the process-lifetime pool instance's existing counters with the other DecSnap fields at the same request start and after successful final ver.wait_commit, before the existing timing output.
+- Gate both snapshots with the existing dec_timing flag. With STRATA_DECODE_TIMING absent, there are no new counter reads, printed lines, or timers.
+- Preserve the existing strata decode timing and GPU profile format strings and positive-window guards. They use the shared end snapshot.
+- Print one additional strata decode CPU pool phases line to stderr, then fflush(stderr). Positive-window output divides each request counter delta by completed dec_windows.
+- Keep existing routing diagnostics unchanged; no duplicate route counts, task settings, or CLI changes.
+
+Counter units and meaning
+- ExpertPool::ms_multi_gu, ms_multi_q, and ms_multi_down are cumulative double milliseconds. GU is gate/up phase elapsed, FF-quant is intermediate FF activation quantization phase elapsed, and Down is down phase elapsed. The diagnostic prints request-end minus request-start divided by windows, in ms/window.
+- These are host phase elapsed values, including the existing phase machinery where applicable, nested with GPU work. The output explicitly says they are not additive serial latency. No new clocks, worker measurements, synchronization, or counters were introduced.
+- ExpertPool::multi_bytes is cumulative int64_t packed expert-blob submitted bytes, incremented by n * BLOB or n * f.bytes in existing multi paths. Subtract in int64_t before conversion to double for bytes/window. Output explicitly distinguishes this accounting from measured DRAM traffic; no bandwidth claim or MB/GB conversion is made.
+
+Zero-window behavior
+When dec_timing is on and dec_windows is zero, print a flushed line saying 0 windows and per-window rates unavailable. Report the raw request phase deltas in milliseconds and raw byte delta using %lld with a long long cast. Perform no division. Preserve the existing behavior of omitting the old timing/profile lines for zero windows.
+
+Verification and remaining limits
+Read-only source inspection, git diff, git status, and source SHA256 only. Git status showed exactly sycl/src/program/generate.cpp modified. No compiler, builds, tests, model, GPU, profiler, service, benchmark, fetch, commit, push, or configuration edits were run. Root owns all validation, including the worktree AGENTS.md diagnostic-environment requirements for first SYCL runtime checks.
+Compilation, format checking, zero-window/cancel behavior, multi-request counter differencing, and runtime correctness remain unqualified until root validates them. Existing process-lifetime signed counter overflow and diagnostic double precision limits are unchanged. The output refers to the captured pool instance, not a new sum across independently owned stage pools. Early error returns retain their existing behavior and do not reach request-completion diagnostics. No performance claim is made.
