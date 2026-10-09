@@ -1,0 +1,39 @@
+{
+  "time_utc": "2026-10-09T23:50:46.422729+00:00",
+  "parent_commit": "1e35586ce7cf2c9f493cd7a34a44137bd500a34b",
+  "source_pins": {
+    "sycl/tools/native-iq2s-nt1-index-spread/iq2s_index_spread.cpp": "c51f580bc72cb303e7fe30b1cfb6f7c09ad82332ffd60d441af0eac2dbe77b89",
+    "sycl/tools/native-iq2s-nt1-index-spread/README.md": "f47b8a21ef399c8ae9b2f235ec27f9ea8547bd989290c80d3c674824aa311c2f",
+    "sycl/tools/native-iq2s-nt1-index-spread/CMakeLists.txt": "fbbe43744582bcd320349392e3e90f81e7b1299128c76639d4b96de285cb255d"
+  },
+  "root_reviewed_full_implementation_report_and_complete_changed_source_diff": true,
+  "source_review": "Only candidate decoded-index representation and independent fixture checks changed. Fixed extracts preserve grid lane order; same eight-byte read envelope, all four active indices and four unused high-zero lanes. Direct control, floating arithmetic, loop directives, CMake and flags unchanged. Register spelling is not emitted-code evidence.",
+  "new_source_built": false,
+  "new_source_tested": false,
+  "new_source_disassembled": false,
+  "new_source_timed": false,
+  "production_adopted": false,
+  "required_next_gates": [
+    "fresh precise release and IntelLLVM ASan/UBSan with complete101line output and original counters/bitwise row checks",
+    "exact linked control/candidate and callers, inspect index roundtrips and other stack traffic before timings"
+  ],
+  "historical_qualification_source_remains_separate": true,
+  "additional_quantizer_capture": {
+    "binary": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-index-spread-release-v2/iq2s_index_spread",
+    "binary_sha256": "9172f3c4a982b1d0d73111d5ae6a447f56984d62f34bb2faf5129f37a9bf2bc8",
+    "argv": [
+      "/usr/bin/objdump",
+      "-d",
+      "-C",
+      "--disassemble=quantize_row_q8_K_ref",
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-index-spread-release-v2/iq2s_index_spread"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "b8bb4d0547df615bf8af291e2c759c25133528a8a18e5cf577f8e120cbb4c996",
+    "stdout_bytes": 26525,
+    "stderr": "",
+    "scope": "complete linked ref target behind quantize_row_q8_K jump thunk; offline only, no binary/model/GPU executed",
+    "source_compile_commands": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/bench/results/2026-10-10-iq2s-index-spread-qualification/release-compile_commands.json"
+  },
+  "quantizer_scope": "Offline complete reference thunk target from OLD qualified binary; Luna R100 read it. No native custom Strata AVX2 quantizer or production worker FP state established. R100 calling this capture committed was premature at report time; it is first committed by this handoff archive."
+}

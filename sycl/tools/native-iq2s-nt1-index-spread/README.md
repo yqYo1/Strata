@@ -102,8 +102,9 @@ Repeat an owner-approved sanitizer build. No long-running timing is automatic.
 Before any performance experiment inspect linked direct-control, candidate, baseline
 and complete callers, bound to binary/object hashes. Confirm active baseline AVX2;
 same scalar loads/signs/scales/madd/FMA/reduction/postscale; no gather, no reassociation.
-HiSpread adds a data-dependent 2KiB table load and two eight-element temporary index
-arrays per inner iteration. `grid_indices` loads eight low bytes; only four are
+HiSpread still adds a data-dependent 2KiB table load. The earlier candidate used two
+eight-element temporary index arrays per inner iteration; the register revision below
+removes those source arrays, without proving the compiler avoids stack traffic. `grid_indices` loads eight low bytes; only four are
 active, and even the final second-half load remains inside the block's sign bytes.
 Sign memcpy may introduce stack scratch in both copies. Reject if index shifts are
 not reduced, hot-loop scratch/spills/helper calls increase, or same operation order
@@ -114,3 +115,50 @@ External real-weight cohort compatibility is deliberately not implemented: no pa
 is necessary for this synthetic index-only fixture. Future actual640-row expert,
 train/holdout timing, live-activation, numerical model/fullcontext and adoption gates
 remain independently required. C/D/r5 and other previous failure statuses are unchanged.
+
+
+## Register index extraction revision — source only
+
+Root qualified the preceding source revision1e35586ce7cf2c9f493cd7a34a44137bd500a34b
+with release and IntelLLVM ASan/UBSan: all96profiles and uniform/mixed16-alignment
+fixtures passed. R99's exact linked artifact nevertheless shows the old index
+arrays stored/reloaded on stack and additional YMM stack traffic: frame184 versus
+control40. That is a codegen cost finding, not a timing estimate. Timing/adoption
+of that old candidate remain held. Original receipts/assembly are not changed.
+
+This revision changes one candidate factor: decoded index representation. New
+always-inline `grid_indices_register` returns the packed __m128i directly, using
+exactly the same8-byte memcpy low load, constexpr HiSpread high entry and
+unpacklo_epi8 as the preserved old out-param helper. Actual `index_candidate`
+uses two packed register values and compile-time `_mm_extract_epi16` lane3/2/1/0
+in original `_mm256_set_epi64x` scalar grid-load positions. It has no decoded-index
+array/out-param, new hot noinline helper, gather, scale table, paired load,
+unroll directive or FP/ISA flag change. Direct-control, baseline trait path,
+scale/sign scratch, two accumulators, block FMA order, hsum, finish, finite row
+recipes, MXCSR logs, byte bounds, and CMake are untouched. The old sign_words
+array is retained intentionally; removing it would be another factor.
+
+New register-helper verification is called INSIDE each existing uniform and
+mixed/alignment case. It stores the returned vector to a test-only guarded buffer,
+checks all4active lanes against the literal q[k]|((h<<(8-2*k))&0x300) oracle,
+checks upper4lanes have zero high bytes, checks input unchanged/output guards,
+and compares the scalar grid words obtained through the same fixed-lane extracts
+to independent oracle codebook words in actual lane positions. Test-only arrays
+are not in the hot dot. No counters or CSV lines are added: the uniform
+count remains exactly262144 and all1024indices; mixed counts remain4194304active
+indices/1048576vectors over16alignments. These additional implementation checks
+reuse the existing domains and do not prove a larger Cartesian product. Current
+success contract remains101lines: FP entry, uniform, mixed,96profile lines, FP end,
+summary; require normalexit0/finalflush and unchanged MXCSR controls.
+
+The new revision has NOT been built, run, sanitizer-tested or disassembled by the
+implementation agent. Root alone owns source review, same-flags fresh release and
+IntelLLVM ASan/UBSan, all101lines/counters/bitwise Gate/Up/GU/profile checksum checks,
+then new exact linked-symbol/caller capture pinned to its own source/object/binary.
+Reuse the owner recipe above in a fresh owner-chosen build directory; preserve old
+qualified artifacts. Confirm extracted active indices/scalar grid loads, preserved
+sign/scale/madd/accum/FMA/hsum/postscale, no gather/hot helper calls; inspect whether
+index stack round-trips actually disappear and whether YMM spills/frame/register
+pressure improve or merely move elsewhere. Register-valued C++ does not guarantee
+register-resident machine code. No timing may be credited before that new gate;
+no speed, actual-weight/live-activation/model/fullcontext or adoption claim follows.

@@ -43,6 +43,13 @@ inline void grid_indices(const uint8_t* q, uint64_t hi, uint16_t* sp) {
     uint64_t low; memcpy(&low,q,8);
     _mm_storeu_si128(reinterpret_cast<__m128i*>(sp), _mm_unpacklo_epi8(_mm_cvtsi64_si128(static_cast<long long>(low)),_mm_cvtsi64_si128(static_cast<long long>(hi))));
 }
+// Register-return representation only; the original out-param helper above stays
+// available to the independent fixture. No decoded index array in the hot dot.
+inline __attribute__((always_inline)) __m128i grid_indices_register(const uint8_t* q, uint64_t hi) {
+    uint64_t low; memcpy(&low,q,8);
+    return _mm_unpacklo_epi8(_mm_cvtsi64_si128(static_cast<long long>(low)),
+                            _mm_cvtsi64_si128(static_cast<long long>(hi)));
+}
 static inline float hsum_float_8(__m256 x) {
     __m128 res = _mm256_extractf128_ps(x,1);
     res = _mm_add_ps(res,_mm256_castps256_ps128(x));
@@ -179,11 +186,10 @@ __attribute__((noinline)) float index_candidate(int n, const block_iq2_s* x, con
             const __m256i q8_1 = _mm256_loadu_si256((const __m256i *)q8); q8 += 32;
             const __m256i q8_2 = _mm256_loadu_si256((const __m256i *)q8); q8 += 32;
             __m256i q2_1, q2_2;
-                uint16_t sp1[8], sp2[8];
-                grid_indices(qs, high[qh[ib32]], sp1);
-                grid_indices(qs+4, high[qh[ib32+1]], sp2);
-                q2_1 = _mm256_set_epi64x(iq2s_grid[sp1[3]], iq2s_grid[sp1[2]], iq2s_grid[sp1[1]], iq2s_grid[sp1[0]]);
-                q2_2 = _mm256_set_epi64x(iq2s_grid[sp2[3]], iq2s_grid[sp2[2]], iq2s_grid[sp2[1]], iq2s_grid[sp2[0]]);
+            const __m128i sp1 = grid_indices_register(qs, high[qh[ib32]]);
+            const __m128i sp2 = grid_indices_register(qs+4, high[qh[ib32+1]]);
+            q2_1 = _mm256_set_epi64x(iq2s_grid[_mm_extract_epi16(sp1,3)], iq2s_grid[_mm_extract_epi16(sp1,2)], iq2s_grid[_mm_extract_epi16(sp1,1)], iq2s_grid[_mm_extract_epi16(sp1,0)]);
+            q2_2 = _mm256_set_epi64x(iq2s_grid[_mm_extract_epi16(sp2,3)], iq2s_grid[_mm_extract_epi16(sp2,2)], iq2s_grid[_mm_extract_epi16(sp2,1)], iq2s_grid[_mm_extract_epi16(sp2,0)]);
             qs += 8;
 
             __m256i aux256 = _mm256_set1_epi32(signs[0] | ((uint32_t) signs[1] << 16));
@@ -220,10 +226,33 @@ void exact(float a,float b,const char* why) { require(std::isfinite(a)&&std::isf
 uint32_t next(uint32_t& s) { s=s*1664525u+1013904223u;return s; }
 uint64_t hash_bytes(const void* ptr,size_t n,uint64_t h=14695981039346656037ull) { const auto* p=static_cast<const uint8_t*>(ptr);for(size_t i=0;i<n;++i) {h^=p[i];h*=1099511628211ull;}return h; }
 float finish(float g,float u) { return (g/(1.f+std::exp(-g)))*u; }
+// Test-only arrays/guards: validate returned lanes AND the exact fixed-lane
+// extraction used by the hot scalar grid loads against an independent scalar oracle.
+// Called within existing fixture cases; does not inflate Cartesian/count claims.
+void check_register_indices(const uint8_t* q,unsigned h) {
+ uint8_t before[8]; memcpy(before,q,sizeof(before));
+ const __m128i packed=grid_indices_register(q,high[h]);
+ uint16_t guarded[10]; guarded[0]=0x4a6c;guarded[9]=0x7b9d;
+ _mm_storeu_si128(reinterpret_cast<__m128i*>(guarded+1),packed);
+ require(guarded[0]==0x4a6c&&guarded[9]==0x7b9d,"register helper output guards");
+ require(memcmp(before,q,sizeof(before))==0,"register helper input unchanged");
+ const unsigned extracted[4]={unsigned(_mm_extract_epi16(packed,0)),unsigned(_mm_extract_epi16(packed,1)),unsigned(_mm_extract_epi16(packed,2)),unsigned(_mm_extract_epi16(packed,3))};
+ uint64_t expected[4],got[4];
+ for(unsigned k=0;k<4;++k) {
+  const unsigned ix=unsigned(q[k])|((h<<(8-2*k))&0x300);
+  require(guarded[k+1]==ix&&extracted[k]==ix,"register helper scalar index oracle");
+  expected[k]=iq2s_grid[ix];
+ }
+ for(unsigned k=4;k<8;++k)require(guarded[k+1]==q[k],"register helper unused zero high lanes");
+ const __m256i v=_mm256_set_epi64x(iq2s_grid[_mm_extract_epi16(packed,3)],iq2s_grid[_mm_extract_epi16(packed,2)],iq2s_grid[_mm_extract_epi16(packed,1)],iq2s_grid[_mm_extract_epi16(packed,0)]);
+ _mm256_storeu_si256(reinterpret_cast<__m256i*>(got),v);
+ require(memcmp(got,expected,sizeof(got))==0,"register helper scalar grid lane oracle");
+}
 void indices() {
  std::array<bool,1024> seen{}; uint64_t count=0;
  for(unsigned h=0;h<256;++h) for(unsigned lo=0;lo<256;++lo) {
   uint8_t q[8]; memset(q,lo,8); uint16_t sp[8]; grid_indices(q,high[h],sp);
+  check_register_indices(q,h);
   uint64_t expected[4];
   for(unsigned k=0;k<4;++k) { unsigned ix=lo|((h<<(8-2*k))&0x300); require(sp[k]==ix,"index"); seen[ix]=true; expected[k]=iq2s_grid[ix]; ++count; }
   __m256i v=_mm256_set_epi64x(iq2s_grid[sp[3]],iq2s_grid[sp[2]],iq2s_grid[sp[1]],iq2s_grid[sp[0]]);
@@ -242,6 +271,7 @@ void mixed_indices() {
   uint8_t before[32]; memcpy(before,storage,sizeof(storage));
   uint16_t guarded[10]; guarded[0]=0x5b7d; guarded[9]=0x6e8f;
   uint16_t* sp=guarded+1; grid_indices(q,high[h],sp);
+  check_register_indices(q,h);
   require(guarded[0]==0x5b7d && guarded[9]==0x6e8f,"mixed output guards");
   require(memcmp(before,storage,sizeof(storage))==0,"mixed input unchanged");
   uint64_t expected[4],got[4];

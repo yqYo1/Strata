@@ -1,0 +1,127 @@
+IQ2_S register index extraction v1 — SOURCE ONLY / UNEXECUTED
+
+Owner/work boundary
+Root assigned existing worktree
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010
+at owner-supplied HEAD1e35586ce7cf2c9f493cd7a34a44137bd500a34b. Only assigned
+sycl/tools/native-iq2s-nt1-index-spread/iq2s_index_spread.cpp and README.md edited;
+this report is the only external write. Existing CMake/production/native dispatch/
+quantizers/pool/calibration/GDN/bench qualification/receipts unchanged. No agent
+configure/build/import/preprocess/syntax/compiler/test/run/CPU-device-query/GPU/
+profiler/objdump/Git/cleanup operation occurred. Python used as source text editor
+only, never imports or executes fixture code. Root owns all serial tests/measurements
+and source adoption/commits; no agent delegation or active-run/receipt query.
+
+Read prior evidence
+Original Sol implementation-iq2s-nt1-index-spread-v1.txt, CPU R96 mixed-lane proof,
+R97 precise FP/UB, R98 independent source review + real-cohort reader contract,
+R99 iq2s-index-only-actual-linked-codegen-round99.txt; source and existing README.
+Shared latest committed registry-v48 remains
+18a8e56913a3970f278210e7b6176c95ad82913c5d617368d6229c13e43539ac,
+owner storagecommitdbd17e2387dc452a1ce7dae5e8f7746a019a0a7d. Existing AGENTS and
+workflow instructions read in previous task remain applicable; explicit source-only
+restriction overrides Git/build workflow. No existing qualification status relabelled.
+
+Old/new exact source identities
+sycl/tools/native-iq2s-nt1-index-spread/iq2s_index_spread.cpp
+old SHA256e86a12c792fa573b5c4203bca0abe31acdf6ea2cba7bb330781b90c24682d2d2
+new SHA256c51f580bc72cb303e7fe30b1cfb6f7c09ad82332ffd60d441af0eac2dbe77b89
+new bytes20112
+sycl/tools/native-iq2s-nt1-index-spread/README.md
+old SHA25625efc4e9c82cd9a0c3f37ca4d4c40164d993d90903fdf7a47f04f9fade8e10db
+new SHA256f47b8a21ef399c8ae9b2f235ec27f9ea8547bd989290c80d3c674824aa311c2f
+new bytes11189
+Unchanged CMakeLists.txt SHA256
+fbbe43744582bcd320349392e3e90f81e7b1299128c76639d4b96de285cb255d bytes2434.
+Changed assigned source/doc bytes31301. Final report hash/bytes returned separately.
+
+Exact prior observation / HOLD
+Root release and IntelLLVM ASan/UBSan qualified the OLD source's96profiles, mixed
+lane16alignment and bitwisefinite Gate/Up/GU, with normal exits. R99 names its exact
+release binary SHA2569172f3c4a982b1d0d73111d5ae6a447f56984d62f34bb2faf5129f37a9bf2bc8.
+R99 linked candidate materializes/reloads sp1/sp2 on stack and additional YMM values;
+frame184 versuscontrol40. Hot bodies have scalar grid loads/no gather/no successful
+helper calls. This is emitted-code cost evidence, not a latency estimate. Old
+candidate timing/adoption remain held; original assembly/receipts are preserved.
+No prior PASS qualifies this newly edited source automatically.
+
+SINGLE FACTOR mechanism
+Preserved old grid_indices(q,hi,uint16_t*) helper byte-for-byte for its existing
+independent fixture. Added inline+always_inline grid_indices_register(q,hi) returning
+__m128i: same8-byte memcpy lowword, same C++20 uint64-to-long-long move and exact
+unpacklo_epi8 with same constexprHiSpread entry. No additional lookup/table/ISA flag.
+Actual index_candidate inner loop now has const __m128i sp1/sp2 and compile-time
+_mm_extract_epi16 lanes3/2/1/0 in original _mm256_set_epi64x scalar iq2s_grid positions.
+It has no decoded-index array/out-param/store, nor new hot noinline helper. No new
+loop-unroll directive or scheduling policy. Packed return plus extract is source
+representation, NOT proof of register residency or reduced spills in machine code.
+
+Everything around index formation remains textually untouched: direct_control full
+body; traits baseline; width guards; q8load order; scale nibble unpack; sign_words
+scratch/memcpy; xor/sub; maddubs/madd; sumi1/sumi2 ordered updates; ascending block
+FMA; final hsum and post0.125; finish(g/(1+exp(-g)))*u; rowfinite comparator, Q8
+quantizer and inputrecipes; namespace/codebook/FP16 lookup; all96profiles and seeds;
+MXCSR logs/control gate; argv/flush/normalexit semantics. CMake/FP/ISA flags unchanged.
+No ScaleVecs/gather/pairing/shared load/vector accumulator fusion/default dispatcher
+change/real-weight extension or timing added. Existing sign scratch intentionally
+retained as a different factor from candidate decoded-index scratch.
+
+New independent fixture checks inside existing cases
+Added test-only check_register_indices(q,h) called once within EACH existing uniform
+and mixed/alignment case. It consumes new packed registerhelper, stores to guarded
+uint16[10] buffer, verifies input8bytes unchanged, guards unchanged, all4active
+lanes against literal scalar q[k]|((h<<(8-2*k))&0x300), each fixed extract0..3 against
+that oracle, and upper4lanes equal lowbytes (high0). Scalar grid words formed through
+literal fixed lane extracts are stored and memcmp'd with independently scalar-oracle
+codebook words at each lane. Test-only arrays/stores not in actual dot hot path.
+Same8-byte read envelope; mixed storage offset0..15 remains32bytes and old outer
+whole-input/outputguard checks retained. Final second-half dot low load through
+qs[35] still insideqs64. Active indices remain0..1023.
+
+Coverage/counters/output unchanged
+Uniform domain256qh*256lo*4positions=262144, all1024indices,65536vectors. Mixed
+16alignments*256qh*256x=1048576vectors/4194304active indices, same x/x^55/x^aa/~x
+transforms plus unused sentinels. New implementation checks reuse these cases, not
+a larger independent four-low-byte Cartesian product; no counters inflated.
+96profiles =4widths256/512/2560/8192*3seeds*8patterns,16Gate/Up pairs each,1536pairs,
+9216row dot calls unchanged. Finite production-quantized synthetic inputs remain
+separate from raw-128/NaN/Inf/denormal/live-model domains. No model payload accessed.
+Expected101lines unchanged: FP entry, indices, mixed_indices,96rows, FP end,summary.
+Normalexit0/finalflush/fulloutput required; partialCSV neverpass. No new timing,
+metadata line, fixture count, MXCSR mode or control gate. Successful checksum values
+are expected unchanged if bitwise gates pass; that expectation is not a test result.
+
+Owner pending gates — ALL UNEXECUTED for new source
+Root under shared measurement lock:
+1 Source review verifies only index representation plus test-onlychecks changed;
+   direct_control/math/caller/flags/CMake/source closure unchanged. Freeze exact
+   source and configured dependency commit3cf03257f219afbe7334045ff7c6a06ac68c627d,
+   compiler/object command/link/binary identities.
+2 Same-flags fresh release build and complete101line fixture with all counts and
+   bitwisefinite Gate/Up/GU/fullprofilechecksums/MXCSR control unchanged; childnormal0,
+   fullflush/no forcedcleanup/survivors. Same IntelLLVM ASan/UBSan source revision
+   and complete uniform/mixed/16alignment/rowfixture. Retain failure statuses unchanged.
+3 Capture exact linked new candidate/control/trait/quantizer/rows/main with own
+   hashes, not overwrite/reuse old-qualified assembly or binary receipt. Confirm
+   preserved scalar table loads/sign/scale/madd/twoaccum/FMA/hsum/postscale; no gather
+   or new successful hothelper call; compile-time extracts present or equivalent
+   value-safe lowering; inspect eliminated index stack stores+movzwl roundtrips,
+   remaining/new YMM/GPR spills/frame/loop/code size. Old sign_words scratch not
+   automatically a compiler spill. No assumption of codegen solely from __m128i.
+4 HOLD timings/adoption unless correctness+sanitizer+exact linkedcodegen gate is
+   accepted by root. If indexroundtrips merely shift into other spills/register
+   saves or extra work, keep rejected/held; do not rescue with other mechanisms.
+
+Root reproduction recipe (not invoked here)
+Use README existing standalone CMake recipe with NEW owner-chosen fresh build/output
+paths and exact unchanged -fp-model=precise,-mavx2,-mfma,-mf16c,IntelLLVM C++20;
+GGML_NATIVE=ON, staticCPU/Threads/OpenMPOFF. For example from W:
+cmake -S sycl/tools/native-iq2s-nt1-index-spread -B build-iq2s-register-extract-v1 -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DCMAKE_BUILD_TYPE=Release -DGGML_SOURCE_DIR=/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml
+cmake --build build-iq2s-register-extract-v1 --target iq2s_index_spread
+./build-iq2s-register-extract-v1/iq2s_index_spread > register-extract-v1.csv 2> register-extract-v1.stderr
+Commands are future root recipe, not executed. Supervise finite wall/RSS/AS/FSize/
+NOFILE/output and close under sharedlock; preserve old qualification directories.
+Existing proposed120s/512MiB/1MiB are bounds to review, not measured new needs.
+No emitted-code, CPU performance, realweight/liveactivation/model/fullcontext/
+end-to-end/adoption evidence is claimed. C/D/r5/currentP/old invalid timings retain
+original statuses. Root GDN work remains disjoint and was not queried or changed.
