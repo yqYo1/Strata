@@ -1,0 +1,25 @@
+# Native wrapper harness target and output audit — round 29
+
+## Scope
+
+Read-only review of commit `25d5003253a97aaf6fa710e1e3715c2ecc3b44d3` in frozen Sol worktree `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-native-wrapper-parity-20261010` (HEAD matched the commit; worktree status was clean). Reviewed the complete harness, CMake diff, build flags/source resolution and the committed REPORT. Compared the two shared baseline files at frozen T `7d0105f2a942ac72ca20fef69d4c2e7960653de3` and H `96bd5bb4e054f6ddcf677fd96e161b499a013fd7`. No configure, build, test, syntax/help query, CPU/GPU/model/profiler/service run, source edit, cleanup, or Git network operation occurred.
+
+## Target and source audit
+
+The opt-in target is wired correctly for the intended narrow CPU gate. `STRATA_SYCL_NATIVE_WRAPPER_PARITY` defaults OFF, refuses non-Linux or `STRATA_NATIVE_EXPERTS=OFF`, adds `native_wrapper_parity`, and links only `strata_kernels_cpu` (`sycl/CMakeLists.txt:239-246`). The target is declared after that library is defined. It does not link `strata_kernels`, `strata_core`, `strata_engine`, or the GPU parity target. Building this target should therefore avoid the GPU library dependency graph; a normal default build with the option ON may include this executable, so the recipe correctly names the target explicitly.
+
+The SYCL directory still applies global `-fsycl`, per-kernel split and precise-float flags to C++ targets (`sycl/CMakeLists.txt:39-68`). Thus “CPU-only” accurately means this harness has no GPU library, queue or device operation; the executable may still be compiled/linked by the SYCL toolchain and carry its host runtime. `strata_kernels_cpu` publishes `strata_includes`, Threads and (when native experts are enabled) `ggml-cpu`/`ggml-base` (`:146-172`, `:202-211`), so the root parity source's Strata and ggml headers are available through transitive usage requirements. Its `../../src/kernels/cpu/iq_avx2_parity.cpp` include resolves from `sycl/tools` to the repository-root source as intended.
+
+The CPU library resolves the production `native_expert.cpp` to the root source and IQ AVX2 entry point to the SYCL forwarding source, which includes the shared implementation and receives this project's AVX2 compile flags. The harness links that built library rather than cloning its selection predicates. Frozen T and H each have identical baseline `sycl/CMakeLists.txt` SHA-256 `d8fc6c99428f96021c0d986bcad77680dbe66f4fa6a64490166ff58f24e274b1` and shared parity source SHA-256 `fb4e0b0629e749b816c4ec71da836f383330cf93aed49a11d03607937e1232d9`. Therefore the two-file commit patch applies unchanged to either baseline. Qualification still needs separate T and H worktrees/builds, with identical resulting patch hashes and preserved compiler/configuration receipts; the clean Sol source review alone is not an execution result.
+
+## Confirmed harness defect
+
+The empty-range assertion is currently missing. `range` first receives valid writes for `[7, rows-9)` (`native_wrapper_parity.cpp:198`), then the purported empty call uses `[split,split)` with `split` inside that earlier interval (`:194-200`). The later `range.untouched(nt, 7, rows-9)` deliberately permits writes anywhere in the first interval (`:208-213`), so an erroneous write by the empty call to that region passes both padding and range comparisons. The comment says the empty interval must be inert, but the test does not establish it.
+
+Before relying on this gate, give the empty call a fresh `Guarded` buffer and assert the entire allocation is unchanged (for example compare a pre-call storage copy; or use the existing outside-range sentinel checker with an empty allowed interval). Keep this result distinct from the ordinary range-output check. This is a harness coverage bug, not evidence that the production wrapper writes on an empty interval.
+
+## Remaining gate boundary
+
+The harness's broader checks are coherent for this synthetic wrapper gate: finite legal activations, H=2560/FF=640, 48 actual-wrapper cases across specified formats and NT=1..8, independent ggml/double references, direct AVX2 comparison, partitioned/full equality and sentinels. The output is explicitly raw active wrapper results for later cross-build comparison; its own summary correctly says `T_H_bitwise_compared=0`, `full_model_shape_qualified=0`, and `performance_eligible=0`. The output sink uses a fresh 0600 file, no-follow parent traversal, a private owned parent, 2 MiB budget and final identity/size/close checks. The tested evidence remains synthetic and does not cover pool histogram totals, full routed work, worker scheduling, AVX-512, model behavior, or performance. A local exit 0 must not be called T/H parity until root performs matched external byte comparison and each local gate passes.
+
+No harness build/runtime conclusion follows from this audit. Fix the empty-interval coverage gap before qualification, then apply the same patch independently to T and H and retain root's prescribed fresh build and comparison protocol.

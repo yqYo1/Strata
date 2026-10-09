@@ -1,0 +1,13 @@
+Round 29: source-only audit of native wrapper harness
+
+Reviewed commit: 25d5003253a97aaf6fa710e1e3715c2ecc3b44d3
+Worktree: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-native-wrapper-parity-20261010
+Scope: mathematical/reference construction, fixture legality, ActQ/layout, GU 18/21/22/23 and Down 20/42 wrapper coverage at NT1..8, row partitions/empty/interior/padding, proposed relative-L1 gate, and T/H same-NT pairing semantics.
+
+Finding: no concrete source blocker found within this scope. The harness calls the production wrappers and actual Q2 pool entry with block-aligned H=2560 and FF=640, covers all six requested type/phase combinations at NT1..8, and checks full versus disjoint partitions and interior rows bitwise, empty intervals and inactive/padding sentinels, finite outputs, and independent reference/direct-kernel agreement. Row intervals are half-open and the three partition intervals cover [0, rows) without overlap or gaps; the interior comparison covers [7, rows-9), i.e. rows-16 values per token.
+
+The ggml reference uses the same production-quantized activation buffers consumed by wrappers; GU applies the declared SwiGLU formula. The Q2 double reference evaluates each 64-value weight block using its 18-byte layout, two 32-value ActQ chunks, and `(code - 1) * weight_scale * activation_scale * q`. This is algebraically consistent with the row kernel's code-dot minus `hx` correction (`hx = scale * sum(q)`). `legal_q2` checks the expected 20 chunks for FF=640, finite/nonnegative scales, finite corrections, and excludes -128. The reused fixture generator randomizes block contents and installs positive finite FP16 scales at each block start; conclusion is limited to these synthetic generated fixtures, not arbitrary external packed bytes.
+
+The 1e-5 comparison uses the existing aggregate relative-L1 metric (`sum(abs(actual-reference))/(sum(abs(reference))+1e-30)`). This is a proposed gate for final GU SwiGLU outputs and the Q2 double reference; no measured pass is claimed by this source audit. The direct AVX2 comparison supplies a second path. The harness correctly makes no NT1-vs-NT2 bitwise claim. Matched T/H comparisons should pair identical type, NT, inputs, compiler settings and fresh-process environment; the in-process summary explicitly says it did not perform that comparison.
+
+CMake adds an opt-in Linux/native-experts target linked to `strata_kernels_cpu`; default remains OFF. Source review does not establish configuration/build/runtime success, target linkage resolution in a built graph, T/H output identity, or full-model behavior. No tests/build/configure/runtime/GPU/model/profiler/cleanup or network operation was performed. The original C full-repeat math rejection remains unaffected.

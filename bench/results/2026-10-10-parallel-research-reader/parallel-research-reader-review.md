@@ -7,7 +7,7 @@ numerical rejection remains unchanged.
 
 ## Roles and actual overlap
 
-Two Luna agents completed rounds 24–28 with distinct scopes, ten read-only
+Two Luna agents completed rounds 24–29 with distinct scopes, twelve read-only
 reports. They independently reviewed coverage and bounded I/O, investigated
 cross-engine QSA and Zen3 candidates, then reviewed new source and qualification
 designs. Each assignment shared the prior report directory, registry v23 and
@@ -102,12 +102,21 @@ H has no build receipt yet; do not infer one from T's old receipt. Two research
 reports contain a duplicated segment in a written registry digest; the actual
 v23 digest is `5dfcd721be2d40077ef584264f05ba370c118f5f94aad44c3117fb7733f19e2b`.
 
-Sol's completed next source is `25d5003253a97aaf6fa710e1e3715c2ecc3b44d3` in
+Sol's submitted next source is `25d5003253a97aaf6fa710e1e3715c2ecc3b44d3` in
 `diag-native-wrapper-parity-20261010`. Root read its complete harness and CMake
 delta. It links the actual SYCL CPU library, calls production GU/Down/Q2 paths
 for 48 type/NT cases, and emits full canonical output for matched T/H comparison.
-It is unbuilt, untested and unadopted. Root next applies the identical harness
-patch to a new frozen-T qualification tree, reviews/builds the two targets with
+It is unbuilt, untested and unadopted. Round29 independently checked its math
+and target/output scopes. The empty-interval check reused a buffer with an
+allowed interior range, so it could miss an erroneous write. Root corrected it
+to use a fresh buffer whose every word must remain sentinel, commit
+`87b50497bc4bac7b40113f181ad51b47e64ba7ae`.
+
+Root applied the identical two-file harness/CMake patch to a new frozen-T tree,
+commit `61a70650a004d27ec622046b3d4d6499e7012ca0`, without changing T's wrapper.
+The CMake, harness and shared fixture source are byte-identical between these
+T/H qualification trees. Both branches are committed and pushed; neither new
+target has been built or executed. Root next builds the two targets with
 matched actual flags, and runs every environment profile in fresh serial
 processes. Current dimensions test dispatch/row arguments, not full model shape.
 Do not demand that NT1 equal NT2 when their existing accumulation paths differ.
@@ -115,8 +124,9 @@ On Zen3, forcing gather does not make `cpu_gather_fast()` true or qualify IQ3S's
 special one-token selection.
 
 Registry v28 is an immutable snapshot made just before that harness returned;
-its assignment status says running. This report records the returned source
-above. Share both with the next research round. Past reports remain available
+its assignment status says running. Registry v29 records its returned source,
+root correction, matched-T preparation and actual cleanup. Share v29 and this
+report with the next research round. Past reports remain available
 under the shared research directory and Git archives; research is iterative.
 
 ## Artifact retention
@@ -125,8 +135,14 @@ All compact individual results, original failures, commands, source pins and
 research reports are committed. The retirement plan names 164 synthetic CPU
 fixture/represented-console files, 401,587,140 logical bytes and 402,623,488
 unique-inode allocation bytes. Their source construction and original
-size/hashes/case outcomes suffice; no raw consumer remains. Root will verify
+size/hashes/case outcomes suffice; no raw consumer remains. Root verified
 committed/pushed evidence, closed owners and all identities under the exclusive
-lock before unlinking. Model/session tensors and real small producer inputs are
-outside this plan. A separate result records actual deletion; available-space
-change is not inferred from file allocation.
+lock and actually removed all 164 files in 0.403 s. Original receipts remain
+byte-identical with their failed/pass statuses. Model/session tensors and real
+small producer inputs are outside this plan. The separate result records actual
+deletion; available-space change was not measured.
+
+Archived research is preserved byte-identical. The blanket whitespace check
+reported only existing trailing blank lines at EOF in three original reports;
+the check with `core.whitespace=-blank-at-eof` passed. Root did not rewrite those
+reports or their pinned hashes to remove formatting-only warnings.
