@@ -1,0 +1,34 @@
+Round 67 — static admission review of the v2 independent prompt preparer
+
+Exact inputs reviewed
+
+Read-only review; no module import/execution, syntax check, tokenizer run, prompt generation, test, build, model/GPU query, cleanup, or Git operation. The v2 implementation-independent report is `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-independent-prompt-preparer-v2.txt`, SHA-256 `5fd23cbb593fde95d25a6e9141575b45432ee4317efaed67295d5f8a12f8c8ef`. Source worktree is `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-static-quota-oracle-v0141-20261010`.
+
+- `sycl/tools/prepare_independent_prompt_tokens_v2.py`: `829f6335ff7b47d587832c40b9f30b9aafddce112e7b980095aa17225b0940cd`
+- `sycl/tools/test_prepare_independent_prompt_tokens_v2.py`: `a6e36b7da9bc8d7928bc7417a6eb4d4277f87f72ae435dda95afe3191c68a729`
+- Frozen production `tools/strata_tokenizer.py`: `9b0327e25aa62754406a924db6cc137e6edb1d93c7af76a4f3d14a8920ea72c8`
+- Frozen production `serve/frontend.py`: `095bbac7d49b19d815d2634457d14d216ba9bd4e98998a4e3b4288f20a25e923`
+- Frozen production template: `12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce`
+- Current actual tokenizer asset sizes/hashes and identities are recorded in R65 `independent-32k-actual-tokenizer-assets-audit-round65.txt`.
+
+Findings
+
+No new source-level correctness blocker found for the stated v2 contract. The previously identified reasoning-option provenance gap is fixed: the manifest requires exactly `enable_thinking=true` and `reasoning_effort="xhigh"`, passes both explicitly to the same `ChatTemplate.render`, and records both. The rendered prompt limit is checked by UTF-8 byte count before the encoder runs.
+
+The actual-pack special-token admission is also materially stronger. The helper checks the exact BOS/EOS/padding config map and verifies representative control and user-defined marker IDs/types against vocab and type arrays, plus every PAD token 248077–248319/type 5. These checks match the R65 actual pack audit. It still relies on the owner supplying the five exact R65 asset hashes and the matching qwen3.8-flash-next-iq3_s pack path; `model_identity` remains declared metadata rather than something inferred from the path or asset hashes. This is an owner admission pin, not an implementation mismatch in the current known assets.
+
+The FIFO/read-identity finding is addressed for a replaced final path component: `lstat` rejects non-regular files before open; `O_NOFOLLOW|O_NONBLOCK` avoids symlink following and blocking on a raced FIFO; the opened descriptor must match pre-open device/inode; then the helper checks ownership, link count, bounds, stable descriptor metadata, and content hash. Parent path components remain caller-trusted, as the implementation report states. A slow regular/network filesystem still requires the external wall deadline.
+
+The final-write self-certification issue is addressed. The emitted candidate record always says `completed=false` and `ready_for_owner_validation=true`; the CLI prints `preparation_returned=true` plus the record hash only after `write_bundle` has completed each write, fsync, and close. Errors propagate, and the owner receipt separately requires clean child exit/no signal, stdout marker/hash, and revalidation of files, hashes, lengths, links and modes. The test source covers final record write, fsync, and close failures with false candidate state; those fixtures remain unexecuted here. There is still no multi-file atomicity or directory-fsync claim, so interrupted or failed candidate directories must remain ineligible pending owner inspection.
+
+The narrow rendering/tokenization path remains aligned with the pinned production source: exact source hashes are checked before compiling/executing those bytes in registered modules; no `server.py`, engine, SYCL, GGUF, or weight import is present. The tokenizer constructor receives ordered tokens, merges and token types, with the qwen35 pattern identity checked. The helper rejects any type-3/type-4 source or wrapper marker literals, then directly renders one user text message with `tools=None`, `add_generation_prompt=True`, explicit thinking/xhigh options and encodes with `parse_special=True`. For that accepted shape, production `Service.render_prompt` selects direct template rendering, while `Service.encode_prompt` takes its unmodified path; control and user-defined markers in the template are therefore emitted normally. It does not claim general API normalization, tools, multimodal, assistant history, or literal-marker equivalence.
+
+Limits and admission conditions
+
+The 1 MiB rendered UTF-8 cap bounds the material handed to BPE but is not an RSS or deadline cap. BPE builds the token list before the 65,536-ID guard, and the unique-shingle sets use tuple-heavy Python objects. Asset, source corpus, merges, tokens and overlap structures also coexist in memory. The helper intentionally has no internal runtime resource supervisor. Root's planned child limits (wall 60 seconds, CPU 30 seconds, address space 1 GiB, RSS 768 MiB, file size 32 MiB, 64 file descriptors) and serialized lock are external controls, not properties proven by this review. Any new actual-pack invocation needs those or an explicit replacement bound recorded first.
+
+The additional fake fixtures cover the reported FIFO, multibyte metadata, unused-tail source hash, R63-style near-copy and shingle threshold, pre-encode rendered byte cap, terminal write/fsync/close faults, and special-ID/type cross-check branches. They use synthetic/fake data and do not establish actual tokenizer output, Unicode/BPE round trips, actual model prompt correctness, corpus independence, or model generalization. This review did not execute them and does not infer their pass result. Root owns the actual asset/manifest admission and any host CPU run; no actual 32K inputs are qualified by these source changes alone.
+
+Disposition
+
+V2 resolves the R66 semantic/provenance and terminal-write concerns by inspection. Proceed only through root's serialized fake-fixture run and external supervisor, then reverify the exact R65 asset/source pins and frozen document provenance before owner acceptance. Candidate presence or `ready_for_owner_validation` is never a pass receipt. The original v1 files and their evidence remain unchanged. This report makes no claim about inference correctness, performance, GPU behavior, statistical independence beyond the declared provenance/overlap checks, or the full 262,144-position lifecycle.
