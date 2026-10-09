@@ -1,0 +1,26 @@
+# Existing D capture coverage for GDN layer 9 (round 34)
+
+Read-only audit of D capture producer source `debug-sycl-layer-major-repeat-v0141-20261009/sycl/src/prefill/prefill.cpp`, its `repeat_capture.hpp`, and the frozen reader in `fix-repeat-capture-reader-20261010/bench/results/2026-10-10-repeat-capture-reader/capture_reader.py`. No tests, build, runtime, GPU, counter, profiler, cleanup or Git action was performed. The source already contains the upstream layer-9 residual boundaries needed for the requested bounded comparison; no extra hook is necessary before comparing the pair.
+
+## Producer and descriptor agreement
+
+The producer gates capture to the target intersection `[98304,98336)` with `p0 < 98336 && p0+T > 98304`; it computes the clipped first row and count (`prefill.cpp:3540-3559`). `capture_rows` adds the row offset to the supplied `[T,width]` pointer. For the expected full-context chunk (`p0=98304,T=8192`), this is rows 98304–98335, 32 rows. Every `R` record uses model width `D=10240` and float32 payload.
+
+For each layer 0–12, `R_input` is recorded before the two half-layer loop (`:3655-3656`). At the end of half 0, the code has completed the attention/GDN output, hyper-connection write into `m.R`, and any enabled control-vector application; it records `R_post_attention_gdn` (`:5190-5220`). At the end of half 1, after MoE output and its residual write, it records `R_post_moe` (`:5220`). For layer 9, a GDN layer under the interval-4 model layout, these are therefore the layer input, post-GDN-half residual, and post-MoE residual, respectively. The capture reader forces a synchronous queue drain/readback at each hook (`repeat_capture.hpp:87-109`); this is an intentionally intrusive numerical diagnostic and may hide timing-sensitive behavior.
+
+The reader's `expected_full_records()` lists the same producer order: per layer `R_input`; for QSA layers 3/7/11, K/V/indexer/query captures, score rows, step/selected-id pairs and attention output; then `R_post_attention_gdn` and `R_post_moe` (`capture_reader.py:138-158`). It requires exactly 345 records per full request and exact descriptor/order agreement (`:165-177`). `owned_full` additionally binds every record to one of the two full-request intervals in the five-entry request ledger, rejects duplicate semantic identities, and validates each request independently (`:179-199,:321-360`). The comparison pairs by semantic descriptor, ignores process-global ordinal offsets, and walks in the left manifest's hook order (`:406-435`). This is sufficient to establish the layer/phase/row identity before interpreting a payload difference.
+
+## How to read the pair without adding hooks
+
+Compare `full256k-first` with `full256k-repeat` using the reader's `compare_requests` on their parsed `owned_full` manifests. Use its `first_difference` semantic identity and the full `different_records` count, preserving the fixed-window and original-rejection caveats.
+
+- If layer 9 `R_input` is the first differing record, the residual was already different at layer 9 entry. Check the immediately preceding `R_post_moe` at layer 8 in the same pair: if it differs first, the earliest captured difference is before/within layer 8's FFN residual path; if layer 8 post-MoE matches but layer 9 input differs, inspect the boundary between those adjacent layer calls.
+- If layer 9 `R_input` matches but `R_post_attention_gdn` is first different, the captured divergence is within layer 9's GDN half, its GDN output projection, or its residual/control write. This capture has no internal layer-9 `qkv`, conv output, recurrent output, or GDN state records, so it narrows the responsible half but cannot distinguish those operations.
+- If the layer-9 post-GDN residual matches and `R_post_moe` first differs, localize the captured change to layer 9's MoE half or its residual/control write.
+- If all three layer-9 records match, continue in reader order through layer 10's three boundaries and then the layer-11 QSA records. A first difference in layer-11 `K_quant_input` or `indexer_raw` after matching layer-11 `R_input` places the earliest captured mismatch inside that layer's input-normalization/projection path rather than proving a layer-9 defect.
+
+This inference is about the earliest difference among the captured payloads, not necessarily the earliest internal arithmetic difference. `R_post_moe` of one layer and `R_input` of the next are separate records of adjacent hooks; their pairwise agreement is a useful boundary cross-check.
+
+## Limits
+
+This capture only covers 32 rows in the chunk intersecting `[98304,98336)`. It does not capture the recurrent GDN state, GDN intermediate tensors, or other token rows/chunks. Thus it can identify the first changed *record* in this bounded window and decide whether new layer-9 internal hooks are justified, but equality across the capture cannot clear the original full-run math rejection or exclude a difference elsewhere. If the first difference is layer-9 `R_post_attention_gdn` with equal input, only then consider a narrow follow-up at the existing GDN block around `prefill.cpp:3725-3740`; do not add it speculatively before reading the pair. The capture reader explicitly keeps `original_C_rejection_cleared=false`, `adopted=false`, `performance_eligible=false`, and `full_lifecycle_passed=false`.

@@ -47,6 +47,21 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   last required fixture. Keep a path/hash/reason deletion manifest; serialize cleanup with tests/builds/GPU
   work. Store compact evidence in Git, and large necessary captures outside Git.
 
+## Parallel SYCL optimization research
+
+- Keep multiple `gpt-6-luna` research agents working on distinct source, official documentation,
+  other-engine implementation and implementer-blog questions while the main agent continues tuning.
+  When a batch returns, review its findings and assign new scopes; research is a repeated part of the work.
+- Share the past report directory, latest committed report/registry and prior decisions at every assignment.
+  Investigate a new evidence gap rather than repeating an already reviewed proposal.
+- Researchers may read source and browse references, and write their assigned report files. They must not
+  edit implementation, build, test, profile, run inference, query/change GPU state or clean artifacts.
+  Do not intervene during their assignment; review their completed reports before assigning follow-ups.
+- Implement in the main agent or a separate `gpt-6.1-sol` agent. The main agent owns and serializes all builds,
+  tests, model runs, profiling and cleanup with the shared measurement lock, including delegated code.
+- Commit returned reports and record each assignment's scope, model, status and report hash. Distinguish
+  completed agents from active agents, and record the concrete dependency if the next investigation must wait.
+
 ## Contributing a change or report
 
 - Search the open issues and pull requests first, and add to a thread that already covers your point.

@@ -1,0 +1,27 @@
+# Decode expert-cache exposure and phase-specific capacity (round34)
+
+Scope: source and recorded evidence only. No runtime, GPU, profiler, build, or fresh query work was performed. The live D2 capture was left untouched.
+
+## Current evidence
+
+The closed four-request histogram receipt passed its math, histogram, and health checks (receipt SHA-256 `d007ae7b10003b3bb485dd74042cb9d592a696b4f60061c1f295e22013a0e66d`). The root report records two fresh 32K requests: request A had 33,676 jobs and 40,604 routed entries, with 2,116 cache hits and 42,720 lookup attempts; request B had 38,294 jobs and 46,606 routed entries, with 1,874 hits and 48,480 lookup attempts. These are logical caller-job/lookup counts, not measured device traffic, time saved, or evidence of a critical-path bottleneck. No CPU-side hit count is converted into DRAM bandwidth or GPU-time claims.
+
+The active settings recorded by the parent are `--expert-cache 128`, `--expert-cache-per-layer`, profile `data/expert-profile.bin`, `--adapt-swaps 0`, max context 262,144, KV resident 32,768, and prefill 8,192. Thus the decode cache is a 128-slot, profile-preloaded cache, not an adaptive cache that grows with context or phase. The profile reader preserves a ranked `(layer, expert)` pair list; the stored ranking has no per-pair counts (`sycl/src/core/expert_cache.cpp:142-219`). The profile-fill code applies that plan once at startup (`sycl/src/program/generate.cpp:4548-4571`).
+
+## Allocation finding
+
+`ExpertCache::layer_slot_range` divides slots by integer quotient and assigns all remainder to the final layer (`sycl/src/core/expert_cache.cpp:759-767`). With the configured 128 slots and 48 layers, the resulting ceilings are two slots for layers 0-46 and 34 slots for layer 47. Per-layer admission enforces each range and has no eviction (`sycl/src/core/expert_cache.cpp:773-787`). Therefore a profile-ranked pair for a layer whose two slots are full cannot use unoccupied capacity in another layer. This is a concrete allocation limitation, though current aggregate hit counts alone do not show that it costs decode work.
+
+Capacity sizing also depends on the option path. The exact mixed-size `open_sized` allocation path is gated on native packing, per-layer mode, and auto sizing (`sycl/src/program/generate.cpp:4323-4345`). With an explicit 128-slot count, the cache keeps the explicit count semantics and uniform maximum-blob storage; simply turning on auto sizing would change the configured capacity policy and has no demonstrated value for this workload.
+
+`--adapt-swaps 0` disables the runtime adaptive tier. When enabled, adaptation initializes usage only when both `adapt_every` and `adapt_swaps` are positive and the experts are not already resident (`sycl/src/program/generate.cpp:7689-7697`). That mechanism swaps experts into fixed resident slots; it does not enlarge the cache. Enabling it would be a distinct policy change and lacks a result here showing that its extra CPU/RAM lease and swap activity improves decode.
+
+## Narrow candidate, conditional on offline evidence
+
+If offline analysis of the existing profile ranking plus per-layer hit records shows that layers other than the final layer repeatedly exhaust two slots while final-layer slots are unused, change only the per-layer remainder assignment: retain a two-slot floor for each layer, then award the 32 surplus slots to the next highest-ranked profile pairs across layers. Keep 128 total slots, the same backing allocation and weights, the same routes, and the current adaptation setting. This removes the structural all-remainder-to-last-layer bias without increasing VRAM or introducing a new phase-specific scratch/lease lifetime.
+
+This is a candidate, not a predicted speedup. The histogram currently available is aggregated and cannot establish whether the candidate helps. First derive a quota summary from the existing ranked profile and obtain per-layer hit/exact-miss accounting in a controlled fresh comparison. Reject the change if the final layer ranks first for all surplus pairs, if total GPU cache hits decline, if exact expert outputs/routes differ, if the existing all-head/all-state/logprob/MTP correctness gate fails, or if fresh matched decode measurements show no improvement. The current full correctness gate remains necessary because the GPU and CPU expert arithmetic paths may have different reduction order. No approximation, quantization, route, or expert-weight change is proposed.
+
+## Recommendation
+
+Do not claim current cache hits establish GPU performance opportunity. Preserve the present 128-slot static policy unless the layer-resolved evidence demonstrates the remainder imbalance is material; then evaluate the quota redistribution above as a controlled, correctness-gated experiment. No other capacity increase or adaptive-swap activation is supported by the evidence reviewed here.
