@@ -188,6 +188,11 @@ public:
     double ms_multi_gu = 0, ms_multi_q = 0, ms_multi_down = 0;
     int64_t multi_bytes = 0;
 
+    /// Opt-in caller-owned decode exposure; reset at the request's decode boundary.
+    bool native_histogram_enabled() const;
+    void native_histogram_begin();
+    void native_histogram_report(std::FILE* f);
+
     /// Total `_mm_pause` iterations spent waiting, over all workers, is no longer counted - see the note on the
     /// atomics below.  It was a LOCKED read-modify-write in the park loop, so measuring the contention added to
     /// it.
@@ -286,6 +291,16 @@ private:
     };
     std::vector<SplitBuf> split_;
     // run_split_multi state: mode 3 = gate/up row parts, 4 = down row parts
+    struct NativeExposure {
+        uint64_t experts = 0, tokens = 0, rows = 0;
+        NativeDispatch selected = NativeDispatch::Ggml;
+        unsigned eligible = 0; // bits: IQ512, IQ256, KQ256, IQ4NL256, Q2
+        int variant = 0; // IQ256 mask; -1 means worker-dependent/unresolved
+    };
+    // Type 64 and NT 0 are bounded overflow buckets (valid jobs have NT 1..MAXT).
+    NativeExposure native_exposure_[2][65][MAXT + 1]{};
+    bool native_histogram_active_ = false;
+    void native_histogram_add(const NativeFmt& f, ExpertJobMulti* jobs, int n, int phase);
     ExpertJobMulti* mjobs_ = nullptr;
     int64_t mrows_ = 0;     // rows of the current multi phase across all its experts (n * FF, then n * H)
     int mtasks_ = 1;        // equal row ranges the phase is cut into

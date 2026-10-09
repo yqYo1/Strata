@@ -2,6 +2,9 @@
 #include "strata/kernels/cpu/pool.hpp"
 #include "strata/core/progress.hpp"
 #include "strata/kernels/cpu/expert_layout.hpp"
+#include "strata/kernels/cpu/iq_avx2.hpp"
+#include "strata/kernels/cpu/iq_avx512.hpp"
+#include "strata/kernels/cpu/kq_avx2.hpp"
 
 #include <algorithm>
 #include <atomic>
@@ -756,6 +759,93 @@ void ExpertPool::run_split_multi(ExpertJobMulti* jobs, int n) {
     ms_drain_ += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
 }
 
+bool ExpertPool::native_histogram_enabled() const {
+    static const bool enabled = [] {
+        const char* v = std::getenv("STRATA_NATIVE_DISPATCH_HISTOGRAM");
+        return v && std::atoi(v) != 0;
+    }();
+    return enabled;
+}
+
+void ExpertPool::native_histogram_begin() {
+    if (!native_histogram_enabled()) return;
+    for (auto& phase : native_exposure_)
+        for (auto& type : phase)
+            for (auto& cell : type) cell = NativeExposure{};
+    native_histogram_active_ = true;
+}
+
+void ExpertPool::native_histogram_add(const NativeFmt& fmt, ExpertJobMulti* jobs, int n, int phase) {
+    if (!native_histogram_active_) return;
+    const int type = phase == 0 ? fmt.gu_type : fmt.d_type;
+    const bool avx2 = cpu_avx2_ok(), avx512 = cpu_avx512_ok();
+    unsigned eligible = 0;
+#if defined(STRATA_NATIVE_EXPERTS)
+    if (phase == 0) {
+        if (avx512 && iq512_supported(type)) eligible |= 1;
+        if (avx2 && iq256_supported(type)) eligible |= 2;
+        if (avx2 && type == 12) eligible |= 4;
+    } else {
+        if (avx2 && (type == 7 || type == 8)) eligible |= 4;
+        if (avx2 && type == 20) eligible |= 8;
+    }
+#endif
+    if (q2_native_kernels(type)) eligible |= 16;
+    for (int e = 0; e < n; ++e) {
+        const int nt = jobs[e].nt;
+        auto& cell = native_exposure_[phase][type >= 0 && type < 64 ? type : 64]
+                                            [nt >= 1 && nt <= MAXT ? nt : 0];
+        cell.experts++;
+        cell.tokens += nt;
+        cell.rows += phase == 0 ? FF : H; // GU output rows, each computes gate and up
+        cell.eligible = eligible;
+        cell.selected = q2_native_kernels(type) ? (avx512 ? NativeDispatch::Q2Avx512 : NativeDispatch::Q2Avx2)
+                       : phase == 0 ? native_gu_dispatch(type, nt) : native_down_dispatch(type, nt);
+#if defined(STRATA_NATIVE_EXPERTS)
+        if (cell.selected == NativeDispatch::Iq256) {
+            // Never claim a caller's per-core decision as the workers' on a hybrid CPU.
+            cell.variant = is_hybrid() ? -1 : iq256_variant();
+            if (cell.variant >= 0 && type != 18 && type != 21 && type != 22) cell.variant &= ~kIq256Gather;
+        } else if (cell.selected == NativeDispatch::Iq4nl256) {
+            cell.variant = is_hybrid() ? -1 : (iq256_variants() & kIq256Vnni);
+        }
+#endif
+    }
+}
+
+void ExpertPool::native_histogram_report(std::FILE* out) {
+    if (!native_histogram_active_) return;
+    NativeDispatchSettings settings;
+    native_gu_dispatch(18, 1, &settings);
+    const int normal_min = settings.gu_min;
+    native_gu_dispatch(21, 1, &settings);
+    native_down_dispatch(20, 1, &settings);
+    int variant_capabilities = 0;
+#if defined(STRATA_NATIVE_EXPERTS)
+    if (cpu_avx2_ok()) variant_capabilities = iq256_variants();
+#endif
+    std::fprintf(out, "strata native dispatch exposure: decode request delta; cpu2=%d cpu512=%d hybrid=%d "
+                      "gu512=%d gu256=%d gu_kq=%d down_kq=%d iq4nl=%d gu_min=%d iq3s_min=%d down_min=%d "
+                      "gather_setting=%d iq256_variant_capabilities=%d; eligible bits=IQ512:1,IQ256:2,KQ256:4,IQ4NL:8,Q2:16; "
+                      "variant=scalar:0,gather:1,vnni:2,both:3,worker-unresolved:-1; "
+                      "cells=phase/type/nt/selected/eligible/variant:experts,tokens,output_rows",
+                 cpu_avx2_ok(), cpu_avx512_ok(), is_hybrid(), settings.gu512, settings.gu256, settings.gu_kq,
+                 settings.down_kq, settings.iq4nl, normal_min, settings.gu_min, settings.down_min, iq256_gather_setting(), variant_capabilities);
+    static const char* labels[] = {"ggml", "kq256", "iq512", "iq256", "iq4nl256", "q2-avx2", "q2-avx512"};
+    for (int phase = 0; phase < 2; ++phase)
+        for (int type = 0; type < 65; ++type)
+            for (int nt = 0; nt <= MAXT; ++nt) {
+                const auto& c = native_exposure_[phase][type][nt];
+                if (!c.experts) continue;
+                std::fprintf(out, " %s/%d/%d/%s/%u/%d:%llu,%llu,%llu", phase == 0 ? "GU" : "Down", type, nt,
+                             labels[(int)c.selected], c.eligible, c.variant, (unsigned long long)c.experts,
+                             (unsigned long long)c.tokens, (unsigned long long)c.rows);
+            }
+    std::fprintf(out, "; exposure only, not time/traffic/worker imbalance\n");
+    std::fflush(out);
+    native_histogram_active_ = false;
+}
+
 void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n) {
     if (n <= 0) return;
     const auto t0 = std::chrono::steady_clock::now();
@@ -769,6 +859,7 @@ void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs
         const auto a = std::chrono::steady_clock::now();
         run_phase(5, mtasks_);
         const auto b = std::chrono::steady_clock::now();
+        if (native_histogram_active_) native_histogram_add(f, mjobs_, nb, 0);
         for (int e = 0; e < nb; ++e)
             for (int t = 0; t < mjobs_[e].nt; ++t)
                 if (q2_native_kernels(f.d_type)) act_quant_any(split_multi_[(size_t) e].ff[t], FF, split_multi_[(size_t) e].a2[t]);
@@ -778,6 +869,7 @@ void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs
         mtasks_ = phase_tasks(mrows_);
         run_phase(6, mtasks_);
         const auto d = std::chrono::steady_clock::now();
+        if (native_histogram_active_) native_histogram_add(f, mjobs_, nb, 1);
         ms_multi_gu += std::chrono::duration<double, std::milli>(b - a).count();
         ms_multi_q += std::chrono::duration<double, std::milli>(c - b).count();
         ms_multi_down += std::chrono::duration<double, std::milli>(d - c).count();

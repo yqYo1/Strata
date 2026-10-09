@@ -10401,6 +10401,7 @@ int main(int argc, char **argv) try {
                                pool.multi_bytes};
             };
             const DecSnap ds0 = dec_timing ? dec_snap() : DecSnap{};
+            pool.native_histogram_begin();
             double dt_run = 0, dt_commit = 0, dt_draft = 0;
             int64_t dec_windows = 0, dec_T = 0;
             const int64_t decode_hits0 = drive.d.cache_hits;
@@ -11300,6 +11301,7 @@ int main(int argc, char **argv) try {
                 return 1;
             }
             const DecSnap ds1 = dec_timing ? dec_snap() : DecSnap{};
+            pool.native_histogram_report(stderr);
             if (dec_timing && dec_windows > 0) {
                 const DecSnap d1 = ds1;
                 const double w = (double) dec_windows, L = (double) g.n_layers;

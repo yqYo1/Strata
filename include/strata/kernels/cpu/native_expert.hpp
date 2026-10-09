@@ -42,6 +42,15 @@ void native_quant_h(const NativeFmt& f, const float* h, void* dst);
 /// From how many tokens native_gu_rows gives this gate/up type to a multi-token kernel (#152; ggml-cpu's per-token dot
 /// below that).  1: a token's rows are the same alone and in any group.
 int native_gu_mt_min(int gu_type);
+/// Shared branch decision; eligibility is separate from threshold/flag/precedence selection.
+/// Pool Q2 routing precedes these wrappers and is classified separately by the pool.
+enum class NativeDispatch { Ggml, Kq256, Iq512, Iq256, Iq4nl256, Q2Avx2, Q2Avx512 };
+struct NativeDispatchSettings {
+    bool gu512 = false, gu256 = false, gu_kq = false, down_kq = false, iq4nl = false;
+    int gu_min = 2, down_min = 2;
+};
+NativeDispatch native_gu_dispatch(int type, int nt, NativeDispatchSettings* settings = nullptr);
+NativeDispatch native_down_dispatch(int type, int nt, NativeDispatchSettings* settings = nullptr);
 /// ff[t][r] = silu(gate_r . a[t]) * (up_r . a[t]) for rows r in [r0, r1), `nt` tokens.
 void native_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* const* act, int nt, float* const* ff,
                     int r0, int r1);
