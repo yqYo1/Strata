@@ -1,0 +1,32 @@
+Round 64 — safe host-only tokenizer and prompt-preparation entry contract
+
+Scope and basis
+
+This is a source inspection, not a tokenization run. No model weights, prompt payloads, tokenizer invocation, server, engine, GPU, profiler, tests, or build were used. The inspected frozen source worktree is `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010`, HEAD `66aaec3a66ad9ed12e6d042cffe743c47e364432`.
+
+The source identifies `tools/strata_tokenizer.py` as the reference implementation. It is pure Python byte-level BPE (with the `regex` package) and reads the model tokenizer exported in a pack's `tokenizer/` directory; its header explicitly says the vocabulary, merges, types, pre-tokenizer type, and Jinja template are carried in GGUF metadata and do not require model weights. The serving path reconstructs the same tokenizer from `vocab.json`, `merges.txt`, and `token_type.json` in `serve/server.py`, then renders the model template with `ChatTemplate` from `serve/frontend.py` before `encode(..., parse_special=True)`. The frontend describes itself as text-only. Do not launch `serve/server.py` as a shortcut: its later startup path creates `StrataEngine` and can load the model.
+
+Source file hashes (SHA-256), for exact provenance:
+
+- `tools/strata_tokenizer.py`: `9b0327e25aa62754406a924db6cc137e6edb1d93c7af76a4f3d14a8920ea72c8`
+- `serve/frontend.py`: `095bbac7d49b19d815d2634457d14d216ba9bd4e98998a4e3b4288f20a25e923`
+- `serve/chat_template.jinja`: `12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce`
+- `tools/batch_test.py`: `38bcc5baa01f633722878147ba348546271d5e44f41b0f8e7717b88f212727d6`
+
+Recommended entry contract
+
+1. For each separately sourced train and validation corpus, retain original UTF-8 text and record its source name/URL or corpus identifier, acquisition/version date, selection rule, and SHA-256. Keep train and validation sources disjoint at the document level. Record each selected document boundary; do not concatenate repeated excerpts or create a validation prompt by editing/reordering training text.
+2. Use the exact tokenizer directory belonging to the selected model pack: `vocab.json`, `merges.txt`, `token_type.json`, `tokenizer.json`, and `chat_template.jinja`. Record hashes for every file and the pack/model identity. The pack's `tokenizer.json` records `pre`, `vocab_size`, `n_merges`, `special_ids`, `pre_pattern`, and `add_bos_token: false`. Do not substitute an upstream family tokenizer or a sibling variant's template. Different fine-tunes can ship different templates.
+3. Reconstruct `tokens` in ID order from the pack's `vocab.json` mapping, read merges in file order and token types from `token_type.json`, then instantiate `tools/strata_tokenizer.py::Tokenizer(tokens, merges, types)`. This matches `tools/batch_test.py::tokenizer(path)`. Treat `token_type.json` as authoritative for special-token classification: type 3 control literals are emitted as one ID only with `parse_special=True`; type 4 user-defined literals are recognized either way. The IDs come from the vocabulary positions/types, not an appended hand-maintained suffix. Preserve the pack config's no-BOS behavior.
+4. Render messages with the pack's `chat_template.jinja` using `serve/frontend.py::ChatTemplate` and production-equivalent normalized message dictionaries/options; tokenize the rendered string with `parse_special=True`, following `Service.encode_prompt` in `serve/server.py`. For simple text-only prompts, keep role/message boundaries and the assistant generation prefix produced by the template. Do not copy an adapter's hard-coded nine-ID ending and call it a tokenizer or template feature; it obscures provenance and may add, remove, or duplicate actual template markers. The renderer and BPE tokenizer are distinct stages, so retain rendered-prompt text as well as its token-ID output and both hashes.
+5. Select complete source documents or paragraphs at natural boundaries, render, and recount with this exact tokenizer until each frozen prompt has at least 32,768 input IDs. Do not cut a document or token array in the middle merely to hit a target length. Record the final token count and an ID-array hash. Preserve a comfortably longer prompt/source candidate when a small overage is acceptable; record any explicit maximum. Read no validation scores while selecting or freezing the validation corpus.
+
+The current repository tooling proves a reusable host BPE reader and template renderer exist; it does not establish that any presently staged 32K fixtures have recoverable source text, nor that their corpus provenance is independent. Treat existing token-ID files only as derived artifacts until their source text and provenance are located and hashed. The cited source inspection did not read or tokenize those payloads. The previous observation of a 262,145-ID context source is a source-file count, not evidence of tokenizer vocabulary size or a valid 262,145-token context. The model tokenizer metadata reports a 248,320-token vocabulary in the source header.
+
+Lifecycle gate and phase-count erratum
+
+A 32K host-built prompt is only an input correctness/workload fixture; it does not replace the full 262,144-position lifecycle gate or the exact head, linear-probe, MTP, live-parts, and phase checks. For a physical 262,144-token context, the final prompt cell is index 262,143. In the 262,140-prefill plus four-output case, 262,143 consumed/saved tokens can be valid because the final emitted token is not fed back as another input cell. Do not require a save count of 262,144 as an independent gate.
+
+Implementation boundary
+
+This report recommends a small host-only preparation entry point importing the existing tokenizer module and frontend template class, without importing `server.py`, constructing an engine, or contacting a model. It does not implement or execute that entry point. Before using it, the owner should confirm the chosen pack's tokenizer assets and package dependencies (notably `regex` and `jinja2`) from the actual frozen worktree/pack and preserve the source and rendered-text provenance above.

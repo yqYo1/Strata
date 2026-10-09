@@ -5,7 +5,7 @@ had returned and no research agent was active. Root resumed multiple independent
 read-only researchers and continued its own execution. The recurring assignment,
 shared-history, separate implementation and root-only testing rules are now in
 AGENTS.md. Returned reports remain files with exact hashes; they are reviewed
-before adoption. Registryv41 has130 completed Luna reports and preserves prior
+before adoption. Registryv42 has132 completed Luna reports and preserves prior
 immutable snapshots in the Git history.
 
 ## Division of work
@@ -21,11 +21,11 @@ fixtures and pure byte-framing helper. Root owns every actual execution and
 serializes builds, tests, inference, profiling and cleanup with the measurement
 lock. Research does not hold up independent main work.
 
-| Latest registryv41 assignment | Model | Scope | State at snapshot |
+| Latest registryv42 assignment | Model | Scope | State at snapshot |
 | --- | --- | --- | --- |
-| Independent input preparation | gpt-6-luna | No-queue tokenizer/template path for separately sourced32K documents | Running, read only |
-| Native service oracle | gpt-6-luna | Exact production activation/FFquant/pool output and timing boundaries | Running, read only |
-| Implementation agent | gpt-6.1-sol | Pure DP and separate frozen-trace adapter | Completed source only; root tests passed |
+| Actual tokenizer assets | gpt-6-luna | Actual pack assets, config/types/template admission | Running, read only |
+| Runtime admission | gpt-6-luna | No-device execution/tracing/interposition coverage for CPU service | Running, read only |
+| Implementation agent | gpt-6.1-sol | Separate bounded independent-prompt preparation helper | Running source only; root tests after report |
 | Main agent | Root | Actual GPU failure closure/archive and next serial qualification | All execution closed; no live GPU process |
 
 Every assignment receives the past-report directory and reviewed decisions.
@@ -308,3 +308,17 @@ Correct the raw R63 SAVE wording: in262140+4 generation, executing physical
 cell262143 qualifies the capacity boundary; saved consumed262143 is valid
 because the final emitted token was not fed. Preserve the complete math/phase
 lifecycle gates, without imposing an incorrect mandatory SAVE262144.
+
+R64 identifies the existing Python BPE tokenizer and text-only Jinja renderer
+for independent prompt preparation. The next separate Sol implementation is a
+bounded helper for two document-disjoint long inputs; no tokenizer/model/test
+is executed by that agent. Root will review and qualify returned source before
+preparing actual inputs. R65 audits actual tokenizer asset/config admission and
+a concrete no-device runtime check for the future CPU service executable.
+
+R64's FFN oracle preserves same-wrapper direct/pool byte equality while treating
+different accumulation-order controls separately. The existing1e-5 row-parity
+bound is not a newly approved blanket full-FFN tolerance. All actual builds,
+tests, tokenization, inference, profiling and cleanup remain owned by root and
+serialized by the measurement lock. No target throughput or new live-policy
+performance has been achieved by these source reports.
