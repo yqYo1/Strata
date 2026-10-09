@@ -1,0 +1,50 @@
+Strata SYCL --pool-tasks 実装報告
+日付: 2026-10-09
+worktree: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-pool-tasks-v0141-20261009
+branch: perf/sycl-pool-tasks-v0141-2026-10-09
+base: 23268953314d12588fd3f496414a46bd426a7306
+
+変更ファイル（未commit）
+sycl/src/program/generate.cpp のみ。
+- 477: Options.pool_tasks = 0 を追加。
+- 903-904: --pool-tasks N のhelp。0..4096、自動は参加スレッド数×3、正の値は各GU/Down phaseの行数でcap。
+- 1754-1765: CLI parser。strtol、errno=0、ERANGE/end pointer/範囲検査。異常時はstderrに1行、return 2。
+- 4176-4177: 唯一のExpertPool構築に第5引数o.pool_tasksを渡す。
+
+全pool経路の静的確認
+ExpertPool構築は当該ファイル内1箇所。4984でdrive.d.pool = &pool。
+通常/nativeのpool callbackは同じdriveを使用（pool_fn/pool_userは5133付近）。
+serveも同じmain内で6370付近から分岐し、同じdriveを使用。
+stage構造体GpuStageは別CPU poolを所有しない。6982でsplit_drive.base = &drive、drive_pool_splitは1055付近でbaseのdrive_pool_multiを呼ぶ。pipeline odd側もsplit_drive_b = split_drive（7142付近）で同じbaseを共有。
+--no-poolやpure-GPU経路では従来同様CPU poolが使用されない。single-tokenのrun/run_splitは既存tasks引数の適用対象外で、変更しない。
+
+default維持の証拠（ソース静的確認、実行時byte parityは未検証）
+include/strata/kernels/cpu/pool.hpp:150-151 のコンストラクタ第5引数の既定値は0。
+変更前の4引数呼出しは0を受け取る。変更後も未指定時Options初期値0を受け取る。
+src/kernels/cpu/pool.cpp:436-438 はtasks_へ保存し0..4096を検査。716-717はtasks_ == 0なら3*(workers + host参加)、正の値ならmin(rows,tasks_)。
+未指定と明示 --pool-tasks 0 に動作差はない。両者は同じ0を既存constructorへ渡すのでsentinelは不要。
+通常起動のstderr行やserveのstdoutプロトコルは追加/変更しない（非SYCL版にあるtasks loggingは移植しない）。help出力は新オプション分だけ増える。
+カーネル、row partition、barrier、cache、KV、共通ヘッダ、数値演算は変更していない。
+
+CMake既存実験の調査と課題
+sycl/CMakeLists.txt:111-115でSTRATA_NATIVE_POOL_TASK_FACTORの既定値は0。この分岐では元pool.cppをそのままcompileするので上記default維持が成立。
+非0（1..16）では:125-136のneedleが旧実装の「mtasks_ = 3 * threads;\n mrows_ = nb * FF;」を探して置換する。しかしbaseのpool.cppは既にmrows_設定後にphase_tasksを呼び、needleが存在しない。従って非0は既存のsite-change guardでconfigure fatalになる見込み（実行していない）。この既存不整合はCLI変更前からあり、今回の許可範囲がgenerate.cppのみのため修正しない。
+非0 factor設定を使ったビルドで動作を保証するものではない。メインで必要なら別課題として扱う。
+
+追加した入力拒否
+空文字/非数（abcなど）、途中/末尾に非数字がある値（1x、1.5、末尾空白など）、負数、4096超、strtolのlong overflow/underflowを拒否しexit code 2。
+値なしは既存next()により「--pool-tasks needs a value」でexit 2。
+strtol流儀に従い先頭空白、+付き、-0、先頭0の整数は許容。errnoチェックは未指定時には走らない。
+
+静的レビュー結果
+git diffと関連ソースを読み、変更は4箇所だけ、変更ファイルは上記1ファイルのみ。入力チェックの前にpool/model生成を行わない。pool kMaxTasksを参照して範囲を共通定義と一致させる。cerrnoは元からinclude済み。
+ビルド/テスト/GPU測定/モデル/サービス/プロファイラー/GPU情報取得/git fetch/commit/pushは実行していない。実行検証はメイン担当。
+
+未実行の検証項目（メインへ引継ぎ）
+- STRATA_NATIVE_POOL_TASK_FACTOR=0 のSYCL buildとコンパイル警告確認。
+- --help、値なし、負数、abc、1x、1.5、空文字、4097、巨大正負整数のCLI exit/stderr確認。
+- 有効0/1/6/12/18/24/36/4096の受付。
+- 未指定対明示0の同一条件decode/token/logit parityおよびstderr/serve stdoutの維持確認。
+- CPU pool_tasks_test（既存partition parity）および必要なSYCL correctnessをdebug-run.pyで実行。
+- native/serve/split-stage/pipeline経路の必要範囲で反映を確認。
+- 32K復元decode、256K decodeの同一state比較。timing環境はdebug loggingを除きメインが逐次管理。
