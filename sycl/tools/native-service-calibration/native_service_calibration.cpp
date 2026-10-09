@@ -78,7 +78,7 @@ static void check_q2(const float* ff,const Q2Buffer& actual){
 }
 static void environment_metadata(){
  require(strata::core::release_gpu_fn().load()==nullptr,"GPU release callback registered");
- for(const char* key:{"STRATA_FORCE_ISA","STRATA_FORCE_AVX2","STRATA_NO_AVXVNNI","STRATA_NO_Q8K_AVX2","STRATA_IQ_MT_MIN","STRATA_IQ3S_MT1","STRATA_NO_IQ512","STRATA_NO_IQ256","STRATA_NO_IQ4NL","STRATA_KQ256","STRATA_IQ256_GATHER","STRATA_Q2_BITPLANE","STRATA_POOL_SPIN_US","STRATA_HOST_CORE","STRATA_NATIVE_DISPATCH_HISTOGRAM"}){
+ for(const char* key:{"STRATA_FORCE_ISA","STRATA_FORCE_AVX2","STRATA_NO_AVXVNNI","STRATA_NO_Q8K_AVX2","STRATA_IQ_MT_MIN","STRATA_IQ3S_MT1","STRATA_IQ_PREFETCH","STRATA_NO_IQ512","STRATA_NO_IQ256","STRATA_NO_IQ4NL","STRATA_KQ256","STRATA_IQ256_GATHER","STRATA_Q2_BITPLANE","STRATA_POOL_SPIN_US","STRATA_HOST_CORE","STRATA_NATIVE_DISPATCH_HISTOGRAM"}){
   const char* value=std::getenv(key);std::cout<<"ENV,"<<key<<','<<quote(value?value:"<unset>")<<'\n';
  }
  require(std::getenv("STRATA_FORCE_ISA")==nullptr&&std::getenv("STRATA_FORCE_AVX2")==nullptr,"feature-forcing environments forbidden");

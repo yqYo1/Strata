@@ -1,6 +1,6 @@
 # Native CPU streaming service calibration
 
-Source-only preparation. Root has not built or tested this new target through this implementation task. The prior `native-service-host` actual-weight smoke is a separate correctness result and its tight-repeat samples are not reused here. All execution, payload access, qualification and cleanup belong to root under the shared measurement lock.
+Root has passed standalone compile/link/import checks for this target. Cohort execution and statistical qualification remain pending. The prior `native-service-host` actual-weight smoke is a separate correctness result and its tight-repeat samples are not reused here. All execution, payload access, qualification and cleanup belong to root under the shared measurement lock.
 
 The program handles one exact GU/Down/NT cell, one task policy and one homogeneous pool batch size per fresh process:
 
@@ -56,3 +56,9 @@ Finite work: 2 cohorts *5 arms *28 rounds *192 experts, plus bounded initial cor
 Within each cohort the implementation visits round0..27, and executes all five arms in a rotating block per round, instead of finishing all rounds for one phase first. The base arm sequence is GU, FFquant, Down, direct_complete, pool; position is `(arm_index + round_index + SEED%5)%5`. This balances each phase across five starting positions over25 measurement rounds. Both cohorts use that same phase rule and the precomputed expert order for each round. Root must still observe boost/thermal/load and counterbalance fresh-process profile/cell ordering; this finite rotation alone is not proof that time drift is absent.
 
 For root's separate non-timing loader/syscall correctness observation, append `--correctness-only`. This mode runs all384 initial direct/GGML/quantizer and homogeneous pool checks, affinity snapshot and output checks, then returns before any WARMUP/ROUND intervals. It permits exactly `LD_DEBUG=libs` for R78's loader observation, still forbids LD_PRELOAD/LD_AUDIT, and emits `RESULT,correctness_only_pass,no_calibration_rounds`. Timing mode always rejects LD_DEBUG. A traced correctness-only process cannot supply timing samples. Neither mode starts a tracer/profiler itself. Owner admission must require normal exit0 and verified complete outputs; a parseable RESULT before a failed final flush/close is not sufficient.
+
+
+Root records `STRATA_IQ_PREFETCH` in environment output. Its default is 2048
+bytes; zero disables the production IQ prefetch. Pin the same value or absence
+in every compared process. The initial compile-only receipt remains historical;
+adding this metadata does not change the kernel or task policy.
