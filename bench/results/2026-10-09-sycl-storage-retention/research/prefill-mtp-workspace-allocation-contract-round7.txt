@@ -1,0 +1,73 @@
+# Prefill/MTP scratch lifetime and allocation contract — round 7
+
+Checkout: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009`, HEAD `23268953314d12588fd3f496414a46bd426a7306`. Scope: active SYCL backend `sycl/src/prefill/prefill.cpp`, the public `include/strata/prefill/prefill.hpp`, and their direct `generate.cpp` callsites. Read-only inspection only; no code, git, environment, build/test, model, GPU, profiler, service, or measurement operation was done. The 2116 MiB figure below is the supplied measured-log value; it was not reproduced. All shape calculations are separate arithmetic estimates.
+
+## Main correction: `draft_kv` has no decode-time caller
+
+Round 6 correctly found that `draft_kv` uses `Impl::region`, but incorrectly described its call sites as decode consumers. A repository-wide search of the active SYCL tree finds only two executable call sites: `generate.cpp:7599` and `:11704`. Both are the `Prefill::on_chunk` callback, set for the prompt path at `:7595` and `:11700`. The header explicitly says “call it from on_chunk” and describes building the draft layer's K/V for prompt cells (`include/strata/prefill/prefill.hpp:49-53,143-146`). They run while each prompt chunk's final residual `R_rows` is still valid. The callback is invoked after the prefill compute queue is synchronized (`prefill.cpp:5170-5177`); `draft_kv` writes the MTP QSA KV state for those prompt positions and waits its compute queue before it returns (`:1520-1521,1649-1655`).
+
+The decode loop's spec-4 drafts use `MtpDrafter` and verifier state, not `Prefill::draft_kv`. No other `draft_kv` call exists in `sycl/src/program`, `sycl/src/core`, or `sycl/src/prefill`. Thus there is **no decode-persistent scratch allocation in `Prefill` required by this function**. Keep the MTP draft KV/session state and weights used by actual decode; do not confuse them with this temporary batching workspace. `draft_kv` can affect which speculative drafts are available by precomputing prompt suffix K/V, but its temporary buffers are no longer needed once prompt ingestion completes.
+
+This distinction makes a material difference to the proposed lifetime split: preserving a small “decode arena” for `draft_kv` is unnecessary. The arena is prompt-only, even when MTP/spec-4 is enabled. It must remain alive through every prompt `on_chunk` callback (and any callback/pipeline still using it), then may be discarded after prompt completion. The next prompt has to rebuild it before its callback runs.
+
+## Exact scratch contract inside `draft_kv`
+
+`draft_kv` uses the shared `m.region` as a temporary arena, with batch capacity `B`, not `n` and not decode `spec`. It declines before touching scratch for `STRATA_MTP_BATCH=0`, no valid region, nonpositive input, incompatible KV mode/device/hybrid state, unsupported weights/embedding, or an unfit batch (`:1444-1477`). For this target KV INT8/resident-32768 configuration, mode 2 is permitted when `STRATA_MTP_BATCH_RING` is enabled (the default); ring batch width is additionally limited by `(n_slots-1)*page_size`, rounded down to 64 (`:1450-1453,1482-1490`).
+
+The row shape is derived from the artifact constants at `:112`: N=2560, HC=4, HCN=10240, LR=320, KV=512. For each `B` rows, it carves distinct arrays in this exact order (`:1487-1516`):
+
+| Temporary pointer | Type and element count |
+|---|---|
+| `emb`, `e2` | float, `B*N` each |
+| `en16` | uint16, `B*N` |
+| `hn`, `h2`, `Rm`, `gated` | float, `B*HCN` each |
+| `hn16`, `xn16` | uint16, `B*HCN` each |
+| `lo`, `lo16` | float `B*LR`; uint16 `B*LR` |
+| `grs` | float, `B*HC` |
+| `mixed`, `mixed_h` | float `B*N`; uint16 `B*N` |
+| `Kc`, `Vc` | float, `B*KV` each |
+| `tok` | int32, `B` |
+| q8/MMQ path only: `xq`, `ident`, `bnd` | `mmq::q8_bytes(B*HC,N)`, int32 `B*HC`, 16 bytes |
+
+The persistent input `R_rows`, host `next_tokens`, MTP weights, and `MtpDrafter::kv_state_rw()` are not allocated from this scratch. A per-call host `tk` vector of `B` int32 token ids is also created (`:1524`); it dies at return. `m.mmq_ctx` is a host-side lazy MMQ context, created only if q8 path runs (`:1527`); it is `Prefill::Impl` state, not device scratch. `Gemm::bf16` uses the queue-bound BLAS descriptor. If MMQ is not selected, `Gemm::native` can use `Gemm::scratch_` to dequantize the Q8_0 embedding/hidden matrices, but that too occurs only inside this prompt callback. `Gemm::bf16` itself does not use `scratch_` in the SYCL oneMKL path (`gemm.dp.cpp:690-749,876-897`). The descriptor is initialized as external-memory-backed at `prefill.cpp:1223-1226`; destroy/detach it before freeing its external scratch allocation.
+
+The implementation computes
+
+`per_row = 4*(2*N + 4*HCN + LR + HC + N + 2*KV + 1) + 2*(N + 2*HCN + LR + N) + 64 + (q8 ? q8_bytes(HC,N)+4*HC : 0)`
+
+then `cap = floor(region_bytes/per_row) & ~63`, and chooses `B=min(max(n-r0,64),cap)` (then the mode-2 resident-ring bound). For the local constants, the base `per_row` guard is **251,860 B**; q8 adds **7,504 B** using `q8_bytes(4,2560)` and four int32 IDs. Therefore the guard needs at least **16,119,040 B (15.37 MiB)** for a 64-row fallback batch without q8, or **16,599,296 B (15.83 MiB)** with q8. This is a floor for the current 64-row batching policy, not a recommended fixed arena: the function will loop over smaller batches if the cap is smaller than `n-r0`.
+
+For `n=8192`, without the resident-ring cap, a full 8192-row batch's guard is about **1,967.7 MiB** without q8 and **2,026.3 MiB** with q8. These are derived lower bounds for that chosen B from the guard formula; actual carve uses 256-byte rounding for each pointer and `region` is sized by the maximum of QSA/GDN/PLE/hyperconnection/MoE scratch (`prefill.cpp:1278-1305`). The reported **2116 MiB is an observed total workspace/log value**, and cannot be equated to either estimate or attributed solely to `draft_kv` without the corresponding run's `region_bytes`, `B`, q8 selection, and full allocator breakdown. `spec=4` does not imply B=4: `draft_kv` runs on prompt chunks (up to 8192 here), with `B` selected from prompt chunk size, region capacity, and QSA resident-ring constraints.
+
+Do not shrink the region to the 64-row floor as a purported decode optimization. It would reduce batch width and change `Gemm::native`/MMQ call grouping for MTP K/V; no equivalence or performance evidence was collected. Keep the existing batch capacity during each prompt, and free the prompt arena only after callbacks complete. If a smaller prompt batch is separately explored, compare MTP KV and speculative behavior independently; target logits are still verified by the main model, but draft acceptance/performance may change.
+
+## Ownership separation and release boundary
+
+The 2116 MiB workspace is not session KV. Current `bytes_needed_owned`/`bytes_needed_impl` and `carve` mix physically separate prompt-only allocations under one `Impl::owned` list. The current owned allocations include: token IDs; GEMM scratch; main chunk tensors including `R`; shared phase `region`; per-layer dequant scratch; MMQ group/identity buffers; expert staging ring; PLE embedding; full-context prompt KV stage; and (for streamed KV mode 1) its identity page table (`prefill.cpp:1195-1228,1262-1388,1997-2045`). In addition to device USM, `init` owns prompt queues/events, expert stager, host group buffers, PLE pinned/pageable buffers, and any peer/handoff state (`:1047-1215`; teardown at `:806-840`). `m.region` is deliberately reused by successive prompt phases, including `draft_kv`; those buffers are not all live simultaneously, but the allocation is the maximum phase workspace.
+
+The lasting model state has different owners and must not be freed: QSA's host-authoritative full KV plus its 32768 resident cells/page maps, MTP's own K/V state, QSA pooled indexer/dead/tail state, GDN recurrence/conv state, PLE history, RoPE tables, expert cache/weights, and verifier/decode graph resources. The layer-major report round 3 already calculated 12 full host INT8 QSA layers at 3.09375 GiB, resident QSA payload at about 396 MiB, one reusable 264 MiB QSA staging pool, and the 10 GiB host layer-major residual plane; none is this per-chunk prompt arena. Do not release or move those states as part of this change.
+
+No graph capture of `Prefill::region` or `draft_kv`'s local pointers was found. `draft_kv` issues ordinary work on `m.cs` and waits before return; verifier graphs are separate decode resources. The required retirement boundary is still strict: finish all prompt callbacks and any successor-stage pipeline, wait compute, copy, optional KV-copy and the stager's CPU jobs, then release the Prompt object backing. `Prefill::run` drains the stage pipeline before returning (`prefill.cpp:2332-2347`); `run_impl` waits compute and expert-copy queues and, when enabled, KV prefetch (`:5231-5255`). `Prefill::reset()` already calls `release()` and replaces `Impl`, while retaining the public stage range and callbacks per header contract (`prefill.cpp:800-840`, header `:69-74`). The reset path is already used to recover from failed init/chunk fallback (`generate.cpp:6772-6780`), not currently at normal prompt boundaries.
+
+## Concrete lifecycle contract for the target run
+
+For the single-GPU `--serve --prefill 8192 --no-prefill-borrow --expert-cache 128 --kvint8 --kv-resident 32768 --maxctx 262144` path with MTP spec 4:
+
+1. Keep the existing full prompt allocation and MTP batching exactly as initialized while that request's prompt is read. Do not reduce B or alter `on_chunk` ordering; `draft_kv` fills MTP K/V as the callback visits prompt chunks. Main/MTP KV, indexer and recurrence state stay in their session owners.
+2. After the request's final `sp.run(...)` returns successfully (which has drained any `next_` layer pipeline), and after any request snapshot/checkpoint operation that reads prompt objects has finished, retire the prompt Prefill implementation. The no-borrow target owns the prompt USM, so the allocator can return it. Keep model/session/expert-cache/verifier/MTP decode objects alive.
+3. Before a later request performs another prompt run, rebuild Prefill with that request's active `SessionState`, position, tokens/source, expert cache/residency map, main in-order queue, chosen chunk, and the original MTP `on_chunk` callback. Retain/reapply stage and peer/helper configuration when applicable. The public `reset()` contract preserves stage/callback members; `init()` recreates `Impl` buffers. Serve currently initializes prompt paths once (`generate.cpp:6677-6696`) and reuses `sp.run` (`:10119-10124`), so factoring a per-request lazy initializer is necessary; simply calling reset without routing the next prompt through init would leave null/uninitialized buffers.
+4. Only reclaim `Prefill`-owned prompt resources. If a future API keeps a small object alive, ensure the `Gemm` descriptor has been destroyed or rebound before its backing `GEMM_SCRATCH` is freed, and do not retain stale `m.region`, T-sized raw pointers, events, or queue helpers. No MTP decode-only scratch needs to be retained based on current source.
+5. For multi-GPU, reset/re-init every stage coherently and wait the full successor chain; the layer-major report's cache leases, MTP suspend/restore and QSA staged-KV ownership remain independent lifecycles. For borrowed mode, restore/refill the leased cache slots before reclaiming/repurposing their memory. The target specifically selects no-borrow, but a generic API must preserve these rules.
+
+A narrow first design is to factor existing serve `init_prompt_paths` and its callback/config wiring into a lazy setup called before each actual prompt read, then call `reset()` after the prompt phase and after state/checkpoint capture. This uses existing teardown and `init()` behavior instead of inventing a retained MTP arena. The code currently uses `sp.run` in several paths that may split a read into 8192-token pieces or interleave batch decode; do not reset until the whole prompt for that request is done, not after the first chunk/`run_part`. The existing per-request cancellation/yield/checkpoint cases must be audited: if the input is parked at a chunk boundary, its session checkpoint remains authoritative and the next resumed read must lazily reinitialize Prefill before continuing.
+
+## Distinguish existing findings and non-goals
+
+- Round 6 report (`prefill-workspace-decode-residency-round6.txt`) should be corrected where it says `draft_kv` is a decode-time consumer and recommends keeping a persistent decode arena for it. The callsites/API show prompt-only use. Its findings that serve holds the arena and that `release()` is teardown rather than reusable prompt-scratch reclamation remain accurate.
+- Layer-major round 3 is orthogonal: it preserves full-context host KV and one reusable QSA stage while moving layer scheduling. Its 10 GiB host residual and 3.094 GiB host KV numbers are geometry, not measured performance; do not conflate with the measured 2116 MiB device Prefill workspace.
+- Expert-major round 5 is also orthogonal and not recommended for this task: it would require a 25 GiB exact route-contribution plane at 256K or a separate 4.6875 GiB decoded expert-weight cache. It does not solve workspace lifetime.
+- The initial prefill/addendum and prior cache-release findings already discuss staged expert rings, full prefill `reset`, and cache leases. Do not propose simply enlarging expert cache or removing the layer-major streamed-KV guard.
+
+## Static qualification gates after any implementation
+
+No test was run here. Root owns all tests/measurement. A sound qualification should establish: no active callbacks/pipeline task at reclamation; second and later request reinitialize correctly; MTP on/spec4 and `STRATA_MTP_BATCH=0` fallback; KV mode 2 ring bound at 32768; prompt cache hit (no prefill) and cache-miss prompt; cancellation/yield/resume at chunk boundaries; checkpoint/state-dump before reset; both layer-major disabled and enabled where supported; no-borrow plus borrowed-cache regression; and verifier graph/decode after workspace release. Compare prompt logits and saved main/MTP KV, pooled indexer, GDN/conv, and PLE state to the baseline. Measure post-prompt free VRAM on target only after correctness; do not infer that the entire 2116 MiB returns physically from allocator counters alone.

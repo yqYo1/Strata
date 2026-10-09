@@ -1,0 +1,47 @@
+{
+  "active": false,
+  "prepared": true,
+  "compiled": false,
+  "gpu_tested": false,
+  "adopted": false,
+  "created_utc": "2026-10-08T14:06:34.605630+00:00",
+  "preparer_sha256": "54c1b19d289d715eb7c64708d04d673b30f75234a0ba3ffafc7bbbe9a49d29da",
+  "source_inputs_sha256": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/prefill/gemm.dp.cpp": "11a2c943ccc323c328b58d99119d77b3b4ed95c92a0f680480bf5ede96bcb705",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-v3-20261008/include/dpct/blas_utils.hpp": "c742fa32e2f47cfccc57568d96d03afcc646ad80cbcc7dcc7aee30f052788a15",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-v3-20261008/include/dpct/detail/blas_utils_detail.hpp": "acfaebfcded1e593f3f230c718ec841113029ffa09eba232e0d2dd53542caed7",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-v3-20261008/include/dpct/detail/lib_common_utils_detail.hpp": "3bccac089253d479e605d622350633188951c0c0ce50c6e528778a00c13b1df1",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-v3-20261008/include/dpct/detail/memory_detail.hpp": "d7d0475f788801a7667cc1c532a53fec6552c23208a6befaaddd3c74901254d1"
+  },
+  "candidate_source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gemm-host-scalars-v01402-source-v1/gemm.dp.cpp",
+  "candidate_source_sha256": "0225c809c1608a59719d84809075b3349bddcf09e5a9bb7aada4bc611aada955",
+  "intended_baseline": "Qualified DD5; separate from the QSA candidate currently executing its full lifecycle.",
+  "changed_default_call_sites": 2,
+  "minimum_performance_input_tokens": 32768,
+  "source_contract_review": {
+    "same_oneMKL_column_major_GEMM": true,
+    "same_descriptor_queue_copy": true,
+    "same_math_mode_getter_and_f32_deduction": true,
+    "same_int_dimensions_and_leading_dimensions": true,
+    "same_BF16_or_F16_inputs_and_FP32_output": true,
+    "same_host_FP32_alpha_beta_values": true,
+    "same_transposed_W_nontransposed_X": true,
+    "same_DPCT_CHECK_ERROR_and_ck_boundary": true,
+    "same_default_event_dependency_arguments": true,
+    "no_barrier_wait_event_or_allocation_added": true,
+    "queue_event_storage_lifetimes_unchanged": true,
+    "unsupported_library_buffer_or_HIP_falls_back": true
+  },
+  "observations": [
+    "The original detail::get_value checks sycl::get_pointer_type through get_pointer_attribute. Ordinary stack alpha/beta are host-only and are dereferenced; this path does not wait or transfer scalars.",
+    "Only device-only scalar pointers use memcpy(...).wait() in that helper; the two changed default callers do not supply device scalar pointers.",
+    "This source candidate removes two scalar pointer-type lookups and dynamic type dispatch, with the same typed oneMKL operation. Compiler elimination and runtime cost are not measured.",
+    "All matrix allocations, owned queue completion, graph/staging/error machinery and launch ordering are outside the changed blocks."
+  ],
+  "limitations": [
+    "Source review is not a compile, device numerical proof or measured speed gain.",
+    "No claim that this wrapper caused earlier hangs or dominant transfer wait.",
+    "Wait for the current owned GPU job to terminate before any engine build or GPU execution.",
+    "Before adoption require logged fresh>=32768 math/disk checks, matched clean>=32768 timing with first/later reads separate, and this binary own complete physical256K lifecycle."
+  ]
+}

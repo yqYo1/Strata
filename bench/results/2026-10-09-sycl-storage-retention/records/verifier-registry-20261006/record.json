@@ -1,0 +1,57 @@
+{
+  "scope": "Actual production registry/callbacks and registration/removal snippets; CPU verifier substitutes payload for mapped flags/queues; no SYCL/Level Zero/GPU",
+  "started_utc": "2026-10-06T09:32:47.999142+00:00",
+  "source_sha256": "4784e341ade1d7d775265766781c345da44c1e3602eef7bc63eb15b11de323fa",
+  "tests": [
+    {
+      "mode": "diag-race",
+      "exit_code": 0,
+      "elapsed_seconds": 0.03537606300233165,
+      "passed": true
+    },
+    {
+      "mode": "release-race",
+      "exit_code": 0,
+      "elapsed_seconds": 0.03578801399999065,
+      "passed": true
+    },
+    {
+      "mode": "failed-init",
+      "exit_code": 0,
+      "elapsed_seconds": 0.00891066099939053,
+      "passed": true
+    },
+    {
+      "mode": "capacity",
+      "exit_code": 0,
+      "elapsed_seconds": 0.00867054099944653,
+      "passed": true
+    },
+    {
+      "mode": "stress",
+      "exit_code": 0,
+      "elapsed_seconds": 0.011592684000788722,
+      "passed": true
+    }
+  ],
+  "controls": [],
+  "passed": false,
+  "candidate": {
+    "compile": [
+      "g++",
+      "-std=c++20",
+      "-O1",
+      "-g",
+      "-pthread",
+      "-fsanitize=address,undefined",
+      "-fno-omit-frame-pointer",
+      "-DSTRATA_REGISTRY_CONTROL=0",
+      "-I/home/yayoi/.local/state/strata-sycl/verifier-registry-20261006",
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/verifier_registry_host_test.cpp",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/verifier-registry-20261006/registry-test"
+    ],
+    "fragment_sha256": "8f871ce21446c0eeb35777ba67f56a07483c44f9e9f78733779f1d2a1e35f89f",
+    "binary_sha256": "9cf60906bbb697eb9f1856a1943234aa07817c260deb37ae8e9ee82176add753"
+  }
+}

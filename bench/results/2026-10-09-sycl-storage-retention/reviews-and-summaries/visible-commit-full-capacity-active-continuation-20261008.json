@@ -1,0 +1,83 @@
+{
+  "created_utc": "2026-10-08T05:49:10.406497+00:00",
+  "goal_status": "active",
+  "goal_objective_unchanged": "PP1000/TG70, keep optimizing; no goal completion/pause/blocker",
+  "previous_goal_turn": "progress: actual visible-prefix SAVE bug reproduced; fixed private candidate passes full32K state/head/64IDs/logprobs and correct32831 consumed IDs, followed by real32831 live resume. Full-capacity sequence is actively running, not blocked.",
+  "feature_head": "c3d8d92ce5aaa1454309526237582597772fa869",
+  "feature_clean": true,
+  "root_main_head": "beddab2fd6b61631d73b39b7484bc9a585ebe1de",
+  "pr9": "https://github.com/yqYo1/Strata/pull/9",
+  "draft": true,
+  "pr9_exact_body_file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/pr9-v01402-visible-commit-preflight-exact-body.md",
+  "pr9_exact_body_sha256": "8e172d3444f8da14264ef6a8cf469a158f3efc4ee7c81d12bb246b4aa836aabf",
+  "pr9_exact_body_chars": 25482,
+  "active_job": {
+    "unified_exec_session_id": 83354,
+    "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-full-kv-access-v01402-full256k-diagnostic-r4/record.json",
+    "receipt_observation_sha256": "04a343362da74957e979a2073b264dfa3bc3cf05878a95641c8801230e424af4",
+    "controller": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_full_visible_commit_v01402_v4.py",
+    "controller_sha256": "d00776406bbb237af0ced779f6fc4f48f8b23c1c67e54f9fe7ed8e983f6f8f12",
+    "binary": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-visible-commit-v1-20261008/strata",
+    "binary_sha256": "fdca351f73bd2433d45d9db7962fde7ad1a4b83f5e254751d27782fe9f5f75c6",
+    "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+    "elapsed_seconds_observed": 1682.6595817279886,
+    "active_request": "full256k-first",
+    "identities_now": {
+      "inferior": {
+        "pid": 3124036,
+        "start_ticks": 12654779,
+        "state": "R"
+      },
+      "debugger": {
+        "pid": 3124025,
+        "start_ticks": 12654772,
+        "state": "S"
+      }
+    },
+    "controller_identity": {
+      "pid": 3123926,
+      "start_ticks": 12654626,
+      "state": "S"
+    },
+    "bounded_deadline_seconds": 10800,
+    "protocol_timeout_seconds": 5400,
+    "log_limit_bytes": 137438953472
+  },
+  "initial_gates": {
+    "full_32768_state_head_ids_logprobs_equal": true,
+    "accepted_offered_drafts": [
+      41,
+      66
+    ],
+    "saved_consumed_tokens": 32831,
+    "saved_ids_exact": true,
+    "live_continuation_input_tokens": 32832,
+    "live_resume_tokens": 32831,
+    "restored_from_disk_test_pending": true
+  },
+  "pending": [
+    "Finish the existing full256k-first request, snapshot, interposed fresh32K, full256k-repeat and every-byte full image comparison",
+    "Real32K disk restoration and same continuation parity",
+    "Full image restore+roundtrip, real262142-prefix clipped tail parity",
+    "262144+1 and262142+3 refusals, then full fresh32K parity",
+    "Only after successful full gate: source adoption or next optimization/quiet comparison"
+  ],
+  "next_actions": [
+    "Monitor this exact owned controller/receipt and collect session83354 only when terminal; do not restart, kill or launch another GPU benchmark while it progresses",
+    "If mathematical mismatch, preserve terminal negative and normal QUIT behavior; investigate actual part differences rather than mask full image bytes",
+    "When terminal, archive final logs/protocol/receipt and private payload hashes in a new immutable version, commit/push and update draftPR9",
+    "Retain >=32768 performance inputs, initial vs repeated reads, no diagnostic/profile/capture timing mixed into clean rates"
+  ],
+  "production_binary_unchanged": "c88f94d81bfb22227310ea00d09ecc8ab21a6e670aee9556307746530f5af714",
+  "accepted_binary_unchanged": "e82fc5de5480b72255b601759497d5810e86bf691350417ed0dc11ed6c429323",
+  "no_reset_rebind_reboot_service_package_global_changes": true,
+  "embed_service_stays_inactive": true,
+  "source_authority": "Pinned compiled registered-copy overlay; private layer object and generate object replacements; do not infer actual binary from current worktree prefill source",
+  "known_terminal_preflights": {
+    "r1": "PC1/default turn split at32761+6 changes arithmetic; normal exit, nofault; not avalid math comparison",
+    "r2": "32K all goldgate passes, SAVE32833 reproduces invisible commit; expected-token assertion, owned cleanup and later readonlyhealth pass",
+    "r3": "legacy metadata KeyError before anyGEN; owned cleanup and later readonlyhealth pass"
+  },
+  "guard_health_receipt": "post-controller-assert-v01402-health-v2/record.json",
+  "guard_health_sha256": "72a25bbe8830a4a269e6a5fbf09e0640338c43b48a00161bf08d81d1b4d97a6e"
+}

@@ -1,0 +1,49 @@
+{
+  "active": false,
+  "passed": true,
+  "started_utc": "2026-10-08T21:28:31.765468+00:00",
+  "scope": "Five previously skipped upstream CPU tokenizer cases using the actual model fixture. This does not rerun the593-case suite or launch the model/GPU.",
+  "argv": [
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-refresh-20261007/test-venv/bin/python",
+    "-m",
+    "unittest",
+    "-v",
+    "serve.test_detok.Detok.test_text_with_split_characters",
+    "serve.test_detok.Detok.test_random_ids_and_broken_bytes",
+    "serve.test_detok.Detok.test_constant_cost",
+    "serve.test_detok.HeapBpe.test_pack_vocab",
+    "serve.test_detok.HeapBpe.test_speed_pack"
+  ],
+  "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/fix-sycl-server-env-v0141-2026-10-09",
+  "environment": {
+    "STRATA_TOKENIZER": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "fixture_sha256": {
+    "vocab.json": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4",
+    "merges.txt": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332",
+    "token_type.json": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b"
+  },
+  "test_source_sha256": {
+    "serve/test_detok.py": "7a5bc54138daf95df6fb23b94e6ca939c21a80878164f0ac60b772a2081490f9",
+    "serve/server.py": "017efa1f4e76d72396738555d13eb1f9898d1c1c12730cf046d9b267b29987e5",
+    "tools/strata_tokenizer.py": "9b0327e25aa62754406a924db6cc137e6edb1d93c7af76a4f3d14a8920ea72c8"
+  },
+  "quiet_sequence_sha256": "606e8b8befda5e3720f4197bc4a88894087dcc0ded9b3732fcc7c1300fafe22c",
+  "gpu_execution": false,
+  "timeout_seconds": 180,
+  "elapsed_seconds": 5.187080328003503,
+  "pid": 2033270,
+  "exit_code": 0,
+  "tests_run": 5,
+  "skipped": 0,
+  "finished_utc": "2026-10-08T21:28:36.953226+00:00",
+  "stdout": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stderr": {
+    "bytes": 494,
+    "sha256": "fff927271f078f3d52f043521e7237d0ba84ceb6b233b02008f6ea4be482afe8"
+  }
+}

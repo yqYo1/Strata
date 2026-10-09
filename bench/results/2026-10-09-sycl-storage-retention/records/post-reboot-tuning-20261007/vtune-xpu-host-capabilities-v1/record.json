@@ -1,0 +1,78 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_tested": false,
+  "created_utc": "2026-10-08T07:36:05.964150+00:00",
+  "scope": "Local installed VTune CLI version and help only. No collection, GPU enumeration/probe, root/package/kernel/service or system configuration action. Help validates option names, not B570 device support or collector availability.",
+  "software": "/opt/intel/oneapi/vtune/2026.4/bin64/vtune",
+  "binary_sha256": "7987d63d0e8ed24fdad6572d8f0873e709831463d202a7fb71c59b6709e9a05d",
+  "steps": [
+    {
+      "label": "version",
+      "argv": [
+        "/opt/intel/oneapi/vtune/2026.4/bin64/vtune",
+        "-version"
+      ],
+      "exit_code": 0,
+      "pid": 3547842,
+      "stdout_sha256": "f77d69a0bed6e01d78c2e961f2408f0ac3592b5ebef9c8781c14f8e0b2836148",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "xpu-help",
+      "argv": [
+        "/opt/intel/oneapi/vtune/2026.4/bin64/vtune",
+        "-help",
+        "collect",
+        "xpu-offload"
+      ],
+      "exit_code": 0,
+      "pid": 3547886,
+      "stdout_sha256": "95cea9d9fd1c20c081d6489da572e5a7020d0c9b30b0673fab513c2713b06e69",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "gpu-help",
+      "argv": [
+        "/opt/intel/oneapi/vtune/2026.4/bin64/vtune",
+        "-help",
+        "collect",
+        "gpu-hotspots"
+      ],
+      "exit_code": 0,
+      "pid": 3548035,
+      "stdout_sha256": "e98ff40ca4652ba4bd05b8044f0fdbf5e9f005378e1bbc030ecfd8bc85b334fa",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "planned_xpu_knobs": {
+    "collect-cpu-sampling": "false",
+    "enable-characterization-insights": "false",
+    "collect-programming-api": "true",
+    "enable-stack-collection": "false",
+    "enable-tasks-stack-collection": "false",
+    "collect-memory-bandwidth": "false",
+    "analyze-power-usage": "false",
+    "enable-user-tasks": "false"
+  },
+  "primary_sources": [
+    {
+      "url": "https://www.intel.com/content/www/us/en/developer/articles/release-notes/vtune-profiler/current.html",
+      "verified_date": "2026-10-08",
+      "note": "2026.4 improves reused LevelZero command-list/SYCL graph tracing; native graphs excluded. Requirements list Arc Pro B, not an explicit B570 validation."
+    },
+    {
+      "url": "https://eel.is/c++draft/basic.def.odr",
+      "verified_date": "2026-10-08",
+      "note": "Multiple class/inline definitions across translation units require matching tokens; local preprocessing supplies the project-specific evidence."
+    }
+  ],
+  "pending": [
+    "complete current indexer full-capacity gate",
+    "uniform DPCT definition candidate GPU math/exit gate",
+    "owned CPU debugger/profiler-launch guard before a new collector",
+    "first logged complete32K profiled request and matched full head/state/output comparison",
+    "prove device timestamp/graph coverage from actual trace before attributing bottlenecks",
+    "separate quiet32768-or-larger throughput measurements"
+  ]
+}

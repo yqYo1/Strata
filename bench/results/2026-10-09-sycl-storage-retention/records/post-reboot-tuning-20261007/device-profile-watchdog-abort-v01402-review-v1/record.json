@@ -1,0 +1,68 @@
+{
+  "active": false,
+  "passed": true,
+  "adopted": false,
+  "created_utc": "2026-10-08T09:31:43.373556+00:00",
+  "scope": "Evidence extraction only. Timestamp-enabled32768 run aborted before numerical completion; all its durations and incomplete/empty trace are rejected for performance analysis.",
+  "controller_sha256": "3a9685e91318e63f7621647bd8493a4e25eb2633cce0a693dbe37fa08f8e099b",
+  "terminal_receipt_sha256": "53cd3cebbc27b9d50d525e44cbc5dbc372a91beb0f9eb0e122b6150e43fd898e",
+  "debugger_failure_sha256": "8db2220ba2e0c37cce2f64f2f094b003fd3fbb570c635390f769480370b58e70",
+  "raw_stderr_bytes": 3849093051,
+  "raw_stderr_full_hash_pending": true,
+  "raw_excerpts": [
+    {
+      "name": "last-submissions",
+      "start": 3257745172,
+      "end": 3258805172,
+      "bytes": 1060000,
+      "sha256": "9d51cfbc155f271769766c3cb9b808a078ffc2f2ab03b1532140b87d12d98b70"
+    },
+    {
+      "name": "watchdog-report",
+      "start": 3830426805,
+      "end": 3830432805,
+      "bytes": 6000,
+      "sha256": "5da5a0c6b78b497518bbacf07f2dad306ca82012dce967c4ff9b133a06d30410"
+    },
+    {
+      "name": "terminal-status",
+      "start": 3849060283,
+      "end": 3849093051,
+      "bytes": 32768,
+      "sha256": "c96ec4d699408f763a9c23ef9c7ce504c70d0289f69c1751bfe5e48f6ec57927"
+    }
+  ],
+  "health_receipt_sha256": "27eda22ac64827a042db7ef90c204a644e8dbc1d56ed2c4132aae57768f91cff",
+  "observed": {
+    "actual_binary_sha256": "dd5efb9002167481d180f370b86fb6978d724f37745f7e4a923432296725ad34",
+    "input_tokens": 32768,
+    "completed_prompt_progress_tokens": 16384,
+    "abort_thread": 82,
+    "abort_call": "main watchdog -> abort",
+    "watchdog_seconds": 60,
+    "stage": "first32K prefill, chunk16384, layer26",
+    "main_thread": "Stager::wait",
+    "staging_threads": "Three application copy-completion polling workers; native counter events remain NOT_READY",
+    "pending_native_events": [
+      "0x6089678",
+      "0x608af58",
+      "0x6087d98"
+    ],
+    "last_copy_size_bytes": 1971200,
+    "gpu_trace_bytes": 0,
+    "complete_numerical_gate_passed": false,
+    "new_kernel_fault_messages": [],
+    "post_exit_exact_word_gpu_runtime_check_passed": true,
+    "owned_survivors": false
+  },
+  "limits": [
+    "No successful32K inference result, throughput, transfer/kernel breakdown or CPU utilization can be derived from this run.",
+    "DD5 passed four unprofiled fresh32K reads and actual disk restoration, but an earlier unprofiled full256K run also stalled on pending copy events. This failure does not establish that the profiler alone caused it.",
+    "The source-audited profiler alters event and append handling; source review did not guarantee runtime compatibility. Its GPU timestamp configuration remains rejected.",
+    "Expected/current native counter values and a complete GPU command timeline were not captured; the underlying event/dependency/lifetime cause remains unresolved.",
+    "Uniform DPCT definitions do not prove the pending-event problem is fixed."
+  ],
+  "minimum_performance_input_tokens": 32768,
+  "diagnostic_timing_excluded": true,
+  "no_reset_rebind_reboot_service_package_global_change": true
+}

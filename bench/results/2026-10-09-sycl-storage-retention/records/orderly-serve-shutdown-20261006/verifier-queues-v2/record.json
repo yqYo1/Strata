@@ -1,0 +1,67 @@
+{
+  "started_utc": "2026-10-06T13:08:32.082651+00:00",
+  "control_commit": "900025461a0fd70906e5b54a3380c4b1341f4aea",
+  "scope": "Production destructor and initializers; CPU queue/USM stand-ins, no GPU",
+  "sources": {
+    "control": {
+      "sycl/src/core/verify.cpp": "4784e341ade1d7d775265766781c345da44c1e3602eef7bc63eb15b11de323fa",
+      "sycl/include/strata/core/verify.hpp": "d3b3f923c53ef27325cbf7ee5d2fd362628cd36d50ef6105ee52b797102d9bb5"
+    },
+    "candidate": {
+      "sycl/src/core/verify.cpp": "d4a23176f2a9bfa5dd88c039bdbc9047d706cb06074d347e6210bc96fc5dab6e",
+      "sycl/include/strata/core/verify.hpp": "3fbc97b2055739606967c39bf71b04ac728f9cde38dcd4490cc178f22da7d2e9"
+    }
+  },
+  "runs": [
+    {
+      "variant": "control",
+      "mode": "unused",
+      "exit_code": -6,
+      "expected_result": true
+    },
+    {
+      "variant": "control",
+      "mode": "copy-only",
+      "exit_code": -6,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "unused",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "copy-only",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "compute-only",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "both",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "both-remote",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "failed-drain",
+      "exit_code": 86,
+      "expected_result": true
+    }
+  ],
+  "passed": true,
+  "finished_utc": "2026-10-06T13:08:36.198517+00:00"
+}

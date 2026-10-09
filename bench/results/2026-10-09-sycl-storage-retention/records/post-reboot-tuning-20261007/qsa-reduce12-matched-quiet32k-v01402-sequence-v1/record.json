@@ -1,0 +1,275 @@
+{
+  "active": false,
+  "passed": true,
+  "started_utc": "2026-10-08T13:08:55.839826+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "controller_sha256": "8a0977339226ccb2e2f8c83dbf9426aca9997ad8a48635f14c9b2c3f14e920a4",
+  "job_controller_sha256": "f83dcd4fcdc38731602986d1e83804b22544d4da27134594a0e215f1c3750cc6",
+  "scope": "Matched DD5/QSA reduce12 ABBA, four fresh32768 inputs A/B/A/B and64 output IDs/logprobs per process. No performance conclusion until all16 full reads, output/MTP/freshness and normal exit gates pass. First process read separate from later reads; no global cache clearing, physical256K/adoption or stall-fix claim.",
+  "minimum_comparison_input_tokens": 32768,
+  "steps": [
+    {
+      "ordinal": 1,
+      "mode": "dd5-control",
+      "repetition": 1,
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_qsa_reduce12_matched_quiet32k_v01402_v1.py",
+        "dd5-control",
+        "quiet",
+        "1"
+      ],
+      "started_utc": "2026-10-08T13:08:55.840326+00:00",
+      "owned_controller": {
+        "pid": 439536,
+        "start_ticks": 15461495,
+        "state": "R"
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-08T13:15:11.000205+00:00",
+      "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-qsa-reduce12-matched-dd5-control-v01402-code32k-quiet-r1/record.json",
+      "receipt_sha256": "04a00e836887b0d548eaa9ce30d57b66154b6c3c19ad6e0ffb6820cf20f958df",
+      "binary_sha256": "dd5efb9002167481d180f370b86fb6978d724f37745f7e4a923432296725ad34",
+      "measurements": [
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 83269.0,
+          "decode_ms": 3876.2,
+          "wall_seconds": 87.32612897199579,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 393.51979728350284,
+          "decode_tok_s": 16.51101594344977
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76692.6,
+          "decode_ms": 4030.2,
+          "wall_seconds": 80.91318787599448,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 427.26416890286674,
+          "decode_tok_s": 15.880105205696989
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76748.4,
+          "decode_ms": 3228.2,
+          "wall_seconds": 80.16808732098434,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 426.95352606699294,
+          "decode_tok_s": 19.825289635090765
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76682.3,
+          "decode_ms": 4001.1,
+          "wall_seconds": 80.87362033498357,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 427.321559212491,
+          "decode_tok_s": 15.995601209667342
+        }
+      ]
+    },
+    {
+      "ordinal": 2,
+      "mode": "qsa-reduce12",
+      "repetition": 1,
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_qsa_reduce12_matched_quiet32k_v01402_v1.py",
+        "qsa-reduce12",
+        "quiet",
+        "1"
+      ],
+      "started_utc": "2026-10-08T13:15:11.001086+00:00",
+      "owned_controller": {
+        "pid": 458913,
+        "start_ticks": 15499011,
+        "state": "R"
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-08T13:21:23.184261+00:00",
+      "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-qsa-reduce12-matched-qsa-reduce12-v01402-code32k-quiet-r1/record.json",
+      "receipt_sha256": "05332727e45e4ce5608da12b8816bd94185d34f33c435dbce21e070638fbbd70",
+      "binary_sha256": "26c29c1353c64cef0e81c18bc1f651c9bcc25f977429d71b18052c5d13ecd34e",
+      "measurements": [
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 82922.3,
+          "decode_ms": 3903.6,
+          "wall_seconds": 87.0051621790044,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 395.16511240040376,
+          "decode_tok_s": 16.395122451070808
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 75601.5,
+          "decode_ms": 3976.2,
+          "wall_seconds": 79.76916380701005,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 433.43055362658146,
+          "decode_tok_s": 16.095769830491424
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 75706.3,
+          "decode_ms": 3563.3,
+          "wall_seconds": 79.45854979500291,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 432.83055703422303,
+          "decode_tok_s": 17.96087896051413
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 75682.6,
+          "decode_ms": 4149.7,
+          "wall_seconds": 80.0221470890101,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 432.96609788775754,
+          "decode_tok_s": 15.422801648311927
+        }
+      ]
+    },
+    {
+      "ordinal": 3,
+      "mode": "qsa-reduce12",
+      "repetition": 2,
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_qsa_reduce12_matched_quiet32k_v01402_v1.py",
+        "qsa-reduce12",
+        "quiet",
+        "2"
+      ],
+      "started_utc": "2026-10-08T13:21:23.185190+00:00",
+      "owned_controller": {
+        "pid": 478140,
+        "start_ticks": 15536229,
+        "state": "R"
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-08T13:27:35.397151+00:00",
+      "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-qsa-reduce12-matched-qsa-reduce12-v01402-code32k-quiet-r2/record.json",
+      "receipt_sha256": "1fb4f7eacdbf5c4142434085991dcd5985561122c087dc4a1a74b7b523b450b5",
+      "binary_sha256": "26c29c1353c64cef0e81c18bc1f651c9bcc25f977429d71b18052c5d13ecd34e",
+      "measurements": [
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 82910.3,
+          "decode_ms": 4591.0,
+          "wall_seconds": 87.69186424301006,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 395.2223065168019,
+          "decode_tok_s": 13.940318013504683
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 75695.3,
+          "decode_ms": 4076.8,
+          "wall_seconds": 79.958863708016,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 432.8934557363535,
+          "decode_tok_s": 15.698587127158556
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 75700.3,
+          "decode_ms": 3477.5,
+          "wall_seconds": 79.36801490100333,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 432.8648631511368,
+          "decode_tok_s": 18.404025880661393
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 75690.4,
+          "decode_ms": 4157.4,
+          "wall_seconds": 80.03782150699408,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 432.92148013486525,
+          "decode_tok_s": 15.394236782604514
+        }
+      ]
+    },
+    {
+      "ordinal": 4,
+      "mode": "dd5-control",
+      "repetition": 2,
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_qsa_reduce12_matched_quiet32k_v01402_v1.py",
+        "dd5-control",
+        "quiet",
+        "2"
+      ],
+      "started_utc": "2026-10-08T13:27:35.398118+00:00",
+      "owned_controller": {
+        "pid": 498020,
+        "start_ticks": 15573451,
+        "state": "R"
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-08T13:33:52.645349+00:00",
+      "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-qsa-reduce12-matched-dd5-control-v01402-code32k-quiet-r2/record.json",
+      "receipt_sha256": "9bce2ea5f306fafab8383946bb51dd60b08e4981fd4b9954d520d5d4d8d9ab1f",
+      "binary_sha256": "dd5efb9002167481d180f370b86fb6978d724f37745f7e4a923432296725ad34",
+      "measurements": [
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 83824.0,
+          "decode_ms": 4017.7,
+          "wall_seconds": 88.02201705297921,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 390.91429662149267,
+          "decode_tok_s": 15.929511909799139
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76685.6,
+          "decode_ms": 4042.4,
+          "wall_seconds": 80.91857973998412,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 427.30317034749675,
+          "decode_tok_s": 15.83217890362161
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76688.5,
+          "decode_ms": 3465.1,
+          "wall_seconds": 80.34392358901096,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 427.28701174230815,
+          "decode_tok_s": 18.469885428991947
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76687.1,
+          "decode_ms": 4185.6,
+          "wall_seconds": 81.06634308499633,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 427.29481229567944,
+          "decode_tok_s": 15.29051987767584
+        }
+      ]
+    }
+  ],
+  "elapsed_seconds": 1496.8064253370103,
+  "active_step": null,
+  "finished_utc": "2026-10-08T13:33:52.646612+00:00"
+}

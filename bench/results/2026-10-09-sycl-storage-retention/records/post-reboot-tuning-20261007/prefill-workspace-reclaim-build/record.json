@@ -1,0 +1,199 @@
+{
+  "scope": "Offline private prefill workspace-reclaim/trace compilation and one-object archive replacement/relink; no GPU execution, parity, capacity, throughput or hang-cause proof",
+  "passed": true,
+  "started_utc": "2026-10-07T04:28:49.000006+00:00",
+  "controller_sha256": "5fef1982fd03265e7c7100404a9cbb4b6afb8af77d486bd98cd620686a05c9d3",
+  "production_source_sha256": "c7ba0822a4f67b9a308eda8024d684e695c5b7ce5ba359143d790e2b9789243c",
+  "production_object_sha256": "fd95daa473860f091dfb5b896eecbf55de33925af098fe1c9a39808e24d29e30",
+  "production_binary_sha256": "619c830b581504072cbc2ba64782887ab847509fa2449f4680bd2b24af4cb659",
+  "environment": {
+    "PATH": "/usr/bin:/bin:/opt/intel/oneapi/compiler/2026.1/bin",
+    "LD_LIBRARY_PATH": null,
+    "LD_PRELOAD": null,
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+    "LIBRARY_PATH": "/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/lib:/usr/lib/x86_64-linux-gnu"
+  },
+  "steps": [
+    {
+      "label": "compile",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_NATIVE_EXPERTS=1",
+        "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+        "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-qmkl=sequential",
+        "-Wall",
+        "-Wextra",
+        "-MD",
+        "-MT",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-workspace-reclaim-build/prefill.cpp.o",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-workspace-reclaim-build/prefill.cpp.o.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-workspace-reclaim-build/prefill.cpp.o",
+        "-c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-workspace-reclaim-build/prefill.cpp"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 11.984792784001911
+    },
+    {
+      "label": "archive-replace",
+      "argv": [
+        "/usr/bin/ar",
+        "r",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-workspace-reclaim-build/libstrata_prefill.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-workspace-reclaim-build/prefill.cpp.o"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.007697134999034461
+    },
+    {
+      "label": "archive-index",
+      "argv": [
+        "/usr/bin/ranlib",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-workspace-reclaim-build/libstrata_prefill.a"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0076770380037487485
+    },
+    {
+      "label": "link",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-O3",
+        "-DNDEBUG",
+        "-fsycl",
+        "-Xsycl-target-backend=spir64",
+        "-cl-fp32-correctly-rounded-divide-sqrt",
+        "-fsycl-device-code-split=per_kernel",
+        "-qmkl=sequential",
+        "CMakeFiles/strata.dir/src/program/generate.cpp.o",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/strata-prefill-workspace-reclaim-candidate",
+        "libstrata_engine.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-workspace-reclaim-build/libstrata_prefill.a",
+        "libstrata_spec.a",
+        "libstrata_engine.a",
+        "libstrata_kernels.a",
+        "libstrata_core.a",
+        "libstrata_kernels_cpu.a",
+        "ggml/src/libggml-cpu.a",
+        "ggml/src/libggml-base.a",
+        "-lm"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 13.939609962995746
+    }
+  ],
+  "candidate_source_sha256": "bdc0dea41753d345f5b5c329d807d3f9013280e2488e39df1d615a3b84506b92",
+  "original_compile_argv": [
+    "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+    "-DSTRATA_NATIVE_EXPERTS=1",
+    "-DSTRATA_VERSION=\"0.1.39-sycl\"",
+    "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+    "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+    "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include",
+    "-O3",
+    "-DNDEBUG",
+    "-std=c++20",
+    "-fsycl",
+    "-fsycl-default-sub-group-size=32",
+    "-fsycl-device-code-split=per_kernel",
+    "-fp-model=precise",
+    "-Wno-unused-parameter",
+    "-Wno-unused-variable",
+    "-Wno-deprecated-declarations",
+    "-qmkl=sequential",
+    "-Wall",
+    "-Wextra",
+    "-MD",
+    "-MT",
+    "CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o",
+    "-MF",
+    "CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o.d",
+    "-o",
+    "CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o",
+    "-c",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/prefill.cpp"
+  ],
+  "production_archive_sha256": "264c4eb22942549ed117c2a3176d41a21dfc5104fc269ed30758505e3c596ca2",
+  "archive_members": [
+    {
+      "member": "gemm.dp.cpp.o",
+      "original_sha256": "1473e7725d62595dcf60cbf030ef6e653c24349ace7c26742280901e88c78ca7",
+      "candidate_sha256": "1473e7725d62595dcf60cbf030ef6e653c24349ace7c26742280901e88c78ca7",
+      "replaced": false
+    },
+    {
+      "member": "kernels.dp.cpp.o",
+      "original_sha256": "1219f278c63be511b09b616a722f9580512bb08c932528df7f1c6bde812f0336",
+      "candidate_sha256": "1219f278c63be511b09b616a722f9580512bb08c932528df7f1c6bde812f0336",
+      "replaced": false
+    },
+    {
+      "member": "prefill.cpp.o",
+      "original_sha256": "fd95daa473860f091dfb5b896eecbf55de33925af098fe1c9a39808e24d29e30",
+      "candidate_sha256": "4adfde47a72fce9b83cc46934f313506651aa43118e6b52f4454ce6714cdd573",
+      "replaced": true
+    },
+    {
+      "member": "moe_fused_stub.cpp.o",
+      "original_sha256": "0f4ccb811fe0b097b018eaa7c635aa95e10294f2271a899925f66673af2dbe87",
+      "candidate_sha256": "0f4ccb811fe0b097b018eaa7c635aa95e10294f2271a899925f66673af2dbe87",
+      "replaced": false
+    }
+  ],
+  "original_link_argv": [
+    "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+    "-O3",
+    "-DNDEBUG",
+    "-fsycl",
+    "-Xsycl-target-backend=spir64",
+    "-cl-fp32-correctly-rounded-divide-sqrt",
+    "-fsycl-device-code-split=per_kernel",
+    "-qmkl=sequential",
+    "CMakeFiles/strata.dir/src/program/generate.cpp.o",
+    "-o",
+    "strata",
+    "libstrata_engine.a",
+    "libstrata_prefill.a",
+    "libstrata_spec.a",
+    "libstrata_engine.a",
+    "libstrata_kernels.a",
+    "libstrata_core.a",
+    "libstrata_kernels_cpu.a",
+    "ggml/src/libggml-cpu.a",
+    "ggml/src/libggml-base.a",
+    "-lm"
+  ],
+  "link_input_sha256": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-jit/CMakeFiles/strata.dir/src/program/generate.cpp.o": "4ecbaad6b776e1a0c39f7bf09361a19bade7c2d1c40cdd49d55b2dcf4ab01a22",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-jit/libstrata_engine.a": "1a962c5500e9cead88af3cca29e37ffe682bf0900ea1a184dd7d30cfbf3526eb",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-jit/libstrata_prefill.a": "264c4eb22942549ed117c2a3176d41a21dfc5104fc269ed30758505e3c596ca2",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-jit/libstrata_spec.a": "1bab66063a4fcf29e34237bf2c6683b1d9b2413db96f4dfbebcd0b9ff26411f2",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-jit/libstrata_kernels.a": "20a33e4af09fb8c726f7e96e8166e6ccfb417ca9ba7defe4b4f1b0d17571f560",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-jit/libstrata_core.a": "adaf24c7d7bc1a6563fac8fa4f1035d881f3f5701357eac54d82bb5bfff5c8b4",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-jit/libstrata_kernels_cpu.a": "766e388d445dc0da3627f1eae91c8a2575785ac739cdeffebce16b2237f8220f",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-jit/ggml/src/libggml-cpu.a": "e3cefe0cf3c866aec7d9f06b9181ca4263304dd7307af462195a9b869be953f2",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-jit/ggml/src/libggml-base.a": "51db6cad079d54c99975a86ac3d9c8077c6fdf7f1aee88f28bb9825b212a146e"
+  },
+  "production_inputs_unchanged": true,
+  "candidate_object_sha256": "4adfde47a72fce9b83cc46934f313506651aa43118e6b52f4454ce6714cdd573",
+  "candidate_archive_sha256": "9b8bec6e8e1b2e2f1ca1de86000ad0ca1ef14338bf10d1e058e3a7e6ba06f238",
+  "candidate_binary_sha256": "3f3ed0526848f6c7273a70da8802cbe00389b67791629c000c26399bc50823f2",
+  "elapsed_seconds": 26.311429675995896,
+  "finished_utc": "2026-10-07T04:29:15.343993+00:00"
+}

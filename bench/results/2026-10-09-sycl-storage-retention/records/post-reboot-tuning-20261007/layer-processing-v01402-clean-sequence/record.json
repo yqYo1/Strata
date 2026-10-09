@@ -1,0 +1,162 @@
+{
+  "active": false,
+  "passed": true,
+  "started_utc": "2026-10-07T22:25:17.806541+00:00",
+  "controller_sha256": "0a8ba6474893c3d5c43db35dae0ec63e7a07c169b9c7fe6ad310dde37ec30c46",
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_layer_processing_v01402_code32k_clean.py",
+        "processing-default",
+        "clean",
+        "1"
+      ],
+      "started_utc": "2026-10-07T22:37:28.229091+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T22:39:29.473380+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 80272.9,
+        "decode_ms": 3730.5,
+        "wall_seconds": 84.01049334699928,
+        "prefill_tok_s": 408.2075021582627,
+        "decode_tok_s": 17.155877228253587
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_layer_processing_v01402_code32k_clean.py",
+        "layer2-ram-layout1",
+        "clean",
+        "1"
+      ],
+      "started_utc": "2026-10-07T22:39:29.474270+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T22:41:48.158724+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 98113.9,
+        "decode_ms": 3797.6,
+        "wall_seconds": 101.91904281800089,
+        "prefill_tok_s": 333.9791813392394,
+        "decode_tok_s": 16.852749104697704
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_layer_processing_v01402_code32k_clean.py",
+        "layer2-gpu-release-layout1",
+        "clean",
+        "1"
+      ],
+      "started_utc": "2026-10-07T22:41:48.159531+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T22:43:42.285816+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 73419.0,
+        "decode_ms": 3680.5,
+        "wall_seconds": 77.1065983389999,
+        "prefill_tok_s": 446.3149865838543,
+        "decode_tok_s": 17.388941719875017
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_layer_processing_v01402_code32k_clean.py",
+        "layer2-gpu-release-layout1",
+        "clean",
+        "2"
+      ],
+      "started_utc": "2026-10-07T22:43:42.286503+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T22:45:45.872352+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 82151.6,
+        "decode_ms": 3709.5,
+        "wall_seconds": 85.86839700400014,
+        "prefill_tok_s": 398.87232871909976,
+        "decode_tok_s": 17.252999056476614
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_layer_processing_v01402_code32k_clean.py",
+        "layer2-ram-layout1",
+        "clean",
+        "2"
+      ],
+      "started_utc": "2026-10-07T22:45:45.873018+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T22:48:01.839194+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 95743.9,
+        "decode_ms": 3751.9,
+        "wall_seconds": 99.50358004699228,
+        "prefill_tok_s": 342.2463467646503,
+        "decode_tok_s": 17.058023934539833
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_layer_processing_v01402_code32k_clean.py",
+        "processing-default",
+        "clean",
+        "2"
+      ],
+      "started_utc": "2026-10-07T22:48:01.840431+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T22:50:02.131973+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 80243.0,
+        "decode_ms": 3753.0,
+        "wall_seconds": 84.00358387299639,
+        "prefill_tok_s": 408.35960769163665,
+        "decode_tok_s": 17.05302424726885
+      }
+    }
+  ],
+  "minimum_comparison_tokens": 32768,
+  "ordering": "default/RAM/GPU/GPU/RAM/default (ABCCBA)",
+  "scope": "Six fresh32K clean timing jobs after nine complete state/head/output controls. Same executable and normal MTP4, all64 outputs match. No debug logging, validation, payload checks, state/head dumps, profiler, transfer profiling or extra waits. No full256K/adoption claim.",
+  "clean_mean": {
+    "processing-default": {
+      "prefill_tok_s": 408.28355492494967,
+      "decode_tok_s": 17.10445073776122
+    },
+    "layer2-ram-layout1": {
+      "prefill_tok_s": 338.11276405194485,
+      "decode_tok_s": 16.95538651961877
+    },
+    "layer2-gpu-release-layout1": {
+      "prefill_tok_s": 422.59365765147703,
+      "decode_tok_s": 17.320970388175816
+    }
+  },
+  "relative_to_default": {
+    "layer2-ram-layout1": {
+      "prefill_tok_s": -0.17186778655805413,
+      "decode_tok_s": -0.008714937441011372
+    },
+    "layer2-gpu-release-layout1": {
+      "prefill_tok_s": 0.035049422279958886,
+      "decode_tok_s": 0.012658673098259188
+    }
+  },
+  "finished_utc": "2026-10-07T22:50:02.132681+00:00"
+}

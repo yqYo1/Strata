@@ -1,0 +1,54 @@
+{
+  "active": false,
+  "created_utc": "2026-10-08T18:12:09.977957+00:00",
+  "source_only": true,
+  "GPU_launched": false,
+  "measurement_controller": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_upstream_v0141_tuned32k_v2.py",
+  "measurement_controller_sha256": "5cf5e71d3c8430e1603480f6c6489e4f0d45ce4b9073193bed9da4fda6854dff",
+  "sequence_controller": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_upstream_v0141_tuned_comparison_sequence_v2.py",
+  "sequence_controller_sha256": "12f72aaca7daa0c17b380fb370794af86e316b2c422b6d99f425bf4cad3e26d9",
+  "scope": "Supersedes unexecuted tuned-v1 preparation: physical reference records omit finish_reason; derive it from their actual DONE without editing raw references. CPU fixtures/negative cases validate actual normalizer. Still waits for default sequence plus new own full-capacity gate; no performance claim.",
+  "reference_schema_cases": [
+    {
+      "case": "owned-profile-definition-v01402-full256k-diagnostic-r7/record.json:control32k-before",
+      "normalized_from_actual_DONE": true,
+      "original_raw_reference_unchanged": true
+    },
+    {
+      "case": "owned-dd5-phase-v2-v01402-code32k-diagnostic-r1/record.json:alternate32k-first",
+      "normalized_from_actual_DONE": true,
+      "original_raw_reference_unchanged": true
+    },
+    {
+      "case": "missing_DONE",
+      "rejected": true
+    },
+    {
+      "case": "truncated_output",
+      "rejected": true
+    },
+    {
+      "case": "wrong_prompt",
+      "rejected": true
+    },
+    {
+      "case": "inconsistent_counts",
+      "rejected": true
+    }
+  ],
+  "early_guards": [
+    {
+      "script": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_upstream_v0141_tuned32k_v2.py",
+      "exit_code": 1,
+      "stderr": "Traceback (most recent call last):\n  File \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_upstream_v0141_tuned32k_v2.py\", line 80, in <module>\n    assert not sequence['active'], 'updated default32K comparison still active; no tuned process'\n           ^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: updated default32K comparison still active; no tuned process\n",
+      "no_output_directory": true
+    },
+    {
+      "script": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_upstream_v0141_tuned_comparison_sequence_v2.py",
+      "exit_code": 1,
+      "stderr": "Traceback (most recent call last):\n  File \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_upstream_v0141_tuned_comparison_sequence_v2.py\", line 20, in <module>\n    assert not default['active'], 'default32K sequence active; no tuned sequence'\n           ^^^^^^^^^^^^^^^^^^^^^\nAssertionError: default32K sequence active; no tuned sequence\n",
+      "no_output_directory": true
+    }
+  ],
+  "lint_passed": true
+}

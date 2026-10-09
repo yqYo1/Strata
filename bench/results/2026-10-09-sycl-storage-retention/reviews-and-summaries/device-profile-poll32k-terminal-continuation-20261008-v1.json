@@ -1,0 +1,89 @@
+{
+  "created_utc": "2026-10-08T10:00:15.758442+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "goal_status": "active",
+  "active_gpu_jobs": false,
+  "open_exec_sessions": [],
+  "feature_root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05",
+  "feature_branch": "sync/upstream-2026-10-05",
+  "feature_head": "523ecdd0d8b18cd83eeec2c937c1b5db1a9bf4a8",
+  "feature_clean": true,
+  "pr_url": "https://github.com/yqYo1/Strata/pull/9",
+  "pr_draft": true,
+  "pr_head_verified": "523ecdd0d8b18cd83eeec2c937c1b5db1a9bf4a8",
+  "pr_body_file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/pr9-v01402-device-profile-poll32k-exact-body-v2.md",
+  "pr_body_characters": 35196,
+  "pr_body_bytes": 35209,
+  "pr_body_sha256": "225a474fd03f246e06824bcc5ce724a125f57bb7e66fa58ad8c1784148a54678",
+  "latest_archive": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/upstream-v0.1.40.2-20261008/code32k/repro32k/device-profile-rejection-and-poll32k-v1",
+  "main_head_unchanged": "beddab2fd6b61631d73b39b7484bc9a585ebe1de",
+  "production_binary_sha256_unchanged": "c88f94d81bfb22227310ea00d09ecc8ab21a6e670aee9556307746530f5af714",
+  "minimum_performance_input_tokens": 32768,
+  "separate_first_and_repeated_full_reads": true,
+  "diagnostic_and_profiled_durations_excluded": true,
+  "failed_device_profile": {
+    "terminal_receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-device-profile-v01402-code32k-diagnostic-r1/record.json",
+    "sha256": "53cd3cebbc27b9d50d525e44cbc5dbc372a91beb0f9eb0e122b6150e43fd898e",
+    "binary_sha256": "dd5efb9002167481d180f370b86fb6978d724f37745f7e4a923432296725ad34",
+    "model": {
+      "pid": 3855228,
+      "start_ticks": 14032359,
+      "state": "t"
+    },
+    "debugger": {
+      "pid": 3855216,
+      "start_ticks": 14032351,
+      "state": "R"
+    },
+    "watchdog": "60s at first32K chunk16384/layer26 after PP16384",
+    "gpu_trace_bytes": 0,
+    "accepted": false,
+    "new_kernel_faults": [],
+    "owned_survivors": false,
+    "post_exit_health_receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/post-device-profile-abort-v01402-health-v1/record.json",
+    "post_exit_health_sha256": "27eda22ac64827a042db7ef90c204a644e8dbc1d56ed2c4132aae57768f91cff"
+  },
+  "polling_candidate": {
+    "build_receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-poll-backoff-v01402-relink-v3/record.json",
+    "build_receipt_sha256": "f82a1904ff760dd0f5af6b71712f815fb87007f4cb68790e71868d20ed2ba842",
+    "binary": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-prefill-poll-backoff-v3-20261008/strata",
+    "binary_sha256": "44a274d8c699829020abb8a85a331a638f40efdf5d6c959a076a58e818f75391",
+    "terminal_receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-poll-backoff-v01402-code32k-diagnostic-r1/record.json",
+    "terminal_receipt_sha256": "fa8ae00e741469d6bef575affa2e263bcac4001d31c98422ba225dbc350f0a68",
+    "controller": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_poll_backoff_code32k_v01402_v1.py",
+    "controller_sha256": "90291c5b12e48951597664fed7a1a9e4172cbd5ecf96b8cd3a7a0c1d225e71a0",
+    "model": {
+      "pid": 3910906,
+      "start_ticks": 14130507,
+      "state": "t"
+    },
+    "debugger": {
+      "pid": 3910892,
+      "start_ticks": 14130500,
+      "state": "R"
+    },
+    "four_fresh32768_math_passed": true,
+    "actual32k_disk_continuation_passed": true,
+    "all_six_head_ids_logprobs_mtp_match_dd5": true,
+    "exit_code": 0,
+    "forced": false,
+    "new_kernel_faults": [],
+    "adopted": false,
+    "quiet_speed_comparison_completed": false,
+    "physical256k_gate_completed": false
+  },
+  "vtune_assessment_corrected": "Real earlier vtune-smoke xpu-offload collection failed before helper execution on unrecognized Ryzen processor/microarchitecture even with CPU sampling/characterization disabled. Do not repeat the same collection or assume help-only history.",
+  "profiling_next_action": "Do not launch the rejected unitrace GPU timestamp configuration again without a concrete compatibility fix and a new logged>=32K gate. Host-only trace remains qualified but cannot establish transfer/kernel dominance.",
+  "next_work": [
+    "Prepare and run matched quiet DD5 versus44a polling comparisons on>=32768 fresh full input, distinguish first versus later reads, retain exact64IDs/logprobs/MTP parity and clean owned exit.",
+    "Complete262144 physical occupancy including cell262143, repeated fresh full prefill, actual full disk restore, clipped tail, capacity refusal and later valid fresh32K before any adoption.",
+    "Native counter expected/current values and dependency/lifetime cause remain unresolved; uniform DPCT and backoff are not claimed stall fixes."
+  ],
+  "constraints": [
+    "Embedding service remains stopped",
+    "No reset/rebind/reboot/service/package/global action",
+    "No main merge or production binary replacement",
+    "Do not overwrite executed controllers, raw receipts, copied source or historical partial snapshots",
+    "No new delegation unless explicitly requested"
+  ]
+}

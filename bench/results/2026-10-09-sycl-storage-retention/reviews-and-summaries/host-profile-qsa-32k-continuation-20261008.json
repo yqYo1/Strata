@@ -1,0 +1,58 @@
+{
+  "saved_utc": "2026-10-07T22:05:56.167940+00:00",
+  "goal_turn_classification": "progress",
+  "objective_status": "active; PP1000/TG70 not achieved; no blocker",
+  "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05",
+  "branch": "sync/upstream-2026-10-05",
+  "head": "1c9b2a23dc3b0494c4b8f22b132b1b6d2e18ecd5",
+  "clean": true,
+  "public_manifest_files": 1480,
+  "new_model_jobs": [
+    "owned-event-ack-no-root-host-profile-v01402-code32k-diagnostic-r1",
+    "owned-event-ack-no-root-host-profile-v01402-code32k-state-r1",
+    "owned-event-ack-no-root-host-profile-v01402-code32k-control-r1",
+    "owned-qsa-batch128-layout1-v01402-code32k-diagnostic-r1",
+    "owned-qsa-batch128-layout1-v01402-code32k-state-r1",
+    "owned-qsa-batch128-layout1-v01402-code32k-state-r2",
+    "owned-qsa-default-v01402-code32k-clean-r1",
+    "owned-qsa-default-v01402-code32k-clean-r2",
+    "owned-qsa-batch128-layout1-v01402-code32k-clean-r1",
+    "owned-qsa-batch128-layout1-v01402-code32k-clean-r2"
+  ],
+  "all_new_process_identities_absent": true,
+  "production_binary_sha256": "c88f94d81bfb22227310ea00d09ecc8ab21a6e670aee9556307746530f5af714",
+  "candidate_binary_sha256": "e82fc5de5480b72255b601759497d5810e86bf691350417ed0dc11ed6c429323",
+  "candidate_adopted": false,
+  "minimum_performance_input_tokens": 32768,
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "completed": {
+    "host_profile_sequence": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/host-profile32k-v01402-sequence/record.json",
+    "host_profile_analysis": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/host-profile32k-v01402-analysis/record.json",
+    "source_review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batch128-layout1-v01402-source-review/record.json",
+    "qsa_state_sequence": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batch128-layout1-v01402-state-sequence/record.json",
+    "qsa_clean_sequence": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-batch128-layout1-v01402-clean-sequence/record.json",
+    "clean_mean": {
+      "qsa-default": {
+        "prefill_tok_s": 408.30011024436124,
+        "decode_tok_s": 16.349098414932868
+      },
+      "qsa-batch128-layout1": {
+        "prefill_tok_s": 408.356668842605,
+        "decode_tok_s": 16.721682548857316
+      }
+    },
+    "relative_change": {
+      "prefill_tok_s": 0.00013852212337139846,
+      "decode_tok_s": 0.022789277088462567
+    },
+    "first_head_sha256": "7881953996c9e022606b573e44ca376f522778a0a57b748abd571618df3d7b5a"
+  },
+  "pr9_body_file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/pr9-v01402-host-profile-qsa-body.md",
+  "next": [
+    "Return to the original processing-order/VRAM-retirement tuning. Review compact workspace reuse, current registered actual-DMA completion, graph lifetime and source bounds before enabling compact/layer-major flags. Use isolated candidates and immutable executed controllers/receipts.",
+    "First logged32K correctness/full-state/head controls and fresh repeats must pass before every clean32K comparison. Batch128/layout1 gave+0.014% PP and no useful gain; do not adopt it or repeat its passed tests without a new concern.",
+    "Investigate retained allocation/budget and safe error propagation from the older full262144 second-prefill failure before relying on release/restore at full context. New stable copy candidate has not passed those gates.",
+    "Compare snapshot versus immutable-RAM restoration and partial release fractions with clean>=32K inputs; keep exact ordered arithmetic and output gates.",
+    "Full262144 normal-MTP occupancy/repeats/restore/clipped-tail/refusal/later-valid remain pending. No reset/rebind/reboot/service/package/global environment changes are authorized; embedding stays stopped/disabled."
+  ]
+}

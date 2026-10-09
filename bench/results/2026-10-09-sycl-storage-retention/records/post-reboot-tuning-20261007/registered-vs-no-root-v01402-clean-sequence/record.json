@@ -1,0 +1,110 @@
+{
+  "active": false,
+  "passed": true,
+  "started_utc": "2026-10-07T20:36:01.754144+00:00",
+  "controller_sha256": "e91a580f3273833b3e3e350f1fc3dcef5c963499d1e289796e581996733fc5ee",
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_event_ack_registered_copy_cb_v01402_code32k_clean.py",
+        "event-ack-registered-copy-cb",
+        "clean",
+        "1"
+      ],
+      "started_utc": "2026-10-07T20:40:20.588959+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T20:42:24.387886+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 80210.5,
+        "decode_ms": 3758.9,
+        "wall_seconds": 83.97709314399981,
+        "prefill_tok_s": 408.52506841373634,
+        "decode_tok_s": 17.0262576817686
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_event_ack_no_root_prefill_cb_v01402_code32k_clean.py",
+        "event-ack-no-root-prefill-cb",
+        "clean",
+        "1"
+      ],
+      "started_utc": "2026-10-07T20:42:24.388419+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T20:44:25.375448+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 80202.8,
+        "decode_ms": 3741.2,
+        "wall_seconds": 83.95126319900737,
+        "prefill_tok_s": 408.5642895260514,
+        "decode_tok_s": 17.10681064898963
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_event_ack_no_root_prefill_cb_v01402_code32k_clean.py",
+        "event-ack-no-root-prefill-cb",
+        "clean",
+        "2"
+      ],
+      "started_utc": "2026-10-07T20:44:25.376119+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T20:46:25.715045+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 80221.3,
+        "decode_ms": 4263.7,
+        "wall_seconds": 84.49558379099471,
+        "prefill_tok_s": 408.47006966977597,
+        "decode_tok_s": 15.01043694443793
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_event_ack_registered_copy_cb_v01402_code32k_clean.py",
+        "event-ack-registered-copy-cb",
+        "clean",
+        "2"
+      ],
+      "started_utc": "2026-10-07T20:46:25.715690+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T20:48:26.155238+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 80901.8,
+        "decode_ms": 3786.2,
+        "wall_seconds": 84.69126164499903,
+        "prefill_tok_s": 405.0342514010813,
+        "decode_tok_s": 16.903491627489306
+      }
+    }
+  ],
+  "minimum_comparison_tokens": 32768,
+  "ordering": "registered/no-root/no-root/registered (ABBA)",
+  "scope": "Two fresh32K timing jobs per private candidate, only after three full state/head matches per arm. No debug logs, validation, state/head dumps, transfer timing or extra waits. Normal MTP4 generates64tokens; reject any output mismatch or xe fault. These jobs do not validate default counter conversion or full262144-cell serving.",
+  "clean_mean": {
+    "event-ack-registered-copy-cb": {
+      "prefill_tok_s": 406.7796599074088,
+      "decode_tok_s": 16.964874654628954
+    },
+    "event-ack-no-root-prefill-cb": {
+      "prefill_tok_s": 408.5171795979137,
+      "decode_tok_s": 16.058623796713782
+    }
+  },
+  "relative_change": {
+    "prefill_tok_s": 0.004271402584141937,
+    "decode_tok_s": -0.053419248674961284
+  },
+  "finished_utc": "2026-10-07T20:48:26.155883+00:00"
+}

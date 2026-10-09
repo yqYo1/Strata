@@ -1,0 +1,40 @@
+# Prefill workspace retained through decode: round 6 audit
+
+Checkout: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009`, HEAD `23268953314d12588fd3f496414a46bd426a7306`. Read-only source audit. No build, test, GPU, profiler, or repository mutation was performed.
+
+## Finding
+
+The prefill device arena is retained for the lifetime of the `Prefill` object. In serve, that object is initialized once for the prompt path and the same `sp` is reused by later `sp.run(...)` calls (`sycl/src/program/generate.cpp:6374, 6696, 10119-10124`). The ordinary serve path does not call `sp.release()` after each prompt. `Prefill::release()` frees its owned allocations, but it also destroys queues/events/stager and peer helpers; it is teardown, not a “drop prompt scratch but remain usable” operation (`sycl/src/prefill/prefill.cpp:806-840`). `reset()` calls release and replaces the `Impl` with an empty one (`:800-804`). Therefore the suspected retained private allocation is real by ownership/lifetime; the exact 2,116 MiB figure is the supplied run's accounting and was not independently measured here.
+
+`--no-prefill-borrow` does not change the lifetime: the arena allocator either carves a borrowed cache region or allocates each device buffer into `Impl.owned` (`prefill.cpp:312-347`, `:1195-1228`). Owned-size accounting is `bytes_needed_owned`; for a chunk T it includes, among other pieces, 32 Mi FP16 elements of GEMM scratch (~64 MiB), chunk tensors, a max-of-attention/MoE/GDN scratch region, dequant buffers, expert staging ring, and a full-context KV stage (`:843`, `:1997-2045`). The latter makes a single allocation’s role too broad to infer that the whole arena is “temporary prompt-only memory.” The same `m.region` is used by `Prefill::draft_kv` as its batched MTP scratch arena (`:1442-1516`). With MTP enabled, decode generation invokes `sp.draft_kv(...)` (`generate.cpp:7599` for CLI, `:11704` for serve); this is a concrete decode-time consumer. Releasing `Impl.owned` wholesale after a prompt would leave `m.region` stale and break or corrupt that path.
+
+The MTP use is conditional: `draft_kv` declines for `STRATA_MTP_BATCH=0`, unsupported KV mode (except ring mode when ring batching is enabled), hybrid state, wrong device, unsupported weights, or insufficient arena capacity (`prefill.cpp:1444-1487`). Declining falls back to `mtp.prefill(...)` at the caller. That fallback may not need `Prefill::region`, but a release design must branch on actual MTP configuration and still retain all prompt-path allocations required for the next request.
+
+## Existing release and reuse constraints
+
+- `Prefill::release()` drains a pending successor, waits compute/copy/KV-copy queues, then tears down helpers/events/queues and frees owned USM. A prompt completion hook must first establish the same drain/wait guarantees. Merely clearing `owned` or freeing `region` is unsafe.
+- `Prefill` is reused across requests. Full release followed by lazy `init` is plausible only if every later prompt reinitializes the paths and callback wiring, including MTP, stage helpers, peer prefill, cache-lend/relayout, and borrowed-cache restoration. Current prompt-path setup at `generate.cpp:6689-6696` is a one-time setup; the request loop reuses it.
+- Existing `reset()` is used to recover from failed prompt-path init after chunk-size fallback (`generate.cpp:6772-6780`), where all prompt paths are subsequently initialized again. This is evidence for a teardown/re-init pattern, but not proof that it is safe at an ordinary request boundary without restoring request-specific callback and loan state.
+- Borrowed mode has no owned chunk arena to return independently: the loan is part of expert cache memory and its lease/refill lifecycle must be respected. The no-borrow case is the direct target for releasing private allocations; the implementation needs a distinct retainable decode scratch allocation if MTP batched drafting is desired.
+
+## Safe implementation direction
+
+Do not add a call to `release()` after prefill. First split ownership by lifetime: persistent decode arena for the `draft_kv` fields (or explicitly force the existing token-wise MTP fallback), reusable prompt arena for chunk/QSA/GDN/MoE/dequant/stager allocations, and session/cache-owned state that remains with `SessionState`/expert cache. Add a prompt-completion operation that drains all producers and consumers, tears down just prompt-only queues/events/stager/peer objects, frees only prompt-only owned buffers, and leaves a valid `Prefill` object with explicit “uninitialized prompt arena” state. Before each subsequent batched prompt, lazily rebuild the prompt arena using the current chunk and cache loan; preserve/reinstall callbacks and stage wiring. If reset/re-init costs are undesirable, retain the private arena as the current default and make release an opt-in memory policy.
+
+For MTP-on serve, either preserve a separately sized region for `draft_kv` or make the fallback explicit before dropping the shared region. Do not assume it is safe because one particular prompt ended: decode can invoke it immediately afterwards. Keep `SessionState` QSA indexer, KV/page tables and pools, GDN recurrence/conv state, PLE history, RoPE, and expert weights/cache outside this prompt scratch lifecycle. Do not release these to reclaim the prompt workspace.
+
+Before implementation, derive a smaller allocation contract from `bytes_needed_impl` and `carve` and split the accounting to report: bytes owned by prompt-only storage, bytes needed by MTP decode batching, and borrowed expert-cache bytes. Validate that each scratch pointer has no graph capture or outstanding queue reference; validate first request, second request, MTP on/off, KV modes 0/2, chunk fallback, cache loan and no-loan, checkpoint/restore, and service shutdown. State equality should compare prefill output plus KV/indexer/GDN/PLE snapshots before and after this lifetime change. No context limit, chunk size, token order, or numerical path should change.
+
+## Code references
+
+- `sycl/src/prefill/prefill.cpp:312-347`: `Alloc` ownership and owned-pointer recording.
+- `:757-785`, `:1195-1215`: full-context KV stage/identity table setup.
+- `:800-840`: `reset` and teardown behavior.
+- `:843`, `:1223-1226`: 32 Mi FP16 GEMM scratch allocation and external GEMM binding.
+- `:1262-1388`: chunk tensor and shared phase scratch allocation.
+- `:1442-1516`: `draft_kv` uses `m.region` and its capacity.
+- `:1987-2045`: owned and borrowed byte accounting.
+- `sycl/src/program/generate.cpp:6374,6689-6696`: serve-owned Prefill and one-time init/callback wiring.
+- `:7599`, `:11704`: decode path's batched MTP callsites.
+- `:6772-6780`: existing reset/re-init only during chunk-size fallback.
+- `:10119-10124`: the prompt path is reused for request runs.

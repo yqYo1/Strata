@@ -1,0 +1,114 @@
+Intel SYCL / Level Zero 転送・キュー調査
+調査日: 2026-10-09
+対象: Strata IQ3_S、Intel Arc B570 10 GiB、Ryzen 5 5600X (AVX2)、RAM 128 GiB、PCIe Gen4 x4 実測約6 GB/s
+比較条件: 32K以上の入力を最低線とし、最終的に物理256K contextまで使用する。prefill/decodeは別々に採否する。
+
+先に結論
+
+現行実装には、4 worker前後のhost staging、page-locked host-USM ring、in-order専用copy queue、DMA完了event照会による再利用制御がすでにある。したがって最初の候補は新しいキューやwaitの追加ではなく、(1) 中間host copyを消せるか範囲を限定して試す、(2) B570上でstagerのworker/ringを小さく掃引しCPU競合と転送待ちを分ける、(3) copy queueのみimmediate command listを選択した構成を短い切り分けとして測る、の順が妥当。PCIeが実測約6 GB/sという上限があるため、帯域超過の期待はできない。GPUへ送るバイト数そのものを減らす効果は本調査対象のコードからは確立できない。
+
+観測として与えられた値は、32K prefill約411–450 tok/s、decode fresh約16.6 tok/s/restored約22 tok/s。目標との差は大きいが、転送やstagerが主因と確定したわけではない。採否は別にする。32K条件で1,000 tok/s目標の半分にも達しないため、256Kだけを先に比べるとCPU・DRAM・GPU容量・KV・transfer量の影響が混ざる。まず32K以上で原因寄与を測り、物理256Kを完走させる測定を別段階で行う。
+
+読み取ったローカルコード
+
+対象の基準worktreeは `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009`、HEAD `23268953314d12588fd3f496414a46bd426a7306`。実験worktreeのHEADは `6fb37964542fce6674b690dff197dadbdbc70527`。作業ツリー状態やサービスを変更せず、ビルド・GPU実行・ベンチ・プロファイラー・テストは行っていない。
+
+- [prefill.cpp](/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009/sycl/src/prefill/prefill.cpp:352): 352–357行にstagingの意図と~2 MB単位のCPU memcpy停滞への言及。357–420行はringとworkerの初期化、392–420行はmalloc_hostとスレッド数。
+- 同ファイルの453–479行は、bufferの過去DMA完了を確認してから再利用し、host copy後にreadyを公開する。518–535行はDMAイベント保持・照会とworker終了。イベント状態の実装は [event_completion.hpp](/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009/sycl/include/strata/event_completion.hpp:1) の1–47行。
+- prefill.cpp 1109–1112行でprofiling任意のin-order copy queueを生成。1123–1135行では通常sourceのstager workerは `max(2,min(4,hardware_concurrency/4))`、`STRATA_STAGER_THREADS` で1–32指定、既定ring 16。transient GGUF file sourceだけ既定32 workers / ring 4*threads。
+- [device.hpp](/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009/sycl/include/dpct/device.hpp:617) 617–655行: in-order/out-of-order queue生成、登録、破棄。通常queue factoryはprofiling付きで作られる（684–704行）。copy queueの別建て自体は実装済み。
+- [sycl_queue.hpp](/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009/sycl/include/strata/sycl_queue.hpp:1) 10–12行: null streamをdefault in-order queueに戻す。ファイル後半にはArc A750 i915のhost-polled memoryとB70 xe上の大きなblitter memset faultについて、ドライバ依存の注意がある。
+- [verify.cpp](/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009/sycl/src/core/verify.cpp:2077) 2077–2085行: i915は既定で各verify window前に全queueをdrain。過去に別queueの作業の後ろへ投入した最初のwindowが開始しない症状を避けるが、直前commitとの重なりを失う。
+- [generate.cpp](/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009/sycl/src/program/generate.cpp:12126) 12126–12161行付近: adaptive refill queue/event/pinned source lifetime。907–909行の`--pool-affinity`はCPU expert poolの設定でstager affinityではない。stager threadsをこれで制御できると見なさない。
+- [DETAILS.md](/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009/docs/DETAILS.md:1380) 1380–1382行: CUDA/HIP向けを含む一般stager sleepとGGUF SSD/RAMでのworker適応測定。別のGPU/CPU/モデル測定なので、B570への数値移植は不可。
+- 同ファイル1446–1451行は別経路の`STRATA_STAGE_PIN`で、過去にbuffer再利用が非同期DMA完了より先行した可能性のあるIQ3_S decode破損を理由に既定OFF。これはstager ringの寿命検証を簡略化しない根拠。
+
+優先候補1 — mmap/GGUF sourceの中間staging copyを一部消す（prefill優先、効果幅は未確定）
+
+現在stagerは未page-locked expertをhost-USM bufferへCPU memcpyし、そのbufferからGPUへDMAする。sourceが128 GiB RAM上の安定したarena/mmapで既に常駐しているケースだけ、SYCL oneAPIの`prepare_for_device_copy`でsource rangeをcopy向けにimportし、直接DMAできればCPU memcpyと一段のbuffer書き込みを避けられる可能性がある。Intelの公式ガイドは繰り返し転送のsystem allocationをhost USMにするか、変更不可のsystem memoryにprepare/releaseを適用する方法を示す。ページ常駐sourceをGPUが読むまでの寿命を保持できる点では実装意図と合う。
+
+- ソース: prefill.cpp 352–356, 357–420, 461–479, 518–535行。DMAは専用queueに逐次投入され、ring bufferが再利用される仕組み。
+- 一次情報: Intel oneAPI GPU Optimization Guide 2025.2 “Optimizing Data Transfers” https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2025-2/optimizing-data-transfers.html 。実験的APIのprepare/releaseと、全ての転送完了までメモリrangeを有効に保つ責任を明記。資料例は256 MBの転送でprepareなし/ありが26.9/45.4 GB/s (H2D)、33.2/48.0 GB/s (D2H)。対象GPUの機種は取得した記事抜粋に明示なし。これは大きな反復copyの例で、B570や~2 MB expert DMAの改善量ではない。
+- 一次情報: Intel oneAPI GPU Optimization Guide “Unified Shared Memory Allocations” https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2024-2/unified-shared-memory-allocations.html 。host USMはPCIe越しのremote hostアクセス、sharedはmigration costやping-pongの可能性を記述。model/測定値なし。
+- 移植できる部分: host allocation/import APIの考え方と明示的寿命管理。試験対象を`--mmap-experts` / file-backed RAM-resident rangeに絞る。通常の小さいprompt入力や使い捨てsourceには適用利益が薄い。
+- 仮説と条件: `prepare_for_device_copy`はexperimentalでcompiler/runtime依存、APIがB570用ツールチェーンにあるか要確認。mapped file pageをLevel ZeroがimportしてDMAできるか保証されない。mmap rangeがunaligned/複数shard/別file boundaryを跨ぐ場合はrange分割と正確なbyte lengthが必要。GPU copy完了eventを得るまでmappingをunmap/close/recycle/書き換えない。releaseは該当rangeを使った全queueのDMA完了後のみ。失敗時は現行malloc_host stagerへ戻す。StrataのSYCL backendではhost pollingで問題の出たIntel driver差もあるため、kernelがpageable sourceを直接ポーリングする方式へ拡張しない。
+- 最小測定案: B570上で既存fallback vs prepare/importの2 arms、IQ3_S 32Kまたは64K promptをinterleaved 5組、cold/warmのsource条件を分ける。全requestのwall-clock prefill tok/sとCPU user/system time、実際にstageされたバイト数、CPU staging memcpyの積算時間を記録する。既存`STRATA_PREFILL_TRANSFER_TIMING`のevent timestamp値/unitrace stallには依存せず、wall clock/OS process accountingだけを採る。全logprobsとgreedy token IDsが一致し、DMA/host rangeの再利用でfaultがないことを必須にする。その後256K完走と全10 GiB VRAM使用の条件でメモリ上限を確認する。
+- 見込み: CPUコピー所要時間ぶんの上限が理論的な最大利益。発行量は少なくとも6 GB/s PCIe制限下にあり、GPU実計算やCPUでのroutingが律速なら利益は小さい。Intelの256 MB数値を2 MB〜複数expert transferへ線形外挿しない。未知: driver page import可能性、copy件数/総byte、元のCPU memcpyが全prefill時間に占める比率。
+
+優先候補2 — stager worker数・ring深さをCPU競合と帯域の両面で小さく掃引（prefill優先、着手しやすい）
+
+既存既定は通常sourceで最大4 worker / 16-slot ring。stage threadはwait時に`yield()`を繰り返し、host-copy速度だけでなくrouter/launch/verifyのCPU時間も競合する。Ryzen 5600Xは6 core/12 threadでAVX2のみという条件なので、GPU copyをCPUへ貼り付けたり、増員を機械的に32へ上げたりせず、2/4/6 workerとring 8/16/32の小さなgridが有効な切り分けになる。特に32Kで4-worker以上がprefillを押し上げるか、CPU負荷とdecode freshを悪化させるか判別できる。
+
+- ソース: prefill.cpp 453–479行でworkerがring slotのDMA完了を待ち、expertをhost copy。1123–1135行でworker/ringの既定値と環境変数。`STRATA_STAGER_THREADS`/`STRATA_STAGER_RING`は実装済み。
+- 一次情報/実測: DETAILS.md 1382行、別環境のGGUF file-backed workloadで32 threads/128 ringがNVMe cold page fault pathに有効だった一方、page cache warmの4-thread既定は別構成より4–7倍速と報告。GPUはRTX 5070、promptは124K Q8_0 modelで、B570/5600Xとは異なる。適応条件はSSD I/Oとwarm RAM copyで反対になる証拠としてのみ移植可能。
+- wait/CPU観点: `host_wait.hpp` 15–27行ではready判定をyield-spinして5分budget。stagerはこの待ちを複数workerで行う。DETAILS.md 1380行のsleep比較はRTX 4070 + Ryzen 9 7940HS・IQ3_S・64K contextでsleepがprefillを5–6%遅らせる一方、全体CPU利用を77–90%から21–25%へ下げた別機種測定。B570ではyield/spinとsleep両方を試す余地はあるが本調査対象に専用スイッチは見当たらず、新規挙動を前提にしない。
+- 移植できる部分: existing knobsでworker数とring幅を調整。現実的にまず2/4/6 worker、ring 8/16/32、計9通りを32K一度ずつ粗く見て上位2設定だけ5組比較。GGUF SSD-streamingの場合はsource別に分ける。host staging量とGPU transfer量を同時に記録して、CPU copyが伸びているのにringを増やしてもGPU idle区間が残るなら次候補へ。
+- 仮説: 4 workerより少なければCPU launch/routerとcache localityに空きを返せる可能性。6 workerでhost copyが増えればbuffer starvationを減らせる可能性。ringを広げるとpipeline bubbleを減らせるがmalloc_host footprintは`ring × MAXBLOB()`で増加し、RAM/OS locked-memory上限と256K KV負荷を圧迫する。128 GiB全体を使い切る状況ではring bufferの過剰拡大が逆効果。
+- 正しさ/寿命: 既存EventCompletionによるDMA event status complete確認を削らない。ring slotをhost sourceに再利用する前にそのDMA終了を確認し、queue drainだけでeventを落とさない。既定worker数を変える場合でもevent completionと`finish()`中worker join/hostbuf free順は保持する。
+- 最小測定案: IQ3_S 32K/64K、同一chunk/同じcache residencyで環境変数のみ変更、fresh engineのinterleaved arms、prefill medians + CPU time + maximum RSS + pinned bytes + host-copy accumulated ns + GPU idle/wait wall estimate。timestamp/unitraceは使わない。最終2設定のみ256K full-context inputでOOM/OS locked-memory degradationを調べ、decode fresh/restoredも別測定。Model output parity必須。
+- 見込み: デフォルトからの改善幅は未測定で、低〜中とみる。0–10%程度の局所差を想定レンジとする根拠はDETAILSの別ハード測定が数%〜worker profile間の大差まで出たことだけで、B570での予測ではない。総量はPCIe約6 GB/sの上限で頭打ち。現行411–450 tok/sから目標1000へ一挙に届かせる根拠はない。
+
+優先候補3 — copy queueに限った即時command-list設定を短い切り分けで検証（prefill/decode別採否、低確度）
+
+Level Zero immediate command listsはホストからのsubmit遅延を下げる可能性がある。しかし環境変数`SYCL_PI_LEVEL_ZERO_USE_IMMEDIATE_COMMANDLISTS=1`は全体適用となり得て、計算queueやverify graphの相互作用を含む。`copy-only immediate queue`はStrataに実装済みと確認できず、新しいqueue propertyだと推定しない。Intel/llama.cppの外部例も全プロセス環境変数で設定しており、copy-only実証ではない。
+
+- ソース: prefill.cpp 1109–1112で専用copy queueは存在する。device.hpp 625–634では現在のqueue creationがin-order+profiling等の標準SYCL property。SYCL queue propertyだけでLevel Zero immediate command listを選べるか、ローカルoneAPI版で一次確認が必要。
+- 一次情報/実測: ggml-org/llama.cpp GitHub issue #24045 https://github.com/ggml-org/llama.cpp/issues/24045 。報告者の環境はArc Pro B50 (Battlemage)、Ubuntu 26.04 kernel 7.0.0-22、llama.cpp build #9468。同一binaryでruntime/container一式も異なるため因果はimmediate-list単独でない。prompt: Gemma4-26B 386.22→388.52 tok/s (+0.6%), generation 17.23→24.64 (+43.0%); LFM2.5-8B MoE prompt +8.2%, generation +6.4%; dense Qwen3.5-9B prompt -0.7%, decode +1.2%。今回の対象・OS・Arc B570と違い、設定の寄与も分離されていないため、改善の根拠にはせず調査仮説としてのみ扱う。
+- 一次実装参考: llama.cpp SYCL docsは`GGML_SYCL_DEV2DEV_MEMCPY`にSYCL/L0 API切替等を公開 https://github.com/crc-org/llama.cpp/blob/main/docs/backend/SYCL.md 。dev-to-devでありhost-to-device prefillの直接根拠ではない。
+- 移植できる部分: queue submitの方式を変えることでホストsubmit側が律速かを測る発想のみ。Intel Level Zero queue submitとdevice driver/runtime version固定のB/A比較。
+- 最小測定案: まずlocal oneAPI/UR docsでenv変数がsupportedであることを確認。copy queue生成後の全prefill DMAのみを対象にできるAPIがなければglobal env試験は広範な介入であると記録する。32K/64K interleaved各5回、prefill tok/s、fresh decode、restored decodeを別計測。既知のevent timestamp profilingやunitrace stallに依存しない。32Kの全logprobs/token IDs parityと256Kでの完走を確認。
+- 見込み: queue submit CPU overheadがdominantの場合だけ少〜中程度。転送時間が6 GB/s近傍ならimmediate submitで上がる幅は小さい。外部B50測定は最大+43% decodeだが全runtime update込みかつ別stackなのでB570見込みに用いない。
+- 採否: 以前の実験ではnative copy queue候補はprefillを改善したがcold decodeは約8%低下し不採用とのこと。従って仮にprefill armが良くてもdecode armの低下を別途判定する。既存の即時化候補をdefault採用する根拠にはならない。
+
+優先候補4 — copy queueをprompt後に閉じる / stagerだけ解放（保留。長期効果仮説）
+
+prefill後にstagerを保持することがdecode CPU schedulingやRSS/locked pagesを阻害しているかは、既存インスタンスがどの時点で解放されるか正確に見てから測るべき。単にqueue drainや`wait()`を追加するのは正しさ/速さの根拠にならない。親エージェントから、copy queue/stager解放案の17本目でgreedy64 IDsは同じでも全logprobsとMTP数が異なり保留との観測が与えられた。反復確認の間欠失敗は解決済み扱いにしない。
+
+- ソース: prefill.cpp 2660–2751, 5231–5249行のstager finish/copy queue waits。Impl destructor 817–835行、生成側generate.cppの12616以降の計測・12760前後のUSM解放を読むべき。device.hpp 642–656行は登録queueのみdestroy可能でdefault queue破棄不可。
+- 正しさ: Stager destructorはfinish→quit→notify→join→host USM freeの順 (423–431行)。DMA source/eventの全利用が終了する前にfreeしない。copy queueのworkがdefault/device-wide waitsに含まれる前提を崩さない。
+- 判断: logprob不一致が1 runでもあれば機能品質上は保留。greedy token一致は非greedy distribution、MTP draft acceptance、decode performanceに十分でない。全状態logprob再現性を少なくとも親観測の完全ログ/状態再確認手順と同等以上で繰り返し検査した後、fresh/restored decodeの複数interleaved runでのみ採否。
+- 改善幅: pinned memory消費に起因するsystem memory pressureが確認された場合はメモリ余裕に寄与するかもしれないが、decode tok/s改善の具体的根拠なし。
+
+優先候補5 — mmap source全体のpin/import、Level Zero native host registration（低確度、API/driver確認後）
+
+Intel資料の`prepare_for_device_copy`は繰返しhost/device copyのための実験APIで、全rangeをprepareして後でreleaseする。page cache上のGGUF全体を長期間prepareすると128 GiB RAMのページをpinしすぎ、256K KV/cacheと競合する。B570 driverが既存file mappingをimport可能か不明。数MB単位で毎expert prepareすれば毎回のregistrationコストがcopy savingsを食う可能性が高い。まず「全shard」の一括prepare vs 1 layer単位の短寿命prepareをAPI仕様上比較するが、先に普通のmalloc_host host staging baselineを取る。
+
+一次情報URL: https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2025-2/optimizing-data-transfers.html (experimental caveat, lifetime and range length rules)。B570の測定実績はなし。移植条件はpage-aligned valid host range、mapping lifetimeを全DMA完了後まで維持、release後だけunmap、exact sizeでprepare/release、失敗時のfallback。256K物理メモリ圧を含む最大RSS/locked bytes測定なしでは採用しない。
+
+CPU affinity / NUMA
+
+Ryzen 5 5600X構成についてソケット間NUMAを避けるための設定効果を示す測定は得られていない。stagerはLinuxではworkerごとにdevice選択するだけでCPU affinity指定は見つからず、`--pool-affinity`は別のCPU expert pool向け。まず`lscpu -e` / `numactl -H`等の読み取り情報で実際のnode/CPU topologyを記録し、NUMAが1 nodeならnode pinning候補から除外する。CPU core affinityはworker数最適化後、GPU submit/main threadまたはstagerが同一core/SMT siblingを取り合う仮説としてだけA/Bする。Ryzen 5600Xでは6 physical coreをstage 6 workersで埋めるとCPU compute/routerが退く可能性もある。affinity変化はdecodeも個別測定。
+
+GPU hang / Level Zero正しさの重要な境界
+
+Strata自身の実装者記録 [INTEL.md](/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009/docs/INTEL.md:444) 444–446行に、Level Zero v2 adapterでstagerがcopy queue eventをhost-wait後、別queue barrierも同eventを含むケースがリング周回後に永久停止した事例がある。v1 adapter、256リング、phaseごとsyncは動作したが、採用修正はホストwaitを避けcopy後にpinned host flagを書いてpollする方式。現コードではEventCompletion queryを行うがhost queue event waitを入れていない。従って提案では`.wait()`でeventをCPU awaitする、queue drainを周回毎に増やす、host bufferを先にfreeすることを避ける。`event::get_info(command_execution_status)`がcompleteになるまでsource/bufferのreuse不可。queryが例外/failureなら未完了扱いのまま安全停止すべき。既知のqueue-drain回避はprefill throughputの改善策として扱わない。
+
+Intel LLM Scaler / IPEX-LLM / OpenVINO / llama.cpp SYCLからの学びと限界
+
+- Intel LLM Scalerは現行Intel repoがArc Pro B60/B70とQwen3.5/3.6等を対象にvLLM/SGLangベースのstackやmodel streaming loadを公開している https://github.com/intel/llm-scaler 。Intel LLM ScalerのMoE転送最適化知見は方向性として参考だが、B570 10 GiB、Strata GGUF IQ3_S、Ryzen hostの実装手順・数値は見つからず、転送面の採用根拠にはしない。
+- IPEX-LLMは過去にIntel GPU向けllama.cpp等の別runtime最適化があった。現行Intel LLM Scaler repoのstreaming load記述がある一方、今回と同じtransfer benchmark/測定機種は見つけられなかった。実装移植や古い数値の直接比較はしない。
+- OpenVINOもデバイス/モデルの実行経路が異なるため、SYCL queue/USM寿命の直接根拠としては使えない。今回の公開情報調査ではB570+IQ3_S+256KでのOpenVINO同条件データは確認できなかった。
+- llama.cpp SYCL backendはqueue/eventとLevel Zero copy切替を持つ点でコード参照先として有用。環境変数や単発ユーザーbenchmarkはdriver/runtimeまで同一でない限り再現性の証明でない。
+- 過去Strata docs測定はCUDA/HIP環境が多く、host staging/pinned DMA/pipeline原理のみ参考。異なるGPUでの百分率をB570値として記載しない。
+
+メイン担当に提案する順番（実験開始前の最小切り分け）
+
+1. B570 runtime/driver/oneAPI adapterとCPU topologyを記録。async queue/event queryによる間欠失敗は現状未解決として扱う。
+2. 現行baselineとstager 2/4/6 workers、ring 8/16/32の粗いスイープを32K以上で実行。warm RAM sourceとcold/file sourceを混ぜない。copy completion codeやbuffer lifespanは変更しない。
+3. 一番良かったstager設定を固定して、mmap source direct-import/prepareを1案だけ比較。まずAPI compile/supportとone-shot safe lifetimeを確認し、bad pathでは即fallback。
+4. immediate command listはcopy-only制御が正式に可能か確認後、独立して実施。全プロセスenvだけならその広い効果を明記する。
+5. prefill候補は32K/64K medianとCPU time/byte数で判定。decode候補はfresh/restoredを別A/Bし、prefillの改善からdecodeの採否を推定しない。
+6. 最終候補にのみ256K全入力完走、RAM128 GiB内のpage cache/KV/stager/pinned memory、GPU物理10 GiB使用、最大RSS/locked pages、終了後のdecode fresh/restoredを確認する。全logprobと必要に応じMTP状態の一致を確認する。
+
+最低限出すべきレポート値: prompt token count (実トークナイズ後)、prefill tok/s/TTFT、decode tok/s (fresh/restored別)、copy/stage total bytes、CPU user/system time、GPU memory use、RSS/locked-host memory、GPU/runtime version、設定値、複数反復分の個別値と中央値。既知のevent timestamp / unitrace stallの時間を採否判定に使わず、外部wall clockとOS CPU accountingを基準にする。
+
+出典 URL (一次情報中心)
+
+1. Intel oneAPI GPU Optimization Guide, Optimizing Data Transfers (2025.2): https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2025-2/optimizing-data-transfers.html
+2. Intel oneAPI GPU Optimization Guide, Unified Shared Memory Allocations (2024.2): https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2024-2/unified-shared-memory-allocations.html
+3. Intel oneAPI GPU Optimization Guide, Performance Impact of USM and Buffers (2025.0): https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2025-0/performance-impact-of-usm-and-buffers.html
+4. Strata SYCL implementation notes, source repo docs/INTEL.md: https://github.com/Niko1221/Strata/blob/main/docs/INTEL.md
+5. llama.cpp SYCL backend docs: https://github.com/crc-org/llama.cpp/blob/main/docs/backend/SYCL.md
+6. llama.cpp Arc Pro B50 Level Zero / immediate-command-list environment and benchmark report: https://github.com/ggml-org/llama.cpp/issues/24045
+7. Intel LLM Scaler source repository: https://github.com/intel/llm-scaler
+8. Intel Arc GPU llama.cpp technical guide (general install/runtime, no B570 transfer measurement): https://www.intel.com/content/www/us/en/developer/articles/technical/run-llms-on-gpus-using-llama-cpp.html

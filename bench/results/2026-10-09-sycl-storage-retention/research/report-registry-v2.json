@@ -1,0 +1,58 @@
+{
+  "created_utc": "2026-10-09T07:32:34.371950+00:00",
+  "research_completed": true,
+  "reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/intel-sycl-transfer.txt",
+      "sha256": "783adcc4910017111ddebd10cf719c5b6911a00933c279a6678e44d56627db8b",
+      "bytes": 24900,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_intel_sycl_transfer",
+      "scope": "SYCL/Level Zero transfer, queue, USM, staging, Intel runtime documents"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/moe-decode-cpu.txt",
+      "sha256": "b6b261e5ab7533154149eed4e6d1d5c3be77fb7e940a5ea9823faedd4b93b900",
+      "bytes": 23843,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_moe_decode_cpu",
+      "scope": "CPU MoE decode, scheduling, AVX2, expert cache, KV residency"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/prefill-algorithms-blogs.txt",
+      "sha256": "ec5b5ad7ccfd5d174b3c77a403cbcc296bd9d8d77a6bfec9aaca86e18e6a3549",
+      "bytes": 10939,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "Prefill algorithms and implementer blogs across engines"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/prefill-code-audit-addendum.txt",
+      "sha256": "ef39d29957a2974cbcdf14b56e6435352d717bcda73c2554037fcc28360ae193",
+      "bytes": 11336,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "Local active code and primary-source follow-up after completed original report"
+    }
+  ],
+  "scope": "Read-only source and web research; report-file writing authorized; researchers performed no builds, tests, GPU work, source changes or adoption. Reports are leads, not validated speed claims.",
+  "main_review_notes": [
+    "The local commit23268953 is fork-specific: the moe-decode-cpu report source link Niko1221/Strata/tree/23268953 should be yqYo1/Strata/tree/23268953314d12588fd3f496414a46bd426a7306. Original researcher report preserved.",
+    "Use prefill-code-audit-addendum over the initial prefill report for active MMQ/fused status and B70/AMD measurement attribution.",
+    "Existing layer-major, cache release, MTP suspension, CPU grouping and AVX2 multi-token are not new implementation proposals.",
+    "External hardware figures are not B570 forecasts. Approximate missing-expert masking from B70 is outside exact-output tuning.",
+    "The Intel transfer report states up to4 workers; actual default on this12-logical-CPU machine is3 (hardware_concurrency/4), and previous passive observation showed all3 inheriting hostCPU0. The affinity candidate requests CPU1,2,3 without changing worker count."
+  ],
+  "implementation_assignment": {
+    "agent": "/root/implement_sycl_pool_tasks",
+    "model": "gpt-6.1-sol",
+    "scope": "SYCL --pool-tasks CLI wiring only, isolated worktree; no agent tests/builds/GPU/commit/push",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/pool-tasks-implementation.txt",
+    "status": "completed-code-only",
+    "testing_owner": "/root",
+    "implementation_report_sha256": "581a28c98ffd55bc8fedef7cc9e376ab7b87613f510d54b1de0871349702f6bb",
+    "main_static_review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/pool-tasks-v0141-source-review-v1.json",
+    "main_static_review_sha256": "a2c1fc95912ff0f58ce940c981d8a6bab6dbc8b072b45dcc2b670e5721b13794"
+  },
+  "updated_utc": "2026-10-09T07:49:05.533901+00:00"
+}

@@ -1,0 +1,84 @@
+{
+  "active": false,
+  "passed": true,
+  "scope": "Four main-cache lease arms with identical64MiB segment allocation. Each first use has flushedUR/LevelZero logs/validation, then two fresh32K complete main-state/head/output controls; immutable RAM or snapshot payload verification. Captured timings excluded. No full256K/adoption or hang-prevention claim.",
+  "parent_controller_sha256": "49f91b577de63408665507cf54db45c4f38f4c1475a261275b444b67e6bf2102",
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_main_cache_release_v01402_code32k.py",
+        "main-vmm-full-ram",
+        "diagnostic",
+        "1"
+      ],
+      "started_utc": "2026-10-07T23:27:36.726224+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T23:31:19.111223+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 175025.3,
+        "decode_ms": 4612.7,
+        "wall_seconds": 179.64467572399008,
+        "prefill_tok_s": 187.21864781834398,
+        "decode_tok_s": 13.874737138769051
+      },
+      "main_cache": "strata prefill cache release: 402653184 physical bytes, 340787200 restored bytes, source ram, suspend 265.601 ms, restore 4959.541 ms, graph 4653.512 ms, same_address 1, slots restored",
+      "main_verify": "strata prefill cache verify: 281651200 occupied tail bytes matched before and after restoration; 0 experts differ from the initial admission map",
+      "mtp_release": "strata mtp decode release: 939524096 physical bytes, experts and head; K/V retained; total 775.990 ms, wait 0.528 ms, unmap 39.117 ms, verify 736.343 ms, verified=1, graph_drop 0.001 ms",
+      "mtp_restore": "strata mtp decode restore: 931016700 payload bytes from RAM, same addresses; total 1013.037 ms, map 47.964 ms, copy 226.854 ms, verify 738.219 ms, verified=1"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_main_cache_release_v01402_code32k.py",
+        "main-vmm-full-ram",
+        "state",
+        "1"
+      ],
+      "started_utc": "2026-10-07T23:31:19.112391+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T23:33:16.758643+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 76212.9,
+        "decode_ms": 3576.2,
+        "wall_seconds": 79.79570123499434,
+        "prefill_tok_s": 429.9534593225032,
+        "decode_tok_s": 17.896090822660927
+      },
+      "main_cache": "strata prefill cache release: 402653184 physical bytes, 340787200 restored bytes, source ram, suspend 259.254 ms, restore 900.922 ms, graph 590.167 ms, same_address 1, slots restored",
+      "main_verify": "strata prefill cache verify: 281651200 occupied tail bytes matched before and after restoration; 0 experts differ from the initial admission map",
+      "mtp_release": "strata mtp decode release: 939524096 physical bytes, experts and head; K/V retained; total 770.187 ms, wait 0.006 ms, unmap 36.952 ms, verify 733.227 ms, verified=1, graph_drop 0.001 ms",
+      "mtp_restore": "strata mtp decode restore: 931016700 payload bytes from RAM, same addresses; total 996.994 ms, map 34.334 ms, copy 226.066 ms, verify 736.593 ms, verified=1"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_main_cache_release_v01402_code32k.py",
+        "main-vmm-full-ram",
+        "state",
+        "2"
+      ],
+      "started_utc": "2026-10-07T23:33:16.759618+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T23:35:13.880173+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 76577.5,
+        "decode_ms": 3546.7,
+        "wall_seconds": 80.12840851800865,
+        "prefill_tok_s": 427.9063693643694,
+        "decode_tok_s": 18.044943186624188
+      },
+      "main_cache": "strata prefill cache release: 402653184 physical bytes, 340787200 restored bytes, source ram, suspend 261.663 ms, restore 1263.165 ms, graph 958.327 ms, same_address 1, slots restored",
+      "main_verify": "strata prefill cache verify: 281651200 occupied tail bytes matched before and after restoration; 0 experts differ from the initial admission map",
+      "mtp_release": "strata mtp decode release: 939524096 physical bytes, experts and head; K/V retained; total 758.775 ms, wait 0.015 ms, unmap 34.942 ms, verify 723.817 ms, verified=1, graph_drop 0.001 ms",
+      "mtp_restore": "strata mtp decode restore: 931016700 payload bytes from RAM, same addresses; total 991.522 ms, map 36.014 ms, copy 226.486 ms, verify 729.021 ms, verified=1"
+    }
+  ],
+  "finished_utc": "2026-10-07T23:35:13.881940+00:00"
+}

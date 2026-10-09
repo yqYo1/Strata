@@ -1,0 +1,113 @@
+{
+  "active": true,
+  "created_utc": "2026-10-08T11:31:00.602828+00:00",
+  "goal_status": "active",
+  "checkpoint": "Live DD5 physical256K qualification after completed quiet32K ABBA. Only source preparation/primary review while model runs; no other GPU job/build.",
+  "feature_commit": "0f103c4cfe17111e0b64137f3909a07b709213d7",
+  "feature_clean": true,
+  "pr9_draft_unmerged_body_last_verified_characters": 37131,
+  "gpu_session_id": 9443,
+  "gpu_controller": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_uniform_full256k_v01402_v1.py",
+  "gpu_controller_sha256": "01838505aba1ce78f4c43159f2f350dfdc25fe248cf49ab7446612c44ae09b83",
+  "live_receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-profile-definition-v01402-full256k-diagnostic-r7/record.json",
+  "live_receipt_sha256_at_observation": "f5edcd9b4604ce0e9d560f8a91fc4f3d597d8e3b577af5c8ace068ddf278659e",
+  "owned_live_identities": {
+    "inferior": {
+      "pid": 36224,
+      "start_ticks": 14711330,
+      "state": "R"
+    },
+    "debugger": {
+      "pid": 36195,
+      "start_ticks": 14711322,
+      "state": "S"
+    }
+  },
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "actual_executable_identity": {
+    "inferior": {
+      "pid": 36224,
+      "start_ticks": 14711330,
+      "state": "R"
+    },
+    "sha256": "dd5efb9002167481d180f370b86fb6978d724f37745f7e4a923432296725ad34",
+    "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9"
+  },
+  "active_request": "full256k-first",
+  "elapsed_seconds_at_observation": 1628.0525874529849,
+  "completed_requests": [
+    {
+      "name": "control32k-before",
+      "input_tokens": 32768,
+      "math_gate_passed": true
+    },
+    {
+      "name": "resume32k-reference",
+      "input_tokens": 32832,
+      "math_gate_passed": true
+    }
+  ],
+  "latest_progress": [
+    "PP 196608 262140 1269946 154.8",
+    "PP 204800 262140 1328046 154.2"
+  ],
+  "not_performance_evidence": true,
+  "full_physical_gate_completed": false,
+  "pending_native_counter_cause_resolved": false,
+  "adopted": false,
+  "native_counter_capture": {
+    "source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/capture_owned_native_counter_v01402_v1.py",
+    "sha256": "7928a49c52c2bfba52fab0d453127d71954d085a955951a07960fe1db7c9632a",
+    "cpu_receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-counter-v01402-cpu-v1/record.json",
+    "cpu_receipt_sha256": "c93b119422938718e230d9e7c02377b7f0e6d48dc2095cb4add442f2e1025e86",
+    "three_real_owned_gdb_cpu_cases_passed": true,
+    "actual_gpu_runtime_fields_not_yet_proven": true,
+    "at_failure_only": true,
+    "budget_seconds": 25,
+    "no_inferior_function_call_or_external_attach_or_resume": true
+  },
+  "source_identity_metadata": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-counter-fields-v01402-source-v1/sources.json",
+  "prepared_controllers": {
+    "prepare_owned_uniform_full256k_v01402_v1.py": "bfafd33bdbe9920fd1c49b1dccab2f178331998de283566a8085b17fcc0c3e99",
+    "prepare_owned_uniform_full256k_v01402_v2.py": "5bef6d27b16ad6d9f529591ee6a98037f4113f165e950c4c957e275c6969ee7e",
+    "prepare_owned_uniform_full256k_v01402_v3.py": "28accd639047b51d3963d0cd039d05ffa4d541c892ae873ae653a58f8bf87192",
+    "test_owned_native_counter_v01402_v1.py": "7ba02210bc652293a9e99db09d31fcbbc2056a5f9f3985de380942f5a174555e",
+    "prepare_qsa_reduce12_sg32_v01402_v1.py": "56fbac9617cb06ba6fefbe17d82a7721fe91107dc367d020a603c78a13826046",
+    "capture_b70_reference_sources_v01402_v1.py": "c913208b8ced21ca6bd5e563f84e2b065eb8775dab5451699e255fa446851ef8"
+  },
+  "prepare_negative_history": {
+    "v1": "Health filename mismatch rejected before output; v1 derived note wrongly called it absolute, corrected in negative-v2.",
+    "v2": "AST rejected leftover ;save() trailer, before output or GPU launch.",
+    "v3": "Exact startup line replaced, AST/same full request/session/math plan passed; generated controller01838505aba1ce78f4c43159f2f350dfdc25fe248cf49ab7446612c44ae09b83 executed."
+  },
+  "b70_primary_capture": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b70-attention-hc-reference-v01402-source-v1/record.json",
+  "b70_primary_capture_sha256": "662613eb5cdd90be8828452bc5272f8c164ad580862c57414fb5f75b8d090eac",
+  "b70_primary_commit": "557f80fe0f4235a76d4cf835f89e108d599b5e94",
+  "b70_applicability_review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/b70-attention-hc-applicability-v01402-review-v1.json",
+  "b70_applicability_review_sha256": "5b5d0b563928ced7f10444904ca81b836f9b43e6918ee287c136104aa804512e",
+  "next_source_candidate": {
+    "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-reduce12-sg32-v01402-source-v1/record.json",
+    "receipt_sha256": "5a9bfd98d59057f3f3559f46c809bf23afa8f4836526659da8e0468a5a3ef019",
+    "candidate_source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-reduce12-sg32-v01402-source-v1/qsa_decode_attn.dp.cpp",
+    "candidate_source_sha256": "410594cafe51989256bbbd4fdc2cfe5d14cb94081f487fb289652dd40c33f467",
+    "built": false,
+    "cpu_float_identity_tested": false,
+    "gpu_tested": false,
+    "reason": "Port upstream inactive experimental pre75 reduce12 to SYCL SG32/transposed variant1. Original QK eight-product expression/32-lane XOR pairing/64-cell partials/external merge preserved; source claims not GPU proof."
+  },
+  "next_actions": [
+    "Poll session9443 or exact live model36224/start14711330 and debugger36195/start14711322. Do not restart on observation timeout. No concurrent GPU probe/model, CPU-heavy build, profiler or large raw-log hashing.",
+    "Continue same full controller: first fresh262140+4 physical lastcell262143, saved13KV layers all262144 cells; interposed fresh32K; repeated full; saved-byte equality; clippedtail; actual32K and full diskrestore; capacity refusals and valid32K. Never claim complete from first-full-only.",
+    "If owned job stops, controller captures expected/current first native host counter after its own stop with may-call-functions off. Inspect terminal receipt/MI/native-counter JSON and exact owned cleanup; post-exit health only after owned identities absent. Do not repeat unmodified failed configuration or reset/rebind/reboot/service/package/global change.",
+    "If job completes, inspect all gates, archive exact versioned controller/CPU/source/failure-capture evidence and complete full results, validate affected manifests, commit/push feature and update exact PR body without merging or production swap.",
+    "Next optimization is source-prepared qsa reduce12 SG32 only: independent FP32 XOR-tree identity check, then compile/relink onto DD5 with one archive-member and actual dependency/source/header review only after current model exits. Logged fresh>=32768 math/state/disk/output/MTP before quiet ABBA; no speed or adoption claim now.",
+    "Do not repeat old batch128-only/control or polling quiet tests: no useful PP gain. B70 bcast changes dot/softmax/merge order and KV representation; direct speed claims or copying masked expert misses are invalid for our baseline."
+  ],
+  "closed_sessions_this_turn": [
+    21667,
+    59981
+  ],
+  "other_active_gpu_jobs": false,
+  "main_production_accepted_unchanged": true,
+  "public_source_adoption": false
+}

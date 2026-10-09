@@ -1,0 +1,48 @@
+{
+  "active": false,
+  "goal_remains_active": true,
+  "goal_turn_classification": "progress",
+  "finished_utc": "2026-10-09T04:27:52.659893+00:00",
+  "all_owned_benchmark_processes_absent": true,
+  "gpu_job_live": false,
+  "artifacts": {
+    "native-copy-decode-repeat-v0141-comparison-sequence-v1/record.json": {
+      "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-copy-decode-repeat-v0141-comparison-sequence-v1/record.json",
+      "sha256": "a9091c40a01af7e725b297d1cb87a01c0348372f6579a34e4db051a9a8981114"
+    },
+    "native-copy-decode-repeat-v0141-summary-v1.json": {
+      "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-copy-decode-repeat-v0141-summary-v1.json",
+      "sha256": "26303e7fdba8f21fb781d898e571b7b33584517e84b8d5fa5870919c551b89e0"
+    },
+    "native-copy-decode-repeat-v0141-public-archive-proof-v2.json": {
+      "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-copy-decode-repeat-v0141-public-archive-proof-v2.json",
+      "sha256": "cb7dd95f72e45a57078de798af699d500e862abd47cedfdeb7db678f15e339a1"
+    },
+    "native-copy-decode-repeat-v0141-review-branches-update-v1.json": {
+      "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-copy-decode-repeat-v0141-review-branches-update-v1.json",
+      "sha256": "5454e7e574d321600fd444517c6bb4d834612ddbcd4d8661c9f6efe6fe28e874"
+    },
+    "native-copy-decode-repeat-v0141-first-decode-host-counter-summary-v1.json": {
+      "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-copy-decode-repeat-v0141-first-decode-host-counter-summary-v1.json",
+      "sha256": "8298f791b79ed64578cf529135cce4e0706905bee6f6db76fa37a2e00dc6559d"
+    },
+    "owned-native-stream-order-v0141-code32k-ring8-diagnostic-r1/record.json": {
+      "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-stream-order-v0141-code32k-ring8-diagnostic-r1/record.json",
+      "sha256": "ddaf94e2fdce81adc83d0955290d9cd4a3fd774f5bda9be93f7a2ab79badcc9c"
+    },
+    "native-copy-full-api-log-lossless-compression-v1.json": {
+      "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-copy-full-api-log-lossless-compression-v1.json",
+      "sha256": "3ca3e672826d071534efeb135d4776a47b5b4985b5ddc208cccdf97e208f8264"
+    }
+  },
+  "completed": "Logged first restore/decode protocol check plus18 independent quiet processes.72 restored continuation samples per mode and six separate fresh32K first-decodes per mode. All outputs, LP and MTP reference comparisons pass, no GPU faults, normal exits. Archive109 benchmark files committed/pushed as23268953314d12588fd3f496414a46bd426a7306 on all three review branches.",
+  "adoption_decision": "Prefill and decode judged independently. Native candidate held back: fresh32K first-decode regression versus qualified baseline\u22127.985%,95% CI\u221212.806..\u22122.897. Qualified baseline decoder remains the reference. No engine source/default change this turn.",
+  "first_decode_counters": "CPU expert and GPU-reach means are similar; stage host counter rises. In host-boundary Verifier::run the PLE gather/copy interval is counted both explicitly and within the enclosing input-stage interval. Capture precedes that interval. Do not claim PCIe busy fraction, graph-capture cost or a proven cause from these counters.",
+  "next_required_work": [
+    "Investigate/isolate the prefill-to-decode transition before adopting native queue selection. Keep old decoder as reference; repeated measurements and phase-specific gates mandatory. Audit safe drain/deregister/recreation of prefill-only queues/events and possible header/build effects.",
+    "Correct/clarify the PLE stage timing counter before using it for attribution; no extra GPU waits/timestamps.",
+    "Do not run prepared ring16/ring32 or promote the stream-order source097/c2 until cold-decode regression is handled. Their CPUpreflights passed; onlynewc2ring8 first numerical diagnostic has passed.",
+    "All new engine configurations still require full physical262144 capacity/state/restore/refusal/later32K proof. Existing native272 full proof remains7f206dc6."
+  ],
+  "do_not_repeat": "The completed216 continuation and18 first-decode measurements, full native272 validation, log compression and upstream update are already done. Preserve executed controllers/receipts; their baseline review HEAD0ed is historical and must not be edited to232. Create versioned future controllers if needed."
+}

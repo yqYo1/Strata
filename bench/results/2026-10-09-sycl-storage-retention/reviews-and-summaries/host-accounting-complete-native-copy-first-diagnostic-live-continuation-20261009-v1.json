@@ -1,0 +1,89 @@
+{
+  "active_goal": true,
+  "objective_unchanged": "prefill1000 tokens/s and decode70 tokens/s optimization; not achieved",
+  "created_utc": "2026-10-08T23:36:46.628704+00:00",
+  "scope": "Continuation after completed upstream qualification, first host-accounting diagnostic and24 quiet fresh32K reads; next native copy-only queue first diagnostic is LIVE. Do not restart or reset the GPU.",
+  "roots": {
+    "main": "/home/yayoi/ghq/github.com/yqYo1/Strata",
+    "integration": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009",
+    "observer": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05",
+    "archive": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/fix-sycl-server-env-v0141-2026-10-09",
+    "native_candidate": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-prefill-native-copy-v0141-20261009"
+  },
+  "heads": {
+    "main": "beddab2fd6b61631d73b39b7484bc9a585ebe1de",
+    "integration": "fe96101e2c3c112d1b7a36caaff66ceda80334ff",
+    "observer": "fe96101e2c3c112d1b7a36caaff66ceda80334ff",
+    "archive": "fe96101e2c3c112d1b7a36caaff66ceda80334ff",
+    "native_candidate": "6caa1421f9212750a425fe1729139ffdde6e9f9a"
+  },
+  "completed": {
+    "host_first_receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-host-accounting-v0141-code32k-diagnostic-r1/record.json",
+    "host_first_receipt_sha256": "6605f3c24444b6069ff10ab594e429ee66c6498a8a9f0cc21d6fcd33e388b2ed",
+    "quiet_sequence_sha256": "d57fba6b0826ad8402505571b8cdc92eee4e0fa5bbd1c1a9b779531bd2f4bc83",
+    "quiet_summary_sha256": "a038f17a6eb74b689c000fcadc21f9c4e00dbe76ccb84d5dfccb78071fe90f80",
+    "quiet_later_prefill": {
+      "baseline": 449.92324612592034,
+      "hostoff": 449.7777053851711,
+      "hoston": 449.74838219553834
+    },
+    "quiet_later_decode": {
+      "baseline": 16.674265615840554,
+      "hostoff": 16.507750904917074,
+      "hoston": 16.413763624706135
+    },
+    "expert_transfer_bytes": {
+      "A": 190240998400,
+      "B": 190199219200
+    },
+    "host_duration_scope": "Submission1.218s, CPU grouping47.744ms, GPU grouping wait29.354s, RAM-worker sum10.125s over later reads. No actual DMA duration or exclusive PCIe-wait fraction; values overlap.",
+    "counter_binary_adopted": false,
+    "counter_binary_full_lifecycle_passed": false,
+    "archive_heads_pushed": true,
+    "native_cpu_build_sha256": "74b48ad90996c942fd74fa826d22dfecf76145d8dec82a40cfa0d35dc9b65fad",
+    "native_uniform_flags_sha256": "54a1a491a7f00874a90af1b7776d0654b8b001e9aea3da99f6e0b1dfe0a83e53",
+    "native114_compile_commands_match_baseline_flags": true
+  },
+  "native_live": {
+    "record": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-expert-copy-v0141-code32k-diagnostic-r1/record.json",
+    "controller": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_native_expert_copy_v0141_code32k_v1.py",
+    "controller_sha256": "3f3df622937ee0f2f6d3e201b3db40ec095b4d68691cfbe02a2f88ee49abef1c",
+    "preparation_sha256": "2a76fbf4369de4b50f56692fef32de1f3e01cd49f9855230fcd1895a3ebe22d2",
+    "cpu_preflight_sha256": "878647b51ce7dd0cfc415d86ed2268b5b9abeb63690008aefa3cfff83801182b",
+    "tool_session_id": 58235,
+    "inferior": {
+      "pid": 2427572,
+      "start_ticks": 19201373,
+      "state": "t"
+    },
+    "debugger": {
+      "pid": 2427561,
+      "start_ticks": 19201365,
+      "state": "R"
+    },
+    "elapsed_at_checkpoint": 271.7314862270141,
+    "active_request_at_checkpoint": "B-read1",
+    "binary_sha256": "2721f8ef417456c8a549cf438292ce34955a078d30974ed0200e1115ab8a3f5f",
+    "deadline_seconds": 1500,
+    "request_deadline_seconds": 300,
+    "log_limit_bytes": 25769803776,
+    "observed_native_queue": "32MiB bounded prefix: zeCommandListCreateImmediate ordinal1/index0/flags2; zeCommandListImmediateGetFlags returns2; UR native import success with ownership1 and profiling flag0; metadata ordinal1. Numerical/state/full-capacity proof remains pending.",
+    "adopted": false
+  },
+  "constraints": [
+    "Keep measured candidate/observer/integration source heads and headers unchanged while native diagnostic is live. Archive worktree may be edited separately.",
+    "No reset/unbind/rebind, packages, service changes, main/prod deployment or profiler/interposer retry. Embed remains inactive/disabled.",
+    "At least32768-token performance inputs and full262144 lifecycle before any changed-engine adoption.",
+    "Do not equate current official UR source to installed source; actual installed adapterbfdc0f26 package2026.1.1-325 was inspected offline.",
+    "Only queue selection/import/registration is changed in native candidate; all original prefill outside queue block and existing header definitions preserved, all114 compiler command tokens match after path/dependency normalization.",
+    "The main output head is device-resident output.weight; mapped token_embd.weight is embedding gather only. Moving it is not assumed to accelerate decode."
+  ],
+  "next": [
+    "Poll the same native diagnostic record and revalidate owned process start ticks; consume tool session58235 only on new output/completion.",
+    "If numerical or runtime failure, preserve owned debugger/native-counter evidence and perform the existing owned cleanup/health path, without reset.",
+    "If all four fresh32K gates pass, derive native baseline/off/on quiet comparison with the same actual8192/128 configuration. Logged durations remain excluded.",
+    "Inspect a bounded terminal log prefix for actual paired ring/barrier/native import evidence and archive small receipts/controller/build bindings.",
+    "A private full262144 native lifecycle is required before adoption; no private candidate inherits869 qualification.",
+    "Continue original performance tuning; host instrumentation and CPU build are preparation, not achievement of1000/70."
+  ]
+}

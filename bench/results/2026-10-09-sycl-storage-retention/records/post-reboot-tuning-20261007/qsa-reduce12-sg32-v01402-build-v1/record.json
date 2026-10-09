@@ -1,0 +1,418 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_tested": false,
+  "adopted": false,
+  "steps": [
+    {
+      "label": "compile",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-v3-20261008/include",
+        "-DSTRATA_SYCL_SAMPLER_FP64=1",
+        "-DSTRATA_VERSION=\"0.1.40-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/../third_party/ggml",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-Wall",
+        "-Wextra",
+        "-MD",
+        "-MT",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-qsa-reduce12-sg32-v1-20261008/qsa_decode_attn.dp.cpp.o",
+        "-MF",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-qsa-reduce12-sg32-v1-20261008/qsa_decode_attn.dp.cpp.o.d",
+        "-o",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-qsa-reduce12-sg32-v1-20261008/qsa_decode_attn.dp.cpp.o",
+        "-c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-reduce12-sg32-v01402-source-v3/qsa_decode_attn.dp.cpp"
+      ],
+      "pid": 343505,
+      "start_ticks": 15288148,
+      "exit_code": 0,
+      "elapsed_seconds": 7.8806036849855445
+    },
+    {
+      "label": "archive-replace",
+      "argv": [
+        "/usr/bin/ar",
+        "r",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-qsa-reduce12-sg32-v1-20261008/libstrata_kernels.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-qsa-reduce12-sg32-v1-20261008/qsa_decode_attn.dp.cpp.o"
+      ],
+      "pid": 344005,
+      "start_ticks": 15288977,
+      "exit_code": 0,
+      "elapsed_seconds": 0.06413352201343514
+    },
+    {
+      "label": "link",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-O3",
+        "-DNDEBUG",
+        "-fsycl",
+        "-Xsycl-target-backend=spir64",
+        "-cl-fp32-correctly-rounded-divide-sqrt",
+        "-fsycl-device-code-split=per_kernel",
+        "-qmkl=sequential",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-visible-commit-v1-20261008/generate.cpp.o",
+        "-o",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-qsa-reduce12-sg32-v1-20261008/strata",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-objects-v1-20261008/libstrata_engine.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-no-root-prefill-20261008/libstrata_prefill.a",
+        "libstrata_spec.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-objects-v1-20261008/libstrata_engine.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-qsa-reduce12-sg32-v1-20261008/libstrata_kernels.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-objects-v1-20261008/libstrata_core.a",
+        "/usr/lib/x86_64-linux-gnu/libze_loader.so",
+        "libstrata_kernels_cpu.a",
+        "ggml/src/libggml-cpu.a",
+        "ggml/src/libggml-base.a",
+        "-lm"
+      ],
+      "pid": 344059,
+      "start_ticks": 15288997,
+      "exit_code": 0,
+      "elapsed_seconds": 19.850192487996537
+    }
+  ],
+  "started_utc": "2026-10-08T12:40:01.895503+00:00",
+  "controller_sha256": "99729b6dcf9c05bb91af023023549a7f39699a9f07047fd5bbbfdfe4ce3a8e54",
+  "scope": "Private compile/link only: replace one qsa_decode_attn.dp.cpp.o member on physical256K-qualified DD5. Preserve all other actual link inputs and uniform DPCT header definitions. No GPU workload or speed claim.",
+  "baseline_full256k_receipt_sha256": "18436b6361831d41aa19e1374454aed458e746f3e234092a1793fd15b823d2a3",
+  "baseline_binary_sha256": "dd5efb9002167481d180f370b86fb6978d724f37745f7e4a923432296725ad34",
+  "baseline_build_receipt_sha256": "b4e79456dc8222ef6187c1667ce798dc4b3f67d18f9da28aee9ca06adb56d2c0",
+  "source_review_sha256": "0e6578c8f4d2fc18b62edb9d20d2670806f6c17cdac4d75a52e30345ee7ae633",
+  "candidate_source_sha256": "c1b0d58f46f0807af10d310320ebe4f9f2b4ad62f1a584abf72a597d7d5f1da1",
+  "candidate_source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-reduce12-sg32-v01402-source-v3/qsa_decode_attn.dp.cpp",
+  "shadow_header": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-v3-20261008/include/dpct/device.hpp",
+  "shadow_header_sha256": "adbcbd0ac45995348e37ac3f5ca42d9f3d4b0555031aeb1781a1e2166a74ed52",
+  "minimum_performance_input_tokens": 32768,
+  "elapsed_seconds": 29.46132638497511,
+  "baseline_link_input_sha256": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-visible-commit-v1-20261008/generate.cpp.o": "4dd9c24f9ccb705fa0500d14566347186ce55af43e895b44a34dc17cc84730b4",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-objects-v1-20261008/libstrata_engine.a": "2ba779a0122a9ee203b5a61ff2bfd547803855f9d7361ca63196ada39a0efdb6",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-no-root-prefill-20261008/libstrata_prefill.a": "1c4a8d644ce2d5d74d0466e59e109ea902b337bee084151f862b215026b8db1f",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/build/libstrata_spec.a": "ff29f801c00b281aed711354818d5fd319a65751670c62fa100ce0fa752069c5",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-objects-v1-20261008/libstrata_kernels.a": "b0893dad9685e3a19037842ace6684ba351c6bbbff45242f0271494c24f76eff",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-dpct-profile-definition-objects-v1-20261008/libstrata_core.a": "40ae8bd4d515720862b994e6e03c9e56cbff12211a38ec6977f6d0b7b2ac2a22",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/build/libstrata_kernels_cpu.a": "b47e850690c39b9ea1869fb9057c4f1e3e55e7b2560b219f88c6fa5413f793eb",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/build/ggml/src/libggml-cpu.a": "e3cefe0cf3c866aec7d9f06b9181ca4263304dd7307af462195a9b869be953f2",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/build/ggml/src/libggml-base.a": "98059baeddf43574e613949b8382d67c088f3f62d1b84c3d47bef31581bcae1c"
+  },
+  "actual_dependency_file_sha256": "bad818ce2c13e10e669f04da190f7e844bb7c2bb4bad30cb6a0de436b21236fe",
+  "actual_dependency_inventory_sha256": "b328e8c63a1067f5ec3f24552a5a6264f8443ee41f33ab1ca0ec5d7acda5a7db",
+  "candidate_object_sha256": "d0a1e63bfd15202a8a44ad5779d30b2fa7d5472d9b31f3d6691ee19d77cd9d42",
+  "original_profiled_dpct_define_retained": true,
+  "archive_members": [
+    {
+      "member": "dequant_s2.dp.cpp.o",
+      "before_sha256": "e2d379af7bc2a634fc5ed41367d143cc1805a179b16f067bc48f177881488570",
+      "after_sha256": "e2d379af7bc2a634fc5ed41367d143cc1805a179b16f067bc48f177881488570",
+      "replaced": false
+    },
+    {
+      "member": "s2_gemv.dp.cpp.o",
+      "before_sha256": "83278c586abe7f896da470c3fda564ddee8d449af48ef4a336ca21b162f6b1f9",
+      "after_sha256": "83278c586abe7f896da470c3fda564ddee8d449af48ef4a336ca21b162f6b1f9",
+      "replaced": false
+    },
+    {
+      "member": "s_gemv.dp.cpp.o",
+      "before_sha256": "807ad56c84ebda51899924819fc47fe3da11b267f2a929898110f1662c142fc6",
+      "after_sha256": "807ad56c84ebda51899924819fc47fe3da11b267f2a929898110f1662c142fc6",
+      "replaced": false
+    },
+    {
+      "member": "s2_gemv_quads.dp.cpp.o",
+      "before_sha256": "28ef1722ea186bae807b7e1a148b0e5b02993582218730dcd28025de58fd7eeb",
+      "after_sha256": "28ef1722ea186bae807b7e1a148b0e5b02993582218730dcd28025de58fd7eeb",
+      "replaced": false
+    },
+    {
+      "member": "s2_gemv_fast.dp.cpp.o",
+      "before_sha256": "8e0ee22ec32033b8fe4762263659d9006672075ae9cd3cb1e068bba3b1342e6d",
+      "after_sha256": "8e0ee22ec32033b8fe4762263659d9006672075ae9cd3cb1e068bba3b1342e6d",
+      "replaced": false
+    },
+    {
+      "member": "router_top10.dp.cpp.o",
+      "before_sha256": "d98cb4fe98815e7269c73b83e9bf5852b8308e5a24b864f7668c8dcf15fd9bb2",
+      "after_sha256": "d98cb4fe98815e7269c73b83e9bf5852b8308e5a24b864f7668c8dcf15fd9bb2",
+      "replaced": false
+    },
+    {
+      "member": "quantize_act.dp.cpp.o",
+      "before_sha256": "4fb70aafeb72d68079869e776ef831847a96a0753721bdb8c38dc7fed636f52c",
+      "after_sha256": "4fb70aafeb72d68079869e776ef831847a96a0753721bdb8c38dc7fed636f52c",
+      "replaced": false
+    },
+    {
+      "member": "rope.dp.cpp.o",
+      "before_sha256": "a3dc45205bef28057b63ae962afe4dfb92bfd1290becccf3520ad107c124cca9",
+      "after_sha256": "a3dc45205bef28057b63ae962afe4dfb92bfd1290becccf3520ad107c124cca9",
+      "replaced": false
+    },
+    {
+      "member": "sampler.dp.cpp.o",
+      "before_sha256": "017fcb7ae6782c013a69f54ceedbb86e3e0927bdf2f38f6c9cfea4433f5c1fb9",
+      "after_sha256": "017fcb7ae6782c013a69f54ceedbb86e3e0927bdf2f38f6c9cfea4433f5c1fb9",
+      "replaced": false
+    },
+    {
+      "member": "s2_gemv_q8.dp.cpp.o",
+      "before_sha256": "f17601cabb86a0478a707bc7af635db91ec59acbb8c32a64913d596265821979",
+      "after_sha256": "f17601cabb86a0478a707bc7af635db91ec59acbb8c32a64913d596265821979",
+      "replaced": false
+    },
+    {
+      "member": "s2_expert_grouped.dp.cpp.o",
+      "before_sha256": "ecd5c72eb6368b049978b0b9080d52cad669f69c95975789373ade475a013157",
+      "after_sha256": "ecd5c72eb6368b049978b0b9080d52cad669f69c95975789373ade475a013157",
+      "replaced": false
+    },
+    {
+      "member": "shared_expert.dp.cpp.o",
+      "before_sha256": "c2eac4c4485476498d8512feed8f95bc6dc3b80e79d639f250a11ea0cd505e1a",
+      "after_sha256": "c2eac4c4485476498d8512feed8f95bc6dc3b80e79d639f250a11ea0cd505e1a",
+      "replaced": false
+    },
+    {
+      "member": "gr.dp.cpp.o",
+      "before_sha256": "ec8c912ab3bbbf61fe6c3978c1b3dd0a9866c5f2565a3e426ba394d0e8914a30",
+      "after_sha256": "ec8c912ab3bbbf61fe6c3978c1b3dd0a9866c5f2565a3e426ba394d0e8914a30",
+      "replaced": false
+    },
+    {
+      "member": "gdn.dp.cpp.o",
+      "before_sha256": "e70a5f0dcce608a554dd6c52625b0c497274405e14a32ece54e61a32b7a7a949",
+      "after_sha256": "e70a5f0dcce608a554dd6c52625b0c497274405e14a32ece54e61a32b7a7a949",
+      "replaced": false
+    },
+    {
+      "member": "qsa.dp.cpp.o",
+      "before_sha256": "931ba2a682c47c3336406436e545bacbd0bf7739d45c9f565680da2c74bfcb1b",
+      "after_sha256": "931ba2a682c47c3336406436e545bacbd0bf7739d45c9f565680da2c74bfcb1b",
+      "replaced": false
+    },
+    {
+      "member": "elementwise.dp.cpp.o",
+      "before_sha256": "12e9013bfc24359b90da56a82f7ad466a6f65b3705960a280bfc5959e2ce08e4",
+      "after_sha256": "12e9013bfc24359b90da56a82f7ad466a6f65b3705960a280bfc5959e2ce08e4",
+      "replaced": false
+    },
+    {
+      "member": "bf16_gemv.dp.cpp.o",
+      "before_sha256": "41452fb7bcd7708180a512b975b0795637fac5802ccd7eed7002d16581f6b24b",
+      "after_sha256": "41452fb7bcd7708180a512b975b0795637fac5802ccd7eed7002d16581f6b24b",
+      "replaced": false
+    },
+    {
+      "member": "native_mmvq.dp.cpp.o",
+      "before_sha256": "f2b7e40f163f89ee59fd0f36d9c4d342144a5ad6d6388e7d04d264a6d9a8ffbf",
+      "after_sha256": "f2b7e40f163f89ee59fd0f36d9c4d342144a5ad6d6388e7d04d264a6d9a8ffbf",
+      "replaced": false
+    },
+    {
+      "member": "native_bf16.dp.cpp.o",
+      "before_sha256": "80e6e4917a20ecde8a9cb49e7cac9620d57aef327d9dbe9d2fe1c32e102140da",
+      "after_sha256": "80e6e4917a20ecde8a9cb49e7cac9620d57aef327d9dbe9d2fe1c32e102140da",
+      "replaced": false
+    },
+    {
+      "member": "native_gr_norm.dp.cpp.o",
+      "before_sha256": "6d688b97074a16a6fea43fd72b9d1f28eacc927596dfdaed669b4c092990af26",
+      "after_sha256": "6d688b97074a16a6fea43fd72b9d1f28eacc927596dfdaed669b4c092990af26",
+      "replaced": false
+    },
+    {
+      "member": "native_moe.dp.cpp.o",
+      "before_sha256": "ff760677d27175b610233531f00f3bac7a45cd06c07f502864d3488d02c9c884",
+      "after_sha256": "ff760677d27175b610233531f00f3bac7a45cd06c07f502864d3488d02c9c884",
+      "replaced": false
+    },
+    {
+      "member": "native_gdn.dp.cpp.o",
+      "before_sha256": "0368e0a2a94b67d31eebcfd2e8123728647330bd0049010d1a67be7074c38a70",
+      "after_sha256": "0368e0a2a94b67d31eebcfd2e8123728647330bd0049010d1a67be7074c38a70",
+      "replaced": false
+    },
+    {
+      "member": "native_gr_postops.dp.cpp.o",
+      "before_sha256": "473340aa8e601abed547d644b96bc4028c104f4e09c220d3fd75b9ba1ffe2739",
+      "after_sha256": "473340aa8e601abed547d644b96bc4028c104f4e09c220d3fd75b9ba1ffe2739",
+      "replaced": false
+    },
+    {
+      "member": "native_router.dp.cpp.o",
+      "before_sha256": "763eff81b643546c598bd530aa147a23d056b99de83b11ba741dbde370d52157",
+      "after_sha256": "763eff81b643546c598bd530aa147a23d056b99de83b11ba741dbde370d52157",
+      "replaced": false
+    },
+    {
+      "member": "native_gdn_preprocess.dp.cpp.o",
+      "before_sha256": "e1139d53fcfd85fa5f0def8711659c05f2bec4a8f36ea9d8ac0e66d15e5303ec",
+      "after_sha256": "e1139d53fcfd85fa5f0def8711659c05f2bec4a8f36ea9d8ac0e66d15e5303ec",
+      "replaced": false
+    },
+    {
+      "member": "native_qsa.dp.cpp.o",
+      "before_sha256": "a6f4868b2fe67472ace700318d2025e84d343dffa3659b762d81cb74d0bb1333",
+      "after_sha256": "a6f4868b2fe67472ace700318d2025e84d343dffa3659b762d81cb74d0bb1333",
+      "replaced": false
+    },
+    {
+      "member": "native_rope.dp.cpp.o",
+      "before_sha256": "f70e4ae6f6fe712130dacd3c5622d46c6849fd98a3a6af02388a4cdbb73c2ba0",
+      "after_sha256": "f70e4ae6f6fe712130dacd3c5622d46c6849fd98a3a6af02388a4cdbb73c2ba0",
+      "replaced": false
+    },
+    {
+      "member": "native_ple_postops.dp.cpp.o",
+      "before_sha256": "c986b09c18578763b717ba7a0892af2f9b3f4d13aa2118e8b4c911197566cdb8",
+      "after_sha256": "c986b09c18578763b717ba7a0892af2f9b3f4d13aa2118e8b4c911197566cdb8",
+      "replaced": false
+    },
+    {
+      "member": "native_flash_attn.dp.cpp.o",
+      "before_sha256": "684fb6a56cef4320e6cbfa78eebf2f20a8090b5622e76e50b204ac105b5c3de1",
+      "after_sha256": "684fb6a56cef4320e6cbfa78eebf2f20a8090b5622e76e50b204ac105b5c3de1",
+      "replaced": false
+    },
+    {
+      "member": "native_qsa_indexer.dp.cpp.o",
+      "before_sha256": "43533c0d75659cae51f6e5b50d3920e96d4c2bb54671f60b293fbb95cf18ebf0",
+      "after_sha256": "43533c0d75659cae51f6e5b50d3920e96d4c2bb54671f60b293fbb95cf18ebf0",
+      "replaced": false
+    },
+    {
+      "member": "native_qsa_score.dp.cpp.o",
+      "before_sha256": "1409a4a9762790091ab2e9142de2f47f22e94596dce86c25f8df6417d2538605",
+      "after_sha256": "1409a4a9762790091ab2e9142de2f47f22e94596dce86c25f8df6417d2538605",
+      "replaced": false
+    },
+    {
+      "member": "ple.dp.cpp.o",
+      "before_sha256": "5b6c7a4fcc9dfda1f6eb6851195cc3e6a86d5ff45b1905a44efa3e393f8b7e24",
+      "after_sha256": "5b6c7a4fcc9dfda1f6eb6851195cc3e6a86d5ff45b1905a44efa3e393f8b7e24",
+      "replaced": false
+    },
+    {
+      "member": "kv_q8.dp.cpp.o",
+      "before_sha256": "6604162cdb9b318b59f42bf73fceed2c36b206582553fceca603766510f104d2",
+      "after_sha256": "6604162cdb9b318b59f42bf73fceed2c36b206582553fceca603766510f104d2",
+      "replaced": false
+    },
+    {
+      "member": "kv_stream.dp.cpp.o",
+      "before_sha256": "877adf0af19418544b73d75a0d28ada8b70fb41409d93b5e9fde0df3a6e7a5a5",
+      "after_sha256": "877adf0af19418544b73d75a0d28ada8b70fb41409d93b5e9fde0df3a6e7a5a5",
+      "replaced": false
+    },
+    {
+      "member": "kv_q4.dp.cpp.o",
+      "before_sha256": "b5ee2e1b3607e4f944b96f85ca5197186d7e8e87056cfbbaef5be6b6507821d7",
+      "after_sha256": "b5ee2e1b3607e4f944b96f85ca5197186d7e8e87056cfbbaef5be6b6507821d7",
+      "replaced": false
+    },
+    {
+      "member": "fused_gr.dp.cpp.o",
+      "before_sha256": "8d9249fe9ab5ecdd7e31d43506b02f026be375c1d35a44a508f7ec6690a03c6b",
+      "after_sha256": "8d9249fe9ab5ecdd7e31d43506b02f026be375c1d35a44a508f7ec6690a03c6b",
+      "replaced": false
+    },
+    {
+      "member": "cvec.dp.cpp.o",
+      "before_sha256": "ecb051e505a141cf3da0b4d8f5dafe24aa54758fde00087a749c112062707ecf",
+      "after_sha256": "ecb051e505a141cf3da0b4d8f5dafe24aa54758fde00087a749c112062707ecf",
+      "replaced": false
+    },
+    {
+      "member": "qsa_decode_attn.dp.cpp.o",
+      "before_sha256": "55874a633724ece9c97e85e6424517510b382a6b6f6d1e05187f6f9c24b8aed0",
+      "after_sha256": "d0a1e63bfd15202a8a44ad5779d30b2fa7d5472d9b31f3d6691ee19d77cd9d42",
+      "replaced": true
+    },
+    {
+      "member": "qsa_prompt_attn.dp.cpp.o",
+      "before_sha256": "922a9bd96eb40315054c364991dec76962c5ef10ddc27c96f4ada828c440113c",
+      "after_sha256": "922a9bd96eb40315054c364991dec76962c5ef10ddc27c96f4ada828c440113c",
+      "replaced": false
+    },
+    {
+      "member": "fused_gdn.dp.cpp.o",
+      "before_sha256": "c6022d52a8dfcacc9bab7187f0b539d5cacc52351bd4d35f25e02423881d636a",
+      "after_sha256": "c6022d52a8dfcacc9bab7187f0b539d5cacc52351bd4d35f25e02423881d636a",
+      "replaced": false
+    },
+    {
+      "member": "dequant_bf16.dp.cpp.o",
+      "before_sha256": "db9c83d0ff65567e4097cc484b985e1d450a5a3580a484528853f6f3eeabd031",
+      "after_sha256": "db9c83d0ff65567e4097cc484b985e1d450a5a3580a484528853f6f3eeabd031",
+      "replaced": false
+    },
+    {
+      "member": "qsa_select.dp.cpp.o",
+      "before_sha256": "82a4fa215d07d14b56a73946f0987d0f8666434c556b53e4d401139bc63ad5ee",
+      "after_sha256": "82a4fa215d07d14b56a73946f0987d0f8666434c556b53e4d401139bc63ad5ee",
+      "replaced": false
+    },
+    {
+      "member": "verify_kernels.dp.cpp.o",
+      "before_sha256": "fe04cef1ba6dd09fe4acc3b332595a4a434a8016b091b03ea19bfb11aaf64227",
+      "after_sha256": "fe04cef1ba6dd09fe4acc3b332595a4a434a8016b091b03ea19bfb11aaf64227",
+      "replaced": false
+    },
+    {
+      "member": "iq_kernels.dp.cpp.o",
+      "before_sha256": "e01ebdbaec139745589c439ca0e38adcd31b2e7ab3bcbf81d8a2a0d0efd70a53",
+      "after_sha256": "e01ebdbaec139745589c439ca0e38adcd31b2e7ab3bcbf81d8a2a0d0efd70a53",
+      "replaced": false
+    },
+    {
+      "member": "ngram.cpp.o",
+      "before_sha256": "9a1373ab9fed336f37410ec2a1175006009c369409bb4f54682934f23053748b",
+      "after_sha256": "9a1373ab9fed336f37410ec2a1175006009c369409bb4f54682934f23053748b",
+      "replaced": false
+    },
+    {
+      "member": "ple_reader.cpp.o",
+      "before_sha256": "00209f2ec8716ca2b11d9327bba75f3ff186aa6c70274dedd53e29c3bfffbfe3",
+      "after_sha256": "00209f2ec8716ca2b11d9327bba75f3ff186aa6c70274dedd53e29c3bfffbfe3",
+      "replaced": false
+    },
+    {
+      "member": "direct_file.cpp.o",
+      "before_sha256": "c630512f14c1175f58acaa5d1771a9142746d9c5f2dba23d09b1ec4c1d8a3906",
+      "after_sha256": "c630512f14c1175f58acaa5d1771a9142746d9c5f2dba23d09b1ec4c1d8a3906",
+      "replaced": false
+    },
+    {
+      "member": "qsa_prompt_attn_xmx.dp.cpp.o",
+      "before_sha256": "ee48cd1a46910c9519af04029483cf2c0b271d7e91a59dc86fe9dd0f9e9598a8",
+      "after_sha256": "ee48cd1a46910c9519af04029483cf2c0b271d7e91a59dc86fe9dd0f9e9598a8",
+      "replaced": false
+    }
+  ],
+  "baseline_inputs_unchanged": true,
+  "only_qsa_decode_archive_member_replaced": true,
+  "candidate_binary": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-qsa-reduce12-sg32-v1-20261008/strata",
+  "candidate_binary_sha256": "26c29c1353c64cef0e81c18bc1f651c9bcc25f977429d71b18052c5d13ecd34e",
+  "candidate_archive_sha256": "54181e898acd7db182c37a920a32b0555b5754b8b5c1f76361410f6ed0599168",
+  "pending": [
+    "Initial logged>=32768 full numerical/session gate",
+    "Quiet>=32768 matched first/later full-read comparison",
+    "Repeated physical256K, actual disk restoration, clipped tail, capacity refusals and later fresh32K before adoption"
+  ],
+  "finished_utc": "2026-10-08T12:40:31.356789+00:00"
+}

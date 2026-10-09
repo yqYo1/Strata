@@ -1,0 +1,161 @@
+{
+  "active": false,
+  "created_utc": "2026-10-08T18:50:53.785052+00:00",
+  "scope": "Continuation checkpoint only. Goal remains active; current physical and waiting-supervisor jobs continue. No terminal physical/tuned/adoption claim.",
+  "default_comparison_completed": true,
+  "default_comparison_receipt_sha256": "01383f1d0118250de479af457a0d40ffa0d321943ea543c54d34cf165393caa9",
+  "default_summary_sha256": "520a07736249828c313974853699663bb8bad13a421a5b2f2b4bdd39e690ad48",
+  "default_measurements": [
+    {
+      "mode": "control",
+      "read_condition": "first_process_read",
+      "reads": 2,
+      "prefill_tok_s": 324.5635408804657,
+      "decode_tok_s": 15.621948838117557,
+      "prefill_change_percent_control": 0.0,
+      "decode_change_percent_control": 0.0
+    },
+    {
+      "mode": "control",
+      "read_condition": "later_fresh_reads",
+      "reads": 6,
+      "prefill_tok_s": 341.03510523870017,
+      "decode_tok_s": 16.690935170495294,
+      "prefill_change_percent_control": 0.0,
+      "decode_change_percent_control": 0.0
+    },
+    {
+      "mode": "pure",
+      "read_condition": "first_process_read",
+      "reads": 2,
+      "prefill_tok_s": 331.58725846006416,
+      "decode_tok_s": 16.705166855904885,
+      "prefill_change_percent_control": 2.164050084166802,
+      "decode_change_percent_control": 6.933949336361134
+    },
+    {
+      "mode": "pure",
+      "read_condition": "later_fresh_reads",
+      "reads": 6,
+      "prefill_tok_s": 348.8870406160037,
+      "decode_tok_s": 17.134825193547666,
+      "prefill_change_percent_control": 2.3023833196901267,
+      "decode_change_percent_control": 2.659467660248538
+    },
+    {
+      "mode": "integrated",
+      "read_condition": "first_process_read",
+      "reads": 2,
+      "prefill_tok_s": 343.1655154682631,
+      "decode_tok_s": 15.274280736506723,
+      "prefill_change_percent_control": 5.73138145379315,
+      "decode_change_percent_control": -2.225510435436351
+    },
+    {
+      "mode": "integrated",
+      "read_condition": "later_fresh_reads",
+      "reads": 6,
+      "prefill_tok_s": 361.6930076143766,
+      "decode_tok_s": 16.456037951737525,
+      "prefill_change_percent_control": 6.057412289335251,
+      "decode_change_percent_control": -1.4073340789975575
+    }
+  ],
+  "source_pins": {
+    "raw_upstream": "fb58e0dbc8399662c0e47c76578c6e878b14f6cf",
+    "integrated": "1eb89482a4afd20277ae0405780ed4f8eb98eb20",
+    "control": "452044ab2546185bebad51c2cb16b9375b6683e3"
+  },
+  "full_job": {
+    "session_id": 22096,
+    "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-upstream-v0141-integrated-full256k-diagnostic-r1/record.json",
+    "elapsed_seconds_observed": 1387.0721039240016,
+    "active_request": "full256k-first",
+    "inferior_actual_identity": {
+      "pid": 1471510,
+      "start_ticks": 17374440,
+      "state": "R"
+    },
+    "debugger_actual_identity": {
+      "pid": 1471498,
+      "start_ticks": 17374432,
+      "state": "S"
+    },
+    "first_four_fresh32k_heads_state_output_passed": true,
+    "requests_observed": [
+      {
+        "name": "control32k-before",
+        "passed": true,
+        "last_protocol": [
+          "DONE 64 32768 202957.7 6751.3 length 41 66 0 2116 42720 0 0 0.0 32768 0"
+        ]
+      },
+      {
+        "name": "resume32k-reference",
+        "passed": true,
+        "last_protocol": [
+          "DONE 64 32832 5.9 3537.0 length 46 51 32831 1412 33120 0 0 0.0 1 0"
+        ]
+      },
+      {
+        "name": "alternate32k-first",
+        "passed": true,
+        "last_protocol": [
+          "DONE 64 32768 195805.4 5130.8 length 38 75 0 1874 48480 0 0 0.0 32768 0"
+        ]
+      },
+      {
+        "name": "control32k-repeat",
+        "passed": true,
+        "last_protocol": [
+          "DONE 64 32768 195740.5 4523.3 length 41 66 0 2116 42720 0 0 0.0 32768 0"
+        ]
+      },
+      {
+        "name": "alternate32k-repeat",
+        "passed": true,
+        "last_protocol": [
+          "DONE 64 32768 195310.5 4842.2 length 38 75 0 1874 48480 0 0 0.0 32768 0"
+        ]
+      },
+      {
+        "name": "full256k-first",
+        "passed": null,
+        "last_protocol": [
+          "PP 73728 262140 452684 162.9"
+        ]
+      }
+    ]
+  },
+  "supervisor_job": {
+    "session_id": 86816,
+    "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-v0141-full-then-tuned-sequence-v1/record.json",
+    "phase_observed": "waiting_for_owned_physical",
+    "full_controller_actual_identity": {
+      "pid": 1471386,
+      "start_ticks": 17374309,
+      "state": "S"
+    },
+    "source_sha256": "79a33ddae81b775d89eff4e61122b11ccb88e5330fbb8e79e07912372f6b6c59",
+    "auto_launch": "Only terminal passed physical test, normal exit and actual process absence admit run_upstream_v0141_tuned_comparison_sequence_v2.py. Do not manually duplicate the tuned job."
+  },
+  "server_wrapper_fix": {
+    "directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-v0141-server-env-forwarding-fix-v1",
+    "source_prepared": true,
+    "tests_passed": true,
+    "test_case_count": 10,
+    "test_receipt_sha256": "24b66cbdabd6f76c7fb1388a4a3a6ffca2751dc77ae1a837cfbc58efdcad2ea1",
+    "candidate_sha256": "1fdb7837a0ae7b0f99c03c63e879889476be5287c7770aaa9516310200eeb497",
+    "tracked_source_applied": false
+  },
+  "next_actions": [
+    "Poll/resume existing full session22096 and supervisor86816; preserve deadlines, source pins and raw logs. No timeout restarts or duplicate GPU jobs.",
+    "Supervisor automatically runs the prepared actual8192 matched quiet v2 sequence after the complete new binary physical capacity and lifecycle gate. Tuned v1 sources remain rejected/unexecuted.",
+    "Review both terminal full and tuned receipts, actual geometry, all output/math/normal-exit/cleanup/fault checks before inference adoption. Revert only measured detrimental SYCL/CPU changes if necessary, keeping all upstream server features.",
+    "After all exact-source jobs finish, apply prepared server wrapper patch to preserve runtime0 values and numeric FIRST/STAGER_THREADS0; retain host-boundary rejection. Engine source/binary unchanged by this wrapper fix.",
+    "Archive small completed records/controllers/source review, scope-correction sidecar and measured tables; do not copy binaries or large raw API/state/session files or rehash their many-GB logs.",
+    "Commit candidate/docs/report; update existing sync branch/draftPR9 only after validation. Main and production binaries remain unchanged.",
+    "Continue the active PP1000/TG70 tuning goal with updated baseline and actual quiet transfer/phase attribution; do not infer PCIe dominance from bandwidth alone."
+  ],
+  "interventions": "No reset, rebind, reboot, service/package/global setting change, main merge or production swap. No new sub-agent."
+}

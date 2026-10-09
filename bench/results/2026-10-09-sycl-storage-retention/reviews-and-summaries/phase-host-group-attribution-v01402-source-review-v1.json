@@ -1,0 +1,19 @@
+{
+  "active": false,
+  "passed": true,
+  "source_only": true,
+  "created_utc": "2026-10-08T15:45:22.303590+00:00",
+  "source_sha256": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/prefill/prefill.cpp": "f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77"
+  },
+  "observations": [
+    "The host-group marker is queued before routing-ID readback and compute-queue wait.",
+    "After that wait, pt.fold queries all recorded marker command_end timestamps before CPU expert grouping and the next marked GPU work.",
+    "The time between marker ends includes these host profiling queries, their debug logging, routing readback/grouping and scheduling gaps. Host grouping interval is not a measurement of the CPU histogram/scatter alone.",
+    "FP32 dot/GEMM arithmetic is unchanged by the existing timing flag, but marker barriers and two waits per chunk alter overlap."
+  ],
+  "next_action": "Only after complete logged numerical/instrumentation gate, run prepared no-API-log >=32768 phase profiles, separate first/later reads. Use phase attribution to prioritize source; verify any claimed gain with uninstrumented matched >=32768 runs.",
+  "GPU_durations_or_performance_measured_by_this_review": false,
+  "PCIe_dominance_proven": false,
+  "new_engine_built": false
+}

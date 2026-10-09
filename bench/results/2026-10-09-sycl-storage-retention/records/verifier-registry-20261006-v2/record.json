@@ -1,0 +1,92 @@
+{
+  "scope": "Actual production registry/callbacks and registration/removal snippets; CPU verifier substitutes payload for mapped flags/queues; no SYCL/Level Zero/GPU",
+  "started_utc": "2026-10-06T09:34:01.415697+00:00",
+  "source_sha256": "4784e341ade1d7d775265766781c345da44c1e3602eef7bc63eb15b11de323fa",
+  "tests": [
+    {
+      "mode": "diag-race",
+      "exit_code": 0,
+      "elapsed_seconds": 0.03501713299920084,
+      "passed": true
+    },
+    {
+      "mode": "release-race",
+      "exit_code": 0,
+      "elapsed_seconds": 0.035904316002415726,
+      "passed": true
+    },
+    {
+      "mode": "failed-init",
+      "exit_code": 0,
+      "elapsed_seconds": 0.008316619001561776,
+      "passed": true
+    },
+    {
+      "mode": "capacity",
+      "exit_code": 0,
+      "elapsed_seconds": 0.008403179999731947,
+      "passed": true
+    },
+    {
+      "mode": "stress",
+      "exit_code": 0,
+      "elapsed_seconds": 0.011856422999699134,
+      "passed": true
+    }
+  ],
+  "controls": [
+    {
+      "mode": "diag-race",
+      "exit_code": -6,
+      "reproduced": "ASan heap-use-after-free"
+    },
+    {
+      "mode": "release-race",
+      "exit_code": -6,
+      "reproduced": "ASan heap-use-after-free"
+    }
+  ],
+  "passed": true,
+  "candidate": {
+    "compile": [
+      "g++",
+      "-std=c++20",
+      "-O1",
+      "-g",
+      "-pthread",
+      "-fsanitize=address,undefined",
+      "-fno-omit-frame-pointer",
+      "-DSTRATA_REGISTRY_CONTROL=0",
+      "-I/home/yayoi/.local/state/strata-sycl/verifier-registry-20261006-v2",
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/verifier_registry_host_test.cpp",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/verifier-registry-20261006-v2/registry-test"
+    ],
+    "fragment_sha256": "8f871ce21446c0eeb35777ba67f56a07483c44f9e9f78733779f1d2a1e35f89f",
+    "binary_sha256": "48bf13c6ead10f807a3ce63ba8123a9d0848f7132597e38ada98651e4019e29d"
+  },
+  "control_build": {
+    "compile": [
+      "g++",
+      "-std=c++20",
+      "-O1",
+      "-g",
+      "-pthread",
+      "-fsanitize=address,undefined",
+      "-fno-omit-frame-pointer",
+      "-DSTRATA_REGISTRY_CONTROL=1",
+      "-I/home/yayoi/.local/state/strata-sycl/verifier-registry-20261006-v2/control",
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/verifier_registry_host_test.cpp",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/verifier-registry-20261006-v2/control/registry-test"
+    ],
+    "fragment_sha256": "ea4e544af38bf0b2b7886320441ac22370d6ac9ef2ddba3cdf2f31d9bd722667",
+    "binary_sha256": "14bf993d7eb3267167c8ef4146cae99f0ac630fa3d86f7dcba3222fa106af3bf",
+    "revision": "4a9b24724da2a683186d1ce4199c39c6090b51ae",
+    "source_sha256": "16a2cc59d4016597a462ad2af0443b4e6df1d06d5667a11d1190d8b569971414"
+  },
+  "helper_sha256": {
+    "sycl/tools/verifier_registry_host_test.cpp": "a4b406de54a6d7e066295a788dc46ef7fd7bce24c82199c714ef0f2b14c5f933",
+    "sycl/tools/test_verifier_registry_host.py": "90159ef6460ef55534b21d307e4bb9790f02c19178afc72614364db52cf6a060"
+  }
+}

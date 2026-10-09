@@ -1,0 +1,87 @@
+{
+  "created_utc": "2026-10-07T23:00:09.466255+00:00",
+  "goal_status": "active",
+  "goal_turn_classification": "progress",
+  "blocker": null,
+  "head": "86e13c1b17104e3f53b45c56f85c35c74c2a4099",
+  "branch": "sync/upstream-2026-10-05",
+  "pr9": {
+    "url": "https://github.com/yqYo1/Strata/pull/9",
+    "draft": true,
+    "body_file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/pr9-v01402-processing-order-body.md",
+    "head_and_exact_body_verified": true
+  },
+  "private_candidate_sha256": "e82fc5de5480b72255b601759497d5810e86bf691350417ed0dc11ed6c429323",
+  "production_sha256_unchanged": "c88f94d81bfb22227310ea00d09ecc8ab21a6e670aee9556307746530f5af714",
+  "public_parent_files": 1862,
+  "public_leaf": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/upstream-v0.1.40.2-20261008/code32k/repro32k/processing-order-and-gpu-residuals",
+  "all15_jobs_terminal": true,
+  "all_owned_identities_absent": true,
+  "mtp_counts_all15": [
+    43,
+    66
+  ],
+  "main_state_and_head_exact_checks": 9,
+  "clean_mean": {
+    "processing-default": {
+      "prefill_tok_s": 408.28355492494967,
+      "decode_tok_s": 17.10445073776122
+    },
+    "layer2-ram-layout1": {
+      "prefill_tok_s": 338.11276405194485,
+      "decode_tok_s": 16.95538651961877
+    },
+    "layer2-gpu-release-layout1": {
+      "prefill_tok_s": 422.59365765147703,
+      "decode_tok_s": 17.320970388175816
+    }
+  },
+  "relative_to_default": {
+    "layer2-ram-layout1": {
+      "prefill_tok_s": -0.17186778655805413,
+      "decode_tok_s": -0.008714937441011372
+    },
+    "layer2-gpu-release-layout1": {
+      "prefill_tok_s": 0.035049422279958886,
+      "decode_tok_s": 0.012658673098259188
+    }
+  },
+  "clean_restore_ms": [
+    247.955,
+    248.489
+  ],
+  "restore_payload_bytes": 931016700,
+  "released_mtp_physical_bytes": 939524096,
+  "closed_exec_sessions": [
+    87397,
+    23760,
+    81085,
+    79178,
+    66980,
+    28983
+  ],
+  "no_gpu_jobs_launched_after_clean_sequence": true,
+  "limitations": [
+    "Two GPU-row prompt timings differ about11%; mean+3.5% is not a reproducible gain claim.",
+    "MTP count parity is not every internal MTP tensor byte parity.",
+    "Main cache remains backed; snapshot-versus-RAM and partial release are pending.",
+    "Fixed32767 GPU rows are not a full262144 context default.",
+    "Older second-prefill capacity failure remains unresolved; full occupancy/repeat/restore/clipped-tail/refusal/later-valid gates stay mandatory.",
+    "Source review does not prove all runtime UB absent."
+  ],
+  "next_steps": [
+    "Investigate main-cache partial release/RAM restoration and graph recapture with source/lifetime checks, full-payload validation before clean32K timing.",
+    "Consider a larger compact chunk with a measured VRAM budget; require full-state/head math gates because GEMM shape may change results.",
+    "Use current registered actual-DMA event candidate for full262144 occupancy/repeat tests after resolving/guarding retained allocation and restoration capacity.",
+    "Alternative key-head tuning requires fixing inactive gdn_cp16 float4 casts with defined typed loads/stores and ordered arithmetic before enabling it."
+  ],
+  "constraints": [
+    "All performance inputs>=32768.",
+    "Never overwrite executed controllers or build receipts.",
+    "First configuration correctness run must use diagnostic_environment with flushed UR/LevelZero logs.",
+    "Clean timing omits diagnostic/profiler/validation/state/head/payload checks and extra waits.",
+    "No reset/rebind/reboot/service/package/global modifications.",
+    "Embedding remains stopped+disabled.",
+    "No production adoption/main merge before full262144 gates."
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "created_utc": "2026-10-08T18:18:05.442919+00:00",
+  "scope": "Source-only clarification of existing processing-order implementation, no new engine edit or GPU action.",
+  "source": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009/sycl/src/prefill/prefill.cpp",
+  "sha256": "f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77",
+  "facts": [
+    "Existing layer-major mode rejects nonzero KV mode, so it cannot be enabled unchanged for the current streamed256K geometry.",
+    "Existing layer-major code already loads every expert of the current layer into a temporary GPU cache, supplies a per-layer residency map, and calls run_impl for that layer.",
+    "The regular compute path uses resident cached blob pointers and skips staging those experts. A proposal based on assuming that layer-major still transfers every weight for every chunk would be wrong.",
+    "After the upstream comparison, use actual no-API phase/copy measurements to choose the next optimization; do not infer PCIe dominance from raw bandwidth alone."
+  ],
+  "performance_claim": false,
+  "GPU_launched": false
+}

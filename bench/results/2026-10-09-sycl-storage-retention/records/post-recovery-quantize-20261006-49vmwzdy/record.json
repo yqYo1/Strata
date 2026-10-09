@@ -1,0 +1,60 @@
+{
+  "started_utc": "2026-10-06T11:36:04.537312+00:00",
+  "boot_id": "ef28c8b7-46f0-4806-9326-36e3158bceb7",
+  "binary": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-jit/quantize_act_parity",
+  "binary_sha256": "3483bb231f80da2ffa3a710be539ccec61c3c1af70c4fe91906ded14484ca46c",
+  "source_sha256": "e619c7b4c024427213464bf789ec47e65c68e2934ecc3d0dc3f0cf30defd66cd",
+  "source_head": "fde2eed5524034a94b30c5fb8e870ccebddbea90",
+  "passed": true,
+  "output": "/home/yayoi/.local/state/strata-sycl/post-recovery-quantize-20261006-49vmwzdy",
+  "steps": [
+    {
+      "label": "before-parity-cursor",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "pid": 365078,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05273575599949254
+    },
+    {
+      "label": "quantize-parity",
+      "argv": [
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-jit/quantize_act_parity",
+        "--selftest"
+      ],
+      "pid": 365083,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.6019156590000421
+    },
+    {
+      "label": "parity-kernel",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=e355ca6a3a6b432f871ba77ded093209;i=bec220d;b=ef28c8b746f04806932636e3158bceb7;m=13f9c552f;t=65d2a63f1b477;x=1a98830163d8d24",
+        "--no-pager",
+        "-o",
+        "short-iso-precise"
+      ],
+      "pid": 365117,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050851562000389094
+    }
+  ],
+  "new_xe_fault_reset_messages": 0,
+  "stdout": "  random normal              blocks byte-exact (0 bad bytes)   round trip bit-exact (0 differ)\n  small magnitude (1e-6)     blocks byte-exact (0 bad bytes)   round trip bit-exact (0 differ)\n  all zero                   blocks byte-exact (0 bad bytes)   round trip bit-exact (0 differ)\n  exact .5 boundaries        blocks byte-exact (0 bad bytes)   round trip bit-exact (0 differ)\n  one extreme per block      blocks byte-exact (0 bad bytes)   round trip bit-exact (0 differ)\n\nquantize_q8_0: 0 failures over 5 distributions x 131072 elements\n  f32->f16 overflow saturates, not NaN         yes (0 of 11 wrong)\n  f16->f32 keeps subnormals                    yes (0x0001 -> 5.96046448e-08, want 2^-24)\n\nQ8_K  (ggml block_q8_K: 292 bytes / 256 elements, {f32 d; i8 qs[256]; i16 bsums[16]})\n  random normal              blocks byte-exact (0 bad bytes)   round trip bit-exact (0 differ)\n  small magnitude (1e-7)     blocks byte-exact (0 bad bytes)   round trip bit-exact (0 differ)\n  all zero                   blocks byte-exact (0 bad bytes)   round trip bit-exact (0 differ)\n  exact .5 ties (half-to-even) blocks byte-exact (0 bad bytes)   round trip bit-exact (0 differ)\n    tie fixture discriminates 522240 ties, 260096 where half-to-even != half-away (49.8%)\n  -127 vs -128 scale observable yes  (0.915% of magnitude, 172016 bytes differ)\n\nquantize_act: 0 failures over 5 Q8_0 + 4 Q8_K distributions\nquantize_act_parity OK\n",
+  "finished_utc": "2026-10-06T11:36:05.250243+00:00"
+}

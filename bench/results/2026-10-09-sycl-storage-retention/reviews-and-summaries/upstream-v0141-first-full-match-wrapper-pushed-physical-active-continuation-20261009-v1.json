@@ -1,0 +1,97 @@
+{
+  "active": false,
+  "kind": "Continuation checkpoint; ongoing owned model/supervisor state is separately authoritative.",
+  "created_utc": "2026-10-08T20:26:47.869725+00:00",
+  "previous_goal_turn_classification": "progress: first updated256K all-tensor-byte match proved with corrected history; server-launcher correction committed/pushed separately; guarded optional builder path fixed.",
+  "physical_job": {
+    "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-upstream-v0141-integrated-full256k-diagnostic-r2/record.json",
+    "exec_session": 37961,
+    "active_at_snapshot": true,
+    "active_request": "full256k-repeat",
+    "elapsed_seconds": 2572.239261536015,
+    "last_protocol": [
+      "PP 40960 262140 244113 167.8",
+      "PP 49152 262140 294363 167.0"
+    ],
+    "identities_observed_live": {
+      "model": {
+        "pid": 1713283,
+        "start_ticks": 17831231,
+        "state": "R"
+      },
+      "debugger": {
+        "pid": 1713252,
+        "start_ticks": 17831224,
+        "state": "S"
+      },
+      "full_controller": {
+        "pid": 1713128,
+        "start_ticks": 17831098,
+        "state": "S"
+      }
+    },
+    "first_full_all_tensor_bytes_receipt_sha256": "596125aac58d78d3df233ce0c544be627070193b577d362a730eab6c24912433",
+    "full_lifecycle_complete": false,
+    "remaining_gates": "repeat full read/all saved bytes, actual disk restoration, clipped verify tail, both context refusals, later fresh32K, normal owned cleanup/kernel fault checks"
+  },
+  "supervisor": {
+    "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-v0141-full-then-tuned-sequence-v2/record.json",
+    "exec_session": 70740,
+    "active_at_snapshot": true,
+    "phase": "waiting_for_owned_physical",
+    "guarded_next_action": "After physical gate terminal/owned processes absent, run tuned v3 control/integrated/integrated/control four fresh32K each.",
+    "controller_sources_unchanged": true
+  },
+  "integration": {
+    "compiled_source_commit": "1eb89482a4afd20277ae0405780ed4f8eb98eb20",
+    "pushed": true,
+    "measurement_root_clean": true,
+    "binary_sha256": "86972697ecb1903750d202f8be29a7a1da351eb3415678c3e3b6af790804d1c8",
+    "main_or_production_adopted": false,
+    "PR9_head": "452044ab2546185bebad51c2cb16b9375b6683e3"
+  },
+  "server_wrapper_fix": {
+    "worktree": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/fix-sycl-server-env-v0141-2026-10-09",
+    "branch": "fix/sycl-server-env-v0141-2026-10-09",
+    "commit": "769bf6fb5722563b14e5b01fa63cbe748408807e",
+    "pushed": true,
+    "cpu10cases_passed": true,
+    "direct_descendant_of_measured_source": true,
+    "file": "sycl/serve/strata-sycl.sh",
+    "file_sha256": "1fdb7837a0ae7b0f99c03c63e879889476be5287c7770aaa9516310200eeb497",
+    "next_integration": "Fast-forward integration branch only after benchmark source guards finish; no engine source/binary changes from this wrapper commit.",
+    "push_receipt_sha256": "870ace349b770de46b7d6b91503673a01252fa43dc85cf244f5900be20b04899"
+  },
+  "optional_host_accounting": {
+    "prepared_source": true,
+    "portable9case_ASan_UBSan_passed": true,
+    "private_build_plan_sha256": "abb2df8e7b332ff0254a108dadad9a14e9ce42e44bb2b8c01cebd578477b761e",
+    "use_builder_v2": "build_host_prefill_accounting_v0141_private_v2.py",
+    "builder_sha256": "0124c96e5786187a2d1dccf8b04d6d116b6a4d690de9390549a1b1c7f5c4b40a",
+    "builder_v1_obsolete_reason": "Unexecuted source-change allowlist used a root launcher path rather than actual sycl/serve path. v2 permits actual wrapper/docs/bench only, rejects inference/header changes.",
+    "engine_compiled": false,
+    "GPU_tested": false,
+    "adopted": false
+  },
+  "optimization_source_observation": {
+    "completed_integrated_default32K_decode_expert_cache_hit_rates_percent": [
+      5.0,
+      3.8,
+      5.0,
+      3.8
+    ],
+    "startup_expert_slots": 128,
+    "startup_expert_cache_mib": 325,
+    "startup_free_vram_mib": 940,
+    "pcie_frac": 0,
+    "source_constraints": "--vram-elastic is explicitly refused by require_sycl_cache_policy because graphs retain physical cache/residency pointers and partial failure must restore residency. Do not toggle it on. Future decoder-memory reuse needs pointer-lifetime/state/disk proof; first measure CPU expert submission/grouping/RAM copies using the optional host counters."
+  },
+  "next_steps": [
+    "Poll the confirmed live physical r2/session37961 and supervisor70740; do not restart model or deadline merely on observation timeout.",
+    "Observe actual full lifecycle and quiet actual8192 matched results before inference-source selection/adoption.",
+    "Merge ready769bf6 wrapper commit after source guards finish, archive small receipts/controllers/evidence and update/push existing draftPR9 without merging main or touching production.",
+    "Then compile optional host accounting with prepared exact-ninja private builder v2 and add its first-use diagnostic4fresh32K head/state/output gate against the updated qualified source.",
+    "Resume sustained PP1000/TG70 optimization on the selected updated baseline."
+  ],
+  "user_constraints": "Minimum32K comparisons, pure raw upstream measured separately, mandatory server features, noHIP/CUDA testing, context262144 must be fully occupied/tested, embed remains inactive, no reset/rebind/reboot/service/package/global changes."
+}

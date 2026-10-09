@@ -1,0 +1,110 @@
+{
+  "active": false,
+  "passed": true,
+  "started_utc": "2026-10-07T21:45:40.501325+00:00",
+  "controller_sha256": "091c62be6f22113d96276aa1418d2084a58252be30fdac271b77bbd7fd4ad313",
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_qsa_batch128_layout1_v01402_code32k_clean.py",
+        "qsa-default",
+        "clean",
+        "1"
+      ],
+      "started_utc": "2026-10-07T21:49:01.119102+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T21:51:01.255754+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 80278.4,
+        "decode_ms": 3807.3,
+        "wall_seconds": 84.09758795199741,
+        "prefill_tok_s": 408.17953521744334,
+        "decode_tok_s": 16.809812728180074
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_qsa_batch128_layout1_v01402_code32k_clean.py",
+        "qsa-batch128-layout1",
+        "clean",
+        "1"
+      ],
+      "started_utc": "2026-10-07T21:51:01.256451+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T21:53:01.791270+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 80286.1,
+        "decode_ms": 3816.0,
+        "wall_seconds": 84.10845301700465,
+        "prefill_tok_s": 408.14038793763797,
+        "decode_tok_s": 16.771488469601678
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_qsa_batch128_layout1_v01402_code32k_clean.py",
+        "qsa-batch128-layout1",
+        "clean",
+        "2"
+      ],
+      "started_utc": "2026-10-07T21:53:01.792006+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T21:55:02.682734+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 80201.1,
+        "decode_ms": 3838.8,
+        "wall_seconds": 84.04688579301,
+        "prefill_tok_s": 408.572949747572,
+        "decode_tok_s": 16.67187662811295
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_qsa_batch128_layout1_v01402_code32k_clean.py",
+        "qsa-default",
+        "clean",
+        "2"
+      ],
+      "started_utc": "2026-10-07T21:55:02.683342+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T21:57:05.583640+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 80231.0,
+        "decode_ms": 4028.1,
+        "wall_seconds": 84.26664471899858,
+        "prefill_tok_s": 408.4206852712792,
+        "decode_tok_s": 15.88838410168566
+      }
+    }
+  ],
+  "minimum_comparison_tokens": 32768,
+  "ordering": "default/batch128-layout1/batch128-layout1/default (ABBA)",
+  "scope": "Four fresh32K clean timing jobs only after full-state/head/output parity. Same executable/model/environment/normal MTP4, no debug validation/dumps/profiler/extra waits. Every output must match the logged control.",
+  "clean_mean": {
+    "qsa-default": {
+      "prefill_tok_s": 408.30011024436124,
+      "decode_tok_s": 16.349098414932868
+    },
+    "qsa-batch128-layout1": {
+      "prefill_tok_s": 408.356668842605,
+      "decode_tok_s": 16.721682548857316
+    }
+  },
+  "relative_change": {
+    "prefill_tok_s": 0.00013852212337139846,
+    "decode_tok_s": 0.022789277088462567
+  },
+  "finished_utc": "2026-10-07T21:57:05.584330+00:00"
+}

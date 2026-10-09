@@ -1,0 +1,212 @@
+{
+  "active": false,
+  "passed": true,
+  "started_utc": "2026-10-08T03:43:41.936621+00:00",
+  "scope": "ABBA matched configurations, fresh process each, three full32768 reads (ckpt0/prompt-cache0) and64 greedy output tokens. Initial prompt JIT/capture versus reads2/3 separate. No API/state/head/trace/profile/payload verification. Correct64IDs/logprobs/MTP43/66 and orderly exit/noXE required.",
+  "controller_sha256": "e7b551f49123c11003f11f01b234cd4d0729e6421233dd95cae12ef33cf96b3c",
+  "model_controller_sha256": "5782618abb49b096cb2be49afabe5c4d11681c6a9a6391f69b5921a82ca7ce0c",
+  "minimum_comparison_tokens": 32768,
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_kv_matched_quiet32k_v01402_v1.py",
+        "kv-stream32k-quiet",
+        "quiet",
+        "1"
+      ],
+      "mode": "kv-stream32k-quiet",
+      "repetition": 1,
+      "started_utc": "2026-10-08T03:43:41.937208+00:00",
+      "controller_process": {
+        "pid": 2820252,
+        "start_ticks": 12070104,
+        "state": "R"
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-08T03:48:27.991032+00:00",
+      "record_file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/record.json",
+      "record_sha256": "9dd4682b96f471af5c16d59aea3ce05f3d46f3b379b0e6d60eb4c0b8a0b010ae",
+      "measurements": [
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 83288.5,
+          "decode_ms": 3792.7,
+          "wall_seconds": 87.08584868900653,
+          "prefill_tok_s": 393.4276640832768,
+          "decode_tok_s": 16.874522108260607
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76692.8,
+          "decode_ms": 3386.9,
+          "wall_seconds": 80.08180421499128,
+          "prefill_tok_s": 427.2630546804915,
+          "decode_tok_s": 18.89633588237031
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76701.4,
+          "decode_ms": 3471.8,
+          "wall_seconds": 80.17817438900238,
+          "prefill_tok_s": 427.21514861527953,
+          "decode_tok_s": 18.434241603779018
+        }
+      ]
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_kv_matched_quiet32k_v01402_v1.py",
+        "kv-layer-major32k-quiet",
+        "quiet",
+        "1"
+      ],
+      "mode": "kv-layer-major32k-quiet",
+      "repetition": 1,
+      "started_utc": "2026-10-08T03:48:27.992110+00:00",
+      "controller_process": {
+        "pid": 2834365,
+        "start_ticks": 12098710,
+        "state": "R"
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-08T03:53:33.512213+00:00",
+      "record_file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/record.json",
+      "record_sha256": "ef5dccb9b330493bd617a5845a05721b9131f7117df9b12b6848b607e23aec86",
+      "measurements": [
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 103580.8,
+          "decode_ms": 3572.9,
+          "wall_seconds": 107.16103686900169,
+          "prefill_tok_s": 316.35206524761344,
+          "decode_tok_s": 17.91262000055977
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76295.7,
+          "decode_ms": 3567.0,
+          "wall_seconds": 79.86951031899662,
+          "prefill_tok_s": 429.48685181471564,
+          "decode_tok_s": 17.942248388001122
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76239.9,
+          "decode_ms": 3465.8,
+          "wall_seconds": 79.71295989600185,
+          "prefill_tok_s": 429.80119333839633,
+          "decode_tok_s": 18.466155000288534
+        }
+      ]
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_kv_matched_quiet32k_v01402_v1.py",
+        "kv-layer-major32k-quiet",
+        "quiet",
+        "2"
+      ],
+      "mode": "kv-layer-major32k-quiet",
+      "repetition": 2,
+      "started_utc": "2026-10-08T03:53:33.513124+00:00",
+      "controller_process": {
+        "pid": 2849169,
+        "start_ticks": 12129262,
+        "state": "R"
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-08T03:58:35.041469+00:00",
+      "record_file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/record.json",
+      "record_sha256": "1cc3102c01717e35b1cc10716b48b8266a9f23f57da46332365306a0ff6a8cf3",
+      "measurements": [
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 98298.8,
+          "decode_ms": 3562.9,
+          "wall_seconds": 101.8688344659895,
+          "prefill_tok_s": 333.3509666445572,
+          "decode_tok_s": 17.962895394201354
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76295.6,
+          "decode_ms": 3584.4,
+          "wall_seconds": 79.88772339599382,
+          "prefill_tok_s": 429.4874147395131,
+          "decode_tok_s": 17.855150094855485
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76376.2,
+          "decode_ms": 3666.8,
+          "wall_seconds": 80.04996401300014,
+          "prefill_tok_s": 429.03417556778163,
+          "decode_tok_s": 17.453910766881204
+        }
+      ]
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_kv_matched_quiet32k_v01402_v1.py",
+        "kv-stream32k-quiet",
+        "quiet",
+        "2"
+      ],
+      "mode": "kv-stream32k-quiet",
+      "repetition": 2,
+      "started_utc": "2026-10-08T03:58:35.042707+00:00",
+      "controller_process": {
+        "pid": 2864923,
+        "start_ticks": 12159415,
+        "state": "R"
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-08T04:03:20.522615+00:00",
+      "record_file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/record.json",
+      "record_sha256": "af2e035464c27f88f217844a1f83e5b7f71d13a3f062e08e65d7e1a2a829037f",
+      "measurements": [
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 83285.6,
+          "decode_ms": 3944.1,
+          "wall_seconds": 87.2368708950089,
+          "prefill_tok_s": 393.4413632128483,
+          "decode_tok_s": 16.226769098146598
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76568.1,
+          "decode_ms": 3510.4,
+          "wall_seconds": 80.0857037169917,
+          "prefill_tok_s": 427.95890194480467,
+          "decode_tok_s": 18.231540565177756
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76646.0,
+          "decode_ms": 3481.7,
+          "wall_seconds": 80.1388916989963,
+          "prefill_tok_s": 427.52394123633326,
+          "decode_tok_s": 18.38182497056036
+        }
+      ]
+    }
+  ],
+  "finished_utc": "2026-10-08T04:03:20.523752+00:00"
+}

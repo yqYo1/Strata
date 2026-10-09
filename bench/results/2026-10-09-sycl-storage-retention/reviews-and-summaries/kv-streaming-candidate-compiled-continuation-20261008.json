@@ -1,0 +1,98 @@
+{
+  "active_goal": true,
+  "goal_status": "active",
+  "goal_objective": "PP1000/TG70; unbounded persistence, not achieved or redefined",
+  "created_utc": "2026-10-08T02:58:59.351249+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "feature_head": "6054209ff9e3ceaa9fd62fd2c23b9389acf165cf",
+  "branch": "sync/upstream-2026-10-05",
+  "pushed": true,
+  "pr": {
+    "number": 9,
+    "url": "https://github.com/yqYo1/Strata/pull/9",
+    "draft": true,
+    "exact_head_body_verified": true,
+    "body_file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/pr9-v01402-kv-stream-safe-compiled-body.md"
+  },
+  "classification": "progress: nine exact full32K same-process captures, UR/native lifetime evidence, and an isolated compiled KV streaming source candidate; no blocker/adoption/new performance claim.",
+  "minimum_performance_input_tokens": 32768,
+  "full_capacity_required": 262144,
+  "required_full_gates": [
+    "normal-MTP occupancy through physical cell262143",
+    "repeated full prefill",
+    "state restoration",
+    "clipped speculative tail",
+    "correct capacity refusals",
+    "later valid request >=32768 tokens"
+  ],
+  "live_gpu_jobs": [],
+  "completed_owners": [
+    {
+      "record": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-main-vmm-full-ram-repeat32k-v01402-code32k-diagnostic-r1/record.json",
+      "role": "inferior",
+      "pid": 2325677,
+      "start_ticks": 11165161,
+      "absent": true
+    },
+    {
+      "record": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-main-vmm-full-ram-repeat32k-v01402-code32k-diagnostic-r1/record.json",
+      "role": "debugger",
+      "pid": 2325666,
+      "start_ticks": 11165153,
+      "absent": true
+    },
+    {
+      "record": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-main-vmm-full-ram-repeat32k-v01402-code32k-state-r1/record.json",
+      "role": "inferior",
+      "pid": 2367759,
+      "start_ticks": 11244039,
+      "absent": true
+    },
+    {
+      "record": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-main-vmm-full-ram-repeat32k-v01402-code32k-state-r1/record.json",
+      "role": "debugger",
+      "pid": 2367747,
+      "start_ticks": 11244031,
+      "absent": true
+    },
+    {
+      "record": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-main-vmm-full-ram-repeat32k-v01402-code32k-state-r2/record.json",
+      "role": "inferior",
+      "pid": 2379666,
+      "start_ticks": 11267356,
+      "absent": true
+    },
+    {
+      "record": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-main-vmm-full-ram-repeat32k-v01402-code32k-state-r2/record.json",
+      "role": "debugger",
+      "pid": 2379655,
+      "start_ticks": 11267348,
+      "absent": true
+    }
+  ],
+  "new_faults_in_model_checks": [],
+  "repeat_sequence_record_sha256": "a5b00c18aa260a09785c23ef84b92e44e41872d536c0cabd29648bd78df78717",
+  "candidate_build_record_sha256": "aa73ab85318ff74297c7164fe4142f6f2c9e8b3e06d2d254f84f1f9bf1d80eb7",
+  "candidate_binary": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-kv-stream-safe-v2-20261008/strata",
+  "candidate_binary_sha256": "4af18d831559e68215090d55ddba878986a07af61d834485351af81d793d6e77",
+  "candidate_gpu_tested": false,
+  "candidate_adopted": false,
+  "production_unchanged": true,
+  "production_binary_sha256": "c88f94d81bfb22227310ea00d09ecc8ab21a6e670aee9556307746530f5af714",
+  "accepted_baseline_binary_sha256": "e82fc5de5480b72255b601759497d5810e86bf691350417ed0dc11ed6c429323",
+  "key_findings": [
+    "All nine raw66-part main states, complete heads,64IDs/logprobs and MTP43/66 exact; all processes exit0 without forced cleanup or XE faults. Capture times are not speed.",
+    "Old UR main680 and MTP6 buffers release before subsequent unmaps; native CL704 remain but all UR/native tracked objects free at exit. Logging-off memory markers replicate first1GiB plus later small reductions; no proven leak/steady state.",
+    "Counter-event extension creation is outside the intermediate parser coverage; standard EventPool successful-create count zero. Current pinned UR source does not prove installed source equality or an event-cache switch remedy. No such flag/runtime is adopted.",
+    "Both older full-context negative attempts already enabled main/MTP release; eager differs in head/logprobs, lazy aborts. Do not reuse their outputs as integrated-candidate gold or claim new release alone solves them.",
+    "Existing --kv-resident32768 RAM-KV route can reduce full-context device storage. Its SYCL possible competing hit stores and host counter aliasing have an isolated compiled fix, plus four unnecessary root properties removed. No GPU execution yet."
+  ],
+  "next_work": [
+    "Prioritize actual implementation/capacity work over more unchanged32K controls.",
+    "Finish source audit of existing KV-streaming host-USM ownership/failure cleanup, borrowed rope/ring lifetimes, staging/clipping, snapshot identity reconstruction and WG1024/SG32 capability before first model use.",
+    "Use new immutable owned controller/build pins for a logged32K normal-MTP64-output check at max-context262144, kv-resident32768, same int8/FIRST0/RING8/chunk8192/cache128/workers5/pcie0. Preserve accepted EventCompletion/registered-copy/drains and same RAM release. No optional unsupported runtime switches.",
+    "Require complete current-layout live/raw state, all248320 first-head values,64IDs/logprobs and MTP counts parity; normal QUIT on mathematical rejection, exact owned cleanup and current journal guard. Do not count captured time.",
+    "After source/correctness gates, compare matched quiet >=32K inputs with loading/capture separated from repeats, then run complete262144 gates with bounded GPU residual storage. Original all32767-GPU32K configuration is not a full-context default.",
+    "Maintain immutable controllers/receipts and complete manifests; commit/push natural boundaries, keep PR draft/main clean, no GPU reset/rebind/reboot/service/package/global action."
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "active": false,
+  "created_utc": "2026-10-08T04:16:03.431657+00:00",
+  "goal_status": "active",
+  "goal_achieved": false,
+  "previous_goal_turn": "progress",
+  "blocker": null,
+  "archive_head": "ebac0156711ff8176a6cc202a2a1a2d264bd5731",
+  "feature_worktree_clean": true,
+  "main_unchanged": true,
+  "production_unchanged": true,
+  "pr": {
+    "number": 9,
+    "url": "https://github.com/yqYo1/Strata/pull/9",
+    "head": "ebac0156711ff8176a6cc202a2a1a2d264bd5731",
+    "draft": true,
+    "state": "open",
+    "body_file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/pr9-v01402-kv-stream32k-body.md",
+    "body_sha256": "f74d0aa2d28ba5ab839ed3aad0267d271d48b83b0b232219eef37eaa43aeb6a3",
+    "exact_body_head_verified": true
+  },
+  "completed_model_requests": 18,
+  "logged_state_head_requests": 6,
+  "quiet_requests": 12,
+  "performance_input_tokens": 32768,
+  "same_process_requests_per_job": 3,
+  "owned_jobs": [
+    {
+      "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-kv-stream32k-v01402-code32k-diagnostic-r1/record.json",
+      "sha256": "1b2361414f883650ab25f3bec1ae457d77f8a9aaef37b7b2cbebb8c3eea17f48",
+      "all_owned_identities_absent": true
+    },
+    {
+      "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-kv-layer-major32k-v01402-code32k-diagnostic-r1/record.json",
+      "sha256": "689950cb1177d1ee83459210af14bf3a474a2d32879e12cda5cc4abee6a08d1e",
+      "all_owned_identities_absent": true
+    },
+    {
+      "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-kv-stream32k-quiet-v01402-code32k-quiet-r1/record.json",
+      "sha256": "9dd4682b96f471af5c16d59aea3ce05f3d46f3b379b0e6d60eb4c0b8a0b010ae",
+      "all_owned_identities_absent": true
+    },
+    {
+      "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r1/record.json",
+      "sha256": "ef5dccb9b330493bd617a5845a05721b9131f7117df9b12b6848b607e23aec86",
+      "all_owned_identities_absent": true
+    },
+    {
+      "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/record.json",
+      "sha256": "1cc3102c01717e35b1cc10716b48b8266a9f23f57da46332365306a0ff6a8cf3",
+      "all_owned_identities_absent": true
+    },
+    {
+      "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-kv-stream32k-quiet-v01402-code32k-quiet-r2/record.json",
+      "sha256": "af2e035464c27f88f217844a1f83e5b7f71d13a3f062e08e65d7e1a2a829037f",
+      "all_owned_identities_absent": true
+    }
+  ],
+  "live_gpu_jobs": [],
+  "sequence_sha256": "2fe9085811a4dc08d5a2f80d25a61a93b8936ceb5d9934f44a903b29ef3b3e39",
+  "summary_file": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/upstream-v0.1.40.2-20261008/code32k/repro32k/kv-streaming-32k-and-layer-order-v3/summary.json",
+  "summary_sha256": "6e0b7c66f1f8de2e37c670e821dd5db61787a58769fcf88be2c342599441136f",
+  "manifest_entries": 2884,
+  "all_manifest_entries_hashed_and_tracked": true,
+  "throughput": {
+    "chunk_major_repeated_pp": 427.49005816215674,
+    "chunk_major_repeated_tg": 18.482686920611084,
+    "layer_major_ram_repeated_pp": 429.45223477543465,
+    "layer_major_ram_repeated_tg": 17.92215065807897
+  },
+  "candidate_adopted": false,
+  "full262144_occupancy_validated": false,
+  "immutable_artifact_note": "Preserved executed source/preparers/logs byte-for-byte, including one preparer extra EOF blank line. Targeted Markdown/other-controller whitespace check passed; no hash-changing trim applied.",
+  "next_steps": [
+    "Prioritize actual262144-cell occupancy through physical cell262143, repeated full prefill, main+MTP restore after another session, clipped speculative tail, capacity refusals and later32768 GEN64 exact control. Current256K configured limit plus18x32K does not close these gates.",
+    "Create a new bounded owned full-context controller; use actual compiled source and flushed diagnostic_environment for first long/clipped configuration. Keep source/build/helper/boot/BDF/embedding/journal/old-failure/owned-PID guards. The latest two logged/four quiet jobs are now additional terminal healthy anchors; no reset/rebind/service/global actions.",
+    "Review SAVE/RESTORE with prompt-cache>0 and ckpt0/no-reuse, so validation covers state rather than silently re-reading. Dump/compare every full-context main-state byte without padding exclusions; retain windows proving maxpos+count262144. Oldfull eager/lazy binaries are negatives, not a canonical current-math reference.",
+    "If source audit finds another active UB/lifetime issue, prepare a new private source/build and >=32K gate rather than overwrite executedv1/v2/v3 controllers. In particular review migrated pointer assignment casts in compiled layer.cpp; do not infer safe expected usage merely from math passes.",
+    "After full gates, consider one8192-row GPU residual prefix (335544320 additional bytes) versus RAMR0 as a new diagnosed32K configuration: logged R0 temporary-free at third32K was463536128 bytes. This is a capacity estimate, not a speed or full256K result. Keep ordinary8192 chunks;12K rejected mathematically.",
+    "PP1000/TG70 unbounded goal remains active/unachieved. Matched current RAM layer-order gain0.46%PP/-3.03%TG is insufficient for adoption; do not mark complete or blocked."
+  ]
+}

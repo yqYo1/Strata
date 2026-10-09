@@ -1,0 +1,2619 @@
+{
+  "active": false,
+  "passed": true,
+  "created_utc": "2026-10-08T23:14:42.745687+00:00",
+  "scope": "Quiet same-day baseline/off/on/on/off/baseline;24 fresh32K reads,64 outputs each, context262144. First/later separate; actual8192 chunks and128 slots; no API logs, profiler or dumps.",
+  "sequence_sha256": "d57fba6b0826ad8402505571b8cdc92eee4e0fa5bbd1c1a9b779531bd2f4bc83",
+  "summarizer_sha256": "521e57875d2f7f61f83eb2901eb8fddc073cbef2d635614ae9aa6914a23207a8",
+  "configuration": {
+    "argv": [
+      "<measured-binary>",
+      "--pack",
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+      "--native",
+      "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "--serve",
+      "--max-context",
+      "262144",
+      "--spec",
+      "4",
+      "--spec-min-p",
+      "0",
+      "--mtp",
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+      "--suffix-draft",
+      "0",
+      "--prefill",
+      "8192",
+      "--no-prefill-borrow",
+      "--expert-cache",
+      "128",
+      "--expert-profile",
+      "data/expert-profile.bin",
+      "--expert-cache-per-layer",
+      "--pool-workers",
+      "5",
+      "--pcie-frac",
+      "0",
+      "--spec-split",
+      "--adapt-swaps",
+      "0",
+      "--conversation-cache-mib",
+      "0",
+      "--conversation-cache-slots",
+      "4",
+      "--greedy",
+      "--short-read",
+      "0",
+      "--kv",
+      "int8",
+      "--kv-resident",
+      "32768",
+      "--prompt-cache",
+      "1",
+      "--prompt-cache-every",
+      "262139",
+      "--prompt-cache-root",
+      "0",
+      "--turn-token",
+      "-1"
+    ],
+    "environment_except_host_flag": {
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/umf/1.1/lib:/usr/lib/x86_64-linux-gnu:/opt/intel/oneapi/mkl/2026.1/lib",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "STRATA_PREFILL_FIRST": "0",
+      "STRATA_PREFILL_RING": "8",
+      "STRATA_PREFILL_COMPACT": "2",
+      "STRATA_PREFILL_ATTN_LAYOUT": "1",
+      "STRATA_PREFILL_LAYER_MAJOR": "0",
+      "STRATA_KV_STAGE_OWN": "1",
+      "STRATA_KV_PREFETCH": "0"
+    }
+  },
+  "groups": {
+    "baseline": {
+      "first": {
+        "reads": 2,
+        "pooled_prefill_tok_s": 407.81402943484375,
+        "pooled_decode_tok_s": 16.745159602302458,
+        "prefill_median": 407.86352577308537,
+        "prefill_min": 403.37044764911894,
+        "prefill_max": 412.3566038970518,
+        "decode_median": 16.751835814290732,
+        "decode_min": 16.417412718364414,
+        "decode_max": 17.08625891021705
+      },
+      "later": {
+        "reads": 6,
+        "pooled_prefill_tok_s": 449.92324612592034,
+        "pooled_decode_tok_s": 16.674265615840554,
+        "prefill_median": 449.91775228805545,
+        "prefill_min": 449.6546765156703,
+        "prefill_max": 450.215641311352,
+        "decode_median": 16.16099153725269,
+        "decode_min": 15.636834518312199,
+        "decode_max": 18.571179850269864
+      }
+    },
+    "hostoff": {
+      "first": {
+        "reads": 2,
+        "pooled_prefill_tok_s": 411.9763309741,
+        "pooled_decode_tok_s": 17.032148179689163,
+        "prefill_median": 411.97635901249555,
+        "prefill_min": 411.86888270761557,
+        "prefill_max": 412.0838353173755,
+        "decode_median": 17.034689962921387,
+        "decode_min": 16.826607072433283,
+        "decode_max": 17.24277285340949
+      },
+      "later": {
+        "reads": 6,
+        "pooled_prefill_tok_s": 449.7777053851711,
+        "pooled_decode_tok_s": 16.507750904917074,
+        "prefill_median": 449.67010317212305,
+        "prefill_min": 449.565841337612,
+        "prefill_max": 450.09134238973667,
+        "decode_median": 16.544870213733002,
+        "decode_min": 14.991450188564333,
+        "decode_max": 18.396090830698476
+      }
+    },
+    "hoston": {
+      "first": {
+        "reads": 2,
+        "pooled_prefill_tok_s": 411.931014629032,
+        "pooled_decode_tok_s": 16.701025547350017,
+        "prefill_median": 411.931033442613,
+        "prefill_min": 411.84299993841455,
+        "prefill_max": 412.01906694681145,
+        "decode_median": 16.701048577411612,
+        "decode_min": 16.681436688734816,
+        "decode_max": 16.72066046608841
+      },
+      "later": {
+        "reads": 6,
+        "pooled_prefill_tok_s": 449.74838219553834,
+        "pooled_decode_tok_s": 16.413763624706135,
+        "prefill_median": 449.69386431703697,
+        "prefill_min": 449.60717000496703,
+        "prefill_max": 450.10370736665703,
+        "decode_median": 16.313704273523804,
+        "decode_min": 14.747223374349048,
+        "decode_max": 18.650735829812035
+      }
+    }
+  },
+  "effects": {
+    "hostoff": {
+      "pooled_prefill_tok_s_relative_to_baseline_percent": -0.032347904226426305,
+      "pooled_decode_tok_s_relative_to_baseline_percent": -0.9986329518781978
+    },
+    "hoston": {
+      "pooled_prefill_tok_s_relative_to_baseline_percent": -0.03886528022005731,
+      "pooled_decode_tok_s_relative_to_baseline_percent": -1.5622996366745023
+    }
+  },
+  "later_host_summary": {
+    "expert_submit_host_ms": {
+      "mean": 1217.6287915,
+      "min": 1201.814707,
+      "max": 1231.445853
+    },
+    "group_gpu_wait_host_ms": {
+      "mean": 29353.89210233333,
+      "min": 29288.569523,
+      "max": 29383.74176
+    },
+    "group_cpu_ms": {
+      "mean": 47.74384383333334,
+      "min": 47.281671,
+      "max": 48.004398
+    },
+    "group_profiler_host_ms": {
+      "mean": 0.057137,
+      "min": 0.052422,
+      "max": 0.060942
+    },
+    "issuer_publication_wait_host_ms": {
+      "mean": 0.0,
+      "min": 0.0,
+      "max": 0.0
+    },
+    "host_copy_worker_ms": {
+      "mean": 10124.7761175,
+      "min": 10087.199112,
+      "max": 10158.198697
+    },
+    "wall_ms": {
+      "mean": 72853.17224183334,
+      "min": 72795.328273,
+      "max": 72875.884648
+    }
+  },
+  "rows": [
+    {
+      "mode": "baseline",
+      "repetition": 1,
+      "request": "A-read0",
+      "first_process_read": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 79465.2,
+      "decode_ms": 3745.7,
+      "wall_seconds": 83.39617877898854,
+      "purpose": "quiet timing",
+      "prefill_tok_s": 412.3566038970518,
+      "decode_tok_s": 17.08625891021705
+    },
+    {
+      "mode": "baseline",
+      "repetition": 1,
+      "request": "B-read1",
+      "first_process_read": false,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 72803.2,
+      "decode_ms": 4038.3,
+      "wall_seconds": 77.03528691298561,
+      "purpose": "quiet timing",
+      "prefill_tok_s": 450.09010592940973,
+      "decode_tok_s": 15.848252977738156
+    },
+    {
+      "mode": "baseline",
+      "repetition": 1,
+      "request": "A-read2",
+      "first_process_read": false,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 72873.7,
+      "decode_ms": 3446.2,
+      "wall_seconds": 76.51369434999651,
+      "purpose": "quiet timing",
+      "prefill_tok_s": 449.6546765156703,
+      "decode_tok_s": 18.571179850269864
+    },
+    {
+      "mode": "baseline",
+      "repetition": 1,
+      "request": "B-read3",
+      "first_process_read": false,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 72782.9,
+      "decode_ms": 4000.2,
+      "wall_seconds": 76.97615790198324,
+      "purpose": "quiet timing",
+      "prefill_tok_s": 450.215641311352,
+      "decode_tok_s": 15.999200039998001
+    },
+    {
+      "mode": "hostoff",
+      "repetition": 1,
+      "request": "A-read0",
+      "first_process_read": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 79517.8,
+      "decode_ms": 3803.5,
+      "wall_seconds": 83.51491948100738,
+      "purpose": "quiet timing",
+      "prefill_tok_s": 412.0838353173755,
+      "decode_tok_s": 16.826607072433283
+    },
+    {
+      "mode": "hostoff",
+      "repetition": 1,
+      "request": "B-read1",
+      "first_process_read": false,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 72869.3,
+      "decode_ms": 4190.1,
+      "wall_seconds": 77.24965664499905,
+      "purpose": "quiet timing",
+      "prefill_tok_s": 449.68182760092384,
+      "decode_tok_s": 15.274098470203574
+    },
+    {
+      "mode": "hostoff",
+      "repetition": 1,
+      "request": "A-read2",
+      "first_process_read": false,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 72877.6,
+      "decode_ms": 3479.0,
+      "wall_seconds": 76.55033573601395,
+      "purpose": "quiet timing",
+      "prefill_tok_s": 449.6306135218503,
+      "decode_tok_s": 18.396090830698476
+    },
+    {
+      "mode": "hostoff",
+      "repetition": 1,
+      "request": "B-read3",
+      "first_process_read": false,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 72803.0,
+      "decode_ms": 3815.8,
+      "wall_seconds": 76.81303266101168,
+      "purpose": "quiet timing",
+      "prefill_tok_s": 450.09134238973667,
+      "decode_tok_s": 16.77236752450338
+    },
+    {
+      "mode": "hoston",
+      "repetition": 1,
+      "request": "A-read0",
+      "first_process_read": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 79530.3,
+      "decode_ms": 3827.6,
+      "wall_seconds": 83.55444269700092,
+      "purpose": "quiet timing",
+      "prefill_tok_s": 412.01906694681145,
+      "decode_tok_s": 16.72066046608841
+    },
+    {
+      "mode": "hoston",
+      "repetition": 1,
+      "request": "B-read1",
+      "first_process_read": false,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 72873.1,
+      "decode_ms": 4339.4,
+      "wall_seconds": 77.40692952100653,
+      "purpose": "quiet timing",
+      "prefill_tok_s": 449.65837874332226,
+      "decode_tok_s": 14.748582753376043
+    },
+    {
+      "mode": "hoston",
+      "repetition": 1,
+      "request": "A-read2",
+      "first_process_read": false,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 72881.4,
+      "decode_ms": 3431.5,
+      "wall_seconds": 76.50648355999147,
+      "purpose": "quiet timing",
+      "prefill_tok_s": 449.60717000496703,
+      "decode_tok_s": 18.650735829812035
+    },
+    {
+      "mode": "hoston",
+      "repetition": 1,
+      "request": "B-read3",
+      "first_process_read": false,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 72860.4,
+      "decode_ms": 3966.4,
+      "wall_seconds": 77.02189445498516,
+      "purpose": "quiet timing",
+      "prefill_tok_s": 449.7367568665558,
+      "decode_tok_s": 16.135538523598225
+    },
+    {
+      "mode": "hoston",
+      "repetition": 2,
+      "request": "A-read0",
+      "first_process_read": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 79564.3,
+      "decode_ms": 3836.6,
+      "wall_seconds": 83.59561839900562,
+      "purpose": "quiet timing",
+      "prefill_tok_s": 411.84299993841455,
+      "decode_tok_s": 16.681436688734816
+    },
+    {
+      "mode": "hoston",
+      "repetition": 2,
+      "request": "B-read1",
+      "first_process_read": false,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 72861.6,
+      "decode_ms": 4339.8,
+      "wall_seconds": 77.39894899001229,
+      "purpose": "quiet timing",
+      "prefill_tok_s": 449.72934989075173,
+      "decode_tok_s": 14.747223374349048
+    },
+    {
+      "mode": "hoston",
+      "repetition": 2,
+      "request": "A-read2",
+      "first_process_read": false,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 72873.6,
+      "decode_ms": 3437.2,
+      "wall_seconds": 76.50403420298244,
+      "purpose": "quiet timing",
+      "prefill_tok_s": 449.6552935493786,
+      "decode_tok_s": 18.619806819504248
+    },
+    {
+      "mode": "hoston",
+      "repetition": 2,
+      "request": "B-read3",
+      "first_process_read": false,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 72801.0,
+      "decode_ms": 3880.7,
+      "wall_seconds": 76.87552865501493,
+      "purpose": "quiet timing",
+      "prefill_tok_s": 450.10370736665703,
+      "decode_tok_s": 16.49187002344938
+    },
+    {
+      "mode": "hostoff",
+      "repetition": 2,
+      "request": "A-read0",
+      "first_process_read": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 79559.3,
+      "decode_ms": 3711.7,
+      "wall_seconds": 83.4638594519929,
+      "purpose": "quiet timing",
+      "prefill_tok_s": 411.86888270761557,
+      "decode_tok_s": 17.24277285340949
+    },
+    {
+      "mode": "hostoff",
+      "repetition": 2,
+      "request": "B-read1",
+      "first_process_read": false,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 72873.1,
+      "decode_ms": 4269.1,
+      "wall_seconds": 77.3348281350045,
+      "purpose": "quiet timing",
+      "prefill_tok_s": 449.65837874332226,
+      "decode_tok_s": 14.991450188564333
+    },
+    {
+      "mode": "hostoff",
+      "repetition": 2,
+      "request": "A-read2",
+      "first_process_read": false,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 72888.1,
+      "decode_ms": 3585.6,
+      "wall_seconds": 76.66629916700185,
+      "purpose": "quiet timing",
+      "prefill_tok_s": 449.565841337612,
+      "decode_tok_s": 17.8491744756805
+    },
+    {
+      "mode": "hostoff",
+      "repetition": 2,
+      "request": "B-read3",
+      "first_process_read": false,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 72811.5,
+      "decode_ms": 3922.2,
+      "wall_seconds": 76.92716535099316,
+      "purpose": "quiet timing",
+      "prefill_tok_s": 450.0387988161211,
+      "decode_tok_s": 16.317372902962624
+    },
+    {
+      "mode": "baseline",
+      "repetition": 2,
+      "request": "A-read0",
+      "first_process_read": true,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 81235.5,
+      "decode_ms": 3898.3,
+      "wall_seconds": 85.31713027501246,
+      "purpose": "quiet timing",
+      "prefill_tok_s": 403.37044764911894,
+      "decode_tok_s": 16.417412718364414
+    },
+    {
+      "mode": "baseline",
+      "repetition": 2,
+      "request": "B-read1",
+      "first_process_read": false,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 72859.0,
+      "decode_ms": 4092.9,
+      "wall_seconds": 77.14555130599183,
+      "purpose": "quiet timing",
+      "prefill_tok_s": 449.7453986467012,
+      "decode_tok_s": 15.636834518312199
+    },
+    {
+      "mode": "baseline",
+      "repetition": 2,
+      "request": "A-read2",
+      "first_process_read": false,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 72796.5,
+      "decode_ms": 3531.0,
+      "wall_seconds": 76.52169599101762,
+      "purpose": "quiet timing",
+      "prefill_tok_s": 450.13153104888283,
+      "decode_tok_s": 18.125177003681678
+    },
+    {
+      "mode": "baseline",
+      "repetition": 2,
+      "request": "B-read3",
+      "first_process_read": false,
+      "generated_tokens": 64,
+      "prompt_tokens": 32768,
+      "prompt_ms": 72865.9,
+      "decode_ms": 3920.9,
+      "wall_seconds": 76.98004654201213,
+      "purpose": "quiet timing",
+      "prefill_tok_s": 449.70281023084874,
+      "decode_tok_s": 16.322783034507385
+    }
+  ],
+  "host_reports": [
+    {
+      "mode": "hoston",
+      "repetition": 1,
+      "request": "A-read0",
+      "first_process_read": true,
+      "tokens": 32767,
+      "chunks": 4,
+      "expert_copies": 92998,
+      "expert_bytes": 190240998400,
+      "expert_submit_host_ms": 1258.727945,
+      "group_gpu_wait_host_ms": 29150.36541,
+      "group_cpu_ms": 47.560341,
+      "group_profiler_host_ms": 0.058041,
+      "issuer_publication_wait_host_ms": 0.0,
+      "host_copy_worker_ms": 10405.081378,
+      "wall_ms": 79524.957825,
+      "layers": [
+        {
+          "layer": 0,
+          "copies": 1966,
+          "bytes": 4278016000
+        },
+        {
+          "layer": 1,
+          "copies": 2005,
+          "bytes": 3028352000
+        },
+        {
+          "layer": 2,
+          "copies": 1984,
+          "bytes": 3910860800
+        },
+        {
+          "layer": 3,
+          "copies": 1974,
+          "bytes": 3891148800
+        },
+        {
+          "layer": 4,
+          "copies": 1948,
+          "bytes": 3839897600
+        },
+        {
+          "layer": 5,
+          "copies": 1926,
+          "bytes": 3796531200
+        },
+        {
+          "layer": 6,
+          "copies": 1939,
+          "bytes": 3822156800
+        },
+        {
+          "layer": 7,
+          "copies": 1906,
+          "bytes": 4147456000
+        },
+        {
+          "layer": 8,
+          "copies": 1871,
+          "bytes": 2825958400
+        },
+        {
+          "layer": 9,
+          "copies": 1852,
+          "bytes": 3650662400
+        },
+        {
+          "layer": 10,
+          "copies": 1907,
+          "bytes": 2880332800
+        },
+        {
+          "layer": 11,
+          "copies": 1846,
+          "bytes": 3638835200
+        },
+        {
+          "layer": 12,
+          "copies": 1812,
+          "bytes": 3107942400
+        },
+        {
+          "layer": 13,
+          "copies": 1903,
+          "bytes": 2874291200
+        },
+        {
+          "layer": 14,
+          "copies": 1886,
+          "bytes": 4103936000
+        },
+        {
+          "layer": 15,
+          "copies": 1848,
+          "bytes": 3642777600
+        },
+        {
+          "layer": 16,
+          "copies": 1895,
+          "bytes": 4123520000
+        },
+        {
+          "layer": 17,
+          "copies": 1911,
+          "bytes": 4451865600
+        },
+        {
+          "layer": 18,
+          "copies": 1949,
+          "bytes": 4241024000
+        },
+        {
+          "layer": 19,
+          "copies": 1975,
+          "bytes": 3893120000
+        },
+        {
+          "layer": 20,
+          "copies": 1991,
+          "bytes": 3414963200
+        },
+        {
+          "layer": 21,
+          "copies": 1997,
+          "bytes": 3731993600
+        },
+        {
+          "layer": 22,
+          "copies": 2019,
+          "bytes": 4393344000
+        },
+        {
+          "layer": 23,
+          "copies": 2015,
+          "bytes": 3971968000
+        },
+        {
+          "layer": 24,
+          "copies": 1976,
+          "bytes": 3895091200
+        },
+        {
+          "layer": 25,
+          "copies": 1951,
+          "bytes": 4545049600
+        },
+        {
+          "layer": 26,
+          "copies": 1971,
+          "bytes": 3885235200
+        },
+        {
+          "layer": 27,
+          "copies": 1951,
+          "bytes": 4545049600
+        },
+        {
+          "layer": 28,
+          "copies": 1986,
+          "bytes": 4626585600
+        },
+        {
+          "layer": 29,
+          "copies": 1993,
+          "bytes": 4642892800
+        },
+        {
+          "layer": 30,
+          "copies": 1974,
+          "bytes": 3385804800
+        },
+        {
+          "layer": 31,
+          "copies": 1966,
+          "bytes": 4278016000
+        },
+        {
+          "layer": 32,
+          "copies": 1966,
+          "bytes": 3875379200
+        },
+        {
+          "layer": 33,
+          "copies": 1979,
+          "bytes": 4306304000
+        },
+        {
+          "layer": 34,
+          "copies": 1987,
+          "bytes": 3916774400
+        },
+        {
+          "layer": 35,
+          "copies": 1962,
+          "bytes": 4570675200
+        },
+        {
+          "layer": 36,
+          "copies": 1941,
+          "bytes": 2931686400
+        },
+        {
+          "layer": 37,
+          "copies": 1903,
+          "bytes": 4140928000
+        },
+        {
+          "layer": 38,
+          "copies": 1968,
+          "bytes": 4282368000
+        },
+        {
+          "layer": 39,
+          "copies": 1944,
+          "bytes": 3832012800
+        },
+        {
+          "layer": 40,
+          "copies": 1989,
+          "bytes": 4633574400
+        },
+        {
+          "layer": 41,
+          "copies": 1953,
+          "bytes": 4249728000
+        },
+        {
+          "layer": 42,
+          "copies": 1926,
+          "bytes": 4190976000
+        },
+        {
+          "layer": 43,
+          "copies": 1971,
+          "bytes": 4288896000
+        },
+        {
+          "layer": 44,
+          "copies": 1937,
+          "bytes": 4512435200
+        },
+        {
+          "layer": 45,
+          "copies": 1882,
+          "bytes": 4384307200
+        },
+        {
+          "layer": 46,
+          "copies": 1884,
+          "bytes": 4099584000
+        },
+        {
+          "layer": 47,
+          "copies": 1713,
+          "bytes": 4560691200
+        }
+      ]
+    },
+    {
+      "mode": "hoston",
+      "repetition": 1,
+      "request": "B-read1",
+      "first_process_read": false,
+      "tokens": 32767,
+      "chunks": 4,
+      "expert_copies": 92979,
+      "expert_bytes": 190199219200,
+      "expert_submit_host_ms": 1201.814707,
+      "group_gpu_wait_host_ms": 29378.26512,
+      "group_cpu_ms": 47.814892,
+      "group_profiler_host_ms": 0.060942,
+      "issuer_publication_wait_host_ms": 0.0,
+      "host_copy_worker_ms": 10087.199112,
+      "wall_ms": 72868.5049,
+      "layers": [
+        {
+          "layer": 0,
+          "copies": 1966,
+          "bytes": 4278016000
+        },
+        {
+          "layer": 1,
+          "copies": 2005,
+          "bytes": 3028352000
+        },
+        {
+          "layer": 2,
+          "copies": 1984,
+          "bytes": 3910860800
+        },
+        {
+          "layer": 3,
+          "copies": 1976,
+          "bytes": 3895091200
+        },
+        {
+          "layer": 4,
+          "copies": 1948,
+          "bytes": 3839897600
+        },
+        {
+          "layer": 5,
+          "copies": 1925,
+          "bytes": 3794560000
+        },
+        {
+          "layer": 6,
+          "copies": 1938,
+          "bytes": 3820185600
+        },
+        {
+          "layer": 7,
+          "copies": 1906,
+          "bytes": 4147456000
+        },
+        {
+          "layer": 8,
+          "copies": 1871,
+          "bytes": 2825958400
+        },
+        {
+          "layer": 9,
+          "copies": 1854,
+          "bytes": 3654604800
+        },
+        {
+          "layer": 10,
+          "copies": 1907,
+          "bytes": 2880332800
+        },
+        {
+          "layer": 11,
+          "copies": 1848,
+          "bytes": 3642777600
+        },
+        {
+          "layer": 12,
+          "copies": 1812,
+          "bytes": 3107942400
+        },
+        {
+          "layer": 13,
+          "copies": 1900,
+          "bytes": 2869760000
+        },
+        {
+          "layer": 14,
+          "copies": 1885,
+          "bytes": 4101760000
+        },
+        {
+          "layer": 15,
+          "copies": 1848,
+          "bytes": 3642777600
+        },
+        {
+          "layer": 16,
+          "copies": 1893,
+          "bytes": 4119168000
+        },
+        {
+          "layer": 17,
+          "copies": 1912,
+          "bytes": 4454195200
+        },
+        {
+          "layer": 18,
+          "copies": 1946,
+          "bytes": 4234496000
+        },
+        {
+          "layer": 19,
+          "copies": 1973,
+          "bytes": 3889177600
+        },
+        {
+          "layer": 20,
+          "copies": 1989,
+          "bytes": 3411532800
+        },
+        {
+          "layer": 21,
+          "copies": 1998,
+          "bytes": 3733862400
+        },
+        {
+          "layer": 22,
+          "copies": 2018,
+          "bytes": 4391168000
+        },
+        {
+          "layer": 23,
+          "copies": 2016,
+          "bytes": 3973939200
+        },
+        {
+          "layer": 24,
+          "copies": 1976,
+          "bytes": 3895091200
+        },
+        {
+          "layer": 25,
+          "copies": 1951,
+          "bytes": 4545049600
+        },
+        {
+          "layer": 26,
+          "copies": 1971,
+          "bytes": 3885235200
+        },
+        {
+          "layer": 27,
+          "copies": 1946,
+          "bytes": 4533401600
+        },
+        {
+          "layer": 28,
+          "copies": 1985,
+          "bytes": 4624256000
+        },
+        {
+          "layer": 29,
+          "copies": 1992,
+          "bytes": 4640563200
+        },
+        {
+          "layer": 30,
+          "copies": 1976,
+          "bytes": 3389235200
+        },
+        {
+          "layer": 31,
+          "copies": 1967,
+          "bytes": 4280192000
+        },
+        {
+          "layer": 32,
+          "copies": 1964,
+          "bytes": 3871436800
+        },
+        {
+          "layer": 33,
+          "copies": 1978,
+          "bytes": 4304128000
+        },
+        {
+          "layer": 34,
+          "copies": 1986,
+          "bytes": 3914803200
+        },
+        {
+          "layer": 35,
+          "copies": 1961,
+          "bytes": 4568345600
+        },
+        {
+          "layer": 36,
+          "copies": 1941,
+          "bytes": 2931686400
+        },
+        {
+          "layer": 37,
+          "copies": 1904,
+          "bytes": 4143104000
+        },
+        {
+          "layer": 38,
+          "copies": 1969,
+          "bytes": 4284544000
+        },
+        {
+          "layer": 39,
+          "copies": 1946,
+          "bytes": 3835955200
+        },
+        {
+          "layer": 40,
+          "copies": 1990,
+          "bytes": 4635904000
+        },
+        {
+          "layer": 41,
+          "copies": 1952,
+          "bytes": 4247552000
+        },
+        {
+          "layer": 42,
+          "copies": 1922,
+          "bytes": 4182272000
+        },
+        {
+          "layer": 43,
+          "copies": 1971,
+          "bytes": 4288896000
+        },
+        {
+          "layer": 44,
+          "copies": 1937,
+          "bytes": 4512435200
+        },
+        {
+          "layer": 45,
+          "copies": 1880,
+          "bytes": 4379648000
+        },
+        {
+          "layer": 46,
+          "copies": 1884,
+          "bytes": 4099584000
+        },
+        {
+          "layer": 47,
+          "copies": 1712,
+          "bytes": 4558028800
+        }
+      ]
+    },
+    {
+      "mode": "hoston",
+      "repetition": 1,
+      "request": "A-read2",
+      "first_process_read": false,
+      "tokens": 32767,
+      "chunks": 4,
+      "expert_copies": 92998,
+      "expert_bytes": 190240998400,
+      "expert_submit_host_ms": 1205.203479,
+      "group_gpu_wait_host_ms": 29383.74176,
+      "group_cpu_ms": 48.004398,
+      "group_profiler_host_ms": 0.059247,
+      "issuer_publication_wait_host_ms": 0.0,
+      "host_copy_worker_ms": 10093.203578,
+      "wall_ms": 72875.884648,
+      "layers": [
+        {
+          "layer": 0,
+          "copies": 1966,
+          "bytes": 4278016000
+        },
+        {
+          "layer": 1,
+          "copies": 2005,
+          "bytes": 3028352000
+        },
+        {
+          "layer": 2,
+          "copies": 1984,
+          "bytes": 3910860800
+        },
+        {
+          "layer": 3,
+          "copies": 1974,
+          "bytes": 3891148800
+        },
+        {
+          "layer": 4,
+          "copies": 1948,
+          "bytes": 3839897600
+        },
+        {
+          "layer": 5,
+          "copies": 1926,
+          "bytes": 3796531200
+        },
+        {
+          "layer": 6,
+          "copies": 1939,
+          "bytes": 3822156800
+        },
+        {
+          "layer": 7,
+          "copies": 1906,
+          "bytes": 4147456000
+        },
+        {
+          "layer": 8,
+          "copies": 1871,
+          "bytes": 2825958400
+        },
+        {
+          "layer": 9,
+          "copies": 1852,
+          "bytes": 3650662400
+        },
+        {
+          "layer": 10,
+          "copies": 1907,
+          "bytes": 2880332800
+        },
+        {
+          "layer": 11,
+          "copies": 1846,
+          "bytes": 3638835200
+        },
+        {
+          "layer": 12,
+          "copies": 1812,
+          "bytes": 3107942400
+        },
+        {
+          "layer": 13,
+          "copies": 1903,
+          "bytes": 2874291200
+        },
+        {
+          "layer": 14,
+          "copies": 1886,
+          "bytes": 4103936000
+        },
+        {
+          "layer": 15,
+          "copies": 1848,
+          "bytes": 3642777600
+        },
+        {
+          "layer": 16,
+          "copies": 1895,
+          "bytes": 4123520000
+        },
+        {
+          "layer": 17,
+          "copies": 1911,
+          "bytes": 4451865600
+        },
+        {
+          "layer": 18,
+          "copies": 1949,
+          "bytes": 4241024000
+        },
+        {
+          "layer": 19,
+          "copies": 1975,
+          "bytes": 3893120000
+        },
+        {
+          "layer": 20,
+          "copies": 1991,
+          "bytes": 3414963200
+        },
+        {
+          "layer": 21,
+          "copies": 1997,
+          "bytes": 3731993600
+        },
+        {
+          "layer": 22,
+          "copies": 2019,
+          "bytes": 4393344000
+        },
+        {
+          "layer": 23,
+          "copies": 2015,
+          "bytes": 3971968000
+        },
+        {
+          "layer": 24,
+          "copies": 1976,
+          "bytes": 3895091200
+        },
+        {
+          "layer": 25,
+          "copies": 1951,
+          "bytes": 4545049600
+        },
+        {
+          "layer": 26,
+          "copies": 1971,
+          "bytes": 3885235200
+        },
+        {
+          "layer": 27,
+          "copies": 1951,
+          "bytes": 4545049600
+        },
+        {
+          "layer": 28,
+          "copies": 1986,
+          "bytes": 4626585600
+        },
+        {
+          "layer": 29,
+          "copies": 1993,
+          "bytes": 4642892800
+        },
+        {
+          "layer": 30,
+          "copies": 1974,
+          "bytes": 3385804800
+        },
+        {
+          "layer": 31,
+          "copies": 1966,
+          "bytes": 4278016000
+        },
+        {
+          "layer": 32,
+          "copies": 1966,
+          "bytes": 3875379200
+        },
+        {
+          "layer": 33,
+          "copies": 1979,
+          "bytes": 4306304000
+        },
+        {
+          "layer": 34,
+          "copies": 1987,
+          "bytes": 3916774400
+        },
+        {
+          "layer": 35,
+          "copies": 1962,
+          "bytes": 4570675200
+        },
+        {
+          "layer": 36,
+          "copies": 1941,
+          "bytes": 2931686400
+        },
+        {
+          "layer": 37,
+          "copies": 1903,
+          "bytes": 4140928000
+        },
+        {
+          "layer": 38,
+          "copies": 1968,
+          "bytes": 4282368000
+        },
+        {
+          "layer": 39,
+          "copies": 1944,
+          "bytes": 3832012800
+        },
+        {
+          "layer": 40,
+          "copies": 1989,
+          "bytes": 4633574400
+        },
+        {
+          "layer": 41,
+          "copies": 1953,
+          "bytes": 4249728000
+        },
+        {
+          "layer": 42,
+          "copies": 1926,
+          "bytes": 4190976000
+        },
+        {
+          "layer": 43,
+          "copies": 1971,
+          "bytes": 4288896000
+        },
+        {
+          "layer": 44,
+          "copies": 1937,
+          "bytes": 4512435200
+        },
+        {
+          "layer": 45,
+          "copies": 1882,
+          "bytes": 4384307200
+        },
+        {
+          "layer": 46,
+          "copies": 1884,
+          "bytes": 4099584000
+        },
+        {
+          "layer": 47,
+          "copies": 1713,
+          "bytes": 4560691200
+        }
+      ]
+    },
+    {
+      "mode": "hoston",
+      "repetition": 1,
+      "request": "B-read3",
+      "first_process_read": false,
+      "tokens": 32767,
+      "chunks": 4,
+      "expert_copies": 92979,
+      "expert_bytes": 190199219200,
+      "expert_submit_host_ms": 1218.509597,
+      "group_gpu_wait_host_ms": 29368.70089,
+      "group_cpu_ms": 47.992887,
+      "group_profiler_host_ms": 0.057935,
+      "issuer_publication_wait_host_ms": 0.0,
+      "host_copy_worker_ms": 10120.05513,
+      "wall_ms": 72855.698982,
+      "layers": [
+        {
+          "layer": 0,
+          "copies": 1966,
+          "bytes": 4278016000
+        },
+        {
+          "layer": 1,
+          "copies": 2005,
+          "bytes": 3028352000
+        },
+        {
+          "layer": 2,
+          "copies": 1984,
+          "bytes": 3910860800
+        },
+        {
+          "layer": 3,
+          "copies": 1976,
+          "bytes": 3895091200
+        },
+        {
+          "layer": 4,
+          "copies": 1948,
+          "bytes": 3839897600
+        },
+        {
+          "layer": 5,
+          "copies": 1925,
+          "bytes": 3794560000
+        },
+        {
+          "layer": 6,
+          "copies": 1938,
+          "bytes": 3820185600
+        },
+        {
+          "layer": 7,
+          "copies": 1906,
+          "bytes": 4147456000
+        },
+        {
+          "layer": 8,
+          "copies": 1871,
+          "bytes": 2825958400
+        },
+        {
+          "layer": 9,
+          "copies": 1854,
+          "bytes": 3654604800
+        },
+        {
+          "layer": 10,
+          "copies": 1907,
+          "bytes": 2880332800
+        },
+        {
+          "layer": 11,
+          "copies": 1848,
+          "bytes": 3642777600
+        },
+        {
+          "layer": 12,
+          "copies": 1812,
+          "bytes": 3107942400
+        },
+        {
+          "layer": 13,
+          "copies": 1900,
+          "bytes": 2869760000
+        },
+        {
+          "layer": 14,
+          "copies": 1885,
+          "bytes": 4101760000
+        },
+        {
+          "layer": 15,
+          "copies": 1848,
+          "bytes": 3642777600
+        },
+        {
+          "layer": 16,
+          "copies": 1893,
+          "bytes": 4119168000
+        },
+        {
+          "layer": 17,
+          "copies": 1912,
+          "bytes": 4454195200
+        },
+        {
+          "layer": 18,
+          "copies": 1946,
+          "bytes": 4234496000
+        },
+        {
+          "layer": 19,
+          "copies": 1973,
+          "bytes": 3889177600
+        },
+        {
+          "layer": 20,
+          "copies": 1989,
+          "bytes": 3411532800
+        },
+        {
+          "layer": 21,
+          "copies": 1998,
+          "bytes": 3733862400
+        },
+        {
+          "layer": 22,
+          "copies": 2018,
+          "bytes": 4391168000
+        },
+        {
+          "layer": 23,
+          "copies": 2016,
+          "bytes": 3973939200
+        },
+        {
+          "layer": 24,
+          "copies": 1976,
+          "bytes": 3895091200
+        },
+        {
+          "layer": 25,
+          "copies": 1951,
+          "bytes": 4545049600
+        },
+        {
+          "layer": 26,
+          "copies": 1971,
+          "bytes": 3885235200
+        },
+        {
+          "layer": 27,
+          "copies": 1946,
+          "bytes": 4533401600
+        },
+        {
+          "layer": 28,
+          "copies": 1985,
+          "bytes": 4624256000
+        },
+        {
+          "layer": 29,
+          "copies": 1992,
+          "bytes": 4640563200
+        },
+        {
+          "layer": 30,
+          "copies": 1976,
+          "bytes": 3389235200
+        },
+        {
+          "layer": 31,
+          "copies": 1967,
+          "bytes": 4280192000
+        },
+        {
+          "layer": 32,
+          "copies": 1964,
+          "bytes": 3871436800
+        },
+        {
+          "layer": 33,
+          "copies": 1978,
+          "bytes": 4304128000
+        },
+        {
+          "layer": 34,
+          "copies": 1986,
+          "bytes": 3914803200
+        },
+        {
+          "layer": 35,
+          "copies": 1961,
+          "bytes": 4568345600
+        },
+        {
+          "layer": 36,
+          "copies": 1941,
+          "bytes": 2931686400
+        },
+        {
+          "layer": 37,
+          "copies": 1904,
+          "bytes": 4143104000
+        },
+        {
+          "layer": 38,
+          "copies": 1969,
+          "bytes": 4284544000
+        },
+        {
+          "layer": 39,
+          "copies": 1946,
+          "bytes": 3835955200
+        },
+        {
+          "layer": 40,
+          "copies": 1990,
+          "bytes": 4635904000
+        },
+        {
+          "layer": 41,
+          "copies": 1952,
+          "bytes": 4247552000
+        },
+        {
+          "layer": 42,
+          "copies": 1922,
+          "bytes": 4182272000
+        },
+        {
+          "layer": 43,
+          "copies": 1971,
+          "bytes": 4288896000
+        },
+        {
+          "layer": 44,
+          "copies": 1937,
+          "bytes": 4512435200
+        },
+        {
+          "layer": 45,
+          "copies": 1880,
+          "bytes": 4379648000
+        },
+        {
+          "layer": 46,
+          "copies": 1884,
+          "bytes": 4099584000
+        },
+        {
+          "layer": 47,
+          "copies": 1712,
+          "bytes": 4558028800
+        }
+      ]
+    },
+    {
+      "mode": "hoston",
+      "repetition": 2,
+      "request": "A-read0",
+      "first_process_read": true,
+      "tokens": 32767,
+      "chunks": 4,
+      "expert_copies": 92998,
+      "expert_bytes": 190240998400,
+      "expert_submit_host_ms": 1280.884474,
+      "group_gpu_wait_host_ms": 29117.15288,
+      "group_cpu_ms": 48.35882,
+      "group_profiler_host_ms": 0.051472,
+      "issuer_publication_wait_host_ms": 0.0,
+      "host_copy_worker_ms": 10425.172529,
+      "wall_ms": 79558.452929,
+      "layers": [
+        {
+          "layer": 0,
+          "copies": 1966,
+          "bytes": 4278016000
+        },
+        {
+          "layer": 1,
+          "copies": 2005,
+          "bytes": 3028352000
+        },
+        {
+          "layer": 2,
+          "copies": 1984,
+          "bytes": 3910860800
+        },
+        {
+          "layer": 3,
+          "copies": 1974,
+          "bytes": 3891148800
+        },
+        {
+          "layer": 4,
+          "copies": 1948,
+          "bytes": 3839897600
+        },
+        {
+          "layer": 5,
+          "copies": 1926,
+          "bytes": 3796531200
+        },
+        {
+          "layer": 6,
+          "copies": 1939,
+          "bytes": 3822156800
+        },
+        {
+          "layer": 7,
+          "copies": 1906,
+          "bytes": 4147456000
+        },
+        {
+          "layer": 8,
+          "copies": 1871,
+          "bytes": 2825958400
+        },
+        {
+          "layer": 9,
+          "copies": 1852,
+          "bytes": 3650662400
+        },
+        {
+          "layer": 10,
+          "copies": 1907,
+          "bytes": 2880332800
+        },
+        {
+          "layer": 11,
+          "copies": 1846,
+          "bytes": 3638835200
+        },
+        {
+          "layer": 12,
+          "copies": 1812,
+          "bytes": 3107942400
+        },
+        {
+          "layer": 13,
+          "copies": 1903,
+          "bytes": 2874291200
+        },
+        {
+          "layer": 14,
+          "copies": 1886,
+          "bytes": 4103936000
+        },
+        {
+          "layer": 15,
+          "copies": 1848,
+          "bytes": 3642777600
+        },
+        {
+          "layer": 16,
+          "copies": 1895,
+          "bytes": 4123520000
+        },
+        {
+          "layer": 17,
+          "copies": 1911,
+          "bytes": 4451865600
+        },
+        {
+          "layer": 18,
+          "copies": 1949,
+          "bytes": 4241024000
+        },
+        {
+          "layer": 19,
+          "copies": 1975,
+          "bytes": 3893120000
+        },
+        {
+          "layer": 20,
+          "copies": 1991,
+          "bytes": 3414963200
+        },
+        {
+          "layer": 21,
+          "copies": 1997,
+          "bytes": 3731993600
+        },
+        {
+          "layer": 22,
+          "copies": 2019,
+          "bytes": 4393344000
+        },
+        {
+          "layer": 23,
+          "copies": 2015,
+          "bytes": 3971968000
+        },
+        {
+          "layer": 24,
+          "copies": 1976,
+          "bytes": 3895091200
+        },
+        {
+          "layer": 25,
+          "copies": 1951,
+          "bytes": 4545049600
+        },
+        {
+          "layer": 26,
+          "copies": 1971,
+          "bytes": 3885235200
+        },
+        {
+          "layer": 27,
+          "copies": 1951,
+          "bytes": 4545049600
+        },
+        {
+          "layer": 28,
+          "copies": 1986,
+          "bytes": 4626585600
+        },
+        {
+          "layer": 29,
+          "copies": 1993,
+          "bytes": 4642892800
+        },
+        {
+          "layer": 30,
+          "copies": 1974,
+          "bytes": 3385804800
+        },
+        {
+          "layer": 31,
+          "copies": 1966,
+          "bytes": 4278016000
+        },
+        {
+          "layer": 32,
+          "copies": 1966,
+          "bytes": 3875379200
+        },
+        {
+          "layer": 33,
+          "copies": 1979,
+          "bytes": 4306304000
+        },
+        {
+          "layer": 34,
+          "copies": 1987,
+          "bytes": 3916774400
+        },
+        {
+          "layer": 35,
+          "copies": 1962,
+          "bytes": 4570675200
+        },
+        {
+          "layer": 36,
+          "copies": 1941,
+          "bytes": 2931686400
+        },
+        {
+          "layer": 37,
+          "copies": 1903,
+          "bytes": 4140928000
+        },
+        {
+          "layer": 38,
+          "copies": 1968,
+          "bytes": 4282368000
+        },
+        {
+          "layer": 39,
+          "copies": 1944,
+          "bytes": 3832012800
+        },
+        {
+          "layer": 40,
+          "copies": 1989,
+          "bytes": 4633574400
+        },
+        {
+          "layer": 41,
+          "copies": 1953,
+          "bytes": 4249728000
+        },
+        {
+          "layer": 42,
+          "copies": 1926,
+          "bytes": 4190976000
+        },
+        {
+          "layer": 43,
+          "copies": 1971,
+          "bytes": 4288896000
+        },
+        {
+          "layer": 44,
+          "copies": 1937,
+          "bytes": 4512435200
+        },
+        {
+          "layer": 45,
+          "copies": 1882,
+          "bytes": 4384307200
+        },
+        {
+          "layer": 46,
+          "copies": 1884,
+          "bytes": 4099584000
+        },
+        {
+          "layer": 47,
+          "copies": 1713,
+          "bytes": 4560691200
+        }
+      ]
+    },
+    {
+      "mode": "hoston",
+      "repetition": 2,
+      "request": "B-read1",
+      "first_process_read": false,
+      "tokens": 32767,
+      "chunks": 4,
+      "expert_copies": 92979,
+      "expert_bytes": 190199219200,
+      "expert_submit_host_ms": 1225.010641,
+      "group_gpu_wait_host_ms": 29354.596639,
+      "group_cpu_ms": 47.778796,
+      "group_profiler_host_ms": 0.052422,
+      "issuer_publication_wait_host_ms": 0.0,
+      "host_copy_worker_ms": 10134.781822,
+      "wall_ms": 72855.900726,
+      "layers": [
+        {
+          "layer": 0,
+          "copies": 1966,
+          "bytes": 4278016000
+        },
+        {
+          "layer": 1,
+          "copies": 2005,
+          "bytes": 3028352000
+        },
+        {
+          "layer": 2,
+          "copies": 1984,
+          "bytes": 3910860800
+        },
+        {
+          "layer": 3,
+          "copies": 1976,
+          "bytes": 3895091200
+        },
+        {
+          "layer": 4,
+          "copies": 1948,
+          "bytes": 3839897600
+        },
+        {
+          "layer": 5,
+          "copies": 1925,
+          "bytes": 3794560000
+        },
+        {
+          "layer": 6,
+          "copies": 1938,
+          "bytes": 3820185600
+        },
+        {
+          "layer": 7,
+          "copies": 1906,
+          "bytes": 4147456000
+        },
+        {
+          "layer": 8,
+          "copies": 1871,
+          "bytes": 2825958400
+        },
+        {
+          "layer": 9,
+          "copies": 1854,
+          "bytes": 3654604800
+        },
+        {
+          "layer": 10,
+          "copies": 1907,
+          "bytes": 2880332800
+        },
+        {
+          "layer": 11,
+          "copies": 1848,
+          "bytes": 3642777600
+        },
+        {
+          "layer": 12,
+          "copies": 1812,
+          "bytes": 3107942400
+        },
+        {
+          "layer": 13,
+          "copies": 1900,
+          "bytes": 2869760000
+        },
+        {
+          "layer": 14,
+          "copies": 1885,
+          "bytes": 4101760000
+        },
+        {
+          "layer": 15,
+          "copies": 1848,
+          "bytes": 3642777600
+        },
+        {
+          "layer": 16,
+          "copies": 1893,
+          "bytes": 4119168000
+        },
+        {
+          "layer": 17,
+          "copies": 1912,
+          "bytes": 4454195200
+        },
+        {
+          "layer": 18,
+          "copies": 1946,
+          "bytes": 4234496000
+        },
+        {
+          "layer": 19,
+          "copies": 1973,
+          "bytes": 3889177600
+        },
+        {
+          "layer": 20,
+          "copies": 1989,
+          "bytes": 3411532800
+        },
+        {
+          "layer": 21,
+          "copies": 1998,
+          "bytes": 3733862400
+        },
+        {
+          "layer": 22,
+          "copies": 2018,
+          "bytes": 4391168000
+        },
+        {
+          "layer": 23,
+          "copies": 2016,
+          "bytes": 3973939200
+        },
+        {
+          "layer": 24,
+          "copies": 1976,
+          "bytes": 3895091200
+        },
+        {
+          "layer": 25,
+          "copies": 1951,
+          "bytes": 4545049600
+        },
+        {
+          "layer": 26,
+          "copies": 1971,
+          "bytes": 3885235200
+        },
+        {
+          "layer": 27,
+          "copies": 1946,
+          "bytes": 4533401600
+        },
+        {
+          "layer": 28,
+          "copies": 1985,
+          "bytes": 4624256000
+        },
+        {
+          "layer": 29,
+          "copies": 1992,
+          "bytes": 4640563200
+        },
+        {
+          "layer": 30,
+          "copies": 1976,
+          "bytes": 3389235200
+        },
+        {
+          "layer": 31,
+          "copies": 1967,
+          "bytes": 4280192000
+        },
+        {
+          "layer": 32,
+          "copies": 1964,
+          "bytes": 3871436800
+        },
+        {
+          "layer": 33,
+          "copies": 1978,
+          "bytes": 4304128000
+        },
+        {
+          "layer": 34,
+          "copies": 1986,
+          "bytes": 3914803200
+        },
+        {
+          "layer": 35,
+          "copies": 1961,
+          "bytes": 4568345600
+        },
+        {
+          "layer": 36,
+          "copies": 1941,
+          "bytes": 2931686400
+        },
+        {
+          "layer": 37,
+          "copies": 1904,
+          "bytes": 4143104000
+        },
+        {
+          "layer": 38,
+          "copies": 1969,
+          "bytes": 4284544000
+        },
+        {
+          "layer": 39,
+          "copies": 1946,
+          "bytes": 3835955200
+        },
+        {
+          "layer": 40,
+          "copies": 1990,
+          "bytes": 4635904000
+        },
+        {
+          "layer": 41,
+          "copies": 1952,
+          "bytes": 4247552000
+        },
+        {
+          "layer": 42,
+          "copies": 1922,
+          "bytes": 4182272000
+        },
+        {
+          "layer": 43,
+          "copies": 1971,
+          "bytes": 4288896000
+        },
+        {
+          "layer": 44,
+          "copies": 1937,
+          "bytes": 4512435200
+        },
+        {
+          "layer": 45,
+          "copies": 1880,
+          "bytes": 4379648000
+        },
+        {
+          "layer": 46,
+          "copies": 1884,
+          "bytes": 4099584000
+        },
+        {
+          "layer": 47,
+          "copies": 1712,
+          "bytes": 4558028800
+        }
+      ]
+    },
+    {
+      "mode": "hoston",
+      "repetition": 2,
+      "request": "A-read2",
+      "first_process_read": false,
+      "tokens": 32767,
+      "chunks": 4,
+      "expert_copies": 92998,
+      "expert_bytes": 190240998400,
+      "expert_submit_host_ms": 1231.445853,
+      "group_gpu_wait_host_ms": 29349.478682,
+      "group_cpu_ms": 47.590419,
+      "group_profiler_host_ms": 0.053874,
+      "issuer_publication_wait_host_ms": 0.0,
+      "host_copy_worker_ms": 10155.218366,
+      "wall_ms": 72867.715922,
+      "layers": [
+        {
+          "layer": 0,
+          "copies": 1966,
+          "bytes": 4278016000
+        },
+        {
+          "layer": 1,
+          "copies": 2005,
+          "bytes": 3028352000
+        },
+        {
+          "layer": 2,
+          "copies": 1984,
+          "bytes": 3910860800
+        },
+        {
+          "layer": 3,
+          "copies": 1974,
+          "bytes": 3891148800
+        },
+        {
+          "layer": 4,
+          "copies": 1948,
+          "bytes": 3839897600
+        },
+        {
+          "layer": 5,
+          "copies": 1926,
+          "bytes": 3796531200
+        },
+        {
+          "layer": 6,
+          "copies": 1939,
+          "bytes": 3822156800
+        },
+        {
+          "layer": 7,
+          "copies": 1906,
+          "bytes": 4147456000
+        },
+        {
+          "layer": 8,
+          "copies": 1871,
+          "bytes": 2825958400
+        },
+        {
+          "layer": 9,
+          "copies": 1852,
+          "bytes": 3650662400
+        },
+        {
+          "layer": 10,
+          "copies": 1907,
+          "bytes": 2880332800
+        },
+        {
+          "layer": 11,
+          "copies": 1846,
+          "bytes": 3638835200
+        },
+        {
+          "layer": 12,
+          "copies": 1812,
+          "bytes": 3107942400
+        },
+        {
+          "layer": 13,
+          "copies": 1903,
+          "bytes": 2874291200
+        },
+        {
+          "layer": 14,
+          "copies": 1886,
+          "bytes": 4103936000
+        },
+        {
+          "layer": 15,
+          "copies": 1848,
+          "bytes": 3642777600
+        },
+        {
+          "layer": 16,
+          "copies": 1895,
+          "bytes": 4123520000
+        },
+        {
+          "layer": 17,
+          "copies": 1911,
+          "bytes": 4451865600
+        },
+        {
+          "layer": 18,
+          "copies": 1949,
+          "bytes": 4241024000
+        },
+        {
+          "layer": 19,
+          "copies": 1975,
+          "bytes": 3893120000
+        },
+        {
+          "layer": 20,
+          "copies": 1991,
+          "bytes": 3414963200
+        },
+        {
+          "layer": 21,
+          "copies": 1997,
+          "bytes": 3731993600
+        },
+        {
+          "layer": 22,
+          "copies": 2019,
+          "bytes": 4393344000
+        },
+        {
+          "layer": 23,
+          "copies": 2015,
+          "bytes": 3971968000
+        },
+        {
+          "layer": 24,
+          "copies": 1976,
+          "bytes": 3895091200
+        },
+        {
+          "layer": 25,
+          "copies": 1951,
+          "bytes": 4545049600
+        },
+        {
+          "layer": 26,
+          "copies": 1971,
+          "bytes": 3885235200
+        },
+        {
+          "layer": 27,
+          "copies": 1951,
+          "bytes": 4545049600
+        },
+        {
+          "layer": 28,
+          "copies": 1986,
+          "bytes": 4626585600
+        },
+        {
+          "layer": 29,
+          "copies": 1993,
+          "bytes": 4642892800
+        },
+        {
+          "layer": 30,
+          "copies": 1974,
+          "bytes": 3385804800
+        },
+        {
+          "layer": 31,
+          "copies": 1966,
+          "bytes": 4278016000
+        },
+        {
+          "layer": 32,
+          "copies": 1966,
+          "bytes": 3875379200
+        },
+        {
+          "layer": 33,
+          "copies": 1979,
+          "bytes": 4306304000
+        },
+        {
+          "layer": 34,
+          "copies": 1987,
+          "bytes": 3916774400
+        },
+        {
+          "layer": 35,
+          "copies": 1962,
+          "bytes": 4570675200
+        },
+        {
+          "layer": 36,
+          "copies": 1941,
+          "bytes": 2931686400
+        },
+        {
+          "layer": 37,
+          "copies": 1903,
+          "bytes": 4140928000
+        },
+        {
+          "layer": 38,
+          "copies": 1968,
+          "bytes": 4282368000
+        },
+        {
+          "layer": 39,
+          "copies": 1944,
+          "bytes": 3832012800
+        },
+        {
+          "layer": 40,
+          "copies": 1989,
+          "bytes": 4633574400
+        },
+        {
+          "layer": 41,
+          "copies": 1953,
+          "bytes": 4249728000
+        },
+        {
+          "layer": 42,
+          "copies": 1926,
+          "bytes": 4190976000
+        },
+        {
+          "layer": 43,
+          "copies": 1971,
+          "bytes": 4288896000
+        },
+        {
+          "layer": 44,
+          "copies": 1937,
+          "bytes": 4512435200
+        },
+        {
+          "layer": 45,
+          "copies": 1882,
+          "bytes": 4384307200
+        },
+        {
+          "layer": 46,
+          "copies": 1884,
+          "bytes": 4099584000
+        },
+        {
+          "layer": 47,
+          "copies": 1713,
+          "bytes": 4560691200
+        }
+      ]
+    },
+    {
+      "mode": "hoston",
+      "repetition": 2,
+      "request": "B-read3",
+      "first_process_read": false,
+      "tokens": 32767,
+      "chunks": 4,
+      "expert_copies": 92979,
+      "expert_bytes": 190199219200,
+      "expert_submit_host_ms": 1223.788472,
+      "group_gpu_wait_host_ms": 29288.569523,
+      "group_cpu_ms": 47.281671,
+      "group_profiler_host_ms": 0.058402,
+      "issuer_publication_wait_host_ms": 0.0,
+      "host_copy_worker_ms": 10158.198697,
+      "wall_ms": 72795.328273,
+      "layers": [
+        {
+          "layer": 0,
+          "copies": 1966,
+          "bytes": 4278016000
+        },
+        {
+          "layer": 1,
+          "copies": 2005,
+          "bytes": 3028352000
+        },
+        {
+          "layer": 2,
+          "copies": 1984,
+          "bytes": 3910860800
+        },
+        {
+          "layer": 3,
+          "copies": 1976,
+          "bytes": 3895091200
+        },
+        {
+          "layer": 4,
+          "copies": 1948,
+          "bytes": 3839897600
+        },
+        {
+          "layer": 5,
+          "copies": 1925,
+          "bytes": 3794560000
+        },
+        {
+          "layer": 6,
+          "copies": 1938,
+          "bytes": 3820185600
+        },
+        {
+          "layer": 7,
+          "copies": 1906,
+          "bytes": 4147456000
+        },
+        {
+          "layer": 8,
+          "copies": 1871,
+          "bytes": 2825958400
+        },
+        {
+          "layer": 9,
+          "copies": 1854,
+          "bytes": 3654604800
+        },
+        {
+          "layer": 10,
+          "copies": 1907,
+          "bytes": 2880332800
+        },
+        {
+          "layer": 11,
+          "copies": 1848,
+          "bytes": 3642777600
+        },
+        {
+          "layer": 12,
+          "copies": 1812,
+          "bytes": 3107942400
+        },
+        {
+          "layer": 13,
+          "copies": 1900,
+          "bytes": 2869760000
+        },
+        {
+          "layer": 14,
+          "copies": 1885,
+          "bytes": 4101760000
+        },
+        {
+          "layer": 15,
+          "copies": 1848,
+          "bytes": 3642777600
+        },
+        {
+          "layer": 16,
+          "copies": 1893,
+          "bytes": 4119168000
+        },
+        {
+          "layer": 17,
+          "copies": 1912,
+          "bytes": 4454195200
+        },
+        {
+          "layer": 18,
+          "copies": 1946,
+          "bytes": 4234496000
+        },
+        {
+          "layer": 19,
+          "copies": 1973,
+          "bytes": 3889177600
+        },
+        {
+          "layer": 20,
+          "copies": 1989,
+          "bytes": 3411532800
+        },
+        {
+          "layer": 21,
+          "copies": 1998,
+          "bytes": 3733862400
+        },
+        {
+          "layer": 22,
+          "copies": 2018,
+          "bytes": 4391168000
+        },
+        {
+          "layer": 23,
+          "copies": 2016,
+          "bytes": 3973939200
+        },
+        {
+          "layer": 24,
+          "copies": 1976,
+          "bytes": 3895091200
+        },
+        {
+          "layer": 25,
+          "copies": 1951,
+          "bytes": 4545049600
+        },
+        {
+          "layer": 26,
+          "copies": 1971,
+          "bytes": 3885235200
+        },
+        {
+          "layer": 27,
+          "copies": 1946,
+          "bytes": 4533401600
+        },
+        {
+          "layer": 28,
+          "copies": 1985,
+          "bytes": 4624256000
+        },
+        {
+          "layer": 29,
+          "copies": 1992,
+          "bytes": 4640563200
+        },
+        {
+          "layer": 30,
+          "copies": 1976,
+          "bytes": 3389235200
+        },
+        {
+          "layer": 31,
+          "copies": 1967,
+          "bytes": 4280192000
+        },
+        {
+          "layer": 32,
+          "copies": 1964,
+          "bytes": 3871436800
+        },
+        {
+          "layer": 33,
+          "copies": 1978,
+          "bytes": 4304128000
+        },
+        {
+          "layer": 34,
+          "copies": 1986,
+          "bytes": 3914803200
+        },
+        {
+          "layer": 35,
+          "copies": 1961,
+          "bytes": 4568345600
+        },
+        {
+          "layer": 36,
+          "copies": 1941,
+          "bytes": 2931686400
+        },
+        {
+          "layer": 37,
+          "copies": 1904,
+          "bytes": 4143104000
+        },
+        {
+          "layer": 38,
+          "copies": 1969,
+          "bytes": 4284544000
+        },
+        {
+          "layer": 39,
+          "copies": 1946,
+          "bytes": 3835955200
+        },
+        {
+          "layer": 40,
+          "copies": 1990,
+          "bytes": 4635904000
+        },
+        {
+          "layer": 41,
+          "copies": 1952,
+          "bytes": 4247552000
+        },
+        {
+          "layer": 42,
+          "copies": 1922,
+          "bytes": 4182272000
+        },
+        {
+          "layer": 43,
+          "copies": 1971,
+          "bytes": 4288896000
+        },
+        {
+          "layer": 44,
+          "copies": 1937,
+          "bytes": 4512435200
+        },
+        {
+          "layer": 45,
+          "copies": 1880,
+          "bytes": 4379648000
+        },
+        {
+          "layer": 46,
+          "copies": 1884,
+          "bytes": 4099584000
+        },
+        {
+          "layer": 47,
+          "copies": 1712,
+          "bytes": 4558028800
+        }
+      ]
+    }
+  ],
+  "candidate_full_lifecycle_passed": false,
+  "candidate_adopted": false,
+  "interpretation_limits": [
+    "Host submission/group wait is not DMA active time or exclusive PCIe waiting.",
+    "RAM-worker durations are a sum over workers and can overlap with GPU/other CPU work.",
+    "Decode spread and this small sample do not establish a small gain/regression.",
+    "The candidate has four-fresh32K full live-state numerical proof, but has not passed full262144 lifecycle."
+  ]
+}

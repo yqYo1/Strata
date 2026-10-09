@@ -1,0 +1,296 @@
+{
+  "scope": "32768-token real-code prompt, unmodified upstream v0.1.40.2 or integrated fork, 8192-token chunks and normal MTP. Diagnostic first-use or separate clean timing; never a 256K capacity claim",
+  "started_utc": "2026-10-07T16:47:06.759559+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "active": false,
+  "completed": true,
+  "healthy": true,
+  "requests": [
+    {
+      "name": "first",
+      "ids": [
+        12055,
+        63,
+        248046
+      ],
+      "logprobs": [
+        "LP -0.072984 12055:-0.072984 63:-4.174554 1707:-5.062187 6982:-5.156934 35344:-5.264690",
+        "LP -0.126773 63:-0.126773 7561:-3.293887 8119:-3.601390 248046:-4.346574 27653:-4.579248",
+        "LP -0.393140 248046:-0.393140 50921:-2.917449 6:-3.025312 13185:-3.028675 3443:-3.113375"
+      ],
+      "protocol": [
+        "RESUME 0",
+        "PP 7248 32768 50574 143.3",
+        "PP 15440 32768 102075 151.3",
+        "PP 23632 32768 148330 159.3",
+        "PP 25104 32768 183279 137.0",
+        "PP 32767 32768 233698 140.2",
+        "REUSED 0",
+        "T 12055",
+        "LP -0.072984 12055:-0.072984 63:-4.174554 1707:-5.062187 6982:-5.156934 35344:-5.264690",
+        "T 63",
+        "LP -0.126773 63:-0.126773 7561:-3.293887 8119:-3.601390 248046:-4.346574 27653:-4.579248",
+        "T 248046",
+        "LP -0.393140 248046:-0.393140 50921:-2.917449 6:-3.025312 13185:-3.028675 3443:-3.113375",
+        "DONE 3 32768 233703.4 2621.6 stop 1 3 0 67 2400 0 0 0.0 32768 0"
+      ],
+      "finish_reason": "stop",
+      "measurement": {
+        "generated_tokens": 3,
+        "prompt_tokens": 32768,
+        "prompt_ms": 233703.4,
+        "decode_ms": 2621.6,
+        "wall_seconds": 236.33094742099638,
+        "prefill_tok_s": 140.21190962561948,
+        "decode_tok_s": 1.1443393347574
+      },
+      "finite_logprobs": true
+    }
+  ],
+  "snapshots": [],
+  "steps": [
+    {
+      "label": "kernel-gap",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bf3e50d;b=0a908c16e292429980ff082da39f4bb9;m=121df3b889;t=65d420d4f9f45;x=267b5d69645cac9f",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "pid": 714568,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05599354300647974
+    },
+    {
+      "label": "embedding-state",
+      "argv": [
+        "/usr/bin/systemctl",
+        "--user",
+        "show",
+        "llama-server-qwen3embed.service",
+        "-p",
+        "ActiveState"
+      ],
+      "pid": 714587,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05569093499798328
+    },
+    {
+      "label": "health-runtime",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import ctypes,sys; ctypes.CDLL(sys.argv[1])",
+        "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0"
+      ],
+      "pid": 714606,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050719748993287794
+    },
+    {
+      "label": "before-health-cursor",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "pid": 714608,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05059945299581159
+    },
+    {
+      "label": "health",
+      "argv": [
+        "/home/yayoi/.local/bin/strata-xe-health",
+        "0000:05:00.0"
+      ],
+      "pid": 714610,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.15202126899384893
+    },
+    {
+      "label": "health-kernel",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bf42104;b=0a908c16e292429980ff082da39f4bb9;m=12ec60995a;t=65d42dbbc8017;x=2402b23cb05479b7",
+        "--no-pager",
+        "-o",
+        "short-iso-precise"
+      ],
+      "pid": 714623,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050710141003946774
+    },
+    {
+      "label": "kernel-before",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "pid": 714625,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050776054995367303
+    },
+    {
+      "label": "kernel-after",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bf42104;b=0a908c16e292429980ff082da39f4bb9;m=12ec60995a;t=65d42dbbc8017;x=2402b23cb05479b7",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "pid": 728555,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05067110899835825
+    }
+  ],
+  "deadline_seconds": 900,
+  "protocol_timeout_seconds": 600,
+  "log_limit_bytes": 8589934592,
+  "cpu_debugger_guard_sha256": "e9925535b6a1753c89f71c32fe4b67b52c20ae7d423df269cccabe14d3b64d21",
+  "preflight_fault_messages": [],
+  "binary_sha256": "892c1ef92e463ca3372730cb978f8876302b3b221deed2cf17a04dfc66d1c805",
+  "source_status_before": "",
+  "environment": {
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/umf/1.1/lib:/usr/lib/x86_64-linux-gnu:/opt/intel/oneapi/mkl/2026.1/lib",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "STRATA_PREFILL_FIRST": "0",
+    "STRATA_PREFILL_RING": "8",
+    "ZEL_ENABLE_LOADER_LOGGING": "1",
+    "ZEL_LOADER_LOG_CONSOLE": "1",
+    "ZEL_LOADER_LOGGING_LEVEL": "trace",
+    "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+    "ZE_ENABLE_VALIDATION_LAYER": "1",
+    "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+    "UR_LOG_LOADER": "level:debug;flush:debug;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:debug;flush:debug;output:stderr",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+    "STRATA_TRACE": "1",
+    "UR_ENABLE_LAYERS": "UR_LAYER_TRACING"
+  },
+  "argv": [
+    "/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/bench-upstream-v0.1.40.2-20261008/build-sycl-pure-20261008/strata",
+    "--pack",
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+    "--native",
+    "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+    "--serve",
+    "--max-context",
+    "33024",
+    "--spec",
+    "4",
+    "--spec-min-p",
+    "0",
+    "--mtp",
+    "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+    "--suffix-draft",
+    "0",
+    "--prefill",
+    "8192",
+    "--no-prefill-borrow",
+    "--expert-cache",
+    "128",
+    "--expert-profile",
+    "data/expert-profile.bin",
+    "--expert-cache-per-layer",
+    "--pool-workers",
+    "5",
+    "--pcie-frac",
+    "0",
+    "--spec-split",
+    "--adapt-swaps",
+    "0",
+    "--conversation-cache-mib",
+    "0",
+    "--conversation-cache-slots",
+    "4",
+    "--greedy",
+    "--short-read",
+    "0",
+    "--kv",
+    "int8"
+  ],
+  "mode": "pure",
+  "phase": "diagnostic",
+  "repetition": 1,
+  "configuration_note": "32768 prompt tokens from the same expanded real-code fixture, up to64 output tokens, context33024, chunk8192, int8 KV, normal MTP4, five CPU workers, cache128 requested, pcie0. FIRST0 and RING8 common to both. No prompt/decode retirement tuning for pure/patched-default. Diagnostic logs do not count as performance results. Actual cache count/workspaces/chunks/freeVRAM are captured from engine logs; upstream mixed packing differs from explicit-count fork contract.",
+  "reference_binary_sha256": "79a4b363d33f66f41d910be6274e609b4eb73f62afb0dc49bca72bf2a538d223",
+  "reference_result_sha256": "76ab5a8eeda05824963f8803c8dde7b5b69a7a2768c1fc5f034be7bacef72b62",
+  "source_sha256": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_v01402_32k.py": "72196da1f92468afdaca5dab33e8100cdec3c424636a18ad8826f461c99f800b",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/recover-xe.sh": "2f90005f79d2309747d917cff51dc53d8ee6192d68cb1feca074f84af8b0796c",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/owned_gdb.py": "61e1d206bf57bb320051cdd65943d23722bc523a602d80c54b7e7a2ad0d3f0d1",
+    "/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/bench-upstream-v0.1.40.2-20261008/sycl/src/prefill/prefill.cpp": "890e964f5583211fef89a4fabf030f75e230f6785584a1f0d37a3d8b471839f3"
+  },
+  "elapsed_seconds": 275.33819794301235,
+  "active_request": null,
+  "startup": [
+    "INFO context=33024 kv=int8 kv_resident=0 expert_slots=144 expert_cache_mib=281 expert_slots_primary=144 expert_cache_primary_mib=281 spec=4 mtp_max=0 lookup=0 vram_free_mib=836 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.00 spec_min_p=0.00 conversation_cache_mib=0 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=0 engine=0.1.40-sycl",
+    "READY 33024 stop"
+  ],
+  "inferior": {
+    "pid": 714645,
+    "start_ticks": 8130695,
+    "state": "t"
+  },
+  "debugger": {
+    "pid": 714627,
+    "start_ticks": 8130687,
+    "state": "R"
+  },
+  "prompt_fixture": {
+    "source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-copy-off/coding-context-256k-tokens.txt",
+    "source_sha256": "cc29e4427bcacb21c9f7df2d1f1a7d41897fce5bd76a8ca43d8c3c34d914dd2a",
+    "tokens": 32768,
+    "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v01402-32k-pure-diagnostic-r1/input-tokens.txt",
+    "sha256": "f52d885109cf6fd6b4b4a96e3d2a11a8bf740f7cbd30e2682d3c90139e793121"
+  },
+  "engine_log_bytes": 3773707271,
+  "engine_log_sha256": "53d5e4fa79e106ed6caf88be240d29a36ffecfc8214a85987f39c202d5b16ea5",
+  "source_status_after": "",
+  "exit_code": 0,
+  "exit_signal": null,
+  "cleanup": {
+    "forced": false,
+    "inferior_survived": false,
+    "gdb_survived": false
+  },
+  "new_fault_messages": [],
+  "finished_utc": "2026-10-07T16:51:42.098012+00:00"
+}

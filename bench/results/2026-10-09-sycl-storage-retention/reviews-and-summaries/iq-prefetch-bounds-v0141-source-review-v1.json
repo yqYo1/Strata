@@ -1,0 +1,63 @@
+{
+  "active": false,
+  "passed": true,
+  "compiled": false,
+  "gpu_executed": false,
+  "tests_executed": false,
+  "adopted": false,
+  "created_utc": "2026-10-09T09:13:07.536615+00:00",
+  "scope": "Root source-only bounded IQ AVX2 prefetch fix. No math/quantization/dispatch, SYCL queue/event/stager/cache/KV changes. Guard hint addresses before pointer formation; gate/up complete matrix bounds, other output row partition bounds. Default2048 retained; strict integer parse rejects malformed/overflow inputs by disabling hints. Not a proven GPU-fault cause or speed claim.",
+  "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/fix-sycl-iq-prefetch-bounds-v0141-20261009",
+  "base": "23268953314d12588fd3f496414a46bd426a7306",
+  "files": {
+    "src/kernels/cpu/iq_avx2.cpp": "6b12af8b57c12698de6a240c85706fdcfadccb67fb4aa72b2baa715cc3f00d4e",
+    "src/kernels/cpu/iq_avx2_rows.inl": "290e479093fcdcd3ba162f448bc9f422a7d85efbcd1917a7f11423937adb43c5"
+  },
+  "feature_stripped_entire_original_sources_equal": true,
+  "all_three_prefetch_sites_bounded": true,
+  "external_standard_reference": "https://eel.is/c++draft/expr.add",
+  "future_main_tests": [
+    "Actual helper/parser boundary host check with hint-address capture, fresh process for env inputs, ASan/UBSan; no test yet.",
+    "Actual native CPU row outputs byte-exact vs baseline across real formats/group sizes/partition boundaries.",
+    "Uniform115object engine rebuild, first-use32K diagnostics/full logits/live state/LP/MTP and separate repeated decode timings.",
+    "Physical262144/session boundaries before adoption."
+  ],
+  "edits": [
+    [
+      "inline void row_dot(const uint8_t* row, int nblocks, const block_q8_K* const* y, float* res) {",
+      "inline void row_dot(const uint8_t* row, const uint8_t* end, int nblocks, const block_q8_K* const* y, float* res) {"
+    ],
+    [
+      "inline void row_dot_iq2xs(const uint8_t* row, int nblocks, const block_q8_K* const* y, float* res) {",
+      "inline void row_dot_iq2xs(const uint8_t* row, const uint8_t* end, int nblocks, const block_q8_K* const* y, float* res) {"
+    ],
+    [
+      "inline void row_dot_any(const uint8_t* row, int nblocks, const block_q8_K* const* y, float* res) {\n    if constexpr (TY == 17) row_dot_iq2xs<NT>(row, nblocks, y, res);\n    else                    row_dot<TY, NT>(row, nblocks, y, res);\n}",
+      "inline void row_dot_any(const uint8_t* row, const uint8_t* end, int nblocks, const block_q8_K* const* y, float* res) {\n    if constexpr (TY == 17) row_dot_iq2xs<NT>(row, end, nblocks, y, res);\n    else                    row_dot<TY, NT>(row, end, nblocks, y, res);\n}"
+    ],
+    [
+      "             int r0, int r1) {\n    const block_q8_K* y[NT];",
+      "             int r0, int r1) {\n    if (r0 >= r1) return;\n    // up_off is the validated size of each complete Gate/Up matrix.\n    const uint8_t* gate_end = blob + up_off;\n    const uint8_t* up_end = blob + up_off + up_off;\n    const block_q8_K* y[NT];"
+    ],
+    [
+      "row_dot_any<TY, NT>(blob + (size_t) r * gu_row, nb, y, g);",
+      "row_dot_any<TY, NT>(blob + (size_t) r * gu_row, gate_end, nb, y, g);"
+    ],
+    [
+      "row_dot_any<TY, NT>(blob + up_off + (size_t) r * gu_row, nb, y, u);",
+      "row_dot_any<TY, NT>(blob + up_off + (size_t) r * gu_row, up_end, nb, y, u);"
+    ],
+    [
+      "void dot_rows(const uint8_t* w, size_t row_bytes, int n, const void* const* act, float* const* out, int r0, int r1) {\n    const block_q8_K* y[NT];",
+      "void dot_rows(const uint8_t* w, size_t row_bytes, int n, const void* const* act, float* const* out, int r0, int r1) {\n    if (r0 >= r1) return;\n    const uint8_t* end = w + (size_t) r1 * row_bytes;\n    const block_q8_K* y[NT];"
+    ],
+    [
+      "row_dot_any<TY, NT>(w + (size_t) r * row_bytes, n / QK_K, y, res);",
+      "row_dot_any<TY, NT>(w + (size_t) r * row_bytes, end, n / QK_K, y, res);"
+    ],
+    [
+      "                int r0, int r1) {\n    const __m128i values = _mm_loadu_si128((const __m128i*) kvalues_iq4nl);",
+      "                int r0, int r1) {\n    if (r0 >= r1) return;\n    const uint8_t* end = w + (size_t) r1 * row_bytes;\n    const __m128i values = _mm_loadu_si128((const __m128i*) kvalues_iq4nl);"
+    ]
+  ]
+}

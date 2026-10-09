@@ -1,0 +1,93 @@
+{
+  "created_utc": "2026-10-08T00:25:17.165138+00:00",
+  "goal_status": "active",
+  "goal_turn_classification": "progress",
+  "blocker": null,
+  "head": "5bf552bfbceb36276658c8d0a3714e3e114e631b",
+  "branch": "sync/upstream-2026-10-05",
+  "pr9": {
+    "url": "https://github.com/yqYo1/Strata/pull/9",
+    "draft": true,
+    "body_file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/pr9-v01402-main-cache-final-body.md",
+    "head_and_exact_body_verified": true
+  },
+  "private_candidate_sha256": "e82fc5de5480b72255b601759497d5810e86bf691350417ed0dc11ed6c429323",
+  "production_sha256_unchanged": "c88f94d81bfb22227310ea00d09ecc8ab21a6e670aee9556307746530f5af714",
+  "public_parent_files": 2458,
+  "public_leaf": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/upstream-v0.1.40.2-20261008/code32k/repro32k/main-cache-release-and-restore",
+  "all20_jobs_terminal": true,
+  "all_owned_identities_absent": true,
+  "mtp_counts_all20": [
+    43,
+    66
+  ],
+  "main_state_and_head_exact_checks": 12,
+  "clean_mean": {
+    "main-vmm-kept-ram": {
+      "prefill_tok_s": 443.27984882598014,
+      "decode_tok_s": 16.886414587773707
+    },
+    "main-vmm-half-ram": {
+      "prefill_tok_s": 443.7565503278666,
+      "decode_tok_s": 17.7016532848053
+    },
+    "main-vmm-full-ram": {
+      "prefill_tok_s": 433.30504249065183,
+      "decode_tok_s": 17.358999661922176
+    },
+    "main-vmm-full-snapshot": {
+      "prefill_tok_s": 442.2446209671897,
+      "decode_tok_s": 17.83019258476661
+    }
+  },
+  "relative_to_kept": {
+    "main-vmm-half-ram": {
+      "prefill_tok_s": 0.0010753962832936725,
+      "decode_tok_s": 0.04827778524529713
+    },
+    "main-vmm-full-ram": {
+      "prefill_tok_s": -0.022502277876484622,
+      "decode_tok_s": 0.027986111065319674
+    },
+    "main-vmm-full-snapshot": {
+      "prefill_tok_s": -0.0023353821779452666,
+      "decode_tok_s": 0.05588978004106493
+    }
+  },
+  "clean_main_full_ram_non_graph_restore_ms": [
+    51.588,
+    52.091
+  ],
+  "clean_main_graph_range_ms": [
+    537.714,
+    1004.037
+  ],
+  "clean_snapshot_suspend_ms": [
+    220.314,
+    221.539
+  ],
+  "closed_exec_sessions": [
+    51801,
+    71021,
+    63534,
+    57854,
+    67908,
+    65546,
+    26382,
+    16382
+  ],
+  "limitations": [
+    "Two fresh clean repeats per arm; do not attribute decode variation to prefill-only flags.",
+    "Same8192-token chunk and residual geometry; freed VRAM has not yet enlarged chunks.",
+    "MTP43/66 count parity is not all internal MTP tensor byte parity.",
+    "CPU standins exercise actual CacheLease logic but not SYCL mappings or every UB.",
+    "Fixed32767 GPU residual rows are not a full262144 default.",
+    "Full262144 occupancy/repeat/restore/clipped-tail/refusal/later-valid gates remain open.",
+    "Production binaries/defaults unchanged; no main merge."
+  ],
+  "next_steps": [
+    "Audit native output-head ownership/lifetime and exact compact-chunk allocation budget before private larger-chunk/head-parking experiments.",
+    "Keep all performance inputs>=32768 and first configuration diagnostic logs.",
+    "Require complete state/head/output math gates before quiet timing and full262144 gates before adoption."
+  ]
+}

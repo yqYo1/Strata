@@ -1,0 +1,72 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_tested": false,
+  "adopted": false,
+  "started_utc": "2026-10-08T07:16:24.932024+00:00",
+  "controller_sha256": "029dbbd77ce7e5932c54076cfa086c3b3be483fcd34fc997d224bc5388a84c50",
+  "steps": [
+    {
+      "label": "link",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-O3",
+        "-DNDEBUG",
+        "-fsycl",
+        "-Xsycl-target-backend=spir64",
+        "-cl-fp32-correctly-rounded-divide-sqrt",
+        "-fsycl-device-code-split=per_kernel",
+        "-qmkl=sequential",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-visible-commit-v1-20261008/generate.cpp.o",
+        "-o",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-prefill-poll-backoff-v2-20261008/strata",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-kv-access-safe-v2-20261008/libstrata_engine.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-prefill-poll-backoff-v2-20261008/libstrata_prefill.a",
+        "libstrata_spec.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-kv-access-safe-v2-20261008/libstrata_engine.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-indexer-spare-commit-v1-20261008/libstrata_kernels.a",
+        "libstrata_core.a",
+        "/usr/lib/x86_64-linux-gnu/libze_loader.so",
+        "libstrata_kernels_cpu.a",
+        "ggml/src/libggml-cpu.a",
+        "ggml/src/libggml-base.a",
+        "-lm"
+      ],
+      "pid": 3483865,
+      "exit_code": 0
+    }
+  ],
+  "scope": "Only replace the accepted prefill archive in the new7f054 indexer-spare candidate link. Reuse unchanged CPU-sanitizer-tested polling object/header. Indexer correctness remains a separate active full-capacity gate; no GPU job is launched, no wait cadence or profiling definition experiment is combined beyond this isolated prefill change.",
+  "elapsed_seconds": 28.261799430998508,
+  "baseline_binary_sha256": "7f054f8338c6552a5ae6dba548d2020ff2e3bd2661f4a41bb5a2289c56d07891",
+  "baseline_build_receipt_sha256": "2080d54305435c0e92afc3f1065acb9f346c257ab684040998489c797247cdae",
+  "poll_build_receipt_sha256": "cf17f2507fb47741a0f6b8c8f0d9fefda6ecfa12ef7970d1c23d63a6b0e1223a",
+  "poll_source_review_sha256": "c078ee4e9dda69763d2799f13cec5c1c5ab1501b7386bd74b02a7fd884e53efb",
+  "actual_prefill_object": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-prefill-poll-backoff-v1-20261008/prefill.cpp.o",
+  "actual_prefill_object_sha256": "22f7302d42384c81cae5e17972a56df176180845b26eb43d323dd8a5c2076699",
+  "actual_shadow_header": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-prefill-poll-backoff-v1-20261008/include/strata/host_wait.hpp",
+  "actual_shadow_header_sha256": "6e2448cbb3c7111dbaea4e02b479d5d41002803d5614ced77e8fa615a8beb9ef",
+  "baseline_link_input_sha256": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-visible-commit-v1-20261008/generate.cpp.o": "4dd9c24f9ccb705fa0500d14566347186ce55af43e895b44a34dc17cc84730b4",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-kv-access-safe-v2-20261008/libstrata_engine.a": "a0e871bd65fa60d1406af47e647546155bc27c1b4bcaf5c8dfe6384460baea60",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-no-root-prefill-20261008/libstrata_prefill.a": "1c4a8d644ce2d5d74d0466e59e109ea902b337bee084151f862b215026b8db1f",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/build/libstrata_spec.a": "ff29f801c00b281aed711354818d5fd319a65751670c62fa100ce0fa752069c5",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-indexer-spare-commit-v1-20261008/libstrata_kernels.a": "d3a3dd9af7ae1d720c6962ae457c535f67c45a836afff9b97fd2c1481f3b30a8",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/build/libstrata_core.a": "5548d5f96a0f8cf91ca1b8084cd5e38750039af04325d263b6135bb31d7fbfbd",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/build/libstrata_kernels_cpu.a": "b47e850690c39b9ea1869fb9057c4f1e3e55e7b2560b219f88c6fa5413f793eb",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/build/ggml/src/libggml-cpu.a": "e3cefe0cf3c866aec7d9f06b9181ca4263304dd7307af462195a9b869be953f2",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/build/ggml/src/libggml-base.a": "98059baeddf43574e613949b8382d67c088f3f62d1b84c3d47bef31581bcae1c"
+  },
+  "baseline_inputs_unchanged": true,
+  "candidate_binary": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-prefill-poll-backoff-v2-20261008/strata",
+  "candidate_binary_sha256": "777449741eccd123a2017d0bd2152e5b447c9095f9ec9515b7f00f57046f529b",
+  "candidate_archive_sha256": "0e70adfa393b6692d8205263c9d779e24d06f4b8031e997056821f78b33c09a5",
+  "only_prefill_link_input_replaced": true,
+  "pending": [
+    "Current indexer full-capacity sequence must complete",
+    "first diagnostic32K math gate against7f054",
+    "matched quiet>=32768 full-read comparisons",
+    "full-capacity gate before adoption"
+  ],
+  "finished_utc": "2026-10-08T07:16:53.197689+00:00"
+}

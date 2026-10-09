@@ -1,0 +1,114 @@
+{
+  "started_utc": "2026-10-06T20:03:59.584025+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "stage": "cli",
+  "scope": "Actual 262144-cell capacity; DS and copy offload disabled, main-cache VMM release and MTP immutable-weight release enabled; no GDB, no prevention/default-settings claim",
+  "healthy": false,
+  "binary_sha256": "79a4b363d33f66f41d910be6274e609b4eb73f62afb0dc49bca72bf2a538d223",
+  "controller_sha256": "644d89059cab22a6fa915247f6541e287f4e0cf065963d10dd0361ba5845086e",
+  "supervisor_sha256": "b2bcbedd8ddda14ba53585485d7832535ee705c2bf5067b69b78a8dfd3a406c9",
+  "environment_sha256": "3781f951812aa34d698c24b76f8a05bfde73181888c16d6874b7cbda164b4caf",
+  "steps": [
+    {
+      "label": "kernel-before",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "pid": 428649,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050549400999443606
+    },
+    {
+      "label": "boundary",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/residual-inplace/check_full_context.py",
+        "--stage",
+        "boundary",
+        "--context",
+        "262144",
+        "--recovery",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-copy-off",
+        "--executable",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/strata-residency-candidate",
+        "--environment-file",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-copy-off/environment.json",
+        "--release-draft",
+        "--verify-draft",
+        "--job-timeout",
+        "30",
+        "--protocol-timeout",
+        "5400",
+        "--shutdown-timeout",
+        "30"
+      ],
+      "pid": 428652,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 1.0023466669999834
+    },
+    {
+      "label": "cli",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/residual-inplace/check_full_context.py",
+        "--stage",
+        "cli",
+        "--context",
+        "262144",
+        "--recovery",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-copy-off",
+        "--executable",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/strata-residency-candidate",
+        "--environment-file",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-copy-off/environment.json",
+        "--release-draft",
+        "--verify-draft",
+        "--job-timeout",
+        "7200",
+        "--protocol-timeout",
+        "5400",
+        "--shutdown-timeout",
+        "30"
+      ],
+      "pid": 428720,
+      "exit_code": 1,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 7232.629447013
+    },
+    {
+      "label": "kernel-after",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=beecd66;b=0a908c16e292429980ff082da39f4bb9;m=18dd181db;t=65d317d2d6897;x=948bc89349933cd3",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "pid": 866904,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050631314999918686
+    }
+  ],
+  "active_stage": null,
+  "summary_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-copy-off/cli-262144-strata-residency-candidate-draft-lease-verified/summary.json",
+  "completed_stages": [
+    "boundary"
+  ],
+  "error": "RecoveryError('cli: failed; see /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-copy-off/cli-supervisor/cli.stdout and /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-copy-off/cli-supervisor/cli.stderr')",
+  "new_fault_messages": [],
+  "finished_utc": "2026-10-06T22:04:33.323738+00:00"
+}

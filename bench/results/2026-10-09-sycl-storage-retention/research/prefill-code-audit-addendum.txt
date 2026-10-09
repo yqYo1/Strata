@@ -1,0 +1,47 @@
+# Prefill調査追補：ローカル実装照合と一次出典
+
+調査対象 checkout: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009` (依頼で示された HEAD)。リポジトリを変更せず、GPU・build・test・benchmarkは実行していない。以下のローカル行番号はこのcheckoutで `nl -ba` により確認。
+
+## 重要な訂正：MoEの量子化GEMMは当該SYCL buildで既にあるか
+
+SYCLでのQwen3.8 MoE expert GEMMは「既にFP16展開+batched GEMM」と断定できない。より正確には当該buildではMMQもfused IQ kernelも未buildで、batched prefill fallbackのFP16経路となる。根拠:
+
+- `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009/sycl/src/prefill/moe_fused_stub.cpp:1-3,19-30` はSYCLのstub自身が「MMQ plan is empty here」とし、fused IQ `native_supported()` も常にfalseとする。
+- `sycl/src/prefill/prefill.cpp:961-987` は `mmq::built()` がfalseなら全層をfallbackにする。`sycl/src/prefill/prefill.cpp:3985-4001` ではnative IQ fuseも `native_supported()` によって除外される。
+- `sycl/src/prefill/prefill.cpp:4077-4100, 4236-4238` のfallbackはhostでtoken/expert groupingをし、non-compact時に`gather_rows16`でFP16 rowsを集約する。`include/strata/prefill/gemm.hpp:43-48` と `sycl/src/prefill/gemm.dp.cpp:876-898` はnative GGUF weightをFP16 scratchへdequantして batched f16 GEMMする動作を明記・実装する。compact modeはexpert計算の一部中間領域を削るがMMQを有効にしない。
+- 同じcheckoutには `sycl/src/prefill/moe_mmq.dp.cpp:173-180` がIQ3_S向け `mul_mat_q_case` を持つ一方、stub/build設定上これはactive MMQ contextには接続されていない。単なるコード存在は実行経路を意味しない。
+
+したがって前レポートの「IQ3_S quantized-weight reuse MoE GEMM」は重複案ではない。しかし実装済みコードの単純な性能比較はない。既存MoE経路の性能を示す実測として混同しないこと。FP16 dequantを避ける新経路はCUDA命令のコピーではなく、B570で実行できるSYCL DPAS/subgroup kernelとしてIQ3_S LUT、sign、scale decodeを実装する必要がある。down-formatも実packのlayer formatを調べて対応型を絞る。現在のhost gather/orderは`prefill.cpp:4078-4163`、weight gather/quantized productをするMMQ構造の参考は`moe_mmq.dp.cpp:162-185`。
+
+## 既存のlayer-majorとdecode資源lease：第一案は機能追加でなく条件付きA/B
+
+このcheckoutには提案したphase transactionに相当する仕組みがすでにある。`sycl/src/prefill/prefill.cpp:2332-2345` で `STRATA_PREFILL_LAYER_MAJOR=1` は複数chunk時、`=2` は常にlayer-majorを選ぶ。layer-majorの制約は同ファイル`2381-2412`にあり、全layerを持つsingle-GPU、compact FP16 path、sourceあり、KV page全resident、PLE preloadなしが必要。特にKV int8/streaming利用時は `kv_mode != 0` で明示的に拒否される。このため依頼時の `KV int8 resident32768` 設定では条件に合わない可能性が高く、実構成で各QSA KV page modeを確認してから比較する必要がある。256Kを満たすためにKV streamingを無効化してlayer-majorだけ通すのは文脈要件を損なう恐れがあり、容量根拠なしに勧めない。
+
+resource controls:
+- `STRATA_PREFILL_RELEASE_CACHE=1` のcache suspension hookはserve側 `sycl/src/program/generate.cpp:7661-7670`、native generate `11615-11728` でgraph guard込みで接続される。layer-major `prefill.cpp:2418-2577` はresident cacheのsnapshot/restore leaseを持ち、restore失敗ではunbacked cacheを使わせずterminate。layer-majorだけではなくcacheを実際に解放するには当該env設定が要る。
+- MTP decode weightsは `generate.cpp:7591-7594` と `11696-11698` から suspend/restore callbackを設定。`sycl/src/prefill/prefill.cpp:2583-2609` がcallbackをleaseし、`sycl/src/core/mtp.cpp:212-242` はidle後、immutable RAM copyを検証し、captured graphsを破棄してphysical backingを外す。`mtp.cpp:247-270` は同VAに再割当、RAMからcopyし、payload再検証する。これはすでに実装済みの「MTP weight release+restore」であり、改善余地は追加実装でなく、設定別でprompt時間へのnet benefitと正しさを測ること。明示的なdecode cache全解放は数秒級の固定費を持ち得るため、small delta promptに無条件適用しない。
+- `sycl/src/prefill/prefill.cpp:2612-2647` 以降はlayer cacheを作り、GPU残差token数を割当てる。layer-majorはデコード用cache枠だけをpromptサイズへ転用する単純なfree-space機能ではなく、層ごとに全promptを通す別schedule+temporary layer expert cache。候補を既存mechanismのABとして扱う。
+
+最小比較は現設定の32K以上で、(a)既定 chunk-major、(b)layer-major、(c)layer-major+cache release、(d)MTP suspendを含む既定実行。prefill throughputは遷移・graph再captureを含むtotalで評価し、decodeを別採否にする。KV mode不適合なら強行せず、コード現状として候補外にする。256K上限と直前を含め、通常の出力確認に加え、`prefill.cpp:2346-2376` の全K/V, GDN/conv, PLE history, indexer state dump diagnosticのbyte比較が可能。mode=2はone-chunk equivalence診断用でもあり、デフォルトはmode=0、他条件では効かない。
+
+CPUshareは `include/strata/prefill/prefill.hpp:179-193` の説明どおりsmall chunk (`stream_all_min`未満)、CPU pool idle時のnonresident expert分担であり、大きなprompt chunkでGPU MoE計算を加速する案とは別。大prompt対象の今回の優先候補ではない。実際のルータ/SYCL copy queueも別担当との分離を維持する。
+
+## B70参照GitHubのREADMEとstaged prefill実装を確認
+
+提供URLは `0xSero` から `sybil-solutions` へredirectする公開repo。README: https://github.com/sybil-solutions/qwen38-flash-next-b70-offload (元URL https://github.com/0xSero/qwen38-flash-next-b70-offload/)。閲覧できた。READMEは1x Arc Pro B70 32GB、PCIe4 x16、AMD EPYC 7443P (container 8 CPU)、NVMe 4台RAID0、Qwen3.8 EXL3 3.05bpwの結果として8K/32K prefill約1135/1193 tok/sを記載。16GiB RAM modeと32GiB modeで近いprefill速度。README lines 206-212, results details at https://github.com/sybil-solutions/qwen38-flash-next-b70-offload/blob/main/docs/results.md lines 197-214。
+
+この測定はArc B570 10GB、PCIe4x4、IQ3_Sの比較測定ではない。さらにdecodeはVRAM/RAMにないpickをそのstepではmask (weight 0)して後でNVMe fillする近似方式で、README lines 247-250がそれを説明。したがってoutput scoreは非bitexactで、decode性能は品質との引換え。この近似は全入力を正確に評価する今回の条件へ移植しない。価値あるのは完全入力prefillでのlayer lookahead/staged gather/copy構造と、attention/GDN/denseが8K forward 5.4s中4.2sという作者のprofile。これはweight streamingだけが速度の天井ではないことを示すが、別モデル quant/build。
+
+実装を確認した`plugin/exl3xpu/nvtier.py`: https://github.com/sybil-solutions/qwen38-flash-next-b70-offload/blob/main/plugin/exl3xpu/nvtier.py 。lines 2820-2825がstaged prefillの要約: NVMe->pinned host buffer->copy engine->VRAM staging、double buffering; layer Lをcompute中にL+1のdirect readsを開始。lines 2841-2861ではdefault host ring NB=4、2 VRAM staging buffer、32 reader threads、copy streamを作る。lines 2866-2889はO_DIRECT per-expert reads、ring reuse event wait。README lines 249も32 prefill reader threadsとprevious-layer overlapを明記する。これはCPU readers/pinned ring/transfer queue単独最適化としてこの担当から再提案しない。
+
+SYCL上で再利用可能な非転送着想: 読み込みを数層先まで行う際、正確なrouter resultを使って未来layer expertを事前fetch可能。ただし現StrataのMoEは層入力が直前層出力なのでL+1 expert IDをL層の開始前に知ることはできず、routeが終わったL+1分を次layerまでにstageするのが自然な最短lookahead。現Strata `Stager`は既にunpinned expertをCPU threadsでahead-of-launchへコピーしring深度を持つ (`sycl/src/prefill/prefill.cpp:352-370`)。推奨追加案としては強くない。
+
+## IQ3_S quantized-GEMM一次実装：GitHub `lighttransport/gemm`
+
+`qgithub.com` は一次sourceへのredirect proxyのため前レポートでは根拠URLとして弱かった。正規repo/file/commitを確認: https://github.com/lighttransport/gemm/commit/ed8a737 and https://github.com/lighttransport/gemm/blob/ed8a737/rdna4/llm/hip_llm_runner.c. commit short SHA `ed8a737`, full `ed8a7377ef7230e5d2369d2f7b35728d8a201476`. 追加diff行はcommit page 379-430: IQ2_S/IQ3_S quantized tile GEMM, M-axis chunks <=32, expert gather, gate/up, SwiGLU, down, scatter. Repository task note `https://github.com/lighttransport/gemm/blob/main/task-rdna4.md` lines 191-202, 227-241 reports RX 9070 XT 16GB, ROCm 7.2.2, Qwen3.6-35B-A3B IQ3_S, prefill pp512 1055 t/s and pp1024 1536 t/s, model-specific comparisons; 401->1001 t/s associated earlier grouped all-expert dequant+GEMM plus GPU top-K/histogram/scatter, while commit `ed8a737` says fused quantized MoE GEMM was another prefill win, without its standalone delta. Therefore don't ascribe 401->1001 solely to `ed8a737` and don't cite these as B570 speed predictions. Note's failed alternatives: bf16 dequant+hipBLASLt batched experts materialized BF16 weights and were too few tokens/expert; <=256 chunk limit arose from Tensile shape-plan failures. This reinforces keeping sparse MoE as group-per-expert quantized GEMM and specializing to current device.
+
+## Updated recommendation
+
+1. Immediate experiment: first check whether actual 32K/256K QSA KV backing meets layer-major's all-resident condition and whether compact is accepted. If yes, run A/B with existing `STRATA_PREFILL_LAYER_MAJOR=2` and optionally cache release on a 32K prompt; compare >32K and 256K only after lower length verifies state. If KV constraints reject it under the real maxctx configuration, skip it. There is no new feature work to propose here.
+2. Main kernel work: enable/build the non-fused IQ3_S quantized MoE GEMM in SYCL or implement a suitable B570 kernel, because the current SYCL native expert route dequantizes to FP16 and the fused stubs are intentionally not built. Start with one-layer/per-shape correctness and compare against the current FP16 path; maintain exact expert map/scatter, shared expert, router scales, order, and GDN/QSA state. 256K remains all tokens, with unchanged chunk boundaries and carry state. HIP DP4A/WMMA or CUDA warp intrinsics are implementation references only, not portable code.
+3. Do not spend this investigation's next slot on generic staged prefetch, CPUshare, or weight release itself: similar structure already exists locally, and B70 code's novel benefit depends on its NVMe/large RAM capacity and approximate decode. Keep perf expectations grounded in B570 profile and independent of decode metrics.

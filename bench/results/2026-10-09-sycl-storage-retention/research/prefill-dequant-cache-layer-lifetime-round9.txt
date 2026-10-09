@@ -1,0 +1,33 @@
+# SYCL prefill expert dequant/GEMM/MMQ cache lifetime audit (round 9)
+
+調査日: 2026-10-09  
+基準: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009` (HEAD `23268953314d12588fd3f496414a46bd426a7306`)  
+比較: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-layer-major-streamed-kv-v0141-20261009` (HEAD `6cdf81078128488e5797afb9e92824b7ebe51124`, source `92b849df…`)  
+方法: read-only source inspection and `diff -u` of the two worktrees. No build, test, GPU, profiler, service, or measurement was run. This report is limited to SYCL prefill expert storage and the candidate's streamed-KV layer-major path.
+
+## 結論
+
+候補の変更はQSAのINT8 K/V stageを層内の複数chunkで保持するものです。expert weightの新しいdequant cacheやGEMM weight cacheは追加していません。基準版にも既にlayer-major実行があり、各層のcompressed expert blobを一時cacheへロードし、その層の全prompt tokenを`run_impl()`で処理してから次層へ進みます。候補はこの同じexpert lifetimeを保ち、`kv_mode!=0`用stage ownershipを追加します。
+
+現在のnative非MMQ expert pathは、各chunk・各expertでcompressed blobからFP16 GU/downを再びdequantします。2組のdequant scratchは製品weight cacheではなく、直近の2個のexpert処理を受ける再利用bufferです。HIP hipBLASLtのmap cacheはGEMM algorithm descriptorをshape等でcacheするだけで、Wやdequant値を保存しません。MMQ pathは最大16 expertのquantized-weight gather groupを現在のchunk用に作り、グループの積が終わればその作業領域を次のgroupで上書きします。従ってコード上でcross-chunkの展開済みexpert weight再利用は確認できません。
+
+## 呼出しとstorageの寿命
+
+- `prefill.cpp:2381-2412`の既存`run_layer_major()`はall-resident KVを要求します。`prefill.cpp:2612-2616`で全expert分の一層用`layer_cache`を1層分だけ作り、`2700-2715`でそのlayerの全expert blobをロードし、`2729-2745`で`run_impl(tokens,n,pos0,err)`を一度呼びます。`run_impl()`は内部で通常の`T`-token chunkへ分けます。各層の開始前にcompute/copy/stagerをdrainし、次層では同じtemporary cache slotを上書きします。各QSA/GDN状態の寿命はこれと別で、SessionStateに保持されます。
+- `run_impl()`のMoE routeはchunkごとに構築されます。通常のexpert ringではslotを再利用する前に`m.used[]` eventを待ち、compute kernelがweightを読み終えた時点でslotを解放します (`prefill.cpp:4530-4625`, `4710-4750`, `4830+`)。candidateのlayer cacheは全expertをchunk開始前にcopy streamでロードして`m.copy->wait(); m.stager->finish()`してからlayerの計算を始めます (`run_layer_major():2698-2712`)。層を替える前にもqueue/stagerをdrainします。candidate固有のKV変更は`run_impl():3760-3794`周辺のstage owner、prefix seed、appendのスケジュールで、expert slotのkey/lifetimeやdequant kernelは変えていません。candidateは`run_layer_major():2403-2440`にplain INT8 identity staging等の条件を加え、`m.layer_major_streamed_kv`を`run_impl()`へ渡すだけです。
+- Native direct pathでは`DQ=2` (`prefill.cpp:242`)の`dq_gu[2]`/`dq_d[2]`を一つずつ選び、`iq_dequant_gu_f16`と`iq_dequant_f16`（nativeでないStrata形式なら`blob_dequant_f16`）でその場に展開します (`prefill.cpp:4778-4785`)。直後の`gemm.f16`がGU/downを消費します (`4794-4803`)。各scratchはGU `1280×2560` + down `2560×640` のFP16で合計 `9,830,400 B = 9.375 MiB`。DQ=2合計18.75 MiBであり、512 expertの保持領域ではありません。各slotは次の処理に再利用されるので、chunk境界をまたぐ有効weight keyもありません。dequantとGEMMは同じin-order compute queue上に順序付けられます。slot-eventはstreamed ring blobの読み終わりを保護し、scratchはqueue順序が保護します。
+- `Gemm::native()` (`gemm.dp.cpp:876-899`)もdense projectionなどで毎call `dequant_f16()`を行い、共有`scratch_`へ書いた後に`f16()`を呼びます。scratchは結果を残すcacheではありません。`Gemm::f16()`はHIPならshapeベースのhipBLASLtを試し、SYCL側はoneMKL GEMMへ進みます (`750-785`)。
+- HIP hipBLASLt `HipLtCallKey`は`(dtype,T,N,K,ldy,beta bits)` (`gemm.dp.cpp:120-135`)で、`HipLtState::cache`の値はalgorithm・supported・必要workspace (`:139-146`)です。keyにW/X/Y pointerもlayer/expertも無い一方、weightデータをcacheする構造もありません。cache lifetimeはGemm/HipLtStateで、`Gemm::~Gemm()`で破棄 (`:385-399`)。よってこれはアルゴリズム選択cacheであり、ポインタが再利用されたexpertの古い展開値を返しません。
+- MMQでは`MMQ_GROUP=16`、`grp_gu/grp_d`を最大16 expert分確保します (`prefill.cpp:949,1352-1360`)。`compute()`は現在のblobを`gather_native()`または`gather_strata_q2()`でgroup slotへコピーし (`4718-4744`)、グループ終端で`mmq_ctx->run()`をGU/downそれぞれ実行します (`4750-4775`)。次のgroup/chunkで領域を使い回します。`mmq::Product`に渡すweight pointer・type・rows/cols/bytesはcallごとに与えられます (`moe_mmq.dp.cpp:155-184`)。`Context`はggml backend contextを保持し、matrix productをcallごとに実行するため、ここで発見したreuseは作業領域/実行contextであり、expertのdequant/変換値のcacheではありません。MMQの集約は直接pathと異なる演算なので、両経路を跨ぐweight-cacheの等価性を主張しません。
+
+## 小さな数値保存cacheの候補
+
+候補pathは層内で同じcompressed expert weightsを複数chunkから読むため、native direct pathのdequant出力を限定個数だけ層の間保持する余地はあります。既存`dq_gu/d`をそのまま複数層のcacheと扱うのは不可（2-slot scratchに過ぎず、次expertで上書きされます）。試すなら、layer-major専用の追加cacheを`(layer ordinal, expert id, weight format/type, blob generation or immutable blob identity, exact geometry)`でtag付けし、単一layer lifetimeに限定、LRU eviction前に使用queueの完了を保証、次layerに入る前に無効化する設計が最小です。source blobが同じアドレスでも次layerで内容が置換されるため、pointer単独keyは誤りです。per-expert展開サイズは9.375 MiB、例えば4 entriesなら37.5 MiB追加です（実際のeviction率・速度効果は未測定）。
+
+valueを現行`iq_dequant_*_f16`が出すFP16 bit列そのものにすれば、重みのscale解釈・量子値のfloat演算・FP16丸め・GEMM順序を変えず、展開を省略する設計は可能です。ただし、native形式ごとに同じdequant関数を初回に使うこと、GEMMが消費するまでevictionしないこと、next layerの上書き前に必要なentryを退役させることが必要です。layer-majorに限ったhit/missを測り、hit時のFP16 bit一致、seed/resume、tail chunk、最終chunk、取消時のdrainを検証してから速度を測るべきです。baselineの通常chunk-majorではlayer間に他層が挟まるため、この提案の局所性は成立せず、共通cacheに広げる根拠はありません。
+
+MMQにもweight bytes gatherの削減余地は理論上ありますが、最大16 expert group・workspace lifetime・MMQのweight layout/algorithmをまたぐため、最初のbounded experimentには含めません。`gather_native`のコピーはdequantとは異なり、weight表現自体を変更しません。今の候補はMMQ group contentsをchunk間保持しないため、対象model/typeでMMQが使われるかを先に確認する必要があります。
+
+## 適用範囲と未確認点
+
+これは静的コード上のcache/lifetime監査です。候補の実機GPU parity、cache hit率、追加VRAM、転送量、時間短縮は未確認です。B570での測定値や外部ブログの速度数値はこの調査から導けません。candidateのKV stage再利用は、QSAのstage dataを一層・複数chunkで所有する話であり、expert weight dequant cacheとは別のallocationとinvalidation契約です。

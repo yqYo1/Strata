@@ -1,0 +1,548 @@
+{
+  "active": false,
+  "passed": true,
+  "created_utc": "2026-10-08T19:08:12.416512+00:00",
+  "scope": "Portable CPU struct fixtures under ASan/UBSan. No engine compiled, no driver loaded and no GPU run or hardware/performance qualification.",
+  "test_source_sha256": "696194bb665c6f6f79cb6067e7b6e8795d842cd6df381454c48c89d5fb9b99d9",
+  "candidate_source_sha256": "c8f6356707af8aaa521e273cf0733d8e650811f67474ba5c249db255d67f05f1",
+  "portable_struct_sha256": "976dffb763247253d8365ca9a6632fee4880357073754d263b187b37fcb75339",
+  "fixture_source_sha256": "edaafc295dba03deaa4619c0b81d0d6250bc5ff089f3ecf0a3ff2a0c74c291de",
+  "compile_argv": [
+    "/usr/bin/g++",
+    "-std=c++20",
+    "-O0",
+    "-g",
+    "-fsanitize=address,undefined",
+    "-fno-omit-frame-pointer",
+    "-pthread",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/host-prefill-accounting-v0141-cpu-check-v1/exact-struct-check.cpp",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/host-prefill-accounting-v0141-cpu-check-v1/exact-struct-check"
+  ],
+  "compile_exit_code": 0,
+  "run_exit_code": 0,
+  "cases": [
+    "unset_and_zero_flags_emit_no_report_or_counter_allocation",
+    "full_context_sized_counts_exceed32bits_without_truncation",
+    "all48_layer_byte_and_count_totals_consistent",
+    "layer_major_reinitialization_does_not_reset_counts",
+    "negative_and_outside_layer_ids_rejected_before_count_mutation",
+    "invalid_and_changed_layer_counts_rejected",
+    "disjoint_issuer_and_consumer_fields_read_after_join",
+    "CPU_and_wait_scopes_reported_separately",
+    "host_only_reporting_returns_before_native_timestamp_queries"
+  ],
+  "asan_ubsan_passed": true,
+  "reported_fixtures": [
+    {
+      "tokens": 262139,
+      "chunks": 32,
+      "expert_copies": 786432,
+      "expert_bytes": 1648562798592,
+      "expert_submit_host_ms": 78.6432,
+      "group_gpu_wait_host_ms": 2300.0,
+      "group_cpu_ms": 7.0,
+      "group_profiler_host_ms": 3.0,
+      "issuer_publication_wait_host_ms": 4.0,
+      "host_copy_worker_ms": 500.0,
+      "wall_ms": 80000.0,
+      "layers": [
+        {
+          "layer": 0,
+          "copies": 16384,
+          "bytes": 32768000000
+        },
+        {
+          "layer": 1,
+          "copies": 16384,
+          "bytes": 32835108864
+        },
+        {
+          "layer": 2,
+          "copies": 16384,
+          "bytes": 32902217728
+        },
+        {
+          "layer": 3,
+          "copies": 16384,
+          "bytes": 32969326592
+        },
+        {
+          "layer": 4,
+          "copies": 16384,
+          "bytes": 33036435456
+        },
+        {
+          "layer": 5,
+          "copies": 16384,
+          "bytes": 33103544320
+        },
+        {
+          "layer": 6,
+          "copies": 16384,
+          "bytes": 33170653184
+        },
+        {
+          "layer": 7,
+          "copies": 16384,
+          "bytes": 33237762048
+        },
+        {
+          "layer": 8,
+          "copies": 16384,
+          "bytes": 33304870912
+        },
+        {
+          "layer": 9,
+          "copies": 16384,
+          "bytes": 33371979776
+        },
+        {
+          "layer": 10,
+          "copies": 16384,
+          "bytes": 33439088640
+        },
+        {
+          "layer": 11,
+          "copies": 16384,
+          "bytes": 33506197504
+        },
+        {
+          "layer": 12,
+          "copies": 16384,
+          "bytes": 33573306368
+        },
+        {
+          "layer": 13,
+          "copies": 16384,
+          "bytes": 33640415232
+        },
+        {
+          "layer": 14,
+          "copies": 16384,
+          "bytes": 33707524096
+        },
+        {
+          "layer": 15,
+          "copies": 16384,
+          "bytes": 33774632960
+        },
+        {
+          "layer": 16,
+          "copies": 16384,
+          "bytes": 33841741824
+        },
+        {
+          "layer": 17,
+          "copies": 16384,
+          "bytes": 33908850688
+        },
+        {
+          "layer": 18,
+          "copies": 16384,
+          "bytes": 33975959552
+        },
+        {
+          "layer": 19,
+          "copies": 16384,
+          "bytes": 34043068416
+        },
+        {
+          "layer": 20,
+          "copies": 16384,
+          "bytes": 34110177280
+        },
+        {
+          "layer": 21,
+          "copies": 16384,
+          "bytes": 34177286144
+        },
+        {
+          "layer": 22,
+          "copies": 16384,
+          "bytes": 34244395008
+        },
+        {
+          "layer": 23,
+          "copies": 16384,
+          "bytes": 34311503872
+        },
+        {
+          "layer": 24,
+          "copies": 16384,
+          "bytes": 34378612736
+        },
+        {
+          "layer": 25,
+          "copies": 16384,
+          "bytes": 34445721600
+        },
+        {
+          "layer": 26,
+          "copies": 16384,
+          "bytes": 34512830464
+        },
+        {
+          "layer": 27,
+          "copies": 16384,
+          "bytes": 34579939328
+        },
+        {
+          "layer": 28,
+          "copies": 16384,
+          "bytes": 34647048192
+        },
+        {
+          "layer": 29,
+          "copies": 16384,
+          "bytes": 34714157056
+        },
+        {
+          "layer": 30,
+          "copies": 16384,
+          "bytes": 34781265920
+        },
+        {
+          "layer": 31,
+          "copies": 16384,
+          "bytes": 34848374784
+        },
+        {
+          "layer": 32,
+          "copies": 16384,
+          "bytes": 34915483648
+        },
+        {
+          "layer": 33,
+          "copies": 16384,
+          "bytes": 34982592512
+        },
+        {
+          "layer": 34,
+          "copies": 16384,
+          "bytes": 35049701376
+        },
+        {
+          "layer": 35,
+          "copies": 16384,
+          "bytes": 35116810240
+        },
+        {
+          "layer": 36,
+          "copies": 16384,
+          "bytes": 35183919104
+        },
+        {
+          "layer": 37,
+          "copies": 16384,
+          "bytes": 35251027968
+        },
+        {
+          "layer": 38,
+          "copies": 16384,
+          "bytes": 35318136832
+        },
+        {
+          "layer": 39,
+          "copies": 16384,
+          "bytes": 35385245696
+        },
+        {
+          "layer": 40,
+          "copies": 16384,
+          "bytes": 35452354560
+        },
+        {
+          "layer": 41,
+          "copies": 16384,
+          "bytes": 35519463424
+        },
+        {
+          "layer": 42,
+          "copies": 16384,
+          "bytes": 35586572288
+        },
+        {
+          "layer": 43,
+          "copies": 16384,
+          "bytes": 35653681152
+        },
+        {
+          "layer": 44,
+          "copies": 16384,
+          "bytes": 35720790016
+        },
+        {
+          "layer": 45,
+          "copies": 16384,
+          "bytes": 35787898880
+        },
+        {
+          "layer": 46,
+          "copies": 16384,
+          "bytes": 35855007744
+        },
+        {
+          "layer": 47,
+          "copies": 16384,
+          "bytes": 35922116608
+        }
+      ]
+    },
+    {
+      "tokens": 32767,
+      "chunks": 4,
+      "expert_copies": 4096,
+      "expert_bytes": 4096000,
+      "expert_submit_host_ms": 0.8192,
+      "group_gpu_wait_host_ms": 0.4096,
+      "group_cpu_ms": 0.04096,
+      "group_profiler_host_ms": 0.0,
+      "issuer_publication_wait_host_ms": 0.008192,
+      "host_copy_worker_ms": 0.0,
+      "wall_ms": 1.0,
+      "layers": [
+        {
+          "layer": 0,
+          "copies": 86,
+          "bytes": 86000
+        },
+        {
+          "layer": 1,
+          "copies": 86,
+          "bytes": 86000
+        },
+        {
+          "layer": 2,
+          "copies": 86,
+          "bytes": 86000
+        },
+        {
+          "layer": 3,
+          "copies": 86,
+          "bytes": 86000
+        },
+        {
+          "layer": 4,
+          "copies": 86,
+          "bytes": 86000
+        },
+        {
+          "layer": 5,
+          "copies": 86,
+          "bytes": 86000
+        },
+        {
+          "layer": 6,
+          "copies": 86,
+          "bytes": 86000
+        },
+        {
+          "layer": 7,
+          "copies": 86,
+          "bytes": 86000
+        },
+        {
+          "layer": 8,
+          "copies": 86,
+          "bytes": 86000
+        },
+        {
+          "layer": 9,
+          "copies": 86,
+          "bytes": 86000
+        },
+        {
+          "layer": 10,
+          "copies": 86,
+          "bytes": 86000
+        },
+        {
+          "layer": 11,
+          "copies": 86,
+          "bytes": 86000
+        },
+        {
+          "layer": 12,
+          "copies": 86,
+          "bytes": 86000
+        },
+        {
+          "layer": 13,
+          "copies": 86,
+          "bytes": 86000
+        },
+        {
+          "layer": 14,
+          "copies": 86,
+          "bytes": 86000
+        },
+        {
+          "layer": 15,
+          "copies": 86,
+          "bytes": 86000
+        },
+        {
+          "layer": 16,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 17,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 18,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 19,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 20,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 21,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 22,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 23,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 24,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 25,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 26,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 27,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 28,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 29,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 30,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 31,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 32,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 33,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 34,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 35,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 36,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 37,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 38,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 39,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 40,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 41,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 42,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 43,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 44,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 45,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 46,
+          "copies": 85,
+          "bytes": 85000
+        },
+        {
+          "layer": 47,
+          "copies": 85,
+          "bytes": 85000
+        }
+      ]
+    }
+  ]
+}

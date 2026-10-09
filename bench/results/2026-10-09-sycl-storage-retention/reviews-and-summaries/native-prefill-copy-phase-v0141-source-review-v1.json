@@ -1,0 +1,28 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_executed": false,
+  "adopted": false,
+  "created_utc": "2026-10-09T04:48:12.527452+00:00",
+  "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-prefill-copy-phase-v0141-20261009",
+  "base_head": "6caa1421f9212750a425fe1729139ffdde6e9f9a",
+  "source_sha256": "6f640c753babb3e29f15a3c14db2998d7ed6195bf399788905031c6a94028a6f",
+  "device_header_sha256": "8805874ecb1d58d7acea8ca931154a38d0ad3d623f7c5ee8d599fa2ba56a841b",
+  "changed_engine_files": [
+    "sycl/src/prefill/prefill.cpp"
+  ],
+  "default_guard_removed_entire_original_prefill_source_byte_identical": true,
+  "decoder_common_header_and_cpu_source_byte_identical": true,
+  "lifetime_review": [
+    "Successful run_impl/run_layer_major and drain_pipeline precede retirement; diagnostic dump precedes retirement.",
+    "OnDevice selects the owning device for retirement and recreation. Both compute and native copy queues wait_and_throw before releasing any expert DMA buffer.",
+    "Stager destructor finishes issued work, signals quit, joins every host worker, then frees pinned host buffers and completed-event references.",
+    "All copied/used event pointers are deleted and set null; all stage_live=false and used_of=i before the copy queue owner is removed. The qualified release() already handles null pointers.",
+    "Registered destroy_queue removes only the owned queue and sets the raw pointer null. No native Level Zero destroy is called after ownership transfer.",
+    "A later Prefill::run recreates only copy queue, expert ring events and Stager using the same init settings. Existing compute buffers, KV, PLE (which uploads on compute queue), weights and decoder graphs stay alive.",
+    "No first-use or lifetime gate proves performance, global hang freedom or full256K correctness. GPU32K and full-capacity lifecycle qualification remain required."
+  ],
+  "source_diff_sha256": "caae06f4b0de810199c06ac6e8c7af4e4311dbcf79d327f0281131eed6ab748b",
+  "native_release_requires_unprofiled_copy_engine_1": true,
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9"
+}

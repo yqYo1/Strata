@@ -1,0 +1,80 @@
+{
+  "active": false,
+  "passed": true,
+  "started_utc": "2026-10-07T22:22:05.268382+00:00",
+  "controller_sha256": "e9fc0775b47ab2f82ab48a1fac199ff8b5e23ea0c40b2a8dd58fe5ff0e0e5fe7",
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_layer_gpu_release_v01402_code32k.py",
+        "layer2-gpu-release-layout1",
+        "diagnostic",
+        "1"
+      ],
+      "started_utc": "2026-10-07T22:29:45.419408+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T22:33:34.285157+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 173873.7,
+        "decode_ms": 6627.4,
+        "wall_seconds": 180.50819332500396,
+        "prefill_tok_s": 188.45863405448895,
+        "decode_tok_s": 9.65687901741256
+      },
+      "release": "strata mtp decode release: 939524096 physical bytes, experts and head; K/V retained; total 779.040 ms, wait 0.503 ms, unmap 43.163 ms, verify 735.371 ms, verified=1, graph_drop 0.001 ms",
+      "restore": "strata mtp decode restore: 931016700 payload bytes from RAM, same addresses; total 990.554 ms, map 32.144 ms, copy 224.597 ms, verify 733.812 ms, verified=1"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_layer_gpu_release_v01402_code32k.py",
+        "layer2-gpu-release-layout1",
+        "state",
+        "1"
+      ],
+      "started_utc": "2026-10-07T22:33:34.286376+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T22:35:31.405628+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 75175.4,
+        "decode_ms": 3700.8,
+        "wall_seconds": 78.89050536599825,
+        "prefill_tok_s": 435.8872716340718,
+        "decode_tok_s": 17.293558149589277
+      },
+      "release": "strata mtp decode release: 939524096 physical bytes, experts and head; K/V retained; total 765.249 ms, wait 0.011 ms, unmap 35.861 ms, verify 729.376 ms, verified=1, graph_drop 0.001 ms",
+      "restore": "strata mtp decode restore: 931016700 payload bytes from RAM, same addresses; total 973.640 ms, map 21.294 ms, copy 227.964 ms, verify 724.381 ms, verified=1"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_layer_gpu_release_v01402_code32k.py",
+        "layer2-gpu-release-layout1",
+        "state",
+        "2"
+      ],
+      "started_utc": "2026-10-07T22:35:31.406275+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T22:37:28.082567+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 75225.3,
+        "decode_ms": 3792.6,
+        "wall_seconds": 79.02416132199869,
+        "prefill_tok_s": 435.59812988449363,
+        "decode_tok_s": 16.874967041079998
+      },
+      "release": "strata mtp decode release: 939524096 physical bytes, experts and head; K/V retained; total 767.590 ms, wait 0.012 ms, unmap 37.316 ms, verify 730.260 ms, verified=1, graph_drop 0.001 ms",
+      "restore": "strata mtp decode restore: 931016700 payload bytes from RAM, same addresses; total 973.164 ms, map 21.613 ms, copy 226.225 ms, verify 725.325 ms, verified=1"
+    }
+  ],
+  "minimum_comparison_tokens": 32768,
+  "scope": "Wait for the completed compact/RAM-row32K exact-state gates, then logged32K and two fresh32K full-state/head/output controls of all-GPU residuals with MTP release/immutable-RAM restoration and payload verification. No clean speed/full256K claim.",
+  "finished_utc": "2026-10-07T22:37:28.083434+00:00"
+}

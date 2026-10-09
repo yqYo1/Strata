@@ -1,0 +1,121 @@
+{
+  "started_utc": "2026-10-07T14:24:30.516042+00:00",
+  "control_commit": "60fc342df60ec970b60c54a3d07a3f7a53273bdd",
+  "scope": "Actual CLI footer/drain and wait fragments; CPU queue stand-ins, no GPU",
+  "sources": {
+    "control": {
+      "sycl/src/program/generate.cpp": "a5aaa09c5893a87e29f8c83b532f7b24a0dbceb84093c4a81b5847cd4f08f831",
+      "sycl/src/kernels/cuda/verify_kernels.dp.cpp": "9d9de2d984d135c4ad725e7a0377acda88cebd290a8c028b6a59dac8be9bdef0",
+      "sycl/src/kernels/cuda/elementwise.dp.cpp": "9127065091922e30990b76eae1490d585954657768af79f59ac0501c2b012748",
+      "sycl/include/dpct/blas_utils.hpp": "66541bfa0442725401577cea576bcdb05c851f3f0bbb684f62dee842909c53b5"
+    },
+    "candidate": {
+      "sycl/src/program/generate.cpp": "4ec6d3fc4c2f5f9071a182c7f785af7ca38b5bebcf1fc2775ce9dd38f09353eb",
+      "sycl/src/kernels/cuda/verify_kernels.dp.cpp": "5c87558f9b82ea066164b077c12361c5ec233b8085047262ebddedc5b083d40d",
+      "sycl/src/kernels/cuda/elementwise.dp.cpp": "f7d94db9b4764b5e41aaae6042120b001ccbdb66855a2539042ad94e0e17153e",
+      "sycl/include/dpct/blas_utils.hpp": "c742fa32e2f47cfccc57568d96d03afcc646ad80cbcc7dcc7aee30f052788a15"
+    }
+  },
+  "runs": [
+    {
+      "variant": "control",
+      "group": "shutdown",
+      "mode": "primary",
+      "exit_code": -6,
+      "expected_result": true
+    },
+    {
+      "variant": "control",
+      "group": "shutdown",
+      "mode": "secondary",
+      "exit_code": -6,
+      "expected_result": true
+    },
+    {
+      "variant": "control",
+      "group": "waits",
+      "mode": "ge",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "control",
+      "group": "waits",
+      "mode": "ge-or",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "control",
+      "group": "waits",
+      "mode": "doorbell",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "control",
+      "group": "descriptor",
+      "mode": "policy",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "group": "shutdown",
+      "mode": "primary",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "group": "shutdown",
+      "mode": "secondary",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "group": "shutdown",
+      "mode": "failed-drain",
+      "exit_code": 1,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "group": "waits",
+      "mode": "ge",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "group": "waits",
+      "mode": "ge-or",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "group": "waits",
+      "mode": "doorbell",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "group": "descriptor",
+      "mode": "policy",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "group": "policy",
+      "mode": "policy",
+      "exit_code": 0,
+      "expected_result": true
+    }
+  ],
+  "passed": true,
+  "finished_utc": "2026-10-07T14:24:37.840336+00:00"
+}

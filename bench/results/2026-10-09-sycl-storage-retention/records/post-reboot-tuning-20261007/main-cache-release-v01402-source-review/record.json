@@ -1,0 +1,29 @@
+{
+  "active": false,
+  "passed": true,
+  "created_utc": "2026-10-07T23:12:01.015671+00:00",
+  "scope": "Review of actual compiled private main-cache lease, callbacks and SYCL segment lifetime before32K model execution. CPU ownership/error evidence is included; not all runtime UB absent, actual mapping, full256K or performance proof.",
+  "binary_sha256": "e82fc5de5480b72255b601759497d5810e86bf691350417ed0dc11ed6c429323",
+  "source_sha256": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/prefill/prefill.cpp": "f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/core/expert_cache.cpp": "d7597d6be9993474a8d404e0dcc5318fb0d75c1bf6bacee068c9704ad9a3b730",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/core/verify.cpp": "e0deec57d957df79f39555840a70a316067113b18b6789d2b4e4d511607586f6",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/core/vmm.cpp": "1da2937797179aaef3345136e0c16877d4c76be49b927aa2f482a080f191d707",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/program/generate.cpp": "0437a6e9da9c9c3f4478eb3fc7b04dc45e4599728939c7828202aa9a970e012b",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/include/strata/sycl_execution_policy.hpp": "6584dda4fcab3c60b5a00f4b25a2e60c6c056931a8c4f0027b53435961e70338"
+  },
+  "host_check_sha256": "2cfa09b8e2ebb23b70b3def6c4f739416574f91a0ab1795ead2e875d662fdc9e",
+  "parent_controller_sha256": "28a03babdea6ae3b68ef43b9b7c64241e9627f9c55e480d1463d7dbcec5dbd79",
+  "controller_sha256": "a85471aae94f08920f61612c6d9e6dde0f1d907d46bb3835b90d34c051dd319f",
+  "preparer_sha256": "7da7d87a8e959117127a99bd8e76f05a1f7047bc3bf6b4e6017cdf0eac410fb3",
+  "review": [
+    "All four arms request128 experts with the same64MiB-segment main-cache allocation,8192-token chunks and32767 GPU residual rows. Fraction0 is the matched backing control;0.5 rounds the retained bytes up to a whole physical segment;1 releases all backing. Physical padding is distinct from logical payload and will be recorded rather than assumed.",
+    "The opt-in STRATA_PREFILL_RELEASE_CACHE allocation selects segmentation without --vram-elastic. Interactive elastic resizing remains explicitly rejected by require_sycl_cache_policy; no interactive command is used.",
+    "Main-cache suspend requires the cache graph-retirement/refresh callbacks. It drains its queue, resolves the complete immutable Arena source on the issuer using the current residency table, validates each source/destination extent, snapshots or verifies the payload, drains all registered device queues, retires graphs and only then shrinks physical backing. Partial-shrink active state enables rollback.",
+    "RAM spans cover only the released portion, including a partial expert at the kept boundary. Snapshot copies the logical tail from GPU before unmapping. Restore grows the original allocation, requires unchanged slots/reserved VA, copies the snapshot or immutable RAM spans, zeros uncovered logical bytes, waits, verifies bytes if requested and refreshes decoder/verifier cache pointers before readiness.",
+    "Verifier retirement waits pending commit and both queues before removing ordinary/no-reset/batch/commit/boundary graphs. Rebuild updates the cache base and records every legal verifier-window graph. Recording/finalization does not execute the model window; runtime full-state/head gates still check this independently.",
+    "Layer cache/residual storage is reclaimed after queues and staging drain and before main/MTP weight restoration. Original callbacks/cache/residency/R pointers are restored on scope exit. The existing MTP lease preserves dense/state/KV and immutable host sources.",
+    "The actual CacheLease CPU extraction matches current production and the compiled private source.19 ASan/UBSan cases check mixed layer order, mid-expert partial boundary, adaptive residency, no-release/partial/full RAM and snapshot, prevalidation, partial-shrink rollback and grow/refresh retry. Fakes do not establish SYCL mapping/hang safety.",
+    "Full262144 context cannot keep every residual row on10GiB: observed40960 bytes per row gives10737377280 bytes for262143 rows before KV/dense/cache/scratch. Fixed32767-row tests are32K only. Dynamic prefix budgeting and the older repeated-prefill retained-memory/rollback failure remain pending; no production default is changed."
+  ]
+}

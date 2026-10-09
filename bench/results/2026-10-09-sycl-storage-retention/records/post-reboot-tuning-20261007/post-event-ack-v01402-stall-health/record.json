@@ -1,0 +1,70 @@
+{
+  "active": false,
+  "healthy": true,
+  "started_utc": "2026-10-07T17:58:36.446686+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "scope": "Logged read-only H2D/kernel/D2H health after the private actual-DMA event candidate32K first-chunk watchdog, with no new xe faults in that job. No reset/rebind/reboot/service changes.",
+  "controller_sha256": "184c45cedcfac66910e49e16a60f70576c4f47e7f612a914395166eed3a664fd",
+  "steps": [
+    {
+      "label": "health-runtime",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import ctypes,sys; ctypes.CDLL(sys.argv[1])",
+        "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0"
+      ],
+      "pid": 944284,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050612193008419126
+    },
+    {
+      "label": "before-health-cursor",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "pid": 944286,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05059236500528641
+    },
+    {
+      "label": "health",
+      "argv": [
+        "/home/yayoi/.local/bin/strata-xe-health",
+        "0000:05:00.0"
+      ],
+      "pid": 944288,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.15103211499808822
+    },
+    {
+      "label": "health-kernel",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bf4699a;b=0a908c16e292429980ff082da39f4bb9;m=13ea5ca62a;t=65d43d9b88ce7;x=1290119e0a036d7d",
+        "--no-pager",
+        "-o",
+        "short-iso-precise"
+      ],
+      "pid": 944303,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05067562199837994
+    }
+  ],
+  "finished_utc": "2026-10-07T17:58:36.751375+00:00"
+}

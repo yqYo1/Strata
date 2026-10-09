@@ -1,0 +1,32 @@
+{
+  "active": false,
+  "prepared": true,
+  "compiled": false,
+  "cpu_float_identity_tested": false,
+  "gpu_tested": false,
+  "adopted": false,
+  "created_utc": "2026-10-08T11:28:31.768737+00:00",
+  "controller_sha256": "56fbac9617cb06ba6fefbe17d82a7721fe91107dc367d020a603c78a13826046",
+  "original_source": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl/src/kernels/cuda/qsa_decode_attn.dp.cpp",
+  "original_source_sha256": "41dfb04922276e91c81033ebdf2495d0e7130f04289722ff38ad7bc555d51679",
+  "candidate_source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-reduce12-sg32-v01402-source-v1/qsa_decode_attn.dp.cpp",
+  "candidate_source_sha256": "410594cafe51989256bbbd4fdc2cfe5d14cb94081f487fb289652dd40c33f467",
+  "upstream_reduce12_sha256": "e5ddc312dee28e2e31adcc36da5436fc77f2e1fa183905357c6f1643e154da89",
+  "scope": "Private source-only port of existing upstream experimental pre75 reduce12. SG32/transposed prompt arm only; preserve dot operands/expression,64-cell partials, scale and external merge. No engine binary or active GPU process changed.",
+  "mechanism": "Reduce twelve lane dot partials by the existing XOR16/8/4/2/1 pairing tree, distributed across head lanes. Sixteen subgroup exchanges per lane instead of twelve independent five-exchange sums. This instruction count is source-derived, not a speed measurement.",
+  "sycl_primary_reference": "https://github.khronos.org/SYCL_Reference/iface/group-algorithms-library.html",
+  "convergence_primary_reference": "https://github.khronos.org/SYCL_Reference/iface/group-functions.html",
+  "guards": [
+    "Only SG32&&TRANSPOSE_Q uses the new collective; launch_chunk_variant forces SG32.",
+    "All subgroup items evaluate all exchanges. Masks and loops are identical; lane-dependent output stores happen after the reduction.",
+    "Masked/past-end cell branch reads one shared srow[c] for a whole subgroup; it skips the collective uniformly.",
+    "No new barrier, queue/event change, global memory layout, vector-pointer alias, cache policy or hidden state.",
+    "Do not assert bit equality for arbitrary NaN payloads or nonfinite intermediate values."
+  ],
+  "pending": [
+    "Independent CPU FP32 tree identity check with finite, cancellation, signed-zero and subnormal cases.",
+    "Compile/actual dependency and single archive-member/link review after active full DD5 job exits.",
+    "First logged>=32768 head/used-state/IDs/logprobs/MTP/disk continuation gate.",
+    "Qualified quiet>=32768 ABBA with first and later full reads separate, then mandatory physical256K gate before adoption."
+  ]
+}

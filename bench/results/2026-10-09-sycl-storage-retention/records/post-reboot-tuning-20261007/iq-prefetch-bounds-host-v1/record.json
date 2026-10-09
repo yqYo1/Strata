@@ -1,0 +1,449 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_executed": false,
+  "measurement_executed": false,
+  "created_utc": "2026-10-09T09:56:22.638023+00:00",
+  "source": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/fix-sycl-iq-prefetch-bounds-v0141-20261009/src/kernels/cpu/iq_avx2.cpp",
+  "source_sha256": "6b12af8b57c12698de6a240c85706fdcfadccb67fb4aa72b2baa715cc3f00d4e",
+  "controller_sha256": "d53ba32990687a768372fee308e70b73733113a5ee163f9b7a474b048c18e91e",
+  "scope": "Actual extracted parser/hint helpers; hint calls captured with bounds oracle and volatile byte reads. CPU ASan/UBSan only, no math-kernel or runtime equivalence claim.",
+  "steps": [
+    {
+      "label": "compile",
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++20",
+        "-O1",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fno-pie",
+        "-no-pie",
+        "-fsanitize=address,undefined",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "case0",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test",
+        "2048"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "d340a62c7e60b71b7eb7669c5492b0e91d92590e6fcc85d2b84edc64b0f7862c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "case1",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test",
+        "0"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "003539de90515a859e6db33e38b39ba267e6117c6a723c960ea820ffad3043d8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "case2",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test",
+        "0"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "003539de90515a859e6db33e38b39ba267e6117c6a723c960ea820ffad3043d8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "case3",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test",
+        "0"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "003539de90515a859e6db33e38b39ba267e6117c6a723c960ea820ffad3043d8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "case4",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test",
+        "0"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "003539de90515a859e6db33e38b39ba267e6117c6a723c960ea820ffad3043d8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "case5",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test",
+        "1"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "74a7709e0036d4afd3a4a96c3a350df28b76f65c2fd644c5a33484ed51bf6a3a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "case6",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test",
+        "2"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "2d3f5e107ffb85c888aaac15b01a8e7a44f092b325c05f6de32473dbe775ba4c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "case7",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test",
+        "63"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "839acedb517b59f29890ef22c4485de4f44f02d6d1d88d2d8f6756282120c62e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "case8",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test",
+        "64"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "2a6f6833f791554db512cd20c963351f0286048baef53a641c7530d916186553",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "case9",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test",
+        "65"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "8f99eed637ff0bc36a19f744e341b182411723fb57b3da8374cb59fae12f51ac",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "case10",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test",
+        "512"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "ee6bc284a150956459c8652b60b86bb49accd344fde46742dcb4c96ed06d08ee",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "case11",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test",
+        "1024"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "017471efd5173af8fa1b3dc1b9f95d521db15fc27ca347ce50aa5a24d7bd6c6f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "case12",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test",
+        "2048"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "d340a62c7e60b71b7eb7669c5492b0e91d92590e6fcc85d2b84edc64b0f7862c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "case13",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test",
+        "2147483647"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "80257f562fcee7143f060baf80aba786a792358845c04b73d5b31490182fec31",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "case14",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test",
+        "0"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "003539de90515a859e6db33e38b39ba267e6117c6a723c960ea820ffad3043d8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "case15",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test",
+        "0"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "003539de90515a859e6db33e38b39ba267e6117c6a723c960ea820ffad3043d8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "case16",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test",
+        "0"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "003539de90515a859e6db33e38b39ba267e6117c6a723c960ea820ffad3043d8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "case17",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test",
+        "0"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "003539de90515a859e6db33e38b39ba267e6117c6a723c960ea820ffad3043d8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "case18",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test",
+        "0"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "003539de90515a859e6db33e38b39ba267e6117c6a723c960ea820ffad3043d8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "case19",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test",
+        "0"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "003539de90515a859e6db33e38b39ba267e6117c6a723c960ea820ffad3043d8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "case20",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test",
+        "0"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "003539de90515a859e6db33e38b39ba267e6117c6a723c960ea820ffad3043d8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "case21",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test",
+        "0"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "003539de90515a859e6db33e38b39ba267e6117c6a723c960ea820ffad3043d8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "case22",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test",
+        "2048"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "d340a62c7e60b71b7eb7669c5492b0e91d92590e6fcc85d2b84edc64b0f7862c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "case23",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq-prefetch-bounds-host-v1/actual-hint-host-test",
+        "0"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "003539de90515a859e6db33e38b39ba267e6117c6a723c960ea820ffad3043d8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "actual_parser_sha256": "0eae5650b533b171eaa2afac07f448f1811fa8c3e698cad60c8f4713b051a55a",
+  "actual_helper_sha256": "8f44aee0a7e436cea3e890a11fc3b2bd33c12a9b19c871f5bc2a034783d6513e",
+  "cases": [
+    {
+      "environment_value": null,
+      "expected": 2048,
+      "cases": 31080,
+      "bounded_reads": 24296,
+      "parsed_distance": 2048
+    },
+    {
+      "environment_value": "",
+      "expected": 0,
+      "cases": 31080,
+      "bounded_reads": 23202,
+      "parsed_distance": 0
+    },
+    {
+      "environment_value": "0",
+      "expected": 0,
+      "cases": 31080,
+      "bounded_reads": 23202,
+      "parsed_distance": 0
+    },
+    {
+      "environment_value": "-1",
+      "expected": 0,
+      "cases": 31080,
+      "bounded_reads": 23202,
+      "parsed_distance": 0
+    },
+    {
+      "environment_value": "-2147483648",
+      "expected": 0,
+      "cases": 31080,
+      "bounded_reads": 23202,
+      "parsed_distance": 0
+    },
+    {
+      "environment_value": "1",
+      "expected": 1,
+      "cases": 31080,
+      "bounded_reads": 27128,
+      "parsed_distance": 1
+    },
+    {
+      "environment_value": "2",
+      "expected": 2,
+      "cases": 31080,
+      "bounded_reads": 27110,
+      "parsed_distance": 2
+    },
+    {
+      "environment_value": "63",
+      "expected": 63,
+      "cases": 31080,
+      "bounded_reads": 26476,
+      "parsed_distance": 63
+    },
+    {
+      "environment_value": "64",
+      "expected": 64,
+      "cases": 31080,
+      "bounded_reads": 26467,
+      "parsed_distance": 64
+    },
+    {
+      "environment_value": "65",
+      "expected": 65,
+      "cases": 31080,
+      "bounded_reads": 26460,
+      "parsed_distance": 65
+    },
+    {
+      "environment_value": "512",
+      "expected": 512,
+      "cases": 31080,
+      "bounded_reads": 25618,
+      "parsed_distance": 512
+    },
+    {
+      "environment_value": "1024",
+      "expected": 1024,
+      "cases": 31080,
+      "bounded_reads": 25263,
+      "parsed_distance": 1024
+    },
+    {
+      "environment_value": "2048",
+      "expected": 2048,
+      "cases": 31080,
+      "bounded_reads": 24296,
+      "parsed_distance": 2048
+    },
+    {
+      "environment_value": "2147483647",
+      "expected": 2147483647,
+      "cases": 31080,
+      "bounded_reads": 23202,
+      "parsed_distance": 2147483647
+    },
+    {
+      "environment_value": "2147483648",
+      "expected": 0,
+      "cases": 31080,
+      "bounded_reads": 23202,
+      "parsed_distance": 0
+    },
+    {
+      "environment_value": "9999999999999999999999999999999",
+      "expected": 0,
+      "cases": 31080,
+      "bounded_reads": 23202,
+      "parsed_distance": 0
+    },
+    {
+      "environment_value": "-9999999999999999999999999999999",
+      "expected": 0,
+      "cases": 31080,
+      "bounded_reads": 23202,
+      "parsed_distance": 0
+    },
+    {
+      "environment_value": "+2048",
+      "expected": 0,
+      "cases": 31080,
+      "bounded_reads": 23202,
+      "parsed_distance": 0
+    },
+    {
+      "environment_value": " 2048",
+      "expected": 0,
+      "cases": 31080,
+      "bounded_reads": 23202,
+      "parsed_distance": 0
+    },
+    {
+      "environment_value": "2048 ",
+      "expected": 0,
+      "cases": 31080,
+      "bounded_reads": 23202,
+      "parsed_distance": 0
+    },
+    {
+      "environment_value": "2048junk",
+      "expected": 0,
+      "cases": 31080,
+      "bounded_reads": 23202,
+      "parsed_distance": 0
+    },
+    {
+      "environment_value": "junk",
+      "expected": 0,
+      "cases": 31080,
+      "bounded_reads": 23202,
+      "parsed_distance": 0
+    },
+    {
+      "environment_value": "00002048",
+      "expected": 2048,
+      "cases": 31080,
+      "bounded_reads": 24296,
+      "parsed_distance": 2048
+    },
+    {
+      "environment_value": "0000",
+      "expected": 0,
+      "cases": 31080,
+      "bounded_reads": 23202,
+      "parsed_distance": 0
+    }
+  ],
+  "parser_processes": 24,
+  "helper_cases": 745920,
+  "bounded_reads": 582238,
+  "harness_sha256": "5c0dd4c0ccae87e12cf8526b0bbf41d8dbe82e36e25d5ac555dc912e37c17e92",
+  "binary_sha256": "7038a2d7be8338fa9be39f60e695e6ef1e47ec48e3a269f1eeb2acd1a5ac6b52"
+}

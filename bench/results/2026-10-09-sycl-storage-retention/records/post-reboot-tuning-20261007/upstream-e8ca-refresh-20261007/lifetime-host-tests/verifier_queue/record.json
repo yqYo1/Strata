@@ -1,0 +1,26 @@
+{
+  "started_utc": "2026-10-07T14:17:31.904669+00:00",
+  "control_commit": "900025461a0fd70906e5b54a3380c4b1341f4aea",
+  "scope": "Production destructor and initializers; CPU queue/USM stand-ins, no GPU",
+  "sources": {
+    "control": {
+      "sycl/src/core/verify.cpp": "4784e341ade1d7d775265766781c345da44c1e3602eef7bc63eb15b11de323fa",
+      "sycl/include/strata/core/verify.hpp": "d3b3f923c53ef27325cbf7ee5d2fd362628cd36d50ef6105ee52b797102d9bb5"
+    }
+  },
+  "runs": [
+    {
+      "variant": "control",
+      "mode": "unused",
+      "exit_code": -6,
+      "expected_result": true
+    },
+    {
+      "variant": "control",
+      "mode": "copy-only",
+      "exit_code": -6,
+      "expected_result": true
+    }
+  ],
+  "passed": false
+}

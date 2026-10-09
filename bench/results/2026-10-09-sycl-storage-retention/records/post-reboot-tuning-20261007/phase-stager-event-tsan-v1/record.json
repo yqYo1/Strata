@@ -1,0 +1,27 @@
+{
+  "active": false,
+  "passed": false,
+  "scope": "ThreadSanitizer of the actual extracted Stager with CPU deferred-DMA events. Not a SYCL/GPU/runtime or model correctness proof.",
+  "parent_receipt_sha256": "769333b1b81af0c20a975cf0c98b5bad2c0d79d207c8643079ee4b01c59869a6",
+  "started_utc": "2026-10-09T06:53:16.232666+00:00",
+  "compile": [
+    "/usr/bin/g++",
+    "-std=c++20",
+    "-O1",
+    "-g",
+    "-pthread",
+    "-fsanitize=thread",
+    "-fno-omit-frame-pointer",
+    "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-prefill-copy-phase-v0141-20261009/sycl/include",
+    "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-stager-event-host-v1",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase_stager_event_host_v1.cpp",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-stager-event-tsan-v1/host-test"
+  ],
+  "compile_exit_code": 0,
+  "test_exit_code": 66,
+  "stdout": "",
+  "stderr_excerpt": "FATAL: ThreadSanitizer: unexpected memory mapping 0x61077ff50000-0x61077ff53000\n",
+  "racedetection_unavailable_reason": "ThreadSanitizer rejected this process address-space layout; no race-free claim.",
+  "finished_utc": "2026-10-09T06:53:21.857819+00:00"
+}

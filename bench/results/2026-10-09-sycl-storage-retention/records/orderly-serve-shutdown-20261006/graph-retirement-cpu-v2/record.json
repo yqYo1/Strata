@@ -1,0 +1,91 @@
+{
+  "started_utc": "2026-10-06T15:43:53.862040+00:00",
+  "scope": "Check actual graph retirement/release fragments with CPU resource stand-ins.\n\nThis checks ownership and error ordering, not GPU residency or model arithmetic.\nIt does not identify the allocation involved in the Oct 7 runtime crash.\n",
+  "control_commit": "60fc342df60ec970b60c54a3d07a3f7a53273bdd",
+  "sources": {
+    "sycl/src/core/mtp.cpp": "e8f0e9dfd78c2c2b9123d5e1f58059d54ca4c086f88ed7575098be4f1aca64f3",
+    "sycl/src/core/verify.cpp": "238f2203119b40bee66bd367a35be14986a9ea40f04520ac9aadaa0f05b405fc"
+  },
+  "runs": [
+    {
+      "variant": "control",
+      "mode": "retained-control",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "cycle",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "disabled",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "wait-error",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "payload-error",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "missing-ram",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "partial-unmap",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "map-error",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "verify-cycle",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "verify-commit-error",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "verify-wait-error",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "verify-multigpu",
+      "exit_code": 0,
+      "expected_result": true
+    },
+    {
+      "variant": "candidate",
+      "mode": "verify-address-error",
+      "exit_code": 0,
+      "expected_result": true
+    }
+  ],
+  "passed": true,
+  "finished_utc": "2026-10-06T15:43:58.259248+00:00"
+}

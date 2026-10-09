@@ -1,0 +1,30 @@
+{
+  "active": false,
+  "prepared": true,
+  "compiled_engine": false,
+  "gpu_tested": false,
+  "adopted": false,
+  "created_utc": "2026-10-08T23:06:39.139350+00:00",
+  "scope": "CPU source/installed-contract preparation; not a compiler, GPU, safety or speed test.",
+  "base_commit": "16b1b04ffd77101c4b49543507c06fc71fbf2368",
+  "source_sha256": {
+    "sycl/src/prefill/prefill.cpp": "6399d65feea884f932a5a1079a91c80228293bfc3be371732b48413977229f84",
+    "sycl/include/dpct/device.hpp": "8805874ecb1d58d7acea8ca931154a38d0ad3d623f7c5ee8d599fa2ba56a841b"
+  },
+  "prefill_outside_queue_factory_branch_byte_identical": true,
+  "all_existing_device_header_definitions_byte_identical": true,
+  "installed_UR_package": "intel-oneapi-compiler-dpcpp-cpp-runtime-2026.1 2026.1.1-325",
+  "installed_UR_library_sha256": "bfdc0f26bf88bd0bccd66fc25302a4b22559f8fe30e499be18529be3ed610e60",
+  "installed_UR_source_git_identity": "unknown; current upstream is not asserted to be installed source",
+  "installed_binary_observation": "Native creation calls zeCommandListIsImmediate, forwards the native unique_ptr to the in-order native constructor and command-list manager, and installs an ownership-conditional native destroy deleter. Offline disassembly only; no GPU calls.",
+  "native_handle_error_policy": "Pre-import empty-list guard cleans validation failures. At make_queue entry ownership transfers; no manual destroy after that entry, because installed adapter may already have adopted it during exception unwind. Import failure aborts initialization with no fallback/retry; an early pre-adoption resource may persist until failing process exit. No runtime-safety proof is claimed.",
+  "pending": [
+    "CPU compile/link and all-translation-unit uniform header proof",
+    "Owned logged32K correctness and native physical queue/barrier/counter verification",
+    "Matched quiet32K performance/default-path comparison",
+    "Full262144 lifecycle before any adoption"
+  ],
+  "documentation": [
+    "https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_backend_level_zero.md"
+  ]
+}

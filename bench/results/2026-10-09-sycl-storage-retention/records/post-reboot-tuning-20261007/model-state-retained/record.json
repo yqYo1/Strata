@@ -1,0 +1,95 @@
+{
+  "started_utc": "2026-10-06T19:30:50.597960+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "scope": "Private prefill-state dumps for retained or same-backing graph-recreation control; copies add synchronization; forced prefill, DS disabled, context128; no performance/fullcapacity claim",
+  "mode": "state-retained",
+  "binary_sha256": "79a4b363d33f66f41d910be6274e609b4eb73f62afb0dc49bca72bf2a538d223",
+  "controller_sha256": "265547a8cea4848e3533b93f85de717548b990f5e744bb63fb583034d0e35c0a",
+  "checker_sha256": "5ebc37cf9aaf05513593bcd7a5eb4e8383496d3d32f6dc039c55a3f11225306d",
+  "healthy": false,
+  "environment": {
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/umf/1.1/lib:/usr/lib/x86_64-linux-gnu:/opt/intel/oneapi/mkl/2026.1/lib",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "LogAllocationType": "1",
+    "LogAllocationStdout": "1",
+    "STRATA_PREFILL_COMPACT": "2",
+    "STRATA_PREFILL_LAYER_MAJOR": "2",
+    "STRATA_PREFILL_RELEASE_DRAFT": "0",
+    "STRATA_PREFILL_DRAFT_VERIFY": "0"
+  },
+  "packages": "intel-igc-core-2 2.41.5\nlibze-intel-gpu1 26.31.39395.14-1~24.04~ppa1\nlibze1 1.32.0-1~24.04~ppa1\n",
+  "error": "RecoveryError('checker: failed; see /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/model-state-retained/checker.stdout and /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/model-state-retained/checker.stderr')",
+  "new_fault_messages": [],
+  "finished_utc": "2026-10-06T19:32:33.883407+00:00",
+  "steps": [
+    {
+      "label": "kernel-before",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "pid": 313414,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05061106999983167
+    },
+    {
+      "label": "link",
+      "argv": [
+        "/usr/bin/ldd",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/strata-residency-candidate"
+      ],
+      "pid": 313416,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05091993599944544
+    },
+    {
+      "label": "checker",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/serve-check-prefill-state.py",
+        "--engine",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/model-state-retained/strata-gdb",
+        "--out",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/model-state-retained/normal-mtp.json",
+        "--force-prefill",
+        "--dump-first-head",
+        "--protocol-timeout",
+        "120"
+      ],
+      "pid": 313441,
+      "exit_code": 1,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 102.88516930800051
+    },
+    {
+      "label": "kernel-after",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=beea947;b=0a908c16e292429980ff082da39f4bb9;m=117c6adbf;t=65d310722947c;x=309cd103a1811175",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "pid": 318447,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05068772100003116
+    }
+  ]
+}

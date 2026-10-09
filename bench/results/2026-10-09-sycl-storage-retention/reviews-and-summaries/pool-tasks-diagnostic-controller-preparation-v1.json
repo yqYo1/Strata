@@ -1,0 +1,102 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_executed": false,
+  "cpu_test_executed": false,
+  "adopted": false,
+  "created_utc": "2026-10-09T08:46:08.330264+00:00",
+  "scope": "Prepare next sequential diagnostic; AST/static checks only. Main measurement continues and new controller refuses while it is active. No engine/test/build/benchmark launched.",
+  "original_controller": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_stager_affinity_v0141_code32k_v1.py",
+  "original_controller_sha256": "cbc8b97858bce52964aefc52ee1bd17870499bcd92b948d6e1e5afc17c0274e7",
+  "controller": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_pool_tasks_v0141_code32k_v1.py",
+  "controller_sha256": "d344b126cd37e53fd53aee24eb38ce6ee18827dba46930f4889607ff98b18806",
+  "top_level_protocol_math_cleanup_helpers_unchanged": true,
+  "source_head": "a2c884672d00ea57e55a44862868ce273ab2b171",
+  "build_receipt_sha256": "7386fe1367d406e9b8f2cb58ac095bf64c7b542dd4b0767a5214d96a0c6d9eba",
+  "edits": [
+    {
+      "old": "assert mode == 'affinity' and phase == 'diagnostic' and repetition == 1",
+      "new": "assert mode == 'tasks6' and phase == 'diagnostic' and repetition == 1"
+    },
+    {
+      "old": "review_head='ba1494d9a0848f37066228cec08fb82022a2c307'",
+      "new": "review_head='a2c884672d00ea57e55a44862868ce273ab2b171'"
+    },
+    {
+      "old": "root=observer.parent/'perf-sycl-stager-affinity-v0141-20261009'",
+      "new": "root=observer.parent/'perf-sycl-pool-tasks-v0141-20261009'"
+    },
+    {
+      "old": "stager-affinity-v0141-private-build-v1/record.json",
+      "new": "pool-tasks-v0141-private-build-v1/record.json"
+    },
+    {
+      "old": "2b3770c396e9479e81de4229f83fc094c485179feade2aba2c1520551de1d84d",
+      "new": "7386fe1367d406e9b8f2cb58ac095bf64c7b542dd4b0767a5214d96a0c6d9eba"
+    },
+    {
+      "old": "7c014a1ddebb4878ca225e67c5508d4ae1caa951aa5ffdb884ded9e440951c55",
+      "new": "482076f28721b6918fc30b781e3a9d24061a6595debb07f5ccc32f479a18de51"
+    },
+    {
+      "old": "stager-affinity-v0141-source-review-v1.json",
+      "new": "pool-tasks-v0141-source-review-v1.json"
+    },
+    {
+      "old": "1f3a360fb5a6bbb92226459dc7144e500ed5363c3e9d0b6186c26b91dc513380",
+      "new": "a2c1fc95912ff0f58ce940c981d8a6bab6dbc8b072b45dcc2b670e5721b13794"
+    },
+    {
+      "old": "stager-affinity-v0141-uniform-build-flags-v1.json",
+      "new": "pool-tasks-v0141-uniform-build-flags-v1.json"
+    },
+    {
+      "old": "4a5cb0a09f8c648b8510f53c62bbc7ddf8f1a14ff1cd01325f0e5171b1a80ebd",
+      "new": "04e61e63a1358b73d7d0a3139e8b07013a7bfe8b5a8c64a93df901ffe8d4665b"
+    },
+    {
+      "old": "owned-stager-affinity-v0141-code32k-affinity-diagnostic-r1",
+      "new": "owned-pool-tasks-v0141-code32k-tasks6-diagnostic-r1"
+    },
+    {
+      "old": "candidate_source=root/'sycl/src/prefill/prefill.cpp'",
+      "new": "candidate_source=root/'sycl/src/program/generate.cpp'"
+    },
+    {
+      "old": "assert digest(candidate_source)==build['source_sha256']['sycl/src/prefill/prefill.cpp']=='e14edcee574a88684de6dd4d46ccce80f975857178865b78aa05a10f966fb00f'",
+      "new": "assert digest(candidate_source)==build['source_sha256']['sycl/src/program/generate.cpp']=='a9cc79806172ac481c8c14a6aa8b0f66bf5d21dfd7eb81f91a21593e77a062b0'\nassert digest(root/'sycl/src/prefill/prefill.cpp')==build['source_sha256']['sycl/src/prefill/prefill.cpp']=='f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77'"
+    },
+    {
+      "old": "if sys.argv[4:]==['--cpu-preflight']:\n",
+      "new": "# Next test cannot overlap the currently owned affinity comparison.\naffinity_sequence_path=base/'stager-affinity-v0141-decode-repeat-comparison-sequence-v1/record.json'\naffinity_sequence=json.loads(affinity_sequence_path.read_text())\nassert not affinity_sequence['active'] and affinity_sequence['passed'] and len(affinity_sequence['steps'])==18\nassert affinity_sequence['sequence_controller_sha256']=='0600cfad0060fb99c80a306dc6ac85df29d435321d4750a00f9dc77913347cc3'\nfor step in affinity_sequence['steps']:\n    p=Path(step['receipt']);assert digest(p)==step['receipt_sha256'];terminal_owned(json.loads(p.read_text()))\n    old=step['controller_identity'];now=process_identity(old['pid']);assert not now or now['start_ticks']!=old['start_ticks']\nfor name,expected_sha in [\n    ('pool-tasks-cli-validation-v1/record.json','25939ce0bc704d654acb6d8b18ced231e12591797785311e9792787d0f89d1a5'),\n    ('pool-tasks-existing-cpu-parity-v2/record.json','1366202e4035b026193c9ea5dfe3b273e8ba5220760f686873ade386c507587a')]:\n    p=base/name;assert digest(p)==expected_sha;x=json.loads(p.read_text())\n    assert x['passed'] and not x['active'] and not x['gpu_executed'] and not x['model_opened'] and not x['adopted']\n\nif sys.argv[4:]==['--cpu-preflight']:\n"
+    },
+    {
+      "old": "'scope':'First opt-in Linux stager CPU-affinity qualification. Four fresh32768 A/B/A/B,64 visible outputs, first logits, all66 live state parts and MTP/logprob references against qualified integrated869. Only RAM-copy worker placement changes; baseline queue/event/kernel/cache/KV paths unchanged. Flushed UR/ZE/ZEL diagnostics. Logged times excluded; no full-capacity, speed or adoption qualification.'",
+      "new": "'scope':'First opt-in --pool-tasks6 qualification. Four fresh32768 A/B/A/B,64 visible outputs, first logits, all66 live state parts and MTP/logprob references against qualified integrated869. Only existing CPU pool row-task partition count changes through CLI; CPU kernels, synchronization, prefill/stager, queues, cache and KV unchanged. Flushed UR/ZE/ZEL diagnostics. Logged times excluded; no full-capacity, speed or adoption qualification.'"
+    },
+    {
+      "old": "    env.update(STRATA_STAGER_CPU_LIST='1,2,3',STRATA_DECODE_TIMING='1',STRATA_DUMP_FIRST_LOGITS=str(out/'first-head.bin'),STRATA_PREFILL_DUMP_STATE=str(out/'prefill-state.bin'))",
+      "new": "    env.pop('STRATA_STAGER_CPU_LIST',None)\n    env.update(STRATA_DECODE_TIMING='1',STRATA_DUMP_FIRST_LOGITS=str(out/'first-head.bin'),STRATA_PREFILL_DUMP_STATE=str(out/'prefill-state.bin'))"
+    },
+    {
+      "old": "    assert args == new_full['argv'][1:] == qualified['argv'][1:]",
+      "new": "    assert args == new_full['argv'][1:] == qualified['argv'][1:]\n    args += ['--pool-tasks','6']"
+    },
+    {
+      "old": "    record['configuration_note'] = 'Exactly the same requested argv/environment for all three modes; actual workspace/cache/VRAM admission can differ by implementation and remains in project messages. Different compiler code/source identities are explicit. Per-process read0 is reported separately from reads1..3. Fresh A/B/A/B means no reused prompt tokens. API logs are never timing evidence.'",
+      "new": "    record['configuration_note'] = 'Qualified baseline arguments plus --pool-tasks6, with the same requested environment except diagnostic output destinations. No affinity/native-copy/release setting. Fresh A/B/A/B has no reused prompt tokens. API logs are never timing evidence.'\n    record['prior_affinity_sequence_receipt_sha256']=digest(affinity_sequence_path)\n    record['pool_tasks_cli_receipt_sha256']=digest(base/'pool-tasks-cli-validation-v1/record.json')\n    record['pool_tasks_cpu_parity_receipt_sha256']=digest(base/'pool-tasks-existing-cpu-parity-v2/record.json')"
+    },
+    {
+      "old": "    assert actual_relevant['STRATA_STAGER_CPU_LIST']=='1,2,3'",
+      "new": "    assert 'STRATA_STAGER_CPU_LIST' not in actual_relevant\n    actual_argv=[v.decode() for v in Path('/proc',str(identity['pid']),'cmdline').read_bytes().split(b'\\0') if v]\n    assert actual_argv==argv\n    record['actual_target_argv']=actual_argv"
+    },
+    {
+      "old": "            if read_index==0 and value.startswith('PP ') and 'host_thread_affinity_at_first_PP' not in result:\n                masks=[]\n                for task in sorted(Path('/proc',str(g.inferior['pid']),'task').iterdir()):\n                    try:\n                        status=task.joinpath('status').read_text().splitlines()\n                        cpus=next(v.split(':',1)[1].strip() for v in status if v.startswith('Cpus_allowed_list:'))\n                        masks.append({'tid':int(task.name),'cpus_allowed_list':cpus,'identity':process_identity(int(task.name))})\n                    except FileNotFoundError:\n                        continue\n                result['host_thread_affinity_at_first_PP']=masks\n",
+      "new": ""
+    },
+    {
+      "old": "    affinity_lines=[v for v in (out/'project-messages.txt').read_text().splitlines() if v.startswith('strata prefill stager affinity: ')]\n    assert affinity_lines and all(v=='strata prefill stager affinity: 3 workers, requested CPUs 1,2,3' for v in affinity_lines)\n    record['stager_affinity_startup_gate']={'passed':True,'workers':3,'requested_cpus':[1,2,3],'messages':affinity_lines,'note':'Message is emitted only after all worker pthread_setaffinity_np calls succeed. No queue/factory/lifetime changes. OS thread masks captured passively during first fresh prefill.'}\n",
+      "new": "    record['pool_tasks_configuration_gate']={'passed':True,'requested_tasks':6,'actual_cli':record['actual_target_argv'][-2:],'source_review_sha256':digest(host_cpu_path),'existing_cpu_parity_sha256':digest(base/'pool-tasks-existing-cpu-parity-v2/record.json'),'note':'Actual compiled CLI supplies the existing ExpertPool fifth argument. No new pool/kernel math or synchronization. Full request numerical gates retained.'}\n"
+    }
+  ]
+}

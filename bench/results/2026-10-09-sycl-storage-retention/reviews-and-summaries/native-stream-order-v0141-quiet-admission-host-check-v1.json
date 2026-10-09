@@ -1,0 +1,33 @@
+{
+  "active": false,
+  "passed": true,
+  "created_utc": "2026-10-09T01:40:33.669399+00:00",
+  "scope": "Expected early refusal only, not a successful future CPU preflight or GPU test. No quiet GPU run directory created. Original full owners stayed live.",
+  "controller_sha256": "b93c2e955d180c75b1e5eac62e5cbdfa41938a92e9042d36ba9aa6bc93907c2e",
+  "argv": [
+    "python3",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_native_stream_order_v0141_quiet32k_v1.py",
+    "baseline",
+    "clean",
+    "1",
+    "--cpu-preflight"
+  ],
+  "exit_code": 1,
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_native_stream_order_v0141_quiet32k_v1.py\", line 103, in <module>\n    assert not native_full['active'], 'original native-copy full256K still active; no new GPU job or CPU preflight admission'\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: original native-copy full256K still active; no new GPU job or CPU preflight admission\n",
+  "original_live_owners": {
+    "inferior": {
+      "pid": 2629170,
+      "start_ticks": 19586805,
+      "state": "R"
+    },
+    "debugger": {
+      "pid": 2629155,
+      "start_ticks": 19586797,
+      "state": "S"
+    }
+  },
+  "original_full_elapsed_seconds": 3841.854518414999,
+  "gpu_executed": false,
+  "new_run_directories_absent": true
+}

@@ -1,0 +1,39 @@
+{
+  "updated_utc": "2026-10-07T21:07:11.318449+00:00",
+  "goal_status": "active; PP1000/TG70 and full262144-cell serving objective not achieved",
+  "current_goal_turn_classification": "progress",
+  "head": "32f600e22f2039e36dd11c7b75d214aff8d0bcd1",
+  "pr": 9,
+  "pr_draft": true,
+  "live_owned_gpu_jobs": [],
+  "completed_new_model_jobs": 13,
+  "new_xe_faults": 0,
+  "production_binary_unchanged": true,
+  "minimum_performance_comparison_tokens": 32768,
+  "registered_copy_binary_sha256": "f02213fc440a1f11b64857fceaa028ab43eeee7fdfb40e5cec33abca411a9705",
+  "no_root_binary_sha256": "e82fc5de5480b72255b601759497d5810e86bf691350417ed0dc11ed6c429323",
+  "clean_mean": {
+    "event-ack-registered-copy-cb": {
+      "prefill_tok_s": 406.7796599074088,
+      "decode_tok_s": 16.964874654628954
+    },
+    "event-ack-no-root-prefill-cb": {
+      "prefill_tok_s": 408.5171795979137,
+      "decode_tok_s": 16.058623796713782
+    }
+  },
+  "clean_scope": "Counter conversion forced off, no CNR, exact-output32K ABBA; no state/head dumps, API logs, validation, extra waits or profiler. Prompt difference below within-control repeat spread; no useful scheduling gain established.",
+  "default_counter_gate": "three fresh32K full state/head/IDs/logprobs exact with prior counter-off control; no forced conversion setting or MKL CNR; common direct-submission/cache/copy-offload settings retained. Captured times not performance evidence.",
+  "adopted": false,
+  "remaining": [
+    "full262144-cell normal-MTP occupancy, repeat, restore, clipped tail, refusal and later valid request",
+    "PP1000/TG70",
+    "general stall prevention not proven by32K controls"
+  ],
+  "next_work": [
+    "Use the stable32K candidate as a control for tuning; every speed comparison must have at least32768 input tokens.",
+    "Profile32K host/API waits and submission using installed private unitrace. Inspected source derives kernel_tracing only from device timing/timeline/submission or chrome device/kernel flags; host-only timing/call tracing avoids generated callbacks that add timestamp event-pool flags. Verify exact built source/CLI options and actual target environment before first fully logged32K check, then compare a quiet profile with complete state/head/output controls.",
+    "Full-context capacity/restore remains mandatory before production adoption. Prior lazy verifier reaches262140+4 once but second request OOM and destructor restore masks original error; no proof that latest tag passes full occupancy.",
+    "Before enabling SG16/256-GRF key-head tuning, replace unrelated float4 pointer accesses in gdn_cp16 with defined float-element loads/stores; also review multi-GPU copy_f32_wide and tail access. These paths are inactive in the current default32K controls."
+  ]
+}

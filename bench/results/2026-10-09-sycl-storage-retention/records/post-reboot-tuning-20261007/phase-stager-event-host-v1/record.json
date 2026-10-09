@@ -1,0 +1,46 @@
+{
+  "active": false,
+  "passed": true,
+  "scope": "Actual Stager host fragment only; delayed CPU DMA/event stubs, buffer reuse across generations and phase recreation. No SYCL/Level Zero/GPU model arithmetic proof.",
+  "started_utc": "2026-10-09T06:47:27.283587+00:00",
+  "source_sha256": "6f640c753babb3e29f15a3c14db2998d7ed6195bf399788905031c6a94028a6f",
+  "fragment_sha256": "f91577626cbfa02f0f1ff4d079ab6192e47b92fb499b552367b9e6d1cedf701c",
+  "native_and_phase_stager_fragments_identical": true,
+  "harness_sha256": "2e502fdf80524df0af620ac9d69fe9a26600acae0128173db1dca4b97af15c64",
+  "tests": [
+    {
+      "name": "ring2-workers4",
+      "returncode": 0,
+      "elapsed_seconds": 0.10404326298157685,
+      "stdout": "PASS ring=2 workers=4 generations=128 DMA_reads=768\n"
+    },
+    {
+      "name": "ring16-workers4",
+      "returncode": 0,
+      "elapsed_seconds": 0.6475415389868431,
+      "stdout": "PASS ring=16 workers=4 generations=128 DMA_reads=6144\n"
+    },
+    {
+      "name": "ring2-workers12",
+      "returncode": 0,
+      "elapsed_seconds": 0.11752403600257821,
+      "stdout": "PASS ring=2 workers=12 generations=128 DMA_reads=768\n"
+    }
+  ],
+  "compile": [
+    "/usr/bin/g++",
+    "-std=c++20",
+    "-O1",
+    "-g",
+    "-pthread",
+    "-fsanitize=address,undefined",
+    "-fno-omit-frame-pointer",
+    "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-prefill-copy-phase-v0141-20261009/sycl/include",
+    "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-stager-event-host-v1",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase_stager_event_host_v1.cpp",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-stager-event-host-v1/host-test"
+  ],
+  "binary_sha256": "aaa83d8cc426754a28b4e684551b7cb2d1636f2ed9b52a332b3112e4a1aa69e4",
+  "finished_utc": "2026-10-09T06:47:31.887032+00:00"
+}

@@ -1,0 +1,70 @@
+{
+  "active": false,
+  "healthy": true,
+  "started_utc": "2026-10-07T17:34:00.932310+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "scope": "Logged read-only H2D/kernel/D2H health after32K first-chunk watchdog/CCS reset. No reset/rebind/reboot/service changes.",
+  "controller_sha256": "16d96c7d8d18cb41795720d2d5ed9e55f5b04d7dd00162e9407addba27ff6bfc",
+  "steps": [
+    {
+      "label": "health-runtime",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import ctypes,sys; ctypes.CDLL(sys.argv[1])",
+        "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0"
+      ],
+      "pid": 860596,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050639534994843416
+    },
+    {
+      "label": "before-health-cursor",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "pid": 860598,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050584020995302126
+    },
+    {
+      "label": "health",
+      "argv": [
+        "/home/yayoi/.local/bin/strata-xe-health",
+        "0000:05:00.0"
+      ],
+      "pid": 860600,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.1508598819928011
+    },
+    {
+      "label": "health-kernel",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bf450b4;b=0a908c16e292429980ff082da39f4bb9;m=1395a8bd55;t=65d438504a412;x=bf7b665832527de7",
+        "--no-pager",
+        "-o",
+        "short-iso-precise"
+      ],
+      "pid": 860617,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05057473400665913
+    }
+  ],
+  "finished_utc": "2026-10-07T17:34:01.236667+00:00"
+}

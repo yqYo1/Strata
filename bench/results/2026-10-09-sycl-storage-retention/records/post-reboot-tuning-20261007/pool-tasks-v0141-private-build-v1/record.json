@@ -1,0 +1,231 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_tested": false,
+  "adopted": false,
+  "compiled_engine": true,
+  "started_utc": "2026-10-09T08:05:17.502192+00:00",
+  "scope": "CPU-only configure and full rebuild of every engine translation unit. Only opt-in SYCL CLI wiring to existing CPU pool task argument. Default0 identical. No native copy-only factory, prefill/stager, queue, kernel or common CPU-source change. Same qualified compiler flags/settings. No GPU command or adoption.",
+  "source_head": "a2c884672d00ea57e55a44862868ce273ab2b171",
+  "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-pool-tasks-v0141-20261009",
+  "controller_sha256": "01e30bba1bfeceec7fb9cd52b104ae2b9417f64a9549c92b6776568c6f69f4cf",
+  "source_sha256": {
+    "sycl/include/dpct/device.hpp": "adbcbd0ac45995348e37ac3f5ca42d9f3d4b0555031aeb1781a1e2166a74ed52",
+    "sycl/src/prefill/prefill.cpp": "f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77",
+    "sycl/src/program/generate.cpp": "a9cc79806172ac481c8c14a6aa8b0f66bf5d21dfd7eb81f91a21593e77a062b0",
+    "sycl/CMakeLists.txt": "d8fc6c99428f96021c0d986bcad77680dbe66f4fa6a64490166ff58f24e274b1"
+  },
+  "admission_deadline_seconds": 2400,
+  "steps": [
+    {
+      "label": "configure",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-pool-tasks-v0141-20261009/sycl",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-pool-tasks-v0141-20261009/build-sycl-pool-tasks-v0141-v1",
+        "-G",
+        "Ninja",
+        "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DCMAKE_C_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icx",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DSTRATA_GGML_DIR=/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned",
+        "-DSTRATA_NATIVE_EXPERTS=ON",
+        "-DSTRATA_SYCL_PARITY=ON",
+        "-DSTRATA_IQ2S_GCC=OFF",
+        "-DSTRATA_SYCL_AOT=",
+        "-DSTRATA_SYCL_SPIN_MAX=",
+        "-DSTRATA_NATIVE_POOL_TASK_FACTOR=0"
+      ],
+      "timeout_seconds": 180,
+      "pid": 4042229,
+      "exit_code": 0,
+      "elapsed_seconds": 4.00153044302715
+    },
+    {
+      "label": "build-strata",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-pool-tasks-v0141-20261009/build-sycl-pool-tasks-v0141-v1",
+        "--target",
+        "strata",
+        "--parallel",
+        "4"
+      ],
+      "timeout_seconds": 1800,
+      "pid": 4042783,
+      "exit_code": 0,
+      "elapsed_seconds": 196.06587197098997
+    }
+  ],
+  "elapsed_seconds": 201.25606645600055,
+  "qualified_baseline_full_receipt_sha256": "168d7896cbe3a60dfc604a08b6fe310f16d823a17d13d8a013260bfc7facb0a4",
+  "source_bound_default_and_host_review_sha256": "a2c1fc95912ff0f58ce940c981d8a6bab6dbc8b072b45dcc2b670e5721b13794",
+  "prior_owned_gpu_admission": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-prefill-copy-phase-v0141-decode-repeat-baseline-clean-r1/record.json",
+      "sha256": "1a5351a793cd1b323af99bcd6988a90fef05a7eee5a6c5e9da4c036dea602cd2",
+      "terminal_owned_processes_absent": true,
+      "math_gate_passed": true,
+      "held_prior_candidate_failure_preserved": false
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-prefill-copy-phase-v0141-decode-repeat-phaseoff-clean-r1/record.json",
+      "sha256": "524d54dfb9aac5b68600e8bbf11cdccbc8239638ece89b9d00eec8a683b619ef",
+      "terminal_owned_processes_absent": true,
+      "math_gate_passed": true,
+      "held_prior_candidate_failure_preserved": false
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-prefill-copy-phase-v0141-decode-repeat-phaseon-clean-r1/record.json",
+      "sha256": "824dba80943a5fd7e154e5bf588fab553f0e0f29162d3cc19f8a80f8ad801c37",
+      "terminal_owned_processes_absent": true,
+      "math_gate_passed": true,
+      "held_prior_candidate_failure_preserved": false
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-prefill-copy-phase-v0141-decode-repeat-phaseoff-clean-r2/record.json",
+      "sha256": "82975a6fde6251ed5795cf3339a80ce6ad898a72e6fa4f792bf12a273e0c5023",
+      "terminal_owned_processes_absent": true,
+      "math_gate_passed": true,
+      "held_prior_candidate_failure_preserved": false
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-prefill-copy-phase-v0141-decode-repeat-phaseon-clean-r2/record.json",
+      "sha256": "1b64ce6ee159967823a0154f24159376803f4733ef6dcbea3c7bcbaf9fce9983",
+      "terminal_owned_processes_absent": true,
+      "math_gate_passed": true,
+      "held_prior_candidate_failure_preserved": false
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-prefill-copy-phase-v0141-decode-repeat-baseline-clean-r2/record.json",
+      "sha256": "7b001891decd22a58a66fe7fb501ba7ac7be146e8e4a89591cf7dbb5ff846d1a",
+      "terminal_owned_processes_absent": true,
+      "math_gate_passed": true,
+      "held_prior_candidate_failure_preserved": false
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-prefill-copy-phase-v0141-decode-repeat-phaseon-clean-r3/record.json",
+      "sha256": "5955e98f981bfa6992888437c9c08e00cfec957cf40aa7a57acefc1e6aa59873",
+      "terminal_owned_processes_absent": true,
+      "math_gate_passed": true,
+      "held_prior_candidate_failure_preserved": false
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-prefill-copy-phase-v0141-decode-repeat-baseline-clean-r3/record.json",
+      "sha256": "c3024dced577f752c1e27a0edee9feb161c719852d608913a90b4696df05aa6e",
+      "terminal_owned_processes_absent": true,
+      "math_gate_passed": true,
+      "held_prior_candidate_failure_preserved": false
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-prefill-copy-phase-v0141-decode-repeat-phaseoff-clean-r3/record.json",
+      "sha256": "12d3eddc524b5e7845e4e6bc01c36fc61fbb4437b311929d58d167db9d9f2ffa",
+      "terminal_owned_processes_absent": true,
+      "math_gate_passed": true,
+      "held_prior_candidate_failure_preserved": false
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-prefill-copy-phase-v0141-decode-repeat-phaseon-clean-r4/record.json",
+      "sha256": "d361d81f5b78d3079d1ebcff154e548ec900573cb3f86bdb755d6138a9275b84",
+      "terminal_owned_processes_absent": true,
+      "math_gate_passed": true,
+      "held_prior_candidate_failure_preserved": false
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-prefill-copy-phase-v0141-decode-repeat-phaseoff-clean-r4/record.json",
+      "sha256": "17ab10396dd121683b18ec8bdb7d02cec26f0e0b133a2b9b7e1798f3e11d8c8d",
+      "terminal_owned_processes_absent": true,
+      "math_gate_passed": true,
+      "held_prior_candidate_failure_preserved": false
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-prefill-copy-phase-v0141-decode-repeat-baseline-clean-r4/record.json",
+      "sha256": "3ef3451666d0982dec2b7a1a1105aa9ae94f094b72133604ce055043fe740e8b",
+      "terminal_owned_processes_absent": true,
+      "math_gate_passed": true,
+      "held_prior_candidate_failure_preserved": false
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-prefill-copy-phase-v0141-decode-repeat-phaseoff-clean-r5/record.json",
+      "sha256": "20c7fad91c7ffa7750229a336edd865ec87b20d5f1eb98b7fb9bd603430dd191",
+      "terminal_owned_processes_absent": true,
+      "math_gate_passed": true,
+      "held_prior_candidate_failure_preserved": false
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-prefill-copy-phase-v0141-decode-repeat-baseline-clean-r5/record.json",
+      "sha256": "be81345721515f788f8d6569194aa1d167a45a08b588da56322a55b1979fb93d",
+      "terminal_owned_processes_absent": true,
+      "math_gate_passed": true,
+      "held_prior_candidate_failure_preserved": false
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-prefill-copy-phase-v0141-decode-repeat-phaseon-clean-r5/record.json",
+      "sha256": "c21f3f2fea45a0aa00eb170da986ad9631c079b5e370e4d8aecf4c250aa2c2ee",
+      "terminal_owned_processes_absent": true,
+      "math_gate_passed": true,
+      "held_prior_candidate_failure_preserved": false
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-prefill-copy-phase-v0141-decode-repeat-baseline-clean-r6/record.json",
+      "sha256": "61ef57c04d92a69b0d351f30ee178e62799a0724e855de5b9f91ba25d64af106",
+      "terminal_owned_processes_absent": true,
+      "math_gate_passed": true,
+      "held_prior_candidate_failure_preserved": false
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-prefill-copy-phase-v0141-decode-repeat-phaseon-clean-r6/record.json",
+      "sha256": "aa5c7c7b262ade3e1f9ddd287abbe4db16459c3146da36733207e5cf0628fbfc",
+      "terminal_owned_processes_absent": true,
+      "math_gate_passed": false,
+      "held_prior_candidate_failure_preserved": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-prefill-copy-phase-v0141-failure-localization-phaseon-diagnostic-r1/record.json",
+      "sha256": "ed44eb8191f1ce7ae2c3493e5251b2d6d4d46337b73343e04742c0605507d9e3",
+      "terminal_owned_processes_absent": true,
+      "math_gate_passed": true,
+      "held_prior_candidate_failure_preserved": false
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-prefill-copy-phase-v0141-minimal-diagnostic-phaseon-r1/record.json",
+      "sha256": "97621e890cc0f41f61fab62898a53c325e768423a58104d084108610884fd46d",
+      "terminal_owned_processes_absent": true,
+      "math_gate_passed": true,
+      "held_prior_candidate_failure_preserved": false
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-prefill-copy-phase-v0141-minimal-diagnostic-phaseoff-r1/record.json",
+      "sha256": "7618e25b7e6675f9ec85eeb9554ffe8544e369385154d7264330e2e929508ad3",
+      "terminal_owned_processes_absent": true,
+      "math_gate_passed": true,
+      "held_prior_candidate_failure_preserved": false
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-prefill-copy-phase-v0141-minimal-diagnostic-phaseon-r2/record.json",
+      "sha256": "d284d81c39ac656483defbba451d2eb9f31dcf0b0271cb38f9fe69f718df5fc7",
+      "terminal_owned_processes_absent": true,
+      "math_gate_passed": true,
+      "held_prior_candidate_failure_preserved": false
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-stager-affinity-v0141-code32k-affinity-diagnostic-r1/record.json",
+      "sha256": "ff94770a606e18639b6e49c03c10722a74698b733fa32bb507091b9464a5aebc",
+      "terminal_owned_processes_absent": true,
+      "math_gate_passed": true,
+      "held_prior_candidate_failure_preserved": false
+    }
+  ],
+  "prior_numerical_failure_remains_held": true,
+  "active_stage": null,
+  "binary": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-pool-tasks-v0141-20261009/build-sycl-pool-tasks-v0141-v1/strata",
+  "binary_sha256": "482076f28721b6918fc30b781e3a9d24061a6595debb07f5ccc32f479a18de51",
+  "compile_commands_sha256": "e9e440998a32e18c8178bfa246d2b3678a93a3a1cc6044de219c075a85d41a69",
+  "CMakeCache_sha256": "0d470c9975f0e7bff3df46f33c4f73b7db9172e80eaabf16f8e3072cd1f460c5",
+  "build_ninja_sha256": "7ad540254489c3b2590553215c398a4c711a6fb74ca93b1a3d76b794b6d2129d",
+  "finished_utc": "2026-10-09T08:08:38.758235+00:00"
+}

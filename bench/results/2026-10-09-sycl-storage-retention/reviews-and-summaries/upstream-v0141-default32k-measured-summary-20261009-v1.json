@@ -1,0 +1,602 @@
+{
+  "active": false,
+  "passed": true,
+  "created_utc": "2026-10-08T18:37:27.222175+00:00",
+  "scope": "Completed default32K measurement only; updated tuned8192 and full256K jobs not completed at this boundary. Not an adoption decision.",
+  "sequence_receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-v0141-matched32k-comparison-sequence-v1/record.json",
+  "sequence_receipt_sha256": "01383f1d0118250de479af457a0d40ffa0d321943ea543c54d34cf165393caa9",
+  "hardware": "Intel Arc B570 10 GiB, Ryzen 5 5600X, 128 GiB RAM",
+  "software": "oneAPI2026.1.1, NEO26.31.39395.14, IGC2.41.5",
+  "upstream_snapshot": "fb58e0dbc8399662c0e47c76578c6e878b14f6cf",
+  "upstream_version_label": "0.1.41 main snapshot; no release tag claim",
+  "integrated_snapshot": "1eb89482a4afd20277ae0405780ed4f8eb98eb20",
+  "input_tokens_each_read": 32768,
+  "generated_visible_tokens_each_read": 64,
+  "requested_chunk": 8192,
+  "actual_chunk_all_modes": 6144,
+  "actual_cache_geometry": {
+    "control": {
+      "slots": 128,
+      "cache_mib": 325
+    },
+    "pure": {
+      "slots": 144,
+      "cache_mib": 281
+    },
+    "integrated": {
+      "slots": 128,
+      "cache_mib": 325
+    }
+  },
+  "method": "Two quiet processes per mode with four fresh A/B/A/B reads each. First process read separated from the later three fresh full reads. RESUME0/REUSED0 enforced. Sum of tokens / sum of engine timing durations; model startup excluded. Diagnostic logging durations excluded.",
+  "quiet_process_order": [
+    "control",
+    "pure",
+    "integrated",
+    "integrated",
+    "pure",
+    "control"
+  ],
+  "same_requested_argv_environment": true,
+  "limitations": [
+    "Two processes per mode do not establish the cause or repeatability of a small decode difference.",
+    "Raw upstream cache admission differs despite matching requested128 slots; raw-vs-control rates include that geometry and output/MTP difference.",
+    "Actual default6144 chunk geometry is separate from the previous tuned8192 baseline."
+  ],
+  "measurements": [
+    {
+      "mode": "control",
+      "read_condition": "first_process_read",
+      "reads": 2,
+      "prefill_tok_s": 324.5635408804657,
+      "decode_tok_s": 15.621948838117557,
+      "prefill_change_percent_control": 0.0,
+      "decode_change_percent_control": 0.0
+    },
+    {
+      "mode": "control",
+      "read_condition": "later_fresh_reads",
+      "reads": 6,
+      "prefill_tok_s": 341.03510523870017,
+      "decode_tok_s": 16.690935170495294,
+      "prefill_change_percent_control": 0.0,
+      "decode_change_percent_control": 0.0
+    },
+    {
+      "mode": "pure",
+      "read_condition": "first_process_read",
+      "reads": 2,
+      "prefill_tok_s": 331.58725846006416,
+      "decode_tok_s": 16.705166855904885,
+      "prefill_change_percent_control": 2.164050084166802,
+      "decode_change_percent_control": 6.933949336361134
+    },
+    {
+      "mode": "pure",
+      "read_condition": "later_fresh_reads",
+      "reads": 6,
+      "prefill_tok_s": 348.8870406160037,
+      "decode_tok_s": 17.134825193547666,
+      "prefill_change_percent_control": 2.3023833196901267,
+      "decode_change_percent_control": 2.659467660248538
+    },
+    {
+      "mode": "integrated",
+      "read_condition": "first_process_read",
+      "reads": 2,
+      "prefill_tok_s": 343.1655154682631,
+      "decode_tok_s": 15.274280736506723,
+      "prefill_change_percent_control": 5.73138145379315,
+      "decode_change_percent_control": -2.225510435436351
+    },
+    {
+      "mode": "integrated",
+      "read_condition": "later_fresh_reads",
+      "reads": 6,
+      "prefill_tok_s": 361.6930076143766,
+      "decode_tok_s": 16.456037951737525,
+      "prefill_change_percent_control": 6.057412289335251,
+      "decode_change_percent_control": -1.4073340789975575
+    }
+  ],
+  "cross_version_output_comparison": [
+    {
+      "mode": "pure",
+      "read_index": 0,
+      "ids_equal_control": false,
+      "logprobs_equal_control": false,
+      "mtp_counts_equal_control": false,
+      "note": "Cross-version differences are reported, not silently accepted as numerical equivalence. Raw hidden-tail accepted counts and actual chunk sizing can differ. Own logged/repeated-output checks are mandatory."
+    },
+    {
+      "mode": "integrated",
+      "read_index": 0,
+      "ids_equal_control": true,
+      "logprobs_equal_control": true,
+      "mtp_counts_equal_control": true,
+      "note": "Cross-version differences are reported, not silently accepted as numerical equivalence. Raw hidden-tail accepted counts and actual chunk sizing can differ. Own logged/repeated-output checks are mandatory."
+    },
+    {
+      "mode": "pure",
+      "read_index": 1,
+      "ids_equal_control": true,
+      "logprobs_equal_control": false,
+      "mtp_counts_equal_control": false,
+      "note": "Cross-version differences are reported, not silently accepted as numerical equivalence. Raw hidden-tail accepted counts and actual chunk sizing can differ. Own logged/repeated-output checks are mandatory."
+    },
+    {
+      "mode": "integrated",
+      "read_index": 1,
+      "ids_equal_control": true,
+      "logprobs_equal_control": true,
+      "mtp_counts_equal_control": true,
+      "note": "Cross-version differences are reported, not silently accepted as numerical equivalence. Raw hidden-tail accepted counts and actual chunk sizing can differ. Own logged/repeated-output checks are mandatory."
+    },
+    {
+      "mode": "pure",
+      "read_index": 2,
+      "ids_equal_control": false,
+      "logprobs_equal_control": false,
+      "mtp_counts_equal_control": false,
+      "note": "Cross-version differences are reported, not silently accepted as numerical equivalence. Raw hidden-tail accepted counts and actual chunk sizing can differ. Own logged/repeated-output checks are mandatory."
+    },
+    {
+      "mode": "integrated",
+      "read_index": 2,
+      "ids_equal_control": true,
+      "logprobs_equal_control": true,
+      "mtp_counts_equal_control": true,
+      "note": "Cross-version differences are reported, not silently accepted as numerical equivalence. Raw hidden-tail accepted counts and actual chunk sizing can differ. Own logged/repeated-output checks are mandatory."
+    },
+    {
+      "mode": "pure",
+      "read_index": 3,
+      "ids_equal_control": true,
+      "logprobs_equal_control": false,
+      "mtp_counts_equal_control": false,
+      "note": "Cross-version differences are reported, not silently accepted as numerical equivalence. Raw hidden-tail accepted counts and actual chunk sizing can differ. Own logged/repeated-output checks are mandatory."
+    },
+    {
+      "mode": "integrated",
+      "read_index": 3,
+      "ids_equal_control": true,
+      "logprobs_equal_control": true,
+      "mtp_counts_equal_control": true,
+      "note": "Cross-version differences are reported, not silently accepted as numerical equivalence. Raw hidden-tail accepted counts and actual chunk sizing can differ. Own logged/repeated-output checks are mandatory."
+    }
+  ],
+  "identities": {
+    "control": [
+      {
+        "phase": "diagnostic",
+        "repetition": 1,
+        "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-code32k-control-diagnostic-r1/record.json",
+        "receipt_sha256": "3b61e0b92d6200cbaf2b20ae55b982f7dd386801d1395f306ebfad4783c4778e",
+        "binary_sha256": "dd5efb9002167481d180f370b86fb6978d724f37745f7e4a923432296725ad34",
+        "commit": "452044ab2546185bebad51c2cb16b9375b6683e3",
+        "startup": [
+          "INFO context=262144 kv=int8 kv_resident=32768 expert_slots=128 expert_cache_mib=325 expert_slots_primary=128 expert_cache_primary_mib=325 spec=4 mtp_max=0 lookup=0 vram_free_mib=940 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.00 spec_min_p=0.00 conversation_cache_mib=0 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=0 engine=0.1.40-sycl",
+          "READY 262144 stop"
+        ],
+        "actual_pp_positions": [
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ],
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ],
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ],
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ]
+        ],
+        "exit_code": 0,
+        "cleanup": {
+          "forced": false,
+          "inferior_survived": false,
+          "gdb_survived": false
+        },
+        "new_fault_messages": []
+      },
+      {
+        "phase": "clean",
+        "repetition": 1,
+        "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-code32k-control-clean-r1/record.json",
+        "receipt_sha256": "cff572a8374433aa3837939c4a9a629db3f9ff4ff6aac60be2715f65939ae03e",
+        "binary_sha256": "dd5efb9002167481d180f370b86fb6978d724f37745f7e4a923432296725ad34",
+        "commit": "452044ab2546185bebad51c2cb16b9375b6683e3",
+        "startup": [
+          "INFO context=262144 kv=int8 kv_resident=32768 expert_slots=128 expert_cache_mib=325 expert_slots_primary=128 expert_cache_primary_mib=325 spec=4 mtp_max=0 lookup=0 vram_free_mib=940 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.00 spec_min_p=0.00 conversation_cache_mib=0 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=0 engine=0.1.40-sycl",
+          "READY 262144 stop"
+        ],
+        "actual_pp_positions": [
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ],
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ],
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ],
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ]
+        ],
+        "exit_code": 0,
+        "cleanup": {
+          "forced": false,
+          "inferior_survived": false,
+          "gdb_survived": false
+        },
+        "new_fault_messages": []
+      },
+      {
+        "phase": "clean",
+        "repetition": 2,
+        "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-code32k-control-clean-r2/record.json",
+        "receipt_sha256": "cc1f45e43ce496d396c6713d461b223adc11df653a56ca3593c20d796d3f8b23",
+        "binary_sha256": "dd5efb9002167481d180f370b86fb6978d724f37745f7e4a923432296725ad34",
+        "commit": "452044ab2546185bebad51c2cb16b9375b6683e3",
+        "startup": [
+          "INFO context=262144 kv=int8 kv_resident=32768 expert_slots=128 expert_cache_mib=325 expert_slots_primary=128 expert_cache_primary_mib=325 spec=4 mtp_max=0 lookup=0 vram_free_mib=940 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.00 spec_min_p=0.00 conversation_cache_mib=0 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=0 engine=0.1.40-sycl",
+          "READY 262144 stop"
+        ],
+        "actual_pp_positions": [
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ],
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ],
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ],
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ]
+        ],
+        "exit_code": 0,
+        "cleanup": {
+          "forced": false,
+          "inferior_survived": false,
+          "gdb_survived": false
+        },
+        "new_fault_messages": []
+      }
+    ],
+    "pure": [
+      {
+        "phase": "clean",
+        "repetition": 1,
+        "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-code32k-pure-clean-r1/record.json",
+        "receipt_sha256": "569909a7320f0a0ca634a5559d819d59abff8bd94734d8268535a689ee9251c6",
+        "binary_sha256": "a4f6b30f3765140a0d03855586f27a57081b8c76b57705661328e96354344468",
+        "commit": "fb58e0dbc8399662c0e47c76578c6e878b14f6cf",
+        "startup": [
+          "INFO context=262144 kv=int8 kv_resident=32768 expert_slots=144 expert_cache_mib=281 expert_slots_primary=144 expert_cache_primary_mib=281 spec=4 mtp_max=0 lookup=0 vram_free_mib=946 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.00 spec_min_p=0.00 conversation_cache_mib=0 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=0 engine=0.1.41",
+          "READY 262144 stop"
+        ],
+        "actual_pp_positions": [
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ],
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ],
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ],
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ]
+        ],
+        "exit_code": 0,
+        "cleanup": {
+          "forced": false,
+          "inferior_survived": false,
+          "gdb_survived": false
+        },
+        "new_fault_messages": []
+      },
+      {
+        "phase": "clean",
+        "repetition": 2,
+        "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-code32k-pure-clean-r2/record.json",
+        "receipt_sha256": "5b6498d3e07b81392ed1db6dc996fbe63bb4235ef28f41e69c7d626f46380a51",
+        "binary_sha256": "a4f6b30f3765140a0d03855586f27a57081b8c76b57705661328e96354344468",
+        "commit": "fb58e0dbc8399662c0e47c76578c6e878b14f6cf",
+        "startup": [
+          "INFO context=262144 kv=int8 kv_resident=32768 expert_slots=144 expert_cache_mib=281 expert_slots_primary=144 expert_cache_primary_mib=281 spec=4 mtp_max=0 lookup=0 vram_free_mib=946 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.00 spec_min_p=0.00 conversation_cache_mib=0 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=0 engine=0.1.41",
+          "READY 262144 stop"
+        ],
+        "actual_pp_positions": [
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ],
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ],
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ],
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ]
+        ],
+        "exit_code": 0,
+        "cleanup": {
+          "forced": false,
+          "inferior_survived": false,
+          "gdb_survived": false
+        },
+        "new_fault_messages": []
+      }
+    ],
+    "integrated": [
+      {
+        "phase": "diagnostic",
+        "repetition": 1,
+        "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-code32k-integrated-diagnostic-r1/record.json",
+        "receipt_sha256": "44cddf86a31f20a400382c4df28c2942f93ecc4a74d19591ff253f25fe6e8065",
+        "binary_sha256": "86972697ecb1903750d202f8be29a7a1da351eb3415678c3e3b6af790804d1c8",
+        "commit": "1eb89482a4afd20277ae0405780ed4f8eb98eb20",
+        "startup": [
+          "INFO context=262144 kv=int8 kv_resident=32768 expert_slots=128 expert_cache_mib=325 expert_slots_primary=128 expert_cache_primary_mib=325 spec=4 mtp_max=0 lookup=0 vram_free_mib=940 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.00 spec_min_p=0.00 conversation_cache_mib=0 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=0 engine=0.1.41",
+          "READY 262144 stop"
+        ],
+        "actual_pp_positions": [
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ],
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ],
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ],
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ]
+        ],
+        "exit_code": 0,
+        "cleanup": {
+          "forced": false,
+          "inferior_survived": false,
+          "gdb_survived": false
+        },
+        "new_fault_messages": []
+      },
+      {
+        "phase": "clean",
+        "repetition": 1,
+        "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-code32k-integrated-clean-r1/record.json",
+        "receipt_sha256": "e49830768cac9005e5dccf1ea8b04b4ff7ca594b70e9f013462ce8ec2fa46686",
+        "binary_sha256": "86972697ecb1903750d202f8be29a7a1da351eb3415678c3e3b6af790804d1c8",
+        "commit": "1eb89482a4afd20277ae0405780ed4f8eb98eb20",
+        "startup": [
+          "INFO context=262144 kv=int8 kv_resident=32768 expert_slots=128 expert_cache_mib=325 expert_slots_primary=128 expert_cache_primary_mib=325 spec=4 mtp_max=0 lookup=0 vram_free_mib=940 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.00 spec_min_p=0.00 conversation_cache_mib=0 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=0 engine=0.1.41",
+          "READY 262144 stop"
+        ],
+        "actual_pp_positions": [
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ],
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ],
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ],
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ]
+        ],
+        "exit_code": 0,
+        "cleanup": {
+          "forced": false,
+          "inferior_survived": false,
+          "gdb_survived": false
+        },
+        "new_fault_messages": []
+      },
+      {
+        "phase": "clean",
+        "repetition": 2,
+        "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-code32k-integrated-clean-r2/record.json",
+        "receipt_sha256": "9d5e7eb1dff56adfa66a1521ddd5c9d3b2a5bc71f12173a21278f0bbbcb8a73e",
+        "binary_sha256": "86972697ecb1903750d202f8be29a7a1da351eb3415678c3e3b6af790804d1c8",
+        "commit": "1eb89482a4afd20277ae0405780ed4f8eb98eb20",
+        "startup": [
+          "INFO context=262144 kv=int8 kv_resident=32768 expert_slots=128 expert_cache_mib=325 expert_slots_primary=128 expert_cache_primary_mib=325 spec=4 mtp_max=0 lookup=0 vram_free_mib=940 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.00 spec_min_p=0.00 conversation_cache_mib=0 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=0 engine=0.1.41",
+          "READY 262144 stop"
+        ],
+        "actual_pp_positions": [
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ],
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ],
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ],
+          [
+            6144,
+            12288,
+            18432,
+            24576,
+            30720,
+            32767
+          ]
+        ],
+        "exit_code": 0,
+        "cleanup": {
+          "forced": false,
+          "inferior_survived": false,
+          "gdb_survived": false
+        },
+        "new_fault_messages": []
+      }
+    ]
+  },
+  "server_changes": "All12 changed common server files byte-identical to pinned upstream; all new SYCL server changes retained with qualified host completion default.",
+  "server_tests": "593 executed,8 skipped,exit0 in existing isolated environment; no package changes."
+}

@@ -1,0 +1,37 @@
+{
+  "active": false,
+  "passed": true,
+  "created_utc": "2026-10-09T01:33:28.555763+00:00",
+  "scope": "Early refusal only while original owned full256K is active. This is not a passing future CPU preflight, compiled binary test or GPU test. No new GPU process or run directory was created. Original owner identities remained live.",
+  "controller_sha256": "4d112ccd8e77a2f6f7a548b9d9903c9f61c6b93cdbb2119e8c4848c211070ef7",
+  "argv": [
+    "python3",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_native_stream_order_v0141_code32k_v1.py",
+    "ring8",
+    "diagnostic",
+    "1",
+    "--cpu-preflight"
+  ],
+  "exit_code": 1,
+  "stderr": "Traceback (most recent call last):\n  File \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_native_stream_order_v0141_code32k_v1.py\", line 102, in <module>\n    assert not native_full['active'], 'original native-copy full256K still active; no new GPU job or CPU preflight admission'\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: original native-copy full256K still active; no new GPU job or CPU preflight admission\n",
+  "stdout": "",
+  "original_full_elapsed_seconds": 3419.418162099988,
+  "original_full_active_request": "full256k-repeat",
+  "original_live_owners": {
+    "inferior": {
+      "pid": 2629170,
+      "start_ticks": 19586805,
+      "state": "R",
+      "executable": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-prefill-native-copy-v0141-20261009/build-sycl-native-expert-copy-v0141-v1/strata"
+    },
+    "debugger": {
+      "pid": 2629155,
+      "start_ticks": 19586797,
+      "state": "S",
+      "executable": "/usr/bin/gdb"
+    }
+  },
+  "new_run_directories_absent": true,
+  "gpu_executed": false,
+  "compiled_engine": false
+}

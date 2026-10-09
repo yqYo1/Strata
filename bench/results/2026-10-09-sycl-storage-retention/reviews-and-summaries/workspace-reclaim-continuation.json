@@ -1,0 +1,52 @@
+{
+  "scope": "Continuation notes, not a benchmark receipt",
+  "git_head": "95e9d5b2eabd3ed726160d963556c3a23f75dfc1",
+  "pr_draft": 9,
+  "live_gpu_session": 2506,
+  "live_gpu_controller": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_full_workspace_reclaim_serve.py",
+  "live_gpu_result": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-workspace-reclaim-serve/record.json",
+  "live_gpu_binary_sha256": "3f3ed0526848f6c7273a70da8802cbe00389b67791629c000c26399bc50823f2",
+  "production_binary_sha256": "75b66b8ff1dbb765b3996818d61bbde001557d4ba11ab658aefd72c70f58d6c2",
+  "production_prefill_source_sha256": "bdc0dea41753d345f5b5c329d807d3f9013280e2488e39df1d615a3b84506b92",
+  "last_status": {
+    "active": true,
+    "elapsed_seconds": 1753.3160600379997,
+    "active_request": "fills-context",
+    "error": null,
+    "inferior": {
+      "pid": 2284293,
+      "start_ticks": 3766581,
+      "state": "t"
+    },
+    "debugger": {
+      "pid": 2284281,
+      "start_ticks": 3766572,
+      "state": "R"
+    }
+  },
+  "all_other_current_turn_sessions_terminal": [
+    21277,
+    62820,
+    73524,
+    2315,
+    78190
+  ],
+  "next_actions": [
+    "Poll the same session 2506; no second GPU job before terminal poll and both owned identities gone",
+    "On failure inspect new free-memory checkpoints and owned main stack; run a guarded health probe only after cleanup; no reset/rebind",
+    "Archive full results separately; startup-only snapshot is already committed and must not be represented as a completed capacity pass",
+    "Production build and only file-path-remapped private link match exactly; normal production-path GPU check is not independently run",
+    "Preserve all full 262144-cell CLI/normal-MTP/refusal/recovery gates and throughput goal"
+  ],
+  "qsa_phase_overlay_source_audit": {
+    "implemented": false,
+    "observation": "sel_scores is read only during selection; attn_scratch starts later on the same compute stream, and sel_ids is separate. Their float payloads could be shared.",
+    "important_indirect_consumer": "Prefill::draft_kv computes its batch capacity from m.region_bytes. Reducing the QSA region can change MTP prefill GEMM batch size (default window 32768), so kernel geometry/bitwise parity is not automatically preserved. Resolve or explicitly validate this before implementing.",
+    "anchors": [
+      "prefill.cpp:qsa_set_bytes / init allocations",
+      "prefill.cpp:draft_kv, cap=m.region_bytes/per_row rounded to64",
+      "prefill.cpp:selection loops before attention loops",
+      "mtp.hpp:first_needed and default32768 window"
+    ]
+  }
+}

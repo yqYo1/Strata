@@ -1,0 +1,12 @@
+Strata storage retention review, 2026-10-09
+
+User explicitly requested review and deletion of unnecessary measurement artifacts.
+Before cleanup: strata-sycl state848.987GiB; models/packs123.202GiB; fork/checkouts7.422GiB; user workspace1.142GiB; legacy tmp backup11.452GiB. Home available173GiB. ZFS compression is off.
+Exact individual measurements and gates remain in immutable original records. This cleanup does not rewrite any result or qualify a rejected candidate.
+Full successful API traces are unnecessary after the result and project messages were recorded. Preserve bounded context, recorded original hashes and outcome metadata; remove the verbose raw log.
+Successful old/candidate tensor and session captures are superseded by current fixtures. Delete only explicitly listed closed-run artifacts. Preserve the current 32K comparison tensors and physical262144 baseline suite plus the one actual decode RESTORE input.
+Failure traces retain causal evidence losslessly as zstd, verifying original and decoded SHA256 and byte count before unlinking raw data. Failure tensors, driver dumps, debugger stacks and unqualified latest C run are protected.
+Source, models, packs, build binaries, research reports and original receipts are untouched. Resume notes belong in committed reports; inference state files are only concrete test fixtures, not progress backups.
+This initial commit records review/plan before deletion. Follow-up result and deletion journal will report observed reclamation and preservation checks.
+
+Root owns all cleanup and tests; no GPU measurement/build/profiler runs concurrently. Research rounds are iterative, with all earlier reports and corrections shared; round10 returned during this review.

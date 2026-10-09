@@ -1,0 +1,39 @@
+# Existing SYCL XMX GEMM audit (2026-10-09)
+
+Scope: read-only audit of worktree `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009` at `23268953`. No build, test, GPU, profiler, service, or git operation was performed.
+
+## Finding
+
+The proposed quantized-weight GEMM is not a new kernel from scratch: `strata::kernels::xmx_gemm_iq` already exists in `sycl/src/kernels/cuda/iq_kernels.dp.cpp:5315-5346`, with API declared at `sycl/include/strata/kernels/xmx_gemm.hpp:1-10`. It already accepts type 21 (IQ3_S), type 20 (IQ4_NL), and several other types, dequantizes weights to FP16 in workgroup local memory, then executes FP16 `joint_matrix` products with FP32 accumulators (`iq_kernels.dp.cpp:5223-5231,5243-5290`). Quantized weights therefore avoid an intermediate full FP16 weight matrix in global memory, but the multiply itself is still FP16; this is not an integer/K-bit matrix multiply.
+
+The missing work is integration/validation, not merely turning on a flag. Grep of `sycl/src/prefill`, `program`, and `core` found no call to `xmx_gemm_iq`; only its definition, declaration, and standalone benchmark call it. The only prompt XMX environment variable found, `STRATA_PROMPT_ATTN_XMX` in `prefill.cpp:996` and QSA files, controls prompt attention, not expert GEMM. `moe_fused_stub.cpp:1-3,19-30` confirms the MMQ/fused SYCL branch is unavailable. The current prompt path retains dequant + oneMKL. No production opt-in/default exists for this expert kernel.
+
+## Shape and batching fit
+
+The XMX operator computes one quantized matrix against M FP16 activation rows. It tiles output features by 16 and M by 16, processes at most 512 rows per main loop (`NT=16`, `NSG=8`, `MAXT=4`, `iq_kernels.dp.cpp:5213-5214,5236-5240`). It has no expert-ID grouping, routing, scatter, or cross-expert batching. A caller would still need to gather tokens by expert, call per expert/matrix, apply gate/up activation and down projection, then scatter/accumulate.
+
+For the model's expert geometry (n_embd 2560, n_ff 640), gate/up is 1280x2560 and down is 2560x640. IQ3_S has qk=256 (`iq_kernels.dp.cpp:741`), so K=2560 suits its per-row mode. IQ4_NL has qk=32 (`:739`), so K=640 is format-valid; current XMX entry accepts non-256 K only when `16*K` is divisible by 256 and K by 16, and rejects non-256 K for paired gate/up (`:5318-5323`). Thus the present kernel could in principle handle an IQ3_S gate/up matrix and an IQ4_NL down matrix as separate calls; one cannot infer it supports IQ3_S down rows at K=640. `xmx_gemm_bench.cpp:18-28` uses this geometry but defaults to type 18 and M=96, not a full model MoE run.
+
+The benchmark (`xmx_gemm_bench.cpp:51-92`) checks standalone output against dequant + oneMKL with a 0.1% bad-element allowance and reports timing. It does not validate router selection, gate/up activation, expert accumulation, prompt state/logits, or tail/large-M behavior as an integrated path. CMake gates the benchmark under `STRATA_SYCL_PARITY` (inspect `sycl/CMakeLists.txt` around the `xmx_gemm_bench` target).
+
+## Performance evidence and overlap
+
+`docs/INTEL.md:300-306` records on the documented Intel card that oneMKL FP16 GEMMs already use XMX, the prompt path is limited by dequantization, and this fused XMX operator was correct but 4–5x slower than dequant + oneMKL. That is strong evidence against adding it as default based on the kernel name alone; it is not a B570 measurement. The same document's B70/Flash-Next section (`:731-735,754ff`) describes a different hardware/model run and should not be used to forecast B570. Reported results vary by scenario; keep them attached to their specific card, software, and model.
+
+The conceptual overlap with the prior proposal is substantial: direct quantized-weight dequant+GEMM is exactly what this operator attempts. New work would instead need (a) wire this operator into the expert/prefill path with correct grouping and fallback, (b) validate the actual model's mixed formats/shapes and numerical behavior, and (c) improve or demonstrate performance on B570. The operator's existence does not constitute a working MoE XMX route.
+
+## Safety and implementation checks before any opt-in
+
+- The entry rejects unsupported type/shape and caps its calculated local allocation at 96 KiB (`:5317-5327`), but does not itself query `joint_matrix` runtime matrix combinations. Official SYCL extension guidance treats joint_matrix as experimental/optional and requires supported combinations and subgroup-convergent collective use. Query support on the actual B570 compiler/driver and retain the fallback.
+- Kernel launch requires subgroup size 16 (`:5333-5342`). The joint_matrix operations are subgroup collectives; any new conditions around them must remain uniform across participating subgroup lanes. Existing branches should receive focused review under the exact compiler/device combination.
+- The single byte-sized `local_accessor` is reinterpreted as `half*` and `float*` (`:5331-5342`). Offsets are multiples of half/float-sized regions, but the code does not visibly express an alignment requirement on the accessor base. Verify alignment guarantees/runtime behavior against the selected SYCL implementation.
+- Row/block layout is a sharp edge: IQ3_S qk=256 while IQ4_NL qk=32; the non-256-K branch flattens a 16-row strip into 256-value chunks (`:5229-5231,5245-5257`). Validate block indices and output coverage for K=640/type20 and reject malformed type/shape combinations before launch. Do not assume a valid shape for one type is valid for another.
+- Tail handling for M and n_out is implemented via local staging/store paths (`:5273-5308`), but production MoE integration needs explicit parity checks for partial M tiles, all output boundaries, and repeated expert calls. Also verify stream ordering/lifetimes and output row stride `ldy` at integration.
+
+Official references consulted: Intel LLVM SYCL `sycl_ext_oneapi_matrix` extension specification (https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_matrix/sycl_ext_oneapi_matrix.asciidoc; optional feature/runtime matrix combinations and collective group/convergence requirements); Intel LLVM issue #22926 about empty matrix-combination reporting on Arc Pro B70 (https://github.com/intel/llvm/issues/22926). The issue is specific to a B70/G31 setup and does not establish B570/G21 support or failure; query the target system.
+
+## Minimal validation plan for the main agent
+
+1. On B570, record compiler/driver and query runtime joint_matrix combinations for the exact FP16 A/B, FP32 accumulator, 16x16x16 shape. If absent, stop and use existing oneMKL path.
+2. Benchmark and compare operator-only IQ3_S gate/up at K=2560 and IQ4_NL down at K=640 against dequant + oneMKL for representative M including non-multiple-of-16 tails and the prompt's actual token batch sizes. Compare full output errors/non-finites, not just timing.
+3. Only if it is faster and parity-clean, integrate behind an explicit opt-in with fallback, then compare full MoE layer outputs and 32K/256K prompt logits/state against the existing path before considering default changes.

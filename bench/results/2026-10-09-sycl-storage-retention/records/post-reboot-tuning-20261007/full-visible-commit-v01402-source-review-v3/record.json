@@ -1,0 +1,38 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_tested": false,
+  "adopted": false,
+  "created_utc": "2026-10-08T05:14:50.882514+00:00",
+  "controller_sha256": "4e5366992d4bcabfb8a13d7d4b52d4c54590d7117c45d003631d34dd9a99ab3e",
+  "parent_controller_sha256": "a1ec6391da4e46c1d109795a4225efa830f4a434e507c9ae94ee2f67df520a91",
+  "session_reader_sha256": "144c05c949bc5fc14bdd36556fc75f1b08706ae3467642994573e0125e47f2dc",
+  "actual_compiled_restore_sources": {
+    "sycl/src/core/conversation_state.cpp": "95e8faff15f3f36d3db0caf1e1a08f28302dc449286b6c2a93896466934cfbab",
+    "sycl/src/core/conversation_snapshot.cpp": "8aad8aa2615b28b8f579ef725f99c79cf994ffd95dc7fd931dec300082d745a5",
+    "sycl/src/program/generate.cpp": "0437a6e9da9c9c3f4478eb3fc7b04dc45e4599728939c7828202aa9a970e012b",
+    "src/core/conversation_file.cpp": "afc7041504adf9e5297fa21f17c8e697389092da6352ffb9814ec2c35b900642",
+    "include/strata/core/conversation_cache.hpp": "d6f5895cb8a5e8837099868c90f888df88423b65b02c10b3ae5ddc8afaa871b7"
+  },
+  "reviewed": [
+    "Snapshot restore validates first, drains queues, restores authoritative host KV and then checkpoint state. Checkpoint restore returns sync, so ring/map-reset operations finish before API return.",
+    "Disk image live.ids records consumed tokens and excludes the final emitted bonus token: 262140+4 output yields262143 consumed, but speculative verifier physically reaches cell262143, and every13-layer image contains262144 rounded cells.",
+    "All saved tensor/state bytes are compared, including rounded last physical cells and the pooled spare row. Only checkpoint LRU stamps and derived representation checksums are omitted from semantic equality. Engine RESTORE validates original checksums before writes.",
+    "Both restored32K continuation and restored256K-prefix clipped tail generate real tokens, and compare complete output IDs/logprobs. No artificial fresh-prefill substitute is used.",
+    "All initial/full/refusal/later input token lists are >=32768. First diagnostic run uses flushed UR/L0 logging; timings are not clean performance evidence.",
+    "SAVE requires PC>0 and a completed ckpt1 request. Default turn-token causes a prefill split, so explicitly disable turn/root boundaries. on_chunk checks periodic threshold only after the existing chunk finishes:262139 records the complete full-input checkpoint without changing chunk geometry. No checkpoint splits or periodic snapshots in32K controls.",
+    "Actual32K SAVE at64 emitted predictions contained32833 consumed tokens, two more than the expected32831, because accepted window rows were committed before length/EOS clipping. The new helper clips the accepted prefix before commit on serial/pipeline serve and CLI. VerifierT and emitted numerical rows stay unchanged. Initial32K must retain all head/state/IDs/logprobs and66 offered drafts; visible accepted count is41 instead of43. Saved token IDs must exactly equal prompt+outputs excluding the last output.",
+    "The disk trailer is payload-hash followed by end magic, as implemented in the actual codec. Reader v2 corrects the initial synthetic assumption and is checked on the actual619404764-byte saved file. Engine RESTORE, not the evidence reader, validates checksum/compatibility."
+  ],
+  "limitations": [
+    "CPU/source preparation is not full-capacity correctness proof.",
+    "No reset/rebind/reboot or service changes are performed."
+  ],
+  "corrected_configuration": {
+    "turn_token": -1,
+    "prompt_cache_root": 0,
+    "prompt_cache_every": 262139,
+    "checkpoint_boundary": "after existing final full chunk; same8192/8192/.../8187 geometry, no32K split"
+  },
+  "visible_commit_build_receipt_sha256": "faa339ee880ecb8d95c11e157be7c4c692ae2a84a71c8c8885d87ab1f30a16b6"
+}

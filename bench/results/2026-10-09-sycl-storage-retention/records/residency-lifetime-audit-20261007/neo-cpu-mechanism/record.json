@@ -1,0 +1,44 @@
+{
+  "scope": "Exercise installed-tag NEO residency fragments with CPU stand-ins.\n\nThis is a controlled lifetime mechanism test, not a GPU reproduction or an\nidentification of the object involved in Strata's Oct 7 crash. Hardware, mapping,\nkernel argument setup and command-list execution are modeled explicitly.\n",
+  "started_utc": "2026-10-06T16:32:37.357419+00:00",
+  "tag": "26.31.39395.14",
+  "tag_commit": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+  "source_sha256": {
+    "shared/source/memory_manager/graphics_allocation.h": "07b0dc2bd0c094a4508162bf6493bd621abcb841087dcaea4cba8e630337653e",
+    "shared/source/memory_manager/graphics_allocation.cpp": "35ad68670f768478227926d43c84d4253d139c6b40068f4db70fc3f05da643be",
+    "shared/source/command_container/cmdcontainer.cpp": "47ef6bc9d730aeb9aa46ff599321e7bd7d052cc97dc0baa7ee0e623b1813ae4f",
+    "level_zero/core/source/context/context.cpp": "276b11641da7bc56d92c41c4db3f85388cd054d7f82d49aa3103a1ac6086ca26",
+    "level_zero/core/source/cmdqueue/cmdqueue.cpp": "cc47f522a3c0d43e596cefc16993285515183dba7c7cf7c56a0413ef45149947",
+    "level_zero/core/source/kernel/kernel_imp.cpp": "2233e2745ddf491387943931f6fcf6c178da601926a84f5d2cadddcb1a690362",
+    "level_zero/core/source/cmdlist/cmdlist_hw.h": "86f98926b207182b11677e3fb607da4334d9e26c72fa94c34cd72f253356b812",
+    "level_zero/core/source/cmdlist/cmdlist_hw_xehp_and_later.inl": "38759e03b9d6e9d20b73bc2f6a5aadcdce18defc9e3cea395ea4f4ceeb577be8"
+  },
+  "runs": [
+    {
+      "mode": "retain-old-list",
+      "exit_code": -6,
+      "expected_uaf": true,
+      "passed": true
+    },
+    {
+      "mode": "update-kernel-only",
+      "exit_code": -6,
+      "expected_uaf": true,
+      "passed": true
+    },
+    {
+      "mode": "retire-and-recreate",
+      "exit_code": 0,
+      "expected_uaf": false,
+      "passed": true
+    },
+    {
+      "mode": "keep-physical-memory",
+      "exit_code": 0,
+      "expected_uaf": false,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "finished_utc": "2026-10-06T16:32:41.525398+00:00"
+}

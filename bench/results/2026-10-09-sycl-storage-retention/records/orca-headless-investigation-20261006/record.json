@@ -1,0 +1,74 @@
+{
+  "generated_at": "2026-10-06T12:30:10.320311+00:00",
+  "boot_id": "ef28c8b7-46f0-4806-9326-36e3158bceb7",
+  "original_unit_sha256": "23e86167d42b3a2ab5cab64a3f313931f1ba5badbc4c2631c3b2169f9f536ac9",
+  "original_after_sha256": "23e86167d42b3a2ab5cab64a3f313931f1ba5badbc4c2631c3b2169f9f536ac9",
+  "runtime_checks": [
+    {
+      "name": "headless",
+      "argv": [
+        "systemctl",
+        "--user",
+        "show",
+        "orca-headless.service",
+        "-p",
+        "MainPID",
+        "-p",
+        "ActiveState",
+        "-p",
+        "SubState",
+        "-p",
+        "NRestarts",
+        "-p",
+        "PartOf",
+        "-p",
+        "BindsTo"
+      ],
+      "exit_status": 0,
+      "stdout": "MainPID=3706\nNRestarts=0\nBindsTo=\nPartOf=\nActiveState=active\nSubState=running\n",
+      "stderr": ""
+    },
+    {
+      "name": "dbus",
+      "argv": [
+        "systemctl",
+        "--user",
+        "show",
+        "dbus.service",
+        "-p",
+        "MainPID",
+        "-p",
+        "ActiveState",
+        "-p",
+        "ActiveEnterTimestamp",
+        "-p",
+        "NRestarts"
+      ],
+      "exit_status": 0,
+      "stdout": "MainPID=4136\nNRestarts=0\nActiveState=active\nActiveEnterTimestamp=Tue 2026-10-06 19:06:06 JST\n",
+      "stderr": ""
+    },
+    {
+      "name": "linger",
+      "argv": [
+        "loginctl",
+        "show-user",
+        "yayoi",
+        "-p",
+        "Linger",
+        "-p",
+        "State"
+      ],
+      "exit_status": 0,
+      "stdout": "State=lingering\nLinger=yes\n",
+      "stderr": ""
+    }
+  ],
+  "production_changes_applied": false,
+  "services_stopped_or_restarted": false,
+  "gpu_operations": false,
+  "passing_nix_glib_cases": 4,
+  "passing_system_glib_cases": 3,
+  "old_incident_direct_signal_evidence": false,
+  "interpretation": "Shared user bus teardown is the strongest supported explanation for Orca headless app exit; observed log lacks exact exit status and direct signal capture."
+}

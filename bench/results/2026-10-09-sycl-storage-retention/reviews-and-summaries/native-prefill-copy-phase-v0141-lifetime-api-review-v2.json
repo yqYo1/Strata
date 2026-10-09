@@ -1,0 +1,41 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_executed": false,
+  "source_diagnostic_receipt_sha256": "e12c8f54dd72f3ab163dad91cab375bd46fc3797038c95e3201b6ddfc4a8e18d",
+  "extract_sha256": "db037f526d4ad45822ecf7209c3e9dccb8941b245e8dcece48cdad7e2b14a4cb",
+  "extract_bytes": 93263,
+  "reviewer_sha256": "629c1bc27bce6edf9c4d36f5f580e33bbde4502524edd12d7602670f95e36637",
+  "created_utc": "2026-10-09T05:11:00.260324+00:00",
+  "native_queue_instances": [
+    {
+      "native_handle": "0x4cb5418",
+      "create_line": 20996,
+      "owned_import_line": 21008,
+      "destroy_line": 14312514,
+      "retired_line": 14312516
+    },
+    {
+      "native_handle": "0x8efb3d8",
+      "create_line": 14610622,
+      "owned_import_line": 14610632,
+      "destroy_line": 28892999,
+      "retired_line": 28893001
+    },
+    {
+      "native_handle": "0x5ef2628",
+      "create_line": 29011994,
+      "owned_import_line": 29012004,
+      "destroy_line": 43297515,
+      "retired_line": 43297517
+    },
+    {
+      "native_handle": "0x5a81e08",
+      "create_line": 43403555,
+      "owned_import_line": 43403565,
+      "destroy_line": 57685912,
+      "retired_line": 57685914
+    }
+  ],
+  "scope": "Each native copy-only ordinal1/index0/flags2 immediate command-list handle is imported with ownership1 and successfully destroyed before its own retired message, before later decode. Four instances; handles may be reused after destruction. This checks observed resource release, not timing, full-capacity correctness or global hang freedom."
+}

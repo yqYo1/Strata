@@ -1,0 +1,111 @@
+{
+  "created_utc": "2026-10-08T00:59:59.993334+00:00",
+  "goal_status": "active",
+  "goal_turn_classification": "progress",
+  "blocker": null,
+  "head": "926d3635726b870b1ea7fc5df2d7620517261639",
+  "branch": "sync/upstream-2026-10-05",
+  "pr9": {
+    "url": "https://github.com/yqYo1/Strata/pull/9",
+    "draft": true,
+    "body_file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/pr9-v01402-chunk12k-rejected-body.md",
+    "body_length": 17311,
+    "head_and_exact_body_verified": true
+  },
+  "public_parent_files": 2528,
+  "public_leaf": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/upstream-v0.1.40.2-20261008/code32k/repro32k/larger-compact-chunk-12k",
+  "private_candidate_sha256": "e82fc5de5480b72255b601759497d5810e86bf691350417ed0dc11ed6c429323",
+  "production_sha256_unchanged": "c88f94d81bfb22227310ea00d09ecc8ab21a6e670aee9556307746530f5af714",
+  "root_main_head_unchanged": "beddab2fd6b61631d73b39b7484bc9a585ebe1de",
+  "all20_previous_cache_controls_passed": true,
+  "previous_clean_mean": {
+    "main-vmm-kept-ram": {
+      "prefill_tok_s": 443.27984882598014,
+      "decode_tok_s": 16.886414587773707
+    },
+    "main-vmm-half-ram": {
+      "prefill_tok_s": 443.7565503278666,
+      "decode_tok_s": 17.7016532848053
+    },
+    "main-vmm-full-ram": {
+      "prefill_tok_s": 433.30504249065183,
+      "decode_tok_s": 17.358999661922176
+    },
+    "main-vmm-full-snapshot": {
+      "prefill_tok_s": 442.2446209671897,
+      "decode_tok_s": 17.83019258476661
+    }
+  },
+  "new_32k_chunk12k": {
+    "normal_exit": true,
+    "no_new_xe_fault": true,
+    "all_owned_identities_absent": true,
+    "math_gate_passed": false,
+    "record_sha256": "3de5e40d7a9bb390112c8de7bc6ee29604e62f8fed45e516cbf57ffe8cb0dfdb",
+    "different_state_parts": 63,
+    "head": {
+      "floats": 248320,
+      "changed_values": 248320,
+      "max_abs": 0.8735668659210205,
+      "rms": 0.18016136861187718,
+      "new_argmax": 40,
+      "baseline_argmax": 40
+    },
+    "first_changed_id": [
+      2,
+      3286,
+      22903
+    ],
+    "mtp_counts": [
+      38,
+      75
+    ],
+    "no_clean_timing": true
+  },
+  "post_rejection_health": {
+    "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/post-chunk12k-v01402-health/record.json",
+    "sha256": "bfb8b9fd6f525c716e8998732e1694268b2af80c90640a1d38c42b272dc536bf",
+    "exact_words_passed": true
+  },
+  "first_capture_scope": {
+    "serve_has_no_startup_verifier_warm": true,
+    "all_legal_graph_sizes_warmed_in_release_restore_callback": true,
+    "kept_zero_fraction_captures_at_first_use": true,
+    "reported_free_drop_bytes": 965898240,
+    "graph_callback_reported_free_drop_beyond_main_mapping_bytes": 877998080,
+    "new_explicit_device_usm_in_callback_bytes": 1114112,
+    "native_callback_command_lists": 680,
+    "native_callback_modules": 61,
+    "all_logged_device_usm_and_native_resources_freed_at_exit": true,
+    "no_isolated_leak_or_runtime_allocation_claim": true
+  },
+  "closed_exec_sessions": [
+    14000,
+    88105,
+    20407,
+    74089,
+    95175
+  ],
+  "limitations": [
+    "The12K chunk changes state/head/output; do not quiet-time or adopt it, or assume numerical rounding is the sole cause.",
+    "Fresh cache-release means include different initial graph capture/kernel loading schedules. They do not isolate warmed repeated recapture.",
+    "Observed VRAM reduction is not a proven direct allocation leak or solution to the older full256K repeat failure.",
+    "CPU geometry estimator granules are not measured SYCL physical granules. V1 borrowed-ring padding mismatch and V1 zeMemFreeExt parser omission are preserved; V2 corrections pass.",
+    "Full262144 occupancy/repeat/restore/clipped-tail/refusal/later-valid gates remain open.",
+    "Native-output-head phase parking is only a source/lifetime review; no implementation/adoption."
+  ],
+  "next_steps": [
+    "Return to accepted8192 geometry and test repeated32K requests in one normal-MTP serve process before long context. Capture actual per-request state/head evidence; inspect whether the first-head diagnostic fires only once and avoid counting stale files.",
+    "Use the new rejected job exact hash plus post-rejection same-boot health as an explicitly audited mathematical rejection in future owner guards; do not weaken fault/stall guards.",
+    "Consider a private startup verifier warm or graph-only matched control to distinguish initial capture/JIT/device-private-resource footprint from repeated release. Full state/head/IDs/logprobs must pass before quiet ABBA.",
+    "Measure phase memory in warmed repeats and resolve/guard temporary cache and rollback capacity before full262144 tests.",
+    "Preserve all performance inputs>=32768, logging/validation for first configuration/correctness runs, clean timing without diagnostic extras, stable binary/source receipts and fullcontext gates before any adoption."
+  ],
+  "constraints": [
+    "No reset/rebind/reboot/service/package/global change.",
+    "Embedding stays stopped+disabled.",
+    "No production defaults/binary adoption or main merge.",
+    "Do not overwrite executed controllers/build/benchmark receipts.",
+    "Goal remains active; PP1000/TG70 not achieved."
+  ]
+}

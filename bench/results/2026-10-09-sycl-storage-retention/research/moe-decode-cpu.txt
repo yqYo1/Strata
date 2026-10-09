@@ -1,0 +1,126 @@
+Strata SYCL の MoE decode / CPU 調査
+調査日: 2026-10-09
+対象: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009 (HEAD 23268953、upstream v0.1.41)。読み取り専用調査。ベンチ、GPU、モデル、ビルド、テスト、プロファイラーは実行していない。
+
+結論
+
+1. 最初に試す価値が高いコード変更は、SYCL generate に未配線の CPU `pool-tasks` を公開し、18-task既定値を含む少数のタスク数を実測すること。CPU pool 本体は任意 task 数とテストを既に持つ。6-core Ryzen では行帯域の偏りを減らす余地があるが、既定値は既に6参加スレッド当たり3タスクなので、大きな倍率は期待せず、実測で決める。
+2. CPU pool の Gate/Up 後の活性量子化は現状ホスト1スレッドだけで全CPU expert/token分を順次処理している。`ms_multi_q` が実時間の有意な割合なら、expert×token単位の量子化ジョブ化は6-core機向けの低リスク候補。ただし新しいpool barrierの費用を引いて採否する。
+3. VRAMに空きがあり256K時にも32K resident KVを維持できる場合に限り、expert cacheを各MoE層あたり1 slot増やすA/Bが有望。CPU expertsが8/10程度を受け持つ今の設定では、GPUでのcache hit増加がCPU負荷を直接減らす。hit率が伸びない場合やKV/モデル容量を損なう場合は採用しない。
+4. 256Kだけの候補としてKV residentを32Kから48K/64Kへ増やす試験。KVは数値を変えずhostコピー中の選択ブロックをVRAM staging poolに置くため、常駐容量とヒット率の変化を確認する。32Kでは全KVがresidentなので、この変更にdecode利得は見込まない。
+5. IQ3_SのAVX2多token行カーネル、expert単位のtoken grouping、`dec_batch`のKV一括appendは既にある。現時点で同機向けに未実装の重複除去方式は確認できなかった。MTP4を深くするだけでCPU仕事が減るとは見なさず、CPU job当たりのtoken数と受理率を計って判断する。
+
+ベース条件と読み方
+
+依頼者からの実測: Arc B570 10 GiB、Ryzen 5 5600X (6物理core、AVX2、AVX-512なし)、RAM 128 GiB、PCIe 4.0 x4およそ6 GB/s。IQ3_S、active約6B。32K基準prefill 411–450 tok/s、初回64 decode 16.6 tok/s、固定32,831状態復元後22 tok/s。MTP4、pool worker 5 + host core 0、per-layer 2 slots / 合計128 slots / 325 MiB、PCIe frac 0、KV int8でresident 32,768、context上限262,144、prefill chunk 8,192。1 verify window当たりCPU expert区間の合計123–126 ms、出力は平均約4 token/window、accepted 2–3、host boundary 48回。GPU stage-counterはPLEを重ねて数える場合があるため、候補の採否はphysical DONE時間・64 token decode時間・CPU pool合計時間を優先する。冷間decode、復元状態decodeを混ぜない。prefillの利得とdecodeの低下を合算しない。
+
+22 tok/sから70 tok/sは約3.2倍。host expert 123–126 ms/windowは各layerのCPU区間を合算した値であり、GPUとの重なりがあるので単純な直列下限とは限らない。ただしCPU区間が主なcritical pathなら、小さなpool調整だけで目標差を埋めるのは難しい。CPU ms、キャッシュmiss、verify windowの受理数を合わせて見る。
+
+確認した実装差
+
+- `include/strata/kernels/cpu/pool.hpp:57-66,182-190,280-291` は `ExpertJobMulti` と `run_split_multi_native`、poolの `tasks` 引数を実装済み。
+- `src/kernels/cpu/pool.cpp:436-438,716-717,759-788` はtask数を保持し、0なら参加者数×3、明示値なら行数でcapする。native multi-token pathはGate/Up→量子化→Downの3段で、Gate/UpとDownは等分row-taskにしてpoolで走らせる。
+- SYCL側 `sycl/src/program/generate.cpp:895-909,1750-1768,4161` は `--pool-workers`, `--pool-affinity`, host workerのCLIとpool生成を持つが、`pool_tasks`のoption/help/parser/constructor引数がない。`sycl/src/program/generate.cpp` 内に `pool_tasks` は見つからなかった。一方、同worktreeの非SYCL `src/program/generate.cpp:412,1726,4255-4258` にはfield、CLI解析、poolへの配線がある。SYCLへ移植するのは「pool task数のCLI配線」で、カーネル追加ではない。
+- `src/core/expert_source.cpp:3310-3351` はverify windowのCPU向けroutingをexpert IDで重複排除し、expertごとに複数tokenのactivation/outputポインタを束ねて `run_split_multi_native` に渡す。各行列の重複readをすでに抑える経路である。
+- `src/kernels/cpu/native_expert.cpp:106-160` は `nt >= 2` のIQ multi-token kernel dispatchを持つ。AVX2経路はZen 2/3を想定し、量子化weight decodeをtoken間で共有する。実装コメントのnative parity結果は3 tokenでggml CPU比2.0–2.4x、1 tokenでは改善なし、codebook lookupが律速、約5 GB/s/core。これはnative_expert_parityでの測定であり5600X/B570のend-to-end値ではない。
+- 同ファイル113-122のIQ3_S単一token特例 `STRATA_IQ3S_MT1=1` はCPU判定がIntelのAVX-VNNI CPUに限定される。`src/kernels/cpu/expert_layout.cpp:211-229` は `GenuineIntel` とAVX-VNNIを検査するため、5600Xではこの特例が働かない。広い `STRATA_IQ_MT_MIN=1` はAVX2でも使えるが、CPUのデフォルトは2であり、AVX-512 Ryzen 7600でIQ3_S decodeが1–3%低下した記録がある (`docs/DETAILS.md:96-103`)。5600Xの速度策として先に有効化する根拠はない。値がtoken-groupサイズに依存しないgreedy再現性を目的にする場合だけ別採否とする。
+- `sycl/src/core/verify.cpp:103,1077-1128` はdecode batch時のK/V appendとindexer appendを既定でwindow一括にする。`STRATA_NO_BATCH_KV_STEP` は1 tokenごとの戻し比較であり、性能改善策として有効化する根拠はない。
+- `include/strata/core/layer.hpp:280-340` はKV stream時にresident cell分をVRAMに置き、残りをpinned host memoryに保持し、選択blockをresolveする設計を定義する。`sycl/src/program/generate.cpp:733,3752,11567-11576` は resident容量と実行時のblock-read VRAM hit / RAM read MiBを表示する。32K以下では要求全体がresidentなので、KV-stream tuningは32K実測に適用しない。
+
+詳細候補
+
+候補A — SYCLにCPU row task粒度のCLI配線を戻し、小さなsweepをする (優先度 高、実装小、効果は中/未測定)
+
+変更場所: `sycl/src/program/generate.cpp:400-420`相当のOpt field、help 895-909、parse 1750-1768、pool生成4161に `pool_tasks` を通す。同じworktreeの非SYCL実装 `src/program/generate.cpp:412,1726,4255-4258` が形の参照。pool実装 `src/kernels/cpu/pool.cpp:716-717` が数値の意味を定義する。
+
+仮説: decodeでGPU cacheに載らない複数expertのrow範囲を全6参加者へ分けるphaseのtask数を変える。現行worker 5 + host drain有効は自動18 row tasks/phase。6/12/18/24/36を同一条件で比較し、少数taskによる不足、過剰dispatchによるatomic/CAS/barrierコストの両方を見る。rowsはexpert間で等形状ではなくnative formatがlayer毎に異なるので、同じlayer内の `n*FF` / `n*H` row flatten境界を保つ既存poolを使う。per-layerの相対比が見えるようnCPU expertsとmulti-entry countも記録する。選択するtask数はSYCL CLIに明示し、サーバー実引数にも同値を渡す。
+
+正しさ/寿命: poolの各taskは既存同様に互いに重ならないhalf-open row rangeを担当する。全GPU window出力は同じrow演算を各1回行うため数学的結果に変更がない。`run_phase`の全doneとworker再parkまで待つプロトコルを短縮/除去しない。job配列、expert blob、per-expert FF bufferはpool runが返るまで生存させる。
+
+最小測定: 32K復元状態、同じ固定prompt/state、MTP4と既定CPU/cache/KV設定のまま、tasks 0/6/12/18/24/36を交互に複数run。各64 output tokensについてphysical DONE ms/token、decode tok/s、CPU pool ms/window、pool phase drain/wait、accepted tokens/window、nCPU jobs・multi-entry分布を比較。次に同設定で256K到達後のdecode A/Bを行い、contextが32768を越えた状態も含める。候補1つだけを変更する。
+
+失敗判定: 改善がrun間ばらつきより小さい、CPU timeが増える、accepted count条件を揃えるとphysical DONE/decodeが改善しない、32K/256K parityまたはフル/部分windowで破綻するなら戻す。既定task数が勝つ可能性を前提にする。目安は全体decodeで少なくとも3%を安定して超えること。
+
+期待値と限界: 6-coreでは各phaseに既定18 taskを出すため、task調整で得られるのはworker imbalanceとbarrier tailの削減。CPU row kernel/DRAM帯域そのものは変わらないため、pool phase計測で軽ければ効果はほぼない。SYCL parser未対応のため、現構成ではこのknobをserver argsへ加えるだけでは効かない。
+
+候補B — Gate/Up後の量子化をCPU poolで並列にする (優先度 中〜高、変更限定、効果は未測定)
+
+変更場所: `src/kernels/cpu/pool.cpp:759-783` の `run_split_multi_native` がGate/Up barrier後にexpert/token loopで `act_quant_any` または `native_quant_h` を直列実行する。共通work queueに一量子化job=(expert,token)を足すmodeを同ファイルの `worker`/`drain` (概ね600-670行)に実装し、`ms_multi_q` (pool.hpp:187-190) の計測を維持する。SYCLの `drive_pool` が共通CPU expert sourceを使う場合、このpool側変更をSYCLの通常CPU MoE経路が呼ぶことをソース呼び出し連鎖で確認してから触る。
+
+仮説: Gate/Up終了後、hostが複数FF vectorを量子化している間はCPU workerがpool phaseに参加せず待っている。`ExpertJobMulti.nt` は各expertの異なるtoken数なので、expert×tokenを独立jobとして6参加者へ配ればserial区間を並列化できる。quantizationはAVX2で速いので、このserial区間の大きさをまず `ms_multi_q` で測る。
+
+正しさ/寿命: 量子化単位は一expert、一tokenの全activation vectorとし、quant blockの境界を割らない。`ff[t]`はGate/Up段の完了後からDown段開始まで読み取り専用、`a2[t]`/`hq[t]`の書き手を一jobだけにする。quant jobsのbarrier完了後だけDownをpublishする。静的/共有scratchを新設せず既存split_multiバッファを再利用する。既存quantizerをそのまま呼ぶため丸めと量子化精度は変えない。
+
+最小測定: 候補Aを採用するならtask数は固定(最良値)、または0既定で統一する。32K/256Kの各64 decodeで同一stateを使い、quant serial、new quant drain、gate/up/downの区間、physical DONEを計測。まずCPU-only parity testの実行計画で同じ `a2/hq` bytesと出力を参照kernelに照合し、承認後に実装/テストを走らせる。
+
+失敗判定: `ms_multi_q`がCPU work/physical DONEに対し小さくpool barrier分を回収できない、full-decode遅延、またはquantized bytes/CPU expert outputsが異なる場合は不採用。End-to-endで3%未満かつ測定誤差内なら保持しない。
+
+期待値と限界: 量子化の合計work量はなくならず、並列に移るだけ。cpu expert/token job数が6未満のlayerでは並列性が足りない。quant phase時間が既に小さければこの候補は不要。
+
+候補C — per-layer expert cacheを1 slotずつ増やす (優先度 高、VRAM依存、CPU負荷を直接減らす)
+
+変更場所: expert cacheの設定値/割当 (`sycl/src/program/generate.cpp`内 `--expert-cache` と `--expert-cache-per-layer`、割当コード約5900行以降)だけで試す。native `expert_source.cpp`はGPU hit/cached rowsをCPUへ送らない経路を持つ。現設定は依頼者測定の128 slots/325 MiB/per-layer 2 slots。
+
+仮説: 容量をMoE層ごとに2から3 slotへ増やして再訪しやすいrouter expertsをVRAMに保持すれば、CPUのexpert jobsと123–126ms/windowを減らせる。まずcache hit率、CPU `jobs`, CPU time/windowの同時変化で効果を説明する。追加必要VRAMは実際の各layer slotサイズ合計で算出し、概算を固定値にしない。全層に一slotずつ増やす場合、現在の1slot当たり平均325/128≈2.54MiBを目安にするが、層ごとのblobサイズが違うため実startupログのMiBが正。
+
+正しさ/寿命: cache slotは元expert blobのbyteコピー、router ID/weightと同じ対応を維持し、CPU/GPUのweighted output reductionは現状どおり。cache eviction/copyが完了するまでkernelがそのslotを読まない既存event境界に従う。KV resident 32768、model weights、head、MTP VRAMを優先して十分なVRAM空きを残し、10GiBを超えるallocationやWindowsのsystem-memory fallbackで設定値だけ見かけ上通る状態を採用しない。
+
+最小測定: 同じ32K復元stateと256K stateでper-layer2→3をA/B、他のexpert cache policy / PCIe frac 0 / pool knobs / MTP / KV unchanged。startup VRAM free logを保存し、per-layer slot count, cache hit/refused, CPU jobs, CPU ms/window, physical DONE, decode rateを比較。32Kと256Kの両方を必須にし、32Kの+改善だけで決めない。
+
+失敗判定: cache hitが増えない、CPU msが下がらない、decode <3%または下がる、resident KV 32768/256K correctnessを維持できない、allocation圧でGPU paging/latency spikeが出るなら採らない。キャッシュ内容の変化でnear-tie greedy tokenが変わる可能性はrouting round差を含め個別に出力/qualityチェックする。
+
+期待値と限界: 3.2倍を直接見込める根拠はない。現2slots/layerは層ごとのcache枠が少なく、CPU側expert数が多いため候補として有力だが、routerのexpert再利用偏りとVRAM空き量が実測まで不明。Linux/Windowsでdriverが余剰割当をsystem memoryへ回す場合もあるのでstartupだけでなくdecodeも計る。
+
+候補D — 256K decodeのKV residentを増やす (優先度 中/条件つき、32Kには適用しない)
+
+変更場所: `sycl/src/program/generate.cpp:445,733,1721-1723,3752` の既存 `--kv-resident`. KV resolveは`include/strata/core/layer.hpp:280-340`、SYCL `sycl/src/kernels/cuda/kv_stream.dp.cpp:359+` (DPCT由来のblock mover)で確認。実行終了の統計はgenerate.cpp:11567-11576にblock readsのVRAM hit率/RAM read MiBを出す。
+
+仮説: 32K resident超のcontextでは選択されたKV blocksがpinned host copyからVRAM staging poolに入る。resident cellsを増やすと、長文decodeで再利用されるblockのVRAM hitが増え、host->GPU読み取りが減る可能性がある。一方でVRAMを使いexpert cacheを縮める可能性がある。docs/DETAILS.md:72-80はKVを保持しattentionが同じ値を読むこと、Q2_0別構成で128K/262K decode改善を報告するが、対象は別GPU/モデル設定でありB570/IQ3_Sの予測値ではない。
+
+正しさ/寿命: residencyだけを変え、KV format=int8とpage table/logical positionsを保つ。resident page eviction後のhost copyはsource of truthである既存designに従う。staging slotがattention kernel実行中に再利用されないようresolve→attentionの既存queue order/eventを維持。32K〜256K context append/resume, MTP draft ring, `max_context=262144` の境界を確認する。
+
+最小測定: 32K runは32K residentのままcontrolとする。256K contextではresident=32768/49152/65536を比較できるものだけ試す。32K, 128K, 256Kまで同一のdocument/evidence stateをbuildして64-token decode。block-read hit%、MiB from RAM/window、VRAM usage/cache slots、physical DONE/decodeを同時記録。expert cacheとの総VRAM競合を明示する。
+
+失敗判定: RAM read/hitが改善しない、decodeに差がない、expert cache縮小でCPU MoEが増えphysical DONEが遅くなる、長文stateのattention/needle correctnessが崩れる、contextが256Kまで到達できない時は不採用。prefill改善だけなら採らない。
+
+期待値と限界: 32K基準では全KVがVRAM内にあり、このresident増加は無効果。256Kではselected blocksの局所性が改善の決め手で、全context KVを常駐させる話ではない。host RAMの使用容量をGPUに移すと、今度はMoE cacheを押し出すかもしれないため単独最適化にしない。
+
+候補E — MTP深さを上げる、またはCPU expert group occupancyを増やす (低確度、現状4から小さく比較)
+
+変更場所: `sycl/src/program/generate.cpp` の`--spec`/`MtpDrafter` config/loop 12314以下 (root equivalent current line references differ; `src/program/generate.cpp:12314-12337` in sibling path). CPU groupingは`src/core/expert_source.cpp:3310-3351`で既に重複expertをまとめる。MTP4、acceptance 2–3/token windowは依頼者の基準。
+
+仮説: `--spec`を3/4/5に振るとverify window内で一expertに属すtoken数が増え、IQ3_S AVX2 multi-token kernelがweight decodeをtokenで共有する機会を増やす。ただしverifyするdraft token数、CPU output行数、MTP drafter workも増える。accepted output token ÷ window physical DONEが上がる場合だけ効果がある。adaptive `spec-min-p`もdraft数とacceptanceを変えるため、同時に変更しない。
+
+正しさ/寿命: speculative samplingのaccept/reject、target logits、Philox/coupled samplingを既存契約どおりに保つ。`--spec`変更で確認対象Tが変わる。CPU groupの`nt`変動によりIQ AVX2 pathとggml pathの丸めが変わり、同一promptでもgreedy near-tie tokenが変わり得る。正確な比較ではtokens/secだけでなく、同一生成seedでのtarget-logit parity/受理token列を記録し、quality比較が必要なら同じ固定datasetで行う。
+
+最小測定: spec=3/4/5を一つずつ、MTPとCPU group分布(nt=1/2/3/4)・unique CPU jobs/layer・accepted output/window・CPU ms/window・physical DONE/window・decode tok/sを並べる。32K cold/restoreを別表、256Kも別表にする。
+
+失敗判定: acceptance増よりCPU service/DONEの増分が大きい、accepted output per wall-timeが上がらない、64-token outputのばらつき内、あるいはquality/target parityが不合格ならMTP4のまま。
+
+期待値と限界: 依頼者の窓当たり約4 tokenのうちaccepted 2–3で、平均multi-token jobのntがいくつか不明。すでに一層の同一expert IDを一jobにまとめ、weight loadを共有するので深さだけで4倍改善する根拠はない。MTP draft自体が高価ならむしろ悪化する。
+
+低確度 / 見送り
+
+- 5600XのAVX2 IQ3_S gather modeを強制 (`STRATA_IQ256_GATHER=1`) する案は原理的にはprobe可能だが、現engineはgather fast判定をIntel AVX-VNNI CPUにだけ許す。Ryzen 5600Xは除外され、gatherが速いという根拠がない。native CPU parity microbenchで3-token IQ3_S row時間が既定AVX2より明確に短くなった後だけengine A/Bする。解決策にせず計測候補に留める。
+- AVX2命令より先に`cpu_avx2_ok()`を検査する現runtime dispatchを崩さない。`iq_avx2.cpp`はAVX2/FMA compile unitなので、5600X target binaryのbaseline/CPU detectionが同じ実行ファイルに入っているかを確認せず ISA-specializationを共有コードへ移さない。
+- Ryzen 5600Xは1 socketなのでNUMA policyの分割は見込み薄。Linux process/worker affinityをGPUのNUMA nodeに狭めるのは、OSが複数NUMA nodeを報告する/他processがCPUを奪うときのみ比較する。Intel LLM ScalerのNUMA exampleはXeon multi-socket hostであり5600Xの効果証拠ではない。
+- CPU expertのGPU cacheをmiss中に同時実行する persistent expert cacheはCPU-only miss pathのapproximationやnew GPU scheduler dependency、slot remappingの整合が必要で大きい。llama.cpp RFCの測定は4x RTX 3090 / EPYCで別model、SYCL実装へそのまま移す提案ではなく、将来の設計参考。まず既存Strata cache size sweepから始める。
+
+原実装・一次資料
+
+- Strata local source (対象worktree): `https://github.com/Niko1221/Strata/tree/23268953` (ソース所在のリンク。line refsは本報告の対象ローカルworktreeに対する)。
+- KTransformers paper, SOSP 2025: https://madsys.cs.tsinghua.edu.cn/publication/ktransformers-unleashing-the-full-potential-of-cpu/gpu-hybrid-inference-for-moe-models/SOSP25-chen.pdf . PaperはMoE hybrid inference、expert weight layout / CPU-GPU split、AMX high-arithmetic-intensity useを分析する。AMX・server CPUの数値をAVX2 Ryzenへ移さず、layout/compute intensityがCPU optimizationへ影響する知見だけを参考にする。
+- KTransformers maintained source/CPU variants: https://github.com/kvcache-ai/ktransformers/ (KT-KernelがAMX/AVX-512/AVX2 variantを公開。実測系は主にDeepSeek + server CPUs)。
+- ggml/llama.cpp MoE expert-indexed matmul kernel: https://github.com/ggml-org/llama.cpp/blob/master/ggml/src/ggml-et/et-kernels/src/mul_mat_id_f32.c . Source comments/indices show expert-ID indexed matmul over activation batch; transferable idea is combine token rows per expert and avoid repeated weight decode. Strata already does this on CPU (`ExpertJobMulti`).
+- llama.cpp contributor's GPU expert cache RFC/own measurements: https://github.com/ggml-org/llama.cpp/discussions/24528 . The author gives CPU miss + GPU cache hit/miss concurrent execution, cites Qwen3.5 routing skew, and reports several models on 4x RTX 3090/EPYC. Exploratory RFC, not upstream guarantee or B570 result.
+- Intel LLM Scaler repo: https://github.com/intel/llm-scaler ; official tuning README: https://github.com/intel/llm-scaler/blob/main/vllm/README.md . It targets Intel multi-GPU/XPU and documents CPU affinity by GPU NUMA locality; reference host is multi-socket server. Not a direct AVX2 CPU expert implementation.
+- SGLang EP docs: https://github.com/sgl-project/sglang/blob/main/docs/docs/advanced_features/expert_parallelism.mdx ; describe grouped GPU GEMMs/EP and masked decode. Useful for the general principle of different prefill/decode grouping, but its NVIDIA GPU kernels do not port as CPU implementation.
+- vLLM EP docs: https://docs.vllm.ai/en/latest/serving/expert_parallel_deployment/ ; expert-parallel distributed GPU reference; no directly applicable CPU MoE kernel found.
+- IPEX-LLM docs: https://github.com/intel/ipex-llm ; current relevant docs focus Intel extension/XPU and do not offer a transferable Ryzen 5600X IQ3_S multi-token MoE row kernel found in this pass.
+
+参照用のローカル測定・テスト資産 (未実行)
+
+- `src/kernels/cpu/pool_tasks_test.cpp` checks task partition parity with synthetic and optional expert data; it is relevant for candidate A's partition semantics.
+- `src/kernels/cpu/iq_avx2_parity.cpp` describes and measures CPU IQ AVX2 kernel parity/throughput; use only as the pre-screen for candidate E/low-confidence gather mode, and do not substitute its microbenchmark for full decode.
+- `sycl/src/kernels/kv_stream_parity.cpp` checks streamed block resolution against a resident pool and requires residency map/page-table consistency; use in a future KV implementation change, not necessary for a pure parameter sweep.
+- Before any accepted candidate, run a fixed 32K restore decode then 256K context decode and verify the documented context boundary and outputs. This research run itself made no source/config/Git/service changes and launched no tests or hardware workload.

@@ -1,0 +1,275 @@
+{
+  "active": false,
+  "passed": true,
+  "started_utc": "2026-10-08T10:08:35.539401+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "controller_sha256": "8c0686547eb7945ca5a74cd9eedfb6ceab4a7e5a426a5c46258e2b1288d4b021",
+  "job_controller_sha256": "e681237f10cdb6cfd27e6a6ef848ac26519def4809a74125584054f56ecc3ff6",
+  "scope": "Matched DD5/44a ABBA, four fresh32768 inputs A/B/A/B and64 output IDs/logprobs per process. No performance conclusion until all16 full reads, output/MTP/freshness and normal exit gates pass. First process read separate from later reads; no global cache clearing, physical256K/adoption or stall-fix claim.",
+  "minimum_comparison_input_tokens": 32768,
+  "steps": [
+    {
+      "ordinal": 1,
+      "mode": "dd5-control",
+      "repetition": 1,
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_poll_matched_quiet32k_v01402_v1.py",
+        "dd5-control",
+        "quiet",
+        "1"
+      ],
+      "started_utc": "2026-10-08T10:08:35.540054+00:00",
+      "owned_controller": {
+        "pid": 4047591,
+        "start_ticks": 14379465,
+        "state": "R"
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-08T10:14:49.698502+00:00",
+      "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-poll-matched-dd5-control-v01402-code32k-quiet-r1/record.json",
+      "receipt_sha256": "b02733fc0e363f8616a4aa6efb0468f60dde82672dedd95f33bded6b0f8c10b8",
+      "binary_sha256": "dd5efb9002167481d180f370b86fb6978d724f37745f7e4a923432296725ad34",
+      "measurements": [
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 83223.9,
+          "decode_ms": 3801.3,
+          "wall_seconds": 87.20871455199085,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 393.73305024157725,
+          "decode_tok_s": 16.83634546076342
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76678.6,
+          "decode_ms": 4165.1,
+          "wall_seconds": 81.03631100401981,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 427.3421789130213,
+          "decode_tok_s": 15.365777532352164
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76614.6,
+          "decode_ms": 3493.6,
+          "wall_seconds": 80.29365415501525,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 427.6991591680959,
+          "decode_tok_s": 18.319212273872225
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76698.2,
+          "decode_ms": 3929.9,
+          "wall_seconds": 80.82360734301619,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 427.23297287289665,
+          "decode_tok_s": 16.285401664164482
+        }
+      ]
+    },
+    {
+      "ordinal": 2,
+      "mode": "dd5-poll-backoff",
+      "repetition": 1,
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_poll_matched_quiet32k_v01402_v1.py",
+        "dd5-poll-backoff",
+        "quiet",
+        "1"
+      ],
+      "started_utc": "2026-10-08T10:14:49.699493+00:00",
+      "owned_controller": {
+        "pid": 4067125,
+        "start_ticks": 14416881,
+        "state": "R"
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-08T10:21:05.885659+00:00",
+      "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-poll-matched-dd5-poll-backoff-v01402-code32k-quiet-r1/record.json",
+      "receipt_sha256": "eb2be73950cd2372aca066114d672c7aafe07af3c6216648d86b3e316d3b427e",
+      "binary_sha256": "44a274d8c699829020abb8a85a331a638f40efdf5d6c959a076a58e818f75391",
+      "measurements": [
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 84628.6,
+          "decode_ms": 3941.7,
+          "wall_seconds": 88.76125032399432,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 387.19770857606056,
+          "decode_tok_s": 16.23664916152929
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76690.6,
+          "decode_ms": 4002.3,
+          "wall_seconds": 80.88400224299403,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 427.27531144625283,
+          "decode_tok_s": 15.990805286959997
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76692.1,
+          "decode_ms": 3441.5,
+          "wall_seconds": 80.32486182899447,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 427.26695448422976,
+          "decode_tok_s": 18.59654220543368
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76683.5,
+          "decode_ms": 4372.6,
+          "wall_seconds": 81.24628592299996,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 427.3148721693715,
+          "decode_tok_s": 14.636600649499153
+        }
+      ]
+    },
+    {
+      "ordinal": 3,
+      "mode": "dd5-poll-backoff",
+      "repetition": 2,
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_poll_matched_quiet32k_v01402_v1.py",
+        "dd5-poll-backoff",
+        "quiet",
+        "2"
+      ],
+      "started_utc": "2026-10-08T10:21:05.886676+00:00",
+      "owned_controller": {
+        "pid": 4086686,
+        "start_ticks": 14454499,
+        "state": "R"
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-08T10:27:21.106093+00:00",
+      "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-poll-matched-dd5-poll-backoff-v01402-code32k-quiet-r2/record.json",
+      "receipt_sha256": "b756d371e19d9985bb8f64531a17172712fe551a06a1a00af8d6d1fd04790f07",
+      "binary_sha256": "44a274d8c699829020abb8a85a331a638f40efdf5d6c959a076a58e818f75391",
+      "measurements": [
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 83315.8,
+          "decode_ms": 3877.9,
+          "wall_seconds": 87.38468955099233,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 393.298750057012,
+          "decode_tok_s": 16.503777817891127
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76713.3,
+          "decode_ms": 4112.6,
+          "wall_seconds": 81.0166860090103,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 427.14887770438764,
+          "decode_tok_s": 15.561931624762922
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76723.7,
+          "decode_ms": 3572.1,
+          "wall_seconds": 80.48479455398046,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 427.09097710355474,
+          "decode_tok_s": 17.91663167324543
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76694.6,
+          "decode_ms": 3951.9,
+          "wall_seconds": 80.83769675900112,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 427.253026940619,
+          "decode_tok_s": 16.194741769781622
+        }
+      ]
+    },
+    {
+      "ordinal": 4,
+      "mode": "dd5-control",
+      "repetition": 2,
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_poll_matched_quiet32k_v01402_v1.py",
+        "dd5-control",
+        "quiet",
+        "2"
+      ],
+      "started_utc": "2026-10-08T10:27:21.107299+00:00",
+      "owned_controller": {
+        "pid": 4106516,
+        "start_ticks": 14492022,
+        "state": "R"
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-08T10:33:38.380476+00:00",
+      "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-poll-matched-dd5-control-v01402-code32k-quiet-r2/record.json",
+      "receipt_sha256": "d5c5204155e1353ee33daedf973f7fc358867da9c24ed75dad45eab9bcaac2cd",
+      "binary_sha256": "dd5efb9002167481d180f370b86fb6978d724f37745f7e4a923432296725ad34",
+      "measurements": [
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 83232.3,
+          "decode_ms": 4099.8,
+          "wall_seconds": 87.5121746439836,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 393.69331377361914,
+          "decode_tok_s": 15.610517586223718
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76651.5,
+          "decode_ms": 3984.0,
+          "wall_seconds": 80.82618054197519,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 427.4932649719836,
+          "decode_tok_s": 16.06425702811245
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76664.9,
+          "decode_ms": 3508.1,
+          "wall_seconds": 80.36504579000757,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 427.41854486212077,
+          "decode_tok_s": 18.24349362902996
+        },
+        {
+          "generated_tokens": 64,
+          "prompt_tokens": 32768,
+          "prompt_ms": 76583.6,
+          "decode_ms": 4211.4,
+          "wall_seconds": 80.98614189200453,
+          "purpose": "quiet matched full32K comparison",
+          "prefill_tok_s": 427.8722859724536,
+          "decode_tok_s": 15.19684665431923
+        }
+      ]
+    }
+  ],
+  "elapsed_seconds": 1502.8418034019996,
+  "active_step": null,
+  "finished_utc": "2026-10-08T10:33:38.381720+00:00"
+}

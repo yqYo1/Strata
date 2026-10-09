@@ -1,0 +1,26 @@
+{
+  "active": false,
+  "prepared": true,
+  "compiled_engine": false,
+  "gpu_tested": false,
+  "adopted": false,
+  "created_utc": "2026-10-08T19:05:09.847721+00:00",
+  "scope": "Private optional STRATA_PREFILL_HOST_TIMING=1 CPU-only accounting source, based on exact integrated1eb prefill. No tracked source mutation, engine compilation, GPU run or speed claim.",
+  "original_source_sha256": "f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77",
+  "candidate_source_sha256": "c8f6356707af8aaa521e273cf0733d8e650811f67474ba5c249db255d67f05f1",
+  "portable_struct_sha256": "976dffb763247253d8365ca9a6632fee4880357073754d263b187b37fcb75339",
+  "preparer_sha256": "57abc79ae96442334889833dfa54cd9a307d04b060866525d6b09a499f4cfffc",
+  "existing_gpu_and_host_ack_call_sequence_unchanged": true,
+  "existing_api_call_site_count": 366,
+  "copy_queue_profiling_enable_condition_unchanged": true,
+  "ownership": "Expert counts written by only the active issuer/preloader; main-thread grouping counters are distinct fields. Initialize arrays before starting an issuer. Existing per-chunk join and queue drains precede report. Stager worker time uses the existing relaxed atomic total.",
+  "measurement_limits": [
+    "Expert bytes count actual expertH2D memcpy commands, excluding KV, PLE and other traffic.",
+    "Submission host time includes time inside memcpy call, not DMA execution time or PCIe bandwidth.",
+    "Grouping GPU wait is wall time around an existing queue drain; includes prior queued compute/dependencies, not pure GPU busy or a PCIe-only wait.",
+    "Grouping CPU time excludes native profiler folding and uploads; reports the actual CPU loops.",
+    "Host-copy worker time is a sum over CPU workers and can overlap other work.",
+    "Instrumentation durations do not replace a clean matched speed comparison."
+  ],
+  "next_gate": "CPU extracted-struct checks, then build on the completed updated baseline after physical/tuned jobs. First GPU use must use diagnostic_environment and compare4 fresh32K A/B outputs plus head/state to the updated qualified reference."
+}

@@ -1,0 +1,330 @@
+{
+  "active": false,
+  "created_utc": "2026-10-08T10:46:56.041803+00:00",
+  "goal_status": "active",
+  "checkpoint": "Terminal matched quiet32K ABBA; negative polling speed evidence published, no adoption.",
+  "feature_worktree": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05",
+  "feature_commit": "0f103c4cfe17111e0b64137f3909a07b709213d7",
+  "feature_clean": true,
+  "pushed": true,
+  "pr": {
+    "url": "https://github.com/yqYo1/Strata/pull/9",
+    "head": "0f103c4cfe17111e0b64137f3909a07b709213d7",
+    "draft": true,
+    "state": "open",
+    "merged": false,
+    "exact_remote_body_verified": true,
+    "body_file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/pr9-v01402-poll-matched-quiet32k-exact-body-v1.md",
+    "body_characters": 37131,
+    "body_sha256": "37b19aa46e0cd3d69676a521532d0c956539915399c88d92bb457c34e21d5b88"
+  },
+  "sequence_receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/poll-matched-quiet32k-v01402-sequence-v1/record.json",
+  "sequence_receipt_sha256": "c1708225b8a6ef3a5e1d874fa9ac3b608a692edce087d963e7090ee4350d94e9",
+  "summary": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/upstream-v0.1.40.2-20261008/code32k/repro32k/poll-matched-quiet32k-v1/summary.json",
+  "summary_sha256": "2eca8e7429d5d79952cfce17b6e0b6bdc1ffe5362df6c82561e2513d9c84715b",
+  "archive": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/upstream-v0.1.40.2-20261008/code32k/repro32k/poll-matched-quiet32k-v1",
+  "validation_receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/poll-matched-quiet32k-v01402-archive-validation-v1.json",
+  "validation_receipt_sha256": "153b4b255a760a875f1f788b6ff97f925e56386236c086823d38fd7ddbfe6091",
+  "fresh_reads": 16,
+  "minimum_performance_input_tokens": 32768,
+  "first_vs_subsequent_separated": true,
+  "groups": {
+    "dd5-control": {
+      "first_process_read": {
+        "requests": 2,
+        "input_tokens_per_request": 32768,
+        "total_prompt_ms": 166456.2,
+        "total_decode_ms": 7901.1,
+        "prefill_tok_s": 393.7131810049731,
+        "decode_tok_s": 16.200275910949106,
+        "prefill_range": [
+          393.69331377361914,
+          393.73305024157725
+        ],
+        "decode_range": [
+          15.610517586223718,
+          16.83634546076342
+        ]
+      },
+      "subsequent_full_reads": {
+        "requests": 6,
+        "input_tokens_per_request": 32768,
+        "total_prompt_ms": 459891.4,
+        "total_decode_ms": 23292.1,
+        "prefill_tok_s": 427.50962509844715,
+        "decode_tok_s": 16.48627646283504,
+        "prefill_range": [
+          427.23297287289665,
+          427.8722859724536
+        ],
+        "decode_range": [
+          15.19684665431923,
+          18.319212273872225
+        ]
+      },
+      "per_read_slot": {
+        "1": {
+          "requests": 2,
+          "input_tokens_per_request": 32768,
+          "total_prompt_ms": 166456.2,
+          "total_decode_ms": 7901.1,
+          "prefill_tok_s": 393.7131810049731,
+          "decode_tok_s": 16.200275910949106,
+          "prefill_range": [
+            393.69331377361914,
+            393.73305024157725
+          ],
+          "decode_range": [
+            15.610517586223718,
+            16.83634546076342
+          ]
+        },
+        "2": {
+          "requests": 2,
+          "input_tokens_per_request": 32768,
+          "total_prompt_ms": 153330.1,
+          "total_decode_ms": 8149.1,
+          "prefill_tok_s": 427.41770859081157,
+          "decode_tok_s": 15.707256016001766,
+          "prefill_range": [
+            427.3421789130213,
+            427.4932649719836
+          ],
+          "decode_range": [
+            15.365777532352164,
+            16.06425702811245
+          ]
+        },
+        "3": {
+          "requests": 2,
+          "input_tokens_per_request": 32768,
+          "total_prompt_ms": 153279.5,
+          "total_decode_ms": 7001.7,
+          "prefill_tok_s": 427.5588059720967,
+          "decode_tok_s": 18.28127454760987,
+          "prefill_range": [
+            427.41854486212077,
+            427.6991591680959
+          ],
+          "decode_range": [
+            18.24349362902996,
+            18.319212273872225
+          ]
+        },
+        "4": {
+          "requests": 2,
+          "input_tokens_per_request": 32768,
+          "total_prompt_ms": 153281.8,
+          "total_decode_ms": 8141.299999999999,
+          "prefill_tok_s": 427.55239043382846,
+          "decode_tok_s": 15.722304791618047,
+          "prefill_range": [
+            427.23297287289665,
+            427.8722859724536
+          ],
+          "decode_range": [
+            15.19684665431923,
+            16.285401664164482
+          ]
+        }
+      }
+    },
+    "dd5-poll-backoff": {
+      "first_process_read": {
+        "requests": 2,
+        "input_tokens_per_request": 32768,
+        "total_prompt_ms": 167944.40000000002,
+        "total_decode_ms": 7819.6,
+        "prefill_tok_s": 390.22438378415706,
+        "decode_tok_s": 16.369123740344772,
+        "prefill_range": [
+          387.19770857606056,
+          393.298750057012
+        ],
+        "decode_range": [
+          16.23664916152929,
+          16.503777817891127
+        ]
+      },
+      "subsequent_full_reads": {
+        "requests": 6,
+        "input_tokens_per_request": 32768,
+        "total_prompt_ms": 460197.80000000005,
+        "total_decode_ms": 23453.0,
+        "prefill_tok_s": 427.2249889069439,
+        "decode_tok_s": 16.373171875666227,
+        "prefill_range": [
+          427.09097710355474,
+          427.3148721693715
+        ],
+        "decode_range": [
+          14.636600649499153,
+          18.59654220543368
+        ]
+      },
+      "per_read_slot": {
+        "1": {
+          "requests": 2,
+          "input_tokens_per_request": 32768,
+          "total_prompt_ms": 167944.40000000002,
+          "total_decode_ms": 7819.6,
+          "prefill_tok_s": 390.22438378415706,
+          "decode_tok_s": 16.369123740344772,
+          "prefill_range": [
+            387.19770857606056,
+            393.298750057012
+          ],
+          "decode_range": [
+            16.23664916152929,
+            16.503777817891127
+          ]
+        },
+        "2": {
+          "requests": 2,
+          "input_tokens_per_request": 32768,
+          "total_prompt_ms": 153403.90000000002,
+          "total_decode_ms": 8114.900000000001,
+          "prefill_tok_s": 427.21208522077984,
+          "decode_tok_s": 15.77345377022514,
+          "prefill_range": [
+            427.14887770438764,
+            427.27531144625283
+          ],
+          "decode_range": [
+            15.561931624762922,
+            15.990805286959997
+          ]
+        },
+        "3": {
+          "requests": 2,
+          "input_tokens_per_request": 32768,
+          "total_prompt_ms": 153415.8,
+          "total_decode_ms": 7013.6,
+          "prefill_tok_s": 427.1789476703182,
+          "decode_tok_s": 18.25025664423406,
+          "prefill_range": [
+            427.09097710355474,
+            427.26695448422976
+          ],
+          "decode_range": [
+            17.91663167324543,
+            18.59654220543368
+          ]
+        },
+        "4": {
+          "requests": 2,
+          "input_tokens_per_request": 32768,
+          "total_prompt_ms": 153378.1,
+          "total_decode_ms": 8324.5,
+          "prefill_tok_s": 427.28394731712024,
+          "decode_tok_s": 15.376298876809418,
+          "prefill_range": [
+            427.253026940619,
+            427.3148721693715
+          ],
+          "decode_range": [
+            14.636600649499153,
+            16.194741769781622
+          ]
+        }
+      }
+    }
+  },
+  "effects": {
+    "first_process_read": {
+      "prefill_tok_s_change_percent": -0.8861265990411371,
+      "decode_tok_s_change_percent": 1.0422528006547749
+    },
+    "subsequent_full_reads": {
+      "prefill_tok_s_change_percent": -0.06658006622369816,
+      "decode_tok_s_change_percent": -0.6860529569777896
+    }
+  },
+  "all_output_logprob_mtp_and_freshness_match": true,
+  "all_normal_exit_no_new_kernel_fault": true,
+  "poll_speed_adopted": false,
+  "active_gpu_jobs": false,
+  "owned_process_identities": [
+    {
+      "kind": "inferior",
+      "pid": 4047865,
+      "start_ticks": 14379818,
+      "state": "t",
+      "same_identity_absent": true
+    },
+    {
+      "kind": "debugger",
+      "pid": 4047854,
+      "start_ticks": 14379811,
+      "state": "R",
+      "same_identity_absent": true
+    },
+    {
+      "kind": "inferior",
+      "pid": 4067405,
+      "start_ticks": 14417236,
+      "state": "t",
+      "same_identity_absent": true
+    },
+    {
+      "kind": "debugger",
+      "pid": 4067394,
+      "start_ticks": 14417228,
+      "state": "R",
+      "same_identity_absent": true
+    },
+    {
+      "kind": "inferior",
+      "pid": 4086980,
+      "start_ticks": 14454915,
+      "state": "t",
+      "same_identity_absent": true
+    },
+    {
+      "kind": "debugger",
+      "pid": 4086967,
+      "start_ticks": 14454907,
+      "state": "R",
+      "same_identity_absent": true
+    },
+    {
+      "kind": "inferior",
+      "pid": 4106838,
+      "start_ticks": 14492371,
+      "state": "t",
+      "same_identity_absent": true
+    },
+    {
+      "kind": "debugger",
+      "pid": 4106826,
+      "start_ticks": 14492364,
+      "state": "R",
+      "same_identity_absent": true
+    }
+  ],
+  "open_sessions": [],
+  "closed_sessions": [
+    71098,
+    44904,
+    71639
+  ],
+  "main_and_production_accepted_unchanged": true,
+  "physical256k_complete_gate_passed": false,
+  "native_pending_counter_cause_resolved": false,
+  "next_steps": [
+    "Do not repeat polling quiet comparison: no useful PP gain; keep private and unadopted.",
+    "DD5 uniform-definition repair has completed six-request numerical/disk32K gate and eight quiet32K reads, but has not run complete physical256K gate. Prepare a versioned full controller from executed r5 full sequence, verify current DD5 executable metadata and exact source/link/quiet receipts before launch; preserve all old scripts/receipts.",
+    "Before full DD5 run, review owned read-only failure capture for native event expected/current counter values. Never interrupt healthy quiet timing; no inferior function calls or external process attachment.",
+    "Full qualification must reach cell262143, repeated fresh full prefill, actual disk restore, clipped speculative tail, refusal and later fresh>=32768. Never claim adoption from first-full-only or32K pass.",
+    "B70 reference primary README author-reports gains from SYCL sparse attention/selection and HC fusion, with different B70/EPYC/PCIe/storage and masked expert misses. Review pinned source without copying altered math/masking; no B570 speed prediction.",
+    "If the DD5 full gate succeeds, use source/profiler-informed exact-math candidate kernels with>=32768 initial logged checks and qualified quiet comparisons. If an owned watchdog stops, capture/cleanup only owned identities; health only after exit, no reset/rebind/reboot/service/package/global changes."
+  ],
+  "rejected_profiler": "Always-on unitrace GPU timestamps failed first32K, empty trace; do not rerun without concrete compatibility change. VTune real collection failed before helper on this Ryzen; no same-configuration retry.",
+  "controllers": {
+    "prepare_owned_poll_matched_quiet32k_v01402_v1.py": "e8c4fec08839dadd44c30ed1b8ffbdd196891c9ec5d8f0529033bff2a9a5ffad",
+    "run_owned_poll_matched_quiet32k_v01402_v1.py": "e681237f10cdb6cfd27e6a6ef848ac26519def4809a74125584054f56ecc3ff6",
+    "run_poll_matched_quiet32k_v01402_sequence_v1.py": "8c0686547eb7945ca5a74cd9eedfb6ceab4a7e5a426a5c46258e2b1288d4b021",
+    "archive_poll_matched_quiet32k_v01402_v1.py": "a5de64e9e076a6d8ac2b47d1647ebccf2ad2744c4b6f7ebc611bd533ec3884ce",
+    "document_poll_matched_quiet32k_v01402_v1.py": "fa2dc0b7c6a07861e20f8738f549aa1540eea3ceea3e5de6ea38c0049272cd81"
+  }
+}

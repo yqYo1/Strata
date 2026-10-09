@@ -1,0 +1,77 @@
+{
+  "scope": "Exercise the real serve checker with CPU protocol children, without a GPU.",
+  "checker_sha256": "354b82c3c768946b92cd2600af16904edc50e8a13bdb04d7b1c15c210a5eb062",
+  "started_utc": "2026-10-06T19:07:01.792372+00:00",
+  "runs": [
+    {
+      "mode": "healthy",
+      "controller_exit_code": 0,
+      "engine_exit_code": 0,
+      "cleanup": [],
+      "raw_bytes": 593293,
+      "raw_sha256": "864c34ad0cf70460a47aca10ed13638e6fcb476a03b654b672e7067c8015e2cd",
+      "completed_requests": 4,
+      "expected_result": true
+    },
+    {
+      "mode": "exit",
+      "controller_exit_code": 1,
+      "engine_exit_code": 17,
+      "cleanup": [],
+      "raw_bytes": 272963,
+      "raw_sha256": "23e1ee2ee941e2077437677e9653136e40857960d3fbcb4cf205f1a853703e59",
+      "completed_requests": 1,
+      "expected_result": true
+    },
+    {
+      "mode": "signal",
+      "controller_exit_code": 1,
+      "engine_exit_code": -15,
+      "cleanup": [],
+      "raw_bytes": 272940,
+      "raw_sha256": "65aa7f3903720ddf9234072042c5cd2b1adc39d9200089323dce1a872cebc079",
+      "completed_requests": 1,
+      "expected_result": true
+    },
+    {
+      "mode": "different-repeat",
+      "controller_exit_code": 1,
+      "engine_exit_code": 0,
+      "cleanup": [
+        "QUIT"
+      ],
+      "raw_bytes": 593293,
+      "raw_sha256": "51a155a6c81c3a15cfdb46e0566cc314b97e43be23be64121b4a74ffb0cefbb8",
+      "completed_requests": 4,
+      "expected_result": true
+    },
+    {
+      "mode": "timeout",
+      "controller_exit_code": 1,
+      "engine_exit_code": 0,
+      "cleanup": [
+        "QUIT"
+      ],
+      "raw_bytes": 592940,
+      "raw_sha256": "aa7809e6c585e172bacdfd29e7ff58f7ee782629960ec477cf6e5f13cfc57b08",
+      "completed_requests": 1,
+      "expected_result": true
+    },
+    {
+      "mode": "ignore-shutdown",
+      "controller_exit_code": 1,
+      "engine_exit_code": -9,
+      "cleanup": [
+        "QUIT",
+        "SIGTERM",
+        "SIGKILL"
+      ],
+      "raw_bytes": 272940,
+      "raw_sha256": "65aa7f3903720ddf9234072042c5cd2b1adc39d9200089323dce1a872cebc079",
+      "completed_requests": 1,
+      "expected_result": true
+    }
+  ],
+  "passed": true,
+  "finished_utc": "2026-10-06T19:07:25.698335+00:00"
+}

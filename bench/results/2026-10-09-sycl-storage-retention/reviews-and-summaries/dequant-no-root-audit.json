@@ -1,0 +1,63 @@
+{
+  "scope": "Read-only source and prior-trace audit plus offline actual-wrapper preparation; no new GPU execution, timing, output or hang-cause result",
+  "created_utc": "2026-10-07T07:36:01.615731+00:00",
+  "source": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/kernels/cuda/iq_kernels.dp.cpp",
+    "sha256": "7d14a2b16c6d081edfcd2943cb044ad4ebe711687971ac4fe53b39c1797d66bd",
+    "root_property_occurrences": 18,
+    "root_group_access_occurrences": 0,
+    "candidate_root_property_occurrences": 16,
+    "changed_functions": [
+      "iq_dequant_f16",
+      "iq_dequant_gu_f16"
+    ],
+    "unchanged": "Kernel body/formulas/names, block counts, work-group32, device capability check, queue selection, all other launch properties and all engine/archive inputs"
+  },
+  "installed_header": {
+    "path": "/opt/intel/oneapi/compiler/2026.1/include/sycl/detail/kernel_launch_helper.hpp",
+    "sha256": "5b88a138ac82687c66073e460018b102ff1c40d17d3d53205f7acd53de6246d2",
+    "lines": [
+      300,
+      313,
+      365,
+      374
+    ],
+    "observed": "MarshalledProperty stores property-key presence in MPresent; KernelPropertyHolderStructTy includes use_root_sync_key. This header alone is not proof of a driver limit or a stall cause."
+  },
+  "primary_reference": {
+    "url": "https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_oneapi_root_group.asciidoc",
+    "accessed_utc_date": "2026-10-07",
+    "paraphrase": "The extension makes use_root_sync launches compatible with root-group synchronization and constrains work-group counts. Removing it is appropriate to test when the kernel uses no root-group synchronization.",
+    "limits": "The branch specification can differ from installed compiler/runtime. The device maximum was not queried, and an invalid range, undefined behavior, prevention or causal link to stalls is not established."
+  },
+  "earlier_probe": {
+    "archive": "bench/results/2026-10-05-sycl-prefill-scaling/dequant-workgroup-probe",
+    "source_identical": true,
+    "whole_fp16_comparisons": 432,
+    "timing_rounds": 720,
+    "limits": "Custom kernel names and wrappers differ; candidate skips original device capability check. These exploratory times do not isolate the property and are not current-boot/integrated/full-context proof."
+  },
+  "prior_api_trace": {
+    "receipt": "dequant-no-root-control-api-snippets.json",
+    "observed": "Both actual dequant wrappers are observed with UR_KERNEL_LAUNCH_FLAG_COOPERATIVE in the earlier unchanged-IQ-source short run.",
+    "limits": "Read-only prior control trace, not a no-root candidate run or a causal conclusion."
+  },
+  "prepared_engine": {
+    "binary_sha256": "ea64e9a81a231915c731e8ff9a960352d408e4f2ea57806214fae333b4ac417e",
+    "archive_members_replaced": 1,
+    "production_inputs_unchanged": true,
+    "gpu_tested": false,
+    "adopted": false
+  },
+  "prepared_probe": {
+    "build_passed": true,
+    "gpu_tested": false,
+    "planned_cases_per_binary": 144,
+    "coverage": "Nine types, seeds7/23, rows1/640/641, columns256/2560, flat/GU, zero/positive/negative finite scales, whole-output byte comparison and guards",
+    "original_binary_sha256": "a7725e2c53bca8c2aa5840adcfcee32300f24400075896fd53be2fbb7b749c71",
+    "candidate_binary_sha256": "1bd31d511eca555ed7bfabb10f1d2492d6ac6bf8e6144f78a1c9ff1c2a1ff652",
+    "same_host_object_sha256": "41ea41fdf2f07d1b12f0b83af9d30743ba69fba7a506cb2e629f6ac4649f925e",
+    "deferred_controller": "run_dequant_actual_wrapper_probe.py",
+    "gate": "Previous full-context successful terminal receipt, continuation has no live jobs, same boot and all pinned prior owners gone"
+  }
+}

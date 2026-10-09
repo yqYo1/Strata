@@ -1,0 +1,49 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_executed": false,
+  "model_opened": false,
+  "adopted": false,
+  "scope": "Existing upstream pool_tasks_test source, linked to exact uniformly built CPU expert/ggml libraries. Synthetic Q4_0 rows, default vs task partitions, different host/worker counts, MAXT and over-buffer expert batches. No inference performance or IQ3_S/full256K qualification.",
+  "started_utc": "2026-10-09T08:22:07.663843+00:00",
+  "source_sha256": "d2d2b670a0e91dab835d1a0331d114b9addc1887af94007adf0284d15056719e",
+  "build_receipt_sha256": "7386fe1367d406e9b8f2cb58ac095bf64c7b542dd4b0767a5214d96a0c6d9eba",
+  "compiled_test_object_sha256": "4c3f55735d0ad6c3fc0058c679b45f8651666be56748beb73460d6af5e11f12b",
+  "prior_cpu_harness_receipt_sha256": "f34a9283269a7cf028944ccd5f594580c13db748a49c7249240d1e368038e4d4",
+  "correction": "Original compile passed. Link failed because runtime LD_LIBRARY_PATH injected Debian libc into a Nix shell wrapper. Reuse the actual compiled test object, select system linker and PATH; do not inject /usr/lib into compiler process. No source/global environment/engine rebuild change.",
+  "steps": [
+    {
+      "label": "link",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-fuse-ld=/usr/bin/ld",
+        "-O3",
+        "-std=c++20",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/pool-tasks-existing-cpu-parity-v1/test.o",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-pool-tasks-v0141-20261009/build-sycl-pool-tasks-v0141-v1/libstrata_kernels_cpu.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-pool-tasks-v0141-20261009/build-sycl-pool-tasks-v0141-v1/ggml/src/libggml-cpu.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-pool-tasks-v0141-20261009/build-sycl-pool-tasks-v0141-v1/ggml/src/libggml-base.a",
+        "-pthread",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/pool-tasks-existing-cpu-parity-v2/pool_tasks_test"
+      ],
+      "timeout_seconds": 60,
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "test",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/pool-tasks-existing-cpu-parity-v2/pool_tasks_test"
+      ],
+      "timeout_seconds": 180,
+      "exit_code": 0,
+      "stdout_sha256": "e215c67f34a6c4aed45831a82ddb89fd1f576ae0f48337896c2b4e392683be1f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "elapsed_seconds": 3.497203866019845,
+  "test_output": "pool tasks: 168 bitwise comparisons passed\n",
+  "finished_utc": "2026-10-09T08:22:11.161275+00:00"
+}

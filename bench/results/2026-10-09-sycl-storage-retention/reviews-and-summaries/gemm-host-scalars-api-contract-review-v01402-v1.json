@@ -1,0 +1,37 @@
+{
+  "active": false,
+  "source_only": true,
+  "passed": true,
+  "created_utc": "2026-10-08T14:35:17.034839+00:00",
+  "candidate_sha256": "0225c809c1608a59719d84809075b3349bddcf09e5a9bb7aada4bc611aada955",
+  "primary_sources": [
+    {
+      "url": "https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-dpcpp/2026-0/gemm.html",
+      "supports": "The USM GEMM overload accepts a queue, typed matrix pointers, scalar values, a compute mode and an optional dependency list."
+    },
+    {
+      "url": "https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-dpcpp/2026-0/scalar-arguments.html",
+      "supports": "Values are accepted for alpha and beta; raw host pointers are consumed at the call, while USM scalar pointers may be read after dependencies."
+    },
+    {
+      "url": "https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-dpcpp/2026-0/compute-modes.html",
+      "supports": "Per-call compute mode is explicit; default mode macros/environment can select alternate arithmetic, so the source candidate retains the existing deduction instead of adding faster arithmetic."
+    }
+  ],
+  "installed_source_observations": [
+    "Original stack alpha/beta are normal host values and take the no-wait get_value path. No scalar transfer-wait bottleneck was found.",
+    "Same descriptor queue copy, transpose, dimensions, leading dimensions and native typed BF16/F16 to FP32 call are preserved.",
+    "Same compute_type f32 plus descriptor math_mode deduction is preserved; no MKL_BLAS_COMPUTE_MODE, reassociation or fast-math setting is changed.",
+    "Only known host scalars bypass the DPCT pointer-type/type-dispatch path. The unsupported buffer/library/HIP branches retain the original call.",
+    "The optional event dependencies are unchanged; no barrier, allocation or new ownership boundary is introduced."
+  ],
+  "not_proven": [
+    "Native source compile and overload resolution",
+    "Device numerical equivalence for every used model shape",
+    "Clean fresh>=32768 performance gain with first/later full reads separate",
+    "This new binary own physical262144 repeated/disk/clipped/refusal/later32K sequence"
+  ],
+  "no_compile_or_gpu_launch": true,
+  "minimum_performance_input_tokens": 32768,
+  "adopted": false
+}

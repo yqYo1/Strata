@@ -1,0 +1,51 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_executed": false,
+  "measurement_executed": false,
+  "source": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-layer-major-streamed-kv-v0141-20261009/sycl/src/prefill/prefill.cpp",
+  "source_sha256": "92b849df3e19ad77a8a56927cae48cd91d4be0f73f4edc1ff189d2177c0cd8c1",
+  "controller_sha256": "c68df9d201f345962b29448aef7b2600297800c3b8bf73f7c8f3d951f51465b1",
+  "created_utc": "2026-10-09T10:16:12.988896+00:00",
+  "scope": "Actual extracted seed/owner extent code; synchronous CPU copy shim for full-page kernel and queue. Checks partial-page layout and prefix bounds only, not real kernel/queue/session equivalence or fault recovery.",
+  "steps": [
+    {
+      "label": "compile",
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++20",
+        "-O1",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fno-pie",
+        "-no-pie",
+        "-fsanitize=address,undefined",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/streamed-kv-prefix-layout-host-v1/actual-seed-host-test.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/streamed-kv-prefix-layout-host-v1/actual-seed-host-test"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "run",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/streamed-kv-prefix-layout-host-v1/actual-seed-host-test"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e4c9b59b887350dbf22faf3958d8f6ac8c615a86e6dbf2c79b57c9ca75490924",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "seed_fragment_sha256": "d8401d1d7b4538cdf49388e1eac791022ba7adca5978d151d13cda110c63fa6c",
+  "owner_guard_sha256": "5d88b6f3da7c80e8535bbd33e9bd7ca39f3e76783c84309a2b0b6b91055ad197",
+  "result": {
+    "prefix_cases": 11,
+    "rows_checked": 5767168,
+    "seed_bytes_checked": 657471936,
+    "owner_cases": 14
+  },
+  "harness_sha256": "37d3377574a93f17b78ad8ea245e539a0eaf9bad34578a1bad82b8f8596d5297",
+  "binary_sha256": "284f2855b5c204a6ec9c19a5ec65edb4da55c456952b47ea3fd0858bb0dc12d6"
+}

@@ -1,0 +1,162 @@
+{
+  "active": false,
+  "kind": "Continuation snapshot; live physical job is not a completed correctness or adoption pass.",
+  "created_utc": "2026-10-08T20:01:37.490845+00:00",
+  "objective": "Finish updated raw upstream/integrated matched32K comparison and mandatory server changes; continue PP1000/TG70 goal afterwards.",
+  "default32k_sequence": {
+    "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-v0141-matched32k-comparison-sequence-v1/record.json",
+    "sha256": "01383f1d0118250de479af457a0d40ffa0d321943ea543c54d34cf165393caa9",
+    "passed": true
+  },
+  "rejected_different_history_run": {
+    "receipt_sha256": "2cabcde178049b9c3479632e299f54f8b2d262c3270c15dd60772babaa9e7be7",
+    "healthy": true,
+    "math_gate_passed": false,
+    "normal_QUIT_exit": 0,
+    "reason": "Cross-version fingerprint deliberately includes engine version; additional B/A/B priming changed only skipped inactive MTP cells. No tensor bytes ignored by the corrected check.",
+    "host_classification_receipt_sha256": "c083340eae6fc5a62ebb079fc6124a50fcc8ee875f316b40296a55a2024157a0"
+  },
+  "separate_four_fresh_numerical_subset_sha256": "95ae2a0a7e61f2240f6138f21fdcb35c1a70ec54300b22a7b99fd6b92873b4a7",
+  "controller_preparation_receipt_sha256": "c8fa4d3634cb843e1c12e01e237681a0ab201679be22c53326b542625dd8e306",
+  "live_physical": {
+    "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-upstream-v0141-integrated-full256k-diagnostic-r2/record.json",
+    "active_at_snapshot": true,
+    "elapsed_seconds": 1063.0174645610095,
+    "active_request": "full256k-first",
+    "last_protocol": [
+      "PP 114688 262140 707875 162.0",
+      "PP 122880 262140 761540 161.4"
+    ],
+    "completed_requests": [
+      "control32k-before",
+      "resume32k-reference"
+    ],
+    "identities_observed": {
+      "inferior": {
+        "pid": 1713283,
+        "start_ticks": 17831231,
+        "state": "R",
+        "argv": [
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009/build-sycl-integrated-20261009/strata",
+          "--pack",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "--native",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--serve",
+          "--max-context",
+          "262144",
+          "--spec",
+          "4",
+          "--spec-min-p",
+          "0",
+          "--mtp",
+          "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+          "--suffix-draft",
+          "0",
+          "--prefill",
+          "8192",
+          "--no-prefill-borrow",
+          "--expert-cache",
+          "128",
+          "--expert-profile",
+          "data/expert-profile.bin",
+          "--expert-cache-per-layer",
+          "--pool-workers",
+          "5",
+          "--pcie-frac",
+          "0",
+          "--spec-split",
+          "--adapt-swaps",
+          "0",
+          "--conversation-cache-mib",
+          "0",
+          "--conversation-cache-slots",
+          "4",
+          "--greedy",
+          "--short-read",
+          "0",
+          "--kv",
+          "int8",
+          "--kv-resident",
+          "32768",
+          "--prompt-cache",
+          "1",
+          "--prompt-cache-every",
+          "262139",
+          "--prompt-cache-root",
+          "0",
+          "--turn-token",
+          "-1"
+        ]
+      },
+      "debugger": {
+        "pid": 1713252,
+        "start_ticks": 17831224,
+        "state": "S",
+        "argv": [
+          "/usr/bin/gdb",
+          "-nx",
+          "-q",
+          "--interpreter=mi2"
+        ]
+      },
+      "full_controller": {
+        "pid": 1713128,
+        "start_ticks": 17831098,
+        "state": "S",
+        "argv": [
+          "/usr/bin/python3",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_upstream_v0141_full256k_v2.py",
+          "integrated",
+          "diagnostic",
+          "2"
+        ]
+      }
+    },
+    "source_sha256": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_upstream_v0141_full256k_v2.py": "a34cb70ed479a4bea5f9727cb19461d32014d9679d3c4642a6e9cc380d2651a1",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_upstream_v0141_tuned32k_v3.py": "80fe9ba0ee4127ded95c0fd5a09e25f4ad754badde381253746ea022b04c11ac",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_upstream_v0141_tuned_comparison_sequence_v3.py": "0d2f9b13b8288b28833ae138ee57b0ff42de52fe0464496be966a94ca38316ff",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_upstream_v0141_full_then_tuned_v2.py": "a4d761e1e485114433918c96a8daeab8d0b67e329c2f4e4699c44458e71d250d",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compare_saved_session_versions_v0141_v1.py": "0260db007151cde044651208dc531249985d3afb1212b1b19500b883c2eba8e0"
+    },
+    "actual_full_history": [
+      "control32k-before",
+      "resume32k-reference"
+    ],
+    "new_fault_gate": "Fresh3round exact-word health passed and preflight fault list empty. Terminal kernel fault/cleanup checks still pending.",
+    "full_exec_session": 37961
+  },
+  "quiet_supervisor": {
+    "receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-v0141-full-then-tuned-sequence-v2/record.json",
+    "active_at_snapshot": true,
+    "phase": "waiting_for_owned_physical",
+    "exec_session": 70740,
+    "next_guard": "Start control/integrated/integrated/control quiet4fresh32K only after terminal full tensor-byte/repeat/disk/clip/refusal/later32K and process-absence proof."
+  },
+  "integration_source": {
+    "head": "1eb89482a4afd20277ae0405780ed4f8eb98eb20",
+    "status": "",
+    "pushed": false,
+    "production_adopted": false
+  },
+  "pending_unapplied_wrapper_fix": "upstream-v0141-server-env-forwarding-fix-v1/source-preparation.json + cpu-test-record.json; CPU10cases passed; apply only after benchmark source guards finish.",
+  "host_accounting": {
+    "source_prepared": true,
+    "cpu9_ASan_UBSan_cases_passed": true,
+    "cpu_struct_check_sha256": "568de39ce1dc0df39e753f405d2fa3816e578e8fee462a0ef844f20e1b39830a",
+    "private_build_plan_sha256": "abb2df8e7b332ff0254a108dadad9a14e9ce42e44bb2b8c01cebd578477b761e",
+    "private_builder_sha256": "87612a35264b3f6e1d47ddabe6ca49495f64f159a67ec43f172f191a9e88e275",
+    "engine_compiled": false,
+    "gpu_tested": false,
+    "adopted": false
+  },
+  "next_steps": [
+    "Observe the currently owned physical r2; no restart of its budget, no reset/rebind/service/package change.",
+    "If full r2 passes, supervisor launches tuned comparison v3; wait for completed quiet results.",
+    "Select CPU/SYCL source on measured results; apply prepared server wrapper environment fix and record full server feature parity.",
+    "Archive small receipts/controllers only, never GB API logs or 4GB saved images, commit/push update draftPR9 on the existing review branch without changing main or production.",
+    "Resume host-accounting private build/first-use diagnostic numerical checks and optimization on the selected updated baseline."
+  ],
+  "scope_clarification_correction_receipt_sha256": "f2569f093aaf0df4a58c8eab22799ec55749a82b9763683c76b490cea6712edb"
+}

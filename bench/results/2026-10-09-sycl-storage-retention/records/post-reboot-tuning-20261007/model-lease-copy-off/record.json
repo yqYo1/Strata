@@ -1,0 +1,186 @@
+{
+  "started_utc": "2026-10-06T19:49:56.181745+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "scope": "Actual unchanged candidate retained/lease comparison with copy offload disabled, no prefill-state diagnostic; DS disabled, context128; no speed/fullcapacity claim",
+  "mode": "lease-copy-off",
+  "binary_sha256": "79a4b363d33f66f41d910be6274e609b4eb73f62afb0dc49bca72bf2a538d223",
+  "controller_sha256": "4ed94473d704c3844faba64a043ed0ad525fb9112a43fde759947340eb6e8b74",
+  "checker_sha256": "0fee776b52bd1e0e992c700bf6abe5e071a34a53a05a16323c76c375886ceda2",
+  "healthy": true,
+  "environment": {
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/umf/1.1/lib:/usr/lib/x86_64-linux-gnu:/opt/intel/oneapi/mkl/2026.1/lib",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "LogAllocationType": "1",
+    "LogAllocationStdout": "1",
+    "STRATA_PREFILL_COMPACT": "2",
+    "STRATA_PREFILL_LAYER_MAJOR": "2",
+    "STRATA_PREFILL_RELEASE_DRAFT": "1",
+    "STRATA_PREFILL_DRAFT_VERIFY": "1"
+  },
+  "packages": "intel-igc-core-2 2.41.5\nlibze-intel-gpu1 26.31.39395.14-1~24.04~ppa1\nlibze1 1.32.0-1~24.04~ppa1\n",
+  "exit_code": 0,
+  "requests": [
+    {
+      "name": "first",
+      "ids": [
+        760,
+        10849,
+        88851,
+        2272
+      ],
+      "first_head": {
+        "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/model-lease-copy-off/normal-mtp-first.head.bin",
+        "bytes": 993280,
+        "floats": 248320,
+        "sha256": "feb9d9260b435e9efb603b1d5961fa616fbfa7004a639036c18ea535e99b02a4"
+      }
+    },
+    {
+      "name": "repeat",
+      "ids": [
+        760,
+        10849,
+        88851,
+        2272
+      ],
+      "first_head": {
+        "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/model-lease-copy-off/normal-mtp-repeat.head.bin",
+        "bytes": 993280,
+        "floats": 248320,
+        "sha256": "feb9d9260b435e9efb603b1d5961fa616fbfa7004a639036c18ea535e99b02a4"
+      }
+    },
+    {
+      "name": "other",
+      "ids": [
+        760,
+        10849,
+        88851,
+        2272
+      ],
+      "first_head": {
+        "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/model-lease-copy-off/normal-mtp-other.head.bin",
+        "bytes": 993280,
+        "floats": 248320,
+        "sha256": "a604cb912de32e8cde7abe39837bb4056059c75d6dda212594bd038ac506957b"
+      }
+    },
+    {
+      "name": "restored",
+      "ids": [
+        760,
+        10849,
+        88851,
+        2272
+      ],
+      "first_head": {
+        "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/model-lease-copy-off/normal-mtp-restored.head.bin",
+        "bytes": 993280,
+        "floats": 248320,
+        "sha256": "feb9d9260b435e9efb603b1d5961fa616fbfa7004a639036c18ea535e99b02a4"
+      }
+    }
+  ],
+  "equality": [
+    {
+      "name": "first",
+      "ids_equal": true,
+      "logprobs_equal": true,
+      "head_equal": true
+    },
+    {
+      "name": "repeat",
+      "ids_equal": true,
+      "logprobs_equal": true,
+      "head_equal": true
+    },
+    {
+      "name": "other",
+      "ids_equal": true,
+      "logprobs_equal": true,
+      "head_equal": true
+    },
+    {
+      "name": "restored",
+      "ids_equal": true,
+      "logprobs_equal": true,
+      "head_equal": true
+    }
+  ],
+  "releases": 6,
+  "restores": 6,
+  "new_fault_messages": [],
+  "finished_utc": "2026-10-06T19:51:49.851156+00:00",
+  "steps": [
+    {
+      "label": "kernel-before",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "pid": 377914,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05064945399954013
+    },
+    {
+      "label": "link",
+      "argv": [
+        "/usr/bin/ldd",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/strata-residency-candidate"
+      ],
+      "pid": 377916,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05093091700018704
+    },
+    {
+      "label": "checker",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-upstream-arc/serve_check.py",
+        "--engine",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/model-lease-copy-off/strata-gdb",
+        "--out",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/model-lease-copy-off/normal-mtp.json",
+        "--force-prefill",
+        "--dump-first-head",
+        "--protocol-timeout",
+        "120"
+      ],
+      "pid": 377927,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 113.15756343400062
+    },
+    {
+      "label": "kernel-after",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=beebd7b;b=0a908c16e292429980ff082da39f4bb9;m=15bbdd9d2;t=65d314b19c08f;x=6794ed71ba0f2208",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "pid": 384168,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05085771799986105
+    }
+  ]
+}

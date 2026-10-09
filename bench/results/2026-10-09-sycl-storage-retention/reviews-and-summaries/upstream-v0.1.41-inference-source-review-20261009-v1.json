@@ -1,0 +1,68 @@
+{
+  "created_utc": "2026-10-08T16:41:59.322464+00:00",
+  "scope": "Source review only of upstream CPU/SYCL inference updates; no performance or numerical equivalence attribution. GPU comparative test pending.",
+  "upstream": "fb58e0dbc8399662c0e47c76578c6e878b14f6cf",
+  "integrated": "1eb89482a4afd20277ae0405780ed4f8eb98eb20",
+  "CPU_changes": "Feature/oracle/format queries moved out of AVX512/AVX2 translation units into baseline units; comparisons/constants and relaxed oracle atomics retained. Fixes probing on CPUs without the target ISA. Not an arithmetic speed optimization.",
+  "IQ_changes": "Seven dequant paths permute lane mapping (il=tid%4,ib=tid/4) to coalesce output stores; same il/ib domain and per-output arithmetic. IQ3_S is relevant to current model; actual bit equality still needs new candidate test.",
+  "sampler_changes": "FP64 requirement conditional on accumulator type; current default FP64 build retains capability check.",
+  "router_change": "Native top10 guarded for512 experts and K10; current model matches these dimensions.",
+  "memory_reporting": "Multiple-device fd accounting corrected; actual pure prefill chunk6144 at requested8192 is recorded rather than assumed same actual geometry.",
+  "waiter_choice": "Candidate retains disabled GPU host-flag spinners and host-side completion from local qualified implementation; raw upstream unmodified.",
+  "server_choice": "All12 changed common-server files byte-identical to upstream;593 tests passed except8 skips.",
+  "inference_adoption_decision": "Pending same-day matched raw/candidate/qualified-control quiet runs and candidate full-capacity lifecycle. No inference reversion based only on source review.",
+  "files": [
+    {
+      "path": "src/kernels/cpu/expert.cpp",
+      "sha256": "31b7b1a628e29f22bce3e39e69efe968298066d08383d8292c9ea1279bee1cfe"
+    },
+    {
+      "path": "src/kernels/cpu/expert_layout.cpp",
+      "sha256": "d0593f30dca73abc637fb4a60e431467110a5f9143788faf590cb47389fa6e7a"
+    },
+    {
+      "path": "src/kernels/cpu/native_expert.cpp",
+      "sha256": "694e86a623889ed03c5157d68f70651692eee9d265d7c2f99d44877ada37a146"
+    },
+    {
+      "path": "src/kernels/cpu/iq_avx2.cpp",
+      "sha256": "58e9c7e49b8158f698cda59aff06c245f62aaecd33556b1e88e234140890fded"
+    },
+    {
+      "path": "src/kernels/cpu/iq_avx512.cpp",
+      "sha256": "539256cc7cba4cc7673ec5a3122737ddd485ec4d0947fd13acda6fbdbefe4f0d"
+    },
+    {
+      "path": "src/kernels/cpu/kq_avx2.cpp",
+      "sha256": "4e8f29b049af758a8174ad82c966aefc92e9c531c14646d8edd8244bc4851639"
+    },
+    {
+      "path": "src/kernels/cpu/expert_multi_test.cpp",
+      "sha256": "e78740421b62ba8a322e21e94f57783e3d0173a6959a498504a4759e12c95450"
+    },
+    {
+      "path": "sycl/src/kernels/cuda/iq_kernels.dp.cpp",
+      "sha256": "22c2fb9c379804c2fc20ae302be05ad0f1c66bc623c6134bd7822057ffbba13a"
+    },
+    {
+      "path": "sycl/src/kernels/cuda/sampler.dp.cpp",
+      "sha256": "133fa180ebf96aa82e93719ccdb4a227c1e82106ce42b27600942da462e63f35"
+    },
+    {
+      "path": "sycl/src/core/expert_cache.cpp",
+      "sha256": "d481154b44ede799edf306e792d2ccf0d896126f96d71783f7d37bfab191f1c5"
+    },
+    {
+      "path": "sycl/src/core/expert_source.cpp",
+      "sha256": "3109bfa4a54cf64f7cf7088fc510370dd49d25d628349324873c8030f52ee028"
+    },
+    {
+      "path": "sycl/src/core/mtp.cpp",
+      "sha256": "caea7e8651c6698a6df536834a91a10eafdbea25625ecb21498bee240bc474bf"
+    },
+    {
+      "path": "sycl/src/core/verify.cpp",
+      "sha256": "05b25bd0d91760875aa103f6b9f6eb450affc0d27dc0795d62f2f1c184fad850"
+    }
+  ]
+}

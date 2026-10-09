@@ -1,0 +1,53 @@
+{
+  "active": false,
+  "created_utc": "2026-10-08T20:06:38.618903+00:00",
+  "scope": "Read-only official source and installed-header contract review; no native queue implementation, build, GPU execution or measured speed claim.",
+  "official_source_snapshot": "51add4ae931a069bbfd3f49814d078cf46279688",
+  "installed_compiler": "2026.1.1 (2026.1.1.20260724)",
+  "installed_UR_library": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0.12.0",
+  "installed_native_queue_header_sha256": "30f86adea4a4be42714a6bef7b637b5a305afcb272cfcc31ad2547c6dd13de4b",
+  "source_findings": [
+    {
+      "file": "queue_create.cpp",
+      "fact": "Generic queues use QueueGroup[Compute].ZeOrdinal. computeIndex selects an index within the compute group, not a copy-only group."
+    },
+    {
+      "file": "queue_create.cpp",
+      "fact": "Native creation accepts immediate command lists, validates zeCommandListIsImmediate, and respects isNativeHandleOwned. Native in-order construction receives the original immediate list."
+    },
+    {
+      "file": "queue_immediate_in_order.cpp",
+      "fact": "The native-list constructor passes the supplied list into commandListManager rather than requesting a new compute ordinal."
+    },
+    {
+      "file": "installed sycl/ext/oneapi/backend/level_zero.hpp:129",
+      "fact": "make_queue tests the native handle variant, passes immediate/list identity, native device, ownership and properties to make_queue_impl."
+    }
+  ],
+  "documentation": [
+    {
+      "url": "https://github.com/intel/llvm/blob/sycl/sycl/doc/EnvironmentVariables.md",
+      "fact": "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1 keeps copies on the engine behind their original queue. The flag alone does not prove every queue uses a compute engine."
+    },
+    {
+      "url": "https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_backend_level_zero.md",
+      "fact": "L0v2 native make_queue requires an in-order immediate command list. Out-of-order native make_queue is undefined behavior."
+    }
+  ],
+  "partial_actual_API_observation": {
+    "log": "owned-upstream-v0141-integrated-full256k-diagnostic-r2/debugger/inferior.stderr",
+    "scope": "Only first15000 startup log lines read, not the whole model trace.",
+    "seen_ordinal": 0,
+    "queue_identity": "Default initial queues only; the dedicated expert-copy queue has not been mapped.",
+    "does_not_prove": "All expert transfers use render/compute engine, transfer dominance or PCIe overlap."
+  },
+  "before_any_candidate_GPU_use": [
+    "Determine installed UR source identity; do not equate current upstream code to the installed adapter.",
+    "Identify the actual expert-copy queue and enumerate a copy-only queue group without assuming an ordinal or queue index.",
+    "Verify counter-event cross-engine waits, barrier support, error-path ownership and native handle lifetime with the installed runtime. Native ownership must survive references held by outstanding events.",
+    "Keep the qualified offload-disabled runtime and engine unchanged throughout current full and quiet tests. First use of any later candidate needs logged exact-word health and a bounded owned diagnostic numerical gate."
+  ],
+  "candidate_implemented": false,
+  "GPU_tested": false,
+  "adopted": false
+}

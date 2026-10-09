@@ -1,0 +1,249 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_tested": false,
+  "adopted": false,
+  "scope": "Replace Stager and PLE host_task DMA acknowledgements with the actual memcpy events, and own a same-context in-order copy queue without profiling unless transfer timing is requested. Explicit release/pipeline drains retained; compute queue properties/math unchanged. All GPU arithmetic, ranges, graph code and queue barriers unchanged. Private build; original sources/objects/link inputs/binary must remain unchanged. CPU ring ownership tests are not a GPU correctness or hang prevention proof.",
+  "started_utc": "2026-10-07T18:55:48.618822+00:00",
+  "controller_sha256": "16acbc243d7ac36b3f8544113dc3137546c7ee257a032ae78f6c2c3ddc5d09e2",
+  "steps": [
+    {
+      "label": "cpu-test-build",
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++17",
+        "-pthread",
+        "-O2",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-no-profile-copy-v2-20261008/source/event_completion_test.cpp",
+        "-o",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-no-profile-copy-v2-20261008/cpu-test"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.7652210109954467
+    },
+    {
+      "label": "cpu-test",
+      "argv": [
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-no-profile-copy-v2-20261008/cpu-test"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.007814786993549205
+    },
+    {
+      "label": "cpu-test-sanitized-build",
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++17",
+        "-pthread",
+        "-O1",
+        "-g",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-no-profile-copy-v2-20261008/source/event_completion_test.cpp",
+        "-o",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-no-profile-copy-v2-20261008/cpu-test-sanitized"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.4176803989976179
+    },
+    {
+      "label": "cpu-test-sanitized",
+      "argv": [
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-no-profile-copy-v2-20261008/cpu-test-sanitized"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.03192377000232227
+    },
+    {
+      "label": "compile",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_NATIVE_EXPERTS=1",
+        "-DSTRATA_SYCL_SAMPLER_FP64=1",
+        "-DSTRATA_VERSION=\"0.1.40-sycl\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+        "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-qmkl=sequential",
+        "-Wall",
+        "-Wextra",
+        "-MD",
+        "-MT",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-no-profile-copy-v2-20261008/prefill.cpp.o",
+        "-MF",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-no-profile-copy-v2-20261008/prefill.cpp.o.d",
+        "-o",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-no-profile-copy-v2-20261008/prefill.cpp.o",
+        "-c",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-no-profile-copy-v2-20261008/source/prefill.cpp"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 13.1368494299968
+    },
+    {
+      "label": "archive-replace",
+      "argv": [
+        "/usr/bin/ar",
+        "r",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-no-profile-copy-v2-20261008/libstrata_prefill.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-no-profile-copy-v2-20261008/prefill.cpp.o"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.007768609997583553
+    },
+    {
+      "label": "archive-index",
+      "argv": [
+        "/usr/bin/ranlib",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-no-profile-copy-v2-20261008/libstrata_prefill.a"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.007753771002171561
+    },
+    {
+      "label": "link",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-O3",
+        "-DNDEBUG",
+        "-fsycl",
+        "-Xsycl-target-backend=spir64",
+        "-cl-fp32-correctly-rounded-divide-sqrt",
+        "-fsycl-device-code-split=per_kernel",
+        "-qmkl=sequential",
+        "CMakeFiles/strata.dir/src/program/generate.cpp.o",
+        "-o",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-no-profile-copy-v2-20261008/strata",
+        "libstrata_engine.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-no-profile-copy-v2-20261008/libstrata_prefill.a",
+        "libstrata_spec.a",
+        "libstrata_engine.a",
+        "libstrata_kernels.a",
+        "libstrata_core.a",
+        "/usr/lib/x86_64-linux-gnu/libze_loader.so",
+        "libstrata_kernels_cpu.a",
+        "ggml/src/libggml-cpu.a",
+        "ggml/src/libggml-base.a",
+        "-lm"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 19.94964628900925
+    }
+  ],
+  "production_source_sha256": "e5cda787d3c6fe4d5c946b0cdea99ff437d7a9797470b3ca47c6ab4828ce92dc",
+  "production_object_sha256": "979c9cd6bc1b951e0d4ee34fd3e1f541e5ee330ad48ec24ccb3a59cf3aa2bed1",
+  "production_archive_sha256": "e365a70c3a57e8d85ff4c34e8ff66fa4874be282b0e25fc324036511aa4a3c38",
+  "production_binary_sha256": "c88f94d81bfb22227310ea00d09ecc8ab21a6e670aee9556307746530f5af714",
+  "changed_dma_pairs": 4,
+  "candidate_source_sha256": "a1799df2027bbbf3bf9b852f9d3274ffa3e29ff051af65a67abe3096cc83c05e",
+  "completion_header_sha256": "e2216317759266525b0f7e1ffc26ec95a7ae081fbe8d4be9fe7d5a57e8d39664",
+  "original_compile_argv": [
+    "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+    "-DSTRATA_NATIVE_EXPERTS=1",
+    "-DSTRATA_SYCL_SAMPLER_FP64=1",
+    "-DSTRATA_VERSION=\"0.1.40-sycl\"",
+    "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include",
+    "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/../include",
+    "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include",
+    "-O3",
+    "-DNDEBUG",
+    "-std=c++20",
+    "-fsycl",
+    "-fsycl-default-sub-group-size=32",
+    "-fsycl-device-code-split=per_kernel",
+    "-fp-model=precise",
+    "-Wno-unused-parameter",
+    "-Wno-unused-variable",
+    "-Wno-deprecated-declarations",
+    "-qmkl=sequential",
+    "-Wall",
+    "-Wextra",
+    "-MD",
+    "-MT",
+    "CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o",
+    "-MF",
+    "CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o.d",
+    "-o",
+    "CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o",
+    "-c",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/prefill.cpp"
+  ],
+  "archive_members": [
+    {
+      "member": "gemm.dp.cpp.o",
+      "replaced": false,
+      "original_sha256": "6bfa4304d3d4ce58e15bd22fdfd981ec460d46c46aff81458ecd8f43109b653c",
+      "candidate_sha256": "6bfa4304d3d4ce58e15bd22fdfd981ec460d46c46aff81458ecd8f43109b653c"
+    },
+    {
+      "member": "kernels.dp.cpp.o",
+      "replaced": false,
+      "original_sha256": "0b38bd5cc902c2b3dfc0f8f171b5bdfbadca1982d3266d2e46cb19a473aca8cb",
+      "candidate_sha256": "0b38bd5cc902c2b3dfc0f8f171b5bdfbadca1982d3266d2e46cb19a473aca8cb"
+    },
+    {
+      "member": "prefill.cpp.o",
+      "replaced": true,
+      "original_sha256": "979c9cd6bc1b951e0d4ee34fd3e1f541e5ee330ad48ec24ccb3a59cf3aa2bed1",
+      "candidate_sha256": "7a358442ba2276785884e1812025e456d72210246188884c7a2d2c6113403607"
+    },
+    {
+      "member": "moe_fused_stub.cpp.o",
+      "replaced": false,
+      "original_sha256": "0f4ccb811fe0b097b018eaa7c635aa95e10294f2271a899925f66673af2dbe87",
+      "candidate_sha256": "0f4ccb811fe0b097b018eaa7c635aa95e10294f2271a899925f66673af2dbe87"
+    }
+  ],
+  "original_link_argv": [
+    "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+    "-O3",
+    "-DNDEBUG",
+    "-fsycl",
+    "-Xsycl-target-backend=spir64",
+    "-cl-fp32-correctly-rounded-divide-sqrt",
+    "-fsycl-device-code-split=per_kernel",
+    "-qmkl=sequential",
+    "CMakeFiles/strata.dir/src/program/generate.cpp.o",
+    "-o",
+    "strata",
+    "libstrata_engine.a",
+    "libstrata_prefill.a",
+    "libstrata_spec.a",
+    "libstrata_engine.a",
+    "libstrata_kernels.a",
+    "libstrata_core.a",
+    "/usr/lib/x86_64-linux-gnu/libze_loader.so",
+    "libstrata_kernels_cpu.a",
+    "ggml/src/libggml-cpu.a",
+    "ggml/src/libggml-base.a",
+    "-lm"
+  ],
+  "link_input_sha256": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-e8ca-refresh-20261007/CMakeFiles/strata.dir/src/program/generate.cpp.o": "a8bed30b7aa5730ef075131b2d12bb15e639bfec67543f757077c511a44574b1",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-e8ca-refresh-20261007/libstrata_engine.a": "e365fac3a71702de72f9131689bb8b5bfa699d5bb6cd2f44594896eaee2da27f",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-e8ca-refresh-20261007/libstrata_prefill.a": "e365a70c3a57e8d85ff4c34e8ff66fa4874be282b0e25fc324036511aa4a3c38",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-e8ca-refresh-20261007/libstrata_spec.a": "ff29f801c00b281aed711354818d5fd319a65751670c62fa100ce0fa752069c5",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-e8ca-refresh-20261007/libstrata_kernels.a": "76df1a4cb1f10dd255b1314ff232b5e2c76ee5178c02fba1037c7c856c056d7d",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-e8ca-refresh-20261007/libstrata_core.a": "8b52dcd2a401493b8586b19e85fbb26479ae422d62a331360d0c8903b071785b",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-e8ca-refresh-20261007/libstrata_kernels_cpu.a": "b47e850690c39b9ea1869fb9057c4f1e3e55e7b2560b219f88c6fa5413f793eb",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-e8ca-refresh-20261007/ggml/src/libggml-cpu.a": "e3cefe0cf3c866aec7d9f06b9181ca4263304dd7307af462195a9b869be953f2",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-e8ca-refresh-20261007/ggml/src/libggml-base.a": "98059baeddf43574e613949b8382d67c088f3f62d1b84c3d47bef31581bcae1c"
+  },
+  "production_inputs_unchanged": true,
+  "candidate_binary": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-no-profile-copy-v2-20261008/strata",
+  "candidate_binary_sha256": "4c184a9dfe0632ca1e79b8dfe4273b21f9eee0a420ee48ab1b28c07d57269a9b",
+  "candidate_object_sha256": "7a358442ba2276785884e1812025e456d72210246188884c7a2d2c6113403607",
+  "candidate_archive_sha256": "e1780e9ad67d3288eb9e3eb302adc06a46bb8f16306b47c0e91162ed4a919c97",
+  "elapsed_seconds": 35.83454094899935,
+  "finished_utc": "2026-10-07T18:56:24.860674+00:00"
+}

@@ -1,0 +1,299 @@
+{
+  "created_utc": "2026-10-09T07:32:34.371950+00:00",
+  "research_completed": false,
+  "reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/intel-sycl-transfer.txt",
+      "sha256": "783adcc4910017111ddebd10cf719c5b6911a00933c279a6678e44d56627db8b",
+      "bytes": 24900,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_intel_sycl_transfer",
+      "scope": "SYCL/Level Zero transfer, queue, USM, staging, Intel runtime documents"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/moe-decode-cpu.txt",
+      "sha256": "b6b261e5ab7533154149eed4e6d1d5c3be77fb7e940a5ea9823faedd4b93b900",
+      "bytes": 23843,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_moe_decode_cpu",
+      "scope": "CPU MoE decode, scheduling, AVX2, expert cache, KV residency"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/prefill-algorithms-blogs.txt",
+      "sha256": "ec5b5ad7ccfd5d174b3c77a403cbcc296bd9d8d77a6bfec9aaca86e18e6a3549",
+      "bytes": 10939,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "Prefill algorithms and implementer blogs across engines"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/prefill-code-audit-addendum.txt",
+      "sha256": "ef39d29957a2974cbcdf14b56e6435352d717bcda73c2554037fcc28360ae193",
+      "bytes": 11336,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "Local active code and primary-source follow-up after completed original report"
+    },
+    {
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Existing SYCL XMX kernels and active call paths, joint_matrix/UB/lifetime audit; distinguish duplication from new MMQ work",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/prefill-xmx-existing-code-audit.txt",
+      "sha256": "da4e45c3be71c1ead314cc5c13258c945e2386894817ac36e36713e425dbc5b5",
+      "bytes": 7143
+    },
+    {
+      "agent": "/root/research_usm_import_lifetimes_round2",
+      "model": "gpt-6-luna",
+      "scope": "Concrete arena/mmap USM-import contracts, runtime support and bounded lifetime-safe staging removal",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/usm-import-lifetimes-round2.txt",
+      "sha256": "386bb9fca759a3d68dd55152233efc242b832920c11076af98715a6be33cd57b",
+      "bytes": 21278
+    },
+    {
+      "agent": "/root/research_decode_weight_reuse_round2",
+      "model": "gpt-6-luna",
+      "scope": "Remaining CPU MoE weight rereads/layout and exact hybrid scheduling beyond already grouped AVX2 rows",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/decode-weight-reuse-round2.txt",
+      "sha256": "183eb4210bc0d754ea99cd8e47f4e9aebb2787b480ea8f8071bfaf94a5b5ca0a",
+      "bytes": 13421
+    },
+    {
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Layer-major prefill with streamed INT8 KV at physical 262144 context on 10 GiB; exact resources and active guard limitations, external layer/activation offload implementations",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/layer-major-streamed-kv-round3.txt",
+      "sha256": "c59ccab8a9cde429ea02f09aa7a9ecde905ff14b9514cd554f7d7868f6efb4c8",
+      "bytes": 13377
+    },
+    {
+      "agent": "/root/research_decode_weight_reuse_round2",
+      "model": "gpt-6-luna",
+      "scope": "Actual mixed-format layer metadata and AVX2 multi-token coverage; CPU quantized Down rows and bounded disassembly analysis on Zen3",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cpu-mixed-format-avx2-round3.txt",
+      "sha256": "9f1e8cedec1eba38e01d1c606b2f942cab63915b4de5940626a649cd4d8b906b",
+      "bytes": 13851
+    },
+    {
+      "agent": "/root/research_usm_import_lifetimes_round2",
+      "model": "gpt-6-luna",
+      "scope": "Existing prefill DMA completion points, exact arena/context lifetime and installed Level Zero v2 prepare/release implementation; concrete bounded import design or rejection",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/dma-retirement-import-v2-round3.txt",
+      "sha256": "d3252a5ef53b8d4d6b6ddeb73374272f87bf723484533cebc7639ed089b5614c",
+      "bytes": 8277,
+      "status": "returned-wrong-backend-needs-sycl-addendum"
+    },
+    {
+      "agent": "/root/research_usm_import_lifetimes_round2",
+      "model": "gpt-6-luna",
+      "scope": "Correct actual SYCL backend DMA retirement and failure lifetime; sycl/src/prefill not CUDA src/prefill",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/sycl-dma-retirement-addendum-round3.txt",
+      "sha256": "765f4e9b580a79fd19e68ca8ab72309c024a6bfb8b38973edfc6959148fa23b5",
+      "bytes": 10562,
+      "status": "completed-read-only"
+    },
+    {
+      "agent": "/root/research_decode_weight_reuse_round2",
+      "model": "gpt-6-luna",
+      "scope": "Actual CPU quantized intrinsic input contracts/-128/saturation and bounded prefetch pointer/alias UB; primary source static audit",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cpu-quant-intrinsic-ub-round4.txt",
+      "sha256": "6460c58180c455b09b4e3a0c80793a96f96b397e97d6b8bead271800d9819f55",
+      "bytes": 6812,
+      "status": "completed-read-only"
+    }
+  ],
+  "scope": "Read-only source and web research; report-file writing authorized; researchers performed no builds, tests, GPU work, source changes or adoption. Reports are leads, not validated speed claims.",
+  "main_review_notes": [
+    "The local commit23268953 is fork-specific: the moe-decode-cpu report source link Niko1221/Strata/tree/23268953 should be yqYo1/Strata/tree/23268953314d12588fd3f496414a46bd426a7306. Original researcher report preserved.",
+    "Use prefill-code-audit-addendum over the initial prefill report for active MMQ/fused status and B70/AMD measurement attribution.",
+    "Existing layer-major, cache release, MTP suspension, CPU grouping and AVX2 multi-token are not new implementation proposals.",
+    "External hardware figures are not B570 forecasts. Approximate missing-expert masking from B70 is outside exact-output tuning.",
+    "The Intel transfer report states up to4 workers; actual default on this12-logical-CPU machine is3 (hardware_concurrency/4), and previous passive observation showed all3 inheriting hostCPU0. The affinity candidate requests CPU1,2,3 without changing worker count.",
+    "The existing xmx_gemm_iq has no production prefill call path. docs/INTEL.md historical 4-5x slowdown refers to Arc Pro B70/Coder IQ1_M, not a B570 result. New integration must have a specific hypothesis beyond enabling existing code.",
+    "USM prepare/release APIs forbid overlapping live ranges. Declared/exported symbols and success without exception do not establish actual host-memory import; matching installed v2 runtime implementation and real import/release support remain unqualified. Existing SYCL PinnedArena registration is a no-op.",
+    "A source lifetime-safe import requires the final DMA consumer completion, exact base/context release, and release before arena retirement. Stager::finish only joins CPU staging jobs and is not DMA completion. Current quiet measurements do not enable import.",
+    "Current resident ArenaExpertSource does not benefit from the file-backed prefetch ordering candidate; that conditional suggestion is not scheduled for this RAM-resident baseline.",
+    "Correction to decode-weight-reuse-round2.txt wording: 70 output tok/s means 14.2857ms per output token; with m output tokens per verification window, target window time is m*14.2857ms. Aggregated expert timing is not serial critical-path time.",
+    "Actual pack has48 MoE layers/512 experts, 12QSA/36GDN; prior questions referring to all64 layers were assumptions and are superseded by actual native_experts.txt metadata. Gate/up18x17,21x10,22x20,23x1; Down20x39,42x9. No missing AVX2 multi-token format was established.",
+    "cpu-mixed-format-avx2-round3.txt contains a block description typo: IQ4_NL18-byte blocks contain a2-byte fp16 scale plus16 code bytes, not16 half-scale bytes. Production source iq_avx2_rows.inl:238 confirms. Preserve original report.",
+    "Historical two-row IQ4_NL/component compiler alternatives were already rejected on5600X at engine level. New loop/row-reuse work needs a distinct hypothesis and evidence.",
+    "layer-major-streamed-kv-round3.txt reports calculated geometry, not observed allocation/speed. Single264MiB stage must preserve all host KV/resident mappings/indexers; host residual plane is10GiB at262144. This is a new implementation candidate; existing guard removal alone is insufficient.",
+    "Source prepare_pool_tasks_diagnostic_v1.py only writes a static controller; no pending CPU tests or GPU probe were run during the live affinity comparison. Source-bound diagnostic refuses overlap via terminal sequence admission and the exclusive measurement lock.",
+    "dma-retirement-import-v2-round3.txt primarily audited CUDA src/prefill/prefill.cpp and explicitly lacks actual SYCL confirmation. Its line3991/852 retirement points MUST NOT be used as evidence for the active sycl/src/prefill/prefill.cpp. A new report-only SYCL addendum is assigned after completion, original preserved. Import still held; no implementation/support probe scheduled.",
+    "New mixed-format intrinsic UB audit and implementation assignments were issued only after preceding reports returned; no running researcher was interrupted/intervened.",
+    "Use sycl-dma-retirement-addendum-round3.txt instead of the original CUDA audit. Normal m.copy wait occurs at run_impl end across its full chunk loop; do not call it a fence after each8K chunk. Failure/caller cleanup and import runtime support still unqualified. Layer-major new implementation may provide bounded per-layer source lifetime later, but import is not implemented.",
+    "CPU intrinsic report native Q8_0 producer citation src/kernels/cpu/expert.cpp is not direct native_quant_h producer: actual native_quant_h invokes ggml traits from_float for d_act Q8_0. Pinned x86 quantize_row_q8_0 and reference use ordinary finite max/127. Report ggml-quants.c line2578 does not match local pinned line276; resolve symbol rather than trusting those line numbers.",
+    "CPU prefetch hazard is supported by unbounded source pointer formation, but no actual GPU fault causal link or default-arena allocation crossing was established. Exact native finite activation path does not establish externally supplied arbitrary Q8 byte contracts.",
+    "Submitted streamed INT8 layer-major implementation is source-only/unqualified. Root review identified eager primary-QSA read even without opt-in; zero-QSA default preservation must be fixed before compilation. Do not infer264MiB stage/root memory fit or speed from geometry."
+  ],
+  "implementation_assignment": {
+    "agent": "/root/implement_sycl_pool_tasks",
+    "model": "gpt-6.1-sol",
+    "scope": "SYCL --pool-tasks CLI wiring only, isolated worktree; no agent tests/builds/GPU/commit/push",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/pool-tasks-implementation.txt",
+    "status": "completed-code-only",
+    "testing_owner": "/root",
+    "implementation_report_sha256": "581a28c98ffd55bc8fedef7cc9e376ab7b87613f510d54b1de0871349702f6bb",
+    "main_static_review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/pool-tasks-v0141-source-review-v1.json",
+    "main_static_review_sha256": "a2c1fc95912ff0f58ce940c981d8a6bab6dbc8b072b45dcc2b670e5721b13794"
+  },
+  "updated_utc": "2026-10-09T09:06:41.732194+00:00",
+  "research_policy": "Repeat read-only gpt-6-luna investigations with shifted scopes while root continues implementation/tuning. Share this entire report directory and completed previous reports at every assignment; identify duplicate proposals and prior adoption/hold reasons. Do not intervene before reports return. Implementation root or separate gpt-6.1-sol; all tests scheduled exclusively by root. Preserve all reports as files.",
+  "rounds": [
+    {
+      "round": 1,
+      "status": "completed",
+      "registry_sha256": "6bfd6ba40fe584068ad45b63a9b0fabaa861bac82a12f586cdb3e87db09bcabc"
+    },
+    {
+      "round": 2,
+      "status": "completed",
+      "assignments": [
+        {
+          "agent": "/root/research_prefill_algorithms_blogs",
+          "model": "gpt-6-luna",
+          "scope": "Existing SYCL XMX kernels and active call paths, joint_matrix/UB/lifetime audit; distinguish duplication from new MMQ work",
+          "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/prefill-xmx-existing-code-audit.txt",
+          "status": "completed-read-only",
+          "sha256": "da4e45c3be71c1ead314cc5c13258c945e2386894817ac36e36713e425dbc5b5",
+          "bytes": 7143
+        },
+        {
+          "agent": "/root/research_usm_import_lifetimes_round2",
+          "model": "gpt-6-luna",
+          "scope": "Concrete arena/mmap USM-import contracts, runtime support and bounded lifetime-safe staging removal",
+          "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/usm-import-lifetimes-round2.txt",
+          "status": "completed-read-only",
+          "sha256": "386bb9fca759a3d68dd55152233efc242b832920c11076af98715a6be33cd57b",
+          "bytes": 21278
+        },
+        {
+          "agent": "/root/research_decode_weight_reuse_round2",
+          "model": "gpt-6-luna",
+          "scope": "Remaining CPU MoE weight rereads/layout and exact hybrid scheduling beyond already grouped AVX2 rows",
+          "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/decode-weight-reuse-round2.txt",
+          "status": "completed-read-only",
+          "sha256": "183eb4210bc0d754ea99cd8e47f4e9aebb2787b480ea8f8071bfaf94a5b5ca0a",
+          "bytes": 13421
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "status": "completed-with-preserved-backend-correction",
+      "previous_reports_directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009",
+      "assignments": [
+        {
+          "agent": "/root/research_prefill_algorithms_blogs",
+          "model": "gpt-6-luna",
+          "scope": "Layer-major prefill with streamed INT8 KV at physical 262144 context on 10 GiB; exact resources and active guard limitations, external layer/activation offload implementations",
+          "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/layer-major-streamed-kv-round3.txt",
+          "status": "completed-read-only",
+          "sha256": "c59ccab8a9cde429ea02f09aa7a9ecde905ff14b9514cd554f7d7868f6efb4c8",
+          "bytes": 13377
+        },
+        {
+          "agent": "/root/research_decode_weight_reuse_round2",
+          "model": "gpt-6-luna",
+          "scope": "Actual mixed-format layer metadata and AVX2 multi-token coverage; CPU quantized Down rows and bounded disassembly analysis on Zen3",
+          "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cpu-mixed-format-avx2-round3.txt",
+          "status": "completed-read-only",
+          "sha256": "9f1e8cedec1eba38e01d1c606b2f942cab63915b4de5940626a649cd4d8b906b",
+          "bytes": 13851
+        },
+        {
+          "agent": "/root/research_usm_import_lifetimes_round2",
+          "model": "gpt-6-luna",
+          "scope": "Existing prefill DMA completion points, exact arena/context lifetime and installed Level Zero v2 prepare/release implementation; concrete bounded import design or rejection",
+          "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/dma-retirement-import-v2-round3.txt",
+          "status": "returned-wrong-backend-needs-sycl-addendum",
+          "sha256": "d3252a5ef53b8d4d6b6ddeb73374272f87bf723484533cebc7639ed089b5614c",
+          "bytes": 8277
+        },
+        {
+          "agent": "/root/research_usm_import_lifetimes_round2",
+          "model": "gpt-6-luna",
+          "scope": "Correct actual SYCL backend DMA retirement and failure lifetime; sycl/src/prefill not CUDA src/prefill",
+          "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/sycl-dma-retirement-addendum-round3.txt",
+          "status": "completed-read-only",
+          "sha256": "765f4e9b580a79fd19e68ca8ab72309c024a6bfb8b38973edfc6959148fa23b5",
+          "bytes": 10562
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "status": "completed",
+      "previous_reports_directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009",
+      "assignments": [
+        {
+          "agent": "/root/research_decode_weight_reuse_round2",
+          "model": "gpt-6-luna",
+          "scope": "Actual CPU quantized intrinsic input contracts/-128/saturation and bounded prefetch pointer/alias UB; primary source static audit",
+          "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cpu-quant-intrinsic-ub-round4.txt",
+          "status": "completed-read-only",
+          "sha256": "6460c58180c455b09b4e3a0c80793a96f96b397e97d6b8bead271800d9819f55",
+          "bytes": 6812
+        }
+      ]
+    },
+    {
+      "round": 5,
+      "status": "assigned-next",
+      "previous_reports_directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009",
+      "assignments": [
+        {
+          "agent": "/root/research_usm_import_lifetimes_round2",
+          "model": "gpt-6-luna",
+          "scope": "Independent read-only safety review of completed Sol streamedINT8 layer-major patch, partial-page layout/queue ordering/default/capacity cleanup",
+          "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/layer-major-streamed-kv-independent-review-round5.txt",
+          "status": "assigned-next",
+          "source_sha256": "40f1f20cc0e99409047ece425b6731395f86809da19cbd0ffb8bdfd94614bf0f"
+        },
+        {
+          "agent": "/root/research_prefill_algorithms_blogs",
+          "model": "gpt-6-luna",
+          "scope": "Exact expert-major reuse inside one layer using host intermediate activations; distinguish existing layer-major chunk schedule and xmx/stager proposals; primary external implementations/blogs",
+          "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/prefill-expert-major-intermediates-round5.txt",
+          "status": "assigned-next"
+        }
+      ]
+    }
+  ],
+  "previous_registry": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/report-registry-v6.json",
+  "previous_registry_sha256": "756c640adb1b2051fb90420468d38e62523a62603ea97c292b08d492ba04e70a",
+  "testing_owner": "/root",
+  "live_measurement": {
+    "sequence": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/stager-affinity-v0141-decode-repeat-comparison-sequence-v1/record.json",
+    "session_id": 38511,
+    "source_head_frozen": "ba1494d9a0848f37066228cec08fb82022a2c307",
+    "builds_and_tests_exclusive": true
+  },
+  "implementation_assignments": [
+    {
+      "agent": "/root/implement_sycl_pool_tasks",
+      "model": "gpt-6.1-sol",
+      "scope": "SYCL --pool-tasks CLI wiring only, isolated worktree; no agent tests/builds/GPU/commit/push",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/pool-tasks-implementation.txt",
+      "status": "completed-code-only",
+      "testing_owner": "/root",
+      "implementation_report_sha256": "581a28c98ffd55bc8fedef7cc9e376ab7b87613f510d54b1de0871349702f6bb",
+      "main_static_review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/pool-tasks-v0141-source-review-v1.json",
+      "main_static_review_sha256": "a2c1fc95912ff0f58ce940c981d8a6bab6dbc8b072b45dcc2b670e5721b13794"
+    },
+    {
+      "agent": "/root/implement_layer_major_streamed_kv",
+      "model": "gpt-6.1-sol",
+      "worktree": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-layer-major-streamed-kv-v0141-20261009",
+      "branch": "perf/sycl-layer-major-streamed-kv-v0141-2026-10-09",
+      "base": "23268953314d12588fd3f496414a46bd426a7306",
+      "scope": "Opt-in layer-major streamed INT8 KV stage ownership/reuse. Code-only isolated worktree, no agent builds/tests/GPU/commit/push.",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/layer-major-streamed-kv-implementation.txt",
+      "status": "completed-code-only",
+      "testing_owner": "/root",
+      "report_sha256": "e29f367994f19ac60341e5d3caea90e8689b939c9a63d92d7b416aaf5e909cb2",
+      "submitted_source_sha256": "40f1f20cc0e99409047ece425b6731395f86809da19cbd0ffb8bdfd94614bf0f",
+      "root_review": "in-progress; no build/test/GPU run"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_tested": false,
+  "adopted": false,
+  "started_utc": "2026-10-07T19:27:42.138108+00:00",
+  "controller_sha256": "a835f1e36ea36cb65ff7dbf36e2855d54798b2b55cde1083b08cb8d9385ccbdd",
+  "steps": [
+    {
+      "label": "configure",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/source/sycl",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/build",
+        "-G",
+        "Ninja",
+        "-DCMAKE_C_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icx",
+        "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DSTRATA_SYCL_AOT=",
+        "-DSTRATA_GGML_DIR=/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned",
+        "-DSTRATA_SYCL_PARITY=ON",
+        "-DSTRATA_NATIVE_POOL_TASK_FACTOR=0"
+      ],
+      "pid": 1235957,
+      "exit_code": 0,
+      "elapsed_seconds": 2.167603091991623
+    },
+    {
+      "label": "build",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/build",
+        "--target",
+        "strata",
+        "--parallel",
+        "4"
+      ],
+      "pid": 1236128,
+      "exit_code": 0,
+      "elapsed_seconds": 195.71116278700356
+    }
+  ],
+  "production_inputs": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/src/prefill/prefill.cpp": "e5cda787d3c6fe4d5c946b0cdea99ff437d7a9797470b3ca47c6ab4828ce92dc",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/include/dpct/device.hpp": "b72d3722dd7d88d9cd644d5e88964ff437e31bf95e0288600f1906ada4d57c31",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-e8ca-refresh-20261007/strata": "c88f94d81bfb22227310ea00d09ecc8ab21a6e670aee9556307746530f5af714"
+  },
+  "scope": "Full private source rebuild. Retain the actual DMA event until source reuse, and make an optional nonprofiling in-order copy queue through device_ext so its global waits still cover this queue. Default queue properties and arithmetic unchanged. Every translation unit is rebuilt with the same modified class definition; no mixed-header ODR experiment. CPU completion tests were already passed with this identical header; no GPU or timing claim.",
+  "elapsed_seconds": 198.61130231799325,
+  "source_revision": "27b94f06da01c97435cbd02db4fc7806b04af339",
+  "archive_sha256": "635e6578a2d54399dfd53c864faa17e2bbabafd587877c358dd166e221f6d29c",
+  "completion_header_sha256": "e2216317759266525b0f7e1ffc26ec95a7ae081fbe8d4be9fe7d5a57e8d39664",
+  "identical_cpu_test_receipt_sha256": "328233ff585099d132125585482e861c06981adadcaf799c736e0637722c037c",
+  "candidate_sources": {
+    "sycl/src/prefill/prefill.cpp": "f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77",
+    "sycl/include/dpct/device.hpp": "bf6a6fb6788fdcc18a532564edcee7b4bc2374b0336f74ca517946f471d4c0a1",
+    "sycl/include/strata/event_completion.hpp": "e2216317759266525b0f7e1ffc26ec95a7ae081fbe8d4be9fe7d5a57e8d39664"
+  },
+  "changed_tracked_sources": [
+    "sycl/include/dpct/device.hpp",
+    "sycl/src/prefill/prefill.cpp"
+  ],
+  "production_inputs_unchanged": true,
+  "candidate_binary": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-event-ack-registered-copy-v3-20261008/build/strata",
+  "candidate_binary_sha256": "2a010b62f54bb6de9a2c793029371546250fc4211569300d16262b35c299a6b6",
+  "finished_utc": "2026-10-07T19:31:01.115806+00:00"
+}

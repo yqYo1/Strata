@@ -1,0 +1,67 @@
+# Prefill最適化調査（2026-10-09）
+
+対象はArc B570 10GB、Ryzen 5600X/AVX2、RAM 128GB、PCIe Gen4x4実測約6GB/s上のQwen3.8-Flash-Next IQ3_S。目標1000 tok/sに対して現在411–450 tok/s。以下、外部の計測結果は異なるGPU・量子化の参考値であり、B570での改善予測ではない。
+
+## すぐ試す価値が高い候補
+
+### 1. Prefill中にdecode expert cacheとdecode用workspaceを解放し、可能なら大きなprompt batchで処理
+
+最も具体的な実装例はQwen3.8-Flash-Nextを2x3090、DDR4-2133 6 DIMM、llama.cpp、UD-Q4_K_XL、261K設定で動かした作者自身の報告。8K promptで99.9から223.7 tok/s（2.24x）、約37Kで88.1から212.6（2.41x）、約119Kで81.3から206.5（2.54x）。decode差は+2%、-1%、0%と報告。方式はprompt中だけexpert cache・decode buffers・CUDA poolsを解放し、ub=2048でprefillしてから復元するtransaction。遷移等の固定費は約2.8秒、後続短promptは損するため pending token数2048以上で有効化。単一機種/量子化で、119K止まり。CUDA専用実装であり、SYCLの資源再構築は別途必要。
+
+URL: https://www.reddit.com/r/LocalLLaMA/comments/1wc6fsk/qwen38flashnext_on_2x3090_ddr4_part_4_2225x/
+
+Strata側の既存状態（依頼文提供）: chunk8192、compact2、ring8、layer-major無効、KV int8 resident32768、expert-cache128 (~325MiB)、MTP4、VRAM約834MiB、prefill workspace約1.86GB。従って「単にVRAMを解放すればweight cacheが大きくなる」という仮説はこの設定では主因になりにくい。意味があるのは全expert residency/host upload抑制に足る増分空間を実際に作れる場合、またはprefill chunk/workspaceを大きくして同じ層のexpert転送を減らせる場合。1.86GB workspaceがどの形状で増えるか、10GBカードの現在の占有内訳をまず確認し、expert常駐可否を見積もる。
+
+ローカル接続点: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009/sycl/src/prefill/prefill.cpp と sycl/src/program/generate.cpp のchunk/phase scheduling、sycl/src/prefill/gemm*.cpp のworkspace計画。正確な行番号は現環境からソースを読めず確認不能。これは明示された読み取り対象名で示す。
+
+比較: 現行と同一promptで32K以上、最低32K・長めに256K、prefillを独立して測る。段階A: cacheだけをprefill中退避、B: cache+decode workspace、C: chunkを大きくしtransactionで復元。各々遷移時間を含む総prefill時間とdecodeを別記し、最低限先頭logits/全LP-MTPの既存verifyおよび256K直前/上限を確認する。破棄したdecode資源を再生成できない失敗時のrollback、KV/GDN stateとpositionを保全できることが条件。途中でprefillが失敗しても部分状態を成功扱いしない。履歴の12K chunk数値不一致があるためchunk増加のみは品質確認なしで採用しない。
+
+期待幅: 上記の他機種で2.2–2.5xだがB570の現行cacheは小さいため同等幅は根拠なし。chunk増大による転送回数減少が見られる場合に限り有望。現状411–450に対する予測値は置けない。
+
+### 2. IQ3_S重みをdequantizeせずtoken-grouped quantized GEMMで再利用
+
+公開実装メモ（AMD RDNA4/Qwen3.5-35B-A3B）では、decode-shaped単token DMMVをprefill chunk全tokenのGEMMに置き換え、quantized weightを保持したまま同じweight tileを複数tokenで再利用する案を説明。別の公開作業メモではIQ2_S/IQ3_Sに `Y[cnt,N]=X[cnt,K]×W[N,K]^T` を行い、warpごとにweight rowを一度だけdequantizeしてcnt tokenへ再利用、BF16 weight materializationを避ける実装を報告。Qwen MoE batched pathを繋いだケースで「THE prefill win」と記述されるが、比較値/機種を同メモは明記せず、改善率としては引用できない。
+
+URL: https://zolotukhin.ai/blog/2026-04-18-why-rdna4-prefill-for-qwen-3-5-is-stuck-at-25-tok-s/
+URL: https://qgithub.com/lighttransport/gemm/blob/main/task-rdna4.md
+
+StrataのIQ3_S MoEが既にbatched GEMMか、expertごとのtoken gatheringを含むか、当該作業ツリーの実装を読めず確認できなかった。対比すべき場所は `sycl/src/prefill/gemm*.cpp` と `sycl/src/prefill/prefill.cpp`、IQ3_SのSYCL kernelである。既存経路がweightを各token/各kernelで再読込・展開していると確認できた場合にだけ差分候補とする。データ構造: chunk内tokenをtop-k expert別にbucket化し、各expertのtoken indexをcontiguous化、quantized IQ3_S blockを一度ロードしgate/up GEMMを行い、SwiGLU後down GEMM、router weight適用・scatter accumulate。activation quantizeはchunkまたはexpert bucketごと一回にし、weight block scale/min/lookupを各tokenで再計算しない。
+
+安全条件: ルータのtop-k、ties、expert order、router重み、shared expert、SwiGLU、端数token/空bucketを現行と一致させる。IQ3_Sの非対称/lookup量子化はFP16/BF16にいったん展開する代わりに正しいscale/lookup計算をSYCLで実装する必要。ブログのCUDA/GLSL cooperative matrix命令は移植不可、SYCL subgroup/local memory/DPAS等への写像を要する。全tokenが各層を正しい順に通り、GDN recurrenceとQSA KV positionの書込順を変更しない。
+
+比較: 32K以上の固定promptで既存batch pathとquantized-weight reuse path、同じchunk sizeを比較。MoE GEMM time, bytes/weight reloads, end-to-end prefill, logits errorを分離。256Kでもchunk boundaryを跨いだrouter/token index、partial final chunk、GDN state continuity、KV slot位置を検証。測定期待は仮説: active expert weight tile再利用が成立すればMoE/GEMM部分の低減。全体改善はプロファイル上のその部分割合次第で、根拠あるパーセント予測はない。
+
+## 大きな再設計候補
+
+### 3. MoE router集約と不均一expert bucketに合わせたgrouped GEMM/autotune
+
+GoogleのQwen3.5-397B-A17B TPU7x技術記事は、Qwen hybrid stackを独立したbuilding blocksとして扱い、batched RPA、Grouped GEMMs等の再利用可能モジュールを先に最適化。組合せ最適化の結果、April–June 2026の社内進歩としてdecode-heavy約3.1x、prefill-heavy約4.7x（512 concurrency tier）とするが、公開比較は大規模TPUサーバー/高concurrencyで、本機の見込みではない。参考になるのは単一巨大kernelではなく、router、expert GEMM、unpermutationを計測しそれぞれ適切な実装にする設計。
+
+URL: https://developers.googleblog.com/systems-engineering-playbook-optimizing-qwen-35-397b-moe-on-ironwood-tpu7x/
+
+調査対象はMoE top-kが作るtoken数の偏りと小さいexpert group。各expert token数をhistogram化し、空・極小groupを飛ばし、大groupはtileサイズ別grouped GEMMへまとめる。入力順をexpert contiguousにpermuteし、gate/upは共有weight fetchを活用、必要なら同一expertの複数tokenを一つのtileに集約。静的chunk=8192固定ではなく、M(shape)で小group kernelと大group GEMMを選択する。ただし128 expert cacheがすでにあるため、cache policy変更ではなくprefill compute/layoutを対象とする。
+
+安全条件: routing結果を近似せず、bucket sortはtoken/expert pairの逆置換を必ず持つ。QwenのGDN/QSA層順とPLE embeddingは維持。chunkを跨ぐ集約はstateful GDNのtoken順序を保った上でMoE部だけ行い、layerを先読み/並替えしない。256Kまで各token exactly-onceであることを確認する。
+
+比較: 32K/64K/256K同一prompt長でgroup size histogram、expertごとのtoken件数、空tile割合、MoE時間と全体tokens/sを測り、bucket閾値/tile形状を絞る。論文/記事の4.7xは適用不可。改善上限はまず現在のMoE占有比率で決まるため、profile未取得では定量予測不能。Intel B70での類似公開ユーザー報告ではQwen3.6 35B MoEのbatched MoE GEMMで+43%とするがIQ3_S/Flash-Next/単B570条件が不一致であり、方向性のみ。
+
+追加URL: https://www.reddit.com/r/LocalLLM/comments/1wyfjyv/qwen38_flash_next_gsqrco_iq3_xxs_running_strata/
+
+## 参照にした補助事例と適用限界
+
+RDNA4のQwen3.5計測ブログは24回の試行中3変更のみ改善し、prefillでSSM projection 1.30s、残りSSM 0.50s、MoE 1.60s、attention 0.70s等を示す。単純にdecode shaderへ2列バッチを与えると悪化し、列数ごと専用コンパイルが必要だったという観察は、SYCLのkernel shape specializationを促すがB570数値ではない。同モデルではGDN相当SSM projectionとMoEが大きい一方、Flash-NextのGDN/QSA構成・実装と完全一致を仮定しない。
+
+QSA/attentionについて、long contextほどattentionが増える可能性はあるものの、このモデルは12/48層だけが通常KV attentionというユーザー報告もあり、GDNのstateとQSA KVを同じcache最適化として扱わない。注意のsparse approximation/evictionや speculative prefillは入力処理を近似・削除し、256K全入力を正確に使う要件に反するので候補から除外。
+
+llama.cppのFlash Attention/KV quantization報告は、prefillで量子化KVのdequant overheadが勝つ場合があると示す。現在KV int8 resident32768のため、prefill速度改善のためKVをさらに低bit化する優先度は低い。QSAのcontext-lengthごとのattention時間/帯域が主因と測定された場合、SYCL fused online-softmax/tilingを別途検討するが、QSA mask/relative positionsを保ち、256K attentionを切り詰めない。GDNはO(S) recurrenceでありattentionのflash kernelに混ぜない。
+
+## 優先順
+
+第一候補はprefill phase resource transactionだが、StrataのVRAM現状では空きが大きく見え、実装着手前にchunk/workspace拡張が必要なほどの不足があるか確認する。最も移植価値の高いカーネル案はIQ3_S quantized weightをtoken batch間で再利用するMoE GEMMで、既存コードに同じ機能がないことを確認できた場合に優先。grouped GEMM shape/bucket autotuneはその次の設計課題。CPU decode、SYCL/L0 transfer queue mechanicsは本調査対象外。
+
+主な出典:
+- https://www.reddit.com/r/LocalLLaMA/comments/1wc6fsk/qwen38flashnext_on_2x3090_ddr4_part_4_2225x/
+- https://zolotukhin.ai/blog/2026-04-18-why-rdna4-prefill-for-qwen-3-5-is-stuck-at-25-tok-s/
+- https://qgithub.com/lighttransport/gemm/blob/main/task-rdna4.md
+- https://developers.googleblog.com/systems-engineering-playbook-optimizing-qwen-35-397b-moe-on-ironwood-tpu7x/
+- https://www.reddit.com/r/LocalLLM/comments/1wyfjyv/qwen38_flash_next_gsqrco_iq3_xxs_running_strata/

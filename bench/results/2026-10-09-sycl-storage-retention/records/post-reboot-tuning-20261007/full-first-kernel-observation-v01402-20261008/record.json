@@ -1,0 +1,27 @@
+{
+  "active": false,
+  "completed": true,
+  "observed_utc": "2026-10-08T06:13:14.227454+00:00",
+  "scope": "Read-only kernel journal since owned model startup through this observation; no device query/reset/recovery. Parent process remains active; no final fault/cleanup proof.",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "fault_messages": [],
+  "steps": [
+    {
+      "label": "kernel-observation",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bf72650;b=0a908c16e292429980ff082da39f4bb9;m=1d75969386;t=65d4d64f27a43;x=573ddc50ad462baf",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "pid": 3286718,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05058426100003999
+    }
+  ]
+}

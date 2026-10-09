@@ -1,0 +1,235 @@
+{
+  "active": false,
+  "passed": true,
+  "created_utc": "2026-10-09T02:21:37.987533+00:00",
+  "scope": "Only13 tracked benchmark metadata/docs files. Three review branches fast-forwarded and pushed atomically; protected live tuning/source roots untouched. Ownership/health helpers unchanged. No PR API/authentication setting change, engine/default change or additional GPU run.",
+  "old_head": "eafeb059602541f749cbb7e734ae17452a86c9e2",
+  "new_head": "0ed619e5239bebc87f018cd2f9b8443e37105c72",
+  "remote_refs": {
+    "refs/heads/fix/sycl-server-env-v0141-2026-10-09": "0ed619e5239bebc87f018cd2f9b8443e37105c72",
+    "refs/heads/sync/upstream-2026-10-05": "0ed619e5239bebc87f018cd2f9b8443e37105c72",
+    "refs/heads/sync/upstream-v0.1.41-2026-10-09": "0ed619e5239bebc87f018cd2f9b8443e37105c72"
+  },
+  "helpers": {
+    "owned_gdb.py": "61e1d206bf57bb320051cdd65943d23722bc523a602d80c54b7e7a2ad0d3f0d1",
+    "recover-xe.sh": "2f90005f79d2309747d917cff51dc53d8ee6192d68cb1feca074f84af8b0796c"
+  },
+  "manifest_sha256": "b2bd4a42caa514efb8682b6c74e474ffafc2a8ac18fd4dbc4f3ba7fe29ec7c31",
+  "elapsed_seconds": 4.525397786987014,
+  "steps": [
+    {
+      "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/fix-sycl-server-env-v0141-2026-10-09",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "0ed619e5239bebc87f018cd2f9b8443e37105c72\n",
+      "stderr": ""
+    },
+    {
+      "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/fix-sycl-server-env-v0141-2026-10-09",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "eafeb059602541f749cbb7e734ae17452a86c9e2\n",
+      "stderr": ""
+    },
+    {
+      "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "eafeb059602541f749cbb7e734ae17452a86c9e2\n",
+      "stderr": ""
+    },
+    {
+      "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/fix-sycl-server-env-v0141-2026-10-09",
+      "argv": [
+        "git",
+        "diff",
+        "--name-only",
+        "eafeb059602541f749cbb7e734ae17452a86c9e2",
+        "0ed619e5239bebc87f018cd2f9b8443e37105c72"
+      ],
+      "exit_code": 0,
+      "stdout": "bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/README.md\nbench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/README.md\nbench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/archive-controller.py\nbench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/controller-generator.py\nbench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/controller-preparation.json\nbench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/controller.py\nbench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/cpu-preflight.json\nbench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/launch-admission.json\nbench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/manifest.json\nbench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/private-artifact-identities.json\nbench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/project-messages.txt\nbench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/protocol.stdout.raw\nbench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/record.json\n",
+      "stderr": ""
+    },
+    {
+      "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/fix-sycl-server-env-v0141-2026-10-09",
+      "argv": [
+        "git",
+        "ls-remote",
+        "--heads",
+        "origin",
+        "refs/heads/fix/sycl-server-env-v0141-2026-10-09",
+        "refs/heads/sync/upstream-v0.1.41-2026-10-09",
+        "refs/heads/sync/upstream-2026-10-05"
+      ],
+      "exit_code": 0,
+      "stdout": "eafeb059602541f749cbb7e734ae17452a86c9e2\trefs/heads/fix/sycl-server-env-v0141-2026-10-09\neafeb059602541f749cbb7e734ae17452a86c9e2\trefs/heads/sync/upstream-2026-10-05\neafeb059602541f749cbb7e734ae17452a86c9e2\trefs/heads/sync/upstream-v0.1.41-2026-10-09\n",
+      "stderr": ""
+    },
+    {
+      "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009",
+      "argv": [
+        "git",
+        "merge",
+        "--ff-only",
+        "0ed619e5239bebc87f018cd2f9b8443e37105c72"
+      ],
+      "exit_code": 0,
+      "stdout": "Updating eafeb059..0ed619e5\nFast-forward\n .../native-expert-copy-v0141-20261009/README.md    |     2 +-\n .../full256k/README.md                             |    13 +\n .../full256k/archive-controller.py                 |    93 +\n .../full256k/controller-generator.py               |   142 +\n .../full256k/controller-preparation.json           |    22 +\n .../full256k/controller.py                         |   632 +\n .../full256k/cpu-preflight.json                    |    25 +\n .../full256k/launch-admission.json                 |    18 +\n .../full256k/manifest.json                         |    57 +\n .../full256k/private-artifact-identities.json      |    64 +\n .../full256k/project-messages.txt                  |   345 +\n .../full256k/protocol.stdout.raw                   |  2033 +++\n .../full256k/record.json                           | 16456 +++++++++++++++++++\n 13 files changed, 19901 insertions(+), 1 deletion(-)\n create mode 100644 bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/README.md\n create mode 100644 bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/archive-controller.py\n create mode 100644 bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/controller-generator.py\n create mode 100644 bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/controller-preparation.json\n create mode 100644 bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/controller.py\n create mode 100644 bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/cpu-preflight.json\n create mode 100644 bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/launch-admission.json\n create mode 100644 bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/manifest.json\n create mode 100644 bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/private-artifact-identities.json\n create mode 100644 bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/project-messages.txt\n create mode 100644 bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/protocol.stdout.raw\n create mode 100644 bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/record.json\n",
+      "stderr": ""
+    },
+    {
+      "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05",
+      "argv": [
+        "git",
+        "merge",
+        "--ff-only",
+        "0ed619e5239bebc87f018cd2f9b8443e37105c72"
+      ],
+      "exit_code": 0,
+      "stdout": "Updating eafeb059..0ed619e5\nFast-forward\n .../native-expert-copy-v0141-20261009/README.md    |     2 +-\n .../full256k/README.md                             |    13 +\n .../full256k/archive-controller.py                 |    93 +\n .../full256k/controller-generator.py               |   142 +\n .../full256k/controller-preparation.json           |    22 +\n .../full256k/controller.py                         |   632 +\n .../full256k/cpu-preflight.json                    |    25 +\n .../full256k/launch-admission.json                 |    18 +\n .../full256k/manifest.json                         |    57 +\n .../full256k/private-artifact-identities.json      |    64 +\n .../full256k/project-messages.txt                  |   345 +\n .../full256k/protocol.stdout.raw                   |  2033 +++\n .../full256k/record.json                           | 16456 +++++++++++++++++++\n 13 files changed, 19901 insertions(+), 1 deletion(-)\n create mode 100644 bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/README.md\n create mode 100644 bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/archive-controller.py\n create mode 100644 bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/controller-generator.py\n create mode 100644 bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/controller-preparation.json\n create mode 100644 bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/controller.py\n create mode 100644 bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/cpu-preflight.json\n create mode 100644 bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/launch-admission.json\n create mode 100644 bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/manifest.json\n create mode 100644 bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/private-artifact-identities.json\n create mode 100644 bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/project-messages.txt\n create mode 100644 bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/protocol.stdout.raw\n create mode 100644 bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/record.json\n",
+      "stderr": ""
+    },
+    {
+      "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/fix-sycl-server-env-v0141-2026-10-09",
+      "argv": [
+        "git",
+        "push",
+        "--atomic",
+        "origin",
+        "refs/heads/fix/sycl-server-env-v0141-2026-10-09:refs/heads/fix/sycl-server-env-v0141-2026-10-09",
+        "refs/heads/sync/upstream-v0.1.41-2026-10-09:refs/heads/sync/upstream-v0.1.41-2026-10-09",
+        "refs/heads/sync/upstream-2026-10-05:refs/heads/sync/upstream-2026-10-05"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "To github.com:yqYo1/Strata\n   eafeb059..0ed619e5  fix/sycl-server-env-v0141-2026-10-09 -> fix/sycl-server-env-v0141-2026-10-09\n   eafeb059..0ed619e5  sync/upstream-2026-10-05 -> sync/upstream-2026-10-05\n   eafeb059..0ed619e5  sync/upstream-v0.1.41-2026-10-09 -> sync/upstream-v0.1.41-2026-10-09\n"
+    },
+    {
+      "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/fix-sycl-server-env-v0141-2026-10-09",
+      "argv": [
+        "git",
+        "ls-remote",
+        "--heads",
+        "origin",
+        "refs/heads/fix/sycl-server-env-v0141-2026-10-09",
+        "refs/heads/sync/upstream-v0.1.41-2026-10-09",
+        "refs/heads/sync/upstream-2026-10-05"
+      ],
+      "exit_code": 0,
+      "stdout": "0ed619e5239bebc87f018cd2f9b8443e37105c72\trefs/heads/fix/sycl-server-env-v0141-2026-10-09\n0ed619e5239bebc87f018cd2f9b8443e37105c72\trefs/heads/sync/upstream-2026-10-05\n0ed619e5239bebc87f018cd2f9b8443e37105c72\trefs/heads/sync/upstream-v0.1.41-2026-10-09\n",
+      "stderr": ""
+    },
+    {
+      "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/fix-sycl-server-env-v0141-2026-10-09",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "0ed619e5239bebc87f018cd2f9b8443e37105c72\n",
+      "stderr": ""
+    },
+    {
+      "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/fix-sycl-server-env-v0141-2026-10-09",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "0ed619e5239bebc87f018cd2f9b8443e37105c72\n",
+      "stderr": ""
+    },
+    {
+      "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "0ed619e5239bebc87f018cd2f9b8443e37105c72\n",
+      "stderr": ""
+    },
+    {
+      "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

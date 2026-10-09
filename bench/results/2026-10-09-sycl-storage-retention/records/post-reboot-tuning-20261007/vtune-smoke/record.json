@@ -1,0 +1,177 @@
+{
+  "scope": "VTune CPU software sampling and small exact-word GPU API/timeline smoke; hardware counters disabled; not model tuning or transfer throughput",
+  "vtune": "/opt/intel/oneapi/vtune/2026.4/bin64/vtune",
+  "helper_sha256": "2f90005f79d2309747d917cff51dc53d8ee6192d68cb1feca074f84af8b0796c",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "jobs": [
+    {
+      "argv": [
+        "/opt/intel/oneapi/vtune/2026.4/bin64/vtune",
+        "-collect",
+        "hotspots",
+        "-knob",
+        "sampling-mode=sw",
+        "-knob",
+        "enable-characterization-insights=false",
+        "-knob",
+        "enable-stack-collection=true",
+        "-data-limit",
+        "128",
+        "-no-summary",
+        "-result-dir",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/vtune-smoke/cpu-result",
+        "--",
+        "/usr/bin/python3",
+        "-c",
+        "import time; end=time.monotonic()+2; n=1\nwhile time.monotonic()<end: n=(n*1664525+1013904223)&0xffffffff\nprint(n)"
+      ],
+      "root": {
+        "pid": 2464799,
+        "start_ticks": 4062918,
+        "state": "R",
+        "ppid": 2464794,
+        "pgrp": 2464799,
+        "session": 2464799
+      },
+      "started_utc": "2026-10-07T05:29:10.073248+00:00",
+      "active": false,
+      "environment": {
+        "LD_LIBRARY_PATH": "/usr/local/cuda/lib64:/nix/store/mj9klbkhzal0vc1aazsajrydkimhc0h2-libglvnd-1.7.0/lib"
+      },
+      "owned": [
+        {
+          "pid": 2464799,
+          "start_ticks": 4062918,
+          "state": "S",
+          "ppid": 2464794,
+          "pgrp": 2464799,
+          "session": 2464799
+        },
+        {
+          "pid": 2464809,
+          "start_ticks": 4062950,
+          "state": "S",
+          "ppid": 2464799,
+          "pgrp": 2464799,
+          "session": 2464799
+        }
+      ],
+      "elapsed_seconds": 1.4371326449982007,
+      "exit_code": 1,
+      "signals": [],
+      "survivors": [],
+      "finished_utc": "2026-10-07T05:29:11.489057+00:00"
+    },
+    {
+      "argv": [
+        "/opt/intel/oneapi/vtune/2026.4/bin64/vtune",
+        "-collect",
+        "xpu-offload",
+        "-knob",
+        "enable-characterization-insights=false",
+        "-knob",
+        "collect-cpu-sampling=false",
+        "-knob",
+        "collect-programming-api=true",
+        "-data-limit",
+        "128",
+        "-no-summary",
+        "-result-dir",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/vtune-smoke/gpu-result",
+        "--",
+        "/home/yayoi/.local/bin/strata-xe-health",
+        "0000:05:00.0"
+      ],
+      "root": {
+        "pid": 2464875,
+        "start_ticks": 4063062,
+        "state": "R",
+        "ppid": 2464794,
+        "pgrp": 2464875,
+        "session": 2464875
+      },
+      "started_utc": "2026-10-07T05:29:11.510625+00:00",
+      "active": false,
+      "environment": {
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/umf/1.1/lib:/usr/lib/x86_64-linux-gnu",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "ZEL_ENABLE_LOADER_LOGGING": "1",
+        "ZEL_LOADER_LOG_CONSOLE": "1",
+        "ZEL_LOADER_LOGGING_LEVEL": "trace",
+        "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+        "ZE_ENABLE_VALIDATION_LAYER": "1",
+        "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+        "UR_LOG_LOADER": "level:debug;flush:debug;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:debug;flush:debug;output:stderr",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "STRATA_TRACE": "1",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING"
+      },
+      "owned": [
+        {
+          "pid": 2464875,
+          "start_ticks": 4063062,
+          "state": "S",
+          "ppid": 2464794,
+          "pgrp": 2464875,
+          "session": 2464875
+        },
+        {
+          "pid": 2464900,
+          "start_ticks": 4063080,
+          "state": "S",
+          "ppid": 2464875,
+          "pgrp": 2464875,
+          "session": 2464875
+        }
+      ],
+      "elapsed_seconds": 1.06826890699449,
+      "exit_code": 1,
+      "signals": [],
+      "survivors": [],
+      "finished_utc": "2026-10-07T05:29:12.556213+00:00"
+    }
+  ],
+  "gpu_exact_words_pass": false,
+  "new_fault_messages": [],
+  "steps": [
+    {
+      "label": "kernel-before",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "pid": 2464797,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050597385998116806
+    },
+    {
+      "label": "kernel-after",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bf1455d;b=0a908c16e292429980ff082da39f4bb9;m=972f296d6;t=65d39624e7d92;x=3076f340ace99f92",
+        "--no-pager",
+        "-o",
+        "short-iso-precise"
+      ],
+      "pid": 2465009,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05047857300087344
+    }
+  ]
+}

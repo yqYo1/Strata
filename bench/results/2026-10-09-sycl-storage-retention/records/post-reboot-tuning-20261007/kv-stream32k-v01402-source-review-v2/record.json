@@ -1,0 +1,36 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_tested": false,
+  "adopted": false,
+  "created_utc": "2026-10-08T03:18:34.396131+00:00",
+  "candidate_sha256": "02801fe89965fd9df0c68b58b5f2be1f8443551c2a39533b54efddd0385846e9",
+  "source_sha256": {
+    "sycl/src/core/layer.cpp": "6aa6064aeb2891812516e9be98233e7cf4b64c855d442e52e7d4d070df370b0f",
+    "sycl/src/core/session.cpp": "939e49516eb8586b51bfd686261a2cae167ca3e1e9af375d00618940a7df9158",
+    "sycl/src/core/conversation_snapshot.cpp": "8aad8aa2615b28b8f579ef725f99c79cf994ffd95dc7fd931dec300082d745a5",
+    "sycl/src/prefill/prefill.cpp": "f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77",
+    "sycl/src/program/generate.cpp": "0437a6e9da9c9c3f4478eb3fc7b04dc45e4599728939c7828202aa9a970e012b",
+    "include/strata/kernels/kv_stream.hpp": "24a47cb5eca790fa35b13bbeb12cf3407389c41219899789880d965cf86d8abe",
+    "sycl/include/strata/sycl_allocation.hpp": "ca98ce77cb9cde05ea90dabc2ac6745de321c23d4b54a7f1e9914a75648a5836"
+  },
+  "source_authority": "Pinned registered-copy compiled overlay; prefill differs from production by validated actual-event completion and registered copy queue. All KV call-path logic reviewed in the compiled overlay; do not substitute current worktree source.",
+  "controller_sha256": "684bb264d3bfb348859cae3a973bad644384d32bd5f6ce13169e60afc92328b6",
+  "parent_controller_sha256": "9bc414b20edad26861e9e6d649aa474732de7b3fc0d45a17d3acaf7749f84ee0",
+  "reviewed": [
+    "layer.cpp kv_plan/qsa_state_init: mode1 main resident8192pages, full-context host-USM identity backing; MTP mode2 fixed ring. checked_usm rejects null. Host backing allocated once at startup and not freed/reused while captured graphs run. Serve drains all registered queues then _Exit; no session rebuild in this gate.",
+    "prefill.cpp run_layer_major rejects mode1: select existing run_impl chunk-major0, no layer-major cache leases or GPU residual allocation.",
+    "take_stage: one full-context identity layer (264MiB int8 at256K); STAGE_OWN=1 avoids borrowed expert placement changes and shares tracked owned allocation list. Identity upload completes before temporary host vector dies.",
+    "prefetch0: staging/upload/append/attention on the same in-order compute queue. Prefix is immutable and every used new row is appended to host and stage before attention. No cross-queue prefetch enabled in initial gate.",
+    "Prefill release drains compute/copy/stager/KV queues before tracked owned buffers. Snapshot occurs after compute/copy drains; no concurrent host CPU reads of device-written authoritative host USM.",
+    "conversation_snapshot selects authoritative host pools for mode1/2. Restore invalidates streaming map or restores bounded MTP ring before later attention. Full restore is a later required gate, not proven by initial prefill captures.",
+    "v3 resolver keeps1024WG/SG32, atomically loads page claims and stores shared hit metadata. Full group barriers separate victim phases; minimum slots>=1024 keeps sweep IDs unique. Byte representation copies remove device/host type-punning. First execution requires device capabilities and runtime launch validation.",
+    "Initial capture compares all66 main-state parts using the existing fail-closed positive-geometry comparator; only unwritten page-rounded future cells may differ. Pooled spare row is live. First full head/all64IDs/logprobs and MTP43/66 unchanged. Full256K occupancy permits no padding exclusions."
+  ],
+  "limitations": [
+    "Source review and CPU compilation are not GPU correctness or absence-of-UB proof.",
+    "Host KV allocations currently live until process exit rather than explicit SessionState RAII. No state reconstruction/reallocation is exercised here.",
+    "Prefetch, hybrid/Q4, multi-GPU, elastic VMM, larger chunks and restore API not activated by this gate.",
+    "At256K a larger stage and sparse indexer change allocation sizes; full occupancy/repeat/restore/tail/refusal/later>=32K remain required."
+  ]
+}

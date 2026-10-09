@@ -1,0 +1,53 @@
+{
+  "active": false,
+  "passed": true,
+  "started_utc": "2026-10-07T21:14:49.983808+00:00",
+  "controller_sha256": "b14bf015d743717b59fd7dec593f19764a40e7aaea21bebe29f584b513d45f2d",
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_host_profile32k_v01402.py",
+        "event-ack-no-root-host-profile",
+        "state",
+        "1"
+      ],
+      "started_utc": "2026-10-07T21:18:43.219318+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T21:20:48.973592+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 80501.3,
+        "decode_ms": 3902.9,
+        "wall_seconds": 84.40829370998836,
+        "prefill_tok_s": 407.04932715372297,
+        "decode_tok_s": 16.39806297881063
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_host_profile32k_v01402.py",
+        "event-ack-no-root-host-profile",
+        "control",
+        "1"
+      ],
+      "started_utc": "2026-10-07T21:20:48.974376+00:00",
+      "exit_code": 0,
+      "finished_utc": "2026-10-07T21:22:50.513590+00:00",
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32768,
+        "prompt_ms": 80648.9,
+        "decode_ms": 3791.7,
+        "wall_seconds": 84.44759701300063,
+        "prefill_tok_s": 406.3043637296975,
+        "decode_tok_s": 16.87897249254952
+      }
+    }
+  ],
+  "minimum_comparison_tokens": 32768,
+  "scope": "First logged/validated host-only unitrace32K check, then quiet host-only profile and matched unprofiled32K control. Every state/head/token/logprob must match the completed default-counter control. No device event instrumentation, clean throughput or full256K claim.",
+  "finished_utc": "2026-10-07T21:22:50.514414+00:00"
+}

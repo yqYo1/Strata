@@ -1,0 +1,35 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_tested": false,
+  "adopted": false,
+  "created_utc": "2026-10-08T06:03:11.446789+00:00",
+  "build_receipt_sha256": "cf17f2507fb47741a0f6b8c8f0d9fefda6ecfa12ef7970d1c23d63a6b0e1223a",
+  "actual_compiled_shadow_header_confirmed": true,
+  "dependency_file_sha256": "bd2db57e2b9489510005cab361630b2b90cc8c96a9f1489b5e9e94210e9caace",
+  "prefill_source_sha256": "f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77",
+  "completion_helper_sha256": "e2216317759266525b0f7e1ffc26ec95a7ae081fbe8d4be9fe7d5a57e8d39664",
+  "cpu_synthetic_readiness_queries": {
+    "control": {
+      "calls": 23518,
+      "elapsed_us": 20000
+    },
+    "candidate": {
+      "calls": 338,
+      "elapsed_us": 20002
+    }
+  },
+  "reviewed": [
+    "Only polling cadence in prefill TU changes; native query function, locked event lifetime, generation monotonicity and completion acquire/release remain identical.",
+    "CPU checks cover immediate readiness, cancellation priority and cancellation during pending work; timeout exits without a destructor that could reclaim an active buffer.",
+    "After32 failed checks, request10us sleep rather than another scheduler yield. Actual wake time depends on OS scheduling; no GPU/performance claim follows from the20ms synthetic callback.",
+    "The original header comment claiming no driver call during readiness is stale: dma_completed calls event.get_info, which can enter UR/L0. This host deadline cannot preempt a blocked runtime status query; the candidate does not claim otherwise.",
+    "Prefill source callback and registered copy queue are from the actual compiled overlay, not current worktree source. The generated dependency file proves the candidate header was selected.",
+    "No GPU job for this candidate is started while the full-capacity fdca process runs. First future execution needs diagnostic logging and complete32K state/head/output parity, then a quiet>=32K comparison."
+  ],
+  "limitations": [
+    "Synthetic polling counts do not measure DMA, CPU utilization or end-to-end inference speed.",
+    "No change to source-buffer reuse safety or GPU event acknowledgement is assumed from a sleep.",
+    "Full capacity, real restoration and hardware parity are not proved for this candidate."
+  ]
+}

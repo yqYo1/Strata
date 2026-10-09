@@ -1,0 +1,55 @@
+# Layer-major expert cache footprint and slot contract (round 10)
+
+調査日: 2026-10-09  
+対象: C candidate `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-layer-major-streamed-kv-v0141-20261009`, commit `6cdf81078128488e5797afb9e92824b7ebe51124`, `prefill.cpp` SHA-256 `92b849df3e19ad77a8a56927cae48cd91d4be0f73f4edc1ff189d2177c0cd8c1`.  
+model metadata: `/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt` (`n_expert=512`, 48 layer entries, total source payload `50,292,326,400 B`).  
+Evidence reviewed: immutable `report-registry-v12.json` SHA-256 `12170eebab7147421b6dfc105bd6c077cb8447c2d19dde6c1530ff9eb3a78bb0`, round 3/5/9 reports, candidate GPU receipt `record.json` SHA-256 `9f76562cc4ced2a60363e7b01b31cfd6da4bbfde8abc62c45c0abe737027f0a1`, and read-only source inspection. No source changes, build, test, device probe, profiler, fetch, or measurement was performed.
+
+## 結論
+
+layer-majorの一層用cacheは512 slotを`MAXBLOB()`幅で一括確保します。今回のIQ3_S packでは`MAXBLOB=2,662,400 B` (最大のlayer 47)、したがって固定容量は`512 × 2,662,400 = 1,363,148,800 B = 1.26953125 GiB`です。GPU receiptの失敗値`1,363,148,800 B`と完全一致します。実際の各layerはformatにより737.5〜1,300 MiBのpayloadしか持たず、slot末尾の未使用域はcache内にゼロ初期化されたままです。
+
+この差は個別layer長を使えば減らせます。ただしlayer 47は最大値そのものなので、全512 expertを一度にresidentに保つ設計のピーク要件は1.2695 GiBから下がりません。receiptでは2回目のread前にExpertCacheが「1.27 GiB必要、free 0.99 GiB」と拒否し、prefillは開始していません。このrunはfull-lifecycle passでも性能対象でもありません。最大層のallocationを除くためには、既存のchunk内stagingへ戻るfallbackなど、同時resident expert数も制限する設計が別途必要です。
+
+## 現行のslot・copy契約
+
+- `sycl/src/prefill/prefill.cpp:115,2612-2616`は一時cacheを`open_sized(vector<int64_t>(n_expert, MAXBLOB()), 1, n_expert, err)`で作ります。全slotは同じ最大長です。`run_layer_major():2690-2715`は現在layerの各expertをsourceから取得し、各slotへ実長`layout.blob_bytes(layer)`だけcopyします。そのlayer内では1 expertを1 slotに対応させ、`residency[e]=e`です。GPU slot間隔は最大長ですが、blob内のGU/up/down offsetはそのlayerのmetadataとblob先頭からの相対offsetを使うため、短いlayer用のslot tailは読まれません。
+- `ExpertCache::open_sized()` (`sycl/src/core/expert_cache.cpp:691-719`)は各入力slot長を256-byteへ切り上げ、prefix-sumでslot offsetを作り、合計byte数を単一のallocationとして`open(total_bytes, ..., blob_bytes=1)`へ渡します。現在の`MAXBLOB`および全48個の`blob_bytes`はいずれも256の倍数なので、現行／正確長slotにslot末尾のalignment slackはありません。現行のwasteはmixed-format長を一様な最大長へ広げた分です。
+- `open()`はallocation前にfree VRAMを確認し、足りなければ正確な要求/free値を含めて拒否します (`expert_cache.cpp:578-612`)。成功時は一時arena全体をzero-fillします (`:649-679`)。長さを縮める改修では、単に`device_slot(e)`の間隔だけ変えるのではなく、slot offset table・total allocation・zeroing・slot bounds・各copy長を同じ`open_sized`契約で一致させる必要があります。
+- 既存layer-majorは層を替える前にcompute/copy/stagerをdrainし、次層の512 expertを同じ一時cacheへcopyします (`prefill.cpp:2683-2715,2747-2754`)。これによりblob pointerの非同期参照が終わってからslotを上書きできます。新しい長さで再openする場合も、先にこのdrainを満たし、`m.cache`/resident mapが古いallocationを指さない状態で置換しなければなりません。`ExpertCache::close()`は通常arenaを解放しますが、copy完了を呼出側が保証する現在の層境界を省略してよい根拠にはなりません。
+
+## packの実長と容量差
+
+`native_experts.txt`の`blob_bytes`はexpert 1個分。各layerに512 expertsある。表の「実容量」は512個分のpacked blobで、slot alignment slackは0。現行固定arenaは常に1,300 MiBです。
+
+| GU/Down type | layer IDs | layers | 1 expert | 実容量/layer | 固定arenaの未使用分/layer |
+|---|---|---:|---:|---:|---:|
+| 18 / 20 | 0, 7, 14, 16, 18, 22, 31, 33, 37, 38, 41, 42, 43, 46 | 14 | 2,176,000 B | 1,062.5 MiB | 237.5 MiB |
+| 22 / 42 | 1, 8, 10, 13, 36 | 5 | 1,510,400 B | 737.5 MiB | 562.5 MiB |
+| 22 / 20 | 2, 3, 4, 5, 6, 9, 11, 15, 19, 23, 24, 26, 32, 34, 39 | 15 | 1,971,200 B | 962.5 MiB | 337.5 MiB |
+| 18 / 42 | 12, 20, 30 | 3 | 1,715,200 B | 837.5 MiB | 462.5 MiB |
+| 21 / 20 | 17, 25, 27, 28, 29, 35, 40, 44, 45 | 9 | 2,329,600 B | 1,137.5 MiB | 162.5 MiB |
+| 21 / 42 | 21 | 1 | 1,868,800 B | 912.5 MiB | 387.5 MiB |
+| 23 / 20 | 47 | 1 | 2,662,400 B | 1,300 MiB | 0 MiB |
+
+If one hypothetically summed the current fixed arena across 48 sequential layer visits, it would be 65,431,142,400 B (60.9375 GiB) of capacity; exact packed data over those same visits is 50,292,326,400 B (46.8384 GiB), leaving 15,138,816,000 B (14.0991 GiB) of cumulative slot tail. This is not simultaneous GPU use: only one layer arena exists at a time. PCIe/source payload for a full pass is the 50.292 GB packed size because current code copies each blob's actual layer size once into the layer cache; the unused slot tails are allocation/zero-fill, not transferred expert data. No speed implication follows from those byte counts.
+
+## Safe allocation options and hard limit
+
+1. **Exact-size one-layer arena (straightforward, partial memory relief).** At each layer boundary, after compute and copy completion, close and reopen the 512-slot arena with `slot_bytes[e]=layout.blob_bytes(layer)`. The `ExpertCache::open_sized()` API already has variable slot offsets; for a single layer all 512 lengths are equal and divisible by 256. Keep `residency[e]=e`, copy exact bytes, and pass the new base/offset contract only to that layer's `run_impl()`. This removes the table's 162.5–562.5 MiB tail on 47 of 48 layers. It does not help layer 47 and adds repeated allocation/zero-fill work, so feasibility/overhead are unmeasured. With the receipt's 0.99 GiB free, only 24 layers' exact arenas are <= that free amount before considering concurrent runtime allocations; layer 0 is 1,062.5 MiB and layer 47 is 1,300 MiB. This cannot qualify a full 48-layer request at that reported headroom.
+2. **Bounded arena plus existing streaming fallback (full-run safety, no reuse promise).** Add an explicit capacity admission before trying the all-512 arena. When the current exact layer arena does not fit the chosen budget, run that layer through the existing `run_impl()` expert ring with no temporary all-layer residency, letting the established route-order copies and slot-use events operate per chunk. This retains the existing expert order, dequant/GEMM arithmetic, token/chunk schedule, and outputs; it may repeat weight transfers for each chunk and therefore is only a correctness-preserving fallback, not a performance proposal. A hybrid can use exact-size full-layer arenas for fitting layers and fallback for larger ones, but allocation/free boundaries and resident-map reset must be explicit.
+3. **Do not treat a tiny LRU as guaranteed reuse.** The expert walk is ordered through routed expert IDs, then each 8K chunk builds a new route. A small cache could repeatedly evict earlier experts and reload in the next chunk; no hit distribution from this task establishes a useful bound. Likewise round 9's bounded dequant cache is a separate extra 9.375 MiB per expert dense FP16 value and is not a substitute for the packed source cache allocation that failed here.
+
+Any variant must retain physical context 262144 and chunk 8192, preserve exact route/token and math order, and wait for all queued readers before resizing/reusing the arena. The 1.2695-GiB single-layer peak is an inherent cost of the current all-512-resident-per-layer contract, not a consequence of alignment padding; reducing it requires relaxing that residency contract with a route-safe fallback. Existing KV-stage and decode-cache mechanisms are outside this report's main recommendation.
+
+## Receipt interpretation
+
+The supplied candidate receipt records A-read0 as passing all numerical checks, including all 66 live-state parts, actual 8192 chunks, and physical reference output fields. B-read1 fails with `ERR ExpertCache: 1363148800 slots x 1 B = 1.27 GiB, but only 0.99 GiB of VRAM is free`; it has no IDs/logprobs and is marked `performance_eligible=false`, `full_lifecycle_passed=false`, `adopted=false`. The error's requested byte count equals the source-level temporary layer-cache arena above. The receipt reports forced cleanup, no new GPU fault messages, and no completed debugger evidence for a matching stall frame. It establishes an allocation refusal on this second request, not a GPU hang, numerical regression, or full-lifecycle success.
+
+## Source anchors
+
+- Pack geometry: `native_experts.txt` header and 48 rows; max `blob_bytes` is layer 47 (GU 23 / Down 20).
+- Temporary allocation and actual bytes copied: `sycl/src/prefill/prefill.cpp:115,2612-2616,2690-2715,2747-2754`.
+- Slot alignment/offset table: `sycl/src/core/expert_cache.cpp:691-719`; free-space check, allocation and zero-fill: `:578-679`.
+- `run_impl()` uses the installed temporary cache/residency to distinguish resident from ring-streamed experts: `sycl/src/prefill/prefill.cpp:4044,4137,4580-4625,4710-4750,4823+`.
+- Previous rounds already distinguish this packed cache from cross-chunk expert-major activations (round 5) and dequant/GEMM work buffers (round 9). No outside implementation's speed result is needed to establish this local allocation contract.
