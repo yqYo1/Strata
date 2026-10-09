@@ -1,0 +1,1859 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "gpu_executed": false,
+  "model_opened": false,
+  "adopted": false,
+  "performance_eligible": false,
+  "original_C_math_gate_passed": false,
+  "scope": "Only native_wrapper_parity target linked actual SYCL CPU library; same two-file test patch in frozenT and candidateH. Global SYCL link flags preserved; no target executable invoked by this build.",
+  "controller_sha256": "77b30a3ae4e421a1b29752c851773dccec6ef748b60ca85888d3ed6e1f77901a",
+  "started_utc": "2026-10-09T16:36:36.135264+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "baseline_build_receipt_sha256": "3632b1514544ef2dd89046c112b823c75a27d0215aca2fce58c4b8df9e43d7f8",
+  "ggml_commit": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+  "source_pins": {
+    "sycl/CMakeLists.txt": "a6bd64de6ec4dd9c4298608e777551ae53b00321745087752200ed4ccc2848dc",
+    "sycl/tools/native_wrapper_parity.cpp": "339658d5c8d13baf59ffe246aac7ac3a0911d60ce01619773c5ce9f587f76fd6",
+    "src/kernels/cpu/iq_avx2_parity.cpp": "fb4e0b0629e749b816c4ec71da836f383330cf93aed49a11d03607937e1232d9"
+  },
+  "deadline_seconds": 1200,
+  "text_budget_bytes": 67108864,
+  "steps": [
+    {
+      "label": "T-configure",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-native-wrapper-parity-baseline-20261010/sycl",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-native-wrapper-parity-baseline-20261010/build-sycl-native-wrapper-v1",
+        "-G",
+        "Ninja",
+        "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DCMAKE_C_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icx",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DSTRATA_GGML_DIR=/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned",
+        "-DSTRATA_NATIVE_EXPERTS=ON",
+        "-DSTRATA_SYCL_PARITY=OFF",
+        "-DSTRATA_SYCL_NATIVE_WRAPPER_PARITY=ON",
+        "-DSTRATA_IQ2S_GCC=OFF",
+        "-DSTRATA_SYCL_AOT=",
+        "-DSTRATA_SYCL_SPIN_MAX=",
+        "-DSTRATA_NATIVE_POOL_TASK_FACTOR=0"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-native-wrapper-parity-baseline-20261010",
+      "deadline_seconds": 120,
+      "identity": {
+        "pid": 1600067,
+        "ppid": 1599420,
+        "start_ticks": 25347686
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 2.657745734002674
+    },
+    {
+      "label": "T-build",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-native-wrapper-parity-baseline-20261010/build-sycl-native-wrapper-v1",
+        "--target",
+        "native_wrapper_parity",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-native-wrapper-parity-baseline-20261010",
+      "deadline_seconds": 600,
+      "identity": {
+        "pid": 1600536,
+        "ppid": 1599420,
+        "start_ticks": 25347952
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 31.47282601200277
+    },
+    {
+      "label": "H-configure",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-native-wrapper-parity-20261010/sycl",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-native-wrapper-parity-20261010/build-sycl-native-wrapper-v1",
+        "-G",
+        "Ninja",
+        "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DCMAKE_C_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icx",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DSTRATA_GGML_DIR=/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned",
+        "-DSTRATA_NATIVE_EXPERTS=ON",
+        "-DSTRATA_SYCL_PARITY=OFF",
+        "-DSTRATA_SYCL_NATIVE_WRAPPER_PARITY=ON",
+        "-DSTRATA_IQ2S_GCC=OFF",
+        "-DSTRATA_SYCL_AOT=",
+        "-DSTRATA_SYCL_SPIN_MAX=",
+        "-DSTRATA_NATIVE_POOL_TASK_FACTOR=0"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-native-wrapper-parity-20261010",
+      "deadline_seconds": 120,
+      "identity": {
+        "pid": 1602834,
+        "ppid": 1599420,
+        "start_ticks": 25351106
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 2.1361647880112287
+    },
+    {
+      "label": "H-build",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-native-wrapper-parity-20261010/build-sycl-native-wrapper-v1",
+        "--target",
+        "native_wrapper_parity",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-native-wrapper-parity-20261010",
+      "deadline_seconds": 600,
+      "identity": {
+        "pid": 1603341,
+        "ppid": 1599420,
+        "start_ticks": 25351320
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 30.908071915997425
+    }
+  ],
+  "arms": [
+    {
+      "label": "T",
+      "source_commit": "61a70650a004d27ec622046b3d4d6499e7012ca0",
+      "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-native-wrapper-parity-baseline-20261010",
+      "build": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-native-wrapper-parity-baseline-20261010/build-sycl-native-wrapper-v1",
+      "binary": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-native-wrapper-parity-baseline-20261010/build-sycl-native-wrapper-v1/native_wrapper_parity",
+      "binary_sha256": "cda7b4a6bf7d8fa6729fb42cbb96136ca0482dd0e1af19564ed7602023316624",
+      "files": {
+        "compile_commands.json": "eb19fc0d680b94e0af1ecbaa8b67896db836d314bb630abc95795f5378384df8",
+        "CMakeCache.txt": "80be89522341b7196162aad055f2ed8075a17706307b8b896f44d83f9f226a65",
+        "build.ninja": "2e1fddc6145a2c6f58f4717b03f6d7fdc811d01a0db0f9214fd0603797e3a827",
+        ".ninja_log": "763382e2f6afc7ab45acdc04734f3e6384dd93e5f65043c846f2df4b76fb99fb"
+      },
+      "runtime_tested": false
+    },
+    {
+      "label": "H",
+      "source_commit": "87b50497bc4bac7b40113f181ad51b47e64ba7ae",
+      "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-native-wrapper-parity-20261010",
+      "build": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-native-wrapper-parity-20261010/build-sycl-native-wrapper-v1",
+      "binary": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-native-wrapper-parity-20261010/build-sycl-native-wrapper-v1/native_wrapper_parity",
+      "binary_sha256": "a88c27ca5c84ef6d968027bcce350946ab0408036aaa6c00b2a7947e21bfdde6",
+      "files": {
+        "compile_commands.json": "e6c0cb8084e023c67449d50f88f9241f1913eb2104e01f66f512ee6cce350919",
+        "CMakeCache.txt": "6ec6f7fef19a808a49ebac8d3c2d1504624f6dcf9e6b79086aa5a7990cd4f803",
+        "build.ninja": "f9140729eb41acffafab10c6b55eb4345d9cf2472b20a1abc837ec1158652dc8",
+        ".ninja_log": "4cb96dfb35253bf4fbe2b829f703bac67ca91e6025cf9d1e0a84d3657d996c92"
+      },
+      "runtime_tested": false
+    }
+  ],
+  "owners": {
+    "1600067": {
+      "pid": 1600067,
+      "ppid": 1599420,
+      "start_ticks": 25347686
+    },
+    "1600183": {
+      "pid": 1600183,
+      "ppid": 1600067,
+      "start_ticks": 25347735
+    },
+    "1600188": {
+      "pid": 1600188,
+      "ppid": 1600183,
+      "start_ticks": 25347738
+    },
+    "1600189": {
+      "pid": 1600189,
+      "ppid": 1600188,
+      "start_ticks": 25347738
+    },
+    "1600190": {
+      "pid": 1600190,
+      "ppid": 1600189,
+      "start_ticks": 25347738
+    },
+    "1600192": {
+      "pid": 1600192,
+      "ppid": 1600190,
+      "start_ticks": 25347739
+    },
+    "1600327": {
+      "pid": 1600327,
+      "ppid": 1600067,
+      "start_ticks": 25347781
+    },
+    "1600329": {
+      "pid": 1600329,
+      "ppid": 1600327,
+      "start_ticks": 25347782
+    },
+    "1600330": {
+      "pid": 1600330,
+      "ppid": 1600329,
+      "start_ticks": 25347782
+    },
+    "1600331": {
+      "pid": 1600331,
+      "ppid": 1600330,
+      "start_ticks": 25347782
+    },
+    "1600389": {
+      "pid": 1600389,
+      "ppid": 1600067,
+      "start_ticks": 25347834
+    },
+    "1600397": {
+      "pid": 1600397,
+      "ppid": 1600389,
+      "start_ticks": 25347838
+    },
+    "1600398": {
+      "pid": 1600398,
+      "ppid": 1600397,
+      "start_ticks": 25347838
+    },
+    "1600399": {
+      "pid": 1600399,
+      "ppid": 1600398,
+      "start_ticks": 25347838
+    },
+    "1600404": {
+      "pid": 1600404,
+      "ppid": 1600399,
+      "start_ticks": 25347839
+    },
+    "1600536": {
+      "pid": 1600536,
+      "ppid": 1599420,
+      "start_ticks": 25347952
+    },
+    "1600539": {
+      "pid": 1600539,
+      "ppid": 1600536,
+      "start_ticks": 25347954
+    },
+    "1600540": {
+      "pid": 1600540,
+      "ppid": 1600539,
+      "start_ticks": 25347954
+    },
+    "1600541": {
+      "pid": 1600541,
+      "ppid": 1600539,
+      "start_ticks": 25347954
+    },
+    "1600542": {
+      "pid": 1600542,
+      "ppid": 1600539,
+      "start_ticks": 25347954
+    },
+    "1600543": {
+      "pid": 1600543,
+      "ppid": 1600539,
+      "start_ticks": 25347954
+    },
+    "1600544": {
+      "pid": 1600544,
+      "ppid": 1600540,
+      "start_ticks": 25347954
+    },
+    "1600545": {
+      "pid": 1600545,
+      "ppid": 1600541,
+      "start_ticks": 25347954
+    },
+    "1600546": {
+      "pid": 1600546,
+      "ppid": 1600542,
+      "start_ticks": 25347954
+    },
+    "1600547": {
+      "pid": 1600547,
+      "ppid": 1600543,
+      "start_ticks": 25347954
+    },
+    "1600548": {
+      "pid": 1600548,
+      "ppid": 1600545,
+      "start_ticks": 25347954
+    },
+    "1600549": {
+      "pid": 1600549,
+      "ppid": 1600546,
+      "start_ticks": 25347954
+    },
+    "1600550": {
+      "pid": 1600550,
+      "ppid": 1600544,
+      "start_ticks": 25347954
+    },
+    "1600551": {
+      "pid": 1600551,
+      "ppid": 1600547,
+      "start_ticks": 25347954
+    },
+    "1600552": {
+      "pid": 1600552,
+      "ppid": 1600548,
+      "start_ticks": 25347956
+    },
+    "1600553": {
+      "pid": 1600553,
+      "ppid": 1600550,
+      "start_ticks": 25347956
+    },
+    "1600554": {
+      "pid": 1600554,
+      "ppid": 1600549,
+      "start_ticks": 25347956
+    },
+    "1600558": {
+      "pid": 1600558,
+      "ppid": 1600551,
+      "start_ticks": 25347957
+    },
+    "1600598": {
+      "pid": 1600598,
+      "ppid": 1600549,
+      "start_ticks": 25348045
+    },
+    "1600605": {
+      "pid": 1600605,
+      "ppid": 1600550,
+      "start_ticks": 25348068
+    },
+    "1600610": {
+      "pid": 1600610,
+      "ppid": 1600551,
+      "start_ticks": 25348076
+    },
+    "1600671": {
+      "pid": 1600671,
+      "ppid": 1600539,
+      "start_ticks": 25348177
+    },
+    "1600672": {
+      "pid": 1600672,
+      "ppid": 1600671,
+      "start_ticks": 25348178
+    },
+    "1600673": {
+      "pid": 1600673,
+      "ppid": 1600672,
+      "start_ticks": 25348178
+    },
+    "1600697": {
+      "pid": 1600697,
+      "ppid": 1600548,
+      "start_ticks": 25348184
+    },
+    "1600702": {
+      "pid": 1600702,
+      "ppid": 1600539,
+      "start_ticks": 25348192
+    },
+    "1600703": {
+      "pid": 1600703,
+      "ppid": 1600702,
+      "start_ticks": 25348192
+    },
+    "1600704": {
+      "pid": 1600704,
+      "ppid": 1600703,
+      "start_ticks": 25348192
+    },
+    "1600705": {
+      "pid": 1600705,
+      "ppid": 1600704,
+      "start_ticks": 25348193
+    },
+    "1600725": {
+      "pid": 1600725,
+      "ppid": 1600704,
+      "start_ticks": 25348247
+    },
+    "1600729": {
+      "pid": 1600729,
+      "ppid": 1600539,
+      "start_ticks": 25348253
+    },
+    "1600730": {
+      "pid": 1600730,
+      "ppid": 1600729,
+      "start_ticks": 25348253
+    },
+    "1600731": {
+      "pid": 1600731,
+      "ppid": 1600730,
+      "start_ticks": 25348254
+    },
+    "1600734": {
+      "pid": 1600734,
+      "ppid": 1600731,
+      "start_ticks": 25348255
+    },
+    "1600741": {
+      "pid": 1600741,
+      "ppid": 1600539,
+      "start_ticks": 25348279
+    },
+    "1600742": {
+      "pid": 1600742,
+      "ppid": 1600741,
+      "start_ticks": 25348279
+    },
+    "1600743": {
+      "pid": 1600743,
+      "ppid": 1600742,
+      "start_ticks": 25348279
+    },
+    "1600791": {
+      "pid": 1600791,
+      "ppid": 1600743,
+      "start_ticks": 25348337
+    },
+    "1600792": {
+      "pid": 1600792,
+      "ppid": 1600731,
+      "start_ticks": 25348338
+    },
+    "1600814": {
+      "pid": 1600814,
+      "ppid": 1600539,
+      "start_ticks": 25348401
+    },
+    "1600815": {
+      "pid": 1600815,
+      "ppid": 1600814,
+      "start_ticks": 25348401
+    },
+    "1600816": {
+      "pid": 1600816,
+      "ppid": 1600815,
+      "start_ticks": 25348401
+    },
+    "1600835": {
+      "pid": 1600835,
+      "ppid": 1600539,
+      "start_ticks": 25348430
+    },
+    "1600836": {
+      "pid": 1600836,
+      "ppid": 1600835,
+      "start_ticks": 25348430
+    },
+    "1600838": {
+      "pid": 1600838,
+      "ppid": 1600836,
+      "start_ticks": 25348430
+    },
+    "1600839": {
+      "pid": 1600839,
+      "ppid": 1600838,
+      "start_ticks": 25348431
+    },
+    "1600842": {
+      "pid": 1600842,
+      "ppid": 1600816,
+      "start_ticks": 25348439
+    },
+    "1600878": {
+      "pid": 1600878,
+      "ppid": 1600539,
+      "start_ticks": 25348476
+    },
+    "1600879": {
+      "pid": 1600879,
+      "ppid": 1600878,
+      "start_ticks": 25348476
+    },
+    "1600880": {
+      "pid": 1600880,
+      "ppid": 1600879,
+      "start_ticks": 25348476
+    },
+    "1600940": {
+      "pid": 1600940,
+      "ppid": 1600539,
+      "start_ticks": 25348568
+    },
+    "1600941": {
+      "pid": 1600941,
+      "ppid": 1600940,
+      "start_ticks": 25348568
+    },
+    "1600942": {
+      "pid": 1600942,
+      "ppid": 1600941,
+      "start_ticks": 25348569
+    },
+    "1600951": {
+      "pid": 1600951,
+      "ppid": 1600838,
+      "start_ticks": 25348582
+    },
+    "1600955": {
+      "pid": 1600955,
+      "ppid": 1600942,
+      "start_ticks": 25348595
+    },
+    "1600975": {
+      "pid": 1600975,
+      "ppid": 1600539,
+      "start_ticks": 25348638
+    },
+    "1600976": {
+      "pid": 1600976,
+      "ppid": 1600975,
+      "start_ticks": 25348638
+    },
+    "1600977": {
+      "pid": 1600977,
+      "ppid": 1600976,
+      "start_ticks": 25348638
+    },
+    "1600978": {
+      "pid": 1600978,
+      "ppid": 1600977,
+      "start_ticks": 25348639
+    },
+    "1600994": {
+      "pid": 1600994,
+      "ppid": 1600539,
+      "start_ticks": 25348655
+    },
+    "1600995": {
+      "pid": 1600995,
+      "ppid": 1600994,
+      "start_ticks": 25348655
+    },
+    "1600997": {
+      "pid": 1600997,
+      "ppid": 1600995,
+      "start_ticks": 25348655
+    },
+    "1601008": {
+      "pid": 1601008,
+      "ppid": 1600997,
+      "start_ticks": 25348656
+    },
+    "1601053": {
+      "pid": 1601053,
+      "ppid": 1600977,
+      "start_ticks": 25348674
+    },
+    "1601085": {
+      "pid": 1601085,
+      "ppid": 1600997,
+      "start_ticks": 25348723
+    },
+    "1601111": {
+      "pid": 1601111,
+      "ppid": 1600539,
+      "start_ticks": 25348792
+    },
+    "1601112": {
+      "pid": 1601112,
+      "ppid": 1601111,
+      "start_ticks": 25348792
+    },
+    "1601114": {
+      "pid": 1601114,
+      "ppid": 1601112,
+      "start_ticks": 25348793
+    },
+    "1601115": {
+      "pid": 1601115,
+      "ppid": 1601114,
+      "start_ticks": 25348794
+    },
+    "1601140": {
+      "pid": 1601140,
+      "ppid": 1601114,
+      "start_ticks": 25348844
+    },
+    "1601238": {
+      "pid": 1601238,
+      "ppid": 1600539,
+      "start_ticks": 25348908
+    },
+    "1601239": {
+      "pid": 1601239,
+      "ppid": 1601238,
+      "start_ticks": 25348908
+    },
+    "1601240": {
+      "pid": 1601240,
+      "ppid": 1601239,
+      "start_ticks": 25348908
+    },
+    "1601251": {
+      "pid": 1601251,
+      "ppid": 1600539,
+      "start_ticks": 25348927
+    },
+    "1601252": {
+      "pid": 1601252,
+      "ppid": 1601251,
+      "start_ticks": 25348927
+    },
+    "1601254": {
+      "pid": 1601254,
+      "ppid": 1601252,
+      "start_ticks": 25348927
+    },
+    "1601255": {
+      "pid": 1601255,
+      "ppid": 1601254,
+      "start_ticks": 25348928
+    },
+    "1601367": {
+      "pid": 1601367,
+      "ppid": 1601254,
+      "start_ticks": 25348991
+    },
+    "1601373": {
+      "pid": 1601373,
+      "ppid": 1600539,
+      "start_ticks": 25349007
+    },
+    "1601374": {
+      "pid": 1601374,
+      "ppid": 1601373,
+      "start_ticks": 25349007
+    },
+    "1601375": {
+      "pid": 1601375,
+      "ppid": 1601374,
+      "start_ticks": 25349007
+    },
+    "1601397": {
+      "pid": 1601397,
+      "ppid": 1600539,
+      "start_ticks": 25349057
+    },
+    "1601398": {
+      "pid": 1601398,
+      "ppid": 1601397,
+      "start_ticks": 25349057
+    },
+    "1601399": {
+      "pid": 1601399,
+      "ppid": 1601398,
+      "start_ticks": 25349058
+    },
+    "1601400": {
+      "pid": 1601400,
+      "ppid": 1601399,
+      "start_ticks": 25349059
+    },
+    "1601448": {
+      "pid": 1601448,
+      "ppid": 1600539,
+      "start_ticks": 25349106
+    },
+    "1601449": {
+      "pid": 1601449,
+      "ppid": 1601448,
+      "start_ticks": 25349106
+    },
+    "1601450": {
+      "pid": 1601450,
+      "ppid": 1601449,
+      "start_ticks": 25349106
+    },
+    "1601451": {
+      "pid": 1601451,
+      "ppid": 1601450,
+      "start_ticks": 25349107
+    },
+    "1601455": {
+      "pid": 1601455,
+      "ppid": 1601399,
+      "start_ticks": 25349123
+    },
+    "1601472": {
+      "pid": 1601472,
+      "ppid": 1601450,
+      "start_ticks": 25349175
+    },
+    "1601482": {
+      "pid": 1601482,
+      "ppid": 1600539,
+      "start_ticks": 25349203
+    },
+    "1601483": {
+      "pid": 1601483,
+      "ppid": 1601482,
+      "start_ticks": 25349203
+    },
+    "1601484": {
+      "pid": 1601484,
+      "ppid": 1601483,
+      "start_ticks": 25349203
+    },
+    "1601485": {
+      "pid": 1601485,
+      "ppid": 1601484,
+      "start_ticks": 25349204
+    },
+    "1601508": {
+      "pid": 1601508,
+      "ppid": 1601484,
+      "start_ticks": 25349264
+    },
+    "1601546": {
+      "pid": 1601546,
+      "ppid": 1600539,
+      "start_ticks": 25349274
+    },
+    "1601547": {
+      "pid": 1601547,
+      "ppid": 1601546,
+      "start_ticks": 25349274
+    },
+    "1601548": {
+      "pid": 1601548,
+      "ppid": 1601547,
+      "start_ticks": 25349275
+    },
+    "1601616": {
+      "pid": 1601616,
+      "ppid": 1600539,
+      "start_ticks": 25349370
+    },
+    "1601617": {
+      "pid": 1601617,
+      "ppid": 1601616,
+      "start_ticks": 25349370
+    },
+    "1601618": {
+      "pid": 1601618,
+      "ppid": 1601617,
+      "start_ticks": 25349370
+    },
+    "1601619": {
+      "pid": 1601619,
+      "ppid": 1601618,
+      "start_ticks": 25349372
+    },
+    "1601693": {
+      "pid": 1601693,
+      "ppid": 1600539,
+      "start_ticks": 25349465
+    },
+    "1601694": {
+      "pid": 1601694,
+      "ppid": 1601693,
+      "start_ticks": 25349465
+    },
+    "1601695": {
+      "pid": 1601695,
+      "ppid": 1601694,
+      "start_ticks": 25349466
+    },
+    "1601705": {
+      "pid": 1601705,
+      "ppid": 1601695,
+      "start_ticks": 25349467
+    },
+    "1601731": {
+      "pid": 1601731,
+      "ppid": 1600539,
+      "start_ticks": 25349488
+    },
+    "1601732": {
+      "pid": 1601732,
+      "ppid": 1601731,
+      "start_ticks": 25349488
+    },
+    "1601733": {
+      "pid": 1601733,
+      "ppid": 1601732,
+      "start_ticks": 25349488
+    },
+    "1601735": {
+      "pid": 1601735,
+      "ppid": 1601733,
+      "start_ticks": 25349489
+    },
+    "1601751": {
+      "pid": 1601751,
+      "ppid": 1601695,
+      "start_ticks": 25349536
+    },
+    "1601757": {
+      "pid": 1601757,
+      "ppid": 1601733,
+      "start_ticks": 25349556
+    },
+    "1601800": {
+      "pid": 1601800,
+      "ppid": 1600539,
+      "start_ticks": 25349597
+    },
+    "1601801": {
+      "pid": 1601801,
+      "ppid": 1601800,
+      "start_ticks": 25349597
+    },
+    "1601802": {
+      "pid": 1601802,
+      "ppid": 1601801,
+      "start_ticks": 25349598
+    },
+    "1601804": {
+      "pid": 1601804,
+      "ppid": 1601802,
+      "start_ticks": 25349599
+    },
+    "1601814": {
+      "pid": 1601814,
+      "ppid": 1600539,
+      "start_ticks": 25349615
+    },
+    "1601815": {
+      "pid": 1601815,
+      "ppid": 1601814,
+      "start_ticks": 25349615
+    },
+    "1601816": {
+      "pid": 1601816,
+      "ppid": 1601815,
+      "start_ticks": 25349615
+    },
+    "1601817": {
+      "pid": 1601817,
+      "ppid": 1601816,
+      "start_ticks": 25349616
+    },
+    "1601833": {
+      "pid": 1601833,
+      "ppid": 1601802,
+      "start_ticks": 25349660
+    },
+    "1601842": {
+      "pid": 1601842,
+      "ppid": 1601816,
+      "start_ticks": 25349695
+    },
+    "1601872": {
+      "pid": 1601872,
+      "ppid": 1600539,
+      "start_ticks": 25349782
+    },
+    "1601873": {
+      "pid": 1601873,
+      "ppid": 1601872,
+      "start_ticks": 25349782
+    },
+    "1601874": {
+      "pid": 1601874,
+      "ppid": 1601873,
+      "start_ticks": 25349782
+    },
+    "1601877": {
+      "pid": 1601877,
+      "ppid": 1601874,
+      "start_ticks": 25349783
+    },
+    "1601924": {
+      "pid": 1601924,
+      "ppid": 1601874,
+      "start_ticks": 25349853
+    },
+    "1601938": {
+      "pid": 1601938,
+      "ppid": 1600539,
+      "start_ticks": 25349898
+    },
+    "1601939": {
+      "pid": 1601939,
+      "ppid": 1601938,
+      "start_ticks": 25349898
+    },
+    "1601940": {
+      "pid": 1601940,
+      "ppid": 1601939,
+      "start_ticks": 25349899
+    },
+    "1601941": {
+      "pid": 1601941,
+      "ppid": 1601940,
+      "start_ticks": 25349900
+    },
+    "1601957": {
+      "pid": 1601957,
+      "ppid": 1600539,
+      "start_ticks": 25349919
+    },
+    "1601958": {
+      "pid": 1601958,
+      "ppid": 1601957,
+      "start_ticks": 25349920
+    },
+    "1601959": {
+      "pid": 1601959,
+      "ppid": 1601958,
+      "start_ticks": 25349920
+    },
+    "1602015": {
+      "pid": 1602015,
+      "ppid": 1600539,
+      "start_ticks": 25349955
+    },
+    "1602016": {
+      "pid": 1602016,
+      "ppid": 1602015,
+      "start_ticks": 25349955
+    },
+    "1602017": {
+      "pid": 1602017,
+      "ppid": 1602016,
+      "start_ticks": 25349955
+    },
+    "1602019": {
+      "pid": 1602019,
+      "ppid": 1602017,
+      "start_ticks": 25349956
+    },
+    "1602057": {
+      "pid": 1602057,
+      "ppid": 1601940,
+      "start_ticks": 25349968
+    },
+    "1602092": {
+      "pid": 1602092,
+      "ppid": 1602017,
+      "start_ticks": 25350014
+    },
+    "1602582": {
+      "pid": 1602582,
+      "ppid": 1600539,
+      "start_ticks": 25350945
+    },
+    "1602583": {
+      "pid": 1602583,
+      "ppid": 1602582,
+      "start_ticks": 25350945
+    },
+    "1602584": {
+      "pid": 1602584,
+      "ppid": 1602583,
+      "start_ticks": 25350945
+    },
+    "1602611": {
+      "pid": 1602611,
+      "ppid": 1602584,
+      "start_ticks": 25350961
+    },
+    "1602644": {
+      "pid": 1602644,
+      "ppid": 1602611,
+      "start_ticks": 25350969
+    },
+    "1602744": {
+      "pid": 1602744,
+      "ppid": 1602584,
+      "start_ticks": 25351016
+    },
+    "1602777": {
+      "pid": 1602777,
+      "ppid": 1602744,
+      "start_ticks": 25351024
+    },
+    "1602834": {
+      "pid": 1602834,
+      "ppid": 1599420,
+      "start_ticks": 25351106
+    },
+    "1603033": {
+      "pid": 1603033,
+      "ppid": 1602834,
+      "start_ticks": 25351154
+    },
+    "1603037": {
+      "pid": 1603037,
+      "ppid": 1603033,
+      "start_ticks": 25351157
+    },
+    "1603038": {
+      "pid": 1603038,
+      "ppid": 1603037,
+      "start_ticks": 25351157
+    },
+    "1603039": {
+      "pid": 1603039,
+      "ppid": 1603038,
+      "start_ticks": 25351157
+    },
+    "1603042": {
+      "pid": 1603042,
+      "ppid": 1603039,
+      "start_ticks": 25351159
+    },
+    "1603154": {
+      "pid": 1603154,
+      "ppid": 1602834,
+      "start_ticks": 25351202
+    },
+    "1603155": {
+      "pid": 1603155,
+      "ppid": 1603154,
+      "start_ticks": 25351202
+    },
+    "1603156": {
+      "pid": 1603156,
+      "ppid": 1603155,
+      "start_ticks": 25351202
+    },
+    "1603157": {
+      "pid": 1603157,
+      "ppid": 1603156,
+      "start_ticks": 25351202
+    },
+    "1603220": {
+      "pid": 1603220,
+      "ppid": 1602834,
+      "start_ticks": 25351252
+    },
+    "1603226": {
+      "pid": 1603226,
+      "ppid": 1603220,
+      "start_ticks": 25351257
+    },
+    "1603227": {
+      "pid": 1603227,
+      "ppid": 1603226,
+      "start_ticks": 25351257
+    },
+    "1603228": {
+      "pid": 1603228,
+      "ppid": 1603227,
+      "start_ticks": 25351257
+    },
+    "1603230": {
+      "pid": 1603230,
+      "ppid": 1603228,
+      "start_ticks": 25351258
+    },
+    "1603341": {
+      "pid": 1603341,
+      "ppid": 1599420,
+      "start_ticks": 25351320
+    },
+    "1603342": {
+      "pid": 1603342,
+      "ppid": 1603341,
+      "start_ticks": 25351320
+    },
+    "1603343": {
+      "pid": 1603343,
+      "ppid": 1603342,
+      "start_ticks": 25351321
+    },
+    "1603344": {
+      "pid": 1603344,
+      "ppid": 1603342,
+      "start_ticks": 25351321
+    },
+    "1603345": {
+      "pid": 1603345,
+      "ppid": 1603342,
+      "start_ticks": 25351321
+    },
+    "1603346": {
+      "pid": 1603346,
+      "ppid": 1603342,
+      "start_ticks": 25351321
+    },
+    "1603347": {
+      "pid": 1603347,
+      "ppid": 1603343,
+      "start_ticks": 25351321
+    },
+    "1603348": {
+      "pid": 1603348,
+      "ppid": 1603344,
+      "start_ticks": 25351321
+    },
+    "1603349": {
+      "pid": 1603349,
+      "ppid": 1603345,
+      "start_ticks": 25351321
+    },
+    "1603350": {
+      "pid": 1603350,
+      "ppid": 1603346,
+      "start_ticks": 25351321
+    },
+    "1603351": {
+      "pid": 1603351,
+      "ppid": 1603348,
+      "start_ticks": 25351321
+    },
+    "1603352": {
+      "pid": 1603352,
+      "ppid": 1603349,
+      "start_ticks": 25351321
+    },
+    "1603353": {
+      "pid": 1603353,
+      "ppid": 1603347,
+      "start_ticks": 25351321
+    },
+    "1603354": {
+      "pid": 1603354,
+      "ppid": 1603350,
+      "start_ticks": 25351321
+    },
+    "1603355": {
+      "pid": 1603355,
+      "ppid": 1603352,
+      "start_ticks": 25351322
+    },
+    "1603356": {
+      "pid": 1603356,
+      "ppid": 1603353,
+      "start_ticks": 25351322
+    },
+    "1603357": {
+      "pid": 1603357,
+      "ppid": 1603354,
+      "start_ticks": 25351322
+    },
+    "1603358": {
+      "pid": 1603358,
+      "ppid": 1603351,
+      "start_ticks": 25351322
+    },
+    "1603388": {
+      "pid": 1603388,
+      "ppid": 1603352,
+      "start_ticks": 25351379
+    },
+    "1603392": {
+      "pid": 1603392,
+      "ppid": 1603353,
+      "start_ticks": 25351392
+    },
+    "1603394": {
+      "pid": 1603394,
+      "ppid": 1603354,
+      "start_ticks": 25351396
+    },
+    "1603463": {
+      "pid": 1603463,
+      "ppid": 1603351,
+      "start_ticks": 25351494
+    },
+    "1603468": {
+      "pid": 1603468,
+      "ppid": 1603342,
+      "start_ticks": 25351497
+    },
+    "1603469": {
+      "pid": 1603469,
+      "ppid": 1603468,
+      "start_ticks": 25351497
+    },
+    "1603470": {
+      "pid": 1603470,
+      "ppid": 1603469,
+      "start_ticks": 25351497
+    },
+    "1603478": {
+      "pid": 1603478,
+      "ppid": 1603342,
+      "start_ticks": 25351514
+    },
+    "1603479": {
+      "pid": 1603479,
+      "ppid": 1603478,
+      "start_ticks": 25351514
+    },
+    "1603480": {
+      "pid": 1603480,
+      "ppid": 1603479,
+      "start_ticks": 25351514
+    },
+    "1603481": {
+      "pid": 1603481,
+      "ppid": 1603480,
+      "start_ticks": 25351515
+    },
+    "1603489": {
+      "pid": 1603489,
+      "ppid": 1603470,
+      "start_ticks": 25351539
+    },
+    "1603512": {
+      "pid": 1603512,
+      "ppid": 1603480,
+      "start_ticks": 25351569
+    },
+    "1603519": {
+      "pid": 1603519,
+      "ppid": 1603342,
+      "start_ticks": 25351570
+    },
+    "1603522": {
+      "pid": 1603522,
+      "ppid": 1603519,
+      "start_ticks": 25351570
+    },
+    "1603523": {
+      "pid": 1603523,
+      "ppid": 1603522,
+      "start_ticks": 25351571
+    },
+    "1603526": {
+      "pid": 1603526,
+      "ppid": 1603523,
+      "start_ticks": 25351572
+    },
+    "1603543": {
+      "pid": 1603543,
+      "ppid": 1603342,
+      "start_ticks": 25351592
+    },
+    "1603544": {
+      "pid": 1603544,
+      "ppid": 1603543,
+      "start_ticks": 25351592
+    },
+    "1603545": {
+      "pid": 1603545,
+      "ppid": 1603544,
+      "start_ticks": 25351592
+    },
+    "1603546": {
+      "pid": 1603546,
+      "ppid": 1603545,
+      "start_ticks": 25351594
+    },
+    "1603565": {
+      "pid": 1603565,
+      "ppid": 1603545,
+      "start_ticks": 25351652
+    },
+    "1603567": {
+      "pid": 1603567,
+      "ppid": 1603523,
+      "start_ticks": 25351654
+    },
+    "1603589": {
+      "pid": 1603589,
+      "ppid": 1603342,
+      "start_ticks": 25351721
+    },
+    "1603590": {
+      "pid": 1603590,
+      "ppid": 1603589,
+      "start_ticks": 25351721
+    },
+    "1603591": {
+      "pid": 1603591,
+      "ppid": 1603590,
+      "start_ticks": 25351722
+    },
+    "1603593": {
+      "pid": 1603593,
+      "ppid": 1603591,
+      "start_ticks": 25351723
+    },
+    "1603607": {
+      "pid": 1603607,
+      "ppid": 1603342,
+      "start_ticks": 25351750
+    },
+    "1603608": {
+      "pid": 1603608,
+      "ppid": 1603607,
+      "start_ticks": 25351750
+    },
+    "1603609": {
+      "pid": 1603609,
+      "ppid": 1603608,
+      "start_ticks": 25351750
+    },
+    "1603610": {
+      "pid": 1603610,
+      "ppid": 1603609,
+      "start_ticks": 25351751
+    },
+    "1603642": {
+      "pid": 1603642,
+      "ppid": 1603342,
+      "start_ticks": 25351805
+    },
+    "1603643": {
+      "pid": 1603643,
+      "ppid": 1603642,
+      "start_ticks": 25351805
+    },
+    "1603644": {
+      "pid": 1603644,
+      "ppid": 1603643,
+      "start_ticks": 25351805
+    },
+    "1603747": {
+      "pid": 1603747,
+      "ppid": 1603609,
+      "start_ticks": 25351906
+    },
+    "1603752": {
+      "pid": 1603752,
+      "ppid": 1603342,
+      "start_ticks": 25351918
+    },
+    "1603753": {
+      "pid": 1603753,
+      "ppid": 1603752,
+      "start_ticks": 25351918
+    },
+    "1603755": {
+      "pid": 1603755,
+      "ppid": 1603753,
+      "start_ticks": 25351918
+    },
+    "1603756": {
+      "pid": 1603756,
+      "ppid": 1603755,
+      "start_ticks": 25351919
+    },
+    "1603776": {
+      "pid": 1603776,
+      "ppid": 1603342,
+      "start_ticks": 25351964
+    },
+    "1603777": {
+      "pid": 1603777,
+      "ppid": 1603776,
+      "start_ticks": 25351964
+    },
+    "1603778": {
+      "pid": 1603778,
+      "ppid": 1603777,
+      "start_ticks": 25351964
+    },
+    "1603780": {
+      "pid": 1603780,
+      "ppid": 1603342,
+      "start_ticks": 25351971
+    },
+    "1603781": {
+      "pid": 1603781,
+      "ppid": 1603780,
+      "start_ticks": 25351971
+    },
+    "1603782": {
+      "pid": 1603782,
+      "ppid": 1603781,
+      "start_ticks": 25351972
+    },
+    "1603783": {
+      "pid": 1603783,
+      "ppid": 1603782,
+      "start_ticks": 25351973
+    },
+    "1603846": {
+      "pid": 1603846,
+      "ppid": 1603342,
+      "start_ticks": 25352001
+    },
+    "1603847": {
+      "pid": 1603847,
+      "ppid": 1603846,
+      "start_ticks": 25352001
+    },
+    "1603848": {
+      "pid": 1603848,
+      "ppid": 1603847,
+      "start_ticks": 25352001
+    },
+    "1603849": {
+      "pid": 1603849,
+      "ppid": 1603848,
+      "start_ticks": 25352002
+    },
+    "1603853": {
+      "pid": 1603853,
+      "ppid": 1603782,
+      "start_ticks": 25352011
+    },
+    "1603873": {
+      "pid": 1603873,
+      "ppid": 1603848,
+      "start_ticks": 25352069
+    },
+    "1603894": {
+      "pid": 1603894,
+      "ppid": 1603342,
+      "start_ticks": 25352132
+    },
+    "1603895": {
+      "pid": 1603895,
+      "ppid": 1603894,
+      "start_ticks": 25352132
+    },
+    "1603896": {
+      "pid": 1603896,
+      "ppid": 1603895,
+      "start_ticks": 25352132
+    },
+    "1603897": {
+      "pid": 1603897,
+      "ppid": 1603896,
+      "start_ticks": 25352133
+    },
+    "1603937": {
+      "pid": 1603937,
+      "ppid": 1603896,
+      "start_ticks": 25352175
+    },
+    "1603977": {
+      "pid": 1603977,
+      "ppid": 1603342,
+      "start_ticks": 25352223
+    },
+    "1603981": {
+      "pid": 1603981,
+      "ppid": 1603977,
+      "start_ticks": 25352224
+    },
+    "1603982": {
+      "pid": 1603982,
+      "ppid": 1603981,
+      "start_ticks": 25352224
+    },
+    "1604030": {
+      "pid": 1604030,
+      "ppid": 1603342,
+      "start_ticks": 25352267
+    },
+    "1604031": {
+      "pid": 1604031,
+      "ppid": 1604030,
+      "start_ticks": 25352267
+    },
+    "1604032": {
+      "pid": 1604032,
+      "ppid": 1604031,
+      "start_ticks": 25352268
+    },
+    "1604033": {
+      "pid": 1604033,
+      "ppid": 1604032,
+      "start_ticks": 25352269
+    },
+    "1604056": {
+      "pid": 1604056,
+      "ppid": 1604032,
+      "start_ticks": 25352329
+    },
+    "1604066": {
+      "pid": 1604066,
+      "ppid": 1603342,
+      "start_ticks": 25352350
+    },
+    "1604067": {
+      "pid": 1604067,
+      "ppid": 1604066,
+      "start_ticks": 25352350
+    },
+    "1604068": {
+      "pid": 1604068,
+      "ppid": 1604067,
+      "start_ticks": 25352350
+    },
+    "1604229": {
+      "pid": 1604229,
+      "ppid": 1603342,
+      "start_ticks": 25352396
+    },
+    "1604230": {
+      "pid": 1604230,
+      "ppid": 1604229,
+      "start_ticks": 25352396
+    },
+    "1604233": {
+      "pid": 1604233,
+      "ppid": 1604230,
+      "start_ticks": 25352396
+    },
+    "1604236": {
+      "pid": 1604236,
+      "ppid": 1604233,
+      "start_ticks": 25352397
+    },
+    "1604282": {
+      "pid": 1604282,
+      "ppid": 1603342,
+      "start_ticks": 25352465
+    },
+    "1604283": {
+      "pid": 1604283,
+      "ppid": 1604282,
+      "start_ticks": 25352465
+    },
+    "1604284": {
+      "pid": 1604284,
+      "ppid": 1604283,
+      "start_ticks": 25352465
+    },
+    "1604286": {
+      "pid": 1604286,
+      "ppid": 1604284,
+      "start_ticks": 25352466
+    },
+    "1604287": {
+      "pid": 1604287,
+      "ppid": 1604233,
+      "start_ticks": 25352468
+    },
+    "1604331": {
+      "pid": 1604331,
+      "ppid": 1604284,
+      "start_ticks": 25352540
+    },
+    "1604342": {
+      "pid": 1604342,
+      "ppid": 1603342,
+      "start_ticks": 25352556
+    },
+    "1604343": {
+      "pid": 1604343,
+      "ppid": 1604342,
+      "start_ticks": 25352556
+    },
+    "1604344": {
+      "pid": 1604344,
+      "ppid": 1604343,
+      "start_ticks": 25352556
+    },
+    "1604345": {
+      "pid": 1604345,
+      "ppid": 1604344,
+      "start_ticks": 25352557
+    },
+    "1604363": {
+      "pid": 1604363,
+      "ppid": 1604344,
+      "start_ticks": 25352617
+    },
+    "1604369": {
+      "pid": 1604369,
+      "ppid": 1603342,
+      "start_ticks": 25352626
+    },
+    "1604370": {
+      "pid": 1604370,
+      "ppid": 1604369,
+      "start_ticks": 25352626
+    },
+    "1604371": {
+      "pid": 1604371,
+      "ppid": 1604370,
+      "start_ticks": 25352627
+    },
+    "1604390": {
+      "pid": 1604390,
+      "ppid": 1603342,
+      "start_ticks": 25352633
+    },
+    "1604391": {
+      "pid": 1604391,
+      "ppid": 1604390,
+      "start_ticks": 25352633
+    },
+    "1604392": {
+      "pid": 1604392,
+      "ppid": 1604391,
+      "start_ticks": 25352633
+    },
+    "1604440": {
+      "pid": 1604440,
+      "ppid": 1603342,
+      "start_ticks": 25352729
+    },
+    "1604441": {
+      "pid": 1604441,
+      "ppid": 1604440,
+      "start_ticks": 25352729
+    },
+    "1604442": {
+      "pid": 1604442,
+      "ppid": 1604441,
+      "start_ticks": 25352729
+    },
+    "1604443": {
+      "pid": 1604443,
+      "ppid": 1604442,
+      "start_ticks": 25352730
+    },
+    "1604461": {
+      "pid": 1604461,
+      "ppid": 1604442,
+      "start_ticks": 25352787
+    },
+    "1604469": {
+      "pid": 1604469,
+      "ppid": 1603342,
+      "start_ticks": 25352806
+    },
+    "1604470": {
+      "pid": 1604470,
+      "ppid": 1604469,
+      "start_ticks": 25352806
+    },
+    "1604471": {
+      "pid": 1604471,
+      "ppid": 1604470,
+      "start_ticks": 25352806
+    },
+    "1604473": {
+      "pid": 1604473,
+      "ppid": 1604471,
+      "start_ticks": 25352807
+    },
+    "1604542": {
+      "pid": 1604542,
+      "ppid": 1603342,
+      "start_ticks": 25352836
+    },
+    "1604543": {
+      "pid": 1604543,
+      "ppid": 1604542,
+      "start_ticks": 25352836
+    },
+    "1604544": {
+      "pid": 1604544,
+      "ppid": 1604543,
+      "start_ticks": 25352836
+    },
+    "1604546": {
+      "pid": 1604546,
+      "ppid": 1604544,
+      "start_ticks": 25352838
+    },
+    "1604581": {
+      "pid": 1604581,
+      "ppid": 1604471,
+      "start_ticks": 25352874
+    },
+    "1604591": {
+      "pid": 1604591,
+      "ppid": 1604544,
+      "start_ticks": 25352909
+    },
+    "1604605": {
+      "pid": 1604605,
+      "ppid": 1603342,
+      "start_ticks": 25352934
+    },
+    "1604606": {
+      "pid": 1604606,
+      "ppid": 1604605,
+      "start_ticks": 25352934
+    },
+    "1604607": {
+      "pid": 1604607,
+      "ppid": 1604606,
+      "start_ticks": 25352935
+    },
+    "1604609": {
+      "pid": 1604609,
+      "ppid": 1604607,
+      "start_ticks": 25352936
+    },
+    "1604623": {
+      "pid": 1604623,
+      "ppid": 1603342,
+      "start_ticks": 25352977
+    },
+    "1604624": {
+      "pid": 1604624,
+      "ppid": 1604623,
+      "start_ticks": 25352977
+    },
+    "1604625": {
+      "pid": 1604625,
+      "ppid": 1604624,
+      "start_ticks": 25352977
+    },
+    "1604626": {
+      "pid": 1604626,
+      "ppid": 1604625,
+      "start_ticks": 25352978
+    },
+    "1604647": {
+      "pid": 1604647,
+      "ppid": 1604607,
+      "start_ticks": 25352996
+    },
+    "1604676": {
+      "pid": 1604676,
+      "ppid": 1604625,
+      "start_ticks": 25353049
+    },
+    "1604723": {
+      "pid": 1604723,
+      "ppid": 1603342,
+      "start_ticks": 25353113
+    },
+    "1604724": {
+      "pid": 1604724,
+      "ppid": 1604723,
+      "start_ticks": 25353113
+    },
+    "1604725": {
+      "pid": 1604725,
+      "ppid": 1604724,
+      "start_ticks": 25353113
+    },
+    "1604726": {
+      "pid": 1604726,
+      "ppid": 1604725,
+      "start_ticks": 25353114
+    },
+    "1604746": {
+      "pid": 1604746,
+      "ppid": 1604725,
+      "start_ticks": 25353175
+    },
+    "1604796": {
+      "pid": 1604796,
+      "ppid": 1603342,
+      "start_ticks": 25353235
+    },
+    "1604797": {
+      "pid": 1604797,
+      "ppid": 1604796,
+      "start_ticks": 25353235
+    },
+    "1604798": {
+      "pid": 1604798,
+      "ppid": 1604797,
+      "start_ticks": 25353235
+    },
+    "1604799": {
+      "pid": 1604799,
+      "ppid": 1604798,
+      "start_ticks": 25353236
+    },
+    "1604811": {
+      "pid": 1604811,
+      "ppid": 1603342,
+      "start_ticks": 25353261
+    },
+    "1604812": {
+      "pid": 1604812,
+      "ppid": 1604811,
+      "start_ticks": 25353261
+    },
+    "1604813": {
+      "pid": 1604813,
+      "ppid": 1604812,
+      "start_ticks": 25353262
+    },
+    "1604830": {
+      "pid": 1604830,
+      "ppid": 1604798,
+      "start_ticks": 25353313
+    },
+    "1604844": {
+      "pid": 1604844,
+      "ppid": 1603342,
+      "start_ticks": 25353352
+    },
+    "1604845": {
+      "pid": 1604845,
+      "ppid": 1604844,
+      "start_ticks": 25353352
+    },
+    "1604846": {
+      "pid": 1604846,
+      "ppid": 1604845,
+      "start_ticks": 25353352
+    },
+    "1604848": {
+      "pid": 1604848,
+      "ppid": 1604846,
+      "start_ticks": 25353354
+    },
+    "1604867": {
+      "pid": 1604867,
+      "ppid": 1604846,
+      "start_ticks": 25353411
+    },
+    "1605432": {
+      "pid": 1605432,
+      "ppid": 1603342,
+      "start_ticks": 25354270
+    },
+    "1605433": {
+      "pid": 1605433,
+      "ppid": 1605432,
+      "start_ticks": 25354270
+    },
+    "1605434": {
+      "pid": 1605434,
+      "ppid": 1605433,
+      "start_ticks": 25354270
+    },
+    "1605461": {
+      "pid": 1605461,
+      "ppid": 1605434,
+      "start_ticks": 25354288
+    },
+    "1605494": {
+      "pid": 1605494,
+      "ppid": 1605461,
+      "start_ticks": 25354296
+    },
+    "1605562": {
+      "pid": 1605562,
+      "ppid": 1605434,
+      "start_ticks": 25354341
+    },
+    "1605598": {
+      "pid": 1605598,
+      "ppid": 1605562,
+      "start_ticks": 25354349
+    }
+  },
+  "cleanup": [],
+  "survivors": [],
+  "elapsed_seconds": 68.988211089978,
+  "toolchain_env": {
+    "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/usr/local/cuda/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/:/usr/local/cuda/lib64:/nix/store/mj9klbkhzal0vc1aazsajrydkimhc0h2-libglvnd-1.7.0/lib",
+    "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+    "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+    "ONEAPI_ROOT": "/opt/intel/oneapi"
+  },
+  "compiler_sha256": {
+    "/opt/intel/oneapi/compiler/2026.1/bin/icpx": "be7fa7c3c74c2ba2b8e1b50b0a61e37986441727899e25f3545636bde157c083",
+    "/opt/intel/oneapi/compiler/2026.1/bin/icx": "be7fa7c3c74c2ba2b8e1b50b0a61e37986441727899e25f3545636bde157c083"
+  },
+  "active_stage": null,
+  "last_child_exit_code": 0,
+  "finished_utc": "2026-10-09T16:37:45.123307+00:00"
+}

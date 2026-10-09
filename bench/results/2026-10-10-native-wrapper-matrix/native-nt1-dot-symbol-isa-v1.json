@@ -1,0 +1,86 @@
+{
+  "passed": true,
+  "active": false,
+  "gpu_executed": false,
+  "target_executed": false,
+  "runtime_sampled": false,
+  "binary_sha256": "d04ce73bdbc9debc2ae199940f3f26d8eac249f9f4edd2133eccb522031010a3",
+  "build_receipt_sha256": "7f59396de97d54760539d88e97dac453fd4b1ccfa3ff1e923abcb4b1b72928b6",
+  "functions": [
+    {
+      "symbol": "ggml_vec_dot_iq3_xxs_q8_K",
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "-M",
+        "intel",
+        "--disassemble=ggml_vec_dot_iq3_xxs_q8_K",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-dispatch-histogram-v0141-20261009/build-sycl-native-dispatch-histogram-v1/strata"
+      ],
+      "disassembly_sha256": "41a3fae2e125b96f23c98dc4e90977a1995e4276ecb4247959df054334e3512f",
+      "disassembly_bytes": 9495,
+      "AVX2_ymm_vpmaddubsw_instructions": 2,
+      "representative_instructions": [
+        "910394:\tc4 e2 55 04 ef       \tvpmaddubsw ymm5,ymm5,ymm7",
+        "9103ad:\tc4 e2 4d 04 c9       \tvpmaddubsw ymm1,ymm6,ymm1"
+      ]
+    },
+    {
+      "symbol": "ggml_vec_dot_iq3_s_q8_K",
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "-M",
+        "intel",
+        "--disassemble=ggml_vec_dot_iq3_s_q8_K",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-dispatch-histogram-v0141-20261009/build-sycl-native-dispatch-histogram-v1/strata"
+      ],
+      "disassembly_sha256": "1230f315ab6af128691653120c077d09917c5960a3d32fedb11de24ad1490bfb",
+      "disassembly_bytes": 10113,
+      "AVX2_ymm_vpmaddubsw_instructions": 2,
+      "representative_instructions": [
+        "910674:\tc4 42 2d 04 d5       \tvpmaddubsw ymm10,ymm10,ymm13",
+        "9106c5:\tc4 42 25 04 dc       \tvpmaddubsw ymm11,ymm11,ymm12"
+      ]
+    },
+    {
+      "symbol": "ggml_vec_dot_iq2_s_q8_K",
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "-M",
+        "intel",
+        "--disassemble=ggml_vec_dot_iq2_s_q8_K",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-dispatch-histogram-v0141-20261009/build-sycl-native-dispatch-histogram-v1/strata"
+      ],
+      "disassembly_sha256": "52d34983b2d0dc07c6b20b66e25fd07dc471b9c6811e56e5903262df192c2ebd",
+      "disassembly_bytes": 9127,
+      "AVX2_ymm_vpmaddubsw_instructions": 2,
+      "representative_instructions": [
+        "910053:\tc4 42 25 04 dd       \tvpmaddubsw ymm11,ymm11,ymm13",
+        "910080:\tc4 42 1d 04 e5       \tvpmaddubsw ymm12,ymm12,ymm13"
+      ]
+    },
+    {
+      "symbol": "ggml_vec_dot_iq4_xs_q8_K",
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "-M",
+        "intel",
+        "--disassemble=ggml_vec_dot_iq4_xs_q8_K",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-dispatch-histogram-v0141-20261009/build-sycl-native-dispatch-histogram-v1/strata"
+      ],
+      "disassembly_sha256": "389d3a6315eeaaf98dd19e86cb48b9d437eb020dfc3ff74c7a20af238cff50aa",
+      "disassembly_bytes": 10956,
+      "AVX2_ymm_vpmaddubsw_instructions": 8,
+      "representative_instructions": [
+        "911314:\tc4 42 2d 04 c9       \tvpmaddubsw ymm9,ymm10,ymm9",
+        "911319:\tc4 e2 3d 04 f6       \tvpmaddubsw ymm6,ymm8,ymm6",
+        "9113a9:\tc4 e2 35 04 e4       \tvpmaddubsw ymm4,ymm9,ymm4"
+      ]
+    }
+  ],
+  "scope": "Read-only disassembly of exact actually executed Hbinary. Each named pinned ggml IQ/Q8K dot symbol contains AVX2 ymm vpmaddubsw. This is code identity, not runtime kernel sampling, critical-path time or speed.",
+  "adopted": false
+}

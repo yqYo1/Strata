@@ -1,0 +1,474 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "process_identity": {
+    "pid": 1692380,
+    "start_ticks": 25487910
+  },
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "deadline_seconds": 60,
+  "gpu_executed": false,
+  "model_opened": false,
+  "runtime_controller_executed": false,
+  "source_sha256": "ff6d8ad537b9e9fb81511725dd5cf936a3a0d460bae271d79707777f38d0a599",
+  "test_sha256": "bb35a6d0551311202e5270a3b7c8f5b75fc22f99615de0ac386291423a245017",
+  "producer_sha256": "5ef33f7d2020a17ecc36ad15796c6f021b4b5963998aa964dccedbe733637368",
+  "cases": [
+    {
+      "name": "valid-mixed",
+      "expected_accept": true,
+      "accepted": true,
+      "passed": true,
+      "fixture_sha256": "10d6e4e01102ce9942dbe4f7f7743a766265021f7b0efe1617de68e847b8b61d",
+      "error": null,
+      "parsed": {
+        "passed": true,
+        "raw": "strata native dispatch exposure: decode request delta; cpu2=1 cpu512=0 hybrid=0 gu512=0 gu256=1 gu_kq=0 down_kq=0 iq4nl=1 gu_min=2 iq3s_min=2 down_min=2 gather_setting=-1 iq256_variant_capabilities=1; eligible bits=IQ512:1,IQ256:2,KQ256:4,IQ4NL:8,Q2:16; variant=scalar:0,gather:1,vnni:2,both:3,worker-unresolved:-1; cells=phase/type/nt/selected/eligible/variant:experts,tokens,output_rows GU/18/1/ggml/2/0:2,2,1280 GU/22/2/iq256/2/0:3,6,1920 Down/20/1/ggml/8/0:2,2,5120 Down/42/2/q2-avx2/16/0:3,6,7680; exposure only, not time/traffic/worker imbalance",
+        "settings": {
+          "cpu2": 1,
+          "cpu512": 0,
+          "hybrid": 0,
+          "gu512": 0,
+          "gu256": 1,
+          "gu_kq": 0,
+          "down_kq": 0,
+          "iq4nl": 1,
+          "gu_min": 2,
+          "iq3s_min": 2,
+          "down_min": 2,
+          "gather_setting": -1,
+          "iq256_variant_capabilities": 1
+        },
+        "cells": [
+          {
+            "phase": "GU",
+            "type": 18,
+            "nt": 1,
+            "selected": "ggml",
+            "eligible": 2,
+            "variant": 0,
+            "experts": 2,
+            "tokens": 2,
+            "output_rows": 1280
+          },
+          {
+            "phase": "GU",
+            "type": 22,
+            "nt": 2,
+            "selected": "iq256",
+            "eligible": 2,
+            "variant": 0,
+            "experts": 3,
+            "tokens": 6,
+            "output_rows": 1920
+          },
+          {
+            "phase": "Down",
+            "type": 20,
+            "nt": 1,
+            "selected": "ggml",
+            "eligible": 8,
+            "variant": 0,
+            "experts": 2,
+            "tokens": 2,
+            "output_rows": 5120
+          },
+          {
+            "phase": "Down",
+            "type": 42,
+            "nt": 2,
+            "selected": "q2-avx2",
+            "eligible": 16,
+            "variant": 0,
+            "experts": 3,
+            "tokens": 6,
+            "output_rows": 7680
+          }
+        ],
+        "totals": {
+          "GU": {
+            "experts": 5,
+            "tokens": 8,
+            "output_rows": 3200
+          },
+          "Down": {
+            "experts": 5,
+            "tokens": 8,
+            "output_rows": 12800
+          }
+        },
+        "source_bound_max_nt": 2,
+        "meaning": "request delta logical caller expert jobs, not actual task fragments/time/traffic/worker imbalance"
+      }
+    },
+    {
+      "name": "valid-all-types",
+      "expected_accept": true,
+      "accepted": true,
+      "passed": true,
+      "fixture_sha256": "82ecfa5763764d02e583f871759792d81490075efc63c40192f1b09e16950142",
+      "error": null,
+      "parsed": {
+        "passed": true,
+        "raw": "strata native dispatch exposure: decode request delta; cpu2=1 cpu512=0 hybrid=0 gu512=0 gu256=1 gu_kq=0 down_kq=0 iq4nl=1 gu_min=2 iq3s_min=2 down_min=2 gather_setting=-1 iq256_variant_capabilities=1; eligible bits=IQ512:1,IQ256:2,KQ256:4,IQ4NL:8,Q2:16; variant=scalar:0,gather:1,vnni:2,both:3,worker-unresolved:-1; cells=phase/type/nt/selected/eligible/variant:experts,tokens,output_rows GU/18/1/ggml/2/0:1,1,640 GU/18/2/iq256/2/0:1,2,640 GU/21/1/ggml/2/0:1,1,640 GU/21/2/iq256/2/0:1,2,640 GU/22/1/ggml/2/0:1,1,640 GU/22/2/iq256/2/0:1,2,640 GU/23/1/ggml/2/0:1,1,640 GU/23/2/iq256/2/0:1,2,640 Down/20/1/ggml/8/0:2,2,5120 Down/20/2/iq4nl256/8/0:2,4,5120 Down/42/1/q2-avx2/16/0:2,2,5120 Down/42/2/q2-avx2/16/0:2,4,5120; exposure only, not time/traffic/worker imbalance",
+        "settings": {
+          "cpu2": 1,
+          "cpu512": 0,
+          "hybrid": 0,
+          "gu512": 0,
+          "gu256": 1,
+          "gu_kq": 0,
+          "down_kq": 0,
+          "iq4nl": 1,
+          "gu_min": 2,
+          "iq3s_min": 2,
+          "down_min": 2,
+          "gather_setting": -1,
+          "iq256_variant_capabilities": 1
+        },
+        "cells": [
+          {
+            "phase": "GU",
+            "type": 18,
+            "nt": 1,
+            "selected": "ggml",
+            "eligible": 2,
+            "variant": 0,
+            "experts": 1,
+            "tokens": 1,
+            "output_rows": 640
+          },
+          {
+            "phase": "GU",
+            "type": 18,
+            "nt": 2,
+            "selected": "iq256",
+            "eligible": 2,
+            "variant": 0,
+            "experts": 1,
+            "tokens": 2,
+            "output_rows": 640
+          },
+          {
+            "phase": "GU",
+            "type": 21,
+            "nt": 1,
+            "selected": "ggml",
+            "eligible": 2,
+            "variant": 0,
+            "experts": 1,
+            "tokens": 1,
+            "output_rows": 640
+          },
+          {
+            "phase": "GU",
+            "type": 21,
+            "nt": 2,
+            "selected": "iq256",
+            "eligible": 2,
+            "variant": 0,
+            "experts": 1,
+            "tokens": 2,
+            "output_rows": 640
+          },
+          {
+            "phase": "GU",
+            "type": 22,
+            "nt": 1,
+            "selected": "ggml",
+            "eligible": 2,
+            "variant": 0,
+            "experts": 1,
+            "tokens": 1,
+            "output_rows": 640
+          },
+          {
+            "phase": "GU",
+            "type": 22,
+            "nt": 2,
+            "selected": "iq256",
+            "eligible": 2,
+            "variant": 0,
+            "experts": 1,
+            "tokens": 2,
+            "output_rows": 640
+          },
+          {
+            "phase": "GU",
+            "type": 23,
+            "nt": 1,
+            "selected": "ggml",
+            "eligible": 2,
+            "variant": 0,
+            "experts": 1,
+            "tokens": 1,
+            "output_rows": 640
+          },
+          {
+            "phase": "GU",
+            "type": 23,
+            "nt": 2,
+            "selected": "iq256",
+            "eligible": 2,
+            "variant": 0,
+            "experts": 1,
+            "tokens": 2,
+            "output_rows": 640
+          },
+          {
+            "phase": "Down",
+            "type": 20,
+            "nt": 1,
+            "selected": "ggml",
+            "eligible": 8,
+            "variant": 0,
+            "experts": 2,
+            "tokens": 2,
+            "output_rows": 5120
+          },
+          {
+            "phase": "Down",
+            "type": 20,
+            "nt": 2,
+            "selected": "iq4nl256",
+            "eligible": 8,
+            "variant": 0,
+            "experts": 2,
+            "tokens": 4,
+            "output_rows": 5120
+          },
+          {
+            "phase": "Down",
+            "type": 42,
+            "nt": 1,
+            "selected": "q2-avx2",
+            "eligible": 16,
+            "variant": 0,
+            "experts": 2,
+            "tokens": 2,
+            "output_rows": 5120
+          },
+          {
+            "phase": "Down",
+            "type": 42,
+            "nt": 2,
+            "selected": "q2-avx2",
+            "eligible": 16,
+            "variant": 0,
+            "experts": 2,
+            "tokens": 4,
+            "output_rows": 5120
+          }
+        ],
+        "totals": {
+          "GU": {
+            "experts": 8,
+            "tokens": 12,
+            "output_rows": 5120
+          },
+          "Down": {
+            "experts": 8,
+            "tokens": 12,
+            "output_rows": 20480
+          }
+        },
+        "source_bound_max_nt": 2,
+        "meaning": "request delta logical caller expert jobs, not actual task fragments/time/traffic/worker imbalance"
+      }
+    },
+    {
+      "name": "duplicate-cell",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true,
+      "fixture_sha256": "e965992881e3eac5861e071fee65a475e2da1984664fe17efd441a3dfea0345c",
+      "error": "AssertionError('duplicate histogram cell')",
+      "parsed": null
+    },
+    {
+      "name": "empty",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true,
+      "fixture_sha256": "405899b38f20493cae1cb7bf7b91d39d798a51b3ea124989f3d360a2209b51b0",
+      "error": "AssertionError('empty/oversized histogram')",
+      "parsed": null
+    },
+    {
+      "name": "missing-down",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true,
+      "fixture_sha256": "5160e719dfa9723119fc20d08c77bbfa7bbbd18435fb64d738daa74fec979375",
+      "error": "AssertionError()",
+      "parsed": null
+    },
+    {
+      "name": "truncated-tail",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true,
+      "fixture_sha256": "6cf2c2c4f5a9d7f7dc8b7021b62fb8e241d63926b46572ebe4b61a16d175b282",
+      "error": "AssertionError()",
+      "parsed": null
+    },
+    {
+      "name": "trailing-garbage",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true,
+      "fixture_sha256": "fb94551f6ee9440f9cbac7c3cfb1ad071fff622a77a6316fc98e6cc0eb7306fe",
+      "error": "AssertionError()",
+      "parsed": null
+    },
+    {
+      "name": "wrong-cpu",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true,
+      "fixture_sha256": "dccc3bd9b8142962b45a204591f6db3487273240a592d43aae8b6e1695e771a1",
+      "error": "AssertionError('unexpected CPU/default dispatch capabilities or settings')",
+      "parsed": null
+    },
+    {
+      "name": "wrong-min",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true,
+      "fixture_sha256": "3ed19002953daf1bccae1b21ab2fc9ded9544f4cf694bfd9a3eb897e38f84326",
+      "error": "AssertionError('unexpected CPU/default dispatch capabilities or settings')",
+      "parsed": null
+    },
+    {
+      "name": "header-duplicate",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true,
+      "fixture_sha256": "2b62097f810dc7938d742dc94e02b2f1213ef59fbf8604e38caa087d0f070c6b",
+      "error": "AssertionError('invalid header: cpu2=1')",
+      "parsed": null
+    },
+    {
+      "name": "unknown-type",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true,
+      "fixture_sha256": "b66ce758fa6b73f47c208d3c3e560a3d43bc78d265a01101d04c98919995baad",
+      "error": "AssertionError('configured spec4/split native NT ceiling exceeded')",
+      "parsed": null
+    },
+    {
+      "name": "unknown-label",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true,
+      "fixture_sha256": "1c5f974cf2beb9d5cb86e4cd31881d04a05257087afba9c5af9b84144361e80f",
+      "error": "AssertionError('malformed/unknown histogram tuple: GU/18/1/unknown/2/0:2,2,1280')",
+      "parsed": null
+    },
+    {
+      "name": "wrong-selected",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true,
+      "fixture_sha256": "f1d53a4a92d24de4ccb0eef61064456cf741930ea325e42bb11349b3ef01ef30",
+      "error": "AssertionError()",
+      "parsed": null
+    },
+    {
+      "name": "wrong-eligible",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true,
+      "fixture_sha256": "ac5f99b079f6cb4b9aa13beb3f2676afd7fbb8c5e11b95dc7e1ec92fa5d7ffd9",
+      "error": "AssertionError()",
+      "parsed": null
+    },
+    {
+      "name": "wrong-variant",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true,
+      "fixture_sha256": "741d05699bea228dc4e304b7c144a0f3d52fe40c654ebed41784745a380a54b5",
+      "error": "AssertionError()",
+      "parsed": null
+    },
+    {
+      "name": "bad-tokens",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true,
+      "fixture_sha256": "155d247ade81100de83cf3be8e00916f24805b8a87bc02a11453be686ab79521",
+      "error": "AssertionError()",
+      "parsed": null
+    },
+    {
+      "name": "bad-rows",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true,
+      "fixture_sha256": "069f69489be6bf37d96982e7386543d5caa78f3c73caa3aff7ad699e3976468e",
+      "error": "AssertionError()",
+      "parsed": null
+    },
+    {
+      "name": "zero-count",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true,
+      "fixture_sha256": "565ce16f65110d53265741aa38dadd9af6c2ce7ac1b96fa011af926fcdcf152b",
+      "error": "AssertionError()",
+      "parsed": null
+    },
+    {
+      "name": "overflow",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true,
+      "fixture_sha256": "fc70de50c6e9a03ad94e3840f01656da91003cb7554a2a0caf4d7d96d25a4494",
+      "error": "AssertionError()",
+      "parsed": null
+    },
+    {
+      "name": "counts-disagree",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true,
+      "fixture_sha256": "ad793d6f315796a89e321db7580cb5b2c57b418a587239ee8ad083ddf436d981",
+      "error": "AssertionError()",
+      "parsed": null
+    },
+    {
+      "name": "nt-zero",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true,
+      "fixture_sha256": "dc95b8e5a19c4de3a2854d3d47ce9fba8ecbedf128a9eaa3b384421cbdbafc54",
+      "error": "AssertionError('configured spec4/split native NT ceiling exceeded')",
+      "parsed": null
+    },
+    {
+      "name": "nt3-falsifies-config",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true,
+      "fixture_sha256": "5da1ed94e6beb2ea6a3cf79c064c66231258c3a1000ddfa1da7ec581c2374cf2",
+      "error": "AssertionError('configured spec4/split native NT ceiling exceeded')",
+      "parsed": null
+    },
+    {
+      "name": "nan-count",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true,
+      "fixture_sha256": "280de3f7fca4b5462bced28a62d5160f58f9e18ce82eba8bb16a12d614b6321e",
+      "error": "AssertionError('malformed/unknown histogram tuple: GU/18/1/ggml/2/0:nan,2,1280')",
+      "parsed": null
+    }
+  ],
+  "case_count": 23,
+  "elapsed_seconds": 0.014863487973343581,
+  "adopted": false,
+  "performance_eligible": false
+}

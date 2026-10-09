@@ -1,0 +1,24 @@
+# Repeated full-context divergence: QSA layer 11 source audit (round 31)
+
+Scope: read-only inspection of frozen C source at `perf-sycl-layer-major-streamed-kv-v0141-20261009` (HEAD `6cdf810`). No build, test, model execution, GPU work, or source edit. This report distinguishes observed localization from hypotheses; it does not assign a root cause.
+
+## Evidence boundary
+
+The committed localization JSON (`streamed-kv-repeat-localization-v1.json`) says the original run was healthy but failed its math gate. On repeated full 262K prefill, QSA ordinal 2 first differs in persisted part 16–20: INT8 K/V and scales first differ at cell 98328; pooled indexer output first differs at block 24582, component 0 (cells 98328–98331). Ordinals 0 and 1 are byte-equal. These are downstream persistent states, not measurements of the layer-11 input or its transient workspace. The earlier QSA states being equal therefore does not prove the input residual at layer 11 was equal. The repeat also has identical four generated IDs, which does not establish state/logit equality.
+
+## Source checks
+
+- `sycl/src/kernels/cuda/native_qsa_indexer.dp.cpp:291-369,481-575`: For chunk `p0=98304`, target block 24582 is wholly within the chunk and reads `raw` rows 24–27; no prior-tail cell contributes. The block range arithmetic includes this block, and each workgroup writes a pooled vector. The local `values`/`partials` buffers are populated through the normalization reduction and a barrier before use. The tail kernel updates the last valid cells. I found no uninitialized-local or stale-tail defect for this block in the inspected implementation.
+- `sycl/src/prefill/prefill.cpp:1325-1334`: QSA raw/indexer/query/selection/attention scratch is shared across QSA layers and chunk iterations. At `:3753-3757`, K/V/Q and raw indexer projections are queued before use; append, selection, attention and projection are scheduled on the same compute queue. The streamed-layer-major admission check requires that queue to be in-order (`:2434-2442`). This makes simple cross-layer scratch reuse a less likely explanation, but static source inspection cannot validate the backend's actual dependency behavior or bounds of every kernel.
+- `sycl/src/prefill/prefill.cpp:3760-3805,3833-3848`: On a retained streamed stage, each QSA ordinal checks stage-owner ordinal and contiguous extent, seeds prior host KV on its first chunk, and appends current K/V to host and stage. The first divergence is at an ordinal whose earlier two persistent states match; this is consistent with either a different layer-11 input or a layer-11 write/read path. It does not by itself implicate stage reuse.
+- `sycl/src/core/session.cpp:162-164` zeros GDN and QSA running state at session initialization; `sycl/src/core/layer.cpp:985` is the QSA reset implementation. This does not demonstrate that repeated benchmark requests use independent, identically initialized sessions; the receipt/session lifecycle remains relevant.
+
+## Candidate and discriminating observation
+
+The narrowest remaining source-level candidate is an input divergence before the layer-11 K/V and indexer projections, potentially in the preceding GDN/MoE/residual path or its reused compact workspace. K/V quantization and indexer pooling both consume per-token activations, so their simultaneous first change at the same cell is compatible with that explanation. The first changed cell is 24 tokens into an 8192-token chunk, so a chunk-boundary-only explanation is not supported by the location. No inspected line proves this candidate.
+
+A discriminating capture should compare, between first and repeated executions, the layer-11 input residual and the outputs of `attn_k`, `attn_v`, and `indexer.k_proj` at rows 0–31 of chunk `p0=98304`, before KV append/quantization; also compare pre-append stage bytes and host K/V for cells 98328–98331. If the residual/raw projection already differs, trace the first preceding layer's output; if projections match but persisted K/V differs, isolate `kv_append`/stage writes; if K/V matches but pooled output differs, isolate the indexer append kernel. Existing evidence does not currently include these intermediate values.
+
+## Conclusion
+
+This audit found no concrete source defect that explains the reported byte onset. It narrows the next useful observation to transient layer-11 inputs/projection outputs versus append outputs. Treat the suspected upstream activation/workspace path as a falsifiable lead, not a diagnosis. No status or validation result is changed.
