@@ -35,6 +35,14 @@ No arguments are accepted. 256 qh bytes × 256 low bytes × four positions = 262
 index comparisons, all 1024 indices, plus 65536 decoded four-qword lane comparisons.
 The literal scalar index oracle is independent of HiSpread construction.
 
+Root added an explicit mixed-byte helper check after the source handoff. For each
+high byte and x, the four active low bytes are x, x^0x55, x^0xaa and ~x; each lane's
+transform is a byte bijection. All 16 input alignment offsets are exercised. This
+adds 4194304 active index comparisons and 1048576 decoded four-qword comparisons,
+plus checks of zero high bytes in unused lanes and input/output write guards.
+It covers lane permutations and alignment, not all four-byte Cartesian products
+or a guard-page read-boundary proof. The copied dot bodies are unchanged.
+
 96 profiles: widths 256/512/2560/8192, three literal uint32 seeds, eight patterns.
 Each tests 16 synthetic independent Gate/Up pairs (1536 pairs, 9216 dot calls total).
 LCG is unsigned32 `state=1664525*state+1013904223` modulo 2^32. Inputs are zero,

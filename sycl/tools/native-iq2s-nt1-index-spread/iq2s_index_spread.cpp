@@ -231,6 +231,31 @@ void indices() {
  for(bool x:seen) require(x,"index coverage"); require(count==262144,"index count");
  printf("indices,%llu,1024,pass\n",static_cast<unsigned long long>(count));
 }
+void mixed_indices() {
+ uint64_t vectors=0, active_indices=0;
+ for(unsigned offset=0;offset<16;++offset) for(unsigned h=0;h<256;++h) for(unsigned x=0;x<256;++x) {
+  alignas(16) uint8_t storage[32]; memset(storage,0xa5,sizeof(storage));
+  uint8_t* q=storage+offset;
+  q[0]=uint8_t(x); q[1]=uint8_t(x^0x55); q[2]=uint8_t(x^0xaa); q[3]=uint8_t(~x);
+  q[4]=0x17; q[5]=0x89; q[6]=0xbe; q[7]=0xfa;
+  uint8_t before[32]; memcpy(before,storage,sizeof(storage));
+  uint16_t guarded[10]; guarded[0]=0x5b7d; guarded[9]=0x6e8f;
+  uint16_t* sp=guarded+1; grid_indices(q,high[h],sp);
+  require(guarded[0]==0x5b7d && guarded[9]==0x6e8f,"mixed output guards");
+  require(memcmp(before,storage,sizeof(storage))==0,"mixed input unchanged");
+  uint64_t expected[4],got[4];
+  for(unsigned k=0;k<4;++k) {
+   unsigned ix=unsigned(q[k])|((h<<(8-2*k))&0x300);
+   require(sp[k]==ix,"mixed index"); expected[k]=iq2s_grid[ix]; ++active_indices;
+  }
+  for(unsigned k=4;k<8;++k) require(sp[k]==q[k],"zero-high unused index");
+  __m256i v=_mm256_set_epi64x(iq2s_grid[sp[3]],iq2s_grid[sp[2]],iq2s_grid[sp[1]],iq2s_grid[sp[0]]);
+  _mm256_storeu_si256(reinterpret_cast<__m256i*>(got),v);
+  require(memcmp(got,expected,sizeof(got))==0,"mixed grid lanes"); ++vectors;
+ }
+ require(vectors==1048576 && active_indices==4194304,"mixed counts");
+ printf("mixed_indices,%llu,%llu,16,pass\n",static_cast<unsigned long long>(active_indices),static_cast<unsigned long long>(vectors));
+}
 void rows() {
  auto* traits=ggml_get_type_traits_cpu(GGML_TYPE_IQ2_S); require(sizeof(block_iq2_s)==82 && QK_K==256,"layout"); require(traits&&traits->vec_dot&&traits->vec_dot_type==GGML_TYPE_Q8_K&&traits->nrows==1,"traits");
  const auto baseline=traits->vec_dot;
@@ -270,6 +295,6 @@ void rows() {
 }
 }
 int main(int argc,char**) {
- try { if(argc!=1) throw std::runtime_error("no arguments admitted"); ggml_cpu_init(); isolated_iq2s::indices(); isolated_iq2s::rows(); printf("summary,synthetic_only,performance_false,adopted_false,pass\n"); if(fflush(stdout)!=0||ferror(stdout)) throw std::runtime_error("stdout flush"); return 0; }
+ try { if(argc!=1) throw std::runtime_error("no arguments admitted"); ggml_cpu_init(); isolated_iq2s::indices(); isolated_iq2s::mixed_indices(); isolated_iq2s::rows(); printf("summary,synthetic_only,performance_false,adopted_false,pass\n"); if(fflush(stdout)!=0||ferror(stdout)) throw std::runtime_error("stdout flush"); return 0; }
  catch(const std::exception& e) {fprintf(stderr,"FAIL,%s\n",e.what());fflush(stderr);return 1;}
 }
