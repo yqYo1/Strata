@@ -1,0 +1,31 @@
+{
+  "implementation_model": "gpt-6.1-sol",
+  "root_full_report_and_diff_reviewed": true,
+  "source_base": "247025fc576abfe764f797da1a1c78035497ee17",
+  "built": false,
+  "executed": false,
+  "timed": false,
+  "adopted": false,
+  "source_pins": {
+    "sycl/src/prefill/gdn_quad_parity.cpp": "fcb81990212bf95bf5d3bb9defe44972ee6d0c930ae6d5f443165e4bd6161a4d",
+    "sycl/tools/gdn-quad-pipeline/README.md": "a25bd124bb2d2d8ea0f016a533c5c772e0ab6acf669cc7910f5bd466aa665266",
+    "sycl/src/prefill/kernels.dp.cpp": "af16f3d89dc0ef154b89800c278a78959ca0f7de0d59e90c7bc16e998f9968be",
+    "sycl/CMakeLists.txt": "ce0a6264b8afb008abab3840e4f22fd652cb371483f2273e4e73e01a5df81ee7"
+  },
+  "independent_review": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-quad-quiet-prefix-independent-review-round102.txt",
+    "sha256": "4febfe77133f5a8b92f05639245ad053add3a307b2649dfa7f9e3a595af2acac",
+    "fully_reviewed": true
+  },
+  "root_corrections": [
+    "README recipe uses actual verified build-v2 rather than failed build-v1",
+    "DPCT check() is a no-op; explicit wait_and_throw is completion/error boundary"
+  ],
+  "scope": "paired independent carried >=32K synthetic recurrence/norm host service; admission included every chunk; full checks outside intervals; not model/kernel-only/productionselector performance",
+  "gates_pending": [
+    "same flags build",
+    "host argument/env negative probes and original short suite",
+    "quiet32K both starting orders repeated fresh processes",
+    "owner normal closure/fault cursors and individual sample statistics"
+  ]
+}

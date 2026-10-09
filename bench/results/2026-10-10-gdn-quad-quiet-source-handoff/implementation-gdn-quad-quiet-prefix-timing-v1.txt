@@ -1,0 +1,176 @@
+GDN quad quiet repeated prefix service timing v1 — SOURCE ONLY / UNEXECUTED
+
+Owner/work boundary
+Root supplied worktree
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010
+branch perf/sycl-gdn-quad-pipeline-20261010, base/source revision
+9edf4a5941f029357b2f2d0b19c19bdff4638c06. Root owns disjoint bench/results commits
+and all actual review/build/test/GPU/profiling/closure/cleanup under the shared lock.
+No agent build/configure/import/preprocess/syntax/compiler/test/target/runtime/device/
+model/profiler/disassembly/Git/cleanup operation was performed. Python source-edit
+scripts performed only text reads/writes, not imports or fixture execution.
+Only the two assigned worktree files and this assigned report were edited. Existing
+kernels/API/CMake/selector/math/FP/GRF and every receipt remain unchanged.
+
+Prior evidence/review boundary
+Read fixture whole source, fail_stop/gpu_stage and every asynchronous endpoint scope,
+existing README and diagnostic_environment source. Read shared R95 host-lifetime,
+R96 fail-stop, R97 selector, R99 spill/GRF contract, R100 target/artifact reviews;
+also consulted related CPU R95/R96/R98 reports from the shared R95–R100 collection.
+Shared committed registry-v48 read-only SHA256 agrees with owner:
+18a8e56913a3970f278210e7b6176c95ad82913c5d617368d6229c13e43539ac.
+Root reports actual frozen default-short and32768/262144 prefix gates passed.
+That is prior synthetic correctness, not qualification of this new mode. Frozen
+candidate spill5056/legacy0 is a resource observation, not performance evidence,
+selected GRF count, actual spill traffic, or authority for GRF-256 execution. This
+implementation keeps current kernels exactly unchanged and does not reopen that
+unsupported-property experiment or production integration/adoption.
+
+Source identities / final bytes
+sycl/src/prefill/gdn_quad_parity.cpp
+old 15403 bytes SHA25679cf2e0772279a28b624ed9086d5412b71cffd11e2f57ef9f426fb6dd8d87ae1
+new 24642 bytes SHA256fcb81990212bf95bf5d3bb9defe44972ee6d0c930ae6d5f443165e4bd6161a4d
+sycl/tools/gdn-quad-pipeline/README.md
+old 12000 bytes SHA256a5ebc495ee8189ca7c9ba58838a4bca2f66e2fe387e421886a32d53b6d30ccf1
+new 19904 bytes SHA256ad9ab176841422f0c8ee3b352646a0fb07156f0dfcae16ebf0fd3ef47b854373
+New combined worktree source/document bytes44546.
+Unchanged read-only source hashes reverified:
+kernels.dp.cpp af16f3d89dc0ef154b89800c278a78959ca0f7de0d59e90c7bc16e998f9968be
+include/strata/prefill/gdn_variant.hpp 044dfc92139d77e4cb3a1ddbf644339cad64a8155b052f691575cc1ccd818bf7
+sycl/CMakeLists.txt ce0a6264b8afb008abab3840e4f22fd652cb371483f2273e4e73e01a5df81ee7
+Report final SHA/bytes returned separately, no recursively self-certified hash.
+
+Opt-in API/argument bounds
+New exact argument layout:
+--timing-prefix TOTAL --chunk CHUNK --order legacy-first|quad-first --samples SAMPLES
+argc must equal9; option spelling/positions strict. TOTAL integer32768..262144,
+CHUNK exactly1024 or2048, SAMPLES1..9; decimal argument byte length<=6, existing
+checked decimal parser excludes nondecimal/overflow. Known dirty diagnostic env
+rejected before queue lookup. Missing/extra/duplicate/reordered args are rejected.
+No default timing, no CTest changes. Existing host probes, ordinary short/parity,
+--prefix output/call/check behavior retain their original source path. Existing
+functions are not replaced or relaxed; new helper functions are separately called
+only by the explicit new main branch. chrono/header comment are the other TU edits.
+
+Finite work/memory
+Two warmup pairs plus1..9recorded paired prefixes. Max11pairs *256chunks (262144 /
+1024) =2816matching chunks,5632logical recurrence+norm arm calls,2816candidate
+admission attempts. Each arm has independent state, full carried prefix and exact
+same checked initialization. State initialized once per pair, never between chunks.
+Input/guard buffers preallocated once with cap1024/2048; each chunk is prepared once
+and consumed unchanged by both arms. No all262144 h/y allocation or raw tensor output.
+Hash readbacks are one-component at a time; largest pair scratch ~96MiB, freed before
+next component. Existing prepare scratch/device allocation cap unchanged. Allocation,
+input initialization/first-use host vectors and all transfers are outside service.
+Supervisor memory/time budgets remain root requirements, not promised RSS estimates.
+
+Paired full-prefix and counterbalance
+Each pair starts with full identical separately allocated nonzero state and checked
+outer guards. Actual directed48-head synthetic input uses cumulative tokenoffset
+and existing generator/finite settings. Every arm carries its own complete prefix;
+there is no state copy from the other arm or per-chunk reset. Each matching chunk
+runs first arm then second arm on the same in-order queue, with successful wait
+before the second interval. After both complete, existing compare performs FULL
+state/FP32y/FP16y/finite/guards/unused capacity gates, not hash-only parity. This is
+independent carried-prefix service with interleaved corresponding chunks, not an
+uninterrupted single-arm full-prefix wall-time experiment.
+
+Two full-prefix warmup pairs run both kernels and existing norm in opposite orders,
+with initialization reset between pairs. Warmup outputs/times recorded separately,
+not counted as trial samples. Recorded sample1 uses CLI order; sample2 reverses it;
+subsequent samples alternate. Order constant across all chunks within one pair.
+Even sample counts balanced; odd differ by1. README recommends separate fresh
+legacy-first andquad-first processes for5samples each, allowing a balanced aggregate.
+No random seed/order changes, hidden profiler, or inferred statistical CI.
+
+Exact timing interval / admission accounting
+Host std::chrono::steady_clock immediately before gpu_stage public function call
+through successful queue.wait_and_throw; elapsed collected immediately afterward.
+Clock positive/finite required; prefix sums positive/finite required. Each quad
+interval includes exact bundle/context/device/kernel/subgroup admission and private/
+spill resource queries EVERY chunk, wrapper and host call overhead, submit,
+recurrence, existing norm, check(), and queue completion wait. Legacy interval
+includes its public setup/call/submit/recurrence/norm/check/wait. Queue idle at start
+following prepare drain or prior arm drain. Admission overhead is INCLUDED, not
+estimated or subtracted; logical admission_attempts count is printed. No fake event,
+GPU-only/kernel-only clock, isolated admission timing, JIT-free promise or wall-time
+claim. Full-prefix warmup reduces first-use effects but does not prove no later JIT
+or cache misses. Existing queue profiling property printed and not toggled for
+one arm; no event timestamp is read. Existing source DPCT profiling define unchanged.
+
+Excluded from SUM: host prep, state reset, guard fills, H2D/D2H, full comparisons,
+digests, allocations, printf/flush. Untimed readback/preparation gaps can change
+cache/clock/power; excluded cost is not absent/free. Both arms use the same
+interleaved workload and owner-frozen quiet profile. This scope is synthetic
+recurrence+norm component service, not whole model/prefill+conv/postprojection/decode
+or engine scheduling/performance/adoption evidence.
+
+Failure/ownership behavior
+New timing_hash_pair vectors declared OUTSIDE gpu_stage before any memcpy; both
+copies and completion fence run inside it. initialize/prepare/compare remain
+existing lifetime-safe wrappers. All timed recurrence calls and waits are inside
+gpu_stage. Unknown completion exceptions invoke existing fail_stop/_Exit2 while
+vectors/device owner remain live: no C++/static destruction, explicit USM release,
+legacy retry, reset or process reuse. Candidate denial not accepted as sample:
+selected true/Submitted/compiledSG32 required after successful drain. Post-submit
+errors cannot fallback. Complete mismatch follows normal failure only after wait
+established completion; final Buffers drain/free unchanged. All failure statuses
+remain failed even if some earlier CSV lines say pass. Summary emitted only after
+normal Buffers destructor; final stdout/stderr flush/ferror and normalexit0 required.
+No source claims parent-owned PID/ticks/forcedcleanup/survivor/fault closure passed.
+
+CSV/digest semantics
+TIMING_META identifies total/chunk/sample/warmup counts, service definition,
+admission included, interleaved chunks and unchanged queue profiling property.
+TIMING_HEADER gives fields. Four warmup arm rows +2*SAMPLES recorded arm rows.
+Each records phase/pair/order/position/arm,total/chunk/chunks, individual complete
+prefix service seconds, tokencount, logical recurrence/admission/norm calls,
+initialstate FNV, finalstate FNV, FP32/FP16 guarded chunk-chain FNV and quad last-call
+compiledSG/private/spill known/raw fields. Legacy resource fields0/unknown: not an
+assertion of newly measured spill0. Norm counts logical caller expectation, not
+measured hardware event counts. Last quad resource report is not claimed to represent
+per-chunk private/spill history; every positive candidate must compiledSG32.
+
+Actual paired bitwise gates compare full arrays after every chunk. Afterward each
+arm's guarded raw allocations are independently read/hash checked. Existing FNV1a
+applied to state/output including tail sentinels; output chain folds canonical
+littleendian uint64(offset,live,chunk_hash) into FNV across ordered chunks. Both arm
+initialstate/finalstate/output-chain digests must repeat across warmups/trials.
+These are reproducibility digests, not collision-free exact cross-trial proof or
+SHA mathematical provenance. Exact=true summary refers FULL PAIRED per-chunk gates.
+No raw captures saved; no huge artifact emitted. Final summary reports recorded
+arm count and synthetic/model/full_lifecycle/adopted limits, computes no ratios/
+medians/speed thresholds. Root owns statistical interpretation and provenance SHA.
+
+Quiet profile contract
+Presence even0 of finite known named trace/validation/logging/compiler dump hooks
+is rejected: STRATA_TRACE/TRACE_SYNC/PROFILE_API, UR_ENABLE_LAYERS/selected UR_LOG
+hooks, SYCL_PI_TRACE/UR_TRACE/TRACE/CACHE_TRACE/PROGRAM compiler options, ZE tracing/
+validation flags, ZEL loader logs, LD_PRELOAD/AUDIT/DEBUG, IGC dump/extra compiler
+flags, large-GRF/debug override hooks. This guard is not exhaustive proof against
+unknown runtime env hooks, system monitoring or externally attached profiler.
+Root must freeze complete env and require clean owner profile/no external profiler
+or competing GPU jobs. No environment is silently unset/rewritten by binary.
+EnableDirectSubmission=0, copy-offload/device selector/adapter/runtime pins remain
+owner-supplied unchanged profile. Diagnostic correctness uses original policies;
+quiet recipe must not invoke debug-run.py or diagnostic_environment tracing.
+
+Owner-only reproduction / remaining checklist (all UNEXECUTED here)
+Under shared measurement lock root builds existing target with exact frozen kernel/
+header/CMake/FP flags and hashes resulting source/object/binary/compiler/options.
+No new configure/ISA/GRF flags in this patch. Revalidate host-only/probe and default
+short regression under existing fault closure; negative args/env before queue lookup.
+From W, root's actual build-directory target path:
+./build-sycl-gdn-quad-v1/gdn_quad_parity --timing-prefix 32768 --chunk 2048 --order legacy-first --samples 5
+./build-sycl-gdn-quad-v1/gdn_quad_parity --timing-prefix 32768 --chunk 2048 --order quad-first --samples 5
+Run separately, preserve individual CSV/private stderr and normal process/queue
+closure, health/fault cursors, no forced cleanup/survivors. No active receipt queried.
+Start32768/chunk2048, longer total only after owner review. Suggested initial wall
+<=1800s/CSV1MiB/stderr4MiB plus finite RSS/AS/FSize/NOFILE are supervision proposals,
+not measured run requirements. CSV pass+summary alone insufficient if normalexit/
+final flush/teardown/fault/ownership gate fails. Require4warmup+10sample rows for5
+samples, token/ceilchunk/logicalcall totals, counterbalance, same paired and repeat
+hashes, actually admitted candidate. Root owns all builds/GPU testing/profiling/
+cleanup/statistical interpretation. Source neither establishes timing validity on
+hardware nor performance improvement/model/fullcontext/adoption. C/D/r5/currentP
+and old invalid timing statuses are never relabelled.

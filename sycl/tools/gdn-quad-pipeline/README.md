@@ -51,6 +51,121 @@ Only totals32768/262144 accepted. Chunk is1..2048 and ceil(total/chunk)<=2048, o
 
 Root resource/closure plan: suggested short deadline240s, longer owner-specified deadline<=1800s initially, stdout4MiB/stderr64MiB diagnostic caps, finite RSS/AS/FSize/NOFILE controls and free device memory. At max2048 chunk, device allocations are roughly278MiB plus compiler/runtime resources; host live preparation/comparison buffers are roughly130MiB plus loader/runtime overhead. Those are source counts, not measured RSS/device peaks. USM allocations are tracked. Partial construction has submitted no commands and attempts to release tracked allocations, reporting cleanup failures while retaining the original error. All host endpoints of asynchronous memcpy live outside `gpu_stage` lambdas. The lambdas include submission and its completion wait; any exception there logs FAIL-STOP and calls `std::_Exit(2)` before the endpoint vectors or USM owner can unwind. Candidate/reference submission errors use the same process policy, with no retry. Normal teardown drains before releasing USM; a failed final drain also exits without C++/static destructors or explicit release. Free failures after a successful drain retain ordinary failure reporting. This conservative disposable-test policy is not engine recovery or safe session reuse. It prevents the R95 host-vector unwinding defect by source construction; independent review and runtime qualification remain required. No post-submit fallback/reset or device/process cleanup command is issued. Parent supervises faults, normal exit, PID/ticks, forced cleanup and survivors. Require final output flush and normal0; a printed PASS before later teardown/closure failure is not authoritative.
 
-Not implemented: expected NaN/Inf propagation masks, per-head/per-tile interior red-zones, deliberate post-submit async-fault injection, a complete automatic-selector integration matrix, compiled instruction/disassembly verification, captures/model/logit/logprob/ID/MTP/all66-state checks, performance samples, profiling, GRF experiments or adoption. Outer guards and full differential arrays detect many cross-slice errors but are not a proof of every write's ownership. Private/spill reports do not prove profitable occupancy. R89's existing test gaps are documented rather than silently labelled covered. Root must complete build/support/bitwise tests, then separately validate default/selector/fallback integration and model/full-context gates before any performance or adoption decision. All existing thresholds and failed C/D/r5 statuses remain unchanged.
+Not implemented: expected NaN/Inf propagation masks, per-head/per-tile interior red-zones, deliberate post-submit async-fault injection, a complete automatic-selector integration matrix, compiled instruction/disassembly verification, captures/model/logit/logprob/ID/MTP/all66-state checks, whole-model performance samples, profiling, GRF experiments or adoption. Outer guards and full differential arrays detect many cross-slice errors but are not a proof of every write's ownership. Private/spill reports do not prove profitable occupancy. R89's existing test gaps are documented rather than silently labelled covered. Root must complete build/support/bitwise tests, then separately validate default/selector/fallback integration and model/full-context gates before any performance or adoption decision. All existing thresholds and failed C/D/r5 statuses remain unchanged.
 
 Reviewed frozen source `kernels.dp.cpp` SHA3a5077a284048b4fde24a4146e3b02e8d84d259480f755e4b0e94cfc52e54f1c; existing parity SHAd4ca2e5e428751252033f53038f2d43c1814e8ccedaaa8ac5e0ebccd1992a6e4. R84/R86/R87/R88/R89 were read before implementation; R88 correctly notes the old recurrence has no source subgroup attribute. Installed header source confirms compile_sub_group_size(uint32_t); no query was run. Exact changed-file hashes and source-only status are in the companion implementation report.
+
+
+## Explicit quiet repeated prefix service mode (source-only addition)
+
+Root reports the frozen earlier short and32768/262144 prefix bitwise gates passed.
+Those are synthetic correctness evidence, not a timing result. The current SG32
+image's reported spill5056 versus legacy0 remains a resource observation, not a
+measured slowdown/speedup or permission for a GRF-256 property. This addition changes
+only the parity executable and this README. Kernels, selector, API header, CMake/FP
+flags, norm arithmetic and GRF modes remain unchanged. New timing mode has not been
+built or executed by the implementation agent. Ordinary short, --prefix, --host-only
+and --host-fail-stop-probe paths retain their previous behavior.
+
+Only the exact nine-argument layout below enables timing:
+
+```sh
+./build-sycl-gdn-quad-v2/gdn_quad_parity --timing-prefix 32768 --chunk 2048 \
+  --order legacy-first --samples 5 > quiet-legacy-first.csv 2> quiet-legacy-first.stderr
+./build-sycl-gdn-quad-v2/gdn_quad_parity --timing-prefix 32768 --chunk 2048 \
+  --order quad-first --samples 5 > quiet-quad-first.csv 2> quiet-quad-first.stderr
+```
+
+Root must run these as separate supervised fresh processes under the shared lock,
+with no competing GPU work, clean timing environment and frozen runtime/build/device
+identity. These are recipes, not executed commands. Do not use debug-run.py or the
+diagnostic_environment() tracing profile for timing. The ordinary correctness mode
+still uses its existing diagnostic policy. No automatic profiler starts here.
+
+Bounds: total32768..262144 integer, chunk exactly1024 or2048, samples1..9. Missing,
+extra, reordered/duplicate options, invalid order, overflow/nondecimal values and
+known trace/validation/profiler/compiler-dump variables fail before queue lookup.
+Samples are explicit; default mode never times. Root should start with32768/chunk2048
+and5samples; longer prefixes require a separate owner decision/deadline. At the
+maximum there are11full paired prefixes (2warmup+9recorded),256chunks each,5632total
+recurrence+norm arm calls,2816comparisons; no loop is unbounded. No full262144 h/y
+array is allocated. Fixed chunk buffers and existing state allocation are reused.
+
+Both arms start each paired prefix with identical separately allocated nonzero
+state and guards, initialized and full-bitwise checked outside timers. Every live
+chunk uses exactly the same directed48-head synthetic input/tokenoffset/finite
+parameters in both arms. Each arm carries its own entire prefix; it never reads or
+copies the other arm's intermediate state. Arms are interleaved at corresponding
+chunk boundaries so full state/FP32y/FP16y/finite/outerguard/unusedcapacity checks run
+after EVERY matching chunk. This measures two independent carried prefixes with
+interleaved service intervals, not uninterrupted single-arm throughput. Readback
+and input transfer between chunks may change cache, clocks and residency; they are
+excluded from service sum but remain experimental context, not claimed free.
+
+Two warmup pairs run the complete selected prefix for both kernels and norm in both
+execution orders, resetting state between pairs. Their service samples are labelled
+warmup and excluded from recorded sample counts. Recorded sample1 uses --order,
+sample2 reverses it, and alternation continues. All chunks within one pair use that
+pair's order. Even sample counts are balanced; odd counts differ by one. Run both
+initial-order fresh processes if a balanced aggregate is needed. Position/order are
+reported source-visible labels, not shuffled/nonreproducible order.
+
+Clock definition: host std::chrono::steady_clock from immediately before gpu_stage
+calling the public explicit recurrence function through successful queue.wait_and_throw.
+Summed service includes wrapper/host-call overhead, candidate exact bundle/device/
+SG32 admission and resource queries on EVERY candidate chunk, legacy setup, submit,
+recurrence, existing output norm, the no-op DPCT check() wrapper and queue completion wait.
+check() performs no validation; wait_and_throw() supplies completion/error reporting. Same
+in-order queue is idle at each start. This is host service including admission;
+there is no separately measured admission estimate and none is subtracted. It is
+not a SYCL event time, GPU kernel-only time, JIT-free assertion or whole-prefix wall
+clock. Full-prefix warmup reduces first-use effects without proving their absence.
+Existing queue profiling property is recorded and unchanged for BOTH arms; no event
+profiling values are consumed or profiling queue mode toggled.
+
+Excluded: state initialization, input generation, guard fills, all H2D transfers,
+readbacks, full checks, digesting, allocation and CSV output. Host transfer endpoint
+vectors are allocated outside gpu_stage callbacks and remain alive across their
+submit+completion fence. Submit/wait errors use existing fail_stop/_Exit2 without
+stack/static destruction or explicit USM release. No candidate-denial fallback is
+accepted in timing; every candidate must report Submitted/compiledSG32 and complete.
+After both arm waits, numerical mismatch fails normally after known completion;
+Buffers final drain/free remains mandatory. Teardown/output failure cannot be
+accepted because a preceding sample or summary line says pass.
+
+Output: TIMING_META and TIMING_HEADER; four labelled warmup arm rows;2*samples
+recorded arm rows; final TIMING_SUMMARY only after Buffers normal drain/release.
+Individual arm rows retain phase/pair/order/position, length/chunk count, summed
+service seconds, total tokens, logical recurrence/admission/norm call counts,
+initial/final state FNV and output chunk-chain FNV, candidate last-call SG/private/spill
+known/raw values, and exact paired-chunk status. Legacy resource fields are0/unknown,
+not a new query or assertion that its spill remains0. Counts are public caller
+invocations, not measured hardware events. No speed ratio/median/tolerance or
+adoption threshold is computed; root interprets individual samples separately.
+
+Digest definition: raw guarded float/half allocations including unused sentinel
+capacity, using existing FNV1a; output chain joins prior FNV with canonical
+little-endian uint64(offset,live,chunk_fnv) for each chunk. Final state FNV is last
+full guarded state. Both arms' raw data are independently read and hashed after
+full bitwise comparison; cross-pair digests must repeat. FNV repeat checks are
+reproducibility checks, not a collision-free bitwise repeat proof or SHA provenance.
+Actual paired comparisons are full arrays, not hashes. No raw tensor files emitted.
+
+quiet_environment rejects presence (even0) of its finite named trace/validation,
+LD_PRELOAD/LD_AUDIT/LD_DEBUG and IGC/compiler-option hooks. This guard is not proof
+that unknown environment hooks, system-level sampling or an external profiler are
+absent. Root must freeze the entire environment, confirm clean owner timing profile,
+no attached profiler/tracer and no other GPU client, retain process/fault/health
+closure and source/binary/flags hashes. EnableDirectSubmission=0 and the existing
+copy-offload/device/adapter settings remain owner pins, not modified by this mode.
+
+Root review/build/testing checklist: compile exact unchanged kernel/FP closure;
+rerun host modes and default short regression; reject malformed timing args and
+known dirty env before queue activity; quiet32768 warmup+5pairs with full comparisons
+and normalexit0/no forcedcleanup/survivors/new faults; retain individual CSV plus
+repeat/order/count evidence; rotate initial order in another fresh process. Root
+may approve longer totals afterward. Initial proposed wall<=1800s, CSV1MiB/stderr4MiB
+and finite RSS/AS/file/NOFILE supervision are owner bounds, not measured requirements.
+Host scratch is still one-chunk bounded (largest additional hash pair ~96MiB, freed
+between components), existing device capacity unchanged. No model/lifecycle/
+prefill+conv/postprojection/decode/end-to-end performance/adoption is qualified.

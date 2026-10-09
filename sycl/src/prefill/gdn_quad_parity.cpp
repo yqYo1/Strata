@@ -1,4 +1,4 @@
-// Candidate-specific exact GPU differential test. No timing or model execution.
+// Candidate-specific exact GPU differential test; explicit synthetic service timing only. No model execution.
 #define DPCT_PROFILING_ENABLED
 #include <sycl/sycl.hpp>
 #include <dpct/dpct.hpp>
@@ -8,6 +8,7 @@
 #include <array>
 #include <bit>
 #include <cmath>
+#include <chrono>
 #include <cstdio>
 #include <cstdint>
 #include <cstdlib>
@@ -145,6 +146,118 @@ void call(Buffers& d,size_t T,size_t prefix,bool cancel,bool force_deny=false){
  std::printf("PASS call T=%zu prefix=%zu pattern=%s candidate=%zu fallback=%zu compiledSG=%u deviceWG=%zu kernelWG=%zu private_known=%d private=%zu spill_known=%d spill=%zu reason=%s\n",T,prefix,cancel?"ordered_cancellation":"48head_directed",candidate_calls,legacy_fallback_calls,report.compiled_subgroup,report.device_max_workgroup,report.kernel_max_workgroup,report.private_known,report.private_bytes,report.spill_known,report.spill_bytes,report.reason);std::fflush(stdout);
 }
 size_t decimal(const char* text){require(text&&*text,"empty argument");size_t n=0;for(const char* p=text;*p;++p){require(*p>='0'&&*p<='9',"nondecimal argument");require(n<=262144/10,"argument overflow/bound");n=n*10+size_t(*p-'0');require(n<=262144,"argument bound");}return n;}
+// Opt-in quiet component timing. Existing parity modes never call these helpers.
+struct TimingOptions {size_t total,chunk,samples;bool quad_first;};
+void quiet_environment(){
+ // Presence, including a literal zero, is rejected for these diagnostic hooks:
+ // callers must remove them, not guess how each runtime interprets a value.
+ for(const char* key:{"STRATA_TRACE","STRATA_TRACE_SYNC","STRATA_PROFILE_API",
+  "UR_ENABLE_LAYERS","UR_LOG_LOADER","UR_LOG_LEVEL_ZERO","UR_LOG_TRACING",
+  "UR_LOG_OPENCL","UR_LOG_CUDA","UR_LOG_HIP","UR_LOG_UMF","UR_LOG_ADAPTER",
+  "SYCL_PI_TRACE","SYCL_UR_TRACE","SYCL_TRACE","SYCL_CACHE_TRACE","SYCL_PROGRAM_COMPILE_OPTIONS",
+  "SYCL_PROGRAM_LINK_OPTIONS","ZE_ENABLE_TRACING_LAYER","ZE_ENABLE_VALIDATION_LAYER",
+  "ZE_ENABLE_PARAMETER_VALIDATION","ZEL_ENABLE_LOADER_LOGGING","ZEL_LOADER_LOG_CONSOLE",
+  "ZEL_LOADER_LOGGING_LEVEL","ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT",
+  "LD_PRELOAD","LD_AUDIT","LD_DEBUG","LD_DEBUG_OUTPUT","IGC_ExtraOCLOptions",
+  "IGC_EnableDump","IGC_DumpToCustomDir","IGC_DumpVISAASM","IGC_DumpASM",
+  "ForceLargeGrfCompilationMode","OverrideDefaultFP64Settings"}){
+  if(std::getenv(key)){std::fprintf(stderr,"quiet timing refused: unset %s\n",key);require(false,"diagnostic/compiler/profiler environment in quiet mode");}
+ }
+ // This is a finite known-hook guard, not proof that an external profiler or
+ // system configuration is absent. The owner must freeze the complete env.
+}
+TimingOptions timing_options(int argc,char** argv){
+ require(argc==9&&std::string(argv[1])=="--timing-prefix"&&std::string(argv[3])=="--chunk"&&std::string(argv[5])=="--order"&&std::string(argv[7])=="--samples",
+ "timing usage: --timing-prefix 32768..262144 --chunk 1024|2048 --order legacy-first|quad-first --samples 1..9");
+ for(int index:{2,4,8})require(std::strlen(argv[index])<=6,"timing decimal byte bound");
+ TimingOptions o{decimal(argv[2]),decimal(argv[4]),decimal(argv[8]),false};
+ require(o.total>=32768&&o.total<=262144&&(o.chunk==1024||o.chunk==2048)&&o.samples>=1&&o.samples<=9,"timing finite bounds");
+ const std::string order(argv[6]);require(order=="legacy-first"||order=="quad-first","timing order");o.quad_first=order=="quad-first";
+ quiet_environment();return o;
+}
+using Clock=std::chrono::steady_clock;
+static_assert(Clock::is_steady);
+struct TimingResult {
+ std::array<double,2> seconds{}; // index0 explicit legacy, index1 explicit quad
+ std::array<uint64_t,2> state{},fp32{},fp16{};
+ uint64_t initial_state=0;
+ size_t calls=0,tokens=0;
+ strata::prefill::GdnQuadReport quad;
+};
+template<class T> std::array<uint64_t,2> timing_hash_pair(Buffers& d,T* a,T* b,size_t count){
+ std::vector<T> x(count),y(count); // host endpoints remain alive through gpu_stage
+ gpu_stage("timing untimed digest transfers",[&]{d.q.memcpy(x.data(),a,count*sizeof(T));d.q.memcpy(y.data(),b,count*sizeof(T));d.q.wait_and_throw();});
+ std::array<uint64_t,2> hashes{fnv(x.data(),count*sizeof(T)),fnv(y.data(),count*sizeof(T))};
+ require(hashes[0]==hashes[1],"timing post-comparison digest discrepancy");return hashes;
+}
+uint64_t digest_join(uint64_t current,uint64_t chunk_hash,size_t offset,size_t live){
+ // Canonical little-endian uint64 tuple, no pointer/host padding representation.
+ for(uint64_t word:{uint64_t(offset),uint64_t(live),chunk_hash})for(unsigned k=0;k<8;++k){current^=(word>>(8*k))&255;current*=1099511628211ULL;}return current;
+}
+TimingResult timing_pair(Buffers& d,const TimingOptions& o,bool quad_first){
+ initialize(d,false,false); // same nonzero finite state in separate device buffers
+ floats(d,d.as,d.bs,NS,NS,"timing identical initial states");
+ TimingResult result;result.initial_state=timing_hash_pair(d,d.as,d.bs,NS+2*G)[0];
+ result.fp32.fill(14695981039346656037ULL);result.fp16.fill(14695981039346656037ULL);
+ for(size_t offset=0;offset<o.total;){
+  const size_t live=std::min(o.chunk,o.total-offset);
+  prepare(d,live,offset,false); // input/guard fill/transfer + drain, all untimed
+  for(size_t position=0;position<2;++position){
+   const bool quad=quad_first?(position==0):(position==1);
+   bool selected=false;strata::prefill::GdnQuadReport report;
+   // Queue is idle after prepare or the preceding arm's successful wait.
+   // Includes wrapper overhead, candidate admission queries/bundle acquisition,
+   // host submit, recurrence+norm, check(), and completion wait. No event claim.
+   const auto start=Clock::now();
+   gpu_stage(quad?"timed quad call and drain":"timed legacy call and drain",[&]{
+    if(quad)selected=strata::prefill::gdn_recurrence_quad_variant(d.bs+G,d.h,d.g,d.b,d.z,d.gamma,1e-6f,d.by+G,d.bh+G,int64_t(live),&d.q,0,&report);
+    else strata::prefill::gdn_recurrence_pipeline_reference(d.as+G,d.h,d.g,d.b,d.z,d.gamma,1e-6f,d.ay+G,d.ah+G,int64_t(live),&d.q);
+    d.q.wait_and_throw();
+   });
+   const double elapsed=std::chrono::duration<double>(Clock::now()-start).count();
+   require(std::isfinite(elapsed)&&elapsed>0,"invalid service clock interval");
+   if(quad){require(selected&&report.status==strata::prefill::GdnQuadReport::Status::Submitted&&report.compiled_subgroup==32,"timing requires actually admitted quad, no fallback");result.quad=report;}
+   result.seconds[quad?1:0]+=elapsed;
+  }
+  // Mandatory complete comparison after every corresponding carried chunk.
+  // Readback/hash work is intentionally outside both service clock intervals.
+  compare(d,live);
+  result.state=timing_hash_pair(d,d.as,d.bs,NS+2*G);
+  const auto y=timing_hash_pair(d,d.ay,d.by,d.capacity*6144+2*G);
+  const auto half=timing_hash_pair(d,d.ah,d.bh,d.capacity*6144+2*G);
+  for(size_t arm=0;arm<2;++arm){result.fp32[arm]=digest_join(result.fp32[arm],y[arm],offset,live);result.fp16[arm]=digest_join(result.fp16[arm],half[arm],offset,live);}
+  offset+=live;++result.calls;result.tokens+=live;
+ }
+ require(result.tokens==o.total&&result.calls==(o.total+o.chunk-1)/o.chunk,"timing carried prefix counters");
+ for(double v:result.seconds)require(std::isfinite(v)&&v>0,"invalid summed prefix service");
+ return result;
+}
+void timing_emit(const TimingResult& r,const TimingOptions& o,const char* phase,size_t pair,bool quad_first){
+ for(size_t position=0;position<2;++position){const bool quad=quad_first?(position==0):(position==1);const size_t arm=quad?1:0;
+  std::printf("TIMING,%s,%zu,%s,%zu,%s,%zu,%zu,%zu,%.9f,%zu,%zu,%zu,%zu,%016llx,%016llx,%016llx,%016llx,%u,%d,%zu,%d,%zu,pass\n",
+   phase,pair,quad_first?"quad-first":"legacy-first",position+1,quad?"quad":"legacy",o.total,o.chunk,r.calls,r.seconds[arm],r.tokens,
+   r.calls,quad?r.calls:size_t(0),r.calls,
+   (unsigned long long)r.initial_state,(unsigned long long)r.state[arm],(unsigned long long)r.fp32[arm],(unsigned long long)r.fp16[arm],
+   quad?r.quad.compiled_subgroup:0,quad&&r.quad.private_known,quad?r.quad.private_bytes:0,quad&&r.quad.spill_known,quad?r.quad.spill_bytes:0);
+ }
+ require(std::fflush(stdout)==0&&std::ferror(stdout)==0,"timing sample output failure");
+}
+void timing_run(sycl::queue& q,const TimingOptions& o){
+ require(q.has_property<sycl::property::queue::in_order>(),"timing in-order queue");
+ std::printf("TIMING_META,total=%zu,chunk=%zu,samples=%zu,warmup_pairs=2,clock=host_steady_service_sum,admission_included=true,interleaved_matching_chunks=true,queue_profiling_property=%d,model=false,kernel_only=false,adopted=false\n",o.total,o.chunk,o.samples,q.has_property<sycl::property::queue::enable_profiling>());
+ std::puts("TIMING_HEADER,phase,pair,order,position,arm,total,chunk,chunks,service_seconds,tokens,recurrence_calls,admission_attempts,norm_calls,initial_state_fnv,final_state_fnv,guarded_fp32_chunk_chain_fnv,guarded_fp16_chunk_chain_fnv,compiled_sg,private_known,private,spill_known,spill,exact");
+ Buffers d(q,o.chunk);TimingResult reference;
+ // Full-prefix warmup for BOTH kernels and norm, in both execution orders.
+ // Warmup samples are labelled and are not recorded trial samples.
+ for(size_t warm=0;warm<2;++warm){bool first=o.quad_first!=(warm%2!=0);const auto r=timing_pair(d,o,first);if(warm==0)reference=r;
+  else require(r.initial_state==reference.initial_state&&r.state==reference.state&&r.fp32==reference.fp32&&r.fp16==reference.fp16,"warmup prefix repeat digest");
+  timing_emit(r,o,"warmup",warm+1,first);
+ }
+ for(size_t sample=0;sample<o.samples;++sample){bool first=o.quad_first!=(sample%2!=0);const auto r=timing_pair(d,o,first);
+  require(r.initial_state==reference.initial_state&&r.state==reference.state&&r.fp32==reference.fp32&&r.fp16==reference.fp16,"recorded prefix repeat digest");timing_emit(r,o,"sample",sample+1,first);
+ }
+ // Buffers destructor drains/releases before caller prints aggregate success.
+}
 } // namespace
 int main(int argc,char** argv){try{
  if(argc==2&&std::string(argv[1])=="--host-fail-stop-probe"){
@@ -158,6 +271,12 @@ int main(int argc,char** argv){try{
   std::puts("PASS host-only empty/denial/negative/ordered-partial contracts; queue_lookup=false GPU_submission=false");
   require(std::fflush(stdout)==0&&std::ferror(stdout)==0&&std::fflush(stderr)==0&&std::ferror(stderr)==0,"final output failure");
   return 0;
+ }
+ if(argc>1&&std::string(argv[1])=="--timing-prefix"){
+  const auto options=timing_options(argc,argv); // reject args/env before queue lookup
+  auto& timing_queue=*strata::q_of(nullptr);timing_run(timing_queue,options);
+  std::printf("TIMING_SUMMARY,samples=%zu,warmup_pairs=2,recorded_arms=%zu,exact=true,synthetic_component_only=true,model=false,full_lifecycle=false,adopted=false,pass\n",options.samples,2*options.samples);
+  require(std::fflush(stdout)==0&&std::ferror(stdout)==0&&std::fflush(stderr)==0&&std::ferror(stderr)==0,"final timing output failure");return 0;
  }
  size_t total=0,chunk=2048;
  if(argc!=1){require(argc==5&&std::string(argv[1])=="--prefix"&&std::string(argv[3])=="--chunk","usage: gdn_quad_parity [--host-only | --host-fail-stop-probe | --prefix 32768|262144 --chunk 1..2048]");total=decimal(argv[2]);chunk=decimal(argv[4]);require((total==32768||total==262144)&&chunk>0&&chunk<=2048&&(total+chunk-1)/chunk<=2048,"bounded prefix/chunk admission");}
