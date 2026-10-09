@@ -1,0 +1,1423 @@
+{
+  "scope": "Exact22/20NT1, layer-balanced real routed weights, synthetic inputs, homogeneous six-job CPU pool; not inference latency/adoption",
+  "controller_sha256": "e7b2c6305174d5ec9cd5fd9fe5801728f3c13a6b17f686c8ce3386dfa2581b24",
+  "created_utc": "2026-10-09T22:08:23.564345+00:00",
+  "bootstrap": "10000 resampled 25-round medians per fresh process/cohort/arm; deterministic SHA256 seed; central 95 percentiles indices249/9749; no per-ID pseudoreplication",
+  "profile_order": [
+    {
+      "tasks": 6,
+      "repeat": 1
+    },
+    {
+      "tasks": 0,
+      "repeat": 1
+    },
+    {
+      "tasks": 0,
+      "repeat": 2
+    },
+    {
+      "tasks": 6,
+      "repeat": 2
+    }
+  ],
+  "process_rounds_not_pooled_as_independent": true,
+  "inference_run": false,
+  "performance_eligible": false,
+  "adopted": false,
+  "full_lifecycle_passed": false,
+  "profiles": [
+    {
+      "tasks": 6,
+      "effective_tasks": 6,
+      "repeat": 1,
+      "receipt_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-calibration-22-20-nt1-timing-tasks6-batch6-r1/record.json",
+      "receipt_sha256": "128c2cb088311e9856b47448ef40bd42ab233211984c13c7720029d7f973d8da",
+      "samples_sha256": "96d373ade681dfb76c5c6438ca1c6a306f5bdce30526e1e9edacc7e388e95412",
+      "stats": {
+        "0/GU": {
+          "samples": 25,
+          "median": 0.26788422395833333,
+          "bootstrap95": [
+            0.247486875,
+            0.27349331770833335
+          ],
+          "relative_interval_width": 0.09708090429535109,
+          "coefficient_of_variation": 0.1334904297971877,
+          "minimum": 0.18335434895833333,
+          "maximum": 0.30786071354166666,
+          "units": "ms_per_expert_call"
+        },
+        "0/FFquant": {
+          "samples": 25,
+          "median": 0.000180859375,
+          "bootstrap95": [
+            0.00015758854166666666,
+            0.00020146875000000001
+          ],
+          "relative_interval_width": 0.2426205903527719,
+          "coefficient_of_variation": 0.42455236925231077,
+          "minimum": 0.0001204375,
+          "maximum": 0.0004002864583333334,
+          "units": "ms_per_expert_call"
+        },
+        "0/Down": {
+          "samples": 25,
+          "median": 0.08671179166666666,
+          "bootstrap95": [
+            0.08370827083333333,
+            0.0900711875
+          ],
+          "relative_interval_width": 0.07338006220799455,
+          "coefficient_of_variation": 0.252062626146553,
+          "minimum": 0.07812902083333333,
+          "maximum": 0.16160069791666667,
+          "units": "ms_per_expert_call"
+        },
+        "0/direct_complete": {
+          "samples": 25,
+          "median": 0.297165421875,
+          "bootstrap95": [
+            0.27867984895833336,
+            0.3045544375
+          ],
+          "relative_interval_width": 0.08707133009758634,
+          "coefficient_of_variation": 0.08075405480904267,
+          "minimum": 0.261756703125,
+          "maximum": 0.34540721354166665,
+          "units": "ms_per_expert_call"
+        },
+        "0/pool": {
+          "samples": 25,
+          "median": 296.229418,
+          "bootstrap95": [
+            287.824411,
+            302.952247
+          ],
+          "relative_interval_width": 0.0510679732692855,
+          "coefficient_of_variation": 0.06679533048457985,
+          "minimum": 279.50357,
+          "maximum": 372.56463,
+          "units": "ms_per_192_job_cohort"
+        },
+        "0/pool_GU": {
+          "samples": 25,
+          "median": 246.0334829999997,
+          "bootstrap95": [
+            234.27406299999893,
+            264.3073110000014
+          ],
+          "relative_interval_width": 0.12206975909861217,
+          "coefficient_of_variation": 0.15794428054648946,
+          "minimum": 153.28696000000036,
+          "maximum": 285.2897580000017,
+          "units": "ms_per_192_job_cohort"
+        },
+        "0/pool_Q": {
+          "samples": 25,
+          "median": 0.056145999999999585,
+          "bootstrap95": [
+            0.05203000000000002,
+            0.05876100000000006
+          ],
+          "relative_interval_width": 0.11988387418516176,
+          "coefficient_of_variation": 0.12741738696875468,
+          "minimum": 0.043884000000000034,
+          "maximum": 0.07159899999999997,
+          "units": "ms_per_192_job_cohort"
+        },
+        "0/pool_Down": {
+          "samples": 25,
+          "median": 46.86438300000009,
+          "bootstrap95": [
+            30.604449999999815,
+            68.59589099999988
+          ],
+          "relative_interval_width": 0.8106676876552497,
+          "coefficient_of_variation": 0.7377196415320585,
+          "minimum": 15.136578000000554,
+          "maximum": 149.47065099999975,
+          "units": "ms_per_192_job_cohort"
+        },
+        "1/GU": {
+          "samples": 25,
+          "median": 0.26269618229166664,
+          "bootstrap95": [
+            0.25955741666666665,
+            0.27894077083333335
+          ],
+          "relative_interval_width": 0.07378620426674387,
+          "coefficient_of_variation": 0.14369389510715116,
+          "minimum": 0.179702484375,
+          "maximum": 0.31201697916666665,
+          "units": "ms_per_expert_call"
+        },
+        "1/FFquant": {
+          "samples": 25,
+          "median": 0.00015028125,
+          "bootstrap95": [
+            0.00013290625,
+            0.00017053125
+          ],
+          "relative_interval_width": 0.2503639010189229,
+          "coefficient_of_variation": 0.3051307593257534,
+          "minimum": 0.00012215625,
+          "maximum": 0.00035567187500000003,
+          "units": "ms_per_expert_call"
+        },
+        "1/Down": {
+          "samples": 25,
+          "median": 0.08506295833333333,
+          "bootstrap95": [
+            0.08115827083333334,
+            0.088124140625
+          ],
+          "relative_interval_width": 0.08189075395626079,
+          "coefficient_of_variation": 0.2641248806552065,
+          "minimum": 0.07794356770833334,
+          "maximum": 0.16594017708333333,
+          "units": "ms_per_expert_call"
+        },
+        "1/direct_complete": {
+          "samples": 25,
+          "median": 0.28381176041666667,
+          "bootstrap95": [
+            0.27038665104166665,
+            0.29020639583333335
+          ],
+          "relative_interval_width": 0.06983412090665007,
+          "coefficient_of_variation": 0.10709170097660373,
+          "minimum": 0.25922590625,
+          "maximum": 0.4053613020833333,
+          "units": "ms_per_expert_call"
+        },
+        "1/pool": {
+          "samples": 25,
+          "median": 302.236611,
+          "bootstrap95": [
+            292.973345,
+            309.451404
+          ],
+          "relative_interval_width": 0.054520393626303704,
+          "coefficient_of_variation": 0.0429561702263391,
+          "minimum": 278.555985,
+          "maximum": 318.61224,
+          "units": "ms_per_192_job_cohort"
+        },
+        "1/pool_GU": {
+          "samples": 25,
+          "median": 242.71152200000142,
+          "bootstrap95": [
+            209.95195299999796,
+            257.10471999999754
+          ],
+          "relative_interval_width": 0.19427494257977299,
+          "coefficient_of_variation": 0.15158818176562527,
+          "minimum": 137.17511000000377,
+          "maximum": 270.4341220000024,
+          "units": "ms_per_192_job_cohort"
+        },
+        "1/pool_Q": {
+          "samples": 25,
+          "median": 0.057496000000000436,
+          "bootstrap95": [
+            0.05558299999999994,
+            0.05887999999999982
+          ],
+          "relative_interval_width": 0.05734311952135555,
+          "coefficient_of_variation": 0.1026610345977269,
+          "minimum": 0.04124400000000028,
+          "maximum": 0.06516500000000036,
+          "units": "ms_per_192_job_cohort"
+        },
+        "1/pool_Down": {
+          "samples": 25,
+          "median": 75.64069299999892,
+          "bootstrap95": [
+            46.556301999997686,
+            91.1591070000004
+          ],
+          "relative_interval_width": 0.5896667948296476,
+          "coefficient_of_variation": 0.5259984857061997,
+          "minimum": 15.646594000000732,
+          "maximum": 150.14203600000155,
+          "units": "ms_per_192_job_cohort"
+        }
+      },
+      "R46_gates": {
+        "GU": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": -0.019366730858602743,
+          "qualified": false
+        },
+        "FFquant": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": -0.16907127429805624,
+          "qualified": false
+        },
+        "Down": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": -0.01901509934971357,
+          "qualified": false
+        },
+        "direct_complete": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": -0.04493679437559339,
+          "qualified": false
+        },
+        "pool": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": 0.020278853601231273,
+          "qualified": false
+        },
+        "pool_GU": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": -0.013502068740774975,
+          "qualified": false
+        },
+        "pool_Q": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": 0.024044455526677888,
+          "qualified": false
+        },
+        "pool_Down": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": 0.614033689507846,
+          "qualified": false
+        }
+      },
+      "observation_before": {
+        "utc": "2026-10-09T22:04:35.372332+00:00",
+        "loadavg": "4.00 3.75 3.68 3/2816 2872066",
+        "cpu_model": "AMD Ryzen 5 5600X 6-Core Processor",
+        "flags": "fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap",
+        "allowed_cpu_list": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "governors": {
+          "/sys/devices/system/cpu/cpufreq/policy0/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy1/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy10/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy11/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy2/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy3/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy4/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy5/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy6/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy7/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy8/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy9/scaling_governor": "powersave"
+        }
+      },
+      "observation_after": {
+        "utc": "2026-10-09T22:05:02.944836+00:00",
+        "loadavg": "5.68 4.19 3.83 4/2784 2873567",
+        "cpu_model": "AMD Ryzen 5 5600X 6-Core Processor",
+        "flags": "fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap",
+        "allowed_cpu_list": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "governors": {
+          "/sys/devices/system/cpu/cpufreq/policy0/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy1/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy10/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy11/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy2/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy3/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy4/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy5/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy6/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy7/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy8/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy9/scaling_governor": "powersave"
+        }
+      }
+    },
+    {
+      "tasks": 0,
+      "effective_tasks": 18,
+      "repeat": 1,
+      "receipt_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-calibration-22-20-nt1-timing-tasks0-batch6-r1/record.json",
+      "receipt_sha256": "8433f44329c6f0e5a7af92e4ef9afd31477cc5e64935f8e5570dbd61b8dd60ad",
+      "samples_sha256": "443cacae5dea12b6616cf9284bd44b454dc0d6f466afa10d8f2f4b11074ba609",
+      "stats": {
+        "0/GU": {
+          "samples": 25,
+          "median": 0.26044958854166667,
+          "bootstrap95": [
+            0.24393370833333336,
+            0.26912341145833335
+          ],
+          "relative_interval_width": 0.09671623313380719,
+          "coefficient_of_variation": 0.13985388702978635,
+          "minimum": 0.18555716666666666,
+          "maximum": 0.3187441510416667,
+          "units": "ms_per_expert_call"
+        },
+        "0/FFquant": {
+          "samples": 25,
+          "median": 0.00014020833333333333,
+          "bootstrap95": [
+            0.000129984375,
+            0.00016171354166666667
+          ],
+          "relative_interval_width": 0.2263001485884101,
+          "coefficient_of_variation": 0.6344172570884086,
+          "minimum": 0.00012007291666666667,
+          "maximum": 0.0006812864583333333,
+          "units": "ms_per_expert_call"
+        },
+        "0/Down": {
+          "samples": 25,
+          "median": 0.08426296875,
+          "bootstrap95": [
+            0.08049123958333333,
+            0.08893144270833332
+          ],
+          "relative_interval_width": 0.10016503394321707,
+          "coefficient_of_variation": 0.2598544134168265,
+          "minimum": 0.07747702604166666,
+          "maximum": 0.15728526041666666,
+          "units": "ms_per_expert_call"
+        },
+        "0/direct_complete": {
+          "samples": 25,
+          "median": 0.276802765625,
+          "bootstrap95": [
+            0.2702336302083333,
+            0.2933188489583333
+          ],
+          "relative_interval_width": 0.08339952347613046,
+          "coefficient_of_variation": 0.14727481709449375,
+          "minimum": 0.26062945833333334,
+          "maximum": 0.43699536979166664,
+          "units": "ms_per_expert_call"
+        },
+        "0/pool": {
+          "samples": 25,
+          "median": 298.121039,
+          "bootstrap95": [
+            293.79617,
+            303.470545
+          ],
+          "relative_interval_width": 0.0324511649109072,
+          "coefficient_of_variation": 0.0559815795565295,
+          "minimum": 282.699579,
+          "maximum": 355.687617,
+          "units": "ms_per_192_job_cohort"
+        },
+        "0/pool_GU": {
+          "samples": 25,
+          "median": 230.8192180000001,
+          "bootstrap95": [
+            223.64684599999782,
+            257.0316759999996
+          ],
+          "relative_interval_width": 0.1446362668120718,
+          "coefficient_of_variation": 0.12489857372562105,
+          "minimum": 174.1300940000001,
+          "maximum": 280.0335430000009,
+          "units": "ms_per_192_job_cohort"
+        },
+        "0/pool_Q": {
+          "samples": 25,
+          "median": 0.05813800000000313,
+          "bootstrap95": [
+            0.05663400000000074,
+            0.0633089999999985
+          ],
+          "relative_interval_width": 0.11481303106397549,
+          "coefficient_of_variation": 0.12447618987873871,
+          "minimum": 0.044633999999994955,
+          "maximum": 0.07230000000000558,
+          "units": "ms_per_192_job_cohort"
+        },
+        "0/pool_Down": {
+          "samples": 25,
+          "median": 64.45112599999993,
+          "bootstrap95": [
+            45.88568399999963,
+            89.32748100000026
+          ],
+          "relative_interval_width": 0.674026967348882,
+          "coefficient_of_variation": 0.5115537723496982,
+          "minimum": 15.530895999999757,
+          "maximum": 124.68820199999982,
+          "units": "ms_per_192_job_cohort"
+        },
+        "1/GU": {
+          "samples": 25,
+          "median": 0.25547654166666667,
+          "bootstrap95": [
+            0.24000904166666667,
+            0.2610410208333333
+          ],
+          "relative_interval_width": 0.08232450239642014,
+          "coefficient_of_variation": 0.13384212947599258,
+          "minimum": 0.18204232812499999,
+          "maximum": 0.28388777604166665,
+          "units": "ms_per_expert_call"
+        },
+        "1/FFquant": {
+          "samples": 25,
+          "median": 0.0001890520833333333,
+          "bootstrap95": [
+            0.00013541145833333333,
+            0.000266859375
+          ],
+          "relative_interval_width": 0.6953000165298365,
+          "coefficient_of_variation": 0.4007410947081598,
+          "minimum": 0.00012064583333333334,
+          "maximum": 0.0004023177083333333,
+          "units": "ms_per_expert_call"
+        },
+        "1/Down": {
+          "samples": 25,
+          "median": 0.08252663541666667,
+          "bootstrap95": [
+            0.08057488541666667,
+            0.08723988541666666
+          ],
+          "relative_interval_width": 0.08076180455375695,
+          "coefficient_of_variation": 0.2643642258546842,
+          "minimum": 0.07758717708333333,
+          "maximum": 0.165388796875,
+          "units": "ms_per_expert_call"
+        },
+        "1/direct_complete": {
+          "samples": 25,
+          "median": 0.28814213541666667,
+          "bootstrap95": [
+            0.28012835416666665,
+            0.2974378645833333
+          ],
+          "relative_interval_width": 0.060072819241227364,
+          "coefficient_of_variation": 0.056136263189608265,
+          "minimum": 0.26545119791666666,
+          "maximum": 0.334698875,
+          "units": "ms_per_expert_call"
+        },
+        "1/pool": {
+          "samples": 25,
+          "median": 299.958012,
+          "bootstrap95": [
+            293.782711,
+            305.455674
+          ],
+          "relative_interval_width": 0.03891532325530942,
+          "coefficient_of_variation": 0.04824517603282573,
+          "minimum": 271.746069,
+          "maximum": 334.834257,
+          "units": "ms_per_192_job_cohort"
+        },
+        "1/pool_GU": {
+          "samples": 25,
+          "median": 235.40858699999626,
+          "bootstrap95": [
+            211.07893100000092,
+            264.78891400000066
+          ],
+          "relative_interval_width": 0.22815643084421808,
+          "coefficient_of_variation": 0.24247098244535073,
+          "minimum": 95.37900300000001,
+          "maximum": 284.2702029999982,
+          "units": "ms_per_192_job_cohort"
+        },
+        "1/pool_Q": {
+          "samples": 25,
+          "median": 0.057697000000001,
+          "bootstrap95": [
+            0.05406300000000286,
+            0.061117000000002975
+          ],
+          "relative_interval_width": 0.12225938956964823,
+          "coefficient_of_variation": 0.15155791728702936,
+          "minimum": 0.03321300000000704,
+          "maximum": 0.07417300000000182,
+          "units": "ms_per_192_job_cohort"
+        },
+        "1/pool_Down": {
+          "samples": 25,
+          "median": 61.99736800000028,
+          "bootstrap95": [
+            39.647242999999435,
+            96.45759200000157
+          ],
+          "relative_interval_width": 0.9163348515053393,
+          "coefficient_of_variation": 0.6585057791244419,
+          "minimum": 15.770794000000478,
+          "maximum": 186.88592199999994,
+          "units": "ms_per_192_job_cohort"
+        }
+      },
+      "R46_gates": {
+        "GU": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": -0.019094086125632015,
+          "qualified": false
+        },
+        "FFquant": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": 0.34836552748885574,
+          "qualified": false
+        },
+        "Down": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": -0.020606125788006135,
+          "qualified": false
+        },
+        "direct_complete": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": 0.04096552202454773,
+          "qualified": false
+        },
+        "pool": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": true,
+          "train_holdout_median_relative_gap": 0.0061618361661486265,
+          "qualified": true
+        },
+        "pool_GU": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": 0.0198829587924354,
+          "qualified": false
+        },
+        "pool_Q": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": -0.00758540025460297,
+          "qualified": false
+        },
+        "pool_Down": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": -0.038071607934354046,
+          "qualified": false
+        }
+      },
+      "observation_before": {
+        "utc": "2026-10-09T22:05:33.306117+00:00",
+        "loadavg": "4.67 4.09 3.81 3/2761 2875915",
+        "cpu_model": "AMD Ryzen 5 5600X 6-Core Processor",
+        "flags": "fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap",
+        "allowed_cpu_list": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "governors": {
+          "/sys/devices/system/cpu/cpufreq/policy0/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy1/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy10/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy11/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy2/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy3/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy4/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy5/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy6/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy7/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy8/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy9/scaling_governor": "powersave"
+        }
+      },
+      "observation_after": {
+        "utc": "2026-10-09T22:06:00.986510+00:00",
+        "loadavg": "7.23 4.78 4.05 4/2808 2877831",
+        "cpu_model": "AMD Ryzen 5 5600X 6-Core Processor",
+        "flags": "fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap",
+        "allowed_cpu_list": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "governors": {
+          "/sys/devices/system/cpu/cpufreq/policy0/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy1/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy10/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy11/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy2/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy3/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy4/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy5/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy6/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy7/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy8/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy9/scaling_governor": "powersave"
+        }
+      }
+    },
+    {
+      "tasks": 0,
+      "effective_tasks": 18,
+      "repeat": 2,
+      "receipt_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-calibration-22-20-nt1-timing-tasks0-batch6-r2/record.json",
+      "receipt_sha256": "b0369d1829325e1e305fb45a9e9a3241ec0b8867ad83dfce4c1c9505d3e38b55",
+      "samples_sha256": "b18722f2522e3f051254b4f08bb812a105832183ba7e3cc0150a4f0292dcba6e",
+      "stats": {
+        "0/GU": {
+          "samples": 25,
+          "median": 0.25592536979166663,
+          "bootstrap95": [
+            0.24009255208333333,
+            0.2636208958333333
+          ],
+          "relative_interval_width": 0.09193439387878188,
+          "coefficient_of_variation": 0.12490210986466474,
+          "minimum": 0.1816873020833333,
+          "maximum": 0.28518419270833334,
+          "units": "ms_per_expert_call"
+        },
+        "0/FFquant": {
+          "samples": 25,
+          "median": 0.0001719375,
+          "bootstrap95": [
+            0.00012857291666666667,
+            0.0002170208333333333
+          ],
+          "relative_interval_width": 0.5144189991518234,
+          "coefficient_of_variation": 0.3883270221811694,
+          "minimum": 0.00011965104166666667,
+          "maximum": 0.00034930208333333335,
+          "units": "ms_per_expert_call"
+        },
+        "0/Down": {
+          "samples": 25,
+          "median": 0.08257193229166666,
+          "bootstrap95": [
+            0.08122622395833333,
+            0.08619520833333333
+          ],
+          "relative_interval_width": 0.060177644353146376,
+          "coefficient_of_variation": 0.2011622012888146,
+          "minimum": 0.07818132812499999,
+          "maximum": 0.153385640625,
+          "units": "ms_per_expert_call"
+        },
+        "0/direct_complete": {
+          "samples": 25,
+          "median": 0.28231358333333334,
+          "bootstrap95": [
+            0.273866640625,
+            0.29455448958333336
+          ],
+          "relative_interval_width": 0.07327967968833722,
+          "coefficient_of_variation": 0.08117970533435925,
+          "minimum": 0.26347431770833335,
+          "maximum": 0.36693572916666667,
+          "units": "ms_per_expert_call"
+        },
+        "0/pool": {
+          "samples": 25,
+          "median": 293.210051,
+          "bootstrap95": [
+            287.406912,
+            298.546091
+          ],
+          "relative_interval_width": 0.03799044051187731,
+          "coefficient_of_variation": 0.04913069176392986,
+          "minimum": 272.229653,
+          "maximum": 334.034802,
+          "units": "ms_per_192_job_cohort"
+        },
+        "0/pool_GU": {
+          "samples": 25,
+          "median": 246.39643700000033,
+          "bootstrap95": [
+            220.77918900000168,
+            262.537981999998
+          ],
+          "relative_interval_width": 0.16947807163297687,
+          "coefficient_of_variation": 0.17097666824267785,
+          "minimum": 130.61111900000014,
+          "maximum": 272.29115399999955,
+          "units": "ms_per_192_job_cohort"
+        },
+        "0/pool_Q": {
+          "samples": 25,
+          "median": 0.05468599999999968,
+          "bootstrap95": [
+            0.051895000000000024,
+            0.0606439999999997
+          ],
+          "relative_interval_width": 0.1599861024759486,
+          "coefficient_of_variation": 0.14460160507850114,
+          "minimum": 0.03922199999999976,
+          "maximum": 0.07051099999999999,
+          "units": "ms_per_192_job_cohort"
+        },
+        "0/pool_Down": {
+          "samples": 25,
+          "median": 48.89407200000005,
+          "bootstrap95": [
+            32.08425900000009,
+            81.07234999999991
+          ],
+          "relative_interval_width": 1.0019229120454474,
+          "coefficient_of_variation": 0.6829857475401879,
+          "minimum": 15.294830000000161,
+          "maximum": 167.8686290000005,
+          "units": "ms_per_192_job_cohort"
+        },
+        "1/GU": {
+          "samples": 25,
+          "median": 0.26052836458333334,
+          "bootstrap95": [
+            0.20553151041666665,
+            0.272463328125
+          ],
+          "relative_interval_width": 0.2569079870262049,
+          "coefficient_of_variation": 0.1772713093737384,
+          "minimum": 0.1797329479166667,
+          "maximum": 0.341843921875,
+          "units": "ms_per_expert_call"
+        },
+        "1/FFquant": {
+          "samples": 25,
+          "median": 0.00017731249999999998,
+          "bootstrap95": [
+            0.00012481770833333333,
+            0.00021498958333333334
+          ],
+          "relative_interval_width": 0.508547761720127,
+          "coefficient_of_variation": 0.40118174295412895,
+          "minimum": 0.00011767187499999999,
+          "maximum": 0.0003556197916666667,
+          "units": "ms_per_expert_call"
+        },
+        "1/Down": {
+          "samples": 25,
+          "median": 0.08647590104166668,
+          "bootstrap95": [
+            0.08417928645833334,
+            0.08878836979166667
+          ],
+          "relative_interval_width": 0.053299049536500796,
+          "coefficient_of_variation": 0.28061591676806946,
+          "minimum": 0.07872141145833333,
+          "maximum": 0.1660304375,
+          "units": "ms_per_expert_call"
+        },
+        "1/direct_complete": {
+          "samples": 25,
+          "median": 0.2800553802083333,
+          "bootstrap95": [
+            0.2728634583333333,
+            0.2989979114583333
+          ],
+          "relative_interval_width": 0.09331887537942882,
+          "coefficient_of_variation": 0.06357281576536682,
+          "minimum": 0.2575759322916667,
+          "maximum": 0.3155841822916667,
+          "units": "ms_per_expert_call"
+        },
+        "1/pool": {
+          "samples": 25,
+          "median": 297.35354,
+          "bootstrap95": [
+            284.982747,
+            304.340573
+          ],
+          "relative_interval_width": 0.06510037176621468,
+          "coefficient_of_variation": 0.06457517328113482,
+          "minimum": 263.638,
+          "maximum": 354.180588,
+          "units": "ms_per_192_job_cohort"
+        },
+        "1/pool_GU": {
+          "samples": 25,
+          "median": 251.00073199999497,
+          "bootstrap95": [
+            214.31637099999898,
+            263.9207209999968
+          ],
+          "relative_interval_width": 0.19762631608579845,
+          "coefficient_of_variation": 0.18734029218881368,
+          "minimum": 113.34028100000069,
+          "maximum": 283.41965300000265,
+          "units": "ms_per_192_job_cohort"
+        },
+        "1/pool_Q": {
+          "samples": 25,
+          "median": 0.05276800000000037,
+          "bootstrap95": [
+            0.051494000000001705,
+            0.05595499999999998
+          ],
+          "relative_interval_width": 0.08453987265005762,
+          "coefficient_of_variation": 0.1087698100421583,
+          "minimum": 0.04133799999999921,
+          "maximum": 0.07034799999999963,
+          "units": "ms_per_192_job_cohort"
+        },
+        "1/pool_Down": {
+          "samples": 25,
+          "median": 49.281015999999,
+          "bootstrap95": [
+            30.914581,
+            81.7096779999988
+          ],
+          "relative_interval_width": 1.030723412845219,
+          "coefficient_of_variation": 0.7991441616276059,
+          "minimum": 15.160467000001518,
+          "maximum": 183.6202200000007,
+          "units": "ms_per_192_job_cohort"
+        }
+      },
+      "R46_gates": {
+        "GU": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": 0.01798569167024633,
+          "qualified": false
+        },
+        "FFquant": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": 0.031261359505634134,
+          "qualified": false
+        },
+        "Down": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": 0.04727960993101288,
+          "qualified": false
+        },
+        "direct_complete": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": -0.007998917722402799,
+          "qualified": false
+        },
+        "pool": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": 0.014131469865608315,
+          "qualified": false
+        },
+        "pool_GU": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": 0.018686532386808175,
+          "qualified": false
+        },
+        "pool_Q": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": -0.035072962001231,
+          "qualified": false
+        },
+        "pool_Down": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": 0.007913924616443246,
+          "qualified": false
+        }
+      },
+      "observation_before": {
+        "utc": "2026-10-09T22:06:24.732097+00:00",
+        "loadavg": "6.46 4.76 4.06 4/2773 2879830",
+        "cpu_model": "AMD Ryzen 5 5600X 6-Core Processor",
+        "flags": "fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap",
+        "allowed_cpu_list": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "governors": {
+          "/sys/devices/system/cpu/cpufreq/policy0/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy1/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy10/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy11/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy2/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy3/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy4/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy5/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy6/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy7/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy8/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy9/scaling_governor": "powersave"
+        }
+      },
+      "observation_after": {
+        "utc": "2026-10-09T22:06:52.010404+00:00",
+        "loadavg": "6.63 4.96 4.15 3/2789 2881742",
+        "cpu_model": "AMD Ryzen 5 5600X 6-Core Processor",
+        "flags": "fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap",
+        "allowed_cpu_list": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "governors": {
+          "/sys/devices/system/cpu/cpufreq/policy0/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy1/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy10/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy11/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy2/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy3/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy4/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy5/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy6/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy7/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy8/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy9/scaling_governor": "powersave"
+        }
+      }
+    },
+    {
+      "tasks": 6,
+      "effective_tasks": 6,
+      "repeat": 2,
+      "receipt_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-calibration-22-20-nt1-timing-tasks6-batch6-r2/record.json",
+      "receipt_sha256": "87d3ce3e9960962f3867b899d2d6396c85369f1e5ce8bc51a2e799ffdb0c89fa",
+      "samples_sha256": "df958eea0bb2b11d5e8baea02ddea64c3eb001945a64e407c15fc0536183a204",
+      "stats": {
+        "0/GU": {
+          "samples": 25,
+          "median": 0.2624095208333333,
+          "bootstrap95": [
+            0.22489171354166668,
+            0.27740112499999997
+          ],
+          "relative_interval_width": 0.20010482581416741,
+          "coefficient_of_variation": 0.18140235447275208,
+          "minimum": 0.18127727083333334,
+          "maximum": 0.3573086302083333,
+          "units": "ms_per_expert_call"
+        },
+        "0/FFquant": {
+          "samples": 25,
+          "median": 0.000135984375,
+          "bootstrap95": [
+            0.00012179166666666665,
+            0.00016463020833333333
+          ],
+          "relative_interval_width": 0.3150254701443947,
+          "coefficient_of_variation": 0.41537226700817437,
+          "minimum": 0.00011797916666666666,
+          "maximum": 0.0003906822916666666,
+          "units": "ms_per_expert_call"
+        },
+        "0/Down": {
+          "samples": 25,
+          "median": 0.08500808854166668,
+          "bootstrap95": [
+            0.08075544270833333,
+            0.09339423958333333
+          ],
+          "relative_interval_width": 0.14867757988470823,
+          "coefficient_of_variation": 0.26782557419803404,
+          "minimum": 0.07856267708333334,
+          "maximum": 0.17726101041666667,
+          "units": "ms_per_expert_call"
+        },
+        "0/direct_complete": {
+          "samples": 25,
+          "median": 0.2826305052083333,
+          "bootstrap95": [
+            0.27155271875000003,
+            0.298021296875
+          ],
+          "relative_interval_width": 0.09365081842630324,
+          "coefficient_of_variation": 0.10296462988985616,
+          "minimum": 0.2606946770833333,
+          "maximum": 0.39550922916666664,
+          "units": "ms_per_expert_call"
+        },
+        "0/pool": {
+          "samples": 25,
+          "median": 302.232368,
+          "bootstrap95": [
+            292.809635,
+            309.914611
+          ],
+          "relative_interval_width": 0.05659544711637227,
+          "coefficient_of_variation": 0.048403856359618656,
+          "minimum": 283.76154,
+          "maximum": 341.447129,
+          "units": "ms_per_192_job_cohort"
+        },
+        "0/pool_GU": {
+          "samples": 25,
+          "median": 226.5539390000008,
+          "bootstrap95": [
+            212.78783699999713,
+            249.1865480000024
+          ],
+          "relative_interval_width": 0.1606624504551437,
+          "coefficient_of_variation": 0.15904790555579057,
+          "minimum": 120.88564700000006,
+          "maximum": 295.0901780000022,
+          "units": "ms_per_192_job_cohort"
+        },
+        "0/pool_Q": {
+          "samples": 25,
+          "median": 0.057479999999999976,
+          "bootstrap95": [
+            0.05256600000000011,
+            0.05821799999999988
+          ],
+          "relative_interval_width": 0.09832985386220895,
+          "coefficient_of_variation": 0.10700661639764988,
+          "minimum": 0.04202100000000031,
+          "maximum": 0.06588599999999989,
+          "units": "ms_per_192_job_cohort"
+        },
+        "0/pool_Down": {
+          "samples": 25,
+          "median": 63.91251800000009,
+          "bootstrap95": [
+            47.25557200000026,
+            102.38622899999928
+          ],
+          "relative_interval_width": 0.8625956029458727,
+          "coefficient_of_variation": 0.5362341281026984,
+          "minimum": 15.171039000000519,
+          "maximum": 165.8716330000002,
+          "units": "ms_per_192_job_cohort"
+        },
+        "1/GU": {
+          "samples": 25,
+          "median": 0.263437609375,
+          "bootstrap95": [
+            0.24722276041666666,
+            0.268736328125
+          ],
+          "relative_interval_width": 0.08166475454804571,
+          "coefficient_of_variation": 0.12260172193967979,
+          "minimum": 0.1847438541666667,
+          "maximum": 0.32415064583333336,
+          "units": "ms_per_expert_call"
+        },
+        "1/FFquant": {
+          "samples": 25,
+          "median": 0.00013280208333333332,
+          "bootstrap95": [
+            0.00012628125,
+            0.00018576562499999998
+          ],
+          "relative_interval_width": 0.44791748372421347,
+          "coefficient_of_variation": 0.41493513638473745,
+          "minimum": 0.00011803645833333333,
+          "maximum": 0.00037899479166666664,
+          "units": "ms_per_expert_call"
+        },
+        "1/Down": {
+          "samples": 25,
+          "median": 0.08169278645833333,
+          "bootstrap95": [
+            0.07982306770833333,
+            0.08674432812499999
+          ],
+          "relative_interval_width": 0.08472303022980841,
+          "coefficient_of_variation": 0.2751379767913971,
+          "minimum": 0.07791583333333334,
+          "maximum": 0.18224425,
+          "units": "ms_per_expert_call"
+        },
+        "1/direct_complete": {
+          "samples": 25,
+          "median": 0.27970672395833335,
+          "bootstrap95": [
+            0.26859742708333334,
+            0.299563421875
+          ],
+          "relative_interval_width": 0.1107087965331843,
+          "coefficient_of_variation": 0.09531331193123974,
+          "minimum": 0.26201367708333334,
+          "maximum": 0.36962467708333335,
+          "units": "ms_per_expert_call"
+        },
+        "1/pool": {
+          "samples": 25,
+          "median": 298.70204,
+          "bootstrap95": [
+            292.381362,
+            305.731155
+          ],
+          "relative_interval_width": 0.04469267434531072,
+          "coefficient_of_variation": 0.0501127452097063,
+          "minimum": 272.403795,
+          "maximum": 334.576951,
+          "units": "ms_per_192_job_cohort"
+        },
+        "1/pool_GU": {
+          "samples": 25,
+          "median": 237.1728000000021,
+          "bootstrap95": [
+            219.07861299999786,
+            260.36362200000076
+          ],
+          "relative_interval_width": 0.1740714323059075,
+          "coefficient_of_variation": 0.14944857803179828,
+          "minimum": 144.996126,
+          "maximum": 288.4052910000046,
+          "units": "ms_per_192_job_cohort"
+        },
+        "1/pool_Q": {
+          "samples": 25,
+          "median": 0.0547149999999994,
+          "bootstrap95": [
+            0.05289100000000024,
+            0.06021500000000124
+          ],
+          "relative_interval_width": 0.13385726034910128,
+          "coefficient_of_variation": 0.12167599868474423,
+          "minimum": 0.04325900000000038,
+          "maximum": 0.07051299999999783,
+          "units": "ms_per_192_job_cohort"
+        },
+        "1/pool_Down": {
+          "samples": 25,
+          "median": 63.799347000000125,
+          "bootstrap95": [
+            33.35630099999844,
+            89.98916399999962
+          ],
+          "relative_interval_width": 0.8876715148824497,
+          "coefficient_of_variation": 0.6003898109396331,
+          "minimum": 15.31031800000028,
+          "maximum": 149.8392019999992,
+          "units": "ms_per_192_job_cohort"
+        }
+      },
+      "R46_gates": {
+        "GU": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": 0.003917878201986635,
+          "qualified": false
+        },
+        "FFquant": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": -0.023401892067869468,
+          "qualified": false
+        },
+        "Down": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": -0.038999842723299816,
+          "qualified": false
+        },
+        "direct_complete": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": -0.010344889161362114,
+          "qualified": false
+        },
+        "pool": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": -0.011680840220263944,
+          "qualified": false
+        },
+        "pool_GU": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": 0.046871226547075207,
+          "qualified": false
+        },
+        "pool_Q": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": -0.04810368823939759,
+          "qualified": false
+        },
+        "pool_Down": {
+          "train_holdout_intervals_overlap": true,
+          "both_relative_width_at_most_5_percent": false,
+          "train_holdout_median_relative_gap": -0.0017707172795158321,
+          "qualified": false
+        }
+      },
+      "observation_before": {
+        "utc": "2026-10-09T22:07:03.704611+00:00",
+        "loadavg": "6.15 4.91 4.14 2/2767 2882575",
+        "cpu_model": "AMD Ryzen 5 5600X 6-Core Processor",
+        "flags": "fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap",
+        "allowed_cpu_list": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "governors": {
+          "/sys/devices/system/cpu/cpufreq/policy0/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy1/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy10/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy11/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy2/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy3/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy4/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy5/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy6/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy7/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy8/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy9/scaling_governor": "powersave"
+        }
+      },
+      "observation_after": {
+        "utc": "2026-10-09T22:07:31.226197+00:00",
+        "loadavg": "8.37 5.54 4.37 2/2794 2884732",
+        "cpu_model": "AMD Ryzen 5 5600X 6-Core Processor",
+        "flags": "fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap",
+        "allowed_cpu_list": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "governors": {
+          "/sys/devices/system/cpu/cpufreq/policy0/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy1/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy10/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy11/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy2/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy3/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy4/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy5/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy6/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy7/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy8/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy9/scaling_governor": "powersave"
+        }
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "repeat": 1,
+      "six_over_eighteen_median_ratio": {
+        "0/GU": 1.028545391291633,
+        "0/FFquant": 1.2899331352154533,
+        "0/Down": 1.0290616738644953,
+        "0/direct_complete": 1.0735637745671458,
+        "0/pool": 0.9936548557379743,
+        "0/pool_GU": 1.065914203903072,
+        "0/pool_Q": 0.9657366954487007,
+        "0/pool_Down": 0.7271305547090076,
+        "1/GU": 1.0282595050719756,
+        "1/FFquant": 0.7949198302936802,
+        "1/Down": 1.0307333856985816,
+        "1/direct_complete": 0.9849713926991689,
+        "1/pool": 1.007596393191191,
+        "1/pool_GU": 1.0310223815242783,
+        "1/pool_Q": 0.9965162833422785,
+        "1/pool_Down": 1.2200629710602968
+      },
+      "scope": "Controlled homogeneous 6-job pool; cross-layer shuffled batches differ from production per-layer variable/mixed-NT callbacks. Direct components are controls, not task-factor treatment."
+    },
+    {
+      "repeat": 2,
+      "six_over_eighteen_median_ratio": {
+        "0/GU": 1.0253361010944129,
+        "0/FFquant": 0.7908942202835333,
+        "0/Down": 1.0295034424215102,
+        "0/direct_complete": 1.0011225881208337,
+        "0/pool": 1.030770831249574,
+        "0/pool_GU": 0.9194692170000839,
+        "0/pool_Q": 1.05109168708628,
+        "0/pool_Down": 1.3071629215091765,
+        "1/GU": 1.011166710374586,
+        "1/FFquant": 0.7489719186934556,
+        "1/Down": 0.9446884678191593,
+        "1/direct_complete": 0.9987550453423155,
+        "1/pool": 1.0045350057039846,
+        "1/pool_GU": 0.9449087981146082,
+        "1/pool_Q": 1.0368973620375799,
+        "1/pool_Down": 1.294602915654203
+      },
+      "scope": "Controlled homogeneous 6-job pool; cross-layer shuffled batches differ from production per-layer variable/mixed-NT callbacks. Direct components are controls, not task-factor treatment."
+    }
+  ],
+  "all_direct_component_fit_gates_passed": false,
+  "interpretation": "If any fit/holdout gates fail, those cells are unresolved and cannot weight route-demand or establish a task candidate. Whole-engine >=32K and full262144 gates remain mandatory. No pool-ms sum or cohort-ms division is an inference/per-job latency estimate."
+}

@@ -62,3 +62,12 @@ Root records `STRATA_IQ_PREFETCH` in environment output. Its default is 2048
 bytes; zero disables the production IQ prefetch. Pin the same value or absence
 in every compared process. The initial compile-only receipt remains historical;
 adding this metadata does not change the kernel or task policy.
+
+Root found the first streaming timing runs placed all workers on host CPU0:
+the fixture narrowed caller affinity before constructing the production pool,
+whose topology detector then saw only that CPU. Those original output-correct
+receipts remain, but their timings are invalid for service calibration or task
+comparison. Construct the pool under original caller affinity, then pin the
+host. Root must require actual singleton thread CPU sets to match the declared
+host plus five distinct workers before interpreting any new timing. This fixes
+the standalone fixture only; production initialization order is a separate audit.

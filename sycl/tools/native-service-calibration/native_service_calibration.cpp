@@ -38,9 +38,12 @@ static int host_cpu() {
  return -1;
 #endif
 }
-static void thread_placement(int tasks){
+static void thread_placement(int tasks,const c::CpuTopology& topology){
 #ifdef __linux__
  size_t threads=0;
+ std::set<int> observed,expected{topology.host_core};
+ require(topology.worker_cores.size()>=5,"five worker CPU plans required");
+ for(int i=0;i<5;++i)require(expected.insert(topology.worker_cores[i]).second,"duplicate planned CPU");
  for(const auto& entry:std::filesystem::directory_iterator("/proc/self/task")){
   require(++threads<=128,"thread audit bound");
   std::ifstream file(entry.path()/"status",std::ios::binary);require(bool(file),"thread status open");
@@ -50,8 +53,14 @@ static void thread_placement(int tasks){
   std::string line,allowed;while(std::getline(lines,line))if(line.rfind("Cpus_allowed_list:",0)==0)allowed=line.substr(18);
   require(!allowed.empty(),"missing thread affinity");
   std::cout<<"PLACEMENT,observed_allowed_list,"<<tasks<<','<<quote(entry.path().filename().string())<<','<<quote(allowed)<<'\n';
+  const auto begin=allowed.find_first_not_of(" \t");require(begin!=std::string::npos,"empty CPU list");
+  const auto cpu_text=allowed.substr(begin);
+  require(std::all_of(cpu_text.begin(),cpu_text.end(),[](char ch){return ch>='0'&&ch<='9';}),"thread must have singleton CPU affinity");
+  require(observed.insert(std::stoi(cpu_text)).second,"threads share a planned CPU");
  }
+ require(threads==6&&observed==expected,"actual thread affinity differs from six CPU plan");
 #else
+ (void)topology;
  std::cout<<"PLACEMENT,observed_allowed_list,unsupported,"<<tasks<<'\n';
 #endif
 }
@@ -223,7 +232,7 @@ int main(int argc,char** argv){try{
  }
  for(int cohort=0;cohort<2;++cohort)require(gu_bytes[cohort]>(64ULL<<20)&&down_bytes[cohort]>(64ULL<<20),"each cohort GU and Down must exceed64MiB");
  plan.close();auto topology=c::detect_cpu_topology(true,c::PoolAffinity::All);require(topology.host_core>=0&&topology.worker_cores.size()>=5,"six physical-core plan");
- require(c::planned_host_core(c::PoolAffinity::All)==topology.host_core,"host plan mismatch");Affinity affinity(topology.host_core);
+ require(c::planned_host_core(c::PoolAffinity::All)==topology.host_core,"host plan mismatch");
  std::array<LayerInput,48> inputs{};std::array<bool,48> initialized{};
  for(const auto& item:cases)if(!initialized[item.layer]){
   auto& input=inputs[item.layer];for(int t=0;t<nt;++t){for(int i=0;i<c::H;++i)input.x[t][i]=float(((i*37+item.layer*11+t*101)%509)-254)/257.0f;input.a[t].reset();c::native_quant_act(item.fmt,input.x[t].data(),input.a[t].data.data());}
@@ -238,18 +247,21 @@ int main(int argc,char** argv){try{
  }
  auto orders=schedule(seed);std::cout<<std::setprecision(17)<<"META,scope,streaming_CPU_cell_not_end_to_end_or_adoption\nMETA,GU,"<<gu_type<<"\nMETA,Down,"<<down_type<<"\nMETA,NT,"<<nt<<"\nMETA,tasks,"<<tasks<<"\nMETA,batch_jobs,"<<batch<<"\nMETA,seed,"<<seed<<"\nMETA,rng,splitmix64_modulo_fisher_yates_v1\nMETA,input_formula,((i*37+layer*11+token*101)%509-254)/257.0f\nMETA,input_quant,outside_service_intervals_once_per_layer_token\nMETA,cpu,"<<quote(c::cpu_name())<<"\nMETA,owned_blob_bytes,"<<aggregate<<"\nMETA,ggml_GU_maxabs,"<<gu_delta<<"\nMETA,ggml_Down_maxabs,"<<down_delta<<"\nMETA,q2_avxvnni,1\nMETA,iq_avxvnni,0\nMETA,iq2s_gcc,off\nMETA,precision,IntelLLVM_precise\n";
  for(int cohort=0;cohort<2;++cohort)std::cout<<"WORKING_SET,"<<cohort<<','<<gu_bytes[cohort]<<','<<down_bytes[cohort]<<'\n';
- std::cout<<"PLACEMENT,planned_host,"<<topology.host_core<<','<<host_cpu()<<'\n';for(int i=0;i<5;++i)std::cout<<"PLACEMENT,planned_worker,"<<i<<','<<topology.worker_cores[i]<<'\n';
  std::cout<<"ROUTE,"<<int(c::native_gu_dispatch(int(gu_type),nt))<<','<<(down_type==42?int(c::cpu_avx512_ok()?c::NativeDispatch::Q2Avx512:c::NativeDispatch::Q2Avx2):int(c::native_down_dispatch(int(down_type),nt)))<<'\n';
  std::cout<<"ROUND,cohort,arm,round,GU,Down,NT,tasks,batch_jobs,batches,logical_jobs,order_fnv,outer_ms,pool_GU_ms,pool_Q_ms,pool_Down_ms,output_fnv,host_cpu\n";
  // One pool lifetime; tasks0 and6 belong in different owner-launched processes.
  c::ExpertPool pool(5,true,true,c::PoolAffinity::All,tasks);require(pool.workers()==5,"pool workers");
+ // Construct workers while the caller still has its original allowed CPU set.
+ // The pool rescans caller affinity; pinning first made all workers inherit CPU0.
+ Affinity affinity(topology.host_core);
+ std::cout<<"PLACEMENT,planned_host,"<<topology.host_core<<','<<host_cpu()<<'\n';for(int i=0;i<5;++i)std::cout<<"PLACEMENT,planned_worker,"<<i<<','<<topology.worker_cores[i]<<'\n';
  std::cout<<"TASK_PLAN,"<<(tasks?tasks:18)<<','<<(tasks?tasks:18)<<'\n';
  // Untimed pool/reference parity gate over all owned experts before timing any arm.
  for(size_t i=0;i<cases.size();i+=size_t(batch)){
   std::array<c::ExpertJobMulti,6> jobs{};for(int j=0;j<batch;++j){auto k=i+j;auto& b=work[k];jobs[j].blob=cases[k].blob.data();jobs[j].nt=nt;for(int t=0;t<nt;++t){b.pout[t].reset();jobs[j].nact[t]=b.ap[t];jobs[j].out[t]=b.pout[t].data.data();}}
   pool.run_split_multi_native(cases.front().fmt,jobs.data(),batch);for(int j=0;j<batch;++j)check_round(Arm::Pool,cases[i+j],work[i+j],nt);
  }
- thread_placement(tasks);pool.diag(stderr);
+ thread_placement(tasks,topology);pool.diag(stderr);
  if(correctness_only){
   for(size_t i=0;i<cases.size();++i)input_check(cases[i].fmt,inputs[cases[i].layer],nt);
   require(strata::core::release_gpu_fn().load()==nullptr,"GPU callback changed");

@@ -1,0 +1,55 @@
+{
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "source_binary_sha256": "3382d73a7b2db38727b3667192533e51f98165f842755331d292115ec24f18e1",
+  "controller_sha256": "68fe975dd828b5b2d200cb358dd864af6864fd2e9677e446996062196f95f4bd",
+  "tool": "/usr/bin/objdump",
+  "tool_sha256": "325c4205a4c658a9d1e1ebc469ae55975a2b897a3d3c1e79d9b158612d37f745",
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/objdump",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "8feb2cb2830955a0c282e6abca2b512dcf52cb9380e6b0263a481bf1c6349d8d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 288
+    },
+    {
+      "argv": [
+        "/usr/bin/objdump",
+        "--no-show-raw-insn",
+        "-M",
+        "intel",
+        "-d",
+        "--disassemble=ggml_vec_dot_iq2_s_q8_K",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/build-native-service-calibration-v1/native_service_calibration"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "6bc97fe673ea01b33dfe4de665ae1b7938388fd8e488cb1b62e5c355f456192e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 5600
+    }
+  ],
+  "gpu_work": false,
+  "model_opened": false,
+  "binary_executed": false,
+  "performance_evidence": false,
+  "expected_instruction_patterns": {
+    "AVX2_unsigned_signed_pair_products": "vpmaddubsw",
+    "AVX2_scaled_int32_pair_sum": "vpmaddwd",
+    "fused_YMM_accumulation": "vfmadd",
+    "float_int32_conversion": "vcvtdq2ps"
+  },
+  "pattern_counts": {
+    "AVX2_unsigned_signed_pair_products": 2,
+    "AVX2_scaled_int32_pair_sum": 2,
+    "fused_YMM_accumulation": 1,
+    "float_int32_conversion": 1
+  },
+  "scope": "Linked current IQ2_S dot contains AVX2 integer dot and fused vector accumulation; not complete per-operation or performance proof",
+  "whole_function_sha256": "6bc97fe673ea01b33dfe4de665ae1b7938388fd8e488cb1b62e5c355f456192e",
+  "finished_utc": "2026-10-09T22:35:11.103713+00:00"
+}

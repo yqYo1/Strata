@@ -1,0 +1,35 @@
+{
+  "scope": "New root placement validation invalidates interpretation, does not rewrite original receipts",
+  "input_receipts": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-calibration-22-20-nt1-timing-tasks6-batch6-r1/record.json",
+      "sha256": "128c2cb088311e9856b47448ef40bd42ab233211984c13c7720029d7f973d8da",
+      "original_output_correctness_passed": true,
+      "timing_interpretation_valid": false
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-calibration-22-20-nt1-timing-tasks0-batch6-r1/record.json",
+      "sha256": "8433f44329c6f0e5a7af92e4ef9afd31477cc5e64935f8e5570dbd61b8dd60ad",
+      "original_output_correctness_passed": true,
+      "timing_interpretation_valid": false
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-calibration-22-20-nt1-timing-tasks0-batch6-r2/record.json",
+      "sha256": "b0369d1829325e1e305fb45a9e9a3241ec0b8867ad83dfce4c1c9505d3e38b55",
+      "original_output_correctness_passed": true,
+      "timing_interpretation_valid": false
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-calibration-22-20-nt1-timing-tasks6-batch6-r2/record.json",
+      "sha256": "87d3ce3e9960962f3867b899d2d6396c85369f1e5ce8bc51a2e799ffdb0c89fa",
+      "original_output_correctness_passed": true,
+      "timing_interpretation_valid": false
+    }
+  ],
+  "actual_placement": "all6threads singletonCPU0; plannedhost0 plusworkers1..5",
+  "reason": "fixture pins caller before ExpertPool constructor rescans sched affinity; core -1 leaves inherited CPU0",
+  "R46_fit_weights_eligible": false,
+  "task_factor_comparison_eligible": false,
+  "production_bug_proven": false,
+  "correctness_results_preserved": true
+}

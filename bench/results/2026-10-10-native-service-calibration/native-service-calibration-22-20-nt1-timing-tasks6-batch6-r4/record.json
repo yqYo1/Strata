@@ -1,0 +1,198 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "scope": "Actual-weight homogeneous-cell standalone CPU calibration, not model/GPU inference",
+  "controller_sha256": "5d16615452013fbfdba190e382e750ab7ddaad87013daaa879b5348558b0e676",
+  "build_receipt_sha256": "dd4d7776f6a426ae0a159e76281d2c6ed00476e083f887de62d91a2506491d89",
+  "binary": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/build-native-service-calibration-v1/native_service_calibration",
+    "bytes": 3716208,
+    "sha256": "3382d73a7b2db38727b3667192533e51f98165f842755331d292115ec24f18e1"
+  },
+  "input_pins": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-calibration-cpu-build-v4/record.json": "dd4d7776f6a426ae0a159e76281d2c6ed00476e083f887de62d91a2506491d89",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json": "f606f5a1f2d00dba240213a7feeb3cc84c9da4f1487075d1e97c336a558e4c89",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache_route_pairs_parser_v1.py": "2ff44099f7385054dc5663f04a8e226d364d4d349a84b2493bc2bb1d6f3585cd",
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/conversions.json": "51df3cd6ffd0d38c2da8e2d3a95a604b4a96c20b06fc639a9bf477282a42b86a"
+  },
+  "commands": [
+    {
+      "label": "uninstrumented-rounds",
+      "argv": [
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/build-native-service-calibration-v1/native_service_calibration",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-calibration-cohort-22-20-nt1-v2/cohort.tsv",
+        "22",
+        "20",
+        "1",
+        "6",
+        "6",
+        "2026101001"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010",
+      "start_observation": {
+        "utc": "2026-10-09T22:19:17.240516+00:00",
+        "loadavg": "4.41 4.20 4.12 3/2783 2931381",
+        "cpu_model": "AMD Ryzen 5 5600X 6-Core Processor",
+        "flags": "fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap",
+        "allowed_cpu_list": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "governors": {
+          "/sys/devices/system/cpu/cpufreq/policy0/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy1/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy10/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy11/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy2/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy3/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy4/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy5/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy6/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy7/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy8/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy9/scaling_governor": "powersave"
+        }
+      },
+      "deadline_seconds": 600,
+      "owner": {
+        "pid": 2931382,
+        "pgid": 2931382,
+        "start_ticks": 27403635
+      },
+      "peak_group_rss_bytes": 1467121664,
+      "exit_code": 0,
+      "elapsed_seconds": 9.673548410006333,
+      "end_observation": {
+        "utc": "2026-10-09T22:19:26.915134+00:00",
+        "loadavg": "4.56 4.24 4.13 3/2773 2932004",
+        "cpu_model": "AMD Ryzen 5 5600X 6-Core Processor",
+        "flags": "fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap",
+        "allowed_cpu_list": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "governors": {
+          "/sys/devices/system/cpu/cpufreq/policy0/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy1/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy10/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy11/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy2/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy3/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy4/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy5/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy6/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy7/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy8/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy9/scaling_governor": "powersave"
+        }
+      },
+      "whole_child_rusage_delta": {
+        "user_seconds": 20.051874,
+        "system_seconds": 0.46530299999999997,
+        "minor_faults": 213705,
+        "major_faults": 0
+      },
+      "files": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-calibration-22-20-nt1-timing-tasks6-batch6-r4/uninstrumented-rounds/stderr.txt": {
+          "bytes": 12425,
+          "sha256": "7ba1ca9f21fc828e4f4db87bff0264dab4a1276c1a302c95f84a6f7bb268e586"
+        },
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-calibration-22-20-nt1-timing-tasks6-batch6-r4/uninstrumented-rounds/stdout.csv": {
+          "bytes": 282227,
+          "sha256": "7f64fb194b18856354e60d2d0f8037f45401e1d8b183764ecfee30da39f183be"
+        }
+      }
+    }
+  ],
+  "cleanup": [],
+  "survivors": [],
+  "gpu_work_submitted": false,
+  "inference_run": false,
+  "performance_eligible": false,
+  "statistical_qualified": false,
+  "adopted": false,
+  "full_lifecycle_passed": false,
+  "started_utc": "2026-10-09T22:19:17.233016+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "limits": {
+    "AS_each_bytes": 103079215104,
+    "RSS_group_poll_bytes": 1610612736,
+    "CPU_each_soft_seconds": 900,
+    "CPU_each_hard_seconds": 901,
+    "FSIZE_each_bytes": 4194304,
+    "NOFILE": 256,
+    "CORE_bytes": 0
+  },
+  "text_budget_bytes": 8388608,
+  "configuration": {
+    "tasks": 6,
+    "batch": 6,
+    "nt": 1,
+    "gu": 22,
+    "down": 20,
+    "round_seed": 2026101001
+  },
+  "timing_scope": "Resident owned weight cohort beyond L3; no DRAM/engine-latency claim. Fixed synthetic layer/token inputs. Direct complete outer wall time; pool phase completion is separate, never divided into per-job service.",
+  "correctness_receipt_sha256": "62707c2acbc0c1ab8baef915b4a2bb3c24d2b795ee31cae1235f644a1000b8bb",
+  "cohort": {
+    "manifest_sha256": "6a5eac378b01531a7438fa512bb0829bc7e447028328cfa5aba9c64a02377304",
+    "tsv_sha256": "49ab6545beda7a1d16cc02da07981b80d4fd36fc4fa9385f56039771fb4d21f1",
+    "owner": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-calibration-cohort-22-20-nt1-v2",
+    "full_blob_bytes": 756940800
+  },
+  "model_identity": [
+    {
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "bytes": 54817524224,
+      "dev": 40,
+      "ino": 2640848,
+      "mtime_ns": 1791009083688077826,
+      "ctime_ns": 1791009083692077878
+    },
+    {
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf",
+      "bytes": 28800138432,
+      "dev": 40,
+      "ino": 2623800,
+      "mtime_ns": 1790924461554234294,
+      "ctime_ns": 1791008604221189761
+    }
+  ],
+  "whole_model_payload_hashed": false,
+  "phase": "uninstrumented-rounds",
+  "recorded_rounds": 250,
+  "warmup_rounds": 30,
+  "timing_samples_complete": true,
+  "exit_source_pin_gate_passed": true,
+  "elapsed_seconds": 10.385417826008052,
+  "finished_utc": "2026-10-09T22:19:27.618777+00:00"
+}

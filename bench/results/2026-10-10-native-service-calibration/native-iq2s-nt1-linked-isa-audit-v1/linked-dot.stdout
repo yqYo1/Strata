@@ -1,0 +1,155 @@
+
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/build-native-service-calibration-v1/native_service_calibration:     file format elf64-x86-64
+
+
+Disassembly of section .init:
+
+Disassembly of section .plt:
+
+Disassembly of section .plt.got:
+
+Disassembly of section .text:
+
+00000000005b2660 <ggml_vec_dot_iq2_s_q8_K>:
+  5b2660:	push   rbp
+  5b2661:	push   r15
+  5b2663:	push   r14
+  5b2665:	push   r13
+  5b2667:	push   r12
+  5b2669:	push   rbx
+  5b266a:	mov    QWORD PTR [rsp-0x8],rsi
+  5b266f:	vxorps xmm6,xmm6,xmm6
+  5b2673:	cmp    edi,0x100
+  5b2679:	jl     5b28d1 <ggml_vec_dot_iq2_s_q8_K+0x271>
+  5b267f:	vpbroadcastb xmm1,BYTE PTR [rip+0x15c3c1]        # 70ea49 <_ZTSN4ggml3cpu17extra_buffer_typeE+0x939>
+  5b2688:	vpbroadcastb xmm2,BYTE PTR [rip+0x15c3b9]        # 70ea4a <_ZTSN4ggml3cpu17extra_buffer_typeE+0x93a>
+  5b2691:	vmovdqu ymm3,YMMWORD PTR [rip+0x139a27]        # 6ec0c0 <_ZTSNSt6thread11_State_implINS_8_InvokerISt5tupleIJZN6strata7kernels3cpu10ExpertPoolC1EibbNS5_12PoolAffinityEiE3$_0EEEEEE+0x138>
+  5b2699:	vpbroadcastq ymm4,QWORD PTR [rip+0x12d66e]        # 6dfd10 <_zero_none+0x80>
+  5b26a2:	shr    edi,0x8
+  5b26a5:	lea    rax,[r9+0x4]
+  5b26a9:	vpxor  xmm0,xmm0,xmm0
+  5b26ad:	xor    esi,esi
+  5b26af:	mov    r8,rcx
+  5b26b2:	vxorps xmm5,xmm5,xmm5
+  5b26b6:	cs nop WORD PTR [rax+rax*1+0x0]
+  5b26c0:	imul   r10,rsi,0x52
+  5b26c4:	vpxor  xmm10,xmm10,xmm10
+  5b26c9:	vmovq  xmm8,QWORD PTR [rcx+r10*1+0x4a]
+  5b26d0:	movzx  r11d,WORD PTR [rcx+r10*1]
+  5b26d5:	mov    r10,0xfffffffffffffffe
+  5b26dc:	vmovss xmm6,DWORD PTR [r11*4+0x7633c0]
+  5b26e6:	imul   r11,rsi,0x124
+  5b26ed:	vpsrlq xmm9,xmm8,0x4
+  5b26f3:	vmovss xmm7,DWORD PTR [r9+r11*1]
+  5b26f9:	xor    r11d,r11d
+  5b26fc:	vpunpcklqdq xmm8,xmm8,xmm9
+  5b2701:	vpxor  xmm9,xmm9,xmm9
+  5b2706:	vpaddw xmm8,xmm8,xmm8
+  5b270b:	vpand  xmm8,xmm8,xmm1
+  5b270f:	vpor   xmm8,xmm8,xmm2
+  5b2713:	vpmovzxbw ymm8,xmm8
+  5b2718:	nop    DWORD PTR [rax+rax*1+0x0]
+  5b2720:	movzx  r13d,BYTE PTR [r8+r10*1+0x44]
+  5b2726:	lea    rbx,[r8+r10*4+0xd]
+  5b272b:	movzx  r12d,BYTE PTR [rbx-0x1]
+  5b2730:	movzx  ebp,BYTE PTR [rbx+0x4]
+  5b2734:	lea    r15d,[r13*4+0x0]
+  5b273c:	mov    r15b,BYTE PTR [rbx]
+  5b273f:	mov    edx,r13d
+  5b2742:	and    edx,0x30
+  5b2745:	mov    r14d,r13d
+  5b2748:	and    r14d,0xc
+  5b274c:	and    r13d,0x3
+  5b2750:	shl    edx,0x4
+  5b2753:	shl    r14d,0x6
+  5b2757:	shl    r13d,0x8
+  5b275b:	or     edx,r12d
+  5b275e:	movzx  r12d,BYTE PTR [rbx-0x2]
+  5b2763:	vmovq  xmm12,QWORD PTR [rdx*8+0x710660]
+  5b276c:	vmovq  xmm11,QWORD PTR [r15*8+0x710660]
+  5b2776:	or     r14d,r12d
+  5b2779:	movzx  r12d,BYTE PTR [rbx-0x3]
+  5b277e:	or     r13d,r12d
+  5b2781:	vpunpcklqdq xmm11,xmm12,xmm11
+  5b2786:	vmovq  xmm12,QWORD PTR [r14*8+0x710660]
+  5b2790:	movzx  r14d,BYTE PTR [r8+r10*1+0x45]
+  5b2796:	vmovq  xmm13,QWORD PTR [r13*8+0x710660]
+  5b27a0:	movzx  r13d,BYTE PTR [rbx+0x1]
+  5b27a5:	add    r10,0x2
+  5b27a9:	lea    edx,[r14*4+0x0]
+  5b27b1:	mov    dl,bpl
+  5b27b4:	movzx  ebp,BYTE PTR [rbx+0x3]
+  5b27b8:	mov    r15d,r14d
+  5b27bb:	and    r15d,0x30
+  5b27bf:	mov    r12d,r14d
+  5b27c2:	and    r12d,0xc
+  5b27c6:	and    r14d,0x3
+  5b27ca:	shl    r15d,0x4
+  5b27ce:	shl    r14d,0x8
+  5b27d2:	shl    r12d,0x6
+  5b27d6:	or     r14d,r13d
+  5b27d9:	vpunpcklqdq xmm12,xmm13,xmm12
+  5b27de:	vmovq  xmm14,QWORD PTR [r14*8+0x710660]
+  5b27e8:	vinserti128 ymm11,ymm12,xmm11,0x1
+  5b27ee:	vmovq  xmm12,QWORD PTR [rdx*8+0x710660]
+  5b27f7:	or     r15d,ebp
+  5b27fa:	movzx  ebp,BYTE PTR [rbx+0x2]
+  5b27fe:	vmovq  xmm13,QWORD PTR [r15*8+0x710660]
+  5b2808:	or     r12d,ebp
+  5b280b:	vpunpcklqdq xmm12,xmm13,xmm12
+  5b2810:	vmovq  xmm13,QWORD PTR [r12*8+0x710660]
+  5b281a:	vpunpcklqdq xmm13,xmm14,xmm13
+  5b281f:	vinserti128 ymm12,ymm13,xmm12,0x1
+  5b2825:	vpbroadcastd ymm13,DWORD PTR [rbx+0x1d]
+  5b282b:	vpshufb ymm13,ymm13,ymm3
+  5b2830:	vpand  ymm13,ymm13,ymm4
+  5b2834:	vpcmpeqb ymm13,ymm13,ymm0
+  5b2838:	vpxor  ymm14,ymm13,YMMWORD PTR [rax+r11*1]
+  5b283e:	vpsubb ymm13,ymm13,ymm14
+  5b2843:	vpmaddubsw ymm11,ymm11,ymm13
+  5b2848:	vpbroadcastd ymm13,DWORD PTR [rbx+0x21]
+  5b284e:	vpshufb ymm13,ymm13,ymm3
+  5b2853:	vpand  ymm13,ymm13,ymm4
+  5b2857:	vpcmpeqb ymm13,ymm13,ymm0
+  5b285b:	vpxor  ymm14,ymm13,YMMWORD PTR [rax+r11*1+0x20]
+  5b2862:	vpsubb ymm13,ymm13,ymm14
+  5b2867:	vpshufb ymm14,ymm8,YMMWORD PTR [r11+0x717260]
+  5b2870:	vpmaddubsw ymm12,ymm12,ymm13
+  5b2875:	vpmaddwd ymm11,ymm11,ymm14
+  5b287a:	vpaddd ymm9,ymm11,ymm9
+  5b287f:	vpshufb ymm11,ymm8,YMMWORD PTR [r11+0x717280]
+  5b2888:	add    r11,0x40
+  5b288c:	vpmaddwd ymm11,ymm12,ymm11
+  5b2891:	vpaddd ymm10,ymm11,ymm10
+  5b2896:	cmp    r10,0x6
+  5b289a:	jb     5b2720 <ggml_vec_dot_iq2_s_q8_K+0xc0>
+  5b28a0:	vmulss xmm6,xmm6,xmm7
+  5b28a4:	inc    rsi
+  5b28a7:	add    r8,0x52
+  5b28ab:	add    rax,0x124
+  5b28b1:	vbroadcastss ymm7,xmm6
+  5b28b6:	vpaddd ymm6,ymm9,ymm10
+  5b28bb:	vcvtdq2ps ymm6,ymm6
+  5b28bf:	vfmadd213ps ymm6,ymm7,ymm5
+  5b28c4:	vmovaps ymm5,ymm6
+  5b28c8:	cmp    rsi,rdi
+  5b28cb:	jne    5b26c0 <ggml_vec_dot_iq2_s_q8_K+0x60>
+  5b28d1:	vextractf128 xmm0,ymm6,0x1
+  5b28d7:	mov    rax,QWORD PTR [rsp-0x8]
+  5b28dc:	vaddps xmm0,xmm0,xmm6
+  5b28e0:	vshufpd xmm1,xmm0,xmm0,0x1
+  5b28e5:	vaddps xmm0,xmm0,xmm1
+  5b28e9:	vmovshdup xmm1,xmm0
+  5b28ed:	vaddss xmm0,xmm0,xmm1
+  5b28f1:	vmulss xmm0,xmm0,DWORD PTR [rip+0x12b73b]        # 6de034 <_IO_stdin_used+0x34>
+  5b28f9:	vmovss DWORD PTR [rax],xmm0
+  5b28fd:	pop    rbx
+  5b28fe:	pop    r12
+  5b2900:	pop    r13
+  5b2902:	pop    r14
+  5b2904:	pop    r15
+  5b2906:	pop    rbp
+  5b2907:	vzeroupper
+  5b290a:	ret
+
+Disassembly of section .fini:
