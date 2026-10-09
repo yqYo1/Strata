@@ -1,0 +1,32 @@
+{
+  "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-main-vmm-half-ram-v01402-code32k-diagnostic-r1/probes/kernel-gap.stdout",
+  "original_sha256": "bdfb3e8738dc9b8a452822aef449dedab6cf173841a62d7b94b8685e654a454b",
+  "original_bytes": 422317,
+  "receipt_sha256": "57241320623267fea34516042406b4b2e48c3a1ba7712b3053cddadb636dc7e7",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "capture_steps": [
+    {
+      "label": "kernel-gap",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bf49b73;b=0a908c16e292429980ff082da39f4bb9;m=149613149c;t=65d44856efb59;x=a92c0de5ad6a7eb0",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "pid": 1972508,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.10071983600209933
+    }
+  ],
+  "filter": "\\bxe\\b|\\bdrm\\b|\\bi915\\b|gpu|05:00|fault|reset|wedg|hang|timestamp stuck|guc|device lost|memory.cat",
+  "line_count": 554,
+  "matched_count": 0,
+  "entries": [],
+  "original_new_fault_messages": [],
+  "note": "Deterministic relevant-entry extraction; original result is unchanged."
+}

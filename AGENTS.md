@@ -23,9 +23,29 @@ offers the same steps as tools.
   measurement.
 - For first SYCL correctness checks and failure investigation, run through
   `python3 sycl/tools/debug-run.py EXECUTABLE ...` or apply `diagnostic_environment()` from
-  `sycl/tools/recover-xe.sh`. Capture stderr: it contains flushed UR API calls, Level Zero API entry/results
-  and Strata progress. Record the environment and keep these logs with the result. Use a clean environment
-  without these logging/validation settings for timing; see [docs/INTEL_GPU_RECOVERY.md](docs/INTEL_GPU_RECOVERY.md).
+  `sycl/tools/recover-xe.sh`. Record the environment and capture stderr with a finite deadline and log budget.
+  Use detailed API tracing for a small first check or a named investigation; for long model checks use
+  validation, warnings/errors and Strata progress. Use a clean environment for timing; see
+  [docs/INTEL_GPU_RECOVERY.md](docs/INTEL_GPU_RECOVERY.md).
+
+## Measurement and diagnostic artifacts
+
+Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measurement and investigation.
+
+- Commit source, commands, environment, individual measurement samples, correctness/fault results and
+  decisions at each work boundary. Resume from committed reports, without separate progress backups.
+- After a run closes, delete successful full API traces, repeated polling/synchronization logs, raw
+  profiler timelines and duplicate kernel windows once their useful evidence is recorded and verified.
+- Keep one representative diagnostic per distinct unresolved failure mechanism, with the relevant
+  error, progress, stack/registers and driver dump. Keep a new instance only when it adds evidence;
+  a failure status or the same signal name alone does not decide retention.
+- Keep full traces only when a recorded question requires the complete history. Record the owner,
+  byte budget, consumer and next review point. Review again when that question is resolved or superseded.
+- Keep raw tensor/session files only for an explicitly named current comparison/RESTORE consumer or
+  unresolved numerical failure. Retire superseded captures after recording comparisons and hashes.
+- Cleanup must not change original result status, weaken validation, touch an active run or remove the
+  last required fixture. Keep a path/hash/reason deletion manifest; serialize cleanup with tests/builds/GPU
+  work. Store compact evidence in Git, and large necessary captures outside Git.
 
 ## Contributing a change or report
 

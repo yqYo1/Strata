@@ -1,0 +1,11 @@
+Remaining log review, 2026-10-09
+
+AGENTS.md now requires docs/ARTIFACT_RETENTION.md. This supersedes the earlier keep-all-failures approach and arbitrary 16-MiB diagnostic windows. Keep individual statistical samples and original result statuses, but only the evidence needed by a current comparison or distinct unresolved failure.
+
+Reviewed deletion plan: 833 closed files, 699145918 logical bytes; original 660 record.json files are pinned and will be rechecked after cleanup. The plan preserves bounded excerpts, eight synchronization aggregates, exact healthy PASS/environment inputs, relevant kernel entries/counts/cursors, original stacks, and three explicit full-trace exceptions with questions and review points. Empty derived logs and duplicate excerpts have also been removed from the proposed archive.
+
+The three existing full traces total 45334299 compressed bytes. Complete history remains useful for the current C repeated-prefill allocation attribution, one representative xe engine-reset lifetime investigation, and one compact CPU memcpy SIGSEGV reproduction. These are temporary case-specific exceptions, not a requirement to retain future repeats.
+
+Current comparison/RESTORE and full physical262144 fixtures, binary/build/flag proofs, original numerical and driver-fault statuses remain unchanged. C is still unqualified after its second-request capacity failure; cleanup cannot turn it into a pass. No inference, build, profiling, compression, service action or GPU action is part of this review.
+
+Old large derived failure windows are removed from this branch tip after creating bounded replacements. Shared Git history is not rewritten; older commits still contain those blobs. No snapshots are deleted. Plan is committed before raw files are unlinked. Final observed deletion/preservation results follow in result.json.

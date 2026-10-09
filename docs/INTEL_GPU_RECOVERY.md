@@ -80,6 +80,12 @@ faults/resets invalidate a data match.
 
 ## Logs for first correctness checks
 
+Apply [the artifact retention rules](ARTIFACT_RETENTION.md) when collecting and
+closing a diagnostic. Capture with a finite deadline and byte budget; keeping
+the result does not require keeping every API call from every run. Small first
+checks may use the detailed profile below. Long model checks use the warning
+profile described later unless a recorded question requires the full history.
+
 Use `python3 sycl/tools/debug-run.py EXECUTABLE ...` for initial SYCL checks and
 failure investigation. It preserves the caller's runtime, device and tuning
 settings, enables Strata progress, and writes UR and Level Zero API traces to

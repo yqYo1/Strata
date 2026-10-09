@@ -1,0 +1,32 @@
+{
+  "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-upstream-e8ca-refresh-short-bounded-cache/probes/kernel-gap.stdout",
+  "original_sha256": "c246698d8d9d0bc39727f410a20f11f6922cf51fbb6b0ca2e1dd76b23e59d423",
+  "original_bytes": 17577,
+  "receipt_sha256": "dcc7e6ee16680650215d6b7cce80a72fefcdda6ee6d60ad70f46f637aedc7f71",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "capture_steps": [
+    {
+      "label": "kernel-gap",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bf3c852;b=0a908c16e292429980ff082da39f4bb9;m=11bc4a3649;t=65d41aba61d06;x=4f612cdbd6e4b79",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "pid": 472558,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050633491002372466
+    }
+  ],
+  "filter": "\\bxe\\b|\\bdrm\\b|\\bi915\\b|gpu|05:00|fault|reset|wedg|hang|timestamp stuck|guc|device lost|memory.cat",
+  "line_count": 23,
+  "matched_count": 0,
+  "entries": [],
+  "original_new_fault_messages": [],
+  "note": "Deterministic relevant-entry extraction; original result is unchanged."
+}

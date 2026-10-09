@@ -1,0 +1,143 @@
+{
+  "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-model-short-clean/collect/stderr",
+  "original_sha256": "4a49a12f63f7301ce8c2d15cdb67a2357959b703cf08b939f20b73263936a14a",
+  "original_bytes": 5014437,
+  "lines": 73755,
+  "sync_phases": {
+    "layer weight preload": {
+      "count": 288,
+      "wait_ms_sum": 0.0,
+      "wait_ms_min": 0.0,
+      "wait_ms_max": 0.0
+    },
+    "embed+steps": {
+      "count": 1434,
+      "wait_ms_sum": 37.70000000000012,
+      "wait_ms_min": 0.0,
+      "wait_ms_max": 0.2
+    },
+    "hc read": {
+      "count": 576,
+      "wait_ms_sum": 1.2,
+      "wait_ms_min": 0.0,
+      "wait_ms_max": 0.2
+    },
+    "gdn": {
+      "count": 216,
+      "wait_ms_sum": 12.599999999999973,
+      "wait_ms_min": 0.0,
+      "wait_ms_max": 0.5
+    },
+    "gdn conv+gates": {
+      "count": 216,
+      "wait_ms_sum": 370.800000000001,
+      "wait_ms_min": 0.5,
+      "wait_ms_max": 2.1
+    },
+    "gdn recurrence": {
+      "count": 216,
+      "wait_ms_sum": 3.1000000000000014,
+      "wait_ms_min": 0.0,
+      "wait_ms_max": 1.3
+    },
+    "gdn out proj": {
+      "count": 216,
+      "wait_ms_sum": 7.499999999999991,
+      "wait_ms_min": 0.0,
+      "wait_ms_max": 0.2
+    },
+    "hc write+norm": {
+      "count": 576,
+      "wait_ms_sum": 229.00000000000068,
+      "wait_ms_min": 0.0,
+      "wait_ms_max": 1.1
+    },
+    "router+shared": {
+      "count": 288,
+      "wait_ms_sum": 7.0999999999999925,
+      "wait_ms_min": 0.0,
+      "wait_ms_max": 0.4
+    },
+    "host grouping": {
+      "count": 288,
+      "wait_ms_sum": 23.500000000000057,
+      "wait_ms_min": 0.0,
+      "wait_ms_max": 0.5
+    },
+    "gather": {
+      "count": 17253,
+      "wait_ms_sum": 1713.7999999995488,
+      "wait_ms_min": 0.0,
+      "wait_ms_max": 3.1
+    },
+    "dequant": {
+      "count": 16965,
+      "wait_ms_sum": 15.399999999999983,
+      "wait_ms_min": 0.0,
+      "wait_ms_max": 1.3
+    },
+    "gemm gate/up": {
+      "count": 16965,
+      "wait_ms_sum": 16.39999999999999,
+      "wait_ms_min": 0.0,
+      "wait_ms_max": 1.1
+    },
+    "gemm down": {
+      "count": 16965,
+      "wait_ms_sum": 25.500000000000053,
+      "wait_ms_min": 0.0,
+      "wait_ms_max": 0.7
+    },
+    "combine": {
+      "count": 288,
+      "wait_ms_sum": 0.30000000000000004,
+      "wait_ms_min": 0.0,
+      "wait_ms_max": 0.1
+    },
+    "residual copy": {
+      "count": 564,
+      "wait_ms_sum": 0.0,
+      "wait_ms_min": 0.0,
+      "wait_ms_max": 0.0
+    },
+    "ple read wait": {
+      "count": 6,
+      "wait_ms_sum": 0.0,
+      "wait_ms_min": 0.0,
+      "wait_ms_max": 0.0
+    },
+    "ple": {
+      "count": 12,
+      "wait_ms_sum": 0.2,
+      "wait_ms_min": 0.0,
+      "wait_ms_max": 0.1
+    },
+    "qsa proj": {
+      "count": 144,
+      "wait_ms_sum": 7.19999999999999,
+      "wait_ms_min": 0.0,
+      "wait_ms_max": 0.6
+    },
+    "qsa indexer": {
+      "count": 72,
+      "wait_ms_sum": 87.59999999999998,
+      "wait_ms_min": 0.1,
+      "wait_ms_max": 1.6
+    },
+    "qsa select": {
+      "count": 72,
+      "wait_ms_sum": 0.4,
+      "wait_ms_min": 0.0,
+      "wait_ms_max": 0.1
+    },
+    "qsa attn": {
+      "count": 72,
+      "wait_ms_sum": 0.0,
+      "wait_ms_min": 0.0,
+      "wait_ms_max": 0.0
+    }
+  },
+  "selected_lines": 60,
+  "timing_eligible": false,
+  "note": "Logged synchronization counts/waits only; not a clean speed measurement or a new pass."
+}

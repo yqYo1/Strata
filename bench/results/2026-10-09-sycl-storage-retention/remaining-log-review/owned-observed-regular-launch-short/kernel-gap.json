@@ -1,0 +1,73 @@
+{
+  "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-observed-regular-launch-short/probes/kernel-gap.stdout",
+  "original_sha256": "23b9840d51939178faeae3a30e376cba28cb97b613f9eb384c10c8165e42b593",
+  "original_bytes": 148553,
+  "receipt_sha256": "a028f956ca218e2a6506b1a9e1c7fb2edf9119c4d369329a647c24a1220df1a8",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "capture_steps": [
+    {
+      "label": "kernel-gap",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bf2b667;b=0a908c16e292429980ff082da39f4bb9;m=e2c0d7ca7;t=65d3e1b696363;x=80e29099bfb498c3",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "pid": 3991885,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05065964900131803
+    }
+  ],
+  "filter": "\\bxe\\b|\\bdrm\\b|\\bi915\\b|gpu|05:00|fault|reset|wedg|hang|timestamp stuck|guc|device lost|memory.cat",
+  "line_count": 195,
+  "matched_count": 2,
+  "entries": [
+    {
+      "_HOSTNAME": "jitakusaba01",
+      "_KERNEL_SUBSYSTEM": "pci",
+      "__MONOTONIC_TIMESTAMP": "63934104689",
+      "SYSLOG_FACILITY": "0",
+      "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+      "__REALTIME_TIMESTAMP": "1791374254992174",
+      "_SOURCE_MONOTONIC_TIMESTAMP": "63933189915",
+      "__CURSOR": "s=3ad31c4e321d43ad949846afdb43877a;i=bf2ed75;b=0a908c16e292429980ff082da39f4bb9;m=ee2c50471;t=65d3ed220eb2e;x=3a1b6c1a2a522d21",
+      "_KERNEL_DEVICE": "+pci:0000:0d:00.0",
+      "__SEQNUM": "200469877",
+      "PRIORITY": "3",
+      "SYSLOG_IDENTIFIER": "kernel",
+      "__SEQNUM_ID": "3ad31c4e321d43ad949846afdb43877a",
+      "_RUNTIME_SCOPE": "system",
+      "_BOOT_ID": "0a908c16e292429980ff082da39f4bb9",
+      "_TRANSPORT": "kernel",
+      "_UDEV_SYSNAME": "0000:0d:00.0",
+      "MESSAGE": "nouveau 0000:0d:00.0: drm: Failure to read SCDC_TMDS_CONFIG: -6"
+    },
+    {
+      "_KERNEL_SUBSYSTEM": "pci",
+      "_SOURCE_MONOTONIC_TIMESTAMP": "66333792823",
+      "_RUNTIME_SCOPE": "system",
+      "__CURSOR": "s=3ad31c4e321d43ad949846afdb43877a;i=bf318d0;b=0a908c16e292429980ff082da39f4bb9;m=f71db9132;t=65d3f613777ee;x=eeae93ccfad2643a",
+      "__REALTIME_TIMESTAMP": "1791376655611886",
+      "SYSLOG_IDENTIFIER": "kernel",
+      "__SEQNUM_ID": "3ad31c4e321d43ad949846afdb43877a",
+      "_BOOT_ID": "0a908c16e292429980ff082da39f4bb9",
+      "PRIORITY": "3",
+      "_HOSTNAME": "jitakusaba01",
+      "MESSAGE": "nouveau 0000:0d:00.0: drm: Failure to read SCDC_TMDS_CONFIG: -6",
+      "__SEQNUM": "200480976",
+      "_TRANSPORT": "kernel",
+      "__MONOTONIC_TIMESTAMP": "66334724402",
+      "_KERNEL_DEVICE": "+pci:0000:0d:00.0",
+      "SYSLOG_FACILITY": "0",
+      "_UDEV_SYSNAME": "0000:0d:00.0",
+      "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d"
+    }
+  ],
+  "original_new_fault_messages": [],
+  "note": "Deterministic relevant-entry extraction; original result is unchanged."
+}

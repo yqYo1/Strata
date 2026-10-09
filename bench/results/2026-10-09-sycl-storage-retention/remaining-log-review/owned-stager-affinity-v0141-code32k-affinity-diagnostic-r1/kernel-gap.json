@@ -1,0 +1,32 @@
+{
+  "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-stager-affinity-v0141-code32k-affinity-diagnostic-r1/probes/kernel-gap.stdout",
+  "original_sha256": "a5bc82f93821139973a9e1943a96872952129b30827759965a582e13695f886d",
+  "original_bytes": 978188,
+  "receipt_sha256": "ff94770a606e18639b6e49c03c10722a74698b733fa32bb507091b9464a5aebc",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "capture_steps": [
+    {
+      "label": "kernel-gap",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bfb01b0;b=0a908c16e292429980ff082da39f4bb9;m=2adb7b3cd8;t=65d5acad72394;x=fecd3b667a1b649c",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "pid": 3971756,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.1507626100210473
+    }
+  ],
+  "filter": "\\bxe\\b|\\bdrm\\b|\\bi915\\b|gpu|05:00|fault|reset|wedg|hang|timestamp stuck|guc|device lost|memory.cat",
+  "line_count": 1281,
+  "matched_count": 0,
+  "entries": [],
+  "original_new_fault_messages": [],
+  "note": "Deterministic relevant-entry extraction; original result is unchanged."
+}

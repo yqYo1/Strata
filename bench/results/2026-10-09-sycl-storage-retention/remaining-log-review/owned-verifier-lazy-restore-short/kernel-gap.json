@@ -1,0 +1,32 @@
+{
+  "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-verifier-lazy-restore-short/probes/kernel-gap.stdout",
+  "original_sha256": "a796d938221c57c3aaebdbfe4afa4efeb8edce5c40f159fbd5aba886229da3c3",
+  "original_bytes": 114943,
+  "receipt_sha256": "33cb89ae5a54042b95957e09d8414fd673cb76b70db19312a8c710211338e954",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "capture_steps": [
+    {
+      "label": "kernel-gap",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bf142e3;b=0a908c16e292429980ff082da39f4bb9;m=96aa2d454;t=65d3959febb11;x=1f4412e6d342fb9e",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "pid": 2722774,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05065518800256541
+    }
+  ],
+  "filter": "\\bxe\\b|\\bdrm\\b|\\bi915\\b|gpu|05:00|fault|reset|wedg|hang|timestamp stuck|guc|device lost|memory.cat",
+  "line_count": 151,
+  "matched_count": 0,
+  "entries": [],
+  "original_new_fault_messages": [],
+  "note": "Deterministic relevant-entry extraction; original result is unchanged."
+}

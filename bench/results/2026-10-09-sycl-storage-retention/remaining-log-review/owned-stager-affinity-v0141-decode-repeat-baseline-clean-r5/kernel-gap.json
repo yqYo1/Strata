@@ -1,0 +1,32 @@
+{
+  "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-stager-affinity-v0141-decode-repeat-baseline-clean-r5/probes/kernel-gap.stdout",
+  "original_sha256": "0c3cc84f5ebe91108f6dde4a9fae29d54e1ba300f9c06a702d184620836f30a8",
+  "original_bytes": 1106382,
+  "receipt_sha256": "19b295b0a4db3410dccb24d31a372ad0f6914055e15e985917d74b8addedb260",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "capture_steps": [
+    {
+      "label": "kernel-gap",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bfb01b0;b=0a908c16e292429980ff082da39f4bb9;m=2adb7b3cd8;t=65d5acad72394;x=fecd3b667a1b649c",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "pid": 59973,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.20085072700749151
+    }
+  ],
+  "filter": "\\bxe\\b|\\bdrm\\b|\\bi915\\b|gpu|05:00|fault|reset|wedg|hang|timestamp stuck|guc|device lost|memory.cat",
+  "line_count": 1449,
+  "matched_count": 0,
+  "entries": [],
+  "original_new_fault_messages": [],
+  "note": "Deterministic relevant-entry extraction; original result is unchanged."
+}

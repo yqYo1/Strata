@@ -1,0 +1,32 @@
+{
+  "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cnr-v01402-code32k-state-r1/probes/kernel-gap.stdout",
+  "original_sha256": "09a633a74251ca502967585abe07102e28e4f848aea0dc00283c60954f3a8278",
+  "original_bytes": 49543,
+  "receipt_sha256": "d4c085b48cf142c558ce85db8250798645961722d3602143c88c0bab8e678576",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "capture_steps": [
+    {
+      "label": "kernel-gap",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bf4699a;b=0a908c16e292429980ff082da39f4bb9;m=13ea5ca62a;t=65d43d9b88ce7;x=1290119e0a036d7d",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "pid": 1045532,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050593722000485286
+    }
+  ],
+  "filter": "\\bxe\\b|\\bdrm\\b|\\bi915\\b|gpu|05:00|fault|reset|wedg|hang|timestamp stuck|guc|device lost|memory.cat",
+  "line_count": 65,
+  "matched_count": 0,
+  "entries": [],
+  "original_new_fault_messages": [],
+  "note": "Deterministic relevant-entry extraction; original result is unchanged."
+}

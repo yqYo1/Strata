@@ -1,0 +1,50 @@
+{
+  "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-tuned32k-control-clean-r1/probes/kernel-gap.stdout",
+  "original_sha256": "8258757cc5a85f9c1ae86f78a2f6f67a958622ae61fe29ee3d2ec8a98232ac89",
+  "original_bytes": 1102438,
+  "receipt_sha256": "0acd594238eb6b5f24146c0d2cfe50885cafe207e970ccdfe9ae9365af86dda0",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "capture_steps": [
+    {
+      "label": "kernel-gap",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bf81acf;b=0a908c16e292429980ff082da39f4bb9;m=20cc9164a2;t=65d50bbed4b5f;x=98a6c454c86edb05",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "pid": 1954086,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.15082655599690042
+    }
+  ],
+  "filter": "\\bxe\\b|\\bdrm\\b|\\bi915\\b|gpu|05:00|fault|reset|wedg|hang|timestamp stuck|guc|device lost|memory.cat",
+  "line_count": 1443,
+  "matched_count": 1,
+  "entries": [
+    {
+      "MESSAGE": "loop20: detected capacity change from 0 to 537160",
+      "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+      "__REALTIME_TIMESTAMP": "1791488551117529",
+      "_RUNTIME_SCOPE": "system",
+      "__SEQNUM_ID": "3ad31c4e321d43ad949846afdb43877a",
+      "PRIORITY": "6",
+      "SYSLOG_IDENTIFIER": "kernel",
+      "SYSLOG_FACILITY": "0",
+      "_TRANSPORT": "kernel",
+      "_SOURCE_MONOTONIC_TIMESTAMP": "178228343826",
+      "__MONOTONIC_TIMESTAMP": "178230230044",
+      "__SEQNUM": "200974337",
+      "_BOOT_ID": "0a908c16e292429980ff082da39f4bb9",
+      "_HOSTNAME": "jitakusaba01",
+      "__CURSOR": "s=3ad31c4e321d43ad949846afdb43877a;i=bfaa001;b=0a908c16e292429980ff082da39f4bb9;m=297f597c1c;t=65d596eb562d9;x=4105ea91c53b156f"
+    }
+  ],
+  "original_new_fault_messages": [],
+  "note": "Deterministic relevant-entry extraction; original result is unchanged."
+}

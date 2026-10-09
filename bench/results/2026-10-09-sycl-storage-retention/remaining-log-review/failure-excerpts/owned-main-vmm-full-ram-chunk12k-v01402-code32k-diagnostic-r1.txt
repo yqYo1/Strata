@@ -1,0 +1,1381 @@
+Derived excerpt of /home/yayoi/.local/state/strata-sycl/storage-audit-20261009-v1/log-context/owned-main-vmm-full-ram-chunk12k-v01402-code32k-diagnostic-r1.txt
+Original derived-window SHA256: 4ecd70607d9bb6fdb4949fd503d37dc3c04f5db4b042c81885b07886724ba874
+First/last 64 KiB; selected issue lines at end.
+First 8388608 bytes of retired log:
+strata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)
+<LOADER>[DEBUG]: Logger loader initialized successfully!
+<LOADER>[INFO]: loaded adapter 0x0x48605b0 (/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0) from /opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0
+   ---> urAdapterGet
+<LEVEL_ZERO>[DEBUG]: zeInit with flags value of 1
+[2026-10-08 09:33:29.629] [thread-id: 140736844174208] [info] Loader Version 1.32.0  - No git SHA found, compiled outside git folder.
+[2026-10-08 09:33:32.146] [thread-id: 140736844174208] [info] Validation Layer Enabled
+[2026-10-08 09:33:32.179] [thread-id: 140736844174208] [info] zeInit succeeded
+[2026-10-08 09:33:32.179] [thread-id: 140736844174208] [trace] zeInit(flags)
+[2026-10-08 09:33:32.322] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeInit(flags=1)
+<LEVEL_ZERO>[DEBUG]: Level Zero Loader version: 1.32.0
+<LEVEL_ZERO>[DEBUG]: zeInitDrivers with flags value of 1
+[2026-10-08 09:33:32.322] [thread-id: 140736844174208] [trace] zeInitDrivers(pCount, phDrivers, desc)
+[2026-10-08 09:33:32.322] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeInitDrivers(pCount=1, phDrivers=nullptr, desc={stype=0x485fc78, flags=1})
+[2026-10-08 09:33:32.322] [thread-id: 140736844174208] [trace] zeInitDrivers(pCount, phDrivers, desc)
+[2026-10-08 09:33:32.322] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeInitDrivers(pCount=1, phDrivers=nullptr, desc={stype=0x485fc78, flags=1})
+[2026-10-08 09:33:32.322] [thread-id: 140736844174208] [trace] zeDriverGet(pCount, phDrivers)
+[2026-10-08 09:33:32.322] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGet(pCount=1, phDrivers=nullptr)
+[2026-10-08 09:33:32.322] [thread-id: 140736844174208] [trace] zeDriverGet(pCount, phDrivers)
+[2026-10-08 09:33:32.322] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGet(pCount=1, phDrivers=0x4a29460)
+[2026-10-08 09:33:32.322] [thread-id: 140736844174208] [trace] zeDeviceGet(hDriver, pCount, phDevices)
+[2026-10-08 09:33:32.322] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGet(hDriver=0x4a294a8, pCount=1, phDevices=nullptr)
+[2026-10-08 09:33:32.322] [thread-id: 140736844174208] [trace] zeDeviceGet(hDriver, pCount, phDevices)
+[2026-10-08 09:33:32.322] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGet(hDriver=0x4a294a8, pCount=1, phDevices=0x4a35d90)
+[2026-10-08 09:33:32.322] [thread-id: 140736844174208] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 09:33:32.322] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0x4a29a08, pDeviceProperties={stype=0x7ffffffdd520, type=0x7ffffffdd530, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+<LEVEL_ZERO>[DEBUG]: 
+zesInit with flags value of 0
+
+[2026-10-08 09:33:32.322] [thread-id: 140736844174208] [trace] zesInit(flags)
+[2026-10-08 09:33:32.325] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zesInit(flags=0)
+[2026-10-08 09:33:32.325] [thread-id: 140736844174208] [trace] zeDriverGet(pCount, phDrivers)
+[2026-10-08 09:33:32.325] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGet(pCount=1, phDrivers=nullptr)
+[2026-10-08 09:33:32.325] [thread-id: 140736844174208] [trace] zeDriverGet(pCount, phDrivers)
+[2026-10-08 09:33:32.325] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGet(pCount=1, phDrivers=0x4a3cc10)
+[2026-10-08 09:33:32.325] [thread-id: 140736844174208] [trace] zeInitDrivers(pCount, phDrivers, desc)
+[2026-10-08 09:33:32.325] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeInitDrivers(pCount=1, phDrivers=0x4a3cce0, desc={stype=0x485fc78, flags=1})
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDriverGetProperties(hDriver, pDriverProperties)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetProperties(hDriver=0x4a294a8, pDriverProperties={stype=0x7ffffffdd470, uuid={id=227}, driverVersion=17013219})
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDriverGetProperties(hDriver, pDriverProperties)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetProperties(hDriver=0x4a294a8, pDriverProperties={stype=0x7ffffffdd640, uuid={id=227}, driverVersion=17013219})
+<LEVEL_ZERO>[DEBUG]: zeDriverHandle 0x4a294a8 matched between zeDriverGet and zeInitDrivers. Not adding duplicate driver to list
+<LEVEL_ZERO>[DEBUG]: 1 L0 Drivers found.
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDeviceGet(hDriver, pCount, phDevices)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGet(hDriver=0x4a294a8, pCount=1, phDevices=nullptr)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDeviceGet(hDriver, pCount, phDevices)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGet(hDriver=0x4a294a8, pCount=1, phDevices=0x4a3cf80)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0x4a29a08, pDeviceProperties={stype=0x7ffffffdd470, type=0x7ffffffdd480, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDriverGetApiVersion(hDriver, version)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetApiVersion(hDriver=0x4a294a8, version=65553)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDriverGetExtensionProperties(hDriver, pCount, pExtensionProperties)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionProperties(hDriver=0x4a294a8, pCount=63, pExtensionProperties=nullptr)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDriverGetExtensionProperties(hDriver, pCount, pExtensionProperties)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionProperties(hDriver=0x4a294a8, pCount=63, pExtensionProperties={name="ZE_extension_device_cache_line_size", version=65536})
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0x4a294a8, name="zeIntelGetDriverVersionString", ppFunctionAddress=0x7fec5db5ac00)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDriverGetProperties(hDriver, pDriverProperties)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetProperties(hDriver=0x4a294a8, pDriverProperties={stype=0x7ffffffdd330, uuid={id=227}, driverVersion=17013219})
+<LEVEL_ZERO>[DEBUG]: Level Zero Driver version: 1.17.39395+14
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0x4a294a8, name="zexDriverImportExternalPointer", ppFunctionAddress=0x7fec5db55a40)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0x4a294a8, name="zexDriverReleaseImportedPointer", ppFunctionAddress=0x7fec5db5de30)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0x4a294a8, name="zeImageGetDeviceOffsetExp", ppFunctionAddress=0x7fec5db5f190)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0x4a294a8, name="zeMemGetPitchFor2dImage", ppFunctionAddress=0x7fec5db61550)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0x4a294a8, name="zeGraphGetIdExt", ppFunctionAddress=0x7fec5db4fdd0)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0x4a294a8, name="zeCommandListAppendHostFunction", ppFunctionAddress=0x7fec5db33140)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zesDriverGet(pCount, phDrivers)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zesDriverGet(pCount=1, phDrivers=nullptr)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zesDriverGet(pCount, phDrivers)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zesDriverGet(pCount=1, phDrivers=0x4a3e090)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zesDriverGetDeviceByUuidExp(hDriver, uuid, phDevice, onSubdevice, subdeviceId)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zesDriverGetDeviceByUuidExp(hDriver=0x4a39998, uuid={id=134}, phDevice=0x486d148, onSubdevice=0, subdeviceId=0)
+<LEVEL_ZERO>[DEBUG]: Initialized 1 platforms
+   <--- urAdapterGet(.NumEntries = 0, .phAdapters = nullptr, .pNumAdapters = 0x7ffffffddd48 (1)) -> UR_RESULT_SUCCESS;
+   ---> urAdapterGet
+   <--- urAdapterGet(.NumEntries = 1, .phAdapters = 0x4a3cf60 {0x485fc50}, .pNumAdapters = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urAdapterGetInfo
+   <--- urAdapterGetInfo(.hAdapter = 0x485fc50, .propName = UR_ADAPTER_INFO_BACKEND, .propSize = 4, .pPropValue = 0x7ffffffddd3c (UR_BACKEND_LEVEL_ZERO), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urAdapterSetLoggerCallback
+   <--- urAdapterSetLoggerCallback(.hAdapter = 0x485fc50, .pfnLoggerCallback = 0x7fffdca39420, .pUserData = nullptr, .level = UR_LOGGER_LEVEL_WARN) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGet
+   <--- urPlatformGet(.hAdapter = 0x485fc50, .NumEntries = 0, .phPlatforms = nullptr, .pNumPlatforms = 0x7ffffffddc7c (1)) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGet
+   <--- urPlatformGet(.hAdapter = 0x485fc50, .NumEntries = 1, .phPlatforms = 0x4a3cf60 {0x4a3d0e0}, .pNumPlatforms = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0x4a3d0e0, .propName = UR_PLATFORM_INFO_BACKEND, .propSize = 4, .pPropValue = 0x7ffffffddc8c (UR_BACKEND_LEVEL_ZERO), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGet
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDeviceGet(hDriver, pCount, phDevices)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGet(hDriver=0x4a294a8, pCount=1, phDevices=nullptr)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDeviceGet(hDriver, pCount, phDevices)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGet(hDriver=0x4a294a8, pCount=1, phDevices=0x4a3eae0)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0x4a29a08, pDeviceProperties={stype=0x4a3ebc8, type=0x4a3ebd8, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=19200000, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0x4a29a08, pDeviceProperties={stype=0x7ffffffdd288, type=0x7ffffffdd298, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDeviceGetCommandQueueGroupProperties(hDevice, pCount, pCommandQueueGroupProperties)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetCommandQueueGroupProperties(hDevice=0x4a29a08, pCount=2, pCommandQueueGroupProperties=nullptr)
+<LEVEL_ZERO>[INFO]: Number of queue groups = 2
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDeviceGetCommandQueueGroupProperties(hDevice, pCount, pCommandQueueGroupProperties)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetCommandQueueGroupProperties(hDevice=0x4a29a08, pCount=2, pCommandQueueGroupProperties={stype=0x485fb90, flags=7, maxMemoryFillPatternSize=18446744073709551615, numQueues=1})
+<LEVEL_ZERO>[INFO]: main blitter/copy engine is available
+<LEVEL_ZERO>[INFO]: link blitter/copy engines are not available
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDeviceGetSubDevices(hDevice, pCount, phSubdevices)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetSubDevices(hDevice=0x4a29a08, pCount=0, phSubdevices=nullptr)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDeviceGetSubDevices(hDevice, pCount, phSubdevices)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetSubDevices(hDevice=0x4a29a08, pCount=0, phSubdevices=0x4a3eb00)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDeviceGetRootDevice(hDevice, phRootDevice)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetRootDevice(hDevice=0x4a29a08, phRootDevice=0x7ffffffdd6e0)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDeviceSynchronize(hDevice)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceSynchronize(hDevice=0x4a29a08)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] zeDeviceGetRootDevice(hDevice, phRootDevice)
+[2026-10-08 09:33:32.326] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetRootDevice(hDevice=0x4a29a08, phRootDevice=0x7ffffffdd7d0)
+   <--- urDeviceGet(.hPlatform = 0x4a3d0e0, .DeviceType = UR_DEVICE_TYPE_ALL, .NumEntries = 0, .phDevices = nullptr, .pNumDevices = 0x7ffffffddbfc (1)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGet
+[2026-10-08 09:33:32.327] [thread-id: 140736844174208] [trace] zeDeviceGetRootDevice(hDevice, phRootDevice)
+[2026-10-08 09:33:32.327] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetRootDevice(hDevice=0x4a29a08, phRootDevice=0x7ffffffdd7d0)
+   <--- urDeviceGet(.hPlatform = 0x4a3d0e0, .DeviceType = UR_DEVICE_TYPE_ALL, .NumEntries = 1, .phDevices = 0x4a3eae0 {0x4a3eb20}, .pNumDevices = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0x4a3d0e0, .propName = UR_PLATFORM_INFO_VERSION, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffffffdd7d0 (5)) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0x4a3d0e0, .propName = UR_PLATFORM_INFO_VERSION, .propSize = 5, .pPropValue = 0x7ffffffdd938 (1.17), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0x4a3d0e0, .propName = UR_PLATFORM_INFO_NAME, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffffffdd7d0 (51)) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0x4a3d0e0, .propName = UR_PLATFORM_INFO_NAME, .propSize = 51, .pPropValue = 0x4a3f1f0 (Intel(R) oneAPI Unified Runtime over Level-Zero V2), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3eb20, .propName = UR_DEVICE_INFO_PARENT_DEVICE, .propSize = 8, .pPropValue = 0x7ffffffdd790 (nullptr), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3eb20, .propName = UR_DEVICE_INFO_TYPE, .propSize = 4, .pPropValue = 0x7ffffffdd730 (UR_DEVICE_TYPE_GPU), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3eb20, .propName = UR_DEVICE_INFO_USE_NATIVE_ASSERT, .propSize = 1, .pPropValue = 0x7ffffffdd730 (true), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+[2026-10-08 09:33:32.327] [thread-id: 140736844174208] [trace] zeDeviceGetModuleProperties(hDevice, pModuleProperties)
+[2026-10-08 09:33:32.327] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetModuleProperties(hDevice=0x4a29a08, pModuleProperties={stype=0x4a3ee40, spirvVersionSupported=65541, flags=15, fp16flags=63, fp32flags=127, fp64flags=127, maxArgumentsSize=2048, printfBufferSize=4194304, nativeKernelSupported={id=0}})
+[2026-10-08 09:33:32.327] [thread-id: 140736844174208] [trace] zeDeviceGetImageProperties(hDevice, pImageProperties)
+[2026-10-08 09:33:32.327] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetImageProperties(hDevice=0x4a29a08, pImageProperties={stype=0x4a3ede0, maxImageDims1D=16384, maxImageDims2D=16384, maxImageDims3D=2048, maxImageBufferSize=633300480, maxImageArraySlices=2048, maxSamplers=16, maxReadImageArgs=128, maxWriteImageArgs=128})
+   <--- urDeviceGetInfo(.hDevice = 0x4a3eb20, .propName = UR_DEVICE_INFO_EXTENSIONS, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffffffdd6b8 (245)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3eb20, .propName = UR_DEVICE_INFO_EXTENSIONS, .propSize = 245, .pPropValue = 0x480f0b0 (cl_khr_il_program cl_khr_subgroups cl_intel_subgroups cl_intel_subgroups_short cl_intel_required_subgroup_size cl_khr_fp16 cl_khr_fp64 cl_khr_int64_base_atomics cl_khr_int64_extended_atomics cl_khr_3d_image_writes cl_intel_bfloat16_conversions ), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceRetain
+   <--- urDeviceRetain(.hDevice = 0x4a3eb20) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3eb20, .propName = UR_DEVICE_INFO_TYPE, .propSize = 4, .pPropValue = 0x7ffffffdd8ac (UR_DEVICE_TYPE_GPU), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3eb20, .propName = UR_DEVICE_INFO_VENDOR_ID, .propSize = 4, .pPropValue = 0x7ffffffdd928 (32902), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3eb20, .propName = UR_DEVICE_INFO_DRIVER_VERSION, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffffffdd7d0 (14)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3eb20, .propName = UR_DEVICE_INFO_DRIVER_VERSION, .propSize = 14, .pPropValue = 0x7ffffffdd8f8 (1.17.39395+14), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3eb20, .propName = UR_DEVICE_INFO_NAME, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffffffdd710 (31)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3eb20, .propName = UR_DEVICE_INFO_NAME, .propSize = 31, .pPropValue = 0x4a3eab0 (Intel(R) Arc(TM) B570 Graphics), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0x4a3d0e0, .propName = UR_PLATFORM_INFO_BACKEND, .propSize = 4, .pPropValue = 0x7ffffffddaec (UR_BACKEND_LEVEL_ZERO), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3eb20, .propName = UR_DEVICE_INFO_TYPE, .propSize = 4, .pPropValue = 0x7ffffffddae4 (UR_DEVICE_TYPE_GPU), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceRelease
+   <--- urDeviceRelease(.hDevice = 0x4a3eb20) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3eb20, .propName = UR_DEVICE_INFO_SUPPORTED_PARTITIONS, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffffffddad8 (0)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGet
+[2026-10-08 09:33:32.327] [thread-id: 140736844174208] [trace] zeDeviceGetRootDevice(hDevice, phRootDevice)
+[2026-10-08 09:33:32.327] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetRootDevice(hDevice=0x4a29a08, phRootDevice=0x7ffffffdd8e0)
+   <--- urDeviceGet(.hPlatform = 0x4a3d0e0, .DeviceType = UR_DEVICE_TYPE_ALL, .NumEntries = 0, .phDevices = nullptr, .pNumDevices = 0x7ffffffddd0c (1)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGet
+[2026-10-08 09:33:32.327] [thread-id: 140736844174208] [trace] zeDeviceGetRootDevice(hDevice, phRootDevice)
+[2026-10-08 09:33:32.327] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetRootDevice(hDevice=0x4a29a08, phRootDevice=0x7ffffffdd8e0)
+   <--- urDeviceGet(.hPlatform = 0x4a3d0e0, .DeviceType = UR_DEVICE_TYPE_ALL, .NumEntries = 1, .phDevices = 0x4a3cf80 {0x4a3eb20}, .pNumDevices = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0x4a3d0e0, .propName = UR_PLATFORM_INFO_VERSION, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffffffdd8e0 (5)) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0x4a3d0e0, .propName = UR_PLATFORM_INFO_VERSION, .propSize = 5, .pPropValue = 0x7ffffffdda48 (1.17), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0x4a3d0e0, .propName = UR_PLATFORM_INFO_NAME, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffffffdd8e0 (51)) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0x4a3d0e0, .propName = UR_PLATFORM_INFO_NAME, .propSize = 51, .pPropValue = 0x4a3f710 (Intel(R) oneAPI Unified Runtime over Level-Zero V2), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3eb20, .propName = UR_DEVICE_INFO_TYPE, .propSize = 4, .pPropValue = 0x7ffffffdd9bc (UR_DEVICE_TYPE_GPU), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3eb20, .propName = UR_DEVICE_INFO_VENDOR_ID, .propSize = 4, .pPropValue = 0x7ffffffdda38 (32902), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3eb20, .propName = UR_DEVICE_INFO_DRIVER_VERSION, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffffffdd8e0 (14)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3eb20, .propName = UR_DEVICE_INFO_DRIVER_VERSION, .propSize = 14, .pPropValue = 0x7ffffffdda08 (1.17.39395+14), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0x4a3d0e0, .propName = UR_PLATFORM_INFO_BACKEND, .propSize = 4, .pPropValue = 0x7ffffffddbfc (UR_BACKEND_LEVEL_ZERO), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3eb20, .propName = UR_DEVICE_INFO_TYPE, .propSize = 4, .pPropValue = 0x7ffffffddbf4 (UR_DEVICE_TYPE_GPU), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceRelease
+   <--- urDeviceRelease(.hDevice = 0x4a3eb20) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3eb20, .propName = UR_DEVICE_INFO_SUPPORTED_PARTITIONS, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffffffddbe8 (0)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceSelectBinary
+   <--- urDeviceSelectBinary(.hDevice = 0x4a3eb20, .pBinaries = 0x7ffffffddc30 ((struct ur_device_binary_t){.stype = UR_STRUCTURE_TYPE_CONTEXT_PROPERTIES, .pNext = nullptr, .pDeviceTargetSpec = 0x7fffdc7ba3c0 (spir64)}), .NumBinaries = 1, .pSelectedBinary = 0x7ffffffddc54 (0)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+[2026-10-08 09:33:32.327] [thread-id: 140736844174208] [trace] zeDeviceGetSubDevices(hDevice, pCount, phSubdevices)
+[2026-10-08 09:33:32.327] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetSubDevices(hDevice=0x4a29a08, pCount=0, phSubdevices=nullptr)
+   <--- urDeviceGetInfo(.hDevice = 0x4a3eb20, .propName = UR_DEVICE_INFO_COMPONENT_DEVICES, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffffffdda80 (0)) -> UR_RESULT_SUCCESS;
+   ---> urContextCreate
+[2026-10-08 09:33:32.327] [thread-id: 140736844174208] [trace] zeContextCreate(hDriver, desc, phContext)
+[2026-10-08 09:33:32.327] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeContextCreate(hDriver=0x4a294a8, desc={stype=0x7ffffffdd9b0, flags=0}, phContext=0x4a404f8)
+[2026-10-08 09:33:32.327] [thread-id: 140736844174208] [trace] zeMemAllocHost(hContext, host_desc, size, alignment, pptr)
+[2026-10-08 09:33:32.328] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemAllocHost(hContext=0x4a404f8, host_desc={stype=0x7ffffffdd430, flags=0}, size=1, alignment=0, pptr=0x7fec4f1ffe00)
+[2026-10-08 09:33:32.328] [thread-id: 140736844174208] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-08 09:33:32.328] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0x4a404f8, ptr=0x7fec4f1ffe00, pMemAllocProperties={stype=0x7ffffffdd430, type=0x7ffffffdd440, id=1, pageSize=2097152}, phDevice=nullptr)
+[2026-10-08 09:33:32.328] [thread-id: 140736844174208] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-08 09:33:32.328] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0x4a404f8, pMemFreeDesc={stype=0x7ffffffdd410, freePolicy=1}, ptr=0x7fec4f1ffe00)
+[2026-10-08 09:33:32.328] [thread-id: 140736844174208] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 09:33:32.328] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0x4a29a08, pDeviceProperties={stype=0x7fec4f5ec068, type=0x7fec4f5ec078, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 09:33:32.328] [thread-id: 140736844174208] [trace] zeMemAllocDevice(hContext, device_desc, size, alignment, hDevice, pptr)
+[2026-10-08 09:33:32.328] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemAllocDevice(hContext=0x4a404f8, device_desc={stype=0x7ffffffdd3f0, flags=0, ordinal=0}, size=1, alignment=0, hDevice=0x4a29a08, pptr=0xffffffffff9ffe00)
+[2026-10-08 09:33:32.328] [thread-id: 140736844174208] [trace] zeContextMakeMemoryResident(hContext, hDevice, ptr, size)
+[2026-10-08 09:33:32.328] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeContextMakeMemoryResident(hContext=0x4a404f8, hDevice=0x4a29a08, ptr=0xffffffffff9ffe00, size=1)
+[2026-10-08 09:33:32.328] [thread-id: 140736844174208] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-08 09:33:32.328] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0x4a404f8, ptr=0xffffffffff9ffe00, pMemAllocProperties={stype=0x7ffffffdd430, type=0x7ffffffdd440, id=3, pageSize=65536}, phDevice=nullptr)
+[2026-10-08 09:33:32.328] [thread-id: 140736844174208] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-08 09:33:32.329] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0x4a404f8, pMemFreeDesc={stype=0x7ffffffdd410, freePolicy=1}, ptr=0xffffffffff9ffe00)
+[2026-10-08 09:33:32.329] [thread-id: 140736844174208] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 09:33:32.329] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0x4a29a08, pDeviceProperties={stype=0x7fec4f5e4068, type=0x7fec4f5e4078, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 09:33:32.329] [thread-id: 140736844174208] [trace] zeMemAllocShared(hContext, device_desc, host_desc, size, alignment, hDevice, pptr)
+[2026-10-08 09:33:32.329] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemAllocShared(hContext=0x4a404f8, device_desc={stype=0x7ffffffdd430, flags=0, ordinal=0}, host_desc={stype=0x7ffffffdd410, flags=0}, size=1, alignment=0, hDevice=0x4a29a08, pptr=0x7fec4f270000)
+[2026-10-08 09:33:32.329] [thread-id: 140736844174208] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-08 09:33:32.329] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0x4a404f8, ptr=0x7fec4f270000, pMemAllocProperties={stype=0x7ffffffdd430, type=0x7ffffffdd440, id=5, pageSize=65536}, phDevice=nullptr)
+[2026-10-08 09:33:32.329] [thread-id: 140736844174208] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-08 09:33:32.330] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0x4a404f8, pMemFreeDesc={stype=0x7ffffffdd410, freePolicy=1}, ptr=0x7fec4f270000)
+[2026-10-08 09:33:32.330] [thread-id: 140736844174208] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 09:33:32.330] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0x4a29a08, pDeviceProperties={stype=0x7fec4f276068, type=0x7fec4f276078, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 09:33:32.330] [thread-id: 140736844174208] [trace] zeMemAllocShared(hContext, device_desc, host_desc, size, alignment, hDevice, pptr)
+[2026-10-08 09:33:32.330] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemAllocShared(hContext=0x4a404f8, device_desc={stype=0x7ffffffdd430, flags=0, ordinal=0}, host_desc={stype=0x7ffffffdd410, flags=0}, size=1, alignment=0, hDevice=0x4a29a08, pptr=0x7fec4f260000)
+[2026-10-08 09:33:32.330] [thread-id: 140736844174208] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-08 09:33:32.330] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0x4a404f8, ptr=0x7fec4f260000, pMemAllocProperties={stype=0x7ffffffdd430, type=0x7ffffffdd440, id=6, pageSize=65536}, phDevice=nullptr)
+[2026-10-08 09:33:32.330] [thread-id: 140736844174208] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-08 09:33:32.330] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0x4a404f8, pMemFreeDesc={stype=0x7ffffffdd410, freePolicy=1}, ptr=0x7fec4f260000)
+[2026-10-08 09:33:32.330] [thread-id: 140736844174208] [trace] zeMemAllocHost(hContext, host_desc, size, alignment, pptr)
+[2026-10-08 09:33:32.330] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemAllocHost(hContext=0x4a404f8, host_desc={stype=0x7ffffffdd430, flags=0}, size=1, alignment=0, pptr=0x7fec4f1ffe00)
+[2026-10-08 09:33:32.330] [thread-id: 140736844174208] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-08 09:33:32.330] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0x4a404f8, ptr=0x7fec4f1ffe00, pMemAllocProperties={stype=0x7ffffffdd430, type=0x7ffffffdd440, id=1, pageSize=2097152}, phDevice=nullptr)
+[2026-10-08 09:33:32.330] [thread-id: 140736844174208] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-08 09:33:32.330] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0x4a404f8, pMemFreeDesc={stype=0x7ffffffdd410, freePolicy=1}, ptr=0x7fec4f1ffe00)
+[2026-10-08 09:33:32.331] [thread-id: 140736844174208] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 09:33:32.331] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0x4a29a08, pDeviceProperties={stype=0x7fec4f26e068, type=0x7fec4f26e078, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 09:33:32.331] [thread-id: 140736844174208] [trace] zeMemAllocDevice(hContext, device_desc, size, alignment, hDevice, pptr)
+[2026-10-08 09:33:32.331] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemAllocDevice(hContext=0x4a404f8, device_desc={stype=0x7ffffffdd3f0, flags=0, ordinal=0}, size=1, alignment=0, hDevice=0x4a29a08, pptr=0xffffffffff9ffe00)
+[2026-10-08 09:33:32.331] [thread-id: 140736844174208] [trace] zeContextMakeMemoryResident(hContext, hDevice, ptr, size)
+[2026-10-08 09:33:32.331] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeContextMakeMemoryResident(hContext=0x4a404f8, hDevice=0x4a29a08, ptr=0xffffffffff9ffe00, size=1)
+[2026-10-08 09:33:32.331] [thread-id: 140736844174208] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-08 09:33:32.331] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0x4a404f8, ptr=0xffffffffff9ffe00, pMemAllocProperties={stype=0x7ffffffdd430, type=0x7ffffffdd440, id=3, pageSize=65536}, phDevice=nullptr)
+[2026-10-08 09:33:32.331] [thread-id: 140736844174208] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-08 09:33:32.331] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0x4a404f8, pMemFreeDesc={stype=0x7ffffffdd410, freePolicy=1}, ptr=0xffffffffff9ffe00)
+[2026-10-08 09:33:32.331] [thread-id: 140736844174208] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 09:33:32.331] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0x4a29a08, pDeviceProperties={stype=0x7fec4f261068, type=0x7fec4f261078, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 09:33:32.331] [thread-id: 140736844174208] [trace] zeMemAllocShared(hContext, device_desc, host_desc, size, alignment, hDevice, pptr)
+[2026-10-08 09:33:32.331] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemAllocShared(hContext=0x4a404f8, device_desc={stype=0x7ffffffdd430, flags=0, ordinal=0}, host_desc={stype=0x7ffffffdd410, flags=0}, size=1, alignment=0, hDevice=0x4a29a08, pptr=0x7fec4f250000)
+[2026-10-08 09:33:32.331] [thread-id: 140736844174208] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-08 09:33:32.331] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0x4a404f8, ptr=0x7fec4f250000, pMemAllocProperties={stype=0x7ffffffdd430, type=0x7ffffffdd440, id=9, pageSize=65536}, phDevice=nullptr)
+[2026-10-08 09:33:32.331] [thread-id: 140736844174208] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-08 09:33:32.332] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0x4a404f8, pMemFreeDesc={stype=0x7ffffffdd410, freePolicy=1}, ptr=0x7fec4f250000)
+[2026-10-08 09:33:32.332] [thread-id: 140736844174208] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 09:33:32.332] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0x4a29a08, pDeviceProperties={stype=0x7fec4f25d068, type=0x7fec4f25d078, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 09:33:32.332] [thread-id: 140736844174208] [trace] zeMemAllocShared(hContext, device_desc, host_desc, size, alignment, hDevice, pptr)
+[2026-10-08 09:33:32.332] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemAllocShared(hContext=0x4a404f8, device_desc={stype=0x7ffffffdd430, flags=0, ordinal=0}, host_desc={stype=0x7ffffffdd410, flags=0}, size=1, alignment=0, hDevice=0x4a29a08, pptr=0x7fec4f240000)
+[2026-10-08 09:33:32.332] [thread-id: 140736844174208] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-08 09:33:32.332] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0x4a404f8, ptr=0x7fec4f240000, pMemAllocProperties={stype=0x7ffffffdd430, type=0x7ffffffdd440, id=10, pageSize=65536}, phDevice=nullptr)
+[2026-10-08 09:33:32.332] [thread-id: 140736844174208] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-08 09:33:32.332] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0x4a404f8, pMemFreeDesc={stype=0x7ffffffdd410, freePolicy=1}, ptr=0x7fec4f240000)
+   <--- urContextCreate(.DeviceCount = 1, .phDevices = 0x4a3eae0 {0x4a3eb20}, .pProperties = nullptr, .phContext = 0x4a415d0 (0x4a43280)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3eb20, .propName = UR_DEVICE_INFO_QUEUE_PROPERTIES, .propSize = 4, .pPropValue = 0x7ffffffddbd0 (UR_QUEUE_FLAG_OUT_OF_ORDER_EXEC_MODE_ENABLE | UR_QUEUE_FLAG_PROFILING_ENABLE), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urQueueCreate
+<LEVEL_ZERO>[INFO]: Copy offload is disabled by the environment variable.
+<LEVEL_ZERO>[DEBUG]: create command list ordinal: 0, type: immediate, device: 0x4a29a08, inOrder: 1
+[2026-10-08 09:33:32.332] [thread-id: 140736844174208] [trace] zeCommandListCreateImmediate(hContext, hDevice, altdesc, phCommandList)
+[2026-10-08 09:33:32.334] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListCreateImmediate(hContext=0x4a404f8, hDevice=0x4a29a08, altdesc={stype=0x7ffffffdd6d0, ordinal=0, index=0, flags=2, mode=0x7ffffffdd6ec, priority=0x7ffffffdd6f0}, phCommandList=0x4a470a8)
+[2026-10-08 09:33:32.334] [thread-id: 140736844174208] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 09:33:32.334] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0x4a294a8, name="zexCounterBasedEventCreate2", ppFunctionAddress=0x7fec5d737c00)
+   <--- urQueueCreate(.hContext = 0x4a43280, .hDevice = 0x4a3eb20, .pProperties = 0x7ffffffddcb0 ((struct ur_queue_properties_t){.stype = UR_STRUCTURE_TYPE_QUEUE_PROPERTIES, .pNext = nullptr, .flags = UR_QUEUE_FLAG_PROFILING_ENABLE}), .phQueue = 0x7ffffffddcc8 (0x4a46500)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3eb20, .propName = UR_DEVICE_INFO_QUEUE_PROPERTIES, .propSize = 4, .pPropValue = 0x7ffffffddc50 (UR_QUEUE_FLAG_OUT_OF_ORDER_EXEC_MODE_ENABLE | UR_QUEUE_FLAG_PROFILING_ENABLE), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urQueueCreate
+[2026-10-08 09:33:32.334] [thread-id: 140736844174208] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 09:33:32.334] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0x4a294a8, name="zexCounterBasedEventCreate2", ppFunctionAddress=0x7fec5d737c00)
+<LEVEL_ZERO>[INFO]: Copy offload is disabled by the environment variable.
+<LEVEL_ZERO>[DEBUG]: create command list ordinal: 0, type: immediate, device: 0x4a29a08, inOrder: 1
+[2026-10-08 09:33:32.334] [thread-id: 140736844174208] [trace] zeCommandListCreateImmediate(hContext, hDevice, altdesc, phCommandList)
+[2026-10-08 09:33:32.335] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListCreateImmediate(hContext=0x4a404f8, hDevice=0x4a29a08, altdesc={stype=0x7ffffffdd470, ordinal=0, index=0, flags=2, mode=0x7ffffffdd48c, priority=0x7ffffffdd490}, phCommandList=0x4a554e8)
+<LEVEL_ZERO>[INFO]: Copy offload is disabled by the environment variable.
+<LEVEL_ZERO>[DEBUG]: create command list ordinal: 0, type: immediate, device: 0x4a29a08, inOrder: 1
+[2026-10-08 09:33:32.335] [thread-id: 140736844174208] [trace] zeCommandListCreateImmediate(hContext, hDevice, altdesc, phCommandList)
+[2026-10-08 09:33:32.336] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListCreateImmediate(hContext=0x4a404f8, hDevice=0x4a29a08, altdesc={stype=0x7ffffffdd470, ordinal=0, index=0, flags=2, mode=0x7ffffffdd48c, priority=0x7ffffffdd490}, phCommandList=0x4a5d188)
+<LEVEL_ZERO>[INFO]: Copy offload is disabled by the environment variable.
+<LEVEL_ZERO>[DEBUG]: create command list ordinal: 0, type: immediate, device: 0x4a29a08, inOrder: 1
+[2026-10-08 09:33:32.336] [thread-id: 140736844174208] [trace] zeCommandListCreateImmediate(hContext, hDevice, altdesc, phCommandList)
+[2026-10-08 09:33:32.337] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListCreateImmediate(hContext=0x4a404f8, hDevice=0x4a29a08, altdesc={stype=0x7ffffffdd470, ordinal=0, index=0, flags=2, mode=0x7ffffffdd48c, priority=0x7ffffffdd490}, phCommandList=0x4a65d98)
+<LEVEL_ZERO>[INFO]: Copy offload is disabled by the environment variable.
+<LEVEL_ZERO>[DEBUG]: create command list ordinal: 0, type: immediate, device: 0x4a29a08, inOrder: 1
+[2026-10-08 09:33:32.337] [thread-id: 140736844174208] [trace] zeCommandListCreateImmediate(hContext, hDevice, altdesc, phCommandList)
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListCreateImmediate(hContext=0x4a404f8, hDevice=0x4a29a08, altdesc={stype=0x7ffffffdd470, ordinal=0, index=0, flags=2, mode=0x7ffffffdd48c, priority=0x7ffffffdd490}, phCommandList=0x4a6eaa8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a77688)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a779a8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a780c8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a78608)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a78d08)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a79268)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a79968)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a79e78)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a7a578)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a7ab18)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a7b218)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a7b7c8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a7bec8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a7c3d8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a7cad8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.338] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a7cfe8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a7d6e8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a7dd08)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a7e408)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a7e918)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a7f018)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a7f528)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a7fc28)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a80138)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a80838)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a80d48)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a81448)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a81958)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a82058)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a82568)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a82c68)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a83178)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a83878)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a83f98)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a84698)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a84ba8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a852a8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a857b8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a85eb8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a863c8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a86ac8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a86fd8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a876d8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.339] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a87be8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.340] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.340] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a882e8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.340] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.340] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a887f8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.340] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.340] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a88ef8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.340] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.340] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a89408)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.340] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.340] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a89b08)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.340] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.340] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a8a018)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.340] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.340] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a8a718)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.340] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.340] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a404f8, hDevice=0x4a29a08, desc=0x7ffffffdd5d0, phEvent=0x4a8ac28)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 09:33:32.340] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 09:33:32.340] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBa
+Last 64 KiB:
+:36:36.793] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0xa4a55b8)
+   <--- urProgramRelease(.hProgram = 0xa497940) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0xa429f68)
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0xa429fc8)
+   <--- urProgramRelease(.hProgram = 0xa41e1f0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x8e97e08)
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x8e97e68)
+   <--- urProgramRelease(.hProgram = 0x8e8ae90) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x8dc3858)
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x8e14b88)
+   <--- urProgramRelease(.hProgram = 0x8deaa90) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x8df0d08)
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x8dc2828)
+   <--- urProgramRelease(.hProgram = 0x8df85a0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x8dc5b28)
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x8dc47b8)
+   <--- urProgramRelease(.hProgram = 0x8dc4390) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x8da5f08)
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x8d9eed8)
+   <--- urProgramRelease(.hProgram = 0x8d9ed70) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.793] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x8da5ea8)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x8dc00a8)
+   <--- urProgramRelease(.hProgram = 0x8daffe0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x8da5fe8)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x8da2408)
+   <--- urProgramRelease(.hProgram = 0x8da4e50) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x8d9ce48)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x8d9cea8)
+   <--- urProgramRelease(.hProgram = 0x8d92b20) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x8d37878)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x8d378d8)
+   <--- urProgramRelease(.hProgram = 0x8d29bc0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x76efcb8)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x76efd18)
+   <--- urProgramRelease(.hProgram = 0x76e37c0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x763adc8)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6acb1d8)
+   <--- urProgramRelease(.hProgram = 0x7644d90) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x7616ff8)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x762a4d8)
+   <--- urProgramRelease(.hProgram = 0x760f470) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x63ff4b8)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6d82c28)
+   <--- urProgramRelease(.hProgram = 0x75f6260) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6d6e288)
+[2026-10-08 09:36:36.794] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.795] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6d6e2e8)
+   <--- urProgramRelease(.hProgram = 0x6d48b50) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.795] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.795] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6381078)
+[2026-10-08 09:36:36.795] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.795] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x63aa718)
+   <--- urProgramRelease(.hProgram = 0x63b8670) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.795] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.795] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x63acec8)
+[2026-10-08 09:36:36.795] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.795] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x63c7078)
+   <--- urProgramRelease(.hProgram = 0x63c6130) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.795] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.795] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x637d5c8)
+[2026-10-08 09:36:36.795] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.795] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x639cfa8)
+   <--- urProgramRelease(.hProgram = 0x637edd0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.795] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.795] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x674a398)
+[2026-10-08 09:36:36.795] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.796] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x637d2d8)
+   <--- urProgramRelease(.hProgram = 0x637e6d0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.796] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.796] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x67502c8)
+[2026-10-08 09:36:36.796] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.796] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6765808)
+   <--- urProgramRelease(.hProgram = 0x6765a30) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.796] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.796] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6752698)
+[2026-10-08 09:36:36.796] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.796] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6750028)
+   <--- urProgramRelease(.hProgram = 0x674fec0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.796] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.796] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6749418)
+[2026-10-08 09:36:36.796] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.797] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x70caee8)
+   <--- urProgramRelease(.hProgram = 0x673e590) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.797] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.797] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x70a20f8)
+[2026-10-08 09:36:36.797] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.797] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x70d2818)
+   <--- urProgramRelease(.hProgram = 0x70d29d0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.797] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.797] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x70a1ed8)
+[2026-10-08 09:36:36.797] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.797] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x709d448)
+   <--- urProgramRelease(.hProgram = 0x64d8730) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.797] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.797] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x64a89e8)
+[2026-10-08 09:36:36.797] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.797] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x64c8338)
+   <--- urProgramRelease(.hProgram = 0x64c81d0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.797] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.797] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6fdeb38)
+[2026-10-08 09:36:36.797] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.797] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x64c5058)
+   <--- urProgramRelease(.hProgram = 0x64a7c60) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.797] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.797] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6fda478)
+[2026-10-08 09:36:36.797] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.797] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6fdc708)
+   <--- urProgramRelease(.hProgram = 0x649fab0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6fd5228)
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6fda1c8)
+   <--- urProgramRelease(.hProgram = 0x6fdffc0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6fc31c8)
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6fccd58)
+   <--- urProgramRelease(.hProgram = 0x6fd4c40) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6fc17f8)
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6fc7aa8)
+   <--- urProgramRelease(.hProgram = 0x6fc5d40) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6fc14b8)
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6fc1518)
+   <--- urProgramRelease(.hProgram = 0x6fb9520) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6c3e778)
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6c3e3b8)
+   <--- urProgramRelease(.hProgram = 0x6c3e250) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6e533d8)
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6c3a188)
+   <--- urProgramRelease(.hProgram = 0x6c34010) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x60c5978)
+[2026-10-08 09:36:36.798] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6e52988)
+   <--- urProgramRelease(.hProgram = 0x6e52b40) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6c34538)
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6c47a98)
+   <--- urProgramRelease(.hProgram = 0x6c47620) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x60c5a48)
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6c3ec08)
+   <--- urProgramRelease(.hProgram = 0x6c3edc0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6b8d178)
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6c2b4e8)
+   <--- urProgramRelease(.hProgram = 0x6c1c090) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6ed8bb8)
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6b96ed8)
+   <--- urProgramRelease(.hProgram = 0x6b6dba0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6ed8b58)
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6b6d5a8)
+   <--- urProgramRelease(.hProgram = 0x6b6cca0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6ef5a48)
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6691988)
+   <--- urProgramRelease(.hProgram = 0x6b75ea0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6ef5e38)
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6ed7b48)
+   <--- urProgramRelease(.hProgram = 0x6ed7840) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x666f1d8)
+[2026-10-08 09:36:36.799] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6ef53d8)
+   <--- urProgramRelease(.hProgram = 0x6693890) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6cbdad8)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6edb2a8)
+   <--- urProgramRelease(.hProgram = 0x6edb140) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6586c18)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6ee7008)
+   <--- urProgramRelease(.hProgram = 0x6ee6ea0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6cb0718)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6cbc268)
+   <--- urProgramRelease(.hProgram = 0x6cbcb20) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6589f28)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6eca9f8)
+   <--- urProgramRelease(.hProgram = 0x6c9d020) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6589ec8)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6584db8)
+   <--- urProgramRelease(.hProgram = 0x65849c0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x658a078)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6583f48)
+   <--- urProgramRelease(.hProgram = 0x6583de0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x66101d8)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6d3e998)
+   <--- urProgramRelease(.hProgram = 0x69c9160) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x66108a8)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x65029a8)
+   <--- urProgramRelease(.hProgram = 0x6502520) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6c558c8)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6506128)
+   <--- urProgramRelease(.hProgram = 0x6505fc0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.800] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x64dd4d8)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6c4dd98)
+   <--- urProgramRelease(.hProgram = 0x6c4dc30) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6c556b8)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6519c38)
+   <--- urProgramRelease(.hProgram = 0x6c4d3a0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6c55398)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x64dcc98)
+   <--- urProgramRelease(.hProgram = 0x64dbb80) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6ce7128)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6c550b8)
+   <--- urProgramRelease(.hProgram = 0x6c50b90) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6d0e648)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6d0e6a8)
+   <--- urProgramRelease(.hProgram = 0x6d077a0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6e8cb68)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x68ebc18)
+   <--- urProgramRelease(.hProgram = 0x68e8b90) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x66f5b48)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6e8dac8)
+   <--- urProgramRelease(.hProgram = 0x6e8d960) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6855fa8)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6d1d2a8)
+   <--- urProgramRelease(.hProgram = 0x6cce870) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6415b38)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.801] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6ea5838)
+   <--- urProgramRelease(.hProgram = 0x6415fc0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x67c1928)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x686b328)
+   <--- urProgramRelease(.hProgram = 0x64161b0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x670a0a8)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x69008e8)
+   <--- urProgramRelease(.hProgram = 0x69007a0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x66c0f58)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x699fee8)
+   <--- urProgramRelease(.hProgram = 0x6c10990) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6c7cf08)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x686d798)
+   <--- urProgramRelease(.hProgram = 0x69a0840) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6c7cf68)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x697a108)
+   <--- urProgramRelease(.hProgram = 0x6400210) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6b66528)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6b255a8)
+   <--- urProgramRelease(.hProgram = 0x66dc7d0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6619c78)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x66dd9f8)
+   <--- urProgramRelease(.hProgram = 0x66dd610) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6790378)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6619a08)
+   <--- urProgramRelease(.hProgram = 0x661b130) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6a26778)
+[2026-10-08 09:36:36.802] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.803] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6c9a3d8)
+   <--- urProgramRelease(.hProgram = 0x6a26610) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.803] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.803] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x651b458)
+[2026-10-08 09:36:36.803] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.803] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x64050c8)
+   <--- urProgramRelease(.hProgram = 0x6437030) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.803] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.803] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6e91c58)
+[2026-10-08 09:36:36.803] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.803] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x69f63c8)
+   <--- urProgramRelease(.hProgram = 0x69a1870) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.803] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.803] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6e91bf8)
+[2026-10-08 09:36:36.803] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.803] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x64fbdd8)
+   <--- urProgramRelease(.hProgram = 0x6793ca0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.803] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.803] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6430e88)
+[2026-10-08 09:36:36.803] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6430aa8)
+   <--- urProgramRelease(.hProgram = 0x642dbf0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6b0e968)
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6661128)
+   <--- urProgramRelease(.hProgram = 0x6907860) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6378a98)
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x66caca8)
+   <--- urProgramRelease(.hProgram = 0x66cab60) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x63796b8)
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6b053b8)
+   <--- urProgramRelease(.hProgram = 0x67c2f20) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x63788c8)
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6703dd8)
+   <--- urProgramRelease(.hProgram = 0x6703c70) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x69294f8)
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6b39798)
+   <--- urProgramRelease(.hProgram = 0x6b39630) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6b39f58)
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6b33d78)
+   <--- urProgramRelease(.hProgram = 0x6379bc0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x661beb8)
+[2026-10-08 09:36:36.804] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6b2b568)
+   <--- urProgramRelease(.hProgram = 0x5b0bf00) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6b3def8)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x69f8ad8)
+   <--- urProgramRelease(.hProgram = 0x66f6110) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6b34b98)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x661e4c8)
+   <--- urProgramRelease(.hProgram = 0x6a6c6e0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6492408)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x4801518)
+   <--- urProgramRelease(.hProgram = 0x662d360) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x642ebe8)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6491b68)
+   <--- urProgramRelease(.hProgram = 0x6aff3b0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x64588d8)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6432238)
+   <--- urProgramRelease(.hProgram = 0x6425c00) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x637a3a8)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6458718)
+   <--- urProgramRelease(.hProgram = 0x6378000) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6862ff8)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6489fc8)
+   <--- urProgramRelease(.hProgram = 0x6862c80) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x688ed38)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x692a2b8)
+   <--- urProgramRelease(.hProgram = 0x6bc8420) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.805] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x4b285a8)
+[2026-10-08 09:36:36.806] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.806] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x686c3a8)
+   <--- urProgramRelease(.hProgram = 0x6afecc0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.806] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.806] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6aeef18)
+[2026-10-08 09:36:36.806] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.806] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6babf98)
+   <--- urProgramRelease(.hProgram = 0x6c06620) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.806] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.806] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x4c901a8)
+[2026-10-08 09:36:36.806] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.806] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6c05398)
+   <--- urProgramRelease(.hProgram = 0x6aca6f0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.806] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.806] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6c05948)
+[2026-10-08 09:36:36.806] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.806] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6ad9a88)
+   <--- urProgramRelease(.hProgram = 0x6b448c0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.806] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.806] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x4bdc108)
+[2026-10-08 09:36:36.806] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x658d348)
+   <--- urProgramRelease(.hProgram = 0x69cc220) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x4b24d48)
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x5fd0be8)
+   <--- urProgramRelease(.hProgram = 0x6bd5260) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6590158)
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6b4afd8)
+   <--- urProgramRelease(.hProgram = 0x69e5160) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x4bcf3e8)
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x605adc8)
+   <--- urProgramRelease(.hProgram = 0x6b56f50) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x672f568)
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x4c884b8)
+   <--- urProgramRelease(.hProgram = 0x6be8f30) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x4b44048)
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x6bf2408)
+   <--- urProgramRelease(.hProgram = 0x6979cb0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x4b26b08)
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x69da7e8)
+   <--- urProgramRelease(.hProgram = 0x6bf1d60) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x6bc8a48)
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x69e5d58)
+   <--- urProgramRelease(.hProgram = 0x4c9d270) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x4c92a98)
+[2026-10-08 09:36:36.807] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x4c9dc58)
+   <--- urProgramRelease(.hProgram = 0x4c90a30) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x5b0a5d8)
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x65ec8d8)
+   <--- urProgramRelease(.hProgram = 0x5b0a670) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x4c87ca8)
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x5b09488)
+   <--- urProgramRelease(.hProgram = 0x4c90ba0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x4b51b48)
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x4c92518)
+   <--- urProgramRelease(.hProgram = 0x5b081f0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x4b4a4a8)
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x4c9e068)
+   <--- urProgramRelease(.hProgram = 0x6084c50) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x4c84e08)
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x5b00a08)
+   <--- urProgramRelease(.hProgram = 0x5b008a0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x4b34c58)
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x4c84b58)
+   <--- urProgramRelease(.hProgram = 0x4c842f0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x5fdff38)
+[2026-10-08 09:36:36.808] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x4c83248)
+   <--- urProgramRelease(.hProgram = 0x5b84020) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x5b0ba88)
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x4ce8178)
+   <--- urProgramRelease(.hProgram = 0x5b0c100) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x5b0b8b8)
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x4d1a498)
+   <--- urProgramRelease(.hProgram = 0x4d19270) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x4d40e18)
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x4ce4ff8)
+   <--- urProgramRelease(.hProgram = 0x4aa9a10) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x4cc5ff8)
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x4cc6058)
+   <--- urProgramRelease(.hProgram = 0x4b2fe10) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x4cc11d8)
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x4cc1238)
+   <--- urProgramRelease(.hProgram = 0x4b3d0d0) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x4b1e8a8)
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x4b09dc8)
+   <--- urProgramRelease(.hProgram = 0x4b3b850) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x4a9ff58)
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x4857998)
+   <--- urProgramRelease(.hProgram = 0x4aa4c20) -> UR_RESULT_SUCCESS;
+   ---> urProgramRelease
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x4824468)
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] zeModuleDestroy(hModule)
+[2026-10-08 09:36:36.809] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x4831eb8)
+   <--- urProgramRelease(.hProgram = 0x47e7770) -> UR_RESULT_SUCCESS;
+   ---> urDeviceRelease
+   <--- urDeviceRelease(.hDevice = 0x4a3eb20) -> UR_RESULT_SUCCESS;
+   ---> urAdapterRelease
+   <--- urAdapterRelease(.hAdapter = 0x485fc50) -> UR_RESULT_SUCCESS;
+
+Selected issue lines (last 32 KiB):
+CommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.805] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.805] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.805] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.805] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.805] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.805] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.805] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.805] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.805] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.805] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.805] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.805] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.806] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.806] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.806] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.806] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.806] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.806] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.806] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.806] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.806] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.806] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.806] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.806] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.806] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.806] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.807] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.807] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.807] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.807] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.807] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.807] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.807] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.807] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.807] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.807] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.807] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.807] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.807] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.807] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.808] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.808] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.808] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.808] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.808] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.808] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.808] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.808] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.808] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:31.808] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.000] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x5a72928, timeout=0)
+[2026-10-08 09:36:32.002] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x5a72928, timeout=0)
+[2026-10-08 09:36:32.005] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.005] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.005] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.005] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.005] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.005] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.005] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.005] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.005] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.005] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.006] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.006] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.006] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.006] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.006] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.006] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.006] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.006] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.006] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.006] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.006] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.006] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.006] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.006] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.006] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.006] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.006] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.006] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.007] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.007] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.007] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.007] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.007] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.007] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.007] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.007] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.007] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.007] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.007] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.007] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.007] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.007] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.007] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.007] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.007] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.008] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.008] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.008] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.008] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.008] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.008] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.008] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.008] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.008] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.008] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.008] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.008] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.008] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.008] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.008] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.008] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.008] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.009] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.009] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.009] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.009] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.009] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.009] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.009] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.009] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.009] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.009] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.009] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.009] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.009] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.009] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.009] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.173] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x5a72928, timeout=0)
+[2026-10-08 09:36:32.175] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x5a72928, timeout=0)
+[2026-10-08 09:36:32.178] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.178] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.178] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.178] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.178] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.178] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.178] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.179] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.179] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.179] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.179] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.179] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.179] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.179] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.179] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.179] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.179] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.179] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.179] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.179] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.179] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.179] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.179] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.179] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.180] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.180] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.180] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.180] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.180] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.180] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.180] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.180] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.180] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.180] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.180] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.180] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.180] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.180] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.180] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.180] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.180] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.181] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.181] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.181] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.181] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.181] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.181] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.181] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.181] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.181] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.181] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.181] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.181] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.181] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.181] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.181] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.181] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.181] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.182] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.182] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.182] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.182] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.182] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.182] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.182] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.182] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.182] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.182] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.182] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.182] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.182] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.182] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.182] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.182] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x4cd3888, timeout=0)
+[2026-10-08 09:36:32.349] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x5a72928, timeout=0)
+[2026-10-08 09:36:32.351] [thread-id: 140736844174208] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x5a72928, timeout=0)

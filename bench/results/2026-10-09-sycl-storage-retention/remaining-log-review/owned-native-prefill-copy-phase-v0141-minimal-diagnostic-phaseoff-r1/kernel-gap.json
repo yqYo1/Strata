@@ -1,0 +1,32 @@
+{
+  "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-prefill-copy-phase-v0141-minimal-diagnostic-phaseoff-r1/probes/kernel-gap.stdout",
+  "original_sha256": "bbe2bda2fd8b8a41c6995664eaa9f9a7fe480bd4ba6e0cf3ab0f37bad08dcb67",
+  "original_bytes": 59585,
+  "receipt_sha256": "7618e25b7e6675f9ec85eeb9554ffe8544e369385154d7264330e2e929508ad3",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "capture_steps": [
+    {
+      "label": "kernel-gap",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bfd1c4e;b=0a908c16e292429980ff082da39f4bb9;m=32442a8cb2;t=65d623386736f;x=375bf84e48a1304c",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "pid": 3785609,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.0505827360029798
+    }
+  ],
+  "filter": "\\bxe\\b|\\bdrm\\b|\\bi915\\b|gpu|05:00|fault|reset|wedg|hang|timestamp stuck|guc|device lost|memory.cat",
+  "line_count": 78,
+  "matched_count": 0,
+  "entries": [],
+  "original_new_fault_messages": [],
+  "note": "Deterministic relevant-entry extraction; original result is unchanged."
+}

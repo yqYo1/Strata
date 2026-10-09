@@ -1,0 +1,1294 @@
+Derived excerpt of /home/yayoi/.local/state/strata-sycl/storage-audit-20261009-v1/log-context/owned-full-kv-access-v01402-full256k-diagnostic-r5.txt
+Original derived-window SHA256: 567219135a8f277ec94c1d6c143d4f68d8112209ff9413acbef96fde3fd7780b
+First/last 64 KiB; selected issue lines at end.
+First 8388608 bytes of retired log:
+strata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)
+<LOADER>[DEBUG]: Logger loader initialized successfully!
+<LOADER>[INFO]: loaded adapter 0x0x4861580 (/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0) from /opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0
+   ---> urAdapterGet
+<LEVEL_ZERO>[DEBUG]: zeInit with flags value of 1
+[2026-10-08 15:48:21.132] [thread-id: 140736844174208] [info] Loader Version 1.32.0  - No git SHA found, compiled outside git folder.
+[2026-10-08 15:48:23.518] [thread-id: 140736844174208] [info] Validation Layer Enabled
+[2026-10-08 15:48:23.580] [thread-id: 140736844174208] [info] zeInit succeeded
+[2026-10-08 15:48:23.580] [thread-id: 140736844174208] [trace] zeInit(flags)
+[2026-10-08 15:48:23.728] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeInit(flags=1)
+<LEVEL_ZERO>[DEBUG]: Level Zero Loader version: 1.32.0
+<LEVEL_ZERO>[DEBUG]: zeInitDrivers with flags value of 1
+[2026-10-08 15:48:23.728] [thread-id: 140736844174208] [trace] zeInitDrivers(pCount, phDrivers, desc)
+[2026-10-08 15:48:23.728] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeInitDrivers(pCount=1, phDrivers=nullptr, desc={stype=0x4860c48, flags=1})
+[2026-10-08 15:48:23.728] [thread-id: 140736844174208] [trace] zeInitDrivers(pCount, phDrivers, desc)
+[2026-10-08 15:48:23.728] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeInitDrivers(pCount=1, phDrivers=nullptr, desc={stype=0x4860c48, flags=1})
+[2026-10-08 15:48:23.728] [thread-id: 140736844174208] [trace] zeDriverGet(pCount, phDrivers)
+[2026-10-08 15:48:23.728] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGet(pCount=1, phDrivers=nullptr)
+[2026-10-08 15:48:23.729] [thread-id: 140736844174208] [trace] zeDriverGet(pCount, phDrivers)
+[2026-10-08 15:48:23.729] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGet(pCount=1, phDrivers=0x4a2a400)
+[2026-10-08 15:48:23.729] [thread-id: 140736844174208] [trace] zeDeviceGet(hDriver, pCount, phDevices)
+[2026-10-08 15:48:23.729] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGet(hDriver=0x4a2a448, pCount=1, phDevices=nullptr)
+[2026-10-08 15:48:23.729] [thread-id: 140736844174208] [trace] zeDeviceGet(hDriver, pCount, phDevices)
+[2026-10-08 15:48:23.729] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGet(hDriver=0x4a2a448, pCount=1, phDevices=0x4a36d30)
+[2026-10-08 15:48:23.729] [thread-id: 140736844174208] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 15:48:23.729] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0x4a2a9a8, pDeviceProperties={stype=0x7ffffffdd5e0, type=0x7ffffffdd5f0, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+<LEVEL_ZERO>[DEBUG]: 
+zesInit with flags value of 0
+
+[2026-10-08 15:48:23.729] [thread-id: 140736844174208] [trace] zesInit(flags)
+[2026-10-08 15:48:23.732] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zesInit(flags=0)
+[2026-10-08 15:48:23.732] [thread-id: 140736844174208] [trace] zeDriverGet(pCount, phDrivers)
+[2026-10-08 15:48:23.732] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGet(pCount=1, phDrivers=nullptr)
+[2026-10-08 15:48:23.732] [thread-id: 140736844174208] [trace] zeDriverGet(pCount, phDrivers)
+[2026-10-08 15:48:23.732] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGet(pCount=1, phDrivers=0x4a3dbb0)
+[2026-10-08 15:48:23.732] [thread-id: 140736844174208] [trace] zeInitDrivers(pCount, phDrivers, desc)
+[2026-10-08 15:48:23.732] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeInitDrivers(pCount=1, phDrivers=0x4a3dc80, desc={stype=0x4860c48, flags=1})
+[2026-10-08 15:48:23.732] [thread-id: 140736844174208] [trace] zeDriverGetProperties(hDriver, pDriverProperties)
+[2026-10-08 15:48:23.732] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetProperties(hDriver=0x4a2a448, pDriverProperties={stype=0x7ffffffdd530, uuid={id=227}, driverVersion=17013219})
+[2026-10-08 15:48:23.732] [thread-id: 140736844174208] [trace] zeDriverGetProperties(hDriver, pDriverProperties)
+[2026-10-08 15:48:23.732] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetProperties(hDriver=0x4a2a448, pDriverProperties={stype=0x7ffffffdd700, uuid={id=227}, driverVersion=17013219})
+<LEVEL_ZERO>[DEBUG]: zeDriverHandle 0x4a2a448 matched between zeDriverGet and zeInitDrivers. Not adding duplicate driver to list
+<LEVEL_ZERO>[DEBUG]: 1 L0 Drivers found.
+[2026-10-08 15:48:23.732] [thread-id: 140736844174208] [trace] zeDeviceGet(hDriver, pCount, phDevices)
+[2026-10-08 15:48:23.732] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGet(hDriver=0x4a2a448, pCount=1, phDevices=nullptr)
+[2026-10-08 15:48:23.732] [thread-id: 140736844174208] [trace] zeDeviceGet(hDriver, pCount, phDevices)
+[2026-10-08 15:48:23.732] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGet(hDriver=0x4a2a448, pCount=1, phDevices=0x4a3df20)
+[2026-10-08 15:48:23.732] [thread-id: 140736844174208] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0x4a2a9a8, pDeviceProperties={stype=0x7ffffffdd530, type=0x7ffffffdd540, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] zeDriverGetApiVersion(hDriver, version)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetApiVersion(hDriver=0x4a2a448, version=65553)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] zeDriverGetExtensionProperties(hDriver, pCount, pExtensionProperties)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionProperties(hDriver=0x4a2a448, pCount=63, pExtensionProperties=nullptr)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] zeDriverGetExtensionProperties(hDriver, pCount, pExtensionProperties)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionProperties(hDriver=0x4a2a448, pCount=63, pExtensionProperties={name="ZE_extension_device_cache_line_size", version=65536})
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0x4a2a448, name="zeIntelGetDriverVersionString", ppFunctionAddress=0x7fec5db5ac00)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] zeDriverGetProperties(hDriver, pDriverProperties)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetProperties(hDriver=0x4a2a448, pDriverProperties={stype=0x7ffffffdd3f0, uuid={id=227}, driverVersion=17013219})
+<LEVEL_ZERO>[DEBUG]: Level Zero Driver version: 1.17.39395+14
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0x4a2a448, name="zexDriverImportExternalPointer", ppFunctionAddress=0x7fec5db55a40)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0x4a2a448, name="zexDriverReleaseImportedPointer", ppFunctionAddress=0x7fec5db5de30)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0x4a2a448, name="zeImageGetDeviceOffsetExp", ppFunctionAddress=0x7fec5db5f190)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0x4a2a448, name="zeMemGetPitchFor2dImage", ppFunctionAddress=0x7fec5db61550)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0x4a2a448, name="zeGraphGetIdExt", ppFunctionAddress=0x7fec5db4fdd0)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0x4a2a448, name="zeCommandListAppendHostFunction", ppFunctionAddress=0x7fec5db33140)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] zesDriverGet(pCount, phDrivers)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zesDriverGet(pCount=1, phDrivers=nullptr)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] zesDriverGet(pCount, phDrivers)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zesDriverGet(pCount=1, phDrivers=0x4a3f030)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] zesDriverGetDeviceByUuidExp(hDriver, uuid, phDevice, onSubdevice, subdeviceId)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zesDriverGetDeviceByUuidExp(hDriver=0x4a3a938, uuid={id=134}, phDevice=0x486e0e8, onSubdevice=0, subdeviceId=0)
+<LEVEL_ZERO>[DEBUG]: Initialized 1 platforms
+   <--- urAdapterGet(.NumEntries = 0, .phAdapters = nullptr, .pNumAdapters = 0x7ffffffdde08 (1)) -> UR_RESULT_SUCCESS;
+   ---> urAdapterGet
+   <--- urAdapterGet(.NumEntries = 1, .phAdapters = 0x4a3df00 {0x4860c20}, .pNumAdapters = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urAdapterGetInfo
+   <--- urAdapterGetInfo(.hAdapter = 0x4860c20, .propName = UR_ADAPTER_INFO_BACKEND, .propSize = 4, .pPropValue = 0x7ffffffdddfc (UR_BACKEND_LEVEL_ZERO), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urAdapterSetLoggerCallback
+   <--- urAdapterSetLoggerCallback(.hAdapter = 0x4860c20, .pfnLoggerCallback = 0x7fffdca39420, .pUserData = nullptr, .level = UR_LOGGER_LEVEL_WARN) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGet
+   <--- urPlatformGet(.hAdapter = 0x4860c20, .NumEntries = 0, .phPlatforms = nullptr, .pNumPlatforms = 0x7ffffffddd3c (1)) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGet
+   <--- urPlatformGet(.hAdapter = 0x4860c20, .NumEntries = 1, .phPlatforms = 0x4a3df00 {0x4a3e080}, .pNumPlatforms = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0x4a3e080, .propName = UR_PLATFORM_INFO_BACKEND, .propSize = 4, .pPropValue = 0x7ffffffddd4c (UR_BACKEND_LEVEL_ZERO), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGet
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] zeDeviceGet(hDriver, pCount, phDevices)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGet(hDriver=0x4a2a448, pCount=1, phDevices=nullptr)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] zeDeviceGet(hDriver, pCount, phDevices)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGet(hDriver=0x4a2a448, pCount=1, phDevices=0x4a3fa80)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0x4a2a9a8, pDeviceProperties={stype=0x4a3fb68, type=0x4a3fb78, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=19200000, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0x4a2a9a8, pDeviceProperties={stype=0x7ffffffdd348, type=0x7ffffffdd358, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] zeDeviceGetCommandQueueGroupProperties(hDevice, pCount, pCommandQueueGroupProperties)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetCommandQueueGroupProperties(hDevice=0x4a2a9a8, pCount=2, pCommandQueueGroupProperties=nullptr)
+<LEVEL_ZERO>[INFO]: Number of queue groups = 2
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] zeDeviceGetCommandQueueGroupProperties(hDevice, pCount, pCommandQueueGroupProperties)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetCommandQueueGroupProperties(hDevice=0x4a2a9a8, pCount=2, pCommandQueueGroupProperties={stype=0x4860b60, flags=7, maxMemoryFillPatternSize=18446744073709551615, numQueues=1})
+<LEVEL_ZERO>[INFO]: main blitter/copy engine is available
+<LEVEL_ZERO>[INFO]: link blitter/copy engines are not available
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] zeDeviceGetSubDevices(hDevice, pCount, phSubdevices)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetSubDevices(hDevice=0x4a2a9a8, pCount=0, phSubdevices=nullptr)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] zeDeviceGetSubDevices(hDevice, pCount, phSubdevices)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetSubDevices(hDevice=0x4a2a9a8, pCount=0, phSubdevices=0x4a3faa0)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] zeDeviceGetRootDevice(hDevice, phRootDevice)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetRootDevice(hDevice=0x4a2a9a8, phRootDevice=0x7ffffffdd7a0)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] zeDeviceSynchronize(hDevice)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceSynchronize(hDevice=0x4a2a9a8)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] zeDeviceGetRootDevice(hDevice, phRootDevice)
+[2026-10-08 15:48:23.733] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetRootDevice(hDevice=0x4a2a9a8, phRootDevice=0x7ffffffdd890)
+   <--- urDeviceGet(.hPlatform = 0x4a3e080, .DeviceType = UR_DEVICE_TYPE_ALL, .NumEntries = 0, .phDevices = nullptr, .pNumDevices = 0x7ffffffddcbc (1)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGet
+[2026-10-08 15:48:23.734] [thread-id: 140736844174208] [trace] zeDeviceGetRootDevice(hDevice, phRootDevice)
+[2026-10-08 15:48:23.734] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetRootDevice(hDevice=0x4a2a9a8, phRootDevice=0x7ffffffdd890)
+   <--- urDeviceGet(.hPlatform = 0x4a3e080, .DeviceType = UR_DEVICE_TYPE_ALL, .NumEntries = 1, .phDevices = 0x4a3fa80 {0x4a3fac0}, .pNumDevices = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0x4a3e080, .propName = UR_PLATFORM_INFO_VERSION, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffffffdd890 (5)) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0x4a3e080, .propName = UR_PLATFORM_INFO_VERSION, .propSize = 5, .pPropValue = 0x7ffffffdd9f8 (1.17), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0x4a3e080, .propName = UR_PLATFORM_INFO_NAME, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffffffdd890 (51)) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0x4a3e080, .propName = UR_PLATFORM_INFO_NAME, .propSize = 51, .pPropValue = 0x4a40190 (Intel(R) oneAPI Unified Runtime over Level-Zero V2), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3fac0, .propName = UR_DEVICE_INFO_PARENT_DEVICE, .propSize = 8, .pPropValue = 0x7ffffffdd850 (nullptr), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3fac0, .propName = UR_DEVICE_INFO_TYPE, .propSize = 4, .pPropValue = 0x7ffffffdd7f0 (UR_DEVICE_TYPE_GPU), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3fac0, .propName = UR_DEVICE_INFO_USE_NATIVE_ASSERT, .propSize = 1, .pPropValue = 0x7ffffffdd7f0 (true), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+[2026-10-08 15:48:23.734] [thread-id: 140736844174208] [trace] zeDeviceGetModuleProperties(hDevice, pModuleProperties)
+[2026-10-08 15:48:23.734] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetModuleProperties(hDevice=0x4a2a9a8, pModuleProperties={stype=0x4a3fde0, spirvVersionSupported=65541, flags=15, fp16flags=63, fp32flags=127, fp64flags=127, maxArgumentsSize=2048, printfBufferSize=4194304, nativeKernelSupported={id=0}})
+[2026-10-08 15:48:23.734] [thread-id: 140736844174208] [trace] zeDeviceGetImageProperties(hDevice, pImageProperties)
+[2026-10-08 15:48:23.734] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetImageProperties(hDevice=0x4a2a9a8, pImageProperties={stype=0x4a3fd80, maxImageDims1D=16384, maxImageDims2D=16384, maxImageDims3D=2048, maxImageBufferSize=633300480, maxImageArraySlices=2048, maxSamplers=16, maxReadImageArgs=128, maxWriteImageArgs=128})
+   <--- urDeviceGetInfo(.hDevice = 0x4a3fac0, .propName = UR_DEVICE_INFO_EXTENSIONS, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffffffdd778 (245)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3fac0, .propName = UR_DEVICE_INFO_EXTENSIONS, .propSize = 245, .pPropValue = 0x4810080 (cl_khr_il_program cl_khr_subgroups cl_intel_subgroups cl_intel_subgroups_short cl_intel_required_subgroup_size cl_khr_fp16 cl_khr_fp64 cl_khr_int64_base_atomics cl_khr_int64_extended_atomics cl_khr_3d_image_writes cl_intel_bfloat16_conversions ), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceRetain
+   <--- urDeviceRetain(.hDevice = 0x4a3fac0) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3fac0, .propName = UR_DEVICE_INFO_TYPE, .propSize = 4, .pPropValue = 0x7ffffffdd96c (UR_DEVICE_TYPE_GPU), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3fac0, .propName = UR_DEVICE_INFO_VENDOR_ID, .propSize = 4, .pPropValue = 0x7ffffffdd9e8 (32902), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3fac0, .propName = UR_DEVICE_INFO_DRIVER_VERSION, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffffffdd890 (14)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3fac0, .propName = UR_DEVICE_INFO_DRIVER_VERSION, .propSize = 14, .pPropValue = 0x7ffffffdd9b8 (1.17.39395+14), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3fac0, .propName = UR_DEVICE_INFO_NAME, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffffffdd7d0 (31)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3fac0, .propName = UR_DEVICE_INFO_NAME, .propSize = 31, .pPropValue = 0x4a3fa50 (Intel(R) Arc(TM) B570 Graphics), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0x4a3e080, .propName = UR_PLATFORM_INFO_BACKEND, .propSize = 4, .pPropValue = 0x7ffffffddbac (UR_BACKEND_LEVEL_ZERO), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3fac0, .propName = UR_DEVICE_INFO_TYPE, .propSize = 4, .pPropValue = 0x7ffffffddba4 (UR_DEVICE_TYPE_GPU), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceRelease
+   <--- urDeviceRelease(.hDevice = 0x4a3fac0) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3fac0, .propName = UR_DEVICE_INFO_SUPPORTED_PARTITIONS, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffffffddb98 (0)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGet
+[2026-10-08 15:48:23.734] [thread-id: 140736844174208] [trace] zeDeviceGetRootDevice(hDevice, phRootDevice)
+[2026-10-08 15:48:23.734] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetRootDevice(hDevice=0x4a2a9a8, phRootDevice=0x7ffffffdd9a0)
+   <--- urDeviceGet(.hPlatform = 0x4a3e080, .DeviceType = UR_DEVICE_TYPE_ALL, .NumEntries = 0, .phDevices = nullptr, .pNumDevices = 0x7ffffffdddcc (1)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGet
+[2026-10-08 15:48:23.734] [thread-id: 140736844174208] [trace] zeDeviceGetRootDevice(hDevice, phRootDevice)
+[2026-10-08 15:48:23.734] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetRootDevice(hDevice=0x4a2a9a8, phRootDevice=0x7ffffffdd9a0)
+   <--- urDeviceGet(.hPlatform = 0x4a3e080, .DeviceType = UR_DEVICE_TYPE_ALL, .NumEntries = 1, .phDevices = 0x4a3df20 {0x4a3fac0}, .pNumDevices = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0x4a3e080, .propName = UR_PLATFORM_INFO_VERSION, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffffffdd9a0 (5)) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0x4a3e080, .propName = UR_PLATFORM_INFO_VERSION, .propSize = 5, .pPropValue = 0x7ffffffddb08 (1.17), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0x4a3e080, .propName = UR_PLATFORM_INFO_NAME, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffffffdd9a0 (51)) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0x4a3e080, .propName = UR_PLATFORM_INFO_NAME, .propSize = 51, .pPropValue = 0x4a406b0 (Intel(R) oneAPI Unified Runtime over Level-Zero V2), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3fac0, .propName = UR_DEVICE_INFO_TYPE, .propSize = 4, .pPropValue = 0x7ffffffdda7c (UR_DEVICE_TYPE_GPU), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3fac0, .propName = UR_DEVICE_INFO_VENDOR_ID, .propSize = 4, .pPropValue = 0x7ffffffddaf8 (32902), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3fac0, .propName = UR_DEVICE_INFO_DRIVER_VERSION, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffffffdd9a0 (14)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3fac0, .propName = UR_DEVICE_INFO_DRIVER_VERSION, .propSize = 14, .pPropValue = 0x7ffffffddac8 (1.17.39395+14), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urPlatformGetInfo
+   <--- urPlatformGetInfo(.hPlatform = 0x4a3e080, .propName = UR_PLATFORM_INFO_BACKEND, .propSize = 4, .pPropValue = 0x7ffffffddcbc (UR_BACKEND_LEVEL_ZERO), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3fac0, .propName = UR_DEVICE_INFO_TYPE, .propSize = 4, .pPropValue = 0x7ffffffddcb4 (UR_DEVICE_TYPE_GPU), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urDeviceRelease
+   <--- urDeviceRelease(.hDevice = 0x4a3fac0) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3fac0, .propName = UR_DEVICE_INFO_SUPPORTED_PARTITIONS, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffffffddca8 (0)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceSelectBinary
+   <--- urDeviceSelectBinary(.hDevice = 0x4a3fac0, .pBinaries = 0x7ffffffddcf0 ((struct ur_device_binary_t){.stype = UR_STRUCTURE_TYPE_CONTEXT_PROPERTIES, .pNext = nullptr, .pDeviceTargetSpec = 0x7fffdc7ba3c0 (spir64)}), .NumBinaries = 1, .pSelectedBinary = 0x7ffffffddd14 (0)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+[2026-10-08 15:48:23.735] [thread-id: 140736844174208] [trace] zeDeviceGetSubDevices(hDevice, pCount, phSubdevices)
+[2026-10-08 15:48:23.735] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetSubDevices(hDevice=0x4a2a9a8, pCount=0, phSubdevices=nullptr)
+   <--- urDeviceGetInfo(.hDevice = 0x4a3fac0, .propName = UR_DEVICE_INFO_COMPONENT_DEVICES, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffffffddb40 (0)) -> UR_RESULT_SUCCESS;
+   ---> urContextCreate
+[2026-10-08 15:48:23.735] [thread-id: 140736844174208] [trace] zeContextCreate(hDriver, desc, phContext)
+[2026-10-08 15:48:23.735] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeContextCreate(hDriver=0x4a2a448, desc={stype=0x7ffffffdda70, flags=0}, phContext=0x4a41498)
+[2026-10-08 15:48:23.735] [thread-id: 140736844174208] [trace] zeMemAllocHost(hContext, host_desc, size, alignment, pptr)
+[2026-10-08 15:48:23.735] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemAllocHost(hContext=0x4a41498, host_desc={stype=0x7ffffffdd4f0, flags=0}, size=1, alignment=0, pptr=0x7fec4f1ffe00)
+[2026-10-08 15:48:23.735] [thread-id: 140736844174208] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-08 15:48:23.735] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0x4a41498, ptr=0x7fec4f1ffe00, pMemAllocProperties={stype=0x7ffffffdd4f0, type=0x7ffffffdd500, id=1, pageSize=2097152}, phDevice=nullptr)
+[2026-10-08 15:48:23.735] [thread-id: 140736844174208] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-08 15:48:23.735] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0x4a41498, pMemFreeDesc={stype=0x7ffffffdd4d0, freePolicy=1}, ptr=0x7fec4f1ffe00)
+[2026-10-08 15:48:23.735] [thread-id: 140736844174208] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 15:48:23.735] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0x4a2a9a8, pDeviceProperties={stype=0x7fec4f5ec068, type=0x7fec4f5ec078, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 15:48:23.735] [thread-id: 140736844174208] [trace] zeMemAllocDevice(hContext, device_desc, size, alignment, hDevice, pptr)
+[2026-10-08 15:48:23.736] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemAllocDevice(hContext=0x4a41498, device_desc={stype=0x7ffffffdd4b0, flags=0, ordinal=0}, size=1, alignment=0, hDevice=0x4a2a9a8, pptr=0xffffffffff9ffe00)
+[2026-10-08 15:48:23.736] [thread-id: 140736844174208] [trace] zeContextMakeMemoryResident(hContext, hDevice, ptr, size)
+[2026-10-08 15:48:23.736] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeContextMakeMemoryResident(hContext=0x4a41498, hDevice=0x4a2a9a8, ptr=0xffffffffff9ffe00, size=1)
+[2026-10-08 15:48:23.736] [thread-id: 140736844174208] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-08 15:48:23.736] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0x4a41498, ptr=0xffffffffff9ffe00, pMemAllocProperties={stype=0x7ffffffdd4f0, type=0x7ffffffdd500, id=3, pageSize=65536}, phDevice=nullptr)
+[2026-10-08 15:48:23.736] [thread-id: 140736844174208] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-08 15:48:23.736] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0x4a41498, pMemFreeDesc={stype=0x7ffffffdd4d0, freePolicy=1}, ptr=0xffffffffff9ffe00)
+[2026-10-08 15:48:23.736] [thread-id: 140736844174208] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 15:48:23.736] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0x4a2a9a8, pDeviceProperties={stype=0x7fec4f5e4068, type=0x7fec4f5e4078, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 15:48:23.736] [thread-id: 140736844174208] [trace] zeMemAllocShared(hContext, device_desc, host_desc, size, alignment, hDevice, pptr)
+[2026-10-08 15:48:23.737] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemAllocShared(hContext=0x4a41498, device_desc={stype=0x7ffffffdd4f0, flags=0, ordinal=0}, host_desc={stype=0x7ffffffdd4d0, flags=0}, size=1, alignment=0, hDevice=0x4a2a9a8, pptr=0x7fec4f270000)
+[2026-10-08 15:48:23.737] [thread-id: 140736844174208] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-08 15:48:23.737] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0x4a41498, ptr=0x7fec4f270000, pMemAllocProperties={stype=0x7ffffffdd4f0, type=0x7ffffffdd500, id=5, pageSize=65536}, phDevice=nullptr)
+[2026-10-08 15:48:23.737] [thread-id: 140736844174208] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-08 15:48:23.737] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0x4a41498, pMemFreeDesc={stype=0x7ffffffdd4d0, freePolicy=1}, ptr=0x7fec4f270000)
+[2026-10-08 15:48:23.737] [thread-id: 140736844174208] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 15:48:23.737] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0x4a2a9a8, pDeviceProperties={stype=0x7fec4f276068, type=0x7fec4f276078, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 15:48:23.737] [thread-id: 140736844174208] [trace] zeMemAllocShared(hContext, device_desc, host_desc, size, alignment, hDevice, pptr)
+[2026-10-08 15:48:23.738] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemAllocShared(hContext=0x4a41498, device_desc={stype=0x7ffffffdd4f0, flags=0, ordinal=0}, host_desc={stype=0x7ffffffdd4d0, flags=0}, size=1, alignment=0, hDevice=0x4a2a9a8, pptr=0x7fec4f260000)
+[2026-10-08 15:48:23.738] [thread-id: 140736844174208] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-08 15:48:23.738] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0x4a41498, ptr=0x7fec4f260000, pMemAllocProperties={stype=0x7ffffffdd4f0, type=0x7ffffffdd500, id=6, pageSize=65536}, phDevice=nullptr)
+[2026-10-08 15:48:23.738] [thread-id: 140736844174208] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-08 15:48:23.738] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0x4a41498, pMemFreeDesc={stype=0x7ffffffdd4d0, freePolicy=1}, ptr=0x7fec4f260000)
+[2026-10-08 15:48:23.738] [thread-id: 140736844174208] [trace] zeMemAllocHost(hContext, host_desc, size, alignment, pptr)
+[2026-10-08 15:48:23.738] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemAllocHost(hContext=0x4a41498, host_desc={stype=0x7ffffffdd4f0, flags=0}, size=1, alignment=0, pptr=0x7fec4f1ffe00)
+[2026-10-08 15:48:23.738] [thread-id: 140736844174208] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-08 15:48:23.738] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0x4a41498, ptr=0x7fec4f1ffe00, pMemAllocProperties={stype=0x7ffffffdd4f0, type=0x7ffffffdd500, id=1, pageSize=2097152}, phDevice=nullptr)
+[2026-10-08 15:48:23.738] [thread-id: 140736844174208] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-08 15:48:23.738] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0x4a41498, pMemFreeDesc={stype=0x7ffffffdd4d0, freePolicy=1}, ptr=0x7fec4f1ffe00)
+[2026-10-08 15:48:23.738] [thread-id: 140736844174208] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 15:48:23.738] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0x4a2a9a8, pDeviceProperties={stype=0x7fec4f26e068, type=0x7fec4f26e078, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 15:48:23.738] [thread-id: 140736844174208] [trace] zeMemAllocDevice(hContext, device_desc, size, alignment, hDevice, pptr)
+[2026-10-08 15:48:23.738] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemAllocDevice(hContext=0x4a41498, device_desc={stype=0x7ffffffdd4b0, flags=0, ordinal=0}, size=1, alignment=0, hDevice=0x4a2a9a8, pptr=0xffffffffff9ffe00)
+[2026-10-08 15:48:23.738] [thread-id: 140736844174208] [trace] zeContextMakeMemoryResident(hContext, hDevice, ptr, size)
+[2026-10-08 15:48:23.738] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeContextMakeMemoryResident(hContext=0x4a41498, hDevice=0x4a2a9a8, ptr=0xffffffffff9ffe00, size=1)
+[2026-10-08 15:48:23.738] [thread-id: 140736844174208] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-08 15:48:23.738] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0x4a41498, ptr=0xffffffffff9ffe00, pMemAllocProperties={stype=0x7ffffffdd4f0, type=0x7ffffffdd500, id=3, pageSize=65536}, phDevice=nullptr)
+[2026-10-08 15:48:23.738] [thread-id: 140736844174208] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-08 15:48:23.738] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0x4a41498, pMemFreeDesc={stype=0x7ffffffdd4d0, freePolicy=1}, ptr=0xffffffffff9ffe00)
+[2026-10-08 15:48:23.738] [thread-id: 140736844174208] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 15:48:23.738] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0x4a2a9a8, pDeviceProperties={stype=0x7fec4f261068, type=0x7fec4f261078, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 15:48:23.738] [thread-id: 140736844174208] [trace] zeMemAllocShared(hContext, device_desc, host_desc, size, alignment, hDevice, pptr)
+[2026-10-08 15:48:23.739] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemAllocShared(hContext=0x4a41498, device_desc={stype=0x7ffffffdd4f0, flags=0, ordinal=0}, host_desc={stype=0x7ffffffdd4d0, flags=0}, size=1, alignment=0, hDevice=0x4a2a9a8, pptr=0x7fec4f250000)
+[2026-10-08 15:48:23.739] [thread-id: 140736844174208] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-08 15:48:23.739] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0x4a41498, ptr=0x7fec4f250000, pMemAllocProperties={stype=0x7ffffffdd4f0, type=0x7ffffffdd500, id=9, pageSize=65536}, phDevice=nullptr)
+[2026-10-08 15:48:23.739] [thread-id: 140736844174208] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-08 15:48:23.739] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0x4a41498, pMemFreeDesc={stype=0x7ffffffdd4d0, freePolicy=1}, ptr=0x7fec4f250000)
+[2026-10-08 15:48:23.739] [thread-id: 140736844174208] [trace] zeDeviceGetProperties(hDevice, pDeviceProperties)
+[2026-10-08 15:48:23.739] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDeviceGetProperties(hDevice=0x4a2a9a8, pDeviceProperties={stype=0x7fec4f25d068, type=0x7fec4f25d078, vendorId=32902, deviceId=57868, flags=8, subdeviceId=0, coreClockRate=2750, maxMemAllocSize=10132807680, maxHardwareContexts=65536, maxCommandQueuePriority=0, numThreadsPerEU=8, physicalEUSimdWidth=16, numEUsPerSubslice=8, numSubslicesPerSlice=4, numSlices=5, timerResolution=52, timestampValidBits=64, kernelTimestampValidBits=64, uuid={id=134}, name="Intel(R) Arc(TM) B570 Graphics"})
+[2026-10-08 15:48:23.739] [thread-id: 140736844174208] [trace] zeMemAllocShared(hContext, device_desc, host_desc, size, alignment, hDevice, pptr)
+[2026-10-08 15:48:23.739] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemAllocShared(hContext=0x4a41498, device_desc={stype=0x7ffffffdd4f0, flags=0, ordinal=0}, host_desc={stype=0x7ffffffdd4d0, flags=0}, size=1, alignment=0, hDevice=0x4a2a9a8, pptr=0x7fec4f240000)
+[2026-10-08 15:48:23.739] [thread-id: 140736844174208] [trace] zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)
+[2026-10-08 15:48:23.739] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemGetAllocProperties(hContext=0x4a41498, ptr=0x7fec4f240000, pMemAllocProperties={stype=0x7ffffffdd4f0, type=0x7ffffffdd500, id=10, pageSize=65536}, phDevice=nullptr)
+[2026-10-08 15:48:23.739] [thread-id: 140736844174208] [trace] zeMemFreeExt(hContext, pMemFreeDesc, ptr)
+[2026-10-08 15:48:23.739] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeMemFreeExt(hContext=0x4a41498, pMemFreeDesc={stype=0x7ffffffdd4d0, freePolicy=1}, ptr=0x7fec4f240000)
+   <--- urContextCreate(.DeviceCount = 1, .phDevices = 0x4a3fa80 {0x4a3fac0}, .pProperties = nullptr, .phContext = 0x4a42570 (0x4a44220)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3fac0, .propName = UR_DEVICE_INFO_QUEUE_PROPERTIES, .propSize = 4, .pPropValue = 0x7ffffffddc90 (UR_QUEUE_FLAG_OUT_OF_ORDER_EXEC_MODE_ENABLE | UR_QUEUE_FLAG_PROFILING_ENABLE), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urQueueCreate
+<LEVEL_ZERO>[INFO]: Copy offload is disabled by the environment variable.
+<LEVEL_ZERO>[DEBUG]: create command list ordinal: 0, type: immediate, device: 0x4a2a9a8, inOrder: 1
+[2026-10-08 15:48:23.739] [thread-id: 140736844174208] [trace] zeCommandListCreateImmediate(hContext, hDevice, altdesc, phCommandList)
+[2026-10-08 15:48:23.741] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListCreateImmediate(hContext=0x4a41498, hDevice=0x4a2a9a8, altdesc={stype=0x7ffffffdd790, ordinal=0, index=0, flags=2, mode=0x7ffffffdd7ac, priority=0x7ffffffdd7b0}, phCommandList=0x4a48048)
+[2026-10-08 15:48:23.741] [thread-id: 140736844174208] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 15:48:23.741] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0x4a2a448, name="zexCounterBasedEventCreate2", ppFunctionAddress=0x7fec5d737c00)
+   <--- urQueueCreate(.hContext = 0x4a44220, .hDevice = 0x4a3fac0, .pProperties = 0x7ffffffddd70 ((struct ur_queue_properties_t){.stype = UR_STRUCTURE_TYPE_QUEUE_PROPERTIES, .pNext = nullptr, .flags = UR_QUEUE_FLAG_PROFILING_ENABLE}), .phQueue = 0x7ffffffddd88 (0x4a474a0)) -> UR_RESULT_SUCCESS;
+   ---> urDeviceGetInfo
+   <--- urDeviceGetInfo(.hDevice = 0x4a3fac0, .propName = UR_DEVICE_INFO_QUEUE_PROPERTIES, .propSize = 4, .pPropValue = 0x7ffffffddd10 (UR_QUEUE_FLAG_OUT_OF_ORDER_EXEC_MODE_ENABLE | UR_QUEUE_FLAG_PROFILING_ENABLE), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urQueueCreate
+[2026-10-08 15:48:23.741] [thread-id: 140736844174208] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)
+[2026-10-08 15:48:23.741] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGetExtensionFunctionAddress(hDriver=0x4a2a448, name="zexCounterBasedEventCreate2", ppFunctionAddress=0x7fec5d737c00)
+<LEVEL_ZERO>[INFO]: Copy offload is disabled by the environment variable.
+<LEVEL_ZERO>[DEBUG]: create command list ordinal: 0, type: immediate, device: 0x4a2a9a8, inOrder: 1
+[2026-10-08 15:48:23.741] [thread-id: 140736844174208] [trace] zeCommandListCreateImmediate(hContext, hDevice, altdesc, phCommandList)
+[2026-10-08 15:48:23.742] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListCreateImmediate(hContext=0x4a41498, hDevice=0x4a2a9a8, altdesc={stype=0x7ffffffdd530, ordinal=0, index=0, flags=2, mode=0x7ffffffdd54c, priority=0x7ffffffdd550}, phCommandList=0x4a56488)
+<LEVEL_ZERO>[INFO]: Copy offload is disabled by the environment variable.
+<LEVEL_ZERO>[DEBUG]: create command list ordinal: 0, type: immediate, device: 0x4a2a9a8, inOrder: 1
+[2026-10-08 15:48:23.742] [thread-id: 140736844174208] [trace] zeCommandListCreateImmediate(hContext, hDevice, altdesc, phCommandList)
+[2026-10-08 15:48:23.743] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListCreateImmediate(hContext=0x4a41498, hDevice=0x4a2a9a8, altdesc={stype=0x7ffffffdd530, ordinal=0, index=0, flags=2, mode=0x7ffffffdd54c, priority=0x7ffffffdd550}, phCommandList=0x4a5e128)
+<LEVEL_ZERO>[INFO]: Copy offload is disabled by the environment variable.
+<LEVEL_ZERO>[DEBUG]: create command list ordinal: 0, type: immediate, device: 0x4a2a9a8, inOrder: 1
+[2026-10-08 15:48:23.743] [thread-id: 140736844174208] [trace] zeCommandListCreateImmediate(hContext, hDevice, altdesc, phCommandList)
+[2026-10-08 15:48:23.744] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListCreateImmediate(hContext=0x4a41498, hDevice=0x4a2a9a8, altdesc={stype=0x7ffffffdd530, ordinal=0, index=0, flags=2, mode=0x7ffffffdd54c, priority=0x7ffffffdd550}, phCommandList=0x4a66d38)
+<LEVEL_ZERO>[INFO]: Copy offload is disabled by the environment variable.
+<LEVEL_ZERO>[DEBUG]: create command list ordinal: 0, type: immediate, device: 0x4a2a9a8, inOrder: 1
+[2026-10-08 15:48:23.744] [thread-id: 140736844174208] [trace] zeCommandListCreateImmediate(hContext, hDevice, altdesc, phCommandList)
+[2026-10-08 15:48:23.745] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListCreateImmediate(hContext=0x4a41498, hDevice=0x4a2a9a8, altdesc={stype=0x7ffffffdd530, ordinal=0, index=0, flags=2, mode=0x7ffffffdd54c, priority=0x7ffffffdd550}, phCommandList=0x4a6fa48)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.745] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.745] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a78628)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.745] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.745] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a78948)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.745] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.745] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a79068)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.745] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.745] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a795a8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.745] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.745] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a79ca8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.745] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.745] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a7a208)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.745] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.745] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a7a908)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.745] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a7ae18)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a7b518)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a7bab8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a7c1b8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a7c768)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a7ce68)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a7d378)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a7da78)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a7df88)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a7e688)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a7eca8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a7f3a8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a7f8b8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a7ffb8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a804c8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a80bc8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a810d8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a817d8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a81ce8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a823e8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a828f8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a82ff8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a83508)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a83c08)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.746] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a84118)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a84818)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a84f38)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a85638)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a85b48)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a86248)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a86758)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a86e58)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a87368)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a87a68)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a87f78)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a88678)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a88b88)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a89288)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a89798)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a89e98)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a8a3a8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a8aaa8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a8afb8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a8b6b8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBasedEventCreate2(hContext=0x4a41498, hDevice=0x4a2a9a8, desc=0x7ffffffdd690, phEvent=0x4a8bbc8)
+<LEVEL_ZERO>[DEBUG]: ze_event_pool_desc_t flags set to: 5
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)
+[2026-10-08 15:48:23.747] [thread-id: 140736844174208] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zexCounterBa
+Last 64 KiB:
+;
+[2026-10-08 16:49:13.525] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.525] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.525] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.525] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.525] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.526] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.526] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.526] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.526] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.526] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.526] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.526] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.526] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.526] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.526] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.526] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.526] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.527] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.527] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.527] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.527] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.527] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.527] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.527] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.527] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.527] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.527] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.527] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.527] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.528] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.528] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.528] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.528] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.528] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.528] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.528] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.528] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.528] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.528] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.528] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.528] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.528] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.528] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.528] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.528] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.529] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.529] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.529] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.529] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.529] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.529] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.529] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.529] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.529] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.529] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.529] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.529] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.530] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.530] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.530] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.530] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.530] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.530] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.530] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.530] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.530] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.531] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.531] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.531] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.531] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.531] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.531] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.531] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.531] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.531] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.531] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.531] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.532] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.532] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.532] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.532] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.532] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.532] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.532] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.532] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.532] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.532] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.532] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.532] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.533] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.533] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.533] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.533] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.533] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.533] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.533] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.533] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.533] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.533] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.533] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.533] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.534] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.534] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.534] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.534] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.534] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.534] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.534] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.534] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.534] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.534] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.534] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.534] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.535] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.535] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.535] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.535] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.535] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.535] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.535] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.535] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.535] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.535] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.535] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.535] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.536] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.536] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.536] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.536] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.536] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.536] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.536] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.536] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.536] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.536] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.536] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.537] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.537] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.537] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.537] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.537] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.537] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.537] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.537] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.537] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.537] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.537] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.538] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.538] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.538] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.538] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.538] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.538] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.538] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.538] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.538] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.538] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.538] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.538] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.539] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.539] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.539] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.539] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.539] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.539] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.539] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.539] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.539] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.539] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.539] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.539] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.540] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.540] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.540] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.540] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.540] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.540] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.540] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.540] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.540] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.540] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+  2 s later:
+  expert pool: epoch 12480, batch epoch 12480: 18 of 18 jobs claimed, 18 done; 5 of 5 workers parked, 5 sleeping; mode 0
+  expert pool threads: w0=sleeping w1=sleeping w2=sleeping w3=sleeping w4=sleeping; host idle for 1381941 ms
+  verify window (last window, not the current stage): 4 tokens at position 32829, host at layer step 96; the GPU rang 96; flags: served 96, plan (A) 96, copies (B) 96
+  threads waiting on the disk (state D): 0 of 77
+  memory: 48540 MiB resident, 0 MiB in swap, 43653 MiB RAM available; 2646 major page faults so far
+   ---> urQueueGetInfo
+[2026-10-08 16:49:13.541] [thread-id: 140731882649280] [trace] zeCommandListHostSynchronize(hCommandList, timeout)
+[2026-10-08 16:49:13.541] [thread-id: 140731882649280] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0x583adf8, timeout=0)
+   <--- urQueueGetInfo(.hQueue = 0x583a9c0, .propName = UR_QUEUE_INFO_EMPTY, .propSize = 1, .pPropValue = 0x7ffeb1deedc7 (true), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+strata: released the verify window's GPU waits (#267): the GPU finished in 0 ms
+[2026-10-08 16:49:13.541] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.542] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.542] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.542] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.542] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.542] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.542] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.542] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.542] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.542] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.542] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.542] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.543] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.543] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.543] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.543] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.543] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.543] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.543] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.543] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.543] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.543] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.543] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.543] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.543] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.543] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.544] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.544] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.544] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.544] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.544] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.544] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.544] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.544] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.544] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.544] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.544] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.544] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.545] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.545] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.545] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.545] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.545] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.545] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.545] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.545] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.545] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.545] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.545] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.545] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.546] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.546] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.546] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.546] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.546] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.546] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.546] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.546] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.546] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.546] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.546] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.546] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.547] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.547] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.547] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.547] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.547] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.547] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.547] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.547] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.547] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.547] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.547] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.547] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.547] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.547] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.547] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.547] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.547] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.548] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.548] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.548] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.548] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.548] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.548] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.548] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.548] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.548] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.548] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.549] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.549] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.549] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.549] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.549] [thread-id: 140731926701760] [trace] zeEventQueryStatus(hEvent)
+[2026-10-08 16:49:13.549] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+   <--- urEventGetInfo(.hEvent = 0x672b5d0, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb4ff41dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.549] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+   <--- urEventGetInfo(.hEvent = 0x6724940, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb3ff21dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+[2026-10-08 16:49:13.549] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+   <--- urEventGetInfo(.hEvent = 0x6723120, .propName = UR_EVENT_INFO_COMMAND_EXECUTION_STATUS, .propSize = 4, .pPropValue = 0x7ffeb47f31dc (UR_EVENT_STATUS_SUBMITTED), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.549] [thread-id: 140731935094464] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+[2026-10-08 16:49:13.549] [thread-id: 140731918309056] [trace] zeEventQueryStatus(hEvent)
+   ---> urEventGetInfo
+
+Selected issue lines (last 32 KiB):
+hEvent=0x6724f58)
+[2026-10-08 16:49:13.508] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.508] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.508] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.508] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.509] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.509] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.509] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.509] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.509] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.509] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.510] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.510] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.510] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.510] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.510] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.510] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.511] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.511] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.511] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.511] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.511] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.511] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.512] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.512] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.512] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.512] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.512] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.512] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.513] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.513] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.513] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.513] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.513] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.513] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.513] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.513] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.513] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.514] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.514] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.514] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.514] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.514] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.514] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.515] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.515] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.515] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.515] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.515] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.515] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.515] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.515] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.515] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.516] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.516] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.516] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.516] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.516] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.516] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.516] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.516] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.516] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.517] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.517] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.517] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.517] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.517] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.517] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.518] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.518] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.518] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.518] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.518] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.518] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.519] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.519] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.519] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.519] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.519] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.519] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.520] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.520] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.520] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.520] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.521] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.521] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.521] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.521] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.521] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.522] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.522] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.522] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.522] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.522] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.522] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.523] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.523] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.523] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.523] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.523] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.523] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.524] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.524] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.524] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.524] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.524] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.524] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.525] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.525] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.525] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.525] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.525] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.525] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.526] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.526] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.526] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.526] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.526] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.526] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.527] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.527] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.527] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.527] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.527] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.527] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.528] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.528] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.528] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.528] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.528] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.528] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.528] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.528] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.528] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.529] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.529] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.529] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.529] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.529] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.529] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.530] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.530] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.530] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.530] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.531] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.531] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.531] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.531] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.531] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.532] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.532] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.532] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.532] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.532] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.532] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.533] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.533] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.533] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.533] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.533] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.533] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.534] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.534] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.534] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.534] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.534] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.534] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.535] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.535] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.535] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.535] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.535] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.535] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.536] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.536] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.536] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.536] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.536] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.536] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.537] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.537] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.537] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.537] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.537] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.537] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.538] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.538] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.538] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.538] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.538] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.538] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.539] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.539] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.539] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.539] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.539] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.539] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.540] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.540] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.540] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.540] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.540] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.541] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.542] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.542] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.542] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.542] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.542] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.543] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.543] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.543] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.543] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.543] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.543] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.543] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.544] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.544] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.544] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.544] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.544] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.544] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.545] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.545] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.545] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.545] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.545] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.545] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.546] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.546] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.546] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.546] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.546] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.546] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.547] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.547] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.547] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.547] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.547] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.547] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.547] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.547] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.547] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.548] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.548] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.548] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.548] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.549] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.549] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)
+[2026-10-08 16:49:13.549] [thread-id: 140731935094464] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x672bbe8)
+[2026-10-08 16:49:13.549] [thread-id: 140731918309056] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6724f58)
+[2026-10-08 16:49:13.549] [thread-id: 140731926701760] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x6723738)

@@ -1,0 +1,32 @@
+{
+  "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-kv-layer-major32k-quiet-v01402-code32k-quiet-r2/probes/kernel-gap.stdout",
+  "original_sha256": "0b511b0dbf4d57f5590d98ed71edd20c9798d07219af6a971aa34fa3759aa262",
+  "original_bytes": 297619,
+  "receipt_sha256": "1cc3102c01717e35b1cc10716b48b8266a9f23f57da46332365306a0ff6a8cf3",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "capture_steps": [
+    {
+      "label": "kernel-gap",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bf607cb;b=0a908c16e292429980ff082da39f4bb9;m=198bfba161;t=65d497b57881e;x=56688e96263aec1b",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "pid": 2849174,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.0506696600059513
+    }
+  ],
+  "filter": "\\bxe\\b|\\bdrm\\b|\\bi915\\b|gpu|05:00|fault|reset|wedg|hang|timestamp stuck|guc|device lost|memory.cat",
+  "line_count": 390,
+  "matched_count": 0,
+  "entries": [],
+  "original_new_fault_messages": [],
+  "note": "Deterministic relevant-entry extraction; original result is unchanged."
+}
