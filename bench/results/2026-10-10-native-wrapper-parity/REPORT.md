@@ -177,3 +177,14 @@ CPU phase R7, GU/task R17, histogram R18/R20, Zen3 R21/R25, R24 reader audits,
 R26 fixture/stale-content audits and R27 wrapper design/final reader audit.
 The original C full-repeat math gate stays false and its rejection is not cleared.
 H is not adopted, full lifecycle is not qualified and no speed claim is made.
+
+Root's source correction after the returned round29 audit
+
+The initial empty-interval call reused the interior-range buffer. An erroneous
+write inside that permitted interval could go unnoticed. Root now uses a fresh
+sentinel-filled buffer for the empty call and requires every word, including
+active output rows, inactive tokens and guards, to remain unchanged. The local
+case result reports `empty_unchanged`. Canonical output bytes and case order are
+unchanged; this source correction is still unbuilt and untested. Apply this final
+identical harness patch to both qualification trees. Original source-only audit
+and submitted commit remain separate from any future runtime receipt.

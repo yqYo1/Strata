@@ -189,14 +189,14 @@ int wrapper_cases(Output& output, int type, bool gu) {
     };
     int failures = 0;
     for (int nt = 1; nt <= kMaxT; ++nt) {
-        Guarded full(rows), partition(rows), range(rows), direct(rows);
+        Guarded full(rows), partition(rows), range(rows), direct(rows), empty(rows);
         run(nt, full.ptr, 0, rows);
         const int split = rows / 2 + 3;
         run(nt, partition.ptr, 0, 1);
         run(nt, partition.ptr, 1, split);
         run(nt, partition.ptr, split, rows);
         run(nt, range.ptr, 7, rows - 9);
-        run(nt, range.ptr, split, split);  // empty interval must change nothing
+        run(nt, empty.ptr, split, split);  // fresh buffer: every word must stay sentinel
         if (gu) cpu::iq256_gu_rows_v(0, type, blob.data(), f.gu_row, f.up_off, (int) kH,
                                     a.gup, nt, direct.ptr, 0, rows);
         else if (type == 42) cpu::q2_0_gguf_rows_multi_avx2_v(false, blob.data() + f.down_off,
@@ -214,12 +214,14 @@ int wrapper_cases(Output& output, int type, bool gu) {
         const double rr = rel(values.data(), reference.data(), values.size());
         const double rd = rel(values.data(), direct_values.data(), values.size());
         const bool refs = all_finite && rr <= kReferenceTolerance && rd <= kReferenceTolerance;
-        const bool pass = all_finite && padding && refs && !partition_differ && !range_differ;
+        const bool empty_unchanged = empty.untouched(nt, 0, 0);
+        const bool pass = all_finite && padding && refs && empty_unchanged &&
+                          !partition_differ && !range_differ;
         failures += !pass;
         std::printf("case phase=%s type=%d nt=%d rows=%d finite=%d legal_actq=1 padding=%d "
                     "partition_differ=%zu range_differ=%zu reference_rel=%.9e direct_rel=%.9e "
-                    "reference_gate=%d passed=%d\n", gu ? "gu" : "down", type, nt, rows,
-                    all_finite, padding, partition_differ, range_differ, rr, rd, refs, pass);
+                    "reference_gate=%d empty_unchanged=%d passed=%d\n", gu ? "gu" : "down", type, nt, rows,
+                    all_finite, padding, partition_differ, range_differ, rr, rd, refs, empty_unchanged, pass);
         // Canonical little-endian record: phase, type, nt, rows, word count,
         // reserved zero; then every active output word in token/row order.
         for (uint32_t word : {gu ? 1u : 2u, (uint32_t) type, (uint32_t) nt, (uint32_t) rows,
