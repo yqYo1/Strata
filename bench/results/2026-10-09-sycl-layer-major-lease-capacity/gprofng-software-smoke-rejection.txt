@@ -1,0 +1,45 @@
+<experiment version="12.4">
+<collector>2.42</collector>
+</experiment>
+<system hostname="jitakusaba01" arch="x86_64" os="Linux 7.0.0-38-generic" pagesz="4096" npages="32955796">
+  <cpu id="0" clk="3604"/>
+  <cpu id="1" clk="3593"/>
+  <cpu id="2" clk="3592"/>
+  <cpu id="3" clk="3799"/>
+  <cpu id="4" clk="4491"/>
+  <cpu id="5" clk="4491"/>
+  <cpu id="6" clk="3606"/>
+  <cpu id="7" clk="3592"/>
+  <cpu id="8" clk="3599"/>
+  <cpu id="9" clk="3593"/>
+  <cpu id="10" clk="4491"/>
+  <cpu id="11" clk="4495"/>
+</system>
+<process pid="1069793"></process>
+<process ppid="1069767"></process>
+<process pgrp="1069793"></process>
+<process sid="1069793"></process>
+<process cwd="/home/yayoi/orca/workspaces/Strata/sycl"></process>
+<process wsize="64"></process>
+<process stackbase="0x0"></process>
+<process>/usr/bin/python3 /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gprofng-software-protocol-smoke-v1/target.py /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gprofng-software-protocol-smoke-v1</process>
+<dataptr name="frameinfo" format="binary"/>
+<setting pause_signal="12"/>
+<setting linetrace="none"/>
+<event kind="run" tstamp="244756.515899988" time="1791555080" tm_zone="-32400"/>
+<event kind="sample" tstamp="0.000296796" id="0" label="collector_open_experiment"/>
+<event kind="pause" tstamp="0.000316603"/>
+<event kind="cerror" id="9">itimer could not be set</event>
+<event kind="cwarn" id="213">12</event>
+<event kind="resume" tstamp="0.150225355"/>
+<event kind="sample" tstamp="0.150228171" id="1" label="collector_resume"/>
+<event kind="sample" tstamp="4.210951330" id="2" label="collector_pause(signal)"/>
+<event kind="pause" tstamp="4.210989802" name="signal"/>
+<event kind="sample" tstamp="4.214953973" id="3" label="collector_close_experiment"/>
+<event kind="run" tstamp="244756.515899988" time="1791555080" tm_zone="-32400"/>
+<event kind="exit" tstamp="4.214477469"/>
+<event kind="comment" id="400">No archive command run</event>
+
+
+
+Root review: the original receipt remains failed. The target did produce READY and DONE and the collector exited 0. The supervisor checks collector exit before draining the reply FIFO, which can reject the final BYE. Independently, the collector records cerror 9 (itimer could not be set), and data.frameinfo is empty; collection is unqualified. Fixing the protocol race alone cannot make this a usable function profile. No model/GPU, privilege or kernel configuration change occurred.

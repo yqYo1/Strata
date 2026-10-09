@@ -1,0 +1,37 @@
+# Long-context repeated-compute failure — round 14
+
+## Scope and receipt
+
+Read-only compute-path audit of frozen C at `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-layer-major-streamed-kv-v0141-20261009`, HEAD `6cdf81078128488e5797afb9e92824b7ebe51124`. No source change, build, test, GPU/profiler run, fetch, or service action was performed.
+
+The owned receipt `owned-layer-major-streamed-kv-v0141-full256k-streamed-lease-diagnostic-r1/record.json` (SHA-256 `a3413ac4c3f20ae593d8507a7db0ac405cd7fab2de286547460e6ba82b0d9404`) is healthy, exits normally, has no fault messages or surviving process, and passes first-run full-capacity and exact saved semantic comparison. It rejects math/full lifecycle because a repeated fresh 262,140-token request differs. Both full requests consume 262,143 input IDs and execute through physical cell 262,143; same prompt hash, first four generated IDs `[40,3172,1151,539]`, MTP counts `[1,5]`, and normal finish. The repeated request has different first-head hash, logprobs, and live state. A fresh 32K control between full reads matches its earlier head/state/output; its exact repeat therefore does not rule out a full-context-only compute or reused-workspace fault. Prompt wall times are diagnostic and not performance evidence.
+
+The first-vs-repeat prefill-state comparator shows live GDN state differs, while PLE state and QSA indexer tails for QSA ordinals 0 and 1 match. The first differences in aggregate QSA tails begin at ordinal 2 (third QSA layer); persisted QSA K/V/indexer parts for ordinals 0 and 1 match in live bytes (the raw serialized parts differ only in declared padding). QSA ordinal 2 K/V and indexer state differ. Since the per-layer projected input and transient selected IDs were not captured, this does **not** prove that ordinal 2 is the origin: its input activation may already differ. It does show that the receipt alone cannot blame a full-context score/top-k or attention operation, and the final aggregate GDN mismatch cannot identify the first divergent operation.
+
+## Ranked compute hypotheses
+
+1. **An earlier recurrent/block computation diverges before QSA ordinal 2; QSA is the first localized persisted difference, not yet the root cause.** The large serialized GDN state (`117,669,888` bytes) differs between repeats; the 32K same-request control does not. In the frozen source, QSA receives the block hidden rows at `src/prefill/prefill.cpp:3840+`; later QSA K/V and pooled keys derive from those rows. A changed input to QSA ordinal 2 naturally changes that layer's K/V and indexer. First compare per-layer input activation hashes before attributing the QSA kernels. If they already differ entering ordinal 2, follow the immediately preceding GDN/MoE/residual boundary; that work is outside this QSA-focused audit.
+
+2. **A long-context indexer scratch/state issue at the first divergent QSA layer.** The streamed path calls `native_qsa_indexer_append_batch` for each 8,192-token chunk (`src/prefill/prefill.cpp:3863-3882`). At fresh `p0==0`, the batch kernel explicitly rewrites the spare/dead key from raw row zero, writes each completed pooled block, updates `block_pos` for its final completed block, and rewrites each tail slot covered by the chunk (`src/kernels/cuda/native_qsa_indexer.dp.cpp:append_first`, `append_blocks`, `append_tail`, around lines 249-385 and 481-564). Normal session reset also zeros GDN/PLE history and each owned QSA indexer array, including streamed map reset (`src/core/session.cpp:161-170`; `src/core/layer.cpp:985-1022`). This makes simple stale indexer state less likely, but doesn't rule out a race, wrong raw input, or scratch alias in the full-row batch path. Compare identical `x`, indexer projection raw rows, `idx_tail`, `idx_dead`, every live pooled row, spare row, and `idx_block_pos` at each QSA layer and chunk. Hash only the active rows plus explicit spare/tail state; don't omit the spare.
+
+3. **Selection or selected-attention scratch/data differs at full width.** For each query, `qsa_step_fill` derives `n_kv`, `n_bid`, and width from position (`src/kernels/cuda/qsa.dp.cpp:1082+`); prefill uploads fresh step records for every chunk (`prefill.cpp:3207-3216`). At this capacity, `max_blocks = max_cells / 4 + 2 = 65,538`; the last full prompt query has at most 65,535 nonempty four-cell blocks and the empty/dead next block is assigned zero selection weight. `qsa_block_scores` writes through each query's `n_bid`, and `block_topk_kernel` reads only `0..n_bid`, weights a final partial block, and writes only the selected width (`src/kernels/cuda/qsa_select.dp.cpp:32-74, 81-240, 1576-1635`). The radix histogram uses integer atomic counts; equal-threshold cells are emitted by a deterministic per-thread prefix in ascending block order. Static review found no obvious long-context scratch read beyond the active score range or top-k output width. Still, transient score or ID scratch is not in the saved receipt, so capture exact `steps`, score bits for active blocks, and selected IDs before ruling this out. Then compare the selected-attention output for the same IDs. The in-order queue requirement is checked before the streamed layer-major path (`prefill.cpp` streamed gate), so the enqueue order itself is an intended contract.
+
+## Minimal discriminating diagnostic
+
+Use a debug-only per-QSA-layer/checkpoint record for the first full run and identical repeat, at least for the first chunk and ordinal 0–3; if equal, extend checkpoints to later chunks. Record a stable hash (and, on first mismatch only, a bounded raw dump) of: input hidden rows; `q_idx` and raw indexer projection; steps (`pos,n_kv,n_bid,width`); tail/dead/pooled active rows plus spare and block position; active score rows and selected IDs; Q/K/V stage identity/selected cell contents; attention output; and post-attention/projected residual. Add an explicit queue wait only in this diagnostic path before hashing/host reads. This partitions the first differing edge:
+
+- differing input hidden rows: investigate the immediately preceding block/recurrent/MoE compute;
+- same input and raw rows, different indexer state: append/reset or indexer memory lifetime;
+- same indexer/query/steps, different scores or IDs: scorer/top-k race, tie or bounds;
+- same IDs and selected K/V, different attention output: attention scratch/reduction or selection-mask handling;
+- same attention output, different post-QSA/residual: output projection or shared layer workspace.
+
+Avoid adding full per-token host copies/synchronizations to the ordinary path. The receipt's whole-state digest is too late in the pipeline to distinguish these cases.
+
+## Source references
+
+- `src/core/session.cpp:161-170` and `src/core/layer.cpp:985-1022`: sequence reset of GDN, PLE, streamed KV map, and QSA indexer arrays.
+- `src/prefill/prefill.cpp:3207-3216, 3840-3901, 4040-4071`: fresh step records, layer-major QSA append, score/top-k dispatch, and attention dispatch.
+- `src/kernels/cuda/native_qsa_indexer.dp.cpp:append_first`, `append_blocks`, `append_tail` and batch launcher around `:481-564`: initial spare/dead write, completed-block coverage, tail rewrite and serial queue ordering.
+- `src/kernels/cuda/qsa_select.dp.cpp:32-74, 81-240, 1576-1635`: score active-block guard, top-k active range/weight/tie handling, and score launch reach.
+- `src/kernels/cuda/qsa_decode_attn.dp.cpp:405-594, 665+`: selected width, per-query/per-chunk scratch, masked-page handling and merge that skips empty chunks.

@@ -1,0 +1,55 @@
+{
+  "active": false,
+  "passed": false,
+  "gpu_executed": false,
+  "model_opened": false,
+  "scope": "Software Hotspots on a harmless Python CPU target with dedicated FIFO protocol; no model or GPU",
+  "started_utc": "2026-10-09T13:55:22.338216+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "controller_sha256": "93f86586e93ad161af9d5c43a2deddeda3cb52549ab29a64443f79f332a99b85",
+  "vtune": "/opt/intel/oneapi/vtune/2026.4/bin64/vtune",
+  "vtune_sha256": "7987d63d0e8ed24fdad6572d8f0873e709831463d202a7fb71c59b6709e9a05d",
+  "target_sha256": "540bb87c7ec4cb7e83e9e180efcd0da55e722fd977c3bec14b3b1688b22061df",
+  "perf_event_paranoid": "4",
+  "ptrace_scope": "1",
+  "deadline_seconds": 60,
+  "text_budget_bytes": 67108864,
+  "result_budget_bytes": 134217728,
+  "data_limit_mib": 64,
+  "owners": {
+    "1014915": {
+      "pid": 1014915,
+      "start_ticks": 24380145,
+      "ppid": 1014912
+    },
+    "1014951": {
+      "pid": 1014951,
+      "start_ticks": 24380247,
+      "ppid": 1014915
+    }
+  },
+  "steps": [],
+  "protocol": [],
+  "cleanup": [],
+  "elapsed_seconds": 1.6551778120046947,
+  "argv": [
+    "/opt/intel/oneapi/vtune/2026.4/bin64/vtune",
+    "-collect",
+    "hotspots",
+    "-knob",
+    "sampling-mode=sw",
+    "-start-paused",
+    "-data-limit=64",
+    "-return-app-exitcode",
+    "-result-dir",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/vtune-software-protocol-smoke-v1/result",
+    "--",
+    "/usr/bin/python3",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/vtune-software-protocol-smoke-v1/target.py",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/vtune-software-protocol-smoke-v1"
+  ],
+  "error": "RuntimeError('VTune exited before target protocol: 1')",
+  "survivors": [],
+  "collector_exit_code": 1,
+  "finished_utc": "2026-10-09T13:55:23.993373+00:00"
+}

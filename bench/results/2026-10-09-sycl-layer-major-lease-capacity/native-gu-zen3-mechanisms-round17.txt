@@ -1,0 +1,38 @@
+Native GU row-kernel source audit on Zen 3: round 17
+Date: 2026-10-09
+
+Scope and limits
+
+Read-only review of the active v0.1.41 CPU source at `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009`, plus the local IQ3_S pack metadata and earlier CPU reports. No build, test, benchmark, profiler, service, GPU, or source modification was performed. Target is Ryzen 5 5600X (Zen 3, AVX2, no AVX-512 or AVX-VNNI), five pool workers, actual packed Qwen3.8-Flash-Next IQ3_S model. This pass avoids repeating IQ4_NL down, compiler, prefetch, predecode/cache, task scheduling, and gather-force proposals already covered in earlier reports.
+
+Active per-layer workload
+
+The verified `native_experts.txt` metadata reviewed in round 3 has 48 MoE layers: GU formats are IQ3_XXS/type 18 on 17 layers, IQ3_S/type 21 on 10, IQ2_S/type 22 on 20, and IQ4_XS/type 23 on one. All four have AVX2 row kernels in `iq_avx2.cpp`; `native_expert.cpp` calls the native multi-token GU path on AVX2 when `nt >= native_gu_mt_min`, default 2. Thus one-token groups normally use ggml, while 2+ groups use the row kernels. Do not infer that all GU work is IQ3_S or that every routed expert takes the AVX2 path.
+
+Concrete new mechanism to screen: reuse activation loads across paired Gate and Up rows
+
+`iq_avx2_rows.inl` `row_dot` (lines 31-57) walks each quant block and each 32-value half, decodes one weight half, then for every token loads the corresponding Q8_K activation vector and applies sign/multiply/accumulate. `gu_rows` (lines 143-154 in this source revision) calls `row_dot_any` once for Gate and again for Up for the same row and same activation pointers. Consequently, each activation vector is loaded twice from the same `y[t][i].qs + off` address per Gate/Up row pair. Gate and Up weight bytes are distinct and cannot be deduplicated, but the activation bytes are identical; current code relies on cache to serve the second read and still executes the load and sign/multiply work separately.
+
+A narrow candidate is a fused paired-row loop for IQ3_S (and only then other formats if justified): for each block/half and token, load the Q8 activation vector once, apply the separate Gate and Up sign vectors and decoded magnitudes, and update separate accumulators. Preserve each output's block/half accumulation order and the existing scale/float reduction sequence. This is an activation-load/uop reuse hypothesis, not a weight-reuse claim or measured speedup. Its potential is constrained because activation lines are likely L1-resident by the Up pass; extra Gate/Up live vectors and accumulators may cause register pressure/spills on Zen 3, and IQ3_S scalar codebook gathers may remain the bottleneck. Begin with NT=2/3, the actual multi-token sizes, inspect generated code for spills, then compare an isolated parity/throughput component and full engine latency. Reject it if loads are eliminated only at the cost of spills, unchanged/smaller component time, altered numerical results, or no repeatable end-to-end gain. Maintain the exact Gate, Up, sigmoid, and multiplication order to avoid introducing additional rounding changes.
+
+Other exact observations
+
+- IQ3_S `Fmt32<21>` builds eight 9-bit indices into a 16-byte stack scratch via `grid_indices`, then performs eight scalar `iq3s_grid` lookups to assemble a YMM vector (`iq_avx2.cpp:259-274`). Its `Fmt32<121>` alternative does vector index construction and AVX2 `vpgatherdd` (`:294-310`). Runtime selection is `STRATA_IQ256_GATHER`; default `cpu_gather_fast()` is Intel AVX-VNNI P-core-gated (`expert_layout.cpp:211-229`), so Zen 3 defaults to scalar decode. Forcing the gather has already been recorded as an unproven Ryzen probe in `moe-decode-cpu.txt`; this audit does not elevate it to a new proposal or recommend enabling it.
+- Tables are shared static lookup tables, not per-expert decoded-weight caches. The same format-specific decoder applies per row; mixed GU formats are dispatched per `NativeFmt`/layer and do not share a compatible decoded representation across formats. No source evidence found for duplicate packed-weight reads within a single row call beyond repeated invocation of distinct Gate and Up rows.
+- The row kernel's `NT` specializations explicitly hold `acci[NT]` per row (`iq_avx2_rows.inl:39-50`). A fused pair approximately doubles those integer accumulators and needs simultaneous Gate/Up decoded operands. On AVX2's 16 YMM registers this is a material risk at NT>=3, so do not assume the candidate is profitable from reduced activation loads alone.
+
+Measurement context and interpretation
+
+The active root-owned phase-timing run has preliminary GU host-phase totals around 111.743 ms/window (23 windows) and reports packed blob byte submissions, not physical DRAM traffic. These diagnostic counters include host phase/dispatch behavior and are not a clean kernel latency or a serial critical-path lower bound. They motivate preserving a per-format/per-NT attribution before ranking the fused-pair experiment; they do not establish that IQ3_S dominates or that activation reloads are exposed.
+
+Decision
+
+The only fresh source-grounded screening hypothesis in this pass is paired Gate/Up activation-vector reuse inside the IQ3_S multi-token row kernel. Keep it experimental and low priority until the active run's per-format/per-NT counters identify enough eligible IQ3_S rows and generated code confirms no spills. No implementation recommendation is justified by source inspection alone.
+
+Relevant source locations
+
+- `src/kernels/cpu/iq_avx2_rows.inl:31-57,143-154`: per-row token loop and separate Gate/Up calls.
+- `src/kernels/cpu/iq_avx2.cpp:259-310,450-495`: scalar/gather decoders and GU dispatch wrapper.
+- `src/kernels/cpu/native_expert.cpp:105-165`: default NT threshold and native GU path selection.
+- `src/kernels/cpu/expert_layout.cpp:204-234`: gather setting and CPU gate.
+- Prior reconciliation: `research-20261009/decode-weight-reuse-round2.txt`, `cpu-mixed-format-avx2-round3.txt`, `moe-decode-cpu.txt`.

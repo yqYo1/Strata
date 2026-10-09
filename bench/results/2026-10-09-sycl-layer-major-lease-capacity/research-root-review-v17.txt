@@ -1,0 +1,13 @@
+Read-only GU audits round 17 — root reconciliation
+
+Root inspected the frozen T CPU iq_avx2_rows.inl and pool.cpp after both Luna reports returned. This is source review, not a kernel benchmark, generated-code proof or adoption.
+
+The paired Gate/Up idea has a real source basis: gu_rows invokes row_dot_any separately for Gate and Up using the same Q8 activation addresses. Reusing activation loads may lower load/uop cost but doubles some live accumulators and can spill AVX2 registers. Actual per-format/per-NT attribution is absent. Do not infer IQ3_S dominance from the model label; prior pack metadata has mixed GU formats. Preserve independent accumulation and SwiGLU order in any separate experimental implementation.
+
+The pool dynamically claims six flattened equal row ranges. Each range may cross expert boundaries. Expert nt affects work and one-token fallback versus multi-token dispatch changes weight-decode amortization. Rows times nt alone is not a measured cost model. Existing atomics already supply dynamic claims; another atomic queue is not a new optimization. No worker-tail data currently proves imbalance. Any NT/dispatch attribution must be diagnostic, bounded and compared separately from clean speed runs.
+
+T completed four fresh 32K requests. All four passed the exact head, 66 live state parts, 64 token IDs/logprobs, MTP and finish checks. Host GU phase per window: 111.743, 111.869, 113.595, 116.660 ms. Down: 41.691, 40.617, 42.321, 43.898 ms. These host durations overlap GPU work and are not additive critical-path times. Submitted blob byte counts are not physical DRAM traffic. This prioritizes GU attribution but proves no new speedup. T full-context qualification and clean speed comparison are unperformed.
+
+The no-model gprofng smoke is actually rejected. Besides the reply-drain race in the supervisor, its collector log reports cerror 9 (itimer could not be set) and has empty frame data. No usable profile was collected; an exit code 0 is insufficient. Keep the original failed receipt. The previous VTune smoke remains rejected by ptrace scope 1. No system settings were changed.
+
+C remains numerically rejected on the second full-context repeat despite healthy normal process/GPU termination. Its byte localization is evidence of first changed saved KV cell 98328, not proof of the earliest computation error or its cause. No C clean comparison or adoption is admitted. Corrected repeat row capture at 5994409005c3b2aad0802653675d67e75f50d001 is source-only and unbuilt. The corrected two-full capture size is 133495872 bytes with only 721856 bytes margin, superseding the report's 115 MiB estimate.

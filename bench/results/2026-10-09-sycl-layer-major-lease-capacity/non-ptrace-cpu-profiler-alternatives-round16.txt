@@ -1,0 +1,51 @@
+# Non-ptrace CPU sampling on the integrated baseline (round 16)
+
+## Finding
+
+The VTune software-Hotspots path is now an observed failure, not an untested design. `vtune-software-protocol-smoke-v1/record.json` records `passed=false`, collector exit 1 after 1.655 s, no target protocol steps, no survivors, and `perf_event_paranoid=4` / `ptrace_scope=1`. `collector.stderr` says VTune cannot start because ptrace scope is limited and suggests changing Yama scope to 0. Do not make that system-security change; do not retry VTune, use hardware PMU collection, or attach a profiler to a debugger-owned process.
+
+The best installed, source-supported alternative is GNU gprofng's **clock-based `collect app`** mode. Static discovery finds `/usr/bin/gprofng` (binutils 2.42-4ubuntu2.10), `/usr/lib/x86_64-linux-gnu/gprofng/libgp-collector.so`, and its collector symbols including `setitimer`, `__collector_sigprof_install`, and `_setitimer`. The host is Ubuntu 24.04.5 x86_64, AMD Ryzen 5 5600X (Zen 3); the tested integrated ELF is x86-64, with `.symtab` and `.eh_frame`, but no `.debug_info` or `.debug_line`. GNU's manual lists AMD processors as supported and states that hardware-counter support varies; it separately describes the default `-p on` clock sampler as 10 ms per thread, and hardware event profiling as the separate `-h` option. The official source history shows the library's SIGPROF dispatcher and treats ptrace as a separate attach feature. The local standard `collect app` mode launches the target; there is no ptrace attach being proposed.
+
+This is a viable **candidate**, not yet host-qualified: no gprofng command, profiler, smoke target, model, test, build, or service was run during this research. Run a harmless CPU-only protocol/stdio smoke under root's normal serial-work policy before using the model. If gprofng rejects the installed kernel, fails to load the collector, cannot control samples with signals, corrupts the protocol, or produces unusable stacks, stop and record that terminal failure. Do not lower `ptrace_scope`, add privilege, or rebuild Strata.
+
+## Proposed baseline collection
+
+Only use the qualified integrated869 baseline, never the failed C/layer-major candidate. The baseline is `owned-upstream-v0141-integrated-full256k-diagnostic-r2/record.json` (SHA-256 `168d7896cbe3a60dfc604a08b6fe310f16d823a17d13d8a013260bfc7facb0a4`), healthy, completed, exit 0, and `math_gate_passed=true`. Use the binary SHA and exact argv/environment captured there; this is a diagnostic function profile, not a speed comparison.
+
+Launch the collector in clock-only mode, avoiding `-h` entirely. Example option/target shape:
+
+```sh
+/usr/bin/gprofng collect app \
+  -p 10m -S off -F off -a off -y USR2 \
+  -o <unique-private-result>.er \
+  <fd-redirecting-target-wrapper> <same-baseline-strata-argv>
+```
+
+`-p 10m` selects the documented per-thread 10 ms clock sample rate; `-y USR2` starts collection paused and uses SIGUSR2 to toggle paused/resumed states. GNU recommends SIGUSR1/2 for this feature. Static search of the Strata SYCL source found no SIGUSR1/SIGUSR2/SIGPROF use. Still verify that the launch's runtime libraries and target do not claim the chosen pause signal during the harmless smoke. `-S off` omits periodic process-wide resource snapshots; `-F off` avoids following child processes; `-a off` avoids automatic archive growth. Keep the exact binary/build hashes and original binaries available for symbol resolution. Do not enable hardware counters or synchronization tracing for this first profile.
+
+Keep the existing Python protocol supervisor as the protocol authority, but launch it through gprofng without GDB/ptrace. Give the engine's fd 0/fd 1 a dedicated FIFO/FD pair via a small `exec` wrapper; direct gprofng stdout/stderr to bounded collector logs so launcher messages cannot be mistaken for protocol lines. Recursively discover and record the target PID plus `/proc/<pid>/stat` start ticks; verify `/proc/<pid>/exe` and cmdline before signaling. If the no-model smoke cannot show that collector and engine streams remain separate and that the wrapper preserves the intended target identity, do not start a model.
+
+Use the r2 `control32k.session.bin` saved by its `SAVE` step (32,831 tokens) as the restore seed. Start the engine paused, await `READY`, send `RESTORE` and require the exact `RESTORED` confirmation, then send SIGUSR2 to the validated target PID to resume collection immediately before `resume32k-reference`. That continuation has 32,832 input tokens and consumes/resumes from 32,831; it generates 64 tokens. After `DONE`, compare every `T` ID and 5-entry `LP` line, the recorded first-head buffer/hash where required, resume/reuse counts, and MTP accepted/offered counts (r2 `[46, 51]`). Send SIGUSR2 once to pause, then send the engine `QUIT` protocol line and wait for a normal collector/target exit. gprofng's pause signal only pauses recording; it does not stop the engine. Unlike VTune there is no separate `-command stop` process; normal target exit closes the experiment and flushes data.
+
+Enforce a finite outer deadline and the existing 64 MiB combined text/result evidence budget in the controller; gprofng's installed `collect app` manual exposes no VTune-style `data-limit`. Monitor experiment-directory and log bytes while collecting. On the cap or any protocol/numerical/collector error, first pause only if the controller's tracked toggle state says recording is active, then issue `QUIT` if the engine is alive, wait for graceful collector finalization, and use PID plus matching start ticks for any last-resort TERM/KILL. Record each action and preserve a terminal failure receipt; never signal by process name/group or overwrite the r2 receipt. Retain the `.er` only while its specific hotspot question is open; after the compact summary is verified, record its hash/size and a deletion manifest as required by `docs/ARTIFACT_RETENTION.md`.
+
+## What this can and cannot show
+
+Clock PC samples and native call-tree/caller-callee views can rank active C++ functions and threads statistically; the actual executable retains `.symtab`, and native unwind metadata `.eh_frame`. Those make function names plausible without recompilation, but they do not prove complete stack unwinding. Validate stack completeness in the harmless run and report missing/truncated stacks. There is no `.debug_info`/`.debug_line`, so do not claim source lines or inline attribution; function/disassembly attribution is the ceiling unless external debug files already match this exact binary (do not rebuild or replace it). For only a few seconds of decode, 10 ms sampling yields a small statistical sample. It can point to CPU-active hotspots but cannot establish hardware cycles, cache misses/bandwidth, time blocked on GPU/IO/locks, kernel work, or decode critical-path durations. Keep it separate from T's existing deterministic counters and phase timings; profiler percentages and phase durations are not additive.
+
+The instrumenting collector library and SIGPROF timer add overhead and may interact with signal handling. The sample can perturb scheduling, worker overlap, and numerical reproducibility; it is diagnostic only. A mathematical mismatch under this mode is a failed profiled reproduction, not evidence of a performance regression. The root's serial T/GPU work must finish before any model-backed collection.
+
+## Alternatives ruled out
+
+- VTune software Hotspots: actual smoke rejected Yama ptrace scope 1 before the target ran; its stderr explicitly asks for scope 0, which is disallowed.
+- `perf`/PMU hardware events: not suitable under `perf_event_paranoid=4` without privilege changes; no PMU route is needed for gprofng `-p` clock sampling.
+- GNU `gprof`: requires building/linking with `-pg`, which would change the frozen executable and is excluded.
+- gprofng attach mode, GDB, `strace`, and other ptrace attach paths: excluded; use only gprofng's normal launched-target path.
+
+## Local and primary-source basis
+
+- Smoke failure: `vtune-software-protocol-smoke-v1/record.json`, `collector.stderr`; no target steps or survivors.
+- Installed static files: `/usr/bin/gprofng`, `/usr/lib/x86_64-linux-gnu/gprofng/libgp-collector.so`, `/usr/share/man/man1/gp-collect-app.1.gz`, `/usr/share/doc/binutils/copyright`; package binutils 2.42-4ubuntu2.10. Local `readelf` inspection of the exact integrated baseline ELF found `.symtab`, `.eh_frame`, no `.debug_info`/`.debug_line`.
+- GNU [gprofng manual](https://sourceware.org/binutils/docs/gprofng.html): AMD CPU support scope; clock-based `-p` sampling rates; native call-stack/function views; launch-target collection; `-y` paused start and pause/resume signal; hardware counters are the separate `-h` mode; ELF debug info optional for basic profile.
+- GNU Binutils [`libcollector` SIGPROF dispatcher change](https://sourceware.org/pipermail/binutils-cvs/2024-May/064816.html) and [`gprofng attach` patch](https://sourceware.org/pipermail/binutils/2025-July/142063.html): collector signal handler and explicit separation of ptrace attach support from normal collection.
+- GNU Binutils license in local package copyright: GPL version 3 or later; manual license: GNU FDL 1.3 or later.

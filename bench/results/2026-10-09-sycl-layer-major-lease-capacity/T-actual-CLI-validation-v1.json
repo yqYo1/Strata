@@ -1,0 +1,239 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_executed": false,
+  "model_opened": false,
+  "scope": "Actual T binary parser/help comparison against all19 D CLI cases; no inference/model/GPU commands",
+  "build_receipt_sha256": "3632b1514544ef2dd89046c112b823c75a27d0215aca2fce58c4b8df9e43d7f8",
+  "binary_sha256": "f303b9b9a75bcb47acbfdce42a032734d299c7143f5f32933916865fd859ea43",
+  "D_cli_receipt_sha256": "25939ce0bc704d654acb6d8b18ced231e12591797785311e9792787d0f89d1a5",
+  "cases": [
+    {
+      "name": "help",
+      "argv": [
+        "--help"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "524a26ffffbeef1b2fee6d4aa2eacff9b5e9907dad859383902a43ccd2fde0c5",
+      "passed": true
+    },
+    {
+      "name": "missing",
+      "argv": [
+        "--pool-tasks"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "6aff5e84857e28bf31b7776d793fd2bf1da4a57d29ebda439caf2c299ab659a7",
+      "passed": true
+    },
+    {
+      "name": "reject2",
+      "argv": [
+        "--pool-tasks",
+        "",
+        "--help"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "6b4b6b012e8b3c08cc5dad3d55d751c81dc964e525405068ef222e65fbd35ec5",
+      "passed": true
+    },
+    {
+      "name": "reject3",
+      "argv": [
+        "--pool-tasks",
+        "-1",
+        "--help"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "6b4b6b012e8b3c08cc5dad3d55d751c81dc964e525405068ef222e65fbd35ec5",
+      "passed": true
+    },
+    {
+      "name": "reject4",
+      "argv": [
+        "--pool-tasks",
+        "4097",
+        "--help"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "6b4b6b012e8b3c08cc5dad3d55d751c81dc964e525405068ef222e65fbd35ec5",
+      "passed": true
+    },
+    {
+      "name": "reject5",
+      "argv": [
+        "--pool-tasks",
+        "abc",
+        "--help"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "6b4b6b012e8b3c08cc5dad3d55d751c81dc964e525405068ef222e65fbd35ec5",
+      "passed": true
+    },
+    {
+      "name": "reject6",
+      "argv": [
+        "--pool-tasks",
+        "1x",
+        "--help"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "6b4b6b012e8b3c08cc5dad3d55d751c81dc964e525405068ef222e65fbd35ec5",
+      "passed": true
+    },
+    {
+      "name": "reject7",
+      "argv": [
+        "--pool-tasks",
+        "1.5",
+        "--help"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "6b4b6b012e8b3c08cc5dad3d55d751c81dc964e525405068ef222e65fbd35ec5",
+      "passed": true
+    },
+    {
+      "name": "reject8",
+      "argv": [
+        "--pool-tasks",
+        "1 ",
+        "--help"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "6b4b6b012e8b3c08cc5dad3d55d751c81dc964e525405068ef222e65fbd35ec5",
+      "passed": true
+    },
+    {
+      "name": "reject9",
+      "argv": [
+        "--pool-tasks",
+        "99999999999999999999999999999999999",
+        "--help"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "6b4b6b012e8b3c08cc5dad3d55d751c81dc964e525405068ef222e65fbd35ec5",
+      "passed": true
+    },
+    {
+      "name": "reject10",
+      "argv": [
+        "--pool-tasks",
+        "-99999999999999999999999999999999999",
+        "--help"
+      ],
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "6b4b6b012e8b3c08cc5dad3d55d751c81dc964e525405068ef222e65fbd35ec5",
+      "passed": true
+    },
+    {
+      "name": "accept0",
+      "argv": [
+        "--pool-tasks",
+        "0",
+        "--help"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "524a26ffffbeef1b2fee6d4aa2eacff9b5e9907dad859383902a43ccd2fde0c5",
+      "passed": true
+    },
+    {
+      "name": "accept1",
+      "argv": [
+        "--pool-tasks",
+        "1",
+        "--help"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "524a26ffffbeef1b2fee6d4aa2eacff9b5e9907dad859383902a43ccd2fde0c5",
+      "passed": true
+    },
+    {
+      "name": "accept6",
+      "argv": [
+        "--pool-tasks",
+        "6",
+        "--help"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "524a26ffffbeef1b2fee6d4aa2eacff9b5e9907dad859383902a43ccd2fde0c5",
+      "passed": true
+    },
+    {
+      "name": "accept12",
+      "argv": [
+        "--pool-tasks",
+        "12",
+        "--help"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "524a26ffffbeef1b2fee6d4aa2eacff9b5e9907dad859383902a43ccd2fde0c5",
+      "passed": true
+    },
+    {
+      "name": "accept18",
+      "argv": [
+        "--pool-tasks",
+        "18",
+        "--help"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "524a26ffffbeef1b2fee6d4aa2eacff9b5e9907dad859383902a43ccd2fde0c5",
+      "passed": true
+    },
+    {
+      "name": "accept24",
+      "argv": [
+        "--pool-tasks",
+        "24",
+        "--help"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "524a26ffffbeef1b2fee6d4aa2eacff9b5e9907dad859383902a43ccd2fde0c5",
+      "passed": true
+    },
+    {
+      "name": "accept36",
+      "argv": [
+        "--pool-tasks",
+        "36",
+        "--help"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "524a26ffffbeef1b2fee6d4aa2eacff9b5e9907dad859383902a43ccd2fde0c5",
+      "passed": true
+    },
+    {
+      "name": "accept4096",
+      "argv": [
+        "--pool-tasks",
+        "4096",
+        "--help"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "524a26ffffbeef1b2fee6d4aa2eacff9b5e9907dad859383902a43ccd2fde0c5",
+      "passed": true
+    }
+  ],
+  "started_utc": "2026-10-09T13:50:02.830197+00:00",
+  "elapsed_seconds": 4.041468021983746,
+  "finished_utc": "2026-10-09T13:50:06.871693+00:00"
+}
