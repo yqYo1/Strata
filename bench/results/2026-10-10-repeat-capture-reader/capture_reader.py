@@ -18,6 +18,7 @@ MAGIC = 0x5354524152505431
 HEADER_BYTES = 128
 MAX_BYTES = 128 * 1024**2
 CHUNK_BYTES = 64 * 1024
+MAX_LEDGER_BYTES = 64 * 1024
 MAX_RECORDS = 690  # two actual full GEN sets; bound manifest memory/JSON too
 REQUESTS = ('control32k-before', 'resume32k-reference', 'full256k-first',
             'control32k-between-full-reads', 'full256k-repeat')
@@ -50,9 +51,19 @@ def file_identity(st):
             ('dev', 'ino', 'uid', 'nlink', 'size', 'mtime_ns', 'ctime_ns')}
 
 
-def open_private(path, expected_identity=None):
+def private_path(path):
+    raw = os.fspath(path)
+    if not raw:
+        raise CaptureError('empty file path')
+    absolute = os.path.abspath(raw)
+    if not Path(absolute).parts[1:]:
+        raise CaptureError('root is not a file path')
+    return absolute
+
+
+def open_private(path, expected_identity=None, max_bytes=MAX_BYTES):
     """No symlink in any path component; final parent private and file exact 0600."""
-    absolute = os.path.abspath(os.fspath(path))
+    absolute = private_path(path)
     parts = Path(absolute).parts[1:]
     parent = os.open('/', os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)
     fd = None
@@ -71,8 +82,8 @@ def open_private(path, expected_identity=None):
         if not stat.S_ISREG(st.st_mode) or st.st_uid != os.geteuid() or \
                 stat.S_IMODE(st.st_mode) != 0o600 or st.st_nlink != 1:
             raise CaptureError('capture must be owned 0600 regular file with one link')
-        if st.st_size > MAX_BYTES:
-            raise CaptureError('capture exceeds 128-MiB file budget')
+        if st.st_size > max_bytes:
+            raise CaptureError('private file exceeds byte budget')
         identity = file_identity(st)
         if expected_identity is not None and any(identity.get(k) != v
                                                   for k, v in expected_identity.items()):
@@ -84,6 +95,29 @@ def open_private(path, expected_identity=None):
         raise
     finally:
         os.close(parent)
+
+
+def read_ledger(path):
+    """Private descriptor-pinned JSON; total read budget is 64 KiB plus one."""
+    fd = None
+    try:
+        fd, pinned = open_private(path, max_bytes=MAX_LEDGER_BYTES)
+        data = bytearray()
+        while len(data) <= MAX_LEDGER_BYTES:
+            chunk = os.read(fd, min(CHUNK_BYTES, MAX_LEDGER_BYTES + 1 - len(data)))
+            if not chunk:
+                break
+            data.extend(chunk)
+        if len(data) > MAX_LEDGER_BYTES:
+            raise CaptureError('ledger exceeds 64 KiB')
+        if file_identity(os.fstat(fd)) != pinned or len(data) != pinned['size']:
+            raise CaptureError('ledger changed during reading')
+        return json.loads(data.decode('utf-8'))
+    except (OSError, UnicodeError, ValueError, RecursionError) as error:
+        raise CaptureError(str(error)) from error
+    finally:
+        if fd is not None:
+            os.close(fd)
 
 
 def expected_full_records():
@@ -128,6 +162,8 @@ def validate_full_segment(records):
 
 
 def validate_ledger(ledger, size):
+    if type(size) is not int or not 0 <= size <= MAX_BYTES:
+        raise CaptureError('GEN ledger file size outside capture budget')
     if not isinstance(ledger, list) or len(ledger) != 5:
         raise CaptureError('owned_full requires exactly five GEN ledger intervals')
     normalized = []
@@ -137,7 +173,7 @@ def validate_ledger(ledger, size):
             raise CaptureError('GEN ledger request identity/order mismatch')
         begin, end = row.get('begin'), row.get('end')
         if type(begin) is not int or type(end) is not int or \
-                begin != previous or not begin <= end <= size:
+                begin != previous or not 0 <= begin <= end <= size <= MAX_BYTES:
             raise CaptureError('GEN ledger gap/overlap/invalid offset')
         if (expected in FULL_REQUESTS) != (end > begin):
             raise CaptureError('only the two full GEN intervals may be nonempty')
@@ -253,12 +289,13 @@ def read_capture(path, ledger=None, mode='framing', byteorder=sys.byteorder,
     """
     prefix = endian(byteorder)
     manifest = {'schema': 'strata-repeat-capture-reader-v1', 'mode': mode,
-                'byteorder': byteorder, 'path': os.path.abspath(os.fspath(path)),
+                'byteorder': byteorder, 'path': None,
                 'structural_complete': False, 'records': [], 'numeric_findings': [],
                 'original_C_rejection_cleared': False, 'adopted': False,
                 'performance_eligible': False, 'full_lifecycle_passed': False}
     fd = None
     try:
+        manifest['path'] = private_path(path)
         if mode not in ('framing', 'owned_full'):
             raise CaptureError('unknown reader mode')
         fd, pinned = open_private(path, expected_identity)
@@ -402,11 +439,9 @@ def main():
     parser.add_argument('--byteorder', choices=('little', 'big'), default=sys.byteorder)
     args = parser.parse_args()
     ledger = None
-    if args.ledger:
-        if args.ledger.stat().st_size > 64 * 1024:
-            parser.error('ledger exceeds 64 KiB')
-        ledger = json.loads(args.ledger.read_text())
     try:
+        if args.ledger:
+            ledger = read_ledger(args.ledger)
         manifest = read_capture(args.capture, ledger, args.mode, args.byteorder)
     except CaptureError as error:
         print(json.dumps(error.manifest or {'structural_error': str(error)}, allow_nan=False))

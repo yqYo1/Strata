@@ -13,6 +13,7 @@ from pathlib import Path
 import struct
 import sys
 import time
+from unittest import mock
 
 import capture_reader as reader
 
@@ -51,13 +52,48 @@ def ledger_for(first_end, final_end):
         (reader.REQUESTS[4], first_end, final_end))]
 
 
+PRODUCER_HEAD = '9c2ebde89e5157c81a9c9ae135719452a0244ca3'
+PRODUCER_SHA256 = 'acd062d1a4f4ab29230630e066fbc29080f92c270cb1fc3e900be12502a17b56'
+PRODUCER_FIELDS = ('magic', 'version', 'layer', 'p0', 'T', 'first', 'rows',
+                   'elements', 'type', 'width', 'ordinal', 'header_bytes')
+
+
+def producer_reference_records():
+    """Independent static transcription of pinned prefill.cpp hooks/geometry.
+
+    No reader descriptor, phase-width table, field order or constants are used.
+    The root runner must supply and hash-check that producer source.
+    """
+    result = []
+    for layer in range(13):
+        phases = [('R_input', 98304, 32, 10240, 1)]
+        if layer in (3, 7, 11):
+            phases.extend((phase, 98304, 32, width, 1) for phase, width in (
+                ('K_quant_input', 512), ('V_quant_input', 512), ('indexer_raw', 128),
+                ('query', 6144), ('q_indexer', 512)))
+            phases.extend(('scores', pos, 1, (pos + 1) // 4 + 1, 1)
+                          for pos in range(98304, 98336))
+            for pos in range(98304, 98336):
+                phases.extend((('steps', pos, 1, 4, 2), ('selected_ids', pos, 1, 2051, 2)))
+            phases.append(('attention_output', 98304, 32, 6144, 1))
+        phases.extend((phase, 98304, 32, 10240, 1)
+                      for phase in ('R_post_attention_gdn', 'R_post_moe'))
+        for phase, first, rows, width, kind in phases:
+            result.append(dict(layer=layer, phase=phase, p0=98304, T=8192,
+                               first=first, rows=rows, elements=rows * width,
+                               type=kind, width=width))
+    if len(result) != 345 or sum(128 + r['elements'] * 4 for r in result) != 66747936:
+        raise AssertionError('independent producer grammar/count/budget changed')
+    return result
+
+
 def generate_full(path):
     """Actual hook-order fixture, deliberately unlike the earlier fake harness.
 
     Only one <=1.25-MiB record payload is ever resident. Repeated selected IDs
     are legal test data: the reader must not invent uniqueness/sorting rules.
     """
-    descriptors = reader.expected_full_records()
+    descriptors = producer_reference_records()
     if len(descriptors) != 345:
         raise AssertionError('source-derived count changed')
     if [r['phase'] for r in descriptors[9:15]] != [
@@ -74,9 +110,9 @@ def generate_full(path):
     with os.fdopen(fd, 'wb') as out:
         for full in range(2):
             for index, descriptor in enumerate(descriptors):
-                row = dict(descriptor, magic=reader.MAGIC, version=1,
+                row = dict(descriptor, magic=0x5354524152505431, version=1,
                            ordinal=full * 345 + index, header_bytes=128)
-                header = struct.pack(PREFIX + '12Q', *(row[k] for k in reader.FIELDS))
+                header = struct.pack(PREFIX + '12Q', *(row[k] for k in PRODUCER_FIELDS))
                 out.write(header + row['phase'].encode().ljust(32, b'\0'))
                 if row['phase'] == 'steps':
                     pos = row['first']
@@ -92,6 +128,8 @@ def generate_full(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--producer-source', type=Path, required=True,
+                        help='pinned producer sycl/src/prefill/prefill.cpp')
     parser.add_argument('--real-normal', type=Path)
     parser.add_argument('--real-partial', type=Path)
     args = parser.parse_args()
@@ -155,6 +193,20 @@ def main():
             raise AssertionError('finite payload summary mismatch')
         json.dumps(manifest, allow_nan=False)
         return {'fixture': str(path), 'sha256': manifest['file_sha256']}
+
+    def producer_pin():
+        actual = digest(args.producer_source)
+        if actual != PRODUCER_SHA256:
+            raise AssertionError('producer source differs from independently reviewed reference')
+        if reader.expected_full_records() != producer_reference_records():
+            raise AssertionError('reader coverage differs from independent producer reference')
+        return {'producer_head': PRODUCER_HEAD, 'source': str(args.producer_source),
+                'sha256': actual, 'records_per_full': 345, 'bytes_per_full': 66747936}
+    check('independent-producer-source-pin-and-all-record-descriptors', producer_pin)
+    if not receipt['cases'][-1]['passed']:
+        receipt['active'] = False
+        save()
+        return 1
 
     check('finite-framing', good_small)
     for name, changes in (
@@ -303,6 +355,75 @@ def main():
         raise AssertionError('nonprivate parent accepted')
     check('nonprivate-parent-rejected', wrong_parent)
 
+    def path_edges():
+        for path in ('', '/', '////'):
+            try:
+                reader.read_capture(path)
+            except reader.CaptureError as error:
+                if not error.manifest or error.manifest['structural_complete']:
+                    raise AssertionError('path rejection lost incomplete manifest')
+            else:
+                raise AssertionError('empty/root path accepted')
+            try:
+                reader.open_private(path)
+            except reader.CaptureError:
+                pass
+            else:
+                raise AssertionError('private opener accepted empty/root path')
+        return {'rejected_paths': ['', '/', '////']}
+    check('empty-and-root-path-CaptureError', path_edges)
+
+    def ledger_ingestion():
+        valid = json.dumps(ledger_for(100, 200)).encode()
+        path = fixture(valid)
+        if reader.read_ledger(path) != ledger_for(100, 200):
+            raise AssertionError('private ledger JSON changed')
+        boundary = fixture(valid + b' ' * (65536 - len(valid)))
+        reader.read_ledger(boundary)
+        link = args.out / 'ledger-symlink'; link.symlink_to(path)
+        parent_link = args.out / 'ledger-parent-symlink'; parent_link.symlink_to(args.out)
+        hard = fixture(valid); os.link(hard, args.out / 'ledger-hardlink')
+        mode = fixture(valid); mode.chmod(0o644)
+        directory = args.out / 'ledger-directory'; directory.mkdir(mode=0o700)
+        fifo = args.out / 'ledger-fifo'; os.mkfifo(fifo, 0o600)
+        public = args.out / 'ledger-public'; public.mkdir(mode=0o755)
+        public_file = public / 'ledger.json'; write_private(public_file, valid)
+        cases = (link, parent_link / path.name, hard, mode, directory, fifo, public_file,
+                 fixture(b'x' * 65537), fixture(b'{'), fixture(b'\xff'),
+                 fixture(b'[' * 2000 + b']' * 2000), Path('/'))
+        for bad in cases:
+            try:
+                reader.read_ledger(bad)
+            except reader.CaptureError:
+                pass
+            else:
+                raise AssertionError('unsafe/malformed ledger accepted: ' + str(bad))
+        return {'rejected_variants': len(cases), 'exact_64KiB_accepted': True}
+    check('bounded-private-ledger-JSON-and-filesystem-policy', ledger_ingestion)
+
+    def ledger_read_mutation(grow):
+        path = fixture(b'[]')
+        actual_read = os.read
+        requests = []
+        def changed_read(fd, count):
+            requests.append(count)
+            if len(requests) == 1:
+                with path.open('ab' if grow else 'wb') as out:
+                    out.write(b' ' * 65536 if grow else b'{}')
+            return actual_read(fd, count)
+        with mock.patch.object(reader.os, 'read', changed_read):
+            try:
+                reader.read_ledger(path)
+            except reader.CaptureError as error:
+                if grow and sum(requests) > 65537:
+                    raise AssertionError('ledger read requested more than bounded budget')
+                if not grow and 'changed' not in str(error):
+                    raise AssertionError('same-size mutation not rejected by stable fstat')
+                return {'rejection': str(error), 'read_requests': requests}
+        raise AssertionError('concurrently changed ledger accepted')
+    check('ledger-growth-read-budget-plus-one', lambda: ledger_read_mutation(True))
+    check('ledger-same-size-mutation-stable-fstat', lambda: ledger_read_mutation(False))
+
     def bad_ledger():
         good = ledger_for(100, 200)
         variants = []
@@ -312,6 +433,17 @@ def main():
         extra = copy.deepcopy(good); extra[0]['end'] = 1; variants.append(extra)
         missing = copy.deepcopy(good); missing[4]['end'] = 199; variants.append(missing)
         boolean = copy.deepcopy(good); boolean[0]['begin'] = False; variants.append(boolean)
+        for index in range(5):
+            for field in ('begin', 'end'):
+                for value in (-1, 1 << 200, True, 1.5, None):
+                    bad = copy.deepcopy(good); bad[index][field] = value; variants.append(bad)
+        for size in (-1, reader.MAX_BYTES + 1, 1 << 200, True, 200.0, None):
+            try:
+                reader.validate_ledger(good, size)
+            except reader.CaptureError:
+                pass
+            else:
+                raise AssertionError('invalid ledger file size accepted')
         for variant in variants:
             try:
                 reader.validate_ledger(variant, 200)
@@ -322,7 +454,7 @@ def main():
     check('request-ledger-missing-gap-order-extra-trailing-bool', bad_ledger)
 
     def bad_coverage():
-        good = reader.expected_full_records()
+        good = producer_reference_records()
         reader.validate_full_segment(good)
         variants = [good[:-1]]
         dup = copy.deepcopy(good); dup[1] = copy.deepcopy(dup[0]); variants.append(dup)

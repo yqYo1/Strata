@@ -132,6 +132,7 @@ CPU supervisor, with an unused B output path:
 ```sh
 PYTHONDONTWRITEBYTECODE=1 python3 /absolute/source-directory/test_capture_reader.py \
   --out /absolute/B/repeat-capture-reader-cpu-validation-v1 \
+  --producer-source /absolute/producer/sycl/src/prefill/prefill.cpp \
   --real-normal /absolute/B/repeat-capture-cpu-validation-v2/normal.bin \
   --real-partial /absolute/B/repeat-capture-cpu-validation-v2/partial-write.bin
 ```
@@ -152,3 +153,51 @@ root closes validation, commits compact evidence, then retires successful bulky
 fixtures under the shared lock with a path/hash/reason manifest. This source
 performs no cleanup. A future valid parser does not itself authorize a model
 run or remove round 22's separate controller digest/close/lifecycle requirements.
+
+
+Round-24 hardening follow-up (source only, untested)
+
+This isolated implementation branches from reader commit
+`b1d4347305b1f840f15cdf51cfaedde3d3d9a6ee`. The original reader worktree is
+unchanged. No build, test, syntax/help/version invocation, GPU/model/profiler or
+service work, cleanup, or push was performed by this implementation agent.
+Root exclusively owns serial execution and review. Source-writing Python was
+used only to edit these three scoped files; it did not import or run them.
+
+The shared descriptor-relative private-file opener now accepts a byte bound.
+The CLI ledger uses that opener with 65,536 bytes, reads at most 65,537 bytes
+in total, checks descriptor identity again and verifies the read length against
+its initial size before UTF-8/JSON decoding. Every opened path component rejects
+symlinks; the final parent is owned/private and the final file is owned 0600,
+regular and single-link. Empty and root paths raise CaptureError; read_capture
+preserves an incomplete manifest. Ledger size and each interval now explicitly
+require integer values and `0 <= begin <= end <= size <= MAX_BYTES`; booleans
+are rejected.
+
+The full synthetic fixture no longer calls reader.expected_full_records or
+uses its phase-width table, magic or header-field ordering. It separately
+transcribes the actual producer hooks and checks all 345 descriptors against
+the reader. Its producer reference is HEAD
+`9c2ebde89e5157c81a9c9ae135719452a0244ca3`, prefill.cpp SHA-256
+`acd062d1a4f4ab29230630e066fbc29080f92c270cb1fc3e900be12502a17b56`.
+Root must add `--producer-source /absolute/producer/sycl/src/prefill/prefill.cpp`
+to the execution recipe above. The test refuses to generate the full fixture
+unless that source hash matches. This is a pinned static reference, requiring
+fresh independent review when producer geometry changes; it does not execute
+the model or prove device behavior. Source arithmetic remains 66,747,936 bytes
+per full and 133,495,872 for the pair.
+
+New test source covers empty/root paths, negative/huge/noninteger offsets in
+every ledger slot and invalid sizes, exact 64-KiB JSON, oversized/invalid UTF-8/
+malformed JSON ledgers, final and parent symlinks, hardlinks, directory/FIFO,
+nonprivate files/parents, deterministic growth after initial fstat and a
+same-size mutation during ledger reading. Mutation injection is confined to
+root's CPU test via a scoped os.read mock; it verifies the 64-KiB-plus-one read
+budget and stable-fstat rejection. No runtime result is asserted here.
+
+Reviewed evidence: repeat-capture R15/R19/R20/R22 and the two reader R24 audit
+reports, plus registry v23 SHA-256
+`5dfcd721be2d40077ef584264f05ba370c118f5f94aad44c3117fb7733f19e2b`.
+The original C rejection remains unchanged, math gate false, rejection-cleared
+false, adoption false, performance eligibility false and full lifecycle false.
+No parser result authorizes model admission. No artifact was deleted.
