@@ -1,0 +1,79 @@
+GDN SG32 quad pipeline v1 — source-only handoff
+2026-10-10. UNBUILT AND UNTESTED. No runtime/support/parity/performance/adoption claim.
+
+Worktree: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010
+Root-supplied branch perf/sycl-gdn-quad-pipeline-20261010, base66aaec3a. No Git command, commit or push was performed. Only the five authorized source/header/CMake/README paths and this report changed. All builds/tests/model/GPU/runtime queries/profile/disassembly/cleanup belong to root under the shared measurement lock.
+
+Changed files (SHA256, bytes):
+sycl/src/prefill/kernels.dp.cpp
+af16f3d89dc0ef154b89800c278a78959ca0f7de0d59e90c7bc16e998f9968be 159280
+sycl/include/strata/prefill/gdn_variant.hpp
+044dfc92139d77e4cb3a1ddbf644339cad64a8155b052f691575cc1ccd818bf7 2138
+sycl/CMakeLists.txt
+ce0a6264b8afb008abab3840e4f22fd652cb371483f2273e4e73e01a5df81ee7 25794
+sycl/src/prefill/gdn_quad_parity.cpp
+a08a6ce8e7bc370f5bd8110c010492742888f93a2c561dd3daf4b04cb37e7a63 13117
+sycl/tools/gdn-quad-pipeline/README.md
+65d83263c4956d0700767684e4290af823ce3638101dddeb54dd097a4060021e 10471
+
+Read full R84 exact-order remap screen, R86 admission/fallback contract, R87 Xe2 GRF evidence, R88 semantic review and R89 parity coverage. Applicable AGENTS was read; the explicit source-only assignment overrides its build/contribution actions. Registry-v47 SHA1aaa7ccf01cb74d3c8441a9467cb7136a8e583b3d9ab8c8ac3767dfc564ef839/storage3acff3b3 are root-supplied provenance, not modified. The separate GPU feasibility researcher was not contacted or delegated work.
+
+Default preservation
+
+Read-only source diff against the frozen kernels file showed insertions only, no removed/replaced existing lines. Existing gdn_rec_cols_pipe_kernel body and launch remain unchanged, with no reqd-subgroup attribute. R88's correction is respected. Existing serial/keyhead/tuned kernels, normalization, default FP/AOT/GRF flags and graph/runtime choices are unchanged. Existing gdn_variant_parity.cpp remains SHAd4ca2e5e428751252033f53038f2d43c1814e8ccedaaa8ac5e0ebccd1992a6e4. CMake only appends a new OFF-by-default correctness option/target. Source preservation is not a claim that a rebuilt default binary has already passed runtime/model parity.
+
+Opt-in/precedence
+
+STRATA_GDN_QUAD accepts literal0/1 only; unset/0 executes the old launch path without candidate admission queries. Invalid strings throw. Selector is process-static; use fresh processes. Normal dispatch considers quad only with variant0, no REC_HEADS selector, pipeline enabled, KEYHEAD0/unset and KEYHEAD_TUNED0/unset. Explicit serial/nonpipeline/keyhead/tuned/nonzero variant choices retain old precedence. Existing HEAD-selected nonzero variant is excluded as well. A denied pre-submit candidate returns false and normal caller takes its old route once. Errors after attempted submission propagate, never retry legacy against possibly modified state.
+
+Dedicated API contract
+
+gdn_recurrence_quad_variant is explicit and ignores environment selectors; boolfalse means no candidate/norm submission and state/output untouched. T0 returns true/Empty before queue lookup, no recurrence or zero-range norm. NegativeT throws. New contract applies to this candidate and applicable quad route, not to unchanged default/conflicting-selector T0 behavior. Padded ld16 is rejected for live candidates. GdnQuadReport is bounded: status/reason/compiledSG/deviceWG/kernelWG and optional private/spill known/value fields. Submitted means attempt boundary, not completion.
+
+Diagnostic forced denial is a pre-submit test seam returning false before queue lookup. It is never used by ordinary dispatch and is not simulated device feature execution. Empty/denied host marker tests can pass null inputs because the function returns before touching them. The explicit legacy reference API bypasses all selectors and invokes the unchanged pipeline body with original geometry/no subgroup attribute, followed by the unchanged norm helper. That separately named compiled image remains subject to root comparison against default/model behavior; source identity alone cannot prove compiler-image equivalence.
+
+Kernel mapping/arithmetic
+
+Distinct named class strata::prefill::GdnRecQuadPipelineSG32; candidate lambda has reqd_sub_group_size32. Real subgroup lane/group IDs determine rg=lane/8, c=lane%8, col=cb*32+sgid*8+c. Four full32-lane subgroups cover one32-column tile in128-item local(1,4,32). Each lane owns32 state rows of one value column; all48 heads use head%16. Only rg0 writes output; each state element retains one writer.
+
+Independent workgroup-linear staging index0..127 writes all shared Q/K entries once. Workgroup barrier before overwrite and after publication remain; the next-token input fetch remains pipelined. No redSLM array or red-partial workgroup barriers remain. All lanes gather KV then output partials convergently in source order c,c+8,c+16,c+24. Explicit ((p0+p1)+p2)+p3 association, old32-step FMA projection/update/output loops, native exp, (v-g*kv)*beta, separate k*delta product and rsqrt128 multiply are retained. This is a source-operation design, not proof of generated instruction order or exact device results.
+
+Admission and error boundary
+
+Exact existing queue must be in-order. Before mutable submission: device SG32 set; device maxWG>=128; local dimension limits support1/4/32; exact type-level kernelID; executable bundle for that queue context/device; has_kernel for that exactID/device; kernel compile_sub_group_size exactly32 and kernel maxWG>=128. Installed source header /opt/intel/oneapi/compiler/latest/include/sycl/info/kernel_device_specific_traits.def confirms compile_sub_group_size uint32_t; no runtime query was run. No substring lookup/unrelated-kernel capability is used.
+
+Submission binds the same admitted executable bundle with handler.use_kernel_bundle. Private/spill descriptors are optional informational values, no resource/performance threshold; unknown resources do not deny otherwise supported candidates. Only read-only query region catches exceptions and returns denial. No catch encloses q.submit, normalization or check. The report marks submission attempt before q.submit, so immediate/partial/asynchronous failure cannot become false/fallback. Public API lookup/build compatibility is still uncompiled evidence pending root.
+
+Candidate-specific correctness target
+
+New STRATA_GDN_QUAD_PARITY option OFF; target/test gdn_quad_parity links strata_prefill without extra flags. Its dedicated candidate call works regardless of QUAD env; CTest uses QUAD0/KEYHEAD0/TUNED0/PIPELINE1/REC_HEADS unset. Existing target definitions were not changed; root should pin QUAD0 for existing default-reference tests.
+
+Default suite24cases: T1/3/4/5/17/257 x zero/nonzero initial x directed/cancellation. Three calls percase(T,3,5), compare after everycall, therefore72 real candidate calls with two additional carried chunks. Positive calls require booltrue/Submitted; unsupported/preflight-denied hardware is an explicit test failure, not a baseline-vs-baseline PASS. Full786432 recurrent FP32 state, all active FP32y and FP16y compared bitwise. No tolerance added. Finite/full-write checks and32 outerguards plus unused output capacity sentinels checked.
+
+Directed values depend on keyhead/row/valuehead/column/token and cumulative offset, covering all48 interleaved heads. Cancellation nonzero state places four partials2^24,1,-2^24,1 at rows0/32/64/96, with sparse key/query1, g0, beta.25, v0. Wrong KV association changes delta/small state cells; wrong output association changes observable output. Host control independently confirms ordered1 versus reassociated2 partial arithmetic; GPU parity remains the authority, not a CPU tolerance. Cancellation-zero is a zero-state control; nonzero cancellation is the association discriminator.
+
+Additional tests: host T0/negative/forced-denial no-touch beforequeue lookup; device T0 full state bit/hash and output sentinel checks; forced-denial full device snapshot and all output untouched before caller invokes exactlyone legacy fallback. Caller logs logical candidate/fallback API counts, not hardware kernel-event counts. The denied/reference state then passes full differential gates. No post-submit fault injection is added; source propagation boundary is reviewed but actual fault behavior remains root-owned.
+
+Long synthetic prefix mode
+
+Optional --prefix32768|262144 --chunk1..2048 (argv uses separate values with spaces). ceil(total/chunk)<=2048 required before queue lookup. Defaults no long run. With2048 chunk,16 or128 calls; every handoff compares fullstate/outputs, inputs derive cumulativeoffset. One reusable chunk allocation, never all262144 h/y tensors. This is recurrence+norm synthetic prefix coverage, not physical model/full-session/conv/lifecycle qualification. Root authorizes longer invocations separately after short gate and budgets.
+
+Root-only recipe, UNEXECUTED
+
+Use new isolated QUAD_BUILD/private receipt; preserve production oneAPI/ggml/AOT/precise FP options exactly. Root configure invocation adds -DSTRATA_GDN_QUAD_PARITY=ON to its pinned existing SYCL build recipe.
+cmake --build "$QUAD_BUILD" --target gdn_quad_parity --parallel 6
+python3 "$WQUAD/sycl/tools/debug-run.py" "$QUAD_BUILD/gdn_quad_parity"
+Later separately approved:
+python3 "$WQUAD/sycl/tools/debug-run.py" "$QUAD_BUILD/gdn_quad_parity" --prefix 32768 --chunk 2048
+python3 "$WQUAD/sycl/tools/debug-run.py" "$QUAD_BUILD/gdn_quad_parity" --prefix 262144 --chunk 2048
+Keep UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD1 and EnableDirectSubmission0; root pins device selection, package provenance, binary/source/flags and fault cursor. Debug logs/owned process receipt mandatory. No performance timing in this target.
+
+Resources/retention/closure
+
+Maximum2048-token buffers: roughly278.75MiB device allocations plus runtime/compiler resources; host preparation roughly128.75MiB plus comparison/loader/backend overhead. Source counts, not measured peak/RSS or driver clearance. Proposed short240s deadline; long independently budgeted initially<=1800s, stdout4MiB/stderr64MiB diagnostic caps, finite RSS/AS/NOFILE/FSize and free-device memory admission. Default72candidatecalls plus one explicit legacy fallback, bounded; long atmost2048handoffs. Root sharedlock serializes all builds/tests/GPU/model/profiler activity.
+
+Owned USM allocation tracking reserves before device alloc, releases partial construction, normal destructor drains and frees. Normal teardown errors propagate; during unwinding originalfailure remains failure. No legacy retry or cleanup/system/device command. Final stdout/stderr flush checked. Parent must require normal0, complete finite/bitwise results, no faults/forced cleanup/survivors; printedPASS alone is not authoritative. Keep source/env/route/resource/case/result/ownership evidence; no model tensors or profiler trace created by agent.
+
+Known remaining gates
+
+Source only, no compile/import/syntax/build/test/runtime/device/model/profile/disassembly/Git/cleanup happened. Kernel bundle API, compiler attribute/collective lowering and actual SG32/WG128 support UNKNOWN. Numerical bitwise parity UNKNOWN. NaN/Inf expected propagation masks, per-head/tile interior redzones, automatic normal-selector integration matrix, post-submit fault injection and default compiled-image comparison are not implemented in this harness. Outer guards/full arrays are meaningful but not a proof of all write ownership. No GRF experiment, timing/speed/occupancy evidence or adoption. Model all-head/logit/logprob/IDs/MTP/all66-state/repeat/32K/physical262144 lifecycle gates remain mandatory and unchanged. CPU WY PASS is mathematical-only; no tolerance transfers. Existing C/D/r5 rejections/currentP physical status remain unchanged.

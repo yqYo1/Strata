@@ -389,3 +389,14 @@ if(STRATA_SYCL_PARITY)
     target_link_libraries(native_expert_parity PRIVATE strata_kernels strata_kernels_cpu)
   endif()
 endif()
+
+# Separate opt-in correctness gate; existing kernels/tests/FP/AOT flags are unchanged.
+option(STRATA_GDN_QUAD_PARITY "Build the SG32 quad recurrence correctness discriminator" OFF)
+if(STRATA_GDN_QUAD_PARITY)
+  add_executable(gdn_quad_parity ${CMAKE_CURRENT_SOURCE_DIR}/src/prefill/gdn_quad_parity.cpp)
+  target_link_libraries(gdn_quad_parity PRIVATE strata_prefill)
+  enable_testing()
+  add_test(NAME gdn_quad_parity COMMAND gdn_quad_parity)
+  set_tests_properties(gdn_quad_parity PROPERTIES TIMEOUT 240
+    ENVIRONMENT_MODIFICATION "STRATA_GDN_QUAD=set:0;STRATA_GDN_KEYHEAD_TUNED=set:0;STRATA_GDN_KEYHEAD=set:0;STRATA_GDN_PIPELINE=set:1;STRATA_GDN_REC_HEADS=unset:")
+endif()

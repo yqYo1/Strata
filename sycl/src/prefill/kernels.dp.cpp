@@ -19,8 +19,11 @@
 #include <cstdlib>
 #include <stdexcept>
 #include <cstring>
+#include <optional>
 
 namespace strata::prefill {
+class GdnRecQuadPipelineSG32;
+class GdnLegacyPipelineReference;
 namespace {
 
 constexpr int N = 2560, HC = 4, D = N * HC, LR = 320;
@@ -993,6 +996,66 @@ __dpct_inline__ void gdn_rec_cols_pipe_kernel(float *__restrict__ state,
     for (int r = 0; r < RPG; ++r) base[r * rs] = s[r];
 }
 #if !defined(__HIPCC__)
+// Independent workgroup-linear Q/K staging; state roles use real subgroup IDs.
+// Same per-row FP operations as gdn_rec_cols_pipe_kernel, with no red SLM.
+__dpct_inline__ void gdn_rec_quad_pipeline_sg32_kernel(float *__restrict__ state, const float *__restrict__ h,
+                                                      const float *__restrict__ gate, const float *__restrict__ beta,
+                                                      float *__restrict__ oc_out, int64_t T) {
+    auto item = sycl::ext::oneapi::this_work_item::get_nd_item<3>();
+    auto sg = item.get_sub_group();
+    const int lane = sg.get_local_id()[0], sgid = sg.get_group_id()[0];
+    const int rg = lane / 8, c = lane % 8;
+    const int head = item.get_group(2) / NCB, cb = item.get_group(2) % NCB;
+    const int col = cb * CB + sgid * 8 + c;
+    const int stage = item.get_local_linear_id(); // Unique0..127; never derived from quad roles.
+    const int qh = head % HK;
+    auto &sk = *sycl::ext::oneapi::group_local_memory_for_overwrite<float[S]>(item.get_group());
+    auto &sq = *sycl::ext::oneapi::group_local_memory_for_overwrite<float[S]>(item.get_group());
+    float s[RPG];
+    float *base = state + ((size_t)(rg * RPG) * HV + head) * S + col;
+    const size_t rs = (size_t)HV * S;
+#pragma unroll
+    for (int r = 0; r < RPG; ++r) s[r] = base[r * rs];
+    float nq = 0.f, nk = 0.f, nv = 0.f, ng = 0.f, nb = 0.f;
+    auto fetch = [&](int64_t t) {
+        const float *ht = h + t * C;
+        nq = ht[qh * S + stage]; nk = ht[HK * S + qh * S + stage];
+        nv = ht[2 * HK * S + head * S + col];
+        ng = gate[t * HV + head]; nb = beta[t * HV + head];
+    };
+    if (T > 0) fetch(0);
+    for (int64_t t = 0; t < T; ++t) {
+        const float cq = nq, ck = nk, cv = nv, cg = ng, cbt = nb;
+        item.barrier(); // Previous token's Q/K reads complete before overwrite.
+        sq[stage] = cq; sk[stage] = ck;
+        item.barrier(); // Publish all128 Q/K rows before state-owner reads.
+        if (t + 1 < T) fetch(t + 1);
+        const float g = sycl::native::exp(cg);
+        float kv = 0.f;
+#pragma unroll
+        for (int r = 0; r < RPG; ++r) kv = sycl::fma(s[r], sk[rg * RPG + r], kv);
+        const float p0 = sycl::select_from_group(sg, kv, c);
+        const float p1 = sycl::select_from_group(sg, kv, c + 8);
+        const float p2 = sycl::select_from_group(sg, kv, c + 16);
+        const float p3 = sycl::select_from_group(sg, kv, c + 24);
+        const float kv_col = ((p0 + p1) + p2) + p3;
+        const float delta = (cv - g * kv_col) * cbt;
+        float o = 0.f;
+#pragma unroll
+        for (int r = 0; r < RPG; ++r) {
+            s[r] = sycl::fma((float)g, s[r], sk[rg * RPG + r] * delta);
+            o = sycl::fma(s[r], sq[rg * RPG + r], o);
+        }
+        const float o0 = sycl::select_from_group(sg, o, c);
+        const float o1 = sycl::select_from_group(sg, o, c + 8);
+        const float o2 = sycl::select_from_group(sg, o, c + 16);
+        const float o3 = sycl::select_from_group(sg, o, c + 24);
+        if (rg == 0) oc_out[t * HV * S + head * S + col] =
+            (((o0 + o1) + o2) + o3) * sycl::rsqrt((float)S);
+    }
+#pragma unroll
+    for (int r = 0; r < RPG; ++r) base[r * rs] = s[r];
+}
 // The recurrence with one thread for the three value heads that share a key head (head % HK): column c of heads
 // qh, qh + 16 and qh + 32, row group rg.  gdn_rec_cols_pipe_kernel spends its time in shared memory, not in
 // arithmetic: every thread of a warp needs the same 32 q and k values per token (the k twice), and a warp receives one
@@ -2584,6 +2647,81 @@ void launch_gdn_out_norm(const float *z, const float *gamma, float eps, const fl
 }
 } // namespace
 
+void gdn_recurrence_pipeline_reference(float *state, const float *h, const float *gate, const float *beta,
+                                     const float *z, const float *gamma, float eps, float *y, uint16_t *y16,
+                                     int64_t T, void *stream, int64_t ld16) {
+    if (T < 0) throw std::invalid_argument("GDN pipeline reference: negative T");
+    if (T == 0) return;
+    if (ld16 != 0 && ld16 != HV * S) throw std::invalid_argument("GDN pipeline reference: padded rows");
+    auto props = sycl::ext::oneapi::experimental::properties{};
+    strata::q_of(stream)->parallel_for<GdnLegacyPipelineReference>(
+        sycl::nd_range<3>(sycl::range(1, 1, HV * NCB) * sycl::range(1, RG, CB), sycl::range(1, RG, CB)), props,
+        [=](sycl::nd_item<3>) { gdn_rec_cols_pipe_kernel(state, h, gate, beta, y, T); });
+    launch_gdn_out_norm(z, gamma, eps, y, y16, T, stream);
+    check("gdn_recurrence_pipeline_reference");
+}
+
+bool gdn_recurrence_quad_variant(float *state, const float *h, const float *gate, const float *beta, const float *z,
+                                const float *gamma, float eps, float *y, uint16_t *y16, int64_t T, void *stream,
+                                int64_t ld16, GdnQuadReport *report, bool diagnostic_deny) {
+    GdnQuadReport result;
+    auto denied = [&](const char *why) { result.reason = why; if (report) *report = result; return false; };
+    if (T < 0) throw std::invalid_argument("GDN quad: negative T");
+    if (T == 0) {
+        result.status = GdnQuadReport::Status::Empty; result.reason = "empty_no_submission";
+        if (report) *report = result;
+        return true; // Before even queue lookup; state/output may be null.
+    }
+    if (ld16 != 0 && ld16 != HV * S) throw std::invalid_argument("GDN quad: padded rows");
+    if (diagnostic_deny) return denied("diagnostic_pre_submit_denial");
+#if !defined(__HIPCC__)
+    auto &q = *strata::q_of(stream);
+    if (!q.has_property<sycl::property::queue::in_order>()) return denied("queue_not_in_order");
+    std::optional<sycl::kernel_bundle<sycl::bundle_state::executable>> executable;
+    // Only this read-only pre-submit region may convert query exceptions into fallback.
+    try {
+        const auto device = q.get_device();
+        const auto sizes = device.get_info<sycl::info::device::sub_group_sizes>();
+        result.device_max_workgroup = device.get_info<sycl::info::device::max_work_group_size>();
+        const auto dimensions = device.get_info<sycl::info::device::max_work_item_sizes<3>>();
+        if (dimensions[0] < 1 || dimensions[1] < RG || dimensions[2] < CB)
+            return denied("device_local_dimensions_unsupported");
+        if (std::find(sizes.begin(), sizes.end(), size_t(32)) == sizes.end() || result.device_max_workgroup < 128)
+            return denied("device_no_SG32_or_WG128");
+        const auto id = sycl::get_kernel_id<GdnRecQuadPipelineSG32>();
+        executable.emplace(sycl::get_kernel_bundle<sycl::bundle_state::executable>(q.get_context(), {device}, {id}));
+        const auto &bundle = *executable;
+        if (!bundle.has_kernel(id, device)) return denied("exact_executable_kernel_unavailable");
+        const auto kernel = bundle.get_kernel(id);
+        result.compiled_subgroup = kernel.get_info<sycl::info::kernel_device_specific::compile_sub_group_size>(device);
+        result.kernel_max_workgroup = kernel.get_info<sycl::info::kernel_device_specific::work_group_size>(device);
+        if (result.compiled_subgroup != 32 || result.kernel_max_workgroup < 128)
+            return denied("compiled_SG_or_WG_mismatch");
+        // Informational only: missing resource descriptors are not support/performance rejection criteria.
+        try { result.private_bytes = kernel.get_info<sycl::info::kernel_device_specific::private_mem_size>(device); result.private_known = true; }
+        catch (const std::exception &) {}
+        try { result.spill_bytes = kernel.get_info<sycl::ext::intel::info::kernel_device_specific::spill_memory_size>(device); result.spill_known = true; }
+        catch (const std::exception &) {}
+    } catch (const std::exception &) { return denied("pre_submit_query_exception"); }
+    // No catch/fallback encloses either submission or check: mutation may be partial on error.
+    result.status = GdnQuadReport::Status::Submitted; result.reason = "candidate_submission_attempted";
+    if (report) *report = result;
+    q.submit([=](sycl::handler &handler) {
+        handler.use_kernel_bundle(*executable); // Bind exactly the executable image admitted above.
+        handler.parallel_for<GdnRecQuadPipelineSG32>(
+            sycl::nd_range<3>(sycl::range(1, 1, HV * NCB) * sycl::range(1, RG, CB), sycl::range(1, RG, CB)),
+            [=](sycl::nd_item<3>) [[sycl::reqd_sub_group_size(32)]] {
+                gdn_rec_quad_pipeline_sg32_kernel(state, h, gate, beta, y, T);
+            });
+    });
+    launch_gdn_out_norm(z, gamma, eps, y, y16, T, stream);
+    check("gdn_recurrence_quad_variant");
+    return true;
+#else
+    return denied("not_SYCL_quad_backend");
+#endif
+}
+
 bool gdn_recurrence_keyhead_variant(float *state, const float *h, const float *gate, const float *beta, const float *z,
                                     const float *gamma, float eps, float *y, uint16_t *y16, int64_t T, void *stream) {
     if (T < 256)
@@ -2604,6 +2742,23 @@ void gdn_recurrence_variant(int variant, float* state, const float* h, const flo
     if (ld16 != 0 && ld16 != HV * S)
         throw std::invalid_argument("gdn_recurrence: padded output rows are not supported by SYCL");
     if (ld16 <= 0) ld16 = (int64_t) HV * S;
+#if !defined(__HIPCC__)
+    static const bool quad = [] {
+        const char *v = std::getenv("STRATA_GDN_QUAD");
+        if (!v || std::strcmp(v, "0") == 0) return false;
+        if (std::strcmp(v, "1") == 0) return true;
+        throw std::invalid_argument("STRATA_GDN_QUAD must be 0 or 1");
+    }();
+    if (quad && variant == 0 && std::getenv("STRATA_GDN_REC_HEADS") == nullptr) {
+        const char *pv = std::getenv("STRATA_GDN_PIPELINE");
+        const char *kv = std::getenv("STRATA_GDN_KEYHEAD");
+        const char *tv = std::getenv("STRATA_GDN_KEYHEAD_TUNED");
+        // Explicit existing serial/nonpipeline/keyhead/tuned selectors keep their old precedence.
+        if ((!pv || std::atoi(pv) != 0) && (!kv || std::atoi(kv) == 0) && (!tv || std::atoi(tv) == 0) &&
+            gdn_recurrence_quad_variant(state, h, gate, beta, z, gamma, eps, y, y16, T, stream, ld16))
+            return;
+    }
+#endif
 #if defined(__HIPCC__)
     if (variant == 3) {   // diagnostics: the quad recurrence + the old norm kernel
         if (T > 0) {
