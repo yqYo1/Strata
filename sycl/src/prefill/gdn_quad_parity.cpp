@@ -21,6 +21,16 @@ constexpr size_t G=32, NS=128*48*128;
 constexpr float sentinel=-98765.f;
 constexpr uint16_t half_sentinel=0x5a5a;
 void require(bool ok,const char* message){if(!ok)throw std::runtime_error(message);}
+// A disposable diagnostic process cannot unwind host memcpy endpoints when a
+// submit/wait error leaves completion unknown. All referenced host vectors live
+// outside these lambdas; terminate here before their scopes can unwind.
+[[noreturn]] void fail_stop(const char* stage,const char* detail){
+ std::fprintf(stderr,"FAIL-STOP stage=%s completion_unknown=true host_unwind=false explicit_USM_release=false detail=%s\n",stage,detail);
+ std::fflush(stdout);std::fflush(stderr);std::_Exit(2);
+}
+template<class Fn> decltype(auto) gpu_stage(const char* stage,Fn&& fn){
+ try{return fn();}catch(const std::exception& e){fail_stop(stage,e.what());}catch(...){fail_stop(stage,"non-standard exception");}
+}
 uint64_t fnv(const void* data,size_t n){uint64_t h=14695981039346656037ULL;auto p=static_cast<const uint8_t*>(data);for(size_t i=0;i<n;++i){h^=p[i];h*=1099511628211ULL;}return h;}
 size_t si(int r,int h,int c){return (size_t(r)*48+h)*128+c;}
 void early_contract(){
@@ -52,13 +62,7 @@ struct Buffers {
   catch(...){auto error=std::current_exception();for(auto p:owned)try{sycl::free(p,q);}catch(...){std::fprintf(stderr,"partial-allocation cleanup failed; original allocation failure retained\n");}std::rethrow_exception(error);}
  }
  ~Buffers() noexcept(false){// Normal calls drain before destruction; never retry a failed recurrence.
-  // An unclassified failed wait does not prove that commands retired. Keep all
-  // possibly referenced allocations until this failing process exits.
-  try{q.wait_and_throw();}catch(...){
-   std::fprintf(stderr,"queue drain failed; completion unknown; explicit USM release skipped for %zu allocations\n",owned.size());
-   if(std::uncaught_exceptions()==0)throw;
-   return; // Preserve the original exception; main exits with failure.
-  }
+  gpu_stage("final queue drain",[&]{q.wait_and_throw();});
   std::exception_ptr error;
   for(auto p:owned)try{sycl::free(p,q);}catch(...){std::fprintf(stderr,"USM release failed after successful drain\n");if(!error)error=std::current_exception();}
   if(error){if(std::uncaught_exceptions()==0)std::rethrow_exception(error);else std::fprintf(stderr,"teardown failure during original error; result remains failed\n");}
@@ -72,9 +76,10 @@ void initialize(Buffers& d,bool zero,bool cancel){
   if(cancel){value=0.f;if(r==0)value=16777216.f;else if(r==32||r==96)value=1.f;else if(r==64)value=-16777216.f;}
   state[si(r,head,col)]=value;
  }
- d.q.fill(d.as,sentinel,NS+2*G);d.q.fill(d.bs,sentinel,NS+2*G);
- d.q.memcpy(d.as+G,state.data(),NS*sizeof(float));d.q.memcpy(d.bs+G,state.data(),NS*sizeof(float));
- d.q.wait_and_throw();
+ gpu_stage("initialize host transfers",[&]{
+  d.q.fill(d.as,sentinel,NS+2*G);d.q.fill(d.bs,sentinel,NS+2*G);
+  d.q.memcpy(d.as+G,state.data(),NS*sizeof(float));d.q.memcpy(d.bs+G,state.data(),NS*sizeof(float));d.q.wait_and_throw();
+ });
 }
 void prepare(Buffers& d,size_t T,size_t offset,bool cancel){
  require(T>0&&T<=d.capacity,"live input bound");
@@ -92,11 +97,13 @@ void prepare(Buffers& d,size_t T,size_t offset,bool cancel){
  }
  for(int col=0;col<128;++col)gamma[col]=cancel?1.f:1.f+float(col%17)*.002f;
  // Allocate guards at the live end, and keep unused capacity as a checked sentinel tail.
- d.q.fill(d.ay,sentinel,d.capacity*6144+2*G);d.q.fill(d.by,sentinel,d.capacity*6144+2*G);d.q.fill(d.ah,half_sentinel,d.capacity*6144+2*G);d.q.fill(d.bh,half_sentinel,d.capacity*6144+2*G);
- d.q.memcpy(d.h,h.data(),h.size()*4);d.q.memcpy(d.g,gate.data(),gate.size()*4);d.q.memcpy(d.b,beta.data(),beta.size()*4);d.q.memcpy(d.z,z.data(),z.size()*4);d.q.memcpy(d.gamma,gamma.data(),128*4);d.q.wait_and_throw();
+ gpu_stage("prepare host transfers",[&]{
+  d.q.fill(d.ay,sentinel,d.capacity*6144+2*G);d.q.fill(d.by,sentinel,d.capacity*6144+2*G);d.q.fill(d.ah,half_sentinel,d.capacity*6144+2*G);d.q.fill(d.bh,half_sentinel,d.capacity*6144+2*G);
+  d.q.memcpy(d.h,h.data(),h.size()*4);d.q.memcpy(d.g,gate.data(),gate.size()*4);d.q.memcpy(d.b,beta.data(),beta.size()*4);d.q.memcpy(d.z,z.data(),z.size()*4);d.q.memcpy(d.gamma,gamma.data(),128*4);d.q.wait_and_throw();
+ });
 }
 void floats(Buffers& d,float* a,float* b,size_t live,size_t allocated,const char* label){
- std::vector<float> x(allocated+2*G),y(x.size());d.q.memcpy(x.data(),a,x.size()*4);d.q.memcpy(y.data(),b,y.size()*4);d.q.wait_and_throw();
+ std::vector<float> x(allocated+2*G),y(x.size());gpu_stage("float receive",[&]{d.q.memcpy(x.data(),a,x.size()*4);d.q.memcpy(y.data(),b,y.size()*4);d.q.wait_and_throw();});
  size_t different=0,bounds=0;bool finite=true;
  for(size_t i=0;i<x.size();++i){if(i<G||i>=G+live)bounds+=x[i]!=sentinel||y[i]!=sentinel;else{different+=std::bit_cast<uint32_t>(x[i])!=std::bit_cast<uint32_t>(y[i]);finite=finite&&std::isfinite(x[i])&&std::isfinite(y[i])&&x[i]!=sentinel&&y[i]!=sentinel;}}
  if(different||bounds||!finite)std::fprintf(stderr,"FAIL %s different=%zu guards=%zu finite=%d\n",label,different,bounds,finite);
@@ -104,43 +111,48 @@ void floats(Buffers& d,float* a,float* b,size_t live,size_t allocated,const char
 }
 void compare(Buffers& d,size_t T){
  floats(d,d.as,d.bs,NS,NS,"state");floats(d,d.ay,d.by,T*6144,d.capacity*6144,"FP32y");
- std::vector<uint16_t> x(d.capacity*6144+2*G),y(x.size());d.q.memcpy(x.data(),d.ah,x.size()*2);d.q.memcpy(y.data(),d.bh,y.size()*2);d.q.wait_and_throw();
+ std::vector<uint16_t> x(d.capacity*6144+2*G),y(x.size());gpu_stage("half receive",[&]{d.q.memcpy(x.data(),d.ah,x.size()*2);d.q.memcpy(y.data(),d.bh,y.size()*2);d.q.wait_and_throw();});
  size_t different=0,bounds=0;bool finite=true;for(size_t i=0;i<x.size();++i){if(i<G||i>=G+T*6144)bounds+=x[i]!=half_sentinel||y[i]!=half_sentinel;else{different+=x[i]!=y[i];finite=finite&&(x[i]&0x7c00)!=0x7c00&&(y[i]&0x7c00)!=0x7c00&&x[i]!=half_sentinel&&y[i]!=half_sentinel;}}
  require(different==0&&bounds==0&&finite,"full half bitwise/finite/guard gate");
 }
 void empty_device(Buffers& d){
  prepare(d,1,0,false);
- std::vector<float> before(NS+2*G),after(before.size());d.q.memcpy(before.data(),d.bs,before.size()*4);d.q.wait_and_throw();
+ std::vector<float> before(NS+2*G),after(before.size());gpu_stage("empty before snapshot",[&]{d.q.memcpy(before.data(),d.bs,before.size()*4);d.q.wait_and_throw();});
  strata::prefill::GdnQuadReport report;
- bool empty=strata::prefill::gdn_recurrence_quad_variant(d.bs+G,nullptr,nullptr,nullptr,nullptr,nullptr,1e-6f,d.by+G,d.bh+G,0,&d.q,0,&report);
+ bool empty=gpu_stage("device empty candidate",[&]{return strata::prefill::gdn_recurrence_quad_variant(d.bs+G,nullptr,nullptr,nullptr,nullptr,nullptr,1e-6f,d.by+G,d.bh+G,0,&d.q,0,&report);});
  require(empty&&report.status==strata::prefill::GdnQuadReport::Status::Empty,"device empty contract");
- d.q.memcpy(after.data(),d.bs,after.size()*4);d.q.wait_and_throw();require(!std::memcmp(before.data(),after.data(),before.size()*4),"empty candidate changed full state bits");
+ gpu_stage("state after snapshot",[&]{d.q.memcpy(after.data(),d.bs,after.size()*4);d.q.wait_and_throw();});require(!std::memcmp(before.data(),after.data(),before.size()*4),"empty candidate changed full state bits");
  floats(d,d.by,d.by,0,d.capacity*6144,"empty FP32 output");
- std::vector<uint16_t> half(d.capacity*6144+2*G);d.q.memcpy(half.data(),d.bh,half.size()*2);d.q.wait_and_throw();require(std::all_of(half.begin(),half.end(),[](auto v){return v==half_sentinel;}),"empty candidate changed half output");
+ std::vector<uint16_t> half(d.capacity*6144+2*G);gpu_stage("sentinel half receive",[&]{d.q.memcpy(half.data(),d.bh,half.size()*2);d.q.wait_and_throw();});require(std::all_of(half.begin(),half.end(),[](auto v){return v==half_sentinel;}),"empty candidate changed half output");
  std::printf("PASS empty_device full_state_fnv=%llu candidate_calls=0 norm_calls=0\n",(unsigned long long)fnv(before.data(),before.size()*4));
 }
 void call(Buffers& d,size_t T,size_t prefix,bool cancel,bool force_deny=false){
  prepare(d,T,prefix,cancel);strata::prefill::GdnQuadReport report;
  size_t candidate_calls=0,legacy_fallback_calls=0;
  // Forced denial has its own device snapshot gate before any explicit legacy fallback.
- std::vector<float> before;if(force_deny){before.resize(NS+2*G);d.q.memcpy(before.data(),d.bs,before.size()*4);d.q.wait_and_throw();}
- bool selected=strata::prefill::gdn_recurrence_quad_variant(d.bs+G,d.h,d.g,d.b,d.z,d.gamma,1e-6f,d.by+G,d.bh+G,int64_t(T),&d.q,0,&report,force_deny);
+ std::vector<float> before;if(force_deny){before.resize(NS+2*G);gpu_stage("denied before snapshot",[&]{d.q.memcpy(before.data(),d.bs,before.size()*4);d.q.wait_and_throw();});}
+ bool selected=gpu_stage("candidate recurrence submission",[&]{return strata::prefill::gdn_recurrence_quad_variant(d.bs+G,d.h,d.g,d.b,d.z,d.gamma,1e-6f,d.by+G,d.bh+G,int64_t(T),&d.q,0,&report,force_deny);});
  if(!selected&&!force_deny)std::fprintf(stderr,"DENIED exact_quad reason=%s compiledSG=%u deviceWG=%zu kernelWG=%zu\n",report.reason,report.compiled_subgroup,report.device_max_workgroup,report.kernel_max_workgroup);
  if(force_deny){
   require(!selected&&report.status==strata::prefill::GdnQuadReport::Status::Denied,"denial submitted candidate");
-  std::vector<float> after(before.size());d.q.memcpy(after.data(),d.bs,after.size()*4);d.q.wait_and_throw();require(!std::memcmp(before.data(),after.data(),before.size()*4),"denied candidate changed full state bits");
+  std::vector<float> after(before.size());gpu_stage("state after snapshot",[&]{d.q.memcpy(after.data(),d.bs,after.size()*4);d.q.wait_and_throw();});require(!std::memcmp(before.data(),after.data(),before.size()*4),"denied candidate changed full state bits");
   // Output allocations must remain entirely sentinel until caller chooses fallback.
   floats(d,d.by,d.by,0,d.capacity*6144,"denied FP32 output");
-  std::vector<uint16_t> half(d.capacity*6144+2*G);d.q.memcpy(half.data(),d.bh,half.size()*2);d.q.wait_and_throw();require(std::all_of(half.begin(),half.end(),[](auto v){return v==half_sentinel;}),"denied candidate changed half output");
-  strata::prefill::gdn_recurrence_pipeline_reference(d.bs+G,d.h,d.g,d.b,d.z,d.gamma,1e-6f,d.by+G,d.bh+G,int64_t(T),&d.q);++legacy_fallback_calls;
+  std::vector<uint16_t> half(d.capacity*6144+2*G);gpu_stage("sentinel half receive",[&]{d.q.memcpy(half.data(),d.bh,half.size()*2);d.q.wait_and_throw();});require(std::all_of(half.begin(),half.end(),[](auto v){return v==half_sentinel;}),"denied candidate changed half output");
+  gpu_stage("denied legacy fallback",[&]{strata::prefill::gdn_recurrence_pipeline_reference(d.bs+G,d.h,d.g,d.b,d.z,d.gamma,1e-6f,d.by+G,d.bh+G,int64_t(T),&d.q);d.q.wait_and_throw();});++legacy_fallback_calls;
  }else{require(selected&&report.status==strata::prefill::GdnQuadReport::Status::Submitted,"candidate unavailable: this is not candidate parity PASS");++candidate_calls;}
- strata::prefill::gdn_recurrence_pipeline_reference(d.as+G,d.h,d.g,d.b,d.z,d.gamma,1e-6f,d.ay+G,d.ah+G,int64_t(T),&d.q);
- d.q.wait_and_throw();compare(d,T);
+ gpu_stage("reference recurrence and final drain",[&]{strata::prefill::gdn_recurrence_pipeline_reference(d.as+G,d.h,d.g,d.b,d.z,d.gamma,1e-6f,d.ay+G,d.ah+G,int64_t(T),&d.q);d.q.wait_and_throw();});compare(d,T);
  std::printf("PASS call T=%zu prefix=%zu pattern=%s candidate=%zu fallback=%zu compiledSG=%u deviceWG=%zu kernelWG=%zu private_known=%d private=%zu spill_known=%d spill=%zu reason=%s\n",T,prefix,cancel?"ordered_cancellation":"48head_directed",candidate_calls,legacy_fallback_calls,report.compiled_subgroup,report.device_max_workgroup,report.kernel_max_workgroup,report.private_known,report.private_bytes,report.spill_known,report.spill_bytes,report.reason);std::fflush(stdout);
 }
 size_t decimal(const char* text){require(text&&*text,"empty argument");size_t n=0;for(const char* p=text;*p;++p){require(*p>='0'&&*p<='9',"nondecimal argument");require(n<=262144/10,"argument overflow/bound");n=n*10+size_t(*p-'0');require(n<=262144,"argument bound");}return n;}
 } // namespace
 int main(int argc,char** argv){try{
+ if(argc==2&&std::string(argv[1])=="--host-fail-stop-probe"){
+  struct HostLifetimeProbe {~HostLifetimeProbe(){std::fputs("FAIL host fail-stop probe unwound\n",stderr);}} probe;
+  std::vector<float> endpoint(8,1.f);
+  gpu_stage("host injected exception",[&]{require(endpoint[0]==1.f,"probe endpoint");throw std::runtime_error("injected host-only exception; no GPU API");});
+  require(false,"host fail-stop probe returned");
+ }
  if(argc==2&&std::string(argv[1])=="--host-only"){
   early_contract();
   std::puts("PASS host-only empty/denial/negative/ordered-partial contracts; queue_lookup=false GPU_submission=false");
@@ -148,7 +160,7 @@ int main(int argc,char** argv){try{
   return 0;
  }
  size_t total=0,chunk=2048;
- if(argc!=1){require(argc==5&&std::string(argv[1])=="--prefix"&&std::string(argv[3])=="--chunk","usage: gdn_quad_parity [--host-only | --prefix 32768|262144 --chunk 1..2048]");total=decimal(argv[2]);chunk=decimal(argv[4]);require((total==32768||total==262144)&&chunk>0&&chunk<=2048&&(total+chunk-1)/chunk<=2048,"bounded prefix/chunk admission");}
+ if(argc!=1){require(argc==5&&std::string(argv[1])=="--prefix"&&std::string(argv[3])=="--chunk","usage: gdn_quad_parity [--host-only | --host-fail-stop-probe | --prefix 32768|262144 --chunk 1..2048]");total=decimal(argv[2]);chunk=decimal(argv[4]);require((total==32768||total==262144)&&chunk>0&&chunk<=2048&&(total+chunk-1)/chunk<=2048,"bounded prefix/chunk admission");}
  early_contract();auto& q=*strata::q_of(nullptr);require(q.has_property<sycl::property::queue::in_order>(),"parity requires same in-order queue");
  std::printf("device=%s prefix=%zu chunk_cap=%zu numerical_gate=bitwise model=false performance=false\n",q.get_device().get_info<sycl::info::device::name>().c_str(),total,chunk);
  if(total){Buffers d(q,chunk);initialize(d,false,false);size_t prefix=0;while(prefix<total){size_t live=std::min(chunk,total-prefix);call(d,live,prefix,false);prefix+=live;}require(prefix==total,"prefix carry length");}
