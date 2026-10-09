@@ -1,0 +1,54 @@
+Conditional GDN WY equation oracle v1 — source-only handoff
+Date2026-10-10. UNEXECUTED. No adoption, tolerance change, production/GPU implementation.
+
+Assigned isolated worktree:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-gdn-wy-equation-oracle-20261010
+Root-supplied base66aaec3a66ad9ed12e6d042cffe743c47e364432. No Git action was run. Only new assigned three source/README files and this report written; production kernels, dispatch, CPU service/calibrationv1, readers/collectors/receipts/registry untouched.
+
+Files/SHA256/bytes:
+sycl/tools/gdn-wy-equation-oracle/CMakeLists.txt
+e0d8b41e23da215248e517258bb91f7046ce7dc32e29b324c82f1caa96186627 877
+sycl/tools/gdn-wy-equation-oracle/gdn_wy_equation_oracle.cpp
+335bcdd934fa548385ddd9b20b2c5e4f200574da8a9d104332efd70cbd64cfd4 14824
+sycl/tools/gdn-wy-equation-oracle/README.md
+352280fec19875502e13bed20f9034f2a45cda6af7892673a3385dba5ebc4114 9209
+
+Read R33gdn-ordinal7-repeat-source; R35repeat-gdn-boundary-contracts; R36gdn-kernel-reduction-determinism; R81prefill-transfer-reuse-external-new-candidates; completedR82gdn-chunkwise-wy-config-parity-and-workspace. R82 actual source-read hash6e19978d99197a1bd91b0ea6630adf3046978a7e2b46693c6980478eb59f1006 matches supplied. Actual frozen kernels.dp.cpp SHA3a5077a284048b4fde24a4146e3b02e8d84d259480f755e4b0e94cfc52e54f1c matches review. Latest registry-v47/rootdocs3acff3b3 identity is supplied by root; not rewritten. Worktree AGENTS read; explicit source-only task takes precedence over its build/Git contribution workflow. Researcher/GPU-feasibility review remains separate, no agent request/delegation/intervention.
+
+Independent equations and implementations
+
+Input is post-conv Q/K/V, natural-log gate g and already-sigmoid beta, no weight-derived gates or beta re-sigmoid. Scalar reference independently computes p=S_old^Tk, d=beta(v-exp(g)p), S_new=exp(g)S_old+k d^T, o=S_new^Tq/sqrt(K) tokenwise. No call into production or WY from scalar. It uses ordinary ordered sums and noncontracted operations.
+
+WY independently builds causal unit-diagonal L_ij=beta_i exp(G_i-G_j)(k_i^Tk_j), j<i, where G is chunk cumulative log gate. Forward-substitute L U=diag(beta)V and L W=diag(beta exp(G))K BEFORE using incoming state. Compute D=U-W S_start. The expanded recurrence yields output_i=(exp(G_i)S_start^Tq_i + sum_j<=i exp(G_i-G_j)(q_i^Tk_j)D_j)/sqrt(K); S_end=exp(G_last)S_start+sum_j live exp(G_last-G_j)k_j D_j^T. README derives L by collecting previous deltas on left. No scalar token-state recurrence is hidden in WY; only final state is published/carries to next live chunk. Causal QK matrix is computed once perhead/chunk and reused across value columns, preventing expensive repeated Kdots in fullwidthCPU controls. Matrices processed onehead at a time; no all-token/chunk state retention.
+
+State layout [key_row,valuehead,valuecol], Q/K head=valuehead%16 for all48valueheads. Wrong contiguous valuehead/3 mapping exists ONLY in explicit negative scalar control; it must differ by>1e-6 on distinct-head controlledfixture. That discrimination threshold is not a model tolerance.
+
+Fixtures and finite scope
+
+100 positive cases +1negative:
+For C1/8/16/32/64, K4/V3 all16/48heads, initialzero/nonzero; lengths0,C-1,C,C+1,2C+1 deduplicatedatC1. T129alsoadded forC1/8/16/32; C64alreadyT129. Includes129single-token handoffs, partial tails and emptyinputidentity. Beta0decay/g0/beta1/beta0g0 controls at2C+1, bothinitialkinds. Independent beta0 analytical finalstate exp(sumg)*Sinitial; beta0/g0 exactlysamevalues. Two literal K1/V1/T3 C1/8 controls q=k1/g=-ln2/beta.5/initial3/v2,4,-1; expected1.75,2.4375,.109375 writtenliteral. Two andonlytwo K128/V128 full16/48head representatives: T17C16nonzero, T65C64zero. No executedT>129, no model/capture/payload, no actualT262144run.
+
+Synthetic queries/keys use deterministic finite normalized integer formulas; gates boundednegative, beta0..1; initialization bounded. Inputdtype float is cast from same generateddouble, not capturedproductioninput. Currentchunk input/output only; paddedinputrowsNaN, paddedoutputrowsfinite sentinel. Eachbuffer has8sentinels perboundary. Guardedallocation checks cap BEFORE allocation; fixture bounds and fixedprogram ensure totalworkingmemory conservatively<128MiB, <1GiB. All live outputs/currentstates/WYscratch finite. Inputtails/guards untouched; outputtails/guards untouched; token/head updatecount=T*48 andchunkhandoffcount=ceil(T/C). Entirecurrentstate compared eachhandoff, notonlysampleoutputs.
+
+Double scalar/WY output andstate bounded perhandoff by max_abs_error<=1e-10*(1+max_abs_reference). This is an explicit fixture-specific mathematical regression bound for these normalized finite synthetic shapes, not pinnedexistingStrata numerical acceptance or adoption tolerance. Literal and analytical controls constrain scalar reference independently. FP32scalar/WY state/output deltas anddouble/floatoutput deltas characterized, NO FP32numerical parity acceptance. Finite/sentinelchecks apply toFP32. No statistical/timing/performance metrics.
+
+Actual production arithmetic comparison
+
+Inspected gdn_rec_cols_pipe_kernel: head%HK, [row,head,col]state, liveTloop; native::exp(gate); projection four32-row FMApartials, left-orderedred0+red1+red2+red3; delta=(v-g*kv)*beta; stateFMA(g,s,k*delta); four32-row FMAoutputpartials; sum*sycl::rsqrt(128). CPUFP32reference usesstandardexp/sqrt, ordinarynoncontractedmultiply/add, oneK-rowordered reduction, syntheticcastinputs. Therefore it is NOT productionbitwiseemulation. Exp/rsqrtapproximation, FMA, grouping eachcanchangebits. WY also reorders decayproducts/prefixlogs and triangular/matrix reductions. No claim currentSYCL/FP16postnorm/modeloutputs match.
+
+Conv/history/gateconstruction/QKnormalization/postRMSnorm gamma+sigmoid(z)/FP16/projection/residualMoE outsideoracle. No experimentalGPUdispatch/library port, state/session ownership change or envconfig change. All-head/all66savedstate/logits/logprob/IDs/MTP/repeat/physical262144 modelgates remain required byrootindependentprotocol. Original C/D/r5 rejection and currentPphysicalqualification unchanged.
+
+Physical arithmetic counts, not allocation or runtime
+
+PHYSICAL_COUNTS prints T262144, chunks, oneFP32state3145728B, oneheadscratch4*(2C²+C*K+2C*V+C), chunkinput4*(2C*16*K+C*48*V+2C*48), chunkoutput4*C*48*V, andhypotheticalallchunkssavedstate=chunks*3145728 forC1/8/16/32/64. AtC16/32/64savedstates48/24/12GiB; noneallocated. Oneheadscratch includesL+causalQK+W+U+D+G. Excludesguards/comparisoncopies/allocator/backend/existingproductionTbuffers/conv/history/fullmodel/launches. This isnotGPUpeakfeasibility, launchthroughputproof orspeedprediction. RootGPUresearchremainsseparate.
+
+Build/output/root recipe
+
+Portable standaloneC++20/noextensions; no parentSYCL, ggml, productionTU or model/library/device dependency. GNU/Clang/IntelLLVM -fno-fast-math -ffp-contract=off; MSVC /fp:strict; othercompilerrefusespendingreview. Common fastmath/SYCLglobalflagsrefused; rootalsoauditsactualconfig-specificflags/compiler/link/binarypins.
+WORACLE assignedWT; ORACLE_BUILD newisolateddir; PRIVATE_RUN newprivateout:
+cmake -S "$WORACLE/sycl/tools/gdn-wy-equation-oracle" -B "$ORACLE_BUILD" -DCMAKE_BUILD_TYPE=Release
+cmake --build "$ORACLE_BUILD" --target gdn_wy_equation_oracle --parallel 2
+"$ORACLE_BUILD/gdn_wy_equation_oracle" > "$PRIVATE_RUN/oracle.csv" 2> "$PRIVATE_RUN/oracle.stderr"
+No CLIinputfiles or unboundedruntimeparameters; extraargsrefused. Rootfirstsource/mathreview thenbuild/CPU/sanitizerqualification under sharedlock. Suggestedwall120s/RSSAS256MiB/output1MiB each/finiteCPUNOFILFSize (sanitizerASrequirementsseparateexplicitownerbudget). Agent didNOTconfigure/compile/import/syntaxcheck/run/test/profile/queryCPU/GPU/model/runtime/Git/cleanup. Build/API/mathematicalexecutionPASS UNKNOWN, source-only.
+
+CSV META;100CASEpositive rows withgeometry/chunks/livecount/doubleoutputstateerrors/floatoutputstateerrors/doublefloatoutputerrors/analyticerror; NEGATIVEwrongmap rejected;5PHYSICAL_COUNTS;RESULTsynthetic_math_pass. Normalexceptions exit1, success0requiresfinalflushgood; ownermustverifychildexit0+completeoutputs ratherthantrustRESULTalone. SourceMAX_BYTES isperbuffercap withboundedknownaggregate, notRSSguarantee. Parentownsclosedreceipt/fault/closure/interpretation/retention. Keepcompactsource/commands/environment/caseerrors/result; nomodeltensors/rawcapture consumer orcleanupcreated. Sourcecodeshallnotbeadopted asGPUkernelonthissyntheticmathresult.

@@ -1,0 +1,490 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "controller_sha256": "f186da9f05dbc5cd635e3b64f5ba2dbd65256d0c289b111de307208574f031a4",
+  "source_pins": {
+    "CMakeLists.txt": "e0d8b41e23da215248e517258bb91f7046ce7dc32e29b324c82f1caa96186627",
+    "gdn_wy_equation_oracle.cpp": "335bcdd934fa548385ddd9b20b2c5e4f200574da8a9d104332efd70cbd64cfd4",
+    "README.md": "352280fec19875502e13bed20f9034f2a45cda6af7892673a3385dba5ebc4114"
+  },
+  "supersedes_failed_controller_receipt_sha256": "6278f13420e7e5585e9c4d0abd7919a74045a5a9bae75070f09239278608899d",
+  "controller_change": "Compile-only FSIZE32MiB allows sanitized assembly/object; runtime/text/math bounds unchanged; original FSIZE failure preserved",
+  "compiler_path": "/usr/bin/g++",
+  "compiler_sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769",
+  "commands": [
+    {
+      "label": "compiler",
+      "argv": [
+        "/usr/bin/g++",
+        "--version"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "AS_bytes": 8589934592,
+      "RSS_group_bytes": 1610612736,
+      "wall_seconds": 120,
+      "CPU_each_seconds": [
+        120,
+        121
+      ],
+      "FSIZE_each_bytes": 2097152,
+      "NOFILE": 256,
+      "CORE_bytes": 0,
+      "owner": {
+        "pid": 2960003,
+        "pgid": 2960003,
+        "start_ticks": 27447431
+      },
+      "peak_group_rss_bytes": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 0.15865251200739294,
+      "stdout_sha256": "59d1cbef41d4ae78d5063d525b7aa13d18dc0493ea00537efc19b2ee398cb5a8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "release-configure",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-gdn-wy-equation-oracle-20261010/sycl/tools/gdn-wy-equation-oracle",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-gdn-wy-equation-oracle-20261010/build-gdn-wy-oracle-release-v2",
+        "-G",
+        "Ninja",
+        "-DCMAKE_CXX_COMPILER=/usr/bin/g++",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DCMAKE_BUILD_TYPE=Release"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "AS_bytes": 8589934592,
+      "RSS_group_bytes": 1610612736,
+      "wall_seconds": 120,
+      "CPU_each_seconds": [
+        120,
+        121
+      ],
+      "FSIZE_each_bytes": 2097152,
+      "NOFILE": 256,
+      "CORE_bytes": 0,
+      "owner": {
+        "pid": 2960011,
+        "pgid": 2960011,
+        "start_ticks": 27447447
+      },
+      "peak_group_rss_bytes": 26497024,
+      "exit_code": 0,
+      "elapsed_seconds": 1.625666493026074,
+      "stdout_sha256": "07c89a570526e44ed9daa4f103f3a00e811781845cd1ed8f5e6ccbb49b002fbb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "release-build",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-gdn-wy-equation-oracle-20261010/build-gdn-wy-oracle-release-v2",
+        "--target",
+        "gdn_wy_equation_oracle",
+        "--parallel",
+        "2"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "AS_bytes": 8589934592,
+      "RSS_group_bytes": 1610612736,
+      "wall_seconds": 120,
+      "CPU_each_seconds": [
+        120,
+        121
+      ],
+      "FSIZE_each_bytes": 33554432,
+      "NOFILE": 256,
+      "CORE_bytes": 0,
+      "owner": {
+        "pid": 2960112,
+        "pgid": 2960112,
+        "start_ticks": 27447609
+      },
+      "peak_group_rss_bytes": 16461824,
+      "exit_code": 0,
+      "elapsed_seconds": 2.9219564389786683,
+      "stdout_sha256": "2fb5456657f2d86c16f30cfc32a69a5a30bab7c2a3c8c24fccfebde974ffc371",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "release-imports",
+      "argv": [
+        "/usr/bin/readelf",
+        "-d",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-gdn-wy-equation-oracle-20261010/build-gdn-wy-oracle-release-v2/gdn_wy_equation_oracle"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "AS_bytes": 8589934592,
+      "RSS_group_bytes": 1610612736,
+      "wall_seconds": 120,
+      "CPU_each_seconds": [
+        120,
+        121
+      ],
+      "FSIZE_each_bytes": 2097152,
+      "NOFILE": 256,
+      "CORE_bytes": 0,
+      "owner": {
+        "pid": 2960317,
+        "pgid": 2960317,
+        "start_ticks": 27447902
+      },
+      "peak_group_rss_bytes": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 0.1544683719985187,
+      "stdout_sha256": "39eff9354d60a8adb8016cf72505c296377e348c8b2ea434da5c9e9e01cdc608",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "release-fixtures",
+      "argv": [
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-gdn-wy-equation-oracle-20261010/build-gdn-wy-oracle-release-v2/gdn_wy_equation_oracle"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "AS_bytes": 536870912,
+      "RSS_group_bytes": 536870912,
+      "wall_seconds": 120,
+      "CPU_each_seconds": [
+        120,
+        121
+      ],
+      "FSIZE_each_bytes": 2097152,
+      "NOFILE": 256,
+      "CORE_bytes": 0,
+      "owner": {
+        "pid": 2960324,
+        "pgid": 2960324,
+        "start_ticks": 27447917
+      },
+      "peak_group_rss_bytes": 39452672,
+      "exit_code": 0,
+      "elapsed_seconds": 3.3610820510075428,
+      "stdout_sha256": "b84eb8dce3aeda20b1658b9737fa0cf0feca2b3c5778fe1bb7dfaac3794d3ae2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "asan-ubsan-configure",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-gdn-wy-equation-oracle-20261010/sycl/tools/gdn-wy-equation-oracle",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-gdn-wy-equation-oracle-20261010/build-gdn-wy-oracle-asan-ubsan-v2",
+        "-G",
+        "Ninja",
+        "-DCMAKE_CXX_COMPILER=/usr/bin/g++",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DCMAKE_CXX_FLAGS=-O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer",
+        "-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=address,undefined"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "AS_bytes": 8589934592,
+      "RSS_group_bytes": 1610612736,
+      "wall_seconds": 120,
+      "CPU_each_seconds": [
+        120,
+        121
+      ],
+      "FSIZE_each_bytes": 2097152,
+      "NOFILE": 256,
+      "CORE_bytes": 0,
+      "owner": {
+        "pid": 2960527,
+        "pgid": 2960527,
+        "start_ticks": 27448254
+      },
+      "peak_group_rss_bytes": 37240832,
+      "exit_code": 0,
+      "elapsed_seconds": 2.1420612710062414,
+      "stdout_sha256": "ed0f5283cff8096595b8b9258e4c64c3cbb7009e8da0c7b544d87a4d6c40412a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "asan-ubsan-build",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-gdn-wy-equation-oracle-20261010/build-gdn-wy-oracle-asan-ubsan-v2",
+        "--target",
+        "gdn_wy_equation_oracle",
+        "--parallel",
+        "2"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "AS_bytes": 8589934592,
+      "RSS_group_bytes": 1610612736,
+      "wall_seconds": 120,
+      "CPU_each_seconds": [
+        120,
+        121
+      ],
+      "FSIZE_each_bytes": 33554432,
+      "NOFILE": 256,
+      "CORE_bytes": 0,
+      "owner": {
+        "pid": 2960658,
+        "pgid": 2960658,
+        "start_ticks": 27448468
+      },
+      "peak_group_rss_bytes": 16367616,
+      "exit_code": 0,
+      "elapsed_seconds": 4.003465093031991,
+      "stdout_sha256": "2fb5456657f2d86c16f30cfc32a69a5a30bab7c2a3c8c24fccfebde974ffc371",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "asan-ubsan-imports",
+      "argv": [
+        "/usr/bin/readelf",
+        "-d",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-gdn-wy-equation-oracle-20261010/build-gdn-wy-oracle-asan-ubsan-v2/gdn_wy_equation_oracle"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "AS_bytes": 8589934592,
+      "RSS_group_bytes": 1610612736,
+      "wall_seconds": 120,
+      "CPU_each_seconds": [
+        120,
+        121
+      ],
+      "FSIZE_each_bytes": 2097152,
+      "NOFILE": 256,
+      "CORE_bytes": 0,
+      "owner": {
+        "pid": 2960786,
+        "pgid": 2960786,
+        "start_ticks": 27448868
+      },
+      "peak_group_rss_bytes": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 0.16526065103244036,
+      "stdout_sha256": "3f5413faf75075670084d626916472c273fbc0fa37badf8620c5fa27a69c4a50",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "asan-ubsan-fixtures",
+      "argv": [
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-gdn-wy-equation-oracle-20261010/build-gdn-wy-oracle-asan-ubsan-v2/gdn_wy_equation_oracle"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "AS_bytes": null,
+      "RSS_group_bytes": 536870912,
+      "wall_seconds": 120,
+      "CPU_each_seconds": [
+        120,
+        121
+      ],
+      "FSIZE_each_bytes": 2097152,
+      "NOFILE": 256,
+      "CORE_bytes": 0,
+      "owner": {
+        "pid": 2960792,
+        "pgid": 2960792,
+        "start_ticks": 27448885
+      },
+      "peak_group_rss_bytes": 174325760,
+      "exit_code": 0,
+      "elapsed_seconds": 6.431361651979387,
+      "stdout_sha256": "b84eb8dce3aeda20b1658b9737fa0cf0feca2b3c5778fe1bb7dfaac3794d3ae2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "cleanup": [],
+  "survivors": [],
+  "started_utc": "2026-10-09T22:26:35.201025+00:00",
+  "scope": "Double synthetic GDN/WY identity and finite FP32 characterization; no production emulation/model parity/performance",
+  "gpu_work_submitted": false,
+  "model_opened": false,
+  "inference_run": false,
+  "performance_eligible": false,
+  "adopted": false,
+  "full_lifecycle_passed": false,
+  "variants": {
+    "release": {
+      "binary_sha256": "1b17dfe09de9d5281a3dbb589d0a421c04f36f8ed9432f48e7e081594339b17c",
+      "binary_bytes": 98296,
+      "compile_commands_sha256": "93541863644baa797fb0c0f84dfebe55e9be28a8e85e7fd58d65a5118a18e3b4",
+      "fixture_stdout_sha256": "b84eb8dce3aeda20b1658b9737fa0cf0feca2b3c5778fe1bb7dfaac3794d3ae2",
+      "positive_cases": 100,
+      "negative_wrong_head_map_discriminated": true,
+      "max_double_output_abs": 9.992007221626409e-16,
+      "max_double_state_abs": 1.5543122344752192e-15,
+      "max_float_output_abs": 5.960464477539062e-07,
+      "max_float_state_abs": 9.834766387939453e-07,
+      "AS_note": "512MiB AS and RSS",
+      "physical_counts_only": [
+        [
+          "PHYSICAL_COUNTS",
+          "262144",
+          "1",
+          "262144",
+          "3145728",
+          "1548",
+          "41344",
+          "24576",
+          "824633720832"
+        ],
+        [
+          "PHYSICAL_COUNTS",
+          "262144",
+          "8",
+          "32768",
+          "3145728",
+          "12832",
+          "330752",
+          "196608",
+          "103079215104"
+        ],
+        [
+          "PHYSICAL_COUNTS",
+          "262144",
+          "16",
+          "16384",
+          "3145728",
+          "26688",
+          "661504",
+          "393216",
+          "51539607552"
+        ],
+        [
+          "PHYSICAL_COUNTS",
+          "262144",
+          "32",
+          "8192",
+          "3145728",
+          "57472",
+          "1323008",
+          "786432",
+          "25769803776"
+        ],
+        [
+          "PHYSICAL_COUNTS",
+          "262144",
+          "64",
+          "4096",
+          "3145728",
+          "131328",
+          "2646016",
+          "1572864",
+          "12884901888"
+        ]
+      ]
+    },
+    "asan-ubsan": {
+      "binary_sha256": "ffb03a55368e6c7263114cb3079d75923c41bb9ffb334fba1636f1ea1d904f77",
+      "binary_bytes": 1708584,
+      "compile_commands_sha256": "d0350563aca1af16b6a10e0abd76913703e2d8817b126d6537b8704230b772ed",
+      "fixture_stdout_sha256": "b84eb8dce3aeda20b1658b9737fa0cf0feca2b3c5778fe1bb7dfaac3794d3ae2",
+      "positive_cases": 100,
+      "negative_wrong_head_map_discriminated": true,
+      "max_double_output_abs": 9.992007221626409e-16,
+      "max_double_state_abs": 1.5543122344752192e-15,
+      "max_float_output_abs": 5.960464477539062e-07,
+      "max_float_state_abs": 9.834766387939453e-07,
+      "AS_note": "ASan requires large sparse shadow virtual mapping; AS unlimited, fixed fixture bounds plus512MiB polled RSS and CPU/wall/output caps",
+      "physical_counts_only": [
+        [
+          "PHYSICAL_COUNTS",
+          "262144",
+          "1",
+          "262144",
+          "3145728",
+          "1548",
+          "41344",
+          "24576",
+          "824633720832"
+        ],
+        [
+          "PHYSICAL_COUNTS",
+          "262144",
+          "8",
+          "32768",
+          "3145728",
+          "12832",
+          "330752",
+          "196608",
+          "103079215104"
+        ],
+        [
+          "PHYSICAL_COUNTS",
+          "262144",
+          "16",
+          "16384",
+          "3145728",
+          "26688",
+          "661504",
+          "393216",
+          "51539607552"
+        ],
+        [
+          "PHYSICAL_COUNTS",
+          "262144",
+          "32",
+          "8192",
+          "3145728",
+          "57472",
+          "1323008",
+          "786432",
+          "25769803776"
+        ],
+        [
+          "PHYSICAL_COUNTS",
+          "262144",
+          "64",
+          "4096",
+          "3145728",
+          "131328",
+          "2646016",
+          "1572864",
+          "12884901888"
+        ]
+      ]
+    }
+  },
+  "exit_pin_gate_passed": true,
+  "elapsed_seconds": 21.014485084975604,
+  "finished_utc": "2026-10-09T22:26:56.196299+00:00"
+}
