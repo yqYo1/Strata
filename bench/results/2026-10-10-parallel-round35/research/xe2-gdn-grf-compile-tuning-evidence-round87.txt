@@ -1,0 +1,41 @@
+# Xe2 GDN GRF compile-tuning evidence (round 87)
+
+Status: read-only source/report review; no compile, import, test, runtime, device, GPU, model, Git, cleanup, or source edits were performed. Scope is whether GRF mode warrants a separately isolated comparison for the proposed exact-order SG32 GDN remap. This report is not performance evidence and makes no speed prediction.
+
+## Finding
+
+A GRF comparison is a useful *later* discriminator once the exact-order remap exists and passes its parity gate, but existing evidence does not justify enabling a GRF mode or claiming it will help. No isolated before/after GRF comparison for this GDN route was found in the reviewed source/docs/report registry. Existing `STRATA_GDN_KEYHEAD_TUNED=1` records are not a GRF experiment.
+
+The source already has an experimental per-kernel `sycl::ext::intel::experimental::grf_size<256>` property on the SG16 tuned keyhead kernel (`sycl/src/prefill/kernels.dp.cpp`, around line 2591). It does not apply to the proposed SG32 remap, the default pipeline, or output norm. `sycl/src/prefill/gdn_variant_parity.cpp` reports private-memory and Intel spill-memory resource values for the SG16 tuned keyhead ID; it does not constitute an isolated 256-GRF performance comparison. `docs/INTEL.md` reports the tuned keyhead path at 727 versus 788 tok/s on B70 (about 8% slower), but that is a combined algorithm/layout result, not an isolated GRF-mode result.
+
+## Compiler controls and constraints
+
+The reviewed `sycl/CMakeLists.txt` uses `-fp-model=precise`, defaults subgroup size to 32, and splits device code per kernel. The AOT path targets `spir64_gen` and retains its existing correctly-rounded FP32 divide/sqrt option. No GRF mode is set in CMake. Keep these FP semantics intact in any future comparison; fast math would confound the result and parity.
+
+Intel's experimental `sycl_ext_intel_grf_size` extension provides per-kernel `grf_size<Size>` and `grf_size_automatic` controls for Intel Level Zero/OpenCL. It warns that a larger register allocation may reduce maximum work-group size and trade performance. The extension's current supported-device table does not list BMG/Xe2. Consequently, do not infer support for the installed oneAPI 2026.1.1 / UR 0.12 / B570 stack from the current extension page or from its use elsewhere in the source: first check that installed headers/compiler accept and honor the property on this target. The extension is experimental.
+
+Intel also documents `-ze-opt-large-register-file` (force large GRF broadly) and `-ze-intel-enable-auto-large-GRF-mode` (compiler heuristic). These are broad compiler controls, not clean controls for one candidate kernel; avoid them for an isolated remap decision unless the test explicitly asks about whole-program mode. Prefer a kernel-local property if supported. AOT backend flags and JIT backend options have separate delivery routes; avoid global `IGC_ExtraOCLOptions` for the isolated question.
+
+## Suggested experiment after parity authorization
+
+Use three separately named implementations of the *same* remap arithmetic and SG32 launch contract: default GRF mode, explicit 256 GRF, and automatic mode if supported. Pin subgroup 32 on the candidate kernel, keep launch geometry and FP flags identical, and preserve exact source/build/device/compiler identities. First compare current mapping versus remap-default to answer the mapping question. Then compare remap-default versus each GRF variant to isolate compiler allocation. Capture compile acceptance, generated-kernel identity, latency samples, correctness/parity/fault result, and per-kernel resource data. `unitrace -d` resource output (private and spill memory) and AOT compiler spill warnings are useful; do not treat private-memory size alone as spill bytes. Where needed, preserve an IGC shader/VISA/GenISA dump with the GRF count and kernel identity.
+
+An SG32 lane assignment changes coalescing (four row groups with eight contiguous columns each) while retaining 32 FP32 state values per lane. Therefore mapping and GRF changes must not be combined in one comparison: any observed effect otherwise cannot be attributed to register mode.
+
+## Source identity reviewed
+
+Frozen source worktree: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010`, HEAD `66aaec3a`.
+
+- `sycl/src/prefill/kernels.dp.cpp` SHA-256 `3a5077a284048b4fde24a4146e3b02e8d84d259480f755e4b0e94cfc52e54f1c`
+- `sycl/CMakeLists.txt` SHA-256 `d8fc6c99428f96021c0d986bcad77680dbe66f4fa6a64490166ff58f24e274b1`
+- `docs/INTEL.md` SHA-256 `fba67cee8e9e48c29b2923631de2fa86c32af8562f7847c7f7f24105825a3f26`
+- `sycl/src/prefill/gdn_variant_parity.cpp` SHA-256 `d4ca2e5e428751252033f53038f2d43c1814e8ccedaaa8ac5e0ebccd1992a6e4`
+
+## References
+
+- Intel LLVM experimental extension: https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_intel_grf_size.asciidoc
+- Intel GPU optimization guide, finding kernels with register spills: https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2025-0/finding-kernels-with-register-spills.html
+- Intel Graphics Compiler configuration flags (shader dump controls): https://github.com/intel/intel-graphics-compiler/blob/master/documentation/configuration_flags.md
+- Strata's existing B70 GDN/keyhead notes: frozen `docs/INTEL.md`, lines 643-663.
+
+The installed-package support check and any performance/parity experiment remain open; this evidence screen does not execute them.

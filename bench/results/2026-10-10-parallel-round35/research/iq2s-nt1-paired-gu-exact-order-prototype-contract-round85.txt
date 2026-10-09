@@ -1,0 +1,78 @@
+# IQ2_S NT1 paired Gate/Up exact-order prototype contract (round 85)
+
+## Decision boundary
+
+The concrete pair remains the type-22 (IQ2_S) NT1 Gate/Up row pair: reuse each raw Q8_K activation vector load while preserving two independent GGML row-dot computations and their exact float schedules. This is an application of the already-known paired activation-reuse mechanism in R17, not a new algorithm or a proposed code change. It is unmeasured and not adopted. Proceed to a temporary prototype only if the corrected actual placement/service evidence says this cell merits kernel work. No source was edited, and no build, test, inference, profile, disassembly or model-payload access was performed for this audit.
+
+## Pinned sources
+
+The Strata source is the owner-designated current-role worktree `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010` (revision label `59323e66`). The dependency is `/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned`, pinned in prior reports to ggml commit `3cf03257f219afbe7334045ff7c6a06ac68c627d`.
+
+| File | SHA-256 |
+|---|---|
+| Strata `src/kernels/cpu/native_expert.cpp` | `767f02f33aca4da9fabbe113c50ce1d7cb2aa9f25b4234df59224ec46a5985cd` |
+| Strata `src/kernels/cpu/iq_avx2_rows.inl` | `94da07f977ef20288d65747604f9c3a7a87cba3237f36d216dbb624bddd9be23` |
+| Strata `src/kernels/cpu/iq_avx2.cpp` | `58e9c7e49b8158f698cda59aff06c245f62aaecd33556b1e88e234140890fded` |
+| GGML `ggml/src/ggml-cpu/arch/x86/quants.c` | `3c489fdc77e3ab484a5f188bff9c60c0e9483c951ed65c1a562a04c249d5628e` |
+| GGML `ggml/src/ggml-cpu/ggml-cpu.c` | `7b451e6528cec3bc27bfd812a1314859c92d22a00c2db371d543cde5b7d5ca94` |
+| GGML `ggml/src/ggml-common.h` | `0061131b615c5721fc88a78feeb22c1f8c450f1c2646a317d80796a653bf595c` |
+| GGML `ggml/include/ggml.h` | `12ee71f99db7db9b353bc02b1fbb57c344ee17c01ac5fb7952b41a637a747ea9` |
+
+Pinned source links: [GGML IQ2_S AVX2 dot at the pinned commit](https://github.com/ggml-org/llama.cpp/blob/3cf03257f219afbe7334045ff7c6a06ac68c627d/ggml/src/ggml-cpu/arch/x86/quants.c), [GGML CPU type traits](https://github.com/ggml-org/llama.cpp/blob/3cf03257f219afbe7334045ff7c6a06ac68c627d/ggml/src/ggml-cpu/ggml-cpu.c), and [GGML type enum](https://github.com/ggml-org/llama.cpp/blob/3cf03257f219afbe7334045ff7c6a06ac68c627d/ggml/include/ggml.h).
+
+## Current NT1 path
+
+The pinned enum sets GGML type 22 to IQ2_S (`ggml.h:408-413`), and its CPU trait pairs `ggml_vec_dot_iq2_s_q8_K` with Q8_K activations and `nrows=1` (`ggml-cpu.c:362-366`). Strata's native GU default minimum is two tokens, so NT1 selects `NativeDispatch::Ggml` (`native_expert.cpp:106-164`). That branch fetches the trait's dot function pointer once before its row loop, then calls it independently for Gate and Up for each row/token (`:182-192`). It finishes each output with `(g/(1.f+std::exp(-g)))*u`. Thus the trait lookup is not repeated on every row; the only call-overhead hypothesis is the two per-dot indirect calls for each of the 640 output rows in one expert's GU pair.
+
+The IQ2_S row kernel already present in Strata is an NT-specialized AVX2 path, not the NT1 oracle. Its `Fmt32<22>::K=0.125f` is applied before the block FMA, and `row_dot` uses a different scaling/reduction placement (`iq_avx2.cpp:231-243`, `iq_avx2_rows.inl:31-57`). R83 records why this is not an NT1 bit-exact replacement. Do not lower `STRATA_IQ_MT_MIN` or substitute the NT2 IQ path.
+
+## Exact pinned GGML AVX2 IQ2_S operation schedule
+
+This description is specifically the `#if defined(__AVX2__)` branch of `ggml_vec_dot_iq2_s_q8_K` (`quants.c:3075-3158`). Verify that the actual native build resolves this branch before using it as the operation-level prototype target; the active dot symbol itself remains the executable oracle. `QK_K` is 256 (`ggml-common.h:89`), so each dot consumes ten IQ2_S/Q8_K blocks at the actual hidden width 2560. Each IQ2_S block is 82 bytes: fp16 `d`, 64 `qs` bytes, 8 `qh` bytes and 8 scale bytes (`ggml-common.h:395-402`).
+
+For each of the ten blocks, the AVX2 path does the following, in source order:
+
+1. Compute the scalar block multiplier `d = GGML_CPU_FP16_TO_FP32(x[i].d) * y[i].d`. Read the 8 scale bytes and expand their packed nibbles to odd scales `(2*nibble + 1)` in the ordered 16-bit scale vector. Set `sumi1` and `sumi2` to eight zeroed 32-bit lanes each (`quants.c:3106-3119`).
+2. Iterate `ib32 = 0, 2, 4, 6`. Each iteration loads exactly two 32-byte Q8_K vectors (`q8_1`, `q8_2`). It independently constructs two 256-bit eight-lane IQ grid vectors, `q2_1` and `q2_2`, from eight scalar `iq2s_grid` lookups using each half's `qh` high bits (`:3120-3132`). The two 16-bit sign words for each 32-value portion are expanded with the shuffle masks; `_mm256_cmpeq_epi8` and xor/sub form the signed activation vectors (`:3133-3143`).
+3. `_mm256_maddubs_epi16(q2, signed_q8)` forms packed pairwise products; `_mm256_madd_epi16` applies the independently selected packed scale and produces eight int32 lanes. `p1` updates `sumi1`; `p2` updates `sumi2`, in that order for every `ib32` (`:3145-3152`). These are two independent per-row integer accumulators; do not merge Gate with Up or move scale application across the integer products.
+4. At the end of this 256-element block, add that row's `sumi1+sumi2` vector, convert its eight lanes to float, and update that row's eight-lane `accumf` with exactly one explicit FMA: `accumf = fmadd(set1(d), cvt(sum), accumf)` (`:3154`). The next block repeats and FMA-accumulates into the same eight lanes in increasing block order.
+5. After the final block, perform GGML's exact horizontal tree: `hsum_float_8` adds low/high 128-bit halves lane-wise, then adds the move-high pair, then adds the duplicated odd lane to the scalar low lane (`quants.c:41-49`). Multiply the resulting scalar by `0.125f` after the reduction (`:3158`). Do not move 0.125 into `d`, into the FMA, or into integer scale arithmetic.
+
+The output requirement is bitwise equality per row under the bound build/FP environment, not approximate dot equality. A candidate must also leave the scalar GU finish's evaluation order unchanged. The actual AVX2 build and all compiler options that could affect intrinsic lowering/FMA remain to be recorded by the implementation owner.
+
+## Paired Gate/Up loop mapping
+
+At each expert output index `r`, Gate and Up point at different packed IQ2_S rows (`native_expert.cpp:185-186`) but use the same Q8_K activation block `act[t]` (`:189-190`). The proposed loop may load each raw activation vector once and use that same register as an input to two separate per-row computations:
+
+- Keep separate Gate and Up decoded grid vectors, `qh` interpretation, sign vectors, scale vectors, `sumi1/sumi2`, `accumf`, block multiplier, final eight-lane reduction and scalar output.
+- For one `ib32` portion, load `q8_1` and `q8_2` once. Apply Gate's sign mask and Gate's IQ vector/scale to them, updating only Gate's integer sums; then apply Up's independent sign mask and Up's independent IQ vector/scale to the same raw `q8_1/q8_2`, updating only Up's sums. The signed Q8 vectors themselves cannot be shared because Gate and Up have distinct signs; only the raw activation loads are common.
+- Complete both rows' four `ib32` iterations and ten block-level FMAs without changing either row's within-dot sequence. Their integer and float accumulators must never be combined. Finish each row with a separate copy of the exact GGML horizontal tree and post-reduction `0.125f`, then apply the existing GU formula to the pair.
+
+A source-level upper bound for the narrow reuse is eight 32-byte activation loads per 256-value block per pair instead of sixteen for two separately executed dots; at ten blocks this is 80 versus 160 vector loads per pair. This is an instruction-count hypothesis from the loop structure, not a measured traffic or timing result. The second current row likely finds Q8_K lines in cache, so this does not imply reduced DRAM traffic or an exposed bottleneck. A safe prototype must maintain raw Q8 values live only long enough to consume both rows, while avoiding spills from the two independent decoder/accumulator states.
+
+## Control that isolates indirect-call cost
+
+Before evaluating a fused pair, compare the current NT1 trait-dispatched path with a type-22-only **direct-call-only control**. In the control, the same row/token loops and Gate-then-Up ordering call the same pinned symbol `ggml_vec_dot_iq2_s_q8_K` directly with identical `n`, destination, row pointer, Q8_K activation pointer and stride arguments. Keep the trait path for all other types and do not change dispatch, buffers, quantization, row ownership, or finish expression. The current code obtains the function pointer only once (`native_expert.cpp:182`), so the difference to test is per-dot indirect versus direct call lowering, not per-row trait lookup.
+
+First inspect the current compiler output: if the actual call is already direct/devirtualized, the control has no remaining call-target distinction and should be dropped. If indirect, compare per-row/per-expert results bitwise and compare component times with fixed identical inputs and weights. This control still makes two GGML dot calls and cannot measure the activation-load reuse itself; it identifies whether merely removing indirect call dispatch is worth carrying separately. Compare a paired-row prototype against this direct-call control as well as against the current production path, so function-call removal is not mistakenly credited to shared loads.
+
+## Evidence gates before a production-source implementation
+
+1. **Corrected service exposure.** Wait for the root-owned quiet profiles with distinct single-CPU placement. Confirm GU22 NT1's phase cost on the actual supported build and chosen worker count, along with the equivalent full GU phase denominator. The old CPU0-constrained pool medians do not qualify. No candidate priority or dominance claim follows from routed-job count alone.
+2. **Bounded real-weight and input contract.** If GU22 warrants work, use the already admitted bounded 192-train/192-disjoint-holdout ID cohort from R83, with each selected expert's Gate and Up role extents independently resolved and source hashes retained. At `H=2560`, test all 640 output pairs per selected expert (ten IQ2_S blocks per row). Keep the real weight blobs and activations ephemeral under the artifact policy; retain extent/ID hashes and row results/status, not raw model tensors. The existing calibration's formula-generated Q8_K inputs are characterization controls, not live activation evidence. Use production Q8_K quantization for any separately authorized live-service comparison.
+3. **Bitwise correctness controls.** For each sampled real-weight row, compare Gate dot, Up dot and final GU output independently to the pinned GGML symbol, bitwise. Exercise deterministic finite legal Q8_K controls produced by the production quantizer, including zero, positive/negative and mixed-sign patterns, multiple finite activation scales and block variation; retain exact control definitions and hashes. Test all rows for the admitted real-weight experts before any production dispatch. On any bit mismatch, stop; do not add a tolerance or change GGML/NT dispatch policy.
+4. **Generated-instruction evidence.** On the actual Zen 3 AVX2 toolchain/flags, inspect emitted code for both rows. Confirm the pair loop issues one raw Q8 load per 32-byte segment (not two), keeps Gate/Up sums independent, preserves per-row FMA/reduction order, and adds no helper/indirect call that cancels the expected change. Inspect the hot block/token loop for stack spills/reloads of XMM/YMM state and register-save traffic. R17 notes AVX2 has sixteen architectural YMM registers; source declarations cannot prove that the paired decoder plus both accumulators fit. If any new hot-loop spills appear, or the compiler cannot maintain the required independent schedule, reject or redesign the prototype before production integration.
+5. **Separated timing.** Keep direct-call control and paired candidate on the same prepared weight/input bytes, CPU placement, compiler, warm/cold policy and per-row output stores. Record each per-row/per-expert sample. Compare candidate versus direct-call control on train and disjoint holdout, and separately retain production-pool phase timings. Require a repeatable candidate improvement beyond measurement noise before model-level validation. No isolated component win alone supports a serving or end-to-end speed claim.
+
+The bounded contract is intentionally stricter than a generic paired-row proposal: the proposed benefit is only raw Q8_K load/uop reuse, while the cost risk is two live IQ2_S decoders and two independent sums. Reject for changed bits, hot-loop spills, no distinguishable call/load reduction, no repeatable holdout component benefit, or failed existing model gates. No threshold, exactness policy, tolerance, or default change is proposed.
+
+## Prior decisions and novelty boundary
+
+- R17 `native-gu-zen3-mechanisms-round17.txt` already describes paired Gate/Up activation reuse for multi-token IQ rows, plus the AVX2 register-pressure and L1-resident-input caveats.
+- R21 `zen3-native-gu-cross-engine-round21.txt` distinguishes current row fusion from shared-load reuse and warns source register counts do not prove spills.
+- R33 `native-nt1-ggml-hotpath-round33.txt` establishes that NT1 uses the pinned GGML AVX2 dot, not a scalar fallback, and distinguishes row math from pool scheduling.
+- R59 `actual-small-nt-format-kernel-priority-round59.txt` prioritizes measurement before another kernel; its trace counts are exposure, not row-call time.
+- R70 `iq4nl-nt1-exact-row-candidate-contract-round70.txt` already defines an unmeasured Down20 direct GGML-order helper and the direct-call-only control pattern. R85 applies that control method to GU22 but does not duplicate the Down20 arithmetic proposal.
+- R80 `native-gu-activation-dependent-service-cost-round80.txt` limits synthetic activation conclusions; R83 `native-gu22-down20-nt1-external-kernel-candidates-round83.txt` identifies the IQ2_S NT1 paired-row application as a known-mechanism, unmeasured adaptation and requires no guessed speed or tolerance claim.
+
+The GGML source at the pinned commit is the primary arithmetic reference. No practitioner-blog result is transferred to this CPU path; prior reports' GPU paired-dot examples are pattern context only. The only conclusions here are source-operation facts and falsifiable prototype conditions, not a performance, model-parity or adoption result.

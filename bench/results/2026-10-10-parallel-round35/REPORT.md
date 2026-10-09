@@ -504,3 +504,49 @@ configuration parity and bounded-workspace review. No new transfer-reuse
 proposal survived the active-path audit. Apple figures are not B570 evidence;
 existing numerical acceptance is not relaxed. A fresh live check shows both
 CPU R82 and GDN R82 researchers running at the final v47 snapshot.
+
+
+## Reviewed batch v48 and parallel continuation
+
+Root fully reviewed 22 new Luna reports (CPU82–90, GPU82–94); 187 are now
+completed and archived with model, scope, hashes and status. Every assignment
+shared the whole past-report directory and the then-latest committed v47. At
+this boundary root directly checked two Luna researchers running on distinct
+new CPU single-decoder contract / GPU root-fix and host-lifetime review scopes.
+The separate Sol source-only quad implementation has completed its handoff. These are timestamped live
+snapshots, not permanent claims that a saved assignment is still running.
+
+Main work continued in parallel: a frozen 384 real-weight ID cohort passed
+native/GGML correctness. Root invalidated four original timings because the
+fixture pinned the parent before pool creation and all workers inherited CPU0;
+fixed the order, added actual singleton placement guards, and collected four
+fresh 25-round-per-arm/cohort processes on six distinct physical CPUs. The
+homogeneous 22/20 NT1 microbench tended to favor 18 over 6 tasks, but fit/holdout
+gates did not all pass and production callback shapes differ. No engine task
+policy, route-service cost model or speed claim was adopted. Every original
+status, failure, individual sample, invalidation and bootstrap result is
+committed in native-role worktree af12591c. Root also closed the emitted-ISA
+question by inspecting the exact current IQ2S NT1 linked dot.
+
+A separate independent GDN/WY equation oracle passed 100 synthetic cases in
+both release and ASan/UBSan (GNU 13.3), with unchanged math bounds. The first
+sanitizer compile's per-file limit failure and the corrected compiler-only
+budget remain separate receipts. Source, complete case results, actual compiler
+flags and root supervisors are in oracle commit e4959ac3. This does not emulate
+GPU native math or validate model/full262144 lifecycle. No GPU ran in this batch.
+
+The source-only Sol completed an opt-in SG32 quad pipeline that preserves
+ascending 32-row FMA partials and ordered four-way sums. Root will own its build,
+small logged diagnostic, exact GPU parity, long-prompt/repeat/physical 262144
+and quiet repeated timing gates. Token-block input staging is a separate later
+candidate, not folded into the quad comparison. Existing Strata keyhead already
+stages 8 tokens; external SG16 arithmetic is not Strata bitwise proof. No source
+adoption or production numerical threshold/default has changed.
+
+Quad source handoff is committed at 61d2f1a; R94 independent review identified
+explicit USM release after failed queue wait despite unknown command completion.
+Root source fix 6d67ba19 skips that release, preserves failure, and adds a host-only
+pre-queue contract mode. These have not been built or run. Followup R95 reviews
+host-side asynchronous memcpy staging/receive lifetimes too before GPU execution.
+R90's alternate GGML checkout hashes do not describe the actual pinned dependency:
+root verified its clean 3cf03257 and original hashes; original report is preserved.

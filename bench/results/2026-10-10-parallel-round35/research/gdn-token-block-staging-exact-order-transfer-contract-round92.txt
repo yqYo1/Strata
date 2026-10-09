@@ -1,0 +1,76 @@
+# GDN token-block staging: exact-order transfer contract (round 92)
+
+Date: 2026-10-10. Read-only source review for a conditional future variant; no source changes, build/import/test, device/runtime/model execution, Git mutation, or cleanup. Only the frozen Strata base `diag-sycl-cache-route-pairs-v0141-20261010`, HEAD `66aaec3a66ad9ed12e6d042cffe743c47e364432`, was inspected. Registry: v47 SHA-256 `1aaa7ccf01cb74d3c8441a9467cb7136a8e583b3d9ab8c8ac3767dfc564ef839`, storage HEAD `3acff3b3`. The separate in-progress quad implementation was not inspected or changed.
+
+## Finding
+
+A T-token SLM stage can preserve Strata's serial recurrence, but the transferable unit is only the scheduling and ownership structure. Upstream's “same arithmetic” refers to its own sequential GDN kernel. It does not prove bit identity with Strata's four 32-row partial sums, `sycl::native::exp`, `sycl::rsqrt`, FMA sequence, or head/stride rules. The R92 probe should combine a distinct SG32 four-row-group/eight-column mapping with T=8 (first) or T=16 staging, retain every Strata expression and reduction order, and change only how inputs reach those expressions and how partials are exchanged. No speed or parity result is known.
+
+There is already a Strata precedent for input staging: frozen base `gdn_rec_kh_kernel` has `GDN_TB=8`, two local buffers, and stages Q/K/V/gate/beta (around `kernels.dp.cpp:1066–1234`, enabled only through its separate key-head path). It still exchanges `rkv`/`ro` partials across row groups and therefore retains token-loop workgroup barriers. So token-block staging alone is not novel. The specific candidate is a quad-lane ownership map plus block staging, using subgroup gathers for the ordered four partials; it must show a benefit over the existing default pipelined kernel and should be evaluated after the separately owned quad baseline is established.
+
+## Frozen Strata contract
+
+The exact default kernel is `gdn_rec_cols_pipe_kernel` in `sycl/src/prefill/kernels.dp.cpp` (`RG=4`, `RPG=32` around line 629; `CB=32`, `NCB=4` around line 764; body around lines 879–994; launch around 2700). Its ordinary workgroup has `NT=RG*CB=128` work-items per one head/32-column tile. Each work-item holds 32 FP32 state values. `qh=head % HK` with `S=128`, `HK=16`, `HV=48`, `C=10240` (file constants near line 26). The recurrence reads:
+
+- Q: `h[t*C + qh*S + row]`
+- K: `h[t*C + HK*S + qh*S + row]`
+- V: `h[t*C + 2*HK*S + head*S + col]`
+- gate/beta: `gate[t*HV + head]`, `beta[t*HV + head]`
+- persistent state: base row `(row*HV + head)*S + col`, with successive state rows separated by `HV*S`
+- output: `oc_out[t*HV*S + head*S + col]`
+
+For each token, each 32-row group initializes `kv=0` and runs the existing `sycl::fma(s[r], k[r], kv)` loop in ascending `r`; the four partials are explicitly combined as `red[0][c] + red[1][c] + red[2][c] + red[3][c]`. Preserve `g=sycl::native::exp(cg)`, `delta=(cv-g*kv_col)*cbt`, `s[r]=sycl::fma((float)g,s[r],k[r]*delta)`, then the ascending-row output `sycl::fma(s[r],q[r],o)`, followed by the same ordered four-way sum times `sycl::rsqrt((float)S)`. Gate construction, Q/K normalization, convolution, output normalization/gating and FP16 output conversion stay outside this candidate and unchanged. Keep the current precise FP build policy.
+
+The existing default pipeline has five workgroup barriers per token (source around lines 929, 941, 958, 976, 987): Q/K overwrite safety, Q/K publication, KV-partial publication, KV-read/`ro` overwrite safety, and output-partial publication. R88 already reviewed the plain quad remap's subgroup lane ownership and ordered gather; this report adds only the token-block staging obligations. Do not assume the upstream arithmetic comment or CUDA/HIP quad code establishes Strata SYCL FP identity.
+
+## Candidate ownership and staging coverage
+
+For the candidate 128-work-item tile, require the distinct SG32 kernel launch attribute before relying on the map. Define from actual subgroup/lane IDs (not assumed ND-range coordinate layout):
+
+`sg = subgroup_id in [0,3]`, `lane in [0,31]`, `rg = lane/8 in [0,3]`, `c8 = lane%8 in [0,7]`, and `col = tile_base + 8*sg + c8`.
+
+This is a bijection from 4 subgroups × 4 row groups × 8 columns to the 4 × 32 `(rg,col)` owners in the existing tile; each owner retains its same 32 state rows. For a given lane, the four row-group partial sources are `c8`, `c8+8`, `c8+16`, `c8+24` in that subgroup. Gather KV and output partials separately and form `((p0+p1)+p2)+p3` explicitly. Do not use a subgroup reduction with unspecified reassociation. One `rg==0` lane per subgroup writes each of its 8 output columns; those four subgroups cover the tile exactly once.
+
+Stage ownership must be derived from a separate flattened work-item ID `wi=0..127`, not from `(rg,c8,sg)`. For each of Q and K, flatten logical `(token,row)` into `p=wi; p<TB*S; p+=128`, with `token=p/S`, `row=p%S`; each valid element is written once and every row 0..127 is covered. For TB=8, each work-item handles 8 elements from each tensor (16 Q/K floats total); TB=16 gives 16 from each (32 floats total). Vectorized copies are permitted only if every vector is aligned/in-bounds, has exactly the same FP32 bits, and covers the same index set. An alternate linear ownership order is acceptable only after a coverage proof.
+
+Q/K staging alone is sufficient for the transfer probe; V/gate/beta may initially remain direct FP32 loads at the existing addresses. If staging them too, define exact disjoint ownership: V is `[TB,32]` for this head/column tile, gate and beta are `[TB]` per head. Each valid source element has one writer and is consumed only after publication; no broadcast may mix heads. Stage copies perform no conversion or arithmetic. The mapping has 4 row-group lanes per output column, so staging/broadcast can remove redundant V/gate/beta loads later, but that is an optional second variable and must not be bundled into the first comparison.
+
+For the simple one-buffer variant, load all valid Q/K values for a block, barrier to publish, process its `nt` tokens serially using subgroup gathers, then barrier before overwriting the same Q/K slots for the next block. This is at most two workgroup barriers per token block (one publication and one reuse guard; the final reuse barrier may be omitted uniformly). It removes the per-token Q/K barriers and, with subgroup gathers replacing `red`, the per-token cross-row-group barriers. A two-buffer pipeline may prefetch a following block, but must separately prove that no lane writes a buffer while any lane still reads it and that all next-block writes are published before consumption; it is not needed for the first semantic probe and may raise register/SLM pressure.
+
+Use `nblocks=ceil(T/TB)` only when `T>0`. For block `b`, `t0=b*TB` and workgroup-uniform `nt=min(T-t0,TB)`. The final partial block writes/stages only `t<T`; it processes only `i<nt`; no invalid padded token may be read. If the launch path permits `T==0`, return before a zero-sized grid or any collective and leave state untouched. Every lane in every subgroup executes the same collectives for each live token. All 128 work-items must reach each workgroup barrier in converged control flow. State carry remains strictly token-serial within a head/column owner and continuous across blocks and prompt chunks; do not reset or replay it. Every state element has one owner and is written once at completion; every output element has one writer per processed token.
+
+A single-buffer publication/reuse barrier count is therefore bounded by `2*ceil(T/TB)` for T>0 (often `2*ceil(T/TB)-1` if the final reuse guard is omitted), versus five barriers per token in the current default. This is a synchronization-count model from source, not measured performance. Any omitted barrier must be justified by the actual local-memory happens-before protocol; no barrier may be removed merely because the token loop is sequential in source.
+
+## Local-memory and register bounds
+
+All figures below are payload bytes per 128-work-item workgroup, not compiler allocation measurements; alignment/padding may increase them.
+
+| staged values | one buffer, TB=8 / 16 | two buffers, TB=8 / 16 |
+|---|---:|---:|
+| Q and K only: `2*TB*128*sizeof(float)` | 8 / 16 KiB | 16 / 32 KiB |
+| plus V `[TB,32]`, gate `[TB]`, beta `[TB]` | 9,280 / 18,560 B | 18,560 / 37,120 B |
+
+For a next-block register prefetch that assigns every staged Q/K input to the same 128 workers, the total Q/K prefetch payload is `2*TB*S/128 = 2*TB` FP32 values per work-item: 16 floats at TB=8, 32 at TB=16. Add, if prefetching them too, `TB*32/128=TB/4` V floats per worker on average (2 or 4), plus `2*TB/128` gate/beta floats per worker on average (0.125 or 0.25; the designated scalar-loader lanes hold the actual values). These are additional live values alongside each lane's 32 state floats and recurrence temporaries, so TB=16 can increase register pressure or spill risk substantially. Q/K-only SLM avoids holding the current tile in registers; next-block registers are still the price of overlapping global loads without staging into the active buffer.
+
+A workgroup's SLM footprint limits local residency to at most `floor(SLM_per_compute_unit / SLM_bytes_per_group)`, before workgroup-slot, thread, and register limits. No target B570 SLM capacity, compiler register count, spill count, or occupancy was measured here. The 10 GiB global-memory cap is not itself the SLM budget; per-group local-memory and register limits may reduce concurrent workgroups and thus hide less latency. Record these resources on the exact target/compiler before interpreting timing. Do not claim TB=8 or 16 fits any target occupancy tier from the byte arithmetic alone.
+
+## Token-block-specific failure modes to guard
+
+- **Wrong staging owner after remap:** reusing old `tid=rg*32+c` as a linear copy index under the new subgroup-to-column map creates holes or duplicates. Keep staging index `wi` independent, and verify each `(buffer,token,row,Q/K)` slot has exactly one producer.
+- **Partial-block uninitialized reads:** stage only live tokens and guard all consumers with common `nt`; zero fill is optional only if those values are never accidentally treated as live. Guarding must not split subgroup collectives or barriers.
+- **Ping-pong overwrite/publication race:** with double buffering, block `b+2` must not overwrite the buffer still read by block `b`; block `b+1` must not consume data before all producers' writes are visible. Use a converged workgroup barrier at the proven transition; async copy requires its own completion/wait contract.
+- **Input/state block alias or stale pointer:** source offsets must use global token `t0+i`, not block-local `i`; persistent state is not block-indexed. Tail and subsequent prompt chunks continue from the exact last processed state.
+- **Arithmetic drift mislabeled as staging:** do not precompute `exp(g)` for a block, replace `sycl::native::exp`/`sycl::rsqrt`, alter FMA placement/association, combine four partials differently, or use a different head permutation. Those change FP behavior and confound the scheduling-only comparison.
+- **Nonuniform collectives:** no lane- or row-group-specific early exit around gathers/barriers; `nt` and block count are workgroup-uniform. The final tail must retain identical collective count among all lanes.
+- **Excess live registers:** keeping 16/32 next-block Q/K floats while also materializing 32 Q and 32 K values per lane (as in the upstream kernel's local arrays) is unnecessary and may spill. Preserve the same arithmetic by loading staged Q/K per term or in bounded pieces; inspect generated resource use before any speed conclusion.
+- **False identity from upstream comment:** llama.cpp's pinned `gdn_blocked_sycl` uses subgroup width 16, `RPL=8`, and its own KDA/shape dispatch. Its timing and “same per-token arithmetic” statement are not Strata parity evidence. Preserve Strata's 32-row partial FMA loops, ordered four-partial sum, `head%16`, and `native::exp`/`rsqrt` exactly.
+
+## Review boundary
+
+R88 (`gdn-sycl-quad-exact-order-semantic-review-round88.txt`) covers the plain quad mapping, gather ownership, and subgroup convergence; R91 (`xe2-llamacpp-b580-new-implementation-transfer-screen-round91.txt`) pins the implementer code and identifies token-block prefetch as a conditional candidate. R82 documents Strata's GDN math/state ownership. R92 adds the staging coverage, byte/register bounds, block-tail and ping-pong race contract. The report is not permission or evidence to adopt the kernel. Root's stated order is to validate the separately owned quad baseline first; token-block staging remains a subsequent independent candidate. No speedup, correctness, target resource fit, or 10 GiB full-model feasibility has been measured.
+
+## Immutable references
+
+- Frozen Strata source: `sycl/src/prefill/kernels.dp.cpp` in HEAD `66aaec3a66ad9ed12e6d042cffe743c47e364432`, SHA-256 `3a5077a284048b4fde24a4146e3b02e8d84d259480f755e4b0e94cfc52e54f1c`.
+- Upstream implementer: [llama.cpp `gated_delta_net.cpp` at `fc18b1a60b0fda3ca2e1cb54e98d063e014dbe88`](https://github.com/Torchit1/llama.cpp/blob/fc18b1a60b0fda3ca2e1cb54e98d063e014dbe88/ggml/src/ggml-sycl/gated_delta_net.cpp).
+- Prior local evidence: R82 `gdn-chunkwise-wy-config-parity-and-workspace-round82.txt`; R88 `gdn-sycl-quad-exact-order-semantic-review-round88.txt`; R91 `xe2-llamacpp-b580-new-implementation-transfer-screen-round91.txt`; registry v47.

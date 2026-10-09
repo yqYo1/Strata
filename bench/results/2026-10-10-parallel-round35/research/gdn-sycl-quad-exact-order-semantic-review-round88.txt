@@ -1,0 +1,52 @@
+# GDN SYCL SG32 quad-reduction semantic review (round 88)
+
+Date: 2026-10-10. Independent read-only review of the proposed four-row-group/eight-column SG32 remap. No code edit, build, test, import, runtime/device query, GPU/model run, Git mutation, or cleanup. Source is frozen at `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010`, HEAD `66aaec3a66ad9ed12e6d042cffe743c47e364432`.
+
+## Decision
+
+**Conditional semantic admission only.** The lane mapping and subgroup gather are well-defined if implemented with a required 32-lane subgroup, workgroup-uniform token/tail control flow, valid lane IDs, and the exact arithmetic/ownership rules below. I found no inherent SYCL data race or collective-convergence defect in that design. This is not compile or device support evidence, parity clearance, or a performance decision. Source review cannot prove compiler lowering preserves the intended FP operation sequence or that the target supports this exact named kernel.
+
+Direct source inspection settles the attribute discrepancy: the ordinary SYCL `gdn_rec_cols_pipe_kernel` launch at `kernels.dp.cpp` around 2700–2715 has **no** `reqd_sub_group_size` attribute. The adjacent output-normalization launch has size 32; the opt-in tuned keyhead recurrence launch has size 16. CMake's `-fsycl-default-sub-group-size=32` is a default setting and does not add a kernel attribute to the ordinary recurrence launch. Thus the current recurrence does not establish its subgroup mapping by source annotation. A candidate must be a distinct named kernel and put `[[sycl::reqd_sub_group_size(32)]]` on that candidate's kernel function/lambda call operator.
+
+## Mapping, communication, ownership
+
+The current pipeline recurrence uses `RG=4`, `CB=32`, `NT=128`; its launch is a 128-item workgroup for each head and 32-column tile (`kernels.dp.cpp:879–997, 2700–2715`). Each old local thread owns one `(rg,c)` state-column slice, with `col=cb*32+c`, 32 state values, and the old KV and output partials are reduced as `red[0][c] + red[1][c] + red[2][c] + red[3][c]`.
+
+For the candidate, each 32-lane subgroup represents four row groups and eight columns: `rg=lane/8`, `c=lane%8`; `col=tile_base + subgroup_id*8 + c`. With 128 work-items and required subgroup size 32, there are four subgroups; their 8-column partitions cover exactly the same 32-column tile. The row-group index comes from the subgroup lane ID and the column partition from the subgroup ID; do not infer either from ND-range local coordinates or assume a particular implementation-defined partition of work-items. Every `(row,head,column)` state element then has one owner: the lane whose `(rg,c,subgroup_id)` maps to it. Exactly the `rg==0` lane in each subgroup should write each output column after gathering; those four subgroup writers cover the tile without overlap.
+
+For each lane, the four KV source lanes `c`, `c+8`, `c+16`, `c+24` are exactly the four row-group lanes for the same `c`; all source IDs are in `[0,31]`. Apply the same gather pattern to output partial `o`. Each lane must execute the four `sycl::select_from_group(sg, partial, source_id)` calls in converged control flow and the same order. The returned partials must be explicitly combined in the old association `(p0+p1)+p2+p3`; do not replace this with `reduce_over_group`, whose operation order is not specified. The gather communicates only within each subgroup, so it requires no cross-subgroup barrier.
+
+Each lane must retain/update only its own 32 state values. For each token: compute KV partial from the original state using the same 32 FMA steps; gather/ordered-sum all four partials; compute `delta` using the existing expression; update those same state entries with the existing `sycl::fma((float)g, s[r], k[r] * delta)` sequence; compute its output partial with the same FMA loop; gather/ordered-sum output partials; then one `rg==0` lane writes output multiplied by the existing `sycl::rsqrt((float)S)`. Preserve existing `sycl::native::exp`, input/output conversion, and other scalar math. The source's HIP-only `gdn_rec_quad_kernel` (`kernels.dp.cpp:1239–1355`) is a mapping precedent, not an exact SYCL implementation: it uses HIP intrinsics and `__expf`/`rsqrtf`, so transplanting its full arithmetic would not be justified as exact SYCL behavior.
+
+## Synchronization and tails
+
+The current SYCL recurrence stages Q/K in workgroup local memory and has five barriers per token: barrier before the next Q/K overwrite, barrier after Q/K publication, barrier after writing KV partials, barrier before overwriting those partials, and barrier after writing output partials. If the candidate removes the shared `red[RG][CB]` exchange entirely and keeps Q/K staging, the two remaining barriers have distinct requirements: (1) all work-items have finished reading prior-token Q/K before any lane overwrites the local arrays, and (2) Q/K writes for this token are visible before any lane reads them. The subgroup collectives replace only the shared `red` exchanges. The candidate must still populate every Q/K row exactly once before those reads; if retaining the local-array staging, distribute its load/store slots with a workgroup-wide linear work-item index independent of the new `(rg,c)` ownership, then have each state-owning lane read its own `rg*32+r` rows. Do not accidentally use the new role coordinates as the old contiguous staging index, which would leave holes/duplicates. Do not remove/relax the Q/K reuse/publication barriers without replacing their memory-order guarantees. If Q/K instead remain in per-lane registers, re-derive the required synchronization from that implementation.
+
+The token loop and `T` are workgroup-uniform. `T==0` skips the loop and its barriers/collectives uniformly; a partial final pipeline chunk must likewise use a common `nt`/tail condition so every lane reaches the same collectives in the same sequence for each live token. Avoid lane-dependent early returns or branches around subgroup collectives. A final tail still updates state only for processed tokens and writes only corresponding output elements. Preserve the current state update exactly once across any repeat/chunking behavior; subgroup layout does not authorize changing state reset, initial state, history, or token partition semantics.
+
+## Semantic admission checklist
+
+1. Distinct named kernel, with `[[sycl::reqd_sub_group_size(32)]]` on its kernel call operator; don't infer the property from the current global compiler default.
+2. Candidate uses the actual `sub_group` lane and subgroup IDs, confirms the intended four-subgroup/128-work-item launch contract, and uses only valid gather IDs.
+3. Every active lane calls all collectives convergently for each processed token; subgroup collectives replace only red-partial barriers; workgroup-local Q/K publication/reuse remains correctly synchronized.
+4. Preserve old ordered sums, FMA order, initial state, per-token update and output, exact state/output ownership, tail/repeat behavior, and all current input/output paths. Keep the current precise FP build policy and do not introduce fast math or a GRF-mode change.
+5. Resolve support/admission for this exact compiled kernel before its first mutable recurrence submission. A failed capability/kernel/resource preflight can choose the legacy path before candidate submission; after possible state mutation, never retry legacy recurrence on the same state. (Fallback contract carried forward from R86; it is an admission rule, not evidence the candidate works.)
+6. Only after implementation, inspect/compile the exact kernel and run the authorized CPU/reference parity gate; then separately check the exact target's support and numerical/runtime gates. None of these checks was run for this report.
+
+## What remains unproved
+
+No source-only argument proves the exact compiler-generated FP instruction order, that this compiler/device supports the required subgroup feature on this named kernel, or that executable-kernel resource limits permit 128 work-items. The ordinary recurrence's source does not demand subgroup 32. The existing AMD quad kernel demonstrates the partition pattern only. There is no implementation here to inspect for shared-memory staging, collective convergence, or exact state writer identity. No performance or spill conclusion follows.
+
+## Immutable source pins
+
+- `sycl/src/prefill/kernels.dp.cpp` SHA-256 `3a5077a284048b4fde24a4146e3b02e8d84d259480f755e4b0e94cfc52e54f1c`
+- `sycl/src/prefill/gdn_variant_parity.cpp` SHA-256 `d4ca2e5e428751252033f53038f2d43c1814e8ccedaaa8ac5e0ebccd1992a6e4`
+- `sycl/CMakeLists.txt` SHA-256 `d8fc6c99428f96021c0d986bcad77680dbe66f4fa6a64490166ff58f24e274b1`
+- Existing design/admission evidence: `gdn-serial-subgroup-remap-exact-order-screen-round84.txt` and `gdn-sycl-subgroup32-admission-fallback-contract-round86.txt` in the same research directory. R88 independently rechecked actual source launch attributes and concentrates on semantic convergence, ownership, and synchronization; it does not restate the prior GRF tuning screen.
+
+## Primary references
+
+- Khronos SYCL 2020 revision 12, especially subgroup/group algorithm, kernel attribute, and memory model sections: https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html
+- Khronos SYCL `sub_group` reference: https://github.khronos.org/SYCL_Reference/iface/sub_group.html (subgroup composition is implementation-defined; IDs identify the abstract subgroup/lane, not a fixed ND-range work-item mapping).
+- Khronos SYCL group algorithms reference: https://github.khronos.org/SYCL_Reference/iface/group-algorithms-library.html (`select_from_group` semantics and out-of-range result).
+- Intel oneAPI subgroups and SIMD vectorization: https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2024-0/sub-groups-and-simd-vectorization.html

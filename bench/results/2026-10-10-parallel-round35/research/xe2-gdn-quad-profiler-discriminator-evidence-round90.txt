@@ -1,0 +1,68 @@
+# Xe2 GDN SG32 quad profiler discriminator evidence (round 90)
+
+Date: 2026-10-10. Read-only review of profiler documentation, implementer sources, and the frozen Strata kernel shape. No build, import, test, device/runtime query, GPU run, profiling run, model run, Git mutation, cleanup, or implementation. No GRF mode/property tuning is revisited here (see R87).
+
+Source under review: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010`, HEAD `66aaec3a66ad9ed12e6d042cffe743c47e364432`; `sycl/src/prefill/kernels.dp.cpp` SHA-256 `3a5077a284048b4fde24a4146e3b02e8d84d259480f755e4b0e94cfc52e54f1c`. R84/R88 define the proposed four-row-groups/eight-columns subgroup mapping and arithmetic constraints. They are design reviews, not measurements.
+
+## Finding
+
+No source found reports an isolated B570/Xe2 GDN benchmark for this exact mapping. The implementation sources provide patterns, not a performance prediction. A single legacy-vs-quad elapsed-time result would show whether the whole remap helps; by itself it cannot explain a regression. The smallest informative profile is a kernel-only, same-input comparison with one diagnostic mapped/shared-reduction version between legacy and full quad, plus two collection modes: (1) low-overhead timing/resource summary and (2) targeted hardware metrics/ISA evidence. The diagnostic middle version need not be a production dispatch choice.
+
+The mapping creates credible competing hypotheses. In the frozen state layout `state[(row*HV + head)*S + col]`, legacy subgroup lanes for a fixed state row access 32 adjacent columns. In the proposal, each subgroup has eight adjacent columns for each of four row groups; lane addresses jump between row groups every eight lanes. This can turn one contiguous 32-column access into four 8-column segments for the repeatedly loaded/stored state rows and lose memory transaction coalescing. This is a **layout-derived risk**, not a measured Xe2 effect. At the same time, the old kernel stages Q/K in workgroup local memory and the proposed version retains it. Each old subgroup can read one shared Q/K row address across 32 lanes; the proposed subgroup reads four row-group addresses, each repeated by eight lanes. Depending on Xe2 SLM bank/broadcast behavior and compiler lowering, this can improve or worsen SLM service. The new version removes the shared KV/output scratch exchanges and three of the five per-token workgroup barriers, but requests four source-lane selections for KV and four for output each token. Finally, each lane retains 32 recurrent state values; materializing 32 K and 32 Q values per lane across the updated recurrence can greatly extend live ranges or spill if not optimized. All four effects can coexist.
+
+## What the tools actually expose
+
+Intel's `unitrace` README documents these usable collection modes/options:
+
+- `unitrace -d -v` gives per-kernel-instance/device timing and occupancy/resource context. The documented fields include SLM bytes per workgroup, private memory per thread, spill memory per thread, register-file size available per thread, and JIT/AOT mode. The register-file field is **available capacity**, not allocated registers or a live-register count. Nonzero spill memory is the direct documented spill indicator; private bytes alone do not mean physical-register spill. `-v` keeps different kernel shapes separate.
+- `unitrace --metric-list` is the discovery step; `-q` queries a metric set per kernel instance, and `-k` samples metrics over time. It lists metric-group selection and examples such as `GpuTime`, `L3_BYTE_READ/WRITE`, `GPU_MEMORY_BYTE_READ/WRITE`, `XVE_ACTIVE`, `XVE_STALL`, and `XVE_BUSY`. The README says metric queries require Level Zero and a flat device hierarchy; available groups/counters are runtime/device dependent. Do not assume the example metric names are present on B570.
+- The README limits `--stall-sampling` to Data Center GPU Max Series and later. “Later” is not enough evidence for B570 support; check the installed profiler/driver's advertised support before planning around it.
+
+Intel VTune's GPU metrics reference names useful counters: `EU Threads Occupancy`, `EU Array Stalled`, `GPU Memory Read/Write Bandwidth`, `L3 Read/Write Bandwidth`, `Shared Local Memory Read/Write Bandwidth`, `SLM Bank Conflicts`, `XVE Barrier Stall`, `XVE Send Stall`, `XVE SBID Stall`, `Untyped Reads/Writes Coalescence`, and typed equivalents. These counters are good discriminators **if the B570 collector exposes them for this run**. The VTune metric catalog explicitly varies by GPU/hardware; availability on the B570 is not verified here. In particular, total/global bandwidth is not a direct transaction-coalescing measure, and an SLM bandwidth number is not a direct broadcast count.
+
+No documented VTune or unitrace metric found here counts subgroup shuffle instructions directly. Use the exact generated per-kernel VISA/GenISA/final ISA dump to count the compiler-lowered cross-lane operations and SLM/global load/store instructions, then pair static counts with runtime kernel time, send/ALU/stall counters, and transaction/bandwidth metrics. `XVE Send`, control, ALU or stall metrics are correlates, not “shuffle counters.” Stalls should be analyzed against the exact kernel identity and instructions; they do not identify a cause without the dump.
+
+Intel's 2025.1 VTune release documentation says GPU Compute/Media Hotspots supports Battlemage, while its user guide says metric availability varies with hardware. That establishes product-family support for a profiling workflow, not B570 support for each requested hardware event. A public Intel PTI-GPU issue documents a B580 `unitrace -q` failure to initialize Level Zero metrics (`ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE`) despite the documented observation-paranoid setting being zero in that user's Ubuntu 24.10 / 2024.37.5 environment. It is a concrete compatibility warning for a different BMG card/older stack, not proof that this B570/UR0.12 stack fails. The runtime metric list and a successful small profiler smoke run are prerequisites; both remain unverified.
+
+## Minimal discriminating profile
+
+Use an isolated recurrence microbenchmark, not a full model, so GDN out-norm, projections, unrelated kernels, and request scheduling do not pollute the selected kernel. Use the same FP32 inputs, state, launch geometry/work, and unchanged precise math for all versions; assign distinct stable kernel names. Profile the actual target launch shape and one representative longer chunk only after the candidate passes the existing parity gate. Keep the normal unprofiled timing as the performance result; profiled runs identify causes and can perturb execution.
+
+Profile three code paths if the implementer can make the middle one cheaply:
+
+1. Frozen legacy recurrence.
+2. SG32 remap with the same remapped per-lane state/QK work but shared-memory four-partial reduction (diagnostic only).
+3. Exact quad path with subgroup gathers and ordered four-partial sums.
+
+This contrast makes the following readings useful:
+
+- **State global access/coalescing:** legacy versus mapped/shared (1→2) changes the row/column lane ownership before replacing the reduction mechanism. Compare `Untyped Reads/Writes Coalescence` where reported, LSC/L3/global-memory transactions/bytes and GPU memory bandwidth, normalized per recurrence launch/token. Since useful state bytes are expected to stay constant, increased transactions/bytes with the mapped lane layout, paired with higher send/memory stalls and no new spill, supports a coalescing penalty. Bandwidth or L3 bytes alone cannot isolate state from Q/K/V; record generated load addresses/instructions and hold inputs/kernel work fixed. If coalescence is absent on B570, exact per-load transaction attribution is unavailable from these counters; do not claim it from bandwidth alone.
+- **SLM broadcast/bank behavior:** compare SLM read/write bandwidth, `SLM Bank Conflicts`, and SLM load/send instruction count per token across 1→2; mapped/shared and quad (2→3) retain the same Q/K staging. A rise in SLM bank conflicts or local-read/send stalls for 1→2 points toward the changed Q/K reader pattern. There is no direct documented “broadcast count”; unchanged byte bandwidth does not rule out serialized same-bank accesses. If SLM counters are missing, this cause remains unresolved without another targeted SLM-layout variant and compiler ISA evidence.
+- **Barrier versus subgroup communication:** 2→3 holds lane ownership and Q/K staging while replacing the shared partial exchange/barriers with gathers. Record `XVE Barrier Stall`, `XVE Send Stall`, `XVE SBID Stall`, compute/send pipeline metrics, exact device time, and static gather/shuffle plus SLM instruction counts. Fewer barrier stalls but more send/pipe stalls and a runtime regression would support shuffle/communication cost. It is not a dedicated shuffle-counter measurement.
+- **Register lifetime/spills:** compare `Spill Memory Per Thread`, `Private Memory Per Thread`, per-workgroup SLM, timing, and compiler resource metadata/assembly for all three exact kernel IDs. If added Q/K/state temporaries increase spill or reduce occupancy and runtime, live-range pressure is implicated. The unitrace register-file-size field alone cannot establish register allocation. Keep the R87 default/GRF policy fixed across all variants.
+
+If profiler event groups cannot be collected together, use separate repeated runs with identical executable/input/clock-state conditions and one metric group per run. Begin with a no-counter timing/resource pass; use metric query for counters supported by `--metric-list`. For hot kernels shorter than the sampling interval, prefer per-instance query metrics over sparse time sampling. Collect unitrace's `-d` (with `-v`) and hardware counters separately if instrumentation changes timings. If Advanced VTune collection needs administrator/root privileges or B570 counters are unavailable, report that gap and use supported timing/resource/ISA evidence; never substitute another GPU's counters.
+
+## Implementer evidence and transfer limits
+
+- Intel oneAPI's subgroup/SIMD guide shows subgroup shuffle use for matrix transpose and warns that long per-work-item vectors can raise register pressure; it explicitly recommends checking for spills and measuring bandwidth. It teaches the data-movement pattern, not a GDN/Xe2 result.
+- Intel's SYCL-TLA “Xe re-architecture” document explains how subgroup and thread layouts differ and that ownership/layout reorders can require shuffle-like data movement. This is useful layout reasoning. It is a template-library explanation, not this recurrence, and no B570 GDN performance measurement was found there.
+- ggml-org/llama.cpp's OpenCL `gated_delta_net.cl` uses `LANES_PER_COLUMN`, subgroup IDs, lane groups, and reduction; its default helper uses local scratch/barriers, with Qualcomm-only shuffle code. The source shows that GDN engines make an explicit ownership/reduction tradeoff. It is OpenCL with different defaults and arithmetic, not an Xe2 measurement or a direct source template for Strata's ordered sum.
+- A llama.cpp implementer post dated 2026-09-29 reports B580-specific SYCL/XMX optimizations and whole-model/prompt-context results, including 32K generation comparisons. It records a real Xe2 environment and a fallback-by-device pattern but reports no isolated GDN/quad/shuffle counters, so its throughput figures cannot predict this recurrence.
+- No measured B570 GDN quad-remap or subgroup-shuffle implementation with counters was located. Treat external outcomes as patterns only. R84's internal AMD HIP quad kernel is also not transferable performance evidence for Xe2.
+
+## Frozen source pins / references
+
+- Strata kernel: `sycl/src/prefill/kernels.dp.cpp`, frozen SHA-256 above, especially current `gdn_rec_cols_pipe_kernel` at lines 879–997 and 5 shared-memory barriers; old mapping, QK staging and GDN output shapes as recorded in R84/R88.
+- Intel unitrace supported options/resource/counter examples: https://github.com/intel/pti-gpu/blob/master/tools/unitrace/README.md
+- Intel VTune GPU metrics catalog: https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2025-4/gpu-metrics-reference.html
+- Intel VTune release support for Battlemage: https://www.intel.com/content/www/us/en/developer/articles/release-notes/vtune-profiler/legacy.html
+- Intel subgroup shuffle/layout guide: https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2024-0/sub-groups-and-simd-vectorization.html
+- Intel SLM bank conflict guide: https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2024-0/shared-local-memory.html
+- Intel register/spill optimization guide: https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2023-1/registerization-and-avoid-register-spills.html
+- Intel SYCL-TLA layout discussion: https://github.com/intel/sycl-tla/blob/main/media/docs/cpp/xe_rearchitecture.md
+- ggml-org/llama.cpp GDN OpenCL implementation: https://github.com/ggml-org/llama.cpp/blob/master/ggml/src/ggml-opencl/kernels/gated_delta_net.cl
+- B580 implementer report (whole model, no kernel counters): https://github.com/ggml-org/llama.cpp/discussions/29643
+- PTI-GPU B580 metrics-query failure report: https://github.com/intel/pti-gpu/issues/83
+
+No B570 tool query, profiler availability check, counter collection, GDN timing, or performance effect was established by this evidence screen.
