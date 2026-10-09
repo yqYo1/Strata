@@ -235,6 +235,17 @@ if(STRATA_NATIVE_EXPERTS)
   endif()
 endif()
 
+# CPU-only differential gate for the production SYCL CPU library. Off by default;
+# build only this target to avoid building GPU kernels or model executables.
+option(STRATA_SYCL_NATIVE_WRAPPER_PARITY "Build CPU-only native wrapper differential harness" OFF)
+if(STRATA_SYCL_NATIVE_WRAPPER_PARITY)
+  if(NOT STRATA_NATIVE_EXPERTS OR NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    message(FATAL_ERROR "Native wrapper parity requires native experts and Linux private output")
+  endif()
+  add_executable(native_wrapper_parity tools/native_wrapper_parity.cpp)
+  target_link_libraries(native_wrapper_parity PRIVATE strata_kernels_cpu)
+endif()
+
 # --- the GPU engine ------------------------------------------------------------------------------------------------
 strata_resolve(_core src/core/device.cu src/core/pinned.cu src/platform/memory.cpp src/core/graph.cpp
                      src/core/weights.cpp src/core/layout.cpp src/core/vmm.cpp)
