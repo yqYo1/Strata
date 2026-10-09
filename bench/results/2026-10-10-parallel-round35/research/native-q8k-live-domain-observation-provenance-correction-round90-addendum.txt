@@ -1,0 +1,12 @@
+Round 90 addendum: correct pinned GGML source provenance
+
+This addendum corrects only the provenance note in `native-q8k-live-domain-aggregate-observation-contract-round90.txt`. The hashes described there as “the separately located current GGML checkout” were read from `/home/yayoi/ghq/github.com/ggml-org/llama.cpp`; that was a different checkout and is not the assigned pinned source. Those values do not indicate a change in the pinned dependency used by the measured build.
+
+The assigned pinned source is `/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned`, at commit `3cf03257f219afbe7334045ff7c6a06ac68c627d` as independently checked by root. Read-only SHA-256 verification in that checkout gives:
+
+- `ggml/src/ggml-quants.c`: `07143d7068936ae46b3c528b2f3d4bbb666e74d88992165716174d243573965d`
+- `ggml/src/ggml-cpu/ggml-cpu.c`: `7b451e6528cec3bc27bfd812a1314859c92d22a00c2db371d543cde5b7d5ca94`
+- `ggml/src/ggml-cpu/arch/x86/quants.c`: `3c489fdc77e3ab484a5f188bff9c60c0e9483c951ed65c1a562a04c249d5628e`
+- `ggml/src/ggml-common.h`: `0061131b615c5721fc88a78feeb22c1f8c450f1c2646a317d80796a653bf595c`
+
+R90's source-level observations about the Strata quantization call sites remain unchanged. For pinned GGML claims, use the source path and hashes above, along with the commit-qualified links in R90. This correction is static provenance only; no implementation, build, test, runtime, Git, or cleanup action was performed.

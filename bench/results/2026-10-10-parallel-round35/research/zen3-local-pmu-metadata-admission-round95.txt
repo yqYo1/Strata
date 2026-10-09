@@ -1,0 +1,63 @@
+R95 — Host PMU metadata admission for the IQ2_S CPU observation plan
+
+Scope
+Read the specifically authorized host metadata files and primary AMD/Linux materials. No CPU-query executable, `perf` command, counter open, profiler, build, test, implementation, source edit, Git operation, or cleanup was performed. The readings establish visible metadata and a permissions blocker; they do not establish that `perf_event_open` succeeds, that every event schedules, or that IBS samples can be collected.
+
+Read-only host evidence
+All 12 `/proc/cpuinfo` logical processor records agree: vendor `AuthenticAMD`, family decimal 25 (= 0x19), model decimal 33 (= 0x21), stepping 0, model name `AMD Ryzen 5 5600X 6-Core Processor`, microcode `0xa201030`. Linux v7.0 PPR nomenclature therefore points to AMD Family 19h Model 21h Revision B0 PPR (#56214) as the model-specific primary reference to check. The PPR revision label must not be inferred solely from product name; the host's model/stepping fields are the observed basis for selecting this document.
+
+`/proc/version` reports `Linux version 7.0.0-38-generic`, built with Ubuntu GCC 13.3.0-6ubuntu2~24.04.1 and GNU ld 2.42 (`#38~24.04.4-Ubuntu`, SMP PREEMPT_DYNAMIC, build date shown as 14 Sep 2026). The `/proc/version` build timestamp text is visibly truncated at `UTC 2…` in this environment, so no build year is inferred. This is a distro kernel. The upstream Linux v7.0 source mapping below is a useful version-matched reference but does not prove the exact Ubuntu patch set; host sysfs alias files are the current runtime mapping evidence.
+
+`/proc/sys/kernel/perf_event_paranoid` is `4`. `/proc/self/status` reports uid/gid 1000, `CapEff=0`, `CapPrm=0`, `CapAmb=0`, `NoNewPrivs=0`, and `Seccomp=0`; lockdown metadata is `[none] integrity confidentiality`. Under the Linux kernel documentation, `perf_event_paranoid >= 1` denies CPU-event access to callers without `CAP_PERFMON`; the documented `>=2` restriction also bars kernel profiling. With value 4 and no effective capability in this process, the requested core PMU events are **not admitted for an ordinary unprivileged run in this current context**. This is a policy conclusion from metadata and kernel docs, not a failed `perf_event_open` attempt. Do not try to work around it in this task.
+
+The `cpu` PMU directory is present with `type=4`; it has no `cpumask` file. Its event-format files are `event=config:0-7,32-35`, `umask=config:8-15`, `cmask=config:24-31`, `edge=config:18`, `inv=config:23`. Its aliases map as follows in this host's sysfs:
+
+| Local alias | PMU | Sysfs config | User-only form for later collection | Meaning/role |
+|---|---|---|---|---|
+| `cpu-cycles` | `cpu`, type 4 | `event=0x76` | `cpu-cycles:u` (or `perf_event_attr.exclude_kernel=1`; set `exclude_hv=1` as well for explicit scope) | Core cycle count, primary timing discriminator |
+| `instructions` | `cpu`, type 4 | `event=0xc0` | `instructions:u` (same explicit exclude fields) | Retired-instruction cross-check, not attribution to index ops |
+
+The two event aliases and their configurations were read from `/sys/bus/event_source/devices/cpu/events/{cpu-cycles,instructions}` and the format above from `/sys/bus/event_source/devices/cpu/format/*`. Kernel v7.0 AMD PMU source maps `PERF_COUNT_HW_CPU_CYCLES` to event `0x0076` and `PERF_COUNT_HW_INSTRUCTIONS` to `0x00c0` in its Family 17h+ maps; the branch for family >= 0x19 selects the Zen2-named map for this path. The local host aliases agree (`0x76`, `0xc0`). This is a mapping confirmation, not a claim about event reliability on every stepping.
+
+Other local core aliases include `branch-instructions=event=0xc2`, `branch-misses=event=0xc3`, `cache-misses=event=0x64,umask=0x09`, `cache-references=event=0x60,umask=0xff`, `stalled-cycles-frontend=event=0xa9`. They are not in the minimal set. In particular, aggregate cache events do not by themselves attribute a miss to the new HiSpread table load; do not expand the event set without a concrete question and model-specific semantics.
+
+Linux PMUs `ibs_op` and `ibs_fetch` are present with types 11 and 10. `ibs_op` exposes `cnt_ctl=config:19` and `swfilt=config2:0`; `ibs_fetch` exposes `rand_en=config:57` and `swfilt=config2:0`. No `events/` alias files were listed for either IBS PMU. Linux's AMD IBS perf documentation describes the default `ibs_op//` cycles stream and `ibs_op/cnt_ctl=1/` micro-op stream; it also states IBS lacks user/kernel filtering and requires `CAP_SYS_ADMIN` or `CAP_PERFMON`. The directory presence and `os` `ibs` CPU flag show kernel/hardware discovery, but **do not establish event opening, privilege, usable sample fields, or low sample loss**. The current process has neither capability. IBS is optional and should remain deferred until the index-only candidate passes codegen qualification.
+
+CPU topology and frequency policy
+`/sys/devices/system/cpu/{possible,present,online}` each report `0-11`. Every cpufreq policy 0–11 is per logical CPU and reports `scaling_driver=amd-pstate-epp`, `scaling_governor=powersave`, `energy_performance_preference=power`, `scaling_min_freq=1738349`, `scaling_max_freq=4654288`, `cpuinfo_min_freq=560758`, `cpuinfo_max_freq=4654288` (kHz). The global cpufreq boost file is `1`. At the time read, policy0 `scaling_cur_freq=4541513` kHz. `/proc/cpuinfo`'s instantaneous `cpu MHz` differs between processors and changes between reads; the first three records observed 3710.821, 4640.648, and 4624.690 MHz. This is dynamic frequency policy, not a fixed-frequency measurement condition. If the owner later times, record chosen pinned CPU, current policy and per-trial effective frequency context; do not treat sysfs frequency snapshots as the executed clock for a whole trial.
+
+`/sys/bus/event_source/devices/msr` is also present (type 12) with aliases `aperf=event=0x01`, `mperf=event=0x02`, and `tsc=event=0x00`, but those are auxiliary context and are not part of the minimal core event pair. Their presence is not permission or proof of a valid combined measurement. No CPU affinity for a future fixture, perf binary/version, active counter users, event multiplexing result, or measured frequency behavior is established here.
+
+Admission and minimal configuration proposal
+
+| Item | Current evidence | Admission status / next evidence needed |
+|---|---|---|
+| Core PMU discovery | `/sys/.../cpu` present, type 4; formats and aliases read | Discovered; actual event open and count quality untested |
+| `cpu-cycles` event | host alias is event 0x76; local format available | Candidate for first minimal counter pair after authorized privilege is arranged; specify user-only (`exclude_kernel=1`, and explicit hypervisor exclusion per selected environment) |
+| `instructions` event | host alias is event 0xc0; local format available | Same; treat as a cross-check, check the exact Model21 PPR/revision notes before asserting accuracy |
+| Current privilege | `perf_event_paranoid=4`; uid 1000; effective/permitted/ambient caps zero | Currently blocked for ordinary process by documented `>=1` rule; must be resolved by the owner/admin before any collection. This report makes no sysctl or capability change |
+| IBS Op optional | PMU directory/type/formats present, CPU flag `ibs` | Not admitted in this context; kernel docs require CAP_PERFMON/CAP_SYS_ADMIN, and no event-open/sample test was attempted |
+| CPU/frequency reproducibility | 12 online CPUs; amd-pstate-epp powersave/power; boost on; frequency range and current snapshot read | Pinning and trial-level behavior still unknown; policy is not locked |
+| `perf_event_open` outcome | Not called | UNKNOWN by design |
+| perf version, enabled event set, running/enabled ratio, multiplexing, counter scheduling | no `perf` invocation | UNKNOWN |
+| Host VM/hypervisor or container PMU virtualization | no query/run used to establish | UNKNOWN; `exclude_hv`/guest policy and privilege mapping must be made explicit by owner |
+| Model 21-specific PMC counter errata/reliability under current B0/microcode | Exact PPR selected, but AMD archive redirects during browser lookup | UNKNOWN until exact Model21 PPR and any applicable revision guidance are inspected; do not substitute another model's errata |
+
+For the later minimum pass, use a task/process-scoped, pinned fixture measurement and only `cpu-cycles` plus `instructions` in a non-sampling counting pass; use user-only filtering and record the exact perf syntax or `perf_event_attr` fields, selected CPU, enabled/running time, raw/scaled counts, and normal/error status. Do not mix IBS sampling into that timing pass. Do not infer usability from `perf list` or sysfs alone. With present `paranoid=4` and no capabilities, there is no collection authorization/evidence now; the owner must arrange an approved perf-capable execution context after candidate codegen qualifies. Excluding kernel/hypervisor does not itself bypass the paranoid restriction.
+
+Exact-model AMD references and errata applicability
+The observed `cpu family=25, model=33, stepping=0` corresponds to hexadecimal Family 19h, Model 21h, stepping 0. The specific AMD PPR reference is *Processor Programming Reference (PPR) for AMD Family 19h Model 21h, Revision B0 Processors*, publication 56214-B0; AMD's direct archive URL is https://www.amd.com/system/files/TechDocs/56214-B0-PUB.zip . During this review, AMD's archive URL redirected to its documentation hub, so the full PPR event definitions were not directly downloaded/verified here. It is still the model-matched primary document to resolve event semantics before interpreting raw PMC values. No Model 21-specific revision guide was located in the primary search. Do not claim that all model-specific counter errata are absent; leave reliability unknown pending the PPR/revision material.
+
+The Family 19h Models 00h–0Fh AMD Revision Guide (#56683), previously cited in R93, does **not** cover this Ryzen 5600X's Model 21h. Therefore the R93 discussion of that guide's retired-event overcount and IBS errata must not be applied to this host. Similarly, Model 10h–1Fh PPR #55901 is not the right model range. This scope check is central: event names from an unrelated Family 19h range do not establish this Model21 stepping's reliability.
+
+Primary source links
+- AMD Model 21h B0 PPR (#56214-B0), direct AMD archive (currently redirects in browser): https://www.amd.com/system/files/TechDocs/56214-B0-PUB.zip
+- AMD Family 19h 00h–0Fh revision guide (#56683), for scope exclusion only: https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/revision-guides/56683.pdf
+- AMD Family 19h 10h–1Fh PPR (#55901), showing a different range and not applicable to model 21h: https://docs.amd.com/v/u/en-US/55901
+- Linux v7.0 AMD PMU source/event mapping: https://github.com/torvalds/linux/blob/v7.0/arch/x86/events/amd/core.c
+- Linux v7.0 perf-list raw event syntax and sysfs event-format guidance: https://github.com/torvalds/linux/blob/v7.0/tools/perf/Documentation/perf-list.txt
+- Linux perf-event security/paranoid semantics: https://docs.kernel.org/admin-guide/perf-security.html
+- Linux AMD IBS perf documentation and required privileges: https://linux.googlesource.com/linux/kernel/git/torvalds/linux/%2B/e34a79b96ab9d49ed8b605fee11099cf3efbb428/tools/perf/Documentation/perf-amd-ibs.txt
+
+Conclusion
+This host is an AMD Ryzen 5 5600X, Family 19h Model 21h stepping 0, with the expected `cpu` PMU aliases exposed as cycles `0x76` and instructions `0xc0`, and both IBS PMU device directories present. The smallest later measurement pair is therefore the two core events with an explicit user-only filter, after static codegen qualification and an owner-approved perf-capable context. The current process is not admitted by the observed security state (`paranoid=4`, no CAP_PERFMON/CAP_SYS_ADMIN). No event-open success, counter reliability, IBS access, or measurable result is claimed. The R93 Family19h Models00h–0Fh errata are outside this CPU's model scope; Model21-specific event errata remain UNKNOWN pending direct PPR review.

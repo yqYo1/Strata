@@ -1,0 +1,23 @@
+IQ2_S intrinsic store alias contract — Round 102
+
+Scope and method
+This is a read-only resolution of the intrinsic-store caveat recorded in R97 and R101. I inspected the installed IntelLLVM 2026.1 Clang 22 headers under `/opt/intel/oneapi/compiler/2026.1/lib/clang/22/include/` and the relevant Clang compiler documentation. I did not build, invoke a compiler, run tests, inspect CPU/GPU state, or inspect root-owned qualification outputs.
+
+Exact header behavior
+`emmintrin.h` defines `__m128i_u` as a 16-byte vector type with alignment 1 (lines 42–43). `_mm_storeu_si128` accepts `__m128i_u *`; its inline body writes the vector member of a local `packed, may_alias` struct (lines 3929–3935). `avxintrin.h` follows the same pattern for `_mm256_storeu_si256`, using the 32-byte, alignment-1 `__m256i_u` (definition lines 38–40; store lines 3318–3324). The common comment in `immintrin.h` (lines 360–363) says `packed` forces unaligned access, and `may_alias` prevents TBAA metadata from being generated based on the wrapper struct and its field type.
+
+Clang's documented `may_alias` extension gives lvalues of an attributed type the same aliasing power as character types. Its Users Manual separately recommends `memcpy` for fully standard type-punning and says small constant-size copies are reliably optimized to simple loads/stores. This is a compiler extension contract, not a C++20 guarantee that a `reinterpret_cast` creates a vector object in the destination storage. The unaligned store guarantee concerns alignment; it does not, by itself, establish C++ object lifetime or standard aliasing legality.
+
+Application to R101
+R101's `check_register_indices` stores 16 bytes into a range wholly inside `uint16_t guarded[10]`. The range and canaries are bounds-correct, and the intrinsic is intentionally unaligned. The actual intrinsic parameter is a vector pointer, while the installed header implements the access through a `may_alias` wrapper. Therefore this exact IntelLLVM implementation does not attach ordinary TBAA assumptions to that store, and the test should work under the documented Clang extension. The narrow residual caveat is portability: C++20 alone does not bless the pointer cast/vector store as access to existing `uint16_t` objects. The production helper in the reviewed source returns `__m128i` by value and uses `memcpy` for its scalar input; this caveat is confined to test-only output storage and the older analogous `grid_indices` helper.
+
+Disposition
+For the stated IntelLLVM 2026.1 compiler, classify the existing fixture store as supported by the compiler's intrinsic-header implementation and aliasing extension, with no evidence of an out-of-bounds store. Do not call it portable standard C++. If the fixture's requirement is compiler-independent C++ object-model validity, use byte storage plus `memcpy` between byte storage and `uint16_t` values (or copy each expected lane out using `memcpy`); no production hot-path change is indicated by this review. Root may retain the existing targeted caveat if its portability criterion requires standard-only access.
+
+Evidence
+- Installed header: `/opt/intel/oneapi/compiler/2026.1/lib/clang/22/include/emmintrin.h`, `__m128i_u` lines 42–43 and `_mm_storeu_si128` lines 3929–3935.
+- Installed header: `/opt/intel/oneapi/compiler/2026.1/lib/clang/22/include/avxintrin.h`, `__m256i_u` lines 38–40 and `_mm256_storeu_si256` lines 3318–3324.
+- Installed header comment: `/opt/intel/oneapi/compiler/2026.1/lib/clang/22/include/immintrin.h`, lines 360–363.
+- Clang Users Manual, “Strict Aliasing”: https://clang.llvm.org/docs/UsersManual.html#strict-aliasing — describes `may_alias`'s aliasing power and recommends `memcpy` for standard type-punning.
+- Clang Attribute Reference: https://clang.llvm.org/docs/AttributeReference.html — describes Clang-supported attributes; the detailed aliasing semantics above are in the Users Manual.
+- Source application details: R101 report, `iq2s-register-index-independent-source-review-round101.txt`, section “Added oracle and residual aliasing note”.

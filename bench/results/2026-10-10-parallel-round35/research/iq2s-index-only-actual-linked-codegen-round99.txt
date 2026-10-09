@@ -1,0 +1,111 @@
+IQ2_S index-only linked codegen interpretation — Round 99
+Status: static interpretation of the committed exact linked-codegen capture and its
+source/build/evidence texts. No compiler, binary, disassembler, runtime, performance
+counter, CPU/GPU query, build, test, Git, or cleanup action was performed here.
+
+Decision
+Hold before timing/adopting the current index_candidate. Its generated hot body
+has no helper calls or gather instruction, but it retains scalar IQ2_S grid-table
+loads and adds stack materialization/reload of each decoded uint16 index plus
+additional vector stack traffic. Its frame allocation is 0xb8 bytes (184), against
+the control's 0x28 (40). This establishes a clear codegen cost to address; it does
+not establish a latency or cycle penalty. First make one narrow source change that
+keeps the eight decoded 16-bit indices in a vector register up to extraction for
+the existing scalar table loads, then repeat the same exact correctness and linked
+codegen proof. If the resulting register-only path still spills materially, do not
+time it as a presumed improvement.
+
+Evidence and boundary
+The read evidence is the Windex committed qualification source at
+`/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010`,
+commit `1e35586ce7cf2c9f493cd7a34a44137bd500a34b`, plus its closed text capture in
+`bench/results/2026-10-10-iq2s-index-spread-qualification/`. The capture pins the
+release executable SHA256 `9172f3c4a982b1d0d73111d5ae6a447f56984d62f34bb2faf5129f37a9bf2bc8`.
+The source is `sycl/tools/native-iq2s-nt1-index-spread/iq2s_index_spread.cpp`.
+Pinned source SHA256: `e86a12c792fa573b5c4203bca0abe31acdf6ea2cba7bb330781b90c24682d2d2`. Captured text identities: `control.asm` `4895cd72e454ae2e2031bea080f3cfe326ae613df21ab2b56934bcbc966a91ad`; `candidate.asm` `9cdab96c33542c002835d832536b2c245ada74ec54ac82415d2102e3b71afa20`; `rows.asm` `05c06a3d65299aee85bd2fcf6586ec8ebce62ecdb38c680739c109c70e549ba0`; `ggml_vec_dot_iq2_s_q8_K.asm` `2bc3964214a21d09d09b41b6403bf61358a5a97c983bfba887467754be201bca`; `main.asm` `6f9f18d939665ac28801998098095b720c63db44aaec371ca337d1b0a94254a9`; `quantize_row_q8_K.asm` `20dba73d4b2c6badd93f2d97e967bb1e7b84ed333f72daed8e96d15c0b219de6`.
+The accepted record reports complete normal exit for release and IntelLLVM ASan/
+UBSan. Each has 96 synthetic profiles, 1,536 GU pairs, 9,216 dot calls, 262,144
+uniform-index comparisons, 4,194,304 mixed active-index comparisons, 1,048,576
+mixed decoded-vector comparisons over 16 alignment offsets, and bitwise equality
+for finite Gate, Up and final GU results. These are source-boundary correctness
+results only. There is no model, actual-weight sample, live activation or timing
+result in this capture.
+
+For the candidate/control translation unit, the recorded release flags are
+IntelLLVM 2026.1 `icpx -O3 -DNDEBUG -std=gnu++20 -fp-model=precise -mavx2 -mfma
+-mf16c`; this is an AVX2/FMA/F16C-targeted harness, not an all-CPU result. The
+pinned GGML CPU translation units in the same release compile database use
+`-march=native -fno-associative-math`; the IntelLLVM capture host metadata names an
+AMD Ryzen 5 5600X. `rows()` obtains the IQ2_S trait using
+`ggml_get_type_traits_cpu`, checks Q8_K and one-row trait metadata, and calls the
+trait's `vec_dot` through an indirect function pointer. It calls the direct
+control and candidate symbols directly. Thus the baseline arm does retain the
+production-style trait indirect call in this harness; no claim is made that the
+application-level dispatch or a production invocation was measured.
+
+Operation comparison, per 256-value IQ2_S block
+Both arms retain the same outer `n/256` block loop, Q8_K inputs, scale extraction,
+signed-Q8 treatment, AVX2 dot/reduction arithmetic, and final horizontal sum. The
+control's inner loop advances by two 32-value groups (four groups per iteration,
+eight groups total). It forms grid indices using scalar shifts/ORs from each
+`qh` byte and four `iq2s_grid` scalar loads per four code bytes, repeated for the
+corresponding second half. Across a complete 256 block, this means 32 grid entries
+are selected. It also copies the 32-byte sign region to a local `sign_words[16]`
+using `memcpy`; the captured control uses one 32-byte vector store at `[rsp]` and
+reads sign words from that local buffer. That is intentional algorithm scratch in
+the control and must not be mislabeled as compiler spill overhead.
+
+The candidate substitutes `grid_indices(qs, high[qh], sp)` for assembling the
+same 16-bit indices with the per-byte shifts/ORs. `high` is a 256-entry compile-time
+mapping that unpacks the four 2-bit fields of qh into bytes; `grid_indices`
+interleaves those high bytes with the eight low q bytes. In linked code, the
+candidate still performs the same number of IQ2_S grid-table scalar loads; it has
+not converted the grid lookup to a vector gather. For each four-code group, the
+compiler stores the packed `sp1`/`sp2` vectors to stack at `[rsp]` and `[rsp+0x10]`,
+then performs four `movzwl` reloads for each before the scalar table lookups. That
+stack array materialization and scalar extraction are part of the candidate's
+chosen index representation, not the control's `sign_words` scratch.
+
+Across the fully unrolled groups, the candidate assembly also stores/reloads
+additional YMM intermediates at frame offsets including `0x20`, `0x50`, `0x70`
+and `0x90`; these are compiler-generated stack traffic in the candidate body.
+Some offsets also hold candidate temporaries (e.g. the broadcast scale state), so
+this report does not count every stack access as a spill. The distinguishing
+factor is visible: repeated index-array stores and `movzwl` reloads in the
+candidate, plus other vector stores/reloads, against the control's compact sign
+scratch and loop-carried vector state. The candidate body is fully unrolled for
+the inner eight 32-value groups, while control retains the inner loop; this can
+explain code-size/register-pressure differences but alone does not imply which is
+faster. Candidate and control each retain a dynamic outer block loop.
+
+Call, lookup and target findings
+There are no helper calls in either successful hot dot body; candidate/control
+calls in their disassembly are confined to invalid-width exception paths. The
+hot grid accesses are scalar `vmovq` loads indexed by GPR into the read-only grid
+table, not AVX2 gather operations. The candidate lowers the `high` interleave and
+packed index path into vector byte operations, but then scalarizes indices via
+stack and GPR loads. It therefore reduces some integer bit assembly while adding
+observable index materialization and scalar reload work.
+
+The separate `ggml_vec_dot_iq2_s_q8_K` symbol is captured and its body contains
+its own scalar grid-table addressing and vector dot path. The qualification's
+`rows()` assembly shows the baseline indirect trait call, direct control call and
+direct candidate call separately. `quantize_row_q8_K` in this linked artifact is
+a jump thunk to `quantize_row_q8_K_ref`; it is called by the synthetic test setup,
+not by the dot functions. There is no evidence here of candidate dispatch in the
+application kernel, persistent weights, a real model workload or production
+activation preparation.
+
+Smallest justified next factor
+Change only the candidate's index output representation: replace the `uint16_t
+sp1[8], sp2[8]` out-parameters with packed `__m128i` results from the same
+low/high-byte interleave, and extract the fixed 16-bit lanes from registers for
+the existing scalar `iq2s_grid` loads. Keep the same high-byte mapping, grid table,
+signed Q8 path, loop structure, accumulation order and target flags. Do not combine
+this with scale-table changes, gathers, pair fusion, wider unrolling or global
+compiler flags. Re-run the already defined uniform/mixed/alignment and full row
+correctness gates, then inspect the exact linked body for eliminated index stack
+round-trips and any newly introduced spills before authorizing a timing comparison.
+
+The result is a codegen gate only. No instruction-throughput conversion, cycle
+estimate, latency prediction or speed claim is supported by these artifacts.

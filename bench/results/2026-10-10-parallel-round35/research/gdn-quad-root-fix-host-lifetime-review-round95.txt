@@ -1,0 +1,61 @@
+# GDN quad root-fix host lifetime review (round 95)
+
+Date: 2026-10-10. Independent read-only source review; no edit, build, test, execution, GPU/device query, Git command, or cleanup. Candidate worktree is `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010`, root-supplied commit `6d67ba1972475cf59c940b48990d95f566abba80`. Reviewed the v2 source handoff and its recorded review scope, not runtime behavior.
+
+Reviewed pins:
+
+- `sycl/src/prefill/gdn_quad_parity.cpp`, SHA-256 `717367a76a82c7e0cf3cc5698cb68ca8e84f867b5d9b0c9b41b3dbf98c926fb1`, 14,000 bytes.
+- `sycl/tools/gdn-quad-pipeline/README.md`, SHA-256 `6bf5729229826c899894677417e0f7c3afef8ad7cc03dd3ed192396f3e97651d`, 11,278 bytes.
+- `sycl/CMakeLists.txt`, SHA-256 `ce0a6264b8afb008abab3840e4f22fd652cb371483f2273e4e73e01a5df81ee7`.
+- Async handler and lazy queue construction: `sycl/include/strata/sycl_error.hpp` SHA-256 `4b64f82b0805e9a113077ea7abc57d18044bff7240d8fe956abe651eb4f90ce4`; `sycl/include/dpct/device.hpp` SHA-256 `adbcbd0ac45995348e37ac3f5ca42d9f3d4b0555031aeb1781a1e2166a74ed52`.
+- Root handoff record: `bench/results/2026-10-10-gdn-quad-source-handoff/root-source-handoff-review-v2.json`, SHA-256 `8b0cde2331a3cfc631a604545539542820e03f39196e29d3f9eefa2fcaba7130`; records no build/host-only/GPU/model execution and specifically requests this host-lifetime review.
+- Installed Unified Runtime header: `/opt/intel/oneapi/compiler/2026.1/include/unified-runtime/ur_api.h`, SHA-256 `4d53fe6809494c21b5a1ccf6d8ed5ba9b2fa3b55027888c2cc2f4ad0d691bbd4`; Level Zero header: `/usr/include/level_zero/ze_api.h`, SHA-256 `095a0eb442ae21946f29147c209f270b93dd0eb5b12a2d0c67e5f4138b533712`.
+
+## Disposition
+
+The R94 device-USM finding is closed for the stated failed-drain case: `Buffers::~Buffers` now skips all explicit `sycl::free` calls after `q.wait_and_throw()` throws (`gdn_quad_parity.cpp:54-60`), logs that completion is unknown, and rethrows on a normal destruction path or preserves the active exception during unwind. The allocation-list vector may then destruct, but it only owns host pointer values; device allocations are intentionally left to process teardown. A successful drain precedes explicit release (`:62-64`). This does not make the SYCL session recoverable or reusable; README correctly describes process failure.
+
+A separate high-priority host-memory lifetime hole remains. The new destructor cannot protect ordinary local `std::vector` objects whose scopes end before `Buffers::~Buffers` gets its later drain. For `queue::memcpy` host endpoints, the operation is asynchronous and its event/wait is what establishes completion. The official SYCL USM material calls queue memcpy asynchronous; queue docs distinguish immediate submission errors from asynchronous errors. Installed UR `urQueueFinish` documents completion only on normal completion and lists `DEVICE_LOST`/`ADAPTER_SPECIFIC` errors; installed Level Zero `zeCommandQueueSynchronize` likewise lists device-loss/reset/error results. Do not treat an unclassified failed submission/wait as a lifetime fence. Sources: [SYCL USM lesson](https://github.khronos.org/syclacademy/Lesson_Materials/Using_USM/), [SYCL queue error handling](https://github.khronos.org/SYCL_Reference/iface/queue.html), [SYCL 2020 rev. 12 object-lifetime section](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html). Installed API details are at `ur_api.h:7320-7349` and `ze_api.h:3654-3685`.
+
+## Concrete host-buffer counterexamples
+
+The queue is in-order, but that orders commands; it does not extend the lifetime of ordinary C++ vectors. Each host `memcpy` can be enqueued asynchronously. If one transfer is accepted and a later transfer submission throws synchronously, or if the following wait throws without a completion guarantee, C++ unwinds the local vector before the outer `Buffers` destructor can try another drain. A later successful retry cannot undo the interval in which the host storage was already destroyed.
+
+- `initialize`, lines 69-77: local `state` is the source of two H2D copies (`:76`). If the second submission fails after the first was accepted, or the wait at `:77` fails, `state` is destroyed as this function unwinds. `Buffers::~Buffers` runs later.
+- `prepare`, lines 81-96: local `h`, `gate`, `beta`, `z`, and `gamma` source five H2D copies (`:96`). Failure on a later copy or at the shared wait can end these vector lifetimes while an earlier copy remains outstanding. Earlier output `fill`s use device allocations, which the repaired destructor does preserve on failed drain; that does not preserve these host sources.
+- `floats`, lines 98-103: local `x` and `y` are destinations for two D2H copies (`:99`). If the second enqueue or wait throws, the first may still write into destroyed vector storage. This helper is reached both directly by normal compare and from `empty_device`/forced denial.
+- `compare`, lines 105-109: local half-output `x` and `y` are D2H destinations (`:107`) and are released on failed submission/wait.
+- `empty_device`, lines 111-120: `before`/`after` host snapshots are destinations (`:113`, `:117`), and local `half` is a destination (`:119`). A thrown wait unwinds those vectors before the outer owner can retry draining.
+- `call`, lines 122-139: forced-denial `before`/`after` and `half` use D2H copies (`:126`, `:131`, `:134`). The normal path reaches `compare`, with the same receive-vector issue. Synchronous candidate/reference submission failure itself only uses device pointers, but any pending host copy from the preceding stage must still be accounted for.
+
+The receive vectors are ordinary pageable host allocations, not tracked in `Buffers::owned`; the async queue operation's use of their address must end before their destructor. This is not merely a question of diagnostic output or a possible host-memory leak: it can write into freed/reused host memory.
+
+## Ownership/error path audit
+
+Normal route: `Buffers d` in `main` owns device allocations and borrows `q`; each helper owns its temporary host vectors. On successful `wait_and_throw`, a helper consumes/compares the results and only then destroys those vectors; ordering is sound. On function exit, `Buffers` performs a final drain and frees USM after success.
+
+Submission-throw route: SYCL reports immediate enqueue errors synchronously ([queue reference](https://github.khronos.org/SYCL_Reference/iface/queue.html#queue-error-handling)). In a sequence of copies, a later enqueue can fail after an earlier enqueue returned successfully. The helper then unwinds and destroys all local vectors while the earlier operation may remain live. The outer `Buffers` destructor's second drain is too late. No per-transfer event or host-storage retention guard is present.
+
+Wait-throw route: the queue's handler is installed by the DPCT device manager; `dpct::device.hpp:70-73` delegates to `strata::rethrow_sycl_errors`, which logs and rethrows the first async exception (`strata/sycl_error.hpp:8-19`). SYCL `wait_and_throw` blocks and dispatches unconsumed async errors, but it can also report synchronous/runtime failures. A generic catch therefore cannot assume the transfer endpoint is safe to destroy. The queue object itself is the function-local-static DPCT manager's queue, initialized with async exceptions enabled (`device.hpp:684-702`); it outlives `Buffers` on ordinary test paths. The manager will not repair stack-local host-pointer lifetimes.
+
+Exception-unwind route: local host vectors in `initialize`/`prepare`/`floats`/`compare`/`empty_device`/`call` are destroyed before outer `Buffers` cleanup. The repaired destructor only addresses the device pointers it owns. It cannot quarantine memory that has already been returned to `std::allocator`.
+
+Partial USM allocation route: all 11 `malloc_device` calls are made before any command submission; `owned.reserve(11)` is done before them (`:47-52`). The catch tries to free each tracked pointer and reports a cleanup failure while retaining the original allocation exception. No host vector is involved yet, so command-lifetime ordering is sound for this path. Cleanup/free failures are not injected or runtime-tested.
+
+## Host-only mode
+
+For exact argument `--host-only`, `main` branches at `gdn_quad_parity.cpp:144-148` before its only `strata::q_of(nullptr)` at `:152`. `early_contract()` calls only: the explicit candidate with `T==0` (candidate returns before queue lookup), the explicit pipeline reference with `T==0` (reference returns before queue lookup), negative-T validation (throws before lookup), forced diagnostic denial (returns before lookup), host array comparisons, scalar arithmetic, and stdio (`:26-40`). The static SYCL target is linked, but no queue, context, device info, allocation, memcpy, or kernel submission call is reachable from this source path. `dpct::dev_mgr::instance()` is function-local-static and its constructor enumerates devices and constructs queues only when first invoked (`device.hpp:849-883`); `q_of` invokes it only on the non-null path or default-queue lookup. So **source-level** `--host-only` does not call into device enumeration or touch GPU APIs.
+
+Do not claim that this proves the dynamic loader or oneAPI/SYCL shared-library/plugin initialization makes no hardware probe: that behavior is outside this source-only audit and no loader trace/process execution is allowed. The README describes the narrow guarantee as before queue lookup and says the mode remains unexecuted. The printed `queue_lookup=false GPU_submission=false` accurately describes the C++ call path, not a measured guarantee about shared-library startup.
+
+## Minimum safe contract and recommended priority
+
+**Priority P1, block any parity executable run until fixed.** For each host-involved asynchronous memcpy, retain both source and destination host storage until a successful completion fence for every operation using them. If any later submission or drain fails without a known completion result, mark the test process failed and do not unwind/reuse/free the affected host vectors. Because this is a disposable test program, the smallest conservative implementation is a fail-stop path that terminates without C++ unwinding on an unclassified copy-submit/wait error, or a process-lifetime quarantine owner that holds all host transfer buffers until exit. Also preserve device USM as the current destructor does. Do not retry the test case or continue to another iteration after such a failure. Successful queue wait then permits normal vector destruction and explicit device-USM release.
+
+A local event wait after each copy is useful for the normal path, but a thrown event wait alone does not solve the failure path: the host vector must still survive a wait exception. A shared helper can wrap both enqueue and wait in one lifetime scope and route unknown completion to the test-process fail-stop/quarantine policy. No implementation was made.
+
+## Validation status and sources
+
+No build or execution was performed. `--host-only` was not executed; no GPU, device, model, or profiler was queried. Root handoff v2 records the same unbuilt/unrun status. Current host-only source control flow is statically clear; dynamic loader behavior, compiled path, async exception ordering on this runtime, and all GPU claims remain unverified.
+
+Primary API evidence: [Khronos SYCL queue reference](https://github.khronos.org/SYCL_Reference/iface/queue.html) (async and synchronous error categories, wait-and-throw); [Khronos SYCL USM lesson](https://github.khronos.org/syclacademy/Lesson_Materials/Using_USM/) (queue memcpy is asynchronous and returns an event used to synchronize); [SYCL 2020 revision 12](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html) (queue/memory object lifetime model; implementation may share/cache global state). Installed Unified Runtime finish contract and error results: `/opt/intel/oneapi/compiler/2026.1/include/unified-runtime/ur_api.h:7320-7349`. Installed Level Zero queue synchronize description/results: `/usr/include/level_zero/ze_api.h:3654-3685`. These low-level APIs establish completion on successful finish/synchronize; an error return is not treated here as proof that host storage is no longer referenced.

@@ -1,0 +1,49 @@
+# GDN quad production selector and phase contract — R97
+
+Review type: source-only, read-only review. No source edits, build, test, execution, GPU query, Git operation, or cleanup was performed.
+
+Pinned review target supplied by parent:
+- Worktree: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010`
+- HEAD: `9edf4a5941f029357b2f2d0b19c19bdff4638c06`
+- Reviewed kernel source SHA-256: `af16f3d89dc0ef154b89800c278a78959ca0f7de0d59e90c7bc16e998f9968be`
+
+## Production callsites and phase map
+
+The only production call to `gdn_recurrence` found under `sycl/src` is `sycl/src/prefill/prefill.cpp:3665`. The other call is in the parity harness, `sycl/src/prefill/gdn_variant_parity.cpp:68`. `gdn_recurrence_variant` and the quad entry point are only called by the dispatcher, apart from explicit parity-fixture calls (`gdn_quad_parity.cpp:40,43,46,122,134`).
+
+The production call is in `Prefill::run_impl` (`prefill.cpp:2794`), inside its two-half loop (`:3562`). The GDN branch requires `half == 0 && !core::is_qsa_layer(g,l)` (`:3645`); it computes the projections and gate/conv inputs, calls `gdn_recurrence` (`:3656-66`), then performs the output projection (`:3667-69`). Therefore the quad selector can affect GDN recurrence for prompt-prefill chunks that pass this branch; the source does not route other phases through it.
+
+Decode uses a different API. `sycl/src/core/layer.cpp:343-46` dispatches to `native_gdn_step` or `gdn_step`; output normalization follows at `:359-62`. Verification callsites in `sycl/src/core/verify.cpp:1012,1018,1905,2792` use `gdn_step_norm_multi`, not `gdn_recurrence`. Prefill cache restoration (`prefill.cpp:2526+`) restores/copies saved bytes; it does not call recurrence. Thus decode, verify/MTP GDN step paths, and restore do not use the quad selector. This report did not trace every upstream MTP control-flow caller; the reviewed verification kernels themselves use the separate step API.
+
+## Selector and environment precedence
+
+`gdn_recurrence` at `sycl/src/prefill/kernels.dp.cpp:2897-2904` has process-static `STRATA_GDN_HEAD` (`atoi(value) != 0`) and `STRATA_GDN_REC_HEADS` (presence). It chooses variant 1 for head mode unless serial-head mode is present, otherwise variant 0. These statics, and the statics in the variant function below, mean tests of environment settings require a fresh process per row.
+
+For non-HIP builds, `gdn_recurrence_variant` initializes the process-static `STRATA_GDN_QUAD` value at `:2745-51`: unset or exact `"0"` disables, exact `"1"` enables, any other value throws `invalid_argument` when the variant function is first entered. The parse occurs before the candidate condition, so an invalid value also throws on a variant-1 call. Candidate selection at `:2752-60` requires quad enabled, variant 0, `STRATA_GDN_REC_HEADS` absent, `STRATA_GDN_PIPELINE` unset/nonzero by `atoi`, `STRATA_GDN_KEYHEAD` unset/atoi-zero, and `STRATA_GDN_KEYHEAD_TUNED` unset/atoi-zero. A true return from `gdn_recurrence_quad_variant` handles the call; false falls through to the old route. Candidate submission errors propagate; the dispatcher does not catch them and switch to the old route.
+
+The old selector starts at `:2805`. Presence of `STRATA_GDN_REC_HEADS` forces the serial path even for empty or `"0"` values; `T <= 0` and variant 2 also enter that path (`:2805-25`). Otherwise old `pipe` and `tuned` are process-static (`:2826-30`): pipeline defaults on and uses `atoi != 0`; tuned is on only when `atoi == 1`. The tuned keyhead path runs when both are enabled (`:2831`); SYCL then checks `gdn_keyhead_ok()` for its keyhead route (`:2833+`), otherwise it uses the old pipeline/nonpipeline routes and norm. Quad is compiled out under `__HIPCC__` (`:2745,2762`).
+
+The old kernel bodies and their launch code remain textually present below the inserted candidate gate. That source identity does not establish byte-identical compiled images or performance neutrality after rebuilding.
+
+## Fresh-process matrix for a post-GPU-gate dispatcher comparison
+
+Use identical prompt, model, state initialization, and positive prefill chunk sizes for the baseline and candidate. Record the selected route/counters, candidate attempts/accepts/denials, old-route launches, full recurrent state, output values, and timing samples. Run each row in its own process so function-static environment reads are deterministic.
+
+| Row | Environment | Expected route / observation |
+|---|---|---|
+| Baseline | `STRATA_GDN_QUAD=0`, other selectors default | Existing selector; capture full state/output and old-route counters. |
+| Candidate | `STRATA_GDN_QUAD=1`, other selectors default, variant 0 | Candidate eligible; compare full state/output with baseline and record candidate and fallback counts. |
+| Serial presence precedence | `STRATA_GDN_QUAD=1`, `STRATA_GDN_REC_HEADS=0` | Presence forces old serial route; no candidate attempt. |
+| Pipeline exclusion | `STRATA_GDN_QUAD=1`, `STRATA_GDN_PIPELINE=0` | Candidate excluded; old route. |
+| Keyhead exclusion | `STRATA_GDN_QUAD=1`, `STRATA_GDN_KEYHEAD=1` | Candidate excluded; old route. |
+| Tuned exclusion | `STRATA_GDN_QUAD=1`, `STRATA_GDN_KEYHEAD_TUNED=1` | Candidate excluded; old route. |
+| Head variant | `STRATA_GDN_QUAD=1`, `STRATA_GDN_HEAD=1` (or the architecture's default head selection) | Variant 1 bypasses candidate. |
+| Invalid setting | `STRATA_GDN_QUAD=<anything except exact 0 or 1>` | First dispatcher call throws; verify the error is surfaced. |
+
+The current forced-denial fixture directly calls `gdn_recurrence_quad_variant(..., force_deny=true)` (`gdn_quad_parity.cpp:43,134`); that seam is not passed through the production dispatcher. A production-selector denial/fallback count therefore needs a controlled dispatcher-visible test seam or equivalent instrumentation. For that check, assert one denied candidate attempt, one old-route fallback, and full state/output equivalence. Candidate post-submit fault injection should separately assert one candidate submission and propagated error, with no old fallback.
+
+`T==0` and `T<0` are not normal prefill chunks; exercise them in a direct dispatcher fixture if required. For `T==0`, the candidate gate is tested before the legacy `T<=0` serial check, so verify intended no-op state/output and route counts for both quad-off and quad-on. For `T<0`, compare the candidate validation error with old-route behavior; do not treat it as a production prompt-prefill case.
+
+## Evidence limits
+
+This was a source inspection only. No normal-dispatcher run, selection/fallback counter, complete state/output comparison, denial-through-dispatcher observation, post-submit fault injection, timing, binary identity check, or decode-vs-prefill performance measurement was performed. The explicit candidate parity harness exercises the candidate API directly and does not establish production selector integration.

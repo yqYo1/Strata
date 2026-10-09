@@ -1,0 +1,42 @@
+# IQ2_S NT1 index-only prototype — independent source review R98
+
+Review scope: source-only review of the three supplied prototype files and comparison with the supplied pinned GGML sources. No source was changed. No build, configure, import, preprocess, syntax check, test, execution, device query, Git command, timing, disassembly, profiler run, or cleanup was performed. This report does not claim runtime correctness, sanitizer cleanliness, emitted-instruction identity, speed, or live-model representativeness.
+
+## Pinned items and source identity
+
+Prototype worktree: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010`; assigned base commit: `af12591ca840deb4649b703cbb7469fbc2417fc9` (from owner handoff; no Git command run).
+
+The supplied file hashes match read-only SHA-256 checks:
+
+- `sycl/tools/native-iq2s-nt1-index-spread/CMakeLists.txt`: `fbbe43744582bcd320349392e3e90f81e7b1299128c76639d4b96de285cb255d`
+- `.../iq2s_index_spread.cpp`: `fcc26c7a2d8e3d2feff91ee6c33afcd348f5f33be09afffe0ff94d39d06289d9`
+- `.../README.md`: `67fd7736f31b2eb76d7519ec1116e37f06ca2b5cca4bfbfc61ba1356dbae2105`
+
+Pinned GGML is `/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml`, commit `3cf03257f219afbe7334045ff7c6a06ac68c627d` (owner supplied). Read-only hashes agree with the handoff: `src/ggml-cpu/arch/x86/quants.c` `3c489fdc77e3ab484a5f188bff9c60c0e9483c951ed65c1a562a04c249d5628e`, `src/ggml-common.h` `0061131b615c5721fc88a78feeb22c1f8c450f1c2646a317d80796a653bf595c`, `src/ggml-cpu/ggml-cpu.c` `7b451e6528cec3bc27bfd812a1314859c92d22a00c2db371d543cde5b7d5ca94`, and `src/ggml-quants.c` `07143d7068936ae46b3c528b2f3d4bbb666e74d88992165716174d243573965d`.
+
+## Findings
+
+No source-level index-mapping or floating-point accumulation mismatch was found in the reviewed candidate against the pinned AVX2 `ggml_vec_dot_iq2_s_q8_K` implementation. The core copied schedule in `direct_control` (`iq2s_index_spread.cpp:64-141`) matches the pinned AVX2 body (`quants.c:3075-3158`) in block-scale multiplication, Q8 loads, sign application, scale shuffle, `maddubs`/`madd`, integer accumulation, per-block float FMA, horizontal sum, and final `0.125f` scaling. Both fixture copies intentionally replace GGML's packed-sign pointer cast with `memcpy` into local `uint16_t` storage (`:88-90`, `:166-68`), a definedness improvement shared by control and candidate but an emitted-code difference that must be inspected.
+
+The candidate changes the four scalar index expressions only (`iq2s_index_spread.cpp:181-85`): a constexpr table spreads the four 2-bit fields of `qh` into byte positions; `grid_indices` memcpy-loads eight low bytes and interleaves them (`:40-44`), and the first four 16-bit values index `iq2s_grid`. For lane k=0..3 this gives `lo[k] | ((qh << (8-2*k)) & 0x300)`, matching the GGML expressions at `quants.c:3123-30`. The lane order used to construct each 256-bit codebook vector is preserved. The additional table lookup and temporary arrays are cost risks, not evidence of an optimization.
+
+The extended low-byte read is in-bounds for the declared object. `block_iq2_s` is `d`, `qs[64]`, `qh[8]`, `scales[8]` in `ggml-common.h:396-402`, with a static size assertion. The final second-half read starts at `qs+28`, reads through `qs[35]`, and remains within `qs[0..63]`; only generated indices 0..3 are consumed. Bytes `qs[32..35]` are in the packed-sign portion used by the dot, but are merely copied into unused extra lanes and do not feed the four scalar lookups. `memcpy` handles byte alignment/aliasing; `_mm_storeu_si128` is explicitly unaligned. The grid indices are in `[0,1023]`, matching the codebook extent. This review found no aliasing or alignment hazard in that path.
+
+The common-header arrangement appears valid: the normal `quants.h` include establishes declarations first; `GGML_COMMON_IMPL_CPP` is then defined before a second include inside `isolated_iq2s` (`iq2s_index_spread.cpp:33-40`). In `ggml-common.h`, declaration and implementation sections have separate guards (`:462-80`); the implementation table macros are `static const` (`:476-82`), and IQ2_S codebook data is included by the `GGML_COMMON_IMPL_C || GGML_COMMON_IMPL_CPP` section. Thus the table definitions are internal to this translation unit and do not add exported symbols. No production dispatch, expert, pool, or calibration source is touched by the supplied three-file fixture.
+
+CMake requires IntelLLVM and rejects several unsafe global flags; it pins the supplied central GGML source hashes, forces CPU-only options, and adds precise FP plus AVX2/FMA/F16C to the fixture target. The recipe alone does not prove the selected GGML trait pointer is the active AVX2 specialization on the host. Runtime CPU/trait confirmation remains required as already called out in the README.
+
+## Fixture coverage and limits
+
+The index loop at `iq2s_index_spread.cpp:222-32` covers all 256 high-byte values, all 256 low-byte values and each of four position formulas, totaling 262,144 scalar comparisons; all 1,024 indices are marked. It also compares the resulting four codebook qwords for each input pair, totaling 65,536 four-qword vector cases. In that explicit vector subtest, the same low byte is replicated into all eight source bytes. This still exercises every `(high, low)` value at each position, and the randomized full-dot profiles exercise distinct packed bytes, but it does not independently vary the four low bytes in each explicit vector case. If that subtest is intended to establish arbitrary mixed-lane interleave order on its own, add a mixed-byte vector fixture in a later revision; this is a small coverage limitation, not a source correctness defect.
+
+The 96 finite-input profiles, 16 Gate/Up weight pairs per profile, production Q8_K quantization, `-128` exclusion, finite checks, and bitwise three-arm comparisons are consistent with the stated synthetic characterization. The quantization-boundary modes anchor a block at +127 and vary adjacent half steps; packed IQ2_S fields are byte-valued and all bit patterns are legal, with finite nonnegative half scales. `act` storage is zero-initialized before quantization, including all-zero block `bsums`. The fixture's final Gate/Up nonlinearity uses the same operands and expression for each arm. These cases support only the admitted finite synthetic domain; they do not show actual expert-weight or live-activation coverage, robust handling of NaN/Inf/denormals/raw Q8 input, or deployed-model numerical behavior.
+
+The FNV checksum is a reproducibility checksum, not a cryptographic proof. Success evidence must include normal exit zero, all expected profile lines, the index line, final summary, and complete output; the source has failure checks and stdout flush/ferror handling (`:217-20`, `:272-75`), while process-level resource/time/output limits remain the supervisor's responsibility.
+
+## Severity and required evidence before advancing
+
+- P1: none identified from source inspection.
+- P2 / evidence gates: mixed-low-byte explicit vector coverage is absent as described above; active AVX2 trait selection, exact outputs, fault handling, sanitizer behavior, compiler output, object/binary identity, spills, code size, hot-loop costs, and timing are all unverified because execution/build/codegen were explicitly out of scope. In particular, source inspection cannot establish that the `memcpy` sign adaptation is free or that the candidate's 2 KiB high-spread table plus two eight-index arrays help performance.
+
+The next evidence gate remains the owner-directed bounded release build and complete fixture execution, followed by sanitizer run and linked baseline/control/candidate/full-caller disassembly review under the measurement lock. No speed or adoption claim is supported by this report.

@@ -1,0 +1,102 @@
+IQ2_S register-valued index extraction — independent source review Round 101
+Status: static review of the exact committed source and its README only. No build,
+compiler, fixture executable, disassembler, performance tool, CPU/GPU query, Git,
+cleanup, or root-owned active output/receipt was inspected or modified.
+
+Identity and prior boundary
+Reviewed Windex commit `22064c0b26232b0964afd70e7d9fe47535b39224`:
+- `sycl/tools/native-iq2s-nt1-index-spread/iq2s_index_spread.cpp`
+  SHA256 `c51f580bc72cb303e7fe30b1cfb6f7c09ad82332ffd60d441af0eac2dbe77b89`
+- `sycl/tools/native-iq2s-nt1-index-spread/README.md`
+  SHA256 `f47b8a21ef399c8ae9b2f235ec27f9ea8547bd989290c80d3c674824aa311c2f`
+The report was cross-read with R99, R100 and Sol's
+`implementation-iq2s-register-index-extraction-v1.txt` to keep the review specific
+to this source delta. R99's old candidate timing/adoption hold remains applicable;
+this source review does not establish results for the new revision.
+
+Source delta and code path
+The new `grid_indices_register` does exactly the prior helper's two operations:
+copy eight bytes from `q` into a `uint64_t`, then interleave the low eight bytes of
+that word with the low eight bytes of `hi`. It returns the resulting `__m128i` by
+value. The old out-parameter `grid_indices` remains unchanged for the old oracle
+fixture. In `index_candidate`, the two former `uint16_t sp1[8], sp2[8]` arrays are
+replaced by two `const __m128i` values, and each of four fixed lanes is extracted
+with `_mm_extract_epi16` at immediate lanes 0, 1, 2, 3 into the same four scalar
+`iq2s_grid` subscript positions. The source keeps the existing array/codebook
+reads; this is not a gather or a change to the subsequent dot arithmetic.
+
+The direct-control body still uses the previous per-byte qh shifts/ORs for its
+indices. The two scalar int32 accumulators and their ordered updates, scale nibble
+expansion, sign scratch/copy, Q8 signed transform, maddubs/madd, ascending block
+FMA, horizontal reduction, postscale, row caller and finish expression remain the
+same in the inspected text. The candidate's only hot-path change is index
+representation plus its four fixed-lane extracts. The added helper checks execute
+only in fixture index cases, not inside `direct_control` or `index_candidate`.
+This supports the claimed single-factor source scope; it says nothing about
+compiler scheduling, register residency, spills, code size or performance.
+
+Bounds, lane mapping, type and ISA review
+`high` is a constexpr array of 256 `uint64_t` entries. Its construction sets only
+bytes 0–3 to qh's four two-bit fields; bytes 4–7 remain zero. `grid_indices_register`
+reads exactly `q[0..7]` via `memcpy`, forms a vector by `_mm_unpacklo_epi8`, and
+therefore places each low byte in the low byte of one 16-bit lane and the
+corresponding high field in its high byte. For the four active lanes k=0..3, the
+result is `q[k] | (((qh>>(2*k))&3)<<8)`, matching the existing scalar expression
+`q[k] | ((qh << (8-2*k)) & 0x300)`. The upper four lanes have a zero high byte and
+contain only q[4..7]; the candidate does not use them for grid selection.
+
+Both new extraction indices are literals in the source, so the intrinsic's
+compile-time lane immediate requirement is met. `_mm_extract_epi16` yields a
+zero-extended 16-bit lane in an integer result; each active IQ2_S index is at most
+1023, so signedness cannot change the table subscript. `_mm_unpacklo_epi8` and
+XMM `PEXTRW` are SSE2 operations, already covered by the fixture's AVX2 target;
+there is no new ISA requirement. Intel's intrinsic documentation describes the
+unpack as interleaving low bytes; the Intel SDM lists the XMM PEXTRW form under
+SSE2 and zero-extends its result. [Intel unpack operators](https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2026-0/unpack-operators-001.html), [Intel SDM, PEXTRW](https://cdrdv2.public.intel.com/789581/325383-sdm-vol-2abcd.pdf).
+
+The 64-bit `memcpy` avoids unaligned typed loads and has the same eight-byte read
+as the prior helper. `q` is valid for those bytes in both call sites: the explicit
+mixed test has at least 8 bytes from every tested offset through offset 15, and the
+actual block's last second-half read reaches at most `qs[35]` inside `qs[64]`. The
+previous helper had the same read envelope. The qh subscripts in the dot range from
+0 through 7; test qh values range over 0 through 255, which matches the constexpr
+table extent. The test-only scalar oracle shifts by 8, 6, 4, or 2, all valid unsigned
+shift counts, and masks to the two index bits. I found no new out-of-range access,
+invalid shift, signed overflow or sequencing-dependent result in the new hot-path
+expression. The `uint64_t`-to-`long long` conversion is the same as the old helper
+and is compiled as C++20, as R97 already analyzed; this change does not widen that
+concern.
+
+Added oracle and residual aliasing note
+`check_register_indices` checks the eight input bytes remain unchanged, guards before
+and after a 16-byte output, all four active lane values against the literal scalar
+formula, all fixed extracts against that formula, and the four unused high lanes
+against the expected zero-high-byte values. It then compares codebook words created
+through the same fixed extracts and lane order against independently computed
+scalar-oracle words. It is invoked inside both existing uniform and mixed/alignment
+cases. This reuse does not enlarge the stated Cartesian coverage or alter the
+reported comparison counters.
+
+One language-level caveat remains visible in the new test-only check: it writes the
+returned vector through `reinterpret_cast<__m128i*>(guarded+1)` into `uint16_t`
+storage. That uses the same intrinsic-pointer aliasing pattern as the retained old
+`grid_indices` output store. The 16-byte range is within `guarded[1..8]`, the
+unaligned-store intrinsic does not require alignment, and its guards are outside
+the written bytes; I found no bounds defect. However, the test store repeats the
+strict-aliasing / intrinsic-access caveat already recorded in R97; source inspection
+alone cannot declare this a fully portable C++ object access. The new production
+helper itself uses `memcpy` for the input and returns the intrinsic vector without
+such a store. Keep that distinction in the root review rather than treating the
+array guard check as proof of aliasing legality.
+
+Codegen and result boundary
+The source and README do not prove that the compiler keeps `sp1`/`sp2` in registers,
+selects `PEXTRW` (or another equivalent lowering), removes the former stack
+round-trips, or avoids new GPR/YMM spills. The `always_inline` annotation expresses
+intent but does not prove emitted code. Nor can identical source arithmetic or
+oracle checks establish instruction schedule, latency or speed. Root's fresh
+release and sanitizer validation and new exact linked-symbol capture are still the
+necessary gates for this revision. If that capture shows the index materialization
+was replaced by equivalent stack traffic or the frame/register pressure regressed,
+retain the hold; do not infer improvement from `__m128i` source types.
+

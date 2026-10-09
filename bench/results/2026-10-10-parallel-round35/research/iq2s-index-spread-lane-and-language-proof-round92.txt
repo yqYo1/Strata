@@ -1,0 +1,54 @@
+Round 92: IQ2_S index spread, lane mapping, and language boundary
+
+Question and scope
+This static review tightens R91's proposed IQ2_S NT1 index-spread substitution. It derives the byte-to-index and index-to-vector-lane mapping against the pinned scalar source and Strata's existing helper, and distinguishes the arithmetic proof from C++/intrinsic portability assumptions. It does not implement or benchmark a candidate. No source edits, builds, tests, executable runs, profiler/GPU work, Git operations, or cleanup were performed.
+
+Source identity
+Pinned GGML source is `/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned`, commit `3cf03257f219afbe7334045ff7c6a06ac68c627d` as verified by root. Strata source identity is commit `af12591ca840deb4649b703cbb7469fbc2417fc9`. The prior R91 report records SHA-256 hashes for the relevant source files and the saved linked-symbol evidence. The v48 registry SHA-256 supplied by root is `18a8e56913a3970f278210e7b6176c95ad82913c5d617368d6229c13e43539ac`.
+
+Derivation of the helper mapping
+The pinned GGML AVX2 scalar construction at `quants.c` forms four 10-bit indices for a qh byte `h` and low bytes `q[0..3]`:
+
+`idx[k] = q[k] | ((h << (8 - 2*k)) & 0x300)`, for k = 0,1,2,3.
+
+Thus the high two bits contributed to each index are, in order, `h[1:0]`, `h[3:2]`, `h[5:4]`, and `h[7:6]`. Equivalently, index `k` is `q[k] + 256 * ((h >> (2*k)) & 3)`. The low byte and high two-bit field occupy disjoint bit positions, so OR equals addition. For every q byte and h byte the result is in `[0,1023]`; the Cartesian domain `q∈[0,255]`, `h∈[0,255]`, and four slots reaches all 1024 possible indices.
+
+Strata `HiSpread::iq2s[h]` places `(h >> (2*k)) & 3` in byte position `8*k` for k=0..3 and leaves bytes 4..7 zero. `grid_indices` loads a 64-bit qword containing the low q bytes, moves its bits into an XMM register, unpacks low bytes with the spread qword, and stores interleaved 16-bit values. For the first four output words this gives, byte-for-byte, `q[k] | (((h >> (2*k)) & 3) << 8)`, which is the same scalar index above. All four outputs are in scalar slot order 0..3.
+
+`Fmt32<22>` passes those outputs to `_mm256_set_epi64x(grid[idx3], grid[idx2], grid[idx1], grid[idx0])`. Intel's intrinsic argument convention is high lane first; after construction, the low 64-bit lane is idx0, then idx1, idx2, and idx3. This matches the original scalar construction's use of the same `_mm256_set_epi64x` argument order. Therefore a candidate that uses the helper but reverses either unpack order or constructor arguments would fail equivalence even if its set of four indices were right.
+
+Memory and object bounds
+For the `j`th 32-value section and half `h∈{0,1}`, the helper's qword starts at `block + 2 + 8*j + 4*h`. The final active section has `j=3,h=1`, so the qword starts at byte offset 30 relative to `qs[0]` and reads through offset 37, still within `qs[64]`. Some loaded bytes overlap the logical boundary between the first 32 grid bytes and second 32 sign bytes; only the first four unpacked words are used as indices, and their source low bytes are the four requested grid bytes. The qh read is within its eight-byte field (maximum index 7). The 16-byte `sp` destination is explicitly 16-byte aligned in the helper; `_mm_storeu_si128` itself does not require destination alignment. `u64` uses `memcpy`, avoiding an unaligned typed 64-bit dereference and strict-aliasing violation at the load site.
+
+This establishes object-range safety for the exact helper call geometry, not general safety for arbitrary callers. Keep the geometry unchanged, and retain explicit object-size/offset checking if the helper is generalized.
+
+Language-level limits of the proof
+The arithmetic identity is independent of quantizer values and Q8_K; it covers every byte pattern for `h` and the four low q bytes. However, the helper's `_mm_cvtsi64_si128((long long)u64(q))` converts an arbitrary `uint64_t` to `long long`. A qword with its high bit set is outside the signed range. In C++20 and later, integral conversion to a signed type is defined by congruence modulo 2^N. In pre-C++20 standards the corresponding out-of-range conversion is implementation-defined. The intended bit interpretation therefore requires the project's actual language mode/compiler behavior (or a construction that avoids this conversion); it cannot be claimed as a language-version-independent proof from source alone.
+
+The store uses an intrinsic cast of the byte buffer to `__m128i*`. Standard C++ aliasing rules permit character-type access to an object's representation, but do not provide a blanket rule for accessing a byte array as a compiler vector type. The compiler intrinsic's documented contract and implementation are relied upon here. A portable-language claim would require an alternate byte-copy formulation or a documented implementation-specific guarantee. These are proof boundaries, not evidence of an observed miscompile.
+
+The original scalar expression itself is safe for the four shifts: `h` is an unsigned byte promoted to `int`, shifts are by 2,4,6,8, maximum shifted value is 65280, and the mask yields at most 768; `q[k]` contributes at most 255. The codebook words read from `iq2s_grid` are below 2^63 in this table, so casts of those table entries to `long long` are representable. That fact does not cure the arbitrary-qword cast in the helper.
+
+Validation contract and domain separation
+The proposed check must be divided into distinct claims:
+
+1. Exhaustive index-builder claim: enumerate all 256 qh bytes × 256 low-byte values × four slots and compare the helper's four outputs to the scalar formula. Separately verify lane 0..3 after the vector constructor. This uses no Q8_K input and makes no quantizer-domain claim.
+2. Ordinary dot exactness claim: compare the pinned dot, current NT1 path, and candidate on Q8_K blocks generated by the production quantizer from finite, admitted source inputs. Preserve the R88 admission conditions (finite source, finite nonzero selected maximum, finite scale/products in the normal quantizer range). Check Gate, Up, and final GU results, and exact output bits. This is the operational domain for bitwise preservation.
+3. Robustness claim: raw Q8_K byte -128, NaN/Inf, and exceptional scales are a separate bucket. They may be tested for fault characterization, but must not be counted as ordinary production-quantized equivalence evidence.
+
+For ordinary inputs the index substitution leaves all dot arithmetic untouched, so a passing index map plus exact dot comparison is the required evidence; no broader argument about changed floating-point order is appropriate because no FP operation should change. Preserve R91's acceptance checks for block accumulation order, FMA placement, horizontal reduction, post-scale, row accumulators, and Gate/Up finish. A compiler/source proof alone cannot show that the generated helper has no spill or that its indexed table access is beneficial.
+
+Recommended acceptance gates
+Before adoption, record the C++ language standard, compiler/version, target flags, and the compiler's documented intrinsic semantics. Inspect linked candidate code to confirm the intended byte mapping, no unintended scratch traffic or helper call, and unchanged codebook-load count and dot/reduction schedule. Bind the inspection to the candidate binary hash and compare to the exact calibration baseline. Keep call-target-only control separate from index spreading as R91 directs. Performance measurement follows only after exactness and linked-code checks; this report asserts no speedup or live-workload priority.
+
+External primary references
+- C++ current draft integral conversion: https://eel.is/c++draft/conv.integral
+- C++17 draft integral conversion (out-of-range signed conversion implementation-defined): https://www.ece.uvic.ca/~frodo/cppdraft/n4659/html/conv.integral
+- C++ current draft type-accessibility/aliasing: https://eel.is/c++draft/basic.lval
+- Intel compiler guide documenting `_mm256_set_epi64x(e3,e2,e1,e0)`: https://www.intel.com/content/dam/develop/external/us/en/documents/cpp_compiler_classic.pdf
+- Clang intrinsic reference for `_mm_cvtsi64_si128`, `_mm_unpacklo_epi8`, and `_mm_storeu_si128`: https://clang.llvm.org/doxygen/emmintrin_8h.html
+- Intel architecture manual, little-endian data representation: https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-vol-1-manual.pdf
+- LLVM TBAA/alias metadata background: https://llvm.org/docs/LangRef.html?highlight=readcyclecounter
+
+Conclusion
+The source-level byte algebra proves the helper's first four spread indices equal the pinned IQ2_S formula and the vector constructor can preserve scalar lane order. The proof is contingent at two language/compiler boundaries: out-of-range unsigned-to-signed conversion in the qword intrinsic argument under pre-C++20 modes, and the compiler-specific vector-store access to a byte buffer. Record and validate those assumptions for the actual compiler configuration. Keep exhaustive index mapping, ordinary production-quantized dot equivalence, and robustness characterization as separate evidence categories.

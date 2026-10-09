@@ -1,0 +1,34 @@
+# Installed IGC/NEO provenance and BMG GRF contract — R103
+
+Date 2026-10-10. Read-only package/file/source-document review. No compiler, disassembler, syclbin-dump, executable, device/GPU/CPU query, build, test, profiler, Git operation or cleanup was run.
+
+## Verdict
+
+There is now positive evidence that BMG/Xe2 is a supported target for current IGC releases and that BMG kernels have actually been generated with 256 GRFs. This still does **not** establish the documented legal-size contract for `sycl::ext::intel::experimental::grf_size<256>` on the exact B570 + oneAPI 2026.1 runtime combination. The exact IGC loaded during the prior GPU gate also was not pinned. Keep the unsupported per-kernel property disabled; exact support remains UNKNOWN.
+
+## Installed packages and source correspondence
+
+Read `/var/lib/dpkg/status`, package file lists/changelogs and library links; no package utility beyond read-only `dpkg-query` was used.
+
+- `intel-oneapi-compiler-dpcpp-cpp` and `intel-oneapi-compiler-dpcpp-cpp-2026.1`: `2026.1.1-325`. The installed SYCL runtime receipt separately pins `libsycl.so.9.0.0` and UR 0.12.0. The exact Intel LLVM source commit corresponding to this licensed compiler package was not found in its package metadata.
+- `libze-intel-gpu1`: `26.31.39395.14-1~24.04~ppa1`, source package `intel-compute-runtime`; installed driver file `/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395`. The saved initial gate reports driver version `1.17.39395+14` and pins this file by SHA-256 `dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c`.
+- Intel upstream Compute Runtime currently publishes tag/release `26.31.39395.13`, whose release metadata names Compute Runtime source `26.31.39395.13`, Level Zero source `v1.32.0`, and IGC `v2.40.13`. The locally installed `.14` Debian PPA package changelog calls itself a new `.14` release, but no matching upstream Git release/tag was located. Thus `.13` is the closest public upstream source baseline, not proof of byte/source identity for the installed `.14` package.
+- Two IGC families are installed: packages `intel-igc-core-2` and `intel-igc-opencl-2` version `2.41.5`, XB build 22716, install their `.so` files under `/usr/local/lib`; and `libigc2`/`libigdfcl2` version `2.40.13+ds1-1~24.04`, source package `intel-graphics-compiler`, install `.so` files under `/usr/lib/x86_64-linux-gnu`. The latter satisfies the Compute Runtime `.14` package dependency (`libigc2 >= 2.40.13`). `libze_intel_gpu` has no ELF `DT_NEEDED` entry for IGC; it can load the compiler stack dynamically. The earlier GPU receipt pins the driver and oneAPI SYCL/UR libraries but contains no IGC library pin or loaded path. Static symlink/file metadata therefore cannot tell which of these IGC builds compiled the tested JIT image. Do not attribute a test result to either IGC version without the loaded-library evidence.
+
+Public primary release sources:
+- [Compute Runtime releases](https://github.com/intel/compute-runtime/releases): tag 26.31.39395.13 identifies its IGC v2.40.13 and Level Zero v1.32.0 inputs.
+- [IGC releases](https://github.com/intel/intel-graphics-compiler/releases): v2.41.5 (build 22716) and v2.40.13 are distinct releases; both list Battlemage among supported platforms. This is target support, not a per-property GRF legality statement.
+
+## What GRF evidence proves
+
+1. Public IGC release v2.41.5 lists Battlemage as supported. The immediately relevant upstream Compute Runtime/IGC baseline (26.31.39395.13 / IGC v2.40.13) is also a BMG-capable stack; the local package bumps runtime to `.14` and co-installs IGC variants, so the precise compiler component actually selected at runtime remains unproven.
+2. Intel IGC issue [#412](https://github.com/intel/intel-graphics-compiler/issues/412) records a BMG-G21 Arc Pro B60 SAGE kernel with GRF count 256 and IGC 2.28.4/2.34.4. It is direct feasibility evidence, but different hardware SKU/kernel/versions and does not establish the SYCL per-kernel property or present support contract.
+3. Intel's public experimental SYCL GRF extension still specifies that supported sizes are PVC 128/256, DG2 128/256, CRI 128/256/512; BMG is omitted. It warns use on unsupported devices or an illegal size may be undefined. The local 2026.1 header defines the feature and statically admits 128/256, but carries no BMG target table. Header acceptance is not runtime legality.
+4. Intel LLVM `program_manager.cpp` lowering recognizes device-image metadata `sycl-grf-size=256` and maps it to `-ze-opt-large-register-file` for non-ESIMD. That proves a generic metadata/lowering route on the inspected source branch; no package/source pin ties that branch to the exact 2026.1.1 binary, and no target-specific gate was found in the public lowering description. The runtime option's existence is not a guarantee that the target property is defined or honored.
+5. Current NEO debug source exposes a broad `ForceLargeGrfCompilationMode` that appends `-cl-intel-256-GRF-per-thread`; this is process-wide OpenCL compilation control and says nothing authoritative about the per-kernel SYCL extension contract. IntelLabs examples using broad flags are practical configuration examples, not Intel API support promises.
+
+Relevant primary links: [SYCL experimental GRF extension](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_intel_grf_size.asciidoc), [IGC v2.41.5 release](https://github.com/intel/intel-graphics-compiler/releases/tag/v2.41.5), [Compute Runtime 26.31 release](https://github.com/intel/compute-runtime/releases/tag/26.31.39395.13), [IGC BMG 256-GRF issue](https://github.com/intel/intel-graphics-compiler/issues/412), [NEO large-GRF debug option](https://github.com/intel/compute-runtime/blob/master/shared/source/debug_settings/debug_variables_base.inl), and [Intel LLVM GRF-property lowering](https://github.com/intel/llvm/blob/sycl/sycl/source/detail/program_manager/program_manager.cpp).
+
+## Remaining UNKNOWN and disposition
+
+No public version-matched product-helper/legal-GRF-size table for BMG was found for Compute Runtime 26.31.39395.14, nor a version-matched `grf_size<256>` guarantee for oneAPI 2026.1.1 + the actual dynamically selected IGC. We can now distinguish this from a claim that Xe2 hardware lacks 256-GRF mode: Intel's release and kernel evidence contradict that hardware-level claim. They do not override the extension's device-specific legal-value requirement. A positive resolution needs an Intel contract or source tied to the exact loaded package stack that names BMG and the per-kernel request, or equivalent Intel confirmation. Until then, no recommendation to run the undefined property. The previous v2 executable's packaged target image (R101) and its 5056 spill field are independent facts and do not change this support decision.

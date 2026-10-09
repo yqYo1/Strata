@@ -1,0 +1,205 @@
+IQ2_S index-only actual-weight cohort reader contract — Round 98
+Status: static read-only source and committed-evidence review. No payload was opened;
+no implementation, build, test, compiler, runtime, CPU/GPU query, profiler, Git,
+or cleanup action was performed. Active build logs were not inspected.
+
+Question and evidence boundary
+This report specifies the smallest bounded extension for checking the index-only
+IQ2_S NT1 control/candidate on the existing route-selected actual-weight cohort and
+for showing what that cohort says about a >=32K route. It does not claim that its
+formula-generated input represents a served activation or that the sample predicts
+full-request latency.
+
+Shared identities read
+The calibration worktree is
+`/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010`,
+owner-supplied base `af12591ca840deb4649b703cbb7469fbc2417fc9`. The index-fixture
+worktree is owner-supplied commit `b4bfcdce95f64773f15c8972ce360d6d8fc51b46`;
+its dot bodies are frozen by the owner. The shared latest committed report registry
+is v48 SHA256 `18a8e56913a3970f278210e7b6176c95ad82913c5d617368d6229c13e43539ac`,
+storage commit `dbd17e2387dc452a1ce7dae5e8f7746a019a0a7d`.
+R94, R96, R97, the source-only IQ2_S implementation report, R81–R83 and the
+calibration source/result files were reviewed. Key identities:
+- original IQ2_S fixture implementation report: SHA256
+  `33d7c5264676382b93962135fd7777a925308826d3f3fe74717d39be41129485`
+- R94 attribution review: `2e7bbc2d03939c5c77e9c02737bfade70fc597e1c37cf4c67e1e1268018fd640`
+- R96 mixed-lane review: `176318ef6ec1ca44882cc8aeb826a2eced00b50c8c56741aadbd582f0d27434c`
+- R97 FP/UB review: `0acc73f4e5ed6d8b76f14a3fae1f061507d18cee15963d2079cbb6eff96eddca`
+- calibration `native_service_calibration.cpp`: `d8853bce01f42ecb553bea223ce9984a4045d129a82e0440e7983594a4abf435`
+- `NativeRolePlan` implementation: `905ba9607eec70e44544396bcc48ac600c87951e3676d256ab6dd22a15e1a9a4`
+- mapped GGUF reader header: `fc8453a95677e797c8fb1198bfb47d715b73a53446d39a29920c372180ca5ee0`
+- frozen cohort manifest: `6a5eac378b01531a7438fa512bb0829bc7e447028328cfa5aba9c64a02377304`
+- frozen cohort TSV: `49ab6545beda7a1d16cc02da07981b80d4fd36fc4fa9385f56039771fb4d21f1`
+- selected-role extent identity file: `568892bce458dbe96cd63c67e6c9cf89ba9b0dc54b93eac401b138c0c6fc7cc6`
+- root's v4 calibration controller: `5d16615452013fbfdba190e382e750ab7ddaad87013daaa879b5348558b0e676`
+
+Existing reader and evidence contract
+The C++ calibration already accepts a bounded cohort TSV (at most 16,384 bytes;
+literal header; exactly 192 `train` and 192 `holdout` IDs; layer/expert ranges;
+no global duplicates). The controller pins the manifest and TSV SHA256, and the
+C++ `read_cohort` preserves their frozen order. Selection is a disjoint 192+192
+split over 384 real `(layer, expert)` IDs. The manifest has each selected ID's
+canonical NT1 counts for the two unique R6 request patterns and its per-ID
+`frequency`, not only the aggregate strata. Its provenance excludes duplicate
+A3/A1 and B4/B2 patterns, and explicitly calls the two prompts dependent.
+
+`expert_layout_load` plus the existing `NativeRolePlan` is the correct single
+reader. It resolves gate/up/down tensor names using the production layout, validates
+type, dimensions, per-expert stride, total payload bytes, data offset and file
+bounds, then `copy_blob` copies the selected role slices in gate/up/down order into
+a caller-owned buffer. The existing calibration stores 384 full blobs and checks
+the aggregate against a 1-GiB cap; the frozen selected total is 756,940,800 bytes
+(721.875 MiB). Its controller caps each reported source extent below 4 MiB, records
+1,152 role extents and their individual SHA256 values, pins model shard identity
+(path, byte length, device/inode, mtime/ctime), checks metadata after the child,
+and does not hash whole model payloads. The C++ reader maps full GGUF files read-only
+but copies only those 384 selected blobs; no raw payload fixture is required.
+
+This is a trusted-stable-source contract, not an adversarial concurrent-mutation
+proof. The mapped reader opens by path, fstats the opened descriptor, mmaps the file,
+and checks tensor bounds; `NativeRolePlan` does not itself hash copied role bytes or
+hold an immutable snapshot. The controller's recorded per-extent SHA256 list is a
+useful pin, but the current timing-mode source checks extent path/offset/length and
+file stat identity rather than recomputing each content hash. A concurrent writer
+could mutate a mapped extent during a copy; replacing or truncating a mapped shard
+can also invalidate a reader's assumptions. Before the extension consumes actual
+weights, the owner should keep the pack/shards/metadata under the existing serial
+lock and read-only/stable for the whole run, verify every copied role slice against
+the frozen expected extent SHA256 list (or compare it to an owner-verified snapshot),
+and recheck source identity after normal child exit. Retain no copied weights on
+disk. This closes the read/copy identity question for trusted immutable inputs
+without expanding the payload budget; a hostile writer race would require a stronger
+snapshot/descriptor-relative reader contract than this source provides.
+
+The existing CPU result is useful admission evidence, not a candidate result. The
+committed r3 correctness summary records complete/pass for all 384 rows, actual
+weights, quantizer parity and pool/native vs independent GGML parity. It ran no
+candidate index arm. No model payload or active run log was opened in this review.
+
+Smallest source-only extension
+Add an owner-controlled actual-index-check mode/arm to the existing calibration
+reader target, or a sibling target that links the exact same reader and frozen
+manifest/TSV contract. Do not write another GGUF parser, route selector, pack
+locator, or input decoder. Reuse the existing `cases[i].blob`, `NativeFmt`, frozen
+`read_cohort`, and already prepared `work[i].ap[t]` activation bytes. Existing
+preparation uses `native_quant_act`; its input bytes are checked against the GGML
+trait quantizer before the correctness path. Thus the actual-weight check can share
+that Q8_K bytestring and needs no activation capture or second quantization pass.
+
+For each of the 384 IDs and every Gate and Up row, call three separate one-row
+arms with exactly the same prepared activation:
+
+1. Pinned trait baseline: obtain `ggml_get_type_traits_cpu(GGML_TYPE_IQ2_S)` and
+   call its `vec_dot` with its Q8_K type and NT1 ABI.
+2. Direct-control copy: call the frozen direct-control body.
+3. Index-only candidate copy: call the frozen candidate body.
+
+Use the checked row geometry and actual `fmt.n_embd` as each Gate/Up dot length;
+obtain Gate and Up row bases from the existing blob `gu_row`/`up_off` offsets.
+For each arm retain per-row Gate and Up bit patterns, compute the production scalar
+finish `(g/(1.f+std::exp(-g)))*u` in the same process, and compare both dot results
+and the final GU value. This directly checks the index-only algorithm against the
+actual trait for every sampled row, not just the final output of the full service
+path. It complements, rather than replaces, the current full GU/quant/Down/pool
+correctness gates. Run in correctness-only mode before any timing; candidate timings
+remain a later, separate arm and use the same frozen IDs, Q8 inputs and bytes.
+
+Preserve R97's result semantics: bit-compare all row/GU values including Inf and
+NaN bit patterns, and emit finite/Inf/NaN counts separately per arm and cohort.
+Do not let the fixture's existing `exact()` finite precondition discard an actual
+row whose production result is nonfinite; the production native path has no such
+filter. Keep the existing bounded synthetic fixture's finite checks in its own
+bucket. The full calibration's existing normal-domain finite check can remain a
+separate admission result; the new candidate-vs-trait comparison must not silently
+convert finiteness into an index-mismatch predicate.
+
+Keep evidence compact: one ID record per selected expert with split, layer/expert,
+canonical route weight, rows checked, mismatch count and first mismatch coordinates
+(if any), plus nonfinite counts and an activation-byte hash. Emit totals by train/
+holdout, layer and frequency tertile. The program must require all 384 IDs, both
+roles and the expected row count before final pass; child normal exit 0 plus the
+complete final record remains required. Don't persist Gate/Up arrays, expert blobs,
+Q8 buffers or full per-row traces. The existing 8-MiB text budget is ample for
+compact 384-ID summaries; keep a hard output cap and keep the full extent SHA list
+in its current owner-controlled evidence file.
+
+Row geometry and format separation
+Type 22 is IQ2_S with Q8_K activations for the Gate/Up dot. R83 confirms the
+selected exact GU22/Down20/NT1 route maps to IQ2_S Gate/Up and IQ4_NL Down, with
+Down20 using its own Q8_0/GGML NT1 path. The intended index candidate is only the
+type-22 Gate/Up dot; never reinterpret or submit Down20 blocks to it. The candidate
+fixture supports widths through 8192 for synthetic characterization, but that cap
+does not make 8192 an actual Down20 IQ2_S activation width.
+
+There is a dimensional detail to resolve from the live checked format instead of
+hard-coding. The calibration worktree's `expert.hpp` geometry and `iq_avx2_parity.cpp` identify
+H=2560 and expert width=640 for that selected calibration; R82's cohort byte
+accounting is consistent with this geometry, hence its Gate/Up type-22
+dot length is 2560 and its Down20 dot length is `fmt.n_ff` (640 in that calibration).
+The request's shorthand “Down-role20 K8192” does not match this source/evidence.
+For any different pack/cell, report the runtime `NativeFmt` dimensions and compute
+row lengths from them; do not assume K8192, nor route any Down role into IQ2_S.
+This distinction matters because fixture width 8192 is just one synthetic width
+profile, while the actual role format and Q8 activation type govern the reader and
+kernel call. If the owner meant another exact model/cell with Down K8192, first
+resolve its pinned manifest and type geometry before constructing the gate.
+
+Checking >=32K relevance without claiming activation realism
+The frozen cohort is route-backed by the closed R6 code32K capture. The manifest
+records each selected ID's two canonical NT1 refused-call counts, the unique A/B
+pattern provenance, layer and frequency tertile. Reuse those frozen manifest values
+to report, separately for train and holdout, selected routed-call exposure, its
+share of the eligible GU22/Down20/NT1 route exposure, per-layer coverage and
+frequency-tertile coverage. This makes it checkable whether the actual-weight
+correctness sample has representation in the recorded >=32K route, and prevents
+an equal-per-ID count from being mistaken for route-weighted service relevance.
+Use only the two canonical patterns once each; the repeated A3/A1 and B4/B2 blocks
+are not extra requests. Keep fit and holdout disjoint by expert ID and don't use
+candidate timing to alter the split.
+
+The current 384 IDs are layer-balanced and rank-stratified across frequency bands,
+not a frequency-weighted latency sample. The R6 A/B requests are dependent; the
+split is an expert-identity holdout, not an independent prompt holdout. The prepared
+Q8_K inputs remain deterministic formula-generated values, shared by all experts
+in a layer; they are not observed model activations. Therefore the extension can
+support: “three-arm bitwise check on actual selected GU weights, production-prepared
+synthetic Q8_K activations, for a route-backed NT1 cohort present in one >=32K trace,
+with its frozen route-exposure coverage reported.” It cannot support live-activation
+representativeness, an actual >=32K service-time claim, task/batch callback timing,
+or generalization to unrelated prompts. No live GPU capture is required for this
+bounded correctness/relevance check, and none should be inferred from source code.
+
+Bounded source and race controls
+- Reuse frozen route receipt SHA256 `f606f5a1f2d00dba240213a7feeb3cc84c9da4f1487075d1e97c336a558e4c89`, parser SHA256
+  `2ff44099f7385054dc5663f04a8e226d364d4d349a84b2493bc2bb1d6f3585cd`, manifest
+  SHA256 `6a5eac378b01531a7438fa512bb0829bc7e447028328cfa5aba9c64a02377304`, TSV
+  SHA256 `49ab6545beda7a1d16cc02da07981b80d4fd36fc4fa9385f56039771fb4d21f1`, and
+  selected role-extent identity SHA256 `568892bce458dbe96cd63c67e6c9cf89ba9b0dc54b93eac401b138c0c6fc7cc6`.
+  Do not rebuild selection from timings or consult payloads to change IDs.
+- Before the child: check source pack primary path and shard identity, `native_experts.txt`,
+  `conversions.json`, reader/compiler/binary and all route/cohort pins. Validate
+  metadata extents and byte count, then verify copied selected role bytes against
+  their frozen per-extent SHA256. After normal child exit: recheck shard identities
+  and selected extent hashes. Treat mismatch, short read, file replacement,
+  unexpected rows, incomplete output or nonzero/abnormal child exit as fail.
+- Keep the existing exact 384-ID, 1-GiB total-copy cap (frozen total 756,940,800
+  bytes), 16-KiB cohort-file cap, less-than-4-MiB per-role extent cap, existing
+  1,536-MiB supervised group RSS budget and 8-MiB output budget unless a new
+  reviewed budget is recorded. Do not create another in-memory copy of all weights
+  or dump raw weights/activations. Only tiny per-ID/per-layer aggregate output is
+  added.
+- Preserve the controller's no-GPU/no-inference admission fields and don't run
+  this while root's build/measurement lock is held by another operation. This
+  report did not inspect active logs or check current lock/run state.
+
+Result and limits
+The current `NativeRolePlan` reader and 384-ID manifest already provide the right
+bounded source and route-selection boundary. The smallest addition is a three-arm,
+per-Gate/Up-row correctness pass over those already copied actual weights and
+already prepared production-quantized Q8_K bytes, plus a compact route-exposure
+join to the pinned manifest. A separate service performance/32K run would still
+need actual request callback shape and live input evidence. Nonfinite rows require
+bit comparison plus separate counts. The only concrete scope discrepancy found is
+that K8192 is a synthetic fixture maximum, while the frozen calibration source
+identifies the actual selected Down20 row width as `fmt.n_ff` (640 for this cell);
+Down20 itself is IQ4_NL/Q8_0 and outside the index candidate.

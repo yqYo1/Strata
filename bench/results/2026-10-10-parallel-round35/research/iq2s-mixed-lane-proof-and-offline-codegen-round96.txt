@@ -1,0 +1,128 @@
+IQ2_S NT1 mixed-lane proof and offline codegen qualification — Round 96
+Status: static review and qualification plan only; no fixture build, execution, test,
+compiler, disassembler, CPU/GPU query, timing, profiling, source edit or Git mutation.
+
+Scope and provenance
+This report extends the source-only fixture review in
+implementation-iq2s-nt1-index-spread-v1.txt and the CPU/GPU observations in R94,
+R95 and R98. The assigned source worktree is
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010,
+under sycl/tools/native-iq2s-nt1-index-spread. The pinned GGML source is
+/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml at
+3cf03257f219afbe7334045ff7c6a06ac68c627d. Read-only registry identity remains
+report-registry-v48.json SHA256 18a8e56913a3970f278210e7b6176c95ad82913c5d617368d6229c13e43539ac,
+storage commit dbd17e2387dc452a1ce7dae5e8f7746a019a0a7d.
+
+Source-level lane derivation
+The candidate's table entry for a high byte h stores eight bytes
+H[k]=(h>>(2*k))&3, k=0..7. The index helper copies eight packed low bytes q[0..7]
+to an integer, moves them to the low 64 bits of an XMM register, then uses
+unpack-low-byte interleave with H. PUNPCKLBW / `_mm_unpacklo_epi8(a,b)` produces
+(a0,b0,a1,b1,...,a7,b7). Reinterpreted as little-endian 16-bit words, outputs are
+q[k] | (H[k]<<8). The four consumed output lanes therefore equal
+q[k] | ((h << (8-2*k)) & 0x300), k=0..3. This is the scalar index expression
+for the four 2-bit selectors. In the 256-bit codebook address construction,
+`_mm256_set_epi64x(idx3,idx2,idx1,idx0)` places idx0 in the least-significant
+64-bit lane and idx3 in the most-significant lane, preserving the source's qword
+read order. Intel's unpack intrinsic description specifies this low-byte
+interleaving; the architectural PUNPCKLBW definition is the ISA-level backing:
+https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2023-2/unpack-operators-001.html
+https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-vol-2b-manual.pdf
+
+The current exhaustive index suite covers all 256 h values, all 256 low-byte
+values and all four k positions against a literal scalar oracle (262,144 checks);
+it also compares 65,536 decoded four-qword vectors. Its low-byte fixture replicates
+a single byte into all positions. That is strong domain coverage per position but
+does not itself prove mixed-lane vector ordering in a single call. The full dot
+profiles do generate distinct packed bytes, but that is indirect and seeded.
+
+Recommended minimal extra helper test: for each h in 0..255 and x in 0..255,
+construct q[0..3] = {x, x^0x55, x^0xaa, uint8_t(~x)} and set q[4..7] to distinct
+sentinels. Compare all four scalar indices and four codebook qwords at their
+actual lane positions. The four transforms are bijections over bytes, so every
+possible low-byte value is observed in every lane while the vectors are mixed;
+this checks h/lane interaction without the 256^5 Cartesian product. Verify the
+stored codebook qwords explicitly, not only helper's temporary uint16 vector.
+Add a separate alignment sweep with q pointing at offsets 0..15 in an aligned
+buffer, with guard bytes and sufficient tail room for the full eight-byte read.
+The second-half read starts at qs-relative offset 28 and consumes qs[28..35],
+inside the 64-byte IQ2_S qs member; a canary around a whole block can confirm the
+fixture's access envelope without changing the production algorithm. Avoid claiming
+that a guard-page test is already part of the fixture.
+
+Whole-dot additions, if the owner wants stronger targeted coverage
+Existing 96 profiles are broad finite synthetic characterization; they are not
+exhaustive packed-weight/Q8 combinations or live-model distribution evidence. A
+small deterministic supplementary set can target bit lanes and index boundaries:
+sign bytes 00/ff/55/aa plus each one-hot bit over the 32-byte sign stream; qh 00/ff
+and one-hot bits; packed q indices selected to hit 0, 255, 256, 511, 512, 767,
+768 and 1023 in mixed k positions; and distinct low bytes within each vector.
+For activation boundaries, generate finite source values then pass them through
+the pinned production Q8_K quantizer, checking prepared lanes at 127, -127, and 0,
+with alternating signs and blockwise placement. Do not inject raw -128 into the
+ordinary production-quantized domain (R88 excludes it). Cross each targeted family
+with representative legal positive/zero scales and both Gate and Up. Keep these
+as bounded targeted profiles; do not claim combinatorial proof from the cross
+product. Compare final bits to the pinned trait arm, and preserve the fixture's
+normal-exit plus complete-output pass conditions.
+
+Offline codegen qualification plan (future owner action; not performed here)
+1. Freeze and report exact source, compiler, configure, object and linked-binary
+   hashes. Capture the actual compile command for the baseline C object and the
+   direct-control/candidate C++ object; preserve full flags, defines, include paths,
+   and link command. Intel's compiler option guide documents `-S -o` assembly output:
+   https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2025-0/use-compiler-options.html
+2. First inspect the package-representative build as configured. The recipe enables
+   GGML_NATIVE (baseline uses `-march=native`) while candidate/control carry explicit
+   `-mavx2 -mfma -mf16c`. Report this as actual-build codegen, and do not call a
+   baseline-vs-control difference an isolated algorithm effect. Candidate vs
+   direct-control is the clean source contrast because both bodies have the same
+   translation unit and flags; include wrapper/caller code because inlining,
+   trait target resolution and call overhead matter.
+3. For an additional matched-target study, build a separate, explicitly qualified
+   copy of the pinned baseline and both prototype bodies with identical compiler
+   version, optimization, FP model, and common AVX2/FMA/F16C feature flags. Intel's
+   documented `-march` CPU targets are processor-model selections; do not assume
+   that `-march=znver3` is accepted by IntelLLVM merely because AOCC documents it.
+   Avoid Intel-only `-x` / `-xHost` for a Zen3 binary. The fixture's explicit
+   feature flags are the conservative shared target vocabulary. Record whether
+   tuning differs; if exact matched flags cannot be applied to the pinned baseline
+   without changing its compile closure, label that comparison unavailable rather
+   than silently treating `-march=native` and explicit feature flags as identical.
+   Intel states that `-march`-generated code can run on non-Intel processors that
+   implement the required features; its `-x` options are Intel-processor-specific:
+   https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2025-1/march.html
+4. Disassemble only after the owner's build gate. Compare complete symbol bodies
+   and relevant callers, recording instruction bytes and address ranges. Confirm
+   (a) all paths are AVX2-active on the host, (b) the four scalar codebook loads,
+   sign application, scale expansion, maddubs/madd, integer accumulation order,
+   FMA/block order, horizontal sum tree and postscale remain as intended, (c) no
+   gather or reassociation appeared, (d) candidate shifts/masks/ORs are actually
+   reduced, and (e) table loads, spills, stack scratch from sign memcpy, helper
+   calls, register pressure and code size. The candidate introduces a dependent
+   2-KiB table read and temporary arrays; do not assume the optimizer removes
+   their cost. Exact output equivalence alone does not establish codegen or speed.
+5. Keep this offline inspection separate from timing. If codegen is acceptable,
+   owner can proceed through the already specified controlled timing/cohort gates;
+   no change in this report authorizes those gates or changes C/D/r5 status.
+
+Compiler provenance and limits
+Intel's 2026 release notes identify the 2026.1.1 compiler release and its Clang
+22 frontend, but this does not independently prove support for every x86 `-march`
+spelling or the behavior of a particular installed binary:
+https://www.intel.com/content/www/us/en/developer/articles/release-notes/oneapi-dpcpp/2026.html
+The 2025 Intel compiler guide says `-march` code may run on non-Intel processors
+with the same feature support, and distinguishes that from `-x` target options.
+AMD AOCC's `znver3` guidance is not IntelLLVM support evidence:
+https://docs.amd.com/r/en-US/57222-AOCC-user-guide/Target-Selection
+Check the actual local IntelLLVM driver's `--version`, accepted-option output and
+assembly only during the owner's authorized build/codegen phase. This report makes
+no claim about installed compiler output.
+
+Result and limitations
+The static derivation supports the candidate's scalar index mapping and explains
+why an explicit mixed-lane fixture is the remaining narrow proof improvement. The
+current test suite's replicated-byte helper fixture should not be described as a
+single-vector mixed-lane test. Full seeded dot profiles provide separate indirect
+mixed-byte coverage. No code was changed, no fixture was built or run, no emitted
+instructions were examined, and no performance inference is made.

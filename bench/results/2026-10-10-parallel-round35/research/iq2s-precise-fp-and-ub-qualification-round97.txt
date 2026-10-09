@@ -1,0 +1,169 @@
+IQ2_S NT1 precise-FP and undefined-behavior qualification — Round 97
+Status: read-only source/document review. No implementation, build, execution, compiler,
+sanitizer, CPU/GPU query, performance, Git, or cleanup action was performed.
+
+Scope and provenance
+Reviewed the pinned IQ2_S AVX2 dot and Q8_K reference quantizer at GGML commit
+3cf03257f219afbe7334045ff7c6a06ac68c627d; the current prototype committed at
+Strata worktree HEAD a9c09660304bc5dc3deb8cf8da10f1f431a9ffe1; and Strata's native
+expert GU finish. The shared report registry remains v48 SHA256
+18a8e56913a3970f278210e7b6176c95ad82913c5d617368d6229c13e43539ac, storage commit
+dbd17e2387dc452a1ce7dae5e8f7746a019a0a7d. Relevant source hashes:
+- fixture `iq2s_index_spread.cpp`: fcc26c7a2d8e3d2feff91ee6c33afcd348f5f33be09afffe0ff94d39d06289d9
+- fixture `CMakeLists.txt`: fbbe43744582bcd320349392e3e90f81e7b1299128c76639d4b96de285cb255d
+- `native_expert.cpp`: 767f02f33aca4da9fabbe113c50ce1d7cb2aa9f25b4234df59224ec46a5985cd
+- `iq_avx2.cpp`: 58e9c7e49b8158f698cda59aff06c245f62aaecd33556b1e88e234140890fded
+- pinned x86 `quants.c`: 3c489fdc77e3ab484a5f188bff9c60c0e9483c951ed65c1a562a04c249d5628e
+- pinned `ggml-quants.c`: 07143d7068936ae46b3c528b2f3d4bbb666e74d88992165716174d243573965d
+
+FP-model finding
+The standalone CMake explicitly adds `-fp-model=precise` before building GGML and the
+C++ fixture; the candidate/control use explicit AVX2/FMA/F16C, and GGML_NATIVE is ON
+for the dependency. Intel's current 2026 C++ guide defines `precise` as value-safe,
+but the same guide says it sets `fp-contract=on`; `strict` is the mode that disables
+contraction and enables FP-environment access. Therefore `precise` alone does not
+mean "no FMA". In this copied dot the intentional block FMA is explicit
+`_mm256_fmadd_ps`, and the integer/SIMD operations and manual horizontal-sum tree
+are explicit intrinsics. The usual unintended scalar multiply-add/reassociation
+risk is narrow: the dot has no ordinary scalar multiply-plus-add recurrence, and
+the `finish` expression has divide then multiply, not a multiply-add. The q8
+quantizer's nearest-integer is `nearest_int(iscale*x)`, whose helper adds the magic
+constant; source-level separate expressions and `precise` make an extra contraction
+less likely, but only the actual compiled C quantizer and its linked instruction
+sequence settle that question. The existing q8 AVX2 source itself uses separate
+multiply and add intrinsics and documents a GCC-only barrier for GCC's default
+`ffp-contract=fast`. Do not infer IntelLLVM output from that GCC comment.
+
+For this index-only change, candidate and direct-control retain the same explicit
+FMA, block accumulation, hsum and finish schedule. `-fp-model=precise` is suitable
+for value-safe optimization, but it is not sufficient evidence that the linked
+pinned trait path, copied quantizer, and fixture used identical effective options.
+Before actual-weight comparison, retain per-object compile commands/options (including
+IntelLLVM driver version and option order) for the baseline C object, fixture C++
+object and copied quantizer. Confirm no fast math/reassociation option leaked in,
+and inspect the linked operations. If an implicit contraction remains ambiguous, a
+separately qualified `-ffp-contract=off` build may remove that ambiguity; preserve
+explicit `_mm256_fmadd_ps` and verify it stays present. This is a qualification
+option, not a source or build change made here.
+
+Integer and conversion safety
+Under R88's admitted Q8_K domain, production quantization starts with finite,
+nondegenerate float blocks, finite scale/products in range, and outputs q8 bytes
+in [-127,127]. IQ2_S grid bytes are unsigned positive magnitudes [8,43]; scale
+nibbles become signed 16-bit factors [1,31]. The vector sign transform
+`(q8 XOR mask)-mask` uses byte-lane SIMD modular arithmetic; it negates every
+admitted byte exactly. Raw -128 is excluded because negative sign cannot represent
++128 in int8. For legal q8, the maximum `maddubs` pair magnitude is 10,922 (below
+int16 saturation); each scaled `madd` pair is bounded by 677,164; and per-lane
+int32 accumulation remains safely below INT32_MAX. After vector accumulation, the
+summed block integer magnitude is below 2^24, so conversion to float is exact.
+These bounds justify the integer stages; they do not prove floating scale products
+are finite for arbitrary finite source floats plus arbitrary valid fp16 weight scale.
+R88 already distinguishes normal quantizer inputs from exceptional robustness cases.
+
+C++20 in the fixture resolves R92's pre-C++20 implementation-defined conversion
+concern for `uint64_t` to `long long` in `grid_indices`, but that is language
+semantics rather than sanitizer evidence. The intrinsic vector store through a
+`__m128i*` pointer into the `uint16_t` buffer remains an implementation-specific
+intrinsic access contract; ASan/UBSan do not prove strict-aliasing legality. The
+candidate uses `memcpy` for qword reads and sign words; full object range is covered
+by prior geometry review. No new scalar signed-overflow, invalid shift, or
+out-of-range array index was found in the reviewed candidate operations.
+
+FP environment and subnormals
+`-fp-model=precise` assumes the default FP environment and does not enable
+`fenv_access`; it does not freeze the runtime MXCSR state. Intel documentation says
+FTZ/DAZ are controlled by MXCSR and describes compiler `-ftz` behavior separately;
+FTZ flushes subnormal results and DAZ treats subnormal operands as zero. The CMake
+file does not explicitly select `-ftz` or `-no-ftz`, nor save/restore MXCSR. The
+fixture's generated ordinary Q8 inputs are finite/nondegenerate; its activated
+magnitudes and chosen half scales (0, 1/1024, 1/8, 1) do not deliberately cover
+subnormal scale products. The real model's half-scale bytes and the service's
+thread FP state were not inspected or measured here. Record MXCSR FTZ/DAZ and
+rounding bits on the owner test thread at entry, and compare the same state for the
+trait and candidate. Add a distinct targeted check for minimum positive/negative
+half subnormal `d` converted by the same lookup table and multiplied by a legal
+production Q8 scale, only if actual-weight evidence or the supported model-format
+contract makes these bytes relevant. Keep that separate from ordinary synthetic
+finite-Q8 coverage. Do not call NaN/Inf/denormal activations normal Q8 production
+inputs; R88 correctly excludes them absent a specific input contract.
+
+Finite-value guard and production finish
+The fixture helper `exact` requires both floats to be finite before comparing their
+bits. It is used on Gate and Up dots and on the final GU result. This is stricter
+than the production native path: `native_gu_rows` computes both dots and stores
+`(g / (1.f + std::exp(-g))) * u` without any `isfinite` rejection. For finite
+ordinary activations the quantizer range proof alone does not bound the product
+`FP16(weight d) * Q8_K(d)` or the later float dot/GU multiplication for every
+possible legal stored half-scale, so the finite assertion is not a theorem over
+all syntactically valid IQ2_S/Q8_K rows. A bit-identical Inf/NaN result would be
+rejected by the fixture even though production does not reject the row. This is a
+coverage/acceptance restriction, not evidence that the index candidate changes
+those outputs; the present synthetic profiles use moderate finite scales and are
+expected to stay finite.
+
+Do not weaken the selected normal synthetic gate silently. Instead separate the
+claims: for bounded ordinary fixtures, require finite plus bitwise equality; for
+actual weights and any permitted large-scale rows, compare output bit patterns
+without a finiteness precondition and report finite/Inf/NaN counts separately. If
+the actual-model policy requires every GU result finite, establish that as an
+independent model/output invariant before using it to exclude rows. Preserve the
+production `std::exp` finish expression and compare against it directly; do not
+substitute a mathematically stable sigmoid, since for large negative g `exp(-g)`
+may overflow and the production IEEE path produces a signed zero after division.
+That behavior is part of the path being characterized, not an index arithmetic
+error. `std::exp` implementation and ULP behavior can differ by compiler/library,
+so bitwise actual-model comparisons must run all arms in the same linked build and
+FP environment.
+
+Narrow sanitizer and FP evidence still needed
+No concrete arithmetic or integer-UB defect was identified in the index-only
+substitution under the established production-Q8 bounds. Before the actual-weight
+gate, the narrow remaining evidence is:
+1. Build the owner-approved ASan and UBSan variants with the exact IntelLLVM driver
+   and verify that host sanitizer runtimes link and execute on this build. Run the
+   same complete fixture, plus root's mixed/alignment and guarded-memory checks.
+   ASan is useful for the qword/grid/sign accesses and fixture allocations; UBSan
+   for scalar shift, bounds, alignment and language UB. These tools do not test
+   FMA/reassociation, floating-point overflow, FTZ/DAZ, scalar-vs-intrinsic aliasing,
+   or model distribution. Initialize all source structs/buffers before use; the
+   current fixture zero-prefills Q8 blocks and assigns every weight field.
+2. Record the exact object flags and linked-operation schedule for the pinned trait,
+   the fixture and quantizer. Check explicit block FMA, ordered integer updates,
+   hsum and postscale, with no changed contraction/order. Preserve C++20 mode.
+3. Record MXCSR rounding, FTZ, DAZ at fixture entry and use identical state across
+   arms. Inspect actual IQ2_S half-scale extrema and actual prepared-Q8 scale range
+   as aggregate bounded evidence before making claims beyond the finite synthetic
+   profile. Keep subnormal/overflow robustness data separate.
+4. For actual weights, compare bits for every row even if output is nonfinite; log
+   finiteness as an independent result. Check actual production finish uses the
+   same `std::exp` form as `native_expert.cpp`; do not treat nonfinite as automatic
+   candidate mismatch. No live activations or model weights were accessed here.
+
+Primary references
+- Intel 2026.0 DPC++/C++ compiler `-fp-model` semantics (precise is value-safe;
+  strict disables contractions):
+  https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2026-0/fp-model-fp.html
+- Intel 2026.0 FP optimization table (`precise` sets `fp-contract=on`):
+  https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2026-0/floating-point-optimizations.html
+- Intel FTZ/DAZ and MXCSR behavior:
+  https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2025-0/set-the-ftz-and-daz-flags.html
+- Intel host sanitizer support matrix (ASan/UBSan supported for host code on Linux;
+  MSan has whole-dependency instrumentation caveats):
+  https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2025-2/host-side-compiler-sanitizers.html
+- Clang UBSan coverage details:
+  https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
+- Intel SDM Volume 1, MXCSR FTZ/DAZ fields:
+  https://cdrdv2.public.intel.com/843827/253665-sdm-vol-1-dec-24.pdf
+- Pinned [Q8_K quantizer](https://github.com/ggml-org/llama.cpp/blob/3cf03257f219afbe7334045ff7c6a06ac68c627d/ggml/src/ggml-quants.c),
+  [IQ2_S AVX2 dot](https://github.com/ggml-org/llama.cpp/blob/3cf03257f219afbe7334045ff7c6a06ac68c627d/ggml/src/ggml-cpu/arch/x86/quants.c),
+  and Strata [native expert finish](https://github.com/yqYo1/Strata/blob/a9c09660304bc5dc3deb8cf8da10f1f431a9ffe1/src/kernels/cpu/native_expert.cpp).
+
+Conclusion
+The copied dot's integer stages are safe on R88's production-quantized Q8 domain,
+and its explicit intrinsics preserve the intended arithmetic order at source level.
+Intel's `precise` model is not a no-FMA or fixed-MXCSR guarantee, so object flags,
+linked schedule and runtime FP state remain required evidence. The current finite-only
+fixture comparator is stricter than production's unchecked GU store; use bitwise
+comparison with separate nonfinite reporting for actual rows. No source change or
+execution was performed in this review.

@@ -1,0 +1,55 @@
+# Exact-order source variants for GDN quad spill investigation — R101
+
+Date: 2026-10-10. Read-only source, artifact and documentation review. No source edits, builds, tests, executable/compiler/device-query/profiler execution, Git operations, or cleanup.
+
+## Decision and boundary
+
+The frozen SG32 quad candidate reports `spillMemSize=5056` while the exact legacy comparator reports 0 in the saved short gate. This establishes a compiler spill allocation field, not the mechanism or its runtime cost. Without kernel-specific ISA/resource output, attribute remains UNKNOWN. Primary Intel guidance directly recommends shortening private-variable live ranges and checking loop unroll factors because excess unrolling can raise register pressure and spill. Based on exact current source, rank three small single-factor candidates below. They are hypotheses to compile/resource-check and then correctness-gate, not diagnoses or predicted fixes. Do not alter subgroup mapping, arithmetic, reduction association, GRF mode, FP flags, norm, or geometry in these tests.
+
+## Ranked isolated source variants
+
+**1. Shorten cross-lane partial live ranges (best first discriminator).** In `gdn_rec_quad_pipeline_sg32_kernel` only, replace the four named `p0..p3` (and later `o0..o3`) temporaries with an explicit left-to-right gather-add chain. Example for `kv_col`:
+
+```cpp
+float kv_col = sycl::select_from_group(sg, kv, c);
+kv_col = kv_col + sycl::select_from_group(sg, kv, c + 8);
+kv_col = kv_col + sycl::select_from_group(sg, kv, c + 16);
+kv_col = kv_col + sycl::select_from_group(sg, kv, c + 24);
+```
+
+Repeat the same source-shape change for `o` and its four lane IDs. This computes the identical association `(((p0+p1)+p2)+p3)` with the same values and collectives, while making each gathered value available for immediate consumption instead of naming all four simultaneously. Preserve converged calls for every lane, in the same order. The compiler may already schedule the existing expression optimally, or may reproduce it exactly; therefore the required discriminator is the compiled spill/resource record. This is not a proposal to use `reduce_over_group`, which has unspecified combination order for non-associative floating-point addition.
+
+**2. End-of-iteration load of next-token scalars (low-risk live-range probe).** The current candidate calls `fetch(t+1)` before `g`, KV, state update, output gather and store; `nq,nk,nv,ng,nb` therefore can stay live over most of the current recurrence body. Keep the initial `fetch(0)` but move the conditional next-token `fetch(t+1)` to after the current output has been written at the loop bottom (or equivalently load each iteration at its top with a carefully retained first-token path). This moves five future-token scalar values out of the main arithmetic live range. It preserves token order, `sycl::native::exp`, each FMA and output; it gives up some prefetch distance, so a spill reduction need not improve latency. Change only this scheduling location, leaving local Q/K staging and barriers unchanged.
+
+**3. Reduce full unroll on one exact-order inner loop (conditional).** Intel guidance calls for comparing unrolled and less-unrolled forms, but the candidate's `s[32]` state must persist across tokens and full unrolling may help scalarize that array. If the first two probes and a kernel-specific dump do not localize pressure, test a separately named copy with a bounded unroll factor on the output dot loop only (`o = fma(s[r], q[r], o)` across `r=0..31`), leaving the KV and state-update loops unchanged. A bounded factor (e.g. 4 or 8 if accepted by the compiler's pragma) reduces only that loop's expansion; the dependency chain on `o` still consumes rows in ascending order. Do not simultaneously change all three loops: that is not a single-factor probe, may turn `s[r]` into dynamic private-array accesses, and could increase spills. Preserve the exact FMA chain and inspect generated code for reassociation/changed instructions under the existing precise FP setting. If the compiler does not honor the bounded factor or introduces private array traffic, reject this variant.
+
+These are source alternatives, not implementation requirements. For each comparison use a distinct kernel name/ID and hold all other code, inputs, build flags, exact SG32 attribute, launch dimensions and GDN state/output semantics constant. Compare one candidate against the frozen SG32 baseline at a time; do not stack transformations until each one is independently characterized.
+
+## Excluded or lower-value changes
+
+- Do not retest 256-GRF property on this B570 stack absent target-specific support, as R100 records; don't substitute global compiler large-GRF flags.
+- Do not replace the four ordered partials with SYCL group reduction or a differently associated tree; it changes FP results. Khronos SYCL docs explicitly define `select_from_group` as a remote-value exchange and reductions as generalized sums whose order is non-deterministic for non-associative ops.
+- A different subgroup mapping or serial four-row reduction is a new mapping/algorithm factor and overlaps R84/R88; not a spill-only experiment.
+- Token-block Q/K staging/prefetch is already a separate R92 candidate. R92 estimates its extra next-block live data and warns it can increase register pressure. Do not combine it with a liveness experiment here.
+- A loop over `s[r]` with no unroll control risks loss of compile-time indexing/scalarization; only test a bounded factor in a separate kernel after evidence warrants it.
+- Replacing `select_from_group` with a vendor intrinsic or a `shuffle` spelling is not supported by reviewed evidence as a spill fix. Intel's Xe tutorial explains that layout reordering can itself be a shuffle, but gives no proof that an alternate spelling lowers better for this kernel.
+
+## Acceptance / disproof evidence
+
+Before timing, obtain a candidate-specific compiler or IGC dump that identifies the kernel and records allocated GRF count, spill size/loads/stores (where reported), private/local memory and work-group/subgroup data. Keep its compiler, IGC and device image hashes pinned. The source edits aim to change liveness; a lower Level Zero spill property alone is a useful resource observation but must be correlated with compiler output. If spill does not change, or ISA shows the same gathers/temporaries and no lower resource use, that candidate did not test the hypothesized mechanism. If spills fall but kernel latency rises, retain the resource improvement as a finding but reject it as a speed optimization. Spill metadata is not a proxy for bandwidth or time.
+
+Then run existing exact GPU bitwise comparison plus missing candidate-specific semantic cases from R89/R96/R99: candidate route asserted, T=0 no-op, short tails, positive long recurrence, all 48 heads, zero and controlled carried state across a second chunk, cancellation-sensitive four-partial fixture, and fail-stop post-submit behavior. Keep full-state/output checks and existing thresholds unchanged. A CPU oracle is useful for equations/indexing, not a GPU-rounding oracle. Only after correctness and resource evidence should the authorized quiet timing comparison be considered; time each single-factor variant against the unchanged SG32 baseline and legacy reference, with identical warmed image and serialized conditions. No timings were collected for this report.
+
+## Artifact inventory correction for R100
+
+R100 searched `build-sycl-gdn-quad-v1` but missed the actual R99 executable in `build-sycl-gdn-quad-v2`. Read-only static inspection of `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/build-sycl-gdn-quad-v2/gdn_quad_parity` found an x86-64 ELF, 1,206,680 bytes, SHA-256 `26952db4727f54f3e6391c1dc6ab8198738feb621af7e1773285081512f435e0`. ELF sections include `__CLANG_OFFLOAD_BUNDLE__` and `.tgtimg`; strings include `spir64`, `sycl-grf-size`, and the candidate kernel type `_ZTSN6strata7prefill22GdnRecQuadPipelineSG32E`. Thus the v2 executable does carry a packaged SYCL target-image section with candidate identity; R100's statement that no relevant executable/device image was found is incorrect for v2. This static inspection did not extract/decode the image or run `syclbin-dump`, and it found no standalone BMG machine ISA/VISA/GenISA dump. The presence of packaged SPIR-V/target image is not presence of final native code or an allocation report.
+
+## Evidence and sources
+
+- Intel oneAPI GPU Optimization Guide, “Registerization and Avoid Register Spills”: https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2023-1/registerization-and-avoid-register-spills.html — states to shorten live ranges, avoid excessive unrolling; unrolling can improve scheduling but increase register pressure and spills; recommends comparing factors. General Intel GPU guidance, not an analysis of this GDN kernel/B570.
+- Khronos SYCL group algorithms: https://github.khronos.org/SYCL_Reference/iface/group-algorithms-library.html — `select_from_group` exchanges a value from a specified subgroup lane; reduction order for non-associative floating operations is not deterministic.
+- PyTorch engineering blog, FlexAttention on Intel GPUs: https://pytorch.org/blog/pytorch-2-9-flexattention-optimization-practice-on-intel-gpus/ — first-person Intel GPU experience describes pipeline overlap increasing register pressure/spilling and delegating overlap differently. Attention/XMX kernel, not recurrent GDN; supports caution against adding prefetch overlap while spills are unresolved.
+- Intel SYCL TLA Xe data-layout tutorial: https://github.com/intel/sycl-tla/blob/main/media/docs/cpp/xe_rearchitecture.md — Xe register ownership/layout conversions can imply shuffle movement. It does not establish a better lowering for `select_from_group`.
+- Existing repo audit R84 documents lane remap and exact ordered sum. R88 verifies collective ownership/convergence constraints. R89 lists parity gaps. R92 treats token-block staging as a distinct experiment. R99 records spill field and unknown mechanism. R100 records GRF support boundary; this report corrects only its v2 artifact inventory.
+
+The frozen source hash remains `af16f3d89dc0ef154b89800c278a78959ca0f7de0d59e90c7bc16e998f9968be`. In the candidate kernel, the relevant source has one fully unrolled 32-row KV FMA loop, four `select_from_group` calls followed by ordered add, one fully unrolled 32-row state/output FMA loop, then another four gathers and ordered sum. This structure motivates the liveness probes but does not itself prove which values spill.

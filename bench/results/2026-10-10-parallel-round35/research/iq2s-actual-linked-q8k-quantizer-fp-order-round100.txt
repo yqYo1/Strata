@@ -1,0 +1,117 @@
+IQ2_S actual linked Q8_K quantizer FP-order review — Round 100
+Status: static review of pinned source, recorded compile commands, captured FP
+output, and the complete committed linked reference-quantizer disassembly. No
+compiler, executable, disassembler, build, test, performance, CPU/GPU query, Git,
+or cleanup action was performed.
+
+Finding
+The exact qualification binary resolves the R97 question for the reference
+quantizer it actually links: on all fixture widths (256, 512, 2560, 8192), the
+normal quantization path is emitted as separate scale multiplication then magic
+constant addition, with no multiply-add contraction in that per-value operation.
+The result is a source/order fact about this linked reference symbol, evaluated
+under the executing thread's MXCSR; it is not a production-thread FP-mode claim.
+It also does not prove the separately compiled Strata AVX2 quantizer arm selected
+by `native_quant_act` has the same emitted schedule. Its source uses explicit
+multiply and add intrinsics and claims byte parity, but this artifact does not
+contain that Strata translation unit.
+
+Identity and source/build evidence
+The capture is the committed qualification binary SHA256
+`9172f3c4a982b1d0d73111d5ae6a447f56984d62f34bb2faf5129f37a9bf2bc8`, from Windex
+qualification commit `1e35586ce7cf2c9f493cd7a34a44137bd500a34b`. Its complete
+linked `quantize_row_q8_K_ref` text capture is
+`/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq2s-quantizer-ref-offline-capture-v1/quantize_row_q8_K_ref.asm`,
+SHA256 `b8bb4d0547df615bf8af291e2c759c25133528a8a18e5cf577f8e120cbb4c996`,
+26,525 captured bytes. `quantize_row_q8_K` in the linked text is a one-instruction
+jump thunk directly to that `_ref` symbol.
+
+The pinned source is GGML commit `3cf03257f219afbe7334045ff7c6a06ac68c627d`:
+`ggml/src/ggml-quants.c`. Its `nearest_int(float fval)` computes a distinct
+`fval + 12582912.f`, copies the resulting float bits to an integer, and extracts
+the mantissa-derived integer. The Q8_K reference quantizer uses
+`iscale = -127.f / max`, calls `nearest_int(iscale*x[j])`, stores `MIN(127, v)`
+into each Q8 byte, computes each 16-byte `bsums` group from those stored bytes,
+and stores `d = 1/iscale` after quantization. The source-level multiply and magic
+addition therefore form the exact FP-order question raised in R97.
+
+The recorded release compile command for this object is IntelLLVM `icx` with
+`-O3 -DNDEBUG -std=gnu11 -fp-model=precise` and baseline x86-64 options; it does
+not pass `-march=native`, `-mavx2`, or an FMA target flag to `ggml-quants.c`. In
+contrast, the fixture C++ object uses `icpx -O3 -DNDEBUG -std=gnu++20
+-fp-model=precise -mavx2 -mfma -mf16c`. The disassembled reference quantizer is
+therefore the generic baseline-target C symbol, not the fixture's AVX2 dot and
+not Strata's custom AVX2 quantizer.
+
+Exact emitted path for ordinary fixture inputs
+The assembly begins with a `k <= 255` early-return check. Every fixture length is
+a positive multiple of 256 and at least 256, so each enters the block path; there
+is no scalar tail path for those input lengths. The reference function's C scalar
+loop over 256 values is auto-vectorized in groups of four floats. After finding
+the block maximum and selecting its sign, the assembly computes `iscale` with
+scalar `divss`. The inner quantization loop loads four XMM vectors of four values
+each and emits four `mulps` operations using the broadcast `iscale`, followed by
+four separate `addps` operations using the magic constant. Subsequent instructions
+perform the bit-mask/subtract nearest-integer extraction, clamp to 127, pack the
+integers, and store 16 Q8 bytes. There is no FMA instruction between these
+multiply and add operations and no alternate scalar quantization tail for the
+fixture widths. The post-loop Q8 scale `d` is emitted as a separate scalar
+`divss` computing `1/iscale`; it is not folded into the byte-generation sequence.
+
+Thus, in this exact linked build, each ordinary finite input product is rounded
+as a float by `mulps` before the magic addition is rounded by `addps`. The compiler
+has not contracted `iscale*x + magic`, reassociated the division, or changed the
+source operation order in this quantizer. This specifically answers the concern
+that `-fp-model=precise` alone was insufficient: the conclusion comes from the
+linked instructions, not from interpreting the flag as a no-FMA promise.
+
+Nearest-integer and bounds caveat
+The magic-add bit trick is not an explicit `_mm_round_ps(..., _MM_ROUND_NEAREST)`
+operation; its FP addition observes the current MXCSR rounding-control mode. For
+ordinary supported quantization, finite nonzero scale, and inputs in a Q8 block,
+`|iscale*x|` is bounded by approximately 127 because `max` is the signed value
+with largest absolute magnitude and `iscale=-127/max`. `nearest_int`'s asserted
+magnitude bound (4,194,303) is therefore comfortably met. The resulting ordinary
+quantizer bytes are in `[-127,127]` (upper clamped at 127); this excludes the
+exceptional tiny-scale/overflow or malformed-input cases from the ordinary claim.
+The linked machine order is stable, but its tie rounding result depends on the
+thread's rounding mode. It neither sets MXCSR nor proves that all production
+threads use round-to-nearest.
+
+The qualification README records release and ASan/UBSan test-entry MXCSR as
+`0x1f80` before `ggml_cpu_init` and `0x1fbb` after initialization. The control bits
+masked by `0xffc0` are unchanged, which means these two captured test states have
+the same rounding-control, FTZ and DAZ controls; low exception-status bits differ.
+This is evidence for those fixture runs only. The binary capture does not run a
+request and does not report any server/pool worker thread's MXCSR.
+
+Relationship to production `native_quant_act`
+In the reviewed Windex source, `native_quant_act` selects `q8k_quant_avx2` when
+`cpu_avx2_ok()` is true and `STRATA_NO_Q8K_AVX2` is unset; otherwise it dispatches
+to the GGML Q8_K trait's `from_float`. The trait fallback resolves to the GGML
+reference quantizer covered by this capture. The normal AVX2 branch instead lives
+in Strata `src/kernels/cpu/iq_avx2.cpp`: it uses explicit `_mm256_mul_ps` then
+`_mm256_add_ps` with the same magic value, and its source comment describes the
+product-rounding boundary and byte-parity intent. Its GCC-only inline-assembly
+barrier addresses GCC's default contraction behavior. The qualification build's
+compile database contains no `native_expert.cpp` or `iq_avx2.cpp` object, and this
+reference-symbol capture cannot establish what IntelLLVM emits for that custom
+branch or establish runtime path selection for production. Record and inspect
+that path's own linked code if the actual-weight gate uses `native_quant_act`
+on an AVX2-enabled host; otherwise the reference capture is sufficient for the
+trait fallback only.
+
+Scope limits and next evidence
+The accepted fixture record covers 96 synthetic profiles, 1,536 GU pairs,
+9,216 dot calls and its mixed-index/alignment checks, with bitwise equality for
+finite Gate, Up and GU results. It is synthetic-only, with no model, actual weights,
+live activations, server thread FP state or timings. Its comparator also requires
+finite dot and GU results; this does not establish a finite-output invariant for
+all actual rows. For actual-weight comparison, compare bits regardless of
+finiteness and keep finite/Inf/NaN counts separate, as R97 requires. If the current
+production quantizer path is the custom AVX2 function, its linked instruction
+capture plus that thread's MXCSR controls remain the narrow missing quantizer
+FP-order evidence. Do not infer either from `-fp-model=precise` or from source
+intrinsic spelling alone.
+
+No timing estimate or speed conclusion follows from the quantizer inspection.

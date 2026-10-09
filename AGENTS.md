@@ -54,6 +54,9 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   When a batch returns, review its findings and assign new scopes; research is a repeated part of the work.
 - Share the past report directory, latest committed report/registry and prior decisions at every assignment.
   Investigate a new evidence gap rather than repeating an already reviewed proposal.
+- If an implementer edits the same files concurrently, give researchers immutable committed source or an
+  owner-created snapshot with revision and file hashes. Do not identify live working-tree bytes as a commit.
+  Record provenance corrections separately, preserving the original report.
 - Researchers may read source and browse references, and write their assigned report files. They must not
   edit implementation, build, test, profile, run inference, query/change GPU state or clean artifacts.
   Do not intervene during their assignment; review their completed reports before assigning follow-ups.

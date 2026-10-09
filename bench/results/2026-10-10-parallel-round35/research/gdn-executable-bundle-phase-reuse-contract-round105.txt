@@ -1,0 +1,88 @@
+# SYCL executable kernel bundle reuse contract for GDN admission — R105
+
+Date: 2026-10-10. Read-only SYCL/API/runtime/source review. No source edit, Git operation, build, test, compiler/device query, binary execution, GPU/profile, disassembler, or cleanup was performed. No GRF-support branch was revisited.
+
+## Source and boundary
+
+Reviewed the exact Wquad source worktree `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010`, source HEAD `fdf4b3c52a68f8d925afb3a6519be4ce0b74156f` (quiet measurement result commit reported separately as `a581ebb05ff52530ba41107224a0308c4c7b9fd1`). Source pins read:
+
+- `sycl/src/prefill/kernels.dp.cpp`: SHA-256 `15bd1666fc10934f8162055b1d489eb5e86cda4136157f0e6b0004e6786f965a`
+- `sycl/src/prefill/gdn_quad_parity.cpp`: SHA-256 `fcb81990212bf95bf5d3bb9defe44972ee6d0c930ae6d5f443165e4bd6161a4d`
+- `sycl/include/strata/prefill/gdn_variant.hpp`: SHA-256 `d9b0c169486205c636658c92db90351f5a9f091bb8e108c07ddce2ec56cd3ef0`
+
+The candidate is explicit and has no selector/default effect. Existing public function contract is: `false` means denied before candidate or norm submission; after submission attempt, exceptions propagate and the same state must not be retried through legacy. The proposed cache concerns only pre-submit admission metadata and retained SYCL objects; it says nothing about whether candidate math/performance should be adopted.
+
+## What runs on every positive-T candidate chunk today
+
+In `gdn_recurrence_quad_variant` (`kernels.dp.cpp` around 2664–2720), each positive-T call performs these candidate admission steps afresh before submission:
+
+1. `q_of(stream)`, in-order queue property check, and `q.get_device()`.
+2. Device queries for subgroup sizes, max workgroup size and max work-item dimensions; reject unless dimensions cover the existing RG/CB geometry, SG32 is present, and device limit is at least 128.
+3. `get_kernel_id<GdnRecQuadPipelineSG32>()`, then `get_kernel_bundle<executable>(q.get_context(), {device}, {id})`.
+4. `bundle.has_kernel(id, device)`, `bundle.get_kernel(id)`, and mandatory kernel-device queries for compiled subgroup size and kernel workgroup size; reject unless 32 and >=128 respectively.
+5. Optional `private_mem_size` and Intel `spill_memory_size` queries. Each is wrapped in its own `catch (std::exception)` and records `known=false` if unavailable; neither value controls admission.
+6. Submit the recurrence with `handler.use_kernel_bundle(*executable)`; then submit output normalization.
+
+The recorded quiet case used 2048-token chunks over 32768 tokens, so the exact admission above is performed 16 times per candidate arm/prefix. It is absent on the legacy arm. The per-call optional private/spill queries also repeat 16 times. These are exact source call counts, not evidence that each query recompiles, reloads, or is costly. DPC++ has an internal per-context program/kernel cache, and the source itself obtains an executable bundle by ID for each chunk; host-side query overhead remains unmeasured.
+
+`T==0` returns before queue lookup or cache access. Negative T, padded-row validation, and the diagnostic denial seam remain before admission. Queue in-order property is a queue property; check it on each actual queue call even if device admission is reused.
+
+## Portability and object-lifetime contract
+
+SYCL 2020 defines a kernel bundle as a set of device images associated with one context and a set of devices. The executable state is invocable. The overload used here explicitly requests an executable bundle filtered to the candidate kernel ID and a single device. `handler::use_kernel_bundle` requires the submission handler’s context to match the bundle context; the compatible device image must contain the kernel. Khronos describes `kernel_bundle` and `kernel` as common-reference runtime classes: copying them retains the same underlying SYCL object semantics. Thus an application-owned copy can be retained and reused; the API does not require the bundle to be reacquired for every submission. This is a legal reuse opportunity, not proof of a runtime-cost reduction.
+
+For this exact candidate, the conservative entry key/ownership contract is:
+
+- Candidate kernel identity is the compile-time `GdnRecQuadPipelineSG32` kernel ID and the current binary/image/build configuration. Do not key by the implementation-defined kernel name string; SYCL does not guarantee that name is unique or stable across runs.
+- Use the exact `sycl::context` returned by the owning queue and the exact `sycl::device` returned by that queue. The executable bundle is created with `{that device}` and the one candidate kernel ID. Do not share a cache entry across a newly-created context merely because it selects the same physical GPU or reports the same name/driver.
+- The simplest safe home is an immutable cache entry owned by the Strata queue/device/context owner, or by an explicit owner object that controls those same objects. Store SYCL values (`context`, `device`, `kernel_bundle<executable>`, and optionally `kernel`) rather than raw Level Zero handles. The SYCL reference semantics keep the underlying objects alive while SYCL copies remain. Do not make a process-global map keyed only by GPU index/name/native pointer.
+- If an owner intentionally shares an entry among multiple queues, every consuming queue must use the same context and the exact supported device represented in the bundle; an equality check on SYCL context/device values is a possible guard. The context may have other devices, but that does not make a bundle for device A automatically valid for device B. Keep the per-queue `in_order` gate separate. The lowest-risk first version is one cache per exact queue owner, avoiding global identity and invalidation logic.
+- Publish a cache entry only after all mandatory current checks succeed. Hold the bundle and, if useful, the kernel descriptor in the entry. The current submit still uses `handler.use_kernel_bundle(*bundle)` and its named lambda, so retaining the bundle is sufficient for exact-image dispatch. If a future path launches a `sycl::kernel` object directly, its argument-binding requirements and launch semantics need a separate review; reuse does not imply arbitrary kernel objects can be substituted without changing code.
+- Serialize first construction/publication (e.g. a mutex or once-state scoped to that owner); expose the completed entry as immutable to concurrent readers. Do not hold a cache mutex across queue submission, a wait, or user callbacks. The SYCL spec does not give this design a universal guarantee that every implementation-specific initialization sequence may be raced by arbitrary host threads.
+- Retain the entry for as long as calls may submit using it. On orderly owner teardown, first quiesce/drain its queues under the existing lifecycle; queue/context destructors are not a synchronization substitute. Then release the entry with its owner. If the last cache/bundle reference goes away, SYCL reference semantics release underlying backend resources according to implementation rules.
+- Treat a new context/device after queue recreation or device reset as a cache miss and perform all admission checks again. Level Zero states modules are created on a context for a device (or its sub-devices); using an object after a device hang/reset invalidates the context-associated handles, and recovery requires destroying the context and creating a new one. Do not attempt to revive a stale entry or retry the same potentially partially-mutated state after an asynchronous/post-submit error. Existing fail-stop/no-fallback behavior remains authoritative.
+- If specialization constants, compile/link options, kernel implementation/image, relevant selector policy, or device binary changes, rebuild the entry in the corresponding new process/configuration. This current kernel sets no specialization constants and uses a fixed named image; that assumption belongs in the cache contract rather than a cross-version/global persistent cache.
+
+The public APIs are standard SYCL. The runtime-object ownership analogy is visible below the abstraction too: Unified Runtime exposes retain/release APIs for context/program/kernel handles; raw-handle management would therefore add manual lifetime obligations with no need in this path. Level Zero module handles are context/device-scoped and cannot safely be treated as GPU-global objects.
+
+## First phase versus steady phase
+
+A conservative first cache-miss phase performs the current admission sequence once: verify this queue is ordered; obtain its context/device; run current device workgroup/dimension/subgroup checks; obtain the executable bundle for exact context+device+kernel ID; check membership; obtain the kernel; query mandatory compiled subgroup/workgroup constraints; and query optional resource descriptors. Only then publish `Ready` with an immutable record, including whether each optional descriptor was successfully read. Cache-construction exceptions remain pre-submit denials. Do not publish partially initialized state.
+
+For later calls through that same owner/key, the steady path may reuse the retained executable bundle and admitted metadata, skip repeated device and kernel queries and bundle/kernel acquisition, and still check the actual queue's in-order property. Continue using the exact bundle through `handler.use_kernel_bundle`. Optional resource descriptors are metadata for the same executable kernel/device and are not gates; if cached, mark them as an entry-time snapshot (`known/value`) rather than implying they were re-queried for the current chunk. If compatibility requires retaining per-call resource freshness, keep just those optional queries per call and measure them separately. A failed optional query remains unknown and never becomes an admission failure.
+
+If the owner can present a queue that does not match its entry, create/obtain a different owner entry or take the existing pre-submit denial path. Never silently use a cache hit from a different context/device. A device-loss/async exception after submit is not a cache miss and cannot select legacy fallback.
+
+## What implementations and public Intel GPU examples establish
+
+The Khronos SYCL 2020 spec/reference (`get_kernel_bundle`, `has_kernel`, `get_kernel`, `handler::use_kernel_bundle`, common reference semantics) gives the portable legality and exact context/device constraints. It does not require `get_kernel_bundle` to be costly, nor prescribe an application cache policy.
+
+The Intel DPC++ implementation documentation says its in-memory cache stores underlying UR program/kernel objects per SYCL context; program keys include device-image ID, specialization-constant values and device set, and kernel entries are keyed by program plus kernel name. The in-memory cache is enabled by default in current DPC++ documentation; persistent on-disk caching is separate and off unless enabled. This implementation already avoids some repeated compilation/object construction, so a user-level retained bundle may mostly save repeated API calls/metadata queries, or may matter little. The public cache docs are implementation behavior, not a SYCL promise and not a timing result for this binary/device.
+
+Intel's SYCL Graph usage guide constructs `MyBundle` once from `MyContext`/`MyDevice`, obtains `kernel` objects from it, captures those objects in command groups, then reuses and replays the executable graph while changing dynamic parameters. Intel's 2026 DPC++ migration article likewise shows fetching an executable bundle outside a submission and passing the retained bundle to `handler::use_kernel_bundle`, or getting a kernel from the bundle and submitting it later. The Intel GPU Optimization Guide presents `sycl::build(kb_src)` followed by use of the executable-state bundle. These are concrete Intel/DPC++ API reuse patterns, but none measures the per-chunk admission path here.
+
+The Codeplay runtime-compilation article discusses source bundles, conversion to executable bundles and persistent cache use, and states Intel GPUs are supported through Level Zero/OpenCL in its compiler support context. This is a runtime-compilation example rather than evidence about DPC++'s handling of this precompiled kernel or Battlemage performance. No inspected llama.cpp/Battlemage implementer report gave evidence of caching this sort of SYCL executable bundle in its hot dispatch. Keep external examples as API usage patterns, not performance proof.
+
+## Measurement-safe next decision, without an adoption claim
+
+The host admission cost is currently unmeasured. A future owner-run experiment should separate first miss from steady hits and retain the current legacy/quad matched checks. Record each host subphase: queue property, device queries, exact executable-bundle retrieval, membership/kernel extraction, mandatory kernel queries, and optional resource queries. Count actual candidate chunks and cache hits/misses. Keep a valid executable bundle alive through submissions. Compare cold-first and warm-steady runs separately, and do not label host query elapsed as GPU elapsed or subtract it from prior full service sums as if the phases were measured in the same run. Preserve output parity, submission errors, normal queue drains and the rule that post-submit errors are fatal/no-fallback. If source/runtime change causes a miss or error, report that path, not a speed estimate.
+
+Only after a safe implementation and a finite component measurement could a clean >=32K quiet timing determine whether reusing admission metadata changes the combined service measure. No cost, speedup, candidate adoption, production default or timing result is claimed here.
+
+## Primary references
+
+- [Khronos SYCL 2020 revision 12](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html): Sections 3.9.9, 3.9.12, 4.5.2, 4.11.7, 4.11.8, 4.9.4.4.
+- [SYCL Reference: kernel bundles](https://github.khronos.org/SYCL_Reference/iface/kernel-bundles.html): executable state, context/device-associated retrieval, kernel ID overload, `has_kernel`.
+- [SYCL Reference: handler `use_kernel_bundle`](https://github.khronos.org/SYCL_Reference/iface/command-group-handler.html#use_kernel_bundle): same-context requirement and compatible image behavior.
+- [SYCL Reference: common reference semantics](https://github.khronos.org/SYCL_Reference/iface/common-reference.html): copying runtime objects preserves underlying-object semantics; context/device/kernel/kernel_bundle are equality comparable.
+- [Intel DPC++ kernel/program cache design](https://intel.github.io/llvm/design/KernelProgramCache.html): per-context in-memory program/kernel cache and key composition.
+- [Intel DPC++ supported environment variables](https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2025-2/supported-environment-variables.html): separate in-memory and persistent cache controls.
+- [Unified Runtime API](https://oneapi-src.github.io/unified-runtime/core/api.html): context/program/kernel retain-release object lifetime at the lower abstraction.
+- [Level Zero module API](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/module.html): module creation binds context and device/sub-device.
+- [Level Zero programming guide](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html): device-loss invalidates context-associated handles; reset recovery requires a new context.
+- [Intel SYCL Graph usage guide](https://github.com/intel/llvm/blob/sycl/sycl/doc/syclgraph/SYCLGraphUsageGuide.md): bundle/kernel obtained from queue context/device and reused in graph command groups.
+- [Intel DPC++ 2026 migration note](https://www.intel.com/content/www/us/en/developer/articles/technical/sycl-breaking-changes-oneapi-dpcpp-compiler-2026.html): retained executable bundle or kernel object usage examples.
+- [Intel GPU Optimization Guide](https://cdrdv2-public.intel.com/824351/oneapi_optimization-guide-gpu_2024.2-771772-824351.pdf): executable bundle built once and subsequently used.
+- [Codeplay SYCL runtime-compilation article](https://codeplay.com/portal/blogs/2025/07/08/sycl-runtime-compilation): executable kernel bundle construction/reuse and cache discussion; not a BMG timing result.
+
+This report is read-only and separates legal cache reuse from measured value. It does not propose changing production math/defaults and does not claim the current repeated admission is expensive.
