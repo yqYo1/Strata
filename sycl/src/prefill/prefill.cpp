@@ -2344,7 +2344,76 @@ struct PeTimer {
 };
 }  // namespace
 
+namespace {
+// Opt-in phase experiment. The compute workspace, KV state and decoder stay
+// alive; only the expert copy queue and its host staging resources are retired.
+// Both queues must be drained before any DMA event or host buffer is freed.
+template <class I>
+bool restore_phase_copy(I& m, std::string& err) try {
+    const core::OnDevice on_device(m.device);
+    uint32_t ordinal = 0;
+    m.copy = dpct::get_current_device().create_in_order_native_copy_queue(true, ordinal);
+    std::fprintf(stderr, "strata prefill copy queue: native copy-only, ordinal %u, index0, in-order, profiling0\n", ordinal);
+    for (int i = 0; i < ring_cap(); ++i) {
+        m.copied[i] = new sycl::event();
+        m.used[i] = new sycl::event();
+    }
+    m.stager = std::make_unique<Stager>();
+    const int hw = (int) std::thread::hardware_concurrency();
+    const char* stv = std::getenv("STRATA_STAGER_THREADS");
+    bool files = false;
+    for (int64_t l = 0; m.src != nullptr && !files && l < m.g->n_layers; ++l)
+        for (int64_t e = 0; !files && e < m.g->n_expert; ++e) files = m.src->transient(l, e);
+    const int threads = stv ? std::clamp(std::atoi(stv), 1, 32) : files ? 32 : std::max(2, std::min(4, hw / 4));
+    if (files && std::getenv("STRATA_STAGER_RING") == nullptr) m.stager->kRing = 4 * threads;
+    if (!m.stager->init((size_t) MAXBLOB(), threads)) {
+        err = "prefill: recreating the phase copy stager failed"; return false;
+    }
+    std::fprintf(stderr, "strata prefill copy phase: recreated\n");
+    return true;
+} catch (const std::exception& exc) {
+    err = std::string("prefill: recreating the phase copy resources: ") + exc.what();
+    return false;
+}
+
+template <class I>
+bool retire_phase_copy(I& m, std::string& err) try {
+    const core::OnDevice on_device(m.device);
+    m.cs->wait_and_throw();
+    m.copy->wait_and_throw();
+    // The destructor joins workers and releases their completed DMA events.
+    m.stager.reset();
+    for (int i = 0; i < RING_MAX; ++i) {
+        if (m.copied[i]) dpct::destroy_event(m.copied[i]);
+        if (m.used[i]) dpct::destroy_event(m.used[i]);
+        m.copied[i] = m.used[i] = nullptr;
+        m.stage_live[i] = false;
+        m.used_of[i] = i;
+    }
+    // Use the registered SYCL owner; never destroy its native handle ourselves.
+    dpct::get_current_device().destroy_queue(m.copy);
+    std::fprintf(stderr, "strata prefill copy phase: retired\n");
+    return true;
+} catch (const std::exception& exc) {
+    err = std::string("prefill: retiring the phase copy resources: ") + exc.what();
+    return false;
+}
+}  // namespace
+
 bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) {
+    const char* phase_env = std::getenv("STRATA_PREFILL_COPY_PHASE_RELEASE");
+    if (phase_env && std::strcmp(phase_env, "0") != 0 && std::strcmp(phase_env, "1") != 0) {
+        err = "prefill: STRATA_PREFILL_COPY_PHASE_RELEASE must be 0 or 1"; return false;
+    }
+    const bool release_copy = phase_env && std::strcmp(phase_env, "1") == 0;
+    if (release_copy) {
+        const char* copy_engine = std::getenv("STRATA_PREFILL_COPY_ENGINE");
+        if (!copy_engine || std::strcmp(copy_engine, "1") != 0 ||
+            std::getenv("STRATA_PREFILL_TRANSFER_TIMING") != nullptr) {
+            err = "prefill: phase release requires the unprofiled native copy queue"; return false;
+        }
+        if (!impl_->copy && !restore_phase_copy(*impl_, err)) return false;
+    }
     const char* mode = std::getenv("STRATA_PREFILL_LAYER_MAJOR");
     const char* first_env = std::getenv("STRATA_PREFILL_FIRST");
     const bool all_cached = impl_->cache && impl_->g &&
@@ -2390,6 +2459,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
         }
         if (std::fflush(file.get()) != 0) { err = "prefill: writing the state diagnostic failed"; return false; }
     }
+    if (release_copy && !retire_phase_copy(*impl_, err)) return false;
     return true;
 }
 
