@@ -1,0 +1,63 @@
+# Cache-route static replay information contract — round 53
+
+## Scope and source identity
+
+Read-only source/evidence audit of v5's route-pair and shape summaries, the frozen Strata cache quota/slot implementation, R34/R35 quota reports, R51's pinned llama.cpp compatible-group LRU audit, and the R52 v5 provenance report. This report is the only write. No code, tests, controller, profile/model, Git state, GPU, or runtime was queried or changed. No offline replay was performed.
+
+Source/research identities:
+
+- v5 controller: `c495ffa7c7785bc82012b5d057ecaa68420ffb4b47e0139c31548e25ee6897dc`
+- shape helper: `0355f450b1c0b3b4dc59ff28db09c5be48ea914e40808f94daa822b38b5dc2ff`
+- route parser: `2ff44099f7385054dc5663f04a8e226d364d4d349a84b2493bc2bb1d6f3585cd`
+- `ExpertCache`: `d481154b44ede799edf306e792d2ccf0d896126f96d71783f7d37bfab191f1c5`
+- `ExpertLayout` header: `dbc6cf5b91367e571ad9cb3be4e4cd851159544186c859a7cd374632a8a63fcd`
+- `ExpertLayout` implementation: `9826d86cc83330d447d62a62189dc782f549ffb815c7bdccd2ad4f4582672f4d`
+- `generate.cpp`: `eb591e263398abd9b178ab00c61e4f6af53a53bad37f837b18cd323af8dbab05`
+- R34 quota report: `5e27eb396ae619ea9f1f690c1fec1d3362bc84b356be6388844a192147993a0c`
+- R35 profile-quota evidence: `7af86fcce9e3e2f9b79f53775035932c048e7187222ae640989c64231ae140a7`
+- R51 external implementation audit: `e732b0e5b6337c5bbe09c81505e0fc7cb9f80bf2de4387b020f55608f1485715`
+- R52 v5 join/provenance report: `32d3f9a290a8a58aa8c0390705136d8ea4f6a40902de3b3d30d2f16363e8a607`
+
+## What v5 counters can calculate exactly for a fixed trace
+
+For each request and each sparse `(layer,expert)` pair, v5's pinned parser retains or can replay `N=entries` and `J=callback_pairs`; the shape helper validates `J <= N <= 2J` and derives `J1=2J-N`, `J2=N-J`. The pair's layer identifies its pinned GU/Down format. Under the frozen source proof (one job per distinct expert callback pair and NT limited to 1 or 2), these are exact logical job counts for the captured trace.
+
+Thus for any proposed **static resident set** S, the replay can exactly calculate on the same captured route trace:
+- routed entries covered: `sum(N[l,e] for (l,e) in S)`;
+- distinct callback jobs covered, separated by phase, actual layer format and NT1/NT2: `sum(J1[l,e])` and `sum(J2[l,e])`;
+- corresponding logical output rows (640 per GU job, 2560 per Down job);
+- request-by-request versions of those totals, if requests are not pooled.
+
+This extends R34/R35's previously available aggregate cache hits/profile ordering with a pair-keyed, per-format NT split. It enables exact fixed-trace scoring for any deterministic static plan, including quota vectors whose selected experts are specified by the plan. It can show the exact captured trace's resident coverage and logical CPU-job exposure under that counterfactual plan. Because the trace was generated under another resident set and GPU/CPU arithmetic can alter later routes, it is not an exact prediction of routes or hits after deploying a different policy. Report it as replayed trace coverage, not live counterfactual performance.
+
+A defensible scoring objective from the counters alone is maximizing covered entries, jobs, or logical rows subject to a fixed *count* or byte constraint; those are exact count objectives. A weighted estimate such as `sum(Jnt * measured_CPU_service[phase,type,nt])` is computable only after separately measuring/calibrating those service costs on the target and presenting the result as an estimate. Counts do not supply CPU service time, memory traffic, upload cost, queue delay, worker imbalance, or latency. No score based solely on `N/J/NT` is an exact runtime-cost objective.
+
+The current v5 summaries deliberately retain the raw per-request stderr interval for replay rather than all pair dictionaries, and preserve request separation. An offline quota comparison must use that replay data and frozen helper/parser/profile/format inputs; the compact aggregate receipt alone cannot reveal pair keys after the raw interval is retired. Do not merge A and B or the repeated A/B runs when reporting holdout quality.
+
+## Why the counters cannot simulate compatible-group global LRU
+
+R51's llama.cpp implementation is not a single arbitrary variable-size pool. It co-groups layers only when tensor count, type, shape, expert stride and device agree; each group has a shared fixed-geometry slot bank. Recency is global only inside such a compatible group/device. It deduplicates expert IDs, touches hits to MRU, and evicts/uploads on misses. It also bypasses lookup for zero/large token batches or when the upper bound on distinct routed experts exceeds that group's slot count.
+
+V5 records final per-request pair totals, not access order. The same `N,J,J1,J2` values can arise from sequences with different interleavings; those sequences cause different LRU evictions and hit counts. The summaries also lack per-batch ordered distinct-ID sets and exact microbatch boundaries needed to determine the R51 large-batch bypass and LRU touch semantics. No deterministic LRU miss stream can be reconstructed from unordered aggregates, even if its final route histogram is exact. A sequence-preserving trace must capture at the lookup/touch decision point, with request/phase and batch boundaries, ordered unique `(layer,expert)` references using the policy's actual touch granularity, initial resident state, and enough group/device identity to reproduce every candidate state transition.
+
+There is also a geometry mismatch. Strata's `ExpertLayout` stores per-layer expert `blob_bytes(layer)`, role offsets and source files; the native format's gate/up/down extents vary by layer. Current v5 validates a type map and explicitly does not validate GGUF role extents or tensor payload. R51 llama.cpp forms each LRU group's slot size from the compatible tensors' expert strides and backend alignment. A Strata LRU byte replay therefore needs exact per-layer three-role extents/loaded blob bytes, alignment and device/group compatibility, plus the number of padded bytes consumed per resident. Type labels, NT jobs and pair counts are not enough to infer that budget.
+
+## Current quota and minimum safe static candidate
+
+The frozen explicit-count path allocates a uniform cache using `ExpertLayout.max_blob`; an explicit 128 slots therefore requests `128 * max_blob` bytes (before any allocator/runtime overhead). With 48 layers and per-layer admission, `layer_slot_range` uses `q=slots/layers=2`: layers 0–46 get two contiguous slots each, and layer 47 receives the remainder of 34. `layer_next[layer]` starts at each range's lower bound; `admit` fills only that layer's range and never borrows or evicts; `residency_[layer*experts+expert]` stores the global slot ID. Profile fill runs once and the per-layer path takes the highest-ranked profile pairs in each layer until that local range fills. R34/R35 already identify the remainder allocation issue and the profile ranking's unverified workload predictiveness; I make no repeat recommendation to redistribute the 32 surplus slots.
+
+The smallest safe API/slot-map candidate for a later controlled static experiment is an optional validated 48-element quota vector, defaulting byte-for-byte to the existing 2×47+34 rule. Require each quota in `[0,n_expert]`, exact vector length, checked prefix-sum arithmetic, and `sum(q_l)==128` for the first policy-only comparison. Replace the arithmetic `layer_slot_range` with half-open prefix ranges `[prefix_l,prefix_{l+1})`; initialize `layer_next_l=prefix_l`; preserve the existing per-layer admission, profile order, non-eviction and global slot IDs. Keep the existing uniform `max_blob` allocation so the first A/B changes only which fixed slots each layer may fill, not VRAM use, eviction behavior, or expert math. An omitted vector must reproduce all existing ranges and admission behavior exactly. Add CPU invariants for no overlapping/omitted slot IDs, exact total, empty and full layers, invalid vectors and profile-fill mapping before any target run. This describes a candidate design; it is not an implementation request or evidence it helps.
+
+Variable-sized allocation is a separate policy/geometry experiment. Strata's existing `open_sized` rounds every slot size up to 256 bytes and builds prefix byte offsets. A mixed-size quota vector would need to produce exactly `q_l` copies of `round_up(blob_bytes(l),256)` per layer, in the same layer/slot order used by the prefix slot map. To preserve the current memory budget, enforce the checked sum `sum_l q_l * round_up(blob_bytes(l),256) <= 128 * max_blob` (or a more conservative explicitly measured available-cache budget after KV/runtime reserve), rather than treating 128 slots as an equal-byte budget. Record actual loaded `blob_bytes(l)`, padded sizes, total allocation, and device reserve. Validate zero-quota layers, overflow, allocation failure/retry, and the final actual slot-to-pair map. Do not combine variable-size packing with quota-selection effects in the first experiment.
+
+A dynamic compatible-group global LRU is not a small quota-vector change: it replaces fixed per-layer ranges with mutable cross-layer ownership, requires group-specific banks/byte accounting, per-pair residency and reverse slot-to-owner maps, ordered recency state, safe slot reuse, and correct upload/update ordering. It should remain an offline sequence replay first, not be inferred from the existing aggregates or folded into the minimal static candidate.
+
+## Holdout and measurement conditions
+
+A meaningful offline quota comparison needs a training trace to choose and freeze the plan, then independent holdout prompts/sessions/traces to score it. The same A/B prompts or repeated A/B request rows used to tune a vector cannot also be presented as independent validation. Preserve per-request and phase rows. Predeclare the objective (entries, NT/format jobs, or a calibrated service estimate), the count/byte constraint, resident initialization, and acceptance rule before inspecting holdout results. For LRU specifically, collect a new ordered event trace and hold out complete sequences, not shuffled pair rows.
+
+A replay win is a candidate-selection signal only. A physical A/B must hold model/build, prompts, context, KV residency, batch/prefill, CPU pool and all other knobs fixed; compare current static plan with one frozen candidate, counterbalance order and reset/warm both under a declared state protocol. Retain exact output, IDs/logprobs/MTP, live-state/head and lifecycle/health gates, plus matched fresh decode measurements. If claiming the cache mechanism helped, also capture actual hits/misses, uploaded/padded bytes and eviction/reload counts. Keep prefill, fresh decode, and restored-state decode separate, and retain the full physical-context lifecycle gate. A higher replay coverage or more logical CPU jobs moved off CPU does not guarantee faster generation; counts are not service cost/traffic/latency.
+
+## Conclusion
+
+The v5 per-pair NT/format join adds enough information to calculate exact fixed-trace static resident coverage and typed logical job/row objectives. It lacks temporal and batch order for compatible-group LRU, and it lacks verified per-layer byte geometry for an exact variable-size byte-budget replay. First candidate, if justified by independent holdout replay, is a static quota vector with the existing 128 uniform slots and admission/slot semantics preserved. Any variable-size or dynamic-LRU design is a separate, higher-evidence experiment. No performance claim or cache-policy change is supported by this audit.

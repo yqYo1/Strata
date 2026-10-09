@@ -5,7 +5,7 @@ had returned and no research agent was active. Root resumed multiple independent
 read-only researchers and continued its own execution. The recurring assignment,
 shared-history, separate implementation and root-only testing rules are now in
 AGENTS.md. Returned reports remain files with exact hashes; they are reviewed
-before adoption. Registryv36 has102 completed Luna reports and preserves prior
+before adoption. Registryv37 has110 completed Luna reports and preserves prior
 immutable snapshots in the Git history.
 
 ## Division of work
@@ -21,12 +21,12 @@ fixtures and pure byte-framing helper. Root owns every actual execution and
 serializes builds, tests, inference, profiling and cleanup with the measurement
 lock. Research does not hold up independent main work.
 
-| Latest registryv36 assignment | Model | Scope | State at snapshot |
+| Latest registryv37 assignment | Model | Scope | State at snapshot |
 | --- | --- | --- | --- |
-| Shape join review | gpt-6-luna | Independent per-pair NT/type join and scalar fixture oracle | Running, read only |
-| External cache research | gpt-6-luna | Cost-aware decode cache scheduling in other implementations and blogs | Running, read only |
-| Implementation agent | gpt-6.1-sol | v4 EOF origin/order and final compact receipt size, independent fixture source | Running, source only; root tests |
-| Main agent | Root | Shape join implementation and actual CPU tests, archive and next admission gates | CPU run closed; no live GPU process |
+| Startup wire review | gpt-6-luna | Actual INFO/READY/GEN/SAVE/QUIT emitter and prior audit gap | Running, read only |
+| Startup mock review | gpt-6-luna | Actual startup failure versus fake/real-PTY CPU coverage | Running, read only |
+| Implementation agent | gpt-6.1-sol | v6 exact INFO startup and bounded fallback transport evidence | Running, source only; root tests |
+| Main agent | Root | Actual GPU failure closure/archive and next serial qualification | All execution closed; no live GPU process |
 
 Every assignment receives the past-report directory and reviewed decisions.
 R45 found no distinct external exact-weight AVX2 NT1/2 candidate; this is a
@@ -155,3 +155,36 @@ The archived pinned controller snapshots retain their original trailing
 spaces so source hashes match actual qualification. Whitespace validation
 checks other changes normally; those byte-preserved sources exempt only
 end-of-line/end-of-file whitespace. All archive hashes were verified.
+
+## Integrated controller qualification and actual startup failure
+
+Rounds50–53 returned eight distinct read-only reports while root integrated and
+executed its own qualification. The external hardware label and CUDA-only cache
+claim were corrected against pinned primary sources in R51; original reports
+remain byte-identical. Static pair aggregates support fixed-trace coverage, not
+ordered LRU replay or live counterfactual routes. The cross-stage tile-DAG is a
+conditional scheduling lead; actual worker wait/compute/tail evidence is absent.
+
+Rootv5 adds exact helper/CPU/profile/metadata provenance and per-type NT1/NT2
+reconciliation; its compact receipt points to raw stderr intervals for replay.
+Root's17 protocol cases,10 scalar shape cases and actual CPU admission preflight
+passed in3.900s. Real LinuxPTY/OwnedGdb with a Python echo child passed in.404s:
+PTY EIO arrived before MI exit was known; genuine exit0 followed, no cleanup or
+survivor. This proves that small transport sequence only, not engine startup.
+
+The actual v5 GPU diagnostic failed in47.846s before any GEN because its startup
+grammar rejected the frozen engine's normal INFO line preceding READY. This is
+a root controller bug, not GPU hang, math disagreement or a speed sample. Its
+original receipt remains failed: active=false, completed=false, healthy=false,
+requests0, exitcode/signalnull, no new GPU fault, forced owned cleanup=true and
+no inferior/debugger survivor. The captured normal INFO/READY bytes and compact
+original receipt are archived. The earlier CPU passes and source reviews do not
+qualify actual engine startup. Root acknowledged the defect and assigned separate
+Solv6 source/fixtures plus two independentR54 emitter/coverage investigations.
+Root will test all returned code serially. No new engine adoption or full-lifecycle
+pass is claimed; C/D numerical rejection remains unchanged.
+
+Raw startup-failure logs remain outside Git until the exactINFO and command
+startup mock consumes them; retire redundant verbose output when that question
+is resolved. The future static-quota replay requires a successful actual pair
+trace, so no current route data has been promoted. No cleanup ran here.

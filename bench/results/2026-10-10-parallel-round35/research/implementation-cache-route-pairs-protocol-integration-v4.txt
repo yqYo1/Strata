@@ -1,0 +1,36 @@
+Cache-route-pairs protocol integration v4 — SOURCE ONLY / UNEXECUTED
+
+Created only B/run_owned_cache_route_pairs_v0141_code32k_v4.py, B/test_cache_route_pairs_protocol_integration_v4.py and this report, where B=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007. Based on immutable v3 cbce9a3cd0fedac9daadae66071bf6b7e5baccf355eb99538869f90b91808518. Existing v3/helper/parser/fixtures/receipts are untouched. Read registry-v35 and both R49 protocol-budget/fixture-admission audits. No controller/fixture/code execution, syntax check, build, model/service/GPU/profiler, Git mutation or cleanup occurred. Root owns all serial review/execution; two independent reviews remain independent evidence.
+
+New hashes
+Controller 90fddc4506d0c41d2f99676889965207d4360dff60d8ad929a26591fe5a36d12
+Fixture e1beacd64b1a94aa4767e283ac2c7bb80ad40d05260cf5a17ef4a561385fbc08
+
+Transport EOF versus process exit
+available_stdout now records zero_read and pty_eio separately, raw received-byte offset, framer received count, quit_sent, inferior exit_code/exit_signal at observation and poll-state exit_known/last_stop. Non-EIO OSError records errno/error/byte offset and remains a failure. Transport reason/order is stored BEFORE protocol.finish, so an unterminated-tail exception cannot erase the transport evidence. EAGAIN returns false without setting EOF. A prior EOF is not re-read/reclassified.
+
+Early transport EOF before QUIT or while inferior exit is still unknown is a conservative failure. If GDB/MI exit notification lags the PTY EOF observation, that ordering also fails rather than assuming a subsequent normal exit repairs it. This may reject an otherwise normally exited process with delayed MI observation; it never claims early EOF was normal. Known signalled/nonzero exit remains separately rejected by the existing normal-exit gate. The finite30-second QUIT loop waits for BOTH observed transport EOF and known process exit. The final boundary never unconditionally calls protocol.finish. EAGAIN after normal process exit therefore cannot fabricate EOF; absent actual zero-read/EIO within the deadline fails. Existing queued/partial/raw tail preservation and R44 no-batch post-DONE/QUIT grammar remain intact.
+
+Checked final failure receipt
+failure_save adds every terminal field BEFORE the checked serialization. encoded_failure computes serialized_failure_receipt_bytes, projected_final_text_bytes and external_or_prior_text_overflow to a stable final payload within at most16 bounded iterations. The exact bytes returned, including every added field and newline, are checked against the1MiB failure reserve and written ONCE. No unverified JSON reserialization or second write occurs.
+
+If full failure metadata exceeds reserve, a bounded fallback preserves observed math/pair/histogram/protocol status, normal exit/signal, named cleanup-failure booleans, fault count and original C/D failure fields, plus bounded error excerpts. It identifies omitted complete failure metadata by SHA256 and byte count, explicitly marks reserve exhaustion, and retains healthy=false/text_budget_gate_passed=false. That fallback is also finalized/stabilized/checked before its single write. A genuine math PASS remains math=true when budget fails; a prior math failure remains false. Neither becomes an overall pass. Large omitted details are not silently called retained in the compact receipt; raw artifacts already written remain untouched.
+
+The64MiB aggregate remains an acceptance gate with reserved controller-write accounting and final scan. Existing unchanged external helpers can still physically overshoot; the compact receipt explicitly records projected overflow and remains failed, with no deletion/repair claim. All source/build/binary/helper/parser/environment/argv/cwd/reference full-head/all66-live-state/ID/logprob/MTP/fault/ownership/cleanup and physical-context gates from v3 remain intact. The original C/D statuses remain failed. New output directory suffix r4 avoids existing artifacts. R42 pair J<=N<=2J and per-type/NT native join are NOT integrated; root handles them in a separate module.
+
+Independent source/fake-source fixtures — unexecuted
+v4 fixture derives from the prior fake-PTY fixture without importing controller top-level. On root's later CPU run it extracts only named source functions, adds encoded_failure, and supplies fake reads/process state, pure immutable helper and bounded temporary artifacts. No actual engine/model/GPU/helper process is invoked. Existing DONE/SAVE/QUIT tail, line/burst, aggregate and cleanup checks remain. Added cases:
+- Normal exit plus no-EOF/EAGAIN leaves framer EOF false and transport_eof absent.
+- EIO while exit unknown records reason, exact offset, poll/exit ordering and fails; later normal exit does not rewrite that observation.
+- Zero-read after known normal exit is recorded distinctly and accepted as observed EOF.
+- Non-EIO EBADF records failure evidence without manufacturing EOF.
+- Independently adjusted filler makes a final encoded receipt EXACTLY1MiB including size/projection fields; byte count must equal actual stored serialization.
+- Oversized final metadata produces a bounded fallback preserving mathPASS/budgetFAIL and forced-cleanup failure.
+- Ordinary compact budget failure preserves math=true and asserts final declared serialization size equals actual bytes.
+
+Limits: AST function fixtures do not execute the real command/send/QUIT loop, real OwnedGdb or closure helpers. Source assertions guard removal of unconditional final finish and presence of the finite observed-EOF timeout, but are not GPU integration or complete lifecycle proof. Near-reserve fixture allocates about1MiB strings; sparse files stimulate logical aggregate budgets without64MiB in-memory buffers. No constant/helper/gate is monkeypatched to weaken admissions.
+
+Root serial recipe (NOT executed)
+After current root-owned work closes, review v4 and independent audits, then:
+python3 /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/test_cache_route_pairs_protocol_integration_v4.py
+Create a NEW CPU receipt with exact controller/fixture/helper hashes, stdout/stderr/normal exit/elapsed and source-only scope. Preserve all old receipts. Then root may repeat exact v4 CPU-preflight with the existing engine/binary/build/flags/parser admissions and required protocol-helper aa72bd7f1a9babf7c6e325b10634f1a046fe78fc2b2738e691d90624197131c1, using v4 self SHA. CPU fixture/preflight success is not GPU/physical-lifecycle/adoption/performance qualification. Any later four-fresh32K one-process diagnostic remains root-owned and separately admitted.

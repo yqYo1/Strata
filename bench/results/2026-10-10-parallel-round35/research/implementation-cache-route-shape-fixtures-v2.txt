@@ -1,0 +1,27 @@
+Cache-route shape fixtures v2 — SOURCE ONLY / UNEXECUTED
+
+Created only B/test_cache_route_shapes_v2.py and this report. B=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007. Read latest registry-v36 and cache-route-pairs-shape-join-audit-round50.txt. Existing shape module, v1 fixture and all controllers/helper/parser/receipts remain unchanged. No fixture/code execution, syntax check, test/build/GPU/model/service/profiler/Git/cleanup action occurred. Root owns serial execution and separately integrates its v5 controller.
+
+New fixture SHA256
+cc3a91f8a34ec80204b3dc0ffff1f61f66dad7bde8cdf9ab417e3a0ea24659bd
+
+Immutable sources re-read and preserved
+cache_route_shapes_v1.py 0355f450b1c0b3b4dc59ff28db09c5be48ea914e40808f94daa822b38b5dc2ff
+test_cache_route_shapes_v1.py 4352787803ec805bd97ec7862c6205a69f250bca78e95bee028af43d36d80fb8
+
+Fixture independence and retained baseline
+The v2 file retains all eight v1 tests, including explicit token-list job oracle, mixed NT/resident pair, classification/shape/rows/missing/extra checks and small actual metadata fixture. It adds two unique-key negative cases with independently literal histogram mutations. It neither imports a producer serializer nor derives mutated cells from the shape reconstruction formula under test. A test-owned sum function measures phase and phase/NT aggregate experts,tokens,rows, then compares them against fixed independent literal totals both before and after each mutation. Unique key cardinality is explicitly asserted before reconcile_shapes. The old v1 wrong-NT case still intentionally reaches duplicate-key detection; neither new case relies on it.
+
+New case 1: duplicate-free NT redistribution
+Reference has GU18 one NT1+one NT2 and GU22 one NT2. Literal mutation instead gives GU18 NT2 experts2,tokens4,rows1280 and GU22 NT1 experts1,tokens1,rows640. No duplicate (phase,type,NT) key exists. Down cells are retained as explicit original literals. Phase totals stay GU(3,5,1920), Down(3,5,7680). For BOTH phases, NT1 has1 expert/1 token and NT2 has2 experts/4 tokens, with corresponding GU rows640/1280 and Down rows2560/5120. Exact mutated key/value dictionaries are checked independently. reconcile_shapes must then reject with the exact message 'per-format/NT histogram differs from pair-derived jobs', demonstrating format/NT discrimination despite identical global and per-NT totals.
+
+New case 2: Down20/42 swap
+GU cells are explicit unmodified literals. Original Down20 NT1+NT2 and Down42 NT2 become Down42 NT1+NT2 and Down20 NT2, each one job with rows2560. Keys remain unique and the identical phase and per-NT experts/tokens/rows literals are checked before/after. The exact Down key/value mutation is independently asserted. Expected rejection is again the exact 'per-format/NT histogram differs from pair-derived jobs', not duplicate detection. This protects the separate per-layer Down-format mapping.
+
+Metadata caller admission scope
+No new source-negative metadata caller/hash test is added; root handles the literal expected metadata SHA admission in v5 separately. The retained v1 actual metadata fixture still uses its existing literal pinned SHA, and its malformed-layout subcase remains solely a helper geometry test. Neither the synthetic resident algebra fixture nor these histogram mutations qualify actual128-profile/model/producer/native histogram provenance. No production math/native/lifecycle gate is monkeypatched or relaxed.
+
+Root serial recipe — NOT executed
+After current root-owned work closes and source review:
+python3 /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/test_cache_route_shapes_v2.py
+Record new fixture/module/report hashes, stdout/stderr, exit/elapsed and CPU-only scope in a new receipt; preserve all v1 receipts. There are ten test methods in v2. A future CPU pass is only shape-join fixture qualification, not v5 controller/GPU integration, cache policy/performance/adoption or physical256K lifecycle qualification. Original numerical/source/hash/fault/cleanup/C/D rejection and exact output/live-state gates remain independent and unchanged.

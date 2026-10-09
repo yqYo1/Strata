@@ -1,0 +1,36 @@
+# Cache route-pairs v4 EOF, receipt, and admission audit — round 51
+
+## Scope and identities
+
+Independent source-only audit of frozen controller B and its fake-PTY fixture against the v4 integration note, v3 baseline, R49 protocol-budget audit, R49 fixture-admission audit, registry-v36, and the pinned OwnedGdb implementation. No controller/fixture execution, syntax check, build, GPU/model/service/profile run, Git mutation, cleanup, or source modification was performed. This report is the only write. Findings establish source behavior, not runtime or GPU qualification.
+
+- v4 controller SHA-256: `90fddc4506d0c41d2f99676889965207d4360dff60d8ad929a26591fe5a36d12`
+- v4 fixture SHA-256: `e1beacd64b1a94aa4767e283ac2c7bb80ad40d05260cf5a17ef4a561385fbc08`
+- v3 controller SHA-256: `cbce9a3cd0fedac9daadae66071bf6b7e5baccf355eb99538869f90b91808518`
+- bounded protocol helper SHA-256: `aa72bd7f1a9babf7c6e325b10634f1a046fe78fc2b2738e691d90624197131c1`
+- OwnedGdb SHA-256: `61e1d206bf57bb320051cdd65943d23722bc523a602d80c54b7e7a2ad0d3f0d1`
+- integration note SHA-256: `a8eb593dda7226163dc2ab90ca3c93b9a58ca936a31f0575ff1f3ba4d686eea0`
+
+## EOF reason and ordering
+
+V4 makes a real distinction between a successful zero-byte PTY read (`zero_read`) and Linux PTY master `EIO` (`pty_eio`); non-EIO read errors are separately recorded with errno and raw offset and re-raised. It records raw/framer byte counts, the cached GDB/MI exit code or signal, whether exit was known, the last stop, and whether QUIT had been sent. It stores this observation before `protocol.finish()`, so an unterminated tail cannot erase the EOF cause/order. EAGAIN returns false without manufacturing EOF; an already-seen EOF is not read/reclassified. The final loop requires actual framer EOF and a separately observed exit, then requires exit code zero/no signal. It does not call `finish()` merely because the loop ended.
+
+The remaining issue is a conservative false negative in the EIO-before-MI-observation race. `available_stdout()` observes PTY EIO and immediately raises when `g.exit_code` and `g.exit_signal` are still unset. The main QUIT loop does call `poll()` (which invokes `g.poll(.01)`) before checking PTY readiness, but GDB/MI is a separate selector/channel. The source gives no ordering guarantee that its `*stopped,reason="exited-normally"` record is consumed before the PTY master becomes readable with EIO. `OwnedGdb.poll` updates cached exit fields only when it reads and parses that MI record. Thus an inferior that has already exited normally can be rejected if PTY closure is observed first; later cleanup/poll may populate exit code 0, but the saved `transport_eof` correctly retains the original unknown-at-observation state and the already-raised error remains. This is a deliberate fail-closed ordering policy, not a false success. The v4 fake fixture explicitly constructs this ordering and verifies a later normal exit cannot rewrite it, but does not exercise actual OwnedGdb/PTY event ordering. A future change seeking to avoid this false negative would need a bounded post-EIO MI-drain/exit-observation policy while retaining the initial EIO observation and never relabeling it as zero-read EOF.
+
+Conversely, EIO is not automatically accepted merely because QUIT was sent: it only passes the boundary when an exit result is already cached, no partial frame exists, and the later overall result is normal. A nonzero or signalled exit remains rejected independently. Zero-read after known normal exit is distinct and accepted as observed transport EOF. The 30-second loop times out if no transport EOF arrives.
+
+## Final failure receipt
+
+The v4 code closes the R49 reserve edge. `encoded_failure` serializes after all current fields exist, iterates the self-referential byte/projection fields to a stable payload, and returns the exact bytes that are then size-checked and written once. If the full failure metadata is over the 1 MiB reserve, the fallback retains actual math/pair/histogram/protocol and exit state, C/D state, compact cleanup booleans, fault count, and bounded error excerpts; it includes byte count and SHA-256 for the omitted full failure payload. It remains `healthy=false` and `text_budget_gate_passed=false`. Neither branch upgrades math status. The exact final payload size, including the newline and declared-size fields, is bounded before write. The fixture contains an exact-1-MiB case and an oversized-metadata fallback case, plus an ordinary math-pass/budget-fail preservation case; these remain unexecuted source fixtures. External helper writes can still physically exceed the aggregate cap, but overflow is reported as a failed budget result rather than repaired or passed.
+
+## Admission pins and known path defect
+
+The v3-to-v4 source diff is limited to: a new r4 output directory, the D receipt path, EOF/error ordering, and bounded failure serialization. The output suffix change is appropriate for isolating new artifacts. The D path change is not: v4 now names `owned-repeat-capture-v0141-two-full-diagnostic-r4/record.json` while retaining the v3 frozen receipt SHA `cc0e49f0dde0642549a5b6ff7b9c2a8d03d7a32d60501dbae69bfeac306e48e3`. V3 binds that hash to the original r3 receipt. This incorrect path/hash pairing prevents v4 admission before a run; restore the r3 path while preserving the original failed D status. This is the already identified integration defect, confirmed independently.
+
+Other previous admission pins in this diff are textually unchanged: build and flags receipts, helper/parser hashes, CPU parity receipt and pin loop, profile and pack pins, model-shard identity, reference full-head/live-state/output comparisons, source/build/binary pins, prior C rejection and prior D failure assertions, and the independent prior-T/owned-run receipts. The v4 fixture also verifies the source retains the protocol-helper pin, exact observed-EOF timeout, boundary checks, final total scan, pair-joint marker, and removal of unconditional EOF finishing. This is a source diff review, not execution of those admissions.
+
+## Fixture boundary and conclusion
+
+The AST fixture executes only selected pure controller functions with a fake read function and fake GDB-like state. Its EIO/zero-read cases usefully distinguish reason and captured order; its receipt cases inspect actual encoded output bytes. It does not execute the QUIT loop, `OwnedGdb`, real PTY semantics, source admission, or the complete controller lifecycle. No fixture pass or runtime outcome is claimed.
+
+Source-only conclusion: v4 fixes EOF provenance and the final-receipt reserve accounting, and it preserves the prior admission structure except for the erroneous D receipt pathname. Its current EOF policy can reject a legitimate normal exit when PTY EIO wins the observation race against GDB/MI exit notification; it fails closed and does not misclassify that order as success. Root should retain the initial EIO ordering evidence and correct the D path before any later admission attempt.

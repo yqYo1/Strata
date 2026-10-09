@@ -1,0 +1,47 @@
+# Cache route-pairs v5 join, provenance, and replay audit — round 52
+
+## Scope and source identity
+
+Independent read-only source audit of frozen v5 controller, shape reconciliation helper, route-pair parser, v2 independent shape fixtures, immutable prior CPU receipts, the producer emitters, registry-v36 and the v4 integration note. This report is the only write. No tests, syntax checks, controller/preflight execution, build, Git operation, GPU/model/service/profile run, or cleanup was performed. Findings do not constitute runtime, model, GPU, or performance qualification.
+
+- v5 controller: `c495ffa7c7785bc82012b5d057ecaa68420ffb4b47e0139c31548e25ee6897dc`
+- shape helper `cache_route_shapes_v1.py`: `0355f450b1c0b3b4dc59ff28db09c5be48ea914e40808f94daa822b38b5dc2ff`
+- route-pair parser `cache_route_pairs_parser_v1.py`: `2ff44099f7385054dc5663f04a8e226d364d4d349a84b2493bc2bb1d6f3585cd`
+- shape fixture v2: `cc3a91f8a34ec80204b3dc0ffff1f61f66dad7bde8cdf9ab417e3a0ea24659bd`
+- shape CPU receipt (actual eight-test v1 shape fixture): `ac73fc288d12d7e1f1464b7caec8bc850792e9068ba4e1636a61f235f6148cff`
+- route-pair CPU receipt: `2803c78cf7621b8f5ebcda50d67f1ba769a28e07d32568508115e91168e35994`
+- producer header `cache_route_pairs.hpp`: `c06b174f8059a3fec6638bfdde59820126f00c1db809a30ce89a6087a888ad42`
+- producer `generate.cpp`: `eb591e263398abd9b178ab00c61e4f6af53a53bad37f837b18cd323af8dbab05`
+- producer `expert_source.cpp`: `41b98031b865338f0429b195ef4aa10ba94cbaf2c0f2224ab1c3a4de7c37f4aa`
+
+## v4-to-v5 integration and admission
+
+The complete source diff adds the shape-helper SHA CLI admission and exact helper pin; validates the exact existing eight-test shape CPU receipt (passed, complete, inactive, no GPU work or cleanup, helper pin); reads the actual pinned metadata for a type map; requires 128 profile-authenticated residents; integrates per-request join and shape gate into health/final exit; preserves the v4 bounded failure receipt and protocol changes; selects a fresh r5 output directory; and corrects latest D receipt path back to r3 while keeping its frozen SHA. The r3 path/hash pairing is now consistent and the prior D failure assertions remain. Build/flags/parser/protocol helper, pair CPU receipt, source/build/binary and model/profile pins, prior reference and output/state gates, C/D failure preservation, and existing fault/ownership/cleanup gates are textually retained. No further admission-path regression was found in the source diff.
+
+The shape CPU receipt is a fixed-hash binding to the actual earlier eight-test v1 fixture, rather than to the new ten-test v2 fixture. That is coherent for the immutable helper admission: the controller pins the exact helper and the existing CPU receipt; the new v2 fixture adds independent negatives but is not made a runtime prerequisite. It does not claim that the v2 fixture has run. The separate existing C++ pair CPU receipt is hash-pinned and its source pins are rechecked; it is only portable pair-count CPU validation, not GPU/controller integration.
+
+## Mathematical gate
+
+The current source join has a concrete provenance chain: v5 calls the pinned route parser on the request-owned stderr byte interval, uses the frozen parsed histogram attached to that same request, obtains residents from the exact pinned static profile, maps layer formats from the exact SHA-pinned pack metadata, then calls the pinned `reconcile_shapes`. Inputs must carry literal `passed is True`; each route's begin/end must be complete and non-offloaded; coordinates/types are bounded; each pair must satisfy integer `0 < J <= N <= 2J`; residents must be all hits and nonresidents all refused; overflow in expected totals is rejected.
+
+For each refused pair, the helper derives `J1=2J-N`, `J2=N-J`, skips zero-job widths, and accumulates (phase, actual layer format, NT) cells with experts/jobs, tokens, and output rows. GU rows per job are 640 and Down rows per job 2560. It then builds a dictionary from actual histogram cells and requires exact key/value dictionary equality with the derived cells. Duplicate actual keys are explicitly rejected before equality. This checks per-format and per-NT allocation and row values, so a correct global total with a wrong format or NT assignment does not pass.
+
+The caller also reconciles native histogram phase tokens with route refused entries and phase experts with distinct refused callback pairs. The pinned histogram parser verifies the frozen default settings/cell schema, selected/eligible labels and scalar variant. The route parser independently validates sorted unique coordinates, request ordinals, classifications, sparse sums, END/DONE counters, all-layer coverage, and static residency. This is a coherent layered check, conditional on the source-proved emitter invariant: each expert callback pair contributes one job, split verification limits each grouped job to NT1/NT2, and `N,J` therefore determine those two job counts. It is not a new resolver execution, a check of actual worker fragments, timing, traffic, or latency.
+
+Metadata handling deliberately remains type-map only. The helper pins bytes and 48-layer/logical/blob geometry, admits GU/Down codes and derives per-layer format labels; v5 separately pins `native_experts.txt` and marks that no GGUF role extents or tensor payload content are validated. The report must not treat this as full model-file validation.
+
+## Compact receipt and offline replay
+
+The new receipt no longer embeds every parsed PAIR dictionary. For each request it retains the pair summary (begin/residency/end totals, layer-entry totals, frame bytes, and pair count), a canonical encoding description plus SHA-256 of the ordered `[layer,expert,N,J,J1,J2]` list, and one replay descriptor with stderr path, byte begin/end, interval SHA-256, parser SHA, shape-helper SHA, and resident-profile SHA. The full engine stderr path remains in the run directory and receives an overall byte count and SHA-256. The request also retains the exact DONE protocol text and the parsed frozen native histogram (including its raw line), while the top-level receipt retains profile path/hash, pinned metadata filenames/hashes, pack path through target argv, source pins, and the helper/parser hashes.
+
+That is sufficient for deterministic offline recomputation while the raw stderr and pinned inputs remain available: extract/hash each interval, rerun the exact parser with the retained ordinal/DONE and resident profile, rerun the frozen histogram parse and format-map/reconcile helpers, then compare summary values and canonical pair-shape hash. The producer emits all BEGIN/RESIDENCY/PAIR/END records and calls `fflush(f)` before returning; its call site is before DONE emission. Thus taking the post-DONE stderr end offset does not omit buffered pair records. The compact record alone is not a substitute for the interval: if the required raw engine log or exact profile/metadata/helper sources are retired, replay ceases to be possible. Keep the engine log under artifact-retention policy for any stated replay consumer; v5 itself does not duplicate it into the receipt or claim that a log can be recreated from the digest.
+
+One practical evidence limit: the canonical pair-shape digest supports equality verification after replay but does not expose pair-by-pair shapes to a reader without the raw interval and parser. This is the intended compactness tradeoff and is adequately documented by the replay pointers; do not describe the summary alone as a self-contained replay fixture.
+
+## EOF change and residual source limitation
+
+Unlike v4, v5 records PTY EIO/zero-read observation and, after QUIT, allows that transport EOF to remain recorded while awaiting a separate GDB/MI exit result until the finite deadline. The final gate still requires observed transport EOF and exit code zero/no signal; EIO before QUIT fails. This avoids v4's immediate false-negative when MI notification lags PTY closure without treating EIO itself as evidence of normal exit. The finite loop and actual MI result remain the acceptance boundary. No real PTY/OwnedGdb ordering was exercised by this audit.
+
+## Source-only conclusion
+
+No mathematical per-format/NT join or provenance defect was found in v5 under its exact admitted helper, parser, histogram, profile, metadata, producer and run-receipt conditions. Compact replay retains the necessary raw intervals, boundaries, hashes and exact parser inputs, subject to keeping referenced artifacts available. The corrected D receipt binding and other admission pins appear coherent in source. Shape-v2 fixture execution and root's v5 CPU fixtures/preflight remain separate pending evidence; this audit did not run them.

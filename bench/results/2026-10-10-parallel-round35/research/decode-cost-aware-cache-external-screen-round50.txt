@@ -1,0 +1,23 @@
+# Round 50: external decode cache and service-cost policy screen
+
+Retrieved 2026-10-10. This is a source/document screen; no local code, test, build, model, service, GPU, profiler, or Git operation was run. The question was whether external MoE systems offer a distinct, evidence-backed cache or scheduling technique for the Ryzen 5 5600X AVX2 + Radeon B570 10 GiB decode path.
+
+## Findings
+
+The strongest mature other-engine analogue is llama.cpp's MoE cache in [`llama-moe-cache.cpp`](https://github.com/ggml-org/llama.cpp/blob/master/src/llama-moe-cache.cpp). It keeps a shared LRU slot pool across layers with compatible expert layouts, maps routed `(layer, expert)` IDs into slots, replaces least-recently-used entries on misses, and budgets slots against a memory limit. Its execution path also bypasses the decode cache for sufficiently large batches to avoid churn. This is a concrete cross-layer capacity-sharing mechanism, unlike Strata's current independent fixed per-layer quotas. The implementation is CUDA/backend-specific and its replacement signal is recency; it does not measure CPU service cost or establish a benefit for Strata.
+
+A closer cost-aware policy example is the implementer's [`moe-autopilot` README](https://github.com/JigSawPT/moe-autopilot). Its described `v3 auto` policy periodically uses route counters, a per-layer knapsack, measured expert sizes/bandwidths, and hysteresis to decide whether the next-window avoided host service cost justifies GPU upload cost; a slowdown guard limits adaptation. This maps conceptually to “admit an expert when expected CPU work saved exceeds copy/admission cost,” rather than ranking only by route frequency. Its README describes a CUDA/RAM-offload design and says comparative A/B is pending; treat it as a design lead, not validated performance evidence or a transferable result for 5600X/B570.
+
+The `moecache` repository describes a separate co-activation predictor plus frequency-pinned experts and prefetching (`https://github.com/joelvarun/moecache`). Its reported 64-expert/top-6/20-slot experiment and LRU comparison are trace-simulator results, not target-machine service measurements. It may inspire a route-transition admission experiment, but is less directly relevant than a service-cost policy and should not be used as a timing claim.
+
+## Mapping to Strata and discriminator
+
+Strata's current configuration is 512 experts × 48 layers with a static 128-slot cache and `--adapt-swaps 0`. The existing integer quota gives two slots to layers 0–46 and 34 to layer 47; each layer has no borrowing from another layer. Round 34 already proposes a static redistribution of the 32 surplus slots based on ranked profile pairs, conditional on layer-resolved evidence. A global LRU pool would be a distinct dynamic policy, but is not justified by aggregate hit counts alone.
+
+The CPU path runs five workers with six tasks per worker and split-spec scheduling. The report should not treat routed-job counts or cache lookup counts as CPU service time. Round 46's calibration protocol is the appropriate source of per-format/per-role CPU service costs; Round 48 establishes that actual GGUF experts are three role extents assembled by `copy_blob`, not a contiguous per-expert source pointer. Any cost score must therefore use verified role-specific bytes and measured CPU service samples, and separately account for admission/copy costs. Do not infer traffic or milliseconds from frequency counts.
+
+A bounded discriminator, if route-resolved evidence later warrants it, is an offline replay of the same held-out decode route trace at the same 128-slot byte budget: compare (a) current static quota/profile, (b) Round 34's static surplus redistribution, and (c) a global recency pool; then test a cost-weighted admission score using independently calibrated service cost and actual upload/copy cost. Preserve exact routes/output and the existing correctness gates. Record per-layer hit/miss, evictions, worker queue/service time, cache-copy time, decode latency, and adaptation overhead separately. Use a second independent trace for selection versus evaluation. This is a measurement design only, not an adoption or source candidate: no cited external result establishes a win on this hardware.
+
+## Duplicate and decision boundary
+
+This does not duplicate Round 45's AVX2 kernel screen, Round 46's real-weight service calibration, or Round 48's payload adapter contract. It adds only external policy analogues and a testable discriminator. No cache policy change is recommended until layer-resolved evidence shows the static policy leaves useful capacity idle and a matched, correctness-gated comparison measures net decode benefit.
