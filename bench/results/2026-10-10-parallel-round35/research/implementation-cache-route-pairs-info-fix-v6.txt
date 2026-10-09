@@ -1,0 +1,35 @@
+Cache-route-pairs INFO startup fix v6 — SOURCE ONLY / UNEXECUTED
+
+Created only B/run_owned_cache_route_pairs_v0141_code32k_v6.py, B/test_cache_route_pairs_protocol_integration_v6.py and this report. B=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007. Based on immutable v5 controller c495ffa7c7785bc82012b5d057ecaa68420ffb4b47e0139c31548e25ee6897dc and fixture ffc36122aa0070952f3e31c7cf28e1d5d97b28b3017c4781593a431089074976. Existing v1..5/helper/parser/shape/producer/qualification files and receipts were not changed. No code/controller/fixture execution, syntax check, tests/build/GPU/model/service/profiler/Git/cleanup action occurred. Root owns all serial tests and later execution.
+
+New source SHA256
+Controller 9304f84dfce23b099c02d0090ea3b8f9b158100d157b0175ab3e4cfda1a9f423
+Fixture 473469d538aaffe26ee59eead3cb4e521725bc14707e799fc25043d64438f672
+
+Evidence
+Read registry-v36 and shared R50..53 reports, with R52 transport/shape reviews specifically governing this change. Inspected frozen generate.cpp8380..8464: actual startup prints INFO configuration first, then READY262144stop and flushes. The prior r5 rejected that legitimate INFO before any GEN; this is a controller grammar defect, not a numerical result. Its pinned receipt SHA51e22e4a541bb693ec4491cffe0ca7ff102848a875b1502424060742039ec47c is retained as failed: active/completed/math/healthy false, exit_code/signal null, forced cleanup true, inferior/debugger survivors false, new faults empty. It ran47.8459s according to root; the exact receipt hash binds the original measurement. No status or receipt is rewritten.
+
+Exact startup wire admission
+startup_step requires exactly one admitted INFO progress then exactly READY262144stop terminal. Missing INFO, duplicate INFO, READY out of order/duplicated or any changed/unknown config fails. ERR remains a startup error. The read loop still requires READY before requests; INFO without READY ending in transport EOF fails. A repeated queued startup row after READY is exposed by the existing pre-GEN boundary and cannot be reattributed.
+
+The INFO matcher fixes every observed word/order/value except vram_free_mib. Fixed: context262144, kv=int8, kv_resident32768, expert_slots128, expert_cache_mib325, expert_slots_primary128, expert_cache_primary_mib325, spec4, mtp_max0, lookup0, cvec0, arena_mib47962, pool_workers5, pcie_frac0.00, spec_min_p0.00, conversation_cache_mib0/slots4/min_free2560, tail_role_token-1, vram_elastic0, engine0.1.41. These are bound by unchanged engine/model/pack/profile/argv admissions; the arena/cache values are not generalized across models or changed residency. Only free VRAM accepts canonical unsigned decimal uint64. No broad INFO-prefix whitelist, additional field or formatting drift is accepted.
+
+The independent fixture embeds the complete actual failed-r5 INFO literal rather than importing producer serialization or parsing expected values from the matcher. It accepts INFO->READY and changed numeric free VRAM alone; rejects missing/duplicate/out-of-order rows, wrong arena/pool/kv/spec/PCIe/engine/free-value encoding, wrong READY context and startup ERR; missing READY EOF is explicitly tested. Existing fixture5 shape/helper/source guards and all GEN/SAVE/QUIT/EOF/budget tests are retained.
+
+Prior r5 closure admission
+Before preflight/GPU work, require exact prior failed receipt hash, same boot, no active job, false completed/healthy/math, no request records, null original exit statuses, exact forced-cleanup/survivor booleans and no fault messages. Require exactly the observed INFO and unexpected-startup ValueError stage. Verify recorded inferior and debugger PID/start_ticks no longer identify live owners. Record startup_before_GEN and original failed/forced-cleanup status separately. This is failed-job ownership closure, NOT terminal_owned mathematical/healthy success. Existing D r3 path/hash/fault-cursor and every other historical path remain unchanged. Only the NEW output directory changes from r5 to r6.
+
+Oversized failure fallback forensic tuple
+R52 noted large-metadata compaction dropped transport details. Before final encoded_failure serialization, fallback now includes bounded transport_small_evidence positional tuple:
+[reason, raw_byte_offset, exit_known_at_observation, quit_sent, non_EIO_errno, exit_code_at_observation, exit_signal_at_observation]
+Reason is pty_eio/zero_read/read_error/null; offset/errno/exit code are bounded integers or null; exit_known is the actual boolean or null if not observed; quit_sent is boolean; signal is at most32 characters or null. For read_error without EOF, offset comes from the read-error observation and exit-known remains explicitly unknown rather than fabricated false. No raw/queued/pending bytes or unbounded error repr are returned to fallback. Independent oversized fixtures assert EOF tuple and non-EIO errno/offset tuple exactly.
+
+The tuple is inserted BEFORE final encoded_failure fixed-point byte counting; exact final payload including tuple is checked against1MiB reserve and written once. Independent fixtures require serialized_failure_receipt_bytes equals actual stored bytes, payload<=reserve and observed mathPASS retained with overall health/budgetFAIL. No unchecked second serialization/write or unbounded tail was restored. Original complete raw transport/error evidence remains in normal-size receipts/raw stdout; compact fallback is expressly a bounded forensic summary.
+
+Preserved gates and decisions
+All v5 source/helper/parser/shape/binary/build/flags/profile/pack/model/env/argv/cwd admissions, exact generated outputs/logprobs/MTP/head/all66-state reference gates, shape/per-format/NT joins, normal process exit, observed EOF, fault/cleanup and physical-context/C/D rejection boundaries remain unchanged. R52 provenance limits and R53 static replay information limits remain: pair/NT counts are evaluated target work including rejected speculation, not service time, weighted route cost, traffic, policy benefit or adoption. No cache/quota/math/engine setting was changed.
+
+Root serial recipe — NOT executed
+After source and independent review:
+python3 /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/test_cache_route_pairs_protocol_integration_v6.py
+Write a NEW CPU qualification receipt with exact v6/helper/shape/parser hashes, stdout/stderr/exit/elapsed; retain all prior artifacts. Repeat v6 exact-self CPU-preflight using the existing root reviewed engine/binary/build/flags/parser/helper/shape pins and required CLI, before any later GPU run. New r6 directory must not preexist. CPU fixtures/preflight alone are not inference/GPU/physical-lifecycle/performance/adoption qualification; all later four-fresh32K one-process work remains separately root-owned.

@@ -1,0 +1,59 @@
+# Static profile-prefix quota selection and oracle — round 57
+
+## Scope and evidence boundary
+
+Read-only source/math review of the fixed static profile-prefix quota problem, using the v5/v6 controller pins and the R42/R52/R53 route-pair sufficiency/provenance conclusions. No replay, test, controller/run query, GPU/model/profile execution, profiler, Git action, or implementation change was performed. The current v6 GPU run was not inspected; its result remains outside this audit. This report is the only write.
+
+Pinned controller identities: v5 `c495ffa7c7785bc82012b5d057ecaa68420ffb4b47e0139c31548e25ee6897dc`; v6 `9304f84dfce23b099c02d0090ea3b8f9b158100d157b0175ab3e4cfda1a9f423`. R52 pins the pair parser `2ff44099f7385054dc5663f04a8e226d364d4d349a84b2493bc2bb1d6f3585cd` and shape helper `0355f450b1c0b3b4dc59ff28db09c5be48ea914e40808f94daa822b38b5dc2ff`; its provenance audit supports request-local fixed-trace replay of pair counts and derived J1/J2 counts when the raw interval and pinned inputs remain available. R53 defines the replay boundary and requires separate train/holdout data.
+
+## Objective and mathematical model
+
+Let `e[l,r]` be the expert at profile rank `r` within layer `l`. A static quota vector `q` selects exactly each layer's first `q_l` profile entries. For one predeclared additive count objective, let `w[l,r] >= 0` be the selected expert's count on the training trace. Examples are routed entries `N`, callback jobs `J`, `J1` jobs, `J2` jobs, or logical output rows derived from the pinned format and NT counts. Keep these as separate objectives unless a scalar weighting is specified in advance; uncalibrated counts do not define service time or latency.
+
+Define prefix score `F_l(q)=sum_{r=1..q} w[l,r]`, with `F_l(0)=0`. Under a fixed uniform-slot budget, solve:
+
+`maximize sum_l F_l(q_l)` subject to `sum_l q_l=128` and `0<=q_l<=512` for 48 layers.
+
+All layers have capacity at least 128, so the upper cap does not bind for this specific exact-total problem. The existing policy vector `(2,...,2,34)` (47 twos and a final 34) is a feasible baseline. Retaining the same 128 uniform slots and `max_blob` allocation makes this a fixed-slot count comparison; it does not assess variable-size byte packing.
+
+## Greedy condition and counterexample
+
+The familiar greedy rule that repeatedly assigns the next slot to the layer with the largest currently exposed next-prefix marginal is globally optimal only if each layer's marginal sequence is nonincreasing: `w[l,1] >= w[l,2] >= ...`. Under that condition, selecting the 128 largest available marginals respects each prefix precedence constraint and is equivalent to maximizing the sum of separable concave prefix curves.
+
+The current candidate keeps profile order inside each layer. The source/evidence contracts establish an ordering by the profile, not that each next profile entry has nonincreasing coverage for a trace objective. Counts along a fixed profile prefix may rise, fall, or be zero. Therefore the diminishing-marginal premise is not established, and global greedy has no general optimality guarantee. Sorting each layer by the measured objective would make marginals decrease, but would change the selected experts from profile prefixes and is a different policy question.
+
+Literal negative oracle (two layers, two slots; entries objective; values are profile-rank counts):
+
+| Layer | Rank 1 | Rank 2 | Prefix scores q=0,1,2 |
+|---|---:|---:|---|
+| A | 10 | 0 | 0, 10, 10 |
+| B | 9 | 100 | 0, 9, 109 |
+
+Greedy takes A's first marginal 10, then B's first marginal 9, yielding score 19 with `(1,1)`; A's second marginal is 0. The exact optimum is `(0,2)` with 109. All weights are nonnegative, but B's profile-rank marginal increases, so the failed premise is visible. A quota selector that sorts all individual weights without respecting prefix order would instead be infeasible for this rank-prefix policy.
+
+## Exact selection and independent small oracle
+
+Use dynamic programming over layers and slot totals, not a greedy assumption:
+
+`D[0,0]=0`; for each layer `l` and total `k`,
+
+`D[l,k] = max_{0<=q<=k} (D[l-1,k-q] + F_l(q))`.
+
+Retain a backpointer for the chosen `q` and reconstruct at `D[48,128]`. This recurrence considers every feasible quota vector and is exact for the declared additive objective, including nonconcave profile-prefix curves. For these dimensions it needs only `O(L*K^2)` work and `O(L*K)` stored states/backpointers (`L=48`, `K=128`); no performance or operational claim is needed. Define a deterministic tie rule before reading results, for example maximize score, then minimize L1 distance from the default `(2x47+34)` vector, then lexicographically smallest quota vector. The primary score remains unchanged by tie-breaking.
+
+An independent oracle should use tiny literal inputs and exhaustive quota enumeration, implemented conceptually as recursion over all quota compositions under a small layer cap. For each complete vector it independently sums the literal selected prefix weights and keeps the maximum. Compare this exhaustive maximum and chosen score against the DP result on:
+
+1. a diminishing-marginal case where greedy and DP agree;
+2. the nonconcave two-layer counterexample above, where greedy must fail and DP/exhaustive enumeration return 109;
+3. equal-score ties to verify the declared deterministic tie rule;
+4. zero-weight ranks and a binding small per-layer cap, including exact-total infeasibility detection.
+
+For a full 48-layer score, the exhaustive oracle is not a practical implementation; the recurrence and induction on layer count prove optimality, while small brute-force cases independently detect recurrence/backpointer or tie-handling defects. Do not claim this oracle has been run: this is a source/math report, and no test was executed.
+
+## Train/holdout and replay limits
+
+Build `w[l,r]` and choose quotas only from frozen training prompts/sessions. Freeze the objective, weighting across requests, total-slot constraint, source rank ordering, and tie rule before scoring any holdout. Score the frozen quota on independent prompts/sessions; preserve each request and phase. Repeated A/B/A/B rows over only prompt A and prompt B are repeated measurements, not four independent samples, and must not be counted as an independent holdout set. Do not tune on the holdout and then report its score as validation.
+
+For any fixed captured trace and any static candidate set, the pair counters support exact count replay under their pinned assumptions. They do not give exact future route traces after changing residency, because changed CPU/GPU execution can affect later numerical routes. A replay result is therefore captured-trace coverage, not live policy performance or latency. Use only a count objective until service costs are separately measured and calibrated; even a calibrated weighted sum estimates CPU service demand rather than end-to-end latency.
+
+No numerical quota candidate, coverage win, runtime result, or performance claim is produced here. The existing default `2x47+34` remains the comparison baseline; candidate selection awaits a closed, admissible training trace and independent holdout evidence.

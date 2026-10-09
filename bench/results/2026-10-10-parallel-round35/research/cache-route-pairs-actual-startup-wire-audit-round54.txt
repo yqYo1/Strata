@@ -1,0 +1,63 @@
+# Cache-route pairs actual startup wire audit — round 54
+
+## Scope and source identity
+
+Read-only wire audit of the actual failed v5 startup receipt, v5 controller/fixture, bounded PTY framer, frozen `generate.cpp` startup and command emitters (including lines 8380–8464), and the R44/R49 reviews. No controller/test/mock execution, build, model/GPU/service/profile query, Git action, cleanup, or source change was performed. This report is the only write. Source findings do not qualify runtime or model correctness.
+
+- Failed r5 receipt SHA-256: `51e22e4a541bb693ec4491cffe0ca7ff102848a875b1502424060742039ec47c`
+- v5 controller SHA-256: `c495ffa7c7785bc82012b5d057ecaa68420ffb4b47e0139c31548e25ee6897dc`
+- v5 fixture SHA-256: `ffc36122aa0070952f3e31c7cf28e1d5d97b28b3017c4781593a431089074976`
+- Frozen `generate.cpp` SHA-256: `eb591e263398abd9b178ab00c61e4f6af53a53bad37f837b18cd323af8dbab05`
+- bounded stdout framer SHA-256: `aa72bd7f1a9babf7c6e325b10634f1a046fe78fc2b2738e691d90624197131c1`
+- R44 boundary review SHA-256: `167a0c5ad66c1a5efcd2c2ea4e68394e341cfdc31bf539d490b26f0f8365e04e`
+- R49 protocol review SHA-256: `128b52d7d0d4dd712bd6632384bd22446974f81b93386cae1930228dab694eac`
+
+## Observed failure
+
+The immutable receipt records `unexpected startup protocol response: 'INFO context=... engine=0.1.41'`. Its stdout framer received 407 bytes and consumed 389; the queued, unconsumed 18-byte row is `READY 262144 stop\n`. The startup array contains only INFO. The controller stopped before GEN or SAVE: `completed=false`, `math_gate_passed=false`, `exit_code=null`. Therefore this is a startup grammar/admission failure, not a numerical rejection. The receipt reports no new GPU fault messages and no surviving inferior/debugger, but it does record `cleanup.forced=true`; preserve that failure/cleanup status as written.
+
+## Frozen startup wire and missing admission
+
+At `generate.cpp:8394–8411`, startup writes one normal stdout status row beginning `INFO `, with this exact field order:
+
+`context, kv, kv_resident, expert_slots, expert_cache_mib, expert_slots_primary, expert_cache_primary_mib, spec, mtp_max, lookup, vram_free_mib, cvec, arena_mib, pool_workers, pcie_frac, spec_min_p, conversation_cache_mib, conversation_cache_slots, conversation_cache_min_free_mib, tail_role_token, vram_elastic, [optional batch_slots and slot_cache], engine`.
+
+The printf is specifically the server Monitor-tab status row, not a stderr log. With the frozen v5 argv there is no `--batch`, so the optional batch suffix is absent. The actual run's INFO row read back the fixed launch settings: context 262144, KV int8/resident 32768, total and primary expert slots 128, spec 4, MTP max 0, lookup 0, pool_workers 5, pcie_frac 0.00, spec_min_p 0.00, conversation cache 0 MiB/4 slots/minimum free 2560 MiB, tail role token -1, vram_elastic 0, engine 0.1.41. Other fields such as free VRAM and arena size are runtime status values, not a math or process result. The exact cache MiB and primary cache MiB were both 325 in this receipt.
+
+At `generate.cpp:8457–8458`, the engine then emits and flushes `READY 262144 stop\n`. So normal stdout startup order for this pinned argv is exactly one INFO status row followed by exactly one READY row. The v5 `protocol_line_kind(value,'startup')` at controller lines 518–531 admits READY, then generic ERR; it has no INFO case. The startup loop at 806–814 calls this classifier on every row before testing READY. It therefore deterministically rejects INFO and never consumes the already queued READY. It also only checks READY's shape (`[0-9]+`) and `stop`; it does not require the reported context to equal the frozen 262144 argv value.
+
+INFO must be added as a narrowly defined startup status frame, not accepted through a general-prefix escape. The parser should require exactly one INFO before READY; reject duplicate, missing, reordered, malformed, or extra startup lines; validate the printf field names/order and numeric/decimal syntax; cross-check fixed argv-derived settings against this run; record dynamic status values without treating them as math success. For this no-batch argv it should reject the optional batch suffix. Then require one READY whose context equals 262144 and readiness mode equals `stop`. Neither INFO nor READY sets `math_gate_passed`, `completed`, or `healthy`; those retain their separate existing output/math/lifecycle and GDB/MI exit gates.
+
+## Complete normal stdout grammar for this argv
+
+This is the command-surface inventory relevant to the pinned one-process `--serve`, no-batch controller; other interactive commands are not issued.
+
+- **Startup:** `INFO <fixed-format status>`, then `READY 262144 stop`, once each and in that order. Startup error/exception remains a failure; it must not be converted into readiness.
+- **Each GEN:** request is `GEN 64 ckpt=1 logprobs=5 <32768 token IDs>`. For a fresh prompt, source emits `RESUME 0` before prompt work, bounded `PP <done> <total> <ms> <tok/s>` progress while reading, then `REUSED 0` before decode. For this 8192 prefill chunk the controller later requires progress endpoints `[8192,16384,24576,32767]`. Decode emits `T <token-id>` rows and, for requested logprobs, `LP <logprob> <id>:<logprob>...` rows; non-finite `LP nan` is intentionally rejected by the exact grammar. The normal terminal is the 16-field `DONE` line. GEN errors use `ERR ...` and do not pass a request. The controller separately checks token/logprob cardinalities and values, finish reason, timings, MTP and reference/state gates.
+- **Unavailable with selected argv:** `BADM`/batch rows require `--batch`; `YIELDED` is for cooperative batch preemption. This controller has no batch client or batch option. Lookup-chain adds optional DONE suffix fields, but INFO reports `lookup=0`, so the selected run expects the 16-field DONE shape. There is no legal stdout response after DONE in this no-batch path; boundary checks reject queued or pending extra bytes rather than assigning them to a later request.
+- **SAVE:** only the deliberate numerical-failure preservation path issues SAVE. It may emit zero or more `SESSION <done> <total>` and `SWAIT <phase> <seconds>` progress lines, then `SAVED <tokens> <bytes> <ms>` on success; refusal emits `SERR <kind> <published> <reason>`; verifier/commit failure can emit `ERR ...`. These belong to the SAVE grammar, not GEN. SAVE does not upgrade the failed mathematical request.
+- **QUIT:** no stdout acknowledgment is defined. The collector requires an empty post-command stdout tail, observed transport EOF, and separately observed GDB/MI normal exit code 0 with no signal. EOF or READY alone is not process success.
+
+These are response shapes/order conditions for the pinned command flow. Runtime status numbers such as current VRAM free are diagnostics; the saved INFO row is valuable evidence of actual configuration readback, but it is not proof of request math, successful completion, or normal process exit.
+
+## Why R44 and R49 missed INFO
+
+R44's scope reviewed request boundaries and enumerated startup as the READY handshake, GEN responses, SAVE and QUIT. It cited the READY emitter at line 8457 and the v1 collector loop, but did not inventory all stdout writes before READY. The v1 loop accepted and retained arbitrary startup lines until READY, so the omission did not fail that controller. The missing source scope was the pre-READY startup transcript, specifically the Monitor-tab `printf` at lines 8394–8411.
+
+R49 then described startup grammar as READY/ERR while relying on the R44 emitter/message list. Its source-to-protocol review enumerated RESUME/PP/REUSED/T/LP/DONE and SAVE rows, but again did not scan and classify the normal INFO stdout emitted before READY. In v3-v5, the newly strict `protocol_line_kind` turned that inherited inventory gap into a hard admission failure. The root cause is not an unexpected engine line: both reviews treated diagnostic status as outside the protocol because they reviewed command responses/readiness individually instead of every stdout frame on the same PTY stream and its actual emission order.
+
+## Required future startup-mock wire
+
+The v5 fixture extracts pure helpers and never executes the startup loop; it contains no INFO or READY startup test. A source-only mock should model the full boundary, not only call the classifier on individual known responses:
+
+1. Feed canonical INFO then `READY 262144 stop\n` in one read burst, including the exact pinned field order and no batch suffix. Require both rows consumed in order and assert the validated fixed settings are recorded while math/completion remain false.
+2. Feed INFO and READY in separate chunks, including a partial INFO/READY tail, to ensure stream framing—not read chunk boundaries—defines rows.
+3. Reject each required startup distinction: missing INFO, duplicate INFO, INFO after READY, READY before INFO, wrong context/readiness mode, wrong fixed field such as expert slots/KV/spec, malformed/missing/extra/reordered INFO field, and the batch-only suffix. Keep dynamic values type-checked and retained without comparing them to hard-coded sample readings.
+4. Feed a startup ERR or EOF before READY and require failure with preserved raw evidence. Do not treat INFO as an error or a success terminal.
+5. Continue a valid wire into the pinned four GEN rows, an isolated SAVE branch for its progress/terminal and refusal/error forms, then QUIT with no stdout tail and a separate normal process exit. Preserve request math gates and process status as independent results.
+
+A realistic fixture must exercise the stateful startup-to-command transition or a small extracted startup-state function. Testing only that `protocol_line_kind('INFO ...','startup')` returns a classification would not prove INFO is consumed exactly once, READY is still pending/consumed next, or READY's context is checked.
+
+## Conclusion
+
+The actual run failed before any GEN because v5 omitted a normal, argv-compatible INFO status frame from its strict startup grammar. The following READY frame was already buffered but not consumed. The frozen source requires INFO then READY; future admission should parse that exact status format and verify its fixed launch values, while keeping status, numerical gates and process exit separate. R44/R49 missed the row because they scoped startup as only the READY handshake and did not enumerate stdout emitted before READY.

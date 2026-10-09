@@ -1,0 +1,31 @@
+# Cache-route-pairs real startup/peer scope audit (R56)
+
+Date: 2026-10-09 UTC
+Scope: read-only source and receipt review. This report distinguishes the v4 real-PTY transport result from v6 controller admission, model math, and GPU qualification. No test, model, query, GPU, profiling, Git, or source operation was run.
+
+## Finding
+
+The v4 record is a passing bounded CPU transport check: it used the real `OwnedGdb` implementation, a real Linux PTY, and selected code extracted from the pinned v6 controller. It proves that this selected startup loop and transport/protocol path can exchange a scripted INFO/READY, one GEN, and QUIT sequence through GDB/MI and observe clean process exit. It does not execute the Strata engine, the complete v6 controller lifecycle/admission checks, the generation/model implementation, or model math. The fixture explicitly records `model_opened=false`, `gpu_work_submitted=false`, `model_math_evaluated=false`, `full_lifecycle_passed=false`, `performance_eligible=false`, and `adopted=false`; keep these distinctions in any summary of the pass.
+
+## What v4 actually exercises
+
+The wrapper pins the v6 controller SHA-256 `9304f84dfce23b099c02d0090ea3b8f9b158100d157b0175ab3e4cfda1a9f423`, `owned_gdb.py` SHA-256 `61e1d206bf57bb320051cdd65943d23722bc523a602d80c54b7e7a2ad0d3f0d1`, the protocol helper SHA-256 `aa72bd7f1a9babf7c6e325b10634f1a046fe78fc2b2738e691d90624197131c1`, and the preceding v6 CPU receipt SHA-256 `39aef99dd369f87454ff90f67f7a458537e0ec49ab083fe7f1716bf715067578`. Wrapper SHA-256 is `74ce93c7238872c25dfda7c003f74d67a90e2bb0b01ec92b2a9cee2eb32ad9f9`.
+
+It imports the pinned real `OwnedGdb`, opens a real PTY, and AST-extracts eleven named v6 helpers (`text_bytes`, `reserve_write`, `event`, `receive_stdout`, `available_stdout`, `boundary`, `protocol_line_kind`, `startup_step`, `poll`, `line`, and `send`). It separately extracts and executes the v6 startup `try` block's three statements: initialize `record['startup']`, initialize `startup_seen`, then the actual `while` startup loop. It asserts progress+terminal startup classification and two received startup lines. The controller source around the later actual call site performs additional work not imported into this wrapper: actual executable/hash/argv/cwd/environment checks, fixture preparation and four fresh A/B/A/B requests, numerical validation/captures, and the outer lifecycle gates.
+
+The child is generated as `echo.py`, a 959-byte Python peer. It prints a fixed INFO and READY, accepts one matching GEN line, emits predetermined RESUME/PP/REUSED rows, 64 copies each of fixed `T 42` and `LP -1.000000 42:-1.000000`, and fixed DONE; it exits successfully only after QUIT and one GEN. Thus the GEN receipt verifies framing/classification, row counting, boundary accounting, and orderly shutdown against this peer. It does not verify actual token selection, prompt prefill, cache reuse, route-pair behavior, logits, or the v6 math/comparison gates.
+
+## Bounds and observed result
+
+The v4 harness sets a 40-second run deadline, 10-second protocol timeout, and a 2 MiB text-log limit. It checks the text budget during the QUIT-drain loop and again after cleanup. The v6 controller itself uses a 64 MiB limit, a 1 MiB failure reserve, a 1,800-second deadline, and a 450-second protocol timeout; v4's smaller limits do not establish that the full controller's longer/bigger run satisfies those bounds. The v4 record says elapsed time was 0.414946 seconds and raw protocol output was 2,547 bytes (SHA-256 `88c6eea7...b6ee688`). All recorded protocol boundaries have received==consumed bytes and no queued/pending bytes; the final boundary records PTY EIO as EOF, followed by GDB exit code 0, no signal, no forced cleanup, and no survivors. PTY EIO is the transport EOF observation; the record separately confirms the later actual MI process exit.
+
+This is a narrow startup/peer evidence supplement. It is not a substitute for the actual pinned v6 run or for any existing source, fixture, math, or GPU gate.
+
+## Earlier attempts preserved
+
+- v2 wrapper SHA-256 `626e25dfc2ba73f8b14c46c8539cca49be3329da3adae30f933275187b36ff4b` failed before lock, PTY, or child creation: its prior-receipt path named `cache-route-pairs-v6-cpu-validation-v2/record.json`, while the actual receipt was v1. The retained `cache-route-pairs-real-pty-v2-launch-error.json` says exit code 1, no child, no GPU work, and no model open. This is a harness-input/path failure, not an engine failure.
+- v3 wrapper SHA-256 `c7faccc906bf8efaa6851e22bafe43b43dbe3e6a5f44fd256c4a0ee256cb18b6` launched GDB/PTY and received the scripted INFO, then failed with `NameError("name 're' is not defined")` before READY/GEN. Its receipt records forced cleanup and no survivors. Keep it as the original failed attempt; v4 is a new passing version and did not overwrite it.
+
+## Artifact identity and disposition
+
+Reviewed v4 `record.json` SHA-256: `ab9130e1aa7a93ec5a2d60b189707df22d65a84ee8d564eab7914ec0bb55a2e2`. Its record inventories byte counts and hashes for raw protocol, MI, event, stderr, argv, and echo artifacts. These are compact receipts rather than full model/API traces. No cleanup was performed; v2/v3 error evidence remains intact.

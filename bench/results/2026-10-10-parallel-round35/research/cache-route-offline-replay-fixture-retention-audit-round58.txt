@@ -1,0 +1,57 @@
+# Round 58: offline replay fixture scope and retained-input audit
+
+Read-only source and closed-receipt audit of the offline static-coverage replay reader, its six CPU fixture methods, the r6 cache-route-pairs diagnostic receipt, the v37 report registry, R52 provenance, R53 information limits, R56 real-peer boundary, and `docs/ARTIFACT_RETENTION.md`. No test, replay, syntax check, model/GPU/runtime query, build, Git action, artifact mutation, or cleanup was performed. Root owns all execution. This report is not an actual replay result.
+
+## Identities and closed input
+
+- Replay reader `replay_cache_route_pairs_v1.py`: `b65dcabbc75614ef06209782c9ebe9b9540f4e9f9b66d6056c47b58153e54f0f`.
+- Fixture `test_replay_cache_route_pairs_v1.py`: `d5bdc4db33ade1cf2276abfa732b1d5967e9ed7d59a7cde60201f23e699a8980`.
+- Successful r6 `record.json`: `f606f5a1f2d00dba240213a7feeb3cc84c9da4f1487075d1e97c336a558e4c89`.
+- Latest committed registry-v37: `dc4f27f9c8ff87f48813de2310094c2b2379437b9ba0fe9cd14b1a5753a04397`.
+- r6 pins controller `9304f84dfce23b099c02d0090ea3b8f9b158100d157b0175ab3e4cfda1a9f423`, route parser `2ff44099b1c0b3b4dc5663f04a8e226d364d4d349a84b2493bc2bb1d6f3585cd`, shape helper `0355f450b1c0b3b4dc59ff28db09c5be48ea914e40808f94daa822b38b5dc2ff`.
+
+The r6 record is closed and successful: `active=false`, completion/health/math/pair/histogram/shape/protocol/text gates true, exit 0/no signal, no error/fault/forced cleanup, four requests, and prior C/D/r5 failure flags preserved. It remains a diagnostic, with `performance_eligible=false`, `full_lifecycle_passed=false`, and `adopted=false`. It is a valid intended replay input; these flags are not upgraded by replay.
+
+## What the reader consumes
+
+For deterministic replay, retain one copy of each exact dependency while the static-default coverage question is open:
+
+| Required input | Reader use | Current identity / bound |
+|---|---|---|
+| Closed r6 `record.json` and exact SHA | Closed-success gates; original request order/names, DONE strings, byte offsets and interval hashes; profile/pack locations, metadata and canonical pair-shape hashes | SHA above; read cap 16 MiB (file currently 300,166 bytes) |
+| r6 `debugger/inferior.stderr` | Rehash full producer log, find request-owned marker frames, reparse each interval and native histogram | SHA `3309c390f8e5f047321ca84bcdc6d182e9c13ca1b8db178c79a88b108e13ab3f`; 1,389,517 bytes; max 64 MiB |
+| Four interval descriptors in the receipt | Check ordered nonempty bounds, path/range provenance, SHA, and ordinal; retain one `DONE` protocol line per request | r6 offsets and per-interval SHA are already embedded in receipt |
+| `cache_route_pairs_parser_v1.py` | Pinned pair-frame parser and static-profile decoder | `2ff44099b1c0b3b4dc5663f04a8e226d364d4d349a84b2493bc2bb1d6f3585cd`; max source 128 KiB |
+| `cache_route_shapes_v1.py` | Pair-shape reconciliation and metadata-derived layer formats | `0355f450b1c0b3b4dc59ff28db09c5be48ea914e40808f94daa822b38b5dc2ff`; max 128 KiB |
+| v6 controller source | Extract only pinned histogram constants/parser after whole-source SHA verification | `9304f84dfce23b099c02d0090ea3b8f9b158100d157b0175ab3e4cfda1a9f423`; max 256 KiB |
+| Static resident profile | Re-derive exactly 128 resident pairs and expected FNV map | `8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf`; profile file 196,632 bytes; max 196,632 bytes |
+| `native_experts.txt` from receipt's `--pack` argument | Pin layer-format metadata, map types, and derive formats | `d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d`; file 3,304 bytes; max 128 KiB |
+| Replay reader itself | Verify `--self-sha256` before CLI work | SHA above; max 128 KiB |
+
+The inspected paths currently exist and their current contents match the controller/parser/shape/profile/metadata hashes above. Raw stderr is the sole substantial replay capture: its compact receipt has offsets and hashes but cannot reconstruct route frames or histograms once the bytes are retired. The profile and metadata are small and similarly cannot be recreated from their digest; retain the exact inputs or a verified replacement at a stable path while replay is an active consumer. The replay output should preserve its source/input hashes and bounded request summaries, but should not embed or duplicate raw stderr.
+
+The reader's `O_NOFOLLOW`/regular-owned-single-link checks, byte caps, pre/post `fstat` identity comparison, and hashes apply to each opened file. Parent directory path resolution is not a general secure-path capability; the pinned hashes and raw-path binding are the intended provenance boundary. The reader loads bounded raw stderr once and creates bounded byte slices/split-line data; 64 MiB is an input-byte cap, not an RSS limit.
+
+## Retained artifacts the replay does not need
+
+The offline reader does not open or parse `debugger/gdb-mi.stdout`, `debugger/engine-and-gdb.stderr`, `debugger/inferior-argv.json`, `protocol.stdout.raw`, `events.jsonl`, any `*.head.bin`, any `*.state.bin`, prompt token text, health-probe output, GGUF payload, weights, or model/session state. It uses the pinned controller source, not the executable binary, to extract the histogram parser; it does not rerun inference or GDB/PTY. In particular, the successful head/state captures and successful raw MI transcript are not replay inputs.
+
+This is a consumer-specific distinction, not authorization to delete those files. The r6 head/state artifacts may still serve the separate request correctness or RESTORE comparison; MI/argv/health logs may support lifecycle review. Under `ARTIFACT_RETENTION.md`, a closed run should keep the original structured result and useful individual correctness/fault evidence, retire duplicate successful traces after evidence is extracted and verified, and keep raw tensor/session files only for a named current comparison/RESTORE consumer. Root must check those consumers, active-process status, hashes, and the exclusive cleanup lock, then record path/size/hash/replacement/reason in a deletion manifest before any removal. This audit performed no cleanup.
+
+The replay reads only `native_experts.txt`, not `index.txt`, `conversions.json`, or the GGUF/role payload. The receipt may retain hashes for those other pack metadata files for the original run's provenance, but this reader does not use them to recompute format labels. The reader therefore validates a pinned type map, not model tensor extents or weights. Do not describe replay as complete model-file validation.
+
+## Fixture oracle versus actual CLI replay
+
+The fixture has six `unittest` methods. It exercises local helpers using literal small data: closed-gate/source-pin rejects, interval range/hash and whole-file mutation negatives, orphan/misplaced/overlap marker negatives, literal canonical JSON/SHA with order/shape changes, and a hand-authored resident/nonresident example with literal expected coverage cells. These are useful pure-function and small-file oracle checks. They do not invoke `replay()`, load the r6 receipt/profile/metadata/raw log, parse actual histogram or route output, exercise the complete four-request chain, or execute the actual command-line entry point. The literal job example is intentionally synthetic and proves only the arithmetic encoded in that example.
+
+Actual CLI proof must be a separate root-owned invocation using the real r6 path and exact r6 SHA, pinned v6 controller path, and reader self SHA. Its durable evidence should include the exact argv, reader/fixture and dependency hashes, stdout byte count/SHA (and compact JSON output or retained structured result), stderr byte count/SHA, exit code, duration, closed-input hashes, and no-survivor/cleanup facts appropriate to the wrapper. It must show `passed=true` with four request summaries and matching canonical shape hashes. A passed fixture receipt alone is not proof that actual replay succeeded; a source-only report or registry entry is likewise not runtime evidence. Conversely, actual CLI replay proves consistency of this captured trace under the frozen static profile and helpers, not new model math, live cache behavior, LRU policy, performance, or GPU qualification.
+
+The replay's fixed output contains request identity and raw reference, pair count and canonical hash, observed CPU histogram cells, and static-default 128-resident coverage counts. It expressly does not reconstruct ordered access, request-time recency, LRU evictions, upload/DRAM traffic, service cost, queue time, latency, or policy benefit. Keep A/B requests separate; no merging or independent holdout claim follows from the four captured requests.
+
+## Retention decision
+
+Consistent with `docs/ARTIFACT_RETENTION.md`, keep the compact original r6 receipt and the single full raw stderr capture while this replay question is active; retain its exact small profile, type-map metadata, and source dependencies with hashes. Preserve the actual replay's compact structured output as evidence rather than retaining duplicate terminal output. The output/report should name the owner, consumer, input paths/hashes, and next review point (when the static-default coverage question is answered or superseded). After that point, review the raw log and other files against remaining comparison/RESTORE consumers; do not delete based only on successful status or this reader's lack of use. No deletion manifest is needed because no deletion occurred.
+
+## Audit conclusion
+
+The reader's dependency surface is small and explicit: closed receipt, its one raw stderr capture, exact parser/shape/controller sources, resident profile, type-map metadata, and self-pinned reader. Successful head/state and MI artifacts are outside this replay consumer's input set, although other current consumers may still justify their retention. Six literal CPU fixtures cover local invariants and negative cases but do not establish a full-receipt replay. Only a captured successful CLI invocation with exact input/output hashes establishes that replay result. Nothing in this read-only audit establishes a new CLI pass or performance/cache-policy result.

@@ -1,0 +1,40 @@
+# Round 55: v6 INFO fixture and compact transport fallback audit
+
+Read-only independent review of registry-v37, committed registry-v36 and the R54 reports, the v6 controller/fixture, and Sol's implementation report. No controller or fixture execution, syntax check, test/build, CPU or GPU query, model/profile/service run, Git operation, source edit, or cleanup was performed. This is a source/fixture audit, not a passed fixture, full-driver, startup, model, GPU, or lifecycle result.
+
+## Identities and scope
+
+- registry-v37 SHA256: `dc4f27f9c8ff87f48813de2310094c2b2379437b9ba0fe9cd14b1a5753a04397`
+- v6 controller SHA256: `9304f84dfce23b099c02d0090ea3b8f9b158100d157b0175ab3e4cfda1a9f423`
+- v6 protocol fixture SHA256: `473469d538aaffe26ee59eead3cb4e521725bc14707e799fc25043d64438f672`
+- Sol implementation report SHA256: `96229f141960c4317e2a83487a7df841a9a7f721fc3892adeb4619e00b9b2c89`
+- R54 startup-mock coverage report: `cache-route-pairs-startup-mock-coverage-audit-round54.txt`
+- R54 source audit of the actual INFO/READY/GEN/SAVE/QUIT wire: `cache-route-pairs-actual-startup-wire-audit-round54.txt`
+
+The v6 diff changes the target output directory to r6, admits the exact failed r5 receipt as a closed failed startup, adds a strict INFO-then-READY state transition, and adds a compact transport tuple to oversized fallback receipts. It leaves prior r5 evidence untouched. Registry-v37 records the actual root-run v5 failure and separates it from the fake fixtures and real PTY echo result; this review does not upgrade those statuses.
+
+## Startup grammar and fixture independence
+
+The v6 classifier (`run_owned_cache_route_pairs_v0141_code32k_v6.py:534-552`) accepts exactly one fixed-format INFO line for this pinned run, with only canonical unsigned-decimal `vram_free_mib` dynamic and bounded to uint64, then exactly `READY 262144 stop`. Other fixed INFO fields/order/spacing and formatting are rejected. `startup_step` (`:555-561`) enforces progress then terminal; the real controller loop records each startup line and calls it before breaking on READY (`:853-862`). Consequently, source wiring now addresses the exact r5 failure: the observed captured INFO can be retained as progress and the loop cannot issue requests until READY. The prior failure remains failed; this source change proves neither a controller run nor successful inference.
+
+The fixture adds 5 methods to the existing 17, bringing the protocol fixture to 22 source-defined test methods (shape fixture remains 10). The literal test takes the complete INFO frame from the failed r5 evidence rather than deriving it from the parser; it exercises `startup_step` for INFO then READY and separately checks alternate free-VRAM values. The state test covers missing INFO, duplicate INFO, READY duplication/order, changed READY context, representative fixed-field mutations, noncanonical/negative free-VRAM text, and startup ERR. The EOF test asserts the extracted transport reader fails before READY. This gives an independent test oracle for the helper's principal state transitions and representative rejection paths.
+
+The coverage boundary remains material: `functions()` parses the controller and executes only selected AST function definitions in a synthetic namespace; it does not invoke top-level controller admission, the real startup read/parse loop, selectors, `OwnedGdb`, a protocol peer, or the command driver. In particular, `test_missing_ready_eof_before_requests_fails` calls `startup_step(INFO)` and `available_stdout()` separately; it does not drive the loop to EOF. The source call site is reviewed, but this fixture must not be called a full startup/command-driver pass. Root's separately planned real startup/GEN mock is still required for that orchestration claim, and the later real-engine owned run remains its own gate.
+
+Specific useful additions if broadening this helper fixture: (1) validate canonical free-VRAM bounds at uint64 maximum and overflow (`2^64-1`, `2^64`), since current tests cover ordinary values, negative and leading-zero cases but not the bound; (2) add representative mutations for omitted fixed groups not currently perturbed (expert slot/cache fields, MTP/lookup, cvec, spec minimum, conversation-cache fields, tail token and elastic flag), plus reordered/extra fields; (3) assert INFO and READY split across reads / coalesced into one read and check raw-byte retention, since current startup test feeds decoded strings directly. These are extra discriminator cases, not evidence of a presently wrong regex: the exact anchored expression itself fixes those fields/order. The current tests directly mutate arena, workers, KV, spec, PCIe, engine and free-VRAM formats, so their negative coverage is not absent.
+
+## Compact fallback tuple
+
+The added `transport_small_evidence()` (`:564-579`) maps EOF/read-error state into a fixed seven-element JSON-safe tuple: reason, raw offset, exit-known-at-observation, QUIT-sent, non-EIO errno, observed exit code and observed signal. It bounds integer magnitudes and signal length, keeps EAGAIN distinct from EOF through the unchanged reader, and avoids copying raw/pending bytes or the unbounded error repr into the compact fallback. `failure_save` inserts this tuple before `encoded_failure`'s fixed-point byte count (`:651-683`). The v6 fixture checks actual stored JSON bytes equal `serialized_failure_receipt_bytes` and remain within the 1 MiB reserve in each new fallback case; it also verifies mathematical PASS is preserved while health and the text-budget gate remain false. Existing near-reserve and normal-size cases remain present.
+
+New exact-case limitations:
+
+- The first fallback test seeds both `transport_eof={reason: pty_eio, ...}` and `transport_read_error={errno: EBADF, ...}` and expects both in one tuple. This is useful as a schema composition test, but it is a synthetic mixed state: production `available_stdout` records and raises a non-EIO read error, while a later EOF observation is not expected after that failure path. The separate read-error-only fallback case is the realistic case for errno/offset retention; keep the mixed case described as compositional, not as a captured transport chronology.
+- The new compact tuple tests cover `pty_eio` with exit unknown and a read-error-only case. They do not exercise compact fallback for `zero_read`, EOF observed with MI exit code 0, EOF observed with signal, or signal length/type and integer-range handling. Existing v5 fixture coverage of zero-read and EOF ordering exercises the full-size in-memory transport record, not the new compact tuple. A focused table of those inputs would independently establish all tuple branches, especially the MI fields newly promised by the tuple.
+- `transport_small_evidence` is tested with an intentionally malformed composite fixture but not with adversarial field types. Source checks (`type(value) is int/bool/str`) constrain those values; explicit bool-as-int, negative/out-of-range integer, and long/non-string signal negatives would verify the compacting guard rather than only its ordinary values.
+
+No source defect was established in this read-only pass. The bounded fallback path does compute the payload after inserting its added fields, writes those exact encoded bytes, and the fixture checks the written-size invariant. The remaining gaps above are coverage gaps, not a claim that current actual data takes those states.
+
+## Evidence boundary and next gate
+
+The design and source call site now address the exact recorded INFO rejection and the previously identified loss of compact transport ordering details. However, the new fixture only executes helpers; it cannot establish that the actual controller consumes INFO and READY in order, then issues GEN, nor that the changed controller handles the later PTY/MI boundary. Follow the root-owned serial sequence in Sol's report and retain separately labeled outcomes for protocol fixture, shape fixture, CPU preflight, any real PTY/CPU mock, and any later owned model run. None can be promoted to another category by this audit. No latency, math, GPU, or adoption conclusion follows here.

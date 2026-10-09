@@ -1,0 +1,47 @@
+# Cache-route pairs v6 INFO admission audit — round 55
+
+## Scope and source identities
+
+Independent read-only source review of v6 versus v5, the exact failed v5 receipt, v6 fixture/integration note, frozen `generate.cpp` startup emitter, and `ExpertLayout` computation. Checked original admission/gate diffs, including the fixed r3 D receipt path and prior C/D/fault/ownership gates. No controller or fixture execution, test, syntax check, build, model/GPU/service/profile query, Git action, cleanup, or source change was performed. This report is the only write. Source review is not a v6 CPU-preflight, actual-PTY mock, or model-run result.
+
+- v6 controller SHA-256: `9304f84dfce23b099c02d0090ea3b8f9b158100d157b0175ab3e4cfda1a9f423`
+- v6 fixture SHA-256: `473469d538aaffe26ee59eead3cb4e521725bc14707e799fc25043d64438f672`
+- v6 implementation note SHA-256: `96229f141960c4317e2a83487a7df841a9a7f721fc3892adeb4619e00b9b2c89`
+- prior v5 controller SHA-256: `c495ffa7c7785bc82012b5d057ecaa68420ffb4b47e0139c31548e25ee6897dc`
+- actual r5 failed receipt SHA-256: `51e22e4a541bb693ec4491cffe0ca7ff102848a875b1502424060742039ec47c`
+- frozen `generate.cpp` SHA-256: `eb591e263398abd9b178ab00c61e4f6af53a53bad37f837b18cd323af8dbab05`
+- `ExpertLayout` implementation SHA-256: `9826d86cc83330d447d62a62189dc782f549ffb815c7bdccd2ad4f4582672f4d`
+- `ExpertLayout` header SHA-256: `dbc6cf5b91367e571ad9cb3be4e4cd851159544186c859a7cd374632a8a63fcd`
+- registry-v37 SHA-256 read-only: `dc4f27f9c8ff87f48813de2310094c2b2379437b9ba0fe9cd14b1a5753a04397`
+
+## Exact INFO matcher against the emitter
+
+The v6 matcher accepts one narrowly shaped `INFO` row for the frozen argv, followed by exactly `READY 262144 stop`. It fixes the field names/order and all configuration values except `vram_free_mib`, which is accepted only as canonical unsigned decimal within the bounded numeric range. This matches `generate.cpp:8394–8411`: the printf emits exactly those ordered fields, and only appends `batch_slots`/`slot_cache` when `o.batch>0). The frozen v6 argv has no batch option, so rejecting that suffix is correct. `READY` is emitted and flushed at lines 8457–8458 after INFO. The emitter's `ERR` remains a startup failure, not an alternate success row.
+
+Static values checked by the matcher are argv/configuration-specific: context 262144, KV int8/resident 32768, expert slots 128, primary slots 128 and both cache MiB fields 325, spec 4, MTP max 0, lookup 0, cvec 0, five pool workers, PCIe fraction/spec minimum 0.00, conversation cache 0 MiB/4 slots/min-free 2560 MiB, tail-role token -1, elastic VRAM 0, and engine 0.1.41. The required ordering and exact row prevent a broad `INFO*` escape. The v6 fixture embeds the full actual r5 INFO as an independent literal, checks INFO→READY, allows only the free-VRAM decimal to vary, and rejects bad/missing/duplicate/order/config rows and a wrong READY context. It also exercises the startup-step state helper and an EOF-before-READY failure. The fixture source remains unexecuted in this audit.
+
+INFO and READY are status/admission evidence only. Neither establishes request math, successful completion, or process exit; the unchanged output/math/reference gates and separate GDB/MI normal-exit/cleanup checks remain required.
+
+## Is `arena_mib=47962` an overfit sample?
+
+For this exact invocation it is a defensible fixed configuration readback, not a generally portable constant. The status emitter computes `arena_mib` as `(o.mmap_experts ? src.resident_bytes() : expert_layout().total) >> 20` (`generate.cpp:8406`). The admitted argv has no `--mmap-experts`, so this is the native expert layout's logical arena total, rounded down to whole MiB, rather than a runtime RSS reading or the sum of all original GGUF shard file sizes.
+
+The pinned `ExpertLayout` loader reads the pack's `native_experts.txt`, validates each type-derived per-expert blob size, then accumulates `L.bytes[layer] * L.n_expert` over layers into `L.total` (`expert_layout.cpp:390–474)). V6 retains the exact engine/build/binary, pack metadata hashes, conversions/source-shard identities, model argv, and other source/profile pins that identify this geometry. The prior qualified full-context receipt and failed r5 receipt both record the same INFO value 47962 under the same pinned configuration. In that scope fixing the deterministic layout-derived value catches an unexpected pack/layout change; accepting arbitrary arena values would weaken config readback.
+
+The limit matters: `47962` is not a universal Strata value and should not be reused for another pack/build, layer geometry, or mmap mode. It means floor(`ExpertLayout.total / 1 MiB`) for this pinned non-mmap run. I did not independently read/recompute the pack metadata or model payload in this audit; the value correspondence rests on the source formula, frozen pack pins and the two existing matching INFO receipts. A future pack or mmap-policy change must derive/review the expected field again rather than copying this sample.
+
+## Stateful order and actual v5 closure admission
+
+V6's `startup_step(value, seen)` enforces progress INFO only when `seen=[]`, then terminal READY only when `seen=['progress']`; a second INFO, early/wrong/duplicate READY, or other line fails. Generic ERR is classified as an error and raises. The loop appends each exact line to `record['startup']`, calls `startup_step`, and only breaks on READY. The existing before-GEN boundary then detects any extra buffered row after READY. Thus the actual r5 failure is admitted as a known prior failed startup job, not relabeled success.
+
+Before a new job, v6 hash-pins the r5 receipt and asserts inactive/incomplete/unhealthy/math-false, no request records, null process exit/signal, exact forced-cleanup/no-survivor values, same boot, no GPU fault message, exactly the observed INFO line and the startup grammar ValueError. It also checks the recorded inferior/debugger PID and start ticks no longer identify the same live processes. This is closure evidence for a failed pre-GEN owner; it does not call `terminal_owned` or require a successful exit/math gate. The original r5 failure values are copied into the new run record separately.
+
+For precision, the pinned r5 receipt says `cleanup.forced=true`, `inferior_survived=false`, `gdb_survived=false`, exit code/signal null, and no fault messages. Its math flag is false because no GEN/request occurred. V6 preserves those facts without implying a numerical failure.
+
+## Other admissions and gate preservation
+
+The full v5→v6 diff shows the expected new output suffix r6; exact r5-closure pins; the startup INFO matcher/state transition; and bounded transport-evidence tuple addition in the oversized final failure receipt. The latter does not alter success/math logic. The v5 original D path/hash remains the corrected r3 path with its failed status. Existing shape/parser/protocol helper/source/build/flags/binary/profile/pack/model/argv/environment/cwd and prior reference/output-state pins are unchanged. Full per-request math/head/logprob/MTP/all-state gates, pair-shape/typed-NT join, C and D failure preservation, normal-exit/EOF, fault scan, cleanup and health predicates are not relaxed or replaced by INFO status. The v6 fixture carries forward v5's prior framing, EOF, pair/provenance and budget assertions and adds startup-specific assertions. No source audit can claim the new tests or live PTY startup have passed.
+
+## Source-only conclusion
+
+V6 repairs the specific v5 defect with an emitter-shaped, argv-specific INFO row and a stateful INFO→READY requirement, while keeping status separate from math and process success. Pinning arena 47962 is appropriate only under this exact non-mmap engine/pack/argv identity; the code maps it to `ExpertLayout.total`, not a measured full-shard resident-byte count. Existing pins and failure states remain preserved in source. Actual v6 fixture, CPU-preflight, real-PTY, GEN/SAVE/QUIT mock, and later model/GPU results remain outside this audit.

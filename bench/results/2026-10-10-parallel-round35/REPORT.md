@@ -5,7 +5,7 @@ had returned and no research agent was active. Root resumed multiple independent
 read-only researchers and continued its own execution. The recurring assignment,
 shared-history, separate implementation and root-only testing rules are now in
 AGENTS.md. Returned reports remain files with exact hashes; they are reviewed
-before adoption. Registryv37 has110 completed Luna reports and preserves prior
+before adoption. Registryv38 has120 completed Luna reports and preserves prior
 immutable snapshots in the Git history.
 
 ## Division of work
@@ -21,11 +21,11 @@ fixtures and pure byte-framing helper. Root owns every actual execution and
 serializes builds, tests, inference, profiling and cleanup with the measurement
 lock. Research does not hold up independent main work.
 
-| Latest registryv37 assignment | Model | Scope | State at snapshot |
+| Latest registryv38 assignment | Model | Scope | State at snapshot |
 | --- | --- | --- | --- |
-| Startup wire review | gpt-6-luna | Actual INFO/READY/GEN/SAVE/QUIT emitter and prior audit gap | Running, read only |
-| Startup mock review | gpt-6-luna | Actual startup failure versus fake/real-PTY CPU coverage | Running, read only |
-| Implementation agent | gpt-6.1-sol | v6 exact INFO startup and bounded fallback transport evidence | Running, source only; root tests |
+| Static quota review | gpt-6-luna | Fixed-slot cache, graph and phase constraints for a different decode quota | Running, read only |
+| Native kernel review | gpt-6-luna | Actual NT/type exposure, official documentation and other implementations | Running, read only |
+| Implementation agent | gpt-6.1-sol | Pure exact static-prefix quota DP and independent small brute-force oracle | Running, source only; root tests |
 | Main agent | Root | Actual GPU failure closure/archive and next serial qualification | All execution closed; no live GPU process |
 
 Every assignment receives the past-report directory and reviewed decisions.
@@ -88,7 +88,8 @@ in221.102s, with normal exits and no cleanup/survivor. The full115 reachable
 objects/114 distinct sources were actually compiled; the flags checker found
 no missing sources or differing production flags against frozenH. Candidate
 binary SHA256 is194968fa045e1afe5805d2cc87ebb4c3c06acf23c86fd9e780655e2ca428b972.
-No new-engine GPU inference was executed.
+No new-engine GPU inference had been executed at that source-qualification boundary;
+the later closed v6 model result is recorded below.
 
 The independent CPU parser fixture passed18 tests. Three invalid env values
 returned exact error text and exit2 from the actual binary before model setup.
@@ -188,3 +189,49 @@ Raw startup-failure logs remain outside Git until the exactINFO and command
 startup mock consumes them; retire redundant verbose output when that question
 is resolved. The future static-quota replay requires a successful actual pair
 trace, so no current route data has been promoted. No cleanup ran here.
+
+## Actual v6 model and offline replay qualification
+
+R54 identified the missing normal INFO before READY: the root v5 caller rejected
+that line and stopped before GEN. Its failed result, forced cleanup and407-byte
+startup transcript remain unchanged. This was a caller bug, with no new GPU
+fault. The separate Sol v6 adds the exact fixed-configuration INFO admission and
+keeps transport EOF evidence in the compact final receipt.
+
+Root passed22 protocol fixtures,10 shape fixtures and actual CPU admission in
+4.155s. A real GDB/PTY scripted peer then passed in.415s using the actual v6
+startup block and transport helpers. It has no model math. The earlier peer v2
+launch-path error and v3 missing-import error remain separate failures.
+
+Actual v6 used the already built194968fa binary and closed in374.696s with model
+exit0, no signal, no new kernel fault, no forced cleanup and no survivor. All four
+fresh32768 A/B/A/B requests passed exact IDs/LP/MTP/head and all66 live state-part
+comparisons. Per-pair NT1/NT2 and per-format histogram reconciliation also passed.
+Canonical pair-shape hashes repeat exactly for the two A and two B requests.
+This is a diagnostic result. The candidate has not passed its own full physical
+262144 lifecycle and is not adopted. Instrumented prefill/decode elapsed samples
+remain individually recorded and are excluded from performance comparisons.
+
+R57 supplies an exact prefix-quota DP contract: profile-rank marginals need not
+decrease, so greedy selection can be wrong. A separate pure CPU oracle is being
+implemented; no engine quota is changed. R58 audits the offline reader's pins,
+interval ownership and required captures. Its generic cleanup-map clause accepts
+missing keys; the caller-pinned actual r6 receipt has all three explicit false
+cleanup flags. The reusable-gate caveat stays open. The raw R58 retention report
+contains a mistyped parser SHA; the actual parser identity is recorded correctly
+in the registry and all execution receipts, and the original report is preserved.
+
+Root separately ran six literal reader fixtures and the full CLI against the
+exact closed r6 receipt and raw intervals. Both exited0 in.891s total, with no
+GPU work, model payload reads, cleanup or survivor. Actual replay validates four
+canonical shape hashes and static-default coverage counts. A/B/A/B are two
+prompt fixtures repeated, not four independent holdout prompts. Counts do not
+measure service time, cache traffic, LRU behavior or a live policy's benefit.
+
+Keep the r6 original receipt, pinned helpers/controller, profile/type map and
+one1,389,517-byte full inferior.stderr capture for the named static-prefix
+count consumer. The reader needs neither candidate head/state tensors nor
+successful MI/health polling transcripts. Root reviews other current consumers
+before retirement under the shared lock. Canonical baseline RESTORE fixtures
+and unresolved C/D divergent captures remain required. No recovery/service/GPU
+state operation is part of this boundary.

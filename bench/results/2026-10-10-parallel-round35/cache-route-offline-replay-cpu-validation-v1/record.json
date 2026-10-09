@@ -1,0 +1,102 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "scope": "Six independent offline reader fixtures plus actual closed fourfresh32K v6 raw-interval/static-count replay; no new inference/GPU helper/model payload read; counts not traffic/time/LRU",
+  "gpu_work_submitted": false,
+  "model_opened": false,
+  "adopted": false,
+  "performance_eligible": false,
+  "full_lifecycle_passed": false,
+  "original_C_D_math_failures_preserved": true,
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "started_utc": "2026-10-09T19:34:09.276162+00:00",
+  "controller_sha256": "dc9b8572b7dab179903368e9c3f470440f12bd613bd15df1dfe9ab07fcad74f2",
+  "pins": {
+    "replay_cache_route_pairs_v1.py": "b65dcabbc75614ef06209782c9ebe9b9540f4e9f9b66d6056c47b58153e54f0f",
+    "test_replay_cache_route_pairs_v1.py": "d5bdc4db33ade1cf2276abfa732b1d5967e9ed7d59a7cde60201f23e699a8980",
+    "owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json": "f606f5a1f2d00dba240213a7feeb3cc84c9da4f1487075d1e97c336a558e4c89",
+    "run_owned_cache_route_pairs_v0141_code32k_v6.py": "9304f84dfce23b099c02d0090ea3b8f9b158100d157b0175ab3e4cfda1a9f423",
+    "test_cache_route_pairs_protocol_integration_v6.py": "473469d538aaffe26ee59eead3cb4e521725bc14707e799fc25043d64438f672",
+    "cache_route_shapes_v1.py": "0355f450b1c0b3b4dc59ff28db09c5be48ea914e40808f94daa822b38b5dc2ff",
+    "test_cache_route_shapes_v2.py": "cc3a91f8a34ec80204b3dc0ffff1f61f66dad7bde8cdf9ab417e3a0ea24659bd",
+    "cache-route-pairs-shapes-cpu-validation-v1/record.json": "ac73fc288d12d7e1f1464b7caec8bc850792e9068ba4e1636a61f235f6148cff",
+    "run_owned_cache_route_pairs_v0141_code32k_v3.py": "cbce9a3cd0fedac9daadae66071bf6b7e5baccf355eb99538869f90b91808518",
+    "test_cache_route_pairs_protocol_integration_v3.py": "d303e8845a3f0e874cf42dced0852348167897e277f2bc29697212584802b868",
+    "bounded_engine_protocol_v1.py": "aa72bd7f1a9babf7c6e325b10634f1a046fe78fc2b2738e691d90624197131c1",
+    "test_bounded_engine_protocol_v1.py": "d40df828556798d66900fa54ed8fcc5159cbd53d736b56794da33823d9e30e44",
+    "test_cache_route_pairs_parser_v2.py": "e80c9ffbaeb0a772998977dde210d5b75fe6fec445d3e7282776b915d86f7266",
+    "cache_route_pairs_parser_v1.py": "2ff44099f7385054dc5663f04a8e226d364d4d349a84b2493bc2bb1d6f3585cd",
+    "run_owned_cache_route_pairs_v0141_code32k_v2.py": "312bb2d93b28033623a2997e47742fdbb1df33e555d116747496c0c29d213673",
+    "cache-route-pairs-v0141-private-build-v1/record.json": "b812f9df5186681f31d3a82c1fa7c07b7f73e5c16cb4ea7232c0e0c62edcd833"
+  },
+  "flags_receipt_sha256": "0e7bf208bf00d9da34a67450e58da87e2714439c514db43e51adc6b051277b49",
+  "binary_sha256": "194968fa045e1afe5805d2cc87ebb4c3c06acf23c86fd9e780655e2ca428b972",
+  "deadline_seconds": 120,
+  "text_budget_bytes": 2097152,
+  "steps": [
+    {
+      "label": "reader-fixture",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/test_replay_cache_route_pairs_v1.py"
+      ],
+      "expected_exit_code": 0,
+      "deadline_seconds": 30,
+      "lock_owner": "root-wrapper",
+      "owner": {
+        "pid": 2279124,
+        "start_ticks": 26412871
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.10125934798270464,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 104,
+      "stderr_sha256": "62cfbeb2911bb226088bfb0918eb4b05008ea70b20bce854ee2ca8a564bd37a5"
+    },
+    {
+      "label": "actual-replay",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/replay_cache_route_pairs_v1.py",
+        "--self-sha256",
+        "b65dcabbc75614ef06209782c9ebe9b9540f4e9f9b66d6056c47b58153e54f0f",
+        "--receipt",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json",
+        "--receipt-sha256",
+        "f606f5a1f2d00dba240213a7feeb3cc84c9da4f1487075d1e97c336a558e4c89",
+        "--controller",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_cache_route_pairs_v0141_code32k_v6.py"
+      ],
+      "expected_exit_code": 0,
+      "deadline_seconds": 30,
+      "lock_owner": "root-wrapper",
+      "owner": {
+        "pid": 2279128,
+        "start_ticks": 26412882
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.4528125770157203,
+      "stdout_bytes": 22143,
+      "stdout_sha256": "a427e8f827c99b83882c67dc1ae361d81eff6f944a47c6c55fbe2f06a543b54c",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "cleanup": [],
+  "survivors": [],
+  "test_environment": {
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/:/usr/local/cuda/lib64:/nix/store/mj9klbkhzal0vc1aazsajrydkimhc0h2-libglvnd-1.7.0/lib",
+    "ZE_ENABLE_VALIDATION_LAYER": "1",
+    "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+    "ZEL_ENABLE_LOADER_LOGGING": "1",
+    "ZEL_LOADER_LOGGING_LEVEL": "warn",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "elapsed_seconds": 0.8910948510165326,
+  "actual_closed_static_replay_executed": true,
+  "original_receipt_status_unchanged": true,
+  "controller_integration_executed": false,
+  "finished_utc": "2026-10-09T19:34:10.167189+00:00"
+}
