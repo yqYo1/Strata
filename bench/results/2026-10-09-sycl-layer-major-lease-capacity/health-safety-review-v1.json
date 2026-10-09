@@ -1,0 +1,125 @@
+{
+  "active": false,
+  "passed": true,
+  "healthy": true,
+  "gpu_executed": true,
+  "started_utc": "2026-10-09T12:05:35.315686+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "failed_receipt_sha256": "9f76562cc4ced2a60363e7b01b31cfd6da4bbfde8abc62c45c0abe737027f0a1",
+  "source_head": "6cdf81078128488e5797afb9e92824b7ebe51124",
+  "binary_sha256": "66d5bee60f4bbdb6f710b395ae11a1e6e14a61e04db417bcd6092d4f7956377e",
+  "preserved_failure_status": {
+    "completed": false,
+    "healthy": false,
+    "math_gate_passed": false
+  },
+  "owned_failed_processes_absent": true,
+  "failed_first_A_math_passed": true,
+  "prior_capacity_failure_exact": true,
+  "prior_kernel_after_cursor": "s=3ad31c4e321d43ad949846afdb43877a;i=bfe2e24;b=0a908c16e292429980ff082da39f4bb9;m=35d7f60407;t=65d65c751eac4;x=11064e6a4d8adc3",
+  "full_trace_archive_sha256": "5cb974ea27da9e354f2fb63ea7da038d519646a922ca1d97050ad540775f6aec",
+  "helper_sha256": "2f90005f79d2309747d917cff51dc53d8ee6192d68cb1feca074f84af8b0796c",
+  "probe_sha256": "7375211a3a97a2b284215dcdad6ba652fc9af2fa2e1a92bc47361e3893931d3b",
+  "controller_sha256": "5c5666eeab376e419aca5db2dc4c1c78e67142994638c886e987fb08f190c147",
+  "raw_log_budget_bytes": 67108864,
+  "recovery_reset_service_actions": false,
+  "steps": [
+    {
+      "label": "kernel-gap",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bfe2e24;b=0a908c16e292429980ff082da39f4bb9;m=35d7f60407;t=65d65c751eac4;x=11064e6a4d8adc3",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "pid": 660309,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050675025006057695
+    },
+    {
+      "label": "embedding-state",
+      "argv": [
+        "/usr/bin/systemctl",
+        "--user",
+        "show",
+        "llama-server-qwen3embed.service",
+        "-p",
+        "ActiveState"
+      ],
+      "pid": 660311,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050696734979283065
+    },
+    {
+      "label": "health-runtime",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import ctypes,sys; ctypes.CDLL(sys.argv[1])",
+        "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0"
+      ],
+      "pid": 660313,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05076379200909287
+    },
+    {
+      "label": "before-health-cursor",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "pid": 660315,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05069974099751562
+    },
+    {
+      "label": "health",
+      "argv": [
+        "/home/yayoi/.local/bin/strata-xe-health",
+        "0000:05:00.0"
+      ],
+      "pid": 660317,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.1512954749923665
+    },
+    {
+      "label": "health-kernel",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bfe9186;b=0a908c16e292429980ff082da39f4bb9;m=373b1a8e51;t=65d672a76750e;x=c77db1eabe78bbc8",
+        "--no-pager",
+        "-o",
+        "short-iso-precise"
+      ],
+      "pid": 660334,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05074238101951778
+    }
+  ],
+  "preflight_fault_messages": [],
+  "health_kernel_cursor": "s=3ad31c4e321d43ad949846afdb43877a;i=bfe9186;b=0a908c16e292429980ff082da39f4bb9;m=373b1a8e51;t=65d672a76750e;x=c77db1eabe78bbc8",
+  "log_bytes": 276801,
+  "log_budget_exceeded": false,
+  "finished_utc": "2026-10-09T12:05:36.270190+00:00"
+}

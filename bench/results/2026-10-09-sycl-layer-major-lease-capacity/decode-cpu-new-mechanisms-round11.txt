@@ -1,0 +1,29 @@
+# Decode CPU MoE: new mechanism candidates (round 11)
+
+Scope and boundary
+
+Inspected the code-only v0141 worktree at `7d0105f2a942ac72ca20fef69d4c2e7960653de3`; did not build or execute it. Existing D tasks6 result establishes numerical equality only, not speed. The relevant machine is Ryzen 5 5600X (AVX2, six physical cores), five configured workers, and actual expert format IQ3_S. Native run batches experts, flattens token rows, and dynamically claims contiguous slices. It executes GU, Q8_H quantization, then Down; workers can receive different slices between phases. `ExpertJobMulti.nt` varies by expert. Existing phase timers include dispatch/synchronization and host drain. Avoided re-proposing generic row split, prefetch, task-count sweep, and Q quantization parallelization already in earlier reports.
+
+1. Retain worker-to-range affinity across GU and Down (test first)
+
+Mechanism: capture the per-worker row ranges used in GU and have Down consume the same ranges, with the same worker IDs; retain current scheduling fallback if an expert batch changes. The projected benefit is reuse of each worker's cache/TLB locality for its output rows and avoiding a second dynamic-claim/atomic scheduling pass. This specifically tests the current phase boundary: GU writes each row's Q8_H intermediate and Down reads that intermediate, but independent dynamic claims can migrate rows between workers. It does not change quantization arithmetic or split rows differently. oneTBB documents affinity partitioning as reuse of a prior loop's task affinity pattern; this is a precedent, not evidence of improvement for Strata ([oneAPI affinity_partitioner specification](https://oneapi-spec.uxlfoundation.org/specifications/oneapi/v1.1-rev-1/oneAPI-spec.pdf)).
+
+Prerequisite/risk: confirm each intermediate/output row is disjoint and stable across GU and Down, and that each phase sees identical row/expert extents. Static assignment may leave a worker idle when per-row Down work varies; the intermediate's actual byte size and whether it remains cache-resident must be measured. With five workers on a six-core CPU, avoid pinning the main thread in a way that steals the sixth core. No speedup assumed.
+
+Root measurement: on repeated fresh 32K numerical cases, compare baseline versus affinity mode with identical worker count and token/expert inputs. Record GU, quant, Down and whole-phase wall times plus per-worker rows and elapsed time, tail max/min, atomic claims, and CPU utilization. Run both one-token and small multi-token cases; require exact heads/state/LP/MTP checks. Regress if whole decode is not faster or tail imbalance worsens.
+
+2. Schedule row chunks by estimated work, not equal row count (format-aware split)
+
+Mechanism: for each flattened range, weight rows using existing kernel dispatch metadata (format, dimensions, and kernel mode), then assign contiguous weighted ranges to the five workers. This is narrower than a generic chunk-size sweep: it tests whether task cost changes by expert format and dimensions enough that equal row counts cause a straggler. The pool code's row count is an imperfect proxy because `ExpertJobMulti.nt`, expert dimensions, format dispatch and native kernel modes differ. OpenMP taskloop's explicit grainsize/num_tasks controls document the general tradeoff between number and size of tasks, but do not prescribe a cost model ([OpenMP 5.2 taskloop](https://www.openmp.org/spec-html/5.2/openmpse74.html)).
+
+Prerequisite/risk: derive weights from existing dispatch dimensions and record actual time per row/type first; do not add a model-specific fixed IQ3_S coefficient without measurements. Small decode batches may not have enough independent rows to balance five workers; per-type bookkeeping can cost more than it saves. Keep row/expert ordering stable and preserve output accumulation order. Potential risk is worse cache locality from crossing expert boundaries.
+
+Root measurement: using phase counters and existing inputs, report row count and measured ns/row by format/kernel/dimension, per-worker completion times, scheduling overhead, GU/Down and end-to-end latency. Compare the same 1-token and multi-token batches across multiple iterations, with exact numerical validations. Only pursue if the equal-row baseline shows a repeatable per-worker tail and the measured cost model reduces the max-worker time without increasing dispatch cost.
+
+3. No immediate third implementation candidate
+
+Small-batch expert fusion is tempting, but current kMaxSplitMulti already batches experts and the source review has not established that the active five-worker IQ3_S path is dominated by per-expert launch/dispatch overhead. Do not propose another batch-size knob until counters show fixed per-expert overhead dominates useful kernel time. Likewise, generic task granularity changes are already covered by prior reports.
+
+Evidence/limitations
+
+Local code facts above are static observations from `src/kernels/cpu/pool.cpp` and `src/core/expert_source.cpp` in the specified worktree; no runtime evidence was collected. oneTBB and OpenMP documentation establish available scheduler concepts only. No external paper result is claimed to predict this CPU, quantization format, or model. Current root status supplied for context: first A all-head/66-state/LP/MTP passed; second B allocation failed (1.27 GiB requested, 0.99 GiB free), so no result from that attempt should be treated as qualified.

@@ -1,0 +1,42 @@
+# SYCL graph address/lifetime contract for cache and MTP weight release (round 11)
+
+調査日: 2026-10-09  
+C: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-layer-major-streamed-kv-v0141-20261009`, HEAD `6cdf81078128488e5797afb9e92824b7ebe51124`, source SHA `92b849df3e19ad77a8a56927cae48cd91d4be0f73f4edc1ff189d2177c0cd8c1`.  
+保存規則: [ARTIFACT_RETENTION.md](/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/docs/ARTIFACT_RETENTION.md)。registry-v15 SHA-256 `21241300c7cfd4e98029872f673352599453be473adcbf8b6b3277a0f3f284b6`。round 3, 7, 8, 10 と関連する既報も確認した。  
+ソースと小さな構造化receiptのread-only確認、Intel/NVIDIA公式文書の閲覧のみ。source変更、build/test、GPU/profiler、serviceは実施していない。
+
+## 結論
+
+既存leaseは、graphが読むdecode allocationを縮める前にqueueをdrainし、graph objectを破棄してbackend側allocation参照も捨て、容量を戻してデータを復元してからgraphを作り直す契約になっている。main verifier cacheは通常の非segmented cacheではrestore後に元と同じ仮想アドレスになる保証がなく、restore callbackが `drive.d`, `thits`, `vh` のbase pointerを更新してからVerifier graphを再captureする。一方、MTP decode expert/head storageは同じ仮想アドレスで戻ることを要求し、address変化をエラーにする。それでも旧command listがphysical mappingを保持し得るため、MTP graphsは物理解放の前に破棄し、RAM復元後に再captureする。
+
+従って「同じvirtual addressならgraphを残せる」とは言えない。候補Cのrelease hooksはこの境界を既に実装している。今すぐ安全と評価できる新規なmemory optimizationは見当たらない。別の将来実験なら、十分なheadroomが確認できる場合にだけleaseを省くpreflightが候補になる。dynamic/updatable graphでpointerを替える案は、現行backendのcaptured command listとphysical unmapの扱いが確認できるまで安全とは評価しない。
+
+## Main expert cacheとVerifier graphs
+
+Single-GPU serveでは `STRATA_PREFILL_RELEASE_CACHE!=0` のときcache suspend/restore callbackを設定する。復元callbackは `drive.d.cache_base`, `thits.cache_base`, `vh.cache_base` を更新してから `ver.rebuild_cache_graphs(address)` を呼ぶ (`generate.cpp:7662-7670`)。
+
+`CacheLease::suspend()` は `m.cs` を待ち、必要なslot payloadをRAMまたはsnapshotに保存し、device queueをdrainし、graph-retire callbackが成功した後にcacheをshrinkする (`prefill.cpp:2436-2522,2578-2581`)。`Verifier::discard_cache_graphs()` はpending commitを待ち、`cs_` と `copy_` を待ってからwindow, no-resident, boundary, batch-management graph objectを破棄する (`verify.cpp:3832-3855`)。captured verifier window kernelsは `hits_.cache_base` とslot offsetsを読むので、これらを破棄してからbackingを外す順序が必要 (`verify.cpp:1280-1301`)。
+
+restore時はcacheをgrowし、RAM modeではsaved resident mappingとimmutable `ArenaExpertSource` に基づいてoccupied slot payloadを戻す。選択時にはcopy前後のbyte検証もある (`prefill.cpp:2527-2560`)。`ExpertCache::grow` は非segmented baseを別アドレスへ再確保できる (`expert_cache.cpp:530-538`); 従ってmain cacheで同じVAを前提にしてはいけない。pointer更新の後にgraphを作る。Verifierのcommit graphは `discard_cache_graphs()` の対象外だが、`capture_commit()` はsequence/session stateとhost commit inputを更新し、MoE cache pointerを受け取らない (`verify.cpp:1876-1980`)。cacheを読むwindow graphと同一視しない。
+
+## MTP decode storage
+
+serveはprompt中の `sp.draft_kv` を使う。decode expert/head release hookは条件を満たすsingle-GPU MTP構成で有効化される (`generate.cpp:7592-7604`)。これはdraft KV scratchの解放ではない。draft KVはprompt chunk callbackでのみ呼ばれ、dense projection storage等は残る (round 7 audit; `generate.cpp` prompt `on_chunk` path)。
+
+`MtpDrafter::suspend_decode_weights()` は全device queuesを待ち、host payloadを保持/検証し、decode graph arraysを破棄してからexpert/head backingをunmapする (`mtp.cpp:212-245`)。restoreはgrowした後にRAM payloadを戻し、queue完了とbyte検証を確認する (`mtp.cpp:247-279`)。MTPは同じVAへの復元を要求し、失敗時はerrorを返す。ソースコメントも、VAが同じでもbackend command listがallocation参照を保持し得て、過去の繰返しleaseで問題になったためgraphを先に破棄すると説明している。restore後のgraph warm/re-captureはdecode前の経路にある (`mtp.cpp:1650+`, `generate.cpp:12285-12296`)。
+
+Prompt終了時のlayer-major順序はcompute/copy/stagerをdrainし、layer cacheを閉じ、main cacheをrestoreしてVerifier graphを再構築し、その後MTP decode weightsを戻す (`prefill.cpp:2747-2805`)。MTP graphはwarm設定/次のdecode経路に従って再作成される。prefill用layer cacheとdecode backing/graphsを同時に重ねないための既存順序である。
+
+## Address updateの限界と新規候補
+
+IntelのSYCL Graph資料はupdatable graph node / dynamic parameterを説明する ([SYCL Graph Usage Guide](https://intel.github.io/llvm/syclgraph/SYCLGraphUsageGuide.html), [DPC++ Command Graph design](https://intel.github.io/llvm/design/CommandGraph.html))。しかしpointer parameterだけを差し替えても、古いgraph executableがunmapされたallocationを参照しない保証にはならない。NVIDIA TensorRTのCUDA graph資料も、capture contextとactivation/input/output pointerの寿命・変更制約を明示する ([TensorRT optimization](https://docs.nvidia.com/deeplearning/tensorrt/latest/performance/optimization.html), [TensorRT-RTX graph guidance](https://docs.nvidia.com/deeplearning/tensorrt-rtx/latest/inference-library/work-with-cuda-graphs.html))。CUDA/TensorRT資料はLevel Zero/SYCL backendの証拠ではなく、B570上の挙動も示さない。
+
+現行と異なる小さな実験候補は、layer-cache確保前のfree-memory preflightで十分なheadroomがある場合だけcache/MTP leaseを省略すること。現在のrelease hookは無条件でgraph retirementとRAM roundtripを行うため、余裕のあるPCではそのコストを避けられる可能性がある。ただし必要headroomの数値は測定されておらず、閾値や速度改善を主張しない。厳しい容量条件では現行leaseを維持する。dynamic graph案は、backend仕様確認と個別のaddress-reuse/unmap試験が先であり、本件の安全な代替策として推奨しない。
+
+## 実行記録との関係
+
+round 10の小さな構造化receiptでは、B試行はcache allocation前に必要 `1,363,148,800 B` に対しfree `0.99 GiB` で容量不足となった。これはrelease hookの実行失敗やgraph address破損の証拠ではない。receipt環境では `STRATA_PREFILL_RELEASE_CACHE` / `STRATA_PREFILL_RELEASE_DRAFT` の設定を確認できず、これらhookがその試行で動いたとも判断できない。後続のforced cleanup記録からGPU faultを推定しない。過去のMTP lease問題のコメントや似た終了コードとも、stack/driver/source evidenceなしに同一視しない。
+
+## 未実施の確認
+
+root側の許可済みGPU試験でrelease envが実際に有効なこと、prompt終了後のrestore後に同じrequestのdecodeが通ること、cache/MTP payload byte verification、Verifier/MTP graph recapture後の同一token/stateを確認する。最初は既存の候補worktreeと記録済み設定だけで比較し、必要ならheadroom preflightは独立した別実験にする。今回はそれらを実行していない。

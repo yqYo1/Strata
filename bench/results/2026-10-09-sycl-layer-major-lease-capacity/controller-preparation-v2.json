@@ -1,0 +1,79 @@
+{
+  "active": false,
+  "passed": true,
+  "gpu_executed": false,
+  "base_controller_sha256": "42826fa2dbbaa200d388d106b955351323d2fae2a4bba4ee6c9a89bb788b4a4e",
+  "controller_sha256": "0473e63592179813b7defc85fbebe03b3d9e49a06b21531b2a800474b6767a26",
+  "source_head": "6cdf81078128488e5797afb9e92824b7ebe51124",
+  "safety_review_sha256": "0208be3bfc73efd1ec61f46e844b35036be6735160435c36227f073a11135dfa",
+  "changed_helpers": [
+    "poll"
+  ],
+  "all_numeric_and_normal_admission_helpers_ast_identical": true,
+  "changes": [
+    {
+      "before": "import fcntl\n",
+      "after": "import fcntl\nimport ast\nimport textwrap\n"
+    },
+    {
+      "before": "assert mode == 'streamed' and phase == 'diagnostic' and repetition == 1",
+      "after": "assert mode == 'streamed-lease' and phase == 'diagnostic' and repetition == 1"
+    },
+    {
+      "before": "out=base/'owned-layer-major-streamed-kv-v0141-code32k-streamed-diagnostic-r1'",
+      "after": "out=base/'owned-layer-major-streamed-kv-v0141-code32k-streamed-lease-diagnostic-r1'"
+    },
+    {
+      "before": "if sys.argv[4:]==['--cpu-preflight']:",
+      "after": "\n# Admit the exact previous allocation rejection separately. It remains failed;\n# terminal_owned() and every normal numerical/fault gate are unchanged.\nsafety_path=base/'streamed-kv-capacity-failure-safety-review-v1/record.json'\nassert digest(safety_path)=='0208be3bfc73efd1ec61f46e844b35036be6735160435c36227f073a11135dfa'\nsafety=json.loads(safety_path.read_text())\nassert safety['active'] is False and safety['passed'] and safety['healthy'] and safety['gpu_executed']\nassert safety['boot_id']==boot and not safety['preflight_fault_messages'] and not safety['log_budget_exceeded']\nassert safety['binary_sha256']==digest(binary) and safety['source_head']==review_head\nassert safety['preserved_failure_status']==dict(completed=False,healthy=False,math_gate_passed=False)\nassert safety['owned_failed_processes_absent'] and safety['prior_capacity_failure_exact']\nfor call in safety['steps']:\n    assert call['exit_code']==0 and not call['timed_out'] and not call['still_alive']\n    assert not process_identity(call['pid'])\nfailed_path=base/'owned-layer-major-streamed-kv-v0141-code32k-streamed-diagnostic-r1/record.json'\nassert digest(failed_path)==safety['failed_receipt_sha256']=='9f76562cc4ced2a60363e7b01b31cfd6da4bbfde8abc62c45c0abe737027f0a1'\nfailed=json.loads(failed_path.read_text())\nassert failed['active'] is False and failed['completed'] is False and failed['healthy'] is False and failed['math_gate_passed'] is False\nassert not failed['new_fault_messages'] and failed['cleanup']==dict(forced=True,inferior_survived=False,gdb_survived=False)\nfor role in ['inferior','debugger']:\n    now=process_identity(failed[role]['pid']);assert not now or now['start_ticks']!=failed[role]['start_ticks']\n\nif sys.argv[4:]==['--cpu-preflight']:"
+    },
+    {
+      "before": "r = m.Runner(probes)",
+      "after": "\nhelper_python=source.read_text().split(\"<<'PY'\\n\",1)[1].rsplit('\\nPY',1)[0]\nrunner_class=next(x for x in ast.parse(helper_python).body if isinstance(x,ast.ClassDef) and x.name=='Runner')\nrun_node=next(x for x in runner_class.body if isinstance(x,ast.FunctionDef) and x.name=='run')\nrun_source=textwrap.dedent(ast.get_source_segment(helper_python,run_node))\nrun_predicate='while child.poll() is None and time.monotonic() < deadline:'\nassert run_source.count(run_predicate)==1\nrun_source=run_source.replace(run_predicate,'while child.poll() is None and time.monotonic() < deadline and sum(p.stat().st_size for p in self.output.iterdir() if p.is_file()) < 64 * 1024**2:')\nexec(compile(run_source,str(Path(__file__)),'exec'),m.__dict__)\nm.Runner.run=m.run\nr=m.Runner(probes)\n"
+    },
+    {
+      "before": "    'scope':'First opt-in layer-major streamed INT8 qualification. Four fresh32768 A/B/A/B requests,64 outputs, exact heads/all66 live state/LP/MTP versus qualified integrated869. Existing one-layer weight cache and host residual schedule with scoped single KV identity stage retained across chunks; canonical append/attention/state kernels and decoder remain original. Physical max262144 and8K chunks unchanged. No cache/MTP release/native copy factory/import/affinity. Flushed UR/ZE/ZEL diagnostics. Logged times excluded, no speed/full-capacity/adoption claim.',",
+      "after": "    'scope':'Layer-major streamed INT8 plus existing full main-cache/MTP RAM leases. Four fresh32768 A/B/A/B requests,64 outputs; exact heads/all66 live state/LP/MTP against qualified integrated869. Physical262144 capacity and8K chunks retained. Full payload verification and graph lifecycle traced with validation/warnings/progress. Logged times excluded; no speed/full-lifecycle/adoption claim.',"
+    },
+    {
+      "before": "'log_limit_bytes':24*1024**3",
+      "after": "'log_limit_bytes':64*1024**2"
+    },
+    {
+      "before": "'source_status_before':'',",
+      "after": "'source_status_before':'','prior_capacity_failure_safety_review_sha256':digest(safety_path),'diagnostic_log_profile':'ZE parameter validation + warning/error logs + Strata progress; no all-success API history',"
+    },
+    {
+      "before": "if sum(p.stat().st_size for p in (out / 'debugger').glob('*.stderr')) >= record['log_limit_bytes']:",
+      "after": "if sum(p.stat().st_size for p in out.rglob('*') if p.is_file() and not p.name.endswith(('.bin','.tmp'))) >= record['log_limit_bytes']:"
+    },
+    {
+      "before": "old_cursor = next(x['argv'][x['argv'].index('--after-cursor') + 1]\n                      for x in health['steps'] if x['label'] == 'health-kernel')",
+      "after": "old_cursor = safety['health_kernel_cursor']"
+    },
+    {
+      "before": "env.update(STRATA_DECODE_TIMING='1',STRATA_DUMP_FIRST_LOGITS=str(out/'first-head.bin'),STRATA_PREFILL_DUMP_STATE=str(out/'prefill-state.bin'))",
+      "after": "env.update(STRATA_PREFILL_RELEASE_CACHE='1',STRATA_PREFILL_CACHE_RELEASE_FRAC='1',STRATA_PREFILL_CACHE_RESTORE='ram',STRATA_PREFILL_CACHE_VERIFY='1',STRATA_PREFILL_RELEASE_DRAFT='1',STRATA_PREFILL_DRAFT_VERIFY='1')\n    env.update(STRATA_DECODE_TIMING='1',STRATA_DUMP_FIRST_LOGITS=str(out/'first-head.bin'),STRATA_PREFILL_DUMP_STATE=str(out/'prefill-state.bin'))"
+    },
+    {
+      "before": "env = m.diagnostic_environment(env)",
+      "after": "env = m.diagnostic_environment(env)\n        env.update(ZEL_LOADER_LOGGING_LEVEL='warn',ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT='0',UR_LOG_LOADER='level:warning;flush:warning;output:stderr',UR_LOG_LEVEL_ZERO='level:warning;flush:warning;output:stderr')\n        env.pop('UR_LOG_TRACING',None)\n        env['UR_ENABLE_LAYERS']=','.join(x for x in env.get('UR_ENABLE_LAYERS','').split(',') if x and x!='UR_LAYER_TRACING')\n        if not env['UR_ENABLE_LAYERS']: env.pop('UR_ENABLE_LAYERS')"
+    },
+    {
+      "before": "record['configuration_note'] = 'Qualified baseline argv identical. Layer-major1 and streamedINT8 stage1 opt-in. No extra CLI task argument, workspace/cache/MTP release, GPU residual plane, import or affinity. Fresh A/B/A/B no reused tokens; logged times excluded.'",
+      "after": "record['configuration_note'] = 'Qualified baseline argv identical. Layer-major1/streamedINT8 and existing main full-cache RAM lease/MTP full-expert+head RAM lease, both payload verifications enabled. Host residual plane retained. No extra CLI task argument/import/native copy factory/affinity. Fresh A/B/A/B no reused tokens; logged times excluded.'"
+    },
+    {
+      "before": "record['engine_log_bytes'] = engine_log.stat().st_size",
+      "after": "\n    cache_release=re.findall(r'^strata prefill cache release: (\\d+) physical bytes, (\\d+) restored bytes, source (\\w+), suspend ([0-9.]+) ms, restore ([0-9.]+) ms, graph ([0-9.]+) ms, same_address ([01]), slots restored$',text,re.M)\n    cache_verify=re.findall(r'^strata prefill cache verify: (\\d+) occupied tail bytes matched before and after restoration; (\\d+) experts differ from the initial admission map$',text,re.M)\n    mtp_release=re.findall(r'^strata mtp decode release: (\\d+) physical bytes, experts and head; K/V retained; total ([0-9.]+) ms, wait ([0-9.]+) ms, unmap ([0-9.]+) ms, verify ([0-9.]+) ms, verified=(\\d), graph_drop ([0-9.]+) ms$',text,re.M)\n    mtp_restore=re.findall(r'^strata mtp decode restore: (\\d+) payload bytes from RAM, same addresses; total ([0-9.]+) ms, map ([0-9.]+) ms, copy ([0-9.]+) ms, verify ([0-9.]+) ms, verified=(\\d)$',text,re.M)\n    assert len(cache_release)==len(cache_verify)==len(mtp_release)==len(mtp_restore)==count==4,'each request requires both complete verified release/restore pairs'\n    assert all(int(x[0])>0 and int(x[1])>0 and x[2]=='ram' and all(math.isfinite(float(v)) and float(v)>=0 for v in x[3:6]) for x in cache_release)\n    assert all(int(x[0])>0 for x in cache_verify)\n    assert all(int(x[0])>0 and x[5]=='1' and all(math.isfinite(float(v)) and float(v)>=0 for v in x[1:5]+x[6:]) for x in mtp_release)\n    assert all(int(x[0])>0 and x[5]=='1' and all(math.isfinite(float(v)) and float(v)>=0 for v in x[1:5]) for x in mtp_restore)\n    memory_points=['before decode cache release','main decode cache released','MTP decode weights released','temporary layer cache allocated','prefill completed with temporary layer cache','temporary buffers released','main decode cache restored, verifier graphs rebuilt','MTP decode weights restored']\n    for point in memory_points:\n        assert text.count('strata trace: prefill memory '+point+': ')==count,point\n    record['verified_ram_lease_gate']={'passed':True,'cache_release':cache_release,'cache_verify':cache_verify,'mtp_release':mtp_release,'mtp_restore':mtp_restore,'memory_points':memory_points,'note':'Payloads verified before/after release; current-map RAM sources and verifier graph rebuild required; MTP graphs retired before unmap and recaptured by normal decode. Logged durations are not performance samples.'}\n\n    record['engine_log_bytes'] = engine_log.stat().st_size"
+    },
+    {
+      "before": "    for point in memory_points:\n        assert text.count('strata trace: prefill memory '+point+': ')==count,point",
+      "after": "    memory=re.findall(r'^strata prefill memory: ([^;]+); free=(\\d+) total=(\\d+) bytes$',text,re.M)\n    assert len(memory)==len(memory_points)*count and [x[0] for x in memory]==memory_points*count,'each lease boundary requires a valid memory query in source order'\n    assert all(0<=int(x[1])<=int(x[2]) and int(x[2])>0 for x in memory)"
+    }
+  ],
+  "adopted": false,
+  "full_lifecycle_passed": false,
+  "performance_eligible": false,
+  "source_memory_trace_gate_corrected_before_gpu": true
+}
