@@ -152,6 +152,13 @@ cannot clear its earlier uninstrumented rejection.
 Compact individual cases, commands, environment, actual compiler flags, failed
 records and research are the durable Git record. Successful synthetic outputs
 and repeated build progress have no remaining consumer after comparison and
-verified extraction. Their retirement will be serial, after committed evidence,
-with path/hash/reason identities. Required real reference/session/failure tensors
-remain outside Git for their named current consumers.
+verified extraction. Root actually retired all103 listed files after evidence
+commit/push `d4ac5d0e`, under the shared exclusive lock and verified path/hash/
+owner identities. Removed logical bytes total2,363,926,612 and unique-inode
+allocation2,368,052,224, approximately2.2GiB. Actual available-space change was
+not measured. The retirement completed in1.548s; original receipts, including
+the failed parser-test launch, remain byte-identical. The deletion manifest and
+actual result are retained separately. Required real reference/session/failure
+tensors remain outside Git for their named current consumers. Registry v31 is
+the immutable pre-retirement snapshot; this report and the actual result record
+the completed retirement.
