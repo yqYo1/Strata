@@ -1,0 +1,101 @@
+PASS early_empty_and_denial host_markers_unchanged state_fnv=8347637681120060619 ordered_partial=1 changed_partial=2
+device=Intel(R) Arc(TM) B570 Graphics prefix=0 chunk_cap=2048 numerical_gate=bitwise model=false performance=false
+CASE T=1 initial=zero pattern=directed
+PASS call T=1 prefix=0 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=3 prefix=1 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=5 prefix=4 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+CASE T=1 initial=zero pattern=cancellation
+PASS call T=1 prefix=0 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=3 prefix=1 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=5 prefix=4 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+CASE T=1 initial=nonzero pattern=directed
+PASS call T=1 prefix=0 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=3 prefix=1 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=5 prefix=4 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+CASE T=1 initial=nonzero pattern=cancellation
+PASS call T=1 prefix=0 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=3 prefix=1 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=5 prefix=4 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+CASE T=3 initial=zero pattern=directed
+PASS call T=3 prefix=0 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=3 prefix=3 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=5 prefix=6 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+CASE T=3 initial=zero pattern=cancellation
+PASS call T=3 prefix=0 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=3 prefix=3 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=5 prefix=6 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+CASE T=3 initial=nonzero pattern=directed
+PASS call T=3 prefix=0 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=3 prefix=3 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=5 prefix=6 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+CASE T=3 initial=nonzero pattern=cancellation
+PASS call T=3 prefix=0 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=3 prefix=3 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=5 prefix=6 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+CASE T=4 initial=zero pattern=directed
+PASS call T=4 prefix=0 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=3 prefix=4 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=5 prefix=7 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+CASE T=4 initial=zero pattern=cancellation
+PASS call T=4 prefix=0 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=3 prefix=4 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=5 prefix=7 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+CASE T=4 initial=nonzero pattern=directed
+PASS call T=4 prefix=0 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=3 prefix=4 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=5 prefix=7 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+CASE T=4 initial=nonzero pattern=cancellation
+PASS call T=4 prefix=0 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=3 prefix=4 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=5 prefix=7 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+CASE T=5 initial=zero pattern=directed
+PASS call T=5 prefix=0 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=3 prefix=5 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=5 prefix=8 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+CASE T=5 initial=zero pattern=cancellation
+PASS call T=5 prefix=0 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=3 prefix=5 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=5 prefix=8 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+CASE T=5 initial=nonzero pattern=directed
+PASS call T=5 prefix=0 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=3 prefix=5 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=5 prefix=8 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+CASE T=5 initial=nonzero pattern=cancellation
+PASS call T=5 prefix=0 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=3 prefix=5 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=5 prefix=8 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+CASE T=17 initial=zero pattern=directed
+PASS call T=17 prefix=0 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=3 prefix=17 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=5 prefix=20 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+CASE T=17 initial=zero pattern=cancellation
+PASS call T=17 prefix=0 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=3 prefix=17 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=5 prefix=20 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+CASE T=17 initial=nonzero pattern=directed
+PASS call T=17 prefix=0 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=3 prefix=17 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=5 prefix=20 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+CASE T=17 initial=nonzero pattern=cancellation
+PASS call T=17 prefix=0 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=3 prefix=17 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=5 prefix=20 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+CASE T=257 initial=zero pattern=directed
+PASS call T=257 prefix=0 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=3 prefix=257 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=5 prefix=260 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+CASE T=257 initial=zero pattern=cancellation
+PASS call T=257 prefix=0 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=3 prefix=257 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=5 prefix=260 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+CASE T=257 initial=nonzero pattern=directed
+PASS call T=257 prefix=0 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=3 prefix=257 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=5 prefix=260 pattern=48head_directed candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+CASE T=257 initial=nonzero pattern=cancellation
+PASS call T=257 prefix=0 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=3 prefix=257 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS call T=5 prefix=260 pattern=ordered_cancellation candidate=1 fallback=0 compiledSG=32 deviceWG=1024 kernelWG=1024 private_known=1 private=0 spill_known=1 spill=5056 reason=candidate_submission_attempted
+PASS empty_device full_state_fnv=16105743530105570629 candidate_calls=0 norm_calls=0
+PASS call T=5 prefix=0 pattern=48head_directed candidate=0 fallback=1 compiledSG=0 deviceWG=0 kernelWG=0 private_known=0 private=0 spill_known=0 spill=0 reason=diagnostic_pre_submit_denial
+PASS complete candidate-specific synthetic GPU differential; no model/full-lifecycle/performance qualification

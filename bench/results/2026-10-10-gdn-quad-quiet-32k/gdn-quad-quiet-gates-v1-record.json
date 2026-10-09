@@ -1,0 +1,630 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "scope": "Requalified short diagnostic plus two fresh counterbalanced >=32768 quiet synthetic component service processes; no model/full-lifecycle/default-selector or kernel-only timing",
+  "source_head": "fdf4b3c52a68f8d925afb3a6519be4ce0b74156f",
+  "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010",
+  "build": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/build-sycl-gdn-quad-quiet-v1",
+  "source_pins": {
+    "sycl/src/prefill/kernels.dp.cpp": "af16f3d89dc0ef154b89800c278a78959ca0f7de0d59e90c7bc16e998f9968be",
+    "sycl/include/strata/prefill/gdn_variant.hpp": "044dfc92139d77e4cb3a1ddbf644339cad64a8155b052f691575cc1ccd818bf7",
+    "sycl/CMakeLists.txt": "ce0a6264b8afb008abab3840e4f22fd652cb371483f2273e4e73e01a5df81ee7",
+    "sycl/src/prefill/gdn_quad_parity.cpp": "fcb81990212bf95bf5d3bb9defe44972ee6d0c930ae6d5f443165e4bd6161a4d",
+    "sycl/tools/gdn-quad-pipeline/README.md": "a25bd124bb2d2d8ea0f016a533c5c772e0ab6acf669cc7910f5bd466aa665266",
+    "sycl/include/dpct/device.hpp": "adbcbd0ac45995348e37ac3f5ca42d9f3d4b0555031aeb1781a1e2166a74ed52",
+    "sycl/include/strata/sycl_error.hpp": "4b64f82b0805e9a113077ea7abc57d18044bff7240d8fe956abe651eb4f90ce4"
+  },
+  "controller_sha256": "320e5f39c8140b9612828d632107adda49e7387cc87f68bcdada47d05e454e58",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "started_utc": "2026-10-09T23:41:35.663671+00:00",
+  "deadline_seconds": 1800,
+  "text_budget_bytes": 100663296,
+  "limits": {
+    "AS_each_bytes": 68719476736,
+    "RSS_owned_poll_bytes": 12884901888,
+    "CPU_each_seconds": [
+      900,
+      901
+    ],
+    "FSIZE_each_bytes": 67108864,
+    "NOFILE": 512,
+    "CORE_bytes": 0
+  },
+  "commands": [
+    {
+      "label": "host-contract",
+      "argv": [
+        "/usr/bin/strace",
+        "--kill-on-exit",
+        "-f",
+        "-yy",
+        "-e",
+        "trace=open,openat,openat2,ioctl",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-quad-quiet-gates-v1/host-contract.trace",
+        "/usr/bin/python3",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/tools/debug-run.py",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/build-sycl-gdn-quad-quiet-v1/gdn_quad_parity",
+        "--host-only"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010",
+      "wall_seconds": 60,
+      "expected_exit_code": 0,
+      "owner": {
+        "pid": 3259134,
+        "ppid": 3259084,
+        "start_ticks": 27897522
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.6950799209880643,
+      "stdout_sha256": "08a9d33724185bf99a73b478374f5d3e12c5cd3b5e127193a6c99335082febaa",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "host-fail-stop",
+      "argv": [
+        "/usr/bin/strace",
+        "--kill-on-exit",
+        "-f",
+        "-yy",
+        "-e",
+        "trace=open,openat,openat2,ioctl",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-quad-quiet-gates-v1/host-fail-stop.trace",
+        "/usr/bin/python3",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/tools/debug-run.py",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/build-sycl-gdn-quad-quiet-v1/gdn_quad_parity",
+        "--host-fail-stop-probe"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010",
+      "wall_seconds": 60,
+      "expected_exit_code": 2,
+      "owner": {
+        "pid": 3259181,
+        "ppid": 3259084,
+        "start_ticks": 27897591
+      },
+      "exit_code": 2,
+      "elapsed_seconds": 0.3637263599666767,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "b5d012cca8da65ffa2520949ad46ee00565c5c896fab2a4450fc059ac35fbfe3"
+    },
+    {
+      "label": "timing-invalid-length",
+      "argv": [
+        "/usr/bin/strace",
+        "--kill-on-exit",
+        "-f",
+        "-yy",
+        "-e",
+        "trace=open,openat,openat2,ioctl",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-quad-quiet-gates-v1/timing-invalid-length.trace",
+        "/usr/bin/python3",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/tools/debug-run.py",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/build-sycl-gdn-quad-quiet-v1/gdn_quad_parity",
+        "--timing-prefix",
+        "32767",
+        "--chunk",
+        "2048",
+        "--order",
+        "legacy-first",
+        "--samples",
+        "1"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010",
+      "wall_seconds": 60,
+      "expected_exit_code": 1,
+      "owner": {
+        "pid": 3259197,
+        "ppid": 3259084,
+        "start_ticks": 27897628
+      },
+      "exit_code": 1,
+      "elapsed_seconds": 0.3671201000106521,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "29a5de8e8b330847395a0a4af98c4419c2a4c5b1b124932f74b9d0824e61fb2f"
+    },
+    {
+      "label": "timing-dirty-environment",
+      "argv": [
+        "/usr/bin/strace",
+        "--kill-on-exit",
+        "-f",
+        "-yy",
+        "-e",
+        "trace=open,openat,openat2,ioctl",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-quad-quiet-gates-v1/timing-dirty-environment.trace",
+        "/usr/bin/python3",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/tools/debug-run.py",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/build-sycl-gdn-quad-quiet-v1/gdn_quad_parity",
+        "--timing-prefix",
+        "32768",
+        "--chunk",
+        "2048",
+        "--order",
+        "legacy-first",
+        "--samples",
+        "1"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010",
+      "wall_seconds": 60,
+      "expected_exit_code": 1,
+      "owner": {
+        "pid": 3259215,
+        "ppid": 3259084,
+        "start_ticks": 27897665
+      },
+      "exit_code": 1,
+      "elapsed_seconds": 0.35801962699042633,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "3737d063086eedeaddb419686c9481898600d6a31d3d1f93bfc73cd880480cbf"
+    },
+    {
+      "label": "gpu-short",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/tools/debug-run.py",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/build-sycl-gdn-quad-quiet-v1/gdn_quad_parity"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010",
+      "wall_seconds": 240,
+      "expected_exit_code": 0,
+      "owner": {
+        "pid": 3259231,
+        "ppid": 3259084,
+        "start_ticks": 27897701
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 1.6673796349787153,
+      "stdout_sha256": "b3f552795e55d69a2ee60c262d6cad0f85881fb78e13fa76971938e738f6417c",
+      "stderr_sha256": "23484a014eba5c475b76a1dc230ea83707106cedf02979526c668272b9dea766"
+    },
+    {
+      "label": "quiet-legacy-first",
+      "argv": [
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/build-sycl-gdn-quad-quiet-v1/gdn_quad_parity",
+        "--timing-prefix",
+        "32768",
+        "--chunk",
+        "2048",
+        "--order",
+        "legacy-first",
+        "--samples",
+        "5"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010",
+      "wall_seconds": 600,
+      "expected_exit_code": 0,
+      "owner": {
+        "pid": 3259430,
+        "ppid": 3259084,
+        "start_ticks": 27897868
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 64.121726796031,
+      "stdout_sha256": "a1a5244b741a0a4afb91cd786a71eba9b9a5e5d6fc7ab461d0c2a381fc0d7744",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "quiet-quad-first",
+      "argv": [
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/build-sycl-gdn-quad-quiet-v1/gdn_quad_parity",
+        "--timing-prefix",
+        "32768",
+        "--chunk",
+        "2048",
+        "--order",
+        "quad-first",
+        "--samples",
+        "5"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010",
+      "wall_seconds": 600,
+      "expected_exit_code": 0,
+      "owner": {
+        "pid": 3263179,
+        "ppid": 3259084,
+        "start_ticks": 27904281
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 64.14187514304649,
+      "stdout_sha256": "7dad09e3d1e281b796fe941b93434e011f2e0b969b2462f74154f37c01c82a5c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "kernel-journal",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--since",
+        "2026-10-09T23:41:35.663671+00:00",
+        "--no-pager"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010",
+      "wall_seconds": 30,
+      "expected_exit_code": 0,
+      "owner": {
+        "pid": 3266739,
+        "ppid": 3259084,
+        "start_ticks": 27910695
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.35485930397408083,
+      "stdout_sha256": "25313e7acad49f70c947050a09b813cd7724001a959dcf75d98c25357b092dcc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "owners": {
+    "3259134": {
+      "pid": 3259134,
+      "ppid": 3259084,
+      "start_ticks": 27897522
+    },
+    "3259181": {
+      "pid": 3259181,
+      "ppid": 3259084,
+      "start_ticks": 27897591
+    },
+    "3259197": {
+      "pid": 3259197,
+      "ppid": 3259084,
+      "start_ticks": 27897628
+    },
+    "3259215": {
+      "pid": 3259215,
+      "ppid": 3259084,
+      "start_ticks": 27897665
+    },
+    "3259231": {
+      "pid": 3259231,
+      "ppid": 3259084,
+      "start_ticks": 27897701
+    },
+    "3259430": {
+      "pid": 3259430,
+      "ppid": 3259084,
+      "start_ticks": 27897868
+    },
+    "3263179": {
+      "pid": 3263179,
+      "ppid": 3259084,
+      "start_ticks": 27904281
+    },
+    "3266739": {
+      "pid": 3266739,
+      "ppid": 3259084,
+      "start_ticks": 27910695
+    }
+  },
+  "cleanup": [],
+  "survivors": [],
+  "gpu_executed": true,
+  "model_opened": false,
+  "adopted": false,
+  "performance_eligible": false,
+  "full_lifecycle_passed": false,
+  "baseline_receipt_sha256": "b812f9df5186681f31d3a82c1fa7c07b7f73e5c16cb4ea7232c0e0c62edcd833",
+  "baseline_compile_commands_sha256": "9676aba0fea22772a671c152c9655f98dfe5bff650f22aa8054b0cd45c6fff52",
+  "prior_build_failure_receipt_sha256": "a7ddabec6b7a5be0981f06d543f9f4c232c6597d08dd561730ee1a9370115992",
+  "qualification_receipt_sha256": "4deae224f4c7586f198bc01945c32825782bbb5e9d6231fee542975bffb33e12",
+  "binary_sha256": "10b937575ef90f2cb47a3e0545718bd01ae8886f8e338d4ae86eb35934d80cd7",
+  "independent_lifetime_review_sha256": "4febfe77133f5a8b92f05639245ad053add3a307b2649dfa7f9e3a595af2acac",
+  "elapsed_seconds": 132.71715711802244,
+  "environment": {
+    "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+    "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+    "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+    "ONEAPI_ROOT": "/opt/intel/oneapi",
+    "CMAKE_PREFIX_PATH": "/opt/intel/oneapi/tbb/2023.1/env/..:/opt/intel/oneapi/pti/1.1/lib/cmake/pti:/opt/intel/oneapi/mkl/2026.1/lib/cmake:/opt/intel/oneapi/ipp/2026.0/lib/cmake/ipp:/opt/intel/oneapi/dpl/2022.13/lib/cmake/oneDPL:/opt/intel/oneapi/dnnl/2026.0/lib/cmake:/opt/intel/oneapi/compiler/2026.1:/opt/intel/oneapi/ccl/2022.1/lib/cmake/oneCCL",
+    "PKG_CONFIG_PATH": "/opt/intel/oneapi/vtune/2026.4/include/pkgconfig/lib64:/opt/intel/oneapi/tbb/2023.1/env/../lib/pkgconfig:/opt/intel/oneapi/mpi/2021.18/lib/pkgconfig:/opt/intel/oneapi/mkl/2026.1/lib/pkgconfig:/opt/intel/oneapi/ippcp/2026.0/lib/pkgconfig:/opt/intel/oneapi/dpl/2022.13/lib/pkgconfig:/opt/intel/oneapi/dnnl/2026.0/lib/pkgconfig:/opt/intel/oneapi/compiler/2026.1/lib/pkgconfig:/opt/intel/oneapi/ccl/2022.1/lib/pkgconfig/",
+    "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+    "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+    "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "EnableDirectSubmission": "0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "STRATA_GDN_QUAD": "0",
+    "STRATA_GDN_KEYHEAD": "0",
+    "STRATA_GDN_KEYHEAD_TUNED": "0",
+    "STRATA_GDN_PIPELINE": "1",
+    "ZEL_ENABLE_LOADER_LOGGING": "1",
+    "ZEL_LOADER_LOG_CONSOLE": "1",
+    "ZEL_LOADER_LOGGING_LEVEL": "trace",
+    "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+    "ZE_ENABLE_VALIDATION_LAYER": "1",
+    "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+    "UR_LOG_LOADER": "level:debug;flush:debug;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:debug;flush:debug;output:stderr",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+    "STRATA_TRACE": "1",
+    "UR_ENABLE_LAYERS": "UR_LAYER_TRACING"
+  },
+  "debug_runner_sha256": "d13a56955124b10b866e2f44dfe78ff60918744f423ea003c8ae9bd1d58a9213",
+  "recover_environment_helper_sha256": "2f90005f79d2309747d917cff51dc53d8ee6192d68cb1feca074f84af8b0796c",
+  "runtime_pins": {
+    "/opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9": {
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9.0.0",
+      "sha256": "d769a71f2c71530e59a5ba22831ec5a82edcde718076d2663772255498c8e053"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0": {
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0.12.0",
+      "sha256": "5338c03524f6d3fdd7d6067e5a3f84315e36e11fe1f526d5bbd02d0c88f82a32"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0": {
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "sha256": "bfdc0f26bf88bd0bccd66fc25302a4b22559f8fe30e499be18529be3ed610e60"
+    },
+    "/usr/lib/x86_64-linux-gnu/libze_loader.so.1": {
+      "realpath": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+      "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363"
+    },
+    "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1": {
+      "realpath": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+      "sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c"
+    }
+  },
+  "active_stage": null,
+  "peak_owned_rss_bytes": 428503040,
+  "host_probes": [
+    {
+      "mode": "--host-only",
+      "observed_exit_code": 0,
+      "trace_sha256": "89e0f7d7841de29d434ae2e5a3b5709c4bc6f1f8f021253d3a710b67fea4f975",
+      "trace_bytes": 144655,
+      "no_GPU_device_open_observed": true,
+      "no_unwind_marker": true,
+      "source_queue_API_not_called": true
+    },
+    {
+      "mode": "--host-fail-stop-probe",
+      "observed_exit_code": 2,
+      "trace_sha256": "8324e13e31e6b10082bde14153cdbe11cbb6f9b8e4ff4ec410f04c0f372fde1b",
+      "trace_bytes": 144659,
+      "no_GPU_device_open_observed": true,
+      "no_unwind_marker": true,
+      "source_queue_API_not_called": true
+    }
+  ],
+  "timing_negative_probes": [
+    {
+      "label": "timing-invalid-length",
+      "exit_code": 1,
+      "no_device_open_observed": true,
+      "trace_sha256": "ab052d6b2ce4df663f235d9a7b5fe4a7e250808d380df770c45d4f4d06234fb5"
+    },
+    {
+      "label": "timing-dirty-environment",
+      "exit_code": 1,
+      "no_device_open_observed": true,
+      "trace_sha256": "c871e226cf9649965a5c2479a0d68ea779ca8d7e7938c89ff818c418e90891b6"
+    }
+  ],
+  "active_gpu_stage": null,
+  "cases": 24,
+  "positive_candidate_calls": 72,
+  "forced_denial_explicit_fallback_calls": 1,
+  "full_state_and_active_FP32_FP16_bitwise": true,
+  "outer_and_unused_capacity_guards": true,
+  "compiled_SG32_observed": true,
+  "synthetic_only": true,
+  "quiet_environment": {
+    "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+    "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+    "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+    "ONEAPI_ROOT": "/opt/intel/oneapi",
+    "CMAKE_PREFIX_PATH": "/opt/intel/oneapi/tbb/2023.1/env/..:/opt/intel/oneapi/pti/1.1/lib/cmake/pti:/opt/intel/oneapi/mkl/2026.1/lib/cmake:/opt/intel/oneapi/ipp/2026.0/lib/cmake/ipp:/opt/intel/oneapi/dpl/2022.13/lib/cmake/oneDPL:/opt/intel/oneapi/dnnl/2026.0/lib/cmake:/opt/intel/oneapi/compiler/2026.1:/opt/intel/oneapi/ccl/2022.1/lib/cmake/oneCCL",
+    "PKG_CONFIG_PATH": "/opt/intel/oneapi/vtune/2026.4/include/pkgconfig/lib64:/opt/intel/oneapi/tbb/2023.1/env/../lib/pkgconfig:/opt/intel/oneapi/mpi/2021.18/lib/pkgconfig:/opt/intel/oneapi/mkl/2026.1/lib/pkgconfig:/opt/intel/oneapi/ippcp/2026.0/lib/pkgconfig:/opt/intel/oneapi/dpl/2022.13/lib/pkgconfig:/opt/intel/oneapi/dnnl/2026.0/lib/pkgconfig:/opt/intel/oneapi/compiler/2026.1/lib/pkgconfig:/opt/intel/oneapi/ccl/2022.1/lib/pkgconfig/",
+    "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+    "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+    "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "EnableDirectSubmission": "0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "STRATA_GDN_QUAD": "0",
+    "STRATA_GDN_KEYHEAD": "0",
+    "STRATA_GDN_KEYHEAD_TUNED": "0",
+    "STRATA_GDN_PIPELINE": "1"
+  },
+  "quiet_component_samples": [
+    {
+      "starting_order": "legacy-first",
+      "individual_pairs": [
+        {
+          "pair": 1,
+          "order": "legacy-first",
+          "legacy_seconds": 0.081186841,
+          "quad_seconds": 0.139437259,
+          "quad_over_legacy": 1.717485953173126
+        },
+        {
+          "pair": 2,
+          "order": "quad-first",
+          "legacy_seconds": 0.057821897,
+          "quad_seconds": 0.166400252,
+          "quad_over_legacy": 2.8778068626838724
+        },
+        {
+          "pair": 3,
+          "order": "legacy-first",
+          "legacy_seconds": 0.081608627,
+          "quad_seconds": 0.139602827,
+          "quad_over_legacy": 1.7106381044739303
+        },
+        {
+          "pair": 4,
+          "order": "quad-first",
+          "legacy_seconds": 0.057930356,
+          "quad_seconds": 0.167044809,
+          "quad_over_legacy": 2.883545355737154
+        },
+        {
+          "pair": 5,
+          "order": "legacy-first",
+          "legacy_seconds": 0.081839136,
+          "quad_seconds": 0.139295026,
+          "quad_over_legacy": 1.7020588536027552
+        }
+      ],
+      "median_quad_over_legacy": 1.717485953173126,
+      "repeat_digests": [
+        "df831868a37d0545",
+        "00f5954c743f5800",
+        "35338fde7ba09a31",
+        "2e5ef19bdf4418c1"
+      ],
+      "quad_last_chunk_resources": [
+        {
+          "private_known": "1",
+          "private": "0",
+          "spill_known": "1",
+          "spill": "5056"
+        },
+        {
+          "private_known": "1",
+          "private": "0",
+          "spill_known": "1",
+          "spill": "5056"
+        },
+        {
+          "private_known": "1",
+          "private": "0",
+          "spill_known": "1",
+          "spill": "5056"
+        },
+        {
+          "private_known": "1",
+          "private": "0",
+          "spill_known": "1",
+          "spill": "5056"
+        },
+        {
+          "private_known": "1",
+          "private": "0",
+          "spill_known": "1",
+          "spill": "5056"
+        },
+        {
+          "private_known": "1",
+          "private": "0",
+          "spill_known": "1",
+          "spill": "5056"
+        },
+        {
+          "private_known": "1",
+          "private": "0",
+          "spill_known": "1",
+          "spill": "5056"
+        }
+      ]
+    },
+    {
+      "starting_order": "quad-first",
+      "individual_pairs": [
+        {
+          "pair": 1,
+          "order": "quad-first",
+          "legacy_seconds": 0.057868278,
+          "quad_seconds": 0.168640082,
+          "quad_over_legacy": 2.9142059834578107
+        },
+        {
+          "pair": 2,
+          "order": "legacy-first",
+          "legacy_seconds": 0.083166398,
+          "quad_seconds": 0.140036725,
+          "quad_over_legacy": 1.6838137561278053
+        },
+        {
+          "pair": 3,
+          "order": "quad-first",
+          "legacy_seconds": 0.057840957,
+          "quad_seconds": 0.171248929,
+          "quad_over_legacy": 2.9606863005395985
+        },
+        {
+          "pair": 4,
+          "order": "legacy-first",
+          "legacy_seconds": 0.082634409,
+          "quad_seconds": 0.138424442,
+          "quad_over_legacy": 1.6751428814599496
+        },
+        {
+          "pair": 5,
+          "order": "quad-first",
+          "legacy_seconds": 0.05783381,
+          "quad_seconds": 0.166946945,
+          "quad_over_legacy": 2.8866668995177736
+        }
+      ],
+      "median_quad_over_legacy": 2.8866668995177736,
+      "repeat_digests": [
+        "df831868a37d0545",
+        "00f5954c743f5800",
+        "35338fde7ba09a31",
+        "2e5ef19bdf4418c1"
+      ],
+      "quad_last_chunk_resources": [
+        {
+          "private_known": "1",
+          "private": "0",
+          "spill_known": "1",
+          "spill": "5056"
+        },
+        {
+          "private_known": "1",
+          "private": "0",
+          "spill_known": "1",
+          "spill": "5056"
+        },
+        {
+          "private_known": "1",
+          "private": "0",
+          "spill_known": "1",
+          "spill": "5056"
+        },
+        {
+          "private_known": "1",
+          "private": "0",
+          "spill_known": "1",
+          "spill": "5056"
+        },
+        {
+          "private_known": "1",
+          "private": "0",
+          "spill_known": "1",
+          "spill": "5056"
+        },
+        {
+          "private_known": "1",
+          "private": "0",
+          "spill_known": "1",
+          "spill": "5056"
+        },
+        {
+          "private_known": "1",
+          "private": "0",
+          "spill_known": "1",
+          "spill": "5056"
+        }
+      ]
+    }
+  ],
+  "visible_kernel_gpu_entries": [],
+  "component_timing_validated": true,
+  "component_definition": "host steady recurrence/norm completion service sum, per-chunk admission included; transfers/checks excluded; interleaved matching chunks",
+  "exit_pin_gate_passed": true,
+  "finished_utc": "2026-10-09T23:43:48.380519+00:00"
+}
