@@ -1,0 +1,61 @@
+{
+  "owner": "/root",
+  "reviewed_utc": "2026-10-09T21:05:12.500807+00:00",
+  "scope": "One new standalone CPU qualification substrate and longprompt collector admission; all prior failure/consumer fixtures untouched",
+  "root_cpu_receipts": {
+    "long-prompt-reference-rules-cpu-validation-v1": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/long-prompt-reference-rules-cpu-validation-v1/record.json",
+      "sha256": "6ad0c044946ffcb77071ae4f9f203448dd89e54dea2f5d675ee3271fd65717df",
+      "passed": true,
+      "active": false,
+      "elapsed_seconds": 0.10300723102409393,
+      "cleanup": [],
+      "survivors": []
+    },
+    "long-prompt-reference-cpu-preflight-v1": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/long-prompt-reference-cpu-preflight-v1/record.json",
+      "sha256": "fe55dd547d351e5a8487e5422b7a1d099a6abd0c481bcc121cdee0cc8fe73033",
+      "passed": false,
+      "active": false,
+      "elapsed_seconds": 0.4543267189874314,
+      "cleanup": [],
+      "survivors": []
+    },
+    "native-role-plan-host-cpu-validation-v1": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-role-plan-host-cpu-validation-v1/record.json",
+      "sha256": "aa75a19110984c01b77fdaa19768949b5a05bedf425f812ec0268e0f78a3a201",
+      "passed": true,
+      "active": false,
+      "elapsed_seconds": 5.056784724991303,
+      "cleanup": [],
+      "survivors": []
+    }
+  },
+  "source_commits": {
+    "role": "c8cc86ae33d1c5f64971ae926dbf38b73827139c",
+    "collector": "7c3013831ce928399f022c6ee6894529bc922420"
+  },
+  "retention": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-role-plan-host-cpu-validation-v1",
+      "byte_budget": 8388608,
+      "consumer": "First shared-role reader qualification and next fullnativeCPUharness source admission",
+      "review_point": "After full native harness actual payload reader validation; keep source-generated fixture until replacement checked"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/build-native-role-plan-host-v1",
+      "byte_budget": 33554432,
+      "consumer": "Current sanitizer fixture / exact compiled closure for next host harness",
+      "review_point": "After full native host build validates shared reader; retire superseded binary/objects by hashmanifest"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/long-prompt-reference-cpu-preflight-v1",
+      "byte_budget": 1048576,
+      "consumer": "Unresolved v1 source-provenance admission failure; v2 fix comparison",
+      "review_point": "After v2 CPUpreflight succeeds retain one compact original failure and retire duplicate traces"
+    }
+  ],
+  "no_artifact_cleanup_performed": true,
+  "original_C_D_r5_status_unchanged": true,
+  "all_model_and_current_reference_captures_untouched": true
+}

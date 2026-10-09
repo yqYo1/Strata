@@ -1,0 +1,28 @@
+Round 69 — baseline `--pool-tasks` compatibility and long-prompt reference arm
+
+Scope
+
+Read-only source and receipt audit. No model, inference, server, GPU, build, test, project-module import, cleanup or Git operation. Source reviewed in `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010` (HEAD `66aaec3a66ad9ed12e6d042cffe743c47e364432`) and existing saved pool-task worktree/build receipts. The qualified integrated baseline is pinned by `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-upstream-v0141-integrated-full256k-diagnostic-r2/record.json` (SHA-256 `168d7896cbe3a60dfc604a08b6fe310f16d823a17d13d8a013260bfc7facb0a4`).
+
+Finding: baseline 869 cannot take `--pool-tasks`
+
+The baseline binary SHA-256 is `86972697ecb1903750d202f8be29a7a1da351eb3415678c3e3b6af790804d1c8`; its recorded build receipt is `20589f1486dedaf825052e95560155acd30e6017b7967e2df476b5dd41989c43`. It predates the CLI wiring and has no `--pool-tasks` parser option. Do not add that argument to a reference command: the baseline will reject it. The source review in `pool-tasks-implementation.txt` records the sole candidate-source change as `sycl/src/program/generate.cpp`: CLI option definition/parser and passing its value to the existing `ExpertPool` fifth argument. The constructor already defaulted that argument to zero.
+
+`--pool-tasks` only sets the number of row-range jobs used by batched GU/Down phases: `phase_tasks(rows)` returns the automatic `3 * (workers + host-participant)` when zero, otherwise `min(rows, requested)`. `drain()` maps each claimed task to a contiguous interval in the concatenated expert-row range (`g0 = mrows * i / mtasks`, `g1 = mrows * (i+1) / mtasks`) and calls the same row kernel for that interval. The source change does not alter the kernel, reduction order within a row, synchronization, cache, KV or prefill. It does alter job granularity and scheduling. Thus the option's absence prevents a matched task-count/performance control on 869; it does not invalidate 869 as a separate numerical reference.
+
+Existing evidence and its limits
+
+- The opt-in build receipt `/pool-tasks-v0141-private-build-v1/record.json` passed a full CPU engine rebuild at source commit `a2c884672d00ea57e55a44862868ce273ab2b171`; binary SHA-256 `482076f28721b6918fc30b781e3a9d24061a6595debb07f5ccc32f479a18de51`. The record says GPU not tested and not adopted.
+- `/pool-tasks-cli-validation-v1/record.json` passed actual CLI acceptance/rejection cases on that binary, but explicitly did no model inference or math qualification. `/pool-tasks-existing-cpu-parity-v2/record.json` passed the existing synthetic Q4_0 partition test, not IQ3_S inference or long-context qualification.
+- The owned `--pool-tasks 6` 32K diagnostic r1 (`record.json` SHA-256 `116604dfa1206464b668c9e391d6a66f09350fe35abec7071402a1621641323f`) passed exact math gates against independent baseline 869: four fresh 32,768-token A/B/A/B requests, output/logprob/head and all 66 live-state parts. It is correctness-only, not speed or full-capacity qualification.
+- The later cache-route diagnostic r6 uses a different binary (SHA `194968fa045e1afe5805d2cc87ebb4c3c06acf23c86fd9e780655e2ca428b972`) but inherits the same 32K task-6 math success; preserve r6 at its existing path and status. Neither r1 nor r6 establishes full-context behavior for the task-6 binary.
+
+Smallest trustworthy new long-prompt reference arm
+
+Use the existing qualified 869 binary as the independent numerical oracle for the exact newly frozen long prompts, with no `--pool-tasks` argument. Capture a fresh baseline result per prompt before the candidate; match model/pack, prompt IDs, context/KV profile, request format and generation settings. Compare candidate token IDs, logprob rows, head vector and live state to that prompt-specific baseline. Label this arm numerical-reference-only: its default automatic partition is not a task-6 timing control. Existing 32K results do not replace a reference for new prompt IDs.
+
+For any task-count timing question, use the already-built 482 binary for both settings (`--pool-tasks 0` and `--pool-tasks 6`) under one fixed quiet environment and the exact same prompt. That is a within-binary scheduling comparison, not an independent kernel oracle; keep the separate 869 numerical reference. Do not rebuild or modify 869 just to add the option, and do not use the 482 binary as its own correctness reference. If the task is specifically to qualify the task-6 long-prompt candidate rather than measure the option, the minimal sequence is new-prompt baseline 869 first, then candidate 482 task-6 with per-prompt gates; omit a separate task-0 timing arm.
+
+Artifact boundaries
+
+This report does not authorize or record a new inference run. Use a unique output path for any next run. The existing r1/r6 and full-context r2 receipts remain unchanged; keep the r6 original SHA and `math_gate_passed=true`. Diagnostic timing remains excluded from performance claims. No artifact cleanup was performed.

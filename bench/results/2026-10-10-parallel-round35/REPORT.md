@@ -5,7 +5,7 @@ had returned and no research agent was active. Root resumed multiple independent
 read-only researchers and continued its own execution. The recurring assignment,
 shared-history, separate implementation and root-only testing rules are now in
 AGENTS.md. Returned reports remain files with exact hashes; they are reviewed
-before adoption. Registryv45 has139 completed Luna reports and preserves prior
+before adoption. Registryv46 has149 completed Luna reports and preserves prior
 immutable snapshots in the Git history.
 
 ## Division of work
@@ -21,12 +21,12 @@ fixtures and pure byte-framing helper. Root owns every actual execution and
 serializes builds, tests, inference, profiling and cleanup with the measurement
 lock. Research does not hold up independent main work.
 
-| Latest registryv45 assignment | Model | Scope | State at snapshot |
+| Latest registryv46 assignment | Model | Scope | State at snapshot |
 | --- | --- | --- | --- |
-| Long-prompt reference researcher | gpt-6-luna | New36004/37462 inputs and matched baseline/controller gates | R68 running, read only |
-| CPU service researcher | gpt-6-luna | Page residency/assembly/phase calibration, primary references | R68 completed, read only |
-| Separate implementation | gpt-6.1-sol | v1/v2 helper and adversarial fixture source | Completed; root8/17fakefixtures passed |
-| Main agent | Root | Actual host input preparation and evidence/controller work | Owner-qualified long inputs; no live GPU process |
+| Production/native researcher | gpt-6-luna | Standalone full-native CPU profiler admission | R74 running, read only |
+| Reference researcher | gpt-6-luna | Actual869 compiled input closure / clean later HEAD | R73 running, read only |
+| Separate implementation | gpt-6.1-sol | v2 collector provenance and protected setup | Running, source only; root owns tests |
+| Main agent | Root | Shared host role owner and actual collector CPU admission | 22 sanitizer groups +9 rules tests passed; collector preflight rejected before GPU |
 
 Every assignment receives the past-report directory and reviewed decisions.
 R45 found no distinct external exact-weight AVX2 NT1/2 candidate; this is a
@@ -403,3 +403,48 @@ Its read-only research scope does not revoke the user's authorization for root
 implementation and measurements. The long-prompt controller reviewer is pending
 at this snapshot; root confirms currentv6 hardcodes32768 and old reference
 outputs, so new prompts require new matched references before candidate claims.
+
+## Live-state audit and continued parallel implementation
+
+At the latest user status check, the Sol implementation was active and the two
+R70 Luna researchers had completed. Root did not count their completed reports
+as active agents. It reviewed the returned findings, assigned distinct R71–73
+source/external scopes and continued implementation and actual serialized CPU
+qualification. The next live snapshot has two Luna assignments and one separate
+Sol assignment active; registryv46 records the snapshot time, scopes, shared
+history, original source/report hashes and root testing ownership. AGENTS.md
+now explicitly requires live-state checks rather than relying on stale registry
+status. R74 is a profiler admission question for the new standalone CPU substrate,
+not another generic VTune recommendation.
+
+Root implemented NativeRolePlan at c8cc86ae, retaining the production GGUF reader
+and independent per-role source extents. A separate C++20 host target with ASan
+and UBSan passed22 independent synthetic fixture groups in5.057s, normal exits
+and no cleanup/survivors. The two-file compile closure has no -fsycl; direct
+NEEDED imports have no SYCL/UR/LevelZero/MKL library. This does not establish
+runtime device-API absence. Source ownership/lifetime review and normalized
+shard fixtures are separate from native layout parsing, actual weights/pool
+service, production checker integration, model math and performance; those
+remain pending. The production readers and engine are unchanged.
+
+The separate Sol's v1 collector/rules are preserved at7c301383. Root's9 pure
+rule fixtures passed in.103s. The actual CPUpreflight failed in.454s with
+baseline clean exact HEAD: originalbuild1eb89482, currentcleanHEAD23268953.
+This occurred before model/GPU/output launch and remains a failed receipt.
+Root also found the nonexistent SYCL native_expert override in the source pin
+list. Solv2 must prove unchanged actual resolved build inputs, preserve the
+original869 binary/argv and fix protected finalization; the baseline worktree
+is not rewritten and provenance is not waived. No new prompt-specific model
+reference has been created.
+
+R68's unsupported --pool-tasks6 baseline suggestion is corrected by R69/root:
+869 is an independent numerical-only oracle using originalargv. R69's proposed
+borrowing change is not adopted: keep the qualified --no-prefill-borrow setting
+in a first quota comparison and treat borrowing separately. R70 identifies
+the NT1 IQ4NL reduction-order difference; no exactness or speed follows from
+matching integer products. R71 finds existing public pool phase counters
+sufficient and limits captured exposure to NT1/2. R73 identifies shared-validator
+integration points and the remaining check-then-reopen gap, without claiming
+production mapping ownership has been unified. Compact evidence, original
+receipts and report hashes are archived here; raw necessary consumers have
+owners, byte budgets and review points in root-parallel-review-v46.json.

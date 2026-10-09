@@ -1,0 +1,201 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "scope": "Thin standalone shared GGUF reader/role owner with synthetic bytes; ASan+UBSan; no actual model, native kernels, pool or production engine",
+  "controller_sha256": "d03ccf08b46516f5556c3adf229aa19572ed71a78323415ca0efd6ce20634653",
+  "pins": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/include/strata/artifact/native_role_plan.hpp": "640c04ae3a1f3bd4cad46b9d3ec6103e140dde78933dd0978412745aa19f38b5",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/src/artifact/native_role_plan.cpp": "905ba9607eec70e44544396bcc48ac600c87951e3676d256ab6dd22a15e1a9a4",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/sycl/tools/native-role-plan-host/CMakeLists.txt": "5f98b2204c9e8aa05e95f3086d04f848d3c8d8b102a211b9f6e1ff23d8df76a9",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/sycl/tools/native-role-plan-host/native_role_plan_fixture.cpp": "f0214a531ec08914627c176b573398b911f453f7662c57dbe064fa88ffcb6b78",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/include/strata/artifact/gguf_reader.hpp": "fc8453a95677e797c8fb1198bfb47d715b73a53446d39a29920c372180ca5ee0",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/include/strata/artifact/gguf_split.hpp": "6280aabf7e4b77447caa5d046d7b7389c82af08b2d02c004897d0d4826a09760",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/include/strata/kernels/cpu/expert_layout.hpp": "dbc6cf5b91367e571ad9cb3be4e4cd851159544186c859a7cd374632a8a63fcd",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/include/strata/kernels/cpu/native_expert.hpp": "87ff3c6d2aedf0d1985b002480086113426d79d284d1e7ac9cf9f01e55f7163e",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/include/strata/kernels/cpu/expert.hpp": "d46e04f4b7a2d34746d31cffa561e2415afd79b5a0eef25df792be98cee0021a"
+  },
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "ASAN_OPTIONS": "detect_leaks=1:abort_on_error=1",
+    "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+  },
+  "started_utc": "2026-10-09T20:57:16.007602+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "commands": [
+    {
+      "label": "compiler",
+      "argv": [
+        "/usr/bin/g++",
+        "--version"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010",
+      "AS_limit_enabled": true,
+      "active": false,
+      "owner": {
+        "pid": 2600369,
+        "start_ticks": 26911512
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.052957691019400954
+    },
+    {
+      "label": "configure",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/sycl/tools/native-role-plan-host",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/build-native-role-plan-host-v1",
+        "-G",
+        "Ninja",
+        "-DCMAKE_CXX_COMPILER=/usr/bin/g++",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DCMAKE_CXX_FLAGS=-fsanitize=address,undefined -fno-omit-frame-pointer",
+        "-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=address,undefined"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010",
+      "AS_limit_enabled": true,
+      "active": false,
+      "owner": {
+        "pid": 2600373,
+        "start_ticks": 26911517
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.4049776089959778
+    },
+    {
+      "label": "build",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/build-native-role-plan-host-v1",
+        "--parallel",
+        "1"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010",
+      "AS_limit_enabled": true,
+      "active": false,
+      "owner": {
+        "pid": 2600429,
+        "start_ticks": 26911558
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 4.481479152978864
+    },
+    {
+      "label": "dynamic-imports",
+      "argv": [
+        "/usr/bin/readelf",
+        "-d",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/build-native-role-plan-host-v1/native_role_plan_fixture"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010",
+      "AS_limit_enabled": true,
+      "active": false,
+      "owner": {
+        "pid": 2600661,
+        "start_ticks": 26912006
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.05359938903711736
+    },
+    {
+      "label": "fixtures",
+      "argv": [
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/build-native-role-plan-host-v1/native_role_plan_fixture",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-role-plan-host-cpu-validation-v1/synthetic-gguf"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010",
+      "AS_limit_enabled": false,
+      "active": false,
+      "owner": {
+        "pid": 2600663,
+        "start_ticks": 26912011
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.05259510700125247
+    }
+  ],
+  "cleanup": [],
+  "survivors": [],
+  "peak_rss_bytes": 16633856,
+  "wall_deadline_seconds": 180,
+  "text_budget_bytes": 8388608,
+  "gpu_work_submitted": false,
+  "model_opened": false,
+  "inference_run": false,
+  "actual_weight_service_measured": false,
+  "production_checker_integrated": false,
+  "performance_eligible": false,
+  "full_lifecycle_passed": false,
+  "adopted": false,
+  "limits": {
+    "CPU_soft_seconds": 120,
+    "CPU_hard_seconds": 121,
+    "AS_build_bytes": 4294967296,
+    "AS_fixture_bytes": null,
+    "AS_fixture_reason": "ASan reserves a large shadow address space; RSS bounded separately",
+    "RSS_poll_bytes": 1073741824,
+    "FSIZE_bytes": 8388608,
+    "CORE_bytes": 0,
+    "NOFILE": 128
+  },
+  "fixture_groups": 22,
+  "binary": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/build-native-role-plan-host-v1/native_role_plan_fixture",
+    "bytes": 4062768,
+    "sha256": "ac1e13cb4a7783c4728ed1e0fe2aee6560a5530a5c96b25eb5b2081c35924c9b"
+  },
+  "compile_commands": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/build-native-role-plan-host-v1/compile_commands.json",
+    "sha256": "3ebb66107707f30bdd190354160781875290e868a602912fa67489a3ffc5200f"
+  },
+  "static_import_scope": "readelf direct NEEDED only; no runtime device-API tripwire claim",
+  "logs": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-role-plan-host-cpu-validation-v1/compiler.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-role-plan-host-cpu-validation-v1/configure.stdout": {
+      "bytes": 472,
+      "sha256": "4fbeb520e15186706915acb8da4a7b0f86026d287fe5381e6867b889985d54bb"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-role-plan-host-cpu-validation-v1/dynamic-imports.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-role-plan-host-cpu-validation-v1/fixtures.stdout": {
+      "bytes": 45,
+      "sha256": "d9f37b8308c160e0189d75e89c52ed2ea007ee740dc05139df1b4438e3bba74d"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-role-plan-host-cpu-validation-v1/build.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-role-plan-host-cpu-validation-v1/configure.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-role-plan-host-cpu-validation-v1/dynamic-imports.stdout": {
+      "bytes": 1929,
+      "sha256": "b6f7cfda2b7ca8a8a816e46d174a570c0dd715cd0c5fbd51822faa6bfb15241c"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-role-plan-host-cpu-validation-v1/compiler.stdout": {
+      "bytes": 246,
+      "sha256": "59d1cbef41d4ae78d5063d525b7aa13d18dc0493ea00537efc19b2ee398cb5a8"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-role-plan-host-cpu-validation-v1/build.stdout": {
+      "bytes": 391,
+      "sha256": "f0c5a369454f74d89cb2aa8c21ce8773cde944738c67c03dfdb6694d7793b6da"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-role-plan-host-cpu-validation-v1/fixtures.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "elapsed_seconds": 5.056784724991303,
+  "finished_utc": "2026-10-09T20:57:21.064491+00:00"
+}

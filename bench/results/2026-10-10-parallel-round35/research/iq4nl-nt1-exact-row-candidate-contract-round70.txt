@@ -1,0 +1,75 @@
+# Round 70 — IQ4_NL Down NT1: exact-row comparison and candidate boundary
+
+## Finding
+
+On the frozen source, the current Down IQ4_NL NT1 route is ggml's `vec_dot`, not Strata's AVX2 row kernel. The existing Strata AVX2 `nt=1` IQ4_NL row computes the same integer dot and fp16-scale product, but it does **not** preserve ggml's float accumulation/reduction order. It is therefore not source-level bit-equivalent to the production NT1 ggml result, and forcing it with the generic `STRATA_IQ_MT_MIN=1` is not an exactness-preserving dispatch change. A prompt can still pass numerically in many cases, but source inspection does not establish bit identity or LP/state equality.
+
+A narrow exact-row formulation is possible: preserve the pinned ggml AVX2 pair-of-block accumulators, order, and final reduction exactly while removing only the per-row indirect `vec_dot` call. This is a candidate for exactness testing, not a performance recommendation. It largely reproduces ggml work; without actual service evidence that per-row indirect-call/setup overhead matters, the defensible present choice is **no adopted NT1 kernel change**. The prior generic two-row and GCC-object alternatives remain rejected, not revived.
+
+## Pins and evidence boundary
+
+Frozen engine root: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010`, commit `66aaec3a66ad9ed12e6d042cffe743c47e364432`. Latest registry: `report-registry-v45.json`, SHA-256 `e9a5139e5a3c5fedd2aa063ec94b5fcc6238f96593ed67203477a5667873e3e9`, docs branch `a912e622`.
+
+Relevant production source SHA-256 pins:
+
+- `src/kernels/cpu/native_expert.cpp`: `767f02f33aca4da9fabbe113c50ce1d7cb2aa9f25b4234df59224ec46a5985cd`
+- `src/kernels/cpu/iq_avx2.cpp`: `58e9c7e49b8158f698cda59aff06c245f62aaecd33556b1e88e234140890fded`
+- `src/kernels/cpu/iq_avx2_rows.inl`: `94da07f977ef20288d65747604f9c3a7a87cba3237f36d216dbb624bddd9be23`
+- `src/kernels/cpu/expert_layout.cpp`: `9826d86cc83330d447d62a62189dc782f549ffb815c7bdccd2ad4f4582672f4d`
+- `sycl/CMakeLists.txt`: `d8fc6c99428f96021c0d986bcad77680dbe66f4fa6a64490166ff58f24e274b1`
+
+Pinned ggml tree `/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned`, commit `3cf03257f219afbe7334045ff7c6a06ac68c627d`. Relevant SHA-256 pins: `ggml/src/ggml-cpu/arch/x86/quants.c` `3c489fdc77e3ab484a5f188bff9c60c0e9483c951ed65c1a562a04c249d5628e`; `ggml/src/ggml-cpu/ggml-cpu.c` `7b451e6528cec3bc27bfd812a1314859c92d22a00c2db371d543cde5b7d5ca94`; `ggml/src/ggml-quants.c` `07143d7068936ae46b3c528b2f3d4bbb666e74d88992165716174d243573965d`.
+
+Read-only source review only. No model weights, tests, binaries, syntax checks, builds, inference, measurements, profiling, device/GPU query, cleanup or Git operation were performed. No speed or model-output claim is made.
+
+## Active geometry and production selection
+
+The actual MoE geometry is `H=2560`, `FF=640`. For IQ4_NL Down, the row dot reduces 640 values: 20 blocks of 32 values. Each IQ4_NL block is 18 bytes (2-byte fp16 `d` plus 16 nibble bytes), so the row is 360 bytes and one expert's 2,560 Down rows occupy 921,600 bytes. The active IQ3_S pack has Down type 20 in 39 layers and type 42 in 9 layers. The old distinct A+B route exposure records 46,254 Down20 NT1 jobs and 118,410,240 logical rows; R63's eligible union has 8,115 Down20 NT1 IDs. These counts prioritize a later service measurement only; they are not timings or independent holdout evidence.
+
+`native_down_dispatch(type,nt)` in `native_expert.cpp:196-214` has a default `STRATA_IQ_MT_MIN=2` and `STRATA_NO_IQ4NL` disable. It selects `Iq4nl256` for Down type 20 only when `cpu_avx2_ok()`, `nt >= mt_min`, and IQ4NL is not disabled; otherwise it returns `Ggml`. Thus NT1 defaults to ggml. `native_down_rows` (`:217+`) calls the format trait's `vec_dot` once per output row and token in the ggml branch; the ggml CPU trait table maps `GGML_TYPE_IQ4_NL` to `ggml_vec_dot_iq4_nl_q8_0` and Q8_0 activation (`ggml-cpu.c:380-383`).
+
+`STRATA_IQ_MT_MIN=1` would route all eligible NT1 IQ4_NL Down calls into the already-existing AVX2 row routine, but it is a broad GU/Down threshold knob and was already exercised as a dispatch profile in the wrapper receipt. It is not proof that this path is exact against ggml, and this report does not recommend repeating it as a new optimization. `STRATA_NO_IQ4NL` selects the current ggml fallback; it is not an optimization candidate.
+
+The AVX2 files are compiled with `-mavx2 -mfma -mf16c`; `cpu_avx2_ok()` verifies AVX, OSXSAVE/YMM state and AVX2 before dispatch. The optional AVX-VNNI copy is compile-time gated and reached only when `cpu_avxvnni_ok()` is true; the Ryzen 5 5600X host recorded in prior receipts has AVX2/FMA/F16C and no AVX-VNNI, so its applicable Strata variant would be the plain AVX2 one. A machine-specific flag or old host receipt is not a substitute for recording the actual build/CPU for any future service arm.
+
+## Arithmetic comparison: same packed dot, different float sequence
+
+Both implementations use the same 16-entry `kvalues_iq4nl` table (`-127,-104,-83,-65,-49,-35,-22,-10,1,13,25,38,53,69,89,113`), unpack low/high nibbles in the same 0–31 logical order, multiply decoded IQ4_NL values by signed Q8_0 activation bytes, sum the integer products, multiply the integer result by the two decoded fp16 scales, and accumulate in float. `native_quant_h()` chooses the ggml trait's Q8_0 quantizer (the special Strata AVX2 quantizer is only for Q8_K), so a controlled comparison can pass the same exact Q8_0 activation bytes to both row functions. Keep quantization outside the row-dot comparison and report it as its own cost.
+
+The mismatch is the row's block reduction:
+
+- Pinned ggml's AVX2 body (`quants.c:3920-3964`) processes blocks in adjacent pairs. It has `accum1` for even blocks and `accum2` for odd blocks. Each pair applies `_mm256_fmadd_ps(scale_product, integer_partial, that_parity_accumulator)`. For `FF=640`, 20 blocks make ten such pairs, with no scalar tail. It then computes `hsum_float_8(_mm256_add_ps(accum1,accum2))`.
+- Strata's `iq4nl_rows<NT>` (`iq_avx2_rows.inl:238-272`) maintains one `accf[t]` and applies an FMA for each consecutive block in order 0..19, then calls Strata `hsum8`. Its horizontal reduction tree also differs: Strata first adds low/high halves and uses two `hadd`; ggml first adds high/low halves then uses `movehl` and `movshdup` adds.
+
+Each scale product and integer partial can agree, but sequential accumulation versus two interleaved accumulators changes float rounding, and the final horizontal-add tree changes it again. The FMA is explicit in both, so this is not simply an FMA-versus-multiply distinction. The source comment in Strata already calls out that “only the order of the float additions differs.” Consequently, equal mathematical sums do not establish bitwise equal outputs. Tiny per-row differences may propagate through the residual and future router/head calculations; LP, top-token, route, or saved prefill-state comparisons can then diverge. Do not state that the NT1 AVX2 branch is exact based only on identical integer products, a parity pass against itself, or a tolerance comparison.
+
+GGML's non-AVX2 branches and scalar odd-block tail exist for other build/geometry cases, but a future exact candidate for this specific 640-wide host geometry must bind to the same production ggml trait/build branch and preserve the model's 20-block case. Reimplementing only its math while compiling under different reassociation/FMA settings is not a source-level guarantee; the direct byte-output comparison against the pinned reference remains mandatory.
+
+## Minimal exact-row candidate, if service evidence justifies one
+
+The narrowest exactness-preserving formulation is a separate NT1-only IQ4_NL helper in Strata's AVX2 translation unit that reproduces the pinned ggml AVX2 row operation, then loops rows without the indirect trait-function call. It must preserve:
+
+1. Q4 nibble-to-`kvalues_iq4nl` table order; the same signed multiply-dot integer grouping (`maddubs` then `madd_epi16`) and no changed/saturated codebook semantics.
+2. For each pair of 32-value blocks, the same separate even/odd 8-lane accumulators, scale product rounding, explicit FMA inputs and pair iteration order as ggml.
+3. The exact final `accum1 + accum2` vector add and ggml's `hsum_float_8` reduction tree; for this geometry process all 10 pairs and no synthetic scalar tail.
+4. The same `NativeFmt` row extent, Q8_0 activation bytes and row output writes as `native_down_rows`; no format change, altered activation quantization, skipped row, approximate table, or route loss.
+
+A per-expert call may process rows in a loop over this helper, replacing only the internal ggml function-pointer call for Down20 NT1. Put it behind a dedicated, Down20/NT1-only test dispatch or direct harness entry; do not enable the broad `STRATA_IQ_MT_MIN=1` policy as a proxy. First verify bitwise equality for every row over independent synthetic edge/random blocks and exact Q8_0 fixtures, then on selected actual pack extents. Compare to the direct pinned ggml trait call, not to a copy of the new helper. If bytes differ, stop; do not lower the model LP/state gate. If outputs are bit-identical, component service timing must still show the actual operation faster on disjoint actual-weight train/holdout cohorts before keeping the experiment. Since this duplicates ggml's optimized reduction and integer code, it has no established benefit other than possibly removing per-row indirect call/setup overhead; inspect generated code and measure that narrow hypothesis before proposing it as a speed candidate.
+
+The historical two-output-row IQ4_NL/component work is already rejected: R7 reports four engine-decode medians regressed by median `+0.70%`; the compiler/object substitution was 3–35% slower in its recorded 5600X comparison. Neither is an exact NT1 candidate. A two-row tile also changes register scheduling and must not be revived under a new name absent a different source mechanism and new service evidence.
+
+## Feature/build and wrapper-receipt cautions
+
+The optional `STRATA_IQ2S_GCC` CMake object is a separately compiled GCC copy of `iq_avx2.cpp` with names remapped, including `iq4nl256_down_rows_v=iq4nl256_down_rows_v_gcc` and `iq4nl256_down_rows=iq4nl256_down_rows_gcc` (`sycl/CMakeLists.txt:212-232`). It can exist for side-by-side diagnostic invocation, but the production `native_down_dispatch` calls the normal symbol and does not automatically switch to the GCC alias. The option name is IQ2S-focused even though the object includes IQ4_NL; do not mistake the alias for active production dispatch or a new arithmetic. It also does not fix the reduction-order difference. Its relevant performance comparison is already screened by R7; no repeat is proposed.
+
+The matched `native_wrapper_parity` receipt at `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-wrapper-matched-cpu-matrix-v1/record.json`, SHA-256 `60616fc79ce250e574383e83943cbcaa9564cb1cdab6e81e6a737eefb030dfdc`, represents 864 CPU-only wrapper cases with legal synthetic weights/activations across dispatch profiles. Its record says model not opened, GPU not executed, performance ineligible, runtime not tested, and the original C math gate false. It is not an actual-weight service calibration, not a proof that IQ4NL NT1 Strata equals ggml, and not the `native_expert_parity` GPU/device harness. It is useful as wrapper/fixture correctness evidence only within its declared synthetic scope.
+
+## Future validation boundary; no run authorized or performed here
+
+For an exactness/service study, use R46/R48's actual-payload protocol, not one repeatedly hot expert. R63 has enough distinct routed Down20/NT1 IDs for the 192 train + 192 disjoint holdout minimum, subject to extent, identity and correctness gates. For each selected ID resolve its three GGUF role tensors through the validated reader; Down is an independently located role span, not `gguf_offset + expert*blob_bytes`. Hash/bind source extents and assemble one logical expert outside timing. Keep ambient mapping/first-touch/load faults separate under R68's no-cache-reset residency plan. The row calibration times the prepared Down bytes and same production Q8_0 activations; no copy, hashing, residency sampling, row correctness check or output checksum belongs inside the timed interval.
+
+If the exact candidate survives parity, retain per-ID and per-round samples for 25 full shuffled rounds on train and 25 on disjoint holdout, with >64 MiB of phase bytes in each cell and the R46 1 GiB full-blob cohort cap. Preserve CPU/compiler/flags/ISA dispatch, affinity, environment, exact H=2560/FF=640, actual blob/activation hashes, each output equality and each round. Keep assembly, wrapper service and any later pool arm separate. This would establish a component-level service difference only. Root's new 36,004/37,462 prompt inputs have no new matching model reference yet; no end-to-end result, 256K lifecycle result, live speed or adoption follows from this source audit.
+
+## References
+
+The governing primary references are the pinned ggml sources listed above and Strata's own frozen implementation. Prior reports: R7 `decode-pool-phase-critical-path-round7.txt` (historical rejected two-row/GCC comparison), R33 `native-nt1-ggml-hotpath-round33.txt` (ggml hot-path/selection boundary), R46 `native-expert-service-calibration-protocol-round46.txt` (future service sample contract), R48 `native-service-expert-payload-adapter-contract-round48.txt` (three independent GGUF roles and assembly), R59 `actual-small-nt-format-kernel-priority-round59.txt` (Down20 NT1 exposure priority), R63 `native-service-route-cohort-sufficiency-round63.txt` (eligible cohort counts), and R68 `native-service-page-residency-calibration-round68.txt` (no-reset residency boundary). No new external optimization method was found useful enough to justify repeating a screened proposal.

@@ -1,0 +1,55 @@
+Round 70 — host-only NativeRolePlan / CPU pool build and link contract
+
+Scope and pins
+
+Read-only CMake, source, compile-command and prior-report review. No compiler, configure, link, binary inspection/execution, import, test, model access, runtime/device query, profiling, cleanup or Git action. Frozen source worktree: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010`, HEAD `66aaec3a66ad9ed12e6d042cffe743c47e364432`. The currently prepared shared helper is not present in this frozen source, so its eventual source/API and link behavior remain unverified. This report complements R61’s role-plan data contract and R65’s runtime-admission limits; it does not repeat those designs.
+
+Recommended standalone target
+
+Configure a small, separate host CMake project from a directory outside `sycl/`. Do not include the SYCL project as a subdirectory and do not reuse `strata_kernels_cpu` from the SYCL build: `sycl/CMakeLists.txt` applies global `-fsycl`, SYCL link options, and device splitting at directory scope. A separate project should create a static target (for example `strata_native_role_cpu`) from exactly these production translation units plus the new helper and the small harness:
+
+- New shared helper `src/artifact/native_role_plan.cpp` (planned; absent in inspected P66 source).
+- `src/kernels/cpu/expert_layout.cpp` — production layout parser/extent geometry.
+- `src/kernels/cpu/native_expert.cpp` — production `NativeFmt`, activation quantization, CPU resolver and ggml CPU initialization.
+- `src/kernels/cpu/pool.cpp` — production `ExpertPool` and batched phases.
+- `src/kernels/cpu/expert.cpp` and `src/kernels/cpu/q2_avx2.cpp` — production CPU expert/quantization implementations.
+- `sycl/src/kernels/cpu/iq_avx2.cpp` — SYCL source-resolution wrapper; it includes the shared root IQ AVX2 implementation and owns the optional GCC alias dispatch.
+- `src/kernels/cpu/iq_avx512.cpp`, `src/kernels/cpu/kq_avx2.cpp`, and `src/kernels/cpu/kq_avx1.cpp` — the dispatch targets referenced by the shared resolver.
+- The new harness TU. It calls only the helper, layout/format APIs, and production pool interface; it must not link engine entry points.
+
+This is the full host CPU closure corresponding to the inspected `strata_kernels_cpu` source lists (`_cpu` plus `_cpu_native`), not a guessed micro-subset that may leave resolver references unresolved. The source-resolution rule matters: in this frozen tree, `iq_avx2.cpp` is the SYCL-side wrapper; using root `src/kernels/cpu/iq_avx2.cpp` directly would omit that wrapper behavior. Do not include `src/core/expert_source.cpp`, `sycl/src/core/gguf_expert_source.cpp`, the GPU `strata_core`/`strata_kernels`, or `strata_engine`; they pull in engine/device surfaces. `GgufFile` is header-only and the selected helper’s parser path has no ggml dependency.
+
+The standalone project should set C++20, Release/O3, warnings and the same precision policy as the compared production build, but omit every SYCL option (`-fsycl`, `-fsycl-default-sub-group-size`, `-fsycl-device-code-split`, backend link options). Include only the source worktree’s `include/`, `third_party/ggml/`, and the pinned ggml public/private include paths needed by these CPU TUs. The helper needs `include/strata/artifact/gguf_reader.hpp`; it should consume `ExpertLayout` rather than duplicate `NativeFmt` or parse through an engine header.
+
+GGML pin and target closure
+
+Use the existing pinned ggml checkout at `/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned` (CMake subdirectory `ggml/`), revision `3cf03257f219afbe7334045ff7c6a06ac68c627d`. The SYCL build receipt records this `ggml_commit`; `sycl/CMakeLists.txt` uses the same FetchContent tag if no checkout is supplied. Add that `ggml/` subdirectory with the CPU-only settings from the inspected CMake: static libraries, `GGML_CUDA=OFF`, `GGML_SYCL=OFF`, `GGML_OPENMP=OFF`, `GGML_BACKEND_DL=OFF`, tests/examples off, and `GGML_NATIVE=ON` for this fixed-host comparison. Link the harness only to `strata_native_role_cpu`, `ggml-cpu`, `ggml-base`, and `Threads::Threads` (through CMake targets so transitive platform dependencies are retained). `native_expert.cpp` calls `ggml_cpu_init`; the format/layout path uses ggml type/row traits. The GGUF reader itself maps/parses files with OS APIs and does not require a ggml reader library.
+
+Definitions and per-source ISA policy
+
+Match the current H build configuration inspected in `build-sycl-cache-route-pairs-v1/CMakeCache.txt`: Release, `STRATA_NATIVE_EXPERTS=ON`, `STRATA_IQ2S_GCC=OFF`, `GGML_NATIVE=ON`; current production compiler is Intel `icpx` 2026.1 and its compile commands use `-fp-model=precise`. Preserve `STRATA_VERSION` only if the new code consumes it. `STRATA_SYCL_SAMPLER_FP64` is not a CPU-role dependency. Do not add global `-march=native` to Strata’s CPU sources; the existing CPU source list applies ISA flags per translation unit. GGML’s own `GGML_NATIVE=ON` emits `-march=native` (and, in this observed build, `-fno-associative-math`) on ggml sources; record this separately from Strata’s flags.
+
+Per-source flags from the frozen `sycl/CMakeLists.txt`:
+
+- `expert.cpp`, `iq_avx512.cpp`: `-mavx512f -mavx512bw -mavx512vl -mavx512dq -mavx512vnni -mavx512vbmi -mf16c -mfma`.
+- `q2_avx2.cpp`, the SYCL-side `iq_avx2.cpp`, `kq_avx2.cpp`: `-mavx2 -mfma -mf16c`.
+- `kq_avx1.cpp`: `-mavx`.
+- `pool.cpp`, `expert_layout.cpp`, `native_expert.cpp`, and the host helper: no forced ISA flags.
+
+The configured CMake runs a compiler-only `-mavx2 -mfma -mf16c` probe for AVX-VNNI intrinsics. The source property assigns `STRATA_AVXVNNI=1/0` to the root `iq_avx2.cpp` path and `q2_avx2.cpp`, but `strata_resolve()` selects `sycl/src/kernels/cpu/iq_avx2.cpp`, the forwarding wrapper. Its entry in the frozen `compile_commands.json` has no `STRATA_AVXVNNI` definition, while `q2_avx2.cpp` does (`=1` in this H build). The wrapper-included root implementation defaults an undefined macro to zero. Therefore the observed H build has Q2 AVX-VNNI enabled and IQ AVX-VNNI disabled. This is a concrete source-property/source-resolution mismatch. To reproduce the frozen H binary, set q2 to the probe result and IQ to zero. If a future CMake change intentionally applies the probe result to the wrapper, record it as a behavior/build change and qualify separately; do not silently assume it matches the frozen build. Do not infer support from the host CPU name. Keep AVX-512 flags confined to the two guarded files and preserve runtime feature checks; do not run AVX-512 code merely because it was compiled.
+
+Keep `STRATA_IQ2S_GCC=OFF` for the minimal host target, matching the observed production configuration. If a later comparison requires it ON, copy the existing CMake custom-object arrangement rather than compiling a second ordinary `iq_avx2.cpp`: the GCC object macro-renames the IQ256 implementation symbols (`iq256_gu_rows`, variants, IQ4NL down, Q8K quantizer, and related functions), while the SYCL wrapper defines the public wrapper to route only IQ2_S NT=2/4 to the GCC aliases. Omitting that alias protocol risks duplicate definitions or bypassing the selected implementation. Record compiler identity and both values of `STRATA_AVXVNNI` / `STRATA_IQ2S_GCC` in every build receipt.
+
+Threading, imports, and source/runtime boundary
+
+Use `find_package(Threads REQUIRED)` and link `Threads::Threads`; `ExpertPool` creates and joins `std::thread` workers. The direct ggml calls visible in the included production sources are `ggml_cpu_init`, `ggml_get_type_traits_cpu`, `ggml_blck_size`, and `ggml_row_size`; expect those from `ggml-cpu`/`ggml-base` transitively. This is a source-level symbol contract only, not the final dynamic import list; the latter must be checked after the actual host link. Leave `strata::core::release_gpu_fn()` unregistered and do not link any engine code: the pool’s stall-abort calls reach an inline nullable callback that is a no-op when unregistered. This is source evidence only. It does not prove the loader or a dependency will never initialize SYCL/UR/Level Zero or query a device.
+
+A host-only source/link claim requires the standalone target to omit SYCL/DPCT headers and targets, `strata_core`, `strata_kernels`, `strata_engine`, `ze_loader`, oneMKL/SYCL flags, and callbacks that register GPU waits. Keep the executable’s import/dependency audit and runtime tripwire as separate admission checks before claiming runtime no-queue/no-device-query. A source-only CMake recipe cannot prove those properties, and `gpu_executed=false` or successful CPU output alone is insufficient (R65). Pool faults can still call the release callback; for this standalone harness the callback must remain null, and timeout handling must fail closed rather than invoking an engine callback.
+
+Source pins used
+
+Frozen `sycl/CMakeLists.txt`: SHA-256 `d8fc6c99428f96021c0d986bcad77680dbe66f4fa6a64490166ff58f24e274b1`. Key sources: `expert_layout.cpp` `9826d86cc83330d447d62a62189dc782f549ffb815c7bdccd2ad4f4582672f4d`; `native_expert.cpp` `767f02f33aca4da9fabbe113c50ce1d7cb2aa9f25b4234df59224ec46a5985cd`; `pool.cpp` `5ef33f7d2020a17ecc36ad15796c6f021b4b5963998aa964dccedbe733637368`; `expert.cpp` `31b7b1a628e29f22bce3e39e69efe968298066d08383d8292c9ea1279bee1cfe`; `q2_avx2.cpp` `ce92563c3706433845aaee48488ccac2d817eb69ae1a48d44ea3a3be1c093dec`; SYCL IQ AVX2 wrapper `e09ab783f50861207d70b65ee9393319475f2368a126f16dbc884a8765859e7a`; `iq_avx512.cpp` `539256cc7cba4cc7673ec5a3122737ddd485ec4d0947fd13acda6fbdbefe4f0d`; `kq_avx2.cpp` `4e8f29b049af758a8174ad82c966aefc92e9c531c14646d8edd8244bc4851639`; `kq_avx1.cpp` `3e7b6c1dcc4b2df972704c0d69da5703cf4adad2aff391a151c336c9ee060640`; GGUF header `fc8453a95677e797c8fb1198bfb47d715b73a53446d39a29920c372180ca5ee0`; nullable pool callback header `cf0376eb23e2fd43a062c1fb40d3ac7885ef8283975051af51034f3f7182d622`.
+
+Evidence boundary
+
+The existing R28 wrapper parity target links the CPU archive but has global SYCL flags and does not instantiate the production pool or role plan. The host target described here is a build contract, not a validated configure/link recipe; no resulting link closure, imported symbols, runtime behavior, actual GGUF, role copy, or pool result is established. Root’s later build and runtime admission must create those records with exact source/command/environment hashes and keep link evidence distinct from runtime no-device evidence.

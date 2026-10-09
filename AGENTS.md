@@ -61,6 +61,9 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   tests, model runs, profiling and cleanup with the shared measurement lock, including delegated code.
 - Commit returned reports and record each assignment's scope, model, status and report hash. Distinguish
   completed agents from active agents, and record the concrete dependency if the next investigation must wait.
+- Check live agent state when resuming work and after reviewing a returned batch. A saved report or a
+  registry entry marked running is not evidence that an agent is still active. Reassign reviewed researchers
+  to distinct new evidence gaps while continuing independent main work; record the actual snapshot time.
 
 ## Contributing a change or report
 
