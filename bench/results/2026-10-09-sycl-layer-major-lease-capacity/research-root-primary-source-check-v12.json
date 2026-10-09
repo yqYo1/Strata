@@ -1,0 +1,22 @@
+{
+  "scope": "Root checked R12 primary-source analogies after reports returned; no implementation or speed proof",
+  "checked_utc": "2026-10-09T12:58:30.518894+00:00",
+  "sources": [
+    {
+      "url": "https://github.com/sgl-project/sglang-jax/blob/main/docs/architecture/06-layers-and-attention.md#6521-epmoe--grouped-matrix-multiply",
+      "finding": "Grouped matmul handles differing expert group sizes on Pallas/TPU. This supports representing irregular token counts, not CPU nt-weighted row chunk efficacy."
+    },
+    {
+      "url": "https://github.com/ggml-org/llama.cpp/blob/master/ggml/src/ggml-cpu/ggml-cpu.c",
+      "finding": "ggml_threadpool_chunk_add uses atomic current_chunk. Dynamic claims already exist in Strata; no new scheduler justification."
+    },
+    {
+      "url": "https://github.com/intel/llvm/blob/sycl/sycl/doc/syclgraph/SYCLGraphUsageGuide.md#graph-owned-memory-allocations-for-temporary-memory",
+      "finding": "Captured async allocations follow graph lifetime and dependencies; async_free marks storage reusable rather than physically deallocating. No proof that this DPCT backend returns VRAM or that observed free counters have this origin."
+    }
+  ],
+  "local_cache_lease_review": "sycl/src/prefill/prefill.cpp:2460-2600: supported restore modes are snapshot and ram. RAM restores actual current residency from complete ArenaExpertSource, no normal D2H snapshot. CACHE_VERIFY intentionally adds D2H comparison in diagnostic only. Release fraction supports VMM partial physical shrink, ordinary cache requires full shrink. Future speed tests must remove payload verification and diagnostic logging; compare a half-release arm separately from full-release after capacity proof.",
+  "planned_timing_separation": "Logged correctness times excluded; GU/quant/Down telemetry reads existing host counters and packed submitted bytes are not measured DRAM traffic. No weighted scheduler until relevant measured imbalance.",
+  "adopted": false,
+  "gpu_tests_executed_by_researchers": false
+}
