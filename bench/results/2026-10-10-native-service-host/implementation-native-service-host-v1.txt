@@ -1,0 +1,50 @@
+Implementation: standalone actual-weight native CPU service host v1
+Date: 2026-10-10. SOURCE ONLY, UNEXECUTED.
+
+Assigned worktree /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010; root-supplied base HEAD c8cc86ae33d1c5f64971ae926dbf38b73827139c. No Git command/mutation/commit/push was performed. Only three new assigned source files and this report were written. Existing role-plan, fixtures, long-prompt collectors/rules/admission and prior receipts were not changed.
+
+Source SHA256:
+sycl/tools/native-service-host/CMakeLists.txt bc4f40ea2134c15954f3505ef2d79fefae07b70222bdb17af404771f28cf3664
+sycl/tools/native-service-host/native_service_host.cpp f4ce8e3d5c43f469533d79f25d2d183ff9d62eeaa4d8849368a97bf4f48bcd3a
+sycl/tools/native-service-host/README.md e19c8e7909b845a3617c1530824507da1ba3a6b417068f8884b5da30bb39b44b
+
+Read contracts: R70 native-role-plan-host-build-link-contract; R71 native-pool-actual-service-harness-seam; R64 native-service-activation-and-ffn-oracle-contract; R74 standalone-native-cpu-profiler-admission; R72 native-role-plan-source-ownership-review. Applicable worktree AGENTS was read. Its requests for builds/Git actions are superseded by this explicit source-only assignment; root owns execution. The user-provided retention instructions apply; the old worktree has no docs/ARTIFACT_RETENTION.md at that path. No measurement artifacts or cleanup were created/performed here. Shared registry-v46 identity is root supplied, not rewritten.
+
+Build closure
+
+Standalone CMake, no parent SYCL CMake or archive. Exact production translation units: native_role_plan.cpp, expert_layout.cpp, native_expert.cpp, pool.cpp, expert.cpp, q2_avx2.cpp, SYCL iq_avx2 forwarding wrapper, iq_avx512.cpp, kq_avx2.cpp and kq_avx1.cpp. Only ggml-cpu, ggml-base and Threads targets linked. STRATA_NATIVE_EXPERTS=1 is essential to prevent the layout TU's non-native fallback definitions; no made-up GGML feature macro is substituted. IntelLLVM C and C++ are required. Strata precise FP flag and per-TU ISA match R70; no global march/SYCL flag is admitted. AVX-VNNI compile probe assigns Q2 1/0; IQ wrapper explicitly zero; STRATA_IQ2S_GCC stays undefined. Pinned CPU-only static ggml checkout HEAD 3cf03257f219afbe7334045ff7c6a06ac68c627d checked at root's future configure. All named non-CPU backends, OpenMP, dynamic backend loading and tests/examples disabled. GGML_NATIVE=ON remains its separate host-native flag choice.
+
+The configure/link/import/no-device boundary is NOT yet qualified. Root must inspect compiler versions, actual compile commands (including cached/config-specific flags), clean ggml compiled-source hashes, linked dependencies and runtime no-device tripwire. A commit check alone is not a clean-source hash proof. No profiler is linked or started; R74 admission remains separate and conditional. No engine source or callback registration is linked. The harness verifies the production nullable GPU-release callback is null before work and after each pool call.
+
+Payload and bounded geometry
+
+Positional PACK_DIR PRIMARY_GGUF COHORT_TSV. Strict literal header layer TAB expert. Whole TSV <=8192 bytes, 1..96 unique decimal pairs, layer0..47/expert0..511. Root freezes actual cohort and pack/shard identities. Layout loads production48x512, NativeRolePlan validates all role extents then assembles selected owned [gate|up|down] blobs before timing, max aggregate1GiB. Extent rows bind source path/tensor, selected absolute offset, per-expert role bytes, full tensor bytes. Plan closes mappings after assembly. FNV blob/cohort identities are useful checksums, NOT SHA256. Root must freeze immutable files and supply cryptographic provenance separately. No payload was read by this agent.
+
+Exact H2560/FF640, GU18/21/22/23, Down20/42, meaningful act/h byte caps, row/up/down/blob consistency checked. Native plan provides checked geometry/extent arithmetic. Quant, FF and output buffers are aligned64; tokens have distinct finite deterministic FP32 x, distinct buffers and recorded formula. Tail canaries protect native act/h slots, FF/output arrays and ActQ; all output/FF elements must be finite. Missing writes start as NaN. ActQ meaningful q/scale/sum/hx and active optional bitplane fields are compared to the actual selected production quantizer; unused/padding fields are not treated as meaningful serialized data.
+
+Correctness and timing
+
+Down20 uses native_quant_h/native_down_rows. Down42 mirrors pool act_quant_any + q2_rows_any over blob+down_off with FF/64 blocks; it does not substitute native_down_rows42. Production input/Down20 quantization is checked byte-exact vs separately invoked pinned GGML from_float. Independent row GGML GU and Down20 NT1 outputs must be bitexact. NT2 and Q2 independent GGML comparisons record max absolute differences without invented tolerance. The Down characterization uses actual direct FF quantized through ggml, whereas Q2 actual route uses ActQ. NT1 GGML GU+Down20 gives the complete independent composition for that cell; NT2/Q2 full arithmetic equivalence is not certified.
+
+An initial untimed/reference run establishes finite outputs and independent checks; three warmups validate actual pool partition parity before five retained repeats. Every direct repeat and pool result must be byteexact to the same prepared-input direct reference. Each token checked separately. Quantized input bytes reverified after pool call. Same-wrapper pool parity is a partition oracle, not an independent arithmetic oracle. No NT1==NT2 requirement across different resolver paths.
+
+Input quant is separately timed. Direct GU, FFquant, Down and actual direct outer wall intervals; pool GU/Q/Down accumulator deltas and actual pool outer wall interval; no construction/assembly/allocation/hash/reference/check/printing in timed intervals. Direct outer is measured, not reconstructed from medians. Same finite loop: two sequential pool objects tasks0/6, fiveworkers+host, NT1/2, max384cells /3072poolcalls /1920samples. No concurrent pool diagnostic owners. Default actual task plan18GU/18Down; explicit6/6. Production host pin is restored by RAII after both pools are destroyed. CPU name/observed hostCPU/plannedworkers and post-warmup Linux per-thread OS allowed CPU lists recorded. OS lists bounded128threads/<16KiB perstatus; they are not a worker-index/TID association or CPU residency trace. Root reconciles placement externally. Existing pool60s stall-abort is unchanged; normal failures return1, but root must record watchdog signals as failures and apply a finite job deadline.
+
+CSV schema: META and ENV reproducible configuration; EXTENT/BLOB payload identities; PLACEMENT planned CPUs and observed allowed lists; TASK_PLAN effective phase tasks; ROUTE selected enum values (GGML=0,Kq256=1,Iq512=2,Iq256=3,Iq4nl256=4,Q2Avx2=5,Q2Avx512=6); SAMPLE full individual5repeats, layer/expert/GU/Down/NT/tasks/workers/repeat/inputQ/directGU/directQ/directDown/directouter/poolGU/poolQ/poolDown/poolouter/FNV/ggmlGUmaxabs/ggmlDownmaxabs/hostCPU. Each call emits named stderr DIAG and production pool.diag outside timing. RESULT/pass is only these defined correctness gates; no timing/adoption qualification. Output errors fail normal nonzero when detected.
+
+Root-only unexecuted recipe
+
+Set WROLE to assigned worktree; HOST_BUILD to a new isolated CPU-only build directory; PRIVATE_RUN to a new private result directory; PACK_DIR/PRIMARY_GGUF/COHORT_TSV to frozen owner-selected inputs.
+cmake -S "$WROLE/sycl/tools/native-service-host" -B "$HOST_BUILD" -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DSTRATA_ROOT="$WROLE" -DGGML_SOURCE_DIR=/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml
+cmake --build "$HOST_BUILD" --target native_service_host --parallel 6
+"$HOST_BUILD/native_service_host" "$PACK_DIR" "$PRIMARY_GGUF" "$COHORT_TSV" > "$PRIVATE_RUN/samples.csv" 2> "$PRIVATE_RUN/pool-diag.txt"
+
+Root serial sharedlock admission: verify source/ggml/compiler pins, CPU-only compiled/link closure and no-device tripwire; first invalid TSV/geometry and existing small synthetic role-plan cases, then controlled actual selected payload smoke. Verify retained5samples percell, warmup markers, phase/task selection, independentNT1/math/parity guards, poolclosure and affinity records. No agent fixture execution, configure, build, syntax/import check, timing, CPU/GPU/runtime query, profiling, model/tokenizer/payload access, cleanup or Git operation happened. No actual source API/link/build success is claimed.
+
+Owner budgets/retention
+
+Root names consumer and freezes actual route cohort before runs. Proposed stdout8MiB/stderr8MiB cap, finite wall/CPU/RSS/NOFILE/FSize supervision, selectedblob allowance1GiB plus pool/ggml overhead and virtual address space for full shard mappings. Those source limits are not an RSS guarantee. Retain compact extents/source hashes/all individual samples/correctness/exit/fault/placement evidence; raw profiling only if an explicit admitted R74 question requires it. Successful output/source consumers and review point recorded by root; no automatic deletion in harness.
+
+Limits
+
+Hot smallcohort, 3warmup+5repeats, not R46 minimumcohort/25round/holdout, not actual decode activation distribution, mixed callbacks/weightedrouter/sharedexpert, fullmodel/end-to-end, GPU overlap, DRAM traffic, worker-tail timing, or performance/adoption qualification. Actual independent NT2/Q2 numerical tolerance is not established. Pinned GGML and exact role extents plus checksum do not certify whole-model numerical correctness. Reference collectors v1/v2, C/D/r5 failures, original qualified869 and current physical/full lifecycle/adoption statuses unchanged.

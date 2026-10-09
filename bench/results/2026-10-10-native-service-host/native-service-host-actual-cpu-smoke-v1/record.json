@@ -1,0 +1,702 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "scope": "Traced controlled hot-cohort actual native CPU payload correctness smoke; no engine or GPU inference",
+  "controller_sha256": "89ecc510b74526e33a2266357adb07dd4015f9c811613431eeca0f07c2751aa4",
+  "build_receipt_sha256": "c8227c12ea5701da507bf87ed54d7a20e3b4286c50c75b01837e6409294ff92c",
+  "binary": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/build-native-service-host-v1/native_service_host",
+    "bytes": 3691912,
+    "sha256": "ade1ade63df665b55908fcb6cc0822d7f7769960088b180797fce7bc3817bc9a"
+  },
+  "input_pins": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-host-cpu-build-v1/record.json": "c8227c12ea5701da507bf87ed54d7a20e3b4286c50c75b01837e6409294ff92c",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/debugger/inferior.stderr": "3309c390f8e5f047321ca84bcdc6d182e9c13ca1b8db178c79a88b108e13ab3f",
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/conversions.json": "51df3cd6ffd0d38c2da8e2d3a95a604b4a96c20b06fc639a9bf477282a42b86a"
+  },
+  "model_identity": [
+    {
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "bytes": 54817524224,
+      "dev": 40,
+      "ino": 2640848,
+      "mtime_ns": 1791009083688077826,
+      "ctime_ns": 1791009083692077878
+    },
+    {
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf",
+      "bytes": 28800138432,
+      "dev": 40,
+      "ino": 2623800,
+      "mtime_ns": 1790924461554234294,
+      "ctime_ns": 1791008604221189761
+    }
+  ],
+  "whole_model_payload_hashed": false,
+  "cohort": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-host-actual-cpu-smoke-v1/cohort.tsv",
+    "sha256": "c3cdb527e2b8c862ec8fd24b74fad16d78c8e64f18b77cb5ca276b87fbd20b9b",
+    "selected": [
+      {
+        "layer": 0,
+        "expert": 7,
+        "GU": 18,
+        "Down": 20,
+        "route": {
+          "entries": 15,
+          "callback_pairs": 13,
+          "NT1": 11,
+          "NT2": 2,
+          "refused": 15
+        }
+      },
+      {
+        "layer": 0,
+        "expert": 15,
+        "GU": 18,
+        "Down": 20,
+        "route": {
+          "entries": 10,
+          "callback_pairs": 9,
+          "NT1": 8,
+          "NT2": 1,
+          "refused": 10
+        }
+      },
+      {
+        "layer": 12,
+        "expert": 7,
+        "GU": 18,
+        "Down": 42,
+        "route": {
+          "entries": 3,
+          "callback_pairs": 2,
+          "NT1": 1,
+          "NT2": 1,
+          "refused": 3
+        }
+      },
+      {
+        "layer": 12,
+        "expert": 10,
+        "GU": 18,
+        "Down": 42,
+        "route": {
+          "entries": 4,
+          "callback_pairs": 3,
+          "NT1": 2,
+          "NT2": 1,
+          "refused": 4
+        }
+      },
+      {
+        "layer": 17,
+        "expert": 0,
+        "GU": 21,
+        "Down": 20,
+        "route": {
+          "entries": 6,
+          "callback_pairs": 5,
+          "NT1": 4,
+          "NT2": 1,
+          "refused": 6
+        }
+      },
+      {
+        "layer": 17,
+        "expert": 16,
+        "GU": 21,
+        "Down": 20,
+        "route": {
+          "entries": 17,
+          "callback_pairs": 13,
+          "NT1": 9,
+          "NT2": 4,
+          "refused": 17
+        }
+      },
+      {
+        "layer": 21,
+        "expert": 11,
+        "GU": 21,
+        "Down": 42,
+        "route": {
+          "entries": 7,
+          "callback_pairs": 4,
+          "NT1": 1,
+          "NT2": 3,
+          "refused": 7
+        }
+      },
+      {
+        "layer": 21,
+        "expert": 17,
+        "GU": 21,
+        "Down": 42,
+        "route": {
+          "entries": 10,
+          "callback_pairs": 8,
+          "NT1": 6,
+          "NT2": 2,
+          "refused": 10
+        }
+      },
+      {
+        "layer": 2,
+        "expert": 16,
+        "GU": 22,
+        "Down": 20,
+        "route": {
+          "entries": 4,
+          "callback_pairs": 3,
+          "NT1": 2,
+          "NT2": 1,
+          "refused": 4
+        }
+      },
+      {
+        "layer": 2,
+        "expert": 20,
+        "GU": 22,
+        "Down": 20,
+        "route": {
+          "entries": 5,
+          "callback_pairs": 3,
+          "NT1": 1,
+          "NT2": 2,
+          "refused": 5
+        }
+      },
+      {
+        "layer": 1,
+        "expert": 6,
+        "GU": 22,
+        "Down": 42,
+        "route": {
+          "entries": 4,
+          "callback_pairs": 3,
+          "NT1": 2,
+          "NT2": 1,
+          "refused": 4
+        }
+      },
+      {
+        "layer": 1,
+        "expert": 9,
+        "GU": 22,
+        "Down": 42,
+        "route": {
+          "entries": 3,
+          "callback_pairs": 2,
+          "NT1": 1,
+          "NT2": 1,
+          "refused": 3
+        }
+      },
+      {
+        "layer": 47,
+        "expert": 2,
+        "GU": 23,
+        "Down": 20,
+        "route": {
+          "entries": 7,
+          "callback_pairs": 6,
+          "NT1": 5,
+          "NT2": 1,
+          "refused": 7
+        }
+      },
+      {
+        "layer": 47,
+        "expert": 9,
+        "GU": 23,
+        "Down": 20,
+        "route": {
+          "entries": 5,
+          "callback_pairs": 4,
+          "NT1": 3,
+          "NT2": 1,
+          "refused": 5
+        }
+      }
+    ],
+    "selection": "first two sorted eligible IDs per GU/Down cell with both nonresident NT1 and NT2 route exposure; never timing-selected",
+    "full_blob_bytes": 28467200
+  },
+  "argv": [
+    "/usr/bin/strace",
+    "-f",
+    "-yy",
+    "-s",
+    "512",
+    "-e",
+    "trace=open,openat,openat2,close,close_range,mmap,ioctl,execve",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-host-actual-cpu-smoke-v1/system-call-trace.txt",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/build-native-service-host-v1/native_service_host",
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+    "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-host-actual-cpu-smoke-v1/cohort.tsv"
+  ],
+  "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010",
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "LD_DEBUG": "libs"
+  },
+  "started_utc": "2026-10-09T21:29:35.830122+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "deadline_seconds": 180,
+  "text_budget_bytes": 16777216,
+  "limits": {
+    "AS_each_bytes": 103079215104,
+    "AS_reason": "full model mmap is virtual; selected blobs bounded separately",
+    "RSS_group_poll_bytes": 2147483648,
+    "CPU_each_soft_seconds": 120,
+    "CPU_each_hard_seconds": 121,
+    "FSIZE_each_bytes": 16777216,
+    "NOFILE": 256,
+    "CORE_bytes": 0
+  },
+  "peak_group_rss_bytes": 71794688,
+  "cleanup": [],
+  "survivors": [],
+  "gpu_work_submitted": false,
+  "inference_run": false,
+  "performance_eligible": false,
+  "adopted": false,
+  "full_lifecycle_passed": false,
+  "independent_NT2_Q2_arithmetic_certified": false,
+  "retained_trace": {
+    "owner": "/root",
+    "byte_budget": 16777216,
+    "consumer": "runtime no-device access and numerical failure diagnosis",
+    "review_point": "after compact syscall/numeric evidence is committed and actual untraced calibration starts"
+  },
+  "owner": {
+    "pid": 2730370,
+    "pgid": 2730370,
+    "start_ticks": 27105494
+  },
+  "exit_code": 0,
+  "device_path_mentions": [],
+  "device_runtime_library_mentions": [],
+  "observed_loader_initialization_objects": [
+    "/lib/x86_64-linux-gnu/libc.so.6",
+    "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+    "/lib/x86_64-linux-gnu/liblzma.so.5",
+    "/lib/x86_64-linux-gnu/libm.so.6",
+    "/lib/x86_64-linux-gnu/libstdc++.so.6",
+    "/lib/x86_64-linux-gnu/libunwind-ptrace.so.0",
+    "/lib/x86_64-linux-gnu/libunwind-x86_64.so.8",
+    "/lib/x86_64-linux-gnu/libunwind.so.8",
+    "/lib64/ld-linux-x86-64.so.2"
+  ],
+  "runtime_audit_scope": "strace followed exec-to-exit and all threads, decoded fd paths; no GPU device open/ioctl/runtime-library path; LD_DEBUG initialization object set captured; not an API interposition claim",
+  "actual_weight_service_measured": true,
+  "individual_samples": 280,
+  "selected_extent_sha256": [
+    {
+      "layer": 0,
+      "expert": 7,
+      "role": 0,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 1390882304,
+      "bytes": 627200,
+      "sha256": "ea0efdbe91cc30a8deb6c376865c6a0830973b976fc79c7a582b50927a073da7"
+    },
+    {
+      "layer": 0,
+      "expert": 7,
+      "role": 1,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 1715556864,
+      "bytes": 627200,
+      "sha256": "fc5c2ee0bf4ef3d4c57439a55a2151862b2be92c38b56cf26bdb2ad803b138dd"
+    },
+    {
+      "layer": 0,
+      "expert": 7,
+      "role": 2,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 920162304,
+      "bytes": 921600,
+      "sha256": "2072e46958755049a34ff7302feb5195e48f21bdab29a68521758eead50ea8f8"
+    },
+    {
+      "layer": 0,
+      "expert": 15,
+      "role": 0,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 1395899904,
+      "bytes": 627200,
+      "sha256": "5bacef717f585d7d49364b07319af8f89a1b451968d5be760a02ee933e0e6dd1"
+    },
+    {
+      "layer": 0,
+      "expert": 15,
+      "role": 1,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 1720574464,
+      "bytes": 627200,
+      "sha256": "529f0a54e24fdfe09e47c1743a25d782167526bcf15dcf639f472476b19bd58e"
+    },
+    {
+      "layer": 0,
+      "expert": 15,
+      "role": 2,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 927535104,
+      "bytes": 921600,
+      "sha256": "9172f56d916d92f350b31a87e990940207afffb5eef500e305437203d3206e22"
+    },
+    {
+      "layer": 12,
+      "expert": 7,
+      "role": 0,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 13706140544,
+      "bytes": 627200,
+      "sha256": "acc74ab1e0f2b5bbcd1a68ab808200c8edba433934a7766d6093e85e041a892a"
+    },
+    {
+      "layer": 12,
+      "expert": 7,
+      "role": 1,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 14031237504,
+      "bytes": 627200,
+      "sha256": "73ba635fc413d2a5005a188666b843c93429dbf93f9895d4815d21259a14ce1b"
+    },
+    {
+      "layer": 12,
+      "expert": 7,
+      "role": 2,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 13468124544,
+      "bytes": 460800,
+      "sha256": "1f0d1f3c553728e6ddc1d40c94884695eeb8024e7be4b89be3b980f9fda13c32"
+    },
+    {
+      "layer": 12,
+      "expert": 10,
+      "role": 0,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 13708022144,
+      "bytes": 627200,
+      "sha256": "4d6b4ec5bfb45e3378b6cacf4ef95c56615d8e1c94868568a1c6a1367f072e69"
+    },
+    {
+      "layer": 12,
+      "expert": 10,
+      "role": 1,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 14033119104,
+      "bytes": 627200,
+      "sha256": "1bd52560ccc19d44fcb3ccfebb846a41bd43751fca200ed7cdc122451750e189"
+    },
+    {
+      "layer": 12,
+      "expert": 10,
+      "role": 2,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 13469506944,
+      "bytes": 460800,
+      "sha256": "ca0b3f7cfb55f1a24f79247af078b9913349043872965f0052843a49c143b1a2"
+    },
+    {
+      "layer": 17,
+      "expert": 0,
+      "role": 0,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 19192385920,
+      "bytes": 704000,
+      "sha256": "0be97bc514fafbc306457c482591027dca0638b25673493f2d128da983f3ee23"
+    },
+    {
+      "layer": 17,
+      "expert": 0,
+      "role": 1,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 19556330880,
+      "bytes": 704000,
+      "sha256": "ccf2fd1a0a00425aed1a79e21ba56485a1ea86a4127449d64fccb34c26b39d7d"
+    },
+    {
+      "layer": 17,
+      "expert": 0,
+      "role": 2,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 18719605120,
+      "bytes": 921600,
+      "sha256": "6f43ce21de353a413a60c1ae9a76bdfd5b924bf043c6e1db3e6da60e534484ff"
+    },
+    {
+      "layer": 17,
+      "expert": 16,
+      "role": 0,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 19203649920,
+      "bytes": 704000,
+      "sha256": "0503ed6ba026e534fb6a39edda00914e5fe9f5e6c100ccf56b5daf4ca8d48371"
+    },
+    {
+      "layer": 17,
+      "expert": 16,
+      "role": 1,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 19567594880,
+      "bytes": 704000,
+      "sha256": "d00cc9667cdffe54951e76851bf0e10b11df4de144c578bddb05372b3e987a3c"
+    },
+    {
+      "layer": 17,
+      "expert": 16,
+      "role": 2,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 18734350720,
+      "bytes": 921600,
+      "sha256": "48a6f3de45b5e7fc89d294480a2bca2672078a3801a8de14339ce86c9448e4bc"
+    },
+    {
+      "layer": 21,
+      "expert": 11,
+      "role": 0,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 23464107520,
+      "bytes": 704000,
+      "sha256": "f75e48e4ad26ed80c6b314b14634efdac76a81debd87ec55f07a0013a338139b"
+    },
+    {
+      "layer": 21,
+      "expert": 11,
+      "role": 1,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 23828103680,
+      "bytes": 704000,
+      "sha256": "a25110a1b81591bcda50c0c3da5d4c4122b9d3f5ee534f4d91ef752f0419fe89"
+    },
+    {
+      "layer": 21,
+      "expert": 11,
+      "role": 2,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 23224581120,
+      "bytes": 460800,
+      "sha256": "5dbda483a275ab9208977a3943a457b7d33b8b70ba80427b8450d37a33b56b0d"
+    },
+    {
+      "layer": 21,
+      "expert": 17,
+      "role": 0,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 23468331520,
+      "bytes": 704000,
+      "sha256": "540a2c205d48ad5c8d64fc44fc0576cba77be0779f493bf5bb33906f670a9f74"
+    },
+    {
+      "layer": 21,
+      "expert": 17,
+      "role": 1,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 23832327680,
+      "bytes": 704000,
+      "sha256": "19b8f6b5434105fb957b524268f4e4073a95ead91df8b0300109053d879f8b84"
+    },
+    {
+      "layer": 21,
+      "expert": 17,
+      "role": 2,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 23227345920,
+      "bytes": 460800,
+      "sha256": "96408a9fdf411e3259458891bcd216117ff7236f733ae4cec547bd1362afd889"
+    },
+    {
+      "layer": 2,
+      "expert": 16,
+      "role": 0,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 3499568896,
+      "bytes": 524800,
+      "sha256": "a6bdda184a0b6732170f21a29db5802eaa9db299c46d55f8694d16f0c6cf4b3b"
+    },
+    {
+      "layer": 2,
+      "expert": 16,
+      "role": 1,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 3771814656,
+      "bytes": 524800,
+      "sha256": "28a4d62f06391b5d24bb6df02edc8cd63fc1a46c75675b1d7248144395e8899a"
+    },
+    {
+      "layer": 2,
+      "expert": 16,
+      "role": 2,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 3033136896,
+      "bytes": 921600,
+      "sha256": "23b43adb016e5cc8ff5a35d8ea65ede29f0bf941b1acf51dede2db9d5345614f"
+    },
+    {
+      "layer": 2,
+      "expert": 20,
+      "role": 0,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 3501668096,
+      "bytes": 524800,
+      "sha256": "2a3cec7c05743cba0af279035f19d7bb8c01d14751b359e0619f878e795ac3ff"
+    },
+    {
+      "layer": 2,
+      "expert": 20,
+      "role": 1,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 3773913856,
+      "bytes": 524800,
+      "sha256": "74dcb15f10aeef83b9c6ca218e549022d81e87effedabe48eb3be03df8c9c554"
+    },
+    {
+      "layer": 2,
+      "expert": 20,
+      "role": 2,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 3036823296,
+      "bytes": 921600,
+      "sha256": "d228d5dc1650445066eedeceae4d7d9c4d829852b87023261845c8f6fd271dc1"
+    },
+    {
+      "layer": 1,
+      "expert": 6,
+      "role": 0,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 2344106880,
+      "bytes": 524800,
+      "sha256": "aefbe5c8ffdbdb2864b9435a27eed1f13d7a0ac7e9592d4b42eed37ca0429bb9"
+    },
+    {
+      "layer": 1,
+      "expert": 6,
+      "role": 1,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 2616301440,
+      "bytes": 524800,
+      "sha256": "35d6215fda023d478ab6a09edd111b7ee19428b5bbecdb0a172bebfe85763cf8"
+    },
+    {
+      "layer": 1,
+      "expert": 6,
+      "role": 2,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 2106871680,
+      "bytes": 460800,
+      "sha256": "3b8cc46f428b303155758442e70929958439b186fdfd96b9f74c4959579ae864"
+    },
+    {
+      "layer": 1,
+      "expert": 9,
+      "role": 0,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 2345681280,
+      "bytes": 524800,
+      "sha256": "b2d3122c0fddbeee5a5a83b9b9b1783eb3b5d57aa8a54e5603e21a76d27e6445"
+    },
+    {
+      "layer": 1,
+      "expert": 9,
+      "role": 1,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 2617875840,
+      "bytes": 524800,
+      "sha256": "9228b0a6026c0a5e1dc8d2748e1203fd99e41b5dedad95b21fdd40237add1e3e"
+    },
+    {
+      "layer": 1,
+      "expert": 9,
+      "role": 2,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 2108254080,
+      "bytes": 460800,
+      "sha256": "9ef7586c0b3cab9f4c32f5ac9cb869e1a307021970b7d3ce9211eb0d9339f09c"
+    },
+    {
+      "layer": 47,
+      "expert": 2,
+      "role": 0,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 53893562880,
+      "bytes": 870400,
+      "sha256": "5d62f06c618001f5662060e85ef592bb99c74ef2c04dd39cd7491a3dee23e856"
+    },
+    {
+      "layer": 47,
+      "expert": 2,
+      "role": 1,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 54342755840,
+      "bytes": 870400,
+      "sha256": "a24ad47dbfaa8ef9288417a414478e772fd8be980b0e9aea34e117b818088533"
+    },
+    {
+      "layer": 47,
+      "expert": 2,
+      "role": 2,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 53420065280,
+      "bytes": 921600,
+      "sha256": "2d00186fa26b267c2d3e2a5e2a87c53601401d2aad8d0e98fd36521451d62442"
+    },
+    {
+      "layer": 47,
+      "expert": 9,
+      "role": 0,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 53899655680,
+      "bytes": 870400,
+      "sha256": "c9de7f8253e80146ecb29728f08388835a2d497f22cca10d43fdd2e6d9868ac5"
+    },
+    {
+      "layer": 47,
+      "expert": 9,
+      "role": 1,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 54348848640,
+      "bytes": 870400,
+      "sha256": "311445e54dc2e359c02867c9f89672da96d241cf3d34dbb9c1a85a9e1555aeb0"
+    },
+    {
+      "layer": 47,
+      "expert": 9,
+      "role": 2,
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "offset": 53426516480,
+      "bytes": 921600,
+      "sha256": "08d429a9b68fb4a9f48ac1310a2a4c274ed2fcf4c68ae4770a9fce4f6a72c280"
+    }
+  ],
+  "correctness_gate_scope": "finite writes/quantized meaningful bytes/NT1 GGML GU+Down20/direct-pool partition/repeat exact; NT2 and Q2 independent deltas characterized only",
+  "elapsed_seconds": 17.34538655797951,
+  "finished_utc": "2026-10-09T21:29:53.175579+00:00",
+  "files": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-host-actual-cpu-smoke-v1/samples.csv": {
+      "bytes": 82072,
+      "sha256": "ea4c64d2dbe5824620454c3cafcdb95f336d8c1232ace8734afe1bbcffc01e0d"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-host-actual-cpu-smoke-v1/pool-diag.txt": {
+      "bytes": 109406,
+      "sha256": "1b6869b5e0d4940b48a90743410c3e04b73afee32752fe0ddcb709bd29bfb542"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-host-actual-cpu-smoke-v1/system-call-trace.txt": {
+      "bytes": 38203,
+      "sha256": "ce5900d00f114c4015f684b8abeadda2406d322e40da55f155e98f18422ce7c8"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-host-actual-cpu-smoke-v1/cohort.tsv": {
+      "bytes": 84,
+      "sha256": "c3cdb527e2b8c862ec8fd24b74fad16d78c8e64f18b77cb5ca276b87fbd20b9b"
+    }
+  }
+}

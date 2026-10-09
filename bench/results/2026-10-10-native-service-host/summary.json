@@ -1,0 +1,41 @@
+{
+  "build_receipt_sha256": "c8227c12ea5701da507bf87ed54d7a20e3b4286c50c75b01837e6409294ff92c",
+  "smoke_receipt_sha256": "607b3e3f47d81e2642285df36bcadfa43e78852cac06e1ac237ed3931bc3b2ac",
+  "build_passed": true,
+  "smoke_passed": true,
+  "selected_experts": 14,
+  "selected_format_pairs": 7,
+  "individual_samples": 280,
+  "correctness_gate_scope": "finite writes/quantized meaningful bytes/NT1 GGML GU+Down20/direct-pool partition/repeat exact; NT2 and Q2 independent deltas characterized only",
+  "no_device_observation": "strace followed exec-to-exit and all threads, decoded fd paths; no GPU device open/ioctl/runtime-library path; LD_DEBUG initialization object set captured; not an API interposition claim",
+  "cleanup": [],
+  "survivors": [],
+  "performance_eligible": false,
+  "full_lifecycle_passed": false,
+  "adopted": false,
+  "research_review_correction": "R77 alleged missing data{} and a.reset were false against the same SHA; R78 retracts them. No source fix was made.",
+  "retained_raw": {
+    "owner": "/root",
+    "files": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-host-actual-cpu-smoke-v1/samples.csv": {
+        "bytes": 82072,
+        "sha256": "ea4c64d2dbe5824620454c3cafcdb95f336d8c1232ace8734afe1bbcffc01e0d"
+      },
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-host-actual-cpu-smoke-v1/pool-diag.txt": {
+        "bytes": 109406,
+        "sha256": "1b6869b5e0d4940b48a90743410c3e04b73afee32752fe0ddcb709bd29bfb542"
+      },
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-host-actual-cpu-smoke-v1/system-call-trace.txt": {
+        "bytes": 38203,
+        "sha256": "ce5900d00f114c4015f684b8abeadda2406d322e40da55f155e98f18422ce7c8"
+      },
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-host-actual-cpu-smoke-v1/cohort.tsv": {
+        "bytes": 84,
+        "sha256": "c3cdb527e2b8c862ec8fd24b74fad16d78c8e64f18b77cb5ca276b87fbd20b9b"
+      }
+    },
+    "consumer": "one representative exact host-binary exec-to-exit runtime observation; pool watchdog/placement and loader evidence",
+    "byte_budget": 262144,
+    "review_point": "when the calibration binary has an independently observed successful runtime boundary, retain the newer representative and retire redundant v1 raw trace/diagnostics"
+  }
+}
