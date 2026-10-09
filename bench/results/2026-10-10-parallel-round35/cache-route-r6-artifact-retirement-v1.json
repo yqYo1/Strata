@@ -1,0 +1,604 @@
+{
+  "active": false,
+  "complete": true,
+  "started_utc": "2026-10-09T19:55:32.461421+00:00",
+  "controller_sha256": "ddc158f79d04cc6fc121987c7b53a812c1afee9973f3c2460ce376e6f3c828f5",
+  "exclusive_lock": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock",
+  "original_receipt_sha256": "f606f5a1f2d00dba240213a7feeb3cc84c9da4f1487075d1e97c336a558e4c89",
+  "committed_evidence": "0098e2c3",
+  "owners": [
+    {
+      "role": "inferior",
+      "recorded": {
+        "pid": 2242169,
+        "start_ticks": 26351899,
+        "state": "t"
+      },
+      "actual_start_ticks": null,
+      "owned_absent": true
+    },
+    {
+      "role": "debugger",
+      "recorded": {
+        "pid": 2242154,
+        "start_ticks": 26351870,
+        "state": "R"
+      },
+      "actual_start_ticks": null,
+      "owned_absent": true
+    }
+  ],
+  "tensor_consumer_review": "No candidate RESTORE/comparison scheduled; canonical four32K inputs and all full256K baseline/unresolved C/D captures untouched",
+  "retained_raw_consumer": {
+    "owner": "/root",
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/debugger/inferior.stderr",
+    "bytes": 1389517,
+    "sha256": "3309c390f8e5f047321ca84bcdc6d182e9c13ca1b8db178c79a88b108e13ab3f",
+    "consumer": "Pinned static-count replay and prefix-quota trace scoring",
+    "next_review": "Close or supersede static-prefix data selection/holdout question"
+  },
+  "kernel_evidence": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/probes/kernel-gap.stdout",
+      "rows": 256,
+      "faults": [],
+      "filter": "page fault|fault response|timestamp stuck|wedg|engine reset|gt reset|guc.*(?:timeout|timed out|failed)|memory.*cat|device.*lost",
+      "device_filter": "0000:05:00.0 or word xe; additionally Strata segfault",
+      "kernel_command_exit": 0
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/probes/kernel-after.stdout",
+      "rows": 15,
+      "faults": [],
+      "filter": "page fault|fault response|timestamp stuck|wedg|engine reset|gt reset|guc.*(?:timeout|timed out|failed)|memory.*cat|device.*lost",
+      "device_filter": "0000:05:00.0 or word xe; additionally Strata segfault",
+      "kernel_command_exit": 0
+    }
+  ],
+  "available_before_bytes": 1076740358144,
+  "entries": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/A-read0.head.bin",
+      "identity": [
+        40,
+        5768226,
+        993280,
+        1791573967696882362,
+        1791573971904918971,
+        1
+      ],
+      "bytes": 993280,
+      "sha256": "7881953996c9e022606b573e44ca376f522778a0a57b748abd571618df3d7b5a",
+      "reported_file_allocation_bytes": 1057792,
+      "retained_replacement": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-upstream-v0141-integrated-full256k-diagnostic-r1/control32k-before.head.bin",
+      "replacement_receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-v0141-tuned-fourfresh-numerical-subset-20261009-v1.json",
+      "reason": "Successful duplicate candidate capture; exact head/all66 live comparisons are committed; canonical comparison/RESTORE fixtures retained; no current consumer needs candidate bytes",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/A-read0.state.bin",
+      "identity": [
+        40,
+        5768224,
+        583631432,
+        1791573967410879874,
+        1791573971909919015,
+        1
+      ],
+      "bytes": 583631432,
+      "sha256": "025eebbd445d6e9291612fec4eb7d6e51276fd7be99c9505fd728b8efbc88053",
+      "reported_file_allocation_bytes": 584066048,
+      "retained_replacement": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-upstream-v0141-integrated-full256k-diagnostic-r1/control32k-before.state.bin",
+      "replacement_receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-v0141-tuned-fourfresh-numerical-subset-20261009-v1.json",
+      "reason": "Successful duplicate candidate capture; exact head/all66 live comparisons are committed; canonical comparison/RESTORE fixtures retained; no current consumer needs candidate bytes",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/B-read1.head.bin",
+      "identity": [
+        40,
+        5768230,
+        993280,
+        1791574046242567023,
+        1791574050853607298,
+        1
+      ],
+      "bytes": 993280,
+      "sha256": "c09b913a457a6818a18ecb7043828e0a4502f90860de3ac9a6e714b87f6bfa30",
+      "reported_file_allocation_bytes": 1057792,
+      "retained_replacement": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-upstream-v0141-integrated-full256k-diagnostic-r1/alternate32k-first.head.bin",
+      "replacement_receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-v0141-tuned-fourfresh-numerical-subset-20261009-v1.json",
+      "reason": "Successful duplicate candidate capture; exact head/all66 live comparisons are committed; canonical comparison/RESTORE fixtures retained; no current consumer needs candidate bytes",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/B-read1.state.bin",
+      "identity": [
+        40,
+        5768228,
+        583631432,
+        1791574046060565433,
+        1791574050860607359,
+        1
+      ],
+      "bytes": 583631432,
+      "sha256": "52202cdccafb42b400bab8cd30bad886b425281050b8aef9922b9705530f5956",
+      "reported_file_allocation_bytes": 584066048,
+      "retained_replacement": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-upstream-v0141-integrated-full256k-diagnostic-r1/alternate32k-first.state.bin",
+      "replacement_receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-v0141-tuned-fourfresh-numerical-subset-20261009-v1.json",
+      "reason": "Successful duplicate candidate capture; exact head/all66 live comparisons are committed; canonical comparison/RESTORE fixtures retained; no current consumer needs candidate bytes",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/A-read2.head.bin",
+      "identity": [
+        40,
+        5768238,
+        993280,
+        1791574125196257800,
+        1791574129218293051,
+        1
+      ],
+      "bytes": 993280,
+      "sha256": "7881953996c9e022606b573e44ca376f522778a0a57b748abd571618df3d7b5a",
+      "reported_file_allocation_bytes": 1057792,
+      "retained_replacement": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-upstream-v0141-integrated-full256k-diagnostic-r1/control32k-repeat.head.bin",
+      "replacement_receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-v0141-tuned-fourfresh-numerical-subset-20261009-v1.json",
+      "reason": "Successful duplicate candidate capture; exact head/all66 live comparisons are committed; canonical comparison/RESTORE fixtures retained; no current consumer needs candidate bytes",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/A-read2.state.bin",
+      "identity": [
+        40,
+        5768236,
+        583631432,
+        1791574125110257046,
+        1791574129223293095,
+        1
+      ],
+      "bytes": 583631432,
+      "sha256": "7889ecb607ef39215206285f716bd2f4ab34ce9cb6a8f871aba59b58424810da",
+      "reported_file_allocation_bytes": 584066048,
+      "retained_replacement": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-upstream-v0141-integrated-full256k-diagnostic-r1/control32k-repeat.state.bin",
+      "replacement_receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-v0141-tuned-fourfresh-numerical-subset-20261009-v1.json",
+      "reason": "Successful duplicate candidate capture; exact head/all66 live comparisons are committed; canonical comparison/RESTORE fixtures retained; no current consumer needs candidate bytes",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/B-read3.head.bin",
+      "identity": [
+        40,
+        5768242,
+        993280,
+        1791574203414944319,
+        1791574208203986415,
+        1
+      ],
+      "bytes": 993280,
+      "sha256": "c09b913a457a6818a18ecb7043828e0a4502f90860de3ac9a6e714b87f6bfa30",
+      "reported_file_allocation_bytes": 1057792,
+      "retained_replacement": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-upstream-v0141-integrated-full256k-diagnostic-r1/alternate32k-repeat.head.bin",
+      "replacement_receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-v0141-tuned-fourfresh-numerical-subset-20261009-v1.json",
+      "reason": "Successful duplicate candidate capture; exact head/all66 live comparisons are committed; canonical comparison/RESTORE fixtures retained; no current consumer needs candidate bytes",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/B-read3.state.bin",
+      "identity": [
+        40,
+        5768240,
+        583631432,
+        1791574203327943554,
+        1791574208208986459,
+        1
+      ],
+      "bytes": 583631432,
+      "sha256": "52202cdccafb42b400bab8cd30bad886b425281050b8aef9922b9705530f5956",
+      "reported_file_allocation_bytes": 584066048,
+      "retained_replacement": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-upstream-v0141-integrated-full256k-diagnostic-r1/alternate32k-repeat.state.bin",
+      "replacement_receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-v0141-tuned-fourfresh-numerical-subset-20261009-v1.json",
+      "reason": "Successful duplicate candidate capture; exact head/all66 live comparisons are committed; canonical comparison/RESTORE fixtures retained; no current consumer needs candidate bytes",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/debugger/engine-and-gdb.stderr",
+      "identity": [
+        40,
+        5767740,
+        0,
+        1791573839591772281,
+        1791573839591772281,
+        1
+      ],
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reported_file_allocation_bytes": 1024,
+      "retained_replacement": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round35/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json",
+      "reason": "Closed successful repeated trace/transport/probe or derived prompt copy; command/environment/individual math/fault/process evidence committed; no replay/RESTORE consumer",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/debugger/gdb-mi.stdout",
+      "identity": [
+        40,
+        5767738,
+        36911,
+        1791574213416032237,
+        1791574213416032237,
+        1
+      ],
+      "bytes": 36911,
+      "sha256": "8b90ca5ad36b727f7c70821297186893ba9fcebc00a5a623f002674a2a3fedae",
+      "reported_file_allocation_bytes": 41984,
+      "retained_replacement": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round35/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json",
+      "reason": "Closed successful repeated trace/transport/probe or derived prompt copy; command/environment/individual math/fault/process evidence committed; no replay/RESTORE consumer",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/debugger/inferior-argv.json",
+      "identity": [
+        40,
+        5767742,
+        1115,
+        1791573839592772289,
+        1791573839592772289,
+        1
+      ],
+      "bytes": 1115,
+      "sha256": "f29c38772259cb07999c0409ddfb86579f3b7c8b53057341fa50fba592424b4c",
+      "reported_file_allocation_bytes": 5120,
+      "retained_replacement": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round35/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/debugger/inferior-argv.json",
+      "reason": "Closed successful repeated trace/transport/probe or derived prompt copy; command/environment/individual math/fault/process evidence committed; no replay/RESTORE consumer",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/events.jsonl",
+      "identity": [
+        40,
+        5768332,
+        20853,
+        1791574208562989571,
+        1791574208562989571,
+        1
+      ],
+      "bytes": 20853,
+      "sha256": "d211adb8776d3c4e5cac95c20560179bfd88bf9a410a57b53f86160755c10d9a",
+      "reported_file_allocation_bytes": 25600,
+      "retained_replacement": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round35/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json",
+      "reason": "Closed successful repeated trace/transport/probe or derived prompt copy; command/environment/individual math/fault/process evidence committed; no replay/RESTORE consumer",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/input-A-tokens.txt",
+      "identity": [
+        40,
+        5767280,
+        142702,
+        1791573839536771806,
+        1791573839536771806,
+        1
+      ],
+      "bytes": 142702,
+      "sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449",
+      "reported_file_allocation_bytes": 271360,
+      "retained_replacement": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round35/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json",
+      "reason": "Closed successful repeated trace/transport/probe or derived prompt copy; command/environment/individual math/fault/process evidence committed; no replay/RESTORE consumer",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/input-B-tokens.txt",
+      "identity": [
+        40,
+        5767282,
+        142683,
+        1791573839539771832,
+        1791573839539771832,
+        1
+      ],
+      "bytes": 142683,
+      "sha256": "9210e7a79017f9d468cba4e492ca4c365a753291aaf4c478be34335a100958c3",
+      "reported_file_allocation_bytes": 271360,
+      "retained_replacement": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round35/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json",
+      "reason": "Closed successful repeated trace/transport/probe or derived prompt copy; command/environment/individual math/fault/process evidence committed; no replay/RESTORE consumer",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/probes/before-health-cursor.stderr",
+      "identity": [
+        40,
+        5767732,
+        0,
+        1791573839161768570,
+        1791573839161768570,
+        1
+      ],
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reported_file_allocation_bytes": 1024,
+      "retained_replacement": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round35/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json",
+      "reason": "Closed successful repeated trace/transport/probe or derived prompt copy; command/environment/individual math/fault/process evidence committed; no replay/RESTORE consumer",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/probes/before-health-cursor.stdout",
+      "identity": [
+        40,
+        5767730,
+        156,
+        1791573839174768682,
+        1791573839174768682,
+        1
+      ],
+      "bytes": 156,
+      "sha256": "bd8e7a6e0262c99d296ce797b152b97c205abd8b86fc746172dfc6ff3ac41159",
+      "reported_file_allocation_bytes": 5120,
+      "retained_replacement": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round35/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json",
+      "reason": "Closed successful repeated trace/transport/probe or derived prompt copy; command/environment/individual math/fault/process evidence committed; no replay/RESTORE consumer",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/probes/embedding-state.stderr",
+      "identity": [
+        40,
+        5767722,
+        0,
+        1791573839009767259,
+        1791573839009767259,
+        1
+      ],
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reported_file_allocation_bytes": 1024,
+      "retained_replacement": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round35/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json",
+      "reason": "Closed successful repeated trace/transport/probe or derived prompt copy; command/environment/individual math/fault/process evidence committed; no replay/RESTORE consumer",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/probes/embedding-state.stdout",
+      "identity": [
+        40,
+        5767720,
+        21,
+        1791573839014767302,
+        1791573839014767302,
+        1
+      ],
+      "bytes": 21,
+      "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68",
+      "reported_file_allocation_bytes": 5120,
+      "retained_replacement": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round35/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json",
+      "reason": "Closed successful repeated trace/transport/probe or derived prompt copy; command/environment/individual math/fault/process evidence committed; no replay/RESTORE consumer",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/probes/health-kernel.stderr",
+      "identity": [
+        40,
+        5767980,
+        0,
+        1791573839413770745,
+        1791573839413770745,
+        1
+      ],
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reported_file_allocation_bytes": 1024,
+      "retained_replacement": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round35/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json",
+      "reason": "Closed successful repeated trace/transport/probe or derived prompt copy; command/environment/individual math/fault/process evidence committed; no replay/RESTORE consumer",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/probes/health-kernel.stdout",
+      "identity": [
+        40,
+        5767978,
+        17,
+        1791573839425770848,
+        1791573839425770848,
+        1
+      ],
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e",
+      "reported_file_allocation_bytes": 5120,
+      "retained_replacement": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round35/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json",
+      "reason": "Closed successful repeated trace/transport/probe or derived prompt copy; command/environment/individual math/fault/process evidence committed; no replay/RESTORE consumer",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/probes/health-runtime.stderr",
+      "identity": [
+        40,
+        5767726,
+        0,
+        1791573839060767698,
+        1791573839060767698,
+        1
+      ],
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reported_file_allocation_bytes": 1024,
+      "retained_replacement": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round35/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json",
+      "reason": "Closed successful repeated trace/transport/probe or derived prompt copy; command/environment/individual math/fault/process evidence committed; no replay/RESTORE consumer",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/probes/health-runtime.stdout",
+      "identity": [
+        40,
+        5767724,
+        0,
+        1791573839060767698,
+        1791573839060767698,
+        1
+      ],
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reported_file_allocation_bytes": 1024,
+      "retained_replacement": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round35/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json",
+      "reason": "Closed successful repeated trace/transport/probe or derived prompt copy; command/environment/individual math/fault/process evidence committed; no replay/RESTORE consumer",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/probes/health-xe.txt",
+      "identity": [
+        40,
+        5767982,
+        1,
+        1791573839464771184,
+        1791573839464771184,
+        1
+      ],
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reported_file_allocation_bytes": 5120,
+      "retained_replacement": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round35/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json",
+      "reason": "Closed successful repeated trace/transport/probe or derived prompt copy; command/environment/individual math/fault/process evidence committed; no replay/RESTORE consumer",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/probes/health.stderr",
+      "identity": [
+        40,
+        5767976,
+        118983,
+        1791573839393770572,
+        1791573839393770572,
+        1
+      ],
+      "bytes": 118983,
+      "sha256": "818792eb3d0d26ee0f12a6e98ce3928d8f5e9f3472aa42e0fd4a3d81a555b874",
+      "reported_file_allocation_bytes": 123904,
+      "retained_replacement": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round35/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json",
+      "reason": "Closed successful repeated trace/transport/probe or derived prompt copy; command/environment/individual math/fault/process evidence committed; no replay/RESTORE consumer",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/probes/kernel-after.stderr",
+      "identity": [
+        40,
+        5769028,
+        0,
+        1791574213587033741,
+        1791574213587033741,
+        1
+      ],
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reported_file_allocation_bytes": 1024,
+      "retained_replacement": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round35/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json",
+      "reason": "Closed successful repeated trace/transport/probe or derived prompt copy; command/environment/individual math/fault/process evidence committed; no replay/RESTORE consumer",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/probes/kernel-after.stdout",
+      "identity": [
+        40,
+        5769026,
+        11521,
+        1791574213599033846,
+        1791574213599033846,
+        1
+      ],
+      "bytes": 11521,
+      "sha256": "38a7a032eee1dc75e09e610bd00d818d1d0d26b6f88562da1267f9fbd7c439df",
+      "reported_file_allocation_bytes": 13312,
+      "retained_replacement": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round35/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json",
+      "reason": "Closed successful repeated trace/transport/probe or derived prompt copy; command/environment/individual math/fault/process evidence committed; no replay/RESTORE consumer",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/probes/kernel-before.stderr",
+      "identity": [
+        40,
+        5767286,
+        0,
+        1791573839539771832,
+        1791573839539771832,
+        1
+      ],
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reported_file_allocation_bytes": 1024,
+      "retained_replacement": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round35/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json",
+      "reason": "Closed successful repeated trace/transport/probe or derived prompt copy; command/environment/individual math/fault/process evidence committed; no replay/RESTORE consumer",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/probes/kernel-before.stdout",
+      "identity": [
+        40,
+        5767284,
+        156,
+        1791573839549771918,
+        1791573839549771918,
+        1
+      ],
+      "bytes": 156,
+      "sha256": "bd8e7a6e0262c99d296ce797b152b97c205abd8b86fc746172dfc6ff3ac41159",
+      "reported_file_allocation_bytes": 5120,
+      "retained_replacement": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round35/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json",
+      "reason": "Closed successful repeated trace/transport/probe or derived prompt copy; command/environment/individual math/fault/process evidence committed; no replay/RESTORE consumer",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/probes/kernel-gap.stderr",
+      "identity": [
+        40,
+        5767718,
+        0,
+        1791573838955766792,
+        1791573838956766801,
+        1
+      ],
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reported_file_allocation_bytes": 1024,
+      "retained_replacement": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round35/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json",
+      "reason": "Closed successful repeated trace/transport/probe or derived prompt copy; command/environment/individual math/fault/process evidence committed; no replay/RESTORE consumer",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/probes/kernel-gap.stdout",
+      "identity": [
+        40,
+        5767716,
+        198437,
+        1791573838993767121,
+        1791573838993767121,
+        1
+      ],
+      "bytes": 198437,
+      "sha256": "4742c1717965a34ec7285c65b395ac6403a107fd05dcdacbacdd95bfbcc4281b",
+      "reported_file_allocation_bytes": 271360,
+      "retained_replacement": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round35/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json",
+      "reason": "Closed successful repeated trace/transport/probe or derived prompt copy; command/environment/individual math/fault/process evidence committed; no replay/RESTORE consumer",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/protocol.stdout.raw",
+      "identity": [
+        40,
+        5768330,
+        25437,
+        1791574208202986406,
+        1791574208202986406,
+        1
+      ],
+      "bytes": 25437,
+      "sha256": "67a540242f39bb47698c43a749239028afc80aa60003aee57b8c4fbb9c14a394",
+      "reported_file_allocation_bytes": 29696,
+      "retained_replacement": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round35/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/protocol.stdout.raw",
+      "reason": "Closed successful repeated trace/transport/probe or derived prompt copy; command/environment/individual math/fault/process evidence committed; no replay/RESTORE consumer",
+      "removed": true
+    }
+  ],
+  "logical_bytes": 2339197841,
+  "reported_file_allocation_bytes": 2341583872,
+  "physical_unique_reclaimed_bytes": null,
+  "limitations": "Per-file allocated-byte sum is not unique physical extents; available-space delta may reflect other activity/snapshots. Original result status stays unchanged.",
+  "elapsed_unlink_seconds": 0.01405898795928806,
+  "available_after_bytes": 1076740358144,
+  "finished_utc": "2026-10-09T19:55:32.476045+00:00",
+  "available_delta_bytes": 0
+}

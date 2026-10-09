@@ -1,0 +1,74 @@
+# Shared host-only native GGUF role-plan contract — round 61
+
+## Scope and boundary
+
+Read-only source design review at frozen worktree `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010`, HEAD `66aaec3a66ad9ed12e6d042cffe743c47e364432`. Inputs reviewed: R60 `native-service-host-only-reader-link-contract-round60.txt`, R48 `bounded-engine-protocol-independent-review-round48.txt`, R46 `native-service-expert-payload-adapter-contract-round48.txt`, and the current source paths/hashes below. The proposed reader seam is not implemented or adopted. No model payload was opened/read, and no build, test, syntax check, replay, device/runtime query, profiling, cleanup, or Git action was performed.
+
+## Source pins
+
+- `sycl/src/core/expert_source.cpp`: `41b98031b865338f0429b195ef4aa10ba94cbaf2c0f2224ab1c3a4de7c37f4aa`
+- `sycl/include/strata/core/expert_source.hpp`: `f94d0f2ed4d14f5aa4ad402fcda041b2a46b2690976d08ff1a0b740555043247`
+- `include/strata/artifact/gguf_reader.hpp`: `fc8453a95677e797c8fb1198bfb47d715b73a53446d39a29920c372180ca5ee0`
+- `src/kernels/cpu/expert_layout.cpp`: `9826d86cc83330d447d62a62189dc782f549ffb815c7bdccd2ad4f4582672f4d`
+- `include/strata/kernels/cpu/expert_layout.hpp`: `dbc6cf5b91367e571ad9cb3be4e4cd851159544186c859a7cd374632a8a63fcd`
+- `sycl/CMakeLists.txt`: `d8fc6c99428f96021c0d986bcad77680dbe66f4fa6a64490166ff58f24e274b1`
+- `sycl/src/kernels/native_expert_parity.cpp`: `9c8e8421550cb31d6166acbc0716acfaa7dddde1bf5beef9fcf29956a05cad8e`
+
+## Narrowest useful shared seam
+
+The useful boundary is a non-polymorphic, host-only `NativeRolePlan` builder and bounded assembler, with its implementation compiled once and linked by both production and a host-only test target. It should own the exact GGUF validation/path resolution now embedded in `check_experts_gguf` and return/retain validated per-role extents. It should not move or instantiate all of `FileExpertSource`.
+
+Suggested source/API boundary (names illustrative):
+
+- `include/strata/artifact/native_role_plan.hpp`: plain `RoleExtent`/`NativeRolePlan` API; inputs are explicit primary shard path plus `const ExpertLayout&`; operations are `open(layout, primary, err)`, `copy_blob(layer, expert, dst, capacity, err)`, `close()`, and optionally a read-only role-span view for production's existing warm/direct-I/O paths. No `ExpertSource` base, virtual methods, SYCL/DPCT types, queues, USM, allocator, worker, or static/global layout lookup.
+- `src/artifact/native_role_plan.cpp`: one implementation of `expert_gguf_file` resolution, tensor validation, role-extent construction, and role-order copying using the existing header-only `strata::GgufFile`/`tensor_payload_bytes` parser. The layout object is data from `expert_layout_load`; the helper should not call or reimplement `native_fmt`.
+- Add this host-only source/library to the CMake path shared by `strata_engine` and a distinct host-reader validation executable. `FileExpertSource::open_gguf` should obtain the plan once and use its owned maps/spans for normal copies; `check_experts_gguf` should delegate to the same validator so `ArenaExpertSource` and other production paths cannot drift. The harness links the helper and the CPU layout loader only, never `strata_engine` or `FileExpertSource`.
+
+The critical factoring target is the checker plus the role path resolver, not a second pack parser. `expert_layout_load` (`src/kernels/cpu/expert_layout.cpp:372+`) remains the sole parser for `native_experts.txt` and calls production `native_fmt` to derive sizes. The shared helper consumes the resulting `ExpertLayout`. The GGUF format parser is already host-only/header-only (`include/strata/artifact/gguf_reader.hpp:1-5, 340+`); use its `GgufFile` and checked `tensor_payload_bytes` (`:477-490`) rather than introducing another GGUF reader.
+
+`check_experts_gguf` and `expert_gguf_file` are currently anonymous/translation-unit-local in the large `sycl/src/core/expert_source.cpp` (`:3077-3150`); the same TU contains queue-bearing vtable members and the destructor/close path (`:420, 594+`, plus R60 references). Therefore linking `FileExpertSource` or this TU into the CPU harness still imports that virtual surface and device dependency risk, even if runtime happens not to call those methods. The existing `native_expert_parity` itself includes SYCL/DPCT and unconditionally obtains `dpct::get_in_order_queue()` in `main` (`sycl/src/kernels/native_expert_parity.cpp:1-45`), so it cannot serve as the host-only executable. A separate executable must enter no queue path at all.
+
+A dedicated helper linked to both call sites is smaller and safer than moving the whole polymorphic reader. It factors the validation that must be identical while leaving `FileExpertSource`'s prefetch, warm/madvise, optional direct I/O, stage buffers and source API in place. For validation and the ordinary copy path, prefer having the plan own the same read-only `GgufFile` mappings it validated and expose bounded role spans; this removes the current validate-then-reopen race in `open_gguf` (`expert_source.cpp:715-791`). Keep direct-I/O handles as an optional production optimization only; they must read the already-validated extents and retain the existing mapping fallback. If retaining a second production mapping is necessary, document that validation and payload mapping are separate opens and recheck file identity/size immediately before use.
+
+## Exact role and shard contract
+
+`ExpertLayout` carries `gguf_off[3*layer+role]`, `gguf_file[3*layer+role]`, `NativeFmt`, per-layer `bytes`, expert/layer geometry, and metadata version (`include/strata/kernels/cpu/expert_layout.hpp:18-38`). The production `expert_gguf_file` resolver (`expert_source.cpp:3077-3082`) uses an empty role filename to mean the supplied primary `--native` shard; a named shard is resolved beside that primary file. Do not invent numbered adjacent shards or collapse three role paths into one.
+
+The layout parser handles metadata generations as follows (`src/kernels/cpu/expert_layout.cpp:420-462`): older v2 rows have offsets but no shard name and use the primary shard; v3 has one shard filename per layer, expanded to all three roles; v4 accepts a `gate,up,down` triple, and an empty role entry means primary. It rejects malformed shard columns and future layout versions. Validate the final `gguf_file` vector geometry, offset vector geometry and known version again at the helper boundary; do not silently fill a partial malformed vector.
+
+For layer `l`, `NativeFmt` is the authority for row/storage sizes. The three expected full-tensor extents are:
+
+- gate: `fm.up_off * n_expert` bytes, stride `fm.up_off`;
+- up: `fm.up_off * n_expert` bytes, stride `fm.up_off`;
+- down: `(lay.bytes[l] - fm.down_off) * n_expert` bytes, stride `lay.bytes[l] - fm.down_off`.
+
+The selected expert begins at `gguf_off[3*l+r] + expert*stride[r]`; the blob assembled for the wrapper is exactly gate bytes, then up bytes, then down bytes. It is not a contiguous GGUF span. Production checker lines `3096-3145` verify `blk.L.ffn_{gate,up,down}_exps.weight`, expected role type, exact three-dimensional shape, payload byte count, absolute file start equality, and file bounds. GGUF dim order is `[n_embd,n_ff,n_expert]` for gate/up and `[n_ff,n_embd,n_expert]` for down. Preserve those checks in the shared validator; do not accept only an offset/length fit.
+
+A `RoleExtent` should carry enough validated facts to avoid re-derivation in callers: layer, role, resolved path/file index, tensor name/type/shape, data-start-relative tensor offset, absolute file offset, file size, per-expert stride, full role bytes, and the source mapping identity/owner. Before multiplication/addition, check `per_role <= UINT64_MAX/n_expert`, `expert <= (UINT64_MAX-absolute_offset)/stride`, and the final extent with subtraction-form bounds (`start <= file_size && length <= file_size-start`). Check `fm.down_off <= lay.bytes[l]` and checked equality of three role lengths to `lay.bytes[l]`. Existing `tensor_payload_bytes` rejects unknown geometry and uint64 overflow; keep that check as well. `check_experts_gguf` currently does `per[r]*n_expert` and `data_start+t->offset` directly; a new shared plan should make the checked arithmetic explicit rather than perpetuating wraparound assumptions.
+
+This interpretation agrees with the [GGUF format specification](https://github.com/ggml-org/ggml/blob/master/docs/gguf.md?plain=1): tensor offsets in the directory are relative to the tensor-data section and must follow alignment rules. Strata's `native_experts.txt` role offsets are absolute file offsets, so the production equality check must explicitly combine `data_start` with the GGUF-relative tensor offset. Do not infer that equal GGUF role offsets or alignment mean the three expert pieces are adjacent.
+
+## Ownership, lifetime, failure and TOCTOU
+
+Construct the plan transactionally: build local file mappings and extents, and publish/swap into the caller only after every role passes. On any parse, open, map, geometry, or bounds error, close all partial handles/maps and return one descriptive error; helper close is idempotent. Make path/mapping ownership RAII so failed opening one of many v4 shards releases already-opened files. Store one mapping per unique resolved path, but one role extent per `(layer,role)`.
+
+A plan's role pointers are valid only while that plan remains open and unchanged. `FileExpertSource::close` must stop/join any workers that could copy or warm those spans before destroying the plan; `copy_blob` must reject bad coordinates/null destination/insufficient capacity and write exactly `lay.bytes[layer]`. Never expose an ephemeral staging buffer as the host API result. Production may retain the plan for the full source lifetime; the harness should allocate one bounded `NativeFmt.bytes` scratch blob, reuse it for selected experts, then close the plan.
+
+Validating with one `GgufFile` map and then reopening separate maps allows a path replacement or size change between validation and use. The plan should validate and serve from the same opened read-only mappings. That closes the check/reopen gap, but a mapped file can still be changed or truncated externally (on POSIX a truncation can fault mapped access); require source files to remain immutable while open and retain file identity/size in the receipt. If hostile concurrent mutation must be supported, use checked reads from the same open handles with short-read errors rather than relying on mmap. Do not claim that a file hash sampled before or after use alone removes the race.
+
+`FileExpertSource::open` currently calls `close` before opening, and on GGUF open error closes partial source state (`expert_source.cpp:422-505`); preserve the caller-visible error prefix and no-half-open contract when replacing the internals. The host helper must own only file/parser/mapping resources. It must not call `dpct::get_in_order_queue()` on construction, error cleanup, destruction, or close.
+
+## Fixture and real-payload acceptance gates
+
+Before wiring this to a service-calibration harness, require separate host-only target evidence:
+
+1. A tiny synthetic GGUF/native-pack fixture built by an independent fixture writer, with known byte patterns and expected hashes for the three logical role slices. Cover v2/no shard name, v3 one filename for all roles, and v4 roles split across files within one layer, including an empty role falling back to primary. Verify exact concatenation and layer/expert indexing. The expected byte strings and role offsets must be authored independently of the plan implementation.
+2. Negative fixtures for wrong tensor name/type/shape, tensor byte-size mismatch, offset mismatch, out-of-file role, arithmetic overflow, missing offset vector, malformed/partial shard vector, unsupported metadata version, missing role file, and a file truncated before open. Each must fail closed with no leaked map/fd and no queue creation. Test open failure midway through a multi-shard plan and repeated close/reopen.
+3. A separate no-device host executable that links the shared role-plan library and production layout loader, but does not link `strata_engine`, `FileExpertSource`, `strata_kernels`, or SYCL/DPCT queue-bearing code. Instrument or otherwise assert no queue/context/device entry point is reached on success and every failure cleanup path. Existing `native_expert_parity` is not this executable.
+4. Only after those pass, a bounded selected-real-payload check: pin `native_experts.txt`, exact source/model shard identity and sizes; select a small declared set spanning formats and a v4 per-role shard boundary; copy one blob at a time through the production shared plan; independently read the three source role extents with a separate checked reader and compare per-role hashes and assembled-byte hash. Do not read or retain the full model, and do not treat mmap-open as payload validation. Then run wrapper correctness/fault/sentinel checks separately from any timing protocol in R46.
+
+These are future acceptance criteria, not completed results. A successful helper fixture would validate boundary arithmetic and copy semantics, not model correctness, service cost, independent holdout, or performance. Real payload access and wrapper work require a separate explicit work authorization/data-retention plan under the existing artifact-retention instructions.
+
+## Conclusion
+
+Factor one host-only role-plan validator/owner/assembler and make both production validation/copy paths call it. Leave the queue-bearing `FileExpertSource` polymorphic class and the current GPU parity executable out of the host-only target. The central seam is the validated role-extent plan with mapping lifetime, not a forked GGUF reader and not a wholesale move of the production reader. It preserves current `expert_layout_load`/`NativeFmt` and the exact production tensor validation while allowing an independent bounded host reader to check selected extents.

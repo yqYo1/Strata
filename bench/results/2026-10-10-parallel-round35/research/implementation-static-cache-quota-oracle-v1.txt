@@ -1,0 +1,43 @@
+Static prefix quota oracle v1 — SOURCE ONLY / UNEXECUTED
+
+Scope/ownership
+Created only sycl/tools/static_cache_quota.py and sycl/tools/test_static_cache_quota.py in root-created isolated worktree /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-static-quota-oracle-v0141-20261010 (branch diag/sycl-static-quota-oracle-v0141-20261010, base66aaec3a), plus this report. No test/code invocation, syntax check, build, GPU/model/query, cleanup, Git mutation/commit/push occurred. Root owns serial review, tests and any later input preparation. Existing engine/cache policy, replay consumer, captured data, receipts and registry remain untouched.
+
+Read R57 exact prefix selection/oracle, R53 information/train-holdout limits, both R58 consumer reviews, latest committed registry-v37 identity dc4f27f9c8ff87f48813de2310094c2b2379437b9ba0fe9cd14b1a5753a04397 and durable parallel-round35 REPORT in docs-sycl-storage-retention-20261009 (root supplied HEADda07415f). Root's prior offline replay CPU/closed-r6 pass is separate evidence (receipt9a161e143c53b21a73818cece331b28d72289126583e630182e3494fc0ee0906); no receipt was queried or adopted here. Closed-gate/file/source-pin loading is deliberately irrelevant to this new pure arithmetic module.
+
+Exact source SHA256
+sycl/tools/static_cache_quota.py 6025cbef7718d3f26f086f7de03cd65370b6edf4dce511c434357bc6c79f0220
+sycl/tools/test_static_cache_quota.py 0554c59c6f69940db5316103786213c3e9ce635105108b92b98a3c3933bcd8cb
+
+API/objective
+score_prefix_quota(curves,quota) returns a checked additive captured-count score.
+select_prefix_quotas(curves,budget,default) returns score, baseline_score, baseline_gain, quotas, total_slots, L1 distance, tie rule and objective scope. Curves directly encode F_layer(q) for q0..capacity, with F(0)=0. No file/model/controller/replay imports, loader, CLI, production admission, quota mutation or engine integration is added. One uniform MAXBLOB slot purchases one more within-layer profile prefix entry. The objective must be ONE predeclared additive captured count. No packed-byte allocation, service/time/traffic/LRU/latency/performance/adoption result is represented.
+
+Strict bounded inputs
+Accept actual list/tuple curves/defaults,1..48 layers, each1..257 prefix entries (0..256 slots), budget integer0..128, explicit default quota per layer within cap and exact default sum==budget. Scores must be actual integer uint64, nonnegative and nondecreasing. Entry0 must equal0. Bool, float, generators, malformed dimensions, negative/out-of-range score/budget/default, decreasing curve or incorrect default sum reject. Default feasibility is required rather than inventing a baseline. Production default [2]*47+[34] is supported when curves contain those entries. Generic small and zero/full-capacity budgets are supported within bounds.
+
+Exact algorithm/ties
+Dynamic programming enumerates layer-prefix choices over exact slot totals, with no diminishing-marginal/greedy assumption. State stores best score, accumulated default L1 distance, deterministic lexicographic rank, previous total and current quota. Equal total states compare maximum score first, minimum L1 second, then parent-prefix lex rank/current quota. Each stage sorts selected prefixes by (parent rank,quota) to assign exact lexicographic ranks; reconstruction follows backpointers. Thus lex comparisons are fixed-size rather than retaining full quota vectors at every transition.
+
+Only states extendable to the final exact budget are considered. Checked addition rejects ANY uint64 overflow among feasible objective candidates, even if the default score fits. No saturation/wrap or silent removal of overflowing alternatives. Since curves are nondecreasing, an overflowing extendable partial score would also overflow some full feasible score; rejection is appropriate for a uint64 objective. Baseline sum is independently checked. Distance is bounded by2*budget<=256. Return gain is optimum minus feasible baseline and cannot be negative.
+
+Complexity/resource bounds
+O(L*K^2) transitions, O(L*K) retained states/backpointers, plus O(L*K*logK) lex-ranking work. L<=48,K<=128, caps<=256; validation examines at most12336 prefix entries. No routes/weights/data payloads are retained. This is mathematical fixed-slot count maximization, not a measured runtime or claim that Python cost improves inference.
+
+Independent CPU fixture source (unexecuted)
+Eight unittest methods use a separate itertools.product exhaustive oracle on tiny quota vectors. It enumerates complete feasible vectors, sums literal curve entries directly, ranks (-score,L1,quota), and never duplicates DP recurrence or lex-ranking machinery. A deterministic grid of small nonconcave/zero/binding curves compares all feasible small default choices to the independent exhaustive result.
+
+Literal checks include:
+- R57 A prefix[0,10,10],B[0,9,109], budget2/default[1,1]: score109,baseline19,gain90,quota[0,2]; greedy19 is not adopted.
+- Uniform score curves retain the supplied feasible default via minimum L1; a separate equal-score/equal-L1 case chooses lexicographic [0,2,0].
+- Zero budget and full generic-capacity budget with hand-computed score13.
+- Maximal48x257 production geometry, budget128/default2x47+34: first47 curves all zero, final marginal3. Hand oracle requires last-layer quota128, score384,baseline102,gain282,L1=188.
+- Maximal all-zero production curves retain default exactly.
+- Malformed geometry/defaults/nonmonotone/boolean/float/negative/oversized/generator negatives.
+- Uint64 maximum accepted; individual overflow, baseline additive overflow and feasible alternative overflow despite fitting baseline rejected.
+No fixture was executed here; source is not a CPU-pass claim. No fixture imports an engine/controller/replay consumer or actual capture.
+
+Root serial recipe (NOT executed)
+After source/independent review and under root's shared execution lock:
+python3 /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-static-quota-oracle-v0141-20261010/sycl/tools/test_static_cache_quota.py
+Create a new CPU receipt with module/fixture/report hashes, stdout/stderr, exit/elapsed and arithmetic-only scope. Root may commit reviewed sources separately after tests; this task performs no Git mutation. Any later mapping from captured routes/profile ranks into objective curves needs separate provenance, objective freeze, train/holdout and static replay admission. Repeated A/B/A/B are two prompts, not four independent holdouts. A selected count-optimal quota is not a live cache policy change or predicted performance benefit; changed CPU/GPU routes can alter future math. Original full-context/C/D/numerical/ownership/health/adoption boundaries remain unchanged.

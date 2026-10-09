@@ -5,7 +5,7 @@ had returned and no research agent was active. Root resumed multiple independent
 read-only researchers and continued its own execution. The recurring assignment,
 shared-history, separate implementation and root-only testing rules are now in
 AGENTS.md. Returned reports remain files with exact hashes; they are reviewed
-before adoption. Registryv38 has120 completed Luna reports and preserves prior
+before adoption. Registryv40 has128 completed Luna reports and preserves prior
 immutable snapshots in the Git history.
 
 ## Division of work
@@ -21,11 +21,11 @@ fixtures and pure byte-framing helper. Root owns every actual execution and
 serializes builds, tests, inference, profiling and cleanup with the measurement
 lock. Research does not hold up independent main work.
 
-| Latest registryv38 assignment | Model | Scope | State at snapshot |
+| Latest registryv40 assignment | Model | Scope | State at snapshot |
 | --- | --- | --- | --- |
-| Static quota review | gpt-6-luna | Fixed-slot cache, graph and phase constraints for a different decode quota | Running, read only |
-| Native kernel review | gpt-6-luna | Actual NT/type exposure, official documentation and other implementations | Running, read only |
-| Implementation agent | gpt-6.1-sol | Pure exact static-prefix quota DP and independent small brute-force oracle | Running, source only; root tests |
+| Workload independence | gpt-6-luna | Actual A/B token/corpus overlap and separate32K workload construction | Running, read only |
+| Native cohort sufficiency | gpt-6-luna | Actual distinct nonresident pair/type/NT diversity for service calibration | Running, read only |
+| Implementation agent | gpt-6.1-sol | Pure DP and separate frozen-trace adapter | Completed source only; root tests passed |
 | Main agent | Root | Actual GPU failure closure/archive and next serial qualification | All execution closed; no live GPU process |
 
 Every assignment receives the past-report directory and reviewed decisions.
@@ -235,3 +235,59 @@ successful MI/health polling transcripts. Root reviews other current consumers
 before retirement under the shared lock. Canonical baseline RESTORE fixtures
 and unresolved C/D divergent captures remain required. No recovery/service/GPU
 state operation is part of this boundary.
+
+## Count analysis, native service next step and artifact retirement
+
+R59's live-engine audit requires different layerranges/cursors/maps and a valid
+admitted probe for zero-quota layers; changing a selected list alone cannot
+deploy quotas. Graph/base lifetime and full-context prefill-to-decode restoration
+remain required. Native format/NT exposure prioritizes real-payload Down20NT1
+existing-kernel service comparison, then Down42 calibration; counts are not
+measured service cost. R60/R61 specify a shared host-only validated GGUF role
+plan and separate CPU ExpertPool harness. No such reader/harness refactor or
+real-payload service experiment has been performed. The old864-case synthetic
+wrapper result did not create an ExpertPool or establish those service costs.
+
+Root passed eight independent exact-DP tests in.353s. Independent R60 reasoning
+found no arithmetic/tie/overflow flaw and requires explicit profile truncation
+for the128-slot objective. The separate Sol trace adapter validates all512ranks
+then builds129 cumulative scores per layer in immutable profile order. Root
+passed seven independent trace fixtures plus the actual closed CLI in1.058s.
+
+The N entry objective was frozen before execution, fitted only on A-read0, and
+then scored on all four captured requests. Candidate/default covered entries
+are3175/2116 for both A repeats and2504/1874 for both B repeats. The quota totals
+128; full per-request references/hashes and quota are preserved in the compact
+result. B is a different diagnostic fixture, not a certified independent holdout.
+No engine quota/config is written. Live numerical routes, service time, traffic
+and performance are untested. Sources and execution proof are committed/pushed
+at e5bd23a5 on diag/sycl-static-quota-oracle-v0141-20261010.
+
+Under the exclusive measurement lock, root verified original closed ownership,
+committed evidence, all66 raw part hashes/head hashes and surviving canonical
+comparison inputs, then retired31 successful r6 artifacts. The manifest records
+2,339,197,841 logical bytes and2,341,583,872 summed per-file allocated bytes.
+Available-space change was0; no unique physical reclamation is claimed. The
+first cleanup launcher had a syntax error before any action; its compact failed
+status remains separate from the corrected successful driver.
+
+The original r6 receipt remains byte-identical. One1,389,517-byte raw stderr,
+its compact receipt and small health summary remain for the named count/data
+selection consumer, with review after that question is superseded. Canonical
+baseline RESTORE fixtures and unresolved C/D captures are untouched. The actual
+closed CLI passed after retirement, proving that its required inputs remain.
+No GPU/service/recovery state was changed. R62 independently audits the new
+source/provenance and fixture/retention boundaries while root saves this evidence.
+
+R62 source/provenance and independent fixture/retention reviews are complete.
+They preserve the exact-input positive count result and identify limits before
+generalizing the adapter's rejection tests. Root made the retained raw budget
+explicit at64MiB in a separate v2 retention review that pins, rather than edits,
+the original deletion manifest. The named current consumer is route/NT-bound
+expert cohort selection for native service calibration. Review the raw capture
+after its source-bound cohort manifest and count question are closed.
+
+R63 now audits A/B source-token independence and whether actual distinct
+nonresident format/NT IDs support disjoint service cohorts. These are read-only
+data/source investigations; no project code, model payload or device execution
+is delegated. Root resumes from this committed report and reviewed files.

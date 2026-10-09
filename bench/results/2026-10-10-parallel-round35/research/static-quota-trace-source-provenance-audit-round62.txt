@@ -1,0 +1,58 @@
+# Static quota trace adapter provenance and data-sufficiency audit — round 62
+
+## Scope and evidence identity
+
+Read-only source/data review of the completed pure trace adapter, its literal CPU fixture, the already-closed r6 receipt, the adapter's recorded actual-trace stdout, the CPU validation receipt, and its linked artifact-retirement manifest. No source was executed here; I did not run a test, adapter, replay, syntax check, build, model/payload access, GPU query, profiler, cleanup, or Git action. The purpose is to audit the new adapter path and preserved inputs, not to repeat the DP arithmetic review (R60) or engine lifecycle review (R59).
+
+Worktree/commit supplied by root: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-static-quota-oracle-v0141-20261010`, commit `ad1c9694`.
+
+Source/data SHA-256 pins:
+
+- Adapter `sycl/tools/static_cache_quota_trace.py`: `1ab9bf4aea79eb121507d7a59df58546f79674ebcb2475ee4379a7413f43f981`
+- Literal fixture `sycl/tools/test_static_cache_quota_trace.py`: `11e7f61a7d9f34647f994b927a1078cc3695ae664daed4b6637efba0953b9033`
+- DP `sycl/tools/static_cache_quota.py`: `6025cbef7718d3f26f086f7de03cd65370b6edf4dce511c434357bc6c79f0220`
+- Fixed-trace reader: `b65dcabbc75614ef06209782c9ebe9b9540f4e9f9b66d6056c47b58153e54f0f`
+- v6 controller: `9304f84dfce23b099c02d0090ea3b8f9b158100d157b0175ab3e4cfda1a9f423`
+- Route parser: `2ff44099f7385054dc5663f04a8e226d364d4d349a84b2493bc2bb1d6f3585cd`
+- Shape helper: `0355f450b1c0b3b4dc59ff28db09c5be48ea914e40808f94daa822b38b5dc2ff`
+- Closed r6 receipt: `f606f5a1f2d00dba240213a7feeb3cc84c9da4f1487075d1e97c336a558e4c89`
+- R6 raw stderr: `3309c390f8e5f047321ca84bcdc6d182e9c13ca1b8db178c79a88b108e13ab3f` (1,389,517 bytes)
+- Profile: `8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf`
+- `native_experts.txt` metadata: `d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d`
+- Artifact-retirement manifest: `20e9767e5e954710e464af41b563bf1fcc57b214b8f257c2bcadd3e49377ac43`
+- Actual-trace stdout: `02b7abedfa788038dcd26db04e883a9de419511f85f6b264b66ece321b6369a5`
+- CPU validation receipt: `8f18655e16fcb47c68ee58428b2e249cf89e2f7d2db05bfd97b27db4178ff248`
+
+The CPU receipt records seven literal adapter fixtures PASS and the actual closed-trace CLI PASS, exit 0, 1.058146630995907 s total; its actual-trace step took 0.954978184949141 s and wrote 6,876 bytes with the stdout hash above. The receipt explicitly marks no GPU work, no model open, no adoption, performance-ineligible, and no full lifecycle. This audit reports those recorded results, not a fresh execution. The receipt's top-level `controller_sha256` identifies its execution wrapper; the adapter's actual result separately records the v6 controller hash above.
+
+## Adapter and provenance path
+
+The CLI first requires the exact helper root, exact r6 receipt digest, and caller-provided adapter self-hash (`static_cache_quota_trace.py:96-107`). `pinned_source` opens source files with `O_NOFOLLOW`, requires an owned regular single-link file within its size cap, hashes bytes read from that descriptor, and compares device/inode/size/mtime/ctime/uid/link-count before and after (`:22-45`). `load_pinned` compiles only the bytes admitted by that check (`:47-50`). The route reader then independently loads and verifies the controller, parser, shape helper, profile, metadata, receipt and raw log under its own pins and bounds (pinned reader source listed above; R58 records its gate). These checks bind the computation to exact bytes; the receipt's r6 controller run SHA and the selected source hashes are not inferred from the current engine checkout.
+
+The adapter intentionally calls the pinned reader's complete `replay()` first (`:102-103`). That checks r6's closed/math/protocol/raw-frame/profile/metadata/shape gates and verifies the entire four-interval source under one raw-log hash. The adapter then reads the exact pinned profile, validates its complete STRP permutation/inverse through the pinned `static_profile` parser, unpacks the rank stream from its fixed 24-byte header, and reads the exact raw stderr again (`:104-109`). For each of four request intervals it rechecks the interval bytes/hash, parses the request with the pinned route parser and its exact ordinal, and uses the corresponding single recorded DONE row (`:110-121`). The second read/reparse is redundant work, but it is not an unbound second data source: the same pinned receipt and reader establish the source path/ranges, and the adapter independently checks raw and per-interval hashes again. A changed source fails rather than silently joining different records.
+
+The fixed source path is `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/debugger/inferior.stderr`; the reader binds it to the closed receipt's `debugger/inferior.stderr` path and checks exact full-log byte count/hash. Each request result preserves begin/end, interval digest, parser/shape/profile hashes, and canonical pair-shape digest. The result also emits adapter/reader/DP/controller/parser/shape/profile/metadata/raw-log hashes. It does not reopen a model payload, session state, head capture, or route tensor. The pinned retirement manifest names the full stderr as the retained raw consumer for static-count replay and prefix-quota scoring; the CPU receipt pins that manifest and records post-retirement scoring. No duplicate tensor bytes are inputs to this result.
+
+The adapter's cleanup check specifically requires a cleanup object and literal `False` for `forced`, `inferior_survived`, and `gdb_survived` (`:52-56`). This closes the missing/empty cleanup-map weakness noted in R58 for this adapter's exact input; the closed r6 receipt contains all three false fields. The adapter also leaves the pinned reader's preservation of original C/D/r5 failure statuses and non-adoption gates in force. The reader's reusable generic cleanup predicate remains weaker by itself; the stricter adapter gate is what applies here.
+
+## Rank, objective and fit-before-score audit
+
+The declared objective is routed entry count `N`, not callbacks, logical bytes, service time or latency. `prefix_curves` requires a complete `layers*experts` rank vector and validates every rank pair's shape, integer types, bounds and uniqueness. Complete length plus no duplicates and in-bounds coordinates implies a full rank permutation. It builds each layer's within-profile order by appending IDs in their original global profile sequence; it does not sort by observed count. Sparse observed count pairs are validated and duplicate-checked; unobserved experts get zero (`:59-93`).
+
+Production input has 48 layers × 512 experts. The pinned parser validates the entire 24,576-entry STRP profile and inverse before the adapter's fixed `<HH` unpack over bytes `[24:24+24576*4]` (`:106-108`). The adapter then uses `ids[:cap]` with `cap=128` for every layer (`:59-60, 88-92`). This is a deliberate, mathematically sufficient truncation for an exact total of 128 slots: no feasible quota can exceed 128, so ranks 129–512 cannot affect any candidate score. Crucially, it validates the full rank order first and only then truncates each layer prefix; it does not reinterpret or reorder those 128 ranks. The per-layer curve includes zero plus cumulative counts for ranks 1..128, including unseen zero-count entries, with checked uint64 prefix addition.
+
+The selected objective/budget/default are fixed in source: A-read0 only, 128 uniform MAXBLOB slots, default `[2]*47+[34]` (module docstring and `DEFAULT`; fit selection at `:122-124`). The loop chooses the DP candidate only when `index==0`, freezes `candidate=fit['quotas']`, and subsequently only scores that frozen vector on requests 2–4 (`:110-125`). Thus B and repetitions do not participate in fit. Before recording any request result, the adapter requires its default-quota score to equal both the request parser's END `hits` and the pinned replay's default resident `covered_entries` (`:119-121`). This is a strong cross-check that rank/count mapping reproduces the already-validated observed default hits, not just a self-consistent new curve.
+
+## Recorded result and exact meaning
+
+The actual stdout reports fit-request score 3,175 entries versus default 2,116 (gain 1,059) on A-read0. With that A-fitted quota frozen, B-read1 scores 2,504 versus its default 1,874. A-read2 repeats A-read0 exactly (same 42,720 total entries and curve hash); B-read3 repeats B-read1 exactly (same 48,480 total entries and curve hash). This confirms the two fixture traces and their repeated count identities. It does not give four independent prompts, a certified holdout, or a distributional performance estimate. The output itself labels B a different diagnostic fixture, not certified independent holdout, and lists changed-route, no-LRU, no-traffic, no-service-cost, no-time, no-packed-byte, no-live-policy and no-full-lifecycle limits.
+
+The score means: among the 128 profile-prefix residents, how many entries in each fixed captured request trace belong to the selected entries. It is exact replay of recorded routes under a counterfactual resident set. Changing residency can change later model math/routing, so these numbers are not expected future counts after installing the quota. The vector and gain are not an engine setting, adoption decision, cache hit-rate or latency prediction. R57's train/holdout rule and R59's source/map/graph/256K lifecycle gates continue to apply.
+
+## Fixture and remaining boundary
+
+The seven literal fixture methods cover interleaved rank order versus count order, unseen-zero entries, the nonconcave greedy counterexample, 48×512 geometry with first-128 truncation and default-score hand oracle, rank/count malformed inputs and overflows, explicit cleanup-key negatives, and canonical curve hashing (`test_static_cache_quota_trace.py:1-86`). They are independent small literals and do not access the closed receipt. The actual CLI receipt supplies positive-path integration evidence after r6 capture retirement. These are complementary: the fixtures test pure transformations and the closed invocation exercises the pinned real record/profile/raw-log chain.
+
+The new fixture does not exercise adversarial `pinned_source` races/no-follow failures, changed-on-disk multi-stage source behavior, or `analyze()` failure cases; the actual CLI is a positive path only. The pinned replay reader's R58 fixtures cover many receipt/raw-frame/source-negative cases, while the adapter-specific seven fixtures cover its new curve and cleanup rules. If this is later generalized to other receipts or made a reusable admission gate, add adapter-level negative fixtures for self/reader/DP/profile/raw hash mismatch, source mutation and wrong helper root, and assert closure/cleanup rejection. This gap does not undermine the recorded exact-input positive result; it limits generalization of the adapter's own rejection behavior beyond the inspected implementation and existing reader fixture coverage.
+
+No candidate quota is adopted here. The actual closed trace result and CPU test receipt remain count-analysis evidence only; independent holdout, live policy, correctness under changed residency, service-time calibration and performance remain open.

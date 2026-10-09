@@ -1,0 +1,43 @@
+# Static quota trace fixture and retention audit — round 62
+
+Read-only independent audit of the trace adapter’s literal fixtures, the closed post-retirement CLI receipt/output, exact inputs it consumes, and the r6 deletion/retention manifest. Source snapshot: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-static-quota-oracle-v0141-20261010. I did not rerun tests/CLI/replay, inspect model payloads, query hardware, profile, clean files, or alter Git/source. Only this report was written.
+
+## Evidence inspected
+
+- Adapter sycl/tools/static_cache_quota_trace.py SHA-256 1ab9bf4aea79eb121507d7a59df58546f79674ebcb2475ee4379a7413f43f981.
+- Literal adapter fixtures sycl/tools/test_static_cache_quota_trace.py SHA-256 11e7f61a7d9f34647f994b927a1078cc3695ae664daed4b6637efba0953b9033.
+- Closed post-retirement validation record /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/static-cache-quota-trace-cpu-validation-v1/record.json SHA-256 8f18655e16fcb47c68ee58428b2e249cf89e2f7d2db05bfd97b27db4178ff248.
+- Captured actual adapter JSON stdout at static-cache-quota-trace-cpu-validation-v1/actual-trace.stdout: 6,876 bytes, SHA-256 02b7abedfa788038dcd26db04e883a9de419511f85f6b264b66ece321b6369a5.
+- r6 retirement manifest /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-route-r6-artifact-retirement-v1.json SHA-256 20e9767e5e954710e464af41b563bf1fcc57b214b8f257c2bcadd3e49377ac43.
+- Original r6 receipt is still 300,166 bytes and hashes to its pinned f606f5a1f2d00dba240213a7feeb3cc84c9da4f1487075d1e97c336a558e4c89.
+
+The validation record is closed with active=false, complete=true, passed=true, gpu_work_submitted=false, model_opened=false, adopted=false, performance_eligible=false, full_lifecycle_passed=false, actual_closed_trace_scoring_executed=true, original_run_receipt_unchanged=true, post_retirement_consumer_passed=true, cleanup=[], survivors=[]. It lists two successful bounded invocations: the adapter fixture suite and the actual closed trace CLI. The actual CLI was run after the r6 artifact retirement manifest completed. This audit relies on that record and captured stdout; I did not rerun either invocation.
+
+## Literal fixture quality and gate
+
+The seven adapter fixture methods in test_static_cache_quota_trace.py exercise small literal rank/count layouts and malformed inputs, not an actual trace parse. In particular:
+
+- test_rank_not_count_order_and_missing_zero hard-codes curves [[0,3,103,103],[0,0,7,7]]; its rank list intentionally differs from input count order, and absent (1,2) / (0,1) counts become zero.
+- test_greedy_failure_literal hard-codes the non-diminishing prefix case and expects quotas [0,2], score 109 versus default 19. The distinct DP test suite test_static_cache_quota.py has its own exhaustive enumerator over every tiny feasible quota vector (lines 7–15 and 31–36); that is independent of the production DP transition logic. The trace fixture itself checks literal curves, then calls the pinned DP helper for the score.
+- test_production_truncation_and_default uses the production 48-by-512 rank geometry. The top 128 entries per layer are kept; count 11 at expert 127 is included and count 999 at expert 128 is excluded. It checks the 48 curves each have 129 prefix points.
+- Rank/count negative tests reject duplicate or incomplete rank pair sets, out-of-range IDs, bool-as-int IDs or counts, duplicate count records, negative or over-uint64 counts, and uint64 prefix overflow. Geometry tests reject bools and out-of-bounds layer/expert/cap values.
+- test_cleanup_explicit_false_only requires a cleanup dictionary and exact boolean False for forced, inferior_survived, and gdb_survived; missing fields and integer zero do not pass.
+- test_curve_hash_literal compares to a literal known digest and confirms layer ordering changes the hash.
+
+The actual CLI path is separately guarded: it self-pins its bytes, dynamically loads the exact frozen replay reader and DP source by SHA, demands the fixed helper root and exact r6 receipt SHA, verifies the closed receipt and cleanup gate, then calls the existing replay/shape/parser chain. It checks profile hash and derives rank order from the packed profile; it reads the whole bounded raw stderr trace by its recorded digest, validates each request's named byte interval and DONE line, reconstructs prefix curves, and reconciles default quota coverage against both parsed end hits and replay coverage (adapter lines 96–126). Request names are fixed to A-read0, B-read1, A-read2, B-read3. The fitted quota vector is produced only on request index 0, A-read0; subsequent rows score that fixed candidate against captured request counts, not a new policy run.
+
+The adapter's source comment and returned limitations correctly say this is an additive captured routed-entry-count objective, not packed-byte allocation, cost, DRAM traffic, LRU ordering, live policy or latency. The candidate is fitted to A-read0 only; B is not a certified independent holdout and A2/B3 are repeated requests. Scores in actual-trace.stdout are A: candidate 3,175 vs default 2,116; B: 2,504 vs 1,874; A2 repeats A; B3 repeats B. This is a count-only replay of routes observed under captured default residency. Different residency could change routing. No latency benefit or candidate-policy runtime result follows.
+
+## Required inputs compared with retired artifacts
+
+The adapter and pinned reader need the exact closed r6 receipt; its source/controller/parser/shape code; the pack's native_experts.txt metadata; the fixed static resident profile; and the original full stderr trace used to verify and slice the four request intervals. The actual stdout records hashes for these inputs and per-request raw references. The whole raw stderr is necessary because the replay reader validates the complete trace and all request frames before returning the four request slices; its bounded file reader caps the file at 64 MiB (replay_cache_route_pairs_v1.py:21,33–55,154–169). The retained trace is 1,389,517 bytes with SHA-256 3309c390f8e5f047321ca84bcdc6d182e9c13ca1b8db178c79a88b108e13ab3f. The manifest identifies /root as owner, names static-count replay and prefix quota scoring as consumer, and says to review when the static-prefix selection/holdout question is closed or superseded.
+
+The adapter does not reopen the removed candidate head/state tensor captures. It consumes receipt metadata and the retained text trace, profile, metadata, and pinned helper code. The record explicitly says original run receipt unchanged and post-retirement consumer passed. Thus removal of duplicate candidate tensors did not remove an input required by this new consumer; the original receipt, canonical comparison/RESTORE fixtures, and unresolved C/D captures remain as stated in the manifest.
+
+The manifest lists 31 removed files, hashes/identities/reasons, replacement paths where applicable, 2,339,197,841 logical bytes, 2,341,583,872 reported file-allocation bytes, and available-space delta zero. It explicitly says the file-allocation sum is not unique physical extents and does not claim physical space reclaimed. Do not turn this deletion record into a disk-space or performance claim.
+
+One retention-recording gap remains: the manifest gives the retained trace's actual byte count, owner, consumer, hash and next review, but has no explicit byte-budget field for the retained full trace. The pinned reader's 64 MiB bound is a real functional cap and the trace is well below it, yet the manifest does not identify that cap as the retention budget. At the next manifest review, record the 64 MiB cap (or another owner-approved maximum) explicitly alongside the current 1,389,517-byte size. This is a documentation gap; it does not invalidate the closed CLI result.
+
+## Evidence boundary
+
+The fixtures qualify adapter arithmetic/input guards on literal CPU examples; the captured CLI output and closed receipt separately establish successful actual trace parsing/scoring after retirement. Neither qualifies an independent holdout, real candidate residency, a changed route sequence, full model lifecycle, service cost, latency, or adoption. This audit found no reason to reopen retired tensor files. Keep the raw stderr only while the recorded trace-scoring/selection question requires reproducible full-history replay; close or supersede that consumer at its stated review point.
