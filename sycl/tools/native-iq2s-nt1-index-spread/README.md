@@ -43,6 +43,16 @@ plus checks of zero high bytes in unused lanes and input/output write guards.
 It covers lane permutations and alignment, not all four-byte Cartesian products
 or a guard-page read-boundary proof. The copied dot bodies are unchanged.
 
+The first root build found that the table implementation header's first inclusion
+of `<cstdint>` inside the private namespace created a nested `std` namespace.
+Root now includes `<cstdint>` globally before that header. The original failed
+build remains a separate receipt. The fixture records MXCSR at entry, after GGML
+initialization and after all checks, and requires rounding/FTZ/DAZ/exception-mask
+controls to be unchanged between the latter two endpoints. Exception status bits
+may change. The fixture does not set an FP mode or establish the model thread's FP
+state. `precise` permits contraction; actual linked operations remain a separate
+gate. Finite synthetic comparison does not admit all possible large-scale rows.
+
 96 profiles: widths 256/512/2560/8192, three literal uint32 seeds, eight patterns.
 Each tests 16 synthetic independent Gate/Up pairs (1536 pairs, 9216 dot calls total).
 LCG is unsigned32 `state=1664525*state+1013904223` modulo 2^32. Inputs are zero,

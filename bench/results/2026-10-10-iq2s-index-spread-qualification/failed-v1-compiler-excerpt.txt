@@ -1,0 +1,17 @@
+{"path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq2s-index-spread-cpu-validation-v1/release-build.stdout", "bytes": 15260, "sha256": "7935ae23b74c3369fb9331e978727612530f1f617b401bed18fe5e707499d2ae"}
+[1/28] Building CXX object CMakeFiles/iq2s_index_spread.dir/iq2s_index_spread.cpp.o
+FAILED: CMakeFiles/iq2s_index_spread.dir/iq2s_index_spread.cpp.o 
+/opt/intel/oneapi/compiler/2026.1/bin/icpx  -I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/include -I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src -I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/ggml-cpu -I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include -O3 -DNDEBUG -std=gnu++20 -fp-model=precise -mavx2 -mfma -mf16c -MD -MT CMakeFiles/iq2s_index_spread.dir/iq2s_index_spread.cpp.o -MF CMakeFiles/iq2s_index_spread.dir/iq2s_index_spread.cpp.o.d -o CMakeFiles/iq2s_index_spread.dir/iq2s_index_spread.cpp.o -c /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/sycl/tools/native-iq2s-nt1-index-spread/iq2s_index_spread.cpp
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/sycl/tools/native-iq2s-nt1-index-spread/iq2s_index_spread.cpp:40:28: error: no template named 'array' in namespace 'isolated_iq2s::std'; did you mean '::std::array'?
+   40 | constexpr auto high = [] { std::array<uint64_t,256> a{}; for(unsigned h=0;h<256;++h) for(unsigned k=0;k<4;++k) a[h] |= uint64_t((h>>(2*k))&3)<<(8*k); return a; }();
+      |                            ^~~~~~~~~~
+      |                            ::std::array
+/usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/tuple:2019:45: note: '::std::array' declared here
+ 2019 |   template<typename _Tp, size_t _Nm> struct array;
+      |                                             ^
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/sycl/tools/native-iq2s-nt1-index-spread/iq2s_index_spread.cpp:65:37: error: no member named 'runtime_error' in namespace 'isolated_iq2s::std'; did you mean '::std::runtime_error'?
+   65 |  if(n<256 || n>8192 || n%256) throw std::runtime_error("width");
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+[2/28] Building C object ggml/src/CMakeFiles/ggml-base.dir/ggml.c.o
+ninja: build stopped: subcommand failed.

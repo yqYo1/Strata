@@ -27,6 +27,7 @@ SOFTWARE.
 #include <bit>
 #include <cmath>
 #include <cstdio>
+#include <cstdint>
 #include <cstring>
 #include <stdexcept>
 #include <vector>
@@ -295,6 +296,16 @@ void rows() {
 }
 }
 int main(int argc,char**) {
- try { if(argc!=1) throw std::runtime_error("no arguments admitted"); ggml_cpu_init(); isolated_iq2s::indices(); isolated_iq2s::mixed_indices(); isolated_iq2s::rows(); printf("summary,synthetic_only,performance_false,adopted_false,pass\n"); if(fflush(stdout)!=0||ferror(stdout)) throw std::runtime_error("stdout flush"); return 0; }
+ try {
+  if(argc!=1) throw std::runtime_error("no arguments admitted");
+  const unsigned entry=_mm_getcsr(); ggml_cpu_init(); const unsigned initialized=_mm_getcsr();
+  printf("fp_environment,%08x,%08x,%08x\n",entry,initialized,0xffc0u);
+  isolated_iq2s::indices(); isolated_iq2s::mixed_indices(); isolated_iq2s::rows();
+  const unsigned final=_mm_getcsr();
+  isolated_iq2s::require((final&0xffc0u)==(initialized&0xffc0u),"FP controls changed");
+  printf("fp_environment_end,%08x,control_unchanged,pass\n",final);
+  printf("summary,synthetic_only,performance_false,adopted_false,pass\n");
+  if(fflush(stdout)!=0||ferror(stdout)) throw std::runtime_error("stdout flush"); return 0;
+ }
  catch(const std::exception& e) {fprintf(stderr,"FAIL,%s\n",e.what());fflush(stderr);return 1;}
 }
