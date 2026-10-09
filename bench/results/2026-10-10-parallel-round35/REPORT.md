@@ -5,7 +5,7 @@ had returned and no research agent was active. Root resumed multiple independent
 read-only researchers and continued its own execution. The recurring assignment,
 shared-history, separate implementation and root-only testing rules are now in
 AGENTS.md. Returned reports remain files with exact hashes; they are reviewed
-before adoption. Registryv40 has128 completed Luna reports and preserves prior
+before adoption. Registryv41 has130 completed Luna reports and preserves prior
 immutable snapshots in the Git history.
 
 ## Division of work
@@ -21,10 +21,10 @@ fixtures and pure byte-framing helper. Root owns every actual execution and
 serializes builds, tests, inference, profiling and cleanup with the measurement
 lock. Research does not hold up independent main work.
 
-| Latest registryv40 assignment | Model | Scope | State at snapshot |
+| Latest registryv41 assignment | Model | Scope | State at snapshot |
 | --- | --- | --- | --- |
-| Workload independence | gpt-6-luna | Actual A/B token/corpus overlap and separate32K workload construction | Running, read only |
-| Native cohort sufficiency | gpt-6-luna | Actual distinct nonresident pair/type/NT diversity for service calibration | Running, read only |
+| Independent input preparation | gpt-6-luna | No-queue tokenizer/template path for separately sourced32K documents | Running, read only |
+| Native service oracle | gpt-6-luna | Exact production activation/FFquant/pool output and timing boundaries | Running, read only |
 | Implementation agent | gpt-6.1-sol | Pure DP and separate frozen-trace adapter | Completed source only; root tests passed |
 | Main agent | Root | Actual GPU failure closure/archive and next serial qualification | All execution closed; no live GPU process |
 
@@ -291,3 +291,20 @@ R63 now audits A/B source-token independence and whether actual distinct
 nonresident format/NT IDs support disjoint service cohorts. These are read-only
 data/source investigations; no project code, model payload or device execution
 is delegated. Root resumes from this committed report and reviewed files.
+
+R63 directly compared the prompt IDs: A/B share32719 initial IDs and the same
+last9 IDs, with only40 unequal positions. They are near-duplicates, so B scores
+are not independent workload validation. R64 investigates separate frozen32K
+source preparation using a production-compatible host tokenizer/template path.
+
+R63 also counted enough distinct nonresident IDs for the prioritized native
+service cells: Down20NT1=8115, Down42NT1=1985 and Down42NT2=891. These permit
+192+192 disjoint ID cohorts before source/extent/math checks, not an actual
+payload/service result. The shared host role-plan and ExpertPool harness still
+need implementation and root-owned qualification. R64 separately audits exact
+activation/FFquant/output/timing boundaries before that measurement.
+
+Correct the raw R63 SAVE wording: in262140+4 generation, executing physical
+cell262143 qualifies the capacity boundary; saved consumed262143 is valid
+because the final emitted token was not fed. Preserve the complete math/phase
+lifecycle gates, without imposing an incorrect mandatory SAVE262144.

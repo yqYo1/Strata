@@ -1,0 +1,48 @@
+# Actual route-ID sufficiency for native service cohorts — round 63
+
+Read-only data sufficiency audit. No model payloads were opened, no replay/controller/adapter/test/engine was run or imported, and there was no GPU/query, source edit, build, profiling, cleanup, or Git operation. This report counts route records from an already closed trace and checks them against the R46 distinct-ID and phase-byte floors. It makes no service-time or performance claim.
+
+## Decision
+
+The closed capture contains enough distinct nonresident `(layer, expert)` IDs for the prioritized cells to form the R46 minimum of 192 train IDs plus 192 disjoint holdout IDs **within each cell**:
+
+| Cell | Captured route-union IDs with jobs | IDs beyond 384 | R46 192+192 feasible? |
+|---|---:|---:|---|
+| Down type 20, NT1 | 8,115 | 7,731 | Yes |
+| Down type 42, NT1 | 1,985 | 1,601 | Yes |
+| Down type 42, NT2 | 891 | 507 | Yes |
+
+These are route-derived eligible IDs, not a selected sample manifest. The count is an upper bound on sampleable IDs before all shard/extent/hash and correctness gates. If any candidate fails those gates, replace it deterministically from the remaining eligible IDs; if fewer than 384 survive for a cell, that cell cannot satisfy R46 with routed IDs. R46 also requires each phase/cell working set to exceed 64 MiB, separate train and holdout cohorts, and a maximum 1 GiB full-blob cohort; passing the ID count alone is not a completed calibration.
+
+Down type 20 has 921,600 bytes of Down extent per expert and Down type 42 has 460,800 bytes per expert from the pinned metadata/layout geometry. At N=192, the corresponding Down working sets are 176,947,200 bytes (168.75 MiB) and 88,473,600 bytes (84.375 MiB), respectively, each above 64 MiB. Train and holdout each use 192 distinct IDs. Confirm selected role extents and actual `blob_bytes` against the pinned metadata before measurement, and apply the R46 1 GiB cap to the full mapped/referenced blobs, not just the Down phase bytes.
+
+## Evidence and counting method
+
+The closed r6 receipt is `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json`, SHA-256 `f606f5a1f2d00dba240213a7feeb3cc84c9da4f1487075d1e97c336a558e4c89`. Its raw closed diagnostic is `debugger/inferior.stderr`, 1,389,517 bytes, SHA-256 `3309c390f8e5f047321ca84bcdc6d182e9c13ca1b8db178c79a88b108e13ab3f`. The format mapping is from IQ3_S `native_experts.txt`, SHA-256 `d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d`; metadata declares 48 MoE layers × 512 experts and Down type 20 in 39 layers and Down type 42 in 9 layers. The metadata, not GGUF payload bytes, was read.
+
+Counts were derived from the raw `CACHE_ROUTE_PAIRS_V1` records. For a pair record `(layer, expert, entries=n, hits, refused, offloaded, callback_pairs=j)`, the established shape rule is `J1=2*j-n`, `J2=n-j`. An ID is eligible for the CPU-service sample when its layer maps to the requested Down type, `refused>0` (nonresident), and the requested `Jnt>0`. Each `(layer, expert)` is counted once per request pattern regardless of how many logical jobs hit it. Logical job totals are reported separately below; they must not be mistaken for distinct IDs. This formula is the pair-to-NT shape rule documented by the R42/R59 trace work and implemented by the pinned cache-route-pairs parser/shape reader; no parser or replay code was executed for this audit.
+
+The trace contains four requests: A-read0, B-read1, A-read2, B-read3. A-read0 and A-read2 have identical PAIR records; B-read1 and B-read3 likewise. Therefore the evidence uses one A and one B only. Repeated A/B request instances add no ID diversity. A and B are two captured fitting patterns, not a general-workload holdout.
+
+| Cell | A unique IDs / logical jobs | B unique IDs / logical jobs | A∪B unique IDs | A∩B IDs |
+|---|---:|---:|---:|---:|
+| Down20 NT1 | 6,023 / 21,761 | 6,327 / 24,493 | 8,115 | 4,235 |
+| Down20 NT2 | 2,183 / 5,583 | 2,253 / 6,625 | 3,407 | 1,029 |
+| Down42 NT1 | 1,444 / 4,987 | 1,562 / 5,489 | 1,985 | 1,021 |
+| Down42 NT2 | 542 / 1,345 | 589 / 1,687 | 891 | 240 |
+
+The A∪B counts are computed as ID set unions; repeated logical jobs across requests do not create new IDs. NT1 and NT2 sets also overlap within a format: Down20 has 3,270 IDs in both NT sets (8,252 in either), and Down42 has 862 in both (2,014 in either). Thus do not add the NT counts and claim that many independent experts. Each cell can satisfy its own disjoint train/holdout split, but cross-cell reuse of an expert is not independent evidence and must be marked in the sample manifest.
+
+Per-layer eligible union counts (layer: IDs) were also checked, confirming broad layer coverage rather than a single-layer pool. Down20 NT1: `0:365, 2:275, 3:181, 4:226, 5:240, 6:277, 7:259, 9:205, 11:190, 14:211, 15:128, 16:164, 17:202, 18:246, 19:193, 22:258, 23:194, 24:207, 25:203, 26:204, 27:184, 28:227, 29:196, 31:149, 32:162, 33:190, 34:235, 35:187, 37:209, 38:254, 39:167, 40:159, 41:209, 42:218, 43:183, 44:201, 45:185, 46:191, 47:181`. Down20 NT2: `0:40, 2:94, 3:60, 4:62, 5:90, 6:106, 7:107, 9:87, 11:81, 14:82, 15:61, 16:75, 17:101, 18:107, 19:94, 22:97, 23:87, 24:96, 25:87, 26:98, 27:84, 28:90, 29:96, 31:68, 32:76, 33:94, 34:112, 35:110, 37:112, 38:101, 39:76, 40:77, 41:90, 42:114, 43:90, 44:86, 45:77, 46:77, 47:65`. Down42 NT1: `1:299, 8:213, 10:219, 12:241, 13:218, 20:208, 21:218, 30:175, 36:194`. Down42 NT2: `1:96, 8:105, 10:99, 12:99, 13:101, 20:98, 21:117, 30:78, 36:98`.
+
+## Selection and holdout contract
+
+For each `(model-pack identity, metadata SHA, phase, format type, NT, dispatch)` cell, construct its eligibility set using the rules above, then bind every candidate ID to its layer-local format, the selected shard, role offsets/lengths, expected logical blob length, and source identity. Hash the actual selected role extents (or bind an immutable pack manifest plus selected-extent hashes) before timing and recheck pack identity afterward. Do not persist a second expert corpus.
+
+After filtering invalid candidates, stratify by available layer and captured frequency band, then sort IDs within strata by a documented stable key and use a fixed declared seed to allocate 192 IDs to train and 192 disjoint IDs to holdout. Selection should balance strata as evenly as possible without excluding low-frequency eligible IDs. Record exact sorted ID lists and the allocator version/seed; do not derive the selection from timing results. Reuse the identical eligible source pool only as needed, but keep the train/holdout split disjoint within each cell. Record cross-cell expert reuse explicitly. If an eligible set has fewer than 384 IDs after source validation, use deterministic metadata-selected IDs only as a separately labeled format-kernel calibration; do not call it route-weighted service evidence.
+
+The manifest for each selected ID should contain `(layer, expert)`, phase/type/NT cell, A/B source-pattern presence, per-pattern logical job count, route eligibility reason (`refused>0`), train/holdout assignment, metadata path/hash, shard path/size/hash, role offsets and byte lengths, expected blob size, selected extent hashes, and pack identity. Preserve the repeated-job totals as context, never as sample weights until service times have actually been measured. This capture supplies default-policy route exposure only; it does not establish how a live routing/cost policy would select jobs or prove that calibration samples represent an uncaptured workload.
+
+## Limits and next gate
+
+R59 prioritizes Down20 NT1 first, then Down42 NT1/NT2; its route-exposure table reports 46,254, 10,476 and 3,032 logical jobs respectively across one A+B pair. Those counts order the calibration; they are not CPU time or decode latency. This audit establishes only routed-ID sufficiency from the captured-default trace. It does not select a dispatch, claim a kernel win, establish actual-payload correctness, or complete the service calibration. Proceed only after exact source extents, current pack identity, wrapper geometry, and correctness are validated under the R46/R48 contract. No A/B pair is an independent workload holdout; the R46 disjoint-ID holdout controls expert-level overfit only.

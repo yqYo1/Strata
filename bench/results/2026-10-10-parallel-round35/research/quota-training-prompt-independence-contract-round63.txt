@@ -1,0 +1,49 @@
+# Quota training-prompt independence contract — round 63
+
+## Scope and source identity
+
+Read-only comparison of the two 32K token inputs used by the closed r6 A/B/A/B run, their source-selection code, and the associated closed receipts. The token files were parsed as integer data only to compare exact ID sequences. I did not tokenize/decode text, run or import the controller, access a model/payload, replay data, execute tests, query hardware, profile, clean artifacts, or change Git state.
+
+Pinned inputs and sources:
+
+- v6 run source `run_owned_cache_route_pairs_v0141_code32k_v6.py`: SHA-256 `9304f84dfce23b099c02d0090ea3b8f9b158100d157b0175ab3e4cfda1a9f423`
+- A source `coding-review-32k-tokens.txt`: SHA-256 `137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449`
+- B source `full-context-copy-off/coding-context-256k-tokens.txt`: SHA-256 `cc29e4427bcacb21c9f7df2d1f1a7d41897fce5bd76a8ca43d8c3c34d914dd2a`
+- Closed r6 receipt: SHA-256 `f606f5a1f2d00dba240213a7feeb3cc84c9da4f1487075d1e97c336a558e4c89`
+- Generated r6 A fixture: SHA-256 `137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449` (32,768 tokens)
+- Generated r6 B fixture: SHA-256 `9210e7a79017f9d468cba4e492ca4c365a753291aaf4c478be34335a100958c3` (32,768 tokens)
+
+The r6 receipt records those exact two fixture hashes and repeats the pair in order A/B/A/B. Its configuration note reports no reused prompt tokens, so the repeated requests were fresh execution/session inputs; that does not make their repeated content independent workloads.
+
+## Actual relationship between A and B
+
+The v6 source lines 830–843 hash both source files, then constructs A from the first 32,768 IDs of A and B from the first 32,759 IDs of B plus the same literal nine-token assistant suffix `[248046,198,248045,74455,198,248068,198,248069,271]`. The A file contains exactly 32,768 IDs; the B source contains 262,145 IDs.
+
+Comparing the resulting 32,768-ID fixtures directly gives:
+
+- A and B share the exact first 32,719 token IDs: 99.85% of the complete prompt length.
+- Their only unequal positions are one contiguous 40-token span at zero-based indices 32,719–32,758.
+- The final nine IDs are identical and equal the literal suffix appended to B.
+- Overall, 32,728 of 32,768 coordinates match.
+
+Thus A/B are not merely from a similar “coding” domain: their tested token sequences share virtually the entire prompt prefix and the exact ending. The filenames differ, but that alone is not evidence of independent source material. Token IDs alone do not establish what the 40-token semantic difference says; I did not decode them. The exact overlap is sufficient to reject treating A and B as independent workload samples.
+
+The B source is itself a long prompt source, not a separately authored 32K task. The older `full-context-copy-off/cli-supervisor/controller.py` reads that source and forms a requested length `n` as `source[:n-9] + assistant_suffix`; its comment describes the raw coding prefix as an unfinished user message and says the suffix is added for the serve path. The archived `full-context-copy-off/reference.json` identifies its underlying fixture as `bench/results/2026-10-05-sycl-prefill-scaling/coding-context-tokens.txt` with fixture hash `b5cb9087db88ad2c6768ad0b18e1601d6cbd2dcc06789115e9e5862a649999c8`. These establish B's prefix/suffix construction and token fixture provenance, but the supplied closed v6 records do not bind a distinct raw-text corpus/task identity for A. The two current source files are exact-ID-pinned, but are not semantically documented as separate tasks.
+
+## What the present A/B/A/B evidence can support
+
+For the frozen count-analysis result, A-read0 is a fit input and the other request records are score-only under the already-frozen quota. Since A and B share 32,719 prefix tokens and the same suffix, B is not a certified independent holdout. A-read2 and B-read3 are literal repeats of the corresponding fixtures, not extra independent samples. Freshness/no prompt-cache reuse establishes session isolation, not workload independence.
+
+This matters for eventual physical quota measurements as well as count replay. Counterbalancing the order of the same near-identical prompts does not diversify workload content. A/B/A/B controls engine/session order effects; it cannot estimate generalization across task prompts. Any candidate selected or scored here remains a single near-duplicate coding prompt pair's captured-route entry comparison, with the changed-residency rerouting caveat already established in R57/R59/R62. It is not a live policy result or performance claim.
+
+The 32K fixture also is not a shortened 256K lifecycle. The older full-context generator's contract builds exactly `n` IDs, and for a 262,144 request it uses the first 262,135 source IDs plus the nine-token suffix. A 32,768 prefix of that source cannot stand in for the full physical boundary. The prior R38 full-context gate retains the last valid position 262,143, save count 262,144, resume/decode and MTP/KV restoration, all four request outputs, logprobs, all-head and all-66-state comparisons, and complete lifecycle/health checks. Do not label a safety-shortened or prefix-only request “256K” evidence.
+
+## Minimal next prompt preparation
+
+Prepare two new, frozen 32,768-token workloads from separately sourced coding tasks/documents under the same tokenizer/model revision and prompt-template recipe: one training workload used only to derive the entry-count curve/quota, and one validation workload from a distinct source task/document that is not a prefix, continuation, paraphrase, or near-copy of training. This is the minimum useful pilot; one validation prompt is not enough for strong population-level claims, so add several independent documents before claiming workload generality.
+
+Before tokenization, freeze for each workload the source/task identifier, raw-source SHA-256, and the exact text selection rule. Record tokenizer/model vocabulary revision and hash, chat-template bytes/hash, truncation policy, and the final exact token-ID SHA-256/count. Use a common short protocol/chat wrapper only if needed, document its exact token span, and ensure the body—not only the final 40 tokens—is independently sourced. Compare ID prefixes and source-document identity before admitting the pair; do not reuse one long source with different cuts/suffixes. Never revise the validation prompt after seeing its score. Fit on training only, freeze the quota/objective/tie rule, then score validation; keep any later physical A/B on the exact same frozen prompt IDs for both policies while treating repeated runs as repeats, not new prompts.
+
+For a separately requested full-context qualification, retain the exact 262,144 physical input tokens and the full lifecycle gates. Do not create a shorter “safe” variant from the same long prompt and count it as an independent 32K holdout. This report does not generate or tokenize any proposed prompt.
+
+No new run, quota selection, independent holdout, live-policy result, or performance conclusion is produced here.
