@@ -448,3 +448,59 @@ integration points and the remaining check-then-reopen gap, without claiming
 production mapping ownership has been unified. Compact evidence, original
 receipts and report hashes are archived here; raw necessary consumers have
 owners, byte budgets and review points in root-parallel-review-v46.json.
+
+
+## Repeated research and actual CPU qualification, registry v47
+
+At the start of this turn, only the Sol implementation agent was still active;
+both Luna researchers had returned R75 reports. Root acknowledged the delay,
+reviewed the reports and assigned further distinct scopes while doing actual
+work. The latest v47 live snapshot records two active Luna researchers; the
+separate Sol implementation has completed. Completed reports do not count as
+live agents. The archive now contains 165 completed Luna reports.
+
+Root corrected actual long-prompt source admission, including the target graph
+and compiled inline dependencies. Eight CPU fixtures and actual CPU preflight
+passed. Root also built the complete standalone native CPU closure and ran
+actual weights: 14 routed IDs, seven format pairs and 280 individual controlled
+samples passed the stated quantization, independent NT1 and direct/pool gates.
+No GPU model run was performed in this turn. The traced hot-cohort samples are
+ineligible for inference speed claims or service weighting.
+
+Source and detailed receipts are committed on `diag/sycl-static-quota-oracle-
+v0141-20261010` at `bdaebe3d` and `diag/sycl-native-role-plan-v0141-20261010` at
+`c454c8cf`. The separate source-only Sol supplied a streaming calibration program; root
+passed its standalone build and the metadata-only incremental rebuild.
+Both receipts remain separate and all execution remains root-owned and serialized.
+
+Root rejected R77's false missing-initialization finding after checking the
+unchanged source. R78 retracts it; both reports remain. The exact-cell sample
+count audit also shows five cells need separately labeled metadata supplements;
+Down-format marginal counts do not prove every GU/Down/NT cell has enough IDs.
+New performance/adoption and full physical 262144 candidate gates remain open.
+
+Root fully reviewed the late R80/R81 reports before assigning distinct CPU R82
+and external-prefill R81 scopes. Those assignments share the past report
+directory, prior decisions and latest committed v46 registry; v47 was still
+uncommitted at assignment time. The source-only Sol handoff is complete, not an
+active assignment. Registry status is a timed live observation and must be
+checked again after reports return.
+
+The calibration metadata now records STRATA_IQ_PREFETCH. Root's minimal launch
+environment means the omitted field is not evidence that a prior run used a
+nondefault value. Builds v1 (24.255s) and v2 (4.937s) passed compile/link/import
+checks and are committed with the tool at 59323e66. Neither executed the 384-ID
+streaming cohort; statistical and engine performance qualification remain open.
+
+Ordinary prefill has no per-layer copy drain. Its retained copy-event list grows
+with the number of copies, so the existing seams cannot provide exact overlap
+with both fixed memory and no added waits. Existing phase windows include idle
+and wait time. This finding prevents a misleading profiling claim; it does not
+change stable queue dependencies, adapter settings or production inference.
+
+The external R81 search returned during root's archive work. Root read the full
+report and advanced only the chunkwise WY GDN idea to R82 mathematical/model
+configuration parity and bounded-workspace review. No new transfer-reuse
+proposal survived the active-path audit. Apple figures are not B570 evidence;
+existing numerical acceptance is not relaxed. A fresh live check shows both
+CPU R82 and GDN R82 researchers running at the final v47 snapshot.

@@ -1,0 +1,75 @@
+# Level Zero command-list mode: qualified future tuning plan — round 78
+
+## Scope and evidence boundary
+
+Read-only source/package metadata and public-source audit of the deferred immediate-vs-regular command-list hypothesis. Frozen Strata tree:
+
+- Root: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010
+- HEAD: 66aaec3a66ad9ed12e6d042cffe743c47e364432
+- sycl/include/dpct/device.hpp SHA-256 adbcbd0ac45995348e37ac3f5ca42d9f3d4b0555031aeb1781a1e2166a74ed52
+- sycl/src/prefill/prefill.cpp SHA-256 f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77
+- sycl/include/strata/sycl_queue.hpp SHA-256 6a836d6d1cbbdd297135957aaed79e90c26c9e5fa1b615dcab33e669dd2cf390
+
+Installed package metadata lists the DPC++/SYCL compiler and runtime as 2026.1.1-325. The installed runtime provides /opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0.12.0; the adapter soname is UR 0.12.0. No runtime/device query or invocation was made. A prior retained clean 32K run record is SHA-256 7543b89c6a86e14f00e6761440e1a3992a0956c6e273332852d98a9b312001bf; its project-messages.txt SHA-256 is 7a26619597f9411610ca1dfe1c72d6c7f22df142ffd3d72e649eb42ee58584a2. Those recorded B570 output and process environment with UR_ADAPTERS_FORCE_LOAD=/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0, UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1, and EnableDirectSubmission=0. This is historical evidence for that run, not a live statement about a current process.
+
+No code, package, runtime, environment, or source files were changed. No Git, Ninja, build, test, profiler, model, GPU, or service action was performed.
+
+## Version-matched interpretation and current adapter/mode
+
+For the recorded Strata runs, loading the explicit v2 adapter path on an Arc B570, plus Intel's 2025.3+ documentation that L0 V2 is the default adapter for Arc B Series / Xe2 and only supports immediate command lists, gives strong evidence that these runs used V2's immediate in-order queue model. Strata's current queues are in-order, matching V2's supported queue mode. This is a conclusion from historical run environment plus documented V2 restrictions, not a queue query.
+
+The 2026.1 DPC++ package contains both v1 and v2 adapter libraries. The run record's explicit UR_ADAPTERS_FORCE_LOAD selected v2, so defaults based only on GPU family are secondary for that recorded process. With V2 selected and without UR_L0_V2_FORCE_BATCHED, V2's documented supported mode is immediate. V2's debug variable UR_L0_V2_FORCE_BATCHED is documented as adding UR_QUEUE_FLAG_SUBMISSION_BATCHED and can produce invalid flag combinations; it is not a supported regular-mode switch for a V2 queue. Do not set it as a batching experiment.
+
+Intel's current public environment-variable documentation uses SYCL_UR_USE_LEVEL_ZERO_V2 to select/disable V2; by default it selects V2 for GPUs based on Xe2 or later (Battlemage/B570). Current Unified Runtime-facing controls seen in Intel materials and 2026 Intel/LLVM test invocations use UR_L0_USE_IMMEDIATE_COMMANDLISTS, UR_L0_BATCH_SIZE, and UR_L0_COPY_BATCH_SIZE. The SYCL_PI_LEVEL_ZERO_* names are PI-era/legacy spellings documented for the older adapter path; do not set both spellings and assume one wins. For this installed UR adapter, use UR_L0_* only when a V1 run has been explicitly selected and the control is confirmed active. V2-specific names are separately prefixed UR_L0_V2_*.
+
+Exact artifact provenance gap: the installed binary identifies compiler/runtime package version and UR adapter soname, but no local source-package commit mapping was found. Intel's public intel/llvm sycl branch and its UR 0.12.0 project metadata are current implementation sources, not proven byte-for-byte sources for package build 2026.1.1-325. Release notes and implementation tests are version-family evidence, not the installed adapter's full private build provenance.
+
+## Strata queue creation and effect scope
+
+- The default DPCT in-order queue is constructed via create_queue_impl(true, sycl::property::queue::in_order()) in sycl/include/dpct/device.hpp:685-686; create_queue_impl adds enable_profiling and uses a SYCL queue constructor (around lines 692–704).
+- The prefill copy queue is separately created by create_in_order_queue_with_profiling in sycl/src/prefill/prefill.cpp:1116–1123; it also uses a SYCL queue constructor, in-order property, and optional profiling.
+- These queues do not set Intel's per-queue immediate_command_list or no_immediate_command_list properties. The adapter/environment policy applies to constructor-created queues; an environment sweep is process-wide and changes all such queues, not just prefill's copy queue.
+- Intel's per-queue property is available for the legacy adapter path and lets a future source experiment target queue construction individually. It is not a path to regular lists on L0 V2, which supports only immediate lists. No property change is recommended by this source-only audit.
+- EnableDirectSubmission=0 is a separate NEO/driver variable. It does not select the UR queue mode. Preserve it at 0 in every future arm, as well as the rest of the functional environment. Do not conflate direct submission with SYCL/UR immediate command lists.
+- Keep all copied and used event/barrier dependencies unchanged. The copy queue's completion event protects compute visibility and each used event protects stage-slot reuse across copy and compute queues; command-list selection does not remove either lifetime edge.
+
+## A/B arms if a future run is separately authorized
+
+Do not run a mode comparison until the recorded process is closed and root has completed the currently active CPU/reference work. Serialize with all GPU/build work.
+
+1. **A — current default/production baseline.** Preserve the exact accepted environment, including EnableDirectSubmission=0, the recorded V2 adapter path, UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1, and leave command-list overrides unset. This is the B570 V2 immediate-only in-order baseline. Collect the effective adapter and queue-kind evidence below. Do not label an environment variable's absence alone as proof of actual mode.
+2. **B — regular lists (conditional legacy-only diagnostic).** Only attempt if Intel/UR confirms the installed V1 adapter supports this B570 and Strata's same in-order/profiling queues. Disable V2 with SYCL_UR_USE_LEVEL_ZERO_V2=0; do not keep the forced-V2 UR_ADAPTERS_FORCE_LOAD path (allow v1 selection or force-load the installed v1 adapter explicitly); set UR_L0_USE_IMMEDIATE_COMMANDLISTS=0; leave UR_L0_BATCH_SIZE and UR_L0_COPY_BATCH_SIZE unset or explicitly at 0 for the adapter's documented dynamic batch-size policy. This necessarily changes adapter family relative to A, so A-vs-B is contextual, not a clean single-variable comparison.
+3. **C — immediate lists on the same legacy path.** Keep the same V1 selection and all other environment as B; set UR_L0_USE_IMMEDIATE_COMMANDLISTS=1. If V1 rejects this device/mode or queue construction falls back, mark the arm unsupported, not passed. Compare B and C for the command-list hypothesis within a constant adapter.
+4. **Optional D — V1 default.** With V2 disabled and no immediate-mode override, log the actual default. Include this arm to distinguish V1's platform default from explicit force. Do not infer it from product family alone.
+
+Do not tune batch counts in the first mode comparison. In V1 regular mode, UR_L0_BATCH_SIZE=0 and UR_L0_COPY_BATCH_SIZE=0 mean dynamic adjustment in the documented interface. Positive values specify a preferred fixed count of compute or copy commands before a list executes; the public source found here does not specify one universal numeric threshold or exact batch algorithm for this package. SYCL PI-era docs have corresponding SYCL_PI_LEVEL_ZERO_BATCH_SIZE / SYCL_PI_LEVEL_ZERO_COPY_BATCH_SIZE controls, default 0/dynamic, but those are not names to rely on for a current UR run. Only after a mode effect is measured should separate fixed-count arms be considered, with batch size recorded as a command-count setting, not a time threshold.
+
+## How to prove the selected mode
+
+The process environment and UR_ADAPTERS_FORCE_LOAD prove which path was requested; they do not alone prove which queue mode was actually created. SYCL_UR_TRACE=2 records UR API calls but should be treated as selection diagnostics, not authoritative performance data; tracing can perturb timing and Intel/LLVM issue 18424 documents a hang whose likelihood changed with tracing. Intel's backend extension says native Level Zero get_native(queue) returns a ze_command_list_handle_t or ze_command_queue_handle_t according to how the SYCL queue was created. A future one-time startup diagnostic can record actual object kind for compute and copy queues, adapter path/version, queue in-order/profiling properties, and override environment before timed requests. Verify that diagnostic's semantics on the selected adapter first. Do not introduce tracing into the timing phase.
+
+A proof record should include exact package versions, libsycl.so and loaded adapter path, runtime/driver build identifiers from already permitted diagnostics, selected device family, full relevant process environment (secrets omitted), per-queue native object kind, and observed effective batch behavior if regular mode is active. If no reliable native queue kind or runtime mode diagnostic is available, mark effective mode unknown and don't interpret its speed.
+
+## Measurement, correctness, and stop gates
+
+If and when separately scheduled, keep the same binary/source/model/profile/input tokens, in-order queue properties, EnableDirectSubmission=0, UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1 where meaningful, service condition, affinity and other environment. Use fresh uncached prompts at **32K or longer**; report prompt processing separately from decode. The timing record should separate total PP wall time and tokens/s, host time spent submitting commands (aggregate count/time by compute/copy queue and launch/copy/barrier class), host time blocked on event/queue waits, per-command device start/end/kernel phases, copy-active DMA bytes/time and span, and decode token/s. Keep aggregate measures and compact samples; don't retain repetitive polling logs or raw traces without a question-specific owner. Repeat modes in balanced serial order (for example A–B–C–B–A) only after a clean baseline and an explicitly authorized GPU run.
+
+Every arm must reach normal process exit with no hang, timeout, async exception, device-lost status, reset/fault log, surviving process, or changed correctness result. Check fresh prompt head/logprob and the existing full recurrent/part-state comparator; never relax numerical rules. If a 32K mode appears viable, recheck the current full physical 256K sequence before adoption and preserve all input tokens. Do not use an adapter switch as a candidate optimization if it causes a queue mode or memory/resource budget that fails these gates. Keep the prior full-256K qualified reference as baseline evidence only; no new physical-256K run occurred in this audit.
+
+## Assessment
+
+This is not a viable immediate-vs-regular A/B on the currently recorded V2 path: its documented mode is immediate-only. A regular-list trial requires an explicit fallback to V1 on B570, which changes adapter and may be unsupported; qualify that device/adapter route first. No Strata timing evidence shows host submissions dominate prefill, no current-process mode query was made, and no performance result was measured. Retain EnableDirectSubmission=0, keep dependencies intact, and do not recommend a queue-mode change until effective mode is logged and the >=32K phased A/B plus numerical/fault/full-256K gates pass.
+
+## Primary sources
+
+- Intel DPC++ environment variables, including current SYCL_UR_USE_LEVEL_ZERO_V2, V2 debug variables and adapter-specific variable table: https://github.com/intel/llvm/blob/sycl/sycl/doc/EnvironmentVariables.md
+- Intel Level Zero backend SYCL extension, including native queue interop types/default constructors: https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_backend_level_zero.md
+- Intel 2026 DPC++ release notes: https://www.intel.com/content/www/us/en/developer/articles/release-notes/oneapi-dpcpp/2026.html
+- Intel Level Zero immediate command-list implementation guide: https://www.intel.com/content/www/us/en/developer/articles/guide/level-zero-immediate-command-lists.html
+- Intel 2025 compiler release notes with UR L0 no_immediate_command_list and UR_L0_USE_IMMEDIATE_COMMANDLISTS=0: https://www.intel.com/content/www/us/en/developer/articles/release-notes/oneapi-dpcpp/2025.html
+- Intel/UR maintainer discussion of L0 env variable intent and dynamic batch sizing: https://github.com/oneapi-src/unified-runtime/issues/1528
+- Intel/LLVM 2026 adapter batch test invocation uses UR_L0_USE_IMMEDIATE_COMMANDLISTS=0 and UR_L0_BATCH_SIZE: https://github.com/intel/llvm/issues/22188
+- Intel/LLVM L0 v2 2026.1 B570 in-order/out-of-order known failure and adapter fallback: https://github.com/intel/llvm/issues/23034
+- Intel/LLVM L0v1 wait/deadlock issue where SYCL_UR_TRACE=2 changed reproduction behavior: https://github.com/intel/llvm/issues/18424
+
+The version-matching limit above applies to Intel/LLVM source branch: it corroborates installed UR 0.12.0 interface and current family behavior, but exact source commit producing package 2026.1.1-325 was not identified.

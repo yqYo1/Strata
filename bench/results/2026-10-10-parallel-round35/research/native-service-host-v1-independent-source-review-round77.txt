@@ -1,0 +1,42 @@
+# R77 — independent source audit of native-service-host v1
+
+## Scope and pins
+
+Read-only source review; no configure, build, syntax/import check, test, model/payload read, runtime/GPU query, profiler, Git/Ninja operation, or cleanup was performed. Reviewed the fixed Wrole source:
+
+- `sycl/tools/native-service-host/CMakeLists.txt` SHA-256 `bc4f40ea2134c15954f3505ef2d79fefae07b70222bdb17af404771f28cf3664`
+- `sycl/tools/native-service-host/native_service_host.cpp` SHA-256 `f4ce8e3d5c43f469533d79f25d2d183ff9d62eeaa4d8849368a97bf4f48bcd3a`
+- `sycl/tools/native-service-host/README.md` SHA-256 `e19c8e7909b845a3617c1530824507da1ba3a6b417068f8884b5da30bb39b44b`
+- implementation report `implementation-native-service-host-v1.txt` SHA-256 `cf01d7a79133da7e2afce2828ea1eb309ecbbac39ed8ca9ff8bc09d2a5e1b0df`
+
+The specified source files match those pins. This is a source audit, not evidence of compiler/link/runtime success.
+
+## Blocker: GU activation quant buffer tail is checked before it is initialized
+
+In `native_service_host.cpp`, `Buffers` declares `a` as `std::array<Bytes<kNativeActBytes>,2>` without a value initializer (`lines 87-96`). `Bytes::data` has no default member initializer (`line 59`). Its `reset()` is the only function that fills the storage with the `0xa5` sentinel; `check(used)` reads every byte from `used` through the end and requires the sentinel (`line 59`). `quant_input()` writes only the quantizer's output bytes (`line 98`), then `check_input()` immediately calls `a[t].check(f.act_bytes)` before doing its independent GGML comparison (`line 99`). The direct path resets `hq`, `q2`, `ff`, and `out` but omits `a[t].reset()` (`line 104`).
+
+Thus the GU quant tail is indeterminate when `check()` reads it. This is not a reliable canary and can fail nondeterministically or read indeterminate unsigned-byte storage; it makes the first `direct()` warmup unreliable and can prevent any sample run from completing. It must be initialized to the sentinel before the first quantizer call (and before every call whose tail is being validated). The independent actual-byte comparison cannot make this tail check valid. The separate input-reference buffers `aq_ref` do get reset in `check_input`, so that side's tail check is valid.
+
+This is the only concrete blocker found in the reviewed files. It is source-only evidence; this round did not execute the harness to observe a failure.
+
+## Contract and correctness audit
+
+The payload setup follows the stated service boundary: it loads production native layout for 48 layers/512 experts, validates selected GU/Down formats and exact H=2560/FF=640 geometry, opens the primary GGUF through `NativeRolePlan`, validates/copies selected expert role blobs into owned contiguous `[gate|up|down]` buffers, records role extents and FNV checksums, then closes mappings before pool timing (`lines 107-108`). `NativeRolePlan`'s `GgufFile` interface is header-only in `include/strata/artifact/gguf_reader.hpp`; omitting `gguf_reader.cpp` from the target source list is therefore not, by itself, a missing-link implementation defect. The immutable-payload/mutation condition remains external ownership as documented.
+
+The native API calls are coherent with the reviewed pool contract. Input activation is produced by `native_quant_act`; direct execution calls `native_gu_rows`, then full-vector FF quantization, then direct Down. The pool route submits one `ExpertJobMulti` with `nt=1` or `2`, distinct `nact[t]` and `out[t]` pointers, and the actual assembled blob to `run_split_multi_native` (`lines 98-106,110`). For Down42 it calls `act_quant_any` and `q2_rows_any` on `blob + down_off`, matching the pool's Q2 path; for Down20 it uses `native_quant_h` and `native_down_rows`.
+
+The known limits are represented correctly rather than silently promoted: the independent GGML reference checks NT1 GU and Down20 composition bitwise; Down42 uses the production ActQ path and its comparison is against a second call to the same selected production quantizer, not an independent arithmetic oracle. NT2/Q2 GGML differences are recorded without an invented tolerance; same direct/pool output parity is a partition check. `check_q2` compares meaningful ActQ payload fields (`q`, `scale`, `sum`, `hx`, active bit-plane arrays and geometry), not padding/unused fields. This addresses the prior R76 caveat about comparing complete meaningful ActQ bytes.
+
+FP32 input generation is deterministic, finite and distinct per token under the emitted formula. FF/output arrays are reset to NaNs and checked elementwise for finite writes; byte buffers have tail canaries; output rows are token-disjoint. The activation formula's integer range and conversion stay finite. The NT1 independent reference is a useful oracle for the exact supported route; it does not establish all NT2/Q2 arithmetic or a full inference result.
+
+The test and timing ordering is appropriately separated: a direct warmup plus GGML reference check precedes retained repeats; each repeat re-runs direct and compares it against the prepared direct result; pool results are compared separately per token; guards and references run outside measured intervals. Direct phase intervals and actual outer time are independently timed; pool phase counters are taken as per-call accumulator deltas and outer wall is measured around the call. Allocation, blob assembly, reference work and printing are outside the intervals. Three warmups and five samples are characterization only, not calibration/performance adoption/full-lifecycle qualification. Pool diagnostics occur after the timed call. Sequential pool lifetimes avoid simultaneous diagnostic owners.
+
+## Phase counters, placement, and CPU-only boundary
+
+The workload creates task settings 0 and 6, with five pinned workers plus host participation; source reports effective plans 18/18 and 6/6. This matches `ExpertPool::phase_tasks` for the fixed large row extents and the configured worker count. Planned worker IDs and host CPU are emitted. Linux `/proc/self/task/*/status` capture reports allowed CPU sets but does not map worker index to TID or prove residency; README and implementation report say so and require root reconciliation. Therefore placement data are diagnostic, not a false claim of per-worker CPU residency.
+
+The standalone CMake rejects non-IntelLLVM compilers, forbids global SYCL/march flags, uses pinned CPU-only GGML and explicit per-TU ISA flags, and links only `ggml-cpu`, `ggml-base`, and Threads. The listed production sources include the SYCL-side IQ AVX2 wrapper. The harness checks the production nullable GPU-release callback remains null before work and after pool calls. These are source-intended controls, not proof of actual link/import closure or absence of runtime device initialization. README correctly leaves compiler command audit, actual link closure, no-device tripwire, limits, and root-run supervision unqualified. The CMake configure contains a `git rev-parse` pin check; this source audit only read that command and did not execute it.
+
+## Outcome and required handoff
+
+Do not use the current source as an executable readiness signal until the activation quant buffer is sentinel-initialized before `check_input`. After the source owner fixes that issue, root can perform its serialized configure/build and then use the predeclared synthetic invalid-input and actual-weight gates. No other defect found here justifies changing the explicit boundaries: Down42 lacks an independent arithmetic oracle, NT2 is only delta-reported, allowed CPU sets are not residency, and no-GPU source intent still needs runtime/link evidence. This audit does not authorize a performance claim or adoption; the 3-warmup/5-sample cohort remains characterization, and the physical/full 262144 lifecycle gate remains separate.

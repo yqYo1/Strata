@@ -1,0 +1,55 @@
+# Qualified 869 long-prompt baseline build-input closure — round 73
+
+## Scope and decision
+
+Read-only evidence review for the fail-closed admission of the already-qualified Strata 869 binary after its source worktree HEAD advanced beyond the recorded build commit. No Git command, compiler/build tool, test, import, source execution, model or payload read, GPU/device query, profiler, cleanup, or workspace mutation occurred. I read only the recorded build/full-capacity receipts, existing generated build metadata, the SYCL CMake source-resolution code and relevant collector source. I did not inspect or intervene in the separate v2 implementation.
+
+The build record and full-capacity receipt do bind the qualified executable by SHA-256, but they do not contain a complete contemporaneous hash manifest of every compiled translation unit, transitive header, generated input, CMake configure input, link input, and toolchain binary. A later clean HEAD may be admitted only after a source-diff audit proves all changes are outside that actual closure (or byte-identical on every closure path), while retaining the exact existing binary hash and build/full-receipt pins. Clean status alone is insufficient; the v1 exact-HEAD check is safe but overly strict. Relaxing it without this closure proof is not safe.
+
+No current changed-path list can be stated from this review: that requires Git comparison, expressly not performed here. Do not infer that the HEAD advance is docs-only.
+
+## Pinned artifacts and failure to preserve
+
+The supplied build receipt is `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/integrated-upstream-v0.1.41-20261009-v2/build-record.json`, SHA-256 `20589f1486dedaf825052e95560155acd30e6017b7967e2df476b5dd41989c43`. It records a successful build of target `strata` at commit `1eb89482a4afd20277ae0405780ed4f8eb98eb20`, source and GGML status empty both before and after, and executable `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009/build-sycl-integrated-20261009/strata`, SHA-256 `86972697ecb1903750d202f8be29a7a1da351eb3415678c3e3b6af790804d1c8`. The build record names GGML commit `3cf03257f219afbe7334045ff7c6a06ac68c627d`.
+
+The independent physical-262,144 qualified full receipt is SHA-256 `168d7896cbe3a60dfc604a08b6fe310f16d823a17d13d8a013260bfc7facb0a4` and binds that same executable/build receipt. The supplied later clean HEAD is `23268953314d12588fd3f496414a46bd426a7306`; the current value was provided by the task owner, not checked with Git here.
+
+Preserve the failed v1 CPU-preflight receipt at `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/long-prompt-reference-cpu-preflight-v1/record.json`, SHA-256 `fe55dd547d351e5a8487e5422b7a1d099a6abd0c481bcc121cdee0cc8fe73033`, and its `fixtures.stderr`. The stderr records the exact admission failure `ValueError: baseline clean exact HEAD`; its receipt status remains failed. No model, GPU or output-directory work was admitted by this source gate. This does not change C/D rejection, full-candidate qualification, or performance status.
+
+## What the available build evidence proves—and what it does not
+
+The build record binds the original CMake configure/build argv, cwd, exit codes, selected target, environment and output binary digest. Configuration used `cmake -S <ROOT>/sycl -B <build> -G Ninja`, `icpx`/`icx` under `/opt/intel/oneapi/compiler/2026.1`, Release, `STRATA_GGML_DIR=/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned`, and a two-job `cmake --build ... --target strata`. It records `ggml_commit`, but not a per-file source/header input hash list or toolchain executable digests/version transcript.
+
+The generated build directory still contains `build.ninja`, `CMakeCache.txt`, `compile_commands.json`, `.ninja_deps`, linked Strata/ggml static archives, and the executable. The current files are useful to reconstruct the configured graph: CMakeCache identifies Release, native experts ON, `STRATA_NATIVE_POOL_TASK_FACTOR=0`, empty `STRATA_SYCL_AOT`, compilers, and external GGML location; `build.ninja` contains object/source edges and compiler/link rules. `compile_commands.json` has 26 entries, all in the external GGML checkout, and therefore is not a complete Strata translation-unit manifest. Depfiles (`*.o.d`) are absent; the Ninja dependency database remains, but was not interpreted with `ninja -t deps` in this review. The existing six file pins in collector v1 are not a complete compile closure and its current CMakeCache/build.ninja hashes are captured at preflight time, not in the original build receipt.
+
+Important SYCL source mapping: `sycl/CMakeLists.txt` defines `strata_resolve`: for `.cpp` sources it selects `sycl/<path>` if present, otherwise `<ROOT>/<path>`; migrated `.cu` entries resolve to `.dp.cpp` under `sycl/src`. The include order is `sycl/include` followed by `include`. The CPU kernel target adds `src/kernels/cpu/native_expert.cpp` directly. `build.ninja` has an object edge for `<ROOT>/src/kernels/cpu/native_expert.cpp`; the path `<ROOT>/sycl/src/kernels/cpu/native_expert.cpp` is absent. The current v1 collector's six-entry source-pin tuple mistakenly names `sycl/src/kernels/cpu/native_expert.cpp`. If its HEAD comparison were simply removed, this wrong pin would not prove the compiled native-expert source and may make the `git show <commit>:<path>` lookup fail. The correct root source path must be used; `native_expert.cpp` has no SYCL override in this checkout.
+
+The build graph demonstrates a mixed input tree, not just `sycl/src`: root `src/spec`, root `src/kernels/cpu`, root `src/core` and `src/platform` sources coexist with `sycl/src` migrated/device/engine sources. Headers can similarly resolve from either `sycl/include` or root `include`. CMake root files and `sycl/CMakeLists.txt`, any included CMake modules, and the external GGML checkout also participate. A few selected hot files or the collector's six pins cannot stand in for the complete target closure. `build.ninja` defines auxiliary targets in addition to `strata`; an all-edge scrape must be reduced to the `strata` target's transitive link/object closure, not reported as the exact built set.
+
+## Fail-closed acceptance contract for a later clean HEAD
+
+A later clean HEAD can be accepted without rebuilding only if all conditions below are recorded as one new provenance receipt, while keeping the original failed v1 receipt and the original build/full receipts immutable:
+
+1. Pin and verify the original build record, full-capacity receipt, and actual executable SHA exactly. Recheck `/proc/<pid>/exe`, original argv/cwd, and process identity when the baseline actually runs. The binary digest is the final identity of the executable; source similarity cannot replace it.
+2. Record current clean HEAD and status, but do not require HEAD equality to the old build commit. Produce the actual path-level diff between build commit `1eb89482a4afd20277ae0405780ed4f8eb98eb20` and the supplied later HEAD `23268953314d12588fd3f496414a46bd426a7306`. Classify every changed path against the complete build/configuration/dependency closure. Reject untracked/dirty files or any changed closure input whose content is not proven identical to the old commit. Changes outside that closure (for example documentation) can be allowed, but only after this classification is evidenced.
+3. Reconstruct the `strata` target's actual object and link closure from the retained configured graph and Ninja dependency database, including generated sources and transitive headers. Resolve sources using the same CMake rules. Include root and SYCL source roots, the root `native_expert.cpp`, both include roots, root/SYCL CMake source files/modules, and any external GGML dependencies. Do not use `compile_commands.json` alone or all `build.ninja` edges as if they were the exact target closure.
+4. For each closure path, compare the build-commit blob to the later clean HEAD blob, or hash both exact bytes and require equality. A path missing at the old commit or current HEAD is a hard rejection until its generated/conditional status is resolved from the actual graph. For external GGML, verify its recorded commit and clean tree and include its actual compiled headers/sources in the closure.
+5. Bind the configured/build recipe as well as code: original configure/build argv from the receipt; current `CMakeCache.txt` and `build.ninja` snapshots; target object/link commands; compiler/CMake/Ninja identities and build options; source-root/include mapping; generated-file state; external GGML identity; and the exact original binary digest. The receipt currently records compiler paths/configuration but not compiler binary/version hashes or build-file hashes captured at build time. If historical generated graph or toolchain identity cannot be established from retained artifacts, state that residual gap and keep baseline admission blocked rather than infer it from current files.
+6. Verify that the comparison and closure manifest itself is pinned, complete, and generated from the exact supplied pair of commits. Keep the original build receipt's `source_status_before/after` and `ggml_status_before/after` as facts about the old build; do not rewrite them to describe current status.
+
+This is a proof of provenance and code-input equivalence, not a new build or numerical result. A currently matching 869 binary digest by itself can identify the bytes being run, but does not establish that a new source HEAD is the same compiled-source baseline. Conversely, an unchanged source commit number by itself would not identify a replaced executable; retain both sides of the binding.
+
+## Exact root-side evidence still needed
+
+The exact changed paths must be obtained by root using a read-only Git comparison after the measurement owner approves/serializes that provenance step. One suitable command is:
+
+```sh
+git -C /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009 \
+  diff --no-ext-diff --no-renames --name-status \
+  1eb89482a4afd20277ae0405780ed4f8eb98eb20 \
+  23268953314d12588fd3f496414a46bd426a7306 --
+```
+
+Then use an exact dependency-path manifest from the `strata` target to compare changed paths and their blob contents. To inspect retained Ninja dependency evidence without rebuilding, root can use the metadata query `/usr/bin/ninja -C <build> -t deps` (and target query/graph as needed), then bind its output to the provenance receipt. This review intentionally did not run either command. The precise diff, current source changes and complete historical depfile closure therefore remain unknown here; no changed path is asserted or guessed.
+
+The v2 source work is owned separately and was not read. Root owns all CPU preflight, build metadata query and later model/runtime actions; this report authorizes none. It establishes no new reference, math, performance, full-capacity candidate, adoption or policy result.

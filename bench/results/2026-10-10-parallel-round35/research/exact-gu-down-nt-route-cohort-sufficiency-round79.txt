@@ -1,0 +1,60 @@
+# R79 — exact GU/Down/NT route-cohort sufficiency
+
+## Scope and evidence pins
+
+Pure data audit of existing closed text plus pack metadata only. No model payload/shards, executable, source import, build, test, runtime, GPU query, profiler, Git/Ninja, cleanup, or implementation edit was performed. The r6 receipt is `owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6/record.json`, SHA-256 `f606f5a1f2d00dba240213a7feeb3cc84c9da4f1487075d1e97c336a558e4c89`, with `active=false`; its sole raw trace `debugger/inferior.stderr` is 1,389,517 bytes, SHA-256 `3309c390f8e5f047321ca84bcdc6d182e9c13ca1b8db178c79a88b108e13ab3f`. Four complete route-pair request blocks contain 7,811 / 8,156 / 7,811 / 8,156 records. Pair record sets 1 and 3 are identical, and 2 and 4 are identical. Thus A=1∪3 and B=2∪4 use only one copy of each pattern; repeats add no expert-ID diversity.
+
+Layer format mapping is the IQ3_S pack's metadata-only file `/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt`, SHA-256 `d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d`. It declares 48 layers × 512 experts with GU formats 18/21/22/23 and Down formats 20/42. The mapping was read; no weight bytes or GGUF shard was opened. Format pair counts below are the exact metadata layer matches, not a cross product inferred from marginal counts.
+
+## Counting rule
+
+For each `CACHE_ROUTE_PAIRS_V1 PAIR layer expert entries hits refused offloaded callback_pairs` row, let `n=entries`, `j=callback_pairs`. An ID is eligible for an NT cell only if `refused>0` and its logical job count is positive: `J1=2*j-n` for NT1, `J2=n-j` for NT2. Group the ID by that layer's exact `(GU type, Down type)` from the metadata. Deduplicate `(layer,expert)` within a request and across the duplicate A/A or B/B captures. Report A and B as separate presence sets, and their union/intersection. Logical callback-job volume and repeated requests do not add unique IDs. This follows the established R42/R63 pair-to-NT rule; no parser or replay code was run.
+
+## Exact-cell distinct IDs
+
+The holdout target is 192 train + 192 disjoint holdout IDs per exact cell, requiring at least 384 distinct eligible IDs. “A/B overlap” is the intersection of distinct nonresident IDs between the two unique captured patterns; it is not a workload holdout. Route-selected sufficiency is assessed per pair below.
+
+| GU | Down | Metadata layers | NT | A IDs | B IDs | A∩B | A∪B | Route 192+192? | If short, metadata-only additions needed |
+|---:|---:|---|---:|---:|---:|---:|---:|---|---:|
+| 18 | 20 | 0,7,14,16,18,22,31,33,37,38,41,42,43,46 (14) | 1 | 2,353 | 2,450 | 1,697 | 3,106 | Yes | 0 |
+| 18 | 20 | same | 2 | 796 | 807 | 349 | 1,254 | Yes | 0 |
+| 18 | 42 | 12,20,30 (3) | 1 | 470 | 482 | 328 | 624 | Yes | 0 |
+| 18 | 42 | same | 2 | 170 | 178 | 73 | 275 | No | 109 |
+| 21 | 20 | 17,25,27,28,29,35,40,44,45 (9) | 1 | 1,259 | 1,343 | 858 | 1,744 | Yes | 0 |
+| 21 | 20 | same | 2 | 517 | 553 | 262 | 808 | Yes | 0 |
+| 21 | 42 | 21 (1) | 1 | 160 | 168 | 110 | 218 | No | 166 |
+| 21 | 42 | same | 2 | 74 | 76 | 33 | 117 | No | 267 |
+| 22 | 20 | 2,3,4,5,6,9,11,15,19,23,24,26,32,34,39 (15) | 1 | 2,282 | 2,388 | 1,586 | 3,084 | Yes | 0 |
+| 22 | 20 | same | 2 | 834 | 855 | 409 | 1,280 | Yes | 0 |
+| 22 | 42 | 1,8,10,13,36 (5) | 1 | 814 | 912 | 583 | 1,143 | Yes | 0 |
+| 22 | 42 | same | 2 | 298 | 335 | 134 | 499 | Yes | 0 |
+| 23 | 20 | 47 (1) | 1 | 129 | 146 | 94 | 181 | No | 203 |
+| 23 | 20 | same | 2 | 36 | 38 | 9 | 65 | No | 319 |
+| 23 | 42 | none | 1 | — | — | — | 0 | No such format pair | Not available |
+| 23 | 42 | none | 2 | — | — | — | 0 | No such format pair | Not available |
+
+Totals reconcile to the prior marginal R63 counts: Down20 NT1 A/B/union = 6,023/6,327/8,115; Down20 NT2 = 2,183/2,253/3,407; Down42 NT1 = 1,444/1,562/1,985; Down42 NT2 = 542/589/891. R63 pooled marginals conceal the exact low-supply cells: GU18/Down42/NT2, GU21/Down42/NT1+NT2, and GU23/Down20/NT1+NT2 do not independently meet 384. Those exact cells need metadata-only format-kernel supplements to reach 384 if the minimum calibration requires 192/192; do not call supplemented IDs routed. Since each matching format pair has 512 experts/layer and at least one matching layer, the requested additions fit the metadata geometry. GU23/Down42 has no matching layer and cannot be assembled as an actual format pair from this pack.
+
+The trace's dispatch exposure summaries identify the matched route implementations: GU NT1 uses `ggml`; GU NT2 uses `iq256` for types 18/21/22/23; Down20 NT1 uses `ggml`, Down20 NT2 uses `iq4nl256`, and Down42 NT1/NT2 use `q2-avx2`. Therefore every existing exact format-pair cell has route-selected exposure for its listed NT; the shortfalls are sample-size limits, not an absence of the NT dispatch. These labels reflect the frozen r6 CPU/ISA and do not transfer automatically to another build or machine.
+
+A/B were four request captures in one diagnostic run and A-repeat/B-repeat are near copies. Use the A∪B expert IDs only to build within-cell distinct-ID train/holdout sets; neither A nor B is an independent workload holdout. Holdout strength here means disjoint expert IDs under the captured patterns, not workload-distribution independence.
+
+## Exact phase extents and R46 bounds
+
+For each metadata format pair, per-expert GU bytes are the two Gate+Up role extents combined (`blob_bytes - Down extent`); Down bytes are the Down role extent. The IQ3_S geometry is fixed by the metadata/type: Down20 is 921,600 bytes/expert; Down42 is 460,800 bytes/expert. The per-expert full blob is the metadata `blob_bytes`. The 192-cohort phase byte counts and 384-ID full-blob cap are:
+
+| GU/Down | Matching layers | GU bytes/expert | Down bytes/expert | GU extent at N=192 | Down extent at N=192 | Full blobs N=192 | Full blobs N=384 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 18/20 | 14 | 1,254,400 | 921,600 | 240,844,800 (229.5 MiB) | 176,947,200 (168.75 MiB) | 417,792,000 | 835,584,000 (796.875 MiB) |
+| 18/42 | 3 | 1,254,400 | 460,800 | 240,844,800 (229.5 MiB) | 88,473,600 (84.375 MiB) | 329,318,400 | 658,636,800 (628.125 MiB) |
+| 21/20 | 9 | 1,408,000 | 921,600 | 270,336,000 (257.8125 MiB) | 176,947,200 (168.75 MiB) | 447,283,200 | 894,566,400 (853.125 MiB) |
+| 21/42 | 1 | 1,408,000 | 460,800 | 270,336,000 (257.8125 MiB) | 88,473,600 (84.375 MiB) | 358,809,600 | 717,619,200 (684.375 MiB) |
+| 22/20 | 15 | 1,049,600 | 921,600 | 201,523,200 (192.0703125 MiB) | 176,947,200 (168.75 MiB) | 378,470,400 | 756,940,800 (721.875 MiB) |
+| 22/42 | 5 | 1,049,600 | 460,800 | 201,523,200 (192.0703125 MiB) | 88,473,600 (84.375 MiB) | 289,996,800 | 579,993,600 (553.125 MiB) |
+| 23/20 | 1 | 1,740,800 | 921,600 | 334,233,600 (318.75 MiB) | 176,947,200 (168.75 MiB) | 511,180,800 | 1,022,361,600 (975 MiB) |
+
+Each 192-ID train or holdout cohort independently exceeds the R46 64 MiB relevant-phase floor for both GU and Down. Even the largest exact pair at 384 total selected blobs—GU23/Down20—is 1,022,361,600 bytes, below the exact 1 GiB cap 1,073,741,824 bytes. Other pairs are smaller. These arithmetic bounds do not certify file extents, shard validity, hashes or current payload identity; those remain the actual-weight harness admission gates. Do not conflate a 384-blob total with simultaneously mapping all cells: R46 maps/processes one cell cohort at a time and caps that live full-blob set.
+
+## Decision
+
+Eight exact GU/Down pairs exist in this pack. All but five NT cells have at least 384 route-selected distinct nonresident IDs: GU18/Down42/NT2, GU21/Down42/NT1 and NT2, GU23/Down20/NT1 and NT2 (five cells) require metadata-only additions; GU23/Down42 has no real layer and is unavailable. The phase-byte floors and 1 GiB arithmetic pass for all seven existing format pairs at N=192/384. This is a source-of-samples sufficiency result only; no selection manifest, extent hash, actual-weight correctness, service timing, route-weight estimate, or calibration is established here.

@@ -1,0 +1,53 @@
+# Level Zero V2 copy offload and safe overlap evidence — round 79
+
+## Scope and provenance
+
+Read-only investigation of `UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1`, the retained B570 hang evidence, and a possible future >=32K copy/compute overlap measurement. No source, package, runtime, environment, or device was changed. No build, test, model, GPU, profiler, Git, cleanup, or service operation was performed.
+
+Frozen Strata tree: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010`, source revision recorded by the parent as `66aaec3a66ad9ed12e6d042cffe743c47e364432`.
+
+- `sycl/src/prefill/prefill.cpp` SHA-256 `f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77`
+- `sycl/include/dpct/device.hpp` SHA-256 `adbcbd0ac45995348e37ac3f5ca42d9f3d4b0555031aeb1781a1e2166a74ed52`
+- `sycl/include/strata/sycl_queue.hpp` SHA-256 `6a836d6d1cbbdd297135957aaed79e90c26c9e5fa1b615dcab33e669dd2cf390`
+- Installed package record from round 78: DPC++ 2026.1.1-325 and Level Zero V2 adapter soname UR 0.12.0. Exact source commit for that packaged adapter was not found. Intel's current `intel/llvm` `sycl` branch is implementation-family evidence, not proof of byte-identical package source.
+
+## What the setting does
+
+Intel's current environment-variable table describes the default as allowing copy operations submitted to any queue to be offloaded to dedicated copy engines; setting this V2-only debug variable tells the driver to keep all copy operations on the engine behind the original queue. It does not disable copies, remove their dependencies, or turn an in-order queue into an out-of-order queue. It is a scheduling hint/path selection with driver support limits, not a guarantee that a particular physical engine executes every transfer.
+
+In current V2 source `command_list_cache.cpp`, the environment value is read once into a static flag. If set and the command-list descriptor requested copy offload, UR clears that request before creating the Level Zero immediate queue or regular list. If the driver has neither supported offload queue/list flag, UR also clears the request. Otherwise the adapter attaches the copy-offload hint/flag. The current source describes this behavior for copy operations generally; call sites explicitly identify USM memcpy, memory-buffer copy/read/write and rectangular variants as operations for which the UMD is responsible for copy-engine offload. The public docs do not give a complete installed-version mapping of every SYCL operation or host/device direction to a physical engine. Therefore do not claim that H2D, D2H, D2D, fills, or any other particular direction is always assigned to a dedicated BCS engine. With the variable set, the documented intent is same-engine execution; the driver/adapter source cannot retrospectively identify which engine handled the old faulting command.
+
+The control concerns assignment of copy work, not whether independent queues and commands can overlap. With offload disabled, copies behind a given queue share that queue's engine and in-order ordering. Work on a separate compute queue can still be eligible to overlap independent copy-queue work, subject to device scheduling/capacity and the program's event dependencies. Shared-engine assignment may remove overlap for copies and compute when both run behind that same queue. The flag alone neither proves nor rules out cross-queue overlap.
+
+Primary sources:
+
+- Intel environment variable table: https://github.com/intel/llvm/blob/sycl/sycl/doc/EnvironmentVariables.md
+- Current V2 list/queue hint implementation: https://raw.githubusercontent.com/intel/llvm/sycl/unified-runtime/source/adapters/level_zero/v2/command_list_cache.cpp
+- V2 command-buffer copy call sites and "Responsibility of UMD to offload" comments: https://raw.githubusercontent.com/intel/llvm/sycl/unified-runtime/source/adapters/level_zero/v2/command_buffer.cpp
+- V2 descriptor's `CopyOffloadEnable` field: https://raw.githubusercontent.com/intel/llvm/sycl/unified-runtime/source/adapters/level_zero/v2/command_list_cache.hpp
+
+## Retained hang record: what it says and does not say
+
+The local diagnosis is explicit that the original machine-wide stall's exact userspace location remains unresolved. The first retained BCS fault at `0x0000d556aa2e0000` was temporally close to shutdown of an AOT normal-MTP run, but timestamps do not identify the ASID's process. The first Strata stall location was not captured before termination. Later records prove a CPU SYCL-cache crash family independently, identify a Strata shutdown/lifetime trigger candidate, and distinguish later xe/GuC recovery failures; none proves that copy-engine offload caused the first fault.
+
+The `direct-submission` 64 KiB allocation probes used V2 and all three H2D/kernel/D2H rounds checked 16,384 words. In a healthy controlled probe, default copy offload created a second 64 KiB `SEMAPHORE_BUFFER` whose GPU VA matched the earlier fault address; with offload disabled, that second semaphore at the matching VA was absent. The record itself warns that earlier failing processes lacked allocation logs, so this does not map the old fault to an ASID or prove cause. Both probe arms exited normally without new kernel faults/resets. This is an allocation association and a candidate mechanism, not a fault-rate comparison or proof the setting prevents hangs.
+
+The separate post-failed-full-serve health record with forced V2 and copy offload disabled passed its integer check but its interval contained repeated GuC migration-queue timeouts/resets. Its zero exit does not establish driver recovery. A later 64 KiB pass after an external reboot used the setting as part of the stable recorded environment, but that is not a matched offload A/B. Current policy should therefore preserve `UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1` and `EnableDirectSubmission=0` as the already-recorded safe environment; this source audit offers no basis to unset the variable or request a driver change.
+
+## Strata queue/copy path and event evidence
+
+`prefill.cpp` creates an in-order profiled `m.copy` queue for prefill copies; the compute stream is `m.cs`. The streamed expert path issues staged blob copies on `m.copy`, records a `copied` event, and makes compute wait on that event before gather/use. It records `used` on compute after the blob's last read, and the copy queue waits on `used` before slot reuse. These copied/used edges protect visibility and ring lifetime and must remain unchanged. The code batches waits/records at an MMQ group boundary where applicable; do not introduce a per-expert host wait or synchronization for profiling.
+
+Existing measurements already available without adding device commands:
+
+- With `STRATA_PREFILL_TRANSFER_TIMING`, `ExpertTransferTimer` retains individual profiled copy events and reports expert-copy count/bytes, summed event `command_start..command_end` as `dma_active_ms`, earliest-start to latest-end as `copy_span_ms`, and host copy-worker time. It also reports activation/device-residual copy aggregates. This is an aggregate active-time/span measure, not per-command host-submit time or a proof of physical engine identity.
+- With `STRATA_PREFILL_TIMING`, `PfTimer` reports aggregate compute-queue phase durations from ordered profiling barrier marks, including `wait copy`, dequant and GEMM phases, plus wall and host waits. A phase duration can include a compute-queue wait/gap; it is not pure kernel busy time.
+- The current output does not retain individual phase interval endpoints or compute-vs-copy intersection totals. `copy_span_ms` minus summed `dma_active_ms` estimates gaps/serialization within that copy stream, not overlap with compute.
+
+A future >=32K analysis, only when separately scheduled, can use these existing profiled events without per-expert waits: collect all expert-copy start/end timestamps already kept by `ExpertTransferTimer`; retain start/end timestamps for existing `PfTimer` phase-boundary events before they are reused/folded; then compute copy-vs-compute interval intersections and union durations after the existing queue completion/join. Keep only compact aggregate overlap totals per phase and copies/bytes counts. First verify the profiling timestamps share a usable device timebase for the two queues; if not, report overlap unknown and use only each queue's aggregates. This requires a small future instrumentation change to expose phase endpoints/overlap aggregation, but no extra device command, barrier, host wait, or synchronization per expert. Leave current copied/used dependencies, in-order queues, the environment flag, and `EnableDirectSubmission=0` unchanged. Compare only matched >=32K input runs, separating prefill wall, host staging/wait time, DMA active/span, phase time and overlap, while preserving exact output/head/logprob and existing persistent-state correctness gates and kernel fault/normal-exit audits. Do not run it in this source-only round.
+
+## Future decision gates
+
+An offload-policy comparison is not justified from the existing nonmatched health probes. If separately approved after other work is closed, baseline and candidate must use identical binary, model, prompt >=32K, queue properties, dependencies, V2 adapter/runtime/driver, `EnableDirectSubmission=0`, and all other environment; change only the copy-offload value for that comparison. Use balanced serial repetitions and no profiling trace in a timing run. Preserve all existing correctness, normal-exit, timeout/device-lost, reset/fault, and process-survival gates. Reject any arm with a hang, asynchronous error, new xe fault/reset, numerical mismatch, incomplete report, or material matched regression. A result can support an overlap/performance claim only when actual interval intersection is measured and timestamp compatibility is established; event aggregation alone cannot certify physical engine assignment.
+
+No experiment was run, no setting change is proposed, and no claim is made that copy offload caused or fixed the historical GPU hang.

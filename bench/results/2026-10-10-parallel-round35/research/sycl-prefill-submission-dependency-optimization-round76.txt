@@ -1,0 +1,39 @@
+# SYCL prefill submission and dependency optimization audit — round 76
+
+## Scope and frozen inputs
+
+Read-only audit of command submission, event dependencies, waits, and queue ordering in the frozen SYCL tree:
+
+- Source: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010`
+- HEAD: `66aaec3a66ad9ed12e6d042cffe743c47e364432`
+- Prior report registry: `report-registry-v46.json`, SHA-256 `4b67fe6c010446b320c511652b8f0edcb245a88b25e86442035aeff2c74bb2ab`
+- Source version evidence was read-only. No builds, tests, imports, profiling, inference, model/GPU queries, changes, cleanup, or Git operations were performed.
+
+This audit does not inspect active CPU service code. It does not repeat command-graph lifetime/rebuild (round 11), USM import retirement, layer-major, XMX, array reuse, or earlier prefill-algorithm candidates.
+
+## What the active path does
+
+In `sycl/src/prefill/prefill.cpp`, the ordinary routed-expert walk stages each expert's host-to-device transfer onto `m.copy` and submits `dpct::sync_barrier(m.copied[sl], m.copy)` to signal readiness (around lines 4584–4646). Before reusing a live stage slot, it submits `ext_oneapi_submit_barrier({*m.used[...]})` (around lines 4610–4632). The compute queue consumes that stage only after the copied event, and records its used event once the expert/group has finished (around lines 4660–4890). This is an explicit two-queue lifetime chain: copy completion makes the bytes readable; compute completion makes the slot reusable. Removing either dependency risks reading a partially copied expert or overwriting a slot still in use.
+
+The `STAGE`-bounded lookahead schedules multiple copies before waiting for the corresponding compute group. The source comments around lines 4650–4695 explain that an MMQ group is gathered in one launch after one wait on its last streamed copy, and the group releases its ring slots with one event; per-expert wait/record added about 10 us of GPU bubble per expert in the cited existing measurement (226 ms of a 32K prompt on an NVFP4 pack). This is an already-integrated batching optimization; it is excluded from this round's new candidate count.
+
+The normal run path's `m.copy->wait()` at lines 5231 onward is a chunk retirement point; it also protects host source lifetimes. The exceptional cleanup and `release()` behavior were already audited in `sycl-dma-retirement-addendum-round3.txt` and are not re-proposed here. `m.cs->wait()` and synchronous diagnostic memcpy waits around lines 4884–4917 / 4979–5041 belong to diagnostic/readback branches, not the ordinary per-expert submission loop. The live event path mostly queues work and uses events for cross-queue dependencies; the code does not show a per-expert host wait on the steady state.
+
+The queue abstraction in `sycl/include/strata/sycl_queue.hpp` falls back to DPCT's default in-order queue for null streams. `m.copy` is separately created as an in-order queue (prior DMA addendum, lines 1–30). Therefore in-order semantics already order commands within each stream. The cross-queue event edges remain necessary; making queues out-of-order would require explicit dependencies for all relevant same-queue work and cannot be assumed safe from this code alone.
+
+## Candidate screen
+
+1. **Replace event/barrier edges with fewer cross-queue dependencies. Reject on current evidence.** Each copied event and used event protects a distinct producer-consumer/reuse edge. Existing MMQ grouping already collapses repeated per-expert synchronization to the group's final copy and one release event. A further edge reduction would need proof that a group never reads a slot before its copy completes and that no future expert overwrites a live slot. No unused edge was identified in the frozen path. Discriminator for any later proposal: an event/dependency trace showing a redundant edge on the same producer-consumer graph, plus correctness at 32K+ and 256K; reject if copy/read or compute/reuse overlap changes or validation needs extra host waits.
+
+2. **Switch queue mode or use regular command lists to batch host submissions. Reject as an ungrounded target-specific change.** Intel's DPC++ environment-variable documentation says Level Zero immediate lists submit commands immediately (no batching), while regular lists permit batching; default selection varies by platform. The Level Zero spec describes immediate command lists as low-latency submission and also warns commands may execute synchronously. This establishes a runtime tradeoff, not that Strata's current device uses the undesirable mode or that prefill is host-submission-bound. The frozen code does not identify the actual underlying command-list mode, and changing it may alter flush/ordering behavior and progress. Discriminator: read-only runtime/driver evidence for the actual queue mode, then a separately authorized measured A/B on the target with 32K+ prompt and phase timings; reject if the long-prefill host-submit/wait component does not fall, or if any hang, timeout, numerical difference, or source-lifetime hazard appears. No such runtime evidence or measurement was collected here.
+
+## Public implementation evidence
+
+- Intel SYCL graph extension: finalized graphs can be replayed with reduced submission overhead, but graph node dependencies/lifetimes and queue constraints remain; native recording requires in-order queues backed by immediate command lists and does not support out-of-order native recording. This is not a new recommendation here because graph replay/lifecycle was audited in round 11. [Intel SYCL graph extension](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_oneapi_graph.asciidoc)
+- Intel SYCL enqueue-barrier extension: barriers create dependency edges and do not block host execution; this supports treating current barriers as queued edges rather than host waits. [Intel enqueue-barrier extension](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_enqueue_barrier.asciidoc)
+- Level Zero command-list specification: immediate lists are low-latency, implicit-queue submission and may block synchronously for appended commands. [Level Zero command list API](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/command_list.html)
+- Intel DPC++ environment variables: immediate command list selection/no-batching behavior and defaults vary by platform. [DPC++ environment variables](https://github.com/intel/llvm/blob/sycl/sycl/doc/EnvironmentVariables.md)
+
+## Decision
+
+No genuinely new, code-supported optimization candidate emerged from this audit. The concrete steady-state loop already batches expert copies and group synchronization while retaining the necessary copy-ready and compute-release dependencies. The immediate-vs-regular queue mode is a measurable runtime hypothesis only; absent target-specific queue-mode and phase measurements, this audit makes no claim that submission dominates or that switching modes improves prefill. Preserve the existing in-order/event lifetimes. Any future test must keep full input coverage (at least 32K, with 256K before adoption), validate logits/state, and distinguish host submission, queue wait, DMA, and kernel phases.

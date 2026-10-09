@@ -1,0 +1,50 @@
+# Long-prompt reference collector v3 source-admission review — round 77
+
+## Scope
+
+Independent read-only audit of the fixed v3 collector and admission helper in:
+
+`/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-static-quota-oracle-v0141-20261010/sycl/tools/`
+
+Pinned source hashes verified:
+
+- `long_prompt_reference_v3.py`: `8f37b55d3a2e55b2c69bde3d58445253ea4ec3a028b4e350d480adfc1dd24e18`
+- `long_prompt_reference_admission_v3.py`: `d98044784022fa105f025c8ce394d81daeb601051f6feebf28f05a9fa0b5af4c`
+- Admission fixture: `7a437a172011f0a358c305bf7866e608e5f7ed8741b865ad7ead26792eed6c32`
+
+No implementation changes, imports, syntax checks, Git/Ninja commands, builds, tests, model/service/runtime/GPU/profiler activity, or cleanup were performed by this review. I read the supplied source and existing owner receipts only.
+
+## R75 issues: addressed
+
+R75 identified two concrete v2 admission defects: the sparse `compile_commands.json` incorrectly stood in for the Strata target TU set, and its suffix-based conservative set omitted active `.inl` inputs.
+
+V3 addresses the first issue by parsing captured `ninja -t commands strata` output with `target_commands_paths` (admission helper lines 80–108), requiring the compiler/source command shape and the actual production native TU. `source_closure` (collector lines 364–395) verifies the captured command output's fixed hash, requires 115 compile rules/114 unique target sources, and separately validates the pinned build's `build.ninja` and sparse compile database hashes. This does not scrape all build.ninja targets; the capture was specifically obtained for `strata`. Fixture coverage checks the retained real command capture and verifies that `src/kernels/cpu/native_expert.cpp` is present while the absent SYCL override is not.
+
+V3 addresses the dependency omission with two layers. The helper's `CODE_SUFFIXES` now includes `.inl`, `.ipp`, and `.tpp` (lines 13–14), and `recorded_dependency_paths` (lines 110–140) parses retained Ninja object dependency blocks without filtering by extension. It normalizes paths, classifies generated/project/GGML/external ownership, and requires complete valid blocks. The collector pins the 4 MiB-bounded dependency evidence and requires its geometry: 241 project paths, 52 GGML paths, and the one known generated input. The tests explicitly cover arbitrary-suffix dependencies, malformed/incomplete metadata, and rejection of changed inline files.
+
+The owner receipts are internally hash-consistent with the supplied pins:
+
+- CPU fixture receipt `long-prompt-reference-admission-cpu-validation-v3/record.json`, SHA-256 `3c2559ba826c62a897790e7820c0ba2e69adf1da84943b543d69ce689e319aea`: passed, 8 tests, 4.272 s; no collector/helper/model execution, no GPU work.
+- Actual collector CPU-preflight receipt `long-prompt-reference-cpu-preflight-v3/record.json`, SHA-256 `d7a48db75c235e6b2bfae66ffe5cf8ac62d46b8182a8bc5117b174dba9cd80d7`: passed, 15.022 s. It pins the v3 source and unchanged numerical-rules SHA `f6c6e4fe4765b51563bef3914446213fd6fab9e1c0832d2b895f1f4ea4079229`; its declared scope is CPU-preflight admission only, with no output, PTY, model or GPU launch.
+
+These receipts establish the described fixture/preflight outcomes, not a new reference run or new 256K qualification.
+
+## Source/build provenance claim boundary
+
+The collector uses baseline build commit `1eb89482a4afd20277ae0405780ed4f8eb98eb20` and reviewed current HEAD `23268953314d12588fd3f496414a46bd426a7306` separately. The read-only retained-build evidence record `baseline-869-source-equivalence-provenance-v1/record.json` is SHA-256 `2d63505c1149eab91f3ee5b3d60630ebc277faec31c288919bdc6f2c950a93b0`; it records successful capture of the actual `ninja -t commands strata` and `ninja -t deps` outputs, the clean reviewed HEAD, and the commit diff. Output hashes match the collector pins: target commands `fadfe6129713809443e877df18a9d7ccc8b90c310d15c9ff34b0bb2888996779`; retained dependencies `e1585f1b8c79cc5e1c900b5edb6e96183032e290d38316c5825c268b4088021f`.
+
+The v3 claim is appropriately scoped to retained build inputs that can be tied to project/GGML Git blobs and the current generated header. It uses `git show <build-commit>:path` hashes for the tracked project/GGML conservative-plus-dependency sets and compares current file hashes, checks the build-commit/current-HEAD diff does not intersect the accepted closure, and rechecks at exit. It separately pins and rechecks existing `CMakeCache.txt`, `build.ninja`, and `compile_commands.json`. The generated `ggml/src/ggml-version.h` is pinned at current preflight and checked at exit; the source explicitly says this is not historical generated-header provenance. It also excludes system/toolchain dependencies from the Git-blob equivalence claim. No assertion of historical compiler binaries, compiler version, or all system-header bytes is made. This limitation is explicit and suitable for the recorded claim.
+
+The closure is intentionally conservative: Ninja dependency evidence covers retained object rules as a superset, while build/current Git comparison reports 352 changed paths outside the accepted source closure. The commit-diff evidence includes benchmark artifacts and `sycl/serve/strata-sycl.sh`; the reviewed claim is that no compiled project/GGML/header/CMake closure path changed. It does not claim all 352 files are intrinsically irrelevant to every imaginable build, only that they are outside this pinned target's admitted source closure.
+
+Potential limitation retained: Ninja's depfile evidence is the set retained by this existing build, not a fresh compiler-produced dep scan. The target command capture is tied to the retained `strata` target and pinned build graph, and current source/blob checks reduce stale/missing-source risk, but this admission is still a specific retained-build equivalence proof, not a general compiler/toolchain provenance proof.
+
+## Numerical and lifecycle status
+
+The CPU fixtures and preflight do not relax the numerical protocol. The source keeps the original 869 argv/default CPU task shape, the same rules SHA, the four fresh prompt protocol and independent-repeat gates. The supplied qualified reference receipt remains the only evidence of the prior physical-256K baseline sequence; the v3 CPU preflight did not open a model or run inference. No new numerical reference was created, no new candidate was adopted, and no performance eligibility is established by these receipts.
+
+## Decision
+
+The two R75 admission issues are closed in the reviewed v3 source and covered by the supplied passing CPU receipts. I found no new source-admission false-pass or setup-closure blocker in the reviewed path. Provenance claims are appropriately bounded for source Git blobs, captured target/dependency metadata, build settings files and the current generated header; historical compiler/system-header provenance remains explicitly unclaimed. The available evidence supports proceeding to root's next separately controlled step, but this review itself does not authorize or report a model/reference run.
+
+Latest committed registry context reviewed: registry-v46 SHA-256 `4b67fe6c010446b320c511652b8f0edcb245a88b25e86442035aeff2c74bb2ab`; docs commit `489372db681a987df2b3e96b3df18d11fc013a78`; archive context `bench/results/2026-10-10-parallel-round35/`.
