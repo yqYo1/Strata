@@ -1,0 +1,808 @@
+{
+  "source_status": "SOURCE ONLY / UNTESTED until root executes",
+  "active": false,
+  "passed": false,
+  "gpu_executed": false,
+  "model_opened": false,
+  "adopted": false,
+  "cases": [
+    {
+      "case": "finite-framing",
+      "passed": true,
+      "details": {
+        "fixture": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-001.bin",
+        "sha256": "ff1a7b9d50663561fb3689ca66bd89c67aa42ef0d8974a7d542ebbff6544b650"
+      }
+    },
+    {
+      "case": "wrong-magic",
+      "passed": true,
+      "details": {
+        "rejection": "wrong magic/version/header size",
+        "fixture": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-002.bin",
+        "sha256": "a25d673fb1016845644c17abcd0708f8bea56447743c2f5ce854d46d818d5a4a"
+      }
+    },
+    {
+      "case": "wrong-version",
+      "passed": true,
+      "details": {
+        "rejection": "wrong magic/version/header size",
+        "fixture": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-003.bin",
+        "sha256": "f063006b014a2b2d9268e865a305ce681c0d1efe67eac020bf4ecfb08218a2f3"
+      }
+    },
+    {
+      "case": "wrong-header-size",
+      "passed": true,
+      "details": {
+        "rejection": "wrong magic/version/header size",
+        "fixture": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-004.bin",
+        "sha256": "a6ff799f84e7f2619cc3b06b78826953cfb480220a10a30096f8fc0bce0a316b"
+      }
+    },
+    {
+      "case": "wrong-first-ordinal",
+      "passed": true,
+      "details": {
+        "rejection": "global ordinal must start at zero and increase by one",
+        "fixture": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-005.bin",
+        "sha256": "e2aaa453c09de46cbff190b26a15ad83c6eeb7260c853fedd975254274274fb9"
+      }
+    },
+    {
+      "case": "forged-huge-elements",
+      "passed": true,
+      "details": {
+        "rejection": "forged/overflowing element count or shape",
+        "fixture": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-006.bin",
+        "sha256": "9198b39d58d5f37dea82b77a0c82707121482185d0389a581e091e4aff3ee9a8"
+      }
+    },
+    {
+      "case": "overflow-shape",
+      "passed": true,
+      "details": {
+        "rejection": "row extent outside chunk or extent overflow",
+        "fixture": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-007.bin",
+        "sha256": "9213d0ab252b8ed21ac4770119f977da99d4e4f2b3093475b1c67ff33a739514"
+      }
+    },
+    {
+      "case": "extent-overflow",
+      "passed": true,
+      "details": {
+        "rejection": "row extent outside chunk or extent overflow",
+        "fixture": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-008.bin",
+        "sha256": "3b3a287ab8858f3ebc7aeb8b8b01cca24138965b5e3e46dc27371f301bd2c54d"
+      }
+    },
+    {
+      "case": "invalid-type",
+      "passed": true,
+      "details": {
+        "rejection": "unknown phase, layer or payload type",
+        "fixture": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-009.bin",
+        "sha256": "a6c7426a323fc43abefb2a039a5b2b543a226764716f3cfaaf727d6e78b3fe05"
+      }
+    },
+    {
+      "case": "invalid-layer",
+      "passed": true,
+      "details": {
+        "rejection": "unknown phase, layer or payload type",
+        "fixture": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-010.bin",
+        "sha256": "8eae187ede654ff69e87d2e834b9c245b870d7b41d27b0a717bacf64c6c094d8"
+      }
+    },
+    {
+      "case": "invalid-phase",
+      "passed": true,
+      "details": {
+        "rejection": "unknown phase, layer or payload type",
+        "fixture": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-011.bin",
+        "sha256": "ee254a807cf191e4f12e09f2b0f524c19a2a2c860e90bfd0a1b328b129b1ae05"
+      }
+    },
+    {
+      "case": "zero-rows",
+      "passed": true,
+      "details": {
+        "rejection": "zero shape or signed producer field overflow",
+        "fixture": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-012.bin",
+        "sha256": "fdf20f09e4ba6dc5281438466cf2f2765e20ff918ad1b9d233ce008fb2fa642e"
+      }
+    },
+    {
+      "case": "row-outside-chunk",
+      "passed": true,
+      "details": {
+        "rejection": "row extent outside chunk or extent overflow",
+        "fixture": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-013.bin",
+        "sha256": "4fc0ac5c49dfe90a5321db78ed208f5ba41d356f593a63102bb10fbbeb93f414"
+      }
+    },
+    {
+      "case": "element-shape-mismatch",
+      "passed": true,
+      "details": {
+        "rejection": "forged/overflowing element count or shape",
+        "fixture": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-014.bin",
+        "sha256": "f0bc00f370dbbd9c2fa35a81de1ae955ceb0deba1833e352d0157c0a092036b6"
+      }
+    },
+    {
+      "case": "float-phase-int-type",
+      "passed": true,
+      "details": {
+        "rejection": "float phase has integer payload type",
+        "fixture": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-015.bin",
+        "sha256": "4915d23687bc13f025533e3af31dd594e4fb165ddc7d1c4d8f024cb08e8a2892"
+      }
+    },
+    {
+      "case": "integer-phase-float-type",
+      "passed": true,
+      "details": {
+        "rejection": "integer phase has float payload type",
+        "fixture": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-016.bin",
+        "sha256": "0f4e5a77bc33474c8ba0a0f96e3e3f6a334ba1a6ded57179a346c3e77f0a7f38"
+      }
+    },
+    {
+      "case": "truncated-header",
+      "passed": true,
+      "details": {
+        "rejection": "record limit or truncated/trailing header",
+        "fixture": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-017.bin",
+        "sha256": "dec030cb2c021ed6d2725599ca6faf3e8ada90502ad2384c2d9558039bbe13ef"
+      }
+    },
+    {
+      "case": "truncated-payload",
+      "passed": true,
+      "details": {
+        "rejection": "truncated payload or payload exceeds file bounds",
+        "fixture": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-018.bin",
+        "sha256": "02d3fbbe111dcd83916344e5ab5a8c44e63d3666e6a6e5468fa43daa5829aca8"
+      }
+    },
+    {
+      "case": "trailing-byte",
+      "passed": true,
+      "details": {
+        "rejection": "record limit or truncated/trailing header",
+        "fixture": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-019.bin",
+        "sha256": "dce3bdea53a7e0da6b8c0ee95802a453960ad6711accf92bf6c7eb5274069ec6"
+      }
+    },
+    {
+      "case": "ordinal-duplicate",
+      "passed": true,
+      "details": {
+        "rejection": "global ordinal must start at zero and increase by one",
+        "fixture": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-020.bin",
+        "sha256": "b1daff934be7b46e67a952ed19c2627ccb52b5dc63783d8f312ff24048a2bd35"
+      }
+    },
+    {
+      "case": "ordinal-gap",
+      "passed": true,
+      "details": {
+        "rejection": "global ordinal must start at zero and increase by one",
+        "fixture": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-021.bin",
+        "sha256": "27f3ab7a07efba620f88352b726771503eb7ec9d8a3e0bd5afe3f6738ebfaef9"
+      }
+    },
+    {
+      "case": "bounded-record-manifest",
+      "passed": true,
+      "details": {
+        "rejection": "record limit or truncated/trailing header",
+        "fixture": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-022.bin",
+        "sha256": "998e47f50c44b225ce061ad395240c20a1766a85aaf923be676dd67d6484f76f"
+      }
+    },
+    {
+      "case": "phase-nonzero-padding",
+      "passed": true,
+      "details": {
+        "rejection": "phase must have nonempty ASCII name and zero padding",
+        "fixture": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-023.bin",
+        "sha256": "08400984355bb3accde384dd3acf24b54334b42bcca2e9dda29a3dc03fb48258"
+      }
+    },
+    {
+      "case": "NaN-is-data-and-preserved-on-later-framing-error",
+      "passed": true,
+      "details": {
+        "finding": {
+          "ordinal": 0,
+          "offset": 0,
+          "request_id": null,
+          "layer": 3,
+          "phase": "float_rows",
+          "summary": {
+            "finite_count": 1,
+            "nan_count": 1,
+            "positive_inf_count": 0,
+            "negative_inf_count": 0,
+            "invalid_integer_count": 0,
+            "minimum": 1.0,
+            "maximum": 1.0,
+            "first_finding": {
+              "kind": "nan",
+              "word": 0,
+              "physical_row": 98304,
+              "column": 0,
+              "raw_bytes": "0000c07f",
+              "raw_bits": 2143289344,
+              "value": "nan"
+            },
+            "has_findings": true
+          }
+        }
+      }
+    },
+    {
+      "case": "invalid-step-and-ID-remain-structurally-valid",
+      "passed": true,
+      "details": {
+        "findings": [
+          {
+            "ordinal": 0,
+            "offset": 0,
+            "request_id": null,
+            "layer": 3,
+            "phase": "steps",
+            "summary": {
+              "finite_count": 4,
+              "nan_count": 0,
+              "positive_inf_count": 0,
+              "negative_inf_count": 0,
+              "invalid_integer_count": 1,
+              "minimum": 2051,
+              "maximum": 98305,
+              "first_finding": {
+                "kind": "invalid_step",
+                "word": 2,
+                "physical_row": 98304,
+                "column": 2,
+                "raw_bytes": "01600000",
+                "raw_bits": 24577,
+                "value": 24577
+              },
+              "step_values": [
+                98304,
+                98305,
+                24577,
+                2051
+              ],
+              "has_findings": true
+            }
+          },
+          {
+            "ordinal": 1,
+            "offset": 144,
+            "request_id": null,
+            "layer": 3,
+            "phase": "selected_ids",
+            "summary": {
+              "finite_count": 2,
+              "nan_count": 0,
+              "positive_inf_count": 0,
+              "negative_inf_count": 0,
+              "invalid_integer_count": 2,
+              "minimum": -1,
+              "maximum": 98305,
+              "first_finding": {
+                "kind": "selected_id_outside_cached_cells",
+                "word": 0,
+                "physical_row": 98304,
+                "column": 0,
+                "raw_bytes": "ffffffff",
+                "raw_bits": 4294967295,
+                "value": -1
+              },
+              "has_findings": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "pair-first-difference-and-equal-caution",
+      "passed": true,
+      "details": {
+        "bitwise_equal": false,
+        "paired_records": 1,
+        "different_records": 1,
+        "first_difference": {
+          "semantic_identity": {
+            "layer": 3,
+            "phase": "float_rows",
+            "p0": 98304,
+            "T": 8192,
+            "first": 98304,
+            "rows": 2,
+            "elements": 4,
+            "type": 1,
+            "width": 2
+          },
+          "left_ordinal": 0,
+          "right_ordinal": 0,
+          "word": 2,
+          "physical_row": 98305,
+          "column": 0,
+          "left_byte_offset": 136,
+          "right_byte_offset": 136,
+          "left": {
+            "raw_bytes": "00004040",
+            "raw_bits": 1077936128,
+            "value": 3.0,
+            "finite": true
+          },
+          "right": {
+            "raw_bytes": "00001041",
+            "raw_bits": 1091567616,
+            "value": 9.0,
+            "finite": true
+          }
+        },
+        "original_C_rejection_cleared": false,
+        "adopted": false,
+        "performance_eligible": false,
+        "full_lifecycle_passed": false
+      }
+    },
+    {
+      "case": "pair-integer-raw-word-summary",
+      "passed": true,
+      "details": {
+        "bitwise_equal": false,
+        "paired_records": 1,
+        "different_records": 1,
+        "first_difference": {
+          "semantic_identity": {
+            "layer": 3,
+            "phase": "selected_ids",
+            "p0": 98304,
+            "T": 8192,
+            "first": 98304,
+            "rows": 1,
+            "elements": 2,
+            "type": 2,
+            "width": 2
+          },
+          "left_ordinal": 0,
+          "right_ordinal": 0,
+          "word": 1,
+          "physical_row": 98304,
+          "column": 1,
+          "left_byte_offset": 132,
+          "right_byte_offset": 132,
+          "left": {
+            "raw_bytes": "02000000",
+            "raw_bits": 2,
+            "value": 2,
+            "finite": true
+          },
+          "right": {
+            "raw_bytes": "03000000",
+            "raw_bits": 3,
+            "value": 3,
+            "finite": true
+          }
+        },
+        "original_C_rejection_cleared": false,
+        "adopted": false,
+        "performance_eligible": false,
+        "full_lifecycle_passed": false
+      }
+    },
+    {
+      "case": "pair-chunk-boundary-NaN-raw-bits",
+      "passed": true,
+      "details": {
+        "bitwise_equal": false,
+        "paired_records": 1,
+        "different_records": 1,
+        "first_difference": {
+          "semantic_identity": {
+            "layer": 3,
+            "phase": "float_rows",
+            "p0": 98304,
+            "T": 8192,
+            "first": 98304,
+            "rows": 1,
+            "elements": 16385,
+            "type": 1,
+            "width": 16385
+          },
+          "left_ordinal": 0,
+          "right_ordinal": 0,
+          "word": 16384,
+          "physical_row": 98304,
+          "column": 16384,
+          "left_byte_offset": 65664,
+          "right_byte_offset": 65664,
+          "left": {
+            "raw_bytes": "00000000",
+            "raw_bits": 0,
+            "value": 0.0,
+            "finite": true
+          },
+          "right": {
+            "raw_bytes": "3412c07f",
+            "raw_bits": 2143294004,
+            "value": "nan",
+            "finite": false
+          }
+        },
+        "original_C_rejection_cleared": false,
+        "adopted": false,
+        "performance_eligible": false,
+        "full_lifecycle_passed": false
+      }
+    },
+    {
+      "case": "stale-manifest-identity-rejected",
+      "passed": false,
+      "error": "AssertionError('stale manifest accepted')"
+    },
+    {
+      "case": "unsafe-file-rejected",
+      "passed": true,
+      "details": {
+        "symlink": "rejected",
+        "hardlink": "rejected",
+        "0644": "rejected"
+      }
+    },
+    {
+      "case": "nonprivate-parent-rejected",
+      "passed": true,
+      "details": {
+        "rejection": "capture parent must be owned and private"
+      }
+    },
+    {
+      "case": "request-ledger-missing-gap-order-extra-trailing-bool",
+      "passed": true,
+      "details": {
+        "rejected_variants": 6
+      }
+    },
+    {
+      "case": "owned-model-missing-duplicate-order-score-row-phase-layer",
+      "passed": true,
+      "details": {
+        "rejected_variants": 7
+      }
+    },
+    {
+      "case": "owned-stream-duplicate-record",
+      "passed": true,
+      "details": {
+        "rejection": "duplicate request semantic record",
+        "fixture_sha256": "2db043e75059cdd1ca6e8e63aeb95c046258c21d993d3b476acd8528fc3faa78"
+      }
+    },
+    {
+      "case": "owned-stream-missing-model-coverage",
+      "passed": true,
+      "details": {
+        "rejection": "full GEN must contain exactly 345 records",
+        "fixture_sha256": "080581f077a3805438139354247b3afa4c8b56fc40049857b7cf3152dd516c7b"
+      }
+    },
+    {
+      "case": "actual-order-two-full-parser-and-ordinal-independent-pair",
+      "passed": true,
+      "details": {
+        "record_count": 690,
+        "size": 133495872,
+        "file_sha256": "deb3def0f07f6d75e52531804a85c48e8b6b18128ff4a45a2df163cce1f92b9c",
+        "pair": {
+          "bitwise_equal": true,
+          "paired_records": 345,
+          "different_records": 0,
+          "first_difference": null,
+          "original_C_rejection_cleared": false,
+          "adopted": false,
+          "performance_eligible": false,
+          "full_lifecycle_passed": false
+        }
+      }
+    },
+    {
+      "case": "ledger-boundary-splits-record",
+      "passed": true,
+      "details": {
+        "rejection": "record crosses or escapes full-GEN ledger interval",
+        "preserved_records": 344
+      }
+    },
+    {
+      "case": "real-production-small-normal-framing-only",
+      "passed": true,
+      "details": {
+        "file_sha256": "8faa1215acf1c2ef256824eb6c5b12946567edadea65cf75ab79f0af69429395",
+        "records": [
+          {
+            "phase": "float_rows",
+            "type": 1,
+            "rows": 2,
+            "width": 4
+          },
+          {
+            "phase": "selected_ids",
+            "type": 2,
+            "rows": 1,
+            "width": 4
+          }
+        ],
+        "numeric_findings": [
+          {
+            "ordinal": 1,
+            "offset": 160,
+            "request_id": null,
+            "layer": 7,
+            "phase": "selected_ids",
+            "summary": {
+              "finite_count": 4,
+              "nan_count": 0,
+              "positive_inf_count": 0,
+              "negative_inf_count": 0,
+              "invalid_integer_count": 2,
+              "minimum": -1,
+              "maximum": 262143,
+              "first_finding": {
+                "kind": "selected_id_outside_cached_cells",
+                "word": 0,
+                "physical_row": 98328,
+                "column": 0,
+                "raw_bytes": "ffffffff",
+                "raw_bits": 4294967295,
+                "value": -1
+              },
+              "has_findings": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "real-production-partial-write-rejected",
+      "passed": true,
+      "details": {
+        "rejection": "truncated payload or payload exceeds file bounds",
+        "file_sha256": "76ba9f7888fc22fdbf2d118e2e718ec326f3471b6f062a41e86dabe57b1da368"
+      }
+    }
+  ],
+  "started_utc": "2026-10-09T16:01:57.999297+00:00",
+  "reader_sha256": "85c4c2b496bbc817c905ea58774a1e173832b84d03d05021303a911297d8f29e",
+  "test_sha256": "985d857b6da3e4ae131e749acd134e7ea2cdd3574f34ca8624a0e69bebded7e7",
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "uname": [
+    "Linux",
+    "jitakusaba01",
+    "7.0.0-38-generic",
+    "#38~24.04.4-Ubuntu SMP PREEMPT_DYNAMIC Mon Sep 14 16:37:11 UTC 2",
+    "x86_64"
+  ],
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "deadline_owner": "root serial supervisor",
+  "fixture_budget_bytes": 146800640,
+  "retention": {
+    "owner": "root reader CPU validation",
+    "raw_deleted": false,
+    "consumer": "framing/parser/pair validation",
+    "next_review": "root closes receipt, extracts evidence and retires fixtures"
+  },
+  "elapsed_seconds": 21.500842504989123,
+  "fixtures": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/two-full.bin",
+      "size": 133495872,
+      "sha256": "deb3def0f07f6d75e52531804a85c48e8b6b18128ff4a45a2df163cce1f92b9c"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-026.bin",
+      "size": 280,
+      "sha256": "07e6f0ae0e1fa4018aa7cc38bb4dd2c9995f3dc0b3c57c741c2d066897eaf095"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-021.bin",
+      "size": 272,
+      "sha256": "27f3ab7a07efba620f88352b726771503eb7ec9d8a3e0bd5afe3f6738ebfaef9"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-028.bin",
+      "size": 144,
+      "sha256": "e3f05d4b32c07f3c02034baa0bee1ce0dd1f20360a87b180514e7ac20e22b0a5"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-014.bin",
+      "size": 136,
+      "sha256": "f0bc00f370dbbd9c2fa35a81de1ae955ceb0deba1833e352d0157c0a092036b6"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-013.bin",
+      "size": 136,
+      "sha256": "4fc0ac5c49dfe90a5321db78ed208f5ba41d356f593a63102bb10fbbeb93f414"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-002.bin",
+      "size": 136,
+      "sha256": "a25d673fb1016845644c17abcd0708f8bea56447743c2f5ce854d46d818d5a4a"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-005.bin",
+      "size": 136,
+      "sha256": "e2aaa453c09de46cbff190b26a15ad83c6eeb7260c853fedd975254274274fb9"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/hardlink.bin",
+      "size": 136,
+      "sha256": "ff1a7b9d50663561fb3689ca66bd89c67aa42ef0d8974a7d542ebbff6544b650"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-030.bin",
+      "size": 136,
+      "sha256": "4f0fa502f00bf16528df18498afd139ef3a056cd7c94c06250e7dd9502ddffbc"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-037.bin",
+      "size": 272,
+      "sha256": "080581f077a3805438139354247b3afa4c8b56fc40049857b7cf3152dd516c7b"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-012.bin",
+      "size": 136,
+      "sha256": "fdf20f09e4ba6dc5281438466cf2f2765e20ff918ad1b9d233ce008fb2fa642e"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-015.bin",
+      "size": 136,
+      "sha256": "4915d23687bc13f025533e3af31dd594e4fb165ddc7d1c4d8f024cb08e8a2892"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-029.bin",
+      "size": 136,
+      "sha256": "b72c2cf0d92118921ea374e0921380a81119033b8e75689a0a44469920971bcd"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-020.bin",
+      "size": 272,
+      "sha256": "b1daff934be7b46e67a952ed19c2627ccb52b5dc63783d8f312ff24048a2bd35"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-027.bin",
+      "size": 144,
+      "sha256": "1726eee08a85ab036f2223c9543432621bb6679549b2ce9337c0c49eefcf200b"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-036.bin",
+      "size": 408,
+      "sha256": "2db043e75059cdd1ca6e8e63aeb95c046258c21d993d3b476acd8528fc3faa78"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-031.bin",
+      "size": 65668,
+      "sha256": "aae61c4b2cb861bcdad839f67ea3874a5f42c57411dd0226a34253aba5bb2f9a"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-004.bin",
+      "size": 136,
+      "sha256": "a6ff799f84e7f2619cc3b06b78826953cfb480220a10a30096f8fc0bce0a316b"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-003.bin",
+      "size": 136,
+      "sha256": "f063006b014a2b2d9268e865a305ce681c0d1efe67eac020bf4ecfb08218a2f3"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-032.bin",
+      "size": 65668,
+      "sha256": "678aceb5b399b10eb900848703dd2bf886777cbf0f41d93866635eaa3945c9ed"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-035.bin",
+      "size": 136,
+      "sha256": "ff1a7b9d50663561fb3689ca66bd89c67aa42ef0d8974a7d542ebbff6544b650"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-009.bin",
+      "size": 136,
+      "sha256": "a6c7426a323fc43abefb2a039a5b2b543a226764716f3cfaaf727d6e78b3fe05"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-007.bin",
+      "size": 136,
+      "sha256": "9213d0ab252b8ed21ac4770119f977da99d4e4f2b3093475b1c67ff33a739514"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-016.bin",
+      "size": 136,
+      "sha256": "0f4e5a77bc33474c8ba0a0f96e3e3f6a334ba1a6ded57179a346c3e77f0a7f38"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-011.bin",
+      "size": 136,
+      "sha256": "ee254a807cf191e4f12e09f2b0f524c19a2a2c860e90bfd0a1b328b129b1ae05"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-018.bin",
+      "size": 135,
+      "sha256": "02d3fbbe111dcd83916344e5ab5a8c44e63d3666e6a6e5468fa43daa5829aca8"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-024.bin",
+      "size": 136,
+      "sha256": "41d811b56af6af33eafbaadbf4b54601df1932c3799bb07cbadc473427dc67b8"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-023.bin",
+      "size": 136,
+      "sha256": "08400984355bb3accde384dd3acf24b54334b42bcca2e9dda29a3dc03fb48258"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-006.bin",
+      "size": 136,
+      "sha256": "9198b39d58d5f37dea82b77a0c82707121482185d0389a581e091e4aff3ee9a8"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-001.bin",
+      "size": 136,
+      "sha256": "ff1a7b9d50663561fb3689ca66bd89c67aa42ef0d8974a7d542ebbff6544b650"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-008.bin",
+      "size": 136,
+      "sha256": "3b3a287ab8858f3ebc7aeb8b8b01cca24138965b5e3e46dc27371f301bd2c54d"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-034.bin",
+      "size": 136,
+      "sha256": "ff1a7b9d50663561fb3689ca66bd89c67aa42ef0d8974a7d542ebbff6544b650"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-033.bin",
+      "size": 136,
+      "sha256": "2d691a18c07a75a62db8e829bebeed1aab296acb881d464229d1ec0b236690be"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-022.bin",
+      "size": 93976,
+      "sha256": "998e47f50c44b225ce061ad395240c20a1766a85aaf923be676dd67d6484f76f"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-025.bin",
+      "size": 137,
+      "sha256": "c887b08937d166901020ad3238d4c985c32556993415a5e8d3cf44c6ae317ba6"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-019.bin",
+      "size": 137,
+      "sha256": "dce3bdea53a7e0da6b8c0ee95802a453960ad6711accf92bf6c7eb5274069ec6"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-010.bin",
+      "size": 136,
+      "sha256": "8eae187ede654ff69e87d2e834b9c245b870d7b41d27b0a717bacf64c6c094d8"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/small-017.bin",
+      "size": 100,
+      "sha256": "dec030cb2c021ed6d2725599ca6faf3e8ada90502ad2384c2d9558039bbe13ef"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/public/file.bin",
+      "size": 136,
+      "sha256": "ff1a7b9d50663561fb3689ca66bd89c67aa42ef0d8974a7d542ebbff6544b650"
+    }
+  ],
+  "finished_utc": "2026-10-09T16:02:19.500121+00:00"
+}

@@ -1,0 +1,74 @@
+{
+  "active": false,
+  "complete": false,
+  "passed": false,
+  "gpu_executed": false,
+  "model_opened": false,
+  "profiler_executed": false,
+  "source_commit": "4e5684f29df9fdc7ec16d969c4443f999bf932d3",
+  "scope": "CPU parser/framing/pair fixtures, Sol hardening4e5684; independently encoded pinned producer grammar and whole-file verification. No real device proof.",
+  "started_utc": "2026-10-09T16:06:32.246171+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "controller_sha256": "dd03c785d74db3c3757794aa957570b4b3139e2c0bf515ebb5456cdf687d09a6",
+  "python": "/usr/bin/python3",
+  "python_sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+  "pins": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/debug-sycl-layer-major-repeat-v0141-20261009/sycl/src/prefill/prefill.cpp": "acd062d1a4f4ab29230630e066fbc29080f92c270cb1fc3e900be12502a17b56",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/fix-repeat-capture-reader-20261010/bench/results/2026-10-10-repeat-capture-reader/capture_reader.py": "de132470f06cbadd1ef1d2c71313dbe0321d268ca664477bb9c74b97a6b69150",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/fix-repeat-capture-reader-20261010/bench/results/2026-10-10-repeat-capture-reader/test_capture_reader.py": "f5e73217e20a6f81aa07dde34986c0cefdd023799f9aa46b50f1961df6aa0ae5",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/normal.bin": "8faa1215acf1c2ef256824eb6c5b12946567edadea65cf75ab79f0af69429395",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/partial-write.bin": "76ba9f7888fc22fdbf2d118e2e718ec326f3471b6f062a41e86dabe57b1da368"
+  },
+  "deadline_seconds": 240,
+  "text_budget_bytes": 67108864,
+  "binary_budget_bytes": 146800640,
+  "owners": {
+    "1484771": {
+      "pid": 1484771,
+      "ppid": 1484712,
+      "start_ticks": 25167141
+    }
+  },
+  "cleanup": [],
+  "survivors": [],
+  "adopted": false,
+  "performance_eligible": false,
+  "full_lifecycle_passed": false,
+  "elapsed_seconds": 21.451688622008078,
+  "argv": [
+    "/usr/bin/python3",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/fix-repeat-capture-reader-20261010/bench/results/2026-10-10-repeat-capture-reader/test_capture_reader.py",
+    "--out",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v2",
+    "--producer-source",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/debug-sycl-layer-major-repeat-v0141-20261009/sycl/src/prefill/prefill.cpp",
+    "--real-normal",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/normal.bin",
+    "--real-partial",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/partial-write.bin"
+  ],
+  "effective_env_changes": {
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "exit_code": 1,
+  "test_record_sha256": "4a237a2a45f807eca91e749d023dff42c19546f82bdfaead733cb0a841b5c219",
+  "case_count": 48,
+  "failed_cases": [
+    {
+      "case": "bounded-private-ledger-JSON-and-filesystem-policy",
+      "passed": false,
+      "error": "AssertionError('unsafe/malformed ledger accepted: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v2/small-049.bin')"
+    },
+    {
+      "case": "ledger-same-size-mutation-stable-fstat",
+      "passed": false,
+      "error": "AssertionError('concurrently changed ledger accepted')"
+    }
+  ],
+  "error": "AssertionError()",
+  "sizes": {
+    "text": 40522,
+    "binary": 133929168
+  },
+  "finished_utc": "2026-10-09T16:06:53.697839+00:00"
+}

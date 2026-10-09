@@ -1,0 +1,22 @@
+# Owned repeat-capture controller / reader binding audit — round 28
+
+## Scope and status
+
+Read-only source review of `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_repeat_capture_v0141_two_full_v2.py`, SHA-256 `188cbb947c0a8737e35335fe22acb268e870de3c6971a3ec72a9625e879433e4`. Reviewed the exact reader commit `4a565c0302dc3e4df9c4b6798da6c8bc21504d3d`, its v3 CPU receipts, R22 and R24–R27 audits, registry v23 (SHA-256 `5dfcd721be2d40077ef584264f05ba370c118f5f94aad44c3117fb7733f19e2b`), and the root v19–v23 review archive. No build, test, syntax/help query, CPU/GPU/model/profiler/service operation, cleanup, edit, or Git synchronization was performed.
+
+The v3 reader gate is a passed CPU result (48/48) with normal exit, no forced cleanup or survivors, 22.990 s per root's supplied result; case receipt SHA-256 is `4c69bbc931261d392e3bef3b019f99a644e35772b212365cce77d44aff84856a` and supervisor receipt SHA-256 is `ab453fce80ec30052c4277623816800ffc151157991bcda852d2c7e6c741fbf9`. The earlier v1/v2 failures remain preserved; the new reader gate does not rewrite them.
+
+## Integration findings
+
+I found no concrete source-level blocker in the v2 controller's reader integration for its stated bounded diagnostic:
+
+- **Invocation/controller and reader pins precede the model path.** The script requires one `--controller-sha256`, validates its format, checks its own file digest on entry and again before parsing, requires the exact reader commit and clean tree, pins reader and test source hashes, and verifies the v3 supervisor and case-receipt hashes/status plus owner cleanup and no GPU/model claims in those CPU receipts. The producer source/header, binary, build flags, and prior numerical/fault evidence keep their independent pins.
+- **The ledger is bound to request evidence twice.** Every GEN records `capture_before_bytes` and `capture_after_bytes` on the request object and separately appends the offset ledger. After normal QUIT and process exit, the controller rebuilds the ledger from the actual request objects, requires equality with the separately recorded ledger and exact `capture_reader.REQUESTS` order, and uses `owned_full` only if that binding passes. `owned_full` then enforces the five contiguous intervals and exactly two full-capture record sets. On a bad history, the controller uses framing mode only for partial evidence and does not mark the owned diagnostic complete.
+- **Parsing occurs after normal producer termination and the close sentinel.** The sequence sends QUIT, requires exit code 0/no signal, checks the inferior log for `repeat capture close failed`, then rechecks controller and reader hashes and parses the closed capture while pinning the stat identity. Parser/compare `CaptureError` saves its partial manifest and leaves `capture_diagnostic_complete=False`; success records the manifest and pair result separately from the model `math_gate_passed` flag.
+- **Outcome semantics remain conservative.** A detected captured difference is retained as a diagnosis result; it need not be a reader/framing error. The controller does not turn equality into a pass for the original C numerical rejection, and always sets full lifecycle, performance eligibility, and adoption false. The bounded run still omits clipped-tail, RESTORE, refusal and later-control lifecycle gates. Synchronous readback can mask or shift the original failure, so this can only characterize the instrumented source/build/window.
+
+## Remaining execution boundary
+
+The reader CPU suite is now validated, but the new controller's own `--cpu-preflight` invocation remains unexecuted in the state supplied for this assignment. That preflight is the next narrow source-pin/controller-binding gate before root decides on any GPU/model diagnostic. This is an execution gate, not a source defect found here. A preflight pass would still establish only that historical evidence, source pins, reader CPU receipts, and invocation binding are coherent; it cannot establish device/USM behavior, capture correctness on real SYCL, or model correctness.
+
+The final capture's whole-file verification is bounded to the closed producer file and the CPU reader's stored SHA-256. It is not a guarantee against a hostile concurrent writer after verification. Root's existing owned-process and orderly-close assumptions are necessary and remain explicit. The original C full-repeat math rejection is still the governing numerical status; no new GPU admission or source adoption is implied by this audit.

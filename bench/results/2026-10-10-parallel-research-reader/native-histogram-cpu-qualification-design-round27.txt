@@ -1,0 +1,43 @@
+# Native dispatch histogram CPU qualification design — round 27
+
+## Scope and decision
+
+Read-only source audit of frozen H `96bd5bb4e054f6ddcf677fd96e161b499a013fd7` in `diag-sycl-native-dispatch-histogram-v0141-20261009`. Registry v23 SHA-256 matches `5dfcd721be2d40077ef584264264f05ba370c118f5f94aad44c3117fb7733f19e2b`. Reviewed the round-20 independent resolver audit, round-18 histogram design, round-25 Zen3 follow-up, and root v18/v19–v23 reviews. No source changes, tests, build/configure, syntax/help/version query, CPU/GPU/model execution, profiling, services, cleanup, or Git network operation occurred.
+
+The smallest meaningful next CPU qualification should target **the shared production wrapper and its actual outputs**, with frozen T as a differential oracle. Do not treat the histogram report itself as a CPU parity test. H’s resolver refactor remains in the always-executed wrappers when collection is off; the histogram toggle only avoids its collection/reset/report overhead.
+
+## What existing CPU tests cover—and what they do not
+
+The current `src/kernels/cpu/iq_avx2_parity.cpp` is the best starting point. It builds deterministic, block-aligned synthetic expert blobs, places valid FP16 block scales, generates finite activation rows, and quantizes them through the engine’s activation quantizers. It checks IQ GU direct AVX2 variant rows against the scalar variant at NT 1–8, checks GU IQ4_NL and Q2_0 Down row variants at NT 1–8, and compares reference paths. It is CPU-only and links `strata_kernels_cpu`, `ggml-cpu`, and `ggml-base` (CMake target around lines 1188–1236). It avoids a model and CUDA runtime.
+
+But its normal parity loop directly calls `iq256_gu_rows_v`, `iq256_rows_v`, `iq4nl256_down_rows_v`, and Q2 row variants. The production `native_gu_rows` wrapper is exercised by `check_engine_width()` only when `native_gu_mt_min(type)==1`; at default `STRATA_IQ_MT_MIN=2`, that helper returns early for the model’s supported IQ types. The test therefore does not fully traverse the refactored production resolver for every real NT under default settings. Its CTest IQ3S one-token profile helps cover a special branch only when the CPU’s gather-fast predicate makes that branch applicable. `--bench --dispatch` invokes the engine wrappers but is a timing mode, not an output-parity assertion.
+
+`src/kernels/native_expert_parity.cpp` calls `native_gu_rows`/`native_down_rows` and has a ggml CPU reference, but that target includes `cuda_runtime.h` and exercises a GPU path; it is unsuitable as the smallest CPU-only qualification. The direct-only parity program is a better base, provided it gains an engine-wrapper check.
+
+## Recommended gate: differential wrapper-output parity against frozen T
+
+Add a CPU-only mode to the existing `iq_avx2_parity` target (or a tiny sibling target linked to the same CPU library) that invokes the actual public wrappers in both frozen T and H builds and emits deterministic output hashes plus mismatch counts. Keep one identical harness source and deterministic seeds in both builds. Compare H’s exact wrapper output bytes to T for each case; also retain the existing independent ggml/direct-kernel checks so identical but already-wrong behavior is not accepted. No hand-copied reimplementation of `native_gu_dispatch` or `native_down_dispatch` should be the oracle.
+
+Use the real target CPU’s detected capability, not a fake feature matrix. For the Ryzen 5 5600X / Zen 3 case, record AVX2 usable, AVX-512 unavailable, AVX-VNNI unavailable, and the exact effective CPU name/flags. Run each environment profile in its own fresh process because resolver settings are function-local statics. Start with this compact boundary matrix:
+
+- Actual model types and all legal group widths: GU types 18, 21, 22 and 23; Down IQ4_NL type 20 and direct Q2_0 type 42; NT 1 through 8.
+- Default settings, `STRATA_IQ_MT_MIN=1`, and `STRATA_IQ_MT_MIN=3`, covering below/at/above the actual dispatch threshold.
+- Isolated fallback profiles: `STRATA_NO_IQ256=1`, `STRATA_NO_IQ4NL=1`, `STRATA_IQ256_GATHER=0`, `STRATA_IQ256_GATHER=1`, and `STRATA_IQ3S_MT1=1` (with the rest of its documented preconditions recorded). Run separate processes rather than changing the environment after a resolver was first called.
+- If claiming the general opt-in KQ resolver remains covered, add only the branch-triggering controls—GU type 12 and Down types 7/8 with `STRATA_KQ256=1` at NT 1 and 2—without presenting them as current-pack exposure. On Zen 3, `STRATA_NO_IQ512` cannot exercise or qualify the AVX-512 route; do not simulate AVX-512 availability.
+
+For each wrapper case, use the same legal synthetic weight blob, same finite activation floats, and the production quantization path. Compare bitwise T/H outputs for the exact same type/NT/settings tuple; require finite results and preserve each implementation’s established ggml/reference tolerance where its accumulation order differs. Existing `fill_blob()` randomizes encoded fields but writes valid positive FP16 block scales, and `Acts` builds quantized inputs from normal finite floats. Do not manufacture arbitrary Q8 bytes: the signed-byte kernels have a separately documented conditional `-128` behavior, while the shown native finite-input quantizers target ± 127. This gate must not accidentally turn that distinct UB/math question into a resolver regression.
+
+Include at least one row-range partition case per representative GU/Down type (full output versus concatenated disjoint row slices) so the wrapper’s row arguments and output offsets are also checked; keep the reference independent of the new resolver helper. Record source, test, compiler, pinned ggml commit and the original T/H CMake configuration hashes. Reuse the exact compiler/build settings from the preserved T and H configure receipts, including the per-source AVX2 flags (`-mavx2 -mfma -mf16c`) and pinned ggml revision. Do not add `-march=native`, force wider ISA, or build the AVX2 files for the build host by default. Prefer the existing Strata CMake target over an ad hoc one-file compile because the gate must link the same CPU resolver, quantizers and kernel objects as the engine.
+
+This is a bounded resolver/math qualification, not a histogram or model result. It can establish that the refactored production wrappers on the actual target reproduce the old wrapper outputs under the tested settings. It does not test the AVX-512 resolver branch, per-core behavior on hybrid CPUs, request histogram accumulation, worker scheduling, CPU performance, GPU math, or end-to-end decode.
+
+## Separate histogram checks after CPU math gate
+
+A CPU-only wrapper test does not instantiate the actual pool’s submitted jobs, so it cannot independently prove that a request histogram’s expert/token/row totals match production routing. Leave that as a later, separately owned request-level validation: on an already-qualified controlled run with the diagnostic enabled, reconcile GU and Down expert totals, routed-token sums, and expected output rows against the same request’s CPU job/entry counters; confirm overflow buckets remain empty; confirm the reported cells match the dispatch labels for that build. The round-20 audit already cautions that job/row counts are exposure, not literal task fragments, timing, memory traffic, or worker imbalance.
+
+For the CPU qualification, compare H with histogram unset/off against T. Separately compare H histogram-off and histogram-on outputs in a deterministic test only if the diagnostic can be enabled without involving a model/GPU request; otherwise defer that side-effect check to the root-owned integration step. Histogram-enabled phase timings are contaminated by its caller-side job walk, including the interval between GU completion and FF quantization. No speed claim can follow from its counters.
+
+## Qualification status and stop conditions
+
+This is a test design, not a result: H remains unbuilt/untested/unadopted in the reviewed evidence. If wrapper outputs differ from T, stop before using histogram data and localize the first type/NT/settings difference. If all cases pass, retain the CPU receipt and exact settings matrix, then keep enabled histogram count reconciliation and fresh-request math/protocol validation as separate gates. The prior T fresh-request passes do not qualify H.
+

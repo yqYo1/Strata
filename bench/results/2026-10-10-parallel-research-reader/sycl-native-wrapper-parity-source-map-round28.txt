@@ -1,0 +1,43 @@
+# SYCL native-wrapper parity source map — round 28
+
+## Scope and correction
+
+Read-only follow-up against frozen H `96bd5bb4e054f6ddcf677fd96e161b499a013fd7` and frozen T `7d0105f2a942ac72ca20fef69d4c2e7960653de3`. I reviewed R24–R27, registry v23 (SHA-256 `5dfcd721be2d40077ef584264264f05ba370c118f5f94aad44c3117fb7733f19e2b`), and relevant source in both worktrees. No source edits, tests, builds/configure, syntax/help queries, CPU/GPU/model/profiler/service operations, cleanup, or Git fetch occurred. The separate uncommitted diagnostic work Sol is preparing was not inspected.
+
+Correction to R27: its suggested existing CMake target path described the top-level CUDA project, not the active SYCL project. Top-level `CMakeLists.txt` defines `iq_avx2_parity` around lines 1230–1236; `sycl/CMakeLists.txt` currently does **not** define that target. The SYCL project’s `native_expert_parity` is not a CPU-only alternative: it links `strata_kernels` (the GPU kernel library) and calls the grouped GPU path. The existing root parity source remains useful as a CPU-only harness source, but a SYCL-specific target must link the SYCL build’s `strata_kernels_cpu` to test the code actually used by that engine.
+
+## Actual SYCL source resolution and flags
+
+`sycl/CMakeLists.txt` defines `strata_resolve()` and checks for a SYCL-side copy before falling back to the repository root. In the CPU library:
+
+- `src/kernels/cpu/native_expert.cpp` resolves to the shared root source. H’s `native_gu_dispatch`/`native_down_dispatch` and wrapper calls are therefore the actual host resolver used by SYCL; no separate SYCL implementation shadows them.
+- `src/kernels/cpu/iq_avx2.cpp` resolves to `sycl/src/kernels/cpu/iq_avx2.cpp`, whose wrapper includes the root IQ AVX2 implementation. Compile properties are attached to this SYCL-side translation unit, so linking the root-only target would not verify this compilation route.
+- `q2_avx2.cpp`, `expert.cpp`, `iq_avx512.cpp`, and the other listed CPU sources resolve to the root copies where no SYCL override exists. The Q2 route is thus the shared CPU implementation.
+
+A correct added target should be declared in `sycl/CMakeLists.txt` after `strata_kernels_cpu` is defined. Resolve the harness source there (it falls back to root `src/kernels/cpu/iq_avx2_parity.cpp`) and link it to **only** `strata_kernels_cpu` and its transitive CPU/ggml dependencies—not `strata_kernels`, `strata_engine`, or `native_expert_parity`. The library itself links `ggml-cpu` and `ggml-base` when `STRATA_NATIVE_EXPERTS=ON`. The SYCL directory globally applies `-fsycl` and `-fsycl` link options to C++ targets, so “CPU-only” here means no GPU engine/kernel library, no GPU API calls, and no GPU device run; the executable may still carry the toolchain’s SYCL host runtime linkage.
+
+Build and compare frozen T and H with the same preserved configure/compiler/ggml receipts. Do not invent an H receipt because H is still unbuilt in the reviewed evidence. The SYCL project sets C++20, `-fp-model=precise`, and per-source ISA options; notably the IQ AVX2 forwarding TU gets `-mavx2 -mfma -mf16c`, while AVX-512 and VNNI alternatives remain in their own source/target-gated paths. Keep `STRATA_IQ2S_GCC` identical in both builds (and record it; default is OFF), as that option substitutes a separate GCC IQ2_S object for NT2/NT4. Do not add `-march=native` or change the existing runtime ISA guards. The test target must fail/skip explicitly if the required target CPU is absent; existing `iq_avx2_parity` returns success with “no AVX2 here, nothing to check,” which would otherwise permit a false pass.
+
+## Format-safe synthetic inputs and independent references
+
+The generic parity harness already supplies the strongest reusable input contract:
+
+- Its expert dimensions are `H=2560`, `FF=640`, matching `native_fmt()` on the model’s native expert rows.
+- GU types under review are 18 (IQ3_XXS), 21 (IQ3_S), 22 (IQ2_S), and 23 (IQ4_XS). Down types are 20 (IQ4_NL) and 42 (Q2_0).
+- `fill_blocks()` initializes deterministic encoded bytes per ggml block and writes a small positive finite FP16 scale in the block’s leading scale field. The remaining IQ/Q2 code bits are bounded bitfield/codebook indices. Use `native_fmt()`/ggml’s `ggml_type_size` and `ggml_row_size` instead of hand-computing row offsets; these shapes are whole blocks.
+- `Acts` builds finite activation vectors and calls `native_quant_act`/`native_quant_h`, matching the actual ggml activation type for the selected weight format. The Q2_0 direct path additionally needs the production `act_quant_any()` result (`ActQ`), as the pool does. Do not pass arbitrary byte arrays as Q8 activations or inject `-128`: the earlier intrinsic audit found a distinct conditional `vpsignb(-128)` behavior, while normal native finite-input quantizers cap the signed values at ± 127.
+
+The wrapper test must exercise these actual paths (not only direct variant helpers):
+
+- For each GU format 18/21/22/23 and NT 1–8, call `native_gu_rows()` from the linked SYCL CPU library. An independent expected result can use `ggml_get_type_traits_cpu(type)->vec_dot` with the same quantized Q8_K activation for gate and up, then apply the fallback’s SiLU expression `(g / (1+exp(-g))) * u`. Keep the established numerical tolerance for the optimized multi-token path, and compare H against T bitwise for the same tuple/settings.
+- For Down type 20 and NT 1–8, call `native_down_rows()` and compare to ggml CPU `vec_dot` using the same produced activation.
+- For Down type 42 and NT 1–8, call the actual pool-level direct `q2_rows_any()` with production `ActQ` activations; `native_down_rows(type42)` is not the engine’s Q2 route. The existing parity source has an independent double reference from Q2_0 block scale/code values and `ActQ.scale/q`; retain its numerical tolerance and add H/T wrapper-output comparison.
+
+The current root `iq_avx2_parity.cpp` already validates the raw IQ AVX2 variants and the IQ4_NL/Q2 row implementations at NT1–8, but it only calls `native_gu_rows()` in the `check_engine_width()` helper when the effective threshold is 1. It does not call the production Down20 wrapper over widths, nor does its ordinary CPU parity path exercise Q2 through `q2_rows_any()`. A new SYCL-specific mode should add the production-wrapper calls/hash output rather than treating raw-kernel parity as resolver parity. The resolver is the system under test: compare H’s actual outputs with the frozen T build under separately launched environment profiles; do not write a parallel copy of the resolver predicates as the expected oracle.
+
+Use the real Ryzen 5 5600X’s detected AVX2/no-AVX512/no-AVX-VNNI capabilities. Test NT1–8 and the already identified threshold/settings boundary cases in separate processes because the dispatch settings are function-local statics. Do not fake CPU feature bits or claim the AVX-512 resolver path was qualified. Histogram row/job totals remain a separate request-level integration gate because a tiny wrapper target does not instantiate the production pool’s routed jobs.
+
+## Gate boundary
+
+This corrected design exercises the exact SYCL CPU archive and its resolved source set without linking the GPU kernel archive. It can establish CPU wrapper parity for the actual compiled H/T source mappings and tested environment tuples. It cannot qualify histogram totals, the untested AVX-512 branch, hybrid per-core variants, worker scheduling, full model behavior, performance, or GPU correctness. No execution result follows from this source audit.
+

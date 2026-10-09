@@ -1,0 +1,36 @@
+# Zen 3 quantized MoE row-kernel research — round 25
+
+## Evidence boundary
+
+Read-only source and public-web research. Active source: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-dispatch-histogram-v0141-20261009`, HEAD `96bd5bb4e054f6ddcf677fd96e161b499a013fd7`; the candidate histogram remains source-only and untested. Registry v23 SHA-256 is `5dfcd721be2d40077ef584264264f05ba370c118f5f94aad44c3117fb7733f19e2b` (correct full digest: `5dfcd721be2d40077ef584264f05ba370c118f5f94aad44c3117fb7733f19e2b`). New R24 reader audit was read. Other relevant prior work: R17 paired Gate/Up reuse and measured-dispatch tile suggestions; R18 histogram design; R20 resolver audit; R21 high-NT spill/token-chunk and false-sharing edge proposals; R24 says histogram counts jobs/rows, not fragments/timing. Root's v19–v23 archive is at `.../docs-sycl-storage-retention-20261009/bench/results/2026-10-09-sycl-layer-major-lease-capacity/research-root-review-v19-v23.md`. No source edits, build, test, syntax/help/version query, run, profiler, or Git synchronization was done.
+
+The active target is a Ryzen 5 5600X: Zen 3, AVX2, no AVX-512. Strata already uses a multi-token native row path for the actual IQ formats and has a separate Q2_0 path. The observed model-format summary is GU 18/21/22/23 and Down 20/42; source maps type 42 to Q2_0 (`iq_avx2_parity.cpp`), not Q5_K. Thus a Q5_K Down-kernel proposal would be inapplicable and is excluded here. Histogram counts, if/when root validates them, remain exposure rather than timing/DRAM/tail evidence.
+
+## One conditional new candidate: pair the Q2_0 Gate and Up dot within a row
+
+This is a narrow Q2_0 exception to Strata's existing fused GU row kernel, not a claim that GU/SwiGLU fusion is generally absent. `pool.cpp` mode 5 handles Q2_0 separately: it calls `q2_rows_any` once on the Gate plane and once on the Up plane, stores both results in thread-local `gbuf`/`ubuf`, then computes sigmoid(Gate)*Up into `sb.ff`. The normal IQ path instead calls `native_gu_rows`, whose row helper handles Gate, Up and SwiGLU within the row call. In `q2_avx2_rows.inl`, `row_multi<NT>` decodes each 64-value Q2 block once for its weight row and applies it to NT activation rows; the Gate and Up calls repeat the activation-byte loads and block-level scheduling separately. The Down Q2 path is already a multi-token row kernel. This local code makes a Q2-only paired GU path a concrete question, not a missing general graph fusion.
+
+Expected opportunity: avoid one repeated traversal of the small Q8 activation blocks per Gate/Up pair, reduce two wrapper traversals to one paired row traversal, and avoid writing/reading the intermediate Gate/Up arrays. The weight streams remain distinct and both must be decoded, so the dominant weight-byte traffic is not removed. The paired kernel would also hold two groups of NT accumulators and more decode state at once; on AVX2's 16 YMM registers this could spill or lengthen live ranges and erase the savings. For `nt=8`, this risk is high. The Q2_0 subset is 9 of 48 MoE layers by source summary; its actual routed CPU job/NT exposure is unknown until the histogram is run. Candidate priority is low unless Q2_0 contributes material CPU native rows and the isolated kernel has a repeatable win.
+
+Smallest root-managed falsification:
+
+1. First use the reviewed histogram on controlled exact-routing requests to establish actual Q2_0 GU job, token and output-row exposure by NT; confirm it is selected on the target. If exposure is negligible, stop.
+2. For the exposed NT values only (begin with 1–4, then test 5–8 only if observed), compare the current two-call path with a prototype paired Q2_0 row microkernel using the same packed blobs and `ActQ` inputs. Keep activation quantization, row partition, pool task count, affinity and all other kernel math unchanged.
+3. Require exact bitwise output parity against the existing separate-kernel result and ggml/reference oracle, including nontrivial scales and cancellation cases. Measure repeated per-row/per-expert time and retired instructions/spills if the local toolchain supports them. Reject if the pair path spills in its inner block loop or has no repeatable isolated win. Only then consider a fresh-request model parity gate; no full-run timing claim follows from the microbench.
+
+## Alternatives reviewed and deprioritized
+
+- Do not reopen the R21 NT=6–8 accumulator-pressure / token-chunking lead or its cache-line boundary/HITM lead. They remain conditional on generated-code spill or real coherence/tail evidence and are already documented. The histogram cannot resolve either.
+- The existing `STRATA_Q2_BITPLANE` path is not a new recommendation. The candidate source says it changes last bits; that conflicts with the current exact numerical gates. Keep it out of qualification unless the user explicitly revises the numerical contract.
+- Do not optimize generic IQ GU by fusing the two projections again: the existing `iq_avx2_rows.inl` already decodes a block once across NT activations and computes both Gate/Up plus SwiGLU within each output-row function. R21 already describes the remaining activation reuse question and the fact that weights are different rows.
+- Do not infer a scheduler change from format or row counts. R18/R20/R24 establish that the histogram is an exposure counter and does not report fragment execution time, worker tails, traffic, or per-worker variant choices.
+
+## Cross-engine context and transfer limits
+
+`ik_llama.cpp` advertises an AVX2-or-better CPU backend and a separate MoE fused-ops lineage, but its docs also caution that row-interleaved repacking can force k-quants to remain on CPU in hybrid runs. That is a storage/layout tradeoff, not evidence for this Q2 row-pair kernel or a Zen3 speedup: [ik_llama README](https://github.com/ikawrakow/ik_llama.cpp).
+
+Current upstream `llama.cpp` has a CPU tiled microkernel with explicit AVX2 and Q4_K/Q5_K instantiations. The implementation demonstrates that a tile can share activation-side work across quantized rows, but it is an ordinary matrix/tiled path and different formats/layout from Strata's grouped-expert Q2_0 GU; treat it only as a design precedent, not a drop-in or measured analogue: [llama.cpp tiled CPU kernel](https://github.com/ggml-org/llama.cpp/blob/master/ggml/src/ggml-cpu/tiled/tiled-kernel.cpp). The current ggml type table maps Q5_K to a per-row `ggml_vec_dot_q5_K_q8_K`; that confirms why the standard row-dot interface is not the same as Strata's explicit NT-specialized expert loop: [ggml CPU type traits](https://github.com/ggml-org/llama.cpp/blob/master/ggml/src/ggml-cpu/ggml-cpu.c).
+
+Intel IPEX reports for Xeon/AVX-512 or AMX and its weight-only quantization paths do not establish an AVX2 Zen3 optimization. This research found no source-backed IPEX result that transfers to this specific Q2_0 grouped MoE row path; keep those platform-specific claims out of the case for this candidate. The paper search result for CPU LLM inference is broad and not a Q2_0 implementation comparison, so it is not used as performance evidence.
+
+No performance estimate is made. This candidate should remain parked until root's serialized histogram and CPU validation complete and only be prototyped if the Q2_0 exposure gate is met.
