@@ -12,7 +12,7 @@ and registry v17 were read; no root cause is established.
 Set `STRATA_PREFILL_REPEAT_CAPTURE` to a controller-owned private binary file.
 Use a fresh path inside a private directory, preserve the exact environment,
 and keep all ordinary run ownership, deadline and numerical/fault gates.
-The file is append-only, requires a regular file owned by the effective user,
+The file is append-only, freshly created, and requires a regular file owned by the effective user,
 permissions without group/other access, one link, and no final-path symlink.
 No file is opened or device operation issued for nonoverlapping chunks.
 Unset disables all diagnostic allocations, file IO, queue waits and copies;
@@ -37,7 +37,8 @@ at zero, and header size 128. Record ordinal continues across requests. The
 controller must associate request transitions with its protocol records;
 there is no independent request identifier in this diagnostic file.
 
-Both existing file contents and new records count against 128 MiB. A failed
+The file must be newly created with O_EXCL; a preexisting path is rejected.
+All new records count against 128 MiB. A failed
 shape, file open/ownership, write or budget check fails the diagnostic request
 with an explicit error. Partial last records indicate incomplete diagnostics.
 Files remain scoped to the process, with close checked at exit; close failure
@@ -62,3 +63,16 @@ first-versus-repeat comparison of these compute edges for the unresolved
 full-context mismatch. Binary budget 128 MiB/process. Keep outside Git and
 review after edge localization or superseding diagnostic; retain hashes,
 comparison results and deletion manifest. This report is the Git resume record.
+
+Root source review, 2026-10-09: POSIX includes and file IO are guarded on Windows.
+Ordinary disabled Windows code does not depend on POSIX APIs; explicitly enabling
+this temporary diagnostic there reports unsupported private-file handling.
+Windows compilation has not been tested. The root controller must serialize all
+requests and record capture byte offsets before GEN and after DONE; the file
+contains process ordinals, not an independent request ID. O_EXCL prevents stale
+append/cross-process reuse. Two full requests are bounded at 133,495,872 bytes
+by source geometry (32 rows, D10240, query6144, four step words, selection width
+at most2051, 345 frames/request); 721,856 bytes remain under128MiB. This is
+source arithmetic, not runtime budget validation. Extra captures/retries are
+not admitted. The Luna review estimate of115MiB with13MiB headroom is incorrect.
+No build/model/GPU test was run for these corrections.

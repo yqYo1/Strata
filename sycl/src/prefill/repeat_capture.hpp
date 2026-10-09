@@ -8,12 +8,30 @@
 #include <vector>
 #include <cerrno>
 #include <cstdlib>
+#if !defined(_WIN32)
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#endif
 #include <stdexcept>
 
 namespace strata::prefill::detail {
+#if defined(_WIN32)
+// This temporary diagnostic uses POSIX private-file checks. Disabled builds
+// remain portable; an explicit request on Windows fails instead of weakening
+// the file ownership or byte-budget contract.
+class RepeatCapture {
+public:
+    static bool enabled() {
+        static const bool on = [] { const char* p = std::getenv("STRATA_PREFILL_REPEAT_CAPTURE"); return p && *p; }();
+        return on;
+    }
+    static RepeatCapture& instance() { static RepeatCapture c; return c; }
+    void record(sycl::queue&, int64_t, const char*, int64_t, int64_t, int64_t, int64_t, int64_t, uint64_t, const void*) {
+        throw std::runtime_error("repeat capture: this diagnostic requires POSIX private-file support");
+    }
+};
+#else
 class RepeatCapture {
     int fd_ = -1;
     uint64_t bytes_ = 0, records_ = 0;
@@ -49,12 +67,12 @@ public:
         const uint64_t elements = (uint64_t) rows * width, size = elements * 4;
         if (fd_ < 0) {
             const char* path = std::getenv("STRATA_PREFILL_REPEAT_CAPTURE");
-            fd_ = ::open(path, O_WRONLY | O_CREAT | O_APPEND | O_NOFOLLOW | O_CLOEXEC | O_NONBLOCK, 0600);
+            fd_ = ::open(path, O_WRONLY | O_CREAT | O_EXCL | O_APPEND | O_NOFOLLOW | O_CLOEXEC | O_NONBLOCK, 0600);
             struct stat st{};
             if (fd_ < 0 || ::fstat(fd_, &st) != 0 || !S_ISREG(st.st_mode) || st.st_uid != ::geteuid() ||
                 (st.st_mode & 077) || st.st_nlink != 1 || st.st_size < 0) {
                 if (fd_ >= 0) { ::close(fd_); fd_ = -1; }
-                throw std::runtime_error("repeat capture: requires an owned private regular file (diagnostic incomplete)");
+                throw std::runtime_error("repeat capture: requires a fresh owned private regular file (diagnostic incomplete)");
             }
             bytes_ = (uint64_t) st.st_size;
             std::fprintf(stderr, "strata: repeat capture enabled; synchronous CPU readbacks can mask timing-dependent failures\n");
@@ -79,4 +97,5 @@ public:
             (unsigned long long) bytes_);
     }
 };
+#endif
 } // namespace strata::prefill::detail
