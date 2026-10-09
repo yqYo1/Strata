@@ -422,4 +422,4 @@ The [updated0.1.41 host accounting](host-prefill-accounting-v0141-20261009/READM
 
 ## Native copy-only expert queue
 
-The [0.1.41 native-copy first diagnostic](native-expert-copy-v0141-20261009/README.md) confirms four fresh32K numerical/state matches and normal cleanup for an opt-in copy-only immediate queue. A bounded UR/Level Zero trace pairs880 expert copies through the imported queue. The uniform build matches all114 baseline compiler commands. Logged times are excluded; quiet speed comparison and full262144 qualification are pending, and the candidate is not adopted.
+The [0.1.41 native-copy trial](native-expert-copy-v0141-20261009/README.md) confirms four fresh32K numerical/state matches and24 quiet32K reads. Copy-only selection improves later prefill from449.782 to541.376 tokens/s (+20.364%) on Arc B570 / Ryzen5600X /128 GiB RAM. A bounded UR/Level Zero trace pairs880 expert transfers through the imported queue. All114 compiler commands match. Full262144 qualification is pending; the candidate is not adopted.
