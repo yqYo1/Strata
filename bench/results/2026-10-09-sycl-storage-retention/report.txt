@@ -12,3 +12,5 @@ This initial commit records review/plan before deletion. Follow-up result and de
 Root owns all cleanup and tests; no GPU measurement/build/profiler runs concurrently. Research rounds are iterative, with all earlier reports and corrections shared; round10 returned during this review.
 
 Retention tightened after second user review: three full representative failure traces only. Remaining full API histories (including successful zstd archives) are removed; selected distinct failure windows keep16MiB at most per experiment. Controller/source/env/protocol result and all stopped-process snapshots remain. Original failure/pass status is unchanged. This supersedes the initial keep-all-failures compression policy.
+
+The remaining old failed-session captures were reviewed separately: captured pre-abort tensors, corrected priming-history/version comparison failures, and obsolete controller assertions do not justify all raw tensors. Current comparison fixtures and live rare numerical failure evidence stay. Retire Oct5 tmp-backup after committing its source/scripts/results; it is a progress copy, not a currently consumed inference fixture.

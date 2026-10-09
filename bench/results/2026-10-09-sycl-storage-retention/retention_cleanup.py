@@ -15,6 +15,7 @@ AUDIT = Path(__file__).resolve().parent
 STATE = AUDIT.parent
 BASE = STATE / 'post-reboot-tuning-20261007'
 ARCHIVE = Path('/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-09-sycl-storage-retention')
+LEGACY = Path('/home/yayoi/.local/state/strata-upstream-arc-followup/tmp-backup-2026-10-05')
 PLAN = AUDIT / 'cleanup-plan.json'
 if len(sys.argv) > 2:
     PLAN = AUDIT / sys.argv[2]
@@ -100,13 +101,17 @@ def plan():
 
 def validate(a):
     p = Path(a['path'])
-    assert p.is_relative_to(BASE) and not p.is_symlink()
+    assert (p.is_relative_to(BASE) or (a['action'] == 'delete-legacy-artifact' and p.is_relative_to(LEGACY))) and not p.is_symlink()
     s = p.lstat()
     assert stat.S_ISREG(s.st_mode) and s.st_nlink == 1
     assert (s.st_dev, s.st_ino, s.st_size, s.st_mtime_ns) == (a['device'], a['inode'], a['bytes'], a['mtime_ns'])
-    receipt = Path(a['receipt'])
-    assert sha(receipt) == a['receipt_sha256']
-    assert identity_absent(load_record(receipt))
+    if a.get('receipt'):
+        receipt = Path(a['receipt'])
+        assert sha(receipt) == a['receipt_sha256']
+        assert identity_absent(load_record(receipt))
+    if a.get('retained_copy'):
+        assert sha(Path(a['retained_copy'])) == a['retained_copy_sha256']
+        assert sha(p) == a['retained_copy_sha256']
     return p
 
 def journal(a, outcome):
@@ -129,7 +134,7 @@ def run(mode):
             row = json.loads(line)
             if row.get('done'):
                 already.add(row['path'])
-    groups = {'delete': {'delete-log', 'delete-dump', 'delete-log-reviewed'}, 'compress': {'compress-log'}}
+    groups = {'delete': {'delete-log', 'delete-dump', 'delete-log-reviewed', 'delete-legacy-artifact'}, 'compress': {'compress-log'}}
     total = 0
     for a in d['actions']:
         if a['action'] not in groups[mode] or a['path'] in already:
@@ -153,7 +158,7 @@ def run(mode):
             journal(a, {'done': False, 'operation': 'unlink pending', 'context': str(context)})
             validate(a).unlink()
             journal(a, {'done': True, 'operation': 'deleted', 'context': str(context)})
-        elif a['action'] == 'delete-dump':
+        elif a['action'] in ('delete-dump', 'delete-legacy-artifact'):
             journal(a, {'done': False, 'operation': 'unlink pending'})
             validate(a).unlink()
             journal(a, {'done': True, 'operation': 'deleted'})

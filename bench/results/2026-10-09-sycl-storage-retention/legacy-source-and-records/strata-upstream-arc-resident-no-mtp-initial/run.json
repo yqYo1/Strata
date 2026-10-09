@@ -1,0 +1,456 @@
+{
+  "exe": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/build-sycl-upstream-jit/strata",
+  "binary_sha256": "d9778aaaeb65bac670f4280a5f5bd1294affaf762ad125e2b2fdef980b410eaa",
+  "args": [
+    "--pack",
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+    "--native",
+    "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+    "--spec",
+    "2",
+    "--max-context",
+    "8192",
+    "--prefill",
+    "8192",
+    "--no-prefill-borrow",
+    "--expert-cache",
+    "128",
+    "--expert-profile",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/data/expert-profile.bin",
+    "--expert-cache-per-layer",
+    "--pool-workers",
+    "5",
+    "--pcie-frac",
+    "0",
+    "--adapt-swaps",
+    "0",
+    "--ple-io",
+    "direct",
+    "--suffix-draft",
+    "0",
+    "--greedy",
+    "--stats",
+    "--serve",
+    "--prompt-cache",
+    "0",
+    "--conversation-cache-mib",
+    "0",
+    "--turn-token",
+    "-1",
+    "--short-read",
+    "0"
+  ],
+  "reference": "/tmp/strata-upstream-arc-attn-paired-wall/base-p1/run.json",
+  "reference_sha256": "41ee8bb26a97560b2f43e802dddfb45266e9283ca105a2d9928305b1f5606dce",
+  "fixture_sha256": "b5cb9087db88ad2c6768ad0b18e1601d6cbd2dcc06789115e9e5862a649999c8",
+  "lengths": [
+    4096,
+    8087
+  ],
+  "mtp": null,
+  "reference_mtp": null,
+  "mode": "profile",
+  "warmup": true,
+  "reverse_order": false,
+  "env": {
+    "LD_LIBRARY_PATH": "/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/lib/x86_64-linux-gnu:/home/yayoi/.local/opt/strata-compute-runtime-26.35.39758.10/usr/local/lib:/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/dal/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/:/usr/local/cuda/lib64:/usr/local/cuda/lib64:/nix/store/mj9klbkhzal0vc1aazsajrydkimhc0h2-libglvnd-1.7.0/lib",
+    "ONEAPI_ROOT": "/opt/intel/oneapi",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "SYCL_CACHE_PERSISTENT": "1",
+    "STRATA_IO_THREADS": "16",
+    "STRATA_PREFILL_ATTN_BATCH": "32",
+    "STRATA_PREFILL_ATTN_LAYOUT": "0",
+    "STRATA_PREFILL_FIRST": "0",
+    "STRATA_PREFILL_RING": "8",
+    "STRATA_PLE_GGUF": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-q2_0/Q2_0/Qwen3.8-Flash-Next-GSQ-RCO-Q2_0-00002-of-00002.gguf",
+    "STRATA_SERVE_NO_MTP": "1",
+    "STRATA_PREFILL_TIMING": "1",
+    "STRATA_PREFILL_TRANSFER_TIMING": "1",
+    "STRATA_DUMP_FIRST_LOGITS": "/tmp/strata-upstream-arc-resident-no-mtp-initial/current-head.bin"
+  },
+  "notes": [
+    "No prompt or conversation cache; every request must report RESUME 0 and a full read.",
+    "Resident prompt wall time includes request setup and any enabled MTP prompt work; keep CLI wall comparisons separate.",
+    "DMA, CPU staging and GPU timeline overlap; do not add or subtract their times.",
+    "Complete first-head hashes and output IDs must match the CLI reference on every request.",
+    "Warmups are recorded and validated but excluded from medians."
+  ],
+  "startup": [
+    "INFO context=8192 kv=fp16 kv_resident=0 expert_slots=128 expert_cache_mib=325 expert_slots_primary=128 expert_cache_primary_mib=325 spec=2 mtp_max=0 lookup=0 vram_free_mib=1168 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.00 spec_min_p=0.00 conversation_cache_mib=0 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=0 engine=0.1.39-sycl",
+    "READY 8192 stop"
+  ],
+  "runs": [
+    {
+      "name": "8087-warmup",
+      "tokens": 8087,
+      "repeat": 0,
+      "warmup": true,
+      "protocol": [
+        "RESUME 0",
+        "PP 6144 8088 20413 301.0",
+        "PP 8087 8088 32692 247.4",
+        "REUSED 0",
+        "T 248046",
+        "DONE 1 8088 33115.0 493.3 stop 0 0 0 5 480 0 0 0.0 8088 0"
+      ],
+      "output_ids": [
+        248046
+      ],
+      "logits_count": 248320,
+      "logits_sha256": "b3d9cf0fde562d11c6e9759ee222dff7641f94e40437435b285b86449a8d8577",
+      "logits_finite": true,
+      "request_prompt_wall_ms": 33115.0,
+      "request_decode_wall_ms": 493.3,
+      "exit_code": 0,
+      "pp_records": [
+        [
+          "PP",
+          "6144",
+          "8088",
+          "20413",
+          "301.0"
+        ],
+        [
+          "PP",
+          "8087",
+          "8088",
+          "32692",
+          "247.4"
+        ]
+      ],
+      "transfer": {
+        "tokens": 8087,
+        "chunks": 2,
+        "expert_copies": 42935,
+        "expert_bytes": 87903744000,
+        "dma_active_ms": 13804.305604,
+        "copy_span_ms": 32523.82,
+        "host_copy_worker_ms": 4568.148554,
+        "wall_ms": 32694.119068,
+        "ple_preload_ms": 0.0,
+        "layers": [
+          {
+            "layer": 0,
+            "copies": 956,
+            "bytes": 2080256000,
+            "dma_active_ms": 327.454435
+          },
+          {
+            "layer": 1,
+            "copies": 941,
+            "bytes": 1421286400,
+            "dma_active_ms": 224.423525
+          },
+          {
+            "layer": 2,
+            "copies": 928,
+            "bytes": 1829273600,
+            "dma_active_ms": 287.417196
+          },
+          {
+            "layer": 3,
+            "copies": 868,
+            "bytes": 1711001600,
+            "dma_active_ms": 269.262754
+          },
+          {
+            "layer": 4,
+            "copies": 828,
+            "bytes": 1632153600,
+            "dma_active_ms": 256.339387
+          },
+          {
+            "layer": 5,
+            "copies": 870,
+            "bytes": 1714944000,
+            "dma_active_ms": 269.214817
+          },
+          {
+            "layer": 6,
+            "copies": 886,
+            "bytes": 1746483200,
+            "dma_active_ms": 274.282275
+          },
+          {
+            "layer": 7,
+            "copies": 883,
+            "bytes": 1921408000,
+            "dma_active_ms": 301.448664
+          },
+          {
+            "layer": 8,
+            "copies": 827,
+            "bytes": 1249100800,
+            "dma_active_ms": 197.231983
+          },
+          {
+            "layer": 9,
+            "copies": 809,
+            "bytes": 1594700800,
+            "dma_active_ms": 250.311046
+          },
+          {
+            "layer": 10,
+            "copies": 858,
+            "bytes": 1295923200,
+            "dma_active_ms": 204.570781
+          },
+          {
+            "layer": 11,
+            "copies": 811,
+            "bytes": 1598643200,
+            "dma_active_ms": 251.006406
+          },
+          {
+            "layer": 12,
+            "copies": 815,
+            "bytes": 1397888000,
+            "dma_active_ms": 219.99868
+          },
+          {
+            "layer": 13,
+            "copies": 873,
+            "bytes": 1318579200,
+            "dma_active_ms": 208.26985
+          },
+          {
+            "layer": 14,
+            "copies": 870,
+            "bytes": 1893120000,
+            "dma_active_ms": 296.868242
+          },
+          {
+            "layer": 15,
+            "copies": 800,
+            "bytes": 1576960000,
+            "dma_active_ms": 247.699994
+          },
+          {
+            "layer": 16,
+            "copies": 822,
+            "bytes": 1788672000,
+            "dma_active_ms": 280.529467
+          },
+          {
+            "layer": 17,
+            "copies": 855,
+            "bytes": 1991808000,
+            "dma_active_ms": 312.591556
+          },
+          {
+            "layer": 18,
+            "copies": 887,
+            "bytes": 1930112000,
+            "dma_active_ms": 302.674268
+          },
+          {
+            "layer": 19,
+            "copies": 916,
+            "bytes": 1805619200,
+            "dma_active_ms": 283.705122
+          },
+          {
+            "layer": 20,
+            "copies": 923,
+            "bytes": 1583129600,
+            "dma_active_ms": 249.321376
+          },
+          {
+            "layer": 21,
+            "copies": 944,
+            "bytes": 1764147200,
+            "dma_active_ms": 277.963068
+          },
+          {
+            "layer": 22,
+            "copies": 966,
+            "bytes": 2102016000,
+            "dma_active_ms": 329.752132
+          },
+          {
+            "layer": 23,
+            "copies": 969,
+            "bytes": 1910092800,
+            "dma_active_ms": 300.014275
+          },
+          {
+            "layer": 24,
+            "copies": 885,
+            "bytes": 1744512000,
+            "dma_active_ms": 273.97277
+          },
+          {
+            "layer": 25,
+            "copies": 862,
+            "bytes": 2008115200,
+            "dma_active_ms": 314.837759
+          },
+          {
+            "layer": 26,
+            "copies": 908,
+            "bytes": 1789849600,
+            "dma_active_ms": 281.148612
+          },
+          {
+            "layer": 27,
+            "copies": 909,
+            "bytes": 2117606400,
+            "dma_active_ms": 332.156448
+          },
+          {
+            "layer": 28,
+            "copies": 950,
+            "bytes": 2213120000,
+            "dma_active_ms": 347.118575
+          },
+          {
+            "layer": 29,
+            "copies": 935,
+            "bytes": 2178176000,
+            "dma_active_ms": 341.730252
+          },
+          {
+            "layer": 30,
+            "copies": 925,
+            "bytes": 1586560000,
+            "dma_active_ms": 249.626499
+          },
+          {
+            "layer": 31,
+            "copies": 929,
+            "bytes": 2021504000,
+            "dma_active_ms": 316.989863
+          },
+          {
+            "layer": 32,
+            "copies": 913,
+            "bytes": 1799705600,
+            "dma_active_ms": 282.607865
+          },
+          {
+            "layer": 33,
+            "copies": 934,
+            "bytes": 2032384000,
+            "dma_active_ms": 318.505285
+          },
+          {
+            "layer": 34,
+            "copies": 957,
+            "bytes": 1886438400,
+            "dma_active_ms": 296.276872
+          },
+          {
+            "layer": 35,
+            "copies": 939,
+            "bytes": 2187494400,
+            "dma_active_ms": 343.267752
+          },
+          {
+            "layer": 36,
+            "copies": 913,
+            "bytes": 1378995200,
+            "dma_active_ms": 217.807174
+          },
+          {
+            "layer": 37,
+            "copies": 894,
+            "bytes": 1945344000,
+            "dma_active_ms": 304.983825
+          },
+          {
+            "layer": 38,
+            "copies": 923,
+            "bytes": 2008448000,
+            "dma_active_ms": 315.270945
+          },
+          {
+            "layer": 39,
+            "copies": 895,
+            "bytes": 1764224000,
+            "dma_active_ms": 277.254692
+          },
+          {
+            "layer": 40,
+            "copies": 951,
+            "bytes": 2215449600,
+            "dma_active_ms": 347.785251
+          },
+          {
+            "layer": 41,
+            "copies": 927,
+            "bytes": 2017152000,
+            "dma_active_ms": 316.361114
+          },
+          {
+            "layer": 42,
+            "copies": 916,
+            "bytes": 1993216000,
+            "dma_active_ms": 312.434911
+          },
+          {
+            "layer": 43,
+            "copies": 915,
+            "bytes": 1991040000,
+            "dma_active_ms": 312.054678
+          },
+          {
+            "layer": 44,
+            "copies": 914,
+            "bytes": 2129254400,
+            "dma_active_ms": 333.968432
+          },
+          {
+            "layer": 45,
+            "copies": 871,
+            "bytes": 2029081600,
+            "dma_active_ms": 318.097549
+          },
+          {
+            "layer": 46,
+            "copies": 872,
+            "bytes": 1897472000,
+            "dma_active_ms": 297.534927
+          },
+          {
+            "layer": 47,
+            "copies": 793,
+            "bytes": 2111283200,
+            "dma_active_ms": 330.162255
+          }
+        ]
+      },
+      "phases": {
+        "gpu_timeline_ms": 32684.400808,
+        "host_setup_ms": 19.098839,
+        "host_chunk_wait_ms": 27.511911,
+        "host_after_chunk_ms": 0.299103,
+        "ple_gather_wall_ms": 358.809046,
+        "ple_host_wait_ms": 0.021941,
+        "phase_ms": {
+          "embed+steps": 20.715519,
+          "hc read": 744.923226,
+          "gdn": 644.311969,
+          "qsa proj": 341.168543,
+          "qsa indexer": 0.648332,
+          "qsa select": 3934.401001,
+          "qsa attn": 2275.802425,
+          "router+shared": 150.512296,
+          "host grouping": 1667.744686,
+          "gather": 439.445006,
+          "wait copy": 256.285448,
+          "dequant": 4352.193015,
+          "gemm gate/up": 1623.040189,
+          "gemm down": 14817.704148,
+          "combine": 142.854062,
+          "ple": 38.126564,
+          "kv stage": 0.0,
+          "gdn conv+gates": 111.038338,
+          "gdn recurrence": 550.0901,
+          "gdn out proj": 280.300003,
+          "ple read wait": 0.006771,
+          "hc write+norm": 293.089166
+        }
+      }
+    }
+  ]
+}

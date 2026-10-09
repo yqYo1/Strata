@@ -1,0 +1,10 @@
+Add an opt-in SG16/GRF256 launch of the existing key-head GDN recurrence for prompts of at least 256 tokens. On an Arc B570 10 GB, this keeps the original arithmetic and full state/output bits while avoiding register spills. Short prompts and explicit serial/non-pipelined settings retain their existing paths; the new selector defaults to off.
+
+On the native IQ3_S model, the profiled recurrence interval falls by about 19% at 4k and 8k. Three paired ordinary CLI runs reduce the 8,087-token median from 17,141.0 to 17,036.5 ms (0.61%, 471.79 to 474.69 tokens/s). The 4,096-token median changes from 13,550.2 to 13,506.0 ms. Measurements use an Arc B570, Ryzen 5 5600X, 128 GB RAM and compute runtime 26.35.39758.10; all complete first heads and output IDs match the original.
+
+Validation:
+- All 29 JIT and 29 B570 AOT CTests pass without skips; full state, FP32/FP16 outputs, guards and eligibility checked at eight lengths.
+- All twelve paired CLI heads match the accepted original in every bit.
+- JIT and AOT normal MTP checks pass repeated generation and checkpoint restoration, including a long prompt that exercises the tuned recurrence. Full long-prompt heads, output IDs and logprobs match the original control.
+
+Raw study sources, negative controls, logs and comparison settings are recorded in `bench/results/2026-10-05-sycl-prefill-scaling/gdn/`.

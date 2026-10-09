@@ -1,0 +1,912 @@
+diff --git a/include/strata/prefill/prefill.hpp b/include/strata/prefill/prefill.hpp
+index 15df6e4..7efb619 100644
+--- a/include/strata/prefill/prefill.hpp
++++ b/include/strata/prefill/prefill.hpp
+@@ -135,6 +135,9 @@ public:
+     /// Checked before every chunk: true stops the prompt early (`run` returns false with err "cancelled").
+     std::function<bool()> should_stop;
+ 
++    /// A layer-major prompt has coherent whole-model state only at its final chunk.
++    bool checkpoint_ready() const { return checkpoint_ready_; }
++
+     /// The vision path: HOST rows (n_embd floats) indexed by absolute position, read in place of the token
+     /// embedding where non-null (an image's <|image_pad|> cells).  Null (default): every position embeds its token.
+     const float* const* embd_rows = nullptr;
+@@ -161,7 +164,9 @@ private:
+     // Stage-1 pipeline: intermediate stages return after handing their chunk to
+     // the direct successor. The public run() drains the chain once at prompt end.
+     bool run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err);
++    bool run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err);
+     bool drain_pipeline(std::string& err);
++    bool checkpoint_ready_ = true;
+ 
+     int64_t stage_lb_ = 0, stage_le_ = -1;
+     Prefill* next_ = nullptr;
+diff --git a/sycl/src/prefill/prefill.cpp b/sycl/src/prefill/prefill.cpp
+index 8df2dbe..2d10b21 100644
+--- a/sycl/src/prefill/prefill.cpp
++++ b/sycl/src/prefill/prefill.cpp
+@@ -8,6 +8,7 @@
+ #include "strata/core/mtp.hpp"
+ #include "strata/core/progress.hpp"
+ #include "strata/core/on_device.hpp"
++#include "strata/core/conversation_snapshot.hpp"
+ 
+ #include "strata/core/layout.hpp"
+ #include "strata/kernels/cpu/expert.hpp"
+@@ -91,6 +92,8 @@ namespace strata::prefill {
+ namespace {
+ 
+ using Clock = std::chrono::steady_clock;
++struct ExpertTransferTimer;
++struct PfTimer;
+ constexpr float EPS = 1e-6f;
+ constexpr int64_t N = 2560, HC = 4, D = N * HC, LR = 320, K = 10, NE = 512;
+ constexpr int64_t C = 10240, ZV = 6144, HV = 48;
+@@ -255,6 +258,7 @@ struct Stager {
+     uint64_t issue_seq = 0;
+     bool measure_copies = false;
+     std::atomic<uint64_t> host_copy_ns{0};
++    std::atomic<bool> failed{false};
+     std::vector<Job> jobs;
+     std::unique_ptr<std::atomic<int>[]> ready;
+     size_t ready_cap = 0;
+@@ -344,12 +348,14 @@ struct Stager {
+                 const auto copy_start = measure_copies ? Clock::now() : Clock::time_point{};
+                 if (jb.gsrc != nullptr) {
+                     if (!jb.gsrc->read_into(jb.l, jb.e, buf[b], jb.bytes)) {
++                        failed.store(true, std::memory_order_relaxed);
+                         std::fprintf(stderr, "prefill: reading expert %d of layer %d from the GGUF failed\n", jb.e, jb.l);
+                         std::memset(buf[b], 0, jb.bytes);
+                     }
+                 } else if (jb.from == nullptr) {
+                     std::memcpy(buf[b], jb.src, jb.bytes);
+                 } else if (!jb.from->copy_blob(jb.l, jb.e, buf[b])) {
++                    failed.store(true, std::memory_order_relaxed);
+                     std::fprintf(stderr, "prefill: the expert source could not copy expert %d of layer %d\n", jb.e, jb.l);
+                     std::abort();
+                 }
+@@ -374,6 +380,7 @@ struct Stager {
+     void start(std::vector<Job>&& js) {
+         if (js.empty()) return;
+         std::lock_guard<std::mutex> lk(mu);
++        failed.store(false, std::memory_order_relaxed);
+         jobs = std::move(js);
+         if (ready_cap < jobs.size()) {
+             ready_cap = jobs.size() * 2;
+@@ -507,8 +514,12 @@ struct Prefill::Impl {
+     core::ExpertSource* src = nullptr;
+     const core::ExpertCache* cache = nullptr;
+     const int32_t* host_res = nullptr;
++    ExpertTransferTimer* transfer_context = nullptr;
++    PfTimer* phase_context = nullptr;
++    float* residual_gpu = nullptr;
++    int64_t residual_gpu_tokens = 0;
+     int64_t T = 0, T_max = 0;
+-    bool borrowed = false;
++    bool borrowed = false, compact = false, compact_hc = false;
+     dpct::queue_ptr cs = &dpct::get_in_order_queue(),
+                     copy = &dpct::get_in_order_queue();
+     Gemm gemm;
+@@ -672,17 +683,72 @@ constexpr size_t GEMM_WS = 32u << 20;               // cuBLAS workspace
+ // of the largest holds them all.  That is ~260 KB of the ~680 KB a prompt token cost - which is what lets a chunk
+ // grow (every expert is streamed once per chunk, so a bigger chunk streams fewer bytes per token).  The sizes are
+ // counted with the same `take` sequence `init` uses; a mismatch makes `init` fail with "do not fit", never overlap.
+-uint64_t gdn_set_bytes(size_t T) {
++bool compact_prefill();
++bool compact_hc_prefill();
++
++// These three float images are consumed in order: embedding, mixed input, half output.
++// Count and carve the compact base with the same allocation sequence.
++template <typename V>
++void compact_take(Alloc& a, Prefill::Impl* m, V* Prefill::Impl::*field, size_t n, bool& ok) {
++    V* value = a.take<V>(n, ok);
++    if (m) m->*field = value;
++}
++void take_compact_hc(Alloc& a, Prefill::Impl* m, size_t T, bool& ok) {
++    auto take = [&](auto field, size_t n) { compact_take(a, m, field, n, ok); };
++    if (gr_unfused()) take(&Prefill::Impl::xn, T * D);
++    else if (m) m->xn = nullptr;
++    take(&Prefill::Impl::xn16, T * D);
++    take(&Prefill::Impl::lo, T * LR);
++    take(&Prefill::Impl::lo16, T * LR);
++    take(&Prefill::Impl::gated, T * D);
++    if (bf16x2_hc()) {
++        take(&Prefill::Impl::xn16_lo, T * D);
++        take(&Prefill::Impl::lo16_lo, T * LR);
++    }
++}
++void take_compact_base(Alloc& a, Prefill::Impl* m, size_t T, bool& ok, bool hc = false) {
++    float* image = a.take<float>(T * N, ok);
++    if (m) m->emb = m->mixed = m->bo = image;
++    auto take = [&](auto field, size_t n) { compact_take(a, m, field, n, ok); };
++    take(&Prefill::Impl::R, T * D);
++    take(&Prefill::Impl::grs, T * HC);
++    if (!hc) take_compact_hc(a, m, T, ok);
++    take(&Prefill::Impl::inj, T * HC);
++    take(&Prefill::Impl::mixed_bf, T * N);
++    take(&Prefill::Impl::mixed_h, T * N);
++    if (bf16x2()) take(&Prefill::Impl::mixed_bf_lo, T * N);
++    take(&Prefill::Impl::steps_dev, T * strata::kernels::kStepCount);
++}
++uint64_t hc_set_bytes(size_t T, bool hc) {
++    if (!hc) return 0;
++    Alloc a; a.count_only = true; bool ok = true;
++    take_compact_hc(a, nullptr, T, ok);
++    return a.used;
++}
++uint64_t ple_set_bytes(size_t T, bool compact) {
++    if (!compact) return 0;
++    constexpr int64_t HD = strata::kernels::NG_HC_DIM;
++    // The original region fits a complete PLE chunk. Preserve its GEMM row
++    // counts, including an odd final chunk, when shrinking the other scratch.
++    const uint64_t per_token = (uint64_t) (3 * HD + N + 4) * 4 +
++                               (uint64_t) N * (bf16x2() ? 4 : 2) + 4096;
++    return (uint64_t) T * per_token;
++}
++
++uint64_t gdn_set_bytes(size_t T, bool compact = false) {
+     Alloc a; a.count_only = true; bool ok = true;
+     a.take<float>(T * C, ok); a.take<float>(T * ZV, ok); a.take<float>(T * 2 * HV, ok); a.take<float>(T * HV, ok);
+-    a.take<float>(T * HV, ok); a.take<float>(T * C, ok); a.take<float>(T * ZV, ok); a.take<uint16_t>(T * ZV, ok);
++    a.take<float>(T * HV, ok); a.take<float>(T * C, ok);
++    if (!compact) { a.take<float>(T * ZV, ok); a.take<uint16_t>(T * ZV, ok); }
+     return a.used;
+ }
+ uint64_t qsa_set_bytes(size_t T, int64_t cap, int64_t max_blocks, int64_t sel_batch, int64_t attn_batch,
+-                       const strata::kernels::QsaShapes& s) {
++                       const strata::kernels::QsaShapes& s, bool compact = false) {
+     Alloc a; a.count_only = true; bool ok = true;
+     a.take<float>(T * 512, ok); a.take<float>(T * 512, ok); a.take<float>(T * 12288, ok); a.take<float>(T * ZV, ok);
+-    a.take<float>(T * 128, ok); a.take<float>(T * 512, ok); a.take<float>(T * ZV, ok); a.take<uint16_t>(T * ZV, ok);
++    a.take<float>(T * 128, ok); a.take<float>(T * 512, ok);
++    if (!compact) a.take<float>(T * ZV, ok);
++    a.take<uint16_t>(T * ZV, ok);
+     a.take<int32_t>(T * (size_t) cap, ok);
+     a.take<float>((size_t) sel_batch * (size_t) max_blocks, ok);
+     a.take<float>((size_t) attn_batch * strata::kernels::qsa_decode_attn_scratch_floats(cap, s), ok);
+@@ -747,6 +813,23 @@ const MmqPlan& mmq_plan() {
+     }();
+     return plan;
+ }
++bool compact_prefill() {
++    static const bool requested = [] {
++        const char* value = std::getenv("STRATA_PREFILL_COMPACT");
++        return value && (std::atoi(value) == 1 || std::atoi(value) == 2);
++    }();
++    if (!requested) return false;
++    const auto& plan = mmq_plan();
++    const char* xmx = std::getenv("STRATA_PROMPT_ATTN_XMX");
++    // MMQ/fused experts need their full grouping arrays; NaN diagnostics inspect full expert intermediates.
++    // The scalar attention split finishes reading a batch's query before the merge writes that batch's output.
++    return plan.fallback && !plan.any && std::getenv("STRATA_DBG_NAN") == nullptr &&
++           (std::getenv("STRATA_PROMPT_ATTN_OLD") != nullptr || !xmx || std::atoi(xmx) == 0);
++}
++bool compact_hc_prefill() {
++    const char* value = std::getenv("STRATA_PREFILL_COMPACT");
++    return value && std::atoi(value) == 2 && compact_prefill();
++}
+ // #136 P3: a layout whose chunks run the fused experts (STRATA_PF_FUSED=1, the Q2_0 pack, a streamed chunk of
+ // stream_all_min() tokens or more).  Its GU, H and Xq hold only the fused path's grouping tables, int8 H and per-token
+ // int8 activations, and Hq nothing: ~100 KB a token less than MMQ's FP32 GU / H and per-slot q8_1 rows, which is what
+@@ -759,7 +842,8 @@ bool fused_layout(size_t T, bool src) {
+ // The MoE buffers MMQ and the fused path share: GU and H in floats, Xq and Hq in bytes.  Without `fused` (the
+ // default): MMQ's, for T tokens.
+ struct MoeBufs { size_t gu, h, xq, hq; };
+-MoeBufs moe_bufs(size_t T, int64_t n_expert, bool fused) {
++MoeBufs moe_bufs(size_t T, int64_t n_expert, bool fused, bool compact = false) {
++    if (compact) return {T * 1280, T * 640, 0, 0};
+     if (!fused) return {T * K * 1280, T * K * 640, mmq::q8_bytes((int64_t) (T * K), N), mmq::q8_bytes((int64_t) (T * K), 640)};
+     const size_t ts = (size_t) std::min<int64_t>((int64_t) T, stream_all_min() - 1);   // MMQ's last small chunk
+     return {std::max(ts * K * 1280, (fused::group_bytes((int64_t) (T * K), (int) n_expert) + 3) / 4),
+@@ -767,15 +851,15 @@ MoeBufs moe_bufs(size_t T, int64_t n_expert, bool fused) {
+             std::max(mmq::q8_bytes((int64_t) (ts * K), N), fused::act_bytes((int64_t) T, N)),
+             mmq::q8_bytes((int64_t) (ts * K), 640)};
+ }
+-uint64_t moe_set_bytes(size_t T, int64_t n_expert, bool fused) {
++uint64_t moe_set_bytes(size_t T, int64_t n_expert, bool fused, bool compact = false) {
+     const MmqPlan& mp = mmq_plan();
+-    const MoeBufs mb = moe_bufs(T, n_expert, fused);
++    const MoeBufs mb = moe_bufs(T, n_expert, fused, compact);
+     Alloc a; a.count_only = true; bool ok = true;
+     a.take<float>(T * n_expert, ok); a.take<float>(T * K, ok); a.take<int32_t>(T * K, ok); a.take<int32_t>(T * K, ok);
+     a.take<int32_t>(T * K, ok);
+-    if (mp.fallback) a.take<uint16_t>(T * K * N, ok);
++    if (mp.fallback) a.take<uint16_t>(T * (compact ? 1 : K) * N, ok);
+     a.take<float>(mb.gu, ok);
+-    if (mp.fallback) a.take<uint16_t>(T * K * 640, ok);
++    if (mp.fallback) a.take<uint16_t>(T * (compact ? 1 : K) * 640, ok);
+     a.take<float>(T * K * N, ok); a.take<float>(T * 640, ok);
+     a.take<float>(T * 640, ok); a.take<uint16_t>(T * 640, ok); a.take<float>(T * N, ok); a.take<float>(T, ok);
+     if (mp.any) {
+@@ -795,6 +879,10 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
+     Impl& m = *impl_;
+     m.wt = &wt; m.g = &g; m.ss = &ss; m.src = src; m.cache = cache; m.host_res = host_res;
+     m.T = chunk; m.cs = strata::q_of(stream); m.stats = &stats_;
++    if (compact_prefill() && !m.cs->is_in_order()) {
++        err = "prefill: compact workspace requires an in-order queue";
++        return false;
++    }
+     if (g.n_embd != N || g.hc != HC || g.hc_lr != LR || g.n_expert < 1 || ss.k != K) {
+         err = "prefill: geometry differs from the artifact's"; return false;
+     }
+@@ -988,16 +1076,22 @@ bool Prefill::carve(size_t T, void* alloc) {
+     const core::ModelGeometry& g = *m.g;
+     core::SessionState& ss = *m.ss;
+     bool ok = true;
+-    m.emb = o.take<float>(T * N, ok); m.R = o.take<float>(T * D, ok);
+-    m.xn = gr_unfused() ? o.take<float>(T * D, ok) : nullptr;   // F-1: not needed (gr_mix_r reads R)
+-    m.grs = o.take<float>(T * HC, ok);
+-    m.xn16 = o.take<uint16_t>(T * D, ok); m.lo = o.take<float>(T * LR, ok); m.lo16 = o.take<uint16_t>(T * LR, ok);
+-    m.gated = o.take<float>(T * D, ok); m.inj = o.take<float>(T * HC, ok);
+-    m.mixed = o.take<float>(T * N, ok); m.mixed_bf = o.take<uint16_t>(T * N, ok);
+-    m.mixed_h = o.take<uint16_t>(T * N, ok); m.bo = o.take<float>(T * N, ok);
+-    if (bf16x2_hc()) { m.xn16_lo = o.take<uint16_t>(T * D, ok); m.lo16_lo = o.take<uint16_t>(T * LR, ok); }
+-    if (bf16x2()) m.mixed_bf_lo = o.take<uint16_t>(T * N, ok);
+-    m.steps_dev = o.take<int32_t>(T * strata::kernels::kStepCount, ok);
++    m.compact = compact_prefill();
++    m.compact_hc = compact_hc_prefill();
++    if (m.compact) {
++        take_compact_base(o, &m, T, ok, m.compact_hc);
++    } else {
++        m.emb = o.take<float>(T * N, ok); m.R = o.take<float>(T * D, ok);
++        m.xn = gr_unfused() ? o.take<float>(T * D, ok) : nullptr;   // F-1: not needed (gr_mix_r reads R)
++        m.grs = o.take<float>(T * HC, ok);
++        m.xn16 = o.take<uint16_t>(T * D, ok); m.lo = o.take<float>(T * LR, ok); m.lo16 = o.take<uint16_t>(T * LR, ok);
++        m.gated = o.take<float>(T * D, ok); m.inj = o.take<float>(T * HC, ok);
++        m.mixed = o.take<float>(T * N, ok); m.mixed_bf = o.take<uint16_t>(T * N, ok);
++        m.mixed_h = o.take<uint16_t>(T * N, ok); m.bo = o.take<float>(T * N, ok);
++        if (bf16x2_hc()) { m.xn16_lo = o.take<uint16_t>(T * D, ok); m.lo16_lo = o.take<uint16_t>(T * LR, ok); }
++        if (bf16x2()) m.mixed_bf_lo = o.take<uint16_t>(T * N, ok);
++        m.steps_dev = o.take<int32_t>(T * strata::kernels::kStepCount, ok);
++    }
+     strata::kernels::QsaShapes s = strata::kernels::qsa_real_shapes();
+     s.n_head = g.n_head; s.n_head_kv = g.n_head_kv; s.head_dim = g.head_dim; s.idx_n_head = g.idx_q_heads;
+     s.idx_dim = g.idx_key_dim;
+@@ -1006,22 +1100,40 @@ bool Prefill::carve(size_t T, void* alloc) {
+     {
+         // one region for the attention half's and the MoE half's scratch (see gdn_set_bytes)
+         const bool fz = fused_layout(T, m.src != nullptr);
+-        const MoeBufs mb = moe_bufs(T, m.g->n_expert, fz);
+-        const uint64_t region = std::max({gdn_set_bytes(T), qsa_set_bytes(T, m.cap, m.max_blocks, m.sel_batch,
+-                                                                           m.attn_batch, s), moe_set_bytes(T, m.g->n_expert, fz)});
++        const MoeBufs mb = moe_bufs(T, m.g->n_expert, fz, m.compact);
++        const uint64_t region = std::max({hc_set_bytes(T, m.compact_hc), ple_set_bytes(T, m.compact), gdn_set_bytes(T, m.compact),
++            qsa_set_bytes(T, m.cap, m.max_blocks, m.sel_batch, m.attn_batch, s, m.compact),
++            moe_set_bytes(T, m.g->n_expert, fz, m.compact)});
+         uint8_t* base = o.take<uint8_t>((size_t) region, ok);
+         m.region = base;
+         m.region_bytes = region;
++        if (m.compact_hc) {
++            // HC inputs are consumed before the child half uses this region. The fused GR write restores
++            // xn16 for the next HC read; it is disabled before PLE and control vectors invalidate that norm.
++            // Keep inj and the child output outside: the GR write reads both while it restores xn16 here.
++            Alloc h;
++            h.base = base; h.cap = region; h.owned = &m.owned;
++            take_compact_hc(h, &m, T, ok);
++        }
+         Alloc a;
+         a.base = base; a.cap = region; a.owned = &m.owned;
+         m.qkv = a.take<float>(T * C, ok); m.z = a.take<float>(T * ZV, ok); m.ab = a.take<float>(T * 2 * HV, ok);
+         m.gate = a.take<float>(T * HV, ok); m.beta = a.take<float>(T * HV, ok); m.hbuf = a.take<float>(T * C, ok);
+-        m.y = a.take<float>(T * ZV, ok); m.y_h = a.take<uint16_t>(T * ZV, ok);
++        if (m.compact) {
++            // Conv has consumed qkv before recurrence starts. Keep both recurrence outputs disjoint inside it.
++            static_assert(3 * ZV <= 2 * C);
++            m.y = m.qkv;
++            m.y_h = reinterpret_cast<uint16_t*>(m.qkv + T * ZV);
++        } else {
++            m.y = a.take<float>(T * ZV, ok); m.y_h = a.take<uint16_t>(T * ZV, ok);
++        }
+         Alloc b;
+         b.base = base; b.cap = region; b.owned = &m.owned;
+         m.Kc = b.take<float>(T * 512, ok); m.Vc = b.take<float>(T * 512, ok); m.Qf = b.take<float>(T * 12288, ok);
+         m.q = b.take<float>(T * ZV, ok); m.idx_raw = b.take<float>(T * 128, ok); m.q_idx = b.take<float>(T * 512, ok);
+-        m.attn = b.take<float>(T * ZV, ok); m.attn_h = b.take<uint16_t>(T * ZV, ok);
++        // Each scalar split completes before its merge, which writes only the queries in that batch.
++        m.attn = m.compact ? m.q : b.take<float>(T * ZV, ok);
++        m.attn_h = b.take<uint16_t>(T * ZV, ok);
+         m.sel_ids = b.take<int32_t>(T * (size_t) m.cap, ok);
+         m.sel_scores = b.take<float>((size_t) m.sel_batch * (size_t) m.max_blocks, ok);
+         m.attn_scratch = b.take<float>((size_t) m.attn_batch * strata::kernels::qsa_decode_attn_scratch_floats(m.cap, s), ok);
+@@ -1030,9 +1142,9 @@ bool Prefill::carve(size_t T, void* alloc) {
+         m.logits = c.take<float>(T * m.g->n_expert, ok); m.w = c.take<float>(T * K, ok); m.ids = c.take<int32_t>(T * K, ok);
+         m.slot_dev = c.take<int32_t>(T * K, ok); m.src_dev = c.take<int32_t>(T * K, ok);
+         const MmqPlan& mp = mmq_plan();
+-        m.Xs = mp.fallback ? c.take<uint16_t>(T * K * N, ok) : nullptr;
++        m.Xs = mp.fallback ? c.take<uint16_t>(T * (m.compact ? 1 : K) * N, ok) : nullptr;
+         m.GU = c.take<float>(mb.gu, ok);
+-        m.Hh = mp.fallback ? c.take<uint16_t>(T * K * 640, ok) : nullptr;
++        m.Hh = mp.fallback ? c.take<uint16_t>(T * (m.compact ? 1 : K) * 640, ok) : nullptr;
+         m.Dm = c.take<float>(T * K * N, ok);
+         m.sgate = c.take<float>(T * 640, ok); m.sup = c.take<float>(T * 640, ok); m.sh_h = c.take<uint16_t>(T * 640, ok);
+         m.shared = c.take<float>(T * N, ok); m.sg = c.take<float>(T, ok);
+@@ -1064,6 +1176,10 @@ bool Prefill::carve(size_t T, void* alloc) {
+     m.ple_norm = o.take<float>((size_t) strata::kernels::NG_HC_DIM, ok);
+     take_stage(o, ss, s, m.stage, ok);
+     m.T = (int64_t) T;
++    if (ok && std::getenv("STRATA_PREFILL_COMPACT") != nullptr)
++        std::fprintf(stderr, "strata prefill: %s layout for %zu tokens: %llu accounted bytes, %llu shared workspace bytes\n",
++                     m.compact_hc ? "compact-hc" : m.compact ? "compact" : "original", T, (unsigned long long) o.used,
++                     (unsigned long long) m.region_bytes);
+     return ok;
+ }
+ 
+@@ -1462,18 +1578,25 @@ uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::Session
+     o.take<uint16_t>((size_t) GEMM_SCRATCH, ok);
+     o.take<uint8_t>(GEMM_WS, ok);
+     auto f = [&](size_t n) { o.take<float>(n, ok); };
+-    f(T * N); f(T * D); f(T * D); o.take<uint16_t>(T * D, ok); f(T * LR); o.take<uint16_t>(T * LR, ok);
+-    f(T * D); f(T * HC); f(T * N); o.take<uint16_t>(T * N, ok); o.take<uint16_t>(T * N, ok); f(T * N);
+-    if (bf16x2_hc()) { o.take<uint16_t>(T * D, ok); o.take<uint16_t>(T * LR, ok); }
+-    if (bf16x2()) o.take<uint16_t>(T * N, ok);
+-    o.take<int32_t>(T * strata::kernels::kStepCount, ok);
++    const bool compact = compact_prefill();
++    const bool compact_hc = compact_hc_prefill();
++    if (compact) {
++        take_compact_base(o, nullptr, T, ok, compact_hc);
++    } else {
++        f(T * N); f(T * D); f(T * D); o.take<uint16_t>(T * D, ok); f(T * LR); o.take<uint16_t>(T * LR, ok);
++        f(T * D); f(T * HC); f(T * N); o.take<uint16_t>(T * N, ok); o.take<uint16_t>(T * N, ok); f(T * N);
++        if (bf16x2_hc()) { o.take<uint16_t>(T * D, ok); o.take<uint16_t>(T * LR, ok); }
++        if (bf16x2()) o.take<uint16_t>(T * N, ok);
++        o.take<int32_t>(T * strata::kernels::kStepCount, ok);
++    }
+     strata::kernels::QsaShapes s = strata::kernels::qsa_real_shapes();
+     s.n_head = g.n_head; s.n_head_kv = g.n_head_kv; s.head_dim = g.head_dim; s.idx_n_head = g.idx_q_heads;
+     s.idx_dim = g.idx_key_dim;
+     const int64_t cap = strata::kernels::qsa_selection_width(strata::kernels::kTopkMaxCells, s);
+     const int64_t max_blocks = ss.qsa_states[ss.qsa_primary()].max_cells / s.idx_block + 2;
+-    o.take<uint8_t>((size_t) std::max({gdn_set_bytes(T), qsa_set_bytes(T, cap, max_blocks, 256, prompt_attn_batch(T), s),
+-                                       moe_set_bytes(T, g.n_expert, fused_layout(T, true))}), ok);
++    o.take<uint8_t>((size_t) std::max({hc_set_bytes(T, compact_hc), ple_set_bytes(T, compact), gdn_set_bytes(T, compact),
++        qsa_set_bytes(T, cap, max_blocks, 256, prompt_attn_batch(T), s, compact),
++        moe_set_bytes(T, g.n_expert, fused_layout(T, true), compact)}), ok);
+     for (int i = 0; i < DQ; ++i) { o.take<uint16_t>(1280 * 2560, ok); o.take<uint16_t>(2560 * 640, ok); }
+     if (mmq_plan().any) {
+         const MmqPlan& mp = mmq_plan();
+@@ -1520,17 +1643,20 @@ namespace {
+ // are folded at every MoE layer's host sync, after which all of them have completed.
+ enum PfPhase { kPfStart, kPfHc, kPfGdn, kPfQsa, kPfQsaIdx, kPfQsaSel, kPfQsaAttn, kPfRouter, kPfHostGroup, kPfGather,
+                kPfWaitCopy, kPfDequant, kPfGemmGU, kPfGemmD, kPfCombine, kPfPle, kPfKvStage, kPfGdnConv, kPfGdnRec, kPfGdnOut,
+-               kPfPleRead, kPfGrWrite, kPfCount };
++               kPfPleRead, kPfGrWrite, kPfLayerLoad, kPfResidual, kPfCount };
+ const char* const kPfNames[kPfCount] = {"embed+steps", "hc read", "gdn", "qsa proj", "qsa indexer", "qsa select",
+                                         "qsa attn", "router+shared", "host grouping", "gather", "wait copy", "dequant",
+                                         "gemm gate/up", "gemm down", "combine", "ple", "kv stage", "gdn conv+gates",
+-                                        "gdn recurrence", "gdn out proj", "ple read wait", "hc write+norm"};
++                                        "gdn recurrence", "gdn out proj", "ple read wait", "hc write+norm",
++                                        "layer weight preload", "residual copy"};
+ struct PfTimer {
+     bool on = std::getenv("STRATA_PREFILL_TIMING") != nullptr;
+     std::vector<dpct::event_ptr> ev;
+     std::vector<int> ph;
+     size_t used = 0;
+     double ms[kPfCount] = {};
++    double host_setup_ms = 0, host_sync_ms = 0, host_chunk_ms = 0;
++    double ple_read_ms = 0, ple_wait_ms = 0;
+     // STRATA_PREFILL_SYNC=1 (debug): wait for the GPU at every mark and log the phase that just finished, so a hang
+     // names the stage that never completes
+     bool sync = std::getenv("STRATA_PREFILL_SYNC") != nullptr;
+@@ -1577,6 +1703,30 @@ struct PfTimer {
+                 << ", line:" << __LINE__ << std::endl;
+       std::exit(1);
+     }
++    void report(int64_t n, double wall_ms, double staging_ms, double ple_ms) {
++        if (!on) return;
++        double total = 0.0;
++        for (double v : ms) total += v;
++        std::string line;
++        char b[96];
++        for (int i = 0; i < kPfCount; ++i) {
++            if (ms[i] <= 0.0) continue;
++            std::snprintf(b, sizeof b, " %s %.0f (%.1f%%)", kPfNames[i], ms[i], total > 0 ? 100.0 * ms[i] / total : 0.0);
++            line += b;
++        }
++        std::fprintf(stderr, "strata prefill timing: %lld tokens, GPU timeline %.0f ms, wall %.0f ms, host staging %.0f ms:%s\n",
++                     (long long) n, total, wall_ms, staging_ms, line.c_str());
++        std::fprintf(stderr, "strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) %.0f ms, "
++                             "waiting for each chunk %.0f ms, after each chunk (the draft layer, progress) %.0f ms, "
++                             "PLE %.0f ms\n", host_setup_ms, host_sync_ms, host_chunk_ms, ple_ms);
++        std::fprintf(stderr, "strata prefill phases: {\"gpu_timeline_ms\":%.6f,\"host_setup_ms\":%.6f,"
++                             "\"host_chunk_wait_ms\":%.6f,\"host_after_chunk_ms\":%.6f,"
++                             "\"ple_gather_wall_ms\":%.6f,\"ple_host_wait_ms\":%.6f,\"phase_ms\":{",
++                     total, host_setup_ms, host_sync_ms, host_chunk_ms, ple_read_ms, ple_wait_ms);
++        for (int i = 0; i < kPfCount; ++i)
++            std::fprintf(stderr, "%s\"%s\":%.6f", i ? "," : "", kPfNames[i], ms[i]);
++        std::fprintf(stderr, "}}\n");
++    }
+     ~PfTimer() {
+         for (dpct::event_ptr e : ev) DPCT_CHECK_ERROR(dpct::destroy_event(e));
+     }
+@@ -1590,6 +1740,20 @@ struct ExpertTransferTimer {
+     bool on = std::getenv("STRATA_PREFILL_TRANSFER_TIMING") != nullptr;
+     struct Copy { sycl::event event; uint64_t bytes; int64_t layer; };
+     std::vector<Copy> copies;
++    std::vector<Copy> activations;
++    std::vector<Copy> device_residuals;
++    int64_t residual_gpu_tokens = 0;
++    double serial_layer_load_ms = 0;
++    sycl::event device_residual(dpct::queue_ptr q, void* dst, const void* src, size_t bytes, int64_t layer) {
++        auto event = q->memcpy(dst, src, bytes);
++        if (on) device_residuals.push_back({event, (uint64_t) bytes, layer});
++        return event;
++    }
++    sycl::event activation(dpct::queue_ptr q, void* dst, const void* src, size_t bytes, int64_t layer) {
++        auto event = q->memcpy(dst, src, bytes);
++        if (on) activations.push_back({event, (uint64_t) bytes, layer});
++        return event;
++    }
+     sycl::event copy(dpct::queue_ptr q, void* dst, const void* src, size_t bytes, int64_t layer) {
+         auto event = q->memcpy(dst, src, bytes);
+         if (on) copies.push_back({event, (uint64_t) bytes, layer});
+@@ -1620,7 +1784,27 @@ struct ExpertTransferTimer {
+             std::fprintf(stderr, "%s{\"layer\":%lld,\"copies\":%llu,\"bytes\":%llu,\"dma_active_ms\":%.6f}",
+                          l ? "," : "", (long long) l, (unsigned long long) layer_copies[(size_t) l],
+                          (unsigned long long) layer_bytes[(size_t) l], (double) layer_ns[(size_t) l] / 1e6);
+-        std::fprintf(stderr, "]}\n");
++        uint64_t activation_bytes = 0, activation_ns = 0;
++        for (const auto& c : activations) {
++            activation_bytes += c.bytes;
++            activation_ns += c.event.get_profiling_info<sycl::info::event_profiling::command_end>() -
++                             c.event.get_profiling_info<sycl::info::event_profiling::command_start>();
++        }
++        uint64_t device_bytes = 0, device_ns = 0;
++        for (const auto& c : device_residuals) {
++            device_bytes += c.bytes;
++            device_ns += c.event.get_profiling_info<sycl::info::event_profiling::command_end>() -
++                         c.event.get_profiling_info<sycl::info::event_profiling::command_start>();
++        }
++        std::fprintf(stderr, "],\"activation_copies\":%zu,\"activation_bytes\":%llu,"
++                             "\"activation_dma_active_ms\":%.6f,\"total_transfer_bytes\":%llu,"
++                             "\"residual_gpu_tokens\":%lld,\"device_residual_copies\":%zu,"
++                             "\"device_residual_bytes\":%llu,\"device_residual_dma_active_ms\":%.6f,"
++                             "\"serial_layer_load_wall_ms\":%.6f}\n",
++                     activations.size(), (unsigned long long) activation_bytes, (double) activation_ns / 1e6,
++                     (unsigned long long) (bytes + activation_bytes), (long long) residual_gpu_tokens,
++                     device_residuals.size(), (unsigned long long) device_bytes, (double) device_ns / 1e6,
++                     serial_layer_load_ms);
+     }
+ };
+ // multi-GPU: the peer's own timeline (STRATA_PREFILL_TIMING): marks on the peer stream, folded with the primary's
+@@ -1686,7 +1870,209 @@ struct PeTimer {
+ };
+ }  // namespace
+ 
+-bool Prefill::run(const int64_t *tokens, int64_t n, int64_t pos0,
++bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) {
++    const char* mode = std::getenv("STRATA_PREFILL_LAYER_MAJOR");
++    const char* first_env = std::getenv("STRATA_PREFILL_FIRST");
++    const int64_t first = first_env ? std::atoll(first_env) : 256;
++    const bool multiple = n > impl_->T || (first > 0 && first < impl_->T && n > 2 * first);
++    // =1 reuses weights across chunks. =2 also forces one-chunk runs for equivalence diagnostics.
++    const bool layer_major = mode && (std::atoi(mode) == 2 || (std::atoi(mode) == 1 && multiple));
++    const bool ok = layer_major ? run_layer_major(tokens, n, pos0, err) : run_impl(tokens, n, pos0, err);
++    if (!ok) return false;
++    // Optional equality diagnostic, outside normal timing: authoritative K/V,
++    // complete recurrent/conv state, PLE history and all indexer state bytes.
++    if (const char* path = std::getenv("STRATA_PREFILL_DUMP_STATE")) {
++        Impl& m = *impl_;
++        m.cs->wait(); m.copy->wait();
++        core::ConversationCheckpoint checkpoint;
++        checkpoint.ids.resize((size_t) (pos0 + n));
++        if (!core::conversation_checkpoint_save(checkpoint, *m.ss, *m.g, err)) return false;
++        std::unique_ptr<std::FILE, decltype(&std::fclose)> file(std::fopen(path, "wb"), &std::fclose);
++        if (!file) { err = "prefill: cannot open the state diagnostic"; return false; }
++        auto write = [&](const void* data, size_t count) {
++            const uint64_t bytes = count;
++            return std::fwrite(&bytes, sizeof(bytes), 1, file.get()) == 1 &&
++                   std::fwrite(data, 1, count, file.get()) == count;
++        };
++        if (!write(m.ss->ple_prev, sizeof(m.ss->ple_prev))) return false;
++        for (const auto* b : {&checkpoint.gdn, &checkpoint.ple, &checkpoint.tails, &checkpoint.dead, &checkpoint.block_pos})
++            if (!write(b->data(), b->size())) return false;
++        for (int64_t i = 0; i < m.ss->qsa_alloc; ++i) {
++            core::ConversationKv kv;
++            if (!core::conversation_kv_save(kv, m.ss->qsa_states[m.ss->qsa_ord0 + i], *m.g, pos0 + n, true, err))
++                return false;
++            for (const auto* b : {&kv.k, &kv.v, &kv.k_scale, &kv.v_scale, &kv.pooled}) {
++                const uint64_t bytes = b->size();
++                if (std::fwrite(&bytes, sizeof(bytes), 1, file.get()) != 1 ||
++                    !b->visit(0, b->size(), [&](const uint8_t* p, size_t count, size_t) {
++                        return std::fwrite(p, 1, count, file.get()) == count;
++                    })) return false;
++            }
++        }
++        if (std::fflush(file.get()) != 0) { err = "prefill: writing the state diagnostic failed"; return false; }
++    }
++    return true;
++}
++
++bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) try {
++    err.clear();
++    Impl& m = *impl_;
++    const core::OnDevice on_device(m.device);
++    const auto& g = *m.g;
++    if (n <= 0) return run_impl(tokens, n, pos0, err);
++    if (stage_lb_ != 0 || stage_le_ != g.n_layers || next_ || helper_ || m.pp || hand_in_ ||
++        !m.compact || !m.src) {
++        err = "prefill: layer-major currently requires a full single-GPU compact FP16 path";
++        return false;
++    }
++    for (int64_t i = 0; i < m.ss->qsa_alloc; ++i) {
++        if (m.ss->qsa_states[m.ss->qsa_ord0 + i].kv_mode != 0) {
++            err = "prefill: layer-major requires all K/V pages resident in VRAM";
++            return false;
++        }
++    }
++    if (const char* preload = std::getenv("STRATA_PREFILL_PRELOAD_PLE"); preload && preload[0] == '1') {
++        err = "prefill: PLE preload is unavailable for layer-major processing";
++        return false;
++    }
++    const auto started = Clock::now();
++    const auto old_stats = stats_;
++    const auto host_copy_start = m.stager->host_copy_ns.load(std::memory_order_relaxed);
++    const int32_t prev[2] = {m.ss->ple_prev[0], m.ss->ple_prev[1]};
++    // Each chunk reads its old host rows before writing the same range back. In-order
++    // compute plus the synchronized callback prevent the download racing its upload.
++    core::ExpertCache layer_cache;
++    const auto& layout = strata::kernels::cpu::expert_layout();
++    if (!layer_cache.open_sized(std::vector<int64_t>((size_t) g.n_expert, MAXBLOB()), 1, g.n_expert, err))
++        return false;
++    const char* gpu_env = std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_GPU");
++    int64_t gpu_tokens = gpu_env ? std::clamp<int64_t>(std::atoll(gpu_env), 0, n) : 0;
++    if (gpu_tokens < n) {
++        const char* first_env = std::getenv("STRATA_PREFILL_FIRST");
++        const int64_t first = first_env ? std::atoll(first_env) : 256;
++        const int64_t first_len = first > 0 && first < m.T && n > 2 * first ? first : std::min(m.T, n);
++        // Keep a complete prefix of chunks on-device. A tail never straddles the two stores.
++        gpu_tokens = gpu_tokens < first_len ? 0 : first_len + (gpu_tokens - first_len) / m.T * m.T;
++    }
++    auto free_rows = [q = m.cs](float* p) { if (p) sycl::free(p, *q); };
++    std::unique_ptr<float, decltype(free_rows)> device_rows(nullptr, free_rows);
++    if (gpu_tokens) {
++        size_t free_bytes = 0, total_bytes = 0;
++        dpct::get_current_device().get_memory_info(free_bytes, total_bytes);
++        const size_t bytes = (size_t) gpu_tokens * D * sizeof(float);
++        if (free_bytes && bytes > free_bytes) {
++            err = "prefill layer-major: requested GPU residual rows exceed free VRAM; lower STRATA_PREFILL_LAYER_MAJOR_R_GPU";
++            return false;
++        }
++        device_rows.reset(sycl::malloc_device<float>((size_t) gpu_tokens * D, *m.cs));
++        if (!device_rows) { err = "prefill layer-major: GPU residual allocation failed"; return false; }
++    }
++    std::vector<float> rows((size_t) (n - gpu_tokens) * D);
++    std::vector<int32_t> residency((size_t) g.n_layers * g.n_expert, -1);
++    ExpertTransferTimer transfers;
++    transfers.residual_gpu_tokens = gpu_tokens;
++    PfTimer phases;
++    // Restore decode's cache and all public callbacks on every exit, including cancellation.
++    struct Restore {
++        Prefill& p; Impl& m;
++        int64_t lb, le; const float* input; bool ready;
++        const core::ExpertCache* cache; const int32_t* residency; ExpertTransferTimer* timer;
++        float* gpu; int64_t gpu_tokens; PfTimer* phases;
++        decltype(on_chunk) chunk; decltype(on_stage_chunk) stage;
++        ~Restore() {
++            m.cs->wait(); m.copy->wait(); m.stager->finish();
++            p.stage_lb_ = lb; p.stage_le_ = le; p.hand_in_ = input; p.checkpoint_ready_ = ready;
++            p.on_chunk = std::move(chunk); p.on_stage_chunk = std::move(stage);
++            m.cache = cache; m.host_res = residency; m.transfer_context = timer;
++            m.residual_gpu = gpu; m.residual_gpu_tokens = gpu_tokens; m.phase_context = phases;
++        }
++    } restore{*this, m, stage_lb_, stage_le_, hand_in_, checkpoint_ready_, m.cache, m.host_res,
++              m.transfer_context, m.residual_gpu, m.residual_gpu_tokens, m.phase_context, on_chunk, on_stage_chunk};
++    m.cache = &layer_cache; m.host_res = residency.data(); m.transfer_context = &transfers;
++    m.residual_gpu = device_rows.get(); m.residual_gpu_tokens = gpu_tokens; m.phase_context = &phases;
++    checkpoint_ready_ = false;
++    int64_t logical_chunks = 0;
++    std::fprintf(stderr, "strata prefill: layer-major, %lld tokens, host residual bytes %llu, GPU residual bytes %llu, layer expert cache bytes %lld\n",
++                 (long long) n, (unsigned long long) (rows.size() * sizeof(float)),
++                 (unsigned long long) ((size_t) gpu_tokens * D * sizeof(float)), (long long) layer_cache.bytes());
++    for (int64_t layer = 0; layer < g.n_layers; ++layer) {
++        if (should_stop && should_stop()) { err = "cancelled"; return false; }
++        m.cs->wait(); m.copy->wait(); m.stager->finish();
++        phases.mark(kPfLayerLoad, strata::q_of(m.cs));
++        const auto load_started = Clock::now();
++        const size_t bytes = (size_t) layout.blob_bytes(layer);
++        std::vector<Stager::Job> jobs;
++        jobs.reserve((size_t) g.n_expert);
++        for (int32_t e = 0; e < g.n_expert; ++e) {
++            if (m.src->transient(layer, e)) {
++                jobs.push_back({nullptr, bytes, m.src, (int32_t) layer, e});
++            } else {
++                // Resolve stable pointers on the issuer thread, as in the original
++                // stream. A source's blob() bookkeeping need not be thread-safe.
++                const uint8_t* blob = m.src->blob(layer, e);
++                if (!blob) { err = "prefill layer-major: missing expert bytes"; return false; }
++                jobs.push_back({blob, bytes});
++            }
++        }
++        m.stager->start(std::move(jobs));
++        for (int32_t e = 0; e < g.n_expert; ++e) {
++            transfers.copy(m.copy, const_cast<uint8_t*>(layer_cache.device_slot(e)), m.stager->wait(e), bytes, layer);
++            m.stager->issued_one(e, m.copy);
++        }
++        m.copy->wait(); m.stager->finish();
++        transfers.serial_layer_load_ms += ms_since(load_started);
++        phases.mark(kPfStart, strata::q_of(m.cs));
++        if (m.stager->failed.load(std::memory_order_relaxed)) {
++            err = "prefill layer-major: loading an expert failed";
++            return false;
++        }
++        stats_.experts_streamed += g.n_expert;
++        stats_.experts_dma += g.n_expert;
++        if (layer > 0)
++            std::fill_n(residency.data() + (size_t) (layer - 1) * g.n_expert, (size_t) g.n_expert, -1);
++        for (int32_t e = 0; e < g.n_expert; ++e) residency[(size_t) layer * g.n_expert + e] = e;
++        stage_lb_ = layer; stage_le_ = layer + 1;
++        hand_in_ = layer == 0 ? nullptr : (gpu_tokens == n ? device_rows.get() : rows.data());
++        m.ss->ple_prev[0] = prev[0]; m.ss->ple_prev[1] = prev[1];
++        on_stage_chunk = [&](int64_t done, std::string& error) {
++            checkpoint_ready_ = layer + 1 == g.n_layers && done == pos0 + n;
++            return layer + 1 != g.n_layers || done != pos0 + n || !restore.stage || restore.stage(done, error);
++        };
++        on_chunk = [&](const float* residual, int64_t count, int64_t position, std::string& error) {
++            if (layer + 1 < g.n_layers) {
++                phases.mark(kPfResidual, strata::q_of(m.cs));
++                const int64_t row = position - pos0;
++                if (row + count <= gpu_tokens)
++                    transfers.device_residual(m.cs, device_rows.get() + (size_t) row * D, residual,
++                                              (size_t) count * D * sizeof(float), layer).wait();
++                else
++                    transfers.activation(m.cs, rows.data() + (size_t) (row - gpu_tokens) * D, residual,
++                                         (size_t) count * D * sizeof(float), layer).wait();
++                phases.mark(kPfStart, strata::q_of(m.cs));
++                return true;
++            }
++            ++logical_chunks;
++            checkpoint_ready_ = position + count == pos0 + n;
++            return !restore.chunk || restore.chunk(residual, count, position, error);
++        };
++        if (!run_impl(tokens, n, pos0, err)) return false;
++    }
++    phases.mark(kPfStart, strata::q_of(m.cs));
++    m.cs->wait(); phases.fold();
++    phases.report(n, ms_since(started), stats_.ms_experts_host - old_stats.ms_experts_host,
++                  stats_.ms_ple - old_stats.ms_ple);
++    stats_.tokens = old_stats.tokens + n;
++    stats_.chunks = old_stats.chunks + logical_chunks;
++    stats_.ms_total = old_stats.ms_total + ms_since(started);
++    transfers.report(n, logical_chunks, g.n_layers, ms_since(started),
++                     (double) (m.stager->host_copy_ns.load(std::memory_order_relaxed) - host_copy_start) / 1e6, 0);
++    return true;
++} catch (const std::exception& exc) {
++    err = std::string("prefill layer-major: ") + exc.what();
++    return false;
++}
++
++bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
+                   std::string &err) try {
+     err.clear();
+     Impl& m = *impl_;
+@@ -1709,8 +2095,10 @@ bool Prefill::run(const int64_t *tokens, int64_t n, int64_t pos0,
+     const uint64_t gdn_floats = (uint64_t) g.ssm_state_size * g.ssm_v_heads * g.ssm_state_size +
+                                 (uint64_t) g.ssm_conv_channels * (g.ssm_d_conv - 1);
+     int32_t prev[2] = {ss.ple_prev[0], ss.ple_prev[1]};
+-    PfTimer pt;
+-    ExpertTransferTimer transfers;
++    PfTimer local_phases;
++    PfTimer& pt = m.phase_context ? *m.phase_context : local_phases;
++    ExpertTransferTimer local_transfers;
++    ExpertTransferTimer& transfers = m.transfer_context ? *m.transfer_context : local_transfers;
+     const uint64_t host_copy_start = m.stager->host_copy_ns.load(std::memory_order_relaxed);
+     const int64_t chunks_start = stats_.chunks;
+     PeTimer pe;
+@@ -1801,11 +2189,16 @@ bool Prefill::run(const int64_t *tokens, int64_t n, int64_t pos0,
+             type of operand memory, so you may need to call wait() on event
+             return by memcpy API to ensure synchronization behavior.
+             */
+-            if (DPCT_CHECK_ERROR(m.cs->memcpy(m.R, hand_in_ + (size_t)c0 * D,
+-                                              (size_t)T * D * 4)) != 0) {
++            if (m.phase_context) pt.mark(kPfResidual, cs);
++            const bool gpu_rows = m.transfer_context && c0 + T <= m.residual_gpu_tokens;
++            const float* input = gpu_rows ? m.residual_gpu + (size_t) c0 * D
++                                         : hand_in_ + (size_t) (c0 - (m.transfer_context ? m.residual_gpu_tokens : 0)) * D;
++            if (DPCT_CHECK_ERROR(gpu_rows ? transfers.device_residual(m.cs, m.R, input, (size_t) T * D * 4, LB)
++                                         : transfers.activation(m.cs, m.R, input, (size_t) T * D * 4, LB)) != 0) {
+                 err = "prefill: the layer split's hand-off upload failed";
+                 return false;
+             }
++            if (m.phase_context) pt.mark(kPfStart, cs);
+         }
+         // C-4: the whole chunk's rows in one gather (the same per-element arithmetic as the per-token path, so the
+         // same bits); a chunk with picture rows, or a token outside the table, takes the per-token path
+@@ -2882,7 +3275,7 @@ bool Prefill::run(const int64_t *tokens, int64_t n, int64_t pos0,
+                                 m.cs->memcpy(m.bounds_dev, m.bounds_host.data(),
+                                              m.bounds_host.size() * 4);
+                             }
+-                        } else {
++                        } else if (!m.compact) {
+                             gather_rows16(m.mixed_h, m.src_dev, m.Xs, T * K, N, m.cs);
+                         }
+                         // multi-GPU: the peer's share, enqueued before the primary's own experts so both cards work at once
+@@ -3381,11 +3774,17 @@ bool Prefill::run(const int64_t *tokens, int64_t n, int64_t pos0,
+                                 m.used_of[slot] = slot;
+                             }
+                             const int64_t o0 = m.off[(size_t) e], ne = m.cnt[(size_t) e];
++                            if (m.compact) {
++                                if (ne > m.T) { err = "prefill: compact expert rows exceed the workspace"; return false; }
++                                pt.mark(kPfGather, cs);
++                                gather_rows16(m.mixed_h, m.src_dev + o0, m.Xs, ne, N, m.cs);
++                            }
++                            const int64_t scratch_row = m.compact ? 0 : o0;
+                             pt.mark(kPfGemmGU, cs);
+-                            m.gemm.f16(m.Xs + o0 * N, m.dq_gu[q], m.GU + o0 * 1280, ne, 1280, N);
+-                            swiglu_interleaved(m.GU + o0 * 1280, m.Hh + o0 * 640, ne, m.cs);
++                            m.gemm.f16(m.Xs + scratch_row * N, m.dq_gu[q], m.GU + scratch_row * 1280, ne, 1280, N);
++                            swiglu_interleaved(m.GU + scratch_row * 1280, m.Hh + scratch_row * 640, ne, m.cs);
+                             pt.mark(kPfGemmD, cs);
+-                            m.gemm.f16(m.Hh + o0 * 640, m.dq_d[q], m.Dm + o0 * N, ne, N, 640);
++                            m.gemm.f16(m.Hh + scratch_row * 640, m.dq_d[q], m.Dm + o0 * N, ne, N, 640);
+                             return true;
+                         }
+                         catch (sycl::exception const &exc) {
+@@ -3597,11 +3996,12 @@ bool Prefill::run(const int64_t *tokens, int64_t n, int64_t pos0,
+             hand_buf ^= 1;
+             continue;   // the last stage reports the chunk (on_chunk)
+         }
+-        if (const char* dump = std::getenv("STRATA_PREFILL_DUMP_R")) {   // debug: the final residuals, every 64th
++        if (const char* dump = (m.transfer_context && LE < g.n_layers) ? nullptr : std::getenv("STRATA_PREFILL_DUMP_R")) {   // debug: the final residuals, every 64th
+             m.cs->wait(); // position (A/B quality of this path)
+             if (std::FILE* f = std::fopen(dump, c0 == 0 ? "wb" : "ab")) {
+                 std::vector<float> row((size_t) D);
+-                for (int64_t t = (64 - p0 % 64) % 64; t < T; t += 64) {
++                const int64_t stride = std::getenv("STRATA_PREFILL_DUMP_R_ALL") ? 1 : 64;
++                for (int64_t t = (stride - p0 % stride) % stride; t < T; t += stride) {
+                     dpct::get_in_order_queue()
+                         .memcpy(row.data(), m.R + t * D, (size_t)D * 4)
+                         .wait();
+@@ -3700,32 +4100,14 @@ bool Prefill::run(const int64_t *tokens, int64_t n, int64_t pos0,
+         return false;
+     }
+     stats_.ms_total += ms_since(t_start);
+-    transfers.report(n, stats_.chunks - chunks_start, g.n_layers, ms_since(t_start),
++    if (!m.transfer_context) transfers.report(n, stats_.chunks - chunks_start, g.n_layers, ms_since(t_start),
+                      (double) (m.stager->host_copy_ns.load(std::memory_order_relaxed) - host_copy_start) / 1e6,
+                      ple_preload_ms);
+     if (pt.on) {
+         pt.fold();
+-        double total = 0.0;
+-        for (double v : pt.ms) total += v;
+-        std::string line;
+-        char b[96];
+-        for (int i = 0; i < kPfCount; ++i) {
+-            if (pt.ms[i] <= 0.0) continue;
+-            std::snprintf(b, sizeof b, " %s %.0f (%.1f%%)", kPfNames[i], pt.ms[i], total > 0 ? 100.0 * pt.ms[i] / total : 0.0);
+-            line += b;
+-        }
+-        std::fprintf(stderr, "strata prefill timing: %lld tokens, GPU timeline %.0f ms, wall %.0f ms, host staging %.0f ms:%s\n",
+-                     (long long) n, total, ms_since(t_start), stats_.ms_experts_host, line.c_str());
+-        std::fprintf(stderr, "strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) %.0f ms, "
+-                             "waiting for each chunk %.0f ms, after each chunk (the draft layer, progress) %.0f ms, "
+-                             "PLE %.0f ms\n", host_setup_ms, host_sync_ms, host_chunk_ms, stats_.ms_ple);
+-        std::fprintf(stderr, "strata prefill phases: {\"gpu_timeline_ms\":%.6f,\"host_setup_ms\":%.6f,"
+-                             "\"host_chunk_wait_ms\":%.6f,\"host_after_chunk_ms\":%.6f,"
+-                             "\"ple_gather_wall_ms\":%.6f,\"ple_host_wait_ms\":%.6f,\"phase_ms\":{",
+-                     total, host_setup_ms, host_sync_ms, host_chunk_ms, ple_read_ms, ple_wait_ms);
+-        for (int i = 0; i < kPfCount; ++i)
+-            std::fprintf(stderr, "%s\"%s\":%.6f", i ? "," : "", kPfNames[i], pt.ms[i]);
+-        std::fprintf(stderr, "}}\n");
++        pt.host_setup_ms += host_setup_ms; pt.host_sync_ms += host_sync_ms; pt.host_chunk_ms += host_chunk_ms;
++        pt.ple_read_ms += ple_read_ms; pt.ple_wait_ms += ple_wait_ms;
++        if (!m.phase_context) pt.report(n, ms_since(t_start), stats_.ms_experts_host, stats_.ms_ple);
+         if (pe.on) {
+             /*
+             DPCT1093: The "pe.dev" device may be not the one intended for
+@@ -3739,6 +4121,7 @@ bool Prefill::run(const int64_t *tokens, int64_t n, int64_t pos0,
+                 dpct::select_device(pe.dev); m.pp->s->wait(); pe.fold();
+                 dpct::select_device(pd);
+             std::string pl;
++            char b[96];
+             for (int i = 0; i < kPeCount; ++i) {
+                 std::snprintf(b, sizeof b, " %s %.0f", kPeNames[i], pe.ms[i]);
+                 pl += b;
+diff --git a/sycl/src/program/generate.cpp b/sycl/src/program/generate.cpp
+index d146525..e601f33 100644
+--- a/sycl/src/program/generate.cpp
++++ b/sycl/src/program/generate.cpp
+@@ -5675,7 +5675,7 @@ int main(int argc, char **argv) try {
+             strata::core::progress_at("reading the prompt (batched), done up to token", done);
+             strata::core::progress_beat();
+             std::fflush(stdout);
+-            if (o.prompt_cache_every > 0 && done >= pp_next_check) {
++            if (o.prompt_cache_every > 0 && done >= pp_next_check && sp.checkpoint_ready()) {
+                 bool saved = false;
+                 if (multi_gpu) {   // the stages' parts, saved when each of them read this chunk
+                     std::vector<ConvCheckpoint> parts;
+diff --git a/sycl/tools/prefill_profile.py b/sycl/tools/prefill_profile.py
+index 0b988aa..dacb49d 100644
+--- a/sycl/tools/prefill_profile.py
++++ b/sycl/tools/prefill_profile.py
+@@ -34,8 +34,11 @@ def main():
+     parser.add_argument("--output", type=Path, required=True)
+     parser.add_argument("--lengths", default="1024,2048,4007")
+     parser.add_argument("--chunk", type=int, default=4096)
++    parser.add_argument("--multiple-chunks", action="store_true",
++                        help="Measure a whole long prompt across chunks, recording the actual chunk count")
+     parser.add_argument("--max-context", type=int, default=8192)
+     parser.add_argument("--expert-cache", type=int, default=512)
++    parser.add_argument("--kv", choices=("fp16", "int8", "q4_0", "k8v4"), default="fp16")
+     parser.add_argument("--ple-io", choices=("direct", "mmap"), default="direct")
+     parser.add_argument("--preload-ple", action="store_true",
+                         help="Diagnostic: finish PLE gather before the GPU/transfer timer; report both times")
+@@ -55,7 +58,9 @@ def main():
+     tokens = [int(t) for t in opts.tokens_file.read_text().split()]
+     if not lengths or min(lengths) < 1 or max(lengths) >= len(tokens):
+         parser.error("The fixture must contain at least max(lengths) + 1 tokens")
+-    if opts.chunk < max(lengths):
++    if opts.chunk < 1:
++        parser.error("chunk must be positive")
++    if opts.chunk < max(lengths) and not opts.multiple_chunks:
+         parser.error("Use a chunk at least as large as every length for a one-chunk comparison")
+     if opts.max_context < max(lengths) + 2:
+         parser.error("The context must fit the longest prefix and one generated token")
+@@ -79,7 +84,8 @@ def main():
+         "exe": str(exe), "binary_sha256": sha256(exe),
+         "fixture": str(opts.tokens_file.resolve()), "fixture_sha256": sha256(opts.tokens_file),
+         "lengths": lengths, "chunk": opts.chunk, "max_context": opts.max_context,
+-        "expert_cache": opts.expert_cache, "ple_io": opts.ple_io, "preload_ple": opts.preload_ple,
++        "multiple_chunks": opts.multiple_chunks,
++        "expert_cache": opts.expert_cache, "kv": opts.kv, "ple_io": opts.ple_io, "preload_ple": opts.preload_ple,
+         "warmup": opts.warmup, "reverse_order": opts.reverse_order,
+         "mtp": str(opts.mtp) if opts.mtp else None,
+         "env": {k: v for k, v in env.items() if k.startswith(("STRATA_", "SYCL_", "ONEAPI_", "NEO_"))
+@@ -93,6 +99,8 @@ def main():
+             "Profiler results need a separate run without phase markers to check instrumentation overhead.",
+             "With preload_ple, transfer.wall_ms excludes the separately reported preload; cli_wall_ms includes it.",
+             "Warmup runs are validated and preserved but excluded from all medians and length slopes.",
++            "With multiple_chunks, wall time and transfer counts cover the whole prompt; the slope also includes changes in chunk count.",
++            "Layer-major activation_bytes count host/device residual transfers separately from quantized expert weight transfers.",
+         ],
+         "runs": [],
+     }
+@@ -116,7 +124,7 @@ def main():
+             args = [str(exe), "--pack", str(opts.pack.resolve()), "--native", str(opts.native.resolve()),
+                     "--tokens-file", str(fixture.resolve()), "--max-new", "1", "--spec", "2",
+                     "--max-context", str(opts.max_context), "--prefill", str(opts.chunk),
+-                    "--no-prefill-borrow", "--expert-cache", str(opts.expert_cache),
++                    "--no-prefill-borrow", "--expert-cache", str(opts.expert_cache), "--kv", opts.kv,
+                     "--expert-profile", str(opts.expert_profile.resolve()), "--expert-cache-per-layer",
+                     "--pool-workers", "5", "--pcie-frac", "0", "--adapt-swaps", "0",
+                     "--ple-io", opts.ple_io, "--suffix-draft", "0", "--greedy", "--stats"]
+@@ -149,6 +157,14 @@ def main():
+             chunk_match = re.search(r"strata generate: prefill \d+ tokens in (\d+) chunks", text)
+             if chunk_match:
+                 record["chunks"] = int(chunk_match[1])
++            layouts = re.findall(r"strata prefill: (original|compact|compact-hc) layout for (\d+) tokens: (\d+) accounted bytes, (\d+) shared workspace bytes", text)
++            if layouts:
++                record["workspace_layouts"] = [{"layout": layout, "capacity_tokens": int(t),
++                                                "accounted_bytes": int(total), "shared_workspace_bytes": int(shared)}
++                                               for layout, t, total, shared in layouts]
++            free = re.findall(r"strata (?:generate|serve): (\d+) MiB of VRAM free", text)
++            if free:
++                record["startup_free_vram_mib"] = list(map(int, free))
+             ple_match = re.search(r"strata generate: prefill .*; PLE ([\d.]+) ms", text)
+             if ple_match:
+                 record["ple_ms"] = float(ple_match[1])
+@@ -167,9 +183,12 @@ def main():
+                               logits_finite=bool(values) and all(map(math.isfinite, values)))
+             report["runs"].append(record)
+             save()
++            chunks = record.get("chunks", 0)
++            chunk_valid = chunks >= 1 if opts.multiple_chunks else chunks == 1
+             valid = (rc == 0 and record.get("reported_tokens") == n
+-                     and record.get("chunks") == 1 and record.get("logits_finite")
+-                     and (opts.mode == "wall" or record.get("transfer", {}).get("chunks") == 1)
++                     and chunk_valid and record.get("logits_finite")
++                     and (opts.mode == "wall" or (record.get("transfer", {}).get("chunks") == chunks
++                                                 and record["transfer"].get("tokens") == n))
+                      and (opts.mode != "profile" or "phases" in record))
+             if not valid:
+                 raise RuntimeError(f"Invalid or failed profile {name}; evidence saved to {target}")
+@@ -184,6 +203,9 @@ def main():
+         if opts.mode != "wall":
+             median.update({key: statistics.median(r["transfer"][key] for r in rows)
+                            for key in ("dma_active_ms", "expert_bytes")})
++            for key in ("activation_bytes", "activation_dma_active_ms", "total_transfer_bytes"):
++                if all(key in r["transfer"] for r in rows):
++                    median[key] = statistics.median(r["transfer"][key] for r in rows)
+         medians.append(median)
+     report["medians"] = medians
+     if len(medians) >= 2:

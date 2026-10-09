@@ -1,0 +1,284 @@
+--- a/sycl/src/prefill/prefill.cpp
++++ b/sycl/src/prefill/prefill.cpp
+@@ -508,7 +508,7 @@
+     const core::ExpertCache* cache = nullptr;
+     const int32_t* host_res = nullptr;
+     int64_t T = 0, T_max = 0;
+-    bool borrowed = false;
++    bool borrowed = false, compact = false;
+     dpct::queue_ptr cs = &dpct::get_in_order_queue(),
+                     copy = &dpct::get_in_order_queue();
+     Gemm gemm;
+@@ -672,17 +672,52 @@
+ // of the largest holds them all.  That is ~260 KB of the ~680 KB a prompt token cost - which is what lets a chunk
+ // grow (every expert is streamed once per chunk, so a bigger chunk streams fewer bytes per token).  The sizes are
+ // counted with the same `take` sequence `init` uses; a mismatch makes `init` fail with "do not fit", never overlap.
+-uint64_t gdn_set_bytes(size_t T) {
++bool compact_prefill();
++
++// These three float images are consumed in order: embedding, mixed input, half output.
++// Count and carve the compact base with the same allocation sequence.
++template <typename V>
++void compact_take(Alloc& a, Prefill::Impl* m, V* Prefill::Impl::*field, size_t n, bool& ok) {
++    V* value = a.take<V>(n, ok);
++    if (m) m->*field = value;
++}
++void take_compact_base(Alloc& a, Prefill::Impl* m, size_t T, bool& ok) {
++    float* image = a.take<float>(T * N, ok);
++    if (m) m->emb = m->mixed = m->bo = image;
++    auto take = [&](auto field, size_t n) { compact_take(a, m, field, n, ok); };
++    take(&Prefill::Impl::R, T * D);
++    if (gr_unfused()) take(&Prefill::Impl::xn, T * D);
++    else if (m) m->xn = nullptr;
++    take(&Prefill::Impl::grs, T * HC);
++    take(&Prefill::Impl::xn16, T * D);
++    take(&Prefill::Impl::lo, T * LR);
++    take(&Prefill::Impl::lo16, T * LR);
++    take(&Prefill::Impl::gated, T * D);
++    take(&Prefill::Impl::inj, T * HC);
++    take(&Prefill::Impl::mixed_bf, T * N);
++    take(&Prefill::Impl::mixed_h, T * N);
++    if (bf16x2_hc()) {
++        take(&Prefill::Impl::xn16_lo, T * D);
++        take(&Prefill::Impl::lo16_lo, T * LR);
++    }
++    if (bf16x2()) take(&Prefill::Impl::mixed_bf_lo, T * N);
++    take(&Prefill::Impl::steps_dev, T * strata::kernels::kStepCount);
++}
++
++uint64_t gdn_set_bytes(size_t T, bool compact = false) {
+     Alloc a; a.count_only = true; bool ok = true;
+     a.take<float>(T * C, ok); a.take<float>(T * ZV, ok); a.take<float>(T * 2 * HV, ok); a.take<float>(T * HV, ok);
+-    a.take<float>(T * HV, ok); a.take<float>(T * C, ok); a.take<float>(T * ZV, ok); a.take<uint16_t>(T * ZV, ok);
++    a.take<float>(T * HV, ok); a.take<float>(T * C, ok);
++    if (!compact) { a.take<float>(T * ZV, ok); a.take<uint16_t>(T * ZV, ok); }
+     return a.used;
+ }
+ uint64_t qsa_set_bytes(size_t T, int64_t cap, int64_t max_blocks, int64_t sel_batch, int64_t attn_batch,
+-                       const strata::kernels::QsaShapes& s) {
++                       const strata::kernels::QsaShapes& s, bool compact = false) {
+     Alloc a; a.count_only = true; bool ok = true;
+     a.take<float>(T * 512, ok); a.take<float>(T * 512, ok); a.take<float>(T * 12288, ok); a.take<float>(T * ZV, ok);
+-    a.take<float>(T * 128, ok); a.take<float>(T * 512, ok); a.take<float>(T * ZV, ok); a.take<uint16_t>(T * ZV, ok);
++    a.take<float>(T * 128, ok); a.take<float>(T * 512, ok);
++    if (!compact) a.take<float>(T * ZV, ok);
++    a.take<uint16_t>(T * ZV, ok);
+     a.take<int32_t>(T * (size_t) cap, ok);
+     a.take<float>((size_t) sel_batch * (size_t) max_blocks, ok);
+     a.take<float>((size_t) attn_batch * strata::kernels::qsa_decode_attn_scratch_floats(cap, s), ok);
+@@ -747,6 +782,19 @@
+     }();
+     return plan;
+ }
++bool compact_prefill() {
++    static const bool requested = [] {
++        const char* value = std::getenv("STRATA_PREFILL_COMPACT");
++        return value && std::atoi(value) == 1;
++    }();
++    if (!requested) return false;
++    const auto& plan = mmq_plan();
++    const char* xmx = std::getenv("STRATA_PROMPT_ATTN_XMX");
++    // MMQ/fused experts need their full grouping arrays; NaN diagnostics inspect full expert intermediates.
++    // The scalar attention split finishes reading a batch's query before the merge writes that batch's output.
++    return plan.fallback && !plan.any && std::getenv("STRATA_DBG_NAN") == nullptr &&
++           (std::getenv("STRATA_PROMPT_ATTN_OLD") != nullptr || !xmx || std::atoi(xmx) == 0);
++}
+ // #136 P3: a layout whose chunks run the fused experts (STRATA_PF_FUSED=1, the Q2_0 pack, a streamed chunk of
+ // stream_all_min() tokens or more).  Its GU, H and Xq hold only the fused path's grouping tables, int8 H and per-token
+ // int8 activations, and Hq nothing: ~100 KB a token less than MMQ's FP32 GU / H and per-slot q8_1 rows, which is what
+@@ -759,7 +807,8 @@
+ // The MoE buffers MMQ and the fused path share: GU and H in floats, Xq and Hq in bytes.  Without `fused` (the
+ // default): MMQ's, for T tokens.
+ struct MoeBufs { size_t gu, h, xq, hq; };
+-MoeBufs moe_bufs(size_t T, int64_t n_expert, bool fused) {
++MoeBufs moe_bufs(size_t T, int64_t n_expert, bool fused, bool compact = false) {
++    if (compact) return {T * 1280, T * 640, 0, 0};
+     if (!fused) return {T * K * 1280, T * K * 640, mmq::q8_bytes((int64_t) (T * K), N), mmq::q8_bytes((int64_t) (T * K), 640)};
+     const size_t ts = (size_t) std::min<int64_t>((int64_t) T, stream_all_min() - 1);   // MMQ's last small chunk
+     return {std::max(ts * K * 1280, (fused::group_bytes((int64_t) (T * K), (int) n_expert) + 3) / 4),
+@@ -767,15 +816,15 @@
+             std::max(mmq::q8_bytes((int64_t) (ts * K), N), fused::act_bytes((int64_t) T, N)),
+             mmq::q8_bytes((int64_t) (ts * K), 640)};
+ }
+-uint64_t moe_set_bytes(size_t T, int64_t n_expert, bool fused) {
++uint64_t moe_set_bytes(size_t T, int64_t n_expert, bool fused, bool compact = false) {
+     const MmqPlan& mp = mmq_plan();
+-    const MoeBufs mb = moe_bufs(T, n_expert, fused);
++    const MoeBufs mb = moe_bufs(T, n_expert, fused, compact);
+     Alloc a; a.count_only = true; bool ok = true;
+     a.take<float>(T * n_expert, ok); a.take<float>(T * K, ok); a.take<int32_t>(T * K, ok); a.take<int32_t>(T * K, ok);
+     a.take<int32_t>(T * K, ok);
+-    if (mp.fallback) a.take<uint16_t>(T * K * N, ok);
++    if (mp.fallback) a.take<uint16_t>(T * (compact ? 1 : K) * N, ok);
+     a.take<float>(mb.gu, ok);
+-    if (mp.fallback) a.take<uint16_t>(T * K * 640, ok);
++    if (mp.fallback) a.take<uint16_t>(T * (compact ? 1 : K) * 640, ok);
+     a.take<float>(T * K * N, ok); a.take<float>(T * 640, ok);
+     a.take<float>(T * 640, ok); a.take<uint16_t>(T * 640, ok); a.take<float>(T * N, ok); a.take<float>(T, ok);
+     if (mp.any) {
+@@ -795,6 +844,10 @@
+     Impl& m = *impl_;
+     m.wt = &wt; m.g = &g; m.ss = &ss; m.src = src; m.cache = cache; m.host_res = host_res;
+     m.T = chunk; m.cs = strata::q_of(stream); m.stats = &stats_;
++    if (compact_prefill() && !m.cs->is_in_order()) {
++        err = "prefill: compact workspace requires an in-order queue";
++        return false;
++    }
+     if (g.n_embd != N || g.hc != HC || g.hc_lr != LR || g.n_expert < 1 || ss.k != K) {
+         err = "prefill: geometry differs from the artifact's"; return false;
+     }
+@@ -988,16 +1041,21 @@
+     const core::ModelGeometry& g = *m.g;
+     core::SessionState& ss = *m.ss;
+     bool ok = true;
+-    m.emb = o.take<float>(T * N, ok); m.R = o.take<float>(T * D, ok);
+-    m.xn = gr_unfused() ? o.take<float>(T * D, ok) : nullptr;   // F-1: not needed (gr_mix_r reads R)
+-    m.grs = o.take<float>(T * HC, ok);
+-    m.xn16 = o.take<uint16_t>(T * D, ok); m.lo = o.take<float>(T * LR, ok); m.lo16 = o.take<uint16_t>(T * LR, ok);
+-    m.gated = o.take<float>(T * D, ok); m.inj = o.take<float>(T * HC, ok);
+-    m.mixed = o.take<float>(T * N, ok); m.mixed_bf = o.take<uint16_t>(T * N, ok);
+-    m.mixed_h = o.take<uint16_t>(T * N, ok); m.bo = o.take<float>(T * N, ok);
+-    if (bf16x2_hc()) { m.xn16_lo = o.take<uint16_t>(T * D, ok); m.lo16_lo = o.take<uint16_t>(T * LR, ok); }
+-    if (bf16x2()) m.mixed_bf_lo = o.take<uint16_t>(T * N, ok);
+-    m.steps_dev = o.take<int32_t>(T * strata::kernels::kStepCount, ok);
++    m.compact = compact_prefill();
++    if (m.compact) {
++        take_compact_base(o, &m, T, ok);
++    } else {
++        m.emb = o.take<float>(T * N, ok); m.R = o.take<float>(T * D, ok);
++        m.xn = gr_unfused() ? o.take<float>(T * D, ok) : nullptr;   // F-1: not needed (gr_mix_r reads R)
++        m.grs = o.take<float>(T * HC, ok);
++        m.xn16 = o.take<uint16_t>(T * D, ok); m.lo = o.take<float>(T * LR, ok); m.lo16 = o.take<uint16_t>(T * LR, ok);
++        m.gated = o.take<float>(T * D, ok); m.inj = o.take<float>(T * HC, ok);
++        m.mixed = o.take<float>(T * N, ok); m.mixed_bf = o.take<uint16_t>(T * N, ok);
++        m.mixed_h = o.take<uint16_t>(T * N, ok); m.bo = o.take<float>(T * N, ok);
++        if (bf16x2_hc()) { m.xn16_lo = o.take<uint16_t>(T * D, ok); m.lo16_lo = o.take<uint16_t>(T * LR, ok); }
++        if (bf16x2()) m.mixed_bf_lo = o.take<uint16_t>(T * N, ok);
++        m.steps_dev = o.take<int32_t>(T * strata::kernels::kStepCount, ok);
++    }
+     strata::kernels::QsaShapes s = strata::kernels::qsa_real_shapes();
+     s.n_head = g.n_head; s.n_head_kv = g.n_head_kv; s.head_dim = g.head_dim; s.idx_n_head = g.idx_q_heads;
+     s.idx_dim = g.idx_key_dim;
+@@ -1006,9 +1064,10 @@
+     {
+         // one region for the attention half's and the MoE half's scratch (see gdn_set_bytes)
+         const bool fz = fused_layout(T, m.src != nullptr);
+-        const MoeBufs mb = moe_bufs(T, m.g->n_expert, fz);
+-        const uint64_t region = std::max({gdn_set_bytes(T), qsa_set_bytes(T, m.cap, m.max_blocks, m.sel_batch,
+-                                                                           m.attn_batch, s), moe_set_bytes(T, m.g->n_expert, fz)});
++        const MoeBufs mb = moe_bufs(T, m.g->n_expert, fz, m.compact);
++        const uint64_t region = std::max({gdn_set_bytes(T, m.compact),
++            qsa_set_bytes(T, m.cap, m.max_blocks, m.sel_batch, m.attn_batch, s, m.compact),
++            moe_set_bytes(T, m.g->n_expert, fz, m.compact)});
+         uint8_t* base = o.take<uint8_t>((size_t) region, ok);
+         m.region = base;
+         m.region_bytes = region;
+@@ -1016,12 +1075,21 @@
+         a.base = base; a.cap = region; a.owned = &m.owned;
+         m.qkv = a.take<float>(T * C, ok); m.z = a.take<float>(T * ZV, ok); m.ab = a.take<float>(T * 2 * HV, ok);
+         m.gate = a.take<float>(T * HV, ok); m.beta = a.take<float>(T * HV, ok); m.hbuf = a.take<float>(T * C, ok);
+-        m.y = a.take<float>(T * ZV, ok); m.y_h = a.take<uint16_t>(T * ZV, ok);
++        if (m.compact) {
++            // Conv has consumed qkv before recurrence starts. Keep both recurrence outputs disjoint inside it.
++            static_assert(3 * ZV <= 2 * C);
++            m.y = m.qkv;
++            m.y_h = reinterpret_cast<uint16_t*>(m.qkv + T * ZV);
++        } else {
++            m.y = a.take<float>(T * ZV, ok); m.y_h = a.take<uint16_t>(T * ZV, ok);
++        }
+         Alloc b;
+         b.base = base; b.cap = region; b.owned = &m.owned;
+         m.Kc = b.take<float>(T * 512, ok); m.Vc = b.take<float>(T * 512, ok); m.Qf = b.take<float>(T * 12288, ok);
+         m.q = b.take<float>(T * ZV, ok); m.idx_raw = b.take<float>(T * 128, ok); m.q_idx = b.take<float>(T * 512, ok);
+-        m.attn = b.take<float>(T * ZV, ok); m.attn_h = b.take<uint16_t>(T * ZV, ok);
++        // Each scalar split completes before its merge, which writes only the queries in that batch.
++        m.attn = m.compact ? m.q : b.take<float>(T * ZV, ok);
++        m.attn_h = b.take<uint16_t>(T * ZV, ok);
+         m.sel_ids = b.take<int32_t>(T * (size_t) m.cap, ok);
+         m.sel_scores = b.take<float>((size_t) m.sel_batch * (size_t) m.max_blocks, ok);
+         m.attn_scratch = b.take<float>((size_t) m.attn_batch * strata::kernels::qsa_decode_attn_scratch_floats(m.cap, s), ok);
+@@ -1030,9 +1098,9 @@
+         m.logits = c.take<float>(T * m.g->n_expert, ok); m.w = c.take<float>(T * K, ok); m.ids = c.take<int32_t>(T * K, ok);
+         m.slot_dev = c.take<int32_t>(T * K, ok); m.src_dev = c.take<int32_t>(T * K, ok);
+         const MmqPlan& mp = mmq_plan();
+-        m.Xs = mp.fallback ? c.take<uint16_t>(T * K * N, ok) : nullptr;
++        m.Xs = mp.fallback ? c.take<uint16_t>(T * (m.compact ? 1 : K) * N, ok) : nullptr;
+         m.GU = c.take<float>(mb.gu, ok);
+-        m.Hh = mp.fallback ? c.take<uint16_t>(T * K * 640, ok) : nullptr;
++        m.Hh = mp.fallback ? c.take<uint16_t>(T * (m.compact ? 1 : K) * 640, ok) : nullptr;
+         m.Dm = c.take<float>(T * K * N, ok);
+         m.sgate = c.take<float>(T * 640, ok); m.sup = c.take<float>(T * 640, ok); m.sh_h = c.take<uint16_t>(T * 640, ok);
+         m.shared = c.take<float>(T * N, ok); m.sg = c.take<float>(T, ok);
+@@ -1064,6 +1132,10 @@
+     m.ple_norm = o.take<float>((size_t) strata::kernels::NG_HC_DIM, ok);
+     take_stage(o, ss, s, m.stage, ok);
+     m.T = (int64_t) T;
++    if (ok && std::getenv("STRATA_PREFILL_COMPACT") != nullptr)
++        std::fprintf(stderr, "strata prefill: %s layout for %zu tokens: %llu accounted bytes, %llu shared workspace bytes\n",
++                     m.compact ? "compact" : "original", T, (unsigned long long) o.used,
++                     (unsigned long long) m.region_bytes);
+     return ok;
+ }
+ 
+@@ -1462,18 +1534,24 @@
+     o.take<uint16_t>((size_t) GEMM_SCRATCH, ok);
+     o.take<uint8_t>(GEMM_WS, ok);
+     auto f = [&](size_t n) { o.take<float>(n, ok); };
+-    f(T * N); f(T * D); f(T * D); o.take<uint16_t>(T * D, ok); f(T * LR); o.take<uint16_t>(T * LR, ok);
+-    f(T * D); f(T * HC); f(T * N); o.take<uint16_t>(T * N, ok); o.take<uint16_t>(T * N, ok); f(T * N);
+-    if (bf16x2_hc()) { o.take<uint16_t>(T * D, ok); o.take<uint16_t>(T * LR, ok); }
+-    if (bf16x2()) o.take<uint16_t>(T * N, ok);
+-    o.take<int32_t>(T * strata::kernels::kStepCount, ok);
++    const bool compact = compact_prefill();
++    if (compact) {
++        take_compact_base(o, nullptr, T, ok);
++    } else {
++        f(T * N); f(T * D); f(T * D); o.take<uint16_t>(T * D, ok); f(T * LR); o.take<uint16_t>(T * LR, ok);
++        f(T * D); f(T * HC); f(T * N); o.take<uint16_t>(T * N, ok); o.take<uint16_t>(T * N, ok); f(T * N);
++        if (bf16x2_hc()) { o.take<uint16_t>(T * D, ok); o.take<uint16_t>(T * LR, ok); }
++        if (bf16x2()) o.take<uint16_t>(T * N, ok);
++        o.take<int32_t>(T * strata::kernels::kStepCount, ok);
++    }
+     strata::kernels::QsaShapes s = strata::kernels::qsa_real_shapes();
+     s.n_head = g.n_head; s.n_head_kv = g.n_head_kv; s.head_dim = g.head_dim; s.idx_n_head = g.idx_q_heads;
+     s.idx_dim = g.idx_key_dim;
+     const int64_t cap = strata::kernels::qsa_selection_width(strata::kernels::kTopkMaxCells, s);
+     const int64_t max_blocks = ss.qsa_states[ss.qsa_primary()].max_cells / s.idx_block + 2;
+-    o.take<uint8_t>((size_t) std::max({gdn_set_bytes(T), qsa_set_bytes(T, cap, max_blocks, 256, prompt_attn_batch(T), s),
+-                                       moe_set_bytes(T, g.n_expert, fused_layout(T, true))}), ok);
++    o.take<uint8_t>((size_t) std::max({gdn_set_bytes(T, compact),
++        qsa_set_bytes(T, cap, max_blocks, 256, prompt_attn_batch(T), s, compact),
++        moe_set_bytes(T, g.n_expert, fused_layout(T, true), compact)}), ok);
+     for (int i = 0; i < DQ; ++i) { o.take<uint16_t>(1280 * 2560, ok); o.take<uint16_t>(2560 * 640, ok); }
+     if (mmq_plan().any) {
+         const MmqPlan& mp = mmq_plan();
+@@ -2882,7 +2960,7 @@
+                                 m.cs->memcpy(m.bounds_dev, m.bounds_host.data(),
+                                              m.bounds_host.size() * 4);
+                             }
+-                        } else {
++                        } else if (!m.compact) {
+                             gather_rows16(m.mixed_h, m.src_dev, m.Xs, T * K, N, m.cs);
+                         }
+                         // multi-GPU: the peer's share, enqueued before the primary's own experts so both cards work at once
+@@ -3381,11 +3459,17 @@
+                                 m.used_of[slot] = slot;
+                             }
+                             const int64_t o0 = m.off[(size_t) e], ne = m.cnt[(size_t) e];
++                            if (m.compact) {
++                                if (ne > m.T) { err = "prefill: compact expert rows exceed the workspace"; return false; }
++                                pt.mark(kPfGather, cs);
++                                gather_rows16(m.mixed_h, m.src_dev + o0, m.Xs, ne, N, m.cs);
++                            }
++                            const int64_t scratch_row = m.compact ? 0 : o0;
+                             pt.mark(kPfGemmGU, cs);
+-                            m.gemm.f16(m.Xs + o0 * N, m.dq_gu[q], m.GU + o0 * 1280, ne, 1280, N);
+-                            swiglu_interleaved(m.GU + o0 * 1280, m.Hh + o0 * 640, ne, m.cs);
++                            m.gemm.f16(m.Xs + scratch_row * N, m.dq_gu[q], m.GU + scratch_row * 1280, ne, 1280, N);
++                            swiglu_interleaved(m.GU + scratch_row * 1280, m.Hh + scratch_row * 640, ne, m.cs);
+                             pt.mark(kPfGemmD, cs);
+-                            m.gemm.f16(m.Hh + o0 * 640, m.dq_d[q], m.Dm + o0 * N, ne, N, 640);
++                            m.gemm.f16(m.Hh + scratch_row * 640, m.dq_d[q], m.Dm + o0 * N, ne, N, 640);
+                             return true;
+                         }
+                         catch (sycl::exception const &exc) {
