@@ -24,3 +24,38 @@ later route-to-prefix adapter needs pinned data/provenance and a frozen
 objective; live cache changes additionally need separate32K/full262144 math,
 phase-specific timing, repeated clean processes and independent holdout inputs.
 The original C/D full-context failures and all adoption gates remain unchanged.
+
+## Closed trace selection
+
+The separate source-only Sol adapter pins the existing reader/DP, exact closed
+r6 receipt, whole raw log and intervals, profile ordering and type metadata. It
+requires all three cleanup flags to be present and literal false, correcting
+the old generic reader's missing-map admission gap at this caller. It validates
+all512 profile ranks and explicitly uses only the first128 for a128-slot budget.
+
+The count objective was fixed before execution to routed entries N. Fit uses
+only A-read0; the candidate is frozen before B is scored. Seven independent
+literal fixture methods and the actual closed-input CLI both passed with exit0
+in1.058s total under the shared lock. No model payload or retired candidate
+tensor was opened; no GPU work, new inference, cleanup or survivor occurred.
+The original r6 receipt remains byte-identical.
+
+| Captured request | Default entries covered | Frozen candidate entries covered | Total route entries |
+| --- | ---: | ---: | ---: |
+| A-read0, fit fixture |2116|3175|42720|
+| B-read1, separate diagnostic fixture |1874|2504|48480|
+| A-read2, repeat |2116|3175|42720|
+| B-read3, repeat |1874|2504|48480|
+
+All candidate quotas and per-request curve/canonical-pair hashes are preserved
+in trace/actual-trace.json. A/B are two diagnostic prompt fixtures repeated.
+B has not been established as an independent holdout set. The selected quota
+is exact only for the stated captured count objective and rank-prefix policy.
+Changing live residency can change numerical routes; no config is written and
+no policy adopted. Counts do not establish service time, traffic or latency.
+
+Next live work must preserve the R59 cache/map/backing/graph/phase contracts and
+verify32K and physical262144 lifecycle before performance/adoption. Independently
+calibrate actual native Down20 NT1 and Down42 service before weighted selection;
+the current service costs are unknown. Retain one r6 raw log for the named
+static-prefix count/data-selection consumer, then review it once superseded.
