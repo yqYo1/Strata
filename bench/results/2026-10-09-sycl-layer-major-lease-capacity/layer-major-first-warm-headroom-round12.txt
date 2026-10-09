@@ -1,0 +1,54 @@
+# Layer-major first-warm headroom and decode-workspace lifetimes (round 12)
+
+調査日: 2026-10-09  
+凍結対象C: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-layer-major-streamed-kv-v0141-20261009, HEAD 6cdf81078128488e5797afb9e92824b7ebe51124, source SHA 92b849df3e19ad77a8a56927cae48cd91d4be0f73f4edc1ff189d2177c0cd8c1。  
+registry-v16 SHA-256 49ce18a297871417ef65f8316094daae668f628188a376f0f68627a32bb3452a。current report directoryとretention policy docs-sycl-storage-retention-20261009/docs/ARTIFACT_RETENTION.mdを確認した。R10, R11, R7、および root review v11 (/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-09-sycl-layer-major-lease-capacity/research-root-review-v11.txt) を参照した。  
+新しいA/B/A/B receipt SHA-256 f54eb757d9553403b59a3f72eb07b036c5d90068f57466b1c97f629b7003b7b2を検証した。receiptはcompleted=true, math_gate_passed=true, healthy=true、cleanupにsurvivorなし、release cache/draftおよびRAM verifyのenvが有効。  
+このレポートはソースと小さな構造化receipt、一次資料のread-only確認だけ。新しい実行、測定、build/test、source変更はしていない。
+
+## 結論
+
+新しい32K A/B/A/B試験は、main-cache RAM leaseとMTP decode-weight RAM leaseを有効にして、対象のstreamed layer-major経路が正常完了し、math gate/no-faultを通った。これはこの構成でleaseを使えることを示すが、262144位置までの容量/正当性は示さない。
+
+提示されたfree-memoryカウンター差から、first warmが約1.28 GBを追加で確保したとは断定できない。初回main-cache restore + Verifier graph rebuildの区間でfree bytesが1,280,585,728 B低下したという区間観測はあるが、ソースではmain cacheの物理restore要求は約402,653,184 B、MTP expert/head restoreは約939,524,096 B。観測区間と複数のrestore/captureが重なり得るので、counter差をgraph単体の割当てやleakに帰属させない。後続の約403–408 MiB差はmain cacheの物理量に近いが、一致だけでは原因を証明しない。最初のbefore-lease 1,571,250,176 B、次の496,001,024 B、後続requestの約20 MB driftも、allocator単位の内訳がない以上は要因未確定である。
+
+R10のlayer-major前に保有するprompt Prefill workspaceは1,861,857,536 Bという既存source accountingと、release leaseの実装を重複提案しない。NativeHead::scratch_とMTP decode scratchはprompt中に使われない箇所を特定できるが、重量は実測されておらず、receiptのGB級変化を説明する候補としては根拠不足。MTPのdense tensorsとdraft QSA K/Vはprompt draft_kvのため保持必須。MTP expert/headとmain expert cacheのleaseは既存機能で、今回成功した。
+
+## 実行結果の範囲と前回失敗との区別
+
+新しいreceiptは4fresh 32K A/B/A/B、normal math、lease payload verificationを通過した診断試験である。rootが示したメモリ計測では、main cache physical growth 402,653,184 B、MTP expert/head 939,524,096 B、layer cache 1,363,148,800 B。first main restore + Verifier recapture区間のfree counter減少1,280,585,728 Bは、その合計が必ずその区間に割り当てられたことを意味しない。全roundで別メモリを初回確保した可能性も残る。
+
+前のR10記録9f76562cc4ced2a60363e7b01b31cfd6da4bbfde8abc62c45c0abe737027f0a1は異なるenvで、release hooksが有効と確認できず、2回目にlayer cacheの容量割当てが失敗した。今回のreceiptと合算・置換しない。R10の容量失敗を今回のgraph lifecycle故障とみなす根拠はない。同じsignal名だけでcauseをgroupしないretention policyにも従う。
+
+## 所有者・寿命のsource確認
+
+### NativeHead
+
+NativeHead::load()はoutput.weightと1-row Q8_1量子化scratchをdevice allocationし、weightsをuploadする (sycl/src/core/native_head.cpp:25-105)。scratch_の要求はnative_q8_1_bytes(n_in,1)で、型/行長依存の一行bufferである。NativeHead::run()はこのscratchをquantize/MMVQで使い (:107-145)、destructorがweightとscratchをfreeする (:19-23)。serveのVerifierは別のarena中のxq_を使ってhead GEMM (verify.cpp:1584-1585)。MTPも独自xq_ / head_logits_を使う (mtp.cpp:1249-1257)。従ってNativeHead scratchはdecodeでは通常Verifier/MTP scratchと別経路だが、NativeHead weightそのものは出力計算で使うため解放対象でない。NativeHead scratchをlazyにしても数GBを回収する仮説にはならない。
+
+### Verifier
+
+Verifier::init()はdecode用device arenaを一括carveしarena_に保持する (verify.cpp:515-575)。中にはactivation/q8, QSA/GDN work arrays, MoE route/scratch, head mixed/logits, sampling scratchがある。Serveではprompt後にwarmする (generate.cpp:12285-12296); cache lease時はVerifierのcache-dependent executable graphsを退避し、restore後にrebuild_cache_graphs()がwarm()を呼ぶ (verify.cpp:3832-3868; R11のgraph/address監査も参照)。Arenaはgraph executableではなく、そのkernel pointerがgraphへcaptureされるため、warm後の単純free/reallocは無効。
+
+### MTP
+
+MtpDrafter::load()はMTP dense weightsとexperts、draft QSA state/KVを別々に作る (mtp.cpp:370-505)。Prompt callbackのPrefill::draft_kvはdense projection tensorsと自身のPrefill::Impl::regionを使ってdraft Q/K/V stateを計算する (R7: prefill.cpp:1444-1655, caller generate.cpp:7595-7604,11700-11707)。従ってdense weights、MTP Q/K/V stateはprompt中に必要である。MTP experts/headはprompt draft_kvで使わず、現行STRATA_PREFILL_RELEASE_DRAFT hookがgraphを捨て、RAMから保持した同じweight imageをprefill後に戻す既存機構である (mtp.cpp:212-279)。
+
+別にMtpDrafter::load()はdecode専用workspace arena_をcarveする (mtp.cpp:530-589): token/step/position, ID map, residuals, Q/K/V/attention, MoE scratch, sampling arrays。Decode-only head_logits_はbind()でmax_t*n_vocab*sizeof(float)として追加確保 (:837-855); coupled sampler buffersはopt-inでbind時に確保 (:735-758)。これらのworkspaceはdraft()で消費されるがprompt draft_kvはPrefill内で別scratchを使う。ただし、このworkspaceの正確な実容量は今回のreceiptに記録されず、GB級かどうか不明。安易に解放して得られる容量を見積もらない。
+
+## 新規の候補（最大2つ、どちらも未測定）
+
+1. **MTP decode scratchの遅延確保。** MTP arena_, head_logits_, coupled sampler buffersを初回mtp.warm()/draft()直前に作り、prompt中は未確保にする設計を個別検討できる。残すものはMTP dense, QSA K/V state, host draft state、Prefill::draft_kvのregionとcallback。draft graphをwarmする前に全bufferの確保を完了させる。これは既存のexpert/head weight leaseとは別のlifetimeであり、同じscratch pointerを捕捉したgraphがあれば先にdrain/deleteが必要。正確なrequested bytesを記録し、このallocation群の不在でlayer-cache allocation headroomがどれだけ変わるか、first-warm後のrestoreとdecodeがどうなるかをA/Bで測る。容量測定で有意な大きさがなければ採用しない。
+2. **Verifier decode workspace/graphのdemand allocationを調べる。** Prompt中にVerifier device arenaはdecode専用だが、MtpDrafter::bind(..., ver.final_R_all())がVerifier storageへのpointerを保持する (generate.cpp:12096-12101)。arenaを遅延/再確保するなら、このpointerをdecode開始前に新addressへ更新し、Verifier/MTP executable graphをcapture前に作り直す必要がある。現行Verifier warm()はcache restore後のrebuildから呼ばれるため、graph objectの退避だけではVerifier arenaのlifetimeを遅らせない。次の狭い確認はcount.usedとfree-memoryをVerifier arena allocの前後でroot計測し、R11のgraph-retire orderingを保ったままMTP window pointerを再bindできるかをsource review/test planにすること。bytesの大きさ/実利益が不明なまま変更しない。
+
+**除外:** NativeHead output.weightはdecode必須、NativeHeadの1-row scratchは小さなquant buffer。MTP denseとdraft K/V stateはprompt draft_kv必須。main-cache / MTP expert-head RAM lease、prompt Prefill reset/lazy reinit、graph pointer re-captureも既報/実装済みで、このroundの新提案として重ねない。
+
+## 外部の一次資料と適用範囲
+
+Intel SYCL Graph Usage Guideは、graph-owned temporary allocationをgraph lifetimeに紐づけ、graph上の依存関係に従ってruntimeがmemoryを再利用できる設計を説明する (https://github.com/intel/llvm/blob/sycl/sycl/doc/syclgraph/SYCLGraphUsageGuide.md#graph-owned-memory-allocations)。またdynamic graph parameterでkernel pointer引数を更新できるが、既存の依存関係は変わらない。これはSYCL拡張の使い方の資料であり、StrataのDPCT capture pathやB570/Level Zeroで実際に解放を回収する保証ではない。
+
+vLLMの公式CUDA graph pool資料は、graph capture poolを通常のallocator poolと分けて管理し、sleep/offload等のlifetimeを明示する設計例である (https://docs.vllm.ai/en/latest/api/vllm/compilation/cudagraph_pool/)。これはCUDA/vLLM固有でSYCLの挙動を証明しない。ここから得られる実装パターンはgraph poolとmodel/workspace allocationsを所有者別に記録することだけで、Strataの既存Verifier/MTP graph retirementを迂回する根拠にしない。
+
+## rootの次の最小測定
+
+本roundでは実行しない。次回にallocatorの帰属を解くなら、同じC binary/config/sourceで、1) Prefill arena accounting/init直後、2) layer-cache open/close、3) main cache restore、4) Verifier graph rebuild/warm、5) MTP weight restore、6) MTP warm、各境界でfree/total bytesを採り、同時にsource側のexact requested bytesを記録する。毎段階のdeltaを混ぜず、Graph warm有無を変える比較は独立したfresh processで行う。機能比較は32KでA/B/A/Bをまず再現し、full physical context testは別gateにする。262144の最後の有効cell (position 262143)、save count 262144、resume/decodeとMTP K/Vの復元を含めない結果からfull-context qualificationをしない。
