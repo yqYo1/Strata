@@ -50,6 +50,9 @@ The corrected v2 emitted 690 frames / 133,495,872 bytes, leaving 721,856 bytes
 under the 128 MiB cap, and rejected one additional large record before queue
 work. Original v1 receipt, source and failure status are preserved. Its large
 synthetic payload has no remaining consumer; the retirement plan pins it.
+Root subsequently removed it under the lock: 133,495,680 logical bytes and
+133,596,160 file-allocation bytes, with unchanged original receipts. Available
+space change was not measured; see the separate retirement result.
 
 The native profiler target has no application timer or SIGPROF handler. Compile
 and collector exited 0; READY/DONE/BYE completed with no forced cleanup or live
