@@ -63,6 +63,7 @@ inline bool dma_completed(const EventCompletion<sycl::event>& state, uint64_t va
 }
 } // namespace strata
 #include "strata/host_wait.hpp"
+#include "repeat_capture.hpp"
 
 #ifndef STRATA_PREFILL_MMQ
 // A build without the llama.cpp sources (no STRATA_NATIVE_EXPERTS): no MMQ, the FP16 expert path everywhere.
@@ -3536,6 +3537,27 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
             dpct::select_device(pd);
         }
         host_setup_ms += ms_since(tsetup);
+        const bool repeat_capture = detail::RepeatCapture::enabled() && p0 < 98336 && p0 + T > 98304;
+        const int64_t capture_first = repeat_capture ? std::max<int64_t>(p0, 98304) : 0;
+        const int64_t capture_end = repeat_capture ? std::min<int64_t>(p0 + T, 98336) : 0;
+        auto capture = [&](int64_t layer, const char* phase, const void* ptr, int64_t width,
+                           uint64_t type = 1, int64_t first = -1, int64_t count = -1) {
+            if (!repeat_capture || layer < 0 || layer > 12) return true;
+            if (first < 0) first = capture_first;
+            if (count < 0) count = capture_end - first;
+            try {
+                detail::RepeatCapture::instance().record(*m.cs, layer, phase, p0, T, first, count, width, type, ptr);
+                return true;
+            } catch (const std::exception& e) {
+                err = std::string("prefill diagnostic: ") + e.what();
+                std::fprintf(stderr, "strata: %s\n", err.c_str());
+                return false;
+            }
+        };
+        auto capture_rows = [&](int64_t layer, const char* phase, const float* ptr, int64_t width) {
+            if (!repeat_capture || layer < 0 || layer > 12) return true;
+            return capture(layer, phase, ptr + (capture_first - p0) * width, width);
+        };
         bool normed = false;   // F-2: the previous half's write already normed R for this half (grs, xn16)
         // #579 #613 (opt-in diagnosis, STRATA_PF_STEP_SYNC=1): the compute and copy streams are waited for after each
         // step named below, a step that took over 250 ms is logged, and a stall's report names the step it is in.
@@ -3630,6 +3652,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                 }
                 stats_.ms_ple += ms_since(tp);
             }
+            if (!capture_rows(l, "R_input", m.R, D)) return false;
             for (int half = 0; half < 2; ++half) {
                 // ---- the hyper-connection read of this half
                 const char* pre = half == 0 ? "hc_attn_" : "hc_ffn_";
@@ -3847,6 +3870,10 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                                                                 core::qsa_kv_format(st), p0 / s.page_size,
                                                                 (p0 + T + s.page_size - 1) / s.page_size, s, m.cs);
                     }
+                    if ((l == 3 || l == 7 || l == 11) &&
+                        (!capture_rows(l, "K_quant_input", m.Kc, 512) ||
+                         !capture_rows(l, "V_quant_input", m.Vc, 512) ||
+                         !capture_rows(l, "indexer_raw", m.idx_raw, 128))) return false;
                     if (staged && retained_stage) {
                         // kv_append has enqueued writes to host authority, resident slots and the
                         // identity stage. Attention follows on the same in-order compute queue.
@@ -3860,6 +3887,9 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                     if (st.kv_rot) strata::kernels::fwht256_inplace_cuda(m.q, T * 24, m.cs);
                     rms_rows(m.q_idx, (const float*) wiqn->data, T * 4, 128, 128, EPS, m.cs);
                     rope(m.q_idx, T, 4, 128, 512, p0, strata::kernels::rope_scaling(), m.cs);
+                    if ((l == 3 || l == 7 || l == 11) &&
+                        (!capture_rows(l, "query", m.q, ZV) ||
+                         !capture_rows(l, "q_indexer", m.q_idx, 512))) return false;
                     // the indexer appends, token by token; then scores + selection for many queries at once:
                     // a query reads completed blocks (final once completed) and `dead` for its own tail block
                     const strata::kernels::QsaIndexerBuffers ib{st.idx_tail, st.idx_dead, st.idx_pooled, st.idx_block_pos};
@@ -3894,11 +3924,28 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                                                                              m.cs, active))
                             strata::kernels::qsa_block_scores(st.idx_pooled, st.idx_dead, m.q_idx + t0 * 512, steps0, nb,
                                                               m.max_blocks, s, m.sel_scores, m.cs, active);
+                        if (repeat_capture && (l == 3 || l == 7 || l == 11)) {
+                            for (int64_t t = std::max<int64_t>(t0, capture_first - p0);
+                                 t < std::min<int64_t>(t0 + nb, capture_end - p0); ++t) {
+                                const int64_t blocks = m.steps_host[(size_t) (t * strata::kernels::kStepCount + strata::kernels::kStepNBid)] + 1;
+                                if (blocks <= 0 || blocks > m.max_blocks) { err = "repeat capture: invalid active score width"; return false; }
+                                if (!capture(l, "scores", m.sel_scores + (t - t0) * m.max_blocks, blocks, 1, p0 + t, 1)) return false;
+                            }
+                        }
                         if (!prompt_topk_variant() ||
                             !strata::kernels::qsa_block_topk_prompt_variant(m.sel_scores, steps0, nb, m.max_blocks,
                                                                           m.cap, s, m.sel_ids + t0 * m.cap, m.cs, active))
                             strata::kernels::qsa_block_topk(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,
                                                             m.sel_ids + t0 * m.cap, m.cs, active);
+                    }
+                    if (repeat_capture && (l == 3 || l == 7 || l == 11)) {
+                        for (int64_t t = capture_first - p0; t < capture_end - p0; ++t) {
+                            const int64_t width = m.steps_host[(size_t) (t * strata::kernels::kStepCount + strata::kernels::kStepWidth)];
+                            if (width <= 0 || width > m.cap) { err = "repeat capture: invalid selection width"; return false; }
+                            if (!capture(l, "steps", m.steps_dev + t * strata::kernels::kStepCount,
+                                         strata::kernels::kStepCount, 2, p0 + t, 1) ||
+                                !capture(l, "selected_ids", m.sel_ids + t * m.cap, width, 2, p0 + t, 1)) return false;
+                        }
                     }
                     // STRATA_SEL_OVERLAP (debug, D-1's question): how much do neighbouring queries' selections share?
                     // Per tile of 16 queries: the union of their selected cells against the sum of their widths.
@@ -4066,6 +4113,8 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                     if (st.kv_rot || st.kv_hybrid) strata::kernels::fwht256_inplace_cuda(m.attn, T * 24, m.cs);
                     pt.mark(kPfQsa, cs);
                     const int64_t ld_a = pf_pad() && T >= std::max<int64_t>(pf_switch_min_t(), 64) ? ZV + ZV_PAD : 0;
+                    if ((l == 3 || l == 7 || l == 11) &&
+                        !capture_rows(l, "attention_output", m.attn, ZV)) return false;
                     gate_attn(m.attn, m.Qf, m.attn_h, T, m.cs, ld_a);
                     if (!native_proj(m.gemm, wo, m.attn_h, m.bo, T, v.name("attn_output.weight"), err, 0, ld_a)) return false;
                     ++qsa_index;
@@ -5168,6 +5217,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                 }
                 if (steered && !cv_fused)   // --control-vector-scaled
                     strata::kernels::cvec_apply(m.R, l, T, D, nullptr, 0, nullptr, 0, false, m.cs);
+                if (!capture_rows(l, half == 0 ? "R_post_attention_gdn" : "R_post_moe", m.R, D)) return false;
             }
         }
         if (!ple_land()) return false;   // a stage that ends before layer 1: the rows land anyway, the next gather starts
