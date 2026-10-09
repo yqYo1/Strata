@@ -1,0 +1,129 @@
+IQ2_S NT1 isolated index-spread fixture v1 — SOURCE ONLY / UNEXECUTED
+
+Owner and scope
+Root requested this source-only CPU implementation on its precreated worktree
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010
+branch perf/sycl-iq2s-nt1-index-spread-20261010, owner-provided base
+af12591ca840deb4649b703cbb7469fbc2417fc9. No Git command was run or identity changed.
+Only three new assigned-directory files and this report were written. Existing
+native_expert/iq_avx2/dispatch/pool/rootCMake/calibration/receipts were not edited.
+No build/configure/import/preprocess/syntax/test/target/timing/disassembly/profile,
+CPU/GPU query/model-payload/cleanup operation was performed. Python was used only
+as a source-file text editor, never to import or execute fixture code.
+
+Read source/research boundary
+Read R91 iq2s-nt1-single-decoder-candidate-contract-round91.txt, SHA
+0e73687c0142adfa11ae3c477febb1a5ff8edbde57b674423ac32a69255d0fca;
+R85 iq2s-nt1-paired-gu-exact-order-prototype-contract-round85.txt;
+R88 iq2s-nt1-q8k-legal-input-integer-bounds-round88.txt;
+R89 zen3-iq2s-nt1-decoder-instruction-alternatives-round89.txt.
+Shared committed registry-v48 identity was verified by read-only SHA256:
+18a8e56913a3970f278210e7b6176c95ad82913c5d617368d6229c13e43539ac,
+root supplied storage commit dbd17e2387dc452a1ce7dae5e8f7746a019a0a7d.
+Applicable worktree AGENTS and git-workflow skill were read. Explicit source-only
+instructions override automatic commit/build rules. No separate agent was spawned.
+
+New files (relative to W)
+sycl/tools/native-iq2s-nt1-index-spread/CMakeLists.txt
+2434 bytes SHA256 fbbe43744582bcd320349392e3e90f81e7b1299128c76639d4b96de285cb255d
+sycl/tools/native-iq2s-nt1-index-spread/iq2s_index_spread.cpp
+16062 bytes SHA256 fcc26c7a2d8e3d2feff91ee6c33afcd348f5f33be09afffe0ff94d39d06289d9
+sycl/tools/native-iq2s-nt1-index-spread/README.md
+6494 bytes SHA256 67fd7736f31b2eb76d7519ec1116e37f06ca2b5cca4bfbfc61ba1356dbae2105
+Total new worktree source/document bytes 24990. This report's final hash/bytes are
+returned separately, avoiding recursive self-hash fields.
+
+Copy-source identities and provenance
+GGML checkout root supplied cleancommit 3cf03257f219afbe7334045ff7c6a06ac68c627d:
+/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml.
+AVX2 IQ2_S dot, scale shuffle and horizontal tree copied from
+src/ggml-cpu/arch/x86/quants.c SHA256
+3c489fdc77e3ab484a5f188bff9c60c0e9483c951ed65c1a562a04c249d5628e
+(read-only local hash agrees). Table/layout src/ggml-common.h SHA256
+0061131b615c5721fc88a78feeb22c1f8c450f1c2646a317d80796a653bf595c.
+Traits src/ggml-cpu/ggml-cpu.c SHA256
+7b451e6528cec3bc27bfd812a1314859c92d22a00c2db371d543cde5b7d5ca94.
+Production quantizer src/ggml-quants.c SHA256
+07143d7068936ae46b3c528b2f3d4bbb666e74d88992165716174d243573965d.
+Local HiSpread/grid_indices source src/kernels/cpu/iq_avx2.cpp SHA256
+58e9c7e49b8158f698cda59aff06c245f62aaecd33556b1e88e234140890fded
+(read-only local hash agrees). Full GGML MIT copyright/permission copied into new
+C++ source. Table header is included inside isolated_iq2s, with internal linkage.
+
+Mechanism and three arms
+1 Normal pinned IQ2_S CPU trait pointer, checked Q8_K/nrows1 layout contract.
+2 Independent noinline direct_control copy of pinned AVX2 operation schedule.
+3 Independent noinline index_candidate copy changing only grid index formation.
+No shared templated dot wrapper adds another noinline helper call; the two complete
+bodies are separate codegen symbols. Candidate HiSpread spreads two bits into each
+byte of a constexpr256xuint64 table. grid_indices memcpy-loads eight low bytes,
+interleaves high bytes, and writes eight uint16 indices. First four indices alone
+feed scalar iq2s_grid qword loads in original lane order. Even last second-half
+8-byte low read lies inside IQ2_S qs/sign object storage. Candidate introduces two
+8-element temporary arrays and a data-dependent 2KiB table load; these are disclosed
+cost risks, not presumed optimized away.
+
+Both copies retain original block FP16 scale conversion via pinned
+GGML_CPU_FP16_TO_FP32 (x86 table lookup in simd-mappings.h), nibble unpacking,
+sign xor/sub, q8 loads, maddubs/madd, sumi1/sumi2 update order, block int sum/float
+conversion/FMA in increasing block order, exact GGML hsum tree and post0.125.
+Safe shared adaptation: memcpy sign bytes into uint16_t[16] rather than C source
+uint16 pointer alias. This may add scratch or alter emitted memory access and must
+be included in generated-code comparison. No ScaleVecs/gather/pairfusion/pairedQ8
+load, default flag, FP reassociation, worker/dispatcher change is present. Gate/Up
+are independent complete calls with original finish (g/(1.f+exp(-g)))*u.
+
+Independent synthetic fixture contract
+Exhaustive qh256*low256*k4=262144 literal scalar-index comparisons, all1024 indices
+seen, plus65536 exact four-qword grid-vector lane comparisons. Literal scalar
+oracle does not reuse table construction.
+96 profiles = widths256/512/2560/8192 * seeds1/0x12345678/0xdeadbeef *8 patterns;
+16 independent Gate/Up pairs each,1536pairs,9216dots across3arms. Finite zero,
+constant+, alternating±endpoint, half-step with+127 block anchor, ordinary random,
+small/large finite magnitude and immediate nextafter neighbors. LCG uint32
+1664525*x+1013904223 modulo2^32. All weight packed byte fields legal, finite
+nonnegative fp16 scales, zero/max/asymmetric/random nibbles, positive/negative/random
+sign streams. No external weights/captures required or opened.
+
+Pinned production quantize_row_q8_K creates actual prepared Q8 bytes; not handwritten
+rawQ8. Input blocks checked finite, nonzero finite selected scale when nonzero,
+scaled products bounded; quant outputs finite d and no -128. Whole act buffers
+prefilled zero so allzero bsums is deterministic. No NaN/Inf/raw-128/denormal
+robustness fixture is called admitted finite input. Quant-boundary controls anchor
+max127 so iscale=-1 and +/-halfsteps/neighbors are meaningful. This is synthetic
+characterization, not actual/live-model input distribution evidence.
+
+Every Gate/Up/finish result must be finite and bitwise identical to traits baseline.
+Compact CSV: one index line,96profile lines with FNV1a input/weights/Q8/dot identity,
+final pass summary. FNV is not cryptographic mathematical proof. Read/argument,
+allocation/row discrepancy, finite or bitwise error, stdout flush/ferror produces
+nonzero; owner must require normalexit0 and complete expected CSV, not a partial
+pass line. No file input/manifest arm is implemented, so no input race/file budget
+contract is claimed. Fixed width<=8192 and16row profiles; no caller integer can
+increase loop/allocations. No automatic timing occurs.
+
+Build/codegen/testing still UNEXECUTED (owner recipe)
+Use W cwd and shared measurement lock. Exact README recipe:
+cmake -S sycl/tools/native-iq2s-nt1-index-spread -B build-iq2s-index-spread
+ -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DCMAKE_BUILD_TYPE=Release
+ -DGGML_SOURCE_DIR=/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml
+cmake --build build-iq2s-index-spread --target iq2s_index_spread
+./build-iq2s-index-spread/iq2s_index_spread > fixture.csv 2> fixture.stderr
+Commands above are written recipe only, not invoked here. Root freezes source/build/
+binary/compiler/flags/dependency clean commit, CPU placement/FP state and normal
+closure in receipt. Standalone IntelLLVM C++20, -fp-model=precise, candidate AVX2/
+FMA/F16C, GGML_NATIVE=ON staticCPU/Threads/OpenMPOFF. No parentSYCL/GPU archive.
+CMake hashes central GGML files at future configure; root owns full clean closure.
+Proposed owner wall120s/RSS512MiB/output1MiB limits are not actual measured needs.
+Root should run release plus approved sanitizers under serial lock, record all
+96profiles and indexcount/normalexit/fault/cleanup results.
+
+Before any timing root must inspect linked baseline/direct/candidate/fullcallers:
+activeAVX2 baseline, preserved scalar codebook loads/sign/scale/madd/FMA/reduction,
+no gather/reassociation, actual reduced index mask/shift/OR, added table/index/sign
+scratch/spills/hot-helpercalls and call devirtualization. Exact outputs are necessary
+but do not establish codegen/cost identity. Reject mechanism if spills/extra work
+negate it; do not rescue with scale/gather/pairing in the same experiment. No emitted
+instruction claim or speed estimate made from source. Full640row actualweights,
+disjoint cohorts, liveactivation/service timing/modelmath/fullcontext/adoption gates
+remain separate. Original C/D/r5/currentP statuses unchanged.
