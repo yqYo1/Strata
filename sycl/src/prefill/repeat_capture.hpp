@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <cstring>
 #include <mutex>
+#include <memory>
 #include <vector>
 #include <cerrno>
 #include <cstdlib>
@@ -35,6 +36,7 @@ public:
 class RepeatCapture {
     int fd_ = -1;
     uint64_t bytes_ = 0, records_ = 0;
+    bool retirement_unknown_ = false;
     std::mutex mutex_;
     static constexpr uint64_t limit = 128ULL * 1024 * 1024;
     void write_all(const void* p, size_t n) {
@@ -62,6 +64,8 @@ public:
     void record(sycl::queue& queue, int64_t layer, const char* phase, int64_t p0, int64_t T,
                 int64_t rowfirst, int64_t rows, int64_t width, uint64_t type, const void* device) {
         std::lock_guard<std::mutex> lock(mutex_);
+        if (retirement_unknown_)
+            throw std::runtime_error("repeat capture: prior readback completion unknown (diagnostic incomplete)");
         if (rows <= 0 || width <= 0 || (uint64_t) width > limit / 4 / (uint64_t) rows)
             throw std::runtime_error("repeat capture: invalid shape (diagnostic incomplete)");
         const uint64_t elements = (uint64_t) rows * width, size = elements * 4;
@@ -80,17 +84,29 @@ public:
         constexpr uint64_t headerbytes = 12 * 8 + 32;
         if (bytes_ > limit || size + headerbytes > limit - bytes_)
             throw std::runtime_error("repeat capture: 128 MiB budget exceeded (diagnostic incomplete)");
-        std::vector<uint32_t> host((size_t) elements);
+        auto host = std::make_unique<std::vector<uint32_t>>((size_t) elements);
         // Drain prior errors before issuing a copy, and keep its destination alive
         // through completion even if the asynchronous error handler throws.
         queue.wait_and_throw();
-        try { queue.memcpy(host.data(), device, (size_t) size).wait_and_throw(); }
-        catch (...) { queue.wait(); throw; }
+        try { queue.memcpy(host->data(), device, (size_t) size).wait_and_throw(); }
+        catch (...) {
+            try { queue.wait(); }
+            catch (...) {
+                // A failed drain does not prove that the destination retired.
+                // Keep this one bounded allocation until process exit; later
+                // captures cannot issue another readback or reuse its storage.
+                retirement_unknown_ = true;
+                (void) host.release();
+                std::fprintf(stderr, "strata: repeat capture readback completion unknown after failed drain; "
+                                     "destination quarantined until process exit; diagnostic incomplete\n");
+            }
+            throw; // Preserve the original submit/event error after either drain outcome.
+        }
         const uint64_t header[12] = {0x5354524152505431ULL, 1, (uint64_t) layer, (uint64_t) p0,
             (uint64_t) T, (uint64_t) rowfirst, (uint64_t) rows, elements, type, (uint64_t) width,
             records_, headerbytes};
         char name[32]{}; std::strncpy(name, phase, sizeof(name) - 1);
-        write_all(header, sizeof(header)); write_all(name, sizeof(name)); write_all(host.data(), (size_t) size);
+        write_all(header, sizeof(header)); write_all(name, sizeof(name)); write_all(host->data(), (size_t) size);
         bytes_ += headerbytes + size; ++records_;
         std::fprintf(stderr, "strata: repeat capture record=%llu layer=%lld phase=%s row=%lld rows=%lld bytes=%llu\n",
             (unsigned long long) records_, (long long) layer, phase, (long long) rowfirst, (long long) rows,

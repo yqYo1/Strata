@@ -76,3 +76,17 @@ at most2051, 345 frames/request); 721,856 bytes remain under128MiB. This is
 source arithmetic, not runtime budget validation. Extra captures/retries are
 not admitted. The Luna review estimate of115MiB with13MiB headroom is incorrect.
 No build/model/GPU test was run for these corrections.
+
+Root error-retirement correction, 2026-10-09: round19 found that a failed copy
+event wait followed by a throwing fallback queue wait could unwind the local
+destination without proof that the device retired it. The destination now has
+an explicit heap owner. A successful fallback drain releases it normally and
+rethrows the original error. On an unclassified throwing drain, the allocation
+is intentionally retained until process exit and the capture instance rejects
+further readbacks. This keeps at most one bounded record destination (at most
+128MiB by the existing shape check); it has no ordinary destructor that might
+free it before unknown work completes. The original submit/event exception is
+preserved and the failed drain is reported separately. This is a source fix for
+a rare error path, not an observed GPU fault or the known numerical root cause.
+Disabled capture is unchanged. CPU fault injection and a real uniform build
+are still required; no runtime qualification is claimed by this correction.
