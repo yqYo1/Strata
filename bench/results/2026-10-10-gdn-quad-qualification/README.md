@@ -1,0 +1,9 @@
+# GDN quad initial qualification on Arc B570
+
+Root built source 9edf4a5941f029357b2f2d0b19c19bdff4638c06 using IntelLLVM 2026.1, precise FP, SPIR64, default subgroup 32 and per-kernel splitting. All 158 common translation-unit flags match the earlier production recipe. Build v1 failed because the minimal environment omitted oneMKL include paths; its original incomplete/failed receipt is preserved. Corrected v2 used a fresh directory and passed.
+
+Host-only and injected fail-stop probes passed with expected exits 0 and 2, with no destructor marker in the latter and no GPU device-path mentions in the observable strace. The GPU diagnostic suite passed 24 cases, 72 positive SG32 candidate calls and one explicit pre-denial fallback, with bitwise full state and active FP32/FP16 output plus guards. Synthetic 32768 and 262144 prefixes with 2048-token chunk buffers passed 16 and 128 candidate calls, comparing every carry. All runs closed normally with no cleanup or survivors.
+
+These recurrence/norm checks are not model context-capacity, cache/restore, cancellation or inference-lifecycle tests. They are not timings and do not justify adoption. The exact candidate reports local/private/spill memory 1024/0/5056, versus 1536/0/0 for reference. Compiler spill allocation is not measured traffic or latency. Experimental GRF-256 remains disabled; quiet repeated >=32K service comparisons and native-code investigation remain open.
+
+Original controllers and receipts, environments, complete commands, compiler/runtime/source/binary identities and individual correctness outputs are committed. Repetitive successful API histories and compiler warnings are represented by raw path/hash/byte manifests and compact excerpts. Full short API history remains outside Git for the current native-artifact investigation; retention is reviewed when that consumer finishes. Production defaults remain unchanged.

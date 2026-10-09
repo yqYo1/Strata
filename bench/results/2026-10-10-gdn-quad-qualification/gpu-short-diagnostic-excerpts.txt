@@ -1,0 +1,129 @@
+Raw identity: {"path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-quad-initial-gates-v1/gpu-short.stderr", "sha256": "cf262250906c0ff5ae00b54ac7a0ddc1024086387e9a64aa60cf406e51aa2ebc", "bytes": 3643147}
+1: <LOADER>[DEBUG]: Logger loader initialized successfully!
+2: <LOADER>[INFO]: loaded adapter 0x0x35f69830 (/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0) from /opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0
+3:    ---> urAdapterGet
+4: <LEVEL_ZERO>[DEBUG]: zeInit with flags value of 1
+5: [2026-10-10 08:14:41.118] [thread-id: 134240040247744] [info] Loader Version 1.32.0  - No git SHA found, compiled outside git folder.
+6: [2026-10-10 08:14:41.121] [thread-id: 134240040247744] [info] Validation Layer Enabled
+7: [2026-10-10 08:14:41.121] [thread-id: 134240040247744] [info] zeInit succeeded
+8: [2026-10-10 08:14:41.122] [thread-id: 134240040247744] [trace] zeInit(flags)
+9: [2026-10-10 08:14:41.780] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeInit(flags=1)
+10: <LEVEL_ZERO>[DEBUG]: Level Zero Loader version: 1.32.0
+11: <LEVEL_ZERO>[DEBUG]: zeInitDrivers with flags value of 1
+12: [2026-10-10 08:14:41.780] [thread-id: 134240040247744] [trace] zeInitDrivers(pCount, phDrivers, desc)
+13: [2026-10-10 08:14:41.780] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeInitDrivers(pCount=1, phDrivers=nullptr, desc={stype=0x35f68608, flags=1})
+14: [2026-10-10 08:14:41.780] [thread-id: 134240040247744] [trace] zeInitDrivers(pCount, phDrivers, desc)
+15: [2026-10-10 08:14:41.780] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeInitDrivers(pCount=1, phDrivers=nullptr, desc={stype=0x35f68608, flags=1})
+16: [2026-10-10 08:14:41.780] [thread-id: 134240040247744] [trace] zeDriverGet(pCount, phDrivers)
+17: [2026-10-10 08:14:41.780] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGet(pCount=1, phDrivers=nullptr)
+18: [2026-10-10 08:14:41.780] [thread-id: 134240040247744] [trace] zeDriverGet(pCount, phDrivers)
+19: [2026-10-10 08:14:41.780] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeDriverGet(pCount=1, phDrivers=0x3614d890)
+20: [2026-10-10 08:14:41.780] [thread-id: 134240040247744] [trace] zeDeviceGet(hDriver, pCount, phDevices)
+1098: [2026-10-10 08:14:42.629] [thread-id: 134240040247744] [trace] zeModuleCreate(hContext, hDevice, desc, phModule, phBuildLog)
+1099: [2026-10-10 08:14:42.917] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleCreate(hContext=0x36164b18, hDevice=0x3614de38, desc={stype=0x7ffdcba3dfb0, format=0x7ffdcba3dfc0, inputSize=10832, pInputModule=3, pBuildFlags=" -cl-fp32-correctly-rounded-divide-sqrt -ze-opt-level=2", pConstants={numConstants=0, pConstantIds=nullptr, pConstantValues=nullptr}}, phModule=0x36260e48, phBuildLog=0x3622b668)
+1100: [2026-10-10 08:14:42.917] [thread-id: 134240040247744] [trace] zeModuleGetProperties(hModule, pModuleProperties)
+1101: [2026-10-10 08:14:42.917] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleGetProperties(hModule=0x36260e48, pModuleProperties={stype=0x7ffdcba3df20, flags=0})
+1102:    <--- urProgramBuildExp(.hProgram = 0x361e8970, .numDevices = 1, .phDevices = 0x361e47c0 {0x36163140}, .flags = 0, .pOptions = 0x363f7bf0 ( -cl-fp32-correctly-rounded-divide-sqrt -ze-opt-level=2)) -> UR_RESULT_SUCCESS;
+1103:    ---> urProgramRetain
+1104:    <--- urProgramRetain(.hProgram = 0x361e8970) -> UR_RESULT_SUCCESS;
+1105:    ---> urKernelCreate
+1106: [2026-10-10 08:14:42.917] [thread-id: 134240040247744] [trace] zeKernelCreate(hModule, desc, phKernel)
+1107: [2026-10-10 08:14:42.917] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelCreate(hModule=0x36260e48, desc={stype=0x7ffdcba3e940, flags=0, pKernelName="_ZTSN6strata7prefill22GdnRecQuadPipelineSG32E"}, phKernel=0x378ec798)
+1108: [2026-10-10 08:14:42.917] [thread-id: 134240040247744] [trace] zeKernelGetName(hKernel, pSize, pName)
+1109: [2026-10-10 08:14:42.917] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelGetName(hKernel=0x378ec798, pSize=46, pName=nullptr)
+1110: [2026-10-10 08:14:42.917] [thread-id: 134240040247744] [trace] zeKernelGetName(hKernel, pSize, pName)
+1111: [2026-10-10 08:14:42.917] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelGetName(hKernel=0x378ec798, pSize=46, pName="_ZTSN6strata7prefill22GdnRecQuadPipelineSG32E")
+1112: [2026-10-10 08:14:42.917] [thread-id: 134240040247744] [trace] zeKernelGetProperties(hKernel, pKernelProperties)
+1113: [2026-10-10 08:14:42.917] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelGetProperties(hKernel=0x378ec798, pKernelProperties={stype=0x378e4dc8, numKernelArgs=6, requiredGroupSizeX=0, requiredGroupSizeY=0, requiredGroupSizeZ=0, requiredNumSubGroups=0, requiredSubgroupSize=32, maxSubgroupSize=32, maxNumSubgroups=32, localMemSize=1024, privateMemSize=0, spillMemSize=5056, uuid={kid=0, mid=0}})
+1114:    <--- urKernelCreate(.hProgram = 0x361e8970, .pKernelName = 0x35f4d5f0 (_ZTSN6strata7prefill22GdnRecQuadPipelineSG32E), .phKernel = 0x7ffdcba3ec60 (0x37db8350)) -> UR_RESULT_SUCCESS;
+1115:    ---> urKernelSetExecInfo
+1116: [2026-10-10 08:14:42.917] [thread-id: 134240040247744] [trace] zeKernelSetIndirectAccess(hKernel, flags)
+1117: [2026-10-10 08:14:42.917] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetIndirectAccess(hKernel=0x378ec798, flags=7)
+1118:    <--- urKernelSetExecInfo(.hKernel = 0x37db8350, .propName = UR_KERNEL_EXEC_INFO_USM_INDIRECT_ACCESS, .propSize = 1, .pProperties = nullptr, .pPropValue = 0x7ffdcba3ec5f (true)) -> UR_RESULT_SUCCESS;
+1119:    ---> urKernelRetain
+1120:    <--- urKernelRetain(.hKernel = 0x37db8350) -> UR_RESULT_SUCCESS;
+1121:    ---> urKernelGetSubGroupInfo
+1122:    <--- urKernelGetSubGroupInfo(.hKernel = 0x37db8350, .hDevice = 0x36163140, .propName = UR_KERNEL_SUB_GROUP_INFO_SUB_GROUP_SIZE_INTEL, .propSize = 4, .pPropValue = 0x7ffdcba3eed4 (32), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+1123:    ---> urKernelGetGroupInfo
+1124: [2026-10-10 08:14:42.918] [thread-id: 134240040247744] [trace] zeKernelGetProperties(hKernel, pKernelProperties)
+1125: [2026-10-10 08:14:42.918] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelGetProperties(hKernel=0x378ec798, pKernelProperties={stype=0x7ffdcba3ea70, numKernelArgs=6, requiredGroupSizeX=0, requiredGroupSizeY=0, requiredGroupSizeZ=0, requiredNumSubGroups=0, requiredSubgroupSize=32, maxSubgroupSize=32, maxNumSubgroups=32, localMemSize=1024, privateMemSize=0, spillMemSize=5056, uuid={kid=0, mid=0}})
+1126:    <--- urKernelGetGroupInfo(.hKernel = 0x37db8350, .hDevice = 0x36163140, .propName = UR_KERNEL_GROUP_INFO_WORK_GROUP_SIZE, .propSize = 8, .pPropValue = 0x7ffdcba3eed0 (1024), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+1127:    ---> urKernelGetGroupInfo
+1128:    <--- urKernelGetGroupInfo(.hKernel = 0x37db8350, .hDevice = 0x36163140, .propName = UR_KERNEL_GROUP_INFO_PRIVATE_MEM_SIZE, .propSize = 8, .pPropValue = 0x7ffdcba3eed0 (0), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+1129:    ---> urKernelGetInfo
+1130:    <--- urKernelGetInfo(.hKernel = 0x37db8350, .propName = UR_KERNEL_INFO_SPILL_MEM_SIZE, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7ffdcba3eea8 (4)) -> UR_RESULT_SUCCESS;
+1131:    ---> urKernelGetInfo
+1132:    <--- urKernelGetInfo(.hKernel = 0x37db8350, .propName = UR_KERNEL_INFO_SPILL_MEM_SIZE, .propSize = 4, .pPropValue = {5056}, .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+1133:    ---> urKernelGetInfo
+1134:    <--- urKernelGetInfo(.hKernel = 0x37db8350, .propName = UR_KERNEL_INFO_PROGRAM, .propSize = 8, .pPropValue = 0x7ffdcba3eea0 (0x361e8970), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+1230: [2026-10-10 08:14:42.983] [thread-id: 134240040247744] [trace] zeModuleCreate(hContext, hDevice, desc, phModule, phBuildLog)
+1231: [2026-10-10 08:14:43.103] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleCreate(hContext=0x36164b18, hDevice=0x3614de38, desc={stype=0x7ffdcba3db70, format=0x7ffdcba3db80, inputSize=10784, pInputModule=3, pBuildFlags=" -cl-fp32-correctly-rounded-divide-sqrt -ze-opt-level=2", pConstants={numConstants=0, pConstantIds=nullptr, pConstantValues=nullptr}}, phModule=0x361d82b8, phBuildLog=0x37a42c98)
+1232: [2026-10-10 08:14:43.103] [thread-id: 134240040247744] [trace] zeModuleGetProperties(hModule, pModuleProperties)
+1233: [2026-10-10 08:14:43.103] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleGetProperties(hModule=0x361d82b8, pModuleProperties={stype=0x7ffdcba3dae0, flags=0})
+1234:    <--- urProgramBuildExp(.hProgram = 0x37939d00, .numDevices = 1, .phDevices = 0x3621af90 {0x36163140}, .flags = 0, .pOptions = 0x381f7550 ( -cl-fp32-correctly-rounded-divide-sqrt -ze-opt-level=2)) -> UR_RESULT_SUCCESS;
+1235:    ---> urProgramRetain
+1236:    <--- urProgramRetain(.hProgram = 0x37939d00) -> UR_RESULT_SUCCESS;
+1237:    ---> urKernelCreate
+1238: [2026-10-10 08:14:43.103] [thread-id: 134240040247744] [trace] zeKernelCreate(hModule, desc, phKernel)
+1239: [2026-10-10 08:14:43.103] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelCreate(hModule=0x361d82b8, desc={stype=0x7ffdcba3e200, flags=0, pKernelName="_ZTSN6strata7prefill26GdnLegacyPipelineReferenceE"}, phKernel=0x37e8d6b8)
+1240: [2026-10-10 08:14:43.103] [thread-id: 134240040247744] [trace] zeKernelGetName(hKernel, pSize, pName)
+1241: [2026-10-10 08:14:43.103] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelGetName(hKernel=0x37e8d6b8, pSize=50, pName=nullptr)
+1242: [2026-10-10 08:14:43.103] [thread-id: 134240040247744] [trace] zeKernelGetName(hKernel, pSize, pName)
+1243: [2026-10-10 08:14:43.103] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelGetName(hKernel=0x37e8d6b8, pSize=50, pName="_ZTSN6strata7prefill26GdnLegacyPipelineReferenceE")
+1244: [2026-10-10 08:14:43.103] [thread-id: 134240040247744] [trace] zeKernelGetProperties(hKernel, pKernelProperties)
+1245: [2026-10-10 08:14:43.103] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelGetProperties(hKernel=0x37e8d6b8, pKernelProperties={stype=0x37c9cb38, numKernelArgs=6, requiredGroupSizeX=0, requiredGroupSizeY=0, requiredGroupSizeZ=0, requiredNumSubGroups=0, requiredSubgroupSize=32, maxSubgroupSize=32, maxNumSubgroups=32, localMemSize=1536, privateMemSize=0, spillMemSize=0, uuid={kid=0, mid=0}})
+1246:    <--- urKernelCreate(.hProgram = 0x37939d00, .pKernelName = 0x445748 (_ZTSN6strata7prefill26GdnLegacyPipelineReferenceE), .phKernel = 0x7ffdcba3e520 (0x378eb330)) -> UR_RESULT_SUCCESS;
+1247:    ---> urKernelSetExecInfo
+1248: [2026-10-10 08:14:43.103] [thread-id: 134240040247744] [trace] zeKernelSetIndirectAccess(hKernel, flags)
+1249: [2026-10-10 08:14:43.103] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetIndirectAccess(hKernel=0x37e8d6b8, flags=7)
+1250:    <--- urKernelSetExecInfo(.hKernel = 0x378eb330, .propName = UR_KERNEL_EXEC_INFO_USM_INDIRECT_ACCESS, .propSize = 1, .pProperties = nullptr, .pPropValue = 0x7ffdcba3e51f (true)) -> UR_RESULT_SUCCESS;
+23125:    ---> urKernelRelease
+23126: [2026-10-10 08:14:43.756] [thread-id: 134240040247744] [trace] zeKernelDestroy(hKernel)
+23127: [2026-10-10 08:14:43.756] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelDestroy(hKernel=0x362e4eb8)
+23128:    <--- urKernelRelease(.hKernel = 0x381e22c0) -> UR_RESULT_SUCCESS;
+23129:    ---> urKernelRelease
+23130: [2026-10-10 08:14:43.756] [thread-id: 134240040247744] [trace] zeKernelDestroy(hKernel)
+23131: [2026-10-10 08:14:43.756] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelDestroy(hKernel=0x378ec798)
+23132:    <--- urKernelRelease(.hKernel = 0x37db8350) -> UR_RESULT_SUCCESS;
+23133:    ---> urKernelRelease
+23134: [2026-10-10 08:14:43.756] [thread-id: 134240040247744] [trace] zeKernelDestroy(hKernel)
+23135: [2026-10-10 08:14:43.756] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelDestroy(hKernel=0x362bfe58)
+23136:    <--- urKernelRelease(.hKernel = 0x377cf680) -> UR_RESULT_SUCCESS;
+23137:    ---> urKernelRelease
+23138: [2026-10-10 08:14:43.757] [thread-id: 134240040247744] [trace] zeKernelDestroy(hKernel)
+23139: [2026-10-10 08:14:43.757] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelDestroy(hKernel=0x362d4578)
+23140:    <--- urKernelRelease(.hKernel = 0x3643a240) -> UR_RESULT_SUCCESS;
+23141:    ---> urProgramRelease
+23142: [2026-10-10 08:14:43.757] [thread-id: 134240040247744] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+23143: [2026-10-10 08:14:43.757] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x37a42c98)
+23144: [2026-10-10 08:14:43.757] [thread-id: 134240040247744] [trace] zeModuleDestroy(hModule)
+23145: [2026-10-10 08:14:43.757] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x361d82b8)
+23146:    <--- urProgramRelease(.hProgram = 0x37939d00) -> UR_RESULT_SUCCESS;
+23147:    ---> urProgramRelease
+23148: [2026-10-10 08:14:43.757] [thread-id: 134240040247744] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+23149: [2026-10-10 08:14:43.757] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x37f39bc8)
+23150: [2026-10-10 08:14:43.757] [thread-id: 134240040247744] [trace] zeModuleDestroy(hModule)
+23151: [2026-10-10 08:14:43.757] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x378dc5c8)
+23152:    <--- urProgramRelease(.hProgram = 0x37a3a310) -> UR_RESULT_SUCCESS;
+23153:    ---> urProgramRelease
+23154: [2026-10-10 08:14:43.757] [thread-id: 134240040247744] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+23155: [2026-10-10 08:14:43.757] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x3622b668)
+23156: [2026-10-10 08:14:43.757] [thread-id: 134240040247744] [trace] zeModuleDestroy(hModule)
+23157: [2026-10-10 08:14:43.757] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x36260e48)
+23158:    <--- urProgramRelease(.hProgram = 0x361e8970) -> UR_RESULT_SUCCESS;
+23159:    ---> urProgramRelease
+23160: [2026-10-10 08:14:43.757] [thread-id: 134240040247744] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+23161: [2026-10-10 08:14:43.757] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x36158f78)
+23162: [2026-10-10 08:14:43.757] [thread-id: 134240040247744] [trace] zeModuleDestroy(hModule)
+23163: [2026-10-10 08:14:43.757] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x363d3528)
+23164:    <--- urProgramRelease(.hProgram = 0x3621f4b0) -> UR_RESULT_SUCCESS;
+23165:    ---> urProgramRelease
+23166: [2026-10-10 08:14:43.757] [thread-id: 134240040247744] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+23167: [2026-10-10 08:14:43.757] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x361c1da8)
+23168: [2026-10-10 08:14:43.757] [thread-id: 134240040247744] [trace] zeModuleDestroy(hModule)
+23169: [2026-10-10 08:14:43.757] [thread-id: 134240040247744] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x36161948)
+23170:    <--- urProgramRelease(.hProgram = 0x36164cf0) -> UR_RESULT_SUCCESS;
+23171:    ---> urDeviceRelease
+23172:    <--- urDeviceRelease(.hDevice = 0x36163140) -> UR_RESULT_SUCCESS;
+23173:    ---> urAdapterRelease
+23174:    <--- urAdapterRelease(.hAdapter = 0x35f685e0) -> UR_RESULT_SUCCESS;

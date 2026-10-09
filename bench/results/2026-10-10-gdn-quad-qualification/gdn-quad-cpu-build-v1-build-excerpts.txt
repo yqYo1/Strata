@@ -1,0 +1,139 @@
+Raw identity: {"path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-quad-cpu-build-v1/build.stdout", "sha256": "30db80f29cf3ec44af62b5d741cbd160781423cda2926e93f4a5183240cb1d1b", "bytes": 4193857}
+1: [1/119] Building CXX object CMakeFiles/strata_kernels_cpu.dir/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/src/kernels/cpu/expert_layout.cpp.o
+2: [2/119] Building CXX object CMakeFiles/strata_kernels_cpu.dir/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/src/kernels/cpu/q2_avx2.cpp.o
+3: [3/119] Building CXX object CMakeFiles/strata_kernels_cpu.dir/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/src/kernels/cpu/expert.cpp.o
+4: [4/119] Building CXX object CMakeFiles/strata_kernels_cpu.dir/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/src/kernels/cpu/native_expert.cpp.o
+33013: 33 warnings generated.
+33014: [82/119] Building CXX object CMakeFiles/strata_engine.dir/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/src/core/conversation_file.cpp.o
+33015: [83/119] Building CXX object CMakeFiles/strata_prefill.dir/src/prefill/gemm.dp.cpp.o
+33016: FAILED: CMakeFiles/strata_prefill.dir/src/prefill/gemm.dp.cpp.o 
+33017: /opt/intel/oneapi/compiler/2026.1/bin/icpx -DSTRATA_NATIVE_EXPERTS=1 -DSTRATA_SYCL_SAMPLER_FP64=1 -DSTRATA_VERSION=\"0.1.41\" -I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include -I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/../include -I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include -O3 -DNDEBUG -std=c++20 -fsycl -fsycl-default-sub-group-size=32 -fsycl-device-code-split=per_kernel -fp-model=precise -Wno-unused-parameter -Wno-unused-variable -Wno-deprecated-declarations -qmkl=sequential -Wall -Wextra -MD -MT CMakeFiles/strata_prefill.dir/src/prefill/gemm.dp.cpp.o -MF CMakeFiles/strata_prefill.dir/src/prefill/gemm.dp.cpp.o.d -o CMakeFiles/strata_prefill.dir/src/prefill/gemm.dp.cpp.o -c /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/src/prefill/gemm.dp.cpp
+33018: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/src/prefill/gemm.dp.cpp:5:
+33019: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/dpct.hpp:53:
+33020: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/image.hpp:14:
+33107:       |                                                            ^
+33108: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/src/prefill/gemm.dp.cpp:9:
+33109: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/blas_utils.hpp:13:
+33110: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/lib_common_utils.hpp:20:2: error: "SYCLomatic runtime requires oneMath/oneMKL support"
+33111:    20 | #error "SYCLomatic runtime requires oneMath/oneMKL support"
+33112:       |  ^
+33113: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/lib_common_utils.hpp:32:43: warning: unused parameter 'field' [-Wunused-parameter]
+33114:    32 | inline void mkl_get_version(version_field field, int *result) {
+33115:       |                                           ^
+33119: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/src/prefill/gemm.dp.cpp:9:
+33120: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/blas_utils.hpp:13:
+33121: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/lib_common_utils.hpp:119:
+33122: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/detail/lib_common_utils_detail.hpp:104:12: error: use of undeclared identifier 'oneapi'; did you mean 'sycl::ext::oneapi'?
+33123:   104 |   } catch (oneapi::mkl::lapack::batch_error const &be) {
+33124:       |            ^~~~~~
+33125:       |            sycl::ext::oneapi
+33126: /opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/ext/oneapi/work_group_static.hpp:17:16: note: 'sycl::ext::oneapi' declared here
+33129: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/src/prefill/gemm.dp.cpp:9:
+33130: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/blas_utils.hpp:13:
+33131: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/lib_common_utils.hpp:119:
+33132: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/detail/lib_common_utils_detail.hpp:104:20: error: no member named 'mkl' in namespace 'sycl::ext::oneapi'
+33133:   104 |   } catch (oneapi::mkl::lapack::batch_error const &be) {
+33134:       |            ~~~~~~~~^
+33135: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/detail/lib_common_utils_detail.hpp:117:16: error: use of undeclared identifier 'oneapi'; did you mean 'sycl::ext::oneapi'?
+33136:   117 |       } catch (oneapi::mkl::lapack::exception &e) {
+33137:       |                ^~~~~~
+33138:       |                sycl::ext::oneapi
+33139: /opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/ext/oneapi/work_group_static.hpp:17:16: note: 'sycl::ext::oneapi' declared here
+33142: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/src/prefill/gemm.dp.cpp:9:
+33143: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/blas_utils.hpp:13:
+33144: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/lib_common_utils.hpp:119:
+33145: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/detail/lib_common_utils_detail.hpp:117:24: error: no member named 'mkl' in namespace 'sycl::ext::oneapi'
+33146:   117 |       } catch (oneapi::mkl::lapack::exception &e) {
+33147:       |                ~~~~~~~~^
+33148: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/src/prefill/gemm.dp.cpp:9:
+33149: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/blas_utils.hpp:15:
+33150: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/detail/blas_utils_detail.hpp:153:3: error: use of undeclared identifier 'oneapi'; did you mean 'sycl::ext::oneapi'?
+33151:   153 |   oneapi::mkl::blas::column_major::nrm2(q, n, reinterpret_cast<const Tx *>(x),
+33152:       |   ^~~~~~
+33153:       |   sycl::ext::oneapi
+33154: /opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/ext/oneapi/work_group_static.hpp:17:16: note: 'sycl::ext::oneapi' declared here
+33156:       |                ^
+33157: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/src/prefill/gemm.dp.cpp:9:
+33158: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/blas_utils.hpp:15:
+33159: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/detail/blas_utils_detail.hpp:153:11: error: no member named 'mkl' in namespace 'sycl::ext::oneapi'
+33160:   153 |   oneapi::mkl::blas::column_major::nrm2(q, n, reinterpret_cast<const Tx *>(x),
+33161:       |   ~~~~~~~~^
+33162: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/detail/blas_utils_detail.hpp:184:7: error: use of undeclared identifier 'oneapi'; did you mean 'sycl::ext::oneapi'?
+33163:   184 |       oneapi::mkl::blas::column_major::dotc(q, n, x, incx, y, incy,
+33164:       |       ^~~~~~
+33165:       |       sycl::ext::oneapi
+33166: /opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/ext/oneapi/work_group_static.hpp:17:16: note: 'sycl::ext::oneapi' declared here
+33168:       |                ^
+33169: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/src/prefill/gemm.dp.cpp:9:
+33170: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/blas_utils.hpp:15:
+33171: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/detail/blas_utils_detail.hpp:184:15: error: no member named 'mkl' in namespace 'sycl::ext::oneapi'
+33172:   184 |       oneapi::mkl::blas::column_major::dotc(q, n, x, incx, y, incy,
+33173:       |       ~~~~~~~~^
+33174: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/detail/blas_utils_detail.hpp:187:7: error: use of undeclared identifier 'oneapi'; did you mean 'sycl::ext::oneapi'?
+33175:   187 |       oneapi::mkl::blas::column_major::dotu(q, n, x, incx, y, incy,
+33176:       |       ^~~~~~
+33177:       |       sycl::ext::oneapi
+33178: /opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/ext/oneapi/work_group_static.hpp:17:16: note: 'sycl::ext::oneapi' declared here
+33180:       |                ^
+33181: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/src/prefill/gemm.dp.cpp:9:
+33182: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/blas_utils.hpp:15:
+33183: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/detail/blas_utils_detail.hpp:187:15: error: no member named 'mkl' in namespace 'sycl::ext::oneapi'
+33184:   187 |       oneapi::mkl::blas::column_major::dotu(q, n, x, incx, y, incy,
+33185:       |       ~~~~~~~~^
+33186: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/detail/blas_utils_detail.hpp:190:5: error: use of undeclared identifier 'oneapi'; did you mean 'sycl::ext::oneapi'?
+33187:   190 |     oneapi::mkl::blas::column_major::dot(q, n, x, incx, y, incy,
+33188:       |     ^~~~~~
+33189:       |     sycl::ext::oneapi
+33190: /opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/ext/oneapi/work_group_static.hpp:17:16: note: 'sycl::ext::oneapi' declared here
+33192:       |                ^
+33193: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/src/prefill/gemm.dp.cpp:9:
+33194: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/blas_utils.hpp:15:
+33195: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/detail/blas_utils_detail.hpp:190:13: error: no member named 'mkl' in namespace 'sycl::ext::oneapi'
+33196:   190 |     oneapi::mkl::blas::column_major::dot(q, n, x, incx, y, incy,
+33197:       |     ~~~~~~~~^
+33198: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/detail/blas_utils_detail.hpp:258:3: error: use of undeclared identifier 'oneapi'; did you mean 'sycl::ext::oneapi'?
+33199:   258 |   oneapi::mkl::blas::column_major::scal(q, n, alpha_val, data_x, incx);
+33200:       |   ^~~~~~
+33201:       |   sycl::ext::oneapi
+33202: /opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/ext/oneapi/work_group_static.hpp:17:16: note: 'sycl::ext::oneapi' declared here
+33204:       |                ^
+33205: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/src/prefill/gemm.dp.cpp:9:
+33206: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/blas_utils.hpp:15:
+33207: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/detail/blas_utils_detail.hpp:258:11: error: no member named 'mkl' in namespace 'sycl::ext::oneapi'
+33208:   258 |   oneapi::mkl::blas::column_major::scal(q, n, alpha_val, data_x, incx);
+33209:       |   ~~~~~~~~^
+33210: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/detail/blas_utils_detail.hpp:268:3: error: use of undeclared identifier 'oneapi'; did you mean 'sycl::ext::oneapi'?
+33211:   268 |   oneapi::mkl::blas::column_major::axpy(q, n, alpha_val, data_x, incx, data_y,
+33212:       |   ^~~~~~
+33213:       |   sycl::ext::oneapi
+33214: /opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/ext/oneapi/work_group_static.hpp:17:16: note: 'sycl::ext::oneapi' declared here
+33216:       |                ^
+33217: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/src/prefill/gemm.dp.cpp:9:
+33218: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/blas_utils.hpp:15:
+33219: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/detail/blas_utils_detail.hpp:268:11: error: no member named 'mkl' in namespace 'sycl::ext::oneapi'
+33220:   268 |   oneapi::mkl::blas::column_major::axpy(q, n, alpha_val, data_x, incx, data_y,
+33221:       |   ~~~~~~~~^
+33222: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/detail/blas_utils_detail.hpp:279:3: error: use of undeclared identifier 'oneapi'; did you mean 'sycl::ext::oneapi'?
+33223:   279 |   oneapi::mkl::blas::column_major::rot(q, n, data_x, incx, data_y, incy,
+33224:       |   ^~~~~~
+33225:       |   sycl::ext::oneapi
+33226: /opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/ext/oneapi/work_group_static.hpp:17:16: note: 'sycl::ext::oneapi' declared here
+33228:       |                ^
+33229: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/src/prefill/gemm.dp.cpp:9:
+33230: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/blas_utils.hpp:15:
+33231: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/detail/blas_utils_detail.hpp:279:11: error: no member named 'mkl' in namespace 'sycl::ext::oneapi'
+33232:   279 |   oneapi::mkl::blas::column_major::rot(q, n, data_x, incx, data_y, incy,
+33233:       |   ~~~~~~~~^
+33234: fatal error: too many errors emitted, stopping now [-ferror-limit=]
+33235: 23 warnings and 20 errors generated.
+33236: [84/119] Building CXX object CMakeFiles/strata_engine.dir/src/core/peer_experts.cpp.o
+33237: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/src/core/peer_experts.cpp:4:
+33238: In file included from /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/strata/core/peer_experts.hpp:20:
+34503: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/graph.hpp:176:13: warning: unused function 'get_nodes' [-Wunused-function]
+34504:   176 | static void get_nodes(dpct::experimental::command_graph_ptr graph,
+34505:       |             ^~~~~~~~~
+34506: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/sycl/include/dpct/graph.hpp:187:13: warning: unused function 'get_root_nodes' [-Wunused-function]
+34507:   187 | static void get_root_nodes(dpct::experimental::command_graph_ptr graph,
+34508:       |             ^~~~~~~~~~~~~~
+34509: 77 warnings generated.
+34510: ninja: build stopped: subcommand failed.
