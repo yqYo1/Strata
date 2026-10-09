@@ -1,0 +1,43 @@
+# CPU quant intrinsic and UB contract audit — round 4
+
+Scope: read-only audit of the native CPU paths in Strata's `sync-upstream-v0.1.41-20261009` worktree, especially GU IQ types 18/21/22/23 and Down IQ4_NL type 20, against pinned ggml commit `3cf03257f219afbe7334045ff7c6a06ac68c627d`. No build, tests, benchmark, GPU work, or repository changes were performed. Source references below are line numbers in that worktree.
+
+## Findings
+
+### Signed-byte activation contract
+
+`src/kernels/cpu/iq_avx2_rows.inl:21-28,31-57` applies `vpsignb` to Q8_K activation bytes for the GU IQ2/IQ3/IQ4 formats and then uses `vpmaddubsw`; the IQ4_NL path at `:260-268` does the same for Q8_0. `vpsignb` is defined to leave byte `-128` unchanged when asked to negate it (two's-complement byte operation). Thus a negative weight sign times activation `-128` yields `-128`, not mathematical `+128`. This is a correctness discrepancy if such an activation byte can reach these kernels.
+
+The native Q8_0 activation quantizer in `src/kernels/cpu/expert.cpp:75-110` scales by `127/amax`, rounds, and packs to signed bytes. For finite ordinary inputs, its intended output range is `[-127,127]`; the Q8_0 reference quantizer at pinned ggml `ggml-quants.c` uses `amax/127` and `roundf` (lines 2578-2607 in the pinned file). This path therefore excludes `-128` under its normal finite-input contract. Strata's Q8_K AVX2 quantizer in `src/kernels/cpu/iq_avx2.cpp:387-454` caps at `127` and sign-extends the low byte after the clamp (`:436-440`), also excluding `-128` for normal finite inputs. It explicitly preserves reference byte behavior for degenerate scale overflow, so do not strengthen this statement to arbitrary NaN/Inf/subnormal input without a separate parity proof.
+
+These quantizers do not establish an invariant for arbitrary Q8 blocks loaded from a model, cache, or other producer. The kernel itself accepts a `block_q8_0`/`block_q8_K` pointer and contains no byte validation. Therefore the `-128` case is excluded for the shown native quantizers, but remains possible for externally supplied or corrupted activation blocks unless the buffer provenance guarantees otherwise. If supporting arbitrary Q8 bytes is required, handle `-128` before sign application (or use widening signed multiply); otherwise document/enforce the producer contract.
+
+### `maddubs` saturation bounds and codebooks
+
+For IQ4_NL, the `kvalues_iq4nl` lookup produces magnitudes at most 127 (`iq_avx2_rows.inl:246-267`; table in `ggml-common.h`). Each unsigned-magnitude × signed-activation pair accumulated by `vpmaddubsw` is bounded by `2*127*128 = 32512`, below `INT16_MAX=32767`; no pair saturation occurs even if an activation contains `-128`. GU IQ formats use decoded grid magnitudes no larger than 127 and have the same bound (`iq_avx2_rows.inl:21-28,41-50`). Q2_0's unsigned codes are 0..3 (`q2_avx2_rows.inl:5-13,21-32`), giving bound `2*3*128=768`. These checks address saturation only; they do not repair the `vpsignb(-128)` sign issue.
+
+The IQ4_NL table has no `-128` weight code, so `_mm256_sign_epi8(q4,q4)` safely forms `|q4|` in its signed-byte lane. GU grid codes are likewise table-derived bounded magnitudes/signs, not arbitrary signed weight bytes. The claims here depend on the format tables and decoding, not on validation of malformed weight blobs.
+
+### Prefetch pointer arithmetic and environment input
+
+`src/kernels/cpu/iq_avx2.cpp:183-195` parses `STRATA_IQ_PREFETCH` with `std::atoi`, default 2048, and `rows_ahead` forms `blk + pf` and `blk + pf + 64` before issuing `_mm_prefetch`. Non-positive values disable it. A nonnumeric string commonly parses as zero; `atoi` does not provide robust error reporting, and an out-of-range decimal is not a portable way to select a distance. Use checked parsing (`strtol`/`from_chars`) with an explicit upper bound if this environment control is intended to accept untrusted values.
+
+The hardware prefetch instruction is a hint and does not itself perform an architecturally visible data load. That fact does not make arbitrary C++ pointer arithmetic valid: if either computed pointer is outside the same array object (or one-past), forming it is undefined behavior before the intrinsic is reached. The loops call `rows_ahead` on every block, including the last (`iq_avx2_rows.inl:36-38,102-104,254-256`), and there is no end pointer or remaining-byte bound in the helper. This establishes an unbounded-pointer-arithmetic hazard for positive `pf`; whether a specific call crosses the actual backing array depends on the owner/allocation extent of `row`/`blob`, which this audit did not prove for all providers. A bounded helper should receive row or allocation end and issue hints only when the target remains within that object; clamping only to the logical row end is the simplest conservative contract.
+
+### Aliasing, alignment, integer arithmetic
+
+The audited IQ paths use unaligned SIMD loads for encoded bytes (`_mm_loadu*`) and use `memcpy` wrappers for scalar 16/32/64-bit reads (`iq_avx2.cpp:50-53`). The Q8 data vectors are also loaded unaligned (`iq_avx2_rows.inl:47,266`). This avoids an alignment requirement in these operations. Reinterpreting bytes as a `block_q8_*` reference still relies on the block layout/type contract, but no concrete misalignment failure was established from the call sites inspected.
+
+No concrete signed-overflow or invalid-shift defect was established in the checked dot arithmetic. `vpmaddubs` pair bounds above fit signed 16-bit; `vpmaddwd` results and the subsequent int32 accumulation are bounded by the finite number of values in one quant block and the decoded code ranges. The AVX2 gather/shift decode uses fixed-width SIMD shifts or unsigned packed fields in the reviewed sections. This is a scoped negative finding, not a proof for every CPU kernel.
+
+## Bottom line
+
+The strongest actionable source-level issue is that `rows_ahead` has no extent bound and can form out-of-object pointers for positive environment distances; the hardware hint's non-faulting behavior does not settle the C++ rule. The signed-byte corner case is conditional: native Q8 quantizers are designed to stay within ±127 for normal finite values, but the dot kernels do not defend against an externally produced `-128` activation. The checked `maddubs` paths have adequate saturation headroom for their decoded code ranges.
+
+## Evidence locations
+
+- Strata: `src/kernels/cpu/iq_avx2.cpp:50-53,183-195,387-454`
+- Strata: `src/kernels/cpu/iq_avx2_rows.inl:21-57,238-272`
+- Strata: `src/kernels/cpu/q2_avx2_rows.inl:5-39`
+- Strata: `src/kernels/cpu/expert.cpp:75-110`
+- Pinned ggml: `ggml-quants.c`, `quantize_row_q8_0_ref`, lines 2578-2607; source URL: https://github.com/ggml-org/llama.cpp/blob/3cf03257f219afbe7334045ff7c6a06ac68c627d/ggml/src/ggml-quants.c

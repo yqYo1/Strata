@@ -29,13 +29,13 @@ STRATA_ROWS_FN inline __m256i dot4u(__m256i u8, __m256i s8) {
 }
 
 template <int TY, int NT> STRATA_ROWS_FN
-inline void row_dot(const uint8_t* row, int nblocks, const block_q8_K* const* y, float* res) {
+inline void row_dot(const uint8_t* row, const uint8_t* end, int nblocks, const block_q8_K* const* y, float* res) {
     const int pf = prefetch_distance();
     __m256 accf[NT];
     for (int t = 0; t < NT; ++t) accf[t] = _mm256_setzero_ps();
     for (int i = 0; i < nblocks; ++i) {
         const uint8_t* blk = row + (size_t) i * Fmt32<TY>::bytes;
-        rows_ahead(blk, pf);
+        rows_ahead(blk, end, pf);
         __m256i acci[NT];
         for (int t = 0; t < NT; ++t) acci[t] = _mm256_setzero_si256();
         for (int j = 0; j < 4; ++j) {
@@ -64,7 +64,7 @@ inline void row_dot(const uint8_t* row, int nblocks, const block_q8_K* const* y,
 // stay scalar loads into set_epi64x (ggml does the same).  Every token still only pays a load, a sign,
 // a maddubs, a madd and an add per half, into alternating accumulators.
 template <int NT> STRATA_ROWS_FN
-inline void row_dot_iq2xs(const uint8_t* row, int nblocks, const block_q8_K* const* y, float* res) {
+inline void row_dot_iq2xs(const uint8_t* row, const uint8_t* end, int nblocks, const block_q8_K* const* y, float* res) {
     static const uint8_t bit_sel[32] = {
         1, 2, 4, 8, 16, 32, 64, (uint8_t) 0x80, 1, 2, 4, 8, 16, 32, 64, (uint8_t) 0x80,
         1, 2, 4, 8, 16, 32, 64, (uint8_t) 0x80, 1, 2, 4, 8, 16, 32, 64, (uint8_t) 0x80 };
@@ -101,7 +101,7 @@ inline void row_dot_iq2xs(const uint8_t* row, int nblocks, const block_q8_K* con
     for (int t = 0; t < NT; ++t) accf[t] = _mm256_setzero_ps();
     for (int i = 0; i < nblocks; ++i) {
         const uint8_t* blk = row + (size_t) i * 74;
-        rows_ahead(blk, pf);
+        rows_ahead(blk, end, pf);
         // the 8 scale bytes -> 16 half-scales of 2*s+1, interleaved [a0, b0, a1, b1, ...] (ggml's unpack)
         __m128i st = _mm_set1_epi64x((long long) u64(blk + 66));
         st = _mm_unpacklo_epi8(_mm_and_si128(st, m4), _mm_and_si128(_mm_srli_epi16(st, 4), m4));
@@ -146,32 +146,38 @@ inline void row_dot_iq2xs(const uint8_t* row, int nblocks, const block_q8_K* con
 }
 
 template <int TY, int NT> STRATA_ROWS_FN
-inline void row_dot_any(const uint8_t* row, int nblocks, const block_q8_K* const* y, float* res) {
-    if constexpr (TY == 17) row_dot_iq2xs<NT>(row, nblocks, y, res);
-    else                    row_dot<TY, NT>(row, nblocks, y, res);
+inline void row_dot_any(const uint8_t* row, const uint8_t* end, int nblocks, const block_q8_K* const* y, float* res) {
+    if constexpr (TY == 17) row_dot_iq2xs<NT>(row, end, nblocks, y, res);
+    else                    row_dot<TY, NT>(row, end, nblocks, y, res);
 }
 
 template <int TY, int NT> STRATA_ROWS_FN
 void gu_rows(const uint8_t* blob, size_t gu_row, size_t up_off, int n, const void* const* act, float* const* ff,
              int r0, int r1) {
+    if (r0 >= r1) return;
+    // up_off is the validated size of each complete Gate/Up matrix.
+    const uint8_t* gate_end = blob + up_off;
+    const uint8_t* up_end = blob + up_off + up_off;
     const block_q8_K* y[NT];
     for (int t = 0; t < NT; ++t) y[t] = (const block_q8_K*) act[t];
     const int nb = n / QK_K;
     float g[NT], u[NT];
     for (int r = r0; r < r1; ++r) {
-        row_dot_any<TY, NT>(blob + (size_t) r * gu_row, nb, y, g);
-        row_dot_any<TY, NT>(blob + up_off + (size_t) r * gu_row, nb, y, u);
+        row_dot_any<TY, NT>(blob + (size_t) r * gu_row, gate_end, nb, y, g);
+        row_dot_any<TY, NT>(blob + up_off + (size_t) r * gu_row, up_end, nb, y, u);
         for (int t = 0; t < NT; ++t) ff[t][r] = (g[t] / (1.f + std::exp(-g[t]))) * u[t];
     }
 }
 
 template <int TY, int NT> STRATA_ROWS_FN
 void dot_rows(const uint8_t* w, size_t row_bytes, int n, const void* const* act, float* const* out, int r0, int r1) {
+    if (r0 >= r1) return;
+    const uint8_t* end = w + (size_t) r1 * row_bytes;
     const block_q8_K* y[NT];
     for (int t = 0; t < NT; ++t) y[t] = (const block_q8_K*) act[t];
     float res[NT];
     for (int r = r0; r < r1; ++r) {
-        row_dot_any<TY, NT>(w + (size_t) r * row_bytes, n / QK_K, y, res);
+        row_dot_any<TY, NT>(w + (size_t) r * row_bytes, end, n / QK_K, y, res);
         for (int t = 0; t < NT; ++t) out[t][r] = res[t];
     }
 }
@@ -243,6 +249,8 @@ void dot_type(int type, int nt, const uint8_t* w, size_t row_bytes, int n, const
 template <int NT> STRATA_ROWS_FN
 void iq4nl_rows(const uint8_t* w, size_t row_bytes, int n, const block_q8_0* const* y, float* const* out,
                 int r0, int r1) {
+    if (r0 >= r1) return;
+    const uint8_t* end = w + (size_t) r1 * row_bytes;
     const __m128i values = _mm_loadu_si128((const __m128i*) kvalues_iq4nl);
     const __m128i m4b = _mm_set1_epi8(0x0f);
     const int nb = n / QK4_NL;
@@ -253,7 +261,7 @@ void iq4nl_rows(const uint8_t* w, size_t row_bytes, int n, const block_q8_0* con
         for (int t = 0; t < NT; ++t) accf[t] = _mm256_setzero_ps();
         for (int ib = 0; ib < nb; ++ib) {
             const uint8_t* blk = row + (size_t) ib * sizeof(block_iq4_nl);
-            rows_ahead(blk, pf);
+            rows_ahead(blk, end, pf);
             const __m128i bits = _mm_loadu_si128((const __m128i*) (blk + 2));
             const __m128i lo = _mm_and_si128(bits, m4b);                      // values 0..15
             const __m128i hi = _mm_and_si128(_mm_srli_epi16(bits, 4), m4b);    // values 16..31

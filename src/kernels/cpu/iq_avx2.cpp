@@ -29,6 +29,7 @@
 
 #include <immintrin.h>
 
+#include <charconv>
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
@@ -183,15 +184,26 @@ inline float hsum8(__m256 v) {
 int prefetch_distance() {
     static const int d = [] {
         const char* v = std::getenv("STRATA_IQ_PREFETCH");
-        return v ? std::atoi(v) : 2048;
+        if (!v) return 2048;
+        int distance = 0;
+        const auto parsed = std::from_chars(v, v + std::strlen(v), distance);
+        // Invalid, overflowing and nonpositive values disable the hint. No atoi overflow.
+        return parsed.ec == std::errc{} && *parsed.ptr == '\0' && distance > 0 ? distance : 0;
     }();
     return d;
 }
 
-inline void rows_ahead(const uint8_t* blk, int pf) {
+// Both pointers belong to the caller's encoded matrix/range. Test integer extents
+// before forming a hint pointer; non-faulting x86 prefetch does not legalize an
+// out-of-array C++ pointer. Interior hints keep their existing distance and T0 policy.
+inline void rows_ahead(const uint8_t* blk, const uint8_t* end, int pf) {
     if (pf <= 0) return;
-    _mm_prefetch((const char*) blk + pf, _MM_HINT_T0);
-    _mm_prefetch((const char*) blk + pf + 64, _MM_HINT_T0);
+    const size_t remaining = static_cast<size_t>(end - blk);
+    const size_t distance = static_cast<size_t>(pf);
+    if (distance >= remaining) return;
+    _mm_prefetch(reinterpret_cast<const char*>(blk + distance), _MM_HINT_T0);
+    if (remaining - distance > 64)
+        _mm_prefetch(reinterpret_cast<const char*>(blk + distance + 64), _MM_HINT_T0);
 }
 
 // ---- per format: one 32-value half (values 64*j + 32*half .. +31) -> grid magnitudes, sign vector, scales
