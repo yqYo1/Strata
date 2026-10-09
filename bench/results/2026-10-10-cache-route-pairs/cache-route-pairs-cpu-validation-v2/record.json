@@ -1,0 +1,83 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "gpu_executed": false,
+  "model_opened": false,
+  "scope": "Portable pair-count CPU fixture only; actual SYCL engine build/runtime remains unqualified",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "started_utc": "2026-10-09T17:54:45.966601+00:00",
+  "controller_sha256": "4ed2d874c06f2fddfcb73d52894a34e94566dbdbbdcf20de339d01a58a135764",
+  "pins": {
+    "sycl/include/strata/core/cache_route_pairs.hpp": "c06b174f8059a3fec6638bfdde59820126f00c1db809a30ce89a6087a888ad42",
+    "sycl/tools/cache-route-pairs-test.cpp": "fc9a5a3c036b385a3c1b26321dabf63d5416810509280a6988d446d24dbc326a",
+    "sycl/src/program/generate.cpp": "eb591e263398abd9b178ab00c61e4f6af53a53bad37f837b18cd323af8dbab05"
+  },
+  "steps": [
+    {
+      "label": "compile",
+      "argv": [
+        "/usr/bin/c++",
+        "-std=c++17",
+        "-pthread",
+        "-O1",
+        "-g",
+        "-UNDEBUG",
+        "-fno-omit-frame-pointer",
+        "-fsanitize=address,undefined",
+        "-I",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010/sycl/include",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010/sycl/tools/cache-route-pairs-test.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-route-pairs-cpu-validation-v2/cache-route-pairs-test"
+      ],
+      "timeout_seconds": 90,
+      "owner": {
+        "pid": 1892815,
+        "start_ticks": 25816510,
+        "pgrp": 1892815
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.9659938820113894,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stderr_bytes": 0
+    },
+    {
+      "label": "fixture",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-route-pairs-cpu-validation-v2/cache-route-pairs-test"
+      ],
+      "timeout_seconds": 20,
+      "owner": {
+        "pid": 1892882,
+        "start_ticks": 25816606,
+        "pgrp": 1892882
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.06431724698632024,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stderr_bytes": 0
+    }
+  ],
+  "cleanup": [],
+  "deadline_seconds": 120,
+  "text_budget_bytes": 67108864,
+  "controller_identity": {
+    "pid": 1892810,
+    "start_ticks": 25816501,
+    "pgrp": 1892810
+  },
+  "sanitizer_environment": {
+    "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+    "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+  },
+  "compiler": "/usr/bin/x86_64-linux-gnu-g++-13",
+  "compiler_sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769",
+  "binary_sha256": "0e80cb43c7d29f86d52d615cf8595d3b6f9d9308200cad701d7ed6bfa575babf",
+  "elapsed_seconds": 1.0559235179971438,
+  "finished_utc": "2026-10-09T17:54:47.022479+00:00"
+}

@@ -1632,7 +1632,13 @@ int visible_output_prefix(int accepted, int64_t remaining, const int32_t* target
 }  // namespace
 
 int main(int argc, char **argv) try {
-    const bool cache_route_pairs_enabled = strata::core::CacheRoutePairs::enabled();
+    bool cache_route_pairs_enabled = false;
+    try {
+        cache_route_pairs_enabled = strata::core::CacheRoutePairs::enabled();
+    } catch (const std::runtime_error& error) {
+        std::fprintf(stderr, "strata: %s\n", error.what());
+        return 2;
+    }
     // **UNBUFFERED, BECAUSE THE INTERESTING OUTPUT IS THE OUTPUT BEFORE A CRASH.**  `stdout` redirected to a
     // pipe or a file is block-buffered, so a program that dies loses every line it had already printed - which
     // turns "it crashed at step 7" into "it crashed somewhere", and the difference is a debugging session.
@@ -11499,7 +11505,8 @@ int main(int argc, char **argv) try {
                 // Existing wait_commit above drained decode; report before DONE, then detach before next prefill.
                 drive.d.cache_route_pairs = nullptr;
                 drive.route_pairs->report(stderr, host_res.data(), host_res.size(), req_hits, req_look,
-                                          req_offload, drive.d.failed);
+                                          req_offload, drive.d.failed, !cancelled &&
+                                          (std::strcmp(finish, "length") == 0 || std::strcmp(finish, "stop") == 0));
             }
             // #471: the prompt tokens this request read - all the fresh ones, or as far as the prompt pass got when a
             // cancel stopped it part-way (a cancelled request used to be logged and counted as having read them all)

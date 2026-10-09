@@ -42,7 +42,7 @@ public:
         if (!seen_[size_t(expert)]) { seen_[size_t(expert)]=true; increment(c.callbacks); }
     }
     bool report(FILE* f, const int32_t* resident, size_t count, int64_t hits, int64_t look,
-                int64_t offloaded, bool dispatch_failed) {
+                int64_t offloaded, bool dispatch_failed, bool request_complete = true) {
         const bool owner=std::this_thread::get_id()==owner_;
         bool unchanged=supported_ && resident && count==cells;
         if (unchanged) unchanged=std::memcmp(start_.data(),resident,sizeof(start_))==0;
@@ -58,7 +58,7 @@ public:
         // DONE look excludes offloads; admissions/scalar callbacks therefore fail reconciliation.
         const bool reconciled=hits>=0 && look>=0 && offloaded>=0 && h==uint64_t(hits) &&
             r<=std::numeric_limits<uint64_t>::max()-h && h+r==uint64_t(look) && o==uint64_t(offloaded);
-        const bool complete=supported_ && owner && !error_.load() && !dispatch_failed && unchanged && reconciled && entries>0;
+        const bool complete=supported_ && owner && !error_.load() && !dispatch_failed && request_complete && unchanged && reconciled && entries>0;
         std::fprintf(f,"CACHE_ROUTE_PAIRS_V1 BEGIN request=%llu layers=%lld experts=%lld enabled=1 supported=%d truncated=0 error=%d complete=%d\n",
             (unsigned long long)ordinal_,(long long)layers_,(long long)experts_,supported_,!owner||error_.load()||dispatch_failed,complete);
         std::fprintf(f,"CACHE_ROUTE_PAIRS_V1 RESIDENCY request=%llu cells=%zu unchanged=%d start_fnv1a64=%016llx end_fnv1a64=%016llx\n",
