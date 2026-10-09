@@ -1,0 +1,100 @@
+strata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)
+strata generate: native pack: /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s experts (largest blob 2.66 MB), token embedding IQ4_XS in mapped host memory (322 MiB, 2.9 s)
+strata generate: 1466 MiB of weights loaded from /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s in 1.1 s (302 canonical tensors skipped: served natively)
+strata generate: 300 native projection matrices, 2018.88 MiB of weights, in 0.7 s
+strata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)
+strata generate: profile data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots
+strata generate: KV streaming: 32768 of 262144 cells per QSA layer in VRAM, the K/V in 3.09 GiB of pinned RAM
+strata generate: PLE on, table 320001536 rows of /home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf
+strata mtp: draft layer loaded, 834 MiB of VRAM (experts 675, dense 111), files read in 1.09 s (722 MiB/s)
+strata generate: experimental native Q5_K head, 521472000 bytes, in 0.2 s
+strata generate: GPU 0: Intel(R) Arc(TM) B570 Graphics, SYCL driver 1.17.39395+14
+strata generate: expert arena read through the file cache (buffered (not Windows))
+strata generate: expert arena: SYCL pageable host arena (queue copies); MAP_HUGETLB unavailable (needed 23983 2 MiB pages, vm.nr_hugepages=0); using 4 KB pages
+strata generate: loaded 46.84 GiB at 1.64 GiB/s
+strata generate: 5 pool workers on logical processors 1,2,3,4,5, the host thread on 0 (draining too) (--host-core first)
+strata generate: expert cache 128 slots, 0.32 GiB of VRAM; policy is
+strata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,
+strata generate: profile fill: 0.26 GiB in 0.1 s (3.77 GB/s, serial)
+strata generate: pre-filled 128 of 128 slots from the profile in 0.1 s (3775 MB/s); slot 0 verified
+strata generate: R4 hit path ON - resident experts are computed on the GPU
+strata generate: 5 expert-pool workers + the host thread
+strata generate: session is up (engine 0.1.41)
+strata generate: token graph hit path: 128 resident experts, decided on the device
+strata serve: the prompt path allocates its own buffers (too few cache slots to borrow)
+strata prefill: compact-hc layout for 8192 tokens: 1861857536 accounted bytes, 1166147584 shared workspace bytes
+strata verify: window up to 4 tokens, 64.5 MiB of device buffers
+strata mtp: draft head over 106299 tokens (212.9 MiB)
+strata serve: 1565 MiB of VRAM free with everything loaded
+strata verify: captured 1-token window with 48 host expert boundaries
+strata verify: captured 4-token window with 96 host expert boundaries
+strata decode timing: 23 windows, avg T 3.87, 2.78 tokens/window, 172.99 ms/window = verify 158.45 (GPU-reach wait 3.05 + per-layer host 126.99 [plan 0.14 actq 0.19 jobs 0.08 CPU 126.32] + stage 3.07) + commit/emit 6.96 + draft 7.58; per layer-window: CPU experts 30.50 (36.78 entries), VRAM hits 1.92, PCIe 0.00
+strata serve: prompt 32768 tokens = 0 reused + 32768 read in 80174 ms (408.7 tok/s), 64 generated in 3979 ms (16.1 tok/s), drafts accepted 41 of 66, 0 checkpoints
+strata serve: decode expert cache hit rate: 5.0% (2116 hits / 42720 lookups)
+strata serve: KV streaming: 92.32% of 548412 block reads hit VRAM, 169.6 MiB read from RAM
+strata serve: session restored 32831 tokens, 0 checkpoints, 619343700 bytes from /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-expert-copy-v0141-full256k-diagnostic-r1/control32k.session.bin in 945.8 ms (read+check 747.7 ms)
+strata decode timing: 18 windows, avg T 3.83, 3.56 tokens/window, 218.77 ms/window = verify 202.56 (GPU-reach wait 6.47 + per-layer host 180.00 [plan 0.15 actq 0.51 jobs 0.08 CPU 178.95] + stage 1.23) + commit/emit 9.49 + draft 6.71; per layer-window: CPU experts 32.23 (36.70 entries), VRAM hits 1.63, PCIe 0.00
+strata serve: prompt 32832 tokens = 32831 reused + 1 read in 6 ms (175.7 tok/s), 64 generated in 3938 ms (16.3 tok/s), drafts accepted 46 of 51, 0 checkpoints
+strata serve: decode expert cache hit rate: 4.3% (1412 hits / 33120 lookups)
+strata serve: KV streaming: 91.22% of 425172 block reads hit VRAM, 150.4 MiB read from RAM
+strata serve: session restored 32831 tokens, 0 checkpoints, 619343700 bytes from /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-expert-copy-v0141-full256k-diagnostic-r1/control32k.session.bin in 891.8 ms (read+check 694.1 ms)
+strata decode timing: 18 windows, avg T 3.83, 3.56 tokens/window, 171.87 ms/window = verify 156.61 (GPU-reach wait 3.08 + per-layer host 142.08 [plan 0.14 actq 0.19 jobs 0.08 CPU 141.39] + stage 0.17) + commit/emit 8.70 + draft 6.56; per layer-window: CPU experts 32.23 (36.70 entries), VRAM hits 1.63, PCIe 0.00
+strata serve: prompt 32832 tokens = 32831 reused + 1 read in 6 ms (176.3 tok/s), 64 generated in 3094 ms (20.7 tok/s), drafts accepted 46 of 51, 0 checkpoints
+strata serve: decode expert cache hit rate: 4.3% (1412 hits / 33120 lookups)
+strata serve: KV streaming: 91.22% of 425172 block reads hit VRAM, 150.4 MiB read from RAM
+strata serve: session restored 32831 tokens, 0 checkpoints, 619343700 bytes from /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-expert-copy-v0141-full256k-diagnostic-r1/control32k.session.bin in 888.8 ms (read+check 690.7 ms)
+strata decode timing: 18 windows, avg T 3.83, 3.56 tokens/window, 162.13 ms/window = verify 147.02 (GPU-reach wait 3.05 + per-layer host 132.34 [plan 0.14 actq 0.19 jobs 0.08 CPU 131.65] + stage 0.45) + commit/emit 8.55 + draft 6.56; per layer-window: CPU experts 32.23 (36.70 entries), VRAM hits 1.63, PCIe 0.00
+strata serve: prompt 32832 tokens = 32831 reused + 1 read in 6 ms (176.9 tok/s), 64 generated in 2918 ms (21.9 tok/s), drafts accepted 46 of 51, 0 checkpoints
+strata serve: decode expert cache hit rate: 4.3% (1412 hits / 33120 lookups)
+strata serve: KV streaming: 91.22% of 425172 block reads hit VRAM, 150.4 MiB read from RAM
+strata serve: session restored 32831 tokens, 0 checkpoints, 619343700 bytes from /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-expert-copy-v0141-full256k-diagnostic-r1/control32k.session.bin in 920.6 ms (read+check 722.2 ms)
+strata decode timing: 18 windows, avg T 3.83, 3.56 tokens/window, 158.86 ms/window = verify 143.73 (GPU-reach wait 3.02 + per-layer host 129.52 [plan 0.14 actq 0.19 jobs 0.08 CPU 128.83] + stage 0.17) + commit/emit 8.58 + draft 6.55; per layer-window: CPU experts 32.23 (36.70 entries), VRAM hits 1.63, PCIe 0.00
+strata serve: prompt 32832 tokens = 32831 reused + 1 read in 6 ms (177.2 tok/s), 64 generated in 2859 ms (22.4 tok/s), drafts accepted 46 of 51, 0 checkpoints
+strata serve: decode expert cache hit rate: 4.3% (1412 hits / 33120 lookups)
+strata serve: KV streaming: 91.22% of 425172 block reads hit VRAM, 150.4 MiB read from RAM
+strata serve: session restored 32831 tokens, 0 checkpoints, 619343700 bytes from /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-expert-copy-v0141-full256k-diagnostic-r1/control32k.session.bin in 896.3 ms (read+check 697.3 ms)
+strata decode timing: 18 windows, avg T 3.83, 3.56 tokens/window, 171.33 ms/window = verify 156.09 (GPU-reach wait 3.02 + per-layer host 141.40 [plan 0.14 actq 0.19 jobs 0.08 CPU 140.72] + stage 0.18) + commit/emit 8.69 + draft 6.54; per layer-window: CPU experts 32.23 (36.70 entries), VRAM hits 1.63, PCIe 0.00
+strata serve: prompt 32832 tokens = 32831 reused + 1 read in 6 ms (175.6 tok/s), 64 generated in 3084 ms (20.8 tok/s), drafts accepted 46 of 51, 0 checkpoints
+strata serve: decode expert cache hit rate: 4.3% (1412 hits / 33120 lookups)
+strata serve: KV streaming: 91.22% of 425172 block reads hit VRAM, 150.4 MiB read from RAM
+strata serve: session restored 32831 tokens, 0 checkpoints, 619343700 bytes from /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-expert-copy-v0141-full256k-diagnostic-r1/control32k.session.bin in 887.9 ms (read+check 689.9 ms)
+strata decode timing: 18 windows, avg T 3.83, 3.56 tokens/window, 164.56 ms/window = verify 149.43 (GPU-reach wait 3.09 + per-layer host 134.99 [plan 0.14 actq 0.20 jobs 0.08 CPU 134.28] + stage 0.20) + commit/emit 8.58 + draft 6.54; per layer-window: CPU experts 32.23 (36.70 entries), VRAM hits 1.63, PCIe 0.00
+strata serve: prompt 32832 tokens = 32831 reused + 1 read in 6 ms (175.4 tok/s), 64 generated in 2962 ms (21.6 tok/s), drafts accepted 46 of 51, 0 checkpoints
+strata serve: decode expert cache hit rate: 4.3% (1412 hits / 33120 lookups)
+strata serve: KV streaming: 91.22% of 425172 block reads hit VRAM, 150.4 MiB read from RAM
+strata serve: session restored 32831 tokens, 0 checkpoints, 619343700 bytes from /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-expert-copy-v0141-full256k-diagnostic-r1/control32k.session.bin in 890.7 ms (read+check 692.0 ms)
+strata decode timing: 18 windows, avg T 3.83, 3.56 tokens/window, 164.46 ms/window = verify 149.25 (GPU-reach wait 3.38 + per-layer host 134.95 [plan 0.14 actq 0.19 jobs 0.08 CPU 134.27] + stage 0.17) + commit/emit 8.65 + draft 6.56; per layer-window: CPU experts 32.23 (36.70 entries), VRAM hits 1.63, PCIe 0.00
+strata serve: prompt 32832 tokens = 32831 reused + 1 read in 6 ms (176.8 tok/s), 64 generated in 2960 ms (21.6 tok/s), drafts accepted 46 of 51, 0 checkpoints
+strata serve: decode expert cache hit rate: 4.3% (1412 hits / 33120 lookups)
+strata serve: KV streaming: 91.22% of 425172 block reads hit VRAM, 150.4 MiB read from RAM
+strata serve: session restored 32831 tokens, 0 checkpoints, 619343700 bytes from /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-expert-copy-v0141-full256k-diagnostic-r1/control32k.session.bin in 882.6 ms (read+check 684.8 ms)
+strata decode timing: 18 windows, avg T 3.83, 3.56 tokens/window, 155.90 ms/window = verify 140.82 (GPU-reach wait 3.42 + per-layer host 126.61 [plan 0.14 actq 0.19 jobs 0.08 CPU 125.95] + stage 0.17) + commit/emit 8.53 + draft 6.54; per layer-window: CPU experts 32.23 (36.70 entries), VRAM hits 1.63, PCIe 0.00
+strata serve: prompt 32832 tokens = 32831 reused + 1 read in 6 ms (176.8 tok/s), 64 generated in 2806 ms (22.8 tok/s), drafts accepted 46 of 51, 0 checkpoints
+strata serve: decode expert cache hit rate: 4.3% (1412 hits / 33120 lookups)
+strata serve: KV streaming: 91.22% of 425172 block reads hit VRAM, 150.4 MiB read from RAM
+strata serve: session restored 32831 tokens, 0 checkpoints, 619343700 bytes from /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-expert-copy-v0141-full256k-diagnostic-r1/control32k.session.bin in 896.2 ms (read+check 698.1 ms)
+strata decode timing: 18 windows, avg T 3.83, 3.56 tokens/window, 159.98 ms/window = verify 144.89 (GPU-reach wait 3.20 + per-layer host 130.62 [plan 0.14 actq 0.19 jobs 0.08 CPU 129.95] + stage 0.17) + commit/emit 8.55 + draft 6.54; per layer-window: CPU experts 32.23 (36.70 entries), VRAM hits 1.63, PCIe 0.00
+strata serve: prompt 32832 tokens = 32831 reused + 1 read in 6 ms (176.3 tok/s), 64 generated in 2880 ms (22.2 tok/s), drafts accepted 46 of 51, 0 checkpoints
+strata serve: decode expert cache hit rate: 4.3% (1412 hits / 33120 lookups)
+strata serve: KV streaming: 91.22% of 425172 block reads hit VRAM, 150.4 MiB read from RAM
+strata serve: session restored 32831 tokens, 0 checkpoints, 619343700 bytes from /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-expert-copy-v0141-full256k-diagnostic-r1/control32k.session.bin in 886.5 ms (read+check 688.8 ms)
+strata decode timing: 18 windows, avg T 3.83, 3.56 tokens/window, 161.49 ms/window = verify 146.35 (GPU-reach wait 3.41 + per-layer host 131.83 [plan 0.14 actq 0.19 jobs 0.08 CPU 131.14] + stage 0.17) + commit/emit 8.60 + draft 6.54; per layer-window: CPU experts 32.23 (36.70 entries), VRAM hits 1.63, PCIe 0.00
+strata serve: prompt 32832 tokens = 32831 reused + 1 read in 6 ms (176.7 tok/s), 64 generated in 2907 ms (22.0 tok/s), drafts accepted 46 of 51, 0 checkpoints
+strata serve: decode expert cache hit rate: 4.3% (1412 hits / 33120 lookups)
+strata serve: KV streaming: 91.22% of 425172 block reads hit VRAM, 150.4 MiB read from RAM
+strata serve: session restored 32831 tokens, 0 checkpoints, 619343700 bytes from /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-expert-copy-v0141-full256k-diagnostic-r1/control32k.session.bin in 1378.8 ms (read+check 1181.2 ms)
+strata decode timing: 18 windows, avg T 3.83, 3.56 tokens/window, 162.10 ms/window = verify 147.14 (GPU-reach wait 3.06 + per-layer host 133.00 [plan 0.14 actq 0.20 jobs 0.08 CPU 132.32] + stage 0.17) + commit/emit 8.42 + draft 6.55; per layer-window: CPU experts 32.23 (36.70 entries), VRAM hits 1.63, PCIe 0.00
+strata serve: prompt 32832 tokens = 32831 reused + 1 read in 6 ms (175.9 tok/s), 64 generated in 2918 ms (21.9 tok/s), drafts accepted 46 of 51, 0 checkpoints
+strata serve: decode expert cache hit rate: 4.3% (1412 hits / 33120 lookups)
+strata serve: KV streaming: 91.22% of 425172 block reads hit VRAM, 150.4 MiB read from RAM
+strata serve: session restored 32831 tokens, 0 checkpoints, 619343700 bytes from /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-expert-copy-v0141-full256k-diagnostic-r1/control32k.session.bin in 896.8 ms (read+check 696.1 ms)
+strata decode timing: 18 windows, avg T 3.83, 3.56 tokens/window, 168.34 ms/window = verify 153.27 (GPU-reach wait 3.61 + per-layer host 138.47 [plan 0.14 actq 0.19 jobs 0.08 CPU 137.80] + stage 0.18) + commit/emit 8.53 + draft 6.55; per layer-window: CPU experts 32.23 (36.70 entries), VRAM hits 1.63, PCIe 0.00
+strata serve: prompt 32832 tokens = 32831 reused + 1 read in 6 ms (175.8 tok/s), 64 generated in 3030 ms (21.1 tok/s), drafts accepted 46 of 51, 0 checkpoints
+strata serve: decode expert cache hit rate: 4.3% (1412 hits / 33120 lookups)
+strata serve: KV streaming: 91.22% of 425172 block reads hit VRAM, 150.4 MiB read from RAM
+strata serve: session restored 32831 tokens, 0 checkpoints, 619343700 bytes from /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-native-expert-copy-v0141-full256k-diagnostic-r1/control32k.session.bin in 892.7 ms (read+check 694.7 ms)
+strata decode timing: 18 windows, avg T 3.83, 3.56 tokens/window, 161.07 ms/window = verify 145.64 (GPU-reach wait 3.11 + per-layer host 131.14 [plan 0.15 actq 0.19 jobs 0.08 CPU 130.44] + stage 0.17) + commit/emit 8.88 + draft 6.55; per layer-window: CPU experts 32.23 (36.70 entries), VRAM hits 1.63, PCIe 0.00
+strata serve: prompt 32832 tokens = 32831 reused + 1 read in 6 ms (176.7 tok/s), 64 generated in 2899 ms (22.1 tok/s), drafts accepted 46 of 51, 0 checkpoints
+strata serve: decode expert cache hit rate: 4.3% (1412 hits / 33120 lookups)
+strata serve: KV streaming: 91.22% of 425172 block reads hit VRAM, 150.4 MiB read from RAM
+strata SYCL shutdown: all queues completed

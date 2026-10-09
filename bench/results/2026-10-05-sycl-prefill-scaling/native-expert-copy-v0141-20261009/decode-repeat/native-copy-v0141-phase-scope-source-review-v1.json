@@ -1,0 +1,125 @@
+{
+  "passed": true,
+  "active": false,
+  "gpu_executed": false,
+  "created_utc": "2026-10-09T03:13:10.952836+00:00",
+  "baseline_engine_commit": "1eb89482a4afd20277ae0405780ed4f8eb98eb20",
+  "candidate_commit": "6caa1421f9212750a425fe1729139ffdde6e9f9a",
+  "changed_engine_files": [
+    "sycl/include/dpct/device.hpp",
+    "sycl/src/prefill/prefill.cpp"
+  ],
+  "unchanged_decode_files": [
+    {
+      "path": "sycl/src/core/concurrent_main.cpp",
+      "sha256": "7525e7e36c2a18509ff042be21d5f214ab27b4b07c5e73965d4da706d70ec462"
+    },
+    {
+      "path": "sycl/src/core/conversation_snapshot.cpp",
+      "sha256": "8aad8aa2615b28b8f579ef725f99c79cf994ffd95dc7fd931dec300082d745a5"
+    },
+    {
+      "path": "sycl/src/core/conversation_snapshot_test.cpp",
+      "sha256": "efa4f4e262a2b34e39b71ef2f6988401cbc44f5017a43255d9b49a79ac164da9"
+    },
+    {
+      "path": "sycl/src/core/conversation_state.cpp",
+      "sha256": "95e8faff15f3f36d3db0caf1e1a08f28302dc449286b6c2a93896466934cfbab"
+    },
+    {
+      "path": "sycl/src/core/device.dp.cpp",
+      "sha256": "a9163b777920f229e99805f39e0e0376cd1c126fe6bc95e023192fe1f5a18de4"
+    },
+    {
+      "path": "sycl/src/core/expert_cache.cpp",
+      "sha256": "d481154b44ede799edf306e792d2ccf0d896126f96d71783f7d37bfab191f1c5"
+    },
+    {
+      "path": "sycl/src/core/expert_source.cpp",
+      "sha256": "3109bfa4a54cf64f7cf7088fc510370dd49d25d628349324873c8030f52ee028"
+    },
+    {
+      "path": "sycl/src/core/gguf_expert_source.cpp",
+      "sha256": "cb37b9457f5d1f065f5ed1d685b9da6c1554ae8ca5055becfbbe72c724bc8da6"
+    },
+    {
+      "path": "sycl/src/core/graph.cpp",
+      "sha256": "bd46e2868f713f14a02297a87d5486eca751445bcba65f2a941587f8923ac998"
+    },
+    {
+      "path": "sycl/src/core/layer.cpp",
+      "sha256": "6b443fc1df1c812ee4811b46ebde315cfe30356a448ac10f0e56332c763416a7"
+    },
+    {
+      "path": "sycl/src/core/mtp.cpp",
+      "sha256": "caea7e8651c6698a6df536834a91a10eafdbea25625ecb21498bee240bc474bf"
+    },
+    {
+      "path": "sycl/src/core/native_dense.cpp",
+      "sha256": "1e227f3fa08b0b3ff83f5dc4533fb8eb1a5b85ef78402c9a5daa5462504c7bc0"
+    },
+    {
+      "path": "sycl/src/core/native_head.cpp",
+      "sha256": "21b4fbd052bad321e39ddee401a3cb7b478ae8719c8fa46541b29d733c7d5806"
+    },
+    {
+      "path": "sycl/src/core/overlap_main.cpp",
+      "sha256": "60f40d4edca68d0776387b0d38738905dabef0faa9327815055f65d8c8f41fae"
+    },
+    {
+      "path": "sycl/src/core/peer_experts.cpp",
+      "sha256": "5708f78a7571bb8e6ed883f5d582298fe238145d2a1d224939becc0332cf0360"
+    },
+    {
+      "path": "sycl/src/core/pinned.dp.cpp",
+      "sha256": "56d4c997b90efe5148964e5c2fe93b25b8c02ef1a0ac61c74394b06e7cd184b3"
+    },
+    {
+      "path": "sycl/src/core/remote_expert_opt_stub.cpp",
+      "sha256": "cd7f23dc9fcb3117bf0c651f85a0764593d78037ea7c67205a6a94c056f8320e"
+    },
+    {
+      "path": "sycl/src/core/remote_experts.cpp",
+      "sha256": "e65f2bd2f05a34a1e506d9b777924fd18033c88da0fae10d5fb1ebda62d29b44"
+    },
+    {
+      "path": "sycl/src/core/session.cpp",
+      "sha256": "939e49516eb8586b51bfd686261a2cae167ca3e1e9af375d00618940a7df9158"
+    },
+    {
+      "path": "sycl/src/core/verify.cpp",
+      "sha256": "05b25bd0d91760875aa103f6b9f6eb450affc0d27dc0795d62f2f1c184fad850"
+    },
+    {
+      "path": "sycl/src/core/vmm.cpp",
+      "sha256": "1da2937797179aaef3345136e0c16877d4c76be49b927aa2f482a080f191d707"
+    },
+    {
+      "path": "sycl/src/core/weights.cpp",
+      "sha256": "4081cf117915ef1dfeb153903a43b322123774c7857eb4e7bc3587f34b0a4ab5"
+    },
+    {
+      "path": "sycl/src/program/generate.cpp",
+      "sha256": "4309a974a0af70d2144a7ba3d05f7780ee31016c3d4898f9fa1a980bce96b552"
+    }
+  ],
+  "native_queue_selector_and_factory_occurrences": [
+    {
+      "path": "sycl/include/dpct/device.hpp",
+      "line": 644,
+      "text": "sycl::queue *create_in_order_native_copy_queue(bool enable_exception_handler,"
+    },
+    {
+      "path": "sycl/src/prefill/prefill.cpp",
+      "line": 1109,
+      "text": "const char* copy_engine = std::getenv(\"STRATA_PREFILL_COPY_ENGINE\");"
+    },
+    {
+      "path": "sycl/src/prefill/prefill.cpp",
+      "line": 1118,
+      "text": "if (DPCT_CHECK_ERROR(m.copy = dpct::get_current_device().create_in_order_native_copy_queue(true, ordinal)) != 0) {"
+    }
+  ],
+  "interpretation": "Native queue selection is called only during prefill initialization; decode core/program source is byte-identical to the qualified baseline. This does not prove zero runtime effect: the imported queue, events and prefill workspace survive into decode, and the common header changes the build. The three-way repeated experiment measures those effects separately.",
+  "phase_policy": "Prefill improvement cannot compensate for decode regression; decode adoption is decided independently."
+}
