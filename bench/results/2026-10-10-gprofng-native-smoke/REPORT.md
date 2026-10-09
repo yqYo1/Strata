@@ -40,9 +40,19 @@ NULs. The receipt records loader/locale/collector environment controls and one
 CPU description, rather than unrelated environment values or duplicate CPU
 stanzas. These are source corrections; runtime qualification remains open.
 
+Round22 independent review found a ptimer key/value predicate error and a
+child-ownership failure gap. Root corrected the predicate to require the
+`ptimer` key and a positive integer interval, preflights pidfd support before
+launch, and terminates/reaps a direct Popen child if registration fails.
+READY provenance now includes target-effective filtered environment and loaded
+libc/collector hashes. Attribution requires the exact `e.user:name` metric
+header before interpreting the first numeric column. These source changes
+still require root-owned execution; an unexpected schema fails the gate.
+
 The work deadline is 57 seconds from supervisor initialization, reserving three
 seconds for exact-owned termination and reaping within the nominal 60-second
-job. It polls combined text, binary and experiment size against 64 MiB. A
+job; cleanup is a bounded best-effort reserve, not a hard wall-clock guarantee.
+It polls combined text, binary and experiment size against 64 MiB. A
 budget-triggered stop is rejected; polling can observe a burst after crossing
 the limit, so the limit is a supervised stop threshold, not a filesystem quota.
 The controller never discards required history to keep running.
@@ -64,7 +74,7 @@ Profile acceptance requires all of these independently:
 
 - Normal compile, collector and report exits, plus READY/DONE/BYE.
 - No `cerror` in the retained collector XML.
-- A `profile` schema with a `ptimer` attribute value, nonempty `data.frameinfo`
+- A `profile` schema with a positive integer `ptimer` attribute, nonempty `data.frameinfo`
   and nonempty `data.profile`.
 - A parsed positive exclusive user CPU-seconds value for `strata_native_busy`
   in `gprofng display text -metrics e.user -functions` output.

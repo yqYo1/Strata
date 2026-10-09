@@ -20,6 +20,13 @@ DEADLINE = 60
 WORK_DEADLINE = 57  # reserve three seconds for exact-owned termination/reaping
 BUDGET = 64 * 1024**2
 SOURCE = Path(__file__).resolve().with_name('native_target.c')
+ENV_KEYS = {'PATH', 'LD_LIBRARY_PATH', 'LD_PRELOAD', 'LANG', 'LC_ALL',
+            'LC_NUMERIC', 'LC_CTYPE', 'TZ', 'GLIBC_TUNABLES'}
+
+
+def environment_controls(values):
+    return {k: v for k, v in values.items()
+            if k in ENV_KEYS or k.startswith('SP_COLLECTOR_')}
 
 
 def sha(path):
@@ -59,11 +66,8 @@ class Supervisor:
                        'controller_sha256': sha(__file__), 'source_sha256': sha(SOURCE),
                        'compiler': str(compiler), 'compiler_sha256': sha(compiler),
                        'gprofng': str(gprofng), 'gprofng_sha256': sha(gprofng),
-                       'environment': {k: v for k, v in os.environ.items() if k in
-                                       {'PATH', 'LD_LIBRARY_PATH', 'LD_PRELOAD', 'LANG', 'LC_ALL',
-                                        'LC_NUMERIC', 'LC_CTYPE', 'TZ', 'GLIBC_TUNABLES',
-                                        'SP_COLLECTOR_PARAMS', 'SP_COLLECTOR_FOLLOW'}},
-                       'environment_scope': 'Loader, locale and collector controls; unrelated environment values omitted.',
+                       'environment': environment_controls(os.environ),
+                       'environment_scope': 'Supervisor inherited loader, locale and collector controls. Target-effective controls captured separately at READY. Unrelated values omitted.',
                        'uname': list(os.uname()),
                        'cpu_description': Path('/proc/cpuinfo').read_text().split('\n\n', 1)[0],
                        'owners': self.owners, 'steps': [], 'protocol': [], 'cleanup': []}
@@ -85,7 +89,9 @@ class Supervisor:
             return
         # pidfd prevents check/kill PID reuse races. Require Linux/Python support.
         fd = os.pidfd_open(row['pid'])
-        assert same(row), 'identity changed while opening pidfd'
+        if not same(row):
+            os.close(fd)
+            raise RuntimeError('identity changed while opening pidfd')
         self.owners[key] = row
         self.pidfds[key] = fd
 
@@ -121,9 +127,26 @@ class Supervisor:
             child = subprocess.Popen(argv, stdout=stdout, stderr=stderr,
                                      start_new_session=True)
         self.children.append((child, step))
-        row = identity(child.pid)
-        assert row, 'child disappeared before ownership was recorded'
-        self.own(row)
+        try:
+            row = identity(child.pid)
+            assert row, 'child disappeared before ownership was recorded'
+            self.own(row)
+        except BaseException:
+            # A direct Popen child cannot be left outside the owner table when
+            # pidfd registration fails. Its Popen lifecycle owns termination
+            # and reaping; never signal a rediscovered foreign PID.
+            if child.poll() is None:
+                child.terminate()
+                self.record['cleanup'].append({'direct_child_pid': child.pid,
+                                                'signal': 'SIGTERM', 'reason': 'ownership registration failed'})
+                try:
+                    child.wait(timeout=1)
+                except subprocess.TimeoutExpired:
+                    child.kill()
+                    self.record['cleanup'].append({'direct_child_pid': child.pid,
+                                                    'signal': 'SIGKILL', 'reason': 'ownership registration failed'})
+                    child.wait(timeout=1)
+            raise
         self.save()
         return child
 
@@ -206,8 +229,13 @@ class Supervisor:
         tree = ET.fromstring('<root>' + text + '</root>')
         errors = [{'attributes': e.attrib, 'text': ''.join(e.itertext())}
                   for e in tree.iter('event') if e.get('kind') == 'cerror']
-        profiles = [ET.tostring(p, encoding='unicode') for p in tree.iter('profile')
-                    if 'ptimer' in p.attrib.values()]
+        profiles = []
+        for p in tree.iter('profile'):
+            if 'ptimer' in p.attrib:
+                interval = int(p.attrib['ptimer'])
+                assert interval > 0, 'nonpositive ptimer interval'
+                profiles.append({'xml': ET.tostring(p, encoding='unicode'),
+                                 'ptimer': interval})
         dataptrs = [p.attrib for p in tree.iter('dataptr')]
         sizes = {p.name: p.stat().st_size for p in experiment.iterdir()
                  if p.is_file() and p.name.startswith('data.')}
@@ -224,6 +252,11 @@ class Supervisor:
 
     def attribution(self):
         text = (self.out / 'functions.stdout').read_text(errors='replace')
+        metric_header = re.search(r'^Current metrics:\s*e\.user:name\s*$', text, re.M)
+        self.record['native_attribution_metric_header'] = metric_header.group(0) if metric_header else None
+        if not metric_header:
+            self.record['native_attribution'] = []
+            return False
         values = []
         for line in text.splitlines():
             if re.search(r'\bstrata_native_busy\b', line):
@@ -275,6 +308,14 @@ def main():
     parser.add_argument('--compiler', type=Path, default=Path('/usr/bin/cc'))
     parser.add_argument('--gprofng', type=Path, default=Path('/usr/bin/gprofng'))
     args = parser.parse_args()
+    # Test support using our own process before any child can be launched.
+    assert callable(getattr(os, 'pidfd_open', None))
+    assert callable(getattr(signal, 'pidfd_send_signal', None))
+    own_fd = os.pidfd_open(os.getpid())
+    try:
+        signal.pidfd_send_signal(own_fd, 0)
+    finally:
+        os.close(own_fd)
     assert re.fullmatch(r'[a-zA-Z0-9][a-zA-Z0-9_.-]*', args.run_name), 'unsafe run name'
     base = args.base.resolve(strict=True)
     assert base.is_dir() and base.stat().st_uid == os.getuid(), 'base must be owned'
@@ -330,6 +371,20 @@ def main():
             assert row and str(row['pid']) in supervisor.owners, 'READY PID not owned child'
             assert same(supervisor.owners[str(row['pid'])]), 'READY identity mismatch'
             supervisor.record['target_identity'] = row
+            try:
+                actual = dict(item.decode().split('=', 1) for item in
+                              Path('/proc', str(row['pid']), 'environ').read_bytes().split(b'\0') if b'=' in item)
+                supervisor.record['target_environment'] = environment_controls(actual)
+                loaded = set()
+                for line in Path('/proc', str(row['pid']), 'maps').read_text().splitlines():
+                    fields = line.split(None, 5)
+                    if len(fields) == 6 and (fields[5].endswith('/libc.so.6') or fields[5].endswith('/libgp-collector.so')):
+                        loaded.add(fields[5])
+                supervisor.record['target_loader_objects'] = [{'path': p, 'sha256': sha(p)} for p in sorted(loaded)]
+                assert same(row), 'target changed during provenance capture'
+            except BaseException as error:
+                supervisor.record['target_provenance_error'] = repr(error)
+                raise
             supervisor.toggle('resume', row, binary)
             assert os.write(request, b'RUN\n') == 4
             assert re.fullmatch(r'DONE [0-9]+', supervisor.read_line(child, reply)), 'invalid DONE'
