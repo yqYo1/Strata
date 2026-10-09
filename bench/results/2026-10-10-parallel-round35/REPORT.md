@@ -5,7 +5,7 @@ had returned and no research agent was active. Root resumed multiple independent
 read-only researchers and continued its own execution. The recurring assignment,
 shared-history, separate implementation and root-only testing rules are now in
 AGENTS.md. Returned reports remain files with exact hashes; they are reviewed
-before adoption. Registryv42 has132 completed Luna reports and preserves prior
+before adoption. Registryv45 has139 completed Luna reports and preserves prior
 immutable snapshots in the Git history.
 
 ## Division of work
@@ -21,12 +21,12 @@ fixtures and pure byte-framing helper. Root owns every actual execution and
 serializes builds, tests, inference, profiling and cleanup with the measurement
 lock. Research does not hold up independent main work.
 
-| Latest registryv42 assignment | Model | Scope | State at snapshot |
+| Latest registryv45 assignment | Model | Scope | State at snapshot |
 | --- | --- | --- | --- |
-| Actual tokenizer assets | gpt-6-luna | Actual pack assets, config/types/template admission | Running, read only |
-| Runtime admission | gpt-6-luna | No-device execution/tracing/interposition coverage for CPU service | Running, read only |
-| Implementation agent | gpt-6.1-sol | Separate bounded independent-prompt preparation helper | Running source only; root tests after report |
-| Main agent | Root | Actual GPU failure closure/archive and next serial qualification | All execution closed; no live GPU process |
+| Long-prompt reference researcher | gpt-6-luna | New36004/37462 inputs and matched baseline/controller gates | R68 running, read only |
+| CPU service researcher | gpt-6-luna | Page residency/assembly/phase calibration, primary references | R68 completed, read only |
+| Separate implementation | gpt-6.1-sol | v1/v2 helper and adversarial fixture source | Completed; root8/17fakefixtures passed |
+| Main agent | Root | Actual host input preparation and evidence/controller work | Owner-qualified long inputs; no live GPU process |
 
 Every assignment receives the past-report directory and reviewed decisions.
 R45 found no distinct external exact-weight AVX2 NT1/2 candidate; this is a
@@ -322,3 +322,84 @@ bound is not a newly approved blanket full-FFN tolerance. All actual builds,
 tests, tokenization, inference, profiling and cleanup remain owned by root and
 serialized by the measurement lock. No target throughput or new live-policy
 performance has been achieved by these source reports.
+
+
+R65/R66 reviews returned while root qualified the separate implementation.
+The v1 fake8fixture pass is preserved at632f9afe; its actual-input preparation
+was held for FIFO open, resource and final-record completion gaps. Separate v2
+resolves them: explicit xhigh/special config, nonblocking regular-file admission,
+1MiB pre-encode rendered cap, and candidate completed=false. Owner acceptance
+requires normal child exit and independently reverified whole-bundle hashes.
+
+Root's17v2 fake CPU fixtures passed in0.254s, normal0, no cleanup/survivors,
+wall60s/CPU30,31s/AS1GiB/RSSpoll768MiB/FSize32MiB/NOFILE64/core0 bounds.
+These cover FIFO, unused-tail hashes, UTF8byte caps, exact80%unique16-shingle
+and R63near-copy boundaries, plus final-record write/fsync/close failure.
+Source/proof is committed and pushed atd652471e. R67 independently found no new
+source blocker. Actual tokenizer inputs remain separate: /usr/bin/python3
+lacks regex; select an existing suitable host environment before execution.
+
+Correct R65's runtime identity:606 actually executed18fresh CPU processes and
+864synthetic cases in native_wrapper_parity, whose pinned CMake links only
+strata_kernels_cpu. The quoted native_expert_parity link snippet is another
+target/snapshot. Nested build metadata runtime_tested=false does not negate
+the actual matrix pass. Device API silence was not instrumented; neither CPU
+results nor ELF dependencies establish silence. Raw report/receipt bytes stay
+unchanged; root-runtime-admission-review-round65.json records the correction.
+
+R67's distinct corpus task runs while root records qualification. Whole-file
+SYCL and CPU source inputs must be frozen before validation, without cuts,
+padding, repeated documents or score feedback. Distinct declared sources plus
+a shingle screen do not prove statistical/population independence. The next
+Luna scopes use actual prepared-input or host-role-plan results, rather than
+repeat reviewed v1/v2 questions. Newregistry reconciles stale historical round
+labels without editing old snapshots. No new model inference, performance
+adoption or full physical262144-position qualification follows from this step.
+
+
+R67 corpus selection returned while root prepared and checked actual inputs.
+Root froze4training/5validation whole source files in manifest order before BPE
+or any model scores. The existing host venv supplies the required regex/Jinja
+packages; no new environment install was needed. Actual host preparation used
+wall180s/CPU120,121s/AS1GiB/RSSpoll768MiB/FSize32MiB/NOFILE64/core0 bounds.
+
+Original owner-v2 receipt remains failed: child normal0 produced valid candidate
+files, but root's body oracle expected untrimmed final whitespace. The pinned
+template uses render_content|trim. Original actual_pack_tokenized=false was an
+initial owner-admission field; the child did execute actual tokenization. Root
+records that fact here without rewriting the original status or bytes.
+
+Corrected root callerv3 passed in0.930s, normal0/no cleanup/survivors, with exact
+whole-file source correspondence after the production template's outer trim,
+private modes, source/asset/manifest hashes, post-close return marker and output
+hashes independently reverified. Train has36004IDs/3whole documents; validation
+has37462IDs/4whole documents. Common prefix is88IDs; shared unique16shingles
+92/31235. These are source-disjoint components inside one codebase, without an
+independent-authorship/population claim. No document/token cut, padding,
+repetition, score-feedback selection or model inference was used.
+
+The six duplicate owner-v2 candidate files (541390logical bytes) were retired
+under the measurement lock after proving they exactly match the canonical v3
+bundle. Both original owner receipts remain unchanged. Keep the one canonical
+bundle outside Git for root's future >=32K model-reference/routing comparison;
+review once that comparison closes or inputs are superseded. Compact candidate,
+manifest, owner receipts/controllers and deletion manifest are committed here.
+
+R68 now shifts both Luna scopes to new long-prompt reference/controller changes
+and real-weight CPU calibration page residency. Root continues source/evidence
+work while they research, without mid-task intervention. The original32K model
+outputs cannot qualify these new prompts. New actual model baseline, candidate
+math/phase/repeats and full physical262144-position lifecycle remain future
+separate execution. No target throughput or new live-policy adoption is claimed.
+
+
+R68's CPU-service plan returned while root inspected the next controller seam.
+It separates source open/map, role assembly/first-touch, prepared direct-wrapper
+service and pool timing; passive mincore/getrusage observations stay outside
+inner timing. Residency snapshots can become stale; fault deltas do not assign
+cost to expert/thread/role. The report contains no actual service result or
+new other-engine comparison. No page-cache advice/reset/pinning is needed.
+Its read-only research scope does not revoke the user's authorization for root
+implementation and measurements. The long-prompt controller reviewer is pending
+at this snapshot; root confirms currentv6 hardcodes32768 and old reference
+outputs, so new prompts require new matched references before candidate claims.

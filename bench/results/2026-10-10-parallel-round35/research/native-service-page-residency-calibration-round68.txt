@@ -1,0 +1,60 @@
+# Native CPU expert-service page residency plan — round 68
+
+## Decision and scope
+
+Read-only measurement design for a future bounded real-weight CPU expert-service calibration. It answers how to observe source-page residency and separate source assembly/first-touch effects from recurring wrapper service without resetting the system page cache. No payload was read, executable was built or run, test/performance/profiler/GPU query was performed, or artifact/Git state changed. Only this report was written.
+
+The source boundary is `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010`, commit `66aaec3a66ad9ed12e6d042cffe743c47e364432`. This plan preserves the round 46 cohorts and round 48 reader contract. It makes no timing or performance claim and does not authorize implementation or a measurement run.
+
+The central separation is:
+
+1. **Source open/map:** opening GGUF and establishing read-only mappings creates virtual mappings; it does not mean the mapped payload pages have been read into RAM.
+2. **Source assembly / first touch:** production `FileExpertSource::copy_blob` gathers gate, up, and down slices from separate tensor extents and copies them into one caller-owned logical blob. This touches source pages and writes the destination. Record this as a distinct load/assembly phase.
+3. **Direct wrapper service:** the timed wrapper operates on the assembled scratch blob, with its cohort prepared and pre-touched outside the timed interval. This is a CPU service measurement on prepared host buffers, not a GGUF page-in measurement.
+4. **Pool arm:** retain the separate production-pool measurement from R46. Do not mix its scheduler or phase-wall-time effects with the source-load arm or direct wrapper result.
+
+A pass after first touch is not a controlled “warm cache” treatment, and the first pass is not guaranteed cold disk I/O. State observed starting residency and faults; call the wrapper arm “resident in host RAM, streaming beyond L3” only when the R46 bytes and observed conditions support that description. Do not claim disk-cold, page-cache-cold, pinned, or deterministic residency.
+
+## Why the reader boundary matters
+
+R48 establishes that GGUF metadata identifies three separately located role tensors, not one contiguous per-expert blob. For each `(layer, expert)`, production assembly reads the role-specific selected spans and concatenates `[gate | up | down]`; the mapped shard VMA may cover a much larger file. `mapped_blob` is null in GGUF mode, and the reader's staging pointer is reused. Use a caller-owned `NativeFmt.bytes` scratch buffer via `copy_blob`; do not time a raw presumed-contiguous GGUF extent or retain a second model-sized copy.
+
+For residency attribution, construct exact role extents from the validated reader plan and metadata: each role start is its file/tensor base plus `expert * role_stride`; GU reads gate plus up (`2*up_off`), Down reads its Down slice (`bytes-down_off`). Preserve separate resolved shard paths and offsets. Do not count a contiguous `blob_bytes` range inside GGUF. Coalesce page-aligned intervals per mapped shard for observation, deduplicating overlapping pages. Sample only selected extents and the bounded cohort, never scan the whole multi-tens-of-GB pack.
+
+R46 requires separate 192-ID train and 192-ID holdout cohorts at minimum, each with more than 64 MiB of relevant phase bytes per cell, and caps the live full-blob cohort at 1 GiB. Preserve its geometry-derived cohort growth rule when an individual phase needs more IDs; do not lower the sample floor to fit. R63 indicates route-ID sufficiency for prioritized Down type 20/42 NT cells, but route eligibility is not a validated payload sample manifest. Bind exact IDs, format/NT, shard identity, metadata and extent hashes under the R46/R48 validation gates. If fewer than 384 valid route-derived IDs remain in a cell, report infeasibility or use a separately labeled format-kernel cohort; do not silently mix the two.
+
+## Passive observations, no cache reset
+
+On Linux, `mincore(2)` reports a snapshot of whether pages in a process mapping are resident. The address must be page-aligned; the length is rounded up to pages. Its result may already be stale when returned, and unlocked pages can change residency at any time. Therefore:
+
+- Capture page size and exact mapping identity, then query only page-aligned ranges intersecting the declared source role extents. Record bitmap/counts and the sampled byte/page coverage, not a single unqualified “cache warm” Boolean.
+- Take snapshots at declared boundaries: immediately after reader open/map but before assembly; after the bounded assembly sweep; and before/after each timed corpus block if the overhead is acceptable. Keep the same ranges and report each snapshot separately. A mincore call is diagnostic overhead, so do not place it inside the outer timed wrapper round.
+- Treat `mincore` as advisory evidence for file-mapping residency. It does not pin pages, report whether the data is in CPU cache, establish actual I/O history, or guarantee that pages stay resident through the next access. It also says nothing about anonymous scratch buffers' contents being in LLC.
+- For `mmap` subranges, account for the mapping base and file offsets carefully; the sampled virtual address must lie inside the open mapping, and returned page bits correspond to whole virtual pages. Do not map/scan extra shards merely to make a residency query possible.
+
+Capture `getrusage(RUSAGE_SELF)` deltas around the assembly sweep and each whole timed corpus block, outside each inner wrapper call. On Linux, `ru_minflt` counts faults served without I/O and `ru_majflt` counts faults requiring I/O; `RUSAGE_SELF` aggregates resource use from all process threads. Report the pair of deltas with process/thread count and block boundary. These counters cannot identify which expert or thread caused a fault, do not distinguish individual source roles, and are not a substitute for mincore or elapsed time. A near-zero fault delta is an observation, not proof of residency or absence of stalls.
+
+Record monotonic wall duration separately for each full cohort round as R46 specifies. Avoid per-call timers. Do not place hashing, mincore, `getrusage`, logging, or `copy_blob` inside the direct wrapper timing interval. Keep assembly timing/fault deltas as a separately named load result; source-copy throughput is not kernel service demand. Validate the assembled bytes and correctness before timing, and recheck pack identity afterward as R48 requires.
+
+## Natural-load sequence
+
+1. Record host/kernel/filesystem, page size, pressure/load, CPU conditions, source mapping identity and file sizes; open the pinned read-only source through the validated production path. No cache-control advice is issued.
+2. Snapshot the exact selected role pages with mincore and `RUSAGE_SELF` counters. This is the ambient starting state, not a cold baseline.
+3. Assemble the declared bounded set with `copy_blob` into caller-owned buffers one cohort at a time, respecting the 1 GiB total full-blob cap. Capture outer elapsed time, post-sweep residency sample and fault deltas. Label it `ambient source assembly / first-touch`; the first sweep may benefit from pre-existing page cache and may incur faults.
+4. Optionally repeat the same assembly sweep once, explicitly labeled `subsequent assembly under naturally evolved residency`. Do not evict pages between sweeps. This contrasts observed ambient first and subsequent passes but is not an independently randomized cold/warm experiment.
+5. Validate bytes/correctness and source identity; pre-touch the prepared cohort outside the timed region. Run the 25 full shuffled rounds on training IDs and separately on disjoint holdout IDs per R46. Capture outer wall-time samples, pre/post block residency samples and process fault deltas. Never divide a pool batch duration by job count to manufacture per-expert service.
+6. Keep only compact IDs, role extents/hashes, residency bit counts/scope, fault deltas, per-round values, source/build/environment receipts and correctness outcomes. Retire no active fixture or last required artifact; this plan itself does not perform cleanup.
+
+Repeated direct wrapper rounds primarily exercise the assembled host buffer working set. With the R46 threshold (>64 MiB relevant bytes per phase/cell) they exceed the stated 32 MiB L3 size of the 5600X by 2x, but they do not become file-backed page-cache measurements merely because their bytes originated in GGUF. Where buffers are copied into anonymous scratch, source file-page residency and wrapper cache behavior must remain distinct in labels and interpretation.
+
+## Explicitly excluded cache interventions
+
+Do not call `madvise(MADV_DONTNEED)`, `posix_fadvise(POSIX_FADV_DONTNEED)`, `drop_caches`, `sync`-then-drop procedures, or other eviction/reset mechanisms. Even process-range advice can alter mapping state and subsequent file-backed accesses may repopulate it; it is not needed for the natural-load question. Do not use WILLNEED/SEQUENTIAL/RANDOM advice either: prefetch/read-ahead hints would deliberately change the source access condition. Do not use `mlock` or other page-pinning policy. Leave the operating system and system-wide cache untouched.
+
+The Linux man-pages document mincore's residency result as a snapshot that may become stale; getrusage's self counters as sums across threads with soft/hard fault meanings; and MADV_DONTNEED as a request that permits releasing mapping resources and later repopulation. References: [mincore(2)](https://man7.org/linux/man-pages/man2/mincore.2.html), [getrusage(2)](https://man7.org/linux/man-pages/man2/getrusage.2.html), [madvise(2)](https://man7.org/linux/man-pages/man2/madvise.2.html), [posix_fadvise(2)](https://man7.org/linux/man-pages/man2/posix_fadvise.2.html).
+
+## Interpretation and limits
+
+A file-backed mapping can fault pages into the process on assembly, while repeated wrapper calls use already assembled data; mixing these phases would make a purported compute service number sensitive to page-cache state and copy traffic. Conversely, a process-level fault count alone cannot assign those events to the source adapter or a particular worker. The combined passive snapshots, process-level fault deltas, explicit phase boundaries, and no-reset policy make those limits visible without pretending that residency is fixed.
+
+Do not infer natural production request latency or system-wide cache benefit from this isolated calibration. The fixed ID cohorts and prepared buffers characterize only the measured CPU service boundary. Production request behavior still requires its own paired end-to-end evidence and unchanged correctness/state gates. This report proposes no candidate, performance conclusion, or policy change.

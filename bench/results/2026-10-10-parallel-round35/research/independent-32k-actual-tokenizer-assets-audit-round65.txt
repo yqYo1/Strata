@@ -1,0 +1,36 @@
+Round 65 — actual qwen3.8-flash-next-iq3_s tokenizer asset admission audit
+
+Scope
+
+Read-only static audit of the selected pack's five tokenizer files and the frozen source implementation. No GGUF/weight access, tokenizer invocation, project module import, dependency/runtime query, server/engine, model payload, tests/build/syntax, GPU/profiling, cleanup, or Git operation. Source worktree: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010`, HEAD `66aaec3a66ad9ed12e6d042cffe743c47e364432`.
+Frozen source hashes: `tools/strata_tokenizer.py` `9b0327e25aa62754406a924db6cc137e6edb1d93c7af76a4f3d14a8920ea72c8`; `serve/frontend.py` `095bbac7d49b19d815d2634457d14d216ba9bd4e98998a4e3b4288f20a25e923`.
+
+Actual assets and identity
+
+The exact selected pack path is `/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/`. All five required files exist. Sizes below are bytes; hashes are SHA-256.
+
+- `vocab.json`: 5,737,005 bytes; `4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4`
+- `merges.txt`: 3,353,258 bytes; `4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332`
+- `token_type.json`: 744,960 bytes; `5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b`
+- `tokenizer.json`: 541 bytes; `c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf`
+- `chat_template.jinja`: 9,993 bytes; `12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce`
+
+JSON/text parsing confirms a contiguous vocabulary ID map 0–248,319 with 248,320 unique entries; 247,587 merge lines; and 248,320 token-type entries. Types count: 248,044 ordinary (1), 27 control (3), 6 user-defined (4), 243 padding (5). The exposed special-literal IDs include `<|endoftext|>` 248044, `<|im_start|>` 248045, `<|im_end|>` 248046, `<tool_call>` 248058, `<tool_response>` 248066, and `<think>` 248068. Type 5 entries are `[PAD248077]` through `[PAD248319]` and are not treated as literal specials by the reference tokenizer's type-3/type-4 matcher.
+
+`tokenizer.json` declares `model=gpt2`, `pre=qwen35`, `vocab_size=248320`, `n_merges=247587`, `add_bos_token=false`, and the exact `QWEN35_PATTERN` shipped in `tools/strata_tokenizer.py`. It declares BOS and padding ID 248044 and EOS ID 248046. The asset's pattern equals the source constant by inspection: it includes `\p{M}` with the letter class and punctuation exclusion, which is the material qwen35-vs-qwen3 behavior called out in the reference source. This is the expected qwen35 byte-level BPE configuration; counts align with the source header.
+
+What constructor does and does not consume
+
+The new host helper can read these files without any model binary. The exact constructor contract visible in source is `Tokenizer(tokens, merges, token_types, pre="qwen35", special_ids=None)`. Rebuild token order from the vocab mapping's integer values. Pass the actual type list. The constructor uses the tokens, merge ordering, and types; it records `pre` and `special_ids` but does not branch on `pre` and does not use `special_ids` to insert BOS/EOS or encode text. Its implementation hardwires `QWEN35_PATTERN`, so admission must reject any config whose declared `pre` or `pre_pattern` differs from this source, rather than assume the config changes tokenizer behavior. The pack values match.
+
+`tools/batch_test.py::tokenizer(path)` is the exact established loading pattern for vocab/merges/types, but that script itself later constructs an engine; reuse only its small loader logic, never run the script. `tools/strata_tokenizer.py` imports `regex` at module import. Its `sys.path.insert(...)` calls occur inside `Tokenizer.from_gguf` and `extract`, not top-level module import; do not call those weight/GGUF paths. `serve/frontend.py` imports standard Python modules and Jinja2, not the engine. Its `ChatTemplate` loads the selected Jinja file with an `ImmutableSandboxedEnvironment`, `trim_blocks=True`, `lstrip_blocks=True`, `loopcontrols`, a `tojson` filter, and `raise_exception` global. Avoid importing `server.py`, which proceeds to `StrataEngine` construction.
+
+Template and token-boundary admission requirements
+
+The current template depends on `enable_thinking` and `reasoning_effort`. With the option absent it uses xhigh reasoning effort and emits an xhigh instruction in a generated system turn; it rejects unsupported effort values. At `add_generation_prompt=True` it appends `<|im_start|>assistant\n` followed by `<think>\n` by default, or an empty think block when thinking is explicitly disabled. Therefore freeze and record the exact kwargs (recommend explicit `reasoning_effort="xhigh"`, or a deliberately selected supported value) and `add_generation_prompt=True`; do not append a manually copied token suffix. The template text includes role delimiters and `<|im_end|>` where its message rendering rules call for them. Tokenize the rendered result with `parse_special=True`, as `Service.encode_prompt` does. This makes template-emitted type-3 control markers IDs and also recognizes type-4 user-defined markers. In user-supplied text, quoted control markers require the frontend's literal-escaping behavior if strict production equivalence is needed; a simple new prompt helper should avoid embedding marker-looking strings in source content.
+
+Admission checks for the CPU helper: assert all five files exist and hash them; validate config `model`, `pre`, `vocab_size`, `n_merges`, `add_bos_token`, and pre-pattern against the actual source; validate the vocab IDs are a unique contiguous range, type length equals vocab size, merge line count equals declared count, and representative special names resolve to the type and ID listed above. Use `token_type.json` as the class authority and `tokenizer.json` special IDs as cross-check metadata, not a suffix to append. The tokenizer does not auto-add BOS/EOS. The chat template must emit its own configured message and generation markers; no fixed nine-token ending is supported by these assets as an independent tokenizer rule. Keep final rendered text, its options, exact asset hashes, and encoded ID hash together for each owned input.
+
+Limits
+
+This audit establishes that these exact assets are structurally present and consistent with the frozen reference's declared dimensions and mode. It did not instantiate or execute the tokenizer, verify a text-to-ID result, prove round-trip correctness for this pack, or establish source provenance/independence for any existing 32K fixture. Template-derived text and the token count still require the separately authorized owner-side CPU preparation and validation. The 32K admission outcome remains distinct from the full 262,144-position lifecycle gate and its exact head/LP/MTP/live-parts/phase checks.
