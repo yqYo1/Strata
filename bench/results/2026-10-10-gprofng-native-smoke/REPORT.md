@@ -1,9 +1,11 @@
 # Native gprofng FIFO protocol smoke v2
 
-Status: **SOURCE ONLY / UNTESTED. Runtime gate OPEN.** No build, syntax check,
-help/version query, target, profiler, model or GPU execution occurred for this
-implementation. Root owns the serial validation and all cleanup. This report
-makes no measured performance or profiler-usability claim.
+Status: **native collection rejected; no usable profile.** Root ran one native
+CPU collection and extracted its closed evidence. The latest reader correction
+was checked on that evidence without recollection; the complete corrected
+controller has not been rerun. The implementation agent performed source work
+only. Root owns all serial execution and cleanup. No model or GPU ran here.
+This report makes no measured model-performance or profiler-usability claim.
 
 Base revision: `391502facfcf72d3371fc487fdb47e8840bd5b56`
 (`docs/sycl-storage-retention-2026-10-09`). The independent implementation branch
