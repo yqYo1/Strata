@@ -970,6 +970,7 @@ bool parse_i64_list(const char* s, std::vector<int64_t>& out, std::string& err) 
 
 /// The pool's adapter plus the wall-clock it spent, so the report can say how much of the token was the CPU.
 struct Drive {
+    std::unique_ptr<strata::core::CacheRoutePairs> route_pairs;
     strata::core::ExpertDispatch d;
     double cpu_ms = 0;
     int64_t calls = 0;
@@ -983,6 +984,7 @@ struct Drive {
 void drive_pool(void* user, const float* x_f, const int32_t* ids, const float* weights, int64_t n_embd, int64_t k,
                 float* out) {
     Drive* t = (Drive*) user;
+    if (t->d.cache_route_pairs) t->d.cache_route_pairs->unsupported_callback();
     const Clock::time_point a = Clock::now();
     strata::core::expert_pool_dispatch(&t->d, x_f, ids, weights, n_embd, k, out);
     t->cpu_ms += std::chrono::duration<double, std::milli>(Clock::now() - a).count();
@@ -1630,6 +1632,7 @@ int visible_output_prefix(int accepted, int64_t remaining, const int32_t* target
 }  // namespace
 
 int main(int argc, char **argv) try {
+    const bool cache_route_pairs_enabled = strata::core::CacheRoutePairs::enabled();
     // **UNBUFFERED, BECAUSE THE INTERESTING OUTPUT IS THE OUTPUT BEFORE A CRASH.**  `stdout` redirected to a
     // pipe or a file is block-buffered, so a program that dies loses every line it had already printed - which
     // turns "it crashed at step 7" into "it crashed somewhere", and the difference is a debugging session.
@@ -4966,6 +4969,10 @@ int main(int argc, char **argv) try {
 
     if (remote_opt && !remote_opt->init(err)) { std::fprintf(stderr, "strata generate: %s\n", err.c_str()); return 1; }
     Drive drive;
+    if (cache_route_pairs_enabled)
+        drive.route_pairs = std::make_unique<strata::core::CacheRoutePairs>();
+    if (drive.route_pairs && (!o.serve || o.batch || o.batch_mtp || o.pipeline_windows))
+        std::fprintf(stderr, "CACHE_ROUTE_PAIRS_V1 MODE enabled=1 supported=0 reason=unsupported_entrypoint\n");
     // #731 (opt-in, STRATA_DISJOINT_ADAPT=1): the adaptive tiers leave an expert a helper GPU holds out of the primary's
     // promotion candidates (it would sit in both caches).  Asked live, from the helper's own cache (RemoteExperts::holds,
     // #854), so an expert the helper's tier swaps in or out later is followed - never a copy taken at load.
@@ -10410,6 +10417,15 @@ int main(int argc, char **argv) try {
             const uint64_t file_bytes0 = src.file_read_bytes();
             const int64_t decode_look0 = drive.d.cache_hits + drive.d.cache_admitted + drive.d.cache_refused;
             const int64_t offload0 = drive.d.offload_entries;   // #588
+            if (drive.route_pairs) {
+                // Boundary callbacks execute on this caller; worker kernels never update pair counters.
+                const bool supported = strata::kernels::cpu::expert_layout().native && n_stages == 1 &&
+                    use_mtp && S_mtp == 4 && o.spec_split && o.spec == 4 && !o.batch && !o.batch_mtp && o.pipeline_windows == 0 &&
+                    !kvg.on && drive.d.usage.empty() && !ajob && !o.vram_elastic &&
+                    drive.d.remote_count == 0 && drive.d.peer == nullptr && drive.d.pcie_num == 0;
+                drive.route_pairs->begin(g.n_layers, g.n_expert, host_res.data(), host_res.size(), supported);
+                drive.d.cache_route_pairs = drive.route_pairs.get();
+            }
             if (cancelled) finish = "cancel";
             // ======== --pipeline-windows 2: the decode windows with the two cards overlapped ========
             // Stage 0 (the first card) runs window K+1 while stage 1 verifies window K, on the guess that K is accepted
@@ -11479,6 +11495,12 @@ int main(int argc, char **argv) try {
             const int64_t req_hits = drive.d.cache_hits - decode_hits0;
             const int64_t req_look = (drive.d.cache_hits + drive.d.cache_admitted + drive.d.cache_refused) - decode_look0;
             const int64_t req_offload = drive.d.offload_entries - offload0;
+            if (drive.route_pairs) {
+                // Existing wait_commit above drained decode; report before DONE, then detach before next prefill.
+                drive.d.cache_route_pairs = nullptr;
+                drive.route_pairs->report(stderr, host_res.data(), host_res.size(), req_hits, req_look,
+                                          req_offload, drive.d.failed);
+            }
             // #471: the prompt tokens this request read - all the fresh ones, or as far as the prompt pass got when a
             // cancel stopped it part-way (a cancelled request used to be logged and counted as having read them all)
             const int64_t fresh = n - resume;

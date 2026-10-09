@@ -1,0 +1,50 @@
+Source-only implementation: cache route pairs v1, 2026-10-10
+
+Status and ownership
+Implemented in the precreated isolated worktree /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010, base 96bd5bb4e054f6ddcf677fd96e161b499a013fd7, branch diag/sycl-cache-route-pairs-v0141-20261010. No Git mutation, build, syntax check, test, inference, GPU query, profiler, service action or cleanup was performed. Root owns serial review, compilation, CPU fixtures and any later owned model run after live D closes. Sources remain uncommitted for root review; no adoption or execution claim.
+
+Motivation and preserved boundaries
+Read registry v32, round35 profile/quota evidence and native histogram production source plus round32 controller review. A rank ordering is not heat. This measures actual classified main-model decode routes without changing quotas, profile order, lookup decisions, source residency, tensor arithmetic or kernel dispatch. Full physical-262144 lifecycle, unresolved original C math failure, independent full-head/all-66-state reference comparisons, generated IDs/logprobs, MTP, health/fault and normal-owned-exit gates remain independent. No performance, DRAM, worker-tail, quota-benefit or math-clearance claim follows from these counters.
+
+Opt-in and scope
+STRATA_CACHE_ROUTE_PAIRS is parsed before GPU setup: unset or exactly 0 disables allocation/output; exactly 1 enables; every other string throws. Allocation is host-only and fixed, less than 2 MiB by static_assert, with 24576 cells and an owned copied resident-slot table. Default incurs null diagnostic checks but changes no routing/arithmetic and allocates no collector. No GPU allocation, event, query or readback is added.
+
+Primary supported scope is serving main-model native decode, one stage, MTP/spec4 split, no batch or pipeline windows, no elastic KV/cache or adaptation, no remote/peer and zero PCIe share; dimensions must be exactly 48 layers x 512 experts with an exact host_res table. Existing current runtime conditions are checked at each request's decode start. Other serving combinations emit supported=0 and complete=0 rather than claiming coverage. Non-serving, batch and pipelined entrypoints explicitly emit unsupported_entrypoint and has no per-request DONE diagnostic. Prefill and separate MTP drafter counters are excluded by attaching the pointer only after decode scalar baselines and detaching before DONE/next prefill. An unexpected scalar main callback marks error/incomplete. Non-serving, batch-service paths that never reach this serving decode block are not qualified.
+
+Counting and callback ownership
+Hooks sit beside the existing cache_hits/offload_entries/cache_refused increments in expert_pool_dispatch_multi, after each ID's range validation and final kind classification. Each routed token/expert entry counts once: kind0 hit, kind<0 refused CPU route, kind>0 offloaded. CPU blob failure can leave partial refused entries, consistent with original scalar increments, but dispatch_failed forbids complete. callback_pairs counts each distinct expert at most once within one layer callback regardless of duplicate token entries or classification. It is a unique classified callback pair, NOT CPU jobs, pool task fragments, or the native histogram caller-job counter; it includes GPU hits as well as CPU routes. callback count includes callbacks reaching the classification loop. Counters are not weighted by router weights.
+
+Verifier run_boundary invokes callbacks directly on the caller after ready-event waits; the CPU pool dispatch returns after workers complete. Worker kernels have no collector pointer and do not write its cells. begin records the calling thread identity; wrong-thread callbacks only set an atomic error and return before any ordinary counter/seen-table access. Reset and report are caller-owned; existing ver.wait_commit drains the last decode commit before the reporter. Adaptation/async mutation and multistage paths are excluded up front. This is not a claim of arbitrary concurrent-callback support. Wrong-thread error, failed dispatch, invalid IDs/dimensions, overflow, scalar path, empty coverage, resident mutation and reconciliation failure all prevent complete=1. Fatal early exits may omit END/DONE; a consumer must reject missing frames.
+
+Framing schema (ASCII stderr, flushed before existing DONE)
+CACHE_ROUTE_PAIRS_V1 BEGIN request=N layers=L experts=E enabled=1 supported=B truncated=0 error=B complete=B
+CACHE_ROUTE_PAIRS_V1 RESIDENCY request=N cells=C unchanged=B start_fnv1a64=HEX end_fnv1a64=HEX
+CACHE_ROUTE_PAIRS_V1 PAIR layer expert entries hits refused offloaded callback_pairs
+CACHE_ROUTE_PAIRS_V1 END request=N cells=C callbacks=C entries=C hits=C refused=C offloaded=C callback_pairs=C done_hits=C done_look=C done_offload=C reconciled=B complete=B
+
+PAIR fields are positional and emitted only for nonzero entries in ascending (layer,expert) order, at most 24576 records. Individual values are bounded uint64 decimal. Each PAIR line is at most 140 bytes at maximal uint64 values, hence all pair lines are <=3440640 bytes; short fixed framing lines keep total below 4 MiB/request. Internal counters check increment and total-sum overflow. There are no raw lookup lines, timestamps or retained source pointers. Request ordinal starts at one for serving decode requests; it is collector-local, distinct from other protocol/session identifiers. The stream has no arbitrary truncation path: sparse capacity is exactly the model cell count, truncated=0, and unsupported dimensions are rejected rather than truncated.
+
+Residency verification
+Copies all 24576 int32 host_res slot identities at decode start; END verifies exact byte equality with the live full table. FNV-1a64 is emitted over each int32 as four canonical little-endian bytes, including -1/nonresident and slot IDs, for joinable identity fingerprints. The hash is explicitly noncryptographic; unchanged is based on exact table comparison, not hash equality. The snapshot retains owned integers, never pointers to backing storage. Supported paths exclude mutation machinery; changed table forbids complete. No resident sets or GPU buffers are fetched for this diagnostic.
+
+Scalar reconciliation
+END requires pair hits == req_hits, hits+refused == req_look, offloaded == req_offload. req_look is the original DONE delta cache_hits+cache_admitted+cache_refused; supported window paths never admit. An unexpected admission/scalar path therefore cannot silently pass. Also require positive entries, no errors, unchanged residency and supported mode. entries == hits+refused+offloaded follows each classification hook; consumers should independently enforce it and sum PAIR records, callback_pairs<=entries, nonnegative DONE fields, exactly one matched BEGIN/RESIDENCY/END per completed request, unique in-range pairs, identical request IDs and dimensions, no empty/incomplete frame pass. Normal protocol, full-reference and health gates remain independently required.
+
+Source-only independent CPU fixture
+sycl/tools/cache-route-pairs-test.cpp uses only the portable diagnostic header and standard library. Fixtures cover strict env parsing, reset/request ordinal, repeated experts within/across callbacks, hit/refused/offloaded totals and independently expected raw PAIR strings, exact resident mutation, ID bounds, wrong-thread rejection, scalar-DONE mismatch, unsupported dimensions, empty request rejection, and maximal sparse cell count/output byte budget. It is not built or executed here and has no GPU or production resolver oracle. No CMake target added; root can compile it independently.
+
+Root serial validation recipe (not executed)
+From this worktree, with root's ordinary CPU compiler and temporary private output location:
+c++ -std=c++17 -pthread -I sycl/include sycl/tools/cache-route-pairs-test.cpp -o ROOT_PRIVATE_PATH/cache-route-pairs-test
+ROOT_PRIVATE_PATH/cache-route-pairs-test
+Then review/build the actual SYCL target using the existing uniform pinned oneAPI flags and receipts, with no march change. Check disabled unset/0 paths emit no frames and retain model/reference outputs. Admit invalid env without model/GPU helpers. For the owned four-fresh-request 32K diagnostic, set STRATA_CACHE_ROUTE_PAIRS=1 alongside the existing phase/native diagnostic environment with identical settings and --pool-tasks 6; extend the root controller's bounded stderr parser before GPU execution. Require exactly one complete pair frame per DONE, independent sparse sums and DONE reconciliation, unchanged residency and all original math/health/fault/exit gates. Do not reuse clean timing results from a diagnostic-enabled process. Retain all four individual compact summaries; reject partial/fatal or unsupported requests. No runtime claim until root completes admission and owned execution.
+
+Retention
+Owner root; consumer round35 offline pair/profile join and controlled cache-policy proposal review. Compact framed summaries <=4 MiB per request, four-request budget <=16 MiB, source/report compact. Re-review after that question is resolved or superseded. No raw route trace is introduced; no cleanup performed.
+
+Changed source files and SHA256 (source-only):
+1a303cbe53ee09a0647becbaeb05ff48fd535fc1d154095949ef34c84e86f6b8  sycl/include/strata/core/cache_route_pairs.hpp
+f94d0f2ed4d14f5aa4ad402fcda041b2a46b2690976d08ff1a0b740555043247  sycl/include/strata/core/expert_source.hpp
+41b98031b865338f0429b195ef4aa10ba94cbaf2c0f2224ab1c3a4de7c37f4aa  sycl/src/core/expert_source.cpp
+6aa4547e9b789013dd8a104c701d0da4d07c286102f2f5dee498e4cc3add3f66  sycl/src/program/generate.cpp
+8de0923564bc2ce577afa9c5f390945607fa944806d0e927512b89b70675babd  sycl/tools/cache-route-pairs-test.cpp
