@@ -1,0 +1,651 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "gpu_executed": false,
+  "model_opened": false,
+  "profiler_executed": false,
+  "adopted": false,
+  "scope": "Exact production RepeatCapture header, fake SYCL namespace queue/event delaying a host memcpy. CPU ASan/UBSan tests producer framing, budget and error ownership. Does not validate real SYCL retirement, USM/kernel behavior or model math.",
+  "started_utc": "2026-10-09T15:16:07.203805+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "controller_sha256": "bed29870a1327633bba3691331c6a6e5dc63af89ad2a4812dd0aaa70881ac0ee",
+  "production_header_sha256": "1db25fde8987a4f778d9cba2a5dfdc811dc4f0e36778b9e6b34a779fdc7bd509",
+  "fake_queue_sha256": "6bec456738138d7adb04afff1456f8f055b7f9db9fd3145a1a5f413f217f1c57",
+  "harness_sha256": "cef69e5867282ed3e20a8c633551e990be46db0e2eaa47b6730cfaa809ee5e20",
+  "compiler": "/usr/bin/g++",
+  "compiler_sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769",
+  "text_budget_bytes": 67108864,
+  "binary_budget_bytes": 150994944,
+  "deadline_seconds": 60,
+  "steps": [
+    {
+      "label": "build",
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++17",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-fno-pie",
+        "-no-pie",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-fixture-v2",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/debug-sycl-layer-major-repeat-v0141-20261009/sycl/src/prefill",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-fixture-v2/producer_test.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/producer-test",
+        "-pthread"
+      ],
+      "deadline_seconds": 20,
+      "environment": {
+        "STRATA_PREFILL_REPEAT_CAPTURE": null,
+        "ASAN_OPTIONS": "detect_leaks=1:abort_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1",
+        "LD_PRELOAD": null
+      },
+      "identity": {
+        "pid": 1299292,
+        "ppid": 1299287,
+        "start_ticks": 24864633
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 1.2273590539989527
+    },
+    {
+      "label": "disabled",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/producer-test",
+        "disabled"
+      ],
+      "deadline_seconds": 5,
+      "environment": {
+        "STRATA_PREFILL_REPEAT_CAPTURE": null,
+        "ASAN_OPTIONS": "detect_leaks=1:abort_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1",
+        "LD_PRELOAD": null
+      },
+      "identity": {
+        "pid": 1299380,
+        "ppid": 1299287,
+        "start_ticks": 24864756
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.048856195993721485
+    },
+    {
+      "label": "normal",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/producer-test",
+        "normal"
+      ],
+      "deadline_seconds": 5,
+      "environment": {
+        "STRATA_PREFILL_REPEAT_CAPTURE": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/normal.bin",
+        "ASAN_OPTIONS": "detect_leaks=1:abort_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1",
+        "LD_PRELOAD": null
+      },
+      "identity": {
+        "pid": 1299383,
+        "ppid": 1299287,
+        "start_ticks": 24864761
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.056276594987139106
+    },
+    {
+      "label": "bad-shape",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/producer-test",
+        "bad-shape"
+      ],
+      "deadline_seconds": 5,
+      "environment": {
+        "STRATA_PREFILL_REPEAT_CAPTURE": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/bad-shape.bin",
+        "ASAN_OPTIONS": "detect_leaks=1:abort_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1",
+        "LD_PRELOAD": null
+      },
+      "identity": {
+        "pid": 1299387,
+        "ppid": 1299287,
+        "start_ticks": 24864766
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.049671441985992715
+    },
+    {
+      "label": "existing",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/producer-test",
+        "existing"
+      ],
+      "deadline_seconds": 5,
+      "environment": {
+        "STRATA_PREFILL_REPEAT_CAPTURE": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/existing.bin",
+        "ASAN_OPTIONS": "detect_leaks=1:abort_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1",
+        "LD_PRELOAD": null
+      },
+      "identity": {
+        "pid": 1299390,
+        "ppid": 1299287,
+        "start_ticks": 24864772
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.05087203299626708
+    },
+    {
+      "label": "symlink",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/producer-test",
+        "symlink"
+      ],
+      "deadline_seconds": 5,
+      "environment": {
+        "STRATA_PREFILL_REPEAT_CAPTURE": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/symlink.bin",
+        "ASAN_OPTIONS": "detect_leaks=1:abort_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1",
+        "LD_PRELOAD": null
+      },
+      "identity": {
+        "pid": 1299393,
+        "ppid": 1299287,
+        "start_ticks": 24864777
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.055920775019330904
+    },
+    {
+      "label": "initial-error",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/producer-test",
+        "initial-error"
+      ],
+      "deadline_seconds": 5,
+      "environment": {
+        "STRATA_PREFILL_REPEAT_CAPTURE": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/initial-error.bin",
+        "ASAN_OPTIONS": "detect_leaks=1:abort_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1",
+        "LD_PRELOAD": null
+      },
+      "identity": {
+        "pid": 1299396,
+        "ppid": 1299287,
+        "start_ticks": 24864783
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.05006312998011708
+    },
+    {
+      "label": "event-drained",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/producer-test",
+        "event-drained"
+      ],
+      "deadline_seconds": 5,
+      "environment": {
+        "STRATA_PREFILL_REPEAT_CAPTURE": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/event-drained.bin",
+        "ASAN_OPTIONS": "detect_leaks=1:abort_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1",
+        "LD_PRELOAD": null
+      },
+      "identity": {
+        "pid": 1299400,
+        "ppid": 1299287,
+        "start_ticks": 24864788
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.05064758099615574
+    },
+    {
+      "label": "submit-drained",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/producer-test",
+        "submit-drained"
+      ],
+      "deadline_seconds": 5,
+      "environment": {
+        "STRATA_PREFILL_REPEAT_CAPTURE": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/submit-drained.bin",
+        "ASAN_OPTIONS": "detect_leaks=1:abort_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1",
+        "LD_PRELOAD": null
+      },
+      "identity": {
+        "pid": 1299403,
+        "ppid": 1299287,
+        "start_ticks": 24864793
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.052892370003974065
+    },
+    {
+      "label": "event-unknown",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/producer-test",
+        "event-unknown"
+      ],
+      "deadline_seconds": 5,
+      "environment": {
+        "STRATA_PREFILL_REPEAT_CAPTURE": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/event-unknown.bin",
+        "ASAN_OPTIONS": "detect_leaks=0:abort_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1",
+        "LD_PRELOAD": null
+      },
+      "identity": {
+        "pid": 1299406,
+        "ppid": 1299287,
+        "start_ticks": 24864799
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.05310226499568671
+    },
+    {
+      "label": "submit-unknown",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/producer-test",
+        "submit-unknown"
+      ],
+      "deadline_seconds": 5,
+      "environment": {
+        "STRATA_PREFILL_REPEAT_CAPTURE": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/submit-unknown.bin",
+        "ASAN_OPTIONS": "detect_leaks=0:abort_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1",
+        "LD_PRELOAD": null
+      },
+      "identity": {
+        "pid": 1299411,
+        "ppid": 1299287,
+        "start_ticks": 24864804
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.05654095302452333
+    },
+    {
+      "label": "partial-write",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/producer-test",
+        "partial-write"
+      ],
+      "deadline_seconds": 5,
+      "environment": {
+        "STRATA_PREFILL_REPEAT_CAPTURE": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/partial-write.bin",
+        "ASAN_OPTIONS": "detect_leaks=1:abort_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1",
+        "LD_PRELOAD": null
+      },
+      "identity": {
+        "pid": 1299414,
+        "ppid": 1299287,
+        "start_ticks": 24864810
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.05680476000998169
+    },
+    {
+      "label": "two-full-budget",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/producer-test",
+        "two-full-budget"
+      ],
+      "deadline_seconds": 20,
+      "environment": {
+        "STRATA_PREFILL_REPEAT_CAPTURE": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/two-full-budget.bin",
+        "ASAN_OPTIONS": "detect_leaks=1:abort_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1",
+        "LD_PRELOAD": null
+      },
+      "identity": {
+        "pid": 1299417,
+        "ppid": 1299287,
+        "start_ticks": 24864816
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.1623317130142823
+    }
+  ],
+  "cases": [
+    {
+      "case": "disabled",
+      "copies": 0,
+      "initial_waits": 0,
+      "event_waits": 0,
+      "drains": 0,
+      "completions": 0,
+      "pending": false,
+      "primary_error": "",
+      "leak_detection": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "normal",
+      "copies": 2,
+      "initial_waits": 2,
+      "event_waits": 2,
+      "drains": 0,
+      "completions": 2,
+      "pending": false,
+      "primary_error": "",
+      "leak_detection": true,
+      "stderr_sha256": "4a69911b8da774f39cdb8320963dc9ef4c08c0a2e9c1ad05a722eaaa1ad8fde9",
+      "capture": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/normal.bin",
+        "size": 304,
+        "sha256": "8faa1215acf1c2ef256824eb6c5b12946567edadea65cf75ab79f0af69429395"
+      },
+      "parse_valid": true,
+      "parsed_records": 2,
+      "frames": [
+        {
+          "ordinal": 0,
+          "layer": 3,
+          "p0": 98304,
+          "T": 8192,
+          "first": 98304,
+          "rows": 2,
+          "width": 4,
+          "type": 1,
+          "phase": "float_rows",
+          "payload_sha256": "db128e87c886ff5ca0de976cfd97ca9f928e8dd7a6f05250c1adfafc6fcf8b4e"
+        },
+        {
+          "ordinal": 1,
+          "layer": 7,
+          "p0": 98304,
+          "T": 8192,
+          "first": 98328,
+          "rows": 1,
+          "width": 4,
+          "type": 2,
+          "phase": "selected_ids",
+          "payload_sha256": "720cca23a682420878e35012a9b4ef40c6875fc4045a336d2ea8cf0a41e4b6a7"
+        }
+      ]
+    },
+    {
+      "case": "bad-shape",
+      "copies": 0,
+      "initial_waits": 0,
+      "event_waits": 0,
+      "drains": 0,
+      "completions": 0,
+      "pending": false,
+      "primary_error": "",
+      "leak_detection": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "existing",
+      "copies": 0,
+      "initial_waits": 0,
+      "event_waits": 0,
+      "drains": 0,
+      "completions": 0,
+      "pending": false,
+      "primary_error": "repeat capture: requires a fresh owned private regular file (diagnostic incomplete)",
+      "leak_detection": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "symlink",
+      "copies": 0,
+      "initial_waits": 0,
+      "event_waits": 0,
+      "drains": 0,
+      "completions": 0,
+      "pending": false,
+      "primary_error": "repeat capture: requires a fresh owned private regular file (diagnostic incomplete)",
+      "leak_detection": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "initial-error",
+      "copies": 0,
+      "initial_waits": 1,
+      "event_waits": 0,
+      "drains": 0,
+      "completions": 0,
+      "pending": false,
+      "primary_error": "initial-error",
+      "leak_detection": true,
+      "stderr_sha256": "1666c3119b3a95a7cd19229673daf6ff319288a2fffa31bf7acc88433910740e",
+      "capture": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/initial-error.bin",
+        "size": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "parse_valid": true,
+      "parsed_records": 0
+    },
+    {
+      "case": "event-drained",
+      "copies": 1,
+      "initial_waits": 1,
+      "event_waits": 1,
+      "drains": 1,
+      "completions": 1,
+      "pending": false,
+      "primary_error": "event-error",
+      "leak_detection": true,
+      "stderr_sha256": "1666c3119b3a95a7cd19229673daf6ff319288a2fffa31bf7acc88433910740e",
+      "capture": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/event-drained.bin",
+        "size": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "parse_valid": true,
+      "parsed_records": 0
+    },
+    {
+      "case": "submit-drained",
+      "copies": 1,
+      "initial_waits": 1,
+      "event_waits": 0,
+      "drains": 1,
+      "completions": 1,
+      "pending": false,
+      "primary_error": "submit-error",
+      "leak_detection": true,
+      "stderr_sha256": "1666c3119b3a95a7cd19229673daf6ff319288a2fffa31bf7acc88433910740e",
+      "capture": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/submit-drained.bin",
+        "size": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "parse_valid": true,
+      "parsed_records": 0
+    },
+    {
+      "case": "event-unknown",
+      "copies": 1,
+      "initial_waits": 1,
+      "event_waits": 1,
+      "drains": 1,
+      "completions": 1,
+      "pending": false,
+      "primary_error": "event-error",
+      "leak_detection": false,
+      "stderr_sha256": "93e2db92302be4d0e019a734466b49ce610243087abd6b7edab0b9e9af5810a5",
+      "capture": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/event-unknown.bin",
+        "size": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "parse_valid": true,
+      "parsed_records": 0
+    },
+    {
+      "case": "submit-unknown",
+      "copies": 1,
+      "initial_waits": 1,
+      "event_waits": 0,
+      "drains": 1,
+      "completions": 1,
+      "pending": false,
+      "primary_error": "submit-error",
+      "leak_detection": false,
+      "stderr_sha256": "93e2db92302be4d0e019a734466b49ce610243087abd6b7edab0b9e9af5810a5",
+      "capture": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/submit-unknown.bin",
+        "size": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "parse_valid": true,
+      "parsed_records": 0
+    },
+    {
+      "case": "partial-write",
+      "copies": 1,
+      "initial_waits": 1,
+      "event_waits": 1,
+      "drains": 0,
+      "completions": 1,
+      "pending": false,
+      "primary_error": "repeat capture: file write failed (diagnostic incomplete)",
+      "leak_detection": true,
+      "stderr_sha256": "1666c3119b3a95a7cd19229673daf6ff319288a2fffa31bf7acc88433910740e",
+      "capture": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/partial-write.bin",
+        "size": 150,
+        "sha256": "76ba9f7888fc22fdbf2d118e2e718ec326f3471b6f062a41e86dabe57b1da368"
+      },
+      "parse_valid": false,
+      "parsed_records": 0,
+      "parse_error": "truncated-payload"
+    },
+    {
+      "case": "two-full-budget",
+      "copies": 690,
+      "initial_waits": 690,
+      "event_waits": 690,
+      "drains": 0,
+      "completions": 690,
+      "pending": false,
+      "primary_error": "repeat capture: 128 MiB budget exceeded (diagnostic incomplete)",
+      "leak_detection": true,
+      "stderr_sha256": "53ffbe18c088654bb17f192e0033ba038b26f12d58b284178467c89f71ae5e25",
+      "capture": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/two-full-budget.bin",
+        "size": 133495872,
+        "sha256": "c8c1f0a24be99dd93743874418d5c066d230bde3ab6eb91a0441a68d08d43d55"
+      },
+      "parse_valid": true,
+      "parsed_records": 690,
+      "margin_bytes": 721856,
+      "parsed_geometry_sha256": "9c8b6bd11e3ee71bea6a62471f35df0a95311334b58051ee4adc14104f9497c9",
+      "numerical_data": "Synthetic repeated 0x3f800000; framing/budget only, not real IDs or model values."
+    }
+  ],
+  "owners": {
+    "1299292": {
+      "pid": 1299292,
+      "ppid": 1299287,
+      "start_ticks": 24864633
+    },
+    "1299293": {
+      "pid": 1299293,
+      "ppid": 1299292,
+      "start_ticks": 24864633
+    },
+    "1299342": {
+      "pid": 1299342,
+      "ppid": 1299292,
+      "start_ticks": 24864708
+    },
+    "1299346": {
+      "pid": 1299346,
+      "ppid": 1299292,
+      "start_ticks": 24864712
+    },
+    "1299347": {
+      "pid": 1299347,
+      "ppid": 1299346,
+      "start_ticks": 24864712
+    },
+    "1299363": {
+      "pid": 1299363,
+      "ppid": 1299347,
+      "start_ticks": 24864722
+    },
+    "1299380": {
+      "pid": 1299380,
+      "ppid": 1299287,
+      "start_ticks": 24864756
+    },
+    "1299383": {
+      "pid": 1299383,
+      "ppid": 1299287,
+      "start_ticks": 24864761
+    },
+    "1299387": {
+      "pid": 1299387,
+      "ppid": 1299287,
+      "start_ticks": 24864766
+    },
+    "1299390": {
+      "pid": 1299390,
+      "ppid": 1299287,
+      "start_ticks": 24864772
+    },
+    "1299393": {
+      "pid": 1299393,
+      "ppid": 1299287,
+      "start_ticks": 24864777
+    },
+    "1299396": {
+      "pid": 1299396,
+      "ppid": 1299287,
+      "start_ticks": 24864783
+    },
+    "1299400": {
+      "pid": 1299400,
+      "ppid": 1299287,
+      "start_ticks": 24864788
+    },
+    "1299403": {
+      "pid": 1299403,
+      "ppid": 1299287,
+      "start_ticks": 24864793
+    },
+    "1299406": {
+      "pid": 1299406,
+      "ppid": 1299287,
+      "start_ticks": 24864799
+    },
+    "1299411": {
+      "pid": 1299411,
+      "ppid": 1299287,
+      "start_ticks": 24864804
+    },
+    "1299414": {
+      "pid": 1299414,
+      "ppid": 1299287,
+      "start_ticks": 24864810
+    },
+    "1299417": {
+      "pid": 1299417,
+      "ppid": 1299287,
+      "start_ticks": 24864816
+    }
+  },
+  "cleanup": [],
+  "survivors": [],
+  "retirement": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-cpu-validation-v2/two-full-budget.bin",
+      "size": 133495872,
+      "sha256": "c8c1f0a24be99dd93743874418d5c066d230bde3ab6eb91a0441a68d08d43d55",
+      "reason": "Disposable mock geometry parsed and hashed; regenerated by recorded harness; no real GPU/model evidence or current raw consumer.",
+      "status": "removed"
+    }
+  ],
+  "prior_failed_mock": "v1 controller rejected 133495680 bytes vs133495872 because mock used floor(pos/4), not floor((pos+1)/4), for completed blocks. Original failed receipt/source unchanged. No production correction from this test.",
+  "leak_oracle": "LSan enabled except the two unknown-retirement cases; those intentionally retain one process-lifetime vector. ASan remains enabled and late memcpy runs after capture destruction. No fake reclamation of a possibly live allocation.",
+  "elapsed_seconds": 2.322069198009558,
+  "binary_sha256": "ec9cd17efac218807571e9666abbe5eb8bfc3a14597081e786a3119f92d690a0",
+  "finished_utc": "2026-10-09T15:16:09.525852+00:00"
+}

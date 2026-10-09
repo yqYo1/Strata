@@ -1,0 +1,52 @@
+Native CPU dispatch histogram implementation — source only
+
+Branch: diag/sycl-native-dispatch-histogram-v0141-2026-10-09
+Worktree: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-dispatch-histogram-v0141-20261009
+Base: 7d0105f2a942ac72ca20fef69d4c2e7960653de3
+Commit: 96bd5bb4e054f6ddcf677fd96e161b499a013fd7
+Status: committed, worktree clean, not pushed, not adopted. Root repository remained clean main; other worktrees untouched.
+
+Committed report: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-dispatch-histogram-v0141-20261009/bench/results/2026-10-09-sycl-native-dispatch-histogram/source-only-report.md
+Report SHA256: 3aeb6e7079c2cc1da1bb12475965caec2048a6c51880371d285679ce3f9c86d4
+Source manifest SHA256: 338110eceb83fcf365f2def2108d5c01841f12e01952183ff67b7008e385a861
+
+{
+  "base_commit": "7d0105f2a942ac72ca20fef69d4c2e7960653de3",
+  "source_sha256": {
+    "include/strata/kernels/cpu/native_expert.hpp": "87ff3c6d2aedf0d1985b002480086113426d79d284d1e7ac9cf9f01e55f7163e",
+    "include/strata/kernels/cpu/pool.hpp": "5c200f068a27d43414cbca2159459944a2541476d0d99cf55f8b962b4b62299b",
+    "src/kernels/cpu/expert_layout.cpp": "9826d86cc83330d447d62a62189dc782f549ffb815c7bdccd2ad4f4582672f4d",
+    "src/kernels/cpu/native_expert.cpp": "767f02f33aca4da9fabbe113c50ce1d7cb2aa9f25b4234df59224ec46a5985cd",
+    "src/kernels/cpu/pool.cpp": "5ef33f7d2020a17ecc36ad15796c6f021b4b5963998aa964dccedbe733637368",
+    "sycl/src/program/generate.cpp": "7c0cb421281a724062d27663d20c6d09aa9643286f98d6e22f4797dbc5906636"
+  },
+  "validation": "not executed; root owned"
+}
+
+# Native CPU dispatch exposure histogram (source only)
+
+Base: frozen T `7d0105f2a942ac72ca20fef69d4c2e7960653de3`. Branch: `diag/sycl-native-dispatch-histogram-v0141-2026-10-09`.
+
+Set `STRATA_NATIVE_DISPATCH_HISTOGRAM=1` to collect one summary per completed SYCL serve decode request, at the existing decode timing boundaries. This toggle is independent of `STRATA_DECODE_TIMING`; using both helps align scopes. Collection starts after prefill and ends beside the decode timing summary. It covers this pool's native CPU expert jobs, including repeat layer/window exposure, rather than unique expert identities. Other stage pools and non-native jobs are outside this report's scope. Early error returns may skip the summary; the next request resets counters. There are no worker counters, new atomics, timers, task intersections, GPU calls or product UI changes.
+
+The fixed array has 2 phases, 65 type buckets and 9 NT buckets. Type 64 and NT 0 are overflow labels; valid current jobs have types below 64 and NT 1..8. Every nonempty cell prints phase/type/NT/selected branch/eligibility mask/variant and integer expert-job, routed-token and output-row counts. GU output rows each compute gate and up; these are not two separate rows. Expert and token sums must agree between GU and Down. No physical DRAM traffic, timings, hotspots or worker imbalance can be inferred. The line is bounded by 1170 cells and holds no expert IDs or raw events.
+
+GU and Down now share their actual branch resolvers with the caller classifier. The original branch predicates, static setting expressions, order and kernel arguments remain: GU KQ first, the outer `iq512_supported || (!cpu512 && iq256_supported)` guard, IQ512 then IQ256, and ggml fallback; Down KQ, IQ4NL with its original threshold, then ggml. The original kernel bodies, fallback arithmetic and accumulation order are unchanged. The native pool's Q2 direct GU/Down routes are classified ahead of those resolvers using the same `q2_native_kernels` gate and the same AVX512-versus-AVX2 choice as `q2_rows_any`.
+
+Eligibility ignores disabling flags and NT thresholds, while selected labels use resolved static settings from the same functions the workers execute. The header records usable AVX2/AVX512, hybrid status, effective GU512/GU256/KQ/IQ4NL switches, general GU, IQ3S and Down thresholds, resolved gather setting, and compiled/CPU-usable IQ256 variant bits. For non-hybrid CPUs the classifier calls the existing IQ256 variant selector, clears gather for formats without gathered decode, and uses VNNI only for IQ4NL. On hybrid CPUs IQ256/IQ4NL variants are always marked `worker-unresolved:-1`, conservatively even with explicit gather overrides. This prevents host-core attribution to workers. GU threshold values capture the special IQ3S_MT1 rule without re-reading environment flags later.
+
+Disabled collection neither walks jobs nor emits diagnostics. Shared resolver refactoring still affects native wrapper control flow in all builds; it requires root-owned parity qualification before adoption. Diagnostic collection adds caller work; in particular GU classification lies between the original GU-end and FF-quant-end timestamps, so enabled FF-quant/host timings include instrumentation. Do not compare enabled timings as clean performance samples.
+
+## Validation required from root
+
+No build, configure, tests, syntax checks, binaries, benchmarks, model/GPU/profiler execution, services, source fetch or cleanup was performed by this implementation agent. This is source-only and unqualified. Root owns all serial execution and no automatic adoption is authorized.
+
+1. Build every touched backend (CUDA, HIP, SYCL), including native-disabled linkage where applicable. Validate CPU parity with the original frozen T across supported formats and NT 1..8, disable flags, IQ_MT_MIN, IQ3S_MT1, gather, VNNI-disable, KQ and IQ4NL settings. Check the AVX512 IQ4_XS outer-guard case explicitly. Confirm shared resolver labels versus original branch decisions and Q2 direct routing.
+2. Verify disabled diagnostics emit nothing and preserve outputs/scheduling. Check enabled per-phase expert sums against submitted native CPU jobs; token sums against their NT sum; rows against jobs times FF/H; check matching GU/Down totals and overflow buckets remain empty. Verify scalar/gather/VNNI labels on the current non-hybrid Zen3 and unresolved labels on hybrid coverage.
+3. Root-managed fresh32K all-head/state/output/logprob/MTP and protocol/fault/normal-exit comparisons with explicit effective settings, first disabled then enabled. Retain individual receipts and environment/source/binary identities. T's four prior exact fresh32K passes do not qualify this candidate. Clean timing and physical256K/full-lifecycle gates remain separate and outstanding.
+
+## Evidence and retention
+
+Design: round18 SHA256 `4e3d5c8987d68b5c6d1c9d20a1feb315bce1787f969ae7c9945970f337363f10`; reviewed root corrections v18 and registry v21 (SHA256 `ca2fc1d5b52910df90321746cb511ce18a67b947eb054c7330080a32b39d4d56`). Source identities are in `source-hashes.json`. There are no measurement samples or raw captures from this implementation. No existing artifacts were removed or result statuses changed. Keep this compact source report in Git; root should record later execution receipts at its work boundary under the retention policy.
+
+Execution performed: source reads/edits, isolated worktree creation, source hash generation, Git read-only review and commit only. Commit hooks were disabled for this commit to ensure no implicit tests/builds execute. No builds, configure, tests, syntax checks, binary invocations, benchmarks, model/GPU/profiler runs, services, resets, fetches or cleanup. Root owns all validation.

@@ -1,0 +1,40 @@
+# RepeatCapture quarantine and error-path review (round 20)
+
+Reviewed the corrected source in `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/debug-sycl-layer-major-repeat-v0141-20261009`: HEAD `9c2ebde89e5157c81a9c9ae135719452a0244ca3`; `sycl/src/prefill/repeat_capture.hpp` SHA256 `1db25fde8987a4f778d9cba2a5dfdc811dc4f0e36778b9e6b34a779fdc7bd509`. Read report registry v21 (SHA256 `ca2fc1d5b52910df90321746cb511ce18a67b947eb054c7330080a32b39d4d56`) and the prior error-retirement and RepeatCapture reviews. This was a static source review only; no build, test, syntax check, mock, or program execution was performed.
+
+## Assessment
+
+The R19 host-destination lifetime gap is closed for the specified unknown-retirement case. The POSIX implementation allocates a heap-owned vector, submits one readback while holding the singleton mutex, and on an event/copy exception attempts a queue drain. If that drain returns normally, it rethrows and lets the vector release after the queue is fenced. If the drain throws, it sets the permanent poison flag, releases the owning `unique_ptr` without deleting the vector, logs that completion is unknown, then rethrows. Later `record()` calls check the poison flag while holding the same mutex and fail before opening the file, allocating a new host buffer, or submitting another readback. Thus there can be at most one quarantined destination per process, and no static/atexit owner frees it. The intentional leak lasts until OS process teardown.
+
+The quarantine is bounded by the accepted shape check: `rows * width * 4 <= 128 MiB`, with positive dimensions checked before allocation. This is a bound on requested vector elements/payload; the C++ allocator's exact capacity/allocation overhead is implementation-specific. Since the poisoned state prevents a second readback, the code cannot accumulate additional quarantine vectors by repeatedly failing captures. The file budget is separate from this host-memory bound.
+
+The original exception is preserved. The outer `catch (...)` remains the active handler while its nested `try` catches a fallback-drain exception. After the nested handler completes, the bare `throw;` rethrows the original exception from the event/copy operation, not the drain exception. If the fallback drain succeeds, the same rethrow occurs after the completion fence. The capture lambda then converts standard exceptions to the diagnostic failure path; exceptions outside `std::exception` still unwind to the existing function-level handler/cleanup.
+
+I found no source-level defect in the corrected poison/rejection logic and no additional free/reuse path for the quarantined buffer. The Windows stub fails before queue work and is unrelated to quarantine. No actual backend condition or runtime lifetime was exercised, so this establishes code structure, not that a particular Intel SYCL runtime can produce the injected double-failure sequence or that all queue errors have the same retirement semantics.
+
+## Edge-case reasoning
+
+- `queue.memcpy` may throw before producing an event, or `wait_and_throw` may throw after submission. The catch conservatively drains in either case. If that drain fails, the vector is retained even if no copy was actually submitted; this can retain an unnecessary buffer but stays within the one-buffer cap and is safe.
+- If the first `queue.wait_and_throw()` (before submission) fails, the destination has not been passed to a queue command. The lambda fails; this path does not quarantine. It still encounters the pre-existing outer queue-retirement behavior for compute work, but the local host vector has no outstanding readback reference.
+- A successful fallback `queue.wait()` proves queue commands retired under the already-recorded SYCL contract, even when the original event wait reported an asynchronous error; it is then safe to destroy the host vector. The caller still fails the diagnostic request, and this does not validate partial model/KV results.
+- On failure of `write_all`, the copy wait has already succeeded, so destruction of the vector does not race device access. The file may contain a partial record, already identified as incomplete by the diagnostic format/procedure.
+- Once `retirement_unknown_` is set, the mutex serializes that state transition against waiting callers. They reject before any new queue operation. The code does not reset the flag, so there is no path to silently reuse storage during the process lifetime.
+- The intentionally leaked vector has no destructor at process exit because ownership is relinquished, not registered in a static owner. The static `RepeatCapture` destructor only closes the file descriptor. Process teardown is the final reclamation boundary; do not add an atexit cleanup that deletes the quarantined vector while device completion remains unknown.
+
+## CPU fault-injection value and limits
+
+A meaningful ASan CPU test requires a narrow fake seam for the queue copy/wait operations; the production method currently takes a concrete `sycl::queue&`, so merely instantiating this exact class with a fake is not available without a wrapper/test seam. The fake should enqueue a delayed host-destination touch, make the event wait throw a known primary exception, and make queue drain throw a distinct secondary exception without completing the touch. Then verify: capture propagates the primary exception; the delayed fake operation can touch the destination without ASan use-after-free; the poison state rejects a second submission; and there is exactly one retained destination. A companion case should let the fallback drain complete the fake operation and throw only from the event wait; verify the primary error still propagates and the destination is released only after the completion mark. Also test a synchronous submit failure plus failed drain (conservative one-buffer quarantine), pre-copy wait failure (no submitted destination), and file-write failure after successful completion (no quarantine).
+
+Because production intentionally leaks in the unknown-retirement case, LeakSanitizer will report that expected allocation. Keep the test's leak oracle explicit: either run that case in an isolated child whose expected retained allocation is documented, or expose a test-only quarantine observer that allows the fake to reclaim the buffer only after it marks the delayed operation complete. Do not “fix” the leak in the test by freeing the buffer while the fake command is still live. ASan can detect a use-after-free if the fake performs the delayed touch; it cannot validate actual SYCL runtime semantics, real command submission/retirement, the device's use of USM host storage, queue routing, or numerical correctness. The fake must not be presented as proof of GPU safety.
+
+A CPU mock can also check ordering and failure propagation for host buffer ownership, but cannot meaningfully assert graph/cache restoration inside the real `run_layer_major` without modeling those separate owners. The source already routes a returned capture failure through the existing `KvDrain` and layer-major `Restore`; no new caller cleanup bypass was found in R19. That inherited cleanup still has the documented fail-stop behavior if its own destructor wait throws.
+
+## Evidence pointers
+
+- Shape check and one-time poison check: `sycl/src/prefill/repeat_capture.hpp` lines 47–57.
+- Heap-backed buffer, pre-copy fence, event wait, fallback drain, poison/leak, primary rethrow: `repeat_capture.hpp` lines 71–96.
+- File write occurs only after successful queue completion: `repeat_capture.hpp` lines 97–105.
+- Earlier queue completion contract and limits: `sycl-drain-error-contract-round8.txt`.
+- Earlier `run_impl` / `run_layer_major` return and restoration walk: `repeat-capture-error-retirement-audit-round19.txt`.
+
+The actual corrected two-full-capture size is 133,495,872 bytes with 721,856 bytes remaining under the 128 MiB cap, as supplied by the experiment owner. This report does not revisit that disk-budget calculation.

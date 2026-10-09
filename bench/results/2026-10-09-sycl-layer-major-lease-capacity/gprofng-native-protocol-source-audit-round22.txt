@@ -1,0 +1,50 @@
+gprofng native protocol smoke v2: independent source audit, round 22
+Date: 2026-10-10
+
+Scope
+
+Read-only review of worktree `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-gprofng-native-smoke-20261010` at HEAD `b61f96c3da23b73525a98a91895132c21da4b15f`, specifically `bench/results/2026-10-10-gprofng-native-smoke/{check_native_protocol_v2.py,native_target.c,REPORT.md}`. Reconciled the v21 registry and prior rounds 16–21 for timer failure, protocol, artifact-retention, and process-identity context. No execution, build, syntax/help/version query, target/profile/CPU/GPU/model work, source edit, service/reset/cleanup action, or Git mutation was performed. This is an independent source review, not a qualification of this untested implementation.
+
+Assessment
+
+The native target is appropriately isolated: it installs no signal handler, creates no timer, uses SIGUSR2/SIGPROF only through the collector, receives RUN/QUIT and writes READY/DONE/BYE on dedicated FIFOs, and executes a four-second noinline volatile-integer CPU loop whose result is consumed in DONE. The controller serializes compile → collect → render while holding the nonblocking measurement lock, checks fresh output directory/run name, owns child processes by PID/start ticks plus pidfds, verifies the READY executable before toggles, and sends SIGUSR2 through a pidfd only after checking the caught-signal bit. The output parser strips only trailing NUL padding, records raw size/hash, rejects embedded NUL, and gatekeeping does not rely on collector exit, total time, output length, or stub files. These are sound fail-closed design choices.
+
+Concrete acceptance bug: the ptimer predicate tests values instead of attribute names
+
+In `Supervisor.evidence()`, profile entries are selected by:
+
+`if 'ptimer' in p.attrib.values()`
+
+A normal profile XML element has an attribute such as `ptimer="10000"`; its attribute values therefore contain the interval, not the literal string `ptimer`. Consequently `profiles` will be empty on a normal valid profile and `valid` will fail closed even when the collector produced a valid positive ptimer. Conversely, it would admit only an unusual value literally equal to `ptimer`, without validating that the interval is numeric or positive. Change the source check to test key presence (`'ptimer' in p.attrib`) and parse/require a positive numeric value; record that value. This must be corrected before root's serial run, or the acceptance gate cannot pass by construction.
+
+Potential cleanup gap if pidfd acquisition/support fails
+
+`launch()` starts and records the `Popen` child, then calls `own()`. `own()` calls `os.pidfd_open()` and only after success inserts the process into `owners`. `cleanup()` signals only PIDs in `owners`; it merely polls the `Popen` children and records their exit codes. Thus if pidfd acquisition fails after Popen (for example unsupported Python binding, seccomp denial, or a transient open error), the launched child is in `children` but absent from `owners`; cleanup will not terminate/reap it. A similar gap exists if `signal.pidfd_send_signal` is unavailable or fails during cleanup. The Linux 7 host likely supports pidfds, and this is a failure-path issue rather than evidence that the host will hit it. Add a preflight for callable `os.pidfd_open`/`signal.pidfd_send_signal` before any child launches; also make `launch()` terminate and `wait()` its direct Popen child if ownership registration fails. Keep PID-reuse safety: use the Popen child handle only for that direct child, and do not signal an unowned process by a bare PID.
+
+Environment/provenance is supervisor environment, not necessarily target-effective environment
+
+The receipt allowlist correctly avoids dumping unrelated environment values, but it captures `os.environ` at controller startup. gprofng may add collector-specific variables or alter loader variables when launching the native target. The field description should explicitly call this the supervisor/inherited environment and avoid implying it is the target's effective environment. Because the unresolved question concerns the collector's actual timer-symbol path, capture a narrow, reviewed allowlist from the READY target's `/proc/<pid>/environ` if available (in particular loader variables and `SP_COLLECTOR_*`), while continuing to omit unrelated values/secrets. Record read failure rather than silently treating the parent environment as the child's. `map.xml`/collector metadata may also identify loaded libc and collector objects; the existing collector-library hash does not identify the exact libc binary/build ID used by the target.
+
+Bounds and ordering notes
+
+- The FIFO protocol drains buffered data before checking child exit, then performs a final drain after observing exit. It processes one complete line and preserves a tail; the later no-extra-pending assertion catches extra replies. Holding both FIFO ends O_RDWR prevents EOF from serving as a completion signal, but code relies on explicit lines and child exit, which is appropriate here. Short fixed ASCII replies fit within PIPE_BUF; parent writes 4/5 byte commands. The 32-byte target line buffer rejects unknown/oversized commands.
+- A subtle cleanup-budget issue remains possible: `WORK_DEADLINE=57` and `poll()` reserve three seconds nominally, while `cleanup()` allows up to 2+1 seconds plus polling, saves, process signaling, and pidfd closes. The reservation is not a hard wall-clock cap, and compiler/render children are polled rather than given their own subprocess timeout; they are bounded by the outer poll deadline. Report this as a bounded best-effort cleanup window, not a strict 60-second maximum.
+- The 64-MiB budget is a supervised stop threshold, not a hard quota: a collector can write between 20-ms polls and overshoot. REPORT.md already states this limitation. It also correctly keeps captures on rejection rather than deleting evidence.
+- The competing-process check is conservative for the listed `comm` values and never signals a matching external process. The shared lock only coordinates tasks that use that lock; it cannot serialize unrelated compiler commands that ignore it. The report correctly discloses that limitation.
+- `identity()` parses `/proc/<pid>/stat` by splitting after the final `)`, then indexes state/ppid/start_ticks. This is conventional for ordinary process comm strings, and the target `native_target` is simple; a process can set `comm` to contain `)`, so a malformed or adversarial comm could make proc discovery fail (e.g. `int(fields[19])`). If broader host-process coverage is required, parse candidate delimiter positions by expected field shape and catch `ValueError`; otherwise document the assumption. This is a lower-priority robustness point than the pidfd gap.
+- Cleanup sends TERM then KILL only to pidfd-owned, live, non-zombie processes, and records forced signals. Normal success waits for compiler/collector/render and verifies no cleanup/survivors. On an earlier failure it does not send a protocol QUIT first; because this target is harmless and the supervisor has a finite cleanup path, that is acceptable for a rejected diagnostic, though it can leave the collector archive incomplete. Retain the failed receipt and do not call an incomplete `.er` a profile.
+
+Profile evidence gate and schema assumptions
+
+The intended gate is sound in principle: no `cerror`, a profile schema with a positive ptimer, nonempty frame data and profile event data, plus positive `e.user` attribution for `strata_native_busy`. The four-second CPU section is appropriate for a clock-only function sample; it does not exercise real Strata signal/timer usage or qualify a model-backed profile. The code's `data.profile` filename assumption and `gprofng display text -metrics e.user -functions` line layout remain explicitly untested, as REPORT.md says. Keep those fail-closed. The attribution parser should be checked against the actual output before interpreting any numeric value; it currently takes the first numeric field on a matching line and assumes that is exclusive user CPU seconds. Require the rendered metric header/column to identify `e.user` and the value to be positive/finite, then associate it with the exact native symbol. Do not treat a matching line with an unrelated leading numeric field as proof.
+
+No collector timers are made by `native_target.c`, so an outcome with cerror 9 would continue to point at collector initialization, not an application timer collision. A valid profile would qualify only this launched native smoke's collector + protocol + schema path; it would not explain the earlier failure until root records the collector's actual setup status or establishes a repeatable difference in inherited/effective loader state.
+
+Required source corrections before execution
+
+1. Fix the ptimer attribute key/value predicate and require a positive numeric interval.
+2. Preflight pidfd API/support before the first `Popen`, and terminate/wait the just-launched Popen child if pidfd ownership registration fails.
+3. Label the environment as controller inherited and, if safely obtainable, record the filtered target-effective loader/collector environment at READY.
+4. Treat the output parser's `e.user` column mapping as an untested acceptance assumption; inspect the actual emitted table from the root-owned harmless run before crediting positive attribution. Preserve schema mismatch as rejection.
+
+After those edits, root should execute under the existing exclusive lock and retain the original terminal failed v1 receipt and status. This audit does not authorize or perform that execution. No registry was modified.

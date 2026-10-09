@@ -1,0 +1,301 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "gpu_executed": false,
+  "model_opened": false,
+  "profiler_executed": false,
+  "scope": "Five separate disposable CPU processes distinguish clock/notification/legacy timer capability, recording immediate returns and errno. No host settings or limits changed.",
+  "started_utc": "2026-10-09T14:49:37.843244+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "controller_sha256": "93a052330cff75acb3229c177170d5ed6d4e5701dcd51e492d473569a809a0c8",
+  "source_sha256": "94c66228dc174d62a0211af690676297ddcbff6cf4829d9a67d75620dd00ba65",
+  "compiler": "/usr/bin/cc",
+  "compiler_sha256": "1b99826121ae6682a634e5efe09bd3e3df58ce58e0b28f849114ab5b89139c26",
+  "text_budget_bytes": 67108864,
+  "deadline_seconds": 60,
+  "steps": [
+    {
+      "label": "build",
+      "argv": [
+        "/usr/bin/cc",
+        "-std=c11",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/timer_control_matrix_v1.c",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-timer-control-matrix-v1/timer-control",
+        "-lrt"
+      ],
+      "deadline_seconds": 20,
+      "identity": {
+        "pid": 1201995,
+        "ppid": 1201991,
+        "start_ticks": 24705697
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.4029233969922643
+    },
+    {
+      "label": "thread-directed",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-timer-control-matrix-v1/timer-control",
+        "thread-directed"
+      ],
+      "deadline_seconds": 5,
+      "identity": {
+        "pid": 1202054,
+        "ppid": 1201991,
+        "start_ticks": 24705737
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.24907385499682277
+    },
+    {
+      "label": "thread-signal",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-timer-control-matrix-v1/timer-control",
+        "thread-signal"
+      ],
+      "deadline_seconds": 5,
+      "identity": {
+        "pid": 1202061,
+        "ppid": 1201991,
+        "start_ticks": 24705762
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.24822959597804584
+    },
+    {
+      "label": "monotonic-directed",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-timer-control-matrix-v1/timer-control",
+        "monotonic-directed"
+      ],
+      "deadline_seconds": 5,
+      "identity": {
+        "pid": 1202068,
+        "ppid": 1201991,
+        "start_ticks": 24705787
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.25881185798789375
+    },
+    {
+      "label": "monotonic-signal",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-timer-control-matrix-v1/timer-control",
+        "monotonic-signal"
+      ],
+      "deadline_seconds": 5,
+      "identity": {
+        "pid": 1202082,
+        "ppid": 1201991,
+        "start_ticks": 24705813
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.2458541139785666
+    },
+    {
+      "label": "legacy-prof",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-timer-control-matrix-v1/timer-control",
+        "legacy-prof"
+      ],
+      "deadline_seconds": 5,
+      "identity": {
+        "pid": 1202094,
+        "ppid": 1201991,
+        "start_ticks": 24705838
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.25266293200547807
+    }
+  ],
+  "cases": [
+    {
+      "case": "thread-directed",
+      "pid": 1202054,
+      "tid": 1202054,
+      "seccomp": 0,
+      "signal": 27,
+      "rlimit_sigpending_rc": 0,
+      "rlimit_sigpending_errno": 0,
+      "rlimit_sigpending_soft": 477734,
+      "clock_id": 3,
+      "notification": 4,
+      "clock_gettime_rc": 0,
+      "clock_gettime_errno": 0,
+      "timer_create_rc": 0,
+      "timer_create_errno": 0,
+      "timer_settime_rc": 0,
+      "timer_settime_errno": 0,
+      "timer_gettime_rc": 0,
+      "timer_gettime_errno": 0,
+      "interval_ns": 10000000,
+      "burn_rc": 0,
+      "disarm_rc": 0,
+      "disarm_errno": 0,
+      "timer_delete_rc": 0,
+      "timer_delete_errno": 0,
+      "signals": 19,
+      "SI_TIMER_signals": 19
+    },
+    {
+      "case": "thread-signal",
+      "pid": 1202061,
+      "tid": 1202061,
+      "seccomp": 0,
+      "signal": 27,
+      "rlimit_sigpending_rc": 0,
+      "rlimit_sigpending_errno": 0,
+      "rlimit_sigpending_soft": 477734,
+      "clock_id": 3,
+      "notification": 0,
+      "clock_gettime_rc": 0,
+      "clock_gettime_errno": 0,
+      "timer_create_rc": 0,
+      "timer_create_errno": 0,
+      "timer_settime_rc": 0,
+      "timer_settime_errno": 0,
+      "timer_gettime_rc": 0,
+      "timer_gettime_errno": 0,
+      "interval_ns": 10000000,
+      "burn_rc": 0,
+      "disarm_rc": 0,
+      "disarm_errno": 0,
+      "timer_delete_rc": 0,
+      "timer_delete_errno": 0,
+      "signals": 19,
+      "SI_TIMER_signals": 19
+    },
+    {
+      "case": "monotonic-directed",
+      "pid": 1202068,
+      "tid": 1202068,
+      "seccomp": 0,
+      "signal": 27,
+      "rlimit_sigpending_rc": 0,
+      "rlimit_sigpending_errno": 0,
+      "rlimit_sigpending_soft": 477734,
+      "clock_id": 1,
+      "notification": 4,
+      "clock_gettime_rc": 0,
+      "clock_gettime_errno": 0,
+      "timer_create_rc": 0,
+      "timer_create_errno": 0,
+      "timer_settime_rc": 0,
+      "timer_settime_errno": 0,
+      "timer_gettime_rc": 0,
+      "timer_gettime_errno": 0,
+      "interval_ns": 10000000,
+      "burn_rc": 0,
+      "disarm_rc": 0,
+      "disarm_errno": 0,
+      "timer_delete_rc": 0,
+      "timer_delete_errno": 0,
+      "signals": 20,
+      "SI_TIMER_signals": 20
+    },
+    {
+      "case": "monotonic-signal",
+      "pid": 1202082,
+      "tid": 1202082,
+      "seccomp": 0,
+      "signal": 27,
+      "rlimit_sigpending_rc": 0,
+      "rlimit_sigpending_errno": 0,
+      "rlimit_sigpending_soft": 477734,
+      "clock_id": 1,
+      "notification": 0,
+      "clock_gettime_rc": 0,
+      "clock_gettime_errno": 0,
+      "timer_create_rc": 0,
+      "timer_create_errno": 0,
+      "timer_settime_rc": 0,
+      "timer_settime_errno": 0,
+      "timer_gettime_rc": 0,
+      "timer_gettime_errno": 0,
+      "interval_ns": 10000000,
+      "burn_rc": 0,
+      "disarm_rc": 0,
+      "disarm_errno": 0,
+      "timer_delete_rc": 0,
+      "timer_delete_errno": 0,
+      "signals": 20,
+      "SI_TIMER_signals": 20
+    },
+    {
+      "case": "legacy-prof",
+      "pid": 1202094,
+      "tid": 1202094,
+      "seccomp": 0,
+      "signal": 27,
+      "rlimit_sigpending_rc": 0,
+      "rlimit_sigpending_errno": 0,
+      "rlimit_sigpending_soft": 477734,
+      "legacy_arm_rc": 0,
+      "legacy_arm_errno": 0,
+      "burn_rc": 0,
+      "disarm_rc": 0,
+      "disarm_errno": 0,
+      "signals": 19,
+      "SI_TIMER_signals": 0
+    }
+  ],
+  "owners": {
+    "1201995": {
+      "pid": 1201995,
+      "ppid": 1201991,
+      "start_ticks": 24705697
+    },
+    "1201996": {
+      "pid": 1201996,
+      "ppid": 1201995,
+      "start_ticks": 24705697
+    },
+    "1202032": {
+      "pid": 1202032,
+      "ppid": 1201995,
+      "start_ticks": 24705725
+    },
+    "1202033": {
+      "pid": 1202033,
+      "ppid": 1202032,
+      "start_ticks": 24705725
+    },
+    "1202054": {
+      "pid": 1202054,
+      "ppid": 1201991,
+      "start_ticks": 24705737
+    },
+    "1202061": {
+      "pid": 1202061,
+      "ppid": 1201991,
+      "start_ticks": 24705762
+    },
+    "1202068": {
+      "pid": 1202068,
+      "ppid": 1201991,
+      "start_ticks": 24705787
+    },
+    "1202082": {
+      "pid": 1202082,
+      "ppid": 1201991,
+      "start_ticks": 24705813
+    },
+    "1202094": {
+      "pid": 1202094,
+      "ppid": 1201991,
+      "start_ticks": 24705838
+    }
+  },
+  "cleanup": [],
+  "survivors": [],
+  "errno_note": "errno is interpreted only for failing calls; raw immediate errno is retained for every call.",
+  "elapsed_seconds": 1.722117438010173,
+  "binary_sha256": "b6857a85352766a8c4ceb54b8ef66b4f1b6891b513b8194ad7019cd8e1ddaae8",
+  "finished_utc": "2026-10-09T14:49:39.565339+00:00"
+}
