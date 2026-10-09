@@ -133,6 +133,7 @@ CPU supervisor, with an unused B output path:
 PYTHONDONTWRITEBYTECODE=1 python3 /absolute/source-directory/test_capture_reader.py \
   --out /absolute/B/repeat-capture-reader-cpu-validation-v1 \
   --producer-source /absolute/producer/sycl/src/prefill/prefill.cpp \
+  --producer-header /absolute/producer/sycl/src/prefill/repeat_capture.hpp \
   --real-normal /absolute/B/repeat-capture-cpu-validation-v2/normal.bin \
   --real-partial /absolute/B/repeat-capture-cpu-validation-v2/partial-write.bin
 ```
@@ -236,3 +237,29 @@ These tests and the implementation are source only and unexecuted by this agent.
 Root owns all serial validation. No GPU/model/build/service work, syntax check,
 cleanup or push was performed. Numerical findings remain separate from framing;
 original C math rejection, adoption, lifecycle and performance gates remain false.
+
+Root follow-up after actual CPU validation of `4e5684f2`
+
+Root's second serial suite finished 48 cases: 46 passed. All five stale-content
+cases passed, including four deterministic unchanged-identity cases. Two new
+ledger cases failed: deeply nested JSON was accepted by the JSON decoder, and a
+same-size write during ledger reading was not observed as a metadata change.
+Normal child exit was 1, with no cleanup or survivors, elapsed 21.452 seconds.
+Original receipts remain unchanged in `repeat-capture-reader-cpu-validation-v2`
+and `repeat-capture-reader-cpu-supervisor-v2` under the B directory above.
+
+Root now requires decoded ledger JSON to satisfy the five-GEN schema, and rejects
+duplicate object keys. A deeply nested JSON array is valid JSON; it is rejected
+because it is not that schema, rather than relying on a decoder recursion limit.
+The metadata-change test now makes its timestamp change explicit with `utime`
+on its private test fixture. This tests rejection of an observed identity change,
+without claiming that fstat detects every same-size concurrent write. Root's
+workflow still requires an orderly closed, owned ledger; content immutability
+against a hostile writer is outside that contract.
+
+The test also pins the separate producer wire-header SHA-256
+`1db25fde8987a4f778d9cba2a5dfdc811dc4f0e36778b9e6b34a779fdc7bd509`
+through required `--producer-header`, and checks duplicate-key JSON plus bytes
+path rejection. Text paths are the explicit API contract. These root corrections
+are untested until the next distinct serial receipt; previous failed receipts
+are not changed. No model or GPU work was performed.

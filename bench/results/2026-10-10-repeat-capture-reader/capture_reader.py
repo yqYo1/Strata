@@ -53,6 +53,8 @@ def file_identity(st):
 
 def private_path(path):
     raw = os.fspath(path)
+    if not isinstance(raw, str):
+        raise CaptureError('file path must be text')
     if not raw:
         raise CaptureError('empty file path')
     absolute = os.path.abspath(raw)
@@ -112,7 +114,20 @@ def read_ledger(path):
             raise CaptureError('ledger exceeds 64 KiB')
         if file_identity(os.fstat(fd)) != pinned or len(data) != pinned['size']:
             raise CaptureError('ledger changed during reading')
-        return json.loads(data.decode('utf-8'))
+        def unique_object(pairs):
+            result = {}
+            for key, value in pairs:
+                if key in result:
+                    raise CaptureError('duplicate JSON ledger key')
+                result[key] = value
+            return result
+        ledger = json.loads(data.decode('utf-8'), object_pairs_hook=unique_object)
+        # A ledger is the five-GEN schema, rather than arbitrary JSON. Check its
+        # extent against the same capture budget before capture-file validation.
+        if not isinstance(ledger, list) or len(ledger) != 5 or not isinstance(ledger[-1], dict):
+            raise CaptureError('ledger JSON must contain five GEN intervals')
+        validate_ledger(ledger, ledger[-1].get('end'))
+        return ledger
     except (OSError, UnicodeError, ValueError, RecursionError) as error:
         raise CaptureError(str(error)) from error
     finally:

@@ -54,6 +54,7 @@ def ledger_for(first_end, final_end):
 
 PRODUCER_HEAD = '9c2ebde89e5157c81a9c9ae135719452a0244ca3'
 PRODUCER_SHA256 = 'acd062d1a4f4ab29230630e066fbc29080f92c270cb1fc3e900be12502a17b56'
+PRODUCER_HEADER_SHA256 = '1db25fde8987a4f778d9cba2a5dfdc811dc4f0e36778b9e6b34a779fdc7bd509'
 PRODUCER_FIELDS = ('magic', 'version', 'layer', 'p0', 'T', 'first', 'rows',
                    'elements', 'type', 'width', 'ordinal', 'header_bytes')
 
@@ -130,6 +131,8 @@ def main():
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--producer-source', type=Path, required=True,
                         help='pinned producer sycl/src/prefill/prefill.cpp')
+    parser.add_argument('--producer-header', type=Path, required=True,
+                        help='pinned producer repeat_capture.hpp wire schema')
     parser.add_argument('--real-normal', type=Path)
     parser.add_argument('--real-partial', type=Path)
     args = parser.parse_args()
@@ -198,10 +201,14 @@ def main():
         actual = digest(args.producer_source)
         if actual != PRODUCER_SHA256:
             raise AssertionError('producer source differs from independently reviewed reference')
+        if digest(args.producer_header) != PRODUCER_HEADER_SHA256:
+            raise AssertionError('producer wire schema differs from reviewed reference')
         if reader.expected_full_records() != producer_reference_records():
             raise AssertionError('reader coverage differs from independent producer reference')
         return {'producer_head': PRODUCER_HEAD, 'source': str(args.producer_source),
-                'sha256': actual, 'records_per_full': 345, 'bytes_per_full': 66747936}
+                'sha256': actual, 'header': str(args.producer_header),
+                'header_sha256': PRODUCER_HEADER_SHA256,
+                'records_per_full': 345, 'bytes_per_full': 66747936}
     check('independent-producer-source-pin-and-all-record-descriptors', producer_pin)
     if not receipt['cases'][-1]['passed']:
         receipt['active'] = False
@@ -388,7 +395,7 @@ def main():
     check('nonprivate-parent-rejected', wrong_parent)
 
     def path_edges():
-        for path in ('', '/', '////'):
+        for path in ('', '/', '////', b'/a-file'):
             try:
                 reader.read_capture(path)
             except reader.CaptureError as error:
@@ -402,7 +409,7 @@ def main():
                 pass
             else:
                 raise AssertionError('private opener accepted empty/root path')
-        return {'rejected_paths': ['', '/', '////']}
+        return {'rejected_paths': ['', '/', '////', 'bytes path']}
     check('empty-and-root-path-CaptureError', path_edges)
 
     def ledger_ingestion():
@@ -422,7 +429,8 @@ def main():
         public_file = public / 'ledger.json'; write_private(public_file, valid)
         cases = (link, parent_link / path.name, hard, mode, directory, fifo, public_file,
                  fixture(b'x' * 65537), fixture(b'{'), fixture(b'\xff'),
-                 fixture(b'[' * 2000 + b']' * 2000), Path('/'))
+                 fixture(b'[' * 2000 + b']' * 2000), Path('/'), fixture(b'{}'),
+                 fixture(valid.replace(b'"begin": 0', b'"begin": 0, "begin": 0', 1)))
         for bad in cases:
             try:
                 reader.read_ledger(bad)
@@ -442,6 +450,12 @@ def main():
             if len(requests) == 1:
                 with path.open('ab' if grow else 'wb') as out:
                     out.write(b' ' * 65536 if grow else b'{}')
+                if not grow:
+                    # Force a distinct observed timestamp. A same-size write can
+                    # share the initial metadata observation; do not assume the
+                    # filesystem updates timestamps on every rapid write.
+                    before = path.stat()
+                    os.utime(path, ns=(before.st_atime_ns, before.st_mtime_ns + 1000000000))
             return actual_read(fd, count)
         with mock.patch.object(reader.os, 'read', changed_read):
             try:
