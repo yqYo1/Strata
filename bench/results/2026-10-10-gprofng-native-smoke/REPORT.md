@@ -34,6 +34,12 @@ python3 /absolute/source-directory/check_native_protocol_v2.py \
 Do not use Python `-O`. The controller explicitly rejects disabled assertions.
 No recipe in this report was executed by the implementation agent.
 
+Root source review added recognition of the installed collector's trailing
+NUL padding in XML, preserving the raw byte count/hash and rejecting embedded
+NULs. The receipt records loader/locale/collector environment controls and one
+CPU description, rather than unrelated environment values or duplicate CPU
+stanzas. These are source corrections; runtime qualification remains open.
+
 The work deadline is 57 seconds from supervisor initialization, reserving three
 seconds for exact-owned termination and reaping within the nominal 60-second
 job. It polls combined text, binary and experiment size against 64 MiB. A

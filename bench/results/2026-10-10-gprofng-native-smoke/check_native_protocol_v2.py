@@ -59,8 +59,13 @@ class Supervisor:
                        'controller_sha256': sha(__file__), 'source_sha256': sha(SOURCE),
                        'compiler': str(compiler), 'compiler_sha256': sha(compiler),
                        'gprofng': str(gprofng), 'gprofng_sha256': sha(gprofng),
-                       'environment': dict(os.environ), 'uname': list(os.uname()),
-                       'cpu_description': Path('/proc/cpuinfo').read_text(),
+                       'environment': {k: v for k, v in os.environ.items() if k in
+                                       {'PATH', 'LD_LIBRARY_PATH', 'LD_PRELOAD', 'LANG', 'LC_ALL',
+                                        'LC_NUMERIC', 'LC_CTYPE', 'TZ', 'GLIBC_TUNABLES',
+                                        'SP_COLLECTOR_PARAMS', 'SP_COLLECTOR_FOLLOW'}},
+                       'environment_scope': 'Loader, locale and collector controls; unrelated environment values omitted.',
+                       'uname': list(os.uname()),
+                       'cpu_description': Path('/proc/cpuinfo').read_text().split('\n\n', 1)[0],
                        'owners': self.owners, 'steps': [], 'protocol': [], 'cleanup': []}
         self.record['collector_library'] = {}
         lib = Path('/usr/lib/x86_64-linux-gnu/gprofng/libgp-collector.so')
@@ -188,7 +193,14 @@ class Supervisor:
         if not xml.is_file():
             self.record['profile_validation'] = {'error': 'missing log.xml'}
             return False
-        text = xml.read_text(errors='replace')
+        raw = xml.read_bytes()
+        # Installed gprofng can pad its XML stream with trailing NUL bytes.
+        # Strip only that tail; an embedded NUL remains a framing failure.
+        unpadded = raw.rstrip(b'\0')
+        self.record['collector_xml'] = {'sha256': sha(xml), 'raw_bytes': len(raw),
+                                        'trailing_nul_padding_bytes': len(raw) - len(unpadded)}
+        assert b'\0' not in unpadded, 'embedded NUL in collector XML'
+        text = unpadded.decode('utf-8')
         # gprofng log.xml contains successive XML fragments rather than one root.
         text = re.sub(r'<\?xml[^>]*\?>', '', text)
         tree = ET.fromstring('<root>' + text + '</root>')
