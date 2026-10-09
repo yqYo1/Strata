@@ -217,11 +217,13 @@ class Supervisor:
             self.record['profile_validation'] = {'error': 'missing log.xml'}
             return False
         raw = xml.read_bytes()
-        # Installed gprofng can pad its XML stream with trailing NUL bytes.
-        # Strip only that tail; an embedded NUL remains a framing failure.
-        unpadded = raw.rstrip(b'\0')
+        # Installed gprofng pads its XML stream with NUL bytes followed by a
+        # final newline. Strip only NUL/ASCII-whitespace at the tail; a NUL
+        # embedded in actual XML remains a framing failure.
+        unpadded = raw.rstrip(b'\0\r\n\t ')
         self.record['collector_xml'] = {'sha256': sha(xml), 'raw_bytes': len(raw),
-                                        'trailing_nul_padding_bytes': len(raw) - len(unpadded)}
+                                        'tail_padding_bytes': len(raw) - len(unpadded),
+                                        'tail_nul_bytes': raw[len(unpadded):].count(0)}
         assert b'\0' not in unpadded, 'embedded NUL in collector XML'
         text = unpadded.decode('utf-8')
         # gprofng log.xml contains successive XML fragments rather than one root.

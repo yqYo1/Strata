@@ -49,6 +49,15 @@ libc/collector hashes. Attribution requires the exact `e.user:name` metric
 header before interpreting the first numeric column. These source changes
 still require root-owned execution; an unexpected schema fails the gate.
 
+Root executed the native target once. READY/DONE/BYE and collector exit 0
+completed without forced cleanup or survivors. The original receipt remains
+rejected: the first XML reader mistook NUL padding followed by a final newline
+for an embedded NUL. The source now permits only NUL/ASCII-whitespace at the
+tail. Reading the closed experiment separately reveals collector cerror 9,
+`itimer could not be set`, and empty frame data, so the collector rejection
+is independent of the reader error. No second collection was run to correct
+the evidence reader; the original failure status must remain unchanged.
+
 The work deadline is 57 seconds from supervisor initialization, reserving three
 seconds for exact-owned termination and reaping within the nominal 60-second
 job; cleanup is a bounded best-effort reserve, not a hard wall-clock guarantee.
