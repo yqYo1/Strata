@@ -16,6 +16,9 @@ STATE = AUDIT.parent
 BASE = STATE / 'post-reboot-tuning-20261007'
 ARCHIVE = Path('/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-09-sycl-storage-retention')
 PLAN = AUDIT / 'cleanup-plan.json'
+if len(sys.argv) > 2:
+    PLAN = AUDIT / sys.argv[2]
+    assert PLAN.parent == AUDIT
 
 def sha(p):
     h = hashlib.sha256()
@@ -119,29 +122,34 @@ def run(mode):
     active = subprocess.run(['ps', '-C', 'strata', '-C', 'gdb', '-C', 'ninja', '-C', 'icpx', '-o', 'comm='], capture_output=True, text=True)
     assert not active.stdout.strip(), active.stdout
     d = json.loads(PLAN.read_text())
-    assert (ARCHIVE / 'cleanup-plan.json').is_file() and sha(ARCHIVE / 'cleanup-plan.json') == sha(PLAN)
+    assert (ARCHIVE / PLAN.name).is_file() and sha(ARCHIVE / PLAN.name) == sha(PLAN)
     already = set()
     if (AUDIT / 'cleanup-journal.jsonl').exists():
         for line in (AUDIT / 'cleanup-journal.jsonl').read_text().splitlines():
             row = json.loads(line)
             if row.get('done'):
                 already.add(row['path'])
-    groups = {'delete': {'delete-log', 'delete-dump'}, 'compress': {'compress-log'}}
+    groups = {'delete': {'delete-log', 'delete-dump', 'delete-log-reviewed'}, 'compress': {'compress-log'}}
     total = 0
     for a in d['actions']:
         if a['action'] not in groups[mode] or a['path'] in already:
             continue
         p = validate(a)
-        if a['action'] == 'delete-log':
-            assert sha(Path(a['project_messages'])) == a['project_messages_sha256']
+        if a['action'] in ('delete-log', 'delete-log-reviewed'):
+            if a.get('project_messages'):
+                assert sha(Path(a['project_messages'])) == a['project_messages_sha256']
             context = AUDIT / 'log-context' / (p.parent.parent.name + '.txt')
             context.parent.mkdir(exist_ok=True)
-            with p.open('rb') as f, context.open('xb') as dest:
-                dest.write(b'First16KiB of retired verbose log:\n')
-                dest.write(f.read(16384))
-                dest.write(b'\nLast16KiB of retired verbose log:\n')
-                f.seek(max(16384, a['bytes'] - 16384))
-                dest.write(f.read(16384))
+            if a.get('keep_context', True):
+                context_bytes = a.get('context_bytes', 16384)
+                with p.open('rb') as f, context.open('xb') as dest:
+                    dest.write(('First ' + str(context_bytes) + ' bytes of retired log:\n').encode())
+                    dest.write(f.read(context_bytes))
+                    dest.write(('\nLast ' + str(context_bytes) + ' bytes of retired log:\n').encode())
+                    f.seek(max(context_bytes, a['bytes'] - context_bytes))
+                    dest.write(f.read(context_bytes))
+            else:
+                context = None
             journal(a, {'done': False, 'operation': 'unlink pending', 'context': str(context)})
             validate(a).unlink()
             journal(a, {'done': True, 'operation': 'deleted', 'context': str(context)})
