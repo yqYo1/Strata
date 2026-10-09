@@ -1,0 +1,26 @@
+# Cache-route pair collector stdout boundaries (round 44)
+
+Scope: read-only protocol audit against frozen engine HEAD 66aaec3a66ad9ed12e6d042cffe743c47e364432, source SHA-256 eb591e263398abd9b178ab00c61e4f6af53a53bad37f837b18cd323af8dbab05. Engine source: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010/sycl/src/program/generate.cpp. Collector: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_cache_route_pairs_v0141_code32k_v1.py. PTY helper: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/fix-repeat-capture-reader-20261010/sycl/tools/owned_gdb.py. No model run was performed for this audit.
+
+## Engine protocol evidence
+
+- Startup emits READY <context> stop and flushes immediately (generate.cpp:8457-58). The collector reads until READY and treats ERR as startup failure (runner:654-661).
+- For each A/B/A/B fixture, the collector sends one GEN and accepts rows until the first DONE (runner:682-701). Token and log-probability rows belong to that request. Engine can emit YIELDED, then DONE, and flushes stdout at lines 11526-34. The only stdout afterward in that code block is optional BADM for --batch (11535-77); batching is disabled for this collector. Routing diagnostics and request summaries after DONE use stderr (11579 onward).
+- There is no normal stdout acknowledgement between DONE and the next GEN. Engine returns to its input loop. A periodic expert-profile save may run before the next request (9095-98), but it is not a protocol response. Reject any complete unexpected stdout row in this gap rather than attributing it to the next GEN.
+- SAVE/RESTORE are between-request commands (9115-24). SAVE emits flushed SESSION and SWAIT progress rows (9140-54), then SAVED on success; refusal/failure emits SERR (9130-39); verifier-commit failure emits ERR and exits (9161-64). The collector only issues SAVE after a math-gate failure, after DONE, and reads until SAVED or ERR (runner:730-744). Keep SESSION/SWAIT in SAVE progress, not GEN output.
+- QUIT breaks the input loop before request work (9099). Engine calls save_profile("exit"), tears down SYCL, and flushes stdout/stderr before exit (11674-99). No QUIT protocol row is defined. Runner sends QUIT after requests and drains PTY bytes until process exit, recording them as quit-stdout (runner:748-765). With batch disabled, expected post-DONE/post-QUIT stdout is empty; surface a nonempty tail as unexpected output. Check normal exit separately from EOF.
+- Main request errors are ERR rows, not successful completions. Require valid DONE syntax and expected fields/cardinality, while retaining only the optional protocol rows enabled for the run.
+
+## PTY/helper framing implications
+
+The runner creates a PTY, sets the slave raw, and gives it to OwnedGdb (runner:647-650). OwnedGdb directs inferior stdin/stdout to the PTY, keeps GDB MI stdout separate, and redirects inferior fd 2 to inferior.stderr (owned_gdb.py:28-68). Its MI reader buffers arbitrary chunks, splits at LF, and retains the remaining tail in pending (86-99). Thus if one chunk contains DONE\nEXTRA\n, EXTRA remains buffered after the request loop returns DONE and will be visible on the next line() call. Explicitly check the boundary before accepting the next GEN. Preserve and inspect unterminated pending bytes at phase boundaries. The controller also captures raw PTY bytes.
+
+## Minimal fake-engine protocol cases
+
+1. Valid: READY; each GEN emits allowed rows and one valid DONE; next GEN succeeds; QUIT exits zero with no tail. Checks normal framing.
+2. Stale row: emit DONE followed by T 999 before reading the next GEN. Controller must flag the row before attributing it to the next request.
+3. Truncated tail: emit DONE followed by unterminated bytes such as T . Preserve and report the tail; do not discard it or treat EOF as clean protocol completion.
+4. Unexpected QUIT: emit any row after QUIT, or exit nonzero/by signal. Record failure; clean completion requires no unexpected tail and normal exit.
+5. SAVE progress: after a deliberately failing math gate, emit SESSION/SWAIT then SAVED (or SERR/ERR). SAVE loop must consume this grammar separately from GEN.
+
+These are recommendations derived from source and collector; they do not claim a fake engine was executed or route-pair GPU integration passed. The current collector stops on DONE and drains post-QUIT bytes, but inspected code does not show a dedicated assertion for an already-buffered extra row between DONE and the next GEN. Add that assertion in separate protocol-fixture work; preserve the engine run status and do not describe unexecuted GPU integration as passed.

@@ -1,0 +1,66 @@
+# Round 42 — Source proof of route-pair job shapes and offline static-cache sufficiency
+
+## Scope
+
+Read-only review at frozen source HEAD `66aaec3a66ad9ed12e6d042cffe743c47e364432`, including the V1 route-pair producer, caller-side dispatch grouping, split verifier, router top-10 kernels, per-layer packed-format layout, native exposure histogram and existing owned-controller checks. I consulted report registry v34 and the Round40 and Round41 reports. No build, test, inference, GPU action, profiler, cleanup or Git mutation was performed. Registry v34 says the new engine was not yet built or model-run; the older decode-phase counter receipt is not a V1 pair trace.
+
+## Exact pair counts imply aggregate NT1/NT2 counts
+
+For one callback, `CacheRoutePairs::callback()` clears a 512-element `seen_` set and increments the callback total. Immediately beside the actual classification loop, `entry(layer,expert,kind)` increments one `entries` count for every routed row and increments that pair's `callbacks` count once the first time the expert appears in this callback. The callback is one `(layer, verifier group)` invocation; the table is request-aggregate and does not retain a window ID. See `sycl/include/strata/core/cache_route_pairs.hpp:30-43,54-77` and `sycl/src/core/expert_source.cpp:2745-2794`.
+
+In the same loop, every refused row is placed in `jobs_multi` by `job_of[expert]`. One `ExpertJobMulti` is created per distinct refused expert in that callback, and `jb.nt` increments once for each routed row appended to that job. Thus for a nonresident pair `p=(layer,expert)` in the supported no-admission static path:
+
+- `J_p = PAIR.callback_pairs` is the number of actual grouped CPU expert jobs for that pair over the request;
+- `N_p = PAIR.entries` is the sum of those jobs' `job.nt` values;
+- the same identity holds for a currently resident pair's hypothetical CPU work if that pair were absent from a candidate set, because its classified rows and callback grouping are unchanged by static residency.
+
+The per-request V1 schema therefore does not need to serialize a separate NT field to recover this aggregate. It does lack per-window placement of those jobs and any corresponding per-window cost/timing.
+
+The two-size bound follows independently for the requested command. `Verifier::run_boundary` uses two groups when split mode is on and `T>=2`, with group rows `[0,ceil(T/2))` and `[ceil(T/2),T)` (`sycl/src/core/verify.cpp:773-775,1681-1723`; the split contract is also documented in Round36). The supported pair-producer command pins spec=4 and `S_mtp=4`, so target verifier `T<=4` and every group has at most two token rows. The selected top-10 IDs are unique within each token: the native router masks a winning expert by replacing its score with `-INFINITY` before the next rank (`sycl/src/kernels/cuda/native_router.dp.cpp:132-140`); the generic router maintains a per-token taken mask while selecting each rank (`sycl/src/kernels/cuda/router_top10.dp.cpp:188-229`). The layer call site selects one of these top-10 paths (`sycl/src/core/layer.cpp:414-419`). An expert can consequently occur zero, one or two times in a callback, once for each of at most two token rows. The parser comment that repeated IDs can occur “within one token's k=10” is not supported by these top-k implementations; repeated expert IDs across the two tokens in a callback are possible and are the reason `entries` may exceed `callback_pairs`.
+
+Every job has `nt∈{1,2}` in this supported workload. Since `J_p` is the number of jobs and `N_p` is the sum of their `nt`, the exact pair-level counts are:
+
+`J2_p = N_p - J_p`
+
+`J1_p = 2*J_p - N_p`
+
+Require `J_p <= N_p <= 2*J_p`; then `J1_p,J2_p` are nonnegative integers and `J1_p+J2_p=J_p`. A zero-count pair is omitted by V1 and is treated as `J=N=0`. This reconstruction is valid for all pairs, including currently cached pairs, because it is based on routing rows and the frozen two-row callback shape, not on whether their current work ran on CPU.
+
+## What the native histogram corroborates and what it measures
+
+The owned controller enables the request-delta native histogram around the four target decode requests. `native_histogram_add` records actual caller jobs by phase, GGML type and `jobs[e].nt`, and records `experts`, `tokens=experts*nt`, and output rows. The current parser accepts only NT1/NT2 and the expected mixed types; the source is `src/kernels/cpu/pool.cpp:778-813,827-844`. For the actual current resident set, the controller currently checks only GU and Down aggregate totals: native expert-job counts equal refused `callback_pairs`, and native token totals equal refused `entries` (`run_owned_cache_route_pairs_v0141_code32k_v1.py:823-830`). That proves the two global totals, but not the per-pair NT split.
+
+A stronger offline reconciliation is possible with no new inference and no larger serialized trace. For each refused pair, derive `(J1,J2)` by the equations above; map the pair's layer to its `NativeFmt`; sum the derived job counts by `(GU type,nt)` and separately `(Down type,nt)`; compare each sum with the corresponding native histogram `experts` cell. Likewise compare tokens as `J1+2*J2`. The histogram is an independent check of the shape equations. The current controller does not perform this per-type/per-NT comparison; it only reconciles aggregate GU/Down totals.
+
+Format identity is layer-scoped in this pack, not expert-scoped. `expert_layout_load` reads one `native_experts.txt` row per layer, constructs one `NativeFmt` from `(gu_type,down_type)`, and stores it in `L.fmt[layer]` (`src/kernels/cpu/expert_layout.cpp:372-424,461-475`; `include/strata/kernels/cpu/native_expert.hpp:21-29`). `drive_pool_multi` dispatches every CPU job from a layer with `lay.fmt[layer]` (`sycl/src/core/expert_source.cpp:2797-2800`). Therefore joining route-pair `(layer,expert)` counts to the pinned native-expert layer metadata assigns the correct GU and down types. The native histogram's phases distinguish GU and Down and carries each phase's type/NT dimensions; it also reports selected dispatch and CPU feature eligibility.
+
+These are *shape and exposure* counts only. The histogram does not record milliseconds per `(type,nt)` cell. `run_split_multi_native` measures whole batched GU, activation-quantize and Down phases across all jobs in each batch, then adds those elapsed times (`src/kernels/cpu/pool.cpp:849-879`). Existing decode-phase outputs are also request/window averages, not costs by expert pair, type or NT. In particular, neither the pair table nor these timings identifies a marginal service time `C(GUtype,Downtype,nt)`; worker scheduling, batch composition and CPU/GPU overlap prevent treating a whole-phase average as a per-job weight.
+
+## Sufficiency for fixed-capacity offline selection
+
+For a fixed static resident set with no runtime admissions, eviction or per-layer residency changes, request-aggregate `(layer,expert)` counts are sufficient for exact *count replay*. Given any proposed resident set `S`, the same saved route table yields:
+
+- hit entries: `Σ_{p∈S} N_p`;
+- CPU route entries: `Σ_{p∉S} N_p`;
+- CPU expert jobs: `Σ_{p∉S} J_p`;
+- CPU jobs by NT/format: use `(J1_p,J2_p)` for each `p∉S` and its layer's pinned `(GU type,Down type)`.
+
+There is no LRU/event-order effect for a fully fixed resident set, so per-window trace chronology is not required for these request-total results. V1 also retains separate per-request frames, enabling prompt-level holding out if enough distinct requests are collected. The current A/B/A/B controller repeats only two prompt fixtures; those repeats do not create an independent prompt holdout for generalization.
+
+This sufficiency is limited to static route/work accounting. Under the current `--expert-cache-per-layer` mechanism, fixed layer quotas constrain which sets can be installed without source/policy changes; an arbitrary global top-128 set cannot be applied merely by reordering profile entries. Route counts can still evaluate any candidate set offline, but an actual test arm needs a mechanism that realizes that set while holding bytes and total capacity constant. Do not silently describe an offline set replay as an engine-policy test.
+
+An unweighted objective such as minimizing total CPU jobs or routed rows is calculable from V1. A format/NT-weighted CPU service-demand objective is calculable only after supplying independent measured `C(GUtype,Downtype,nt)` calibration for the same build, CPU dispatch, worker settings and machine, using `Σ_p∉S (J1_p*C(...,1)+J2_p*C(...,2))`. Current diagnostic counters do not contain those costs. Even such a sum is a CPU-demand screening metric, not predicted latency; it must be followed by paired end-to-end measurements with unchanged correctness and lifecycle gates. No cache selection or speed claim is made here.
+
+The pair report's supported scope is the serial main-target verifier path: native experts, one stage, MTP S=4 with spec=4 and split verification, no batch, pipeline, peer, remote, offload share, adaptive swaps, elastic cache or usage adaptation (`sycl/src/program/generate.cpp:10426-10434`). It records all evaluated target verifier rows before acceptance is known, so rows later rejected by rollback remain in the counts. MTP drafter routing is not attached to this target `Drive`; do not mix drafter work or prefill into the table. The current serial path has no second pipelined verifier.
+
+The producer is fail-closed for invalid use. `begin` binds a caller thread and clears request counters; callbacks/entries on another thread set `error`; invalid pair coordinates set `error`; each uint64 increment detects max and fails closed; report aggregation uses checked addition. `complete` also requires supported mode, owner thread, no error, no dispatch failure/cancellation/incomplete finish, unchanged host residency, scalar reconciliation and positive entries. Cancellation can report `error=0,complete=0`; overflow and dispatch failure cannot pass complete. Consumers must reject any noncomplete frame, not interpret partial counters as usable routes (`cache_route_pairs.hpp:25-28,30-61`).
+
+## External method note
+
+A recent primary preprint on trace-driven MoE cache evaluation argues that replay semantics and prompt-set contamination can change cache-policy comparisons; its claims are from separate models and simulation conditions, so they transfer only as a method warning to keep training/holdout prompts separate and bind replay semantics. It does not alter the source proof above or validate Strata performance. [When Does Trace-Driven Evaluation Mislead MoE Expert Caching?](https://arxiv.org/abs/2608.07911)
+
+## Corrections to prior-round framing
+
+Round40's statement that V1 could not calculate per-pair NT shape was too broad: exact aggregate NT1/NT2 per pair is recoverable under the source-proved relation and the fixed two-token split/top-10 uniqueness described here. Round40's proposal to require a larger per-window trace before a fixed-static count objective is also unnecessary. Keep the per-window fields only for temporal-policy studies and window-local timing. The request-aggregate V1 trace is enough to nominate or replay a fixed static set by count, after validating the stronger per-type/NT reconciliation. Round9's hot-expert predecode is a decode optimization across repeated windows (not a prompt-only proposal); V1 lacks the window-local timing needed to score its temporal reuse directly.
+
+No actual model route-pair totals or native histogram from the new build are available in registry v34, and this report does not infer them from prior timing-only counters. Preserve all prior math, process-health, fault, physical-context and adoption gates.

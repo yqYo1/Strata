@@ -1,0 +1,71 @@
+# Round 39 — Controller framing and qualification design for route-pair frames
+
+## Decision
+
+Add a fail-closed `CACHE_ROUTE_PAIRS_V1` parser to the root-owned `run_owned_native_dispatch_histogram_v0141_code32k_v2.py` before any diagnostic execution. Attribute the producer's flushed stderr frame by the controller's existing per-request stderr byte interval, and join it to the one stdout `DONE` from that request. A frame is a complete per-request main-target route classification only; it is not a complete correctness result or a performance sample.
+
+The pair unit is one routed token/expert entry after final `kind` classification. `hits`, `refused` and `offloaded` partition those entries. `callback_pairs` counts distinct `(layer,expert)` entries within each layer callback, including hits; it is not unique request-wide pairs, CPU expert jobs, task fragments, weighted route mass, bytes, or time. Verifier work includes target rows later rejected by MTP acceptance/rollback. With the exact H configuration (static cache, adaptation off, no peer/remote and PCIe share 0), offload and admission should be zero; target `DONE look` equals hit plus refused entries.
+
+## Byte ownership and bounds
+
+Use the controller's `stderr_begin_offset` recorded immediately before sending each `GEN` and `stderr_end_offset` sampled only after its matching `DONE` arrives. The producer flushes the `END` frame before writing/flushing `DONE`, so the closed byte interval can own its frame. At finalization, read the closed inferior stderr log in binary mode, scan line-by-line with a 65,536-byte global line ceiling (as in the existing controller), retain each line's `[start,end)` offsets, and assign every line beginning `CACHE_ROUTE_PAIRS_V1 ` to exactly one request interval. Require each frame line to be ASCII, newline-terminated, wholly within the interval, and at most 256 bytes. Do not infer ownership from request ordinal alone.
+
+Use these stricter protocol ceilings:
+
+- One request interval: at most 4 MiB total bytes beginning with the route-pair prefix; this exceeds the fixed producer's maximal 24,576 PAIR records plus framing while keeping malformed growth bounded.
+- Whole four-request run: at most 16 MiB of route-pair-prefixed data and 98,304 PAIR records total.
+- One frame: one BEGIN, one RESIDENCY, one END, and 0–24,576 PAIR lines. Each PAIR line must be no longer than 140 bytes. Do not allocate from untrusted declared counts; parse incrementally and reject once the line, record, or byte cap is exceeded.
+- Inferior stderr remains subject to the existing 64 MiB run cap and 65,536-byte line check. These caps concern serialized diagnostic data only; they do not bound raw route storage or GPU traffic.
+
+For the successful four-request qualification, require four request intervals and exactly one frame in each; ordinal `1,2,3,4` must match the `A-read0, B-read1, A-read2, B-read3` interval order. Reject route-prefixed lines outside all four intervals, duplicate/missing/nested frame records, or a frame split across request intervals. Preserve existing upper-level log filtering and raw stderr receipts.
+
+## Strict frame grammar and reconciliation
+
+Parse exact versioned line forms with exact key order and no unknown or repeated fields. Accept only ASCII decimal digits for unsigned fields and enforce `0..2^64-1`; reject signs, whitespace within values, overflow, empty values and noncanonical booleans. Require signed `done_*` values to be nonnegative and within `0..2^63-1`. Hex fingerprints must be exactly 16 lowercase hex digits.
+
+For each frame, require:
+
+- BEGIN is exactly `request=<expected ordinal> layers=48 experts=512 enabled=1 supported=1 truncated=0 error=0 complete=1`.
+- RESIDENCY has the same request ID, `cells=24576`, `unchanged=1`, and exact valid fingerprints. Require `start_fnv1a64 == end_fnv1a64`; also require the producer's `unchanged=1`, which is based on exact host-table `memcmp`. Hash equality alone is not sufficient identity evidence because FNV-1a64 is noncryptographic.
+- PAIR records are strictly ascending by `(layer,expert)`, unique, with `0<=layer<48`, `0<=expert<512`, and `entries>0`. Require all per-pair counters in uint64 range; `hits + refused + offloaded == entries` with checked arithmetic; and `1 <= callback_pairs <= entries`.
+- END has the same request ID, `cells == number of PAIR lines`, and all aggregate fields exactly equal checked sums over PAIR records. Require `entries == hits + refused + offloaded`, `callback_pairs <= entries`, `reconciled=1`, and `complete=1`. Reject duplicate PAIRs even if their counts could be merged.
+- Join END `done_hits`, `done_look`, `done_offload` to the matching stdout DONE fields `[9]`, `[10]`, and `[15]` respectively. For this frozen static-cache configuration, require `done_hits == hits`, `done_look == hits + refused`, and `done_offload == offloaded == 0`. More generally, document that native scalar DONE lookup totals can include admissions; do not relax this exact run's no-admission gate to make a mismatch pass.
+
+A missing frame or a good-looking prefix without END is a failed qualification, never an empty histogram. Keep raw frame lines and parsed per-request values in the receipt, and verify their byte interval and final receipt SHA before marking a parser gate passed.
+
+## Malformed and edge golden cases for the parser
+
+Before GPU use, add pure CPU parser cases to the root-owned harness (without exercising a running engine):
+
+1. One minimal valid frame with sorted pairs and independently calculated sums is accepted; reversing the order or repeating a pair is rejected.
+2. Duplicate BEGIN, RESIDENCY or END; missing each of those records; PAIR before BEGIN / after END; nested BEGIN; extra unknown key; wrong version prefix; non-ASCII, missing newline, oversized line, per-frame/run byte cap, or pair-record cap is rejected.
+3. A different request ID in BEGIN/RESIDENCY/END, a frame whose byte interval belongs to another request, an orphan route line, duplicate ordinal/frame in one interval, or no frame for a DONE is rejected.
+4. Negative or signed unsigned values, `+1`, uint64/int64 overflow, malformed hex, boolean other than `0|1`, out-of-range layer/expert, zero entries, duplicate pair, and checked-add overflow are rejected.
+5. Mismatch in any PAIR sum, END cell count, DONE hit/look/offload, `reconciled`, or complete flag is rejected.
+6. `supported=0`, `complete=0`, `error=1`, `truncated=1`, changed residency or unequal fingerprints is parsed as a failure classification but rejected from the successful qualification. The root-fixed cancellation case with otherwise matching partial counts must show `complete=0,error=0`; it is not accepted as a complete request. An unsupported entrypoint's mode-level `supported=0` is not a per-request frame and cannot satisfy one.
+7. A duplicated whole valid frame or a valid-looking frame outside `[stderr_begin_offset,stderr_end_offset)` is rejected, even if the DONE totals happen to match.
+
+These cases test the parser's invariants independently of the producer and controller's live output. Keep the successful cancellation/unsupported shapes as negatives, not as accepted route measurements.
+
+## Residency identity versus actual slots
+
+The V1 `RESIDENCY cells=24576` is the number of possible `(layer,expert)` table cells, **not** the number of resident GPU slots. The FNV hashes encode the entire signed host `host_res` mapping, including `-1` and slot IDs; producer `unchanged=1` proves that this mapping did not change during a supported request. They do not expose the mapping contents, resident-pair count, cache backing pointer, model identity, or 128-slot count.
+
+Therefore bind the frame to independent startup evidence: exact command includes `--expert-cache 128 --expert-profile data/expert-profile.bin --expert-cache-per-layer --adapt-swaps 0 --pcie-frac 0`; parse engine startup/config receipt showing `expert_slots=128`, `expert_slots_primary=128`, `expert_cache_mib=325`, and the pool's “pre-filled 128 of 128 slots” result. Pin `data/expert-profile.bin` SHA-256 `8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf`, cache allocation/dispatch source hashes, actual compiled binary SHA-256, exact arguments/environment, and model/pack identity from the run's acquisition and metadata receipts. Use an immutable model repository revision and existing per-shard content digests when available. Do not claim the FNV is a cryptographic model/cache identity. If no stored full-shard digest or immutable revision exists, explicitly report that limitation; do not silently substitute filenames and sizes for content identity.
+
+For a stronger map check without another inference, compute an independently expected `host_res` slot table from the pinned profile and frozen H admission rules (round35 documents the 128-slot, 48-layer split: two per layer for 0–46 and the 32-slot remainder on layer47), encode signed int32 values in canonical little-endian order, and compare its FNV against the first frame's start hash. Record that this deterministic expected-map computation checks the initial slot assignment, while producer `unchanged` checks start/end stability. Do not derive cache membership from routed PAIR counts or treat a matching noncryptographic hash alone as a content proof.
+
+## Integrate with the existing four-fresh 32K gates
+
+Do not weaken `validate_fresh`, `normalize_reference`, captured-reference comparisons or terminal process checks in `run_owned_native_dispatch_histogram_v0141_code32k_v2.py`. Preserve for each A/B/A/B request:
+
+- 32,768 prompt tokens, zero resume/reused tokens, full read through `PP 32767` with the normal 8,192-token chunk boundaries, and 1–64 visible output tokens that exactly match IDs, logprobs, MTP accepted/offered counts and finish reason against its qualified reference; in this baseline the qualified reference supplies the exact 64-token comparison.
+- Independent first-head capture equality and all 66 live prefill-state parts equality at position 32,767, plus the repeated A and B request output checks.
+- Existing first-head finiteness/shape, all prompt-state parts, sampled logprob finiteness, MTP counts, and same-process normal generation checks. The route frame is supplementary; it cannot clear the previously rejected original full-context numerical gate.
+- Exactly four owned pair frames, four successful request-local DONE joins, clean normal exit 0, no signal, no new driver/device fault, no forced cleanup, no survivor, healthy terminal process record, and the same build/source/model/config pins. Require the controller's diagnostic mode to remain `performance_eligible=false`; do not reuse diagnostic-enabled timings as clean speed results.
+
+A pair histogram may then be joined offline to the pinned 128-entry initial residency and candidate quota maps to count replayed hits on exactly these target routes. It still does not establish timing benefit, future workload predictivity, DRAM traffic, CPU worker-tail duration, or behavior at 256K context. Keep any quota/cache A/B as a separately authorized, fresh model run after root closes the current source and qualification reviews.
+
+## Scope
+
+Read-only design using the existing H four-request controller v2, frozen producer frame schema and runtime-gate reports R35–R38. This task did not inspect an unstable Sol controller/parser, modify files other than this report, run tests/builds/inference/GPU/profilers, or perform cleanup/Git operations.

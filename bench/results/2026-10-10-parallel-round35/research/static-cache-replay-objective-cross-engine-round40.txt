@@ -1,0 +1,47 @@
+# Round 40 — Conditional 128-slot static-cache replay objective and cross-engine context
+
+## Decision
+
+Treat a route-pair trace as a way to nominate one controlled static-cache test arm, not as evidence to change the shipped cache policy or predict speed. The actual-model route trace is not yet a result in the evidence available for this review. The profile SHA `8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf` identifies the bytes, but its route provenance is unknown; its 48×512 shape does not establish that its ranking predicts this workload (round37 provenance audit). Keep the current profile and 128-slot, per-layer cache as control.
+
+The specific candidate arm is: reserve 2 slots in each of the 48 layers (96 slots), using each layer’s first two pairs in the pinned profile order, then give the remaining 32 slots to the 32 eligible pairs with the highest trace-derived *incremental avoided CPU service demand* among pairs outside that base set. Eligibility requires at least one observed CPU miss/job for that pair in the training windows. This defines a 128-pair candidate set independent of the current quota artifact; compare it against the existing 128-pair admission as control. Enforce at most one extra slot per pair; ties sort by ascending `(layer, expert)`. This preserves baseline coverage everywhere and tests whether a workload-specific trace supports spending surplus capacity elsewhere. It is a conditional candidate definition only; no pair set can be named until exact route/job records exist.
+
+For pair `p=(l,e)`, define its candidate score from training events as
+
+`V(p) = Σ_{j∈CPU jobs for p in training} C(l, GU_type(j), down_type(j), job.nt(j))`.
+
+`C` is the measured CPU service time for the corresponding native expert job shape, collected on the same machine/build with the actual CPU worker configuration. `job.nt` is the actual grouped-job row count (1 or 2 for the decode cases under consideration), not the callback `n_tok`, route-entry count, worker count, or a presumed job size. Use the same fixed calibration procedure for all events and report its samples. The candidate chooses the top 32 eligible `p` by `V(p)` from a predeclared training split. If service-time calibration by all observed `(layer, GU type, down type, nt)` cells is unavailable, do not invent a proxy weight or apply this objective; report only the unweighted route/job evidence and defer candidate selection.
+
+This score estimates avoided CPU service demand, not end-to-end latency: CPU jobs can overlap GPU work, hit handling has costs, and cache behavior can change scheduling. Therefore the candidate is accepted only by paired end-to-end comparison on untouched holdout requests, with correctness and lifecycle gates intact. Report TTFT and decode throughput/TPOT separately, alongside cache hit/miss and CPU/GPU timing. Do not report a speed forecast from `V` or a higher simulated hit count.
+
+## Required trace and offline replay
+
+The V1 pair frame is aggregate per request. `entries` are routed token/expert occurrences; `callback_pairs` are distinct experts in a layer callback across kinds. Neither field is a CPU job count or weighted cost. The current V1 schema does not preserve decode window IDs or CPU job `nt` categories, so it cannot calculate the stated score or distinguish workload windows. Its PAIR records must remain diagnostic totals only.
+
+Before candidate selection, extend the diagnostic evidence in a separately versioned format (do not reinterpret V1) to retain, for every decode window and each `(layer,expert)`:
+
+- route entries by outcome (`hit` versus CPU refused/miss), kind, and actual per-token/per-row shape;
+- CPU `ExpertJobMulti` invocation count and actual `job.nt` for each invocation, including 1 and 2, grouped by `(GU projection type, down-projection type)`; current mixed formats include GU 18/21/22/23 and down 20/42;
+- callback/window ID, request ID, decode phase, `n_tok`, accepted output range and whether target-verifier rows were later rejected by rollback. Preserve target verifier work in the target trace; record MTP drafter work separately and do not mix it into target-route selection;
+- cache residency/set identity at the start and end of each request and an unambiguous mapping to the pinned model/pack, binary, command, and profile hashes.
+
+A CPU job is grouped once per expert in a callback and can contain multiple routed rows. Count each actual job once, and use its observed `job.nt` in `C`; never multiply `callback_pairs` by `n_tok` or treat `entries` as jobs. Keep prefill separate from decode. Partition windows into a deterministic training and holdout split by request/prompt, not by neighboring windows from the same prompt. Freeze the selected pair set and score before opening the holdout.
+
+Replay the training routes twice offline: current profile admission under the existing 128-slot split and candidate admission with the pinned profile’s first two pairs per layer plus 32 selected additions. Report per layer and overall routed entries, unique callback pairs, CPU job invocations by `nt` and format, hits/misses, and weighted CPU service demand; include pair-level selected additions and the exact deterministic tie-break. This replay only verifies selection arithmetic. It is not a latency result and must not alter route records or treat the profile's global rank as measured heat.
+
+## Holdout and acceptance
+
+Compare current-cache control and frozen candidate with paired, fresh requests from an untouched 32K+ holdout set, alternating order (A/B/B/A or randomized balanced order) under the same machine, binary, model/pack, worker count, VRAM budget, generation settings and request isolation. Keep 128 total resident slots and the exact same expert bytes; do not add VRAM capacity. Record individual samples, prompt hash/length, warm/cold state, wall-clock TTFT and per-token decode timing, target cache counters, actual CPU jobs/worker tails and GPU timing. Use enough paired requests to cover distinct prompts and report paired differences and uncertainty; do not pool prompt and decode phases.
+
+Retain the established full checks: exact IDs/logprobs and MTP accepted/offered counts against references, first-head and all 66 final-prefill-state comparisons, successful normal generation, process exit/cleanup, and physical 262144-token lifecycle gates where applicable. A 32K+ holdout win is limited to that workload; it does not clear any rejected full-context numerical gate. A candidate that only raises hit count or lowers estimated CPU service demand but fails to improve paired end-to-end decode under correctness gates is not accepted.
+
+Round9's hot predecode optimization is a distinct prompt-phase question; do not use its result as decode weights or combine prefill and decode. Round17's GU reuse observation motivates retaining the exact per-format/job-shape strata because shared GU handling may make formats differ in saved CPU work. Round30 excluded NT8 from its measured decode fast-path claim; this candidate is scoped to actual decode `job.nt` 1/2 only, and says nothing about NT8/prefill. Round35 established that rank redistribution is mechanically possible but the profile contains an ordering without counts/provenance, while the closed histogram had no layer/expert axis; it did not justify changing quotas. Round37 could establish profile byte identity but not training/model/router provenance. The actual pair trace and measured costs are prerequisites, not conclusions.
+
+## Cross-engine context (methodology only; no Strata transfer claim)
+
+- FineMoE describes expert-cache policy choices and reports evaluation on six RTX 3090 GPUs and a 32-core Threadripper, with Qwen1.5-MoE/Mixtral/Phi workloads and a 7:3 profiling/test prompt split. It reports prompt and generation metrics separately and observes that layerwise routing behavior makes simple recency an imperfect proxy. This supports workload-separated holdout evaluation, not this machine's 128-slot quota or a speed estimate. [FineMoE, EuroSys 2026](https://intellisys.haow.us/assets/pdf/Hanfei_FineMoE_EuroSys26.pdf)
+- llama.cpp's public `llama-moe-cache.cpp` describes fixed cache slots and builds per-layer plans with duplicate expert IDs removed before hit accounting. Its hit unit is a distinct expert in a plan, unlike Strata's per-route-entry `entries`; raw hit ratios across those implementations are not directly comparable. [llama.cpp MoE cache source](https://github.com/ggml-org/llama.cpp/blob/master/src/llama-moe-cache.cpp)
+- vLLM issue #38256 is an RFC proposing a GPU expert cache backed by pinned CPU memory and LFRU/prediction. It is a proposal, not evidence of a shipped implementation or comparable benchmark. Its anecdotal single-stream GPT-OSS result is not transferable. [vLLM RFC #38256](https://github.com/vllm-project/vllm/issues/38256)
+- The CPU/GPU collaborative MoE paper describes a GPU cache with CPU fallback, but the available abstract is insufficient to establish comparable workload counts or validate this objective. [CPU/GPU collaborative MoE paper](https://arxiv.org/abs/2512.16473)
+
+No code, cache policy, or quota change is recommended by this report. No route totals, latency, or speed forecast are asserted.

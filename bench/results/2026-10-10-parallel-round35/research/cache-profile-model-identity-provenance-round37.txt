@@ -1,0 +1,38 @@
+# Round 37 — Shipped expert-profile identity and model provenance
+
+## Finding
+
+The requested SHA-256 identifies the exact shipped `data/expert-profile.bin` bytes inspected in the frozen H source tree: `8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf`. It is a valid complete 48-layer × 512-expert STRP v1 ranking: 24,576 unique `(layer, expert)` pairs, with a rank-to-slot table. The file contains no model name, model revision/hash, source-trace names/hash, prompts, counts, probabilities, or workload labels. Its identity is established; its routing-provenance is not.
+
+**Operational consequence:** the loader's geometry/range checks make a same-shape but wrong-model profile look valid. Do not interpret rank as route heat or use this file alone to redistribute the 128 cache slots. No policy change or performance claim follows from this audit.
+
+## What local history records about the profile
+
+- Git first adds the 130,328-byte profile in initial product commit `f2a08d4b` (2026-09-24), at that time with 8,000 ranked pairs. The commit message describes Strata's install/server/model setup, not how those pairs were collected. No trace, invocation, dataset, model-file hash or generation script is attached to that first insertion.
+- Commit `e6265c719` (2026-09-28; “setup and profile fixes”) changes it to the current 24,576-pair coverage. Its commit message says the first 8,000 were unchanged and explains that the full list fixes an 8,000-slot cache cap. It adds `tools/make_profile.py` and says the tool can build/extend a profile from `--dump-routing` traces. Git records no trace input or command for this binary change. The current suffix does not match the tool's no-trace fill order, but that cannot recover which trace, model, prompts, or workload produced it.
+- The current script documents that a trace is an engine record of routed `(layer,k,expert IDs,weights)` and ranks pairs by occurrence count. Its `read_trace` increments each listed expert once and does not use recorded router weights. Since the shipped base already ranks all pairs, default base-first mode cannot change their order; `--reorder` is needed for trace pairs to rank first. This explains possible creation mechanics, not the shipped file's actual provenance.
+- STRP v1 stores geometry, capacity/count, the ordered pair list, and an inverse table. `read_expert_profile` rejects incompatible dimensions and out-of-range pairs, but the format has no model identity field or content binding (`sycl/src/core/expert_cache.cpp:142-197,229-265`). Therefore a 48×512 profile can pass validation for another 48×512 model. The profile also cannot certify router-temperature, prompt distribution, generation mode, or whether it was made from this precise quantization.
+
+## Local model and pack identity
+
+The active local GGUF is named `Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S`, and its **header only** was parsed; tensor data was not opened. Metadata identifies `general.name=Qwen3.8-Flash-Next GSQ-RCO`, `general.architecture=qwen4exp`, `general.quantized_by=ISTA DASLab`, and the ISTA-DASLab Hugging Face repository URL. It records `quantize.imatrix.file=imatrix-qwen3.8-flash-next.gguf`, dataset label `calib_qwen3.8-flash-next.tokids`, 926 entries and 1,000 chunks. Example expert tensors have shapes `[640,2560,512]` / `[2560,640,512]`; the pack's `native_experts.txt` declares `n_expert 512` over 48 layer rows.
+
+The installed pack's `conversions.json` names `tools/iq_pack.py` and both IQ3_S shards by name and byte size; `tensors` is empty. `index.txt` and `native_experts.txt` identify tensor names, GGUF offsets and quantization types. The pack has no `experts.bin`, so experts are served from the GGUF locations rather than a repacked expert blob. These compact records establish which model family/variant and source paths the pack describes; names and sizes are not cryptographic hashes of the two large shards.
+
+The packer derives expert count from the router tensor, requires each routed expert tensor's final dimension to be that count, then assembles optional expert blobs with `reshape(n_expert, -1)[e]` in increasing `e` order (`tools/iq_pack.py:429-473,530-544,586-597`). It maps by tensor name and source offset. Thus **Strata's IQ pack conversion does not reorder expert IDs**; for this pack it is not doing expert conversion at all. The runtime router emits index-valued IDs, and cache/profile pairs refer to those IDs.
+
+## What GSQ/RCO documentation establishes—and does not
+
+The primary [ISTA-DASLab model card](https://huggingface.co/ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF) describes standard GGUF quantizations of the Qwen base. It says GSQ performs post-training low-bit scalar quantization, while RCO assigns quantization types per tensor under a size budget; the quantization search covers fused routed-expert matrices by layer, and selected variants are assembled into GGUF. It does not describe a permutation or remapping of experts. The repository's tensor-allocation artifact is about quantization type per tensor, not a model/profile identity map.
+
+That supports a narrow conclusion: **there is no documented GSQ/RCO expert-ID reordering here, and no Strata packer permutation.** It does not prove that the unavailable GGUF creation pipeline never transformed the expert axis, nor does it prove the shipped profile was trained/measured against this quantization or even the original Qwen checkpoint. No per-expert permutation map, profile-source checkpoint, or source trace is present in the local profile/pack records. Do not infer equivalence from shared `48×512` geometry, the “GSQ-RCO” name, or quantization metadata. GSQ/RCO are quantization methods, not evidence of router workload provenance.
+
+## Evidence needed before using the ranking for cache selection
+
+Use route observations from the exact model and test workload, with model identity attached outside the current STRP format: both IQ3_S GGUF shard hashes or immutable Hub revision, pack metadata/hash, engine revision, prompt/request identity, decode versus prefill phase, generated token IDs/config, and per-pair route-entry counts. The active `--dump-routing` path records layer, IDs and weights from the loaded model (`sycl/src/program/generate.cpp:990-1009,5083-5129`); its binary records are the useful provenance source. If building a count-ranked profile, preserve the actual traces and command/hash, and note that the current `make_profile.py` ignores the weights. For the active comparison, the in-progress per-pair dispatch histogram can provide the same-model route/hit evidence more directly, provided it is tied to the exact model/pack and request record and keeps callback job counts separate from route entries. Join those measured pairs to candidate cache sets offline; accept a different ranking only after exact per-pair evidence and the existing correctness gates.
+
+A small proof of expert-ID equivalence against an upstream checkpoint would require a producer-declared mapping or comparison of router outputs / corresponding expert tensors at selected IDs. That is separate from the immediate same-loaded-model cache question. This audit did not read whole weights, run inference, or validate a model permutation.
+
+## Scope and inputs
+
+Read-only: frozen H96bd5 tree's profile history, profile reader/writer, profile tool, pack metadata and packer, model GGUF header, plus root's round35 report/registry. The only model-file inspection was the compact GGUF header/metadata and tensor descriptors; no tensor payload or large weight file was read. External primary source was the ISTA-DASLab model card linked above. No code, tests, build, GPU work, cleanup, or Git writes were performed.

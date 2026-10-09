@@ -1,0 +1,63 @@
+# Round 36 — Exact route-count semantics for the fixed H decoder
+
+## Finding
+
+For the frozen H settings (`--expert-cache 128 --expert-profile data/expert-profile.bin --expert-cache-per-layer --adapt-swaps 0 --pcie-frac 0 --spec 4 --spec-split`, 64 output tokens), add pair-keyed counts at the host-side `ExpertDispatch` classification loop in `expert_pool_dispatch_multi`. Count **routed token-entry occurrences** by `(layer, expert)`, separately recording resident hits, CPU-miss entries, PCIe/peer offload entries, and CPU-job occurrences. Do not label all four as “misses,” and do not substitute unique-job counts for entry counts.
+
+In this native multi-token path, the distinctions are source-explicit:
+
+- `n_tok*k` is the number of routed token/expert entries passed to one callback (`sycl/src/core/expert_source.cpp:2549-2565`).
+- Each resident route entry is `kind==0` and increments `cache_hits`; repeated occurrences of one resident expert across tokens count repeatedly (`:2758-2767`). The GPU plan deduplicates weight/expert groups for execution but fans each group back out to its destination entries.
+- Each CPU-served route entry increments `cache_refused` and `multi_entries` (`:2768-2792`). `multi_entries` is miss **token-entry** count, not the number of unique experts.
+- `job_of[e]` groups all CPU-miss entries with the same expert ID within the one `(layer, callback-group)` dispatch into one `ExpertJobMulti`; `multi_misses += njobs` counts those distinct CPU `(layer,expert)` jobs (`:2770-2791,2823-2829`). Each job's `nt` is its count of token occurrences in that callback.
+- `kind==1` PCIe and `kind==2` peer/helper routes increment `offload_entries`, which the struct documents as routed entries outside both `cache_hits` and `cache_refused` (`sycl/include/strata/core/expert_source.hpp:373-389`).
+
+For a successful native multi-token request, the useful accounting invariants are:
+
+`all route entries = hit entries + CPU-miss entries + offload entries`
+
+`DONE lookups = hit entries + admitted entries + CPU-miss entries`
+
+`DONE lookups + DONE offloaded = all route entries`
+
+On the exact H command, adaptation is off, PCIe share is zero, and there are no helper/peer caches, so `admitted=0`, `offloaded=0`, and all route entries should equal DONE lookups. `multi_entries` should equal the CPU-miss subset; `multi_misses` is smaller or equal and measures the number of unique CPU expert jobs **per callback**, not a request-wide unique-pair count.
+
+This clarifies the closed H totals: A's `40,604` `multi_entries` are CPU-routed token entries; plus `2,116` hit entries gives `42,720` total lookups/routes. A's `33,676` `multi_misses` are CPU expert-job occurrences. B analogously has `46,606 + 1,874 = 48,480` route entries/lookups and `38,294` CPU expert-job occurrences. The root report's phrase “routed entries” for `multi_entries` is ambiguous: it means entries served by CPU, not all routed entries. These equalities are caller counters, not GPU traffic, cache benefit in time, or critical-path proof.
+
+## Bounded hand-derived checks
+
+These examples use tiny route arrays to make the counter rules auditable; they are not tests or executions.
+
+1. One callback group with `n_tok=2`, `k=3`, resident expert `{4}`, IDs `[4,7,7]` and `[4,8,8]`: six total route entries; two resident hits; four CPU-miss entries (`cache_refused=multi_entries=4`); two CPU jobs (expert 7 with `nt=2`, expert 8 with `nt=2`); zero offload; `lookups=6`.
+2. One T=4 verifier window with `--spec-split`, `k=1`, all four entries expert 9 and nonresident: A and B each have `n_tok=2`; each callback creates one job with `nt=2`. Aggregated over the window: one unique `(layer,expert)` pair in the route set, four CPU-miss entries/lookups, but two `multi_misses` job occurrences because `job_of` resets per callback. Without split there would be one job with `nt=4`, same four entry counts. This is why a unique-pair summary and a callback/job count must remain separate.
+3. With `T=4`, model `k=10`, one layer dispatches 40 route entries across the two split groups. If only one of three offered MTP drafts is accepted (`a=1`), the caller commits `a+1=2` rows, yet the cache classifier and verifier have already evaluated all 40 entries for that layer. For all 48 MoE layers the dispatch totals still include every evaluated row, including rows later rejected or rolled back. The accounting measures work performed by the target verifier, not emitted/accepted tokens.
+
+The real model uses `k=10`; the `k=3` and `k=1` examples only isolate duplicate semantics. A `T=1` first/short window has one group. For `T>=2`, verifier split mode uses `G=2`, A=`[0,ceil(T/2))`, B=`[ceil(T/2),T)` (`sycl/src/core/verify.cpp:773-775,1637-1639`). The runtime boundary service calls the pool once for each `(layer,group)` (`:1681-1723`); `--pool-tasks 6` partitions CPU output rows and does not merge token groups or change these route arrays.
+
+## Speculation, commit, and MTP scope
+
+`generate.cpp` calls `ver.run(T, window, ..., drive_pool_multi, ...)` for target verification (`:12435`); callback sets `d.layers=layer` before classification (`:1012-1019`). MTP drafts are made by `mtp.draft(...)` on the drafter path before the next target window, not through `drive_pool_multi` (`:11282-11296`; `sycl/src/core/mtp.cpp:1650+`). Thus the proposed pair histogram covers main target-model MoE classification only. It does not count MTP draft-model computations, MTP acceptance, QSA/KV work, or output sampling.
+
+The per-request totals deliberately include speculative target work: all `T` rows run through verifier callbacks before the acceptance prefix is known. Later `ver.commit(a+1, ...)` keeps only the accepted prefix (`generate.cpp:11214`); rejected rows do not retroactively disappear from dispatch counts. The DONE fields `drafts accepted` and `drafts offered` are separate (`:11486-11490,11557-11562`). Do not divide pair counts by generated tokens and call the result per-token cost without also accounting for `T`, split groups, and accepted-prefix behavior.
+
+This fixed command has no `--pipeline-windows`, so there is no speculative second verifier whose completed work is later undone. If the diagnostic is generalized to pipeline windows, count every actual target callback as evaluated work and distinguish window sequence/role (committed path, speculative future, rolled back). Those paths can overlap and `Drive` may be accessed by more than one servicing context; use per-callback local counters plus synchronized aggregation or separate per-verifier maps. The fixed serial callback itself is serviced synchronously by the verifier host thread, while `ExpertPool::run_split_multi_native` executes worker tasks and returns before `drive_pool_multi` returns. Update the `(layer,expert)` pair counts in the host classification loop, never from CPU row workers, so current fixed-mode counting needs no worker atomics/locks.
+
+## Reset, stable residency identity, and report boundary
+
+The request-scoped baseline in H is taken after prompt handling and before the target decode loop: `decode_hits0`, `decode_look0`, and `offload0` around `generate.cpp:10404-10412`. Reset the pair map in that same request-start block, after any prior request's commit/refill/prompt work has completed and before the first `ver.run`. Do not reset at each window; per-request counts must include every speculative target window.
+
+At request start and end, fingerprint the host residency identity from the exact `host_res` vector: its element count/shape (`48*512`), every signed slot value in stable order, plus cache slot count/bytes and the cache base address as a backing-instance hint. Startup constructs `host_res` by copying `xcache.slot_of(layer,expert)` for every pair (`generate.cpp:5666-5699`) and then installs the same vector as `drive.d.host_res` (`:5740-5749`). It is the host classification table itself, so no device readback is required. With `--adapt-swaps 0`, no helper/peer tier, no elastic resize, and no prefill-cache borrowing/release in this run, main-cache membership, slot mapping, and backing should stay fixed through decode. Require start/end hashes to match; also record resident-pair count and slot count so a hash mismatch is diagnosable. Pointer identity alone is not enough: include the map contents. Conversely, do not read expert weights back from GPU merely to fingerprint them.
+
+For a successful request, report the pair table at the existing diagnostics boundary immediately after the final `ver.wait_commit(err)` and before DONE (`generate.cpp:11297-11304,11479-11490`). `Verifier::run_boundary` drains the verify queue (`cs_->wait`) and copy queue (`copy_->wait_and_throw`) before returning (`verify.cpp:1688-1740,2280+`); MTP's ordinary draft path waits its queue before returning (`mtp.cpp:1749-1767`); the final `wait_commit` waits the pending commit event (`verify.cpp:2598-2621`). Print only after these waits succeed. Khronos SYCL documents that `queue::wait`/`wait_and_throw` complete commands submitted to that queue; a wait on one queue does not imply other queues have completed, so keep the named verifier/copy/MTP/commit fences in scope. The [SYCL queue reference](https://github.khronos.org/SYCL_Reference/iface/queue.html) also distinguishes `wait_and_throw` error propagation. A failed request must retain its failure result and must not be reported as a closed complete 64-output profile; any partial counts are diagnostic partial work only.
+
+One compact line can carry the invariants without printing all-zero pairs: request ID and decode role; T/window/group counts; map hash/resident count/slots/backing hint at start/end; sums of pair route, hit, CPU miss-entry, offload-entry, and CPU-job counts; and an explicit successful/failed drain status. The full pair table can be sorted and emitted only for nonzero route-count pairs. `cache_admitted` is zero on the present native window route; assert that rather than folding a startup fill into request counts.
+
+## Offline replay remains an opportunity estimate
+
+A layer/expert route histogram can be joined to the 128-slot starting set to replay hit-entry counts for the frozen request trace and a hypothetical quota set. This is more informative than the aggregate H histogram, but it estimates only classifications on that captured sequence. It does not establish how routes change under different math/rounding, whether the additional resident entries lie on critical verifier windows, whether CPU wall time or device work falls, or how steady-state routes change at full context. Keep the exact all-head/all-66-state/IDs/logprobs/MTP gates, physical 262,144-context lifecycle, prompt-vs-cold-decode-vs-restored-decode separation, and separate unstamped repeated performance comparisons. No timing or speed inference follows from histogram arithmetic.
+
+A useful other-engine source confirms why counter units matter: current llama.cpp `llama_moe_cache::plan` first deduplicates IDs into `uniq`, then increments its `n_hit` once per cached distinct expert; it separately retains per-layer slot maps. Its hit unit is a distinct-expert-per-plan count, unlike Strata's native-window `cache_hits` entry count. See [llama.cpp cache planner](https://github.com/ggml-org/llama.cpp/blob/master/src/llama-moe-cache.cpp#L1590-L1625). Treat it as a semantics comparison only, not a performance precedent for this engine.
+
+## Boundaries and failure risks
+
+This accounting is specific to the frozen single-GPU native multi-token target path. Do not silently reuse its equations for the single-token `expert_hit_run` path, which can admit cache entries; peer/multi-GPU routing; PCIe share; layer-split stages; dynamic adaptive swaps; VMM resize/cache lease; batch-recursive verifier; or pipeline-window concurrency. In dynamic-cache paths, a start/end hash alone cannot attribute a hit to the residency map seen at each callback, so record a map epoch/hash per callback before replaying routes. Reject or mark invalid expert IDs, incomplete callbacks, cache/route failures, counter overflow, failed queue drains, or a request that lacks normal completion. Counts must be accumulated from the `kind[]` classification actually used to select GPU/CPU work; reconstructing classification after the run from the final map can mislabel an expert whose residency changed in flight.

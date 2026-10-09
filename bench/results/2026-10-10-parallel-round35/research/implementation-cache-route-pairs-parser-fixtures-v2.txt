@@ -1,0 +1,52 @@
+Cache-route-pairs parser fixtures v2 — SOURCE ONLY / UNEXECUTED
+2026-10-10
+
+Scope
+Wrote only B/test_cache_route_pairs_parser_v2.py and this report, where B=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007. Read immutable parser_v1, latest registry-v34 and the R41 parser audit, with root's explicit correction overriding its false aggregate callback cap. No parser, controller, producer, prior fixture or v1 report was changed. No build, fixture, syntax check, GPU/target/profiler operation, Git mutation, cleanup or delegated execution was performed. Root owns all serial qualification after the current actual engine build.
+
+New source
+B/test_cache_route_pairs_parser_v2.py
+SHA256 e80c9ffbaeb0a772998977dde210d5b75fe6fec445d3e7282776b915d86f7266
+
+Immutable v1 identities re-read and preserved
+cache_route_pairs_parser_v1.py SHA256 2ff44099f7385054dc5663f04a8e226d364d4d349a84b2493bc2bb1d6f3585cd
+run_owned_cache_route_pairs_v0141_code32k_v1.py SHA256 dcd260ade5b77c3c30c87091f474a9ee2be906eaa7ee619d438f0a3f1ab4e0e5
+test_cache_route_pairs_parser_v1.py SHA256 7eb94a9a76f5bf9518f959ff6393ff30d1f475fa8afbf923806d3b27e8112395
+The v2 fixture checks the immutable parser SHA before importing it. No parser helper is monkeypatched or weakened. No producer serializer is imported: test-owned Frame text is constructed from independently specified callback route rows, with independently calculated static membership, counts, sparse sums and DONE fields. The synthetic full STRP profile and inverse tail are likewise independently encoded. Expected resident slots and FNV byte order are hand-derived for this layer-major synthetic profile, not obtained from the parser under test.
+
+Corrected callback meaning
+An NT1 top10 callback with ten distinct experts produces ten callback-pair occurrences for that layer, while callbacks/48 equals one. The accepted mixed-hit golden frame explicitly checks each layer's callback-pair sum is ten and GREATER than callbacks/48. This guards against adding R41's false sum_e callback_pairs(layer,e)<=callbacks/48 invariant. Existing per-pair callback_pairs<=callbacks/48 is valid and receives a rejection case where callback_pairs<=entries still holds but the per-pair callback cap is exceeded. No new broad aggregate cap or NT/job-size inference is imposed.
+
+Accepted reference cases
+- Ordinals1,2,3,4 each accepted with the exact current static 128-slot layout: two residents in each first47 layers,34 in the last. Each layer's one NT1 top10 callback routes experts0..9; totals are480 entries,104 hits,376 refused,0 offloaded,48 callbacks and480 callback-pair occurrences. Equal positive top-k10 layer coverage and DONE sums are independently expected.
+- Two callbacks per layer with row (0,2,2,3,4,5,6,7,8,9) repeated twice: counts repeated expert2 entry-wise four times but only twice callback-wise. This tests repeated IDs inside/across callbacks without falsely requiring entries<=2*callback_pairs or confusing pair occurrences with CPU native jobs. It is a parser-unit fixture, not a claim that the joined production NT histogram qualified this artificial route row.
+- Bounded ordinary non-marker stderr interleaving is accepted; ownership/interval attribution remains the controller's separate responsibility.
+
+Named rejection branches
+Every negative case uses assertRaisesRegex against the EXACT intended parser ValueError message. A fixture cannot pass merely because an earlier unrelated gate rejected it. Source construction keeps predecessor gates coherent where needed; execution remains unperformed.
+
+18 test methods cover these cases:
+- Missing BEGIN, RESIDENCY or END each targets wrong frame type/field count; empty three-marker frame targets missing/empty/oversized frame.
+- Duplicate BEGIN occupies the required RESIDENCY position; duplicate RESIDENCY/END and a complete nested frame land inside the PAIR sequence and target unexpected/duplicate frame marker or PAIR.
+- Swapped BEGIN/RESIDENCY targets frame position; swapped/duplicated PAIR keys and layer48/expert512 target unsorted/duplicate/out-of-range pair.
+- Uppercase, short, nonhex, 0x-prefixed and overlong FNV strings target noncanonical FNV; separately canonical wrong hashes, cells, unchanged and residency ordinal target resident identity changed/not pinned static map.
+- BEGIN ordinal/dimensions/enabled/supported/truncated/error/complete status, caller ordinal0/5 and wrong ordinal binding, END ordinal/reconciled/complete each target their own status/binding branch. Cancellation is incomplete regardless of the actual error bit.
+- Wrong/duplicate field names, noncanonical decimals (leading zero, signed, float,21digits), individually overflowing uint64 target grammar/numeric branches.
+- Individually legal uint64 fields whose classification addition exceeds entries target invalid pair classification/callback units; zero entries/callbacks, callbacks>entries and per-pair callback cap receive separate constructions.
+- Nonzero PAIR offload is otherwise entry-sum/callback coherent and targets fixed no-offload profile changed. Both resident-as-refused and nonresident-as-hit target static classification mismatch.
+- Two independently legal resident PAIR records each containing U64 entries/hits trigger sparse total overflow on the second checked addition, before END aggregate checks.
+- Sparse END cell-count mismatch; each END entries/hits/refused/offloaded/callback_pairs mismatch; each END done_hits/done_look/done_offload mismatch; and each corresponding protocol DONE counter mismatch target their intended sum or reconciliation branch.
+- Zero/non-48-multiple callback totals; unequal layer-entry coverage with coherent adjusted END/DONE totals; cancel/extra-field DONE and generated/prompt/reused/read-count mismatch target callback, coverage or DONE branches.
+- Input type, incomplete interval, oversized line, CRLF, non-ASCII marker, misplaced marker, request frame-byte ceiling and frame-record count target distinct scan bounds/encoding branches.
+- Full synthetic profile acceptance verifies resident cardinality, per-layer quotas and FNV; malformed size/magic, geometry, independent pair layer/expert bounds, duplicate ranking and inverse-table values each assert the exact corresponding profile branch.
+
+Budget fixture limits
+The largest deliberate allocation is65 newline-terminated marker lines of65536 bytes each:4259840 bytes. Each line passes the line bound; the65th exceeds4MiB during scanning before bad marker grammar can interfere. The record-count fixture uses24580 short marker lines, well below4MiB, and reaches the frame-count gate. No >64MiB interval is allocated, no implementation constant/helper is patched, and no whole-job budget or owned-interval gate is claimed tested here. Those remain controller qualification duties. Synthetic profile size is196632 bytes; ordinary golden frames have480 sparse cells.
+
+Root serial execution recipe (NOT executed)
+After the current root-owned build closes, review this source and run:
+python3 /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/test_cache_route_pairs_parser_v2.py
+Pin fixture/parser/report hashes in a new root CPU receipt; retain stdout/stderr, normal exit, elapsed time and source-only scope. If a named branch expectation fails, inspect the exact ValueError before changing either fixture or parser. Preserve all v1 files and receipts. This fixture intentionally imports only the immutable CPU parser, never the owned controller or producer.
+
+Limits and preserved decisions
+Not executed, not a production callback integration test, not owned interval attribution, not native histogram/model math qualification. No relaxation of full-head/all66-state/generated-ID/logprob/MTP, health/fault/ownership, normal QUIT/cleanup, physical256K lifecycle or rejected C/D statuses. No cache quota, profile heat/provenance, per-pair NT reconstruction, traffic, performance or adoption claim follows from fixture source or a future CPU pass.

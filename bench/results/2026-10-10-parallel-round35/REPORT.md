@@ -1,60 +1,152 @@
-# Recurring parallel research and main-agent execution
+# Recurring parallel research and root-owned qualification
 
-At the user's status check, both round34 Luna assignments had returned and no
-research agent was active. Root resumed two separate round35 assignments using
-the shared prior-report directory and registry. They returned while root was
-running the bounded D numerical capture. Root reviewed both reports and assigned
-two distinct round36 investigations plus a separate Sol source implementation.
-The continuation rule is now explicit in AGENTS.md.
+The user's status check exposed a real assignment gap: both round34 Luna tasks
+had returned and no research agent was active. Root resumed multiple independent
+read-only researchers and continued its own execution. The recurring assignment,
+shared-history, separate implementation and root-only testing rules are now in
+AGENTS.md. Returned reports remain files with exact hashes; they are reviewed
+before adoption. Registryv35 has100 completed Luna reports and preserves v34's
+previous snapshot in the Git history.
 
-| Assignment at registry v33 | Model | Scope | Status |
+## Division of work
+
+Rounds35–45 supplied22 reports with distinct source and external-reference
+scopes while root ran the D diagnostic, localized its numerical disagreement,
+qualified portable counters, built the actual engine and ran CPU preflights.
+Round46 additionally withdrew a duplicate candidate before implementation.
+Researchers read source, official documentation, other engines and implementer
+blogs, and write only their assigned reports. Root does not intervene mid-task.
+A separate gpt-6.1-sol supplied the counter, controller/parser, independent parser
+fixtures and pure byte-framing helper. Root owns every actual execution and
+serializes builds, tests, inference, profiling and cleanup with the measurement
+lock. Research does not hold up independent main work.
+
+| Latest registryv35 assignment | Model | Scope | State at snapshot |
 | --- | --- | --- | --- |
-| Cache count audit | gpt-6-luna | Pair-keyed route counts, evaluated speculative work, DONE totals and callback ownership | Running, read-only |
-| GDN kernel audit | gpt-6-luna | Actual T8192 kernel writers, scratch, collectives and reduction determinism | Running, read-only |
-| Cache pair diagnostic | gpt-6.1-sol | Opt-in finite per-request host counters in an isolated worktree | Running, source only |
-| Main agent | Root | D two-full capture and returned-report review | Runtime diagnostic active |
+| Expert payload adapter | gpt-6-luna | Exact production sample extents, format geometry and read-only calibration input contract | Returned and reviewed |
+| Protocol review | gpt-6-luna | Independent byte-framer/oracle and controller integration conditions | Returned and reviewed |
+| Implementation agent | gpt-6.1-sol | New controller protocol/final-budget integration and CPU fixture source | Running, source only; root tests |
+| Main agent | Root | Source review, actual build/tests, durable archive and next admission gates | No live execution process |
 
-Registry v32 preserves the earlier snapshot with round35 running; v33 records its
-completion and the subsequent assignments. There are75 completed Luna reports.
-Past reports and decisions are shared before each assignment. Root does not
-intervene mid-task. Researchers write only their assigned report files; root
-owns all builds, tests, model/profiler runs and cleanup, serialized by the common
-measurement lock. No test of the new Sol code has run.
+Every assignment receives the past-report directory and reviewed decisions.
+R45 found no distinct external exact-weight AVX2 NT1/2 candidate; this is a
+negative screen, not proof that current kernels are optimal. R45's proposed
+chunk-major resident residual schedule is already the qualified869 baseline's
+run_impl path. R46 withdrew its novelty. Root did not implement that duplicate.
+R46 defines actual-weight service calibration, not measured costs. R47 finds
+exact maximum group caches of2.3071GiB for two layers and4.5288GiB for four,
+before the one shared264MiB stage and other live allocations. The frozen C
+run has no matching free-memory snapshot; fit and grouped slot maps remain
+unqualified. R48 corrects the raw-mmap input assumption: separate GGUF gate/up/down slices
+require the production reader to assemble a logical expert blob; the standalone
+CPU harness currently lacks that reader link. It also reviews framing limits and
+tail ownership. A separate Sol is preparing protocol integration. The next two
+Luna scopes specifically await that returned immutable v3/fixture source, then
+review byte ownership/budgets and independent fake-engine/admission oracles
+while root prepares/runs serial tests. This dependency is recorded explicitly;
+research is not considered finished.
 
-## Returned findings and decisions
+## Closed model diagnostic and numerical limits
 
-Round34 confirmed that D already captures layer9 input, post-GDN residual and
-post-MoE residual for rows98304–98335. No new hook or rebuild is required before
-the first comparison. Round35 maps those records to the actual in-order compute
-queue and explains their limits: final recurrent state includes all8192 chunk
-rows, and synchronous capture may change timing. Equality of the fixed window
-cannot clear the earlier uninstrumented C mathematical rejection.
+D controllerv3's CPU preflight passed in2.230s. The actual GPU diagnostic closed
+in961.036s with model exit0, no signal, no new GPU fault, no forced cleanup and
+no survivor. Initial32K control and resumed32K reference passed math. The FIRST
+full262140+4 request failed LP, head and live-state equality; all4 IDs and MTP1/5
+matched and physicalcell262143 was reached. Root stopped before the second full
+request. Original controller result remains exit1, completed=false, healthy=false
+and an incomplete-five-GEN ValueError. No successful repeated/full lifecycle or
+performance result is claimed.
 
-The cache audit confirms the actual model/profile has48 layers and512 experts.
-The explicit128-slot per-layer policy grants2 slots to layers0–46 and34 to
-layer47. The existing196632-byte STRP file contains24576 unique ranked pairs and
-a rank-to-slot table, with no route counts or provenance. A rank-based redistribution
-changes the selected set but has no measured hit or speed benefit. Root holds
-that policy change. The separate Sol assignment supplies exact pair-keyed
-classification evidence before any policy experiment; count semantics require
-independent review and root-managed qualification.
+Its reader parsed345 finite records/66747936bytes with framing-only mode and
+null request IDs. There is no request pair. CPU localization against the qualified
+baseline passed in14.974s: persisted GDN ordinals0–9 match, ordinal10/model13
+first differs at float640. QSA ordinals0–2 match; ordinal3/model15 first differs
+at stored K cell49155, head0,rowbyte52. All248320 head floats differ, maxabsolute
+.91595. These are final stored locations, not temporal onset. They differ from
+C's earlier repeated-full failure at model9/model11/cell98328. Existing selected
+capture at98304 and layers0–12 cannot localize the new D failure. The initial
+CPU launch lacked NumPy; its error remains recorded separately from the successful
+virtualenv execution of the unchanged localizer.
 
-## Main work and evidence limits
+C and D mathematical rejection, adoption=false and full-lifecycle=false are
+preserved. Exact generated outputs, head, all66 live state parts, actual baseline
+MTP, fault/health/ownership and physical262144 checks remain required. Logged
+instrumented elapsed times cannot establish speed.
 
-Root's capture controller v3 CPU preflight passed in2.230s with normal exit0 and
-no cleanup or survivors. Its SHA256 is
-`2a81a49356e687df078adfe97b53d4094047c18797db560cc21b306752cc0194`.
-The actual root-owned GPU job is active under executor session28794, with a5400s
-overall deadline,2400s per-protocol deadline,64MiB text budget and128MiB binary
-capture budget. Both the initial32K control and resumed32K reference passed the
-existing math gates; the first full256K request is running at this snapshot.
-No final numerical/capture/health result is yet claimed. Its authoritative live
-receipt is named in the registry. Root keeps supervising the same process.
+## Main-agent source qualification
 
-The original C full256K receipt remains mathematically rejected. Adoption,
-full lifecycle and clean performance eligibility stay false. Logged diagnostic
-elapsed times do not support speed claims. Full-head, all66 live state parts,
-IDs/logprobs, MTP, physical262144 context, fresh fault/health and normal ownership
-checks remain required. Successful comparison fixtures and large live captures
-stay outside Git for named consumers; compact reports, sources and receipts are
-committed. No artifact cleanup runs during the live model.
+Root corrected the pair producer's uncaught invalid-env runtime_error and kept
+normal cancellation distinct from diagnostic error. Independent portable
+ASan/UBSan fixtures passed twice as source changed:1.105s then1.056s. The final
+producer source is committed at66aaec3a. Root then built the actual SYCL engine
+in221.102s, with normal exits and no cleanup/survivor. The full115 reachable
+objects/114 distinct sources were actually compiled; the flags checker found
+no missing sources or differing production flags against frozenH. Candidate
+binary SHA256 is194968fa045e1afe5805d2cc87ebb4c3c06acf23c86fd9e780655e2ca428b972.
+No new-engine GPU inference was executed.
+
+The independent CPU parser fixture passed18 tests. Three invalid env values
+returned exact error text and exit2 from the actual binary before model setup.
+The first root wrapper incorrectly expected --help on stdout; it exited1 after
+those component passes. Its original failed status stays intact. The corrected
+wrapper checked actual stderr help for0/1 and passed the pinned controller CPU
+preflight in6.012s, reusing unchanged successful component evidence. The preflight
+used actual commit/binary/build/flags/profile identities, submitted no GPU work
+and did not read model payloads or create a runtime output directory.
+
+Rootv2 controller bounds protocol lines, records/asserts actual inferior CWD,
+and omits the unused project-messages stderr duplicate. IndependentR43/R44 review
+still requires explicit trailing/extra stdout ownership and final aggregate
+artifact-budget accounting before a GPU run. A separate pure framing helper
+retains complete/partial tails without policy decisions; root's13 independent
+fake-byte-source CPU tests passed in.373s. This is not controller/PTY/model
+integration. Integration and its negative fixtures remain required.
+
+## Research review decisions
+
+- The STRP profile has24576 unique ranked pairs and an inverse rank table, but
+  no heat counts/provenance.128 slots currently give2 to layers0–46 and34 to
+  layer47. Quota changes remain held until actual per-pair workload evidence.
+- R41's proposed sum_e callback_pairs<=callbacks/48 is false: one top10 layer
+  callback yields ten pair occurrences. Root rejected it; R43 withdrew it and
+  the positive fixture accepts this case. Per-pair callback limits remain valid.
+- R42 proves unique top10 IDs within each token and at most2 token rows per
+  split callback. For a fixed pair,J=callback_pairs,N=entries give J2=N-J and
+  J1=2J-N. A larger window trace is unnecessary for static count replay. Actual
+  per-type/NT histogram reconciliation and measured service calibration are
+  still needed; counts are not traffic, timing or predicted latency. Artificial
+  within-token duplicate-ID parser fixtures are not production NT2 evidence.
+- R39's full residual locator scans1.55TB/request; avoiding transfer alone does
+  not establish observer overhead. Equal noncryptographic hashes locate
+  boundaries and cannot replace model mathematics. No locator runtime exists.
+- The residual handoff audit found no normal-path stride/tail/queue-order defect.
+  Async errors and throwing implicit-noexcept drains remain a source-level
+  error/ownership caveat, not incident attribution. Unknown completion cannot
+  justify catch-and-free. R44 defines a future CPU ownership oracle; no drain
+  change or GPU fault injection was performed.
+
+Raw reports are preserved with corrections:66 is state-part count (12QSA/36GDN),
+134215680bytes is below128MiB by2048, and actual MTP comparison is1/5, not5/5.
+R42's D source-hash string has a leading6 typo; the pinned actual source is
+acd062d1a4f4ab29230630e066fbc29080f92c270cb1fc3e900be12502a17b56.
+
+## Artifacts and next boundary
+
+Source, commands/environment, all samples/statuses, reports and compact receipts
+are committed. Large D failed state/session/capture stays outside Git for the
+next full chunk/layer boundary map and prefill-versus-saved-state/physical-tail
+comparison. Review it when that question is superseded. The new actual engine
+build is retained for the named controller-integration consumer. Successful32K
+raw duplicates can be retired after evidence extraction; no cleanup ran here.
+No separate resume checkpoint exists. Follow docs/ARTIFACT_RETENTION.md.
+
+Next root work is strict protocol-boundary/final-budget integration and CPU
+negative cases, then independent per-type/NT counter joining. Only after those
+passes is the fourfresh32K route diagnostic eligible. This independent baseline-
+derived decode diagnostic does not adopt C/D prefill. Review the new Luna scopes
+before choosing a separate implementation; root manages all execution.
+
+The two archived pinned controller snapshots retain their original trailing
+spaces so source hashes match actual qualification. Whitespace validation
+checks other changes normally; those two byte-preserved sources exempt only
+end-of-line/end-of-file whitespace. All archive hashes were verified.

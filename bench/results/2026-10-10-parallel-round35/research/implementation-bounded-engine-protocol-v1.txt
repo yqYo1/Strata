@@ -1,0 +1,47 @@
+Bounded engine protocol helper v1 — SOURCE ONLY / UNEXECUTED
+2026-10-10
+
+Scope
+Prepared only B/bounded_engine_protocol_v1.py, B/test_bounded_engine_protocol_v1.py and this report, where B=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007. Read latest registry-v34, R43 controller budget hardening report, the root v2 controller and the prior independent parser-fixture report. No existing controller, parser, producer, source qualification or v1 artifact was edited. No code/fixture execution, syntax check, build, GPU query/model/profiler action, Git mutation, cleanup or delegation occurred. Root owns serial review and all later tests/integration.
+
+Sources and SHA256
+bounded_engine_protocol_v1.py aa72bd7f1a9babf7c6e325b10634f1a046fe78fc2b2738e691d90624197131c1
+test_bounded_engine_protocol_v1.py d40df828556798d66900fa54ed8fcc5159cbd53d736b56794da33823d9e30e44
+Root v2 controller read and left unchanged: 312bb2d93b28033623a2997e47742fdbb1df33e555d116747496c0c29d213673
+
+Purpose and policy separation
+R43 identified queued/partial stdout tail after DONE that the current controller can leave in pending, while QUIT drains only fresh PTY bytes. This helper makes all accepted unconsumed bytes explicit and keeps their original order. It does not interpret DONE, associate lines with requests, read descriptors/processes, strip trailing output, or impose a blanket empty-tail rejection. R44's actual-emitter work and root review must decide which trailing messages are legal and who owns them. A legal DONE is not assumed to imply zero additional output. Current controller CPU-preflight admission is not this helper's execution, GPU integration, numerical qualification or adoption.
+
+API and bounds
+BoundedProtocolLines(line_limit=65536, chunk_limit=65536, buffer_limit=131072, cr_policy='preserve'). All limits must be actual positive integers, not bool. Line and chunk limits cannot exceed65536; combined unconsumed payload budget cannot exceed131072 and must cover one maximum line. Smaller configured limits are supported for independent bounded fixtures.
+
+feed(bytes) accepts one bounded chunk; empty bytes are a no-op, not EOF. Every logical line is at most65536 bytes INCLUDING its terminal LF. An unfinished line reaching the configured line limit is rejected immediately because even the next LF could no longer fit. LF split across writes and multiple complete lines in a burst are handled independently. Complete lines are queued in order; partial bytes remain separate. The helper validates the complete incoming chunk, including all segment lengths and total queued+pending payload, BEFORE copying/mutating accepted state. A malformed good-prefix/bad-suffix chunk is rejected atomically; no good prefix is silently retained while its remainder disappears. Error is latched and the caller must retain/log the rejected input chunk separately if needed. Subsequent feed is forbidden; previously accepted queue/partial bytes remain inspectable/consumable for diagnostics. There is no reset or discard operation.
+
+pop_line() returns the next exact LF-terminated bytes, INCLUDING LF, or None when no complete line exists. It never returns an incomplete line. The caller must parse/validate content/encoding and explicitly assign its ownership. queued_tail() returns an immutable tuple of complete queued byte strings without consumption; pending_tail() returns an immutable bounded copy of the unfinished line. state() returns immutable received_bytes, consumed_bytes, queued_lines, queued_bytes, pending_bytes, eof and error, plus buffered_bytes and has_unconsumed properties. For admitted chunks, received-consumed == queued_bytes+pending_bytes. Inspecting a tail does not consume it. At a caller-defined boundary, state exposes both complete and unfinished trailing output; it neither reattributes nor rejects it automatically.
+
+finish() is the only EOF declaration. EOF with a partial unfinished line raises a latched ProtocolFramingError while preserving that partial and all complete queued lines. EOF with complete queued tail succeeds but has_unconsumed remains true until the caller consumes it. Feed after EOF is rejected and latched; repeated finish on a healthy fully framed EOF is harmless. pop_line/state/tail inspection remain available after failure for diagnostics.
+
+CR/content policy
+Default preserve: CR is ordinary raw content, counts toward the line byte bound, and is never stripped; CRLF is returned byte-identically including CR+LF. Optional reject: every CR is forbidden and rejects the whole incoming chunk before admission. No newline normalization, whitespace trimming, UTF8/ASCII decoding or replacement occurs. Empty lines, NUL and arbitrary non-LF bytes are preserved. A future strict engine protocol caller can choose reject and independently validate ASCII/line grammar. CR handling is explicit, unlike strip(), and caller framing decisions remain reviewable.
+
+Memory limits
+Combined stored queue payload and pending payload never exceed configured buffer_limit (default128KiB). Pending partial is always shorter than line_limit; a temporary validated complete line is at most line_limit. No pending+whole-chunk concatenation occurs: scanning uses indices/find first, then copies at most one validated bounded segment/line. Queued line count is at most buffer_limit because every queued line consumes at least one LF byte. Python deque/bytes object overhead, the caller-owned input chunk, bounded temporary line copies, immutable state records and optional tail inspection copies are additional memory; the payload budget is not a claim that total Python process RSS is128KiB. All these objects are finite/bounded by the configured line/chunk/buffer budgets; no unbounded raw history is retained. The helper is single-caller, not thread-safe, and performs no I/O or allocation of GPU objects.
+
+Independent fixture coverage (unexecuted)
+FakeSource supplies explicit byte chunks; no real engine, controller serializer, PTY, subprocess or socket. Thirteen test methods cover:
+- Exact65535-content+LF accepted in one chunk and split LF chunks;65536 no-LF rejected; a split complete line over limit rejected.
+- Per-chunk cap and combined queued/pending budget; rejection is atomic and latches; consuming complete lines frees capacity without dropping or reordering remaining bytes.
+- Multiple short lines in one burst, split content/newline, conservation of received/consumed/buffered bytes.
+- DONE plus complete trailing message plus incomplete tail, explicit tail snapshots and caller consumption before later request/QUIT assignment; no automatic tail rejection or reattribution.
+- Complete queued EOF tail and unterminated EOF tail; EOF preserves evidence; empty feed is not EOF; feed after EOF rejects.
+- Preserve-CR/CRLF byte identity and explicitly configured reject-CR policy.
+- Good-prefix/bad-suffix atomic rejection, empty lines and arbitrary raw bytes, configuration/input-type failures.
+The largest fixture input is65537 bytes; no64MiB budget file or large repeated history is created. Fixture source calls only the pure helper and unittest; root must execute it to establish any pass.
+
+Root serial recipe (NOT executed)
+After source review and the current owned work/build closes:
+python3 /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/test_bounded_engine_protocol_v1.py
+Pin helper/fixture/report SHA256 in a new CPU receipt; retain stdout/stderr, normal exit, elapsed time and CPU-only scope. Do not overwrite prior parser/controller receipts. A later separate controller patch should explicitly consume existing queued tails before new request attribution or QUIT, record/validate actual emitter semantics from R44, preserve raw stdout evidence, and independently enforce final aggregate text-artifact budgets. This preparation does not make that patch or execute it.
+
+Preserved limits/results
+This helper does not solve R43's separate post-final-JSON aggregate64MiB artifact cap; controller polling/write/final-save limits remain separate work. No numerical/native histogram/pair math gate, source/binary/build receipt, ownership/fault/normal-QUIT/cleanup gate, physical256K lifecycle or original C/D rejection is relaxed or reclassified. No inference, performance, traffic, cache-policy or adoption claim follows from source preparation or a future CPU fixture pass.
