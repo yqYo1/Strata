@@ -33,3 +33,30 @@ when verifying the build inputs.
 No new long-input numerical reference, matched speed measurement or candidate
 full-262144 lifecycle has been established. Existing C/D rejections remain
 unchanged. The next revision and all tests/model runs remain root-owned.
+
+
+## Revision 3 CPU qualification
+
+`long_prompt_reference_v3.py` preserves the numerical rules and original 869
+argv. It obtains the translation units from the recorded `ninja -t commands
+strata` target graph: 115 compile rules and 114 unique sources. The CMake
+compilation database contains only GGML entries and is not a project TU list.
+The retained-object dependency superset includes 241 project and 52 GGML paths,
+including both compiled `.inl` files, regardless of extension. Git blobs from
+the recorded build commits are compared to current files. A generated GGML
+version header is separately pinned for this run and checked again at exit;
+this does not reconstruct historical compiler or system-header hashes.
+
+Root's eight v3 admission fixtures passed in 4.272s, and the actual collector
+CPU preflight passed in 15.022s. The latter compared 807 project and 1,362 GGML
+conservative inputs. The 352 build-to-current changed paths are outside that
+closure: 351 archived bench files and one server launcher. Revision 2's pure
+fixtures passed but its real preflight failed before model execution because
+the sparse compilation database omitted the project native source. Both
+failures remain recorded; no earlier status has been upgraded.
+
+Source, commands, receipts and the exact compiled-input proof are committed in
+`bench/results/2026-10-10-long-prompt-admission/`. CPU admission does not qualify
+PTY/model execution, establish the new long-input reference, or demonstrate
+performance or candidate full-context correctness. The next root-owned model
+run has a unique output path ending in `reference-r3`.

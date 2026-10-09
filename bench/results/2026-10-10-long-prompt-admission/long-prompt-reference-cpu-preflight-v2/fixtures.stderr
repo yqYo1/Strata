@@ -1,0 +1,19 @@
+Traceback (most recent call last):
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-static-quota-oracle-v0141-20261010/sycl/tools/long_prompt_reference_v2.py", line 646, in <module>
+    if __name__=='__main__': main()
+                             ^^^^^^
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-static-quota-oracle-v0141-20261010/sycl/tools/long_prompt_reference_v2.py", line 464, in main
+    full,build,source_pins,model_identity,fixtures,input_pins,fault=admit(options)
+                                                                    ^^^^^^^^^^^^^^
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-static-quota-oracle-v0141-20261010/sycl/tools/long_prompt_reference_v2.py", line 414, in admit
+    source_pins=source_closure(build)
+                ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-static-quota-oracle-v0141-20261010/sycl/tools/long_prompt_reference_v2.py", line 368, in source_closure
+    compiled=admission.compile_paths(commands,str(ROOT),str(GGML_ROOT),build['build'])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-static-quota-oracle-v0141-20261010/sycl/tools/long_prompt_reference_admission_v2.py", line 49, in compile_paths
+    require('src/kernels/cpu/native_expert.cpp' in result['project'] and 'sycl/src/kernels/cpu/native_expert.cpp' not in result['project'],'actual production native source path')
+  File "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-static-quota-oracle-v0141-20261010/sycl/tools/long_prompt_reference_admission_v2.py", line 15, in require
+    if not ok: raise ValueError(message)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: actual production native source path
