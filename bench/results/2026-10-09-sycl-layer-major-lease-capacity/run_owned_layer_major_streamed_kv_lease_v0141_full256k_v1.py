@@ -770,7 +770,7 @@ try:
     info=dict(x.split('=',1) for x in infos[0].split()[1:])
     assert all(info[k]==v for k,v in dict(context='262144',kv='int8',kv_resident='32768',expert_slots='128',expert_cache_mib='325',spec='4',arena_mib='47962',pool_workers='5',engine='0.1.41').items())
     record['streamed_layer_major_configuration_gate']={'passed':True,'source_review_sha256':digest(host_cpu_path),'prefix_cpu_sha256':digest(prefix_path),'actual_info':info,'seeds':seeds,'drains':drains,'note':'Each fresh request uses12INT8 identity owners,8K/tail chunks determined by its physical prefix length,zero seed bytes,and all sequential retained chunks. Full cases drain262139cells; decode must separately reach262143. Nonzero prefix seeding in the layer-major path is not claimed by this sequence.'}
-    
+
     cache_release=re.findall(r'^strata prefill cache release: (\d+) physical bytes, (\d+) restored bytes, source (\w+), suspend ([0-9.]+) ms, restore ([0-9.]+) ms, graph ([0-9.]+) ms, same_address ([01]), slots restored$',text,re.M)
     cache_verify=re.findall(r'^strata prefill cache verify: (\d+) occupied tail bytes matched before and after restoration; (\d+) experts differ from the initial admission map$',text,re.M)
     mtp_release=re.findall(r'^strata mtp decode release: (\d+) physical bytes, experts and head; K/V retained; total ([0-9.]+) ms, wait ([0-9.]+) ms, unmap ([0-9.]+) ms, verify ([0-9.]+) ms, verified=(\d), graph_drop ([0-9.]+) ms$',text,re.M)
