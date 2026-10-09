@@ -201,3 +201,38 @@ reports, plus registry v23 SHA-256
 The original C rejection remains unchanged, math gate false, rejection-cleared
 false, adoption false, performance eligibility false and full lifecycle false.
 No parser result authorizes model admission. No artifact was deleted.
+
+
+Stale-manifest follow-up (source only, untested)
+
+Root reports that its serial execution of the original `b1d43473` suite completed
+39 cases with 38 passing. `stale-manifest-identity-rejected` failed with
+`AssertionError('stale manifest accepted')`. Child normal exit was 1, no forced
+cleanup or survivors, elapsed 21.738 seconds. These are root's original results,
+not execution of the hardening changes. Original receipts remain outside Git:
+`/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/repeat-capture-reader-cpu-validation-v1/record.json`
+and `repeat-capture-reader-cpu-supervisor-v1/record.json` under that same parent.
+This report does not change their status or claim a demonstrated filesystem
+mechanism. Indistinguishable timestamp/identity observations are a hypothesis;
+the acceptance in the original stale-manifest case is the observed failure.
+
+The comparator now streams the entire file on each pinned open descriptor and
+checks SHA-256 against its manifest before trusting matching payload hashes.
+This includes all headers, preventing a stale header from being hidden by
+unchanged payload hashes. Each pass reads at most the initial file size, capped
+at 128 MiB, in chunks of at most 64 KiB; no payload arrays are retained. Both
+files are hashed even when they name the same file. Descriptor identity is
+checked after each pass and again after comparison. Differing payloads retain
+the existing bounded first-word comparison and captured-hook order semantics.
+Orderly closed producer provenance remains required; this does not establish
+immutability against a hostile writer after verification.
+
+The original stale-manifest test remains unchanged. Four additional deterministic
+CPU test cases mutate a closed small fixture's payload or header, for a shared
+path and for a distinct right file, while mocking file_identity to return its
+original metadata. Each demands CaptureError from the whole-file digest and
+asserts that the original C rejection flag remains false. No sleep is used.
+These tests and the implementation are source only and unexecuted by this agent.
+Root owns all serial validation. No GPU/model/build/service work, syntax check,
+cleanup or push was performed. Numerical findings remain separate from framing;
+original C math rejection, adoption, lifecycle and performance gates remain false.

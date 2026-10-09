@@ -320,6 +320,38 @@ def main():
         raise AssertionError('stale manifest accepted')
     check('stale-manifest-identity-rejected', stale_identity)
 
+    def stale_content_with_unchanged_identity(header, same_path):
+        left = fixture(packed())
+        right = left if same_path else fixture(packed())
+        a = reader.read_capture(left)
+        b = a if same_path else reader.read_capture(right)
+        pinned = b['file_identity']
+        with right.open('r+b') as out:
+            out.seek(16 if header else 128)
+            out.write(struct.pack(PREFIX + 'Q', 4) if header else struct.pack(PREFIX + 'f', 7.0))
+        actual_identity = reader.file_identity
+        def unchanged_identity(st):
+            identity = actual_identity(st)
+            return dict(pinned) if identity['ino'] == pinned['ino'] and \
+                identity['dev'] == pinned['dev'] else identity
+        with mock.patch.object(reader, 'file_identity', unchanged_identity):
+            try:
+                reader.compare_requests(left, a, None, right, b, None)
+            except reader.CaptureError as error:
+                if 'whole-file hash became stale' not in str(error):
+                    raise AssertionError('stale content was not rejected by whole-file digest')
+                if a['original_C_rejection_cleared'] or b['original_C_rejection_cleared']:
+                    raise AssertionError('stale comparison cleared original C rejection')
+                return {'rejection': str(error), 'mutation': 'header' if header else 'payload',
+                        'same_path': same_path, 'metadata_identity_simulated_unchanged': True}
+        raise AssertionError('equal manifest hashes hid stale closed-file bytes')
+    for header in (False, True):
+        for same_path in (False, True):
+            check('stale-%s-unchanged-identity-%s' %
+                  ('header' if header else 'payload', 'same-path' if same_path else 'right-file'),
+                  lambda header=header, same_path=same_path:
+                      stale_content_with_unchanged_identity(header, same_path))
+
     def unsafe_file():
         original = fixture(packed())
         link = args.out / 'symlink.bin'; link.symlink_to(original)

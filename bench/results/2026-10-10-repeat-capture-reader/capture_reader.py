@@ -364,6 +364,30 @@ def word_summary(raw, kind, byteorder):
             'finite': kind == 2 or math.isfinite(value)}
 
 
+def verify_manifest_file(fd, pinned, manifest):
+    """Rehash the entire pinned file, including headers, before hash shortcuts.
+
+    Closed producer provenance is still required. Metadata alone cannot prove
+    content equality when a same-size write has indistinguishable timestamps.
+    """
+    size = pinned['size']
+    if type(size) is not int or not 0 <= size <= MAX_BYTES:
+        raise CaptureError('comparison file size outside capture budget')
+    os.lseek(fd, 0, os.SEEK_SET)
+    remaining = size
+    digest = hashlib.sha256()
+    while remaining:
+        chunk = os.read(fd, min(remaining, CHUNK_BYTES))
+        if not chunk:
+            raise CaptureError('comparison file shortened during verification')
+        digest.update(chunk)
+        remaining -= len(chunk)
+    if file_identity(os.fstat(fd)) != pinned:
+        raise CaptureError('capture changed during comparison file verification')
+    if digest.hexdigest() != manifest.get('file_sha256'):
+        raise CaptureError('comparison manifest whole-file hash became stale')
+
+
 def compare_requests(left_path, left_manifest, left_request,
                      right_path, right_manifest, right_request):
     """Pair by semantic identity, ignoring process-global ordinals. Bounded I/O.
@@ -390,6 +414,8 @@ def compare_requests(left_path, left_manifest, left_request,
     try:
         afd, apin = open_private(left_path, left_manifest['file_identity'])
         bfd, bpin = open_private(right_path, right_manifest['file_identity'])
+        verify_manifest_file(afd, apin, left_manifest)
+        verify_manifest_file(bfd, bpin, right_manifest)
         for a in left:
             b = bmap[semantic(a)]
             if a['payload_sha256'] == b['payload_sha256']:
