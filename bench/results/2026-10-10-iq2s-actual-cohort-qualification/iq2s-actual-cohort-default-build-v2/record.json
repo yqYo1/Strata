@@ -1,0 +1,177 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "variant": "default",
+  "controller_sha256": "4e288661fb6f0b435a40999f1d9c523d109a8660727a2939d5c680b87d965895",
+  "base_build_receipt_sha256": "292849fedd2f0b9460304f3c3f317d3b9fcab483734e3d95103d23e4c1131de1",
+  "helper_sha256": "1ef9245586c14264a374d0a6e702e70c1d5fb30f19f67948709148fbb9b2cb2f",
+  "commands": [
+    {
+      "label": "configure",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/sycl/tools/native-service-calibration",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-default-v2",
+        "-G",
+        "Ninja",
+        "-DCMAKE_C_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icx",
+        "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DSTRATA_ROOT=/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010",
+        "-DGGML_SOURCE_DIR=/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010",
+      "owner": {
+        "pid": 3509328,
+        "pgid": 3509328,
+        "start_ticks": 28278270
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 2.83323788800044
+    },
+    {
+      "label": "build",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-default-v2",
+        "--target",
+        "native_service_calibration",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010",
+      "owner": {
+        "pid": 3509544,
+        "pgid": 3509544,
+        "start_ticks": 28278556
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 25.33393835404422
+    },
+    {
+      "label": "direct-imports",
+      "argv": [
+        "/usr/bin/readelf",
+        "-d",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-default-v2/native_service_calibration"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010",
+      "owner": {
+        "pid": 3510927,
+        "pgid": 3510927,
+        "start_ticks": 28281092
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.13105219800490886
+    },
+    {
+      "label": "defined-symbols",
+      "argv": [
+        "/usr/bin/nm",
+        "--defined-only",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-default-v2/native_service_calibration"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010",
+      "owner": {
+        "pid": 3510987,
+        "pgid": 3510987,
+        "start_ticks": 28281110
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.1293435330153443
+    }
+  ],
+  "cleanup": [],
+  "survivors": [],
+  "environment": {
+    "PATH": "/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8"
+  },
+  "gpu_work_submitted": false,
+  "inference_run": false,
+  "model_opened": false,
+  "performance_eligible": false,
+  "adopted": false,
+  "owner_scope": "Entire inherited session, including Ninja compiler process groups",
+  "source_commit": "508da185e58adbf0e288f32fe18360d7ac44ee7d",
+  "started_utc": "2026-10-10T00:45:03.586935+00:00",
+  "limits": {
+    "AS_each_bytes": 12884901888,
+    "RSS_group_bytes": 8589934592,
+    "CPU_each_soft_seconds": 300,
+    "CPU_each_hard_seconds": 301,
+    "FSIZE_each_bytes": 134217728,
+    "NOFILE": 256,
+    "CORE": 0,
+    "wall_total_seconds": 600,
+    "text_budget_bytes": 16777216
+  },
+  "peak_group_rss_bytes": 657317888,
+  "compile_comparison": {
+    "common_units": 37,
+    "mismatches": [],
+    "added_units": [],
+    "missing_units": [
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/sycl/tools/native-service-calibration/iq2s_index_dot.cpp"
+    ],
+    "excluded_flags": [
+      "-fsanitize=address,undefined",
+      "-fno-omit-frame-pointer",
+      "-DSTRATA_CALIBRATION_IQ2S_INDEX_CHECK=1"
+    ]
+  },
+  "binary": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-default-v2/native_service_calibration",
+    "bytes": 3716208,
+    "sha256": "724388f4a7e212d924642cd2abb9d322905bfa385562e4a7dee63a88e410494a"
+  },
+  "compile_commands": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-default-v2/compile_commands.json",
+    "bytes": 40449,
+    "sha256": "ede27b3cbb3ccb5d0d26acfd3efd1190bf28549c5a59f36fd15c38fc482e69b3"
+  },
+  "default_option_omitted": true,
+  "production_source_pins_stable": true,
+  "elapsed_seconds": 28.995713696000166,
+  "finished_utc": "2026-10-10T00:45:32.582673+00:00",
+  "logs": {
+    "defined-symbols.stdout": {
+      "bytes": 152802,
+      "sha256": "df9236ed8262b113b8a6d8f726064fb7f49d1ab6b1f8bf67f7487b6f9d084810"
+    },
+    "build.stdout": {
+      "bytes": 4135,
+      "sha256": "2f01cbb46e5c697b82b03aef58aadebdeeaba95a8cd12df03268b3ee11be141e"
+    },
+    "configure.stdout": {
+      "bytes": 1427,
+      "sha256": "381c930ad80518af2f56e945f9c05e0e8965afa0f4ce04ff8e1fd1f9d7ea3d29"
+    },
+    "direct-imports.stdout": {
+      "bytes": 1542,
+      "sha256": "f7ae0484dfcad30a36c3a31cee9a8e976b0a5de2dc4faeac2e9ca2e3a8f033db"
+    },
+    "defined-symbols.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "configure.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "direct-imports.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "build.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

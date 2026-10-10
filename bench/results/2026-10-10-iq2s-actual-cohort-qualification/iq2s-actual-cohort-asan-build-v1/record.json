@@ -1,0 +1,154 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "variant": "asan",
+  "controller_sha256": "3e30397f8772687327d957d58304555d59b92704535cf171eaeb12cbcf940fb5",
+  "base_build_receipt_sha256": "292849fedd2f0b9460304f3c3f317d3b9fcab483734e3d95103d23e4c1131de1",
+  "helper_sha256": "1ef9245586c14264a374d0a6e702e70c1d5fb30f19f67948709148fbb9b2cb2f",
+  "commands": [
+    {
+      "label": "configure",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/sycl/tools/native-service-calibration",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-asan-v1",
+        "-G",
+        "Ninja",
+        "-DCMAKE_C_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icx",
+        "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DSTRATA_ROOT=/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010",
+        "-DGGML_SOURCE_DIR=/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml",
+        "-DSTRATA_CALIBRATION_IQ2S_INDEX_CHECK=ON",
+        "-DCMAKE_C_FLAGS=-fsanitize=address,undefined -fno-omit-frame-pointer",
+        "-DCMAKE_CXX_FLAGS=-fsanitize=address,undefined -fno-omit-frame-pointer",
+        "-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=address,undefined"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010",
+      "owner": {
+        "pid": 3490890,
+        "pgid": 3490890,
+        "start_ticks": 28247264
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 6.121660953969695
+    },
+    {
+      "label": "build",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-asan-v1",
+        "--target",
+        "native_service_calibration",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010",
+      "owner": {
+        "pid": 3491511,
+        "pgid": 3491511,
+        "start_ticks": 28247879
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 186.49239542899886
+    },
+    {
+      "label": "direct-imports",
+      "argv": [
+        "/usr/bin/readelf",
+        "-d",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-asan-v1/native_service_calibration"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010",
+      "owner": {
+        "pid": 3502468,
+        "pgid": 3502468,
+        "start_ticks": 28266531
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.12704203801695257
+    }
+  ],
+  "cleanup": [],
+  "survivors": [],
+  "environment": {
+    "PATH": "/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8"
+  },
+  "gpu_work_submitted": false,
+  "inference_run": false,
+  "model_opened": false,
+  "performance_eligible": false,
+  "adopted": false,
+  "source_commit": "508da185e58adbf0e288f32fe18360d7ac44ee7d",
+  "started_utc": "2026-10-10T00:39:53.535297+00:00",
+  "limits": {
+    "AS_each_bytes": 12884901888,
+    "RSS_group_bytes": 8589934592,
+    "CPU_each_soft_seconds": 300,
+    "CPU_each_hard_seconds": 301,
+    "FSIZE_each_bytes": 134217728,
+    "NOFILE": 256,
+    "CORE": 0,
+    "wall_total_seconds": 600,
+    "text_budget_bytes": 16777216
+  },
+  "peak_group_rss_bytes": 97083392,
+  "compile_comparison": {
+    "common_units": 38,
+    "mismatches": [],
+    "added_units": [],
+    "missing_units": [],
+    "excluded_flags": [
+      "-fsanitize=address,undefined",
+      "-fno-omit-frame-pointer",
+      "-DSTRATA_CALIBRATION_IQ2S_INDEX_CHECK=1"
+    ]
+  },
+  "binary": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-asan-v1/native_service_calibration",
+    "bytes": 22758656,
+    "sha256": "a8036f115d61599ca8d7da611959b3ad250ad579cd69b64dee933c73059b8d4d"
+  },
+  "compile_commands": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-asan-v1/compile_commands.json",
+    "bytes": 43971,
+    "sha256": "ad70cc23266420ece75d35de77b31f2f77bc868c46664bb8023bdc6e94c05ba8"
+  },
+  "default_option_omitted": false,
+  "production_source_pins_stable": true,
+  "elapsed_seconds": 193.22352735401364,
+  "finished_utc": "2026-10-10T00:43:06.758848+00:00",
+  "logs": {
+    "configure.stdout": {
+      "bytes": 1424,
+      "sha256": "1001c6951826b053d805e9d3079b62c8a7af77e63262b8a5e64548522873d566"
+    },
+    "direct-imports.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "build.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "direct-imports.stdout": {
+      "bytes": 1725,
+      "sha256": "5c3a9e68106b53ab99dc29230aebd46118c0268c22ee4a0925e1cc8920de29f8"
+    },
+    "configure.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "build.stdout": {
+      "bytes": 4226,
+      "sha256": "60e1d6ca2e2360da8c6a6cd73c87e111c5ade264b1242006d14f4b900facf91e"
+    }
+  }
+}

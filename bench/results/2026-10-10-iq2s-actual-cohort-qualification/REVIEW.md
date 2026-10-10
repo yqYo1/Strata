@@ -1,0 +1,13 @@
+# Actual-weight IQ2_S admission
+
+Ryzen 5 5600X, IntelLLVM 2026.1, pinned GGML3cf03257. This is a CPU-only numerical gate with actual selected model weights and deterministic finite synthetic activations. It is not model performance, live activation coverage or full262144-token lifecycle qualification. No candidate adopted.
+
+Release and full-production ASAN+UBSAN builds both completed normally. All384 experts across15 layers /245760 Gate-Up row pairs /1474560 dot calls matched trait, direct control and register-index bits for Gate, Up and finish. All reported values were finite. Release and sanitizer numerical records were identical. The16 STRATA feature variables were unset. Caller MXCSR entry8064, prepared/final8123: controlmask0x1f80, nearest-even, FTZ/DAZoff; exception flags differ normally. No pool starts in this candidate gate. Every selected1152 role extent (756940800B total) matched its prior individual SHA256 before and after each run; complete model shard identities remained stable. Complete numerical rows are retained once; sanitizer equivalence and hashes are in its closed receipt.
+
+The Release process was observed from pre-exec to exit using strace and LD_DEBUG=libs, with no scoped GPU device/runtime access observed. This is scoped observation, not universal API interposition. Four invalid cell combinations rejected before pack/model opens.
+
+A fresh build with the private CMake option omitted resolved it OFF. All37 common compile units retained flags after declared comparison exclusions; only the isolated dot TU was omitted. No candidate/helper symbols were linked. The new mode rejected before pack/model opens; original correctness mode passed all384 independent GGML references and five-worker pool parity with tasks6/batch6. Sanitizer flags instrumented every ON translation unit; no ASAN/UBSAN/leak diagnostics appeared in the untraced run.
+
+The ASAN build's original PGID-only RSS watcher omitted Ninja compiler jobs in separate process groups. The unchanged receipt's RSS peak is therefore only the initial group, not the full compiler tree. Root checked all inherited build sessions empty after normal completion and preserved this correction separately. The next default build used an entire-session watcher and completed normally. No inference or GPU run was involved in either build.
+
+A separate Sol implements timing-only source in another worktree while root owns all builds/tests sequentially. Timing, default adoption, live32K decode/prefill and physical262144 lifecycle gates remain pending. Verbose successful traces/compiler logs are represented by hashes/excerpts. Original state logs currently stay in place until independent review consumers finish; there is no open failure in these successful runs.

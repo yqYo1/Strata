@@ -1,0 +1,13 @@
+{
+  "parent_receipt_sha256": "fae66c11cc2504fb03eda66dd2eb54b4d3ffddce2246a2aabd503496e86a7fe6",
+  "closed": true,
+  "owned_session_ids": [
+    3490890,
+    3491511,
+    3502468
+  ],
+  "post_build_session_survivors": [],
+  "root_observation": "Ninja creates a separate process group for compiler jobs while preserving the owned session. Root observed compiler PID3492579 PGID3492577 as a descendant of build PID3491511, CPU158.39s RSS336629760B. The original PGID-only RSS observer omitted this compiler.",
+  "original_peak_group_rss_claim_scope": "Only original PGID, not total compiler-tree/session RSS. Do not interpret as a full build-tree resource peak.",
+  "build_admission": "Normal source-pinned compile/import/flag comparison completed; all owned sessions now empty. Inherited per-process RLIMITs apply. No model or GPU run. Future builds must observe the owned session rather than only the initial PGID."
+}
