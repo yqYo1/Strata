@@ -1,0 +1,36 @@
+# GDN gate-buffer production ownership audit — R109
+
+Date: 2026-10-10. Read-only source audit. No Strata edits, Git operations, builds, tests, profiles, inference, device queries, or cleanup.
+
+## Inputs and source pins
+
+Reviewed R108 in full: `gdn-head-precompute-and-norm-implementer-blog-candidates-round108.txt`. Sole Strata source is immutable git-show snapshot `gdn-gate-consumers-cd353f30`, revision `cd353f30a47dfd42818aace6f464bd227084e779`, manifest SHA-256 `1ac15ccad1b17ca2913f17abdf40a4989f567a39568cb27bf74721af9572dcfb`, 227 files / 7,377,107 bytes. Source file hashes:
+
+- `sycl/src/prefill/prefill.cpp`: `f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77`
+- `sycl/src/prefill/kernels.dp.cpp`: `cc5254f688b9138fc71800884c853211771067c0f07a0a44a237fd45b59b4bfa`
+- `sycl/src/core/layer.cpp`: `6b443fc1df1c812ee4811b46ebde315cfe30356a448ac10f0e56332c763416a7`
+- `include/strata/prefill/kernels.hpp`: `51182b3c71119cd64b56e2d5de110a3b2f0e9832927c240ef14a307e1be2ae81`
+
+## Production prompt path and storage
+
+`prefill.cpp:903-910` computes the GDN scratch set size for the requested chunk T. At `1314-1322`, a scratch `Alloc a` carves `qkv`, `z`, `ab`, `gate`, `beta`, `hbuf`, and output storage in that order. `gate` is exactly `T * HV` FP32 values (HV = 48 value heads in this model), immediately followed by a distinct `T * HV` beta array; no gate-capacity overrun or hidden larger capacity is indicated. The set is within the shared region whose size is the maximum of the GDN, QSA, HC, PLE and MoE sets (`1293-1299`). In compact mode the GDN output aliases dead `qkv` storage after convolution (`1315-1322`), but `gate` does not alias another array. The allocation is per prompt chunk, not a second full-context tensor.
+
+At `3654-3669`, production prompt execution identifies the layer's GDN state, performs QKV and Z projections, writes alpha/beta projections into `ab`, calls `gdn_gates(..., m.gate, m.beta, T, m.cs)`, separately runs convolution, then calls `gdn_recurrence(..., m.gate, m.beta, ..., T, m.cs, ...)`. The only direct production prompt read of `m.gate` is this recurrence call. Gate generation and recurrence use the same `m.cs` queue in call order; there is no cross-stream alias or concurrent reader in this path. Gate is not exposed through the prompt public interface. Public low-level declarations remain generic pointer APIs (`kernels.hpp:55,61`), and test/parity code also calls recurrence with externally supplied gate data (`gdn_variant_parity.cpp:68`), so its input contract must remain log-gate unless a separate private entry point/flag distinguishes the precomputed representation.
+
+The prompt driver supplies T per chunk. Allocation and both kernel APIs are sized by this T; nothing in the inspected call uses a fixed physical 262144 gate array. Long prompts are processed in chunks while session state is carried between calls/chunks. Therefore an in-place representation conversion costs no additional capacity even at physical-context 262144. A separate `exp_gate` array would add `4*T*48` bytes per live chunk: 1.5 MiB at 8192, 6 MiB at 32768, and 48 MiB at 262144, and would violate the no-new-memory criterion absent proven scratch reuse.
+
+## Consumer and recurrence inventory
+
+`kernels.dp.cpp:456-470` implements gate generation: one output per `(t,head)` and separate beta. The gate slot currently receives `(v > 20 ? v : log1p(native_exp(v))) * ssm_a[h]`, i.e. log-decay form. Recurrence implementations consume the gate pointer and compute `sycl::native::exp(gate[t*HV+head])` (e.g. lines 704 and 837; the regular column-pipeline is at 898 onward). Dispatcher `gdn_recurrence_variant` (`2809+`) selects quad/quad-2c, key-head, regular pipelined, or regular column recurrence according to variant/runtime checks, with the same gate argument. All of these must be updated for a changed private representation; updating only the regular path is unsafe. `gdn_recurrence` is the prompt wrapper at `2967+`.
+
+Snapshot-wide exact API call inventory: prompt production has one `gdn_gates` + `gdn_recurrence` chain (`prefill.cpp:3661,3665`); a diagnostic variant parity caller invokes recurrence directly with fixture gate values (`gdn_variant_parity.cpp:68`). The separate decode production route is `core/layer.cpp:324-363`: it prepares one-step alpha/beta with fused or split gate kernels, then calls `gdn_step`/`native_gdn_step` or fused step+norm. This uses separate decode buffers and one-token APIs, not the prompt `m.gate` allocation or `gdn_gates`/`gdn_recurrence` interfaces. Do not change decoder gate semantics as part of the prompt experiment. This means a private prompt-only implementation is possible without altering public decode behavior, but the generic public `gdn_gates` API should not silently change semantics.
+
+## Decision
+
+**Ownership audit supports a same-buffer, prompt-private, opt-in experiment; it does not support changing the public gate API or decoder.** The production prompt gate is an intermediate with a closed producer → recurrence lifetime, distinct allocation, same queue, and no other prompt consumer. The representation can be changed in place after the producer computes the stored FP32 gate, provided all prompt recurrence variants read it directly as decay and skip only their former exp. Preserve the default log-gate behavior and explicit fixture/API contract by adding a private opt-in path/entry point (or a clearly scoped mode carried through both prompt producer and recurrence dispatch); ensure every recurrence implementation is consistent. No additional array or capacity is needed. This is a source-feasibility decision only, not implementation authorization or a performance recommendation.
+
+The GDN session-state carry and convolution history are separate state fields. In-place gate conversion touches only the T-by-HV temporary; it must not alter state carry, convolution TAIL handling, output tail/chunk dispatch, or ordering of recurrence tokens. Physical 262144 is covered by chunked production storage, not an allocation of 262144 gates unless T itself reaches that size.
+
+## Not established
+
+No implementation, numerical equivalence, bitwise state/output comparison, full-model lifecycle test, long-prompt / physical-262144 validation, event timing, or speedup was measured. Source-level pseudo-prefix/fixture passes do not establish production lifecycle correctness. The separate native-exp/compiler exactness audit remains outstanding and is intentionally outside this report. Confirm all dispatcher branches, alias assumptions, event ordering, precision options and carried state with the implementation's actual validation before promotion.

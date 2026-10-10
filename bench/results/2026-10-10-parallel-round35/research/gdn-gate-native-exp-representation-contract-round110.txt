@@ -1,0 +1,44 @@
+# GDN gate `native::exp` representation contract — round 110
+
+Date: 2026-10-10
+Scope: read-only SYCL/compiler/floating-point review of the R108 candidate to compute `native::exp(gate)` in the existing gate producer and let recurrence reuse it. This is not an implementation, a benchmark, or the production-consumer ownership audit assigned separately.
+
+## Inputs pinned
+
+- Immutable source snapshot: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-source-snapshots/gdn-gate-consumers-cd353f30`, revision `cd353f30a47dfd42818aace6f464bd227084e779`.
+- Snapshot manifest SHA-256: `1ac15ccad1b17ca2913f17abdf40a4989f567a39568cb27bf74721af9572dcfb`.
+- `sycl/src/prefill/kernels.dp.cpp`: SHA-256 `cc5254f688b9138fc71800884c853211771067c0f07a0a44a237fd45b59b4bfa`, 162594 bytes. Relevant source has `gdn_gates_kernel` form and store `gate[i]=(v>20 ? v : log1p(native::exp(v)))*ssm_a[h]`; recurrence later evaluates `native::exp(gate[t*HV+head])`.
+- `sycl/CMakeLists.txt`: snapshot pins the existing `-fp-model=precise` compile option and default subgroup size 32. The producer and recurrence are different kernels/call contexts.
+- Prior evidence checked: registry v49 (SHA-256 `0c7d8f4bd959ba71ec9eb9b3748d8ec32b8a05ca1cc1f8567e6e25e3b492b0cc`, 339675 bytes), and rounds 88, 92, 106, 107, and 108. The candidate and its possible storage reuse are described in R108; this report adds only its FP representation contract.
+
+## What the contracts do and do not establish
+
+Khronos SYCL's native precise math reference states that native functions have implementation-defined precision, and that valid input range and maximum error are implementation-defined. `native::exp` is the base-e exponential. It does not promise correctly rounded results or bitwise agreement between separate call sites/kernels: [SYCL native precise math functions](https://github.khronos.org/SYCL_Reference/iface/native-prec-math-func.html).
+
+Intel's DPC++ floating-point model documentation describes `precise` as restricting value-unsafe transformations. It explicitly does not establish consistency for parallel floating-point code. Intel's `consistent` model has different guarantees and disables contraction; the project uses `precise`, not `consistent`. `precise` permits contraction (`fp-contract=on`). These compiler settings do not override the SYCL native function's implementation-defined accuracy/range or promise equal bits for `native::exp` in two kernel contexts. Intel documents the model and its limits here: [FP model: `-fp-model`](https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2026-0/fp-model-fp.html) and [floating-point optimizations](https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2024-0/floating-point-optimizations.html).
+
+Therefore, even if both sites receive the identical FP32 bit pattern and call the same spelling, source and compiler flags alone cannot prove that producer-computed and recurrence-computed native exponential results are bit-identical. The same backend may in practice lower both calls identically; the cited contracts do not require that result. The proposed transformation remains a hypothesis until checked on the actual device/compiler build. Nor should `-fp-model=precise` be treated as an accuracy guarantee for the SYCL `native` overload; Intel's high-precision math-library setting is not evidence about the native device overload's lowering.
+
+The recurrence currently consumes the stored FP32 gate. Moving `exp` before that store may change the value supplied to exp if the compiler can keep or transform an intermediate differently from the later FP32 memory round-trip. A bitwise comparison must use the exact stored gate representation as the baseline input. A proposed path must either demonstrate that it rounds/consumes precisely that representation before exp, or explicitly measure the gate-bit difference and reject if exact gate semantics are required. Do not assume an apparent store followed by a load in the same kernel forces a physical memory round-trip; compiler forwarding/elimination is possible. Preserving a materialized buffer round-trip may require a separate pass and erode the saved work, so that is a measured design tradeoff, not a free correctness trick.
+
+`fp-contract=on` means contraction can be allowed where an eligible multiply/add expression exists; it is not a general promise to fuse this exponential. No contraction setting makes two native exponential evaluations bit-identical. The reviewed expression contains multiply/add work around the gate computation, so compare the actual stored FP32 gate bits as well as exponential outputs if transformation changes expression placement.
+
+The native math reference makes valid range and error implementation-defined. Consequently no portable claim can be made from source alone about NaN/infinity handling, subnormal preservation or flush-to-zero, exact zero behavior, underflow/overflow, or scalar-versus-vector lowering. The code uses scalar `float` expressions, but compiler vectorization/SIMD mapping and device lowering are target-specific. Establish the model-reachable gate range from the qualified workload and test its edges on target; include explicit special-value cases only where the candidate's accepted input contract allows them. Test zero and underflow/subnormal boundaries because a tiny result can alter recurrence state even when ordinary values agree. The producer's softplus branch boundary at `v > 20` is a separate input-generation boundary and must be covered on both sides and at the boundary.
+
+## External algorithm evidence
+
+R108 reviewed the Eric Alcaide WY/chunked linear-attention implementation write-up and its cited FLA implementation. Its measured exponential reduction comes from an algebraic chunk transform (`BT²`-style exponent work reduction), with changed operation order and a different recurrence algorithm. It is not a measured same-scalar gate-precompute substitution, does not establish this representation's exactness, and cannot qualify this candidate. No reviewed external implementation/blog provides target measurements for this exact scalar producer-to-consumer precomputation. Treat external algorithm results as motivation only, not evidence for Strata's speed or numerical behavior.
+
+## Bounded qualification before promotion
+
+Use a single-factor A/B on the same device, compiler, flags, inputs, and existing baseline path. Keep the comparison narrowly on this representation change; do not infer correctness or speed from source analysis, compiler flags, or recurrence-only timing.
+
+1. First compare the exact FP32 gate bits used by recurrence and the resulting `native::exp` bits. Exercise the finite model-reachable range plus its observed endpoints; zero; the softplus input branch immediately below, at, and above 20; and gate values around subnormal/underflow transitions. Include infinities/NaNs only if permitted by the accepted input contract, recording unsupported or out-of-range cases rather than generalizing them.
+2. Run existing GDN parity at all heads, covering ordinary and final partial/tail chunks and carry/state continuation. Compare complete recurrent state and normalized output, using the existing strict correctness criterion. Include one full 262144-token physical context, not a Cartesian expansion of every synthetic corner into a new large-context matrix.
+3. Measure gate preparation plus recurrence total, and retain stage timings to explain the result. A recurrence-only win is insufficient if producer work, launch/synchronization, or storage handling removes it. Record per-sample measurements and environment in the owning experiment report.
+
+Promotion is limited to a target/compiler/input domain where the relevant gate representation, exponential outputs, complete recurrence state and output satisfy the existing exact criterion, and end-to-end gate-preparation-plus-recurrence time improves. If native exp outputs differ, the candidate is not bitwise equivalent; do not broaden tolerances or promote it under an exactness claim. Any alternative tolerance-based acceptance needs an explicit separate numerical decision and model-level validation.
+
+## Source limitations
+
+This note did not build, compile, test, profile, inspect disassembly, query a GPU, run inference, change source, or audit the production ownership/consumer chain. It establishes the language/compiler-contract limit and a bounded qualification plan; it does not establish actual lowering, target numerical agreement, speedup, or scratch-buffer exclusivity.
