@@ -1,0 +1,337 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "mode": "host-checks",
+  "started_utc": "2026-10-10T02:08:05.576419+00:00",
+  "controller_sha256": "7df012ee4d9bd047a6094ccedb37fddb3d56d4b054d9fdf468534b0fb6e94e1f",
+  "commands": [
+    {
+      "label": "normal",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "print(\"closed\")"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T02:08:05.577715+00:00",
+      "wall_seconds": 3,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3824872,
+          "start_ticks": 28776469,
+          "sid": 3824872,
+          "pgid": 3824872
+        }
+      ],
+      "pid": 3824872,
+      "direct_identity": {
+        "pid": 3824872,
+        "state": "R",
+        "ppid": 3824870,
+        "pgid": 3824872,
+        "sid": 3824872,
+        "start_ticks": 28776469,
+        "rss_bytes": 466944
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T02:08:05.734369+00:00",
+      "elapsed_seconds": 0.1558063649572432,
+      "logs": {
+        "normal.stdout": {
+          "bytes": 7,
+          "sha256": "55cba4bb35813b49ebc44b95a00002da823de6184c0fd3c9667a9aa06345bfe3"
+        },
+        "normal.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "nonzero",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "raise SystemExit(2)"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T02:08:05.735541+00:00",
+      "wall_seconds": 3,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3824880,
+          "start_ticks": 28776484,
+          "sid": 3824880,
+          "pgid": 3824880
+        }
+      ],
+      "pid": 3824880,
+      "direct_identity": {
+        "pid": 3824880,
+        "state": "R",
+        "ppid": 3824870,
+        "pgid": 3824880,
+        "sid": 3824880,
+        "start_ticks": 28776484,
+        "rss_bytes": 466944
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 2,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T02:08:05.909640+00:00",
+      "elapsed_seconds": 0.17322100704768673,
+      "logs": {
+        "nonzero.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "nonzero.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "timeout",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import time;time.sleep(20)"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T02:08:05.910953+00:00",
+      "wall_seconds": 0.15,
+      "normal_exit": false,
+      "session_empty": true,
+      "observation_complete": false,
+      "cleanup": [
+        {
+          "pid": 3824899,
+          "start_ticks": 28776502,
+          "signal": "SIGTERM",
+          "time_utc": "2026-10-10T02:08:06.125205+00:00",
+          "result": "sent"
+        }
+      ],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3824899,
+          "start_ticks": 28776502,
+          "sid": 3824899,
+          "pgid": 3824899
+        }
+      ],
+      "pid": 3824899,
+      "direct_identity": {
+        "pid": 3824899,
+        "state": "R",
+        "ppid": 3824870,
+        "pgid": 3824899,
+        "sid": 3824899,
+        "start_ticks": 28776502,
+        "rss_bytes": 462848
+      },
+      "peak_session_rss_bytes": 7868416,
+      "error": "AssertionError: wall deadline",
+      "failure_observed_utc": "2026-10-10T02:08:06.098141+00:00",
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": -15,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T02:08:06.250408+00:00",
+      "elapsed_seconds": 0.33852739998837933,
+      "logs": {
+        "timeout.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "timeout.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "output-limit",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import os,time;os.write(1,b\"x\"*262144);time.sleep(20)"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T02:08:06.251361+00:00",
+      "wall_seconds": 3,
+      "normal_exit": false,
+      "session_empty": true,
+      "observation_complete": false,
+      "cleanup": [
+        {
+          "pid": 3824914,
+          "start_ticks": 28776536,
+          "signal": "SIGTERM",
+          "time_utc": "2026-10-10T02:08:06.314933+00:00",
+          "result": "sent"
+        }
+      ],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3824914,
+          "start_ticks": 28776536,
+          "sid": 3824914,
+          "pgid": 3824914
+        }
+      ],
+      "pid": 3824914,
+      "direct_identity": {
+        "pid": 3824914,
+        "state": "R",
+        "ppid": 3824870,
+        "pgid": 3824914,
+        "sid": 3824914,
+        "start_ticks": 28776536,
+        "rss_bytes": 466944
+      },
+      "peak_session_rss_bytes": 8187904,
+      "error": "AssertionError: combined text limit",
+      "failure_observed_utc": "2026-10-10T02:08:06.286532+00:00",
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": -15,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T02:08:06.421692+00:00",
+      "elapsed_seconds": 0.16975519998231903,
+      "logs": {
+        "output-limit.stdout": {
+          "bytes": 262144,
+          "sha256": "d509bff642a353f88582e8a846ecae041c333b79c57a7a24ff310fbdb7e914e9"
+        },
+        "output-limit.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "reparented-group",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import os,time\npid=os.fork()\nif pid==0:\n os.setpgid(0,0);time.sleep(20)\nelse:\n time.sleep(.05);os._exit(0)"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T02:08:06.422699+00:00",
+      "wall_seconds": 3,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": false,
+      "cleanup": [
+        {
+          "pid": 3824921,
+          "start_ticks": 28776554,
+          "signal": "SIGTERM",
+          "time_utc": "2026-10-10T02:08:06.586149+00:00",
+          "result": "sent"
+        }
+      ],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3824920,
+          "start_ticks": 28776553,
+          "sid": 3824920,
+          "pgid": 3824920
+        },
+        {
+          "pid": 3824921,
+          "start_ticks": 28776554,
+          "sid": 3824920,
+          "pgid": 3824921
+        }
+      ],
+      "pid": 3824920,
+      "direct_identity": {
+        "pid": 3824920,
+        "state": "R",
+        "ppid": 3824870,
+        "pgid": 3824920,
+        "sid": 3824920,
+        "start_ticks": 28776553,
+        "rss_bytes": 466944
+      },
+      "peak_session_rss_bytes": 8286208,
+      "error": "AssertionError: owned session survives direct process exit",
+      "failure_observed_utc": "2026-10-10T02:08:06.531244+00:00",
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T02:08:06.698956+00:00",
+      "elapsed_seconds": 0.27570546901552007,
+      "logs": {
+        "reparented-group.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "reparented-group.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "GPU_runtime_launched": false,
+  "model_opened": false,
+  "adopted": false,
+  "performance_eligible": false,
+  "full_lifecycle_passed": false,
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "no_GPU_API_or_model": true,
+  "checked": [
+    "normal0",
+    "nonzero2 preserved",
+    "deadline owned cleanup",
+    "text-limit owned cleanup",
+    "same-SID reparented child/new-PGID cleanup"
+  ],
+  "finished_utc": "2026-10-10T02:08:06.699893+00:00",
+  "GPU_completion": "unproven_if_GPU_launched"
+}

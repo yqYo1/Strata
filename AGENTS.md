@@ -80,3 +80,11 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   [docs/COMMUNITY_BENCHMARKS.md](docs/COMMUNITY_BENCHMARKS.md), compare against a same-day run of the build you are
   testing, and say what you did not test.
 - Open test requests and the hardware that is wanted are listed in [docs/TEST_REQUESTS.md](docs/TEST_REQUESTS.md).
+
+
+### Continuing parallel optimization research
+
+- Inspect actual agent status at the start of resumed tuning; a historical running record is not evidence that an agent still runs.
+- Use multiple gpt-6-luna read-only investigators with distinct scopes. Once their reports return, read the full reports, preserve original files and separate corrections, and assign relevant follow-ups while the main agent continues implementation or qualification. Research is recurring, not one batch.
+- Share the past report directory, latest committed registry, prior decisions and immutable source with every follow-up. Verify compiled target/call-path eligibility before accepting an optimization from merely present source files.
+- Keep source implementation with the main agent or separate gpt-6.1-sol. The main agent manages all builds, tests and GPU/model runs serially; research agents never run them. Do not intervene in running research tasks.

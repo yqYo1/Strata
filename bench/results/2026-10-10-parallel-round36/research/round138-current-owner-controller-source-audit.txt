@@ -1,0 +1,63 @@
+# R138 — current owner-controller source audit
+
+Date: 2026-10-10. Static-only review of the immutable owner-controller source snapshot and its closed CPU host-check receipt. No active runtime files, GPU state, source worktree, compiler, build, test, executable, model/payload, profiler, Git action, cleanup, or running task was accessed or changed. This report assesses controller source behavior and the already-closed host receipt; it is not runtime/GPU evidence.
+
+## Pinned evidence
+
+- Immutable source snapshot: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-source-snapshots/gdn-gate-factor-runtime-owner-v1/`.
+- Snapshot manifest SHA-256: `d4fcb992ac63b16c474dba4271223bc9cb6fd7f155cf4d207246fb67c25bc0e4` (as supplied with the audit assignment).
+- `run_gdn_gate_factor_probe_v1.py`: 22,784 bytes; SHA-256 `28ec17ad37a30991f29f6158d32ff79d76c0441bbc72ad857ee720267ab449e2`.
+- `host-checks-record.json`: 8,226 bytes; SHA-256 `27bb3779e38fce7d95b3e356f2b0b9c2f4f012d7c00c81907d137da98caf0b2e`.
+- Private probe root-v4 manifest SHA-256: `4b488ae17f57bf791594af87dcd93485f00704d10d0cd3d8c2459125a0585f6f` (used only as already-pinned context; this review did not inspect active source).
+
+The closed receipt identifies the exact controller digest above, records five CPU-only checks, and says `GPU_runtime_launched=false`, `model_opened=false`, `active=false`, `complete=true`, `passed=true`, `full_lifecycle_passed=false`. It is evidence for those checks only. In particular, the timeout and output-cap checks demonstrate cleanup attempts and closure, not strict enforcement of their deliberately short test thresholds.
+
+## Findings against the requested controller contract
+
+### Process identity, session membership, and closure
+
+The owner launches each command with `start_new_session=True`, pins process identity using `(pid,start_ticks)` and a pidfd, and rechecks `start_ticks` after `pidfd_open` before registering it (`:55–69, :122–132`). The `/proc/<pid>/stat` field offsets used for PID state, parent, PGID, SID, start time and RSS are consistent with the stat layout (`:29–34`). During execution and cleanup it scans all visible processes and adopts every non-zombie process whose SID equals the still-unreaped direct-child PID (`:71–92`). Signals go through registered pidfds after another start-time/state check (`:94–112`). Holding the session leader unreaped until the last scan prevents its numeric SID from being recycled during the ownership window (`:133–147, :178–186`). This is a sound narrow contract for a direct probe and catches a reparented child that changes PGID but stays in the owner session; the closed host receipt records that exact scenario (`reparented-group`).
+
+The contract remains same-session containment, not full descendant containment. A descendant that calls `setsid()` escapes the membership scan; the host receipt tests a new process group, not a new session. The probe source path reviewed in R135 has no explicit subprocess creation, so this is a defined coverage limit rather than evidence of a present child escape. If runtime evidence ever shows a helper/driver child can create another session, this controller cannot claim to own it.
+
+A few cleanup details are not fully represented. `signal_owned` omits an attempt record when the process is already gone or zombie (`:99–105`), and a failed scan during the initial cleanup is recorded as an error but later successful closure sets `ownership_status='observed'` (`:94–98, :170–177`). The error still prevents `completed()` from passing, and final `session_empty`/survivor status remains explicit, so this does not turn uncertain cleanup into success. For a maximally auditable signal ledger, record `already_exited`/`zombie` as explicit outcomes and distinguish “a scan failed earlier” from final closure status.
+
+### Error and finalization status
+
+`run()` catches execution/observation failures, writes the error and timestamp, attempts TERM and then KILL with a fresh session scan before each signal, records send errors, captures remaining survivors, waits for the direct child, and records partial log sizes/hashes (`:148–199`). A final scan failure sets `session_empty=false` and `ownership_status='unknown'`; a wait failure sets `direct_child_reaped=false`; `self.active` remains set whenever either direct reap or session emptiness is unresolved (`:170–198`). The top-level `active` flag is derived from those same two closure requirements (`:371–372`). `completed()` requires complete observation, direct reap, empty session and no errors/cleanup/error field (`:202–205`). These gates prevent a nonzero exit, deadline failure, scan/signal/wait error, or survivor from becoming a clean pass.
+
+The last record save is attempted even after a main-path exception. If that save fails, the code emits a bounded diagnostic and marks the in-memory result failed, leaving the prior durable record incomplete (`:368–380`). One limitation is that the record is not fsynced before atomic rename, so crash/power-loss durability is not established. This is a persistence limitation, not a clean-pass bypass in the observed control flow.
+
+### Deadlines and output caps: closed host checks expose overshoot
+
+The controller polls at 50 ms intervals and checks elapsed wall time and combined output size after each process scan (`:135–142`). In production the child also gets per-file `RLIMIT_FSIZE=4 MiB`, so stdout plus stderr cannot exceed 8 MiB even if polling notices the aggregate text cap late (`:114–120, :44`). This is a hard file-size ceiling for each child output file, while the aggregate text-cap assertion is reactive.
+
+The closed host receipt shows why the distinction matters: its `timeout` case requested a 0.15-second wall limit but took about 0.357 seconds total (deadline observed at about 0.184 seconds), and its `output-limit` case requested a 65,536-byte aggregate cap yet recorded 262,144 stdout bytes. These cases pass the host-check harness because that harness only requires a recorded failure, cleanup, direct reap, empty session and no cleanup errors (`:273–288`); it does not assert bounded overshoot. Production's 120-second limit and 8-MiB cap have a separate 4-MiB-per-file ceiling, but elapsed time can still exceed the deadline by polling/termination/close time. Therefore these are bounded best-effort detection limits, not exact stop-at-deadline/output semantics. If the protocol treats 120 seconds as a strict total wall ceiling, or requires output to stop at exactly 8 MiB, this source does not enforce that interpretation. The parent owner should preserve actual elapsed time, signal/cleanup time and actual bytes, and classify cap/deadline violations as failures; do not infer exact enforcement from the passing host checks.
+
+There is no per-child `RLIMIT_RSS`; aggregate live session RSS is sampled from `/proc` and checked every 50 ms (`:136–140`). Sampling can miss brief peaks. The record's `peak_session_rss_bytes` is consequently an observed polling peak, not a guaranteed maximum. The 16-GiB address-space, CPU 120/121, 4-MiB file, 256 descriptor and zero-core rlimits are installed in `preexec_fn` (`:114–120`); CPU/AS limits apply per process, not as an aggregate for a forked session. This is acceptable as defense for the intended single process but should not be described as aggregate session limits.
+
+### Probe parser and identity/environment binding
+
+The parser enforces one exact ordered scope and geometry record, 15 cases with the configured lengths, five ordered stage names per case (75 total), each case-pass count, the terminal summary, no trailing CSV rows, three equal 8K hashes, and the exact total comparisons (`:208–243`). It is called only after normal exit 0, completed owner observation, no selected stderr failure markers, and an available clean kernel interval (`:354–364`). This correctly binds terminal text to process closure rather than accepting a marker alone.
+
+The identity parser is not fully exact about field schema. It requires 27 CSV fields and 13 unique key/value pairs, checks backend plus the listed PCI/device/driver constraints, but does not require the complete 13-key set or a fixed key order (`:212–228`). Also, the three repeated hash values are parsed with `int()` and checked for equality, but are not constrained to the unsigned 64-bit decimal domain (`:229–243`). A malformed or fabricated output row could therefore satisfy these parts of the parser with unknown extra identity keys or three equal negative/out-of-range integers. The pinned probe emits a fixed schema and unsigned hash type, and executable hash/source pins reduce ordinary accidental drift, but the stated “strict exact identity” parser contract is stronger than what these lines implement. Require the exact identity key sequence/set and validate each value's format/range; parse repeated hashes as decimal uint64 values.
+
+The environment binding does address the R133 lossiness: the controller constructs and stores the exact effective environment mapping, separately records presence/value for the three identity variables, and passes that same mapping to `parse_probe` (`:315–329, :348, :363`). The stdout identity environment rows are compared using the probe's known sanitization, while exact values remain in the controller record. This avoids relying on lossy stdout as the sole source of truth. The exact environment record is restricted to the constructed launch mapping rather than inherited arbitrary parent variables.
+
+### Journal interval and evidence status
+
+The GPU path captures a cursor before launching the probe and later queries only records after that cursor (`:333–337, :355–360`). Both journal commands run under bounded output and wall policies; the interval is separately marked `complete` or `unavailable_or_partial`, and the run refuses a clean result if it is incomplete. Visible GPU fault entries or a devcoredump before/after also fail the run (`:338–360`). Thus unavailable journal evidence is not treated as an empty clean interval.
+
+The actual journal text is retained in the output files and the record stores filtered matching lines but not the interval file's byte count/hash or raw-journal retention owner/review point (`:355–359`). The parent should record the interval bytes/hash and status in the compact receipt, then apply the artifact-retention rules to the successful raw journal file after the run closes. This audit did not inspect that runtime output or perform cleanup.
+
+## Decision
+
+No source-level defect was found in the core direct PIDFD plus same-SID ownership mechanism, cleanup re-discovery between TERM/KILL, exact-environment capture, or fail-closed incomplete/unknown survivor gates. The closed CPU receipt supports the exercised cleanup cases only; it also documents nonzero wall/output overshoot under the intentionally short test limits. Two contract gaps remain for strict qualification: the parser's identity/hash checks are not fully schema/range exact, and the resource checks are sampled or per-file/per-process ceilings rather than exact aggregate limits. Same-session supervision cannot contain a descendant that creates a new session. These limits should be carried into any run report; this static audit does not prove the diagnostic binary ran, that GPU work drained, that the journal was complete in a real run, or that the host/device is healthy.
+
+## Source locations and prior evidence
+
+- Immutable source: `run_gdn_gate_factor_probe_v1.py` (`:29–34`, `:44–199`, `:202–243`, `:246–380`).
+- Closed CPU-only host check record: `host-checks-record.json`.
+- Prior static environment/identity receipt finding: R133 `round133-exact-pci-source-admission.txt`.
+- Prior reference-controller review and GDN async completion constraints: R135 `round135-owned-runtime-controller-reuse-audit.txt` and R128 `round128-gdn-probe-async-source-admission.txt`.
+- Runtime status/authorization boundary for this audit: parent task R138; no runtime files were read.

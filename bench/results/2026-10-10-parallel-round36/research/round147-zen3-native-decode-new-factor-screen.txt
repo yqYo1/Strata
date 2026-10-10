@@ -1,0 +1,39 @@
+# R147 — Zen 3 native IQ2_S/IQ3_S CPU decode external-factor screen
+
+Date: 2026-10-10. Decision: **no new candidate** qualifies under the requested constraints. This is a source and public-evidence screen, not a claim that the CPU path is optimal. No compiler, build, disassembly, test, runtime, GPU, model, profiling, Git, or cleanup action was performed. No source or result was edited. No new performance result is claimed.
+
+## Target and current dispatch
+
+Target is the Ryzen 5 5600X (Zen 3, AVX2), preserving the existing IQ2_S/IQ3_S storage, arithmetic/dataflow, and exact output contract. The fixed source was read only from WPROBE `perf-sycl-gdn-gate-factor-probe-20261010`, under `sycl/` and `include/`.
+
+The distinction between ordinary one-token decode and the multi-token verifier path is material:
+
+- `sycl/src/core/expert_source.cpp:2419-2440` is the single-token `expert_pool_dispatch`; for a native layout it fails with “the single-token expert path does not take a native (IQ) pack”. Thus a native IQ row kernel in the pool is not itself an ordinary NT=1 decode candidate at this callsite.
+- The native branch in `expert_pool_dispatch_multi` quantizes each token's activations then submits `run_split_multi_native` (`expert_source.cpp:2549-2557,2722-2733,2797-2800`). The API is explicitly a verify-window path; `verify.cpp:432-435` requires a window of at least two tokens and caps it at `MAXT`. Do not transfer a multi-token win to NT=1 or call verifier/prefill measurements decode results.
+- `sycl/src/kernels/cpu/iq_avx2.cpp` is a 22-line wrapper including the implementation from outside the permitted source scope. Its optional GCC wrapper dispatches only type 22 for `nt==2 || nt==4`; all other cases fall back to the existing implementation (`:1-21`). No external include body was read. `sycl/CMakeLists.txt:200-234` likewise scopes `STRATA_IQ2S_GCC` to IQ2_S and NT2/4. It supplies no new IQ3_S mechanism and no NT1 option.
+
+Relevant fixed-source SHA-256 pins:
+
+- `sycl/src/core/expert_source.cpp`: `41b98031b865338f0429b195ef4aa10ba94cbaf2c0f2224ab1c3a4de7c37f4aa`
+- `sycl/src/kernels/cpu/iq_avx2.cpp`: `e09ab783f50861207d70b65ee9393319475f2368a126f16dbc884a8765859e7a`
+- `sycl/CMakeLists.txt`: `5911b38ff78b7d185ffd92ee34d0360f272e003b558ae7a3fa0707a1e684f9b6`
+- `sycl/src/core/verify.cpp`: `05b25bd0d91760875aa103f6b9f6eb450affc0d27dc0795d62f2f1c184fad850`
+- `sycl/src/core/mtp.cpp`: `caea7e8651c6698a6df536834a91a10eafdbea25625ecb21498bee240bc474bf`
+
+## External leads screened
+
+- **llama.cpp IQ3_S multiply/decode experiment, PeterReid, discussion #5866 (4 Mar 2024):** author describes replacing a grouped codebook lookup with a different polynomially chosen codebook and vectorized decode. The author explicitly says the codebook changes, so old IQ3_S files are incompatible; the initial branch also had an IQ3_XXS issue. The cited measurements are older Intel CPUs, with a separate Ryzen 7950X result from a maintainer. This changes the encoding and is not a drop-in operation/dataflow-preserving IQ3_S optimization for the existing model bytes. [Discussion](https://github.com/ggml-org/llama.cpp/discussions/5866).
+- **ik_llama IQK / K quants, maintainer discussion #8 (1 Aug 2024; follow-up 13 Jun 2025):** the proposal uses new quant formats and smaller SIMD-resident tables; the author compares IQ3_K against IQ3_S on a Ryzen 7950X. This is a storage/encoding and quantization change, not a decoder replacement for current IQ2_S/IQ3_S bytes. Its reported target is Zen 4 Ryzen 7950X, not Zen 3 5600X. [Maintainer discussion](https://github.com/ikawrakow/ik_llama.cpp/discussions/8).
+- **llama.cpp issue #26450 (2 Aug 2026):** the author reports an AVX2 gather-vs-set difference for IQ2_S/IQ3_S on an Intel Core i9-13900K, including slower E-core behavior. The issue's own evidence is Intel-specific; gather is already a screened/rejected direction in the prior IQ2_S rounds, so this supplies neither a new factor nor Zen 3 evidence. [Issue and measurements](https://github.com/ggml-org/llama.cpp/issues/26450).
+- **Intel LLM Scaler:** its repository describes a vLLM/ComfyUI GenAI stack targeting Intel Arc Pro B60/B70 GPUs and lists conventional online INT4/FP8 serving. It is not a Zen 3 CPU IQ2_S/IQ3_S microkernel or a transferable CPU decode factor. [Project README](https://github.com/intel/llm-scaler).
+- **AMD Family 19h Software Optimization Guide:** architecture reference for the target family, but this screen found no specific exact-format IQ2_S/IQ3_S CPU decoder implementation there. It cannot establish a speedup or nominate an algorithm by itself. [AMD guide PDF](https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/revision-guides/57095-PUB_1.01.pdf).
+
+Prior rounds already screen the remaining same-format leads: register/direct IQ2_S index variants lost all 12 actual-weight cells; gather/index/scale-table/panel changes, prefetch, sign scratch, requantization, full FP16 predecode, compiler swaps and generic pool scheduling are already considered. I do not reopen these or turn earlier holds into candidates. In particular, IQ2_S's existing GCC NT2/4 wrapper is a compiler-specific measured option, not a distinct external algorithm; it does not qualify as a new NT1 decode factor.
+
+## Disposition and evidence limits
+
+No concrete, format-preserving, arithmetic/dataflow-preserving external CPU optimization remained that was both new relative to prior rounds and applicable to Zen 3 AVX2. Accordingly there is no file/line patch target, root discriminator, or RAM/reuse estimate to propose. The incompatible codebook/quant-format leads are excluded before any expansion cost analysis. This does not establish that future same-format work cannot help.
+
+No benchmark was run. Any later decode comparison must retain the established gates: exercise repeated native decode operations after at least a 32K-token leading context; compare NT=1 independently from verifier/prefill; keep correctness exact; and make no speed claim until repeated target-hardware measurements support it. The external published numbers above are reported only to identify their own hardware and are not transferred to the 5600X.
+
+External pages accessed 2026-10-10. Prior-work filter: R83, R86, R89, R91, R104, R117, R123 and R132 in the same research directory. No active run, payload or measurement logs were read.

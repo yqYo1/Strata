@@ -1,0 +1,42 @@
+R143 — static review of prefill GDN factor implementation v1
+
+Scope and status
+
+Read-only source audit of the immutable Sol snapshot in `research-source-snapshots/gdn-prefill-gate-factor-sol-v1`; no implementation/build/compiler/disassembly/test/runtime/GPU/model/profiler/Git/cleanup work was performed. No performance, codegen, queue-execution, or numerical-parity claim is made. The R141 proposed tolerance is not a gate for this implementation, and the old quad harness does carry state across its prefixes (correcting R141's mistaken claim); missing real convolution/full-prefill/model coverage remains relevant. Root's independent compile and parity gates are pending.
+
+Inputs and hashes
+
+Snapshot manifest SHA-256 `540de0d2f480118a480f82fd0b2340cb614dfc440c1b34b995c1291dcc89dae9`. File hashes from the manifest:
+
+- `sycl/src/prefill/kernels.dp.cpp`: `ee745dbc335748709023dd349829d0300b797adefae0e951f975bae4e5408e3f`
+- `sycl/src/prefill/prefill.cpp`: `064d6789aeb55c7c44e7fe703d4fcabfee9524c4e14f164610236a6c84257d6a`
+- `sycl/include/strata/prefill/gdn_gate_factor.hpp`: `28aaa4c9b5e0d25a32af603d1d4676861c5950ca7c63dfc6f44f9401575ed08e`
+- `sycl/include/strata/prefill/gdn_variant.hpp`: `d9b0c169486205c636658c92db90351f5a9f091bb8e108c07ddce2ec56cd3ef0` (identical to base)
+- `sycl/CMakeLists.txt`: `a1b3987ebcaf3c857158a9cc8642d6a58c5634bdce490ac67540c039b83b8ecf`
+
+The implementation handoff reviewed by root is `implementation-gdn-prefill-gate-factor-v1.txt`, 9,760 bytes, SHA-256 `f24b37eb3316313519561ddd2ca8f4685b34c947b10960f6aa5718110fd63e74`. Comparison base is the read-only WPROBE source at HEAD `609a270daac23c9b1a26d26ec092b2f60d2da335`; no root live worktree or ACTIVE output was read.
+
+Findings
+
+**No source-level must-fix defect found in the requested factor pairing or selector fallback.** This is a static conclusion only; it does not clear the implementation for adoption.
+
+- `kernels.dp.cpp` adds the factor kernels under `STRATA_GDN_PREFILL_GATE_FACTOR && !__HIPCC__`. I normalized and compared the original and factor body pairs: serial (`gdn_rec_kernel`/`gdn_rec_factor_kernel`), columns, pipelined columns, SG32 quad pipeline, and key-head all match after replacing the old `native::exp(loggate)` load with a direct factor load (`gate[...]`, staged `cg`, or staged `sg[...]`). Other recurrence arithmetic, FMA/reduction order, barriers, local storage, row stores, output and norm inputs are unchanged. The producer is a copy with the same `v`, softplus, multiply and beta expressions; it names the FP32 `loggate` intermediate and stores `native::exp(loggate)` to the same gate slot. This matches the intended “rounded loggate then factor” source boundary. Actual device rounding/codegen and factor-vs-materialized-legacy equality remain unverified.
+- The extra factor norm kernel is a renamed copy for the non-quad factor route; quad/tuned key-head use the existing out-norm launcher. No path applies `exp` to a stored factor. All five recurrence reader schedules have factor counterparts; route selection is explicit and factor-only.
+- The old public `gdn_gates` / `gdn_recurrence` and legacy kernel bodies are unchanged in the source diff. `gdn_variant.hpp` is byte-identical. With the CMake feature default OFF, the new device families are preprocessor-excluded and prefill's legacy producer/consumer statements remain the compiled branch; the getter still validates the runtime selector. This supports source-level default-off preservation, not binary/kernel identity or ABI proof.
+- CMake attaches the private macro to `strata_prefill`, the target containing `prefill.cpp` and resolved `kernels.cu`/`kernels.dp.cpp`. The new private header declarations are unconditional, and OFF/HIP builds retain host API definitions that reject factor use; the macro does not leak publicly from the target.
+- `gdn_prefill_gate_factor_enabled` accepts absent/`0`, accepts `1` only in an enabled non-HIP build, and throws for malformed values or unavailable backend/build. Encoded entry points reject unknown encodings, T outside `[0,262144]`, negative T, unsupported variants and unsupported `ld16`; T=0 returns before queue lookup/submission. Factor mode is blocked in feature-OFF/HIP builds. Padded prefill output is refused before GDN producer/conv work whenever `ld_y` would be 6208 instead of the accepted 6144. This keeps the added path out of layouts it has not implemented.
+- For SYCL dispatch, the factor wrapper preserves legacy precedence: quad is attempted only for variant 0 when no explicit serial/head/pipeline/key-head/tuned selector suppresses it; pre-submit quad refusal returns false and falls through to the factor serial/columns/key-head path, never the log-gate path. Explicit variant 2 selects the serial factor reader. Serial (`STRATA_GDN_REC_HEADS`), tuned SG16 key-head (only at T>=256), ordinary key-head, columns pipeline and columns are dispatched in the expected order. Malformed `STRATA_GDN_QUAD` is rejected for factor encoding before the gate producer API submits. Existing legacy selector caching/`atoi` semantics are copied; fresh-process selector testing remains necessary.
+- The factor quad route checks the exact factor kernel ID/bundle on the active context/device, SG32 and work-group/device limits before submission. Query/admission exceptions/denials fall through; submission, norm launch and queue check are outside the catch, so there is no post-submit retry that could double-mutate recurrent state. Captured bundle lifetime extends through command-group binding; submissions use the caller's queue. The copied kernel retains the old barrier/local-memory structure. No new restrict aliasing, pointer arithmetic, subgroup primitive, local-memory extent, or SYCL API misuse was found by source inspection. This cannot establish compiler acceptance, runtime bundle lifetime, actual device subgroup behavior, or async-error handling.
+- `prefill.cpp` selects one encoding before work and uses it at the shared per-layer producer and recurrence site, leaving projections, convolution, output projection and state layout unchanged. Layer-major validates mode at entry and reaches the same shared path. The feature selector is read again in that shared `run_impl`; concurrent environment mutation is not supported or claimed.
+
+One small API-contract point for root to decide
+
+In a feature-ON build, direct calls to `gdn_gates_encoded(DecayFactor,...)` and `gdn_recurrence_encoded(DecayFactor,...)` are permitted even when `STRATA_GDN_PREFILL_GATE_FACTOR` is absent or `0`; only the prefill caller consults the runtime selector. This is consistent with an explicitly typed private test API, but it is not a global runtime lockout. If the intended contract is “no factor submissions unless selector is exactly 1,” add an entry check to the private encoded APIs (and test that OFF/0 refuses before queue lookup); if typed explicit selection is the contract, document and test this deliberate distinction. It does not create a mismatch in the production prefill path, which passes DecayFactor only when the getter returned true.
+
+Root's next validation gates
+
+Compile both feature-OFF and feature-ON from the same pinned source/options, verify OFF direct-factor refusal and legacy API behavior, then run exact gate producer materialization comparisons and per-dispatch recurrence parity with independent initial buffers. Exercise quad pre-submit denial and confirm factor fallback, and inject/observe submit-time errors only under root's controlled harness to confirm no retry and drained error propagation. Root's real-prefill carry/convolution/context/model checks are still required; none was performed here. The primitive pass or mechanical-copy result alone establishes neither recurrence correctness nor adoption/performance.
+
+Source locations reviewed
+
+Snapshot `kernels.dp.cpp`: factor device copies around lines 2216–2790; legacy quad admission around 3279–3367; factor quad and tuned/selector helpers around 3550–3833; runtime API validation/wrappers around 3836–3887. Snapshot `prefill.cpp`: layer-major entry check around 2382–2389; run_impl mode capture around 2797–2806; shared GDN pairing and padded-layout guard around 3672–3693. Snapshot `CMakeLists.txt`: feature option and private target definition around 282–285.
