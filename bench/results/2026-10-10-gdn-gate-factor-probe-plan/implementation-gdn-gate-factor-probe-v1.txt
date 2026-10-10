@@ -1,0 +1,92 @@
+GDN gate-factor first-stage numerical discriminator v1
+SOURCE ONLY / UNBUILT / UNRUN. No compiler/configure/build/syntax/import/test/
+program/model-payload/inference/device-query/profile/Git/cleanup executed.
+Only three new files in assigned standalone directory; no production/rootCMake/
+engine/selector/math/representation/threshold changes. No adoption/performance.
+Worktree owner baseb7436c79a83f32fcead3664ff6d0f0664151833d:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-gate-factor-probe-20261010
+
+Read full R12455b8df393faa7c62865b02c285ac015d444ae8004fb04cdfcb5da3fe4fd2c99a
+and R110 native-exp representation contract, pinned source expression/constants.
+Immutable gdn-gate-consumers-cd353f30 manifest:
+1ac15ccad1b17ca2913f17abdf40a4989f567a39568cb27bf74721af9572dcfb
+kernels.dp.cpp:
+cc5254f688b9138fc71800884c853211771067c0f07a0a44a237fd45b59b4bfa
+HV48 HK16 S128 copied actual constants; gate/sigmoid math copied source forms.
+
+New files relative to worktree, bytes/SHA256:
+sycl/tools/gdn-gate-factor-probe/CMakeLists.txt
+674 98a4874926683e4861a68a8c7985275c4327a66ba709a2c42510d221df35f25d
+sycl/tools/gdn-gate-factor-probe/gdn_gate_factor_probe.cpp
+9141 d644767d98fa2a274299368fdba3960dfff2e5b2df3f0f74b10198b442544105
+sycl/tools/gdn-gate-factor-probe/README.md
+4999 679ea6fd647676b196e5ecd0f0abac9a365f9d292a186e77e5fb8ed97b87462a
+
+Standalone IntelLLVM C++20 SYCL target -fp-model=precise/per_kernel split compile
+and link, no parent libraries. Fast/relaxed globalCXX flags rejected, but owner
+must inspect actual allconfig/compile/link flags for exact production parity.
+No fast math/native substitution/tolerance/volatile rounding trick.
+Baseline producer writes FP32 loggate+beta; subsequent separate scalar/SG16/SG32
+readers native-exp the stored bits. Candidate producer forms float loggate,
+writes loggate+beta and native-exp factor in same kernel. Candidate register
+expression is NOT guaranteed physically stored/reloaded. Exact loggate/beta/factor
+bits screen this context. Reader subgroup mapping is independent, not actual
+recurrence context or compiler-context qualification. All five comparisons fail
+on first unequal IEEE word, report index/case/T/field/bits/domain and nonzeroexit.
+
+Finite synthetic patterns include negative/nearzero gates; v below/at/above20
+using adjacent floats; large finite artificial underflow/subnormal values.
+No observed model range inferred. Optional --include-artificial-nonfinite adds
++Inf/qNaN, labelled artificial/out-of-domain, no portable NaN assurance. Inputs
+deterministic by token/head, dt0, negative ssm_a; beta uses production sigmoid.
+No model payload/capture, state, output norm/convolution or timing access/output.
+
+Fifteen T cases0,1,3,5,15,16,17,127,128,129,8191,8192,3,8192,8192. T0 submits no
+producer/reader kernel; queue boundary still drains/checks. Same finite allocated
+8K buffers reused large-small-large, outputs reset to exact bit canaries; active
+prefix overwritten, inactive tail/leading/trailing guards checked. Full8K repeat
+combined fingerprint must match. Inputs and guards remain immutable checked bits.
+Separate buffers/no pointer aliasing, bounds checked upfront, WG128 rounded tails.
+Device allocations total(10*N+96+22*16)*4=15730432 bytes below16MiB. Host immutable
+input snapshot786432 words; all loops/case/progress/output counts fixed. Source
+caps are not RSS/wall bounds. No allcontext262144 allocation.
+
+Queue explicitly in_order with bounded async collector(max8messages/max1024bytes
+permessage), GPU selector then strict LevelZero/GPU/sharedUSM/SG16/SG32/WG128
+admission. Wrong CPU/OpenCL refused. Owner must pin intendedGPU/backend; selector
+alone is not device identity. STAGE flushed before all75validation stages;
+wait_and_throw every stage, async errors explicitly checked. Submitted-stage
+exception uses _Exit2 and NEVER unwinds/frees possibly in-flight USM endpoints.
+Owner session supervision is required; waits cannot intrinsically guarantee wall
+bound. No recovery/reset/kill commands/tooling. Ordinary fully drained numerical
+failures use normal RAII and exit1; normal pass requires allcases/final flush/exit0.
+Normal free still belongs to known-drained state; no submitted-error cleanup claim.
+
+Output finite CASE/STAGE/CASE_PASS/FULL_REPEAT_HASH and terminal counts/scope.
+First difference includes exact uint32bits and domain. Pass only necessary isolated
+screen, not sufficient recurrence/compiler/model/full256K qualification. Earlier
+CPU candidate rejection unchanged. Failure records remain failure.
+
+Root recipe UNEXECUTED (README exact commands): fresh private build via
+cmake -S $W/sycl/tools/gdn-gate-factor-probe -B $PRIVATE_BUILD
+ -DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icpx
+ -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+cmake --build $PRIVATE_BUILD --target gdn_gate_factor_probe --parallel2
+$PRIVATE_BUILD/gdn_gate_factor_probe
+Optional separate labelled run --include-artificial-nonfinite.
+Owner shared lock, exact retained LevelZero debugenv, selectedGPU and owned process
+session with wall120s/RSS1GiB/text1MiB proposed upper limits (owner review required),
+finite CPU/FSize/NOFILE/AS limits, fault/normalexit/no survivors closure. Owner kills
+only its session if stalled; implementer ran none. Private build/run no overwrite.
+
+Pending root gates: full source review; actual same compiler/backend/production
+flags/perkernel verify (CMake not arbitrary flag auditor); compile/build/static
+kernel admission/SGsupport; intendedGPU selection; output source/input/guards/
+all15case counts/mismatch behavior; clean async/driverfaults; no abandoned endpoint
+cleanup after stage error; owned deadline and final flush/normalexit qualification.
+Even isolated exact pass requires actual serial/columns/pipe/keyhead/quad/tuned
+consumer contexts and exact state after every token/finalstate/normalizedoutput,
+real reachable gates, carry/multiplelayers/chunkreuse/repeatedprompts/full262144,
+model math before any representation optimization/adoption. Native exp precision/
+range/context reproducibility implementation-defined. No performance measurement,
+compiler lowering proof, state/norm/model parity, service/traffic/fullcontext claim.
