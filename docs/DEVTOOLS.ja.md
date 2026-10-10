@@ -47,6 +47,16 @@ mkdir -p .lint/bin && curl -sSL https://github.com/lycheeverse/lychee/releases/l
 
 `tools/lint/run.sh` は、ディストリビューションの `reuse` があればそれを使い、なければ `.lint/venv/bin/reuse` を使います。
 
+B570 の評価機では、root を使わずにリントの道具を `.lint/` に入れる方法も確認しました。
+`codespell` 2.4.1 と `reuse` 6.2.0 は `.lint/venv` に入れます。
+Gitleaks 8.30.1 の Linux x64 リリースは、リリースのチェックサムを確認して `.lint/bin` に置きました。
+Ubuntu noble の `cppcheck` 2.13.0 と `libtinyxml2-10` は `apt-get download` で取得し、
+`dpkg-deb -x` で `.lint/cppcheck` に展開しました。
+この Cppcheck は、`.lint/cppcheck/usr/bin/cfg` から `../lib/x86_64-linux-gnu/cppcheck/cfg` へのリンクが要ります。
+リントのコマンドの `PATH` に `.lint/venv/bin`、`.lint/bin`、`.lint/cppcheck/usr/bin` を、
+ライブラリを探すパスに `.lint/cppcheck/usr/lib/x86_64-linux-gnu` を加えます。
+これらは任意の開発用の道具で、エンジンは使いません。
+
 ## intel/llvm をソースからビルドする
 
 free のビルドは、intel/llvm の DPC++ でエンジンをコンパイルします（[BUILD.ja.md](BUILD.ja.md#ビルド)）。

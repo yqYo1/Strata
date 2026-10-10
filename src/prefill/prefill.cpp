@@ -340,6 +340,9 @@ struct Stager {
     }
     /// A layer's jobs; the previous layer's are finished (finish()).
     void start(std::vector<Job>&& js) {
+        // A worker exception makes this instance terminal. Reconstruct only
+        // after the owning Prefill has drained both queues and released it.
+        failure.rethrow();
         if (js.empty()) return;
         cancelled.store(false);
         failed.store(false);

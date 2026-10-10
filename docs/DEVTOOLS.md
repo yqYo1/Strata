@@ -47,6 +47,16 @@ mkdir -p .lint/bin && curl -sSL https://github.com/lycheeverse/lychee/releases/l
 
 `tools/lint/run.sh` uses the distribution's `reuse` when there is one and `.lint/venv/bin/reuse` otherwise.
 
+On the B570 evaluation host, lint tools were also installed without root into `.lint/`.
+`codespell` 2.4.1 and `reuse` 6.2.0 use `.lint/venv`.
+The Gitleaks 8.30.1 Linux x64 release was checked against its release checksum and placed in `.lint/bin`.
+Ubuntu noble's `cppcheck` 2.13.0 and `libtinyxml2-10` packages were downloaded with `apt-get download`
+and extracted with `dpkg-deb -x` into `.lint/cppcheck`.
+For this relocated Cppcheck, `.lint/cppcheck/usr/bin/cfg` points to `../lib/x86_64-linux-gnu/cppcheck/cfg`.
+The lint command includes `.lint/venv/bin`, `.lint/bin` and `.lint/cppcheck/usr/bin` in `PATH`,
+and `.lint/cppcheck/usr/lib/x86_64-linux-gnu` in its library search path.
+These tools remain optional development tools; the engine does not use them.
+
 ## intel/llvm from source
 
 The free build compiles the engine with intel/llvm's DPC++ ([BUILD.md](BUILD.md#build-and-run)).

@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
+// SPDX-License-Identifier: LGPL-3.0-or-later
 // CPU-only qualification of production publication.hpp; no GPU or model required.
 #include "strata/prefill/publication.hpp"
 #include <cassert>
@@ -6,7 +8,7 @@
 #include <iostream>
 using namespace strata::prefill::publication;
 const char* error_text() { return "injected failure"; }
-int main() {
+int main() try {
     // Old ordering is the expected negative: release precedes producer metadata read.
     bool read = false, violated = false;
     auto release = [&] { if (!read) violated = true; };
@@ -88,4 +90,7 @@ int main() {
         assert(staged.load() == (1 << 30));
     }
     std::cout << "production publication helper qualification passed\n";
+} catch (const std::exception& e) {
+    std::cerr << "publication qualification: " << e.what() << "\n";
+    return 1;
 }

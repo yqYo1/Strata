@@ -1,3 +1,4 @@
+// SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
 // SPDX-License-Identifier: LGPL-3.0-or-later
 #pragma once
 #include <atomic>
@@ -14,7 +15,9 @@ template<class ErrorText> void require(bool ok, const char* operation, ErrorText
 }
 // A failed wait does not establish completion. Prevent stack/member host
 // buffers being freed while a device command could still reference them.
-// _Exit skips C++ destruction; the OS/driver retire the process's GPU context.
+// _Exit skips C++ destruction and initiates process teardown. It is not a
+// GPU fence and does not establish device recovery. The bool API cannot prove
+// quiescence after an error, so this policy intentionally fails conservatively.
 template<class ErrorText> void cleanup_require(bool ok, const char* operation, ErrorText text) noexcept {
     if (ok) return;
     std::fprintf(stderr, "prefill: GPU completion unconfirmed at %s: %s; exiting before buffer release\n", operation, text());
