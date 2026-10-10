@@ -1,0 +1,5 @@
+# Private IQ4_NL exact-bit fixture source
+
+Separate Sol fixture plus root review additions, unbuilt/untested.84 deterministic paired cases cover positive/negative finite scales, every nibble/block/lane and256/512/full1638400-value shapes; full Down orientation is2560rows by640columns. Every live FP16 output, full canary extent and immutable packed input is compared. Independent IEEE RNE expected bits and generic/private equality remain separate; any mismatch fails. A20-input device constructor diagnostic records midpoint/overflow/signedzero/subnormal results separately from the packed-input corpus.
+
+Root added explicit endianness, selected fp16/half_fp_config metadata and terminal-after-teardown. These records do not infer effective denormal mode or emitted code. Production helper check() is empty; owning asynchronous error propagation remains an integration gate. Synthetic fixture uses explicit queue wait_and_throw plus sticky nonthrowing collector and fail-stop exit on uncertain completion. No new default device code, production math change, model/timing/adoption result. Root will manage all builds and tests serially.

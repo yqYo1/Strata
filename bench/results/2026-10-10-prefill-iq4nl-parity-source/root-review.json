@@ -1,0 +1,41 @@
+{
+  "root_full_source_handoff_diff_review": true,
+  "build": false,
+  "tests": false,
+  "GPU": false,
+  "model": false,
+  "adopted": false,
+  "source_pins": {
+    "sycl/CMakeLists.txt": {
+      "bytes": 27310,
+      "sha256": "51b077ccfcae7cb623e6fd6b04c24bed1a67fcebfe00ce51910f0c44bfedd51a"
+    },
+    "sycl/src/kernels/prefill_iq4nl_parity.cpp": {
+      "bytes": 12926,
+      "sha256": "009b52b92d0716ec3d3eb1265736df535968ad572cb6a3cce197761b88b8f701"
+    },
+    "sycl/src/kernels/cuda/iq_kernels.dp.cpp": {
+      "bytes": 268264,
+      "sha256": "df880d310c4dc880d8ae187da7adbb0af35548e168dc6cb1c4930802d64e2731"
+    },
+    "sycl/src/prefill/prefill.cpp": {
+      "bytes": 321142,
+      "sha256": "b3b8cab8394be20065c1a5671d0268a6a294e6f0887589e52636232c3db655fd"
+    },
+    "sycl/src/prefill/iq4nl_dequant.hpp": {
+      "bytes": 407,
+      "sha256": "264ff084967db8b7f8ad3173ec5ac4beba82c17af55236808b3c7b7bac70cc32"
+    }
+  },
+  "case_count": 84,
+  "active_words_per_arm": 45896704,
+  "root_additions": [
+    "Explicit little-endian host admission",
+    "Selected-device fp16 and sorted advertised half_fp_config receipt",
+    "Separate20-float unchanged-constructor diagnostic against independent RNE reference; no portable contract claim",
+    "Terminal only after successful USM/queue teardown and sticky-error check"
+  ],
+  "expected_GPU_stages": 341,
+  "unresolved_production_async_boundary": "R164 check() empty; prototype preserves existing helper boundary. Fixture stage waits/sticky flag explicit, but production integration must establish full owning error propagation; no adoption.",
+  "oracle_boundary": "R165/166 distinguish host constructor subnormal truncation from device native conversion. Fixture independent integer RNE oracle uses neither constructor nor production decoder. Observed equality would be target-specific, not effective-mode/codegen proof."
+}
