@@ -89,13 +89,18 @@ driver enumeration, ordinal selection, tile translation or matching fallback.
 Core device query requires vendor0x8086/device0xe20c and SUBDEVICE flag clear;
 driver properties supply nonzero version. Extension discovery is confined to this
 driver, count1..256 with fixed storage, all names terminated, unique PCI extension
-version>=1.0. Every LevelZero result checked. Non-null function address resolves
-zeDevicePciGetPropertiesExt with installed ZE_APICALL signature, initialized
+version>=1.0. Every LevelZero result checked. The public loader entry point
+zeDevicePciGetPropertiesExt queries the selected device with initialized
 stype/pNext, and typed BDF must equal domain0/bus5/device0/function0.
+The first runtime refused before allocation/submission because the installed
+driver rejects this public API name in zeDriverGetExtensionFunctionAddress,
+despite advertising PCI1.0. The documented direct loader API is used instead;
+the original failed receipt remains unchanged. This new interface awaits a
+fresh root build and controlled runtime qualification.
 
 IDENTITY reports decimal typed PCI/vendor/device/root/flags/driver/extension/name
 then bounded sanitized IDENTITY_ENV for ZE_FLAT_DEVICE_HIERARCHY, ZE_AFFINITY_MASK
-and ONEAPI_DEVICE_SELECTOR, flushed before work. Unsupported/error/missing/null/
+and ONEAPI_DEVICE_SELECTOR, flushed before work. Unsupported/error/missing/
 subdevice/mismatch/oversized environment fails nonzero without allocations or
 probe submission. Receipt proves the runtime-selected handle's reported identity
 at startup, not unique tile identity or later health. Existing name/Intel/USM/

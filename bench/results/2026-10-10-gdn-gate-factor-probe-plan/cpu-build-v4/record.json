@@ -1,0 +1,231 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "scope": "Private copied-expression necessary screen compile only, no device/model qualification",
+  "commands": [
+    {
+      "label": "compiler-version",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "--version"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-gate-factor-probe-20261010",
+      "owner": {
+        "pid": 3813983,
+        "sid": 3813983,
+        "start_ticks": 28757175
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.1328616570099257
+    },
+    {
+      "label": "configure",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-gate-factor-probe-20261010/sycl/tools/gdn-gate-factor-probe",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-gate-factor-probe-20261010/build-gdn-gate-factor-probe-v4",
+        "-G",
+        "Ninja",
+        "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-gate-factor-probe-20261010",
+      "owner": {
+        "pid": 3814000,
+        "sid": 3814000,
+        "start_ticks": 28757192
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.4061231250525452
+    },
+    {
+      "label": "build",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-gate-factor-probe-20261010/build-gdn-gate-factor-probe-v4",
+        "--target",
+        "gdn_gate_factor_probe",
+        "--parallel",
+        "2"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-gate-factor-probe-20261010",
+      "owner": {
+        "pid": 3814063,
+        "sid": 3814063,
+        "start_ticks": 28757236
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 4.891351002966985
+    },
+    {
+      "label": "target-commands",
+      "argv": [
+        "/usr/bin/ninja",
+        "-C",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-gate-factor-probe-20261010/build-gdn-gate-factor-probe-v4",
+        "-t",
+        "commands",
+        "gdn_gate_factor_probe"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-gate-factor-probe-20261010",
+      "owner": {
+        "pid": 3814422,
+        "sid": 3814422,
+        "start_ticks": 28757728
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.12850683799479157
+    },
+    {
+      "label": "direct-imports",
+      "argv": [
+        "/usr/bin/readelf",
+        "-d",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-gate-factor-probe-20261010/build-gdn-gate-factor-probe-v4/gdn_gate_factor_probe"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-gate-factor-probe-20261010",
+      "owner": {
+        "pid": 3814430,
+        "sid": 3814430,
+        "start_ticks": 28757744
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.12947103299666196
+    }
+  ],
+  "cleanup": [],
+  "survivors": [],
+  "gpu_work_submitted": false,
+  "inference_run": false,
+  "model_opened": false,
+  "adopted": false,
+  "performance_eligible": false,
+  "full_lifecycle_passed": false,
+  "source_snapshot_sha256": "152b74e534845dff7f8ea17f9422530f59fcde48b8fac8f2b40ce63be784987f",
+  "source_pins": {
+    "sycl/tools/gdn-gate-factor-probe/CMakeLists.txt": {
+      "bytes": 1233,
+      "sha256": "ef0482284ca72f1a86a71edaed0cf9cc2abec3dcc65af353dd3aeb404212c756"
+    },
+    "sycl/tools/gdn-gate-factor-probe/gdn_gate_factor_probe.cpp": {
+      "bytes": 13809,
+      "sha256": "801b9c6ee397c04f7ce3478d63f17d09aedbee1b39f61dfbf3fe26541a6f9632"
+    },
+    "sycl/tools/gdn-gate-factor-probe/README.md": {
+      "bytes": 8031,
+      "sha256": "c0de42cd944a17565a9c6a6f2daed491857e18f5db51ca59a7f3bcba520b84a9"
+    }
+  },
+  "controller_sha256": "50b71ec6d889ce7ad8e5652141f4cc08c82e8340ed547c9b601c0565cb608146",
+  "helper_sha256": "cbd98b28266a2b04b67adb7a1fb7127174f916f0999fedee813ff1466507f73d",
+  "compiler_sha256": "be7fa7c3c74c2ba2b8e1b50b0a61e37986441727899e25f3545636bde157c083",
+  "identity_dependency_pins": {
+    "/usr/include/level_zero/ze_api.h": {
+      "realpath": "/usr/include/level_zero/ze_api.h",
+      "sha256": "095a0eb442ae21946f29147c209f270b93dd0eb5b12a2d0c67e5f4138b533712"
+    },
+    "/usr/lib/x86_64-linux-gnu/libze_loader.so": {
+      "realpath": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+      "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/include/sycl/ext/oneapi/backend/level_zero.hpp": {
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/include/sycl/ext/oneapi/backend/level_zero.hpp",
+      "sha256": "30f86adea4a4be42714a6bef7b637b5a305afcb272cfcc31ad2547c6dd13de4b"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/include/sycl/detail/backend_traits_level_zero.hpp": {
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/include/sycl/detail/backend_traits_level_zero.hpp",
+      "sha256": "3307be81e73cdc1dd6149bac1a4b9e351f74641130aa6a4d720330f65c496711"
+    }
+  },
+  "environment": {
+    "PATH": "/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8"
+  },
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "started_utc": "2026-10-10T02:04:52.640778+00:00",
+  "limits": {
+    "wall_seconds": 600,
+    "AS_each_bytes": 12884901888,
+    "RSS_session_bytes": 6442450944,
+    "CPU_each_seconds": [
+      300,
+      301
+    ],
+    "FSIZE_each_bytes": 134217728,
+    "text_bytes": 16777216,
+    "NOFILE": 256,
+    "CORE": 0
+  },
+  "owner_scope": "Whole inherited session, including Ninja compiler process groups",
+  "peak_session_rss_bytes": 333062144,
+  "binary": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-gate-factor-probe-20261010/build-gdn-gate-factor-probe-v4/gdn_gate_factor_probe",
+    "bytes": 191872,
+    "sha256": "5ce545335f5c384cfab9a77c7e64bc8977ca8b4dbf9bc68a241a85d9be5917d0"
+  },
+  "compile_commands": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-gate-factor-probe-20261010/build-gdn-gate-factor-probe-v4/compile_commands.json",
+    "sha256": "4fc17205a0d97742cca44f9645e389dc934d127fae1d0eb40699757083ded524"
+  },
+  "required_device_math_flags": [
+    "-O3",
+    "-DNDEBUG",
+    "-std=c++20",
+    "-fsycl",
+    "-fp-model=precise",
+    "-fsycl-default-sub-group-size=32",
+    "-fsycl-device-code-split=per_kernel"
+  ],
+  "link_backend_option_checked": true,
+  "exit_pin_gate_passed": true,
+  "elapsed_seconds": 5.941178327950183,
+  "finished_utc": "2026-10-10T02:04:58.581992+00:00",
+  "logs": {
+    "build.stdout": {
+      "bytes": 142,
+      "sha256": "10a4589b6523ff2e8015b18128dfe678d4891e826a07991eb9aa098356d7a05f"
+    },
+    "configure.stdout": {
+      "bytes": 509,
+      "sha256": "36d52456a1d922761c42b426fee88fcc9aaf49c50232652efad88ad9cd4614b7"
+    },
+    "direct-imports.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target-commands.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "compiler-version.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target-commands.stdout": {
+      "bytes": 838,
+      "sha256": "40c063066b71998813dfd7331cf1507e595117e6747d8215a2f26f2b54c6a76b"
+    },
+    "configure.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "direct-imports.stdout": {
+      "bytes": 1691,
+      "sha256": "5a6ec9625a68d30a0e47575616ba3b087bbb5c3fec2cc7928eaafd5adb688a45"
+    },
+    "build.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "compiler-version.stdout": {
+      "bytes": 257,
+      "sha256": "119a0a4ee0badbc5231f46aa701b7ad3f97cc23f478eecb25ab2f77a66c92bac"
+    }
+  }
+}

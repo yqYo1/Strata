@@ -62,12 +62,10 @@ void exact_identity(sycl::queue& q){
   if(std::strcmp(extensions[i].name,ZE_PCI_PROPERTIES_EXT_NAME)==0){require(!advertised,"duplicate PCI extension");advertised=true;version=extensions[i].version;}
  }
  require(advertised&&version>=ZE_PCI_PROPERTIES_EXT_VERSION_1_0,"PCI extension unsupported/version too old");
- void* address=nullptr;ze_ok(zeDriverGetExtensionFunctionAddress(driver,"zeDevicePciGetPropertiesExt",&address),"PCI function address");
- require(address!=nullptr,"null PCI function");
- using PciQuery=ze_result_t (ZE_APICALL *)(ze_device_handle_t,ze_pci_ext_properties_t*);
- const auto query=reinterpret_cast<PciQuery>(address);
  ze_pci_ext_properties_t pci{};pci.stype=ZE_STRUCTURE_TYPE_PCI_EXT_PROPERTIES;pci.pNext=nullptr;
- ze_ok(query(device,&pci),"zeDevicePciGetPropertiesExt");
+ // This is a public loader entry point. Installed driver26.31.39395.14
+ // advertises PCI1.0 but rejects this name in its driver-function lookup.
+ ze_ok(zeDevicePciGetPropertiesExt(device,&pci),"zeDevicePciGetPropertiesExt");
  require(pci.address.domain==0&&pci.address.bus==5&&pci.address.device==0&&pci.address.function==0,"selected PCI BDF mismatch");
  std::cout<<"IDENTITY,backend,LevelZero,vendor,"<<properties.vendorId<<",device,"<<properties.deviceId
  <<",domain,"<<pci.address.domain<<",bus,"<<pci.address.bus<<",pci_device,"<<pci.address.device<<",function,"<<pci.address.function

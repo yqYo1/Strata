@@ -1,0 +1,270 @@
+{
+  "active": false,
+  "complete": false,
+  "passed": false,
+  "mode": "gpu",
+  "started_utc": "2026-10-10T02:01:16.771203+00:00",
+  "controller_sha256": "28ec17ad37a30991f29f6158d32ff79d76c0441bbc72ad857ee720267ab449e2",
+  "commands": [
+    {
+      "label": "journal-cursor",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T02:01:19.114407+00:00",
+      "wall_seconds": 5,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3800561,
+          "start_ticks": 28735822,
+          "sid": 3800561,
+          "pgid": 3800561
+        }
+      ],
+      "pid": 3800561,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T02:01:19.281953+00:00",
+      "elapsed_seconds": 0.16754504304844886,
+      "logs": {
+        "journal-cursor.stdout": {
+          "bytes": 156,
+          "sha256": "af1971162bf4bdbaf9adf9ea1b4c5f89ae8c375954901e1e609139b6c334e1fe"
+        },
+        "journal-cursor.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "probe",
+      "argv": [
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-gate-factor-probe-20261010/build-gdn-gate-factor-probe-v3/gdn_gate_factor_probe"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/umf/1.1/lib:/usr/lib/x86_64-linux-gnu",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "EnableDirectSubmission": "0",
+        "ZEL_ENABLE_LOADER_LOGGING": "1",
+        "ZEL_LOADER_LOG_CONSOLE": "1",
+        "ZEL_LOADER_LOGGING_LEVEL": "trace",
+        "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+        "ZE_ENABLE_VALIDATION_LAYER": "1",
+        "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+        "UR_LOG_LOADER": "level:debug;flush:debug;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:debug;flush:debug;output:stderr",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "STRATA_TRACE": "1",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING"
+      },
+      "started_utc": "2026-10-10T02:01:19.776139+00:00",
+      "wall_seconds": 120,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3800582,
+          "start_ticks": 28735888,
+          "sid": 3800582,
+          "pgid": 3800582
+        }
+      ],
+      "pid": 3800582,
+      "peak_session_rss_bytes": 49922048,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T02:01:20.017840+00:00",
+      "elapsed_seconds": 0.24169814202468842,
+      "logs": {
+        "probe.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "probe.stderr": {
+          "bytes": 48748,
+          "sha256": "0178bf3f31075775756b4ba766077cfa62ad9de0b2415228b87e48a4ec7c0dd4"
+        }
+      }
+    },
+    {
+      "label": "kernel-interval",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=c0209ab;b=0a908c16e292429980ff082da39f4bb9;m=42e537f065;t=65d72d493d722;x=29d513cb6885c61b",
+        "--no-pager"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T02:01:20.018187+00:00",
+      "wall_seconds": 5,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3800611,
+          "start_ticks": 28735913,
+          "sid": 3800611,
+          "pgid": 3800611
+        }
+      ],
+      "pid": 3800611,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T02:01:20.171822+00:00",
+      "elapsed_seconds": 0.1536433080327697,
+      "logs": {
+        "kernel-interval.stdout": {
+          "bytes": 17,
+          "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+        },
+        "kernel-interval.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "GPU_runtime_launched": true,
+  "model_opened": false,
+  "adopted": false,
+  "performance_eligible": false,
+  "full_lifecycle_passed": false,
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/umf/1.1/lib:/usr/lib/x86_64-linux-gnu",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "EnableDirectSubmission": "0",
+    "ZEL_ENABLE_LOADER_LOGGING": "1",
+    "ZEL_LOADER_LOG_CONSOLE": "1",
+    "ZEL_LOADER_LOGGING_LEVEL": "trace",
+    "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+    "ZE_ENABLE_VALIDATION_LAYER": "1",
+    "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+    "UR_LOG_LOADER": "level:debug;flush:debug;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:debug;flush:debug;output:stderr",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+    "STRATA_TRACE": "1",
+    "UR_ENABLE_LAYERS": "UR_LAYER_TRACING"
+  },
+  "build_receipt_sha256": "6fdb4234d361f310d0b9e9894561da484906ac2b8492ed180d57bf2d5a0f1880",
+  "source_head": "00ccf742bb0a39a6c6d5d7aba9b43d7a1a9f4518",
+  "binary": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-gate-factor-probe-20261010/build-gdn-gate-factor-probe-v3/gdn_gate_factor_probe",
+    "bytes": 191880,
+    "sha256": "9c665ee61410dffaf44a5cdf898563a169da41a5783a21dc2e4b0990b4d2e3b6"
+  },
+  "runtime_pins": {
+    "/opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9": {
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9.0.0",
+      "sha256": "d769a71f2c71530e59a5ba22831ec5a82edcde718076d2663772255498c8e053"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0": {
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0.12.0",
+      "sha256": "5338c03524f6d3fdd7d6067e5a3f84315e36e11fe1f526d5bbd02d0c88f82a32"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0": {
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "sha256": "bfdc0f26bf88bd0bccd66fc25302a4b22559f8fe30e499be18529be3ed610e60"
+    },
+    "/usr/lib/x86_64-linux-gnu/libze_loader.so.1": {
+      "realpath": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+      "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363"
+    },
+    "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1": {
+      "realpath": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+      "sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c"
+    }
+  },
+  "recover_environment_helper_sha256": "2f90005f79d2309747d917cff51dc53d8ee6192d68cb1feca074f84af8b0796c",
+  "exact_environment_set_unset": {
+    "ZE_FLAT_DEVICE_HIERARCHY": {
+      "present": false,
+      "value": null
+    },
+    "ZE_AFFINITY_MASK": {
+      "present": false,
+      "value": null
+    },
+    "ONEAPI_DEVICE_SELECTOR": {
+      "present": true,
+      "value": "level_zero:gpu"
+    }
+  },
+  "limits": {
+    "AS_each_bytes": 17179869184,
+    "RSS_session_bytes": 2147483648,
+    "CPU_each_seconds": [
+      120,
+      121
+    ],
+    "stdout_stderr_bytes": 8388608,
+    "FSIZE_each_bytes": 4194304,
+    "NOFILE": 256,
+    "CORE": 0,
+    "wall_seconds": 120
+  },
+  "kernel_cursor": "s=3ad31c4e321d43ad949846afdb43877a;i=c0209ab;b=0a908c16e292429980ff082da39f4bb9;m=42e537f065;t=65d72d493d722;x=29d513cb6885c61b",
+  "devcoredump_before": false,
+  "host_checks_sha256": "27bb3779e38fce7d95b3e356f2b0b9c2f4f012d7c00c81907d137da98caf0b2e",
+  "GPU_runtime_launch_attempted": true,
+  "probe_process_result": {
+    "exit_code": 1,
+    "completed": true,
+    "normal_exit": true
+  },
+  "last_progress_lines": [],
+  "submitted_stage_seen": false,
+  "journal_status": "complete",
+  "visible_kernel_GPU_entries": [],
+  "devcoredump_after": false,
+  "error": "AssertionError: probe did not close normally0",
+  "finished_utc": "2026-10-10T02:01:20.172326+00:00",
+  "GPU_completion": "unproven_if_GPU_launched"
+}
