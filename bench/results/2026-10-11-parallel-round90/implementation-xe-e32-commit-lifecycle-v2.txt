@@ -1,0 +1,47 @@
+XeStrata e32 commit transaction lifecycle implementation v2
+Date: 2026-10-11 (Asia/Tokyo)
+Workspace: /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011
+Base: e32b8b0594095352365db0e140a68d5bf56d8b0f
+Branch: fix/xestrata-e32-host-handoff-20261011 (supplied by MAIN; unchanged)
+Follow-up scope: R347 commit lifecycle findings only, after R346/R347 reviews completed.
+R347 report SHA-256: 2165c017d37be5c0c183d0dd07f52b8b8a05f229ba8570289741770e7cb1ed36
+
+Execution boundary
+Source reads, four source/header/test-source edits and this report only. No lint, test, compiler, build, runtime/GPU, service/process, branch, clone/fetch, commit or push action was executed by this implementer. MAIN's prefill.cpp/publication.hpp/test_prefill_publication.cpp remain untouched. Universal serialized host handoff gate remains unchanged. MAIN owns serial source-LLVM/toolchain build and all validation. v1 source snapshot recorded by MAIN remains the independent prior source boundary.
+
+Production change
+The new host-only strata::core::CommitTransaction helper stores pending ownership, whether the event was successfully recorded for the current transaction, and the first fault. Verifier uses this real helper, rather than a separate test model.
+
+- commit() first calls wait_commit() before modifying mapped h_commit_ arguments or starting another transaction. This waits any earlier writes and rejects an already-poisoned transaction.
+- For the graph path, begin() marks pending before graph_launch. A rejected launch is recorded as a sticky failure and immediately calls checked completion handling. An unconfirmed local drain terminates before quietly abandoning ownership.
+- In async mode, event_record success explicitly marks the current event usable. An event_record failure records the first error, immediately drains cs_ through wait_commit(), reports failure even if that drain succeeded, and terminates if local completion remains unconfirmed. An older event object cannot qualify this transaction because recorded state began false.
+- In synchronous mode, wait_commit() uses a checked queue drain; pending clears only when that drain succeeds. Failure preserves pending, records the first fault and blocks reuse. Later wait_commit() retries the queue drain while continuing to return the sticky failure.
+- wait_commit() uses event_sync only for an event successfully recorded for the current transaction. Failed event_sync retains pending and makes that event unusable, so a later call must use checked stream_sync. A later successful drain releases ownership but cannot report the failed session state as valid.
+- wait_commit() also visits downstream stages even if the current stage failed, preserving the current stage's original error while draining/qualifying later stages independently. run() calls wait_commit() before its existing queue waits/staging, so no subsequent window silently reuses failed committed state.
+- The one-token self-commit route submits no additional commit graph; its existing run-time completion remains the ownership boundary. It still waits/rejects an earlier commit before host bookkeeping.
+- pl_commit_async() now directly rejects the universal concurrent-handoff gate before staging/submission. The dormant legacy pipeline transaction code is not redesigned because the capability gate remains false and capture/launch are already refused. Reenabling concurrent mode still requires the separate atomic/ownership redesign documented in v1.
+
+Failure semantics
+A fault remains sticky after checked completion, intentionally blocking commit, run and wait_commit from claiming reusable/valid session state. Device state may have advanced while host PLE bookkeeping did not; safe completion alone cannot establish a valid transaction. Caller must reconstruct the verifier/session or use its higher-level recovery path after an error. This differs from a retryable transient wait: repeated calls may drain outstanding work, but do not erase the original fault. This conservative state policy is deliberate.
+No early destructor/free is introduced. Existing verifier destructor first checks compute and copy completion and terminates on an unconfirmed drain. Immediate rejected launch/event-record drains use the same conservative fail-stop rule; it is not a GPU driver recovery guarantee or historical fault attribution.
+
+New host-only fault-injection source (not executed)
+tools/test_commit_transaction.cpp includes the production helper and uses real begin/record/fail/wait transitions with injected event/queue callback returns. Checks remain enabled even if NDEBUG is set. Cases cover normal event completion; rejecting a second begin while pending; ensuring a second transaction cannot reuse the earlier event; rejected launch; rejected event recording with successful queue drain; failed event wait retaining pending and later using the queue; synchronous queue-wait failure; event-record failure plus failed queue drain; first error preservation; and later boundaries/reuse refusing poisoned state even after successful drain. This validates source-level state ownership and fault cutpoints only, not GPU event visibility or fault behavior. It is a standalone source, not a registered CTest target; MAIN must explicitly compile/run it.
+
+Edited paths and current SHA-256
+include/strata/core/commit_transaction.hpp  52106d09b751d00a4ae1c85f555ba50bc10eb227f956423da94cb98cf7d850ad
+include/strata/core/verify.hpp  452c85060e68e94b7d9e0f039d25f3b9696972a50292e08bf6d69b9b96e454a7
+src/core/verify.cpp  44d8667e973c44d889afac2387cf7686a1b3785d31fa22f22cc5c7097927e27a
+tools/test_commit_transaction.cpp  15fe42c25f5ab45f95fa6317dd428198c4cccf70d550be8cd9892e30c160a6d0
+
+Qualification suggestions (MAIN executes; none done here)
+1. Independently inspect the v1-to-v2 diff: every accepted/possibly-partial graph submission follows begin; usable event state follows successful event_record; pending clears only after true wait; wait failures cannot become a later success; mapped arguments cannot overwrite prior in-flight graph input; downstream wait behavior preserves first local error. Confirm pl_commit_async rejects before host state changes.
+2. Compile and execute the host-only production-helper source with the available approved host compiler, -std=c++17 -Wall -Wextra -pedantic -Iinclude. Repeat under host ASan/UBSan in a separate artifact path; record compiler, commands, header/source/executable hashes and statuses. A proposed command is: c++ -std=c++17 -Wall -Wextra -pedantic -Iinclude tools/test_commit_transaction.cpp -o <owned-artifact-dir>/test_commit_transaction . This report does not imply that command has run.
+3. Run required changed-file lint, rebuild strata_engine (verify.cpp and the new header dependency) and dependent strata executable from the owned source/toolchain snapshot. Keep required free/contrib-llvm qualification and the explicitly-authorized environment-specific toolchain evaluation distinct per the latest AGENTS.md/user instructions.
+4. After source/build gates and under MAIN's GPU ownership, qualify normal sync and async commits, consecutive verifier windows, MTP/snapshot/restore boundaries, one-token self-commit, and multi-stage next_ propagation where supported. Prefer production API fault injection for graph_launch/event_record/event_sync/stream_sync false cutpoints when safely available; the host helper tests are not a substitute for actual queue draining.
+5. A record-failure or launch-failure with successful drain should return the original error and reject later reuse. Failed drain must not return quiescence or free referenced storage. A failed event wait followed by a successful queue drain must still report the original fault. Exercise caller recovery/reconstruction separately; failure paths intentionally do not restore a valid session automatically.
+
+Caveats
+Source-only, uncompiled/unexecuted. No test/lint/runtime success, numerical parity or throughput claim. The helper is owned by the existing verifier control thread; this does not add support for concurrent calls to one Verifier. General non-commit GPU error recovery and dormant batch/pipeline transaction implementation remain outside this narrow follow-up. No files/captures were deleted and no active run was touched.
+
+Status: v2 source changes and test source delivered to MAIN; all source qualification, lint, builds, tests, runtime work and commits remain with MAIN.

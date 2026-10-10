@@ -1,0 +1,366 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "commands": [
+    {
+      "label": "compiler-version",
+      "argv": [
+        "/usr/bin/g++",
+        "--version"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:53:08.210746+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 749381,
+          "start_ticks": 1075233,
+          "sid": 749381,
+          "pgid": 749381
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10752.332230635,
+      "pid": 749381,
+      "spawn_return_monotonic": 10752.33374194,
+      "direct_identity": {
+        "pid": 749381,
+        "state": "R",
+        "ppid": 749378,
+        "pgid": 749381,
+        "sid": 749381,
+        "start_ticks": 1075233,
+        "rss_bytes": 327680
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:53:08.331244+00:00",
+      "elapsed_seconds": 0.12027822099844343,
+      "logs": {
+        "compiler-version.stdout": {
+          "bytes": 246,
+          "sha256": "59d1cbef41d4ae78d5063d525b7aa13d18dc0493ea00537efc19b2ee398cb5a8"
+        },
+        "compiler-version.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "compile-plain-ndebug",
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-pedantic",
+        "-O2",
+        "-DNDEBUG",
+        "-I/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/include",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/tools/test_commit_transaction.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-e32-commit-cpu-root-v1/commit-plain-ndebug"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:53:08.331812+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 749385,
+          "start_ticks": 1075245,
+          "sid": 749385,
+          "pgid": 749385
+        },
+        {
+          "pid": 749386,
+          "start_ticks": 1075245,
+          "sid": 749385,
+          "pgid": 749385
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10752.453269859,
+      "pid": 749385,
+      "spawn_return_monotonic": 10752.455208047,
+      "direct_identity": {
+        "pid": 749385,
+        "state": "R",
+        "ppid": 749378,
+        "pgid": 749385,
+        "sid": 749385,
+        "start_ticks": 1075245,
+        "rss_bytes": 286720
+      },
+      "peak_session_rss_bytes": 62361600,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:53:08.916695+00:00",
+      "elapsed_seconds": 0.5847011639998527,
+      "logs": {
+        "compile-plain-ndebug.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-plain-ndebug.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "run-plain-ndebug",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-e32-commit-cpu-root-v1/commit-plain-ndebug"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:53:08.917162+00:00",
+      "wall_seconds": 20,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 749418,
+          "start_ticks": 1075303,
+          "sid": 749418,
+          "pgid": 749418
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10753.038625064,
+      "pid": 749418,
+      "spawn_return_monotonic": 10753.040560819,
+      "direct_identity": {
+        "pid": 749418,
+        "state": "R",
+        "ppid": 749378,
+        "pgid": 749418,
+        "sid": 749418,
+        "start_ticks": 1075303,
+        "rss_bytes": 479232
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:53:09.039599+00:00",
+      "elapsed_seconds": 0.12223851099952299,
+      "logs": {
+        "run-plain-ndebug.stdout": {
+          "bytes": 42,
+          "sha256": "a5fb9de96e5a84cf0e41db0146ea04313ec28fee85e642576f0072cad86fa25d"
+        },
+        "run-plain-ndebug.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "compile-asan-ubsan",
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-pedantic",
+        "-O1",
+        "-g",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/include",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/tools/test_commit_transaction.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-e32-commit-cpu-root-v1/commit-asan-ubsan"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:53:09.040252+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 749434,
+          "start_ticks": 1075316,
+          "sid": 749434,
+          "pgid": 749434
+        },
+        {
+          "pid": 749435,
+          "start_ticks": 1075316,
+          "sid": 749434,
+          "pgid": 749434
+        },
+        {
+          "pid": 749481,
+          "start_ticks": 1075371,
+          "sid": 749434,
+          "pgid": 749434
+        },
+        {
+          "pid": 749482,
+          "start_ticks": 1075371,
+          "sid": 749434,
+          "pgid": 749434
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10753.161907401,
+      "pid": 749434,
+      "spawn_return_monotonic": 10753.163608232,
+      "direct_identity": {
+        "pid": 749434,
+        "state": "R",
+        "ppid": 749378,
+        "pgid": 749434,
+        "sid": 749434,
+        "start_ticks": 1075316,
+        "rss_bytes": 458752
+      },
+      "peak_session_rss_bytes": 76562432,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:53:09.781919+00:00",
+      "elapsed_seconds": 0.7413237059990934,
+      "logs": {
+        "compile-asan-ubsan.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-asan-ubsan.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "run-asan-ubsan",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-e32-commit-cpu-root-v1/commit-asan-ubsan"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-10T19:53:09.782498+00:00",
+      "wall_seconds": 20,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 749490,
+          "start_ticks": 1075390,
+          "sid": 749490,
+          "pgid": 749490
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10753.904075797,
+      "pid": 749490,
+      "spawn_return_monotonic": 10753.905736203,
+      "direct_identity": {
+        "pid": 749490,
+        "state": "R",
+        "ppid": 749378,
+        "pgid": 749490,
+        "sid": 749490,
+        "start_ticks": 1075390,
+        "rss_bytes": 569344
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:53:09.915063+00:00",
+      "elapsed_seconds": 0.13226911399942765,
+      "logs": {
+        "run-asan-ubsan.stdout": {
+          "bytes": 42,
+          "sha256": "a5fb9de96e5a84cf0e41db0146ea04313ec28fee85e642576f0072cad86fa25d"
+        },
+        "run-asan-ubsan.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "started_utc": "2026-10-10T19:53:08.209495+00:00",
+  "gpu_executed": false,
+  "full262144_runtime_qualified": false,
+  "scope": "Production CommitTransaction helper with event/queue/submission fault injection; plain NDEBUG and ASan/UBSan. No GPU API or full Verifier execution.",
+  "controller_sha256": "5ad878ef47e4cb74de170e13e2172b3f1f60d2cb074e2c2a000ba96a910c00a8",
+  "source_pins": {
+    "include/strata/core/commit_transaction.hpp": "52106d09b751d00a4ae1c85f555ba50bc10eb227f956423da94cb98cf7d850ad",
+    "include/strata/core/verify.hpp": "452c85060e68e94b7d9e0f039d25f3b9696972a50292e08bf6d69b9b96e454a7",
+    "src/core/verify.cpp": "44d8667e973c44d889afac2387cf7686a1b3785d31fa22f22cc5c7097927e27a",
+    "tools/test_commit_transaction.cpp": "15fe42c25f5ab45f95fa6317dd428198c4cccf70d550be8cd9892e30c160a6d0"
+  },
+  "compiler_version": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+  "results": [
+    {
+      "case": "production-commit-helper-fault-injection",
+      "mode": "plain-ndebug",
+      "stdout": "commit transaction fault injection passed\n",
+      "binary_sha256": "5ea18fce5e967ceccc7e1acc80a35cc22de7580a21465444a08dab405c2ae178"
+    },
+    {
+      "case": "production-commit-helper-fault-injection",
+      "mode": "asan-ubsan",
+      "stdout": "commit transaction fault injection passed\n",
+      "binary_sha256": "21958611875d14d2ef3a9522eba5a2c413073d80598bd4b5dfd92ef8e47b0a69"
+    }
+  ],
+  "source_stable": true,
+  "finished_utc": "2026-10-10T19:53:09.916425+00:00"
+}

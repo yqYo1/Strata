@@ -1,0 +1,1 @@
+R344〜352の読み取り専用Luna9件とSolのsource実装報告2件を原文保存。registry v113は465件。原文を変更せず訂正をregistry別項目に記録。mainがCPU試験2件を実行、compiler/full engine/runtime資格は未完了。追加R353/R354とSol full-context probeは継続中。

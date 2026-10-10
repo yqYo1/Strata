@@ -1,0 +1,5181 @@
+{
+  "active": false,
+  "complete": false,
+  "passed": false,
+  "commands": [
+    {
+      "label": "lld-version",
+      "argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/bin/ld.lld",
+        "--version"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "CMAKE_PREFIX_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/deps/usr",
+        "PKG_CONFIG_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/deps/usr/lib/x86_64-linux-gnu/pkgconfig"
+      },
+      "started_utc": "2026-10-10T19:47:10.184995+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 718139,
+          "start_ticks": 1039430,
+          "sid": 718139,
+          "pgid": 718139
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10394.306591151,
+      "pid": 718139,
+      "spawn_return_monotonic": 10394.308457735,
+      "direct_identity": {
+        "pid": 718139,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 718139,
+        "sid": 718139,
+        "start_ticks": 1039430,
+        "rss_bytes": 466944
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:47:10.305797+00:00",
+      "elapsed_seconds": 0.12054660899957526,
+      "logs": {
+        "lld-version.stdout": {
+          "bytes": 48,
+          "sha256": "1479084e18fdeec3181dd42501959b88ee5ba6093df14b89ffa418b07afadcd4"
+        },
+        "lld-version.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "ghq-clone",
+      "argv": [
+        "/home/yayoi/.nix-profile/bin/ghq",
+        "get",
+        "--shallow",
+        "--no-recursive",
+        "github.com/intel/llvm"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:47:10.306371+00:00",
+      "wall_seconds": 900,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 718182,
+          "start_ticks": 1039442,
+          "sid": 718182,
+          "pgid": 718182
+        },
+        {
+          "pid": 718193,
+          "start_ticks": 1039443,
+          "sid": 718182,
+          "pgid": 718182
+        },
+        {
+          "pid": 718195,
+          "start_ticks": 1039444,
+          "sid": 718182,
+          "pgid": 718182
+        },
+        {
+          "pid": 718196,
+          "start_ticks": 1039444,
+          "sid": 718182,
+          "pgid": 718182
+        },
+        {
+          "pid": 718235,
+          "start_ticks": 1039566,
+          "sid": 718182,
+          "pgid": 718182
+        },
+        {
+          "pid": 722318,
+          "start_ticks": 1045923,
+          "sid": 718182,
+          "pgid": 718182
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10394.427869077,
+      "pid": 718182,
+      "spawn_return_monotonic": 10394.429543639,
+      "direct_identity": {
+        "pid": 718182,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 718182,
+        "sid": 718182,
+        "start_ticks": 1039442,
+        "rss_bytes": 299008
+      },
+      "peak_session_rss_bytes": 535388160,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:48:34.972020+00:00",
+      "elapsed_seconds": 84.66542199600008,
+      "logs": {
+        "ghq-clone.stdout": {
+          "bytes": 38,
+          "sha256": "82a486149d9a44dc9772645e2222a50904bf4f50c02e18885d90511581d1a026"
+        },
+        "ghq-clone.stderr": {
+          "bytes": 4456,
+          "sha256": "17f607e26ef1ef965677eddf7018f545392292f0a03dd167f1a21e923df8de91"
+        }
+      }
+    },
+    {
+      "label": "default-branch",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm",
+        "symbolic-ref",
+        "--short",
+        "HEAD"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:48:34.972550+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 723526,
+          "start_ticks": 1047909,
+          "sid": 723526,
+          "pgid": 723526
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10479.094140532,
+      "pid": 723526,
+      "spawn_return_monotonic": 10479.095933537,
+      "direct_identity": {
+        "pid": 723526,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 723526,
+        "sid": 723526,
+        "start_ticks": 1047909,
+        "rss_bytes": 446464
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:48:35.087758+00:00",
+      "elapsed_seconds": 0.11492801500025962,
+      "logs": {
+        "default-branch.stdout": {
+          "bytes": 5,
+          "sha256": "f2dfefb936e07cab81fefb7efde95d7e0ba2ee935cab3bb7cfaa45a5a56eed62"
+        },
+        "default-branch.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "remote-default",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm",
+        "symbolic-ref",
+        "--short",
+        "refs/remotes/origin/HEAD"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:48:35.088360+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 723529,
+          "start_ticks": 1047921,
+          "sid": 723529,
+          "pgid": 723529
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10479.209913257,
+      "pid": 723529,
+      "spawn_return_monotonic": 10479.211550288,
+      "direct_identity": {
+        "pid": 723529,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 723529,
+        "sid": 723529,
+        "start_ticks": 1047921,
+        "rss_bytes": 446464
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:48:35.220904+00:00",
+      "elapsed_seconds": 0.13226458800090768,
+      "logs": {
+        "remote-default.stdout": {
+          "bytes": 12,
+          "sha256": "85143070c701462c42f8d064836003e8f2d8b93f4601109465613944c1c77cf9"
+        },
+        "remote-default.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "mirror-status",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm",
+        "status",
+        "--porcelain",
+        "--untracked-files=no"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:48:35.221554+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 723549,
+          "start_ticks": 1047934,
+          "sid": 723549,
+          "pgid": 723549
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10479.343141318,
+      "pid": 723549,
+      "spawn_return_monotonic": 10479.344820158,
+      "direct_identity": {
+        "pid": 723549,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 723549,
+        "sid": 723549,
+        "start_ticks": 1047934,
+        "rss_bytes": 393216
+      },
+      "peak_session_rss_bytes": 40968192,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:48:35.950461+00:00",
+      "elapsed_seconds": 0.7285913010000513,
+      "logs": {
+        "mirror-status.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "mirror-status.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "fetch-pinned-tag",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm",
+        "fetch",
+        "--depth",
+        "1",
+        "origin",
+        "tag",
+        "v7.1.1"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:48:35.951178+00:00",
+      "wall_seconds": 600,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 723604,
+          "start_ticks": 1048007,
+          "sid": 723604,
+          "pgid": 723604
+        },
+        {
+          "pid": 723606,
+          "start_ticks": 1048013,
+          "sid": 723604,
+          "pgid": 723604
+        },
+        {
+          "pid": 723607,
+          "start_ticks": 1048013,
+          "sid": 723604,
+          "pgid": 723604
+        },
+        {
+          "pid": 724913,
+          "start_ticks": 1050076,
+          "sid": 723604,
+          "pgid": 723604
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10480.073057974,
+      "pid": 723604,
+      "spawn_return_monotonic": 10480.07493654,
+      "direct_identity": {
+        "pid": 723604,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 723604,
+        "sid": 723604,
+        "start_ticks": 1048007,
+        "rss_bytes": 319488
+      },
+      "peak_session_rss_bytes": 469590016,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:21.846078+00:00",
+      "elapsed_seconds": 45.894344770000316,
+      "logs": {
+        "fetch-pinned-tag.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "fetch-pinned-tag.stderr": {
+          "bytes": 83,
+          "sha256": "b5ea00b85c5297a1332b18b2fd4d5ceaf523813a827950d850ca59990812c597"
+        }
+      }
+    },
+    {
+      "label": "pinned-commit",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm",
+        "rev-parse",
+        "v7.1.1^{}"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:21.846788+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 726541,
+          "start_ticks": 1052596,
+          "sid": 726541,
+          "pgid": 726541
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10525.968438745,
+      "pid": 726541,
+      "spawn_return_monotonic": 10525.970079213,
+      "direct_identity": {
+        "pid": 726541,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 726541,
+        "sid": 726541,
+        "start_ticks": 1052596,
+        "rss_bytes": 360448
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:21.960808+00:00",
+      "elapsed_seconds": 0.11365152600046713,
+      "logs": {
+        "pinned-commit.stdout": {
+          "bytes": 41,
+          "sha256": "cc8ecd0d7059046202e6dceabf098d84c8f0a250183432dcd3b97db16e4ed5d2"
+        },
+        "pinned-commit.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "add-bound-worktree",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm",
+        "worktree",
+        "add",
+        "-b",
+        "toolchain/sycl-v711-b570-20261011",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "504366f4b82ff00bbac7b0c956635eed8bc599d8"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:21.961714+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 726546,
+          "start_ticks": 1052608,
+          "sid": 726546,
+          "pgid": 726546
+        },
+        {
+          "pid": 726550,
+          "start_ticks": 1052616,
+          "sid": 726546,
+          "pgid": 726546
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10526.083482412,
+      "pid": 726546,
+      "spawn_return_monotonic": 10526.085179336,
+      "direct_identity": {
+        "pid": 726546,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 726546,
+        "sid": 726546,
+        "start_ticks": 1052608,
+        "rss_bytes": 319488
+      },
+      "peak_session_rss_bytes": 690552832,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:38.855784+00:00",
+      "elapsed_seconds": 16.893583124001452,
+      "logs": {
+        "add-bound-worktree.stdout": {
+          "bytes": 91,
+          "sha256": "c09a62bd4b14a67393eebed1b049f530ea8e9b1002f0392df42e8fb38daad0ab"
+        },
+        "add-bound-worktree.stderr": {
+          "bytes": 4160,
+          "sha256": "476d9834ef7cf77455b88bc6c47c20e5dfee4c4a24799fbd87d603b49173dd38"
+        }
+      }
+    },
+    {
+      "label": "patch-check-01-cuda-sync-points",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "--check",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/01-cuda-sync-points.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:38.857007+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727536,
+          "start_ticks": 1054297,
+          "sid": 727536,
+          "pgid": 727536
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10542.978746,
+      "pid": 727536,
+      "spawn_return_monotonic": 10542.980535228,
+      "direct_identity": {
+        "pid": 727536,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727536,
+        "sid": 727536,
+        "start_ticks": 1054297,
+        "rss_bytes": 327680
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:38.980720+00:00",
+      "elapsed_seconds": 0.12324570799864887,
+      "logs": {
+        "patch-check-01-cuda-sync-points.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-check-01-cuda-sync-points.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-apply-01-cuda-sync-points",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/01-cuda-sync-points.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:38.981666+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727573,
+          "start_ticks": 1054310,
+          "sid": 727573,
+          "pgid": 727573
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10543.10342694,
+      "pid": 727573,
+      "spawn_return_monotonic": 10543.105361712,
+      "direct_identity": {
+        "pid": 727573,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727573,
+        "sid": 727573,
+        "start_ticks": 1054310,
+        "rss_bytes": 446464
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:39.109056+00:00",
+      "elapsed_seconds": 0.1268993359990418,
+      "logs": {
+        "patch-apply-01-cuda-sync-points.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-apply-01-cuda-sync-points.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-check-02-hip-sync-points",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "--check",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/02-hip-sync-points.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:39.110162+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727602,
+          "start_ticks": 1054323,
+          "sid": 727602,
+          "pgid": 727602
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10543.232190886,
+      "pid": 727602,
+      "spawn_return_monotonic": 10543.233991585,
+      "direct_identity": {
+        "pid": 727602,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727602,
+        "sid": 727602,
+        "start_ticks": 1054323,
+        "rss_bytes": 454656
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:39.241223+00:00",
+      "elapsed_seconds": 0.13032258000021102,
+      "logs": {
+        "patch-check-02-hip-sync-points.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-check-02-hip-sync-points.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-apply-02-hip-sync-points",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/02-hip-sync-points.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:39.242023+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727606,
+          "start_ticks": 1054336,
+          "sid": 727606,
+          "pgid": 727606
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10543.363836556,
+      "pid": 727606,
+      "spawn_return_monotonic": 10543.365497413,
+      "direct_identity": {
+        "pid": 727606,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727606,
+        "sid": 727606,
+        "start_ticks": 1054336,
+        "rss_bytes": 393216
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:39.365239+00:00",
+      "elapsed_seconds": 0.122679091999089,
+      "logs": {
+        "patch-apply-02-hip-sync-points.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-apply-02-hip-sync-points.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-check-03-cuda-select-binary-2",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "--check",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/03-cuda-select-binary-2.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:39.366354+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727610,
+          "start_ticks": 1054348,
+          "sid": 727610,
+          "pgid": 727610
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10543.488432797,
+      "pid": 727610,
+      "spawn_return_monotonic": 10543.491072827,
+      "direct_identity": {
+        "pid": 727610,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727610,
+        "sid": 727610,
+        "start_ticks": 1054348,
+        "rss_bytes": 446464
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:39.481974+00:00",
+      "elapsed_seconds": 0.11484171899974172,
+      "logs": {
+        "patch-check-03-cuda-select-binary-2.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-check-03-cuda-select-binary-2.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-apply-03-cuda-select-binary-2",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/03-cuda-select-binary-2.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:39.482961+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727615,
+          "start_ticks": 1054360,
+          "sid": 727615,
+          "pgid": 727615
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10543.604870971,
+      "pid": 727615,
+      "spawn_return_monotonic": 10543.607617772,
+      "direct_identity": {
+        "pid": 727615,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727615,
+        "sid": 727615,
+        "start_ticks": 1054360,
+        "rss_bytes": 458752
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:39.610051+00:00",
+      "elapsed_seconds": 0.12645977799911634,
+      "logs": {
+        "patch-apply-03-cuda-select-binary-2.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-apply-03-cuda-select-binary-2.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-check-04-cuda-binary-to-adapter",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "--check",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/04-cuda-binary-to-adapter.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:39.611209+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727618,
+          "start_ticks": 1054373,
+          "sid": 727618,
+          "pgid": 727618
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10543.733247819,
+      "pid": 727618,
+      "spawn_return_monotonic": 10543.735339757,
+      "direct_identity": {
+        "pid": 727618,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727618,
+        "sid": 727618,
+        "start_ticks": 1054373,
+        "rss_bytes": 393216
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:39.747874+00:00",
+      "elapsed_seconds": 0.1359021029984433,
+      "logs": {
+        "patch-check-04-cuda-binary-to-adapter.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-check-04-cuda-binary-to-adapter.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-apply-04-cuda-binary-to-adapter",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/04-cuda-binary-to-adapter.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:39.748882+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727626,
+          "start_ticks": 1054387,
+          "sid": 727626,
+          "pgid": 727626
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10543.870902832,
+      "pid": 727626,
+      "spawn_return_monotonic": 10543.872854535,
+      "direct_identity": {
+        "pid": 727626,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727626,
+        "sid": 727626,
+        "start_ticks": 1054387,
+        "rss_bytes": 454656
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:39.866519+00:00",
+      "elapsed_seconds": 0.1168875500006834,
+      "logs": {
+        "patch-apply-04-cuda-binary-to-adapter.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-apply-04-cuda-binary-to-adapter.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-check-05-cuda-binaries-to-adapter",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "--check",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/05-cuda-binaries-to-adapter.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:39.868176+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727629,
+          "start_ticks": 1054399,
+          "sid": 727629,
+          "pgid": 727629
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10543.990534627,
+      "pid": 727629,
+      "spawn_return_monotonic": 10543.992441577,
+      "direct_identity": {
+        "pid": 727629,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727629,
+        "sid": 727629,
+        "start_ticks": 1054399,
+        "rss_bytes": 458752
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:40.020815+00:00",
+      "elapsed_seconds": 0.1515568209997582,
+      "logs": {
+        "patch-check-05-cuda-binaries-to-adapter.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-check-05-cuda-binaries-to-adapter.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-apply-05-cuda-binaries-to-adapter",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/05-cuda-binaries-to-adapter.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:40.022094+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727633,
+          "start_ticks": 1054414,
+          "sid": 727633,
+          "pgid": 727633
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10544.14415326,
+      "pid": 727633,
+      "spawn_return_monotonic": 10544.145950062,
+      "direct_identity": {
+        "pid": 727633,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727633,
+        "sid": 727633,
+        "start_ticks": 1054414,
+        "rss_bytes": 454656
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:40.144386+00:00",
+      "elapsed_seconds": 0.1215194190008333,
+      "logs": {
+        "patch-apply-05-cuda-binaries-to-adapter.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-apply-05-cuda-binaries-to-adapter.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-check-06-cuda-host-register",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "--check",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/06-cuda-host-register.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:40.145884+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727637,
+          "start_ticks": 1054426,
+          "sid": 727637,
+          "pgid": 727637
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10544.268335782,
+      "pid": 727637,
+      "spawn_return_monotonic": 10544.270575799,
+      "direct_identity": {
+        "pid": 727637,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727637,
+        "sid": 727637,
+        "start_ticks": 1054426,
+        "rss_bytes": 319488
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:40.271565+00:00",
+      "elapsed_seconds": 0.12453038700004981,
+      "logs": {
+        "patch-check-06-cuda-host-register.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-check-06-cuda-host-register.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-apply-06-cuda-host-register",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/06-cuda-host-register.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:40.272872+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727645,
+          "start_ticks": 1054439,
+          "sid": 727645,
+          "pgid": 727645
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10544.395202036,
+      "pid": 727645,
+      "spawn_return_monotonic": 10544.396929298,
+      "direct_identity": {
+        "pid": 727645,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727645,
+        "sid": 727645,
+        "start_ticks": 1054439,
+        "rss_bytes": 446464
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:40.391818+00:00",
+      "elapsed_seconds": 0.117896470001142,
+      "logs": {
+        "patch-apply-06-cuda-host-register.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-apply-06-cuda-host-register.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-check-07-cuda-host-register-table",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "--check",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/07-cuda-host-register-table.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:40.393247+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727650,
+          "start_ticks": 1054451,
+          "sid": 727650,
+          "pgid": 727650
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10544.515334635,
+      "pid": 727650,
+      "spawn_return_monotonic": 10544.517133751,
+      "direct_identity": {
+        "pid": 727650,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727650,
+        "sid": 727650,
+        "start_ticks": 1054451,
+        "rss_bytes": 442368
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:40.522197+00:00",
+      "elapsed_seconds": 0.12813570400066965,
+      "logs": {
+        "patch-check-07-cuda-host-register-table.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-check-07-cuda-host-register-table.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-apply-07-cuda-host-register-table",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/07-cuda-host-register-table.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:40.523736+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727654,
+          "start_ticks": 1054464,
+          "sid": 727654,
+          "pgid": 727654
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10544.646241685,
+      "pid": 727654,
+      "spawn_return_monotonic": 10544.648192357,
+      "direct_identity": {
+        "pid": 727654,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727654,
+        "sid": 727654,
+        "start_ticks": 1054464,
+        "rss_bytes": 393216
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:40.649979+00:00",
+      "elapsed_seconds": 0.12503924500015273,
+      "logs": {
+        "patch-apply-07-cuda-host-register-table.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-apply-07-cuda-host-register-table.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-check-08-cuda-newer-matrix",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "--check",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/08-cuda-newer-matrix.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:40.651698+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727670,
+          "start_ticks": 1054477,
+          "sid": 727670,
+          "pgid": 727670
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10544.774179516,
+      "pid": 727670,
+      "spawn_return_monotonic": 10544.776016614,
+      "direct_identity": {
+        "pid": 727670,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727670,
+        "sid": 727670,
+        "start_ticks": 1054477,
+        "rss_bytes": 327680
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:40.783750+00:00",
+      "elapsed_seconds": 0.13086095300059242,
+      "logs": {
+        "patch-check-08-cuda-newer-matrix.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-check-08-cuda-newer-matrix.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-apply-08-cuda-newer-matrix",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/08-cuda-newer-matrix.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:40.785236+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727680,
+          "start_ticks": 1054490,
+          "sid": 727680,
+          "pgid": 727680
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10544.907608454,
+      "pid": 727680,
+      "spawn_return_monotonic": 10544.909532696,
+      "direct_identity": {
+        "pid": 727680,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727680,
+        "sid": 727680,
+        "start_ticks": 1054490,
+        "rss_bytes": 323584
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:40.907162+00:00",
+      "elapsed_seconds": 0.12085958700117772,
+      "logs": {
+        "patch-apply-08-cuda-newer-matrix.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-apply-08-cuda-newer-matrix.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-check-09-cuda-binaries-to-adapter-2",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "--check",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/09-cuda-binaries-to-adapter-2.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:40.909024+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727688,
+          "start_ticks": 1054503,
+          "sid": 727688,
+          "pgid": 727688
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10545.03140546,
+      "pid": 727688,
+      "spawn_return_monotonic": 10545.033219194,
+      "direct_identity": {
+        "pid": 727688,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727688,
+        "sid": 727688,
+        "start_ticks": 1054503,
+        "rss_bytes": 450560
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:41.038132+00:00",
+      "elapsed_seconds": 0.12800299400078075,
+      "logs": {
+        "patch-check-09-cuda-binaries-to-adapter-2.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-check-09-cuda-binaries-to-adapter-2.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-apply-09-cuda-binaries-to-adapter-2",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/09-cuda-binaries-to-adapter-2.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:41.039477+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727707,
+          "start_ticks": 1054516,
+          "sid": 727707,
+          "pgid": 727707
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10545.161766352,
+      "pid": 727707,
+      "spawn_return_monotonic": 10545.163838173,
+      "direct_identity": {
+        "pid": 727707,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727707,
+        "sid": 727707,
+        "start_ticks": 1054516,
+        "rss_bytes": 327680
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:41.186858+00:00",
+      "elapsed_seconds": 0.14638580799874035,
+      "logs": {
+        "patch-apply-09-cuda-binaries-to-adapter-2.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-apply-09-cuda-binaries-to-adapter-2.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-check-10-cuda-temp-lists",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "--check",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/10-cuda-temp-lists.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:41.189470+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727712,
+          "start_ticks": 1054531,
+          "sid": 727712,
+          "pgid": 727712
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10545.311848949,
+      "pid": 727712,
+      "spawn_return_monotonic": 10545.313934535,
+      "direct_identity": {
+        "pid": 727712,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727712,
+        "sid": 727712,
+        "start_ticks": 1054531,
+        "rss_bytes": 393216
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:41.359495+00:00",
+      "elapsed_seconds": 0.16894293000041216,
+      "logs": {
+        "patch-check-10-cuda-temp-lists.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-check-10-cuda-temp-lists.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-apply-10-cuda-temp-lists",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/10-cuda-temp-lists.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:41.361739+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727717,
+          "start_ticks": 1054548,
+          "sid": 727717,
+          "pgid": 727717
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10545.484683294,
+      "pid": 727717,
+      "spawn_return_monotonic": 10545.487296193,
+      "direct_identity": {
+        "pid": 727717,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727717,
+        "sid": 727717,
+        "start_ticks": 1054548,
+        "rss_bytes": 0
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:41.637080+00:00",
+      "elapsed_seconds": 0.2737107660013862,
+      "logs": {
+        "patch-apply-10-cuda-temp-lists.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-apply-10-cuda-temp-lists.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-check-11-build-job-pools",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "--check",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/11-build-job-pools.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:41.639234+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727730,
+          "start_ticks": 1054576,
+          "sid": 727730,
+          "pgid": 727730
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10545.761723928,
+      "pid": 727730,
+      "spawn_return_monotonic": 10545.763418918,
+      "direct_identity": {
+        "pid": 727730,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727730,
+        "sid": 727730,
+        "start_ticks": 1054576,
+        "rss_bytes": 450560
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:41.765038+00:00",
+      "elapsed_seconds": 0.12459133199990902,
+      "logs": {
+        "patch-check-11-build-job-pools.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-check-11-build-job-pools.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-apply-11-build-job-pools",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/11-build-job-pools.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:41.766937+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727736,
+          "start_ticks": 1054589,
+          "sid": 727736,
+          "pgid": 727736
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10545.889496578,
+      "pid": 727736,
+      "spawn_return_monotonic": 10545.891591552,
+      "direct_identity": {
+        "pid": 727736,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727736,
+        "sid": 727736,
+        "start_ticks": 1054589,
+        "rss_bytes": 393216
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:41.889495+00:00",
+      "elapsed_seconds": 0.121320996000577,
+      "logs": {
+        "patch-apply-11-build-job-pools.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-apply-11-build-job-pools.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-check-12-hip-libclc-target",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "--check",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/12-hip-libclc-target.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:41.891118+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727744,
+          "start_ticks": 1054601,
+          "sid": 727744,
+          "pgid": 727744
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10546.013473794,
+      "pid": 727744,
+      "spawn_return_monotonic": 10546.01519324,
+      "direct_identity": {
+        "pid": 727744,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727744,
+        "sid": 727744,
+        "start_ticks": 1054601,
+        "rss_bytes": 323584
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:42.004894+00:00",
+      "elapsed_seconds": 0.11268649100020411,
+      "logs": {
+        "patch-check-12-hip-libclc-target.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-check-12-hip-libclc-target.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-apply-12-hip-libclc-target",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/12-hip-libclc-target.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:42.006289+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727748,
+          "start_ticks": 1054612,
+          "sid": 727748,
+          "pgid": 727748
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10546.128646476,
+      "pid": 727748,
+      "spawn_return_monotonic": 10546.130348279,
+      "direct_identity": {
+        "pid": 727748,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727748,
+        "sid": 727748,
+        "start_ticks": 1054612,
+        "rss_bytes": 327680
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:42.119562+00:00",
+      "elapsed_seconds": 0.11218819399982749,
+      "logs": {
+        "patch-apply-12-hip-libclc-target.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-apply-12-hip-libclc-target.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-check-13-hip-host-register",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "--check",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/13-hip-host-register.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:42.121179+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727755,
+          "start_ticks": 1054624,
+          "sid": 727755,
+          "pgid": 727755
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10546.243550352,
+      "pid": 727755,
+      "spawn_return_monotonic": 10546.245165402,
+      "direct_identity": {
+        "pid": 727755,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727755,
+        "sid": 727755,
+        "start_ticks": 1054624,
+        "rss_bytes": 393216
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:42.235242+00:00",
+      "elapsed_seconds": 0.11295934500049043,
+      "logs": {
+        "patch-check-13-hip-host-register.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-check-13-hip-host-register.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-apply-13-hip-host-register",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/13-hip-host-register.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:42.237014+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727787,
+          "start_ticks": 1054635,
+          "sid": 727787,
+          "pgid": 727787
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10546.359446576,
+      "pid": 727787,
+      "spawn_return_monotonic": 10546.361110248,
+      "direct_identity": {
+        "pid": 727787,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727787,
+        "sid": 727787,
+        "start_ticks": 1054635,
+        "rss_bytes": 450560
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:42.361321+00:00",
+      "elapsed_seconds": 0.12314592099937727,
+      "logs": {
+        "patch-apply-13-hip-host-register.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-apply-13-hip-host-register.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-check-14-hip-queue-empty",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "--check",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/14-hip-queue-empty.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:42.363481+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727791,
+          "start_ticks": 1054648,
+          "sid": 727791,
+          "pgid": 727791
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10546.486308041,
+      "pid": 727791,
+      "spawn_return_monotonic": 10546.487982944,
+      "direct_identity": {
+        "pid": 727791,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727791,
+        "sid": 727791,
+        "start_ticks": 1054648,
+        "rss_bytes": 454656
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:42.486983+00:00",
+      "elapsed_seconds": 0.12195981799959554,
+      "logs": {
+        "patch-check-14-hip-queue-empty.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-check-14-hip-queue-empty.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-apply-14-hip-queue-empty",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/14-hip-queue-empty.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:42.488642+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727794,
+          "start_ticks": 1054661,
+          "sid": 727794,
+          "pgid": 727794
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10546.611208956,
+      "pid": 727794,
+      "spawn_return_monotonic": 10546.612885983,
+      "direct_identity": {
+        "pid": 727794,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727794,
+        "sid": 727794,
+        "start_ticks": 1054661,
+        "rss_bytes": 323584
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:42.611672+00:00",
+      "elapsed_seconds": 0.12173718899975938,
+      "logs": {
+        "patch-apply-14-hip-queue-empty.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-apply-14-hip-queue-empty.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-check-15-hip-exit-unload",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "--check",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/15-hip-exit-unload.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:42.614177+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727798,
+          "start_ticks": 1054673,
+          "sid": 727798,
+          "pgid": 727798
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10546.737285213,
+      "pid": 727798,
+      "spawn_return_monotonic": 10546.739209826,
+      "direct_identity": {
+        "pid": 727798,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727798,
+        "sid": 727798,
+        "start_ticks": 1054673,
+        "rss_bytes": 458752
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:42.743661+00:00",
+      "elapsed_seconds": 0.12766251299944997,
+      "logs": {
+        "patch-check-15-hip-exit-unload.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-check-15-hip-exit-unload.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-apply-15-hip-exit-unload",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/15-hip-exit-unload.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:42.745421+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727806,
+          "start_ticks": 1054686,
+          "sid": 727806,
+          "pgid": 727806
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10546.868325925,
+      "pid": 727806,
+      "spawn_return_monotonic": 10546.870100416,
+      "direct_identity": {
+        "pid": 727806,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727806,
+        "sid": 727806,
+        "start_ticks": 1054686,
+        "rss_bytes": 327680
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:42.883313+00:00",
+      "elapsed_seconds": 0.13626741099869832,
+      "logs": {
+        "patch-apply-15-hip-exit-unload.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-apply-15-hip-exit-unload.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-check-16-hip-libclc-fma",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "--check",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/16-hip-libclc-fma.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:42.886062+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727810,
+          "start_ticks": 1054700,
+          "sid": 727810,
+          "pgid": 727810
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10547.009341845,
+      "pid": 727810,
+      "spawn_return_monotonic": 10547.011122387,
+      "direct_identity": {
+        "pid": 727810,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727810,
+        "sid": 727810,
+        "start_ticks": 1054700,
+        "rss_bytes": 327680
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:43.026249+00:00",
+      "elapsed_seconds": 0.13820531900091737,
+      "logs": {
+        "patch-check-16-hip-libclc-fma.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-check-16-hip-libclc-fma.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-apply-16-hip-libclc-fma",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/16-hip-libclc-fma.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:43.028122+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727814,
+          "start_ticks": 1054715,
+          "sid": 727814,
+          "pgid": 727814
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10547.150761725,
+      "pid": 727814,
+      "spawn_return_monotonic": 10547.152447889,
+      "direct_identity": {
+        "pid": 727814,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727814,
+        "sid": 727814,
+        "start_ticks": 1054715,
+        "rss_bytes": 446464
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:43.155273+00:00",
+      "elapsed_seconds": 0.1257863519986131,
+      "logs": {
+        "patch-apply-16-hip-libclc-fma.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-apply-16-hip-libclc-fma.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-check-17-hip-bundle-arch",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "--check",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/17-hip-bundle-arch.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:43.157192+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727818,
+          "start_ticks": 1054728,
+          "sid": 727818,
+          "pgid": 727818
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10547.279861434,
+      "pid": 727818,
+      "spawn_return_monotonic": 10547.281931681,
+      "direct_identity": {
+        "pid": 727818,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727818,
+        "sid": 727818,
+        "start_ticks": 1054728,
+        "rss_bytes": 323584
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:43.275808+00:00",
+      "elapsed_seconds": 0.11721682999996119,
+      "logs": {
+        "patch-check-17-hip-bundle-arch.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-check-17-hip-bundle-arch.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "patch-apply-17-hip-bundle-arch",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "apply",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/17-hip-bundle-arch.patch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T19:49:43.277780+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727826,
+          "start_ticks": 1054740,
+          "sid": 727826,
+          "pgid": 727826
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10547.400467975,
+      "pid": 727826,
+      "spawn_return_monotonic": 10547.402163987,
+      "direct_identity": {
+        "pid": 727826,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727826,
+        "sid": 727826,
+        "start_ticks": 1054740,
+        "rss_bytes": 393216
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:49:43.401731+00:00",
+      "elapsed_seconds": 0.12253593300010834,
+      "logs": {
+        "patch-apply-17-hip-bundle-arch.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "patch-apply-17-hip-bundle-arch.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "configure",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011/buildbot/configure.py",
+        "-o",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/build",
+        "-t",
+        "Release",
+        "--cmake-opt=-DCMAKE_INSTALL_PREFIX=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install",
+        "--cmake-opt=-DSYCL_UR_FORCE_FETCH_LEVEL_ZERO=ON",
+        "--cmake-opt=-DLLVM_ENABLE_ZSTD=FORCE_ON",
+        "--cmake-opt=-DLLVM_USE_STATIC_ZSTD=ON",
+        "--cmake-opt=-DLLVM_RAM_PER_LINK_JOB=10000",
+        "--cmake-opt=-DLLVM_PARALLEL_LINK_JOBS=1",
+        "--cmake-opt=-DLLVM_ENABLE_ASSERTIONS=OFF",
+        "--cmake-opt=-DLLVM_USE_LINKER=lld",
+        "--cmake-opt=-DLLVM_TARGETS_TO_BUILD=X86",
+        "--cmake-opt=-DCMAKE_C_COMPILER=/usr/bin/gcc",
+        "--cmake-opt=-DCMAKE_CXX_COMPILER=/usr/bin/g++",
+        "--cmake-opt=-DCMAKE_PREFIX_PATH=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/deps/usr",
+        "--cmake-opt=-DCMAKE_C_FLAGS=-I/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/deps/usr/include",
+        "--cmake-opt=-DCMAKE_CXX_FLAGS=-I/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/deps/usr/include",
+        "--cmake-opt=-DCMAKE_LIBRARY_PATH=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/deps/usr/lib/x86_64-linux-gnu"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "CMAKE_PREFIX_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/deps/usr",
+        "PKG_CONFIG_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/deps/usr/lib/x86_64-linux-gnu/pkgconfig"
+      },
+      "started_utc": "2026-10-10T19:49:43.405495+00:00",
+      "wall_seconds": 600,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 727830,
+          "start_ticks": 1054752,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 727832,
+          "start_ticks": 1054756,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 727841,
+          "start_ticks": 1054765,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 727842,
+          "start_ticks": 1054766,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 728073,
+          "start_ticks": 1054861,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 728082,
+          "start_ticks": 1054871,
+          "sid": 727830,
+          "pgid": 728082
+        },
+        {
+          "pid": 728083,
+          "start_ticks": 1054871,
+          "sid": 727830,
+          "pgid": 728082
+        },
+        {
+          "pid": 728325,
+          "start_ticks": 1054990,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 728668,
+          "start_ticks": 1055170,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 728722,
+          "start_ticks": 1055200,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 728947,
+          "start_ticks": 1055287,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 728963,
+          "start_ticks": 1055297,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 728964,
+          "start_ticks": 1055298,
+          "sid": 727830,
+          "pgid": 728964
+        },
+        {
+          "pid": 728965,
+          "start_ticks": 1055298,
+          "sid": 727830,
+          "pgid": 728964
+        },
+        {
+          "pid": 728966,
+          "start_ticks": 1055298,
+          "sid": 727830,
+          "pgid": 728964
+        },
+        {
+          "pid": 729028,
+          "start_ticks": 1055347,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 729034,
+          "start_ticks": 1055350,
+          "sid": 727830,
+          "pgid": 729034
+        },
+        {
+          "pid": 729035,
+          "start_ticks": 1055350,
+          "sid": 727830,
+          "pgid": 729034
+        },
+        {
+          "pid": 729036,
+          "start_ticks": 1055350,
+          "sid": 727830,
+          "pgid": 729034
+        },
+        {
+          "pid": 729037,
+          "start_ticks": 1055350,
+          "sid": 727830,
+          "pgid": 729034
+        },
+        {
+          "pid": 729459,
+          "start_ticks": 1055528,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 729464,
+          "start_ticks": 1055530,
+          "sid": 727830,
+          "pgid": 729464
+        },
+        {
+          "pid": 729465,
+          "start_ticks": 1055530,
+          "sid": 727830,
+          "pgid": 729464
+        },
+        {
+          "pid": 729466,
+          "start_ticks": 1055530,
+          "sid": 727830,
+          "pgid": 729464
+        },
+        {
+          "pid": 729467,
+          "start_ticks": 1055530,
+          "sid": 727830,
+          "pgid": 729464
+        },
+        {
+          "pid": 729586,
+          "start_ticks": 1055663,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 729587,
+          "start_ticks": 1055664,
+          "sid": 727830,
+          "pgid": 729587
+        },
+        {
+          "pid": 729588,
+          "start_ticks": 1055664,
+          "sid": 727830,
+          "pgid": 729587
+        },
+        {
+          "pid": 729589,
+          "start_ticks": 1055664,
+          "sid": 727830,
+          "pgid": 729587
+        },
+        {
+          "pid": 729652,
+          "start_ticks": 1055823,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 729688,
+          "start_ticks": 1055850,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 729689,
+          "start_ticks": 1055851,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 729694,
+          "start_ticks": 1055853,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 729695,
+          "start_ticks": 1055853,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 729698,
+          "start_ticks": 1055854,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 729699,
+          "start_ticks": 1055855,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 729700,
+          "start_ticks": 1055855,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 729720,
+          "start_ticks": 1055916,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 732745,
+          "start_ticks": 1057521,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 732865,
+          "start_ticks": 1057675,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 732867,
+          "start_ticks": 1057675,
+          "sid": 727830,
+          "pgid": 732867
+        },
+        {
+          "pid": 732868,
+          "start_ticks": 1057675,
+          "sid": 727830,
+          "pgid": 732867
+        },
+        {
+          "pid": 732869,
+          "start_ticks": 1057675,
+          "sid": 727830,
+          "pgid": 732867
+        },
+        {
+          "pid": 733061,
+          "start_ticks": 1058059,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 733266,
+          "start_ticks": 1058527,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 733270,
+          "start_ticks": 1058528,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 733275,
+          "start_ticks": 1058530,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 733276,
+          "start_ticks": 1058530,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 733279,
+          "start_ticks": 1058532,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 733280,
+          "start_ticks": 1058532,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 733281,
+          "start_ticks": 1058533,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 733399,
+          "start_ticks": 1058620,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 733822,
+          "start_ticks": 1059131,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 733823,
+          "start_ticks": 1059133,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 733829,
+          "start_ticks": 1059136,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 733830,
+          "start_ticks": 1059136,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 733833,
+          "start_ticks": 1059138,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 733835,
+          "start_ticks": 1059142,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 733836,
+          "start_ticks": 1059143,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 733887,
+          "start_ticks": 1059303,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 734069,
+          "start_ticks": 1059421,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 734070,
+          "start_ticks": 1059422,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 734071,
+          "start_ticks": 1059422,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 734222,
+          "start_ticks": 1059648,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 734293,
+          "start_ticks": 1059766,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 734310,
+          "start_ticks": 1059800,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 734311,
+          "start_ticks": 1059801,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 734358,
+          "start_ticks": 1059857,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 734457,
+          "start_ticks": 1059949,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 734459,
+          "start_ticks": 1059950,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 734468,
+          "start_ticks": 1059952,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 734469,
+          "start_ticks": 1059952,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 734471,
+          "start_ticks": 1059954,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 734473,
+          "start_ticks": 1059954,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 734474,
+          "start_ticks": 1059955,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 734560,
+          "start_ticks": 1060040,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 734825,
+          "start_ticks": 1060488,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 735056,
+          "start_ticks": 1060608,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 735099,
+          "start_ticks": 1060631,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 735100,
+          "start_ticks": 1060632,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 735106,
+          "start_ticks": 1060634,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 735107,
+          "start_ticks": 1060634,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 735110,
+          "start_ticks": 1060635,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 735111,
+          "start_ticks": 1060636,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 735112,
+          "start_ticks": 1060636,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 735265,
+          "start_ticks": 1060744,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 735334,
+          "start_ticks": 1060854,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 735335,
+          "start_ticks": 1060856,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 735341,
+          "start_ticks": 1060858,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 735342,
+          "start_ticks": 1060858,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 735347,
+          "start_ticks": 1060861,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 735350,
+          "start_ticks": 1060866,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 735351,
+          "start_ticks": 1060866,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 735893,
+          "start_ticks": 1061367,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 735894,
+          "start_ticks": 1061368,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 735900,
+          "start_ticks": 1061370,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 735901,
+          "start_ticks": 1061370,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 735903,
+          "start_ticks": 1061372,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 735904,
+          "start_ticks": 1061373,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 735905,
+          "start_ticks": 1061373,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 735991,
+          "start_ticks": 1061489,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 736100,
+          "start_ticks": 1061580,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 736101,
+          "start_ticks": 1061581,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 736118,
+          "start_ticks": 1061583,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 736119,
+          "start_ticks": 1061583,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 736121,
+          "start_ticks": 1061584,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 736122,
+          "start_ticks": 1061585,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 736123,
+          "start_ticks": 1061585,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 736159,
+          "start_ticks": 1061648,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 736423,
+          "start_ticks": 1061903,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 736743,
+          "start_ticks": 1062166,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 737132,
+          "start_ticks": 1062342,
+          "sid": 727830,
+          "pgid": 727830
+        },
+        {
+          "pid": 737457,
+          "start_ticks": 1062839,
+          "sid": 727830,
+          "pgid": 727830
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10547.528212773,
+      "pid": 727830,
+      "spawn_return_monotonic": 10547.529821361,
+      "direct_identity": {
+        "pid": 727830,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 727830,
+        "sid": 727830,
+        "start_ticks": 1054752,
+        "rss_bytes": 458752
+      },
+      "peak_session_rss_bytes": 671698944,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T19:51:05.468743+00:00",
+      "elapsed_seconds": 82.06179672800135,
+      "logs": {
+        "configure.stdout": {
+          "bytes": 39629,
+          "sha256": "cb6f7b9f634103b751418730e836415b2001653777144d06ee0e62b00238da99"
+        },
+        "configure.stderr": {
+          "bytes": 4698,
+          "sha256": "be74102b93b30e1d66bfd3e515b0e2d94d1f39c54c1a6f5312f4b1cfdece9cfb"
+        }
+      }
+    },
+    {
+      "label": "compile-install",
+      "argv": [
+        "/usr/bin/nice",
+        "-n",
+        "10",
+        "/usr/bin/python3",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011/buildbot/compile.py",
+        "-o",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/build",
+        "-j",
+        "6"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "CMAKE_PREFIX_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/deps/usr",
+        "PKG_CONFIG_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/deps/usr/lib/x86_64-linux-gnu/pkgconfig"
+      },
+      "started_utc": "2026-10-10T19:51:05.472944+00:00",
+      "wall_seconds": 5400,
+      "errors": [
+        "cleanup observation: RuntimeError('owned process population cap')"
+      ],
+      "owners": [
+        {
+          "pid": 737598,
+          "start_ticks": 1062959,
+          "sid": 737598,
+          "pgid": 737598
+        },
+        {
+          "pid": 737601,
+          "start_ticks": 1062963,
+          "sid": 737598,
+          "pgid": 737598
+        },
+        {
+          "pid": 737602,
+          "start_ticks": 1062964,
+          "sid": 737598,
+          "pgid": 737598
+        },
+        {
+          "pid": 737623,
+          "start_ticks": 1063027,
+          "sid": 737598,
+          "pgid": 737623
+        },
+        {
+          "pid": 737624,
+          "start_ticks": 1063027,
+          "sid": 737598,
+          "pgid": 737624
+        },
+        {
+          "pid": 737625,
+          "start_ticks": 1063027,
+          "sid": 737598,
+          "pgid": 737625
+        },
+        {
+          "pid": 737626,
+          "start_ticks": 1063027,
+          "sid": 737598,
+          "pgid": 737626
+        },
+        {
+          "pid": 737627,
+          "start_ticks": 1063027,
+          "sid": 737598,
+          "pgid": 737623
+        },
+        {
+          "pid": 737628,
+          "start_ticks": 1063027,
+          "sid": 737598,
+          "pgid": 737628
+        },
+        {
+          "pid": 737629,
+          "start_ticks": 1063027,
+          "sid": 737598,
+          "pgid": 737624
+        },
+        {
+          "pid": 737630,
+          "start_ticks": 1063027,
+          "sid": 737598,
+          "pgid": 737625
+        },
+        {
+          "pid": 737631,
+          "start_ticks": 1063027,
+          "sid": 737598,
+          "pgid": 737631
+        },
+        {
+          "pid": 737632,
+          "start_ticks": 1063027,
+          "sid": 737598,
+          "pgid": 737626
+        },
+        {
+          "pid": 737633,
+          "start_ticks": 1063027,
+          "sid": 737598,
+          "pgid": 737628
+        },
+        {
+          "pid": 737634,
+          "start_ticks": 1063027,
+          "sid": 737598,
+          "pgid": 737631
+        },
+        {
+          "pid": 737635,
+          "start_ticks": 1063027,
+          "sid": 737598,
+          "pgid": 737625
+        },
+        {
+          "pid": 737636,
+          "start_ticks": 1063027,
+          "sid": 737598,
+          "pgid": 737626
+        },
+        {
+          "pid": 737637,
+          "start_ticks": 1063027,
+          "sid": 737598,
+          "pgid": 737624
+        },
+        {
+          "pid": 737638,
+          "start_ticks": 1063027,
+          "sid": 737598,
+          "pgid": 737623
+        },
+        {
+          "pid": 737639,
+          "start_ticks": 1063027,
+          "sid": 737598,
+          "pgid": 737628
+        },
+        {
+          "pid": 737640,
+          "start_ticks": 1063027,
+          "sid": 737598,
+          "pgid": 737631
+        },
+        {
+          "pid": 737656,
+          "start_ticks": 1063058,
+          "sid": 737598,
+          "pgid": 737656
+        },
+        {
+          "pid": 737657,
+          "start_ticks": 1063058,
+          "sid": 737598,
+          "pgid": 737656
+        },
+        {
+          "pid": 737658,
+          "start_ticks": 1063058,
+          "sid": 737598,
+          "pgid": 737656
+        },
+        {
+          "pid": 737661,
+          "start_ticks": 1063061,
+          "sid": 737598,
+          "pgid": 737661
+        },
+        {
+          "pid": 737662,
+          "start_ticks": 1063061,
+          "sid": 737598,
+          "pgid": 737661
+        },
+        {
+          "pid": 737663,
+          "start_ticks": 1063061,
+          "sid": 737598,
+          "pgid": 737661
+        },
+        {
+          "pid": 737697,
+          "start_ticks": 1063101,
+          "sid": 737598,
+          "pgid": 737697
+        },
+        {
+          "pid": 737698,
+          "start_ticks": 1063102,
+          "sid": 737598,
+          "pgid": 737697
+        },
+        {
+          "pid": 737699,
+          "start_ticks": 1063102,
+          "sid": 737598,
+          "pgid": 737697
+        },
+        {
+          "pid": 737705,
+          "start_ticks": 1063120,
+          "sid": 737598,
+          "pgid": 737705
+        },
+        {
+          "pid": 737706,
+          "start_ticks": 1063121,
+          "sid": 737598,
+          "pgid": 737705
+        },
+        {
+          "pid": 737707,
+          "start_ticks": 1063121,
+          "sid": 737598,
+          "pgid": 737705
+        },
+        {
+          "pid": 737746,
+          "start_ticks": 1063193,
+          "sid": 737598,
+          "pgid": 737746
+        },
+        {
+          "pid": 737747,
+          "start_ticks": 1063193,
+          "sid": 737598,
+          "pgid": 737746
+        },
+        {
+          "pid": 737748,
+          "start_ticks": 1063194,
+          "sid": 737598,
+          "pgid": 737746
+        },
+        {
+          "pid": 737765,
+          "start_ticks": 1063236,
+          "sid": 737598,
+          "pgid": 737765
+        },
+        {
+          "pid": 737766,
+          "start_ticks": 1063236,
+          "sid": 737598,
+          "pgid": 737765
+        },
+        {
+          "pid": 737767,
+          "start_ticks": 1063236,
+          "sid": 737598,
+          "pgid": 737765
+        },
+        {
+          "pid": 737770,
+          "start_ticks": 1063239,
+          "sid": 737598,
+          "pgid": 737770
+        },
+        {
+          "pid": 737771,
+          "start_ticks": 1063240,
+          "sid": 737598,
+          "pgid": 737770
+        },
+        {
+          "pid": 737772,
+          "start_ticks": 1063240,
+          "sid": 737598,
+          "pgid": 737770
+        },
+        {
+          "pid": 737778,
+          "start_ticks": 1063263,
+          "sid": 737598,
+          "pgid": 737778
+        },
+        {
+          "pid": 737779,
+          "start_ticks": 1063263,
+          "sid": 737598,
+          "pgid": 737778
+        },
+        {
+          "pid": 737780,
+          "start_ticks": 1063263,
+          "sid": 737598,
+          "pgid": 737778
+        },
+        {
+          "pid": 737822,
+          "start_ticks": 1063291,
+          "sid": 737598,
+          "pgid": 737822
+        },
+        {
+          "pid": 737823,
+          "start_ticks": 1063291,
+          "sid": 737598,
+          "pgid": 737822
+        },
+        {
+          "pid": 737824,
+          "start_ticks": 1063291,
+          "sid": 737598,
+          "pgid": 737822
+        },
+        {
+          "pid": 737830,
+          "start_ticks": 1063305,
+          "sid": 737598,
+          "pgid": 737830
+        },
+        {
+          "pid": 737831,
+          "start_ticks": 1063305,
+          "sid": 737598,
+          "pgid": 737830
+        },
+        {
+          "pid": 737832,
+          "start_ticks": 1063305,
+          "sid": 737598,
+          "pgid": 737830
+        },
+        {
+          "pid": 737833,
+          "start_ticks": 1063306,
+          "sid": 737598,
+          "pgid": 737833
+        },
+        {
+          "pid": 737834,
+          "start_ticks": 1063306,
+          "sid": 737598,
+          "pgid": 737833
+        },
+        {
+          "pid": 737835,
+          "start_ticks": 1063306,
+          "sid": 737598,
+          "pgid": 737833
+        },
+        {
+          "pid": 737848,
+          "start_ticks": 1063328,
+          "sid": 737598,
+          "pgid": 737848
+        },
+        {
+          "pid": 737849,
+          "start_ticks": 1063328,
+          "sid": 737598,
+          "pgid": 737848
+        },
+        {
+          "pid": 737850,
+          "start_ticks": 1063328,
+          "sid": 737598,
+          "pgid": 737848
+        },
+        {
+          "pid": 737869,
+          "start_ticks": 1063362,
+          "sid": 737598,
+          "pgid": 737869
+        },
+        {
+          "pid": 737870,
+          "start_ticks": 1063362,
+          "sid": 737598,
+          "pgid": 737869
+        },
+        {
+          "pid": 737871,
+          "start_ticks": 1063363,
+          "sid": 737598,
+          "pgid": 737869
+        },
+        {
+          "pid": 737873,
+          "start_ticks": 1063364,
+          "sid": 737598,
+          "pgid": 737873
+        },
+        {
+          "pid": 737874,
+          "start_ticks": 1063364,
+          "sid": 737598,
+          "pgid": 737873
+        },
+        {
+          "pid": 737875,
+          "start_ticks": 1063365,
+          "sid": 737598,
+          "pgid": 737873
+        },
+        {
+          "pid": 737884,
+          "start_ticks": 1063392,
+          "sid": 737598,
+          "pgid": 737884
+        },
+        {
+          "pid": 737885,
+          "start_ticks": 1063392,
+          "sid": 737598,
+          "pgid": 737884
+        },
+        {
+          "pid": 737886,
+          "start_ticks": 1063392,
+          "sid": 737598,
+          "pgid": 737884
+        },
+        {
+          "pid": 737889,
+          "start_ticks": 1063395,
+          "sid": 737598,
+          "pgid": 737889
+        },
+        {
+          "pid": 737890,
+          "start_ticks": 1063396,
+          "sid": 737598,
+          "pgid": 737889
+        },
+        {
+          "pid": 737891,
+          "start_ticks": 1063396,
+          "sid": 737598,
+          "pgid": 737889
+        },
+        {
+          "pid": 737938,
+          "start_ticks": 1063463,
+          "sid": 737598,
+          "pgid": 737938
+        },
+        {
+          "pid": 737939,
+          "start_ticks": 1063463,
+          "sid": 737598,
+          "pgid": 737938
+        },
+        {
+          "pid": 737940,
+          "start_ticks": 1063463,
+          "sid": 737598,
+          "pgid": 737938
+        },
+        {
+          "pid": 737941,
+          "start_ticks": 1063464,
+          "sid": 737598,
+          "pgid": 737941
+        },
+        {
+          "pid": 737942,
+          "start_ticks": 1063464,
+          "sid": 737598,
+          "pgid": 737941
+        },
+        {
+          "pid": 737943,
+          "start_ticks": 1063464,
+          "sid": 737598,
+          "pgid": 737941
+        },
+        {
+          "pid": 737948,
+          "start_ticks": 1063466,
+          "sid": 737598,
+          "pgid": 737948
+        },
+        {
+          "pid": 737949,
+          "start_ticks": 1063466,
+          "sid": 737598,
+          "pgid": 737948
+        },
+        {
+          "pid": 737950,
+          "start_ticks": 1063466,
+          "sid": 737598,
+          "pgid": 737948
+        },
+        {
+          "pid": 737954,
+          "start_ticks": 1063471,
+          "sid": 737598,
+          "pgid": 737954
+        },
+        {
+          "pid": 737955,
+          "start_ticks": 1063471,
+          "sid": 737598,
+          "pgid": 737954
+        },
+        {
+          "pid": 737956,
+          "start_ticks": 1063471,
+          "sid": 737598,
+          "pgid": 737954
+        },
+        {
+          "pid": 737985,
+          "start_ticks": 1063527,
+          "sid": 737598,
+          "pgid": 737985
+        },
+        {
+          "pid": 737986,
+          "start_ticks": 1063527,
+          "sid": 737598,
+          "pgid": 737985
+        },
+        {
+          "pid": 737988,
+          "start_ticks": 1063527,
+          "sid": 737598,
+          "pgid": 737985
+        },
+        {
+          "pid": 738014,
+          "start_ticks": 1063554,
+          "sid": 737598,
+          "pgid": 738014
+        },
+        {
+          "pid": 738015,
+          "start_ticks": 1063554,
+          "sid": 737598,
+          "pgid": 738014
+        },
+        {
+          "pid": 738016,
+          "start_ticks": 1063554,
+          "sid": 737598,
+          "pgid": 738014
+        },
+        {
+          "pid": 738020,
+          "start_ticks": 1063569,
+          "sid": 737598,
+          "pgid": 738020
+        },
+        {
+          "pid": 738022,
+          "start_ticks": 1063569,
+          "sid": 737598,
+          "pgid": 738020
+        },
+        {
+          "pid": 738023,
+          "start_ticks": 1063569,
+          "sid": 737598,
+          "pgid": 738020
+        },
+        {
+          "pid": 738028,
+          "start_ticks": 1063587,
+          "sid": 737598,
+          "pgid": 738028
+        },
+        {
+          "pid": 738030,
+          "start_ticks": 1063587,
+          "sid": 737598,
+          "pgid": 738028
+        },
+        {
+          "pid": 738031,
+          "start_ticks": 1063588,
+          "sid": 737598,
+          "pgid": 738028
+        },
+        {
+          "pid": 738037,
+          "start_ticks": 1063591,
+          "sid": 737598,
+          "pgid": 738037
+        },
+        {
+          "pid": 738038,
+          "start_ticks": 1063591,
+          "sid": 737598,
+          "pgid": 738037
+        },
+        {
+          "pid": 738039,
+          "start_ticks": 1063591,
+          "sid": 737598,
+          "pgid": 738037
+        },
+        {
+          "pid": 738054,
+          "start_ticks": 1063618,
+          "sid": 737598,
+          "pgid": 738054
+        },
+        {
+          "pid": 738055,
+          "start_ticks": 1063618,
+          "sid": 737598,
+          "pgid": 738054
+        },
+        {
+          "pid": 738056,
+          "start_ticks": 1063619,
+          "sid": 737598,
+          "pgid": 738054
+        },
+        {
+          "pid": 738067,
+          "start_ticks": 1063663,
+          "sid": 737598,
+          "pgid": 738067
+        },
+        {
+          "pid": 738068,
+          "start_ticks": 1063663,
+          "sid": 737598,
+          "pgid": 738067
+        },
+        {
+          "pid": 738069,
+          "start_ticks": 1063663,
+          "sid": 737598,
+          "pgid": 738067
+        },
+        {
+          "pid": 738075,
+          "start_ticks": 1063666,
+          "sid": 737598,
+          "pgid": 738075
+        },
+        {
+          "pid": 738076,
+          "start_ticks": 1063666,
+          "sid": 737598,
+          "pgid": 738075
+        },
+        {
+          "pid": 738077,
+          "start_ticks": 1063666,
+          "sid": 737598,
+          "pgid": 738075
+        },
+        {
+          "pid": 738085,
+          "start_ticks": 1063682,
+          "sid": 737598,
+          "pgid": 738085
+        },
+        {
+          "pid": 738086,
+          "start_ticks": 1063682,
+          "sid": 737598,
+          "pgid": 738085
+        },
+        {
+          "pid": 738087,
+          "start_ticks": 1063682,
+          "sid": 737598,
+          "pgid": 738085
+        },
+        {
+          "pid": 738096,
+          "start_ticks": 1063715,
+          "sid": 737598,
+          "pgid": 738096
+        },
+        {
+          "pid": 738097,
+          "start_ticks": 1063715,
+          "sid": 737598,
+          "pgid": 738096
+        },
+        {
+          "pid": 738098,
+          "start_ticks": 1063715,
+          "sid": 737598,
+          "pgid": 738096
+        },
+        {
+          "pid": 738101,
+          "start_ticks": 1063721,
+          "sid": 737598,
+          "pgid": 738101
+        },
+        {
+          "pid": 738102,
+          "start_ticks": 1063721,
+          "sid": 737598,
+          "pgid": 738101
+        },
+        {
+          "pid": 738103,
+          "start_ticks": 1063721,
+          "sid": 737598,
+          "pgid": 738101
+        },
+        {
+          "pid": 738108,
+          "start_ticks": 1063727,
+          "sid": 737598,
+          "pgid": 738108
+        },
+        {
+          "pid": 738109,
+          "start_ticks": 1063727,
+          "sid": 737598,
+          "pgid": 738108
+        },
+        {
+          "pid": 738110,
+          "start_ticks": 1063728,
+          "sid": 737598,
+          "pgid": 738108
+        },
+        {
+          "pid": 738114,
+          "start_ticks": 1063729,
+          "sid": 737598,
+          "pgid": 738114
+        },
+        {
+          "pid": 738115,
+          "start_ticks": 1063729,
+          "sid": 737598,
+          "pgid": 738114
+        },
+        {
+          "pid": 738116,
+          "start_ticks": 1063729,
+          "sid": 737598,
+          "pgid": 738114
+        },
+        {
+          "pid": 738120,
+          "start_ticks": 1063734,
+          "sid": 737598,
+          "pgid": 738120
+        },
+        {
+          "pid": 738121,
+          "start_ticks": 1063734,
+          "sid": 737598,
+          "pgid": 738120
+        },
+        {
+          "pid": 738123,
+          "start_ticks": 1063734,
+          "sid": 737598,
+          "pgid": 738120
+        },
+        {
+          "pid": 738165,
+          "start_ticks": 1063773,
+          "sid": 737598,
+          "pgid": 738165
+        },
+        {
+          "pid": 738166,
+          "start_ticks": 1063773,
+          "sid": 737598,
+          "pgid": 738165
+        },
+        {
+          "pid": 738167,
+          "start_ticks": 1063773,
+          "sid": 737598,
+          "pgid": 738165
+        },
+        {
+          "pid": 738169,
+          "start_ticks": 1063775,
+          "sid": 737598,
+          "pgid": 738169
+        },
+        {
+          "pid": 738170,
+          "start_ticks": 1063775,
+          "sid": 737598,
+          "pgid": 738169
+        },
+        {
+          "pid": 738171,
+          "start_ticks": 1063775,
+          "sid": 737598,
+          "pgid": 738169
+        },
+        {
+          "pid": 738174,
+          "start_ticks": 1063780,
+          "sid": 737598,
+          "pgid": 738174
+        },
+        {
+          "pid": 738175,
+          "start_ticks": 1063780,
+          "sid": 737598,
+          "pgid": 738174
+        },
+        {
+          "pid": 738176,
+          "start_ticks": 1063780,
+          "sid": 737598,
+          "pgid": 738174
+        },
+        {
+          "pid": 738179,
+          "start_ticks": 1063787,
+          "sid": 737598,
+          "pgid": 738179
+        },
+        {
+          "pid": 738180,
+          "start_ticks": 1063787,
+          "sid": 737598,
+          "pgid": 738179
+        },
+        {
+          "pid": 738181,
+          "start_ticks": 1063788,
+          "sid": 737598,
+          "pgid": 738179
+        },
+        {
+          "pid": 738206,
+          "start_ticks": 1063828,
+          "sid": 737598,
+          "pgid": 738206
+        },
+        {
+          "pid": 738207,
+          "start_ticks": 1063828,
+          "sid": 737598,
+          "pgid": 738206
+        },
+        {
+          "pid": 738208,
+          "start_ticks": 1063828,
+          "sid": 737598,
+          "pgid": 738206
+        },
+        {
+          "pid": 738222,
+          "start_ticks": 1063864,
+          "sid": 737598,
+          "pgid": 738222
+        },
+        {
+          "pid": 738223,
+          "start_ticks": 1063864,
+          "sid": 737598,
+          "pgid": 738222
+        },
+        {
+          "pid": 738224,
+          "start_ticks": 1063864,
+          "sid": 737598,
+          "pgid": 738222
+        },
+        {
+          "pid": 738226,
+          "start_ticks": 1063867,
+          "sid": 737598,
+          "pgid": 738226
+        },
+        {
+          "pid": 738227,
+          "start_ticks": 1063867,
+          "sid": 737598,
+          "pgid": 738226
+        },
+        {
+          "pid": 738228,
+          "start_ticks": 1063867,
+          "sid": 737598,
+          "pgid": 738226
+        },
+        {
+          "pid": 738231,
+          "start_ticks": 1063869,
+          "sid": 737598,
+          "pgid": 738231
+        },
+        {
+          "pid": 738232,
+          "start_ticks": 1063869,
+          "sid": 737598,
+          "pgid": 738231
+        },
+        {
+          "pid": 738233,
+          "start_ticks": 1063869,
+          "sid": 737598,
+          "pgid": 738231
+        },
+        {
+          "pid": 738236,
+          "start_ticks": 1063877,
+          "sid": 737598,
+          "pgid": 738236
+        },
+        {
+          "pid": 738237,
+          "start_ticks": 1063877,
+          "sid": 737598,
+          "pgid": 738236
+        },
+        {
+          "pid": 738238,
+          "start_ticks": 1063877,
+          "sid": 737598,
+          "pgid": 738236
+        },
+        {
+          "pid": 738244,
+          "start_ticks": 1063891,
+          "sid": 737598,
+          "pgid": 738244
+        },
+        {
+          "pid": 738245,
+          "start_ticks": 1063892,
+          "sid": 737598,
+          "pgid": 738244
+        },
+        {
+          "pid": 738246,
+          "start_ticks": 1063892,
+          "sid": 737598,
+          "pgid": 738244
+        },
+        {
+          "pid": 738276,
+          "start_ticks": 1063912,
+          "sid": 737598,
+          "pgid": 738276
+        },
+        {
+          "pid": 738277,
+          "start_ticks": 1063912,
+          "sid": 737598,
+          "pgid": 738276
+        },
+        {
+          "pid": 738278,
+          "start_ticks": 1063912,
+          "sid": 737598,
+          "pgid": 738276
+        },
+        {
+          "pid": 738285,
+          "start_ticks": 1063924,
+          "sid": 737598,
+          "pgid": 738285
+        },
+        {
+          "pid": 738286,
+          "start_ticks": 1063924,
+          "sid": 737598,
+          "pgid": 738285
+        },
+        {
+          "pid": 738287,
+          "start_ticks": 1063924,
+          "sid": 737598,
+          "pgid": 738285
+        },
+        {
+          "pid": 738290,
+          "start_ticks": 1063925,
+          "sid": 737598,
+          "pgid": 738290
+        },
+        {
+          "pid": 738291,
+          "start_ticks": 1063926,
+          "sid": 737598,
+          "pgid": 738290
+        },
+        {
+          "pid": 738292,
+          "start_ticks": 1063926,
+          "sid": 737598,
+          "pgid": 738290
+        },
+        {
+          "pid": 738304,
+          "start_ticks": 1063955,
+          "sid": 737598,
+          "pgid": 738304
+        },
+        {
+          "pid": 738305,
+          "start_ticks": 1063955,
+          "sid": 737598,
+          "pgid": 738304
+        },
+        {
+          "pid": 738306,
+          "start_ticks": 1063955,
+          "sid": 737598,
+          "pgid": 738304
+        },
+        {
+          "pid": 738322,
+          "start_ticks": 1063974,
+          "sid": 737598,
+          "pgid": 738322
+        },
+        {
+          "pid": 738323,
+          "start_ticks": 1063974,
+          "sid": 737598,
+          "pgid": 738322
+        },
+        {
+          "pid": 738325,
+          "start_ticks": 1063974,
+          "sid": 737598,
+          "pgid": 738322
+        },
+        {
+          "pid": 738331,
+          "start_ticks": 1063981,
+          "sid": 737598,
+          "pgid": 738331
+        },
+        {
+          "pid": 738332,
+          "start_ticks": 1063981,
+          "sid": 737598,
+          "pgid": 738331
+        },
+        {
+          "pid": 738333,
+          "start_ticks": 1063981,
+          "sid": 737598,
+          "pgid": 738331
+        },
+        {
+          "pid": 738377,
+          "start_ticks": 1064060,
+          "sid": 737598,
+          "pgid": 738377
+        },
+        {
+          "pid": 738378,
+          "start_ticks": 1064060,
+          "sid": 737598,
+          "pgid": 738377
+        },
+        {
+          "pid": 738379,
+          "start_ticks": 1064060,
+          "sid": 737598,
+          "pgid": 738377
+        },
+        {
+          "pid": 738384,
+          "start_ticks": 1064068,
+          "sid": 737598,
+          "pgid": 738384
+        },
+        {
+          "pid": 738385,
+          "start_ticks": 1064069,
+          "sid": 737598,
+          "pgid": 738384
+        },
+        {
+          "pid": 738386,
+          "start_ticks": 1064069,
+          "sid": 737598,
+          "pgid": 738384
+        },
+        {
+          "pid": 738390,
+          "start_ticks": 1064074,
+          "sid": 737598,
+          "pgid": 738390
+        },
+        {
+          "pid": 738391,
+          "start_ticks": 1064074,
+          "sid": 737598,
+          "pgid": 738390
+        },
+        {
+          "pid": 738392,
+          "start_ticks": 1064074,
+          "sid": 737598,
+          "pgid": 738390
+        },
+        {
+          "pid": 738401,
+          "start_ticks": 1064087,
+          "sid": 737598,
+          "pgid": 738401
+        },
+        {
+          "pid": 738402,
+          "start_ticks": 1064087,
+          "sid": 737598,
+          "pgid": 738401
+        },
+        {
+          "pid": 738403,
+          "start_ticks": 1064087,
+          "sid": 737598,
+          "pgid": 738401
+        },
+        {
+          "pid": 738405,
+          "start_ticks": 1064090,
+          "sid": 737598,
+          "pgid": 738405
+        },
+        {
+          "pid": 738406,
+          "start_ticks": 1064090,
+          "sid": 737598,
+          "pgid": 738405
+        },
+        {
+          "pid": 738407,
+          "start_ticks": 1064090,
+          "sid": 737598,
+          "pgid": 738405
+        },
+        {
+          "pid": 738458,
+          "start_ticks": 1064134,
+          "sid": 737598,
+          "pgid": 738458
+        },
+        {
+          "pid": 738459,
+          "start_ticks": 1064134,
+          "sid": 737598,
+          "pgid": 738458
+        },
+        {
+          "pid": 738460,
+          "start_ticks": 1064134,
+          "sid": 737598,
+          "pgid": 738458
+        },
+        {
+          "pid": 738508,
+          "start_ticks": 1064156,
+          "sid": 737598,
+          "pgid": 738508
+        },
+        {
+          "pid": 738509,
+          "start_ticks": 1064156,
+          "sid": 737598,
+          "pgid": 738508
+        },
+        {
+          "pid": 738510,
+          "start_ticks": 1064156,
+          "sid": 737598,
+          "pgid": 738508
+        },
+        {
+          "pid": 738515,
+          "start_ticks": 1064160,
+          "sid": 737598,
+          "pgid": 738515
+        },
+        {
+          "pid": 738516,
+          "start_ticks": 1064160,
+          "sid": 737598,
+          "pgid": 738515
+        },
+        {
+          "pid": 738517,
+          "start_ticks": 1064161,
+          "sid": 737598,
+          "pgid": 738515
+        },
+        {
+          "pid": 738525,
+          "start_ticks": 1064174,
+          "sid": 737598,
+          "pgid": 738525
+        },
+        {
+          "pid": 738526,
+          "start_ticks": 1064174,
+          "sid": 737598,
+          "pgid": 738525
+        },
+        {
+          "pid": 738527,
+          "start_ticks": 1064175,
+          "sid": 737598,
+          "pgid": 738525
+        },
+        {
+          "pid": 738532,
+          "start_ticks": 1064186,
+          "sid": 737598,
+          "pgid": 738532
+        },
+        {
+          "pid": 738533,
+          "start_ticks": 1064186,
+          "sid": 737598,
+          "pgid": 738532
+        },
+        {
+          "pid": 738534,
+          "start_ticks": 1064186,
+          "sid": 737598,
+          "pgid": 738532
+        },
+        {
+          "pid": 738537,
+          "start_ticks": 1064193,
+          "sid": 737598,
+          "pgid": 738537
+        },
+        {
+          "pid": 738539,
+          "start_ticks": 1064193,
+          "sid": 737598,
+          "pgid": 738537
+        },
+        {
+          "pid": 738540,
+          "start_ticks": 1064193,
+          "sid": 737598,
+          "pgid": 738537
+        },
+        {
+          "pid": 738544,
+          "start_ticks": 1064206,
+          "sid": 737598,
+          "pgid": 738544
+        },
+        {
+          "pid": 738545,
+          "start_ticks": 1064206,
+          "sid": 737598,
+          "pgid": 738544
+        },
+        {
+          "pid": 738546,
+          "start_ticks": 1064206,
+          "sid": 737598,
+          "pgid": 738544
+        },
+        {
+          "pid": 738556,
+          "start_ticks": 1064230,
+          "sid": 737598,
+          "pgid": 738556
+        },
+        {
+          "pid": 738557,
+          "start_ticks": 1064230,
+          "sid": 737598,
+          "pgid": 738556
+        },
+        {
+          "pid": 738558,
+          "start_ticks": 1064230,
+          "sid": 737598,
+          "pgid": 738556
+        },
+        {
+          "pid": 738567,
+          "start_ticks": 1064246,
+          "sid": 737598,
+          "pgid": 738567
+        },
+        {
+          "pid": 738568,
+          "start_ticks": 1064246,
+          "sid": 737598,
+          "pgid": 738567
+        },
+        {
+          "pid": 738569,
+          "start_ticks": 1064246,
+          "sid": 737598,
+          "pgid": 738567
+        },
+        {
+          "pid": 738577,
+          "start_ticks": 1064265,
+          "sid": 737598,
+          "pgid": 738577
+        },
+        {
+          "pid": 738578,
+          "start_ticks": 1064265,
+          "sid": 737598,
+          "pgid": 738577
+        },
+        {
+          "pid": 738579,
+          "start_ticks": 1064265,
+          "sid": 737598,
+          "pgid": 738577
+        },
+        {
+          "pid": 738582,
+          "start_ticks": 1064269,
+          "sid": 737598,
+          "pgid": 738582
+        },
+        {
+          "pid": 738583,
+          "start_ticks": 1064269,
+          "sid": 737598,
+          "pgid": 738582
+        },
+        {
+          "pid": 738584,
+          "start_ticks": 1064270,
+          "sid": 737598,
+          "pgid": 738582
+        },
+        {
+          "pid": 738589,
+          "start_ticks": 1064284,
+          "sid": 737598,
+          "pgid": 738589
+        },
+        {
+          "pid": 738590,
+          "start_ticks": 1064284,
+          "sid": 737598,
+          "pgid": 738589
+        },
+        {
+          "pid": 738591,
+          "start_ticks": 1064284,
+          "sid": 737598,
+          "pgid": 738589
+        },
+        {
+          "pid": 738603,
+          "start_ticks": 1064313,
+          "sid": 737598,
+          "pgid": 738603
+        },
+        {
+          "pid": 738604,
+          "start_ticks": 1064313,
+          "sid": 737598,
+          "pgid": 738603
+        },
+        {
+          "pid": 738605,
+          "start_ticks": 1064313,
+          "sid": 737598,
+          "pgid": 738603
+        },
+        {
+          "pid": 738609,
+          "start_ticks": 1064316,
+          "sid": 737598,
+          "pgid": 738609
+        },
+        {
+          "pid": 738610,
+          "start_ticks": 1064316,
+          "sid": 737598,
+          "pgid": 738609
+        },
+        {
+          "pid": 738611,
+          "start_ticks": 1064316,
+          "sid": 737598,
+          "pgid": 738609
+        },
+        {
+          "pid": 738612,
+          "start_ticks": 1064316,
+          "sid": 737598,
+          "pgid": 738612
+        },
+        {
+          "pid": 738613,
+          "start_ticks": 1064316,
+          "sid": 737598,
+          "pgid": 738612
+        },
+        {
+          "pid": 738614,
+          "start_ticks": 1064317,
+          "sid": 737598,
+          "pgid": 738612
+        },
+        {
+          "pid": 738616,
+          "start_ticks": 1064320,
+          "sid": 737598,
+          "pgid": 738616
+        },
+        {
+          "pid": 738617,
+          "start_ticks": 1064320,
+          "sid": 737598,
+          "pgid": 738616
+        },
+        {
+          "pid": 738618,
+          "start_ticks": 1064320,
+          "sid": 737598,
+          "pgid": 738616
+        },
+        {
+          "pid": 738626,
+          "start_ticks": 1064336,
+          "sid": 737598,
+          "pgid": 738626
+        },
+        {
+          "pid": 738627,
+          "start_ticks": 1064336,
+          "sid": 737598,
+          "pgid": 738626
+        },
+        {
+          "pid": 738628,
+          "start_ticks": 1064336,
+          "sid": 737598,
+          "pgid": 738626
+        },
+        {
+          "pid": 738655,
+          "start_ticks": 1064371,
+          "sid": 737598,
+          "pgid": 738655
+        },
+        {
+          "pid": 738656,
+          "start_ticks": 1064371,
+          "sid": 737598,
+          "pgid": 738655
+        },
+        {
+          "pid": 738657,
+          "start_ticks": 1064372,
+          "sid": 737598,
+          "pgid": 738655
+        },
+        {
+          "pid": 738664,
+          "start_ticks": 1064392,
+          "sid": 737598,
+          "pgid": 738664
+        },
+        {
+          "pid": 738665,
+          "start_ticks": 1064392,
+          "sid": 737598,
+          "pgid": 738664
+        },
+        {
+          "pid": 738666,
+          "start_ticks": 1064392,
+          "sid": 737598,
+          "pgid": 738664
+        },
+        {
+          "pid": 738668,
+          "start_ticks": 1064394,
+          "sid": 737598,
+          "pgid": 738668
+        },
+        {
+          "pid": 738669,
+          "start_ticks": 1064394,
+          "sid": 737598,
+          "pgid": 738668
+        },
+        {
+          "pid": 738670,
+          "start_ticks": 1064394,
+          "sid": 737598,
+          "pgid": 738668
+        },
+        {
+          "pid": 738676,
+          "start_ticks": 1064408,
+          "sid": 737598,
+          "pgid": 738676
+        },
+        {
+          "pid": 738679,
+          "start_ticks": 1064408,
+          "sid": 737598,
+          "pgid": 738676
+        },
+        {
+          "pid": 738680,
+          "start_ticks": 1064408,
+          "sid": 737598,
+          "pgid": 738676
+        },
+        {
+          "pid": 738723,
+          "start_ticks": 1064425,
+          "sid": 737598,
+          "pgid": 738723
+        },
+        {
+          "pid": 738724,
+          "start_ticks": 1064425,
+          "sid": 737598,
+          "pgid": 738723
+        },
+        {
+          "pid": 738725,
+          "start_ticks": 1064425,
+          "sid": 737598,
+          "pgid": 738723
+        },
+        {
+          "pid": 738733,
+          "start_ticks": 1064436,
+          "sid": 737598,
+          "pgid": 738733
+        },
+        {
+          "pid": 738734,
+          "start_ticks": 1064436,
+          "sid": 737598,
+          "pgid": 738733
+        },
+        {
+          "pid": 738735,
+          "start_ticks": 1064436,
+          "sid": 737598,
+          "pgid": 738733
+        },
+        {
+          "pid": 738745,
+          "start_ticks": 1064466,
+          "sid": 737598,
+          "pgid": 738745
+        }
+      ],
+      "cleanup": [
+        {
+          "pid": 737598,
+          "start_ticks": 1062959,
+          "signal": "SIGTERM",
+          "result": "sent"
+        },
+        {
+          "pid": 737601,
+          "start_ticks": 1062963,
+          "signal": "SIGTERM",
+          "result": "sent"
+        },
+        {
+          "pid": 737602,
+          "start_ticks": 1062964,
+          "signal": "SIGTERM",
+          "result": "sent"
+        },
+        {
+          "pid": 738603,
+          "start_ticks": 1064313,
+          "signal": "SIGTERM",
+          "result": "sent"
+        },
+        {
+          "pid": 738604,
+          "start_ticks": 1064313,
+          "signal": "SIGTERM",
+          "result": "sent"
+        },
+        {
+          "pid": 738605,
+          "start_ticks": 1064313,
+          "signal": "SIGTERM",
+          "result": "sent"
+        },
+        {
+          "pid": 738609,
+          "start_ticks": 1064316,
+          "signal": "SIGTERM",
+          "result": "sent"
+        },
+        {
+          "pid": 738610,
+          "start_ticks": 1064316,
+          "signal": "SIGTERM",
+          "result": "sent"
+        },
+        {
+          "pid": 738611,
+          "start_ticks": 1064316,
+          "signal": "SIGTERM",
+          "result": "sent"
+        },
+        {
+          "pid": 738664,
+          "start_ticks": 1064392,
+          "signal": "SIGTERM",
+          "result": "sent"
+        },
+        {
+          "pid": 738665,
+          "start_ticks": 1064392,
+          "signal": "SIGTERM",
+          "result": "sent"
+        },
+        {
+          "pid": 738666,
+          "start_ticks": 1064392,
+          "signal": "SIGTERM",
+          "result": "sent"
+        },
+        {
+          "pid": 738723,
+          "start_ticks": 1064425,
+          "signal": "SIGTERM",
+          "result": "sent"
+        },
+        {
+          "pid": 738724,
+          "start_ticks": 1064425,
+          "signal": "SIGTERM",
+          "result": "sent"
+        },
+        {
+          "pid": 738725,
+          "start_ticks": 1064425,
+          "signal": "SIGTERM",
+          "result": "sent"
+        },
+        {
+          "pid": 738745,
+          "start_ticks": 1064466,
+          "signal": "SIGTERM",
+          "result": "sent"
+        }
+      ],
+      "observation_complete": false,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 10629.596024154,
+      "pid": 737598,
+      "spawn_return_monotonic": 10629.598135929,
+      "direct_identity": {
+        "pid": 737598,
+        "state": "R",
+        "ppid": 718122,
+        "pgid": 737598,
+        "sid": 737598,
+        "start_ticks": 1062959,
+        "rss_bytes": 434176
+      },
+      "peak_session_rss_bytes": 1073233920,
+      "error": "RuntimeError('owned process population cap')",
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": -15,
+      "finished_utc": "2026-10-10T19:51:21.050206+00:00",
+      "elapsed_seconds": 15.575467197000762,
+      "logs": {
+        "compile-install.stdout": {
+          "bytes": 7640,
+          "sha256": "6748dea0826664f28a2c236c7637ab97207fb1b3986773bdd6196d551c8d6884"
+        },
+        "compile-install.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "started_utc": "2026-10-10T19:47:10.178904+00:00",
+  "controller_sha256": "c7f9687b580abe389ef0046985e599b7e006ec4f2b2fc3326ffe69981e756488",
+  "scope": "Private source-built Intel LLVM7.1.1 compiler/runtime for latest Xe free and Intel-only contrib-llvm qualification",
+  "model_executed": false,
+  "gpu_executed": false,
+  "queue_created": false,
+  "system_packages_installed": false,
+  "clone_manager": "ghq",
+  "source_tag": "v7.1.1",
+  "source_commit_expected": "504366f4b82ff00bbac7b0c956635eed8bc599d8",
+  "install_consumer": "latest e32 corrected free/contrib-llvm full engine builds",
+  "build_jobs": 6,
+  "link_jobs": 1,
+  "raw_log_budget_bytes": 67108864,
+  "total_wall_budget_seconds": 7200,
+  "compile_wall_budget_seconds": 5400,
+  "build_storage_review": "After successful install/hash and engine configure, retire compiler build intermediates; keep installed compiler and pinned source as current rebuild consumer.",
+  "prereq_scope": "lld18/hwloc/zstd development files extracted privately; no sudo/global install; no automatic xmx probe",
+  "prerequisite_packages": [
+    {
+      "package": "libhwloc-dev=2.10.0-1build1",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-llvm-v711-source-root-v1/packages/libhwloc-dev_2.10.0-1build1_amd64.deb",
+      "bytes": 267592,
+      "sha256": "896791d90e996c00091a88cd349738d954cf0077e82458f992cd5dc810221d5e"
+    },
+    {
+      "package": "libzstd-dev=1.5.5+dfsg2-2build1.1",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-llvm-v711-source-root-v1/packages/libzstd-dev_1.5.5+dfsg2-2build1.1_amd64.deb",
+      "bytes": 363956,
+      "sha256": "6c9d2b5677a4677e9ead62f74723bb919113621a8028ed543a4d78952d54d165"
+    },
+    {
+      "package": "lld-18=1:18.1.3-1ubuntu1",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-llvm-v711-source-root-v1/packages/lld-18_1%3a18.1.3-1ubuntu1_amd64.deb",
+      "bytes": 1371582,
+      "sha256": "c574594d714bf445f4c2323fa99374c05b79be09a3899edbf9d4b7265c9ccc57"
+    }
+  ],
+  "previous_failed_receipt_sha256": "d709c7ef36144c001d362eacf8b45b080cc7e2dfcbe1fa0779bd68d4b628030d",
+  "artifact_file_cap_bytes": 17179869184,
+  "previous_failure_diagnosis": "Git index-pack failed under inherited 64MiB RLIMIT_FSIZE; source pack needs a separate finite artifact-file limit. Original failure unchanged; comparison uses 16GiB per-file cap while raw text remains64MiB.",
+  "build_environment": {
+    "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/bin:/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "CMAKE_PREFIX_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/deps/usr",
+    "PKG_CONFIG_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/deps/usr/lib/x86_64-linux-gnu/pkgconfig"
+  },
+  "mirror_default_branch": "sycl",
+  "source_worktree": "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+  "source_commit": "504366f4b82ff00bbac7b0c956635eed8bc599d8",
+  "source_patches": [
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/01-cuda-sync-points.patch",
+      "sha256": "aed73fb03f14ff4e75e0d14b3b27e4c66b7f04019a53cd2a68def112decc5526"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/02-hip-sync-points.patch",
+      "sha256": "5da9efb1437c8115bfee3d2d67a79c480994ecc1d577812e82503c9fa5a7d2b2"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/03-cuda-select-binary-2.patch",
+      "sha256": "207c324d9fe1df11c28ebbf02b80b3eaac9ca3b44b378032fd900ec926bb05da"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/04-cuda-binary-to-adapter.patch",
+      "sha256": "d268bbee9e0dc38390da406b3177b9fa7218f224524af6bb3aa7d28ecd1313c6"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/05-cuda-binaries-to-adapter.patch",
+      "sha256": "710394640eb4eb9400c136ed3cfed5800b043019802a5272d1be2a89464bf400"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/06-cuda-host-register.patch",
+      "sha256": "728f527ed08e1136ad145c34b84fa3ba66ae485a048c5d464776bf83698b795c"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/07-cuda-host-register-table.patch",
+      "sha256": "344e44f9bc8464600ba4d927226aa39d9166827c352ac1a02e2b76c50fcdc14e"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/08-cuda-newer-matrix.patch",
+      "sha256": "493c01c756e2fdd91b10e66ccbeed4fb01c2d6006257fa0991b4d6f0eb6a50a6"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/09-cuda-binaries-to-adapter-2.patch",
+      "sha256": "eef0be7028a19fba1c2eae3a42c7e5bac8bd07234f6c213a82f1d76ae75521d6"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/10-cuda-temp-lists.patch",
+      "sha256": "f5166470e6ebe3c6fa08d837f6dcee486c950e217a5e7d03c0260a720dbf59a8"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/11-build-job-pools.patch",
+      "sha256": "93d5bade32db36b51aa572d9d592202da4097031ce536bb2285b6e78cc2c36ea"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/12-hip-libclc-target.patch",
+      "sha256": "e37f7a1ad7c2d26bb3c4a4f457d4fca3aa19bed7f7dc77b5ddaa64dfdf44382e"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/13-hip-host-register.patch",
+      "sha256": "56708234b14fbaf4f572f125d37a5e2481b8d3986802b5bdaa63aea1f474c1cc"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/14-hip-queue-empty.patch",
+      "sha256": "daf1d5e4c0db33666966b202d4370894dc4bfcb656d115376b727030ae700acc"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/15-hip-exit-unload.patch",
+      "sha256": "54df74b5dbe5469b8f8d9859a154025c1c4d6efeed3031315ebeb3ae14f2db63"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/16-hip-libclc-fma.patch",
+      "sha256": "ea151faca4acc8a24f1aa7805f1750d7ba3c6b35a1890278b143b49b08d0250e"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/17-hip-bundle-arch.patch",
+      "sha256": "7444a09ca27972b2fd48122b87d29bb3a0aac1be3db08b5b26f3f414328fb0f5"
+    }
+  ],
+  "configure_script_sha256": "83ff12b8e9dc03fcc6c5a079b93961df37503bbd480aebe55f5200a77da7ed8e",
+  "compile_script_sha256": "8303e946a5a3114969d61093ce1364bb9f7dd57704dbd4abdae349e1699f2f0c",
+  "configuration_complete": true,
+  "error": "RuntimeError('closed normal compile-install')",
+  "finished_utc": "2026-10-10T19:51:21.053791+00:00"
+}

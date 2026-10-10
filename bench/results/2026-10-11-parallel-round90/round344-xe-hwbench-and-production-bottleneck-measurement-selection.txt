@@ -1,0 +1,85 @@
+# R344 — Xe e32 hwbench/kernelbench と B570 実モデル測定の選定
+
+Date: 2026-10-11 (Asia/Tokyo)
+Scope: source-only selection for comparing XeStrata latest e32 hardware/kernel microbenchmarks and production phase timing against B570 ceilings. Read latest pristine source at `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/bench-xestrata-e32-pristine-20261011`; consulted R335, R338, R293, R206/R207 and the completed six-run report. No run, test, build, GPU, service/process operation, or Git mutation was done. Only this report was written.
+
+## Decision
+
+Use `--hw-bench` as a bounded host-memory / copy / storage ceiling sample and `--kernel-bench` as a prompt-kernel-path capability comparison, with the scope limits below. Neither locates a real request bottleneck by itself. For that, the useful source instrumentation is `STRATA_PREFILL_TIMING=1` and `STRATA_DECODE_TIMING=1` on a controlled real request, but it traverses the production generation path. Do not run it now: the supplied host capability receipt passed with `HOST_USM=1`, `ATOMIC_HOST_USM=0`, and `ZE_HOST_CAPS=3` (no concurrent host/device capability). Keep all doorbell/device-spin paths out of current work; capability/path qualification must precede any future GPU or generation run. The source for hwbench itself uses ordinary transfers and no doorbell or spin kernel, but this audit's explicit no-GPU/no-run constraint still rules out executing it.
+
+The six completed 64K comparison samples give useful whole-engine context only: baseline median prompt/decode `201.33 / 8.86 tok/s`; corrected-Xe median `205.20 / 10.73 tok/s`, with each paired decode ratio positive (+18.9% to +31.1%) but prompt ratios mixed. The arms differ in expert slots/ring, pageable vs host-USM arena, issuer setting, emitted path and MTP acceptance; the model is IQ3_S, cross-arm output shares only its first five IDs, and quality/math/full-262144 qualification remain false. This signal is not evidence for a particular launch, copy, XMX, CPU, or cache mechanism. The summary is `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-xe-corrected-six64k/summary.json`.
+
+## Exact microbench commands and what each number means
+
+Use the resolved e32 executable and each intended pack as placeholders below. These are future candidate argv only, not commands run in R344.
+
+```
+<e32-strata> --hw-bench --pack <active-pack>
+<e32-strata> --kernel-bench --pack <active-pack>
+```
+
+The first command is implemented at `src/program/generate.cpp:1420-1490`; `tools/bench.py:284-303` constructs it from the model config, forwarding `--pack` or `--native`. With `--pack`, SSD is the largest regular file in the pack directory; with `--native`, it reads that GGUF. Omitting both omits the SSD datum. It prints:
+
+| Output | Numerator / denominator in source | What it bounds; limits |
+| --- | --- | --- |
+| `ram_read_gb_s` | Bytes read from a buffer of `min(4 GiB, RAM/8)` over the wall span of a pinned thread per physical core; best of 3 passes | Host sequential-read sample under Xe's pool-like threading. Not current model CPU service, random IQ access, or a DRAM roofline for the actual request. CPU threads use ready/go spin barriers; this is host spin, no device-spin test. |
+| `ram_read_1t_gb_s` | One core scans one quarter of the multi-thread buffer size; best of 3 | Single-thread sequential-read reference; no cache-resident vs cold control and not a specific expert-dot measurement. |
+| `h2d_gb_s`, `d2h_gb_s` | Each of four 256 MiB copies, divided by GPU event elapsed time after a warm-up; maximum valid burst | Pinned host-USM PCIe-copy sample (no doorbell). It is a best burst, not sustained run-wide payload throughput. Event setup/host queue overhead is excluded. |
+| `h2d_pageable_gb_s`, `d2h_pageable_gb_s` | Same 256 MiB / four-burst / fastest-event method using pageable host memory | Comparison for staging-copy behavior. Neither copy result records the real request's transferred bytes, queue wait, expert reuse, or end-to-end staging span. |
+| `ssd_read_gb_s`, `ssd_read_gib` | Successfully read O_DIRECT bytes / elapsed wall seconds; four threads, 8 MiB blocks, at most 4 GiB | Pack-file cold-cache storage reference. Not model load latency, pack parsing, or an active GPU measurement. |
+
+Source shows `bench_copy_gbps` uses host/device allocations, `copy_async`, and stream events, not `Doorbell`, `doorbell_ring`, or a host/device spin loop. It is still GPU work and is not permitted to execute under this task. If later run, retain each sample, not just these maxima, and do not treat one short fast burst as the validated installed-link rate. Compare H2D/D2H payload to R207's installed external PCIe Gen4 x4 encoded ceiling 7.8769 GB/s (protocol/software overhead below that); do not use advertised Gen4 x8. The prior ~6 GB/s figure is provisional, since R207 found no current raw transfer receipt. Host RAM rate can be compared only with an explicitly conditional 51.2 GB/s two-channel DDR4-3200 ceiling; the DIMM channel/rate population is not established. `HW` results are effective measurements, while those hardware numbers are theoretical/conditional ceilings.
+
+The second command is implemented at `src/program/generate.cpp:1493-1575`; `tools/bench.py:306-327` calls it once for each environment arm `default`, `STRATA_NO_XMX=1`, and `STRATA_NO_BF16_MMA=1` (the variable is added to child env, not to argv). It executes GPU products on synthetic data and does not invoke the production router/doorbell/pool. Do not execute now due to the no-GPU constraint. Its tested numerators/denominators are:
+
+| `KB` result | Numerator / denominator | Applicability |
+| --- | --- | --- |
+| `dense-bf16` | `T=4096, N=4K, K=hidden_size`, BF16 X/W -> FP32 Y; 3 warmups, then median of 10 host elapsed intervals from call through `stream_sync`, in microseconds | Dense projection in the prompt path, on the named backend (`Gemm::path`). Shape is model geometry, but all-zero/constant synthetic values and a single T do not establish real prefill tokens/s or attention/PLE/launch shares. This is the most relevant `kernel-bench` output for XMX vs no-XMX/no-BF16-MMA prompt product throughput. |
+| `expert-gate-up` | One MMQ grouped operation for 16 experts × 64 rows, shape `1280×K`, first native gate/up ggml type; 3 warmups + median 10 call-and-sync wall spans | Synthetic fixed-M=64 int8-matrix prompt product, not actual per-expert row histogram or layer distribution. |
+| `expert-down` | Same, 16×64 rows, `K×640`, same first-layer type; 3 warmups + median 10 | Synthetic prompt expert-down product only if MMQ is built and supports that type; it does not time CPU Down20/GU22 decode rows or the routed hardware path. |
+
+Shape preparation and activation quantization happen before the timed `ctx.run`; weight bytes are filled with a repeated test pattern. This is a path/shape comparator, not a roof in FLOP/s or a correctness test. `--no-xmx` and `--no-bf16-mma` remove matrix paths for contrasts but are not the device's theoretical peaks. Do not convert Intel's 203 Int8 TOPS marketing peak into FP16 performance. R207's 380 GB/s GDDR6 figure is a product peak; R207 found no accepted local sustained B570 VRAM bandwidth or real oneMKL internal-kernel share. Neither bench supplies that missing streaming-DRAM measurement.
+
+## Real pack-format fit, especially GU22 / IQ2_S
+
+`kernel_bench` reads `K` from `index.txt` token embedding and exactly one expert type from the **first layer** of `native_experts.txt` (`bench_hidden`, `bench_expert_type`). It does not iterate the mixed-format layers/roles. In the actual IQ3_S pack named in the six-run logs, layer 0 gate/up is ggml type 18 (IQ3_XXS), layer 1 is type 22 (IQ2_S) with Down type 42, and subsequent layers include type 22/Down20; the pack is mixed. The native_experts metadata reports those types. Consequently an unmodified `--kernel-bench --pack <qwen3.8...iq3_s>` will benchmark type 18 for both synthetic expert products, not the prevalent GU22 IQ2_S cell. It is not a representative GU22/Down20 measurement for that model.
+
+To evaluate GU22 versus other formats, select a cloned/read-only pack fixture whose first layer has the intended type, or add an explicit type/layer/role selector and report one run per observed `GU type × Down type × K × FF × M` cell. Keep the source's native type support/dispatch check as eligibility; a supported type is not evidence it is present or used in the live pack. Preserve real layer/role counts and production row histograms from the same inference request. For the R293 target candidate (CPU decode, GU22 IQ2_S / Down20 IQ4_NL on Ryzen 5 5600X), the current Xe `kernel-bench` is not a relevant kernel ceiling: it is GPU MMQ prefill. Use R293's narrowly scoped native CPU row-kernel parity/service harness and same-request `STRATA_DECODE_TIMING` context when that path is safe; do not cite synthetic MMQ throughput as CPU decode service.
+
+The synthetic MMQ rows=64 per expert can be a rough higher-batch prompt workload, but it cannot represent both cold/small-M decode and 4096-token actual prefill. For prompt-fit conclusions, collect the real `prefill_chunk`, per-layer/type grouped rows, and existing prefill phase breakdown, then compare the correct matching shape/type against the microbenchmark. A pack with a different first layer or output formats must not inherit the type-18 result.
+
+## Production phase timing and separation of costs
+
+The current Xe source provides the strongest useful internal phase labels:
+
+- Set `STRATA_PREFILL_TIMING=1` to enable code at `src/prefill/prefill.cpp:1068-1130,2385-2395`. It reports GPU timeline, request wall, host staging, host chunk setup (including PLE rows / expert plan), sync and related host phases. This helps distinguish device timeline from host staging/coordination during prefill. Its GPU timeline spans ordered event boundaries; it is not a direct per-kernel oneMKL roof. Source comments flag that timeline/accounting can contain gaps and host costs, so preserve labels and do not sum overlapping intervals as serial wall.
+- Set `STRATA_DECODE_TIMING=1` on a real request (`src/program/generate.cpp:8673-8674,9419-9436`). It emits per-request average verify-window milliseconds and separates GPU-reach wait, per-layer host plan/ActQ/jobs/CPU, stage, commit/emit, draft, counts of CPU experts/entries, VRAM hits, PCIe experts and adaptive swaps; it additionally prints GPU stage profile counters in device-clock ticks per window. These enable CPU work/dispatch from wait/commit/draft attribution. The wait is a host-observed rendezvous span, not pure GPU time. PCIe is a count, not bytes or copy duration. Device ticks are not milliseconds unless the device clock conversion is established. It does not report a direct launch-gap sum, host worker busy-vs-parked time, physical transfer bytes, or per-kernel PCIe wait.
+- `--stats` is the CLI to request existing stage summaries in generator modes (`src/program/generate.cpp:648`). `--stage-timing` is **not** a time measurement: its help text explicitly describes per-stage kernel-count shares and warns uncaptured event intervals include host gaps. Do not use that counter as a cycle/time percentage.
+
+The source offers `--gpu-only-full`, but this mode captures/replays production `pre` and `post` graphs plus LM head (`generate.cpp:646,4802-4830,5150`). It resets the doorbell and replays the graph without a CPU pool, yet graph capture contains the router/doorbell path. Exclude it from the current allowed comparison because it may launch the forbidden doorbell path. `--graph-only` is also a misleading floor: it omits `post` and LM-head work. `--gpu-stages` and `--stage-timing` also replay captured layer graphs and should be excluded unless a later source/path review demonstrates no doorbell/device spin. Avoid all production decode timing/serve requests under the supplied capability gate until the parent explicitly qualifies the B570 doorbell path.
+
+This leaves the safe measurement selection for later authorization:
+
+1. Source-only now: record the active pack's mixed native-expert type inventory and the 6-run medians/limitations; use R206/R207 ceiling facts as theoretical comparisons, not measurements.
+2. After GPU work is authorized and the doorbell gate is cleared: run the two standalone diagnostics on B570 (`--hw-bench --pack ...` and `--kernel-bench --pack ...`) as distinct phases, preserve raw per-sample receipts/argv/env. Do not run benchmark controls concurrently with the production server.
+3. After the doorbell/host concurrency issue is independently cleared: collect real prompt/decode phase logs with fixed input and identical configuration, keeping prefill and decode results separate. Join the decode's phase labels to actual route format/NT histograms and same-request cache/transfer counts. Compare host staging / CPU service / GPU-stage floor / copy service with matching ceilings; leave unmeasured launch gaps and transfer bytes explicitly unattributed.
+4. Any use of `gpu-only-full`/stage replay needs a further explicit check whether it launches the ring publication; do not infer safe from “no pool”.
+
+## Ceiling mapping and decision boundary
+
+| Observed production term | Relevant comparison | What is missing before a roofline claim |
+| --- | --- | --- |
+| Prefill host staging / expert-copy wall | pinned H2D and pageable-vs-pinned `HW`; installed 7.8769 GB/s encoded PCIe ceiling | Same request's copy bytes, successful completion spans, staging queue vs host prep split, and data-residency state |
+| Prefill dense BF16 product | `KB dense-bf16` default/no-XMX/no-BF16-MMA for same K; product peak only if separately measured | Exact call shapes/counts, oneMath stage share, output correctness; 203 Int8 TOPS is irrelevant to FP16 |
+| Prompt grouped expert MMQ | Per-type `KB expert-*` once the tested type and M histogram match the pack | `kernel-bench` currently fixes first-layer type and M=64; live mixed layers and actual grouped rows are required |
+| Decode CPU service | Host CPU phase timing + R293 production-source candidate tests; `HW ram_read_*` is only a bandwidth reference | Format/NT/job counts, same request, worker busy/parked spans and actual memory traffic; sequential RAM rate is not IQ kernel rate |
+| Decode GPU/launch/rendezvous | GPU-stage device-clock profile and GPU-reach wait, only after safe route qualification | Tick-to-time calibration, per-launch gap, copy completion, doorbell and host spin wait, real stage dependency joins |
+| GPU memory ceiling | R207 nominal 380 GB/s only as peak ceiling | A validated B570 sustained streaming benchmark and production bytes/cache behavior; `kernel-bench` is not a memory-bandwidth test |
+
+Avoid subtracting `GPU floor` from production request wall and naming the remainder “launch overhead”: prompt/session state, head/logit, commit, host service, device wait and speculation differ by path. Likewise do not add worker CPU sums, GPU-reach wait, PCIe copy spans and request duration when work overlaps.
+
+## Decision and evidence
+
+`--hw-bench` can benchmark installed RAM, copy and SSD paths independently without changing prefill, and source shows it has no doorbell/device-spin case. `--kernel-bench` gives useful synthetic dense-BF16 and grouped-expert prompt-path path/shape comparisons but its first-layer-only type selection makes the existing IQ3_S model's GU22 IQ2_S behavior unmeasured by default. Existing prefill/decode timing can distinguish important host/GPU terms only in real production-path requests, which are gated off by the supplied B570 capability result. No existing e32 six-run sample contains the requested phase logs; its whole-engine decode improvement cannot be assigned to CPU, transfer, launch or GPU ceilings. Keep these evidence classes independent, preserve the current no-launch gate, and use full real-path phase/counter joins only after explicit B570 path clearance.
+
+Related evidence: R335 `round335-xe-decode-transferable-paths-and-confounds.txt`; R338 `round338-updated-xestrata-full-performance-and-build-delta.txt`; R293 `round293-xestrata-cpu-decode-kernel-import-candidate.txt`; R206/R207 CPU/VRAM/PCIe ceilings; corrected-six64k `summary.json` and `RESULTS_JA.md`; supplied PASS capability receipt `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-host-capabilities-root-v2/record.json`.

@@ -1,0 +1,74 @@
+# Round 350 — Xe exact 262,144-cell context diagnostic design
+
+Date: 2026-10-11 (Asia/Tokyo). Read-only source investigation; this file is the only artifact written. No source edits, compiler/build/test, process/service/GPU/device operation, or Git mutation was performed. This design does not claim a full-context run has been executed.
+
+## Source identity and scope
+
+Target: `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011` (basee32). The relevant current files and SHA-256 values are:
+
+- `src/prefill/prefill.cpp` — `6c9551e39615fa4cef1670526aa89c73ee0c35902fe7509202228359ea184732`.
+- `include/strata/prefill/publication.hpp` — `c266156f02854f6578ca526203525249e6e9035ca56102a4aeb815280d42e2ee`.
+- `include/strata/prefill/prefill.hpp` — `c3db75e2c4d672504c42b3f6fb31e1ddbf6740e2584573cfea11494d75fa14ae`.
+- `src/program/generate.cpp` — `63b4235bebc52c97c2ffa3b0ec27a1093cabe5df1aab35e6f33b2e806ae0142b`.
+- `src/core/conversation_state.cpp` — `6f3da121efc291a9bef47fb7c081d35f1dcf06bb01ba40180b57d4fb55ac6958`.
+- `src/core/conversation_snapshot.cpp` — `fd0b79e2e56e0ef52da9d82e889631b1ed6d5f992d26adf4ec38551d253a7047`.
+- `include/strata/core/conversation_snapshot.hpp` — `0c07b2e1ea5791ad28c8c375e6aaf46766ba5b024045493bd14e0d2d0b8600da`.
+- `src/core/layer.cpp` — `fefc457de582573a8f1132c02139a61161d90fe50dcacda46c8c64cf0b581c97`.
+- `src/kernels/xe/kv_stream.cpp` — `82c83a59525741c6d4f9cc644037b4a4cf87798d2d49fd4cca939a035ddc2ef7`.
+- `src/kernels/xe/native_qsa_indexer.cpp` — `41a4b64a914fd4e6f99c6fcbe71805b171f295214018bb7289dc0b3c9919523c`.
+- `src/core/mtp.cpp` — `see source file; hash not captured in this pass`.
+
+I read R329, R336, R337, R346, and R347 before this review. This report does not repeat the already-covered resident-page/index arithmetic, teacher-forcing findings, or serialized verifier handoff review.
+
+## Main conclusion
+
+The corrected `Prefill::run` guard now rejects a span outside `ss.max_cells` before `OnDevice` and before any kernel enqueue (`src/prefill/prefill.cpp:1135-1146`; `publication::valid_span` at `include/strata/prefill/publication.hpp:16-20`). It permits exactly `[0,262144)`. This establishes safe admission only. It does not make the normal generate route an exact-boundary test.
+
+A minimal device diagnostic needs a dedicated branch after the normal model/session/Prefill initialization and before the native generation path's `n_batched` / verifier work (`src/program/generate.cpp:9797-9820 and following`). Feed exactly 262,144 token IDs to `Prefill::run(tokens.data(), 262144, 0, err)`, then exit successfully from the diagnostic branch. Do not enter the verifier or sampler: the next position is 262,144, outside the physical context, and the requested diagnostic expects no generated output. Normal generation deliberately prefills `n_prompt - 1` at this call site and keeps a terminal token for the verifier; request admission also reserves slack. Neither normal free-running generation nor a larger `--max-context` setting proves this exact physical boundary.
+
+There is a concrete terminal-cell hazard in the existing MTP callback: at `generate.cpp:9797-9802`, each chunk builds `nxt[t]` from `o.tokens[p0+t+1]`. With a full-span Prefill call, the last callback has `p0=258048`, `T=4096`, and `t=4095`, so this reads token index 262144, one past the supplied full-context sequence. The server callback at `6095-6100` has the same `cur[p0+t+1]` shape. A full-context diagnostic must replace or narrowly correct that callback before using it.
+
+## Minimal call path and MTP terminal rule
+
+Use a development-only exact-full-context mode in `generate.cpp` after the production model, `SessionState`, `MtpDrafter`, and `Prefill` are initialized. Reuse the production token input as an exact token-ID vector, but require `tokens.size()==ss.max_cells==262144`; record the token-vector SHA-256, tokenizer/model identity, and max-context setting. Keep the ordinary prefill chunk setting and record the actual `prefill.chunk()`.
+
+`Prefill::run` processes `T=min(chunk,n-c0)` at each c0; its `on_chunk` callback is invoked only after the prefill stream has synchronized (`prefill.cpp:2403-2412`). For a semantically real MTP pass, derive `mtp_n = min(T, max(0, n-(p0+1)))`; this covers 262,143 rows with real next tokens and must skip the final main-model residual at cell 262143. That leaves the MTP draft one cell shorter, which the current aggregate snapshot API cannot represent.
+
+To exercise the full production snapshot/restore lifecycle at the physical endpoint, the diagnostic can use an explicitly marked terminal probe token for the last MTP row only. Fill next-token IDs from the actual input for cells 0..262142, and set the MTP next-token input paired with main residual cell 262143 to a valid token ID recorded as `terminal_probe_token`. Then `mtp.prefill`/`draft_kv` produces a fully initialized draft payload of 262144 cells and the production whole-session snapshot has consistent extents. The probe is diagnostic-only: it is not an actual continuation token, no inference follows restore, and the report must say `mtp_real_next_rows=262143`, `mtp_probe_rows=1`. This avoids an out-of-bounds read and uninitialized terminal draft bytes while preserving the full-context no-output rule. It tests MTP storage and session lifetime, not MTP prediction quality at an impossible next position.
+
+The full `Prefill::run` also does not publish the sampler's terminal input/next-token state: its callback is attached to completed chunks and reports the chunk residuals. The diagnostic must therefore mean “all 262,144 prompt cells passed through batched target prefill”; it must not claim that one-past decode ran or that the MTP draft has a valid position 262144.
+
+## What to record to establish actual full use
+
+Emit a compact manifest only after `Prefill::run` succeeds and all diagnostic reads/copies have synchronized. Record:
+
+- `n=262144`, `pos0=0`, `ss.max_cells=262144`, token-ID count and SHA-256, model/config identity, engine source revision/hash set, backend/runtime/driver/device identity, KV precision and resident setting, `prefill.chunk()`, and whether MTP was enabled.
+- `PrefillStats.tokens==262144`, `PrefillStats.chunks==ceil(262144/chunk)`, and the callback's ordered `(p0,T)` intervals. Require gapless, nonoverlapping coverage from 0 through exclusive end 262144; require the terminal interval `(258048,4096)` for chunk 4096. The existing stats are updated per completed chunk (`prefill.cpp:1202,2346`); callback interval records independently expose the real final range.
+- For every owned QSA layer, record the expected `st.max_cells`, `st.kv_mode`, `st.n_pages`, `st.n_slots`, presence of authoritative `st.host` pools when streamed, and a diagnostic append-row counter at the existing per-chunk KV append site (`prefill.cpp:1586-1601`). Require the per-layer row total to equal 262144. A counter alone is not the proof: after callback synchronization, hash or read back the authoritative host-backed KV bytes covering both an early region and the final page/cell, plus the indexer's final pooled row/spare row. Keep the per-layer aggregate content fingerprints and expected byte extents in the compact manifest.
+- For `--kv-resident 32768` with the source's four-cell pages, record `kv_mode=1`, `n_slots=8192`, `n_pages=65536`, host-pool present, and the final logical page 65535. The authoritative values are the identity-layout pinned host copy; the 32K VRAM pool is only a residency cache (`include/strata/kernels/kv_stream.hpp:12-25`). Prefill stages host history and appends to the host/staging pools (`prefill.cpp:704-705, 1586-1601`). `kv_stream_counters()` counts the decode resolver's requests (`kv_stream.hpp:108-113`, `kv_stream.cpp:277-288`); zero resolver calls during prefill are not evidence of missing KV and should not be used as a prefill coverage counter.
+- Record result/error, the final callback interval, terminal skip count, stream-sync result, and restore status. Preserve one compact report plus hashes, not full token/API traces or duplicate polls.
+
+## Restore/session-lifetime seam and limit
+
+The public high-level snapshot APIs assume one common token extent for every K/V layer. `conversation_snapshot_save/validate/restore` set `upto=view.ids.size()` for every main QSA layer and the MTP draft (`src/core/conversation_state.cpp:281-297, 354-380`). Without the explicitly tagged probe row, the correct MTP extent is one token shorter than main-model prefill, and the draft's page size is four cells: even `conversation_kv_save(..., upto=262143, include_index=false)` rounds payload cells up to 262144 (`src/core/conversation_snapshot.cpp:25-48`). So the clean alternatives are: skip aggregate snapshot claims and restore main session state with per-layer typed extents, or use the diagnostic-only terminal probe row for an aggregate full-session lifecycle test. The second is the minimal way to exercise the production aggregate snapshot API without reading uninitialized MTP bytes.
+
+With the terminal probe row, use the production `ConversationView`, `conversation_snapshot_save`, `conversation_snapshot_validate`, and `conversation_snapshot_restore` path. First calculate and log allocation using `conversation_snapshot_capture_bytes` plus `conversation_session_sizes`; refuse the restore phase before capture if configured RAM cannot admit it. Full snapshots can be very large, so preflight is required. For a session-file test, use `conversation_snapshot_sources` and `session_file_write`, but account for the full serialized KV size and disk space; `session_file_read` also allocates the parsed payload subject to `conversation_session_read_limits` (`conversation_file.hpp:211-239`).
+
+After capture, restore into a separately allocated destination session if device memory permits; then call `conversation_kv_verify` for every main QSA layer and the draft, requiring identical full-payload fingerprints. If a second full session is not admissible, restore into the same session after replacing its data with a known diagnostic pattern and record that the operation was in-place. The streamed main `conversation_kv_restore` resets the stale residency map; subsequent attention resolves pages from the restored authoritative host copy. A streamed MTP ring restore refills its last pages from its host copy (`conversation_snapshot.cpp:222-239`). No inference follows restore. The result proves target full-context append and serialized state lifetime, while the draft's final row remains explicitly probe-only.
+
+## CPU now vs actual device proof
+
+CPU-only work can validate the descriptor/admission edges: accept exactly `(n=262144,pos0=0,max=262144)`, reject one-past and negative spans, check the gapless interval manifest for 64 chunks of 4096, and check the MTP index mapping: actual input token for rows 0..262142 and an explicitly tagged probe ID for row 262143. Those checks prove only bookkeeping and callback bounds; they do not execute the production GPU kernels.
+
+The adoption gate remains a later actual Xe device run: the exact token vector must flow through initialized production Prefill for all 262144 positions, final host-backed KV/index bytes must be captured, and the production aggregate snapshot must round-trip through production restore with byte/fingerprint agreement. The MTP terminal probe must remain marked and unused after restore. No regular generated output, capacity increase, or request slack qualifies as that proof.
+
+## References
+
+- `include/strata/prefill/prefill.hpp:95-119` — Prefill contract, stats, callback contract.
+- `src/prefill/prefill.cpp:1135-1146, 1191-1205, 1586-1629, 2340-2412` — entry guard, chunk ranges, QSA append/indexer path, completion and callbacks.
+- `src/program/generate.cpp:9797-9820` — native MTP `next_tokens` callback and normal `n_prompt-1` invocation.
+- `include/strata/core/conversation_snapshot.hpp:11-33, 43-67` and `src/core/conversation_state.cpp:281-297, 354-380` — save/restore contracts and common extent.
+- `src/core/conversation_snapshot.cpp:25-48, 150-239` — rounded payload geometry, host-backed snapshot reads, restore and residency handling.
+- `src/core/layer.cpp:614-630, 669-767` — four-cell pages, slots, full page table, host pool and session state allocation.
+- `include/strata/kernels/kv_stream.hpp:12-25, 108-113` — host-backed authoritative KV and counter meaning.
+- `docs/DETAILS.md:87-90` — documented context KV residency model.

@@ -1,0 +1,61 @@
+Round 348 — Xe free and Intel-only contrib-llvm build/runtime contract
+Date: 2026-10-11 (Asia/Tokyo)
+Scope: read-only build, link, runtime and test-source review for the current e32 XeStrata source worktree and pinned Intel LLVM source-build controller. No source or Git state was changed; no configure/build/test/compiler/GPU/runtime query/process/service action, clone or fetch was performed. Commands below are recommendations for MAIN, not executed results.
+
+Source identity and toolchain
+- XeStrata base commit is e32b8b0594095352365db0e140a68d5bf56d8b0f in /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011. The pristine comparison tree has the same HEAD. The implementation tree contains the session/verifier/elementwise/prefill/generate source changes and new helper/test sources documented in implementation-xe-e32-serialized-handoff-v1.txt and implementation-xe-e32-commit-lifecycle-v2.txt. Use this modified tree for qualification.
+- Controller is /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-llvm-v711-source-v2/run_root.py, SHA-256 c7f9687b580abe389ef0046985e599b7e006ec4f2b2fc3326ffe69981e756488. It pins intel/llvm v7.1.1 commit 504366f4b82ff00bbac7b0c956635eed8bc599d8 at /home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011 and installs to the XeStrata tree's .tools/intel-llvm-v711/install. This is not the generic docs path .tools/intel-llvm/install; use the controller's real destination.
+- The pinned source worktree has modifications to the 17 patch targets. Controller lines 63–66 apply every sorted 01–17 patch after git apply --check. It builds Release, X86 host targets only, with no --cuda or --hip; forces release-pinned Level Zero fetch and static zstd; uses private ld.lld/hwloc/zstd, LLVM_RAM_PER_LINK_JOB=10000 MB, LLVM_PARALLEL_LINK_JOBS=1, assertions OFF, and compile.py -j 6 (lines 67–84). All 17 repository patches are still applied as required, but this Xe-only toolchain build does not qualify CUDA/HIP adapter behavior. Patch 11-build-job-pools is common; CUDA patches 01,03–10 and HIP patches 02,12–17 are inactive in this build.
+- Do not substitute XeStrata tools/intel_llvm_build.py for the controller: its normal route differs in install root, invokes the XMX probe, and --contrib turns on CUDA. Current script SHA-256 is 7cb1e78485f76f5266f0550f9a54ccabfec377799377340f03a11ed82fc5c871.
+- Key source hashes: XeStrata CMakeLists.txt 45f4ad75a424b1549d319e10c5151c691586e737e9cea62ca24316fbb0c11599; AGENTS.md 0427d8d4f91c4cf5128e77d3d898ee20783b63394d24718d1ff0b16779424dd0.
+
+Mode/configure contract
+Local AGENTS.md requires intel/llvm-only SYCL build/test in free and contrib-llvm modes; contrib-icpx is explicitly not qualified. CMake identifies these as free (STRATA_LICENSE=free) and contrib (STRATA_LICENSE=contrib). Xe configure checks -fsycl plus __LIBSYCL_MAJOR_VERSION >= 9 and rejects ordinary clang/icpx in these modes (CMakeLists.txt:247–261). Force CUDA/HIP arch lists empty; defaults are auto and may probe other installed vendors (lines 44–99). STRATA_BUILD_TESTS defaults OFF in this checkout because tests/CMakeLists.txt and bench/micro are absent (lines 136–141), so pass ON.
+
+Use the controller's same installed clang/clang++ for both engine builds, with fresh build dirs. Preserve CMakeCache, compile_commands.json, full configure argv, ninja -t commands strata, compiler/runtime hashes, all modified object/archive membership, final link line and executable hash. Keep STRATA_NATIVE_EXPERTS=ON for full features. The current third_party/main/llama.cpp is absent (ggml placeholder is empty). CMake therefore fetches the pinned llama.cpp commit 3cf03257f219afbe7334045ff7c6a06ac68c627d at configure unless a matching checkout is passed as STRATA_GGML_DIR (CMakeLists.txt:781–816). This is a configure network/dependency requirement; do not silently disable native experts.
+
+Free Intel-Xe engine:
+  cmake -S . -B build/free -G Ninja \
+    -DCMAKE_C_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang \
+    -DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ \
+    -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+    -DSTRATA_ENABLE_XE=ON -DSTRATA_LICENSE=free \
+    -DSTRATA_CUDA_ARCHS= -DSTRATA_HIP_ARCHS= -DSTRATA_ONEMKL=OFF \
+    -DSTRATA_NATIVE_EXPERTS=ON -DSTRATA_BUILD_TESTS=ON -DSTRATA_WERROR=ON
+
+Intel-only contrib-llvm engine:
+  cmake -S . -B build/contrib-llvm -G Ninja \
+    -DCMAKE_C_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang \
+    -DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ \
+    -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+    -DSTRATA_ENABLE_XE=ON -DSTRATA_LICENSE=contrib \
+    -DSTRATA_CUDA_ARCHS= -DSTRATA_HIP_ARCHS= -DSTRATA_ONEMKL=ON \
+    -DMKL_ROOT=/opt/intel/oneapi/mkl/latest \
+    -DSTRATA_NATIVE_EXPERTS=ON -DSTRATA_BUILD_TESTS=ON -DSTRATA_WERROR=ON
+
+Run from the XeStrata root. If MKL is elsewhere, set MKL_ROOT to its actual root. CMake otherwise uses MKLROOT then /opt/intel/oneapi/mkl/latest (CMakeLists.txt:483–489). Free forces oneMKL OFF because it is non-free (480–482); with no AMD/NVIDIA backends, it does not configure oneMath and uses XeStrata's own Xe dense kernels. Intel-only contrib with ONEMKL=ON builds oneMath with MKL GPU backend on and MKL CPU backend off, fetching pinned archive xestrata-3 (CMakeLists.txt:491–496, 547–566): https://github.com/MistVVK/oneMath/archive/refs/tags/xestrata-3.tar.gz, SHA-256 9a5203102002e5e85f1ad4a8b91b9f6134365f016bba1a430b038df95517e61d. A fresh contrib configure needs network unless that exact archive/source has been staged; changing archive URL causes CMake to remove and repopulate its build-tree source.
+
+Build target strata in both dirs. It pulls in strata_kernels, strata_engine, strata_prefill, strata_spec and changed generate.cpp (CMakeLists.txt:372–407, 591–606); this compiles all changed production TUs and checks the final link. Record actual membership. The configured SYCL link option includes -fsycl-max-parallel-link-jobs=<logical cores> (354–360), which should be retained with link resource use. With CUDA/HIP empty, the target list is SPIR64 only. docs/BUILD.md:219–225 says SYCL translation units use several GB and 6 jobs succeeded on its 92-GiB validation host while 16 was killed; use a recorded conservative job count.
+
+Runtime and library resolution
+- Both modes use the source-built free intel/llvm SYCL runtime, UR loader, Level Zero adapter and libumf. docs/BUILD.md:185–188 explicitly warns to run without oneAPI setvars.sh: oneAPI UR adapters/libumf can precede the matching custom runtime and cause GPU tests to segfault with mismatched libsycl.
+- Run the free engine with the custom install lib first in LD_LIBRARY_PATH. For contrib-llvm, keep that same custom compiler lib first, then add MKL_ROOT/lib (typically /opt/intel/oneapi/mkl/latest/lib), followed only by needed system paths. Do not let oneAPI compiler/UR library dirs from setvars precede the custom runtime. Confirm libsycl.so.9, libur_loader, libur_adapter_level_zero and libumf resolve from the custom install; oneMKL libraries should resolve from MKL_ROOT. Intel's DPC++ FAQ says Linux runtime lib directory must be on LD_LIBRARY_PATH: https://github.com/intel/llvm/blob/sycl/doc/FAQ.md. Intel's oneMKL Linux guide lists its SYCL dynamic libraries in the MKL lib directory: https://www.intel.com/content/www/us/en/docs/onemkl/developer-guide-linux/2024-0/dynamic-libraries-in-the-lib-directory.html.
+- Controller forces a pinned Level Zero loader/header source for toolchain configuration, but it does not supply the Intel GPU kernel driver. Level Zero driver/compute-runtime remains a host runtime prerequisite. Official LLVM guide: https://github.com/intel/llvm/blob/sycl-rel-7_1/sycl/doc/GetStartedGuide.md.
+- Packaged runtime files differ from local contrib development: docs/BUILD.md:415–437 says intel/llvm runtime and UR files are bundled; oneMKL is not. A local contrib run must expose MKL separately while preserving the custom free runtime first. Configure/link success alone is not runtime validation.
+
+Test source and fixture audit
+- Pass STRATA_BUILD_TESTS=ON. Root CMake still registers source tests even though tests/CMakeLists.txt is absent; that missing file means model-level tests in tests/ are not added. The current tests/core, tests/platform and tests/data/native_experts sources exist.
+- Correction to R341's suggested CPU CTest set: expert_parity and pool_test are registered with --selftest, but both default to opening pack/full/experts.bin (src/kernels/cpu/expert_parity.cpp:80–111; pool_test.cpp:53–81). The current worktree has no pack/ directory. These cannot be treated as fixture-free passes; exclude until the explicitly named pack is provided. iq_parity is intentionally not registered because its real-row path needs logs/iq_fixture (CMakeLists.txt:613–616).
+- tools/test_commit_transaction.cpp and tools/test_prefill_publication.cpp are unregistered host-only harnesses that include the production helper headers. Compile/run explicitly. Commit harness uses explicit expect checks. Publication harness uses assert (source lines 14+), so release NDEBUG would disable checks; keep assertions enabled (for example add -UNDEBUG after -DNDEBUG or use Debug). It creates threads, so use -pthread.
+- Small CPU-only CTest subset: pool_tasks_test, pool_stress, iq_avx2_parity, q8k_quant_parity, q2_bitplane_parity and expert_multi_test (record expected ISA skip separately). Exclude expert_parity/pool_test without pack/full/experts.bin.
+- Changed device files have relevant GPU entry points: elementwise_parity --selftest is registered (CMakeLists.txt:608–612) and resident_plan_parity (657–659). These need a usable SYCL device, so they are B570 runtime checks, not host-only tests. Session/verifier handoff and generate routing have no direct CTest integration test; a bounded real model/session/verifier exercise is needed for those runtime paths. Host helper harnesses prove state transitions but cannot establish queue/event completion on B570.
+
+Minimal host harness compile forms (not run):
+  c++ -std=c++20 -Wall -Wextra -pedantic -UNDEBUG -pthread -Iinclude tools/test_commit_transaction.cpp -o <owned-test-dir>/test_commit_transaction
+  c++ -std=c++20 -Wall -Wextra -pedantic -UNDEBUG -pthread -Iinclude tools/test_prefill_publication.cpp -o <owned-test-dir>/test_prefill_publication
+Use a distinct host ASan/UBSan output directory if instrumenting; apply sanitizer flags at compile and link. This host run does not substitute for B570 queue/event tests.
+
+References and limitations
+Local references: current worktree AGENTS.md (“Free and non-free builds”, “Lints”); CMakeLists.txt lines 39–55, 100–120, 136–163, 247–267, 354–360, 372–407, 473–602, 608–700, 781–816 and 829–911; docs/DEVTOOLS.md:50–74; docs/BUILD.md:150–158, 185–217, 219–228, 415–437; source controller above. Prior reports R341, R345, R346, R347 and implementation v1/v2 were consulted. R345's earlier environment snapshot said DPC++ was unavailable then; the source-build controller now provides the requested v7.1.1 path, so that stale conclusion must not be reused.
+Official primary sources: pinned Intel LLVM release source https://github.com/intel/llvm/tree/504366f4b82ff00bbac7b0c956635eed8bc599d8; runtime FAQ and Get Started Guide above; Intel oneMKL dynamic library guide above.
+No configure, build, test, link inspection, ldd, GPU query, XMX probe, runtime execution, lint or validation is claimed. This report is an execution contract and pitfall map only.

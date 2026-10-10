@@ -1,0 +1,7 @@
+最新Xe e32b8b05の採用前契約確認。未変更prefillは旧39bdの障害経路と同一のため再実行を拒否。B570実queryはHOST_USM=1/ATOMIC_HOST_USM=0、L0HOST_CAPS=3。queue/kernel/モデルを作らないcapability query v2はPASS、v1のCPU compile失敗は原status保持。device scopeだけではhost allocationの並行アクセスを保証しない。
+
+対策はCPU/GPUのフラグ同時pollを禁止し、完了待ちでsession/verifierを分割。commitはsubmit前pending、event記録成功後だけevent有効、wait失敗はpending保持・以後queue drain・成功drain後もfaultを消さず再利用拒否。実production helperの障害注入はplain NDEBUGとASan/UBSanの2件PASS。Prefill helper/実entry抽出4件もPASS。これらはCPU証拠で、GPU挙動や実full262144の証明ではない。小tailでCPU poolとH2Dが同じhost-USM arenaを読む分担も、追加source gateで無効化。後者を含む全ソースのbuildは未完了。
+
+最新XeのAGENTSに従いfree/contrib-llvm用のIntelLLVM7.1.1 source compilerを準備。bootstrap v1は64MiBファイル上限でGit pack失敗、v2は累計256子pidfd上限でcompiler停止。いずれも閉鎖確認済みのFAILEDのまま保存。v3 ownerは死んだ非leaderのpidfdを閉じ、live256/累計200000を分離。640子fixture実観測641/peak33、通常終了PASS。v3コンパイルは進行中で未資格。GPU障害やreset/rebindは行っていない。
+
+旧修正Xeの6回64K結果は別のsix64k報告に保存済みで、今回e32の性能ではない。最新correctedの全build/free-runtime初回確認・長入力3回・実全容量capture/restoreを続ける。公式v0.1.42はXe後。通常pristine SYCLもvolatile host-USM handoffが残るため未変更生成測定はsource不適格と記録し、安全なprefill-only実行形の有無を別途調査。サーバー全機能は必須、推論採否はprefill/decode別。
