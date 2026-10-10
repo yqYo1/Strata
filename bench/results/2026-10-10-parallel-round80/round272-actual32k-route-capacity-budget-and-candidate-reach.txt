@@ -1,0 +1,70 @@
+# R272 — actual32K route, capacity budget and candidate reach
+
+Date: 2026-10-10 (Asia/Tokyo). Read-only quantitative audit after R270. No build, test, inference, profile, GPU/process/hardware query, state change, cleanup, Git operation, implementation, or additional agent was used. Only this report was written.
+
+## Decision
+
+The completed actual 32K census changes R270's candidate decision: retire the **resident-only small-M direct-IQ prototype as a priority**. Although 49.7% of expert calls have `ne<=80`, just 168 of those calls are resident; 46,319 are staged. The resident candidate therefore reaches 0.18% of all expert calls and 0.036% of routed rows. Its format-weighted isolated expansion-service equivalent is about 21 ms, only 0.20% of the corresponding 10.74-second all-call expansion-service estimate. This is not a bound on possible GEMM savings, which have not been measured by actual `ne`, but there is no evidence to justify an implementation for this narrow resident slice.
+
+A direct packed-IQ path covering staged small-`ne` experts could reach much more of the call histogram, but it would have to keep each staged packed expert alive through both projections. The current path records the slot-use event after dequantization; extending it through GU/SwiGLU/Down changes ring ownership and copy overlap. Treat that as a separate event/lifetime experiment, not as an easy extension of the resident proposal. The joined counts and isolated capacities are sufficient to reject a “small resident experts are the main service bottleneck” claim; they do not select the next performance bottleneck.
+
+## Immutable evidence and scope
+
+R270 was fully read. Its caller hash was mistyped in one sentence as `...226d950...`; the verified immutable caller SHA256 is `905f43162ae079b6785584ada226d950cec14b13bd413ca51ab1a48f49de6ebaf`. The actual census receipt is `owned-prefill-route-census-v3-code32k-diagnostic-r1/record.json`, SHA256 `ad7415ecd477812f812ed3c4068d8c23105dbe2df57cec0b7ac919369f9f2131`; its `census.jsonl` SHA256 is `41f81d6046f98684fd12019d25b06b8f87bf68aab471e7614a3f1de15c257e53`. The completed join is `actual-prefill-census-capacity-join-v1.json`, `passed=true`, `model_route_join_qualified=true`, and `performance_eligible=false`. Its descriptor pack receipt, unchanged source metadata, caller manifest/header and isolated capacity report are named and hashed inside that join. The source pair codes are native `(GU type, Down type)`, not hardware instruction families.
+
+The joined request accounts for `n=32767` census positions plus the final greedy output from a single fresh 32,768-token request, four 8,192-token chunks, 192 layer-chunk rows, and 93,505 positive `(layer,chunk,expert)` calls. It passed the exact first-head and all 66 live-state-part numerical comparison, including tokens/logprobs/MTP and normal exit; the census added zero device commands. This admits route counts for that one prompt/configuration. It does not qualify a full 262,144-position lifecycle, default-off runtime parity, production performance, or general request distribution. Its 131-second diagnostic elapsed time is explicitly excluded from performance evidence.
+
+## What the histogram says
+
+The census totals are 15,728,160 routed rows, 92,998 copied expert calls, and 190,240,998,400 logical packed bytes attributed to those copies. The two generic projections have 93,505 GU calls and 93,505 Down calls. `source=1` is resident (507 calls, 318,580 rows); `source=3` is stager-RAM (92,998 calls, 15,409,580 rows). Those fields describe the admitted accounting route, not measured physical DMA-active intervals or DRAM traffic.
+
+| Exact census `ne` interval | Expert calls | Routed rows | Share of calls | Share of rows |
+|---|---:|---:|---:|---:|
+| 1–16 | 19,948 | 138,024 | 21.3% | 0.88% |
+| 17–80 | 26,539 | 1,140,838 | 28.4% | 7.25% |
+| 81–160 | 16,499 | 1,935,320 | 17.6% | 12.3% |
+| 161–640 | 26,472 | 8,098,012 | 28.3% | 51.5% |
+| 641–8,192 | 4,047 | 4,415,966 | 4.33% | 28.1% |
+
+Together `ne<=80` has 46,487 calls (49.7%) but only 1,278,862 rows (8.13%). Of these small-row calls, 46,319 are stager-RAM and 168 resident. By contrast, `ne>80` has 47,018 calls and 14,449,298 rows. Thus a per-call overhead/conversion hypothesis has many possible targets, but the selected resident-only R270 target covers very few; a row-throughput/GEMM hypothesis needs the actual M-conditioned GEMM timing rather than the call histogram alone.
+
+The seven native format pairs contribute 27,283 calls at 18/20, 5,801 at 18/42, 17,634 at 21/20, 2,005 at 21/42, 29,271 at 22/20, 9,662 at 22/42, and 1,849 at 23/20. Every pair is present in the isolated expansion capacity dataset, which makes the following pair-weighted comparison possible without nearest-`ne` interpolation. It does **not** give the per-pair `ne` composition of GEMM time; the exact census retains that data for a later join.
+
+## Independent service-capacity terms — keep separate
+
+**Packed-copy payload scenario.** Dividing 190,240,998,400 logical copied bytes by the independent pinned/USM H2D attained rate 6.446833643 GB/s gives 29.51 seconds. The pageable fixture rate 4.605214183 GB/s gives 41.31 seconds; the encoded Gen4x4 external-link ceiling 7.876923077 GB/s gives 24.15 seconds. These are conditional payload service-time comparisons for the census byte total. They are not the model's observed copy duration, an absolute lower/upper bound for its transfers, or proof that the DMA engine was busy for that interval. Actual source mix, submission granularity, transfer-completion intervals, caching and overlap all matter.
+
+**Generic-IQ expansion scenario.** The isolated seven-pair fixture reports end-to-end host-submit-plus-completion medians per expert (GU and Down expansion together) of 129.134, 99.681, 115.101, 75.876, 114.156, 76.033, and 207.700 microseconds for the pair order above. Multiplying each pair's actual census calls by its paired median and summing gives 10.743 seconds of *capacity-equivalent expansion service*. Substituting the reported process-median ranges yields 10.333–10.828 seconds. This arithmetic uses all 93,505 actual format-pair calls, with no row-size interpolation. The fixture used device-resident packed weights, three fresh processes and seven samples/process; its O2 AOT build is not the production O3 build. It is neither an exclusive model-phase measurement nor proof that production expansion takes this sum.
+
+The same `ne<=80`, `source=3` call slice has a format-weighted expansion-service equivalent of 5.345 seconds (5.143–5.386 seconds using process-median ranges); resident `ne<=80` has 0.0210 seconds (0.0204–0.0212). These explain candidate reach, not achievable savings. They must not be added to the 29.51-second copy scenario: those operations may overlap, and the existing copy and compute completion structure must be measured in the actual run.
+
+The join separately reports 919,191,552,000 logical bytes written by GU+Down FP16 expansion for all calls. This is output-byte accounting, not a third transfer stream to add to packed input bytes or to the isolated service estimates. GEMM may subsequently read these matrices, but its actual memory traffic and caching are unmeasured here.
+
+## Budget model for the next critical-path decision
+
+For one exact, clean matched request, define observed service spans from qualified completion events, but compute request wall time from the application clock. Partition device compute spans into DQ-GU, DQ-Down, GU GEMM, SwiGLU, and Down GEMM; retain host submission/route preparation; separately record successful staged-copy completion spans and queue waits. For each item, preserve the owner queue, source, expert/pair/`ne`, start/end event, and whether its interval overlaps another item. Report both summed service time by class and the union of intervals on each independent engine/queue. The sum describes work volume; interval unions and dependencies describe exposed wall time. Never sum overlapping H2D and compute durations as if serial, count a host wait again as device execution, or count the expansion output bytes as H2D payload.
+
+The source gives ordered dependencies within each expert: native GU and Down dequantization feed the GU GEMM, SwiGLU, then Down GEMM; the staged expert's packed blob is currently released after the dequant reads. This does not supply actual command durations or prove phase exclusivity. The queue property and event ownership in the production binary must be taken from the already-owned service-event qualification, not inferred from census counters. A source route's logical `transfer_calls` is not an H2D active-time counter.
+
+Do not form a `29.51 + 10.74 = request seconds` estimate: data transfer and compute can overlap and both rates come from isolated fixtures. Do not infer GEMM time from the M=80 capacity sample, `weighted_mean_rows_per_expert=168.21`, a bucket midpoint, or another “nearest” expert size. A correct upper bound on request wall time or on candidate headroom is not available until same-run measured timings exist.
+
+## Measurements that would change the decision
+
+Main is continuing default-off parity, service-event qualification, and repeated clean matched `>=32K` timing. For the first performance-eligible matched sample, the useful minimum is:
+
+1. Clean application wall time with prompt/tokenizer/model/build/config identities and repeated individual samples; exclude the diagnostic route-census run and its long trace.
+2. Actual production-build paired completion spans for dequant GU/Down and GEMM GU/Down at the *observed exact* `(format, ne)` bins, plus SwiGLU and host-submit spans. Keep enough samples to report variation; no interpolation from the existing M=80 or O2 data.
+3. Staged-copy submit-to-completion spans and successful payload by source, and a same-run overlap/dependency timeline that can distinguish copy-only, compute-only, overlapped, and wait intervals. Preserve the qualified event owner and do not insert waits just to make timings easy.
+4. A joined attribution table: number of calls, rows, logical bytes, sum of measured service by category, engine/queue interval union, and the uninstrumented request wall. If profile instrumentation perturbs the request, keep it separate and use the uninstrumented sample for performance.
+
+Only consider expanding the R270 direct-IQ work beyond the resident slice if those data show dequant is materially exposed on the actual critical path. For a staged implementation, also quantify the ring occupancy and lost/retained copy overlap when its release event moves from after dequant to after Down. If copy overlap is already the limiting exposed segment, a small-M kernel that lengthens slot hold time could regress the service even if its isolated device kernel is faster.
+
+## Evidence references
+
+- Actual join and full identity/hashes: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/actual-prefill-census-capacity-join-v1.json`.
+- Exact actual histogram and request/math receipt: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-prefill-route-census-v3-code32k-diagnostic-r1/census.jsonl` and `record.json`.
+- Isolated seven-pair expansion fixture and all process ranges: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-gpu-iq-dequant-capacity/three-process-summary.json`.
+- Independent pinned/pageable H2D rates and hardware interpretation: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-hardware-architecture-decisions/CAPACITY_AND_ARCHITECTURE_JA.md`.
+- R270 candidate/event-lifetime review: `round270-small-expert-service-compiled-path-candidates.txt`; source pair and staging event context remain in its immutable caller/source pins.
+
+No performance candidate is adopted by this audit. The result is narrower: the resident-only small-M path is too small to prioritize; larger staged small-M coverage remains conditional on qualified critical-path and event-overlap evidence.

@@ -1,0 +1,13 @@
+--- a/sycl/include/strata/prefill_service_ledger.hpp
++++ b/sycl/include/strata/prefill_service_ledger.hpp
+@@ -228,7 +228,9 @@
+         bool first = true;
+         for (const auto& item : shapes) {
+             const auto& key = item.first;
+-            std::fprintf(stderr, "%s{\"role\":%d,\"source\":%d,\"rows\":%lld,\"N\":%lld,\"K\":%lld,\"ldy\":%lld,",
++            // M is the per-call tuple dimension; totals_json's rows is the
++            // accumulated row count. Distinct keys preserve both in JSON.
++            std::fprintf(stderr, "%s{\"role\":%d,\"source\":%d,\"M\":%lld,\"N\":%lld,\"K\":%lld,\"ldy\":%lld,",
+                 first ? "" : ",", std::get<0>(key), std::get<1>(key), (long long)std::get<2>(key),
+                 (long long)std::get<3>(key), (long long)std::get<4>(key), (long long)std::get<5>(key));
+             first = false; totals_json(item.second); std::fprintf(stderr, "}");

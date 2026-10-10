@@ -1,0 +1,18 @@
+--- a/sycl/src/prefill/prefill.cpp
++++ b/sycl/src/prefill/prefill.cpp
+@@ -2992,7 +2992,14 @@
+     PeTimer pe;
+     if (m.pp) pe.dev = m.pp->dev; else pe.on = false;
+     const dpct::queue_ptr cs = strata::q_of(m.cs);
+-    ExpertServiceLedger services{std::getenv("STRATA_PREFILL_SERVICE_TIMING") != nullptr, "expert_gemm"};
++    const char* const gemm_service_env = std::getenv("STRATA_PREFILL_GEMM_SERVICE_TIMING");
++    const bool gemm_service_invalid = gemm_service_env && std::strcmp(gemm_service_env, "0") != 0 && std::strcmp(gemm_service_env, "1") != 0;
++    ExpertServiceLedger services{!gemm_service_invalid && (std::getenv("STRATA_PREFILL_SERVICE_TIMING") != nullptr ||
++        (gemm_service_env && std::strcmp(gemm_service_env, "1") == 0)), "expert_gemm"};
++    if (gemm_service_invalid) {
++        services.invalidate("gemm_service_env_must_be_exact_0_or_1");
++        services.receipt(); // No admission, event capture or queries for this invalid GEMM switch.
++    }
+     services.admit(cs);
+     if (services.on && *strata::q_of(m.gemm.stream()) != *cs) services.invalidate("gemm_queue_identity");
+     transfers.admit(m.copy, cs);

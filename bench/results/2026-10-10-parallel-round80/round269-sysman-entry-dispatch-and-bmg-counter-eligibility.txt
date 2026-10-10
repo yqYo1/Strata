@@ -1,0 +1,54 @@
+# Round 269 — Sysman entry dispatch and BMG memory-bandwidth eligibility
+
+Status: read-only source research. Public source checked is compute-runtime tag 26.31.39395.13. The selected installed package is recorded as `libze-intel-gpu1 26.31.39395.14-1~24.04~ppa1`, with driver library `/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395` and `1.17.39395+14`; exact source identity for this `.14` PPA binary is not established. `.13` findings below describe the closest public source, not proof that installed `.14` has identical code.
+
+## Finding
+
+The old `level_zero/tools/source/sysman/memory/linux/os_memory_imp.cpp` path is not the only Linux implementation and its DG2/PVC-only switch cannot be used to claim BMG Sysman bandwidth is unsupported. In `.13`, a separate `level_zero/sysman/source/api/memory/linux/sysman_os_memory_imp.cpp` delegates to the Linux `SysmanProductHelper`. The BMG implementation is in `level_zero/sysman/source/shared/linux/product_helper/xe2_hpg_core/bmg/sysman_product_helper_bmg.cpp`. Its BMG-specialized `getMemoryBandwidth` reads PMT OOBMSM request counters and is the relevant implementation when the newer `zesInit`/Sysman-driver route is selected.
+
+For that `.13` BMG helper, the returned `readCounter` and `writeCounter` are already byte totals. It packs each upper/lower register pair, multiplies 32B request counters by 32 and 64B request counters by 64, sums the selected memory-subsystem and GT/DisplayVC0/SOC counters, and assigns the totals to the Level Zero bandwidth struct. It also returns `maxBandwidth` in bytes/sec after converting PMT's 100-Mbps units, and a Sysman microsecond timestamp. Do not apply another ×32 or ×64 to those returned API deltas.
+
+## Distinct entry and handle routes
+
+### `zeInit` with `ZES_ENABLE_SYSMAN=1`
+
+In `.13` `level_zero/core/source/driver/driver.cpp`, core initialization reads `ZES_ENABLE_SYSMAN` into `envVariables.sysman`; `DriverHandle::create` stores it as `enableSysman` (`level_zero/core/source/driver/driver_handle.cpp`). `level_zero/tools/source/sysman/sysman.cpp` creates a Sysman handle during core `Device` creation only when `enableSysman` is true and the device is not a subdevice. It uses `SysmanDeviceHandleContext::init` / `SysmanDeviceImp`, the older `level_zero/tools/source/sysman` family.
+
+That older Linux OS implementation (`level_zero/tools/source/sysman/linux/os_sysman_imp.cpp`) creates the PMT mapping but its `isDriverModelSupported()` returns true only when the DRM driver name is `i915`; other names return false, causing `SysmanDeviceImp::init()` to reject initialization. Thus `.13` source does not establish this as an eligible BMG route on xe. No current host KMD query was permitted or performed; do not claim which branch the installed machine takes. This check is specific to the old route and must not be carried over to the product-helper path.
+
+### Standalone `zesInit` / Sysman driver enumeration
+
+In `.13` `level_zero/sysman/source/driver/sysman_driver.cpp`, `zesInit` calls `SysmanDriver::driverInit()`. That path independently discovers hardware, builds a Sysman driver handle, and marks `sysmanOnlyInit` after successful initialization. `zesDriverGet` enumerates its driver handle. The modern `level_zero/sysman/source/driver/sysman_driver_handle_imp.cpp` maps core devices to Sysman devices by UUID where callers need to bridge core handles to Sysman handles.
+
+The modern device route constructs `level_zero/sysman/source/device/sysman_device_imp.cpp`, then `level_zero/sysman/source/shared/linux/zes_os_sysman_imp.cpp`. The Linux implementation selects `SysmanProductHelper::create(getProductFamily())`; `enable_sysman_product_helper_bmg.cpp` registers `SysmanProductHelperHw<IGFX_BMG>`. The BMG helper includes `sysman_os_agnostic_product_helper_xe2_and_later.inl`, whose specialization returns true for `isZesInitSupported()`. This is the separate API/product-helper route that makes the BMG memory-bandwidth code eligible in `.13`; it is not reached by evidence about the old DG2/PVC switch alone.
+
+When a client calls `zesDeviceEnumMemoryModules` on a valid Sysman device handle, the newer `SysmanDevice::memoryGet` reaches `MemoryHandleContext`. The context creates memory handles for root/subdevices, retaining only modules whose `LinuxMemoryImp::isMemoryModuleSupported()` succeeds. `MemoryImp::memoryGetBandwidth` delegates to OS `getBandwidth`, and Linux OS `getBandwidth` dispatches to the selected product helper. The public API `zesMemoryGetBandwidth` requires a memory handle returned by memory-module enumeration; it does not accept a PMT node or raw device pointer. The exact installed loader/driver DDI dispatch and `.14` internal handle selection still require installed-binary evidence.
+
+The modern Linux init also requires a DRM driver model and successful Sysman KMD access-interface initialization. On the BMG bandwidth call itself, `.13` helper requires PMT telemetry nodes reachable from the PCI root path, a recognized BMG OOBMSM/PUNIT GUID/key map, readable `MSU_BITMASK`, all counters corresponding to enabled MSUs, and readable `VRAM_BANDWIDTH`. It returns unsupported if no telemetry nodes or no recognized key map are found, and not-available for counter/max-bandwidth read failures. Successful Sysman initialization or successful memory-handle enumeration alone therefore does not guarantee a successful bandwidth sample.
+
+## `.13` BMG counter calculation details
+
+`getMemoryBandwidth` in the BMG helper searches PMT telemetry nodes and merges key-offset maps for recognized BMG GUIDs, then reads `MSU_BITMASK`. For each set bit in supported MSUs 0–7, it reads the per-channel GT, DisplayVC0, and SOC read request counters and GT/SOC write request counters. Register names distinguish `_32B_` and `_64B_`; `getCounterValues` joins each upper/lower word and multiplies by 32 or 64 bytes respectively before accumulation. The algorithm’s output fields are byte counts. PMT `VRAM_BANDWIDTH` is right-shifted by 16, interpreted by the source comment as units of 100 Mbps, and converted to bytes/sec. Timestamp is set after the reads with `SysmanDevice::getSysmanTimestamp()`.
+
+This describes `.13` source semantics. It does not establish installed `.14` source, package patch equivalence, counter reset/retention behavior across device reset, or actual telemetry availability on the target. The Level Zero header’s conflicting generic 32-byte-transaction note is not a reason to rescale BMG helper output: the BMG implementation performs its own explicit per-register byte conversion before returning.
+
+## Source references (official upstream)
+
+- Core `zeInit` env handling: https://github.com/intel/compute-runtime/blob/26.31.39395.13/level_zero/core/source/driver/driver.cpp
+- Core driver handle flag and device creation: https://github.com/intel/compute-runtime/blob/26.31.39395.13/level_zero/core/source/driver/driver_handle.cpp
+- `zeInit`-attached Sysman handle creation: https://github.com/intel/compute-runtime/blob/26.31.39395.13/level_zero/tools/source/sysman/sysman.cpp
+- Older Linux driver-model eligibility: https://github.com/intel/compute-runtime/blob/26.31.39395.13/level_zero/tools/source/sysman/linux/os_sysman_imp.cpp
+- Standalone `zesInit`: https://github.com/intel/compute-runtime/blob/26.31.39395.13/level_zero/sysman/source/driver/sysman_driver.cpp
+- Standalone Sysman/core UUID handle mapping: https://github.com/intel/compute-runtime/blob/26.31.39395.13/level_zero/sysman/source/driver/sysman_driver_handle_imp.cpp
+- Modern Sysman device construction: https://github.com/intel/compute-runtime/blob/26.31.39395.13/level_zero/sysman/source/device/sysman_device_imp.cpp
+- Modern Linux init/product-helper selection: https://github.com/intel/compute-runtime/blob/26.31.39395.13/level_zero/sysman/source/shared/linux/zes_os_sysman_imp.cpp
+- Modern Linux memory dispatch: https://github.com/intel/compute-runtime/blob/26.31.39395.13/level_zero/sysman/source/api/memory/linux/sysman_os_memory_imp.cpp
+- Product-helper interface default returns unsupported for bandwidth: https://github.com/intel/compute-runtime/blob/26.31.39395.13/level_zero/sysman/source/shared/linux/product_helper/sysman_product_helper_hw.inl
+- BMG product-helper registration and implementation: https://github.com/intel/compute-runtime/blob/26.31.39395.13/level_zero/sysman/source/shared/linux/product_helper/xe2_hpg_core/bmg/enable_sysman_product_helper_bmg.cpp and https://github.com/intel/compute-runtime/blob/26.31.39395.13/level_zero/sysman/source/shared/linux/product_helper/xe2_hpg_core/bmg/sysman_product_helper_bmg.cpp
+- BMG helper supports `zesInit`: https://github.com/intel/compute-runtime/blob/26.31.39395.13/level_zero/sysman/source/shared/product_helper/sysman_os_agnostic_product_helper_xe2_and_later.inl
+- Level Zero Sysman API/header version: https://github.com/oneapi-src/level-zero/blob/v1.32.0/include/zes_api.h
+- Existing receipt for installed `.14` package and driver identity: `bench/results/2026-10-10-parallel-round35/research/bmg-installed-igc-register-contract-round103.txt` in frozen worktree commit `7832bae18651b83f6692c79089e97a26c7e91959`.
+
+## What remains unknown for the installed package
+
+No installed `.14` source tag or package-source equality was verified, and no runtime API call was performed. We therefore cannot claim which exported DDI route is selected by this installation or whether its BMG helper matches `.13`. The source-supported expectation for an eligible `.13` standalone `zesInit` route is BMG Sysman byte totals with per-counter 32B/64B scaling already applied. A read-only `.14` proof should record initialization entrypoint, driver/device handles and UUID mapping, `zesDeviceEnumMemoryModules` result and properties, `zesMemoryGetBandwidth` result code/raw fields, and driver version. If that API call succeeds, preserve raw API fields and do not post-scale; if it fails, retain the precise result code and do not infer that the old DG2/PVC implementation was selected.

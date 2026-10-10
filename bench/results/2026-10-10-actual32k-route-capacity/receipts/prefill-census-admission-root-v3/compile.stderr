@@ -1,0 +1,20 @@
+/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill_census_admission_v3.cpp: In function ‘int main(int, char**)’:
+/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill_census_admission_v3.cpp:30:5: error: this ‘if’ clause does not guard... [-Werror=misleading-indentation]
+   30 |     if(argc!=2)return 2;const std::string_view mode=argv[1];
+      |     ^~
+/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill_census_admission_v3.cpp:30:25: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+   30 |     if(argc!=2)return 2;const std::string_view mode=argv[1];
+      |                         ^~~~~
+/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill_census_admission_v3.cpp:53:11: error: this ‘if’ clause does not guard... [-Werror=misleading-indentation]
+   53 |           if(mode=="meta-small")--m.experts;if(mode=="meta-large")++m.experts;
+      |           ^~
+/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill_census_admission_v3.cpp:53:45: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+   53 |           if(mode=="meta-small")--m.experts;if(mode=="meta-large")++m.experts;
+      |                                             ^~
+/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill_census_admission_v3.cpp:54:11: error: this ‘if’ clause does not guard... [-Werror=misleading-indentation]
+   54 |           if(mode=="unknown-branch")m.branch=19;if(mode=="native-branch")m.branch=C::generic_gguf;
+      |           ^~
+/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill_census_admission_v3.cpp:54:49: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+   54 |           if(mode=="unknown-branch")m.branch=19;if(mode=="native-branch")m.branch=C::generic_gguf;
+      |                                                 ^~
+cc1plus: all warnings being treated as errors

@@ -1,0 +1,134 @@
+Private source-only handoff: GEMM-only returned-event service switch
+2026-10-10. No build, test, source-program execution, GPU/profiling/process/
+hardware query, Git operation, model payload read, live root-run-file read or
+cleanup. Root owns all serial qualification. Original v3 and W are unchanged.
+
+Assigned private output directory:
+  D=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-gemm-service-only-v1
+Files and SHA256:
+  D/prefill.cpp
+    1cf7e911a555e8611c1368a4d18d4ba81c95027bb8de77f89ad65ac64b05fc3c
+  D/include/strata/prefill_route_census.hpp (exact copied v3)
+    c673382e9f4bf63919489cf00daa71bec793ff7b4584c203291380b827dc110b
+  D/include/strata/prefill_service_ledger.hpp
+    7d473f68dcfdb48660c50cff0e75c6191e5b3339ed95901a1aa4286f38bbff06
+  D/prefill.cpp.patch (MINIMAL delta from exact v3 caller, not original W)
+    1b42d70d9786342d2f8ff6b086cb2111ba51da2af073e7e4cfa41857514fbda6
+  D/prefill_service_ledger.hpp.patch (delta from original W service header)
+    747f7044b824f2a717aeb841e7d648bf74d2b4f3c4452015cbd1eeba63266313
+  This report's SHA256 supplied separately in the final handoff.
+
+Immutable input identities:
+  B=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007
+  B/prefill-route-census-v3/prefill.cpp
+    905f43162ae079b6785584da226d950cec14b13bd413ca51ab1a48f49de6ebaf
+  B/prefill-route-census-v3/prefill_route_census.hpp
+    c673382e9f4bf63919489cf00daa71bec793ff7b4584c203291380b827dc110b
+  W=/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010
+  owner-pinned HEAD495369cf4dc6e6da564095a1c26504dd3694e3f2; original caller
+    f6cbc4acb9f84b19480a25892a2e6864896a3e3ab0f68ace3c3f51a788591f69
+  W/sycl/include/strata/prefill_service_ledger.hpp independently hashed read-only:
+    25a469910ac0e1a6f87bd38da8d89c2cbbe377299623394f1e9d49a526fe25e4
+  Registry102/storage2a1eb6864420738db7714587f26f517e1718879e are parent-supplied
+  provenance; no report-hash transcription from R270/R272 was used.
+
+Exact change and flag semantics
+  The caller delta only replaces construction of expert_gemm ServiceLedger with
+  parsing/enablement of STRATA_PREFILL_GEMM_SERVICE_TIMING and one invalid receipt.
+  New flag absent or EXACT0: no GEMM-only enablement. EXACT1: enables the existing
+  expert_gemm lane. Any other present string (including empty,00,true,2,whitespace)
+  disables this GEMM lane and immediately emits an invalid receipt with reason
+  gemm_service_env_must_be_exact_0_or_1. services.admit returns immediately because
+  on=false, so malformed values add no GEMM queue/property/aspect/event queries,
+  records, profiling queries, clocks or aggregates; original compute continues.
+  The old STRATA_PREFILL_SERVICE_TIMING flag retains its existing presence-based
+  semantics when the new flag is absent/0/1. A malformed new flag suppresses GEMM
+  capture even if the full flag is present, because the requested diagnostic
+  configuration is invalid. It does NOT override the explicitly present full
+  flag's unchanged transfer-ledger/copy-queue behavior; that combination remains
+  the full-copy mode and is not an isolation/qualification recipe.
+  New flag is NOT referenced by ExpertTransferTimer, Stager::measure_copies or
+  copy-queue creation. With full/transfer flags absent, all transfer ledgers and
+  Stager copy profiling stay OFF and the original copy queue property stays
+  unprofiled. Ordinary existing Stager completion polling remains unchanged;
+  there is no new diagnostic event query on the copy queue.
+  Existing full/transfer flags expressly present still enable their original
+  copy profiling. Full combined profiling remains FAILED/unqualified; this
+  implementation is neither a retry nor adoption of that mode.
+
+Compute event and lifetime boundaries unchanged
+  No new queue, device command, marker, device query site, wait or synchronization
+  boundary is added. The new enabled lane uses existing services.admit on the
+  SAME existing compute queue, existing f16_event exact single-product API,
+  existing expectation/recording path, existing chunk/final wait folds and same
+  fatal no-unwind handling. It does not change GEMM arguments/math, dequant,
+  source jobs, ring/workspace, command order, host ownership or USM lifetime.
+  Frozen dpct create_queue_impl already puts enable_profiling on its ordinary
+  compute queues. This change does not create/recreate or upgrade a queue. A
+  custom compute queue without property/aspect fails existing ledger admission.
+  Returned routine event end-start remains a returned-event duration, not proof
+  of exclusive GEMM kernel busy or complete internal oneMKL kernel service.
+
+JSON schema correction (logging only)
+  ServiceLedger shapes previously emitted tuple per-call rows under key rows,
+  then totals_json emitted accumulated rows under the same key. Ordinary JSON
+  decoders kept the latter and silently lost the per-call M/ne denominator.
+  Now the shape tuple field is M. N/K/ldy and all accumulated totals remain
+  unchanged, including totals rows. No counters, validity logic, query coverage,
+  event storage or numerical operation changes. Consumers must use shapes.M
+  for exact per-call ne and shapes.rows for summed routed rows. Receipt/global/
+  coverage rows retain their old meaning. Old duplicate-key logs cannot be
+  assumed to contain M after ordinary JSON decoding; recover only with original
+  raw log/parser evidence under root authority.
+
+Default-off proof reasoning (static only)
+  New env absent means gemm_service_invalid=false and the original full flag
+  alone selects services.on, exactly as v3. With old diagnostic flags absent,
+  services stays off, no event path/clock/record/query is enabled. New exact0
+  also stays off. Added strcmp calls are guarded by non-null env. No transfer
+  or queue-creation condition was edited. Header log rename is unreachable on
+  disabled ledgers. Census header is byte-identical to v3, including nfloor32767
+  and T<=8192; no geometry or qualification expansion. Machine-code identity,
+  numerical PASS, timing or fault-free event-query execution are not asserted
+  by this source-only follow-up.
+
+Root-only qualification suggestions (NOT RUN)
+  1. Apply caller patch to exact v3 private/isolated caller and header patch to
+     original W service header; verify hashes. Or compile this private caller
+     with -I"$D/include" before frozen SYCL includes, using root's exact frozen
+     library/object recipe and original precise/runtime/safety settings. Fresh
+     caller/header compilation is required; don't reuse an object incorporating
+     the old duplicate-key schema. Root retains all linking/build ownership.
+  2. CPU/stub flag admission cells: absent/0 => no newly enabled lane;1 enables
+     only expert_gemm; malformed => invalid receipt and zero queue/event calls.
+     Test full absent and present separately; do not actually repeat the failed
+     full profiling GPU mode merely to validate the boolean expression.
+     Assert no new flag reference appears in copy creation/transfer/Stager enable
+     conditions. Assert existing old flag semantics remain unchanged.
+  3. Existing real-header service ledger contract: multiple same-shape calls
+     with M=7 must decode shapes.M=7 and shapes.rows=7*calls; parse JSON with
+     object_pairs_hook duplicate-key rejection for ALL objects. Verify M,N,K,
+     ldy,roles/expected pairs and query/submission/fold reconciliation. Repeat
+     existing failure/unknown-completion/fatal-no-unwind contracts unchanged.
+  4. Root alone decides whether/when a first GEMM-only GPU qualifier is safe
+     after source/health review. Exact isolation environment requires full and
+     transfer flags ABSENT (their string0 still means present/enabled), timing
+     phase markers absent, new GEMM flag1 and original census settings as needed.
+     Keep one-process/serial lock, finite watchdog/log/RSS budgets, original
+     runtime safe flags and normal-exit/kernel-fault/completion/cleanup gates.
+     Capture original numerical comparator/head/live66/route/ne identity and
+     valid expert_gemm receipt plus shape-M coverage, with zero transfer ledger
+     output and unchanged unprofiled copy queue. No service-only GPU PASS is
+     implied by root's earlier v3 census/default-OFF numerical qualification.
+  5. Timing only after a separately successful qualifier; no repeat/reset of
+     the failed full-copy mode is proposed. Ledger query/runtime overhead and
+     returned-event coverage remain risks; keep request wall, host submit and
+     device returned-event clocks separate. No optimization/capacity adoption,
+     performance gain or full physical262144 qualification follows from this.
+
+Root-supplied evidence preserved in interpretation: one fresh32768 census v3
+and default-OFF numerical/live/normal/no-fault PASS; first full service profiling
+watchdog SIGABRT with main Stager::wait and workers urEventGetInfo->NEO, no xe
+dump/fault or survivor. Those are parent-observed statuses, not this agent's
+measurements. Full combined copy/GEMM profiling remains unqualified. Private
+separation and schema repair are ready for root review and serial validation.

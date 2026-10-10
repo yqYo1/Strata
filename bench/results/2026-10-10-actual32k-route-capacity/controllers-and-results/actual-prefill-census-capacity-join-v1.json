@@ -1,0 +1,159 @@
+{
+  "created_utc": "2026-10-10T13:30:05.548372+00:00",
+  "passed": true,
+  "model_route_join_qualified": true,
+  "performance_eligible": false,
+  "full256k_qualified": false,
+  "controller": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/derive_actual_prefill_census_capacity_join_v1.py",
+    "bytes": 6606,
+    "sha256": "4e899cf2223c1ebdddad4b3a5a313fe0d21b39dba3d832f7f05185790e86e6ed"
+  },
+  "model_receipt": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-prefill-route-census-v3-code32k-diagnostic-r1/record.json",
+    "bytes": 62309,
+    "sha256": "ad7415ecd477812f812ed3c4068d8c23105dbe2df57cec0b7ac919369f9f2131"
+  },
+  "census": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-prefill-route-census-v3-code32k-diagnostic-r1/census.jsonl",
+    "bytes": 5069008,
+    "sha256": "41f81d6046f98684fd12019d25b06b8f87bf68aab471e7614a3f1de15c257e53"
+  },
+  "pack_receipt": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-current-native-pack-census/receipt.json",
+    "bytes": 78372,
+    "sha256": "902283e324b339127a9eb197954260ab606e32767b4e9acaf1d17e2463d31f84"
+  },
+  "dequant_capacity": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-gpu-iq-dequant-capacity/three-process-summary.json",
+    "bytes": 26032,
+    "sha256": "82c0972e3ec8197ad0cd9dae3e42092d2e878a2c8cae8b7a37a68fbcec15b030"
+  },
+  "scope": "Actual onefresh32768 request native genericIQ census joined to current unchanged manifest/header/144 descriptors and source metadata. Measured route counts and logical byte amounts; isolated capacities are attained estimates, never exclusive model critical path or absolute ceilings.",
+  "totals": {
+    "calls": 93505,
+    "rows": 15728160,
+    "transfer_calls": 92998,
+    "transfer_bytes": 190240998400,
+    "generic_GU_calls": 93505,
+    "generic_Down_calls": 93505
+  },
+  "paired_formats": {
+    "18/20": {
+      "calls": 27283,
+      "rows": 4587380,
+      "transfer_calls": 27171,
+      "transfer_bytes": 59124096000,
+      "generic_GU_calls": 27283,
+      "generic_Down_calls": 27283
+    },
+    "18/42": {
+      "calls": 5801,
+      "rows": 983010,
+      "transfer_calls": 5777,
+      "transfer_bytes": 9908710400,
+      "generic_GU_calls": 5801,
+      "generic_Down_calls": 5801
+    },
+    "21/20": {
+      "calls": 17634,
+      "rows": 2949030,
+      "transfer_calls": 17562,
+      "transfer_bytes": 40912435200,
+      "generic_GU_calls": 17634,
+      "generic_Down_calls": 17634
+    },
+    "21/42": {
+      "calls": 2005,
+      "rows": 327670,
+      "transfer_calls": 1997,
+      "transfer_bytes": 3731993600,
+      "generic_GU_calls": 2005,
+      "generic_Down_calls": 2005
+    },
+    "22/20": {
+      "calls": 29271,
+      "rows": 4915050,
+      "transfer_calls": 29151,
+      "transfer_bytes": 57462451200,
+      "generic_GU_calls": 29271,
+      "generic_Down_calls": 29271
+    },
+    "22/42": {
+      "calls": 9662,
+      "rows": 1638350,
+      "transfer_calls": 9627,
+      "transfer_bytes": 14540620800,
+      "generic_GU_calls": 9662,
+      "generic_Down_calls": 9662
+    },
+    "23/20": {
+      "calls": 1849,
+      "rows": 327670,
+      "transfer_calls": 1713,
+      "transfer_bytes": 4560691200,
+      "generic_GU_calls": 1849,
+      "generic_Down_calls": 1849
+    }
+  },
+  "ne_buckets": {
+    "1-16": {
+      "calls": 19948,
+      "routed_rows": 138024,
+      "logical_packed_bytes": 40859366400
+    },
+    "17-80": {
+      "calls": 26539,
+      "routed_rows": 1140838,
+      "logical_packed_bytes": 54586521600
+    },
+    "81-160": {
+      "calls": 16499,
+      "routed_rows": 1935320,
+      "logical_packed_bytes": 33784217600
+    },
+    "161-640": {
+      "calls": 26472,
+      "routed_rows": 8098012,
+      "logical_packed_bytes": 53820492800
+    },
+    "641-8192": {
+      "calls": 4047,
+      "routed_rows": 4415966,
+      "logical_packed_bytes": 8309452800
+    }
+  },
+  "source_buckets": {
+    "3": {
+      "calls": 92998,
+      "routed_rows": 15409580,
+      "logical_packed_bytes": 190240998400
+    },
+    "1": {
+      "calls": 507,
+      "routed_rows": 318580,
+      "logical_packed_bytes": 1119052800
+    }
+  },
+  "minimum_ne": 1,
+  "maximum_ne": 6495,
+  "weighted_mean_rows_per_expert": 168.2066199668467,
+  "generic_gu_and_down_expanded_output_bytes": 919191552000,
+  "attained_HostUSM_H2D_GBs": 6.446833643341082,
+  "attained_pageable_H2D_GBs": 4.605214183505477,
+  "external_Gen4x4_encoded_GBs": 7.876923076923077,
+  "H2D_payload_service_seconds_at_attained_USM": 29.509214743969615,
+  "H2D_payload_service_seconds_at_attained_pageable": 41.309913246030405,
+  "H2D_payload_seconds_at_encoded_external_link": 24.15168925,
+  "census_host_accumulation_seconds": 0.02141227,
+  "census_host_serialization_seconds": 0.014484626,
+  "source_buckets_semantics": "Header sourceenum: 1resident;3copied. transfer_source detail in lossless census. Source inferred from admitted caller accounting, not physical DMA/DRAM counters.",
+  "limits": [
+    "Diagnostic wall/DONE times excluded from clean speed.",
+    "Counts/bytes do not establish DMA active durations, overlap or CPU exclusive critical path.",
+    "No arbitrary nearest-ne interpolation: capacity fixtures do not time every admitted row size.",
+    "Standalone sevenpair DQ O2 AOT differs from production O3 compile policy; use as candidate scale, not model latency fact.",
+    "No whole54.8GB GGUF payload hash; descriptor/header/manifest identity and actual loadedMeta paths only.",
+    "No full262144 candidate physical context, defaultOFF runtime parity or production adoption yet."
+  ]
+}
