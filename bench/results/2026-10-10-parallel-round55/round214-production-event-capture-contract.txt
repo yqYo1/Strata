@@ -1,0 +1,65 @@
+# R214 — Production GEMM and expert-copy event-capture contract
+
+Date: 2026-10-10 (Asia/Tokyo). Read-only implementation-feasibility audit on the immutable SYCL/DPCT source at commit `185fa78098bee4be01ac81ad4f791673d24246f3`, plus primary oneMKL, SYCL, and Intel PTI documentation. No implementation, build, test, inference, GPU/process query, profiler run, Git operation, service action, or cleanup was performed. Only this report was written.
+
+## Finding and recommendation
+
+The least disruptive route is an opt-in, bounded event ledger in the existing prefill instrumentation, then one short `unitrace` capture as an independent host/device timeline check. Do not infer actual GEMM service from the `gemm down` phase total. The current copy timer already retains `sycl::event` plus logical byte count and layer behind `STRATA_PREFILL_TRANSFER_TIMING`; its copy queue is created with profiling enabled under that flag, and it queries events after the prefill work has already waited. This is a real capture path, but it currently emits aggregates, has no expert/copy identity or per-copy row, and does not itself show host API or staging waits.
+
+The GEMM seam is clear: `Gemm::f16` calls DPCT `dpct::blas::gemm`; the DPCT overload is `void`, and `dpct::detail::gemm_impl` calls `oneapi::mkl::blas::column_major::gemm` but discards the returned event. The oneMKL USM GEMM API returns a `sycl::event` whose completion represents the routine. Thus no caller-returned GEMM event exists today; a phase marker around the call cannot substitute for one.
+
+I recommend adding a nullable event output only along the existing half-input / float-output oneMKL path, then collecting that event at the two native fallback call sites (GU and Down). Keep the current `Gemm::f16` invocation and output behavior exactly as-is when the event-audit flag is absent. Do not add waits, queue barriers, replay, or a second GEMM call. Make the capture SYCL/oneMKL-only; if a backend or fallback cannot provide the event, report `unsupported` and do not combine it with event-qualified samples.
+
+## Exact source seam and proposed patch boundary
+
+The frozen identities are:
+
+- `sycl/src/prefill/prefill.cpp`: SHA-256 `1a6598a158e0b11e79c7a9f93ba7e452e3c316f108e38a07ed88c88a04cc8b72`
+- `sycl/src/prefill/gemm.dp.cpp`: SHA-256 `11a2c943ccc323c328b58d99119d77b3b4ed95c92a0f680480bf5ede96bcb705`
+- `sycl/include/dpct/blas_utils.hpp`: SHA-256 `c742fa32e2f47cfccc57568d96d03afcc646ad80cbcc7dcc7aee30f052788a15`
+- `sycl/include/dpct/detail/blas_utils_detail.hpp`: SHA-256 `acfaebfcded1e593f3f230c718ec841113029ffa09eba232e0d2dd53542caed7`
+- `include/strata/prefill/gemm.hpp`: SHA-256 `f0c30f5f73df10506be20c83aa538b06b5e10692ea82e5063249e6fe89e69bf7`
+
+A narrowly scoped implementation can touch those GEMM declarations/wrappers and `prefill.cpp` only:
+
+1. In `dpct::detail::gemm_impl` (`blas_utils_detail.hpp:347–360`), preserve the oneMKL call arguments and return its `sycl::event` through an event-aware helper or optional out parameter. In `dpct::blas::gemm` (`blas_utils.hpp:921–1050`), expose that output only for the `real_half, real_half, real_float, real_float` dispatch arm. All existing callers without an output pointer continue through the same oneMKL invocation and discard its event.
+2. Thread the optional event output through `Gemm::f16` (`gemm.hpp:40`, `gemm.dp.cpp:750–784`). The opt-in should be accepted only when the actual execution branch is the SYCL/oneMKL path. HIP WMMA/hipBLASLt and other non-oneMKL branches currently do not return a SYCL event; do not fabricate one for those routes.
+3. At `prefill.cpp:4886–4890`, assign a monotonically increasing request-local sequence and record the actual identifiers already in scope: chunk, layer, expert `e`, role `GU`/`Down`, row count `ne`, matrix dimensions/strides, representation, and event. Bracket the existing host call with `steady_clock` timestamps so enqueue-call cost is separate from device event time. These are the oneMKL calls for the observed non-MMQ compact native route; other paths (MMQ, fused kernels, shared experts) need distinct record kinds or must be explicitly excluded from this capture’s coverage.
+4. Extend `ExpertTransferTimer::Copy` (`prefill.cpp:2286–2307`) and `copy` call sites to retain the returned event, byte count, layer and expert/job identity, chunk, source kind (pinned blob vs staged host buffer), ring slot, and host submit begin/end. Record the existing `Stager::wait` interval and ring-slot reuse wait as separate host fields; never relabel either as DMA service. Existing copy calls already obtain their event at submission, so this adds metadata rather than commands.
+5. Preserve single-writer ownership. `stream_all` can issue copies on the issuer thread while GEMMs are submitted by the compute thread; avoid unsynchronized writes to one vector or a mutex on the hot path. Preallocate bounded per-producer lanes and merge after the existing issuer join. Cap records from a checked upper bound derived from request chunks/layers/routed experts; on cap overflow, missing event, or unrecognized backend, invalidate the capture instead of publishing a partial result as complete. A practical cap should be stated in the controller and checked against expected row counts before admission.
+
+The user-facing default remains unchanged. Profile-enabled queues are an explicit precondition: the compute queue must be the exact existing in-order `m.cs` queue with `enable_profiling` and the device profiling aspect, and the existing copy queue must have profiling enabled. Do not replace/recreate a caller-owned compute queue to turn profiling on. Fail closed as `unsupported` before the workload if either queue cannot satisfy this; preserve queue identity and context.
+
+## Event fields, service definitions, and validation
+
+For each returned GEMM and expert-copy event, retain `command_submit`, `command_start`, and `command_end` after the program’s existing completion synchronization. Derive:
+
+- oneMKL routine event span: `command_end - command_start`;
+- queue delay after submit: `command_start - command_submit`;
+- preceding same-queue gap: current `command_submit - previous command_end`;
+- copy event byte rate: logical copy bytes divided by that event’s start-to-end span;
+- overlap: interval intersection between copy and compute events on the same backend timebase.
+
+These are event-level operation spans and logical byte rates, not proof of exclusive kernel-busy time, physical PCIe payload, or DRAM traffic. A returned oneMKL event guarantees the routine’s completion, but the library may implement the routine with internal work; use PTI kernel events when a kernel-level decomposition is needed. SYCL specifies that profiling timestamps from events sharing a backend use a common timebase, so differences can join the compute and copy queues. Host `steady_clock` values remain a separate clock; do not directly subtract them from event timestamps.
+
+Validation must happen only after the existing compute/copy completion waits and thread joins: confirm exact queue/device/context identity, every retained event is complete, drain async queue errors without adding a wait, query profiling fields with exceptions caught, enforce `submit <= start <= end`, ensure nonnegative/nonzero durations where expected, check queue-clock monotonicity, reconcile submitted/retained/queried rows and expected role/copy counts, sum bytes with overflow checks, and mark any missing/unsupported/failed query or cap hit invalid. This preserves the current scheduling and arithmetic. The report parser should independently verify full `(request, chunk, layer, expert, role)` coverage and recompute byte totals and rates.
+
+For host starvation, retain host call begin/end and measured stager/ring waits keyed by the same request-local sequence. Compare those with per-event queue gaps and `command_submit` values; host/device cause attribution should be cross-checked against PTI’s host-device trace, not inferred by subtracting the independent host and device clocks. Do not insert a host wait to make a timeline easier to read.
+
+## Independent PTI/unitrace check
+
+Intel PTI `unitrace` documents host API timing, per-kernel queue/submit/execution timing, per-device command timelines, and Chrome/Perfetto traces that include host-device interactions and dependencies. A short, isolated, already-authorized diagnostic can be wrapped with `unitrace --kernel-submission --device-timeline --chrome-kernel-logging --chrome-call-logging` (or a small `--start-paused` collection window if the harness can bracket only the diagnostic request). Retain engine/queue identifiers; use the narrowest relevant capture window and a documented event-buffer limit. This can show whether the long Down-labelled interval contains one long GEMM kernel, multiple kernels, queue holes, and `zeMemCopy`/other copy commands, while the source ledger supplies exact routed-expert IDs and byte counts.
+
+PTI is not yet qualified on this exact B570 driver/runtime stack. First verify on the exact binary that the oneMKL dispatches and `queue::memcpy` operations are visible, timestamps are valid, and capture does not alter correctness/fault status. If filtering cannot preserve copy commands or host interactions, use a short bounded trace without filters and reduce it to a compact event table; do not keep a full timeline beyond its named question. The PTI trace is a diagnostic cross-check, not the source of truth for expert bytes.
+
+## Decision rule
+
+Use the merged event ledger and PTI cross-check to answer two separate questions: (1) are actual per-shape GEMM service spans themselves large, or is the phase label dominated by gaps before the next compute-queue marker; (2) do copy intervals overlap GEMMs, and do staging waits or late submissions leave the compute queue idle? Reordering/overlap work is supported only if dependency-aligned traces show avoidable host gaps or underlapped copy/compute while event-level GEMM/copy service remains adequate. A hardware/data-volume limit is supported only if service intervals account for the critical path under valid clock/coverage checks and the actual request’s shape/route distribution. The R212 phase total alone does not choose between these.
+
+## Primary references
+
+- [oneMKL BLAS GEMM, USM return event and completion semantics](https://oneapi-spec.uxlfoundation.org/specifications/oneapi/v1.2-rev-1/elements/onemkl/source/domains/blas/gemm)
+- [SYCL 2020 event profiling timestamp timebase and command_submit/start/end definitions](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html)
+- [Intel PTI-GPU unitrace options and host/device timeline guidance](https://github.com/intel/pti-gpu/blob/master/tools/unitrace/README.md)
+
+Prior context: [R212 phase-attribution audit](/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round212-prefill-down-attribution-and-critical-path-gap.txt), SHA-256 `c8caad979426c1c1aaae8c8e911a8731df421feeaa3cadc891867f265c05887b`; [R211 GEMM contract and CPU service envelope](/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round211-production-gemm-contract-and-cpu-service-envelope.txt), SHA-256 `9662f9f73f7749afa704dab96448390dc533bd357e6b51627b4d47bc30c4a03b`.

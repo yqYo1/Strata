@@ -1,0 +1,11 @@
+{
+  "R214": [
+    "Actual oneMKL returned event completion covers routine completion; its profiling interval does not establish coverage of every internal library kernel. Qualify against all-kernel tracing before calling it totalGEMM active service.",
+    "current.command_submit - previous.command_end can be negative under ordinary pipelined submission. Do not invalidate or label this queue idle. A positive next-start/previous-end gap may contain dequant, SwiGLU, barriers or other unretained work; full command/dependency coverage is required to label it idle or host starvation.",
+    "Host steady-clock and SYCL timestamps are separate clocks. No direct subtraction or absolute cross-clock causal claim. Copy payload is exact submitted logical bytes, not controller traffic. Keep producer lanes owned and bounded; query after existing sync/join only."
+  ],
+  "R215": [
+    "Row tasks can split one expert across several workers/calls. Reconcile worker output-row coverage to exposure rows; summed worker call counts need not equal expert job counts. Attribute calls separately and verify no duplicate/missing rows.",
+    "Thread CPU time excludes descheduling but includes memory stalls; it does not decide instruction-vs-DRAM roof. Current census snapshot includes native dispatch exposure counts, not kernel or worker service. GU22 and mixed Down formats/NT remain separate."
+  ]
+}
