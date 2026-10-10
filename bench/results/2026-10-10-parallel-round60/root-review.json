@@ -1,0 +1,37 @@
+{
+  "created_utc": "2026-10-10T09:15:29.433940+00:00",
+  "reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round225-hardware-concurrency-profile-evidence-audit.txt",
+      "bytes": 11715,
+      "sha256": "c4d4cb547bdf628de527fb2cbd92731ff7b038c107314cf2f2282a65c3dfafa2",
+      "agent": "/root/research_bottleneck_evidence_audit_v203",
+      "model": "gpt-6-luna",
+      "scope": "Closed raw/compactPTI event, engine and concurrency evidence audit",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round226-ple-readonly-capacity-probe-contract.txt",
+      "bytes": 14544,
+      "sha256": "518d5b43a87edd731ab28fcfcf94045fbfbcb9496ddcb788034361091b1e47fd",
+      "agent": "/root/research_native_iq4nl_esimd_k640_v202",
+      "model": "gpt-6-luna",
+      "scope": "Source-matched bounded PLE page/storage capacity control",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    }
+  ],
+  "registry": {
+    "bytes": 235450,
+    "sha256": "abdc9a66cd6d263ddbf7e11276363474ce91011b85dd8a56a8763708618f2fe0"
+  },
+  "corrections": {
+    "R225_correction_provenance": "Original report names R/round59-root-review-corrections.txt and digest a1554..., but that file is absent. Actual supplied/root-reviewed R223 correction is committed round59/root-review.json and registryv82 root_review_corrections_round59. Preserve the original report and correct this unsupported path/hash attribution; its empirical trace reconciliation is separately supported.",
+    "R225_precision": "Epoch double-microsecond serialization does not retain nanosecond accuracy at this epoch; the root1us guard is only a conservative serialization check, not clock calibration.Observed5.084us minimum gap andzero intersection remain narrow trace observations.",
+    "R226_one_page_bound": "Its roughly2GiB for32K is expressly a one-page-per-row bound.8KiB straddling jobs can exceed that; actual source job count/bytes must be used, no universal2GiB maximum.",
+    "R226_authorization": "Read-only bounded measurements are already authorized by the user. The report wording future separately authorized creates no new permission requirement."
+  },
+  "qualification_source_archive_commit": "a32f86bbc1fe027fd7c6e49c7fc7fa5d8f7b360c",
+  "native_fixture_source_commit": "dba6bea90192f907cbeecdb75c29aa0e7d1fa449"
+}

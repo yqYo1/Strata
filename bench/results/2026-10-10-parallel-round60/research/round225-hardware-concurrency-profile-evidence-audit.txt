@@ -1,0 +1,64 @@
+# R225: Hardware-concurrency PTI evidence audit
+
+Date: 2026-10-10
+Scope: read-only audit of the closed synthetic hardware-concurrency run and existing profile. No benchmark, build, test, profiler, process, hardware, or device query was run. No run status or source artifact was changed. The raw trace was not copied into this report.
+
+## Result
+
+The closed PTI trace supports the narrow statement that, in this one profiling-perturbed synthetic run, 144 8 MiB H2D copy commands and 3,168 GEMM commands were observed, and their device execution intervals did not overlap in the trace. The trace's two PTI lane labels both resolve to `L0 Compute Engine<0,0>`; this is a reported queue-group ordinal/index label, not a measurement of physical engine occupancy or exclusivity. The separate clean, non-profiled repetitions show a modest but variable Down wall-time benefit for concurrent host submission. These observations are compatible: the concurrent path can reduce host-side wait/submission time while the device commands still execute sequentially. That mechanism remains an inference, not a measured cause.
+
+This is a synthetic independent-buffer control, not a production model run. It does not establish production routing, model speedup, engine saturation, or a causal role for the copy-offload flag.
+
+## Inputs and integrity
+
+The immutable docs worktree reviewed was `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009`, commit `66ce79d37eef5e339438c728e29388730ce10b48`. The benchmark source/run archive identifies its captured source revision as `950776db…`; the run receipts and source files listed below are the authority for this closed run. The latest reviewed registry was v82, SHA-256 `726b6d305b57b7e13b822180b3aeaa1f08374bfc215b822089d36c2540bf9a64`. The R223 correction record reviewed before this audit is `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round59-root-review-corrections.txt`, SHA-256 `a1554abafe78b173382aebe3bf36c59b5539b249a2f017d5f64e0e5fe73c916d`. It corrects the earlier unsupported admission-error claim: failed initial admission retains no events, and profiling-query exceptions invalidate/continue rather than fatal-exit. This audit makes no admission-defect claim.
+
+The complete raw profile remains at `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/hardware-concurrency-v1-profile/hardware-concur.1107780.json`, 5,159,273 bytes, SHA-256 `78e09c273cae266854d0e436f54cbae0be8b6a1a8dac61c27fd092c091c62a0f`. Its named consumer is this R225 audit. The compact operation table is 616,409 bytes, SHA-256 `3470a701b808e7011a87a5ec4c76374197e21189ad4d663bb1eb4881e9aff740`; profile analysis is 4,149 bytes, SHA-256 `f7cb87d5ad4e00efc8eca111f669003f5f50f3e2ec2d3f17259f8d233ca20251`; profile receipt is 28,643 bytes, SHA-256 `391280792e19a07012c0016cb1762da9684fbdfacccbfb86abb3e565b1c54b92`; PTI source-meaning record is 5,462 bytes, SHA-256 `c5ae1d2207eb7b3826f10a71de9ce3a5afd681592130d5301037f6155accda22`.
+
+The archived benchmark source is 7,788 bytes, SHA-256 `6bc104ef6c068814c9a7b513783f27b24844864af0a58e1e4194a187239ea54b`; the run harness is 10,700 bytes (its digest is recorded in the archive); the offline analyzer is 8,648 bytes, SHA-256 `301796f4ec3ac4743b3e5bdbe979a437bae3bbd6e418b5c97cb252bb55ac9e46`; the profile receipt pins the benchmark binary at 396,280 bytes, SHA-256 `fe301f725198e7c2ea24887dbe859055ee80fc21cd6564a89849e36e3aae2ffc`. The three-process summary is 7,204 bytes. The pinned PTI source checkout is commit `6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033`.
+
+## Independent trace and source reconciliation
+
+An offline parser read the already-closed raw trace and compact table and checked the analyzer's joins. It found 3,330 `gpu_op` events, 16,516 `cpu_op` events, and 6,660 flow keys. Event IDs were unique. Each GPU event had one host/device flow pair for H2D and one for D2H; both device flow anchors coincide with the GPU command start in this trace. For H2D, the host flow anchor joins exactly one CPU API event by process, thread, and timestamp. The records therefore link the device operations to host append calls; they do not provide a complete high-level SYCL/oneMKL dependency graph or an independent measurement of queue waits.
+
+The exact operation names contain:
+
+- 144 `zeCommandListAppendMemoryCopy(H2D)[8388608]` device events, totaling 1,207,959,552 logical bytes;
+- 3,168 `gemm_*` device events;
+- 18 other setup/validation device events.
+
+The archived source's loops account for those target counts: copies are six shapes × two passes × three copy-enabled modes × four copies; GEMMs are four small shapes × two passes × three modes × 128 and two large shapes × two passes × three modes × 8. The joined host records include 3,171 kernel append calls and 159 memory-copy append calls, consistent with the operation mix plus other setup/validation work. The exact target operation-name counts and source loop arithmetic independently agree.
+
+The trace was collected with `--chrome-kernel-logging --chrome-call-logging -d` in a single profiling-qualification process. Its receipt reports complete/passed, normal exit code 0, empty session, no recorded errors, cleanup completed, and no survivors. No visible kernel fault or device coredump is recorded. The trace is explicitly marked `profiling_perturbation=true`; it is excluded from the clean timing summary and is not performance evidence.
+
+## Overlap and timing precision
+
+Recomputing intervals from the complete compact table gives zero copy/GEMM intersection over all probe phases. The union durations are 188,535,878 ns for the target copy intervals and 175,603,167 ns for GEMM intervals. The closest cross-role interval gap is 5,084 ns. Since this zero intersection includes warmup, solo, serialized, and concurrent phases, the concurrent subset also has zero observed overlap. This supports only “no overlap observed in this trace,” not a claim that overlap is impossible or that one engine was saturated.
+
+PTI's `UniTimer::GetEpochTimeInUs` converts its nanosecond counter to integer microseconds plus the remainder multiplied by 0.001; JSON serialization prints six fractional digits. The resulting timestamp representation has a nominal 1 ns grid, but that is not a clock-calibration or accuracy bound. The 5.084 µs minimum observed gap is larger than a conservative 1 µs serialization guard, on this trace's shared timebase. Do not infer sub-nanosecond accuracy or a general clock-error bound.
+
+## What the engine label establishes
+
+Both PTI lanes are rendered as `Thread 1107780 L0 Compute Engine<0,0>` despite different thread IDs (`4259518335` and `4259518334`). The target copies and 3,167 GEMMs appear on the first lane; one GEMM appears on the second. PTI source forms this string from the Level Zero engine name plus group ordinal/index. Its collector classifies a group from its flags (checking COMPUTE before COPY), then uses the group ordinal and queue index. The Level Zero specification defines the ordinal as the queue-group-property position, the index as a queue within that group, and flags as supported capabilities. Thus the defensible reading is “same PTI-reported ordinal-0/index-0 queue-engine slot, labeled Compute.” The label alone does not show that copy support is absent: a group may support both capabilities, and PTI's classification order can label it Compute. The profile receipt does not retain the complete group-property flags or `numQueues` values.
+
+Primary references: [Level Zero command-queue API](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/command_queue.html) and [Level Zero device API](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/device.html). PTI source excerpts are pinned to the commit above; the profile's `pti-source-meaning.json` carries the source-path and line mapping.
+
+## Clean repetitions and compatibility with zero overlap
+
+The three clean fresh processes have seven samples per cell. Down M80 median-of-process medians are 8.489 ms serial and 7.515 ms concurrent; the per-process serial/concurrent ratios are 1.130, 1.186, and 1.069. Down M160 medians are 8.781 ms serial and 8.223 ms concurrent; ratios are 1.118, 1.068, and 1.047. The gain is present in these three process summaries but varies across processes. Keep it as a small observed wall-time difference, not a stable universal speedup. GU changes are small.
+
+The benchmark source explicitly waits for copy completion before GEMM submission in the serial path; the concurrent path submits copies and then GEMMs without an inter-queue wait. Sequential device execution and less host-side waiting/submission idle time can coexist, so the clean wall-time change does not contradict the zero-overlap profile. The trace did not measure the host-side causal gap well enough to prove that explanation. PTI logging also perturbs execution, which is why its timeline is not used to explain the clean timing magnitude.
+
+The experiment uses independent host-USM-to-device-USM buffers and synthetic operations. It does not exercise the production ring, model routing, or the exact production shapes/dependencies; no production throughput or cause claim follows.
+
+## Runtime flag provenance
+
+The profile receipt records `UR_ADAPTERS_FORCE_LOAD=/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0`, `UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1`, `EnableDirectSubmission=0`, and `NEOReadDebugKeys=1`. This establishes the observed settings for this run only. Prior closed reports identify the adapter family/soname as UR v2 0.12.0, but the installed adapter binary hash and exact source revision are not pinned to the public source used for semantic review. Public current source therefore cannot establish the shipped v0.12 flag's behavior here. There was no flag A/B. The trace's zero overlap is an empirical observation under the recorded environment, not evidence that the flag caused it.
+
+## Smallest safe next discriminator and retention
+
+The smallest safe next discriminator is offline mode-labeling of the existing compact table and CPU-call records using the source-defined loop order. Separate the concurrent and serial probe batches, then align host append and explicit wait/synchronization calls with their device intervals. This requires no GPU run and can test whether the already-observed wall-time difference is compatible with reduced host wait/submission gaps. Preserve the recorded flags and do not repeat a synthetic benchmark or run an offload A/B for this question.
+
+If that offline check cannot answer the production question, the next device discriminator should be one bounded, small actual-production prefill PTI request using the established production copy/GEMM path and the already-qualified safe environment. Keep the R223 serial build/small-event admission gate and do not broaden to a retry sweep. This would test whether the same queued operation pattern appears in production; it still would not by itself establish general speedup.
+
+Retention: raw trace owner is `hardware-concurrency-v1-profile`; its R225 consumer is now complete and the trace is 5.16 MB. After this report is reviewed and committed, retire the raw trace with a deletion-manifest entry recording path, hash `78e09c…`, byte count, and reason (the pinned compact operation table and profile analysis preserve the evidence needed for this closed audit). Retain the compact table, analyzer, source, receipts, clean summaries, and this report. Do not delete the trace as part of this audit; cleanup remains a separate serialized action and must preserve the original run status.
