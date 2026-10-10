@@ -1,0 +1,28 @@
+{
+  "created_utc": "2026-10-10T09:15:29.433940+00:00",
+  "source": {
+    "bytes": 35770,
+    "sha256": "f062f24ea57443c4cd59d09d2b56d498165ea497254ae9fa8998375b062b2ac3"
+  },
+  "root_changed_source_and_handoff_read": true,
+  "scope": "NT1–4 actual-payload hot/streaming fixture only; production kernels unchanged",
+  "tested": false,
+  "adopted": false,
+  "predeclared_calibration_gates": {
+    "NT1": "Existing exact GGML controls",
+    "GU": {
+      "maxabs": 0.0001,
+      "nrms": 1e-05
+    },
+    "Down": {
+      "maxabs": 0.0001,
+      "nrms": 1e-05
+    },
+    "full_chain": {
+      "maxabs": 0.001,
+      "nrms": 0.0001
+    }
+  },
+  "gate_rationale": "Owner chooses strict bounded fixture error budgets before anyNT2–4 run: stages reject >1e-4 absolute or1e-5 normalized RMS; independently requantized nonlinear full chain rejects >1e-3 absolute or1e-4 normalized RMS. These are calibration admission limits, not a proof of exact equality, model sensitivity or model-adoption tolerances. Do not broaden to fit any failed result; preserve failures and investigate.",
+  "next": "Root owns serial build, parser/formula checks, untimed actual384-payload references and separate fresh timing. No permission round is required for already-authorized read-only measurement."
+}
