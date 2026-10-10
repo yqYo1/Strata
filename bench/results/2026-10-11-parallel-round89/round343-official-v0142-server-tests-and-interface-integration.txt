@@ -1,0 +1,64 @@
+# R343 — v0.1.42 server integration: CPU-only test selection and interfaces
+
+Date: 2026-10-11 (Asia/Tokyo)
+Scope: read-only source/test audit for official Strata v0.1.42 (`61b3fb5dd3f1e8ec09cf7e4e05208bc6d3c46406`) against the current local v0.1.41-derived tree. This complements R331's feature inventory and R333's SYCL correctness review; it does not repeat their full diffs.
+
+## Environment and constraints
+
+Inspected the existing local worktree `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009` (HEAD `8f3e44...`, a customized worktree, not a pristine v0.1.41 checkout), prior checked-in R331/R333 reports, and the current source/test file inventory. No clone/fetch, build, test execution, GPU, process/service operation, or source change was performed. This is test/source inspection, not a pass/fail test result.
+
+## CPU-only suite available now
+
+From the repository root, these are the targeted existing suites appropriate for API/server contracts and fake-engine lifecycle behavior:
+
+```
+python -m unittest serve.test_parallel serve.test_server serve.test_request_hardening serve.test_frontend serve.test_responses serve.test_runconfig serve.test_quiet_cancel serve.test_restart_waiters serve.test_lifecycle
+python -m unittest tools.test_setup_engine_hash tools.test_setup_engine_keep
+```
+
+The server tests use mocks or a Python fake engine subprocess, so they do not need a GPU or model download. The setup tests use local fixture metadata/archive/process mocks and likewise do not need a GPU/download. They were not run in this audit. `serve/test_parallel.py` already tests batch/pump/slot concurrency, making it the regression anchor for upstream scheduling changes. `serve/test_server.py` already covers sampling aliases and reasoning/effort-end configuration in part; `serve/test_request_hardening.py` anchors request validation. `serve/test_frontend.py` and `serve/test_responses.py` protect API translation and output contracts.
+
+## v0.1.42 cases to integrate, including replicas and keepawake
+
+The following upstream additions are absent from this local tree and therefore cannot yet be run here. Import/adapt their tests first, preserving local fake-engine fixtures and API shape. Commands below are intended from the repository root after the tests/modules are integrated:
+
+| Concern | Upstream regression file(s) | CPU-only test command after integration | GPU? |
+| --- | --- | --- | --- |
+| Engine READY deadline and timeout/restart race | `serve/test_ready_timeout.py` | `python -m unittest serve.test_ready_timeout` | No; fake engine/process lifecycle |
+| Parallel request state race | upstream cases added to `serve/test_parallel.py` | `python -m unittest serve.test_parallel` | No; fake engine |
+| Recognizable context overflow response | `serve/test_context_overflow.py` | `python -m unittest serve.test_context_overflow` | No; mocked engine/error mapping |
+| Keepawake while requests wait in queue | `serve/test_queue_keepalive.py` | `python -m unittest serve.test_queue_keepalive` | No; fake clock/activity source |
+| Multi-replica lifecycle/dispatch | `serve/replicas.py`, `serve/test_replicas.py` | `python -m unittest serve.test_replicas` | No for mocked child engines; separately smoke-test a real configured binary |
+| OS keepawake acquire/release | `serve/keepawake.py`, `serve/test_keepawake.py` | `python -m unittest serve.test_keepawake` | No; inject/mock OS calls, including Windows API path |
+| Parser tracking/fragmented stream | `serve/test_parser_track.py` | `python -m unittest serve.test_parser_track` | No; deterministic chunk fixtures |
+| Effort-end launcher binary selection | `tools/test_effort_end_args.py` | `python -m unittest tools.test_effort_end_args` | No; temporary/fake executable paths |
+| Broken llama archive recovery | `tools/test_setup_llama_archive.py` | `python -m unittest tools.test_setup_llama_archive` | No; tiny local ZIP fixture |
+| Generation cancel/park/restore semantics | `tools/test_cancel_park.py` (upstream integration test) | `python -m unittest tools.test_cancel_park` only if its fixture uses a fake protocol engine; otherwise run as a separate model/engine gate | Not established as CPU-only; inspect its fixture before putting it in the CPU suite |
+
+The local tree has `tools/parking_test.py`, a model/engine integration script (`--exe`/config and snapshot verification), so it is not a substitute for a CPU-only server cancellation test and must not be included in a CPU-only command. Retain it as a separate engine/SYCL integration gate. A server fake-engine test can validate queue cancellation and lifecycle transitions without claiming GPU engine park/restore correctness.
+
+Also absent: `serve/replicas.py`, `serve/keepawake.py`, and the named server regression modules above, plus `tools/test_cancel_park.py`, `tools/test_effort_end_args.py`, and `tools/test_setup_llama_archive.py`. Existing local tests do not make those new features covered just because neighboring suites run. In particular, replicas and keepawake are required parts of the v0.1.42 server feature integration, not optional follow-up work.
+
+## Existing patch overlap and interface boundary
+
+The local server is already customized: `serve/server.py` has a batch `Service`/`StrataEngine`, `_pump` scheduling, slot grouping/affinity, and restart waiters. Thus upstream parallel-state/READY/restart changes touch the same scheduler and lifecycle paths. Port the state/race fixes into these existing abstractions and extend `serve.test_parallel`/`serve.test_restart_waiters`; do not replace the local pump or bypass slot affinity. Context-overflow handling overlaps request/error mapping in `serve/test_request_hardening.py`; preserve OpenAI/Anthropic error shape and test both recognized overflow and unrelated engine errors. Keepawake must count queued plus active work and balance acquire/release across success, error, cancellation, timeout, and shutdown. Replica tests must exercise readiness failure, dispatch/affinity, and cleanup of sibling children after one child fails.
+
+Request-schema overlaps already include `repetition_penalty` compatibility aliasing, reasoning configuration, and `effort_end_args` in local server code/tests. Keep the compatibility alias and established parameter mapping. Add launcher tests that prove version/feature detection resolves the actual configured `STRATA_SYCL_BIN` executable rather than inferring support from a wrapper or default CUDA/HIP path. Upstream unsupported content parts should retain the documented filter/log behavior instead of being converted into blanket request rejection; cover this in frontend/parser tests.
+
+Minimum seams to keep stable while bringing in all functionality:
+
+1. Preserve the API/request-to-generation contract and `runconfig` loader. Server-only features should not silently rewrite generation parameters or token accounting.
+2. Keep an engine-process adapter boundary (binary path + argv/env, readiness, request/stream, stop/park, exit/error, close). Replicas should compose multiple adapters and reuse the same protocol; they should not fork a second API/request implementation. Readiness timeout and replica failures must propagate through this boundary.
+3. Tie keepawake to explicit service activity lifecycle hooks (`queued`, `started`, `finished`), not to backend-specific decode timing. Use an injectable OS adapter for deterministic tests.
+4. Keep performance instrumentation/backend selection outside HTTP semantics. SYCL-vs-CPU phase measurements belong in engine/backend config and phase metrics; do not add request-visible knobs or alter API output to represent performance state. Any SYCL cancellation implementation still requires a separate protocol/real-engine correctness check; fake server tests establish only the server side.
+5. Route engine flags and feature detection through the resolved executable/config interface. Avoid using a server option as an implicit engine tuning change; freeze and assert argv for representative CPU/SYCL launcher configurations.
+
+## Recommended verification sequence
+
+First run existing suites above to record local baseline. After adapting code/tests, run server lifecycle/scheduler/error/API suites together, then replica and keepawake tests, parser/effort-end tests, and local archive recovery tests. Keep cancel/park real-engine verification separate and use the configured SYCL executable with the same protocol and deterministic fixture as the current integration harness. Do not call a CPU-only fake test evidence of SYCL correctness, and do not combine server API work with performance measurements.
+
+## Conclusion
+
+There is a usable CPU-only baseline, but the v0.1.42 server delta is not fully regression-covered in this worktree: READY timeout, context overflow, queue keepalive, replicas, keepawake, parser tracking, launcher-specific effort-end detection, and archive recovery test files are missing. The safest integration keeps the existing scheduler/API interfaces, adds replica/keepawake composition at the process/activity boundaries, and verifies request semantics with fake engines before the separate SYCL engine cancellation and performance gates. R331 contains the upstream feature/commit catalog; R333 contains the inference/SYCL implementation delta.
+
+References: `round331-latest-upstream-server-functional-delta.txt`; `round333-upstream-v0141-to-v0142-inference-full-delta.txt`; upstream commit references recorded in R331 (including READY timeout `32a2439d`, parallel state `caba015b`, cancellation `8824e217`, overflow `2bf1d07c`, queued keepalive `875d6a92`, replicas `8d276c19`, parser/content `40bdd86d`, effort-end binary lookup `b9cba34b`, and archive recovery `15341671`).

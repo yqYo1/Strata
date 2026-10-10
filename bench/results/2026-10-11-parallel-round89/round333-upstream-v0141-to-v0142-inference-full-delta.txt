@@ -1,0 +1,102 @@
+# R333 — upstream v0.1.41 から v0.1.42 の推論・SYCL差分
+
+日付: 2026-10-11 (Asia/Tokyo)。公式 GitHub の compare、選択したソースの commit history と固定 SHA raw source、基準 worktree を読み取り専用で照合した。235 commits の compare を確認し、`src/prefill/prefill.cpp`、`src/program/generate.cpp`、SYCL版の同ファイル、CPU expert dispatch と SYCL CMake の変更履歴および実効差分を追った。ソース監査のみ。ビルド、テスト、GPU、プロセス、サービス操作、Git mutation は行っていない。R331 (server/API/setup の範囲) と R332 (latest-tip delta) を参照し、その範囲は繰り返していない。
+
+## 基準と結論
+
+対象比較は v0.1.41 tag `fb58e0dbc8399662c0e47c76578c6e878b14f6cf` (2026-10-08) から v0.1.42 tag / current main `61b3fb5dd3f1e8ec09cf7e4e05208bc6d3c46406` (2026-10-10) まで。GitHub compare は 235 commits ahead, 0 behind。v0.1.42 tag は current main と同じ commit で、release 後の別コード差分はない。main が SYCL tree を持たないという R332 の結論は誤りだった: R332 は stale local mirror を見ていた。公式 v0.1.41 基準と現 main の両方に `sycl/` がある。最新 tip commit単体はCUDA向けPCIe share調整だったが、その前の全差分には大きなSYCL/A770、SYCL memory-safety、CPU dispatch、prefill変更がある。
+
+B570/Arc Pro B570 の統合版にとって優先すべき upstream 差分は、**大きなdevice allocationを前提とした oneMKL GEMM operand staging / scratch寿命管理**、次に **現SYCL Stager/issuerとKV/queue所有権のsource-only契約を行単位で照合すること**。SYCL A770 XMX、Alchemist JIT stateless option、Doorbell fast pathはB570にそのまま移せない。CPU prefill share と CUDA decode PCIe autotuneは、upstreamで測定された機能でも、現在の独立した SYCL実装にはない。SYCL機能を別runtimeの結果から性能改善とみなさない。
+
+## 必須扱い: correctness / capacity / lifetime
+
+### 1. 4 GiB超 offset のSYCL GEMM operands
+
+Commit `56efb70939` が大きいallocation内のoffsetが4 GiBを超えるFP16/BF16 operandを `oneMKL` GEMM用の小さなfresh scratchへcopyする。報告された環境はArc A770 + oneMKL 2026.1: allocation先頭から4 GiBより後に置かれたBF16 operandの末尾tileに誤りが出て、promptが非有限値/garbageになった。小allocationは4 GiBを超えないためregistrationなしでも直接経路になる。Arena/cacheのbase→size registryを追加し、`0b063ce804` でfree時unregisterも追加した。scratchは呼出しqueueに属するよう引数のqueueを使い、先行GEMMが読み中のscratchを拡大/freeするとき `q.wait()` してから解放する。allocation失敗時はdirect GEMMに戻り、warningを出す。これはlevel-zero eventの小修正ではなく correctness fallback付きのlibrary-addressing対策である。
+
+B570のAOT `bmg` には別のJIT workaroundを混ぜない。`defadd6e0e` の `-ze-opt-greater-than-4GB-buffer-required` はAlchemist JIT (A-series) 限定。docsはBMG AOTをこのoption変更の対象外と明記する。ただしoneMKLのprecompiled kernelはこのcompiler optionを受けないので、operand-staging変更はJIT optionとは独立の検討対象。現B570の実allocations/offsetsが閾値を越えるかを正確に source/layout と READY capacityから確認する。4GiB high offsetの誤読が起きたとするruntime証拠、または当該binaryが修正済みだという主張は本監査から出ない。
+
+### 2. 非同期コピーとslot / graph / workspace再利用
+
+`f71c5307c6` と `56354964d8` はCUDA FileExpertSource のpinned stage bufferについて、async H2Dが完了する前にsource bufferを再充填するのを防ぐfenceを通常読み出しとlent-slot refill両方に追加。pageable sourceはdriverがcopy call内でstageするため同じfence不要。event作成/recordに失敗すればそのstreamをsyncするfallbackもある。これは**CUDA FileExpertSource実装**。SYCLのstagerを安全にする変更としてevent APIをそのまま移植してはならない。
+
+SYCL差分では `0b063ce804` のgemm scratch wait/free とallocation registry unregisterが直接重要。R323の別Xe caller監査では、SYCL helper `bool` の失敗を捨て、eventがempty/古いままでも成功としてslot/progressを公開し得る箇所が報告済み。そこはXeのcaller固有指摘で、統合Dに同じ defect があるという根拠ではない。本R333では当該host sourceを再監査していない。移植前には統合版SYCL各producer/consumerが copy submit、completion-event record/wait、slot generation更新をどう順序づけ、failure/async errorでどう停止するかを同じcallsite単位で比較する。queueをまたぐ依存は明示event/queue barrierで示し、全producer停止後に正しいconsumer queueをdrainしてからsource/device allocationをfreeする。SYCL `free`をwaitとみなさない。
+
+### 3. Buffersの実サイズと admission
+
+`a26fcbcdba` は `Prefill::bytes_needed*` のMoE allocation計算に実際の `src` 条件を渡し、layout initが選んだMoE buffersを数える。SYCL版にも同じAPI引数が反映され、`abbd0ea9aa` がmulti-GPU merge側のsrc flagを追随。新A770 XMX pathはdequant slot数/stream staging ringを増やすため、`bytes_needed`とinitの両方を同じmode/formatで数える (`ce60cc373f`)。これらはallocation capacity/admission correctnessであり単なる速度変更ではない。個別分岐を統合するならbytes_neededとinitのcounterfactualを一致させる。
+
+`78f6174474` はXe driver上で大きなdevice allocationのalias page問題をguardし、`generate.cpp`にもB-series cardのfree-memory fallbackやsplit/mirror limitsが複数回修正されている。これはB570でのresource admission設計に関連するが、driver固有の仮定を統合 runtimeへコピーしない。正確なallocatorとdevice telemetry APIを確認する。
+
+## 条件付きで評価できる prefill 候補
+
+### CPU prefill share (CUDA/CPU work split)
+
+`16264ceeff`, `92bce20e4b`, `f2a3b946e9` 等は小chunk (初期default `<1024`)、次いで最大3072-tokenまでのopt-inで、native nonresident expertsの一部をアイドルCPU poolに割り当てる。`auto` はCPU per-expert timeとGPU expert work timeを層ごとに計り次層のshareを調整する。source/docで報告されたRTX 5090 + 9950X3Dの600-token runはUD-Q4_K_XL 1,528–1,548→1,296–1,369 ms (share 0.65)、Q2_0 472–491→445–448 ms、IQ2_XS 507→490 ms。別のRTX 3060/P100/5070 0.1.41 measurement では512-token prompts -28…-34%, 1000-token -20…-26%とされる。ただしGPU/CPU丸めが異なるため回答は同一にならず、docsはmean KL 0.004, max 0.025 と明記。2,048-token 5070 caseでは2%遅くなったためlarger chunks defaultではない。
+
+`eaaa237e85` はcacheに全expertがresidentならCPU share defaultをarmしない。`04dbe56145` はRAM/cgroup/Windows commitの不足時に既定shareをoffにし、明示 `auto`/数値指定は尊重してwarningだけ出し、pinned share buffers確保失敗がchat自体を落とさないようにした。だがCPU prefill share本体はroot `src/prefill/prefill.cpp` にあり、統合SYCLは独立 `sycl/src/prefill/prefill.cpp`。比較したmain SYCL prefill TUにはこのCPU-share worker routeがない。したがってこれはSYCLへのdirect cherry-pick候補ではない。SYCLのCPU pool timingを使うなら、host-source eligibility、pinned buffer demand/failure fallback、CPU activation quantization、row write ownership、per-layer GPU/CPU intervalのoverlap、quality差を別に証明する必要がある。B570 long-prefillの未帰属時間に効くという証拠はない。
+
+### A770 grouped XMX prefill
+
+`ce60cc373f` と関連 commits は `STRATA_PF_XMX=1/2` を追加。mode 1はgroup expert dequant後にgrouped XMX GEMM、mode 2は対象形式のcompressed weightsを一括group XMX kernelで処理する。適格形式とrow数でfallbackがあり、`STRATA_PF_XMX_ROWS` thresholdもある。A770/Arc A-seriesのsubgroup-8 joint_matrix 8x8x16 kernelに限定。commit `72a67c8e90` と `sycl/CMakeLists.txt` はXe2/Xe-HPC/BMG AOTでこのkernelをbuildから外し、Battlemageでenv opt-inを無視する。B570向け採用候補から除外する。A770 measured parity/GEMM resultもB570 speed proofではない。
+
+### PLE direct→mmap failover
+
+`30017336ed` はstartup cold-random-row probeで `--ple-io direct` が低速 (15k rows/s未満) なら、implicit defaultをmmapに切替える。明示 `direct` は保持してwarning。upstream docsは該当報告機でmmapが40–100×速かったとする。これはmodel startup後のdirect I/O選択に関する条件付きprefill候補で、B570上の実測値はない。統合SYCL `generate.cpp` に実効しているか、PLE loader/device pathとmode parsingを確認し、B570の同じGGUFと同じcold probeを基準に比較する。`mmap`はtable全体をRAMにresident pinする指定ではない。source fixup有無はnormal warm prompt tok/sの主張から分離する。
+
+## Decode / CPU kernel候補と範囲
+
+### CPU AVX1 kernels
+
+`7b14a443ee` はAVX2を持たないAVX CPU向けQ2_0 rows/quantizer、`dd7b0b5f07` はi-quant AVX1 rowsを追加。`aab7e30d01` は測定が遅かったIQ4_XS gate/upを汎用GGML dotに戻す。SYCL CMakeの実効差分で `q2_avx1.cpp`/`iq_avx1.cpp` が組み込まれ、`-msse4.2 -mavx -mno-avx2 -mno-fma -mno-f16c` に固定される。CPU ID dispatchでAVX2 CPUからは呼ばれず、rootless micro parity/dispatch build prerequisitesとしては明快。Target Ryzen 5 5600XはAVX2を持つため当面のB570 host decode候補ではない。Separate AVX2 service work (IQ4_NL NT1–4) はR213の未解決measurement gateを残す。
+
+### Latest CUDA PCIe auto share
+
+`aa7b0cb13e`/`0e9af37041` は0.1.42 mainでCUDA single-GPU decode PCIe shareをCPU pool serviceから最大3回更新する機能。R332に記録の通り、SYCLに導入する変更ではない。SYCL prefillのnonresident shareとも別のcontrol loop。B570 decode candidateなし。
+
+## CPU memory / session / batching effects (server functional details are R331)
+
+`daa765524d`, `73ed39ae8e`, `c9680eeff6` と後続guard commitsはhost memory estimate、cgroup limits、explicit `--memory-limit-mib`、session SAVE/RESTORE/PARK、host cache reclaimのadmissionを整える。serve branchの大半はR331範囲のためここでは機能細部を繰り返さない。engine source上は`conversation_available_memory()`から`available_host_bytes()`にadmission参照を置き換える場所がある。Inference computeを速めるものではないがlarge context/session lifetime and host stagingに使えるRAMを誤って過大評価しないためのprecondition。B570に適用する時はsycl/runtimeとLinux MemAvailable/cgroup measurementが同じ意味かを見る。
+
+`91f1e85dd1` `--aux-cpus` はLinuxでpool以外のengine/host threadsをspare CPUsに置くoff-by-default affinity control。5600X/CPU pool scheduleで診断候補だが、current oneMKL/SYCL threadsも同じ placement contractか、5-worker pool occupancyとUI/host contentionがどうなるかをCPU-only affinity source testとrequest-level paired measurementで評価。単純にpoolのpin maskを増やさない。
+
+`a22a0e8c46` split MTP prompt batched K/V is opt-in and dual/multi-GPU last-stage behavior; not single B570.
+
+## SYCL/Level Zero-specific effective changes
+
+- `56efb70939` + `0b063ce804`: high-offset oneMKL operand staging; pointer allocation map unregister; per-call queue selection; scratch lifetime wait. **Source/build review priority.**
+- `ce60cc373f`, `defadd6e0e`, `sycl/CMakeLists.txt`: A770 grouped XMX and JIT 4-GiB stateless access. **Explicitly BMG-inapplicable for XMX/JIT switch.** The oneMKL staging issue is distinct as above.
+- `9c790e3dde`/`b70bc033b5`/`3157c78935`/`00b14af827`: Intel GPU doorbell publication and mapped expert payload variants. Xe uses uncached store hint; i915 uses plain stores; `STRATA_DOORBELL_CHECK=1` checksum is opt-in after A750 measurement showed 17% decode cost. A770-only paired publication is `STRATA_SYCL_A770_FAST=1`, explicitly disabled on B-series / inappropriate i915 path. These are device/driver cache-coherency optimizations, not generic host atomics to transplant.
+- `6c9bbc8147` adds B-series-specific spin bound (20k polling reads, 2,000,000 when drafting without MTP). `76e1cd2eef` changes draft wait from 1024 spins to GPU wait after A-series acceptance improved in one report; not a B570 performance delta by itself. Treat the actual GPU doorbell / host mapped allocator's publication and wakeup semantics as a single correctness contract before tuning.
+- `4340476438` pins PCIe probe source; `3540500232` corrects it to apply only to layer split, keeping single-card source pageable. This final state means no pinned-source port for this B570 single-card configuration.
+- `10be33ff9a`: with `STRATA_VERIFY_NO_HOST` and a host mirror, adaptive swaps disable because swapping a resident expert would leave it in neither device nor mirrored host copy. Correctness-critical for that exact mode; verify actual mirror+no-host startup path. Do not infer from CLI alone.
+- `a26fcbcdba`/`abbd0ea9aa`: byte-admission `src` flag consistency; see above.
+
+These changes demonstrate that the official upstream contains an actively maintained SYCL path, but official main's SYCL work is multi-generation and model/device gated. It does not make any one setting active by default on B570. Several B-series fixes remove unsafe behavior or keep the older safe path as default; a documentation headline or opt-in kernel is not proof it is active in baseline binary.
+
+## Rootless source / build prerequisites before any adoption decision
+
+No runnable candidate or test is authorized by this report. The safe independent work boundary is CPU/source evidence only:
+
+1. Pin official base and tip, exact integrated baseline/current worktree source manifests, generated compile definitions, oneAPI compiler/MKL version, AOT target (`bmg-g21`) and linker options. Confirm which root shared source files the SYCL target actually compiles versus the independent `sycl/src/*` forks; check per-file effective diff instead of commit title.
+2. For 4GiB correctness change, trace register/unregister across *all* device allocator/free owners and alias/suballocation forms. Prove range checking handles integer overflow and upper-bound pointers, source offsets, alignment and size; ensure staging scratch comes from the same context/device and the GEMM queue, copy dependencies precede GEMM, failure is explicit, and resize drains prior reads before free. CMake prerequisite is correct oneMKL SYCL domain and queue mapping; AOT/JIT options remain separate.
+3. For CPU share or kernel candidates, establish algorithmic CPU-only fixture oracle, dispatch predicate, exact input/output/guard behavior and architecture guard. For scheduling/affinity, CPU mock tests prove workers restore affinity and all early-return/thread lifecycle paths. Do not add source changes or a build in this round.
+4. Any GPU runtime performance/quality claim later needs independent work boundary, correct B570 target, verified system health, long-context fault admission, source/executable pin, fresh matched fixture and the user's separate run gate. Upstream RTX/A770/CPU values only prioritize the hypothesis.
+
+## Decision
+
+The strongest upstream delta is a safety/correctness fix for oneMKL's high-offset GEMM reads and staging scratch lifetime; inspect against integrated B570's exact allocations and link receipt first. For throughput, PLE direct→mmap is the most device-neutral conditional prefill experiment. CUDA CPU-prefill-share measurements are promising upstream but their code is not integrated into SYCL and their numerical result differs, so they need a SYCL-specific design and a quality/long-prompt gate. Grouped XMX and Alchemist JIT options do not apply to B570. No code, runtime quality, capacity, or speed qualification follows from this source audit.
+
+## 公式参照
+
+- [v0.1.41 → main full compare](https://github.com/Niko1221/Strata/compare/fb58e0dbc8399662c0e47c76578c6e878b14f6cf...61b3fb5dd3f1e8ec09cf7e4e05208bc6d3c46406)
+- [v0.1.42 release](https://github.com/Niko1221/Strata/releases/tag/v0.1.42)
+- [0b063ce — GEMM scratch lifetime / allocation unregister](https://github.com/Niko1221/Strata/commit/0b063ce804)
+- [56efb709 — stage oneMKL operands beyond 4 GiB](https://github.com/Niko1221/Strata/commit/56efb70939)
+- [defadd6 — Alchemist JIT >4 GiB access](https://github.com/Niko1221/Strata/commit/defadd6e0e)
+- [f71c530 — pinned source buffer fence](https://github.com/Niko1221/Strata/commit/f71c5307c6)
+- [04dbe56 — CPU-prefill-share memory guard](https://github.com/Niko1221/Strata/commit/04dbe56145)
+- [3001733 — slow PLE direct fallback](https://github.com/Niko1221/Strata/commit/30017336ed)
+- [Khronos SYCL 2020 specification](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html)
+
+Earlier evidence consulted: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round331-latest-upstream-server-functional-delta.txt`, `round332-latest-upstream-sycl-cpu-inference-delta.txt`, R310/R312/R318/R323/R330.

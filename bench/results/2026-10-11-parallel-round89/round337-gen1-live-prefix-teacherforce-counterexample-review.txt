@@ -1,0 +1,40 @@
+# R337 — GEN 1 live-prefix による serial teacher forcing の反例レビュー
+
+日付: 2026-10-11 (Asia/Tokyo)。読み取り専用 source review。Xe `ce70467423d97497979b05ef604e2bcecac47b2b`, `src/program/generate.cpp`; baseline WT `7d0105f2`, `sycl/src/program/generate.cpp`。R336 report は変更していない。GPU/runtime/build/test/service/process/Git操作は行っていない。
+
+## 判定と R336 の訂正
+
+Root の反例は成立する。R336 の「既存CLI/serveでは固定tokenのteacher forcingができない」という結論は広すぎるため訂正する。`--serve` 内で繰り返し `GEN 1` を使い、各要求の入力promptを前回live prefix + 外部reference token 1個にすると、初回の長いprefill後はreference prefixをcache reuseしながら1 tokenずつforwardさせられる。これは同じreference prefix上でのgreedy next-token一致や、要求された限定的なlogprob指標を測れる既存手段であり、新規フックは必須ではない。
+
+ただし serving interface が各位置の full target-vocabulary logitsを出力するわけではない。`logprobs=K` は `0..20` を許し、LP行は生成された選択tokenの logprob と（K>0なら）top-K候補だけを出す（Xe lines 7300-7303, 8972-8987; baseline analogous 10262+, 11250+）。reference token logprobはtop-20に入った時のみこの候補から分かる。full KL、全vocabulary距離、top-20外のreference token確率は測れない。LP20は full-distribution metric の代用ではない。
+
+## なぜ GEN 1 chain が働くか
+
+Xe source ではrequest prefix再利用に `prompt_cache>0`, cached control vector一致、`live_ok` と `starts_with(live, live_imgs)` が要る（7486-7489）。`live_ok` は正常終了時 `o.prompt_cache > 0 && req_ckpt` で立つ（9064-9066）。Text request の `ckpt` は既定trueで、`ckpt=0` は次 request が延長しないone-shot扱い（7286-7290, 7317）。一つのserverを維持し、prompt-cacheを有効にし、各requestで同じcvecと `ckpt=1` を使う。
+
+request prompt長を n とすると、cache matchした `resume=live.size()` が `RESUME` で返り（7486-7489, 7754）、prompt read begins at `resume` (`read_from = reread_to>0 ? 0 : resume`, 7738-7754)。`REUSED` 後、最後のprompt tokenは通常のbatched prefillではなく最初のverify windowの入力になる（8259-8265）。`first_window` はT=1に固定される（8862）。したがって、liveがreference prefix Pまで保持し、次 requestが P + reference-token r を渡すとき、Pは再利用され、rがそのrequestの最初の窓で処理され、次token予測がP,rを条件とする。
+
+サンプル出力はそのままKV/liveに残るわけではない。request開始時 `consumed` は最終prompt tokenを除く `ids[0:n-1]` から始まり（8287-8291）、commit後に追加するのは `window[0..a]` のみで、コメントも「最後のoutputは次のxでありsession内にまだない」と明記する（8954-8959）。`GEN 1` のfirst windowはT=1、a=0で、prompt最終tokenがcommitされ、1つ生成した時点でloopが終了する。結果 `live.swap(consumed)` は生成sampleを含まず、完全に要求されたpromptを保持する（9064-9066）。よって次の外部reference tokenを、その未消費の出力位置に入れられる。
+
+MTPを使う場合も、resume時に `mtp.kv_restore(resume)` が走る（7738）。first windowをT=1にするためその窓はdraft proposalに依存しない。Root提示の `--kv int8 --kv-resident 32768`, context 65,536 設定と単一GPUについて、このソース経路に明確な禁止条件は見つからない。ただしこれはKV stage/restoreやcache retentionがその実機条件で成功するruntime proofではない。
+
+Baselineの対応する契約は `prompt-cache/live` reuse 9557-9561, MTP restore 9791, `RESUME/REUSED` 9807/10356, consumed初期化 10383+, first-window T=1 11108, committed input only 11218, live publish 11345-11347。今回比較したTeacher-force制御フローに本質的な差は見つからない。
+
+## 最小の実験プロトコル（未実行）
+
+1. 各engineを同じsingle-card, int8 KV, `--kv-resident 32768`, `--max-context`、prompt-cache有効条件で一度起動する。64K固定seed promptのtoken ID列Pを同一にする。serverはrun全体で維持する。
+2. まず `GEN 1 logprobs=20 <P>` を送り、`RESUME 0` 相当のprefillと最初のnext-token結果を確認する。この応答終了後liveにあるのはPで、sampled outputは含まれない。
+3. 以後位置 i ごとに `GEN 1 logprobs=20 <P + reference[0..i]>` を送り、出力 `T` を `reference[i+1]` と比較する。request promptの長さは毎回+1。期待する契約信号は、最初の要求のlong prefillの後、各次要求で `RESUME` が前のlive長（prompt長）に達し、`REUSED` が同数を示し、新たにprefillするsuffixは原則ゼロ（reference末尾tokenだけが最初のverify窓で処理）。record actual RESUME/REUSED, PP/DONE, ref token, T, LP row, errors, elapsed timings。もしRESUMEが伸びない、または再読込み/restoreが生じればそのrunは低prefill比較として無効。
+4. 複数run間では同じモデル/quant/config/token IDs、server seed/sampling（default absent keys greedy; or explicit same seed, no penalties）を使う。teacher-forced位置一致率、greedy token exact-match、top20 candidate overlap、reference tokenがtop20に入る比率、選択token logprobを報告できる。候補外reference-token logprobとfull KLは不明として残す。
+
+注意: `GEN 64` のfree-running比較を同じ方式と混同しない。`max_new=64` ではaccepted window commitsによりliveはreference prefixではなく、生成済み・commit済みtoken列を含む。R336の64-token run（common prefix 5後にdivergeした記録）は引き続きfree-running性能/品質証拠であり、固定prefix teacher forcingではない。R337のGEN1 chainはその異なる目的を持つ。
+
+## 実証境界と判断
+
+このcounterexampleの根拠はsource flowであり、実機で `RESUME`/`REUSED` の増分、逐次K/V restore、測定時間、数値結果は確認していない。Rootは既にGPU/service測定を担当しているため本エージェントは実行しない。まず既存GEN1/LP20 chainのruntime smoke/RESUME進行を確認すれば、推測の最大の不確実性が解消できる。sourceに基づく限り、固定reference prefixでの限定的decode比較は既存経路で可能、full-logit比較だけは不可というのが修正後の結論。
+
+## Context / execution constraints
+
+GEN request admission also requires `n + max_new + 8 <= o.max_context` (`Xe:7437-7439`; baseline analogous near 9628). Thus a seed of exactly 65,536 tokens cannot be scored with `--max-context 65536`, and merely setting capacity to 65,600 is insufficient for a literal 65,536-token seed plus all 64 teacher-forced positions. For a seed length P and 64 outputs, the last scoring request carries n=P+63 prompt tokens and max_new=1, so the current guard needs `max_context >= P+72`; if also feeding reference[63] to score the following position, require P+73. Size max-context to the actual tokenized seed/continuation plus guard (for example 65,608 for P=65,536 and 64 scored outputs), then verify memory admission at that capacity. The lower bound is a request validator, separate from the per-window `p+T` bound at 8894.
+
+This server route uses the serve verifier loop (`o.serve` at 4995), whose own `first_window` starts true (8278) and is forced to T=1 (8862); it does not depend on standalone native-pack's `first_window = native_pack` path (9867). No native-pack disablement is needed by this control-flow argument. Long prompt token IDs must remain identical, cvec must match, prompt-cache/live must remain enabled, and no resume fallback/re-read may occur; validate the `RESUME` / `REUSED` values on-device before treating the chain as prefill-suppressed. The 32,768 resident int8 configuration does not change these logical conditions, but its runtime restore/admission remains unverified.

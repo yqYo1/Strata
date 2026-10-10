@@ -1,0 +1,1 @@
+読み取り専用Luna R329〜343の15件を原文保存。registry v112は454件。R330の入力fixture混同、R331/R343のversion/HEAD、R332のSYCL不在、R336のGEN1 live-prefix判断は別項目で訂正し、原レポートは変更しない。R342は全doorbell経路の直列fallback、R343は公式版サーバーのGPU不要統合試験の提案。直接source/fixture確認と実行資格はメイン担当。

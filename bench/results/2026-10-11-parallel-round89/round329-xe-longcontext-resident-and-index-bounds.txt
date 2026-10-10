@@ -1,0 +1,59 @@
+# Round 329 — Xe 32K/64K resident and index-boundary source audit
+
+Date: 2026-10-11 (Asia/Tokyo). Read-only source audit. I wrote only this report. No source edits, build, test, Git command, GPU/process/device query or operation, or cleanup was performed. The supplied 8,193-prompt-token issuer-OFF diagnosis and exact-integer pre/post checks are treated as prior evidence only: they qualify that short diagnostic, not 32K/64K correctness, 256K bounds, or performance.
+
+## Duplicate check and source identity
+
+I read the reports `round324-xe-second-chunk-index-allocation-bounds.txt` through `round328-xe-corrected-diagnostic-gate-review.txt` before inspecting source. R324 already covered c0=4096 / prompt positions 4096–8191, and was not repeated as the target. This review concentrates on the resident-page-count edge, the 4-cell index/KV tails at 32767 and 65535, their next positions, and the full-context endpoint.
+
+The supplied implementation sources match the requested SHA-256 values:
+
+- `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/src/prefill/prefill.cpp` — `59e1c4ea18c38da799314439099bcf14e9a19f0b7ce9f4f00629173a534cf9ce`.
+- `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/prefill/publication.hpp` — `547397243c32126f26caebad4baa39278dcf1471f3bff368af4fc481e5462710`.
+
+Supporting source files read to resolve called contracts (actual hashes):
+
+- `src/core/layer.cpp` — `fefc457de582573a8f1132c02139a61161d90fe50dcacda46c8c64cf0b581c97`.
+- `src/kernels/xe/qsa.cpp` — `a6bf5966f862adb188bc1ece52ebe668d02a29c4fa10a4aca33593deb2611c6a`.
+- `src/kernels/xe/native_qsa_indexer.cpp` — `41a4b64a914fd4e6f99c6fcbe71805b171f295214018bb7289dc0b3c9919523c`.
+- `src/kernels/xe/kv_stream.cpp` — `82c83a59525741c6d4f9cc644037b4a4cf87798d2d49fd4cca939a035ddc2ef7`.
+- `src/kernels/xe/qsa_select.cpp` — `288781bae6824338528f2b558ee5ef41200ab4e849ee3508ef99760356d8d727`.
+- `src/prefill/kernels.cpp` — `2ead1511d2ecb6cb1cdc73ec3e6143ac097e0f0a715716631f351273371079d4`.
+
+The hashes identify the tree read; no historical fault is attributed to this source version from a static review.
+
+## Finding
+
+For legal positions through `max_cells=262144`, I found no source-derived out-of-bounds access at the 32,768-cell resident boundary, at 65,536 cells, or at the exact 262,144-cell context endpoint in the traced FP16 KV / 4-cell page / 4-cell index-block geometry. Chunk scratch remains local to T; absolute positions are passed only to position-aware operations. The 32,768-cell setting changes streamed KV slot count and therefore capacity, but the boundary itself does not introduce a new page-table or scratch offset formula.
+
+The relevant transition is precise: logical page 8191 contains cells 32764–32767, the last page index within 8,192 resident pages. Logical page 8192 begins at cell 32768 and is still within the 65,536-entry full-context page table / host pool; it is outside the nominal resident-slot count and can be nonresident. At 65535, the cell is in logical page 16383, which is already beyond that 32K resident count but remains far inside full-context capacity. The resident resolver may replace mappings as selected pages change; the source does not give a special branch at c0=32768 or c0=65536.
+
+## Boundary arithmetic
+
+With `max_context=262144`, page size=4, index block=4, KV resident request=32768 cells, and 4K chunks:
+
+- `kv_plan` makes `pages=ceil(262144/4)=65536`, and `slots=ceil(max(32768,20480)/4)=8192`; since slots < pages this is streamed mode 1. `qsa_state_init` allocates a full-context host copy, an 8192-page device pool, and a page table for 65536 logical pages (`src/core/layer.cpp:614–630, 669–767`). The FP16 K/V pool calculation uses two-byte values for both arrays (`src/core/layer.cpp:633–642`).
+- `Prefill::run` computes `T=min(m.T,n-c0)` and `p0=pos0+c0`; its token/activation/scratch rows use local t or c0-based input pointers (`src/prefill/prefill.cpp:1191–1248`). For a terminal token held out of the batched prefix, the final batched positions 32766 and 65534 have indexer `n_kv` 32767 and 65535, and `n_bid` 8191 and 16383. The terminal positions 32767 and 65535 produce `n_kv` 32768 and 65536, and `n_bid` 8192 and 16384 (`src/kernels/xe/qsa.cpp:409–417`).
+- Since 32766 and 65534 are each two cells into their four-cell block/page, the final batched prefix leaves a three-cell tail. The batched appender writes completed blocks only when their last cell is inside the batch, reads prior cells from `idx_tail`, writes its new tail by modulo-4 slot, and uses its extra pooled row as a sentinel (`src/kernels/xe/native_qsa_indexer.cpp:204–247`). The terminal decode at the next position completes block 8191 / 16383. This is the useful check for a batched-to-terminal handoff, not a repeat of R324's aligned second 4K chunk.
+- At the 32768-cell limit, the terminal token at 32767 is the last cell in the last nominal resident page (8191). Position 32768 begins logical page 8192. The same arithmetic at 65535 / 65536 addresses pages 16383 / 16384, both legal in the page table. `kv_append` reads `page_table[pos/4]`; it writes the physical pool only for a nonnegative mapping and writes the full logical host copy (and, on prompt path, staging pool) using identity host/stage offsets (`src/prefill/kernels.cpp:168–195`). This separates resident mapping from full-context indexing.
+- Before each staged QSA layer, `prefill.cpp` copies `ceil(p0/4)` prefix pages from host into the identity staging pool, then appends the chunk's pages. At c0=32768 this is 8192 pages `[0,8192)`; at c0=65536 it is 16384 pages `[0,16384)`. The current 4096-cell chunk adds 1024 pages, staying below 65536. `kv_stage_from_host` copies `n_blocks * page_bytes` from the corresponding host-plane base into stage-plane base (`src/prefill/prefill.cpp:1562–1570`; `src/kernels/xe/kv_stream.cpp:268–275`). At a partial last chunk T, only actual T cells are appended; it does not assume a 4096-cell tail.
+- The indexer pooled allocation is `max_cells/4+2=65538` rows of 128 floats. The appender can write the completed block and next sentinel row. At the exact final cell 262143 it can write rows 65535 and 65536, below the allocation; `idx_tail` is 3×128 floats and `idx_dead` is 128 floats (`src/core/layer.cpp:764–768`; batch guard and writes at `src/kernels/xe/native_qsa_indexer.cpp:162–168, 204–247`).
+- QSA per-row width remains `min(n_kv,2051)` for top-k 2048 plus one 4-cell block, so it is 2051 at both the 32K and 64K boundaries. `sel_ids` is T×cap and `steps_dev` T×kStepCount; `sel_scores` is 256×65538; those capacities use query-local rows and full-context block capacity, not c0 (`src/prefill/prefill.cpp:566–575, 749–774; qsa_step_fill at src/kernels/xe/qsa.cpp:409–417`). For max context, the last valid query has n_kv=262144, n_bid=65536; score kernel block b=65536 is inside `max_blocks=65538` and uses the sentinel row. Per-call selection batch is 256, below the kernel's nq≤65535 guard (`src/prefill/prefill.cpp:418–421, 1625–1640`; `src/kernels/xe/qsa_select.cpp:239–255`).
+
+## PLE and gather scratch at c0 transitions
+
+PLE's two host upload buffers are sized for T×N, row maps for T×PLE_N_HEADS, and device embedding scratch for T×N. Its gather reads the two preceding token IDs through `at(c0)` / `at(c0+1)` and writes only T local rows; upload size is T×N. On consecutive chunks, the previous tokens are read from the original token array at c0−2 onward, so crossing 32768 or 65536 does not change the address coordinate system (`src/prefill/prefill.cpp:692–702, 1173–1185, 1251–1277`). The batch post-op scratch slices by local s0/nb from the single `region_bytes` allocation; `SB` is derived from that size (`src/prefill/prefill.cpp:1445–1482`).
+
+MoE routed rows and MMQ gather group buffers are also local to T and top-k K. The main scratch counts use T×K; the streamed group allocations are fixed group maxima, and gather uses those group buffers (`src/prefill/prefill.cpp:777–803, 2057–2122`). Neither c0 value contributes to an allocation offset in those paths. This is a source bound only; data-dependent routing was not exercised.
+
+## Exact 256K endpoint and source-level limit
+
+At the valid endpoint, a final chunk beginning at p0=258048 with T=4096 has exclusive end 262144. The native indexer batch rejects `p0+T>max_cells`, so equality is accepted. The last appended cell is 262143; its page index is 65535; the appender's following sentinel is row 65536. RoPE/context arrays use max_cells rows, so the last valid position is the final array row, not one past it. The source-derived valid-end bounds fit their stated capacities.
+
+One hardening gap is visible at the `Prefill::run` entry (`src/prefill/prefill.cpp:1135–1159`): this function has no early `pos0+n<=max_cells` check. The batch indexer has a later guard (`native_qsa_indexer.cpp:165–168`), but before it runs, Q/K RoPE, KV append/page-table indexing, and other per-position operations can be submitted. If a caller ever passes an overlong prompt or nonzero pos0+n beyond max_cells, a late indexer rejection alone does not establish that those earlier accesses were bounded. Caller admission may already prevent that input; this audit did not inspect or assert caller behavior. Treat this as a source-level invalid-input contract question, not evidence of an OOB on the legal 262144-cell request. At exact max context, any generated/decode position 262144 would be one-past and must be rejected or handled by a context policy before these kernels.
+
+The publication header concerns issuer publication and cleanup failure policy, not index/page/scratch geometry. It was read for identity and context (`publication.hpp:13–25, 40–59`); no new finding is inferred from it for these boundaries.
+
+## Conclusion and limit
+
+Static source review found no valid-path allocation overrun at 32768, 65536, or the exact 262144 endpoint for the stated geometry. The distinctive 32K risk point is page 8192 being the first nonresident logical page while all history remains in the full host/staging allocations; the terminal positions 32767/65535 exercise completion of a partial 4-cell batch tail. The 256K valid endpoint fits the current stated capacities, but the run entry has no local full-context guard against overlong input. None of these deductions substitutes for the planned 32K/64K GPU validation, and none identifies the historic fault's cause.

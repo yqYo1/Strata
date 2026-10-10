@@ -1,0 +1,96 @@
+R341 — Latest XeStrata rebuild and qualification contract
+Date: 2026-10-11
+Scope: read-only build/test integration plan for XeStrata tip e32b8b0594095352365db0e140a68d5bf56d8b0f, with the corrected prefill publication countermeasure preserved. No build, test, GPU, process/service action, install, clone/fetch, or Git mutation was performed. The six quiet 64K runs remain parent-owned and must close before any build/GPU work.
+
+Decision
+A prefill-TU-only rebuild/link is no longer an adequate artifact for the latest Xe tree. The full base 39bdadcc..tip source compare changes production files in five compiled targets, changes the oneMath dependency and top-level build graph, and adds a CPU test. The safe next artifact is a clean, fully configured B570 `contrib-icpx` build from tip, with the countermeasure files overlaid and asserted by SHA, followed by a distinct host-only ASan/UBSan test build. Preserve source identity and test status separately; do not relabel the old v7 linked binary as latest-source qualified.
+
+Source identity and preservation gate
+- Latest Xe's stock `src/prefill/prefill.cpp` is byte-identical to pristine eval commit 39bdadcc: SHA-256 `919c696192311066055077bdd0fc74769bfb50854e3437b6b387732acf6d532e`. That stock file does not contain the full publication countermeasure.
+- Keep the previously reviewed corrected file `src/prefill/prefill.cpp` at SHA-256 `59e1c4ea18c38da799314439099bcf14e9a19f0b7ce9f4f00629173a534cf9ce` and `include/strata/prefill/publication.hpp` at SHA-256 `547397243c32126f26caebad4baa39278dcf1471f3bff368af4fc481e5462710`. The latter helper is absent from latest upstream. Apply/preserve both explicitly on the integration branch and verify these exact hashes after overlay and before configure/build. Preserve their current source review state, not just a compiled object.
+- Keep the separate base upstream source identity (`e8ca9af` / `0.1.40.2`) distinct from the latest Xe tip commit identity (`e32b8b05…`). The version macro alone does not identify the build.
+
+Full rebuild map
+The CMake targets containing the production files changed since the pristine evaluation tree are:
+
+| Source change in 39bd..e32 | CMake target / dependent artifact | Rebuild implication |
+|---|---|---|
+| `src/core/expert_source.cpp` (Q2_0 CPU calibration now supplies ActQ) | `strata_engine` | Recompile the engine archive and relink `strata`; it is not covered by the old prefill archive replacement. |
+| `src/kernels/cpu/pool.cpp`, `include/strata/kernels/cpu/pool.hpp` (native batch validation) | `strata_kernels_cpu`, then `strata_engine` / test executables | Recompile CPU pool and header dependents; build `pool_tasks_test`. |
+| `src/kernels/xe/elementwise.cpp`, `src/kernels/xe/verify_kernels.cpp`, `src/kernels/xe/xmx_gemm.cpp` | `strata_kernels` | Recompile changed SYCL translation units; relink `strata`, device selftests and parity executables. The doorbell change crosses the elementwise/verify production path. |
+| `src/prefill/gemm.cpp` plus preserved corrected `src/prefill/prefill.cpp` and new `publication.hpp` | `strata_prefill` | Recompile `gemm.cpp` and the corrected `prefill.cpp`; track the header dependency. Relink `strata`. |
+| `src/program/generate.cpp` | executable `strata` | Recompile and link the new short-read policy and diagnostic commands. |
+| `src/kernels/cpu/pool_tasks_test.cpp` | `pool_tasks_test` | Compile and execute the Q2_0/invalid-batch regression. |
+| `CMakeLists.txt` / oneMath xestrata-3 | configure, `onemath`, every dependent final link | Reconfigure and rebuild with the new dependency pin and link rules; do not reuse old oneMath build objects as if they represented xestrata-3. |
+
+`strata_core` itself does not contain `expert_source.cpp`; CMake assigns that file to `strata_engine`. `elementwise.cpp`, `verify_kernels.cpp`, and `xmx_gemm.cpp` are members of `strata_kernels`; `strata_prefill` contains `gemm.cpp` and `prefill.cpp`; `strata` is built from `program/generate.cpp`. These mappings are from the current top-level `CMakeLists.txt` (targets around lines 358–400, 586–602, and 740–750). Unchanged call-site translation units in `strata_engine` still link against the rebuilt kernel and prefill archives.
+
+The previous v7 receipt records one `prefill.cpp.o` replacement in `libstrata_prefill.a` and executable SHA `6685135337d7538903d6b624bfb5b309ccf0a243d5cfd52b3ccd814ba87685e5`. That was a useful narrow source countermeasure artifact, but it predates this full Xe source delta, kept the old oneMath dependency, and cannot establish any of the changed target objects above. The previous eval cache also had `STRATA_BUILD_TESTS=OFF`; it contains no latest source test result.
+
+B570 release-like configure recipe
+After the runs close and a clean fixed-SHA integration tree exists, configure a fresh, empty build directory (do not reuse `eval-b570-icpx-v1`) with the established B570 compiler and target mode. The intended CMake values are:
+
+```sh
+cmake -S . -B build/eval-b570-icpx-e32-v1 -G Ninja \
+  -DCMAKE_C_COMPILER=/usr/bin/cc \
+  -DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icpx \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+  -DSTRATA_ENABLE_XE=ON \
+  -DSTRATA_LICENSE=contrib-icpx \
+  -DSTRATA_ONEMKL=ON \
+  -DSTRATA_CUDA_ARCHS= -DSTRATA_HIP_ARCHS= \
+  -DSTRATA_NATIVE_EXPERTS=ON \
+  -DSTRATA_BUILD_TESTS=ON \
+  -DSTRATA_WERROR=ON
+cmake --build build/eval-b570-icpx-e32-v1 --parallel <recorded-job-count>
+```
+
+Use the B570/SPIR-V target configuration from the existing B570 build record; do not add CUDA/ROCm targets, change the BMG AOT backend options, or infer a new target from the generic Xe release table. Keep the complete configure argv, compiler SHA/version output, CMakeCache, `compile_commands.json`, `ninja -t commands strata`, the oneMath xestrata-3 archive hash, produced archive member manifests, link argv, and final executable hash in the build receipt. `STRATA_WERROR=ON` is a useful stricter project-code build if clean; the repository requires no new `-Wall -Wextra` findings, and this setting turns those warnings into failures. If it exposes pre-existing upstream warnings, record the exact source and distinguish them rather than weakening validation silently.
+
+This build must re-resolve the CMake-pinned oneMath `xestrata-3` archive, SHA-256 `9a5203102002e5e85f1ad4a8b91b9f6134365f016bba1a430b038df95517e61d`. The archive URL and new CMake target rules are part of the build identity. For this B570 Intel-only `contrib-icpx` build, oneMKL is required and the new CUDA/ROCm-specific backend target flags should not be applied. The top-level `-fsycl-max-parallel-link-jobs` is a link-time concurrency flag, not a device runtime option; record it and the available memory/job policy since it can alter peak link resource demand.
+
+Compiler availability: `/opt/intel/oneapi/compiler/2026.1/bin/icpx` and `icx` are present, matching the old eval build's compiler path. `dpclang++` and `dpcpp` are not on PATH, and the available generic `clang++` resolves to `/home/yayoi/.nix-profile/bin/clang++`; that is not evidence of a free Intel LLVM DPC++ compiler or libsycl 9. Do not configure the Xe backend as free with ordinary clang. The free-LLVM variant is currently unavailable unless a DPC++ 7+ toolchain is separately provisioned; no installation is part of this task. Accordingly, the minimal reproducible variant here is `contrib-icpx`, with no CUDA/HIP targets and oneMKL enabled.
+
+Meaningful CPU and sanitizer qualification
+The current source tree contains `tests/core/*`, `tests/platform/*` and source-level CTest targets, but lacks `tests/CMakeLists.txt` and `bench/micro/`. `CMakeLists.txt` therefore defaults `STRATA_BUILD_TESTS` to OFF despite available CPU test sources; set it ON explicitly. Top-level CTest targets include CPU-only `pool_tasks_test`, `pool_test`, `pool_stress`, `expert_multi_test` (return code 77 means expected ISA skip), `expert_parity`, `iq_avx2_parity`, `q8k_quant_parity`, and `q2_bitplane_parity`. These use synthetic data or checked-in expert fixtures and need no model/GPU. The test runner should select that set explicitly, not run unrelated GPU parity/device tests on a no-GPU host:
+
+```sh
+ctest --test-dir build/eval-b570-icpx-e32-v1 --output-on-failure \
+  -R '^(pool_tasks_test|pool_test|pool_stress|expert_multi_test|expert_parity|iq_avx2_parity|q8k_quant_parity|q2_bitplane_parity)$'
+```
+
+`pool_tasks_test` is directly relevant: the latest patch adds its Q2_0 ActQ batch and missing-activation rejection case. It does not exercise `CpuCalJobs`' startup factory through the complete engine, so retain a source/callsite assertion that its Q2_0 branch fills `act` before `run_split_multi_native`; then add a small actual B570/model calibration smoke only after the active runs close. Keep `expert_multi_test`'s expected no-AVX-512 skip explicit; no latest source change alters the AVX-512 implementation or selection.
+
+Build a separate clean sanitizer tree; never reuse the optimized build directory:
+
+```sh
+cmake -S . -B build/eval-b570-icpx-e32-asan-v1 -G Ninja \
+  -DCMAKE_C_COMPILER=/usr/bin/cc \
+  -DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icpx \
+  -DCMAKE_BUILD_TYPE=Debug \
+  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+  -DSTRATA_ENABLE_XE=ON -DSTRATA_LICENSE=contrib-icpx -DSTRATA_ONEMKL=ON \
+  -DSTRATA_CUDA_ARCHS= -DSTRATA_HIP_ARCHS= -DSTRATA_NATIVE_EXPERTS=ON \
+  -DSTRATA_BUILD_TESTS=ON -DSTRATA_SANITIZE=address,undefined
+cmake --build build/eval-b570-icpx-e32-asan-v1 --parallel <recorded-job-count>
+ctest --test-dir build/eval-b570-icpx-e32-asan-v1 --output-on-failure \
+  -R '^(pool_tasks_test|pool_test|pool_stress|expert_multi_test|expert_parity|iq_avx2_parity|q8k_quant_parity|q2_bitplane_parity)$'
+```
+
+The CMake sanitizer flags instrument project-owned host code; ggml and SYCL device code are not instrumented. This can catch CPU pool/job/pointer and host publication helper errors; it cannot establish GPU event completion or device memory safety. Do not run sanitizer binaries under Intel SDE. Additionally compile/run `tools/test_prefill_publication.cpp` as a CPU-only harness with the exact preserved `publication.hpp` and `-fsanitize=address,undefined`; this file is not currently a CTest target. Record compiler, full command, source/header hashes, stdout and exit status. It validates helper state/order/failure cutpoints, not actual GPU queue completion.
+
+Lint and source-review contract
+- Run `tools/lint/run.sh` from the integration repository root on all changed/new files; pass `STRATA_LINT_BUILD=build/eval-b570-icpx-e32-v1` so oneAPI clang-tidy can read that build's `compile_commands.json`. C++/SYCL receives compiler `-Wall -Wextra`, oneAPI clang-tidy and cppcheck; CMake receives cmake-lint; Markdown receives mdl plus lychee offline; text receives codespell; all files receive gitleaks and repository-wide `reuse lint`. Missing lint executables are reported as skipped by the script and must be recorded, not described as passing.
+- Preserve Japanese-first / English-translated docs if any docs are changed. Do not clang-format; the repository says formatting is by hand.
+- Run CTest cases affected and `python -m unittest` for changed `serve/` and `tools/` Python code; current planned source focus does not require unrelated server suites, but latest `generate.cpp` changes do merit the short-read policy tests if they are integrated/changed. No Python/server test is a substitute for engine build/link or B570 qualification.
+- Latest changes do not modify AVX-512-specific source or its runtime selection, so no new SDE run is implied by this integration. If later edits touch those guarded files/dispatch, AGENTS.md's `sde64 -icx` parity requirements apply.
+
+Source and runtime qualification sequence
+1. After the six old-version quiet runs close, create the pinned latest source tree; preserve the countermeasure source/hash gate above. Generate a source delta report from pristine e32 and corrected e32, so source fix plus upstream delta are both reviewable.
+2. Configure/build clean Release with oneMath xestrata-3; verify all changed production source objects are represented in the new archives and final `strata` link, and no object came from the old v7 root. Retain complete compile/dependency manifests and archive hashes.
+3. Run the rootless CPU CTest subset and CPU-only publication harness; repeat relevant subset in the separate ASAN/UBSan tree. Record expected ISA skip distinctly from failure.
+4. Run CTest GPU tests only when their B570 target and device are explicitly available and the active-run owner has closed the GPU window. Then do the small two-chunk source/runtime diagnostic and only afterwards any 64K/full-context or performance gate already owned by the root task. Keep exact output/quality, fault status, memory admission, and performance as separate outcomes.
+5. For later performance comparison, freeze the learned short-read setting (or record its state) and isolate it from batched prefill and output decode. The rebuilt binary differs in generate routing and device handoff in addition to publication code; do not compare it to v7 as a single prefill change.
+
+No build/test/lint was run during this audit; this report is a concrete execution plan and provenance contract, not a qualification result.

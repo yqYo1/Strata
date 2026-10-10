@@ -1,0 +1,49 @@
+# R339 — upstream XeStrata 差分の lifetime / full-context safety review
+
+日付: 2026-10-11 (Asia/Tokyo)。read-only source comparison。親taskが指定した official `main` fixed SHA `e32b8b0594095352365db0e140a68d5bf56d8b0f` と base `39bdadcc9e2b89b1e3c8be7bb2a603b04fa0e197` を比較し、現行 corrected tree `ce70467423d97497979b05ef604e2bcecac47b2b` と並べた。build/test/GPU/process/service/Git mutation/fetch/clone はしていない。full delta を GitHub compare `.diff` から読み、fixed SHA の raw files は直接参照した。歴史上のB570/CAT18/UR40 fault原因はソース比較から帰属しない。
+
+## 結論
+
+**最新upstream差分は、調査対象のproducer/stager/issuer/failure/lifetime countermeasuresを含まない。** `src/prefill/prefill.cpp` はupstream baseとlatestでSHA256がともに `919c696192311066055077bdd0fc74769bfb50854e3437b6b387732acf6d532e`（byte-identical）。corrected treeにはこのファイルの変更（SHA `59e1c4ea18c38da799314439099bcf14e9a19f0b7ce9f4f00629173a534cf9ce`）と追加helper `include/strata/prefill/publication.hpp`（SHA `547397243c32126f26caebad4baa39278dcf1471f3bff368af4fc481e5462710`）があるが、そのheaderはlatest raw treeに存在せずHTTP 404。base..latest の140 filesには `src/prefill/prefill.cpp` もpublication headerも含まれない。
+
+このため最新upstreamをprefill安全countermeasureの代用として扱わないこと。main側が採用候補にしているcorrected treeのsource gatesとその後のruntime evidenceを維持し、上流取り込みはR338担当のbuild/performance差分と合わせて別途評価する。
+
+## Fault/control matrix
+
+| 項目 | pristine→latest upstream | corrected `ce704…` の状態 / 残る制限 |
+|---|---|---|
+| skipped-group release: flush → producer publication → event record → consumed/slot reuse | **未修正。** latest prefill.cppがbaseと完全一致。`release_to` はgroup flush後、`wait_issued`なしでused eventをrecordし、`used_of`, `consumed`, issuer handbackを更新する旧順序 (`prefill.cpp:2155-2162`)。event boolも未検査。 | `publication::skipped_entry(flush,wait,release)` でflush → producer publication待ち → event/meta/consumed更新を順序づける。`wait_issued`の失敗もfailure/stopを確認する。ソース順序を直すもので、実行時イベント正当性の証明ではない。 |
+| issuer thread のsubmit/error channel | **未修正。** `copy_async_after`, `event_record`等のboolを無視し、成功扱いで `stage_live`, issued/consumed進行をpublish。`gpu::last_error` はthread-localなのでmain threadからissuerのerrorを後追いできず、単なるfalseはC++ exceptionではない（R323 source audit）。 | `publication::require` をissuer自身のthreadで呼び、outer catchが `Failure::capture`、stop設定、Stager cancelを行う。Failureをconsumerへ通知。source-only。 |
+| staged/issuer sequence failure wakeup / ABA | **未修正。** upstream staged `issued`と `a_issued` は通常storeだけ。failure terminal stateなし。`wait_issued` は `a_issued > k` をspinするだけでerror/stopを見ない (`1332-1378`)。 | `publication::wait_issued` はfailure/stopをチェック。Stager cancelは高いterminal valueとnotify、`publish_staged`のCASは通常 `j+1` がterminal sentinelを下げない。sequenceのpublishはmetadata後。`a_issued`は単調な通常順序で、failureを別stateで通知する。 |
+| skip event とcopy/slot handoff | **未修正。** producer copied event、consumer used event、cross-stream waitやstager `dma_done` record/syncの失敗を無視しうる。stager workerはfailed source/eventでもreadyをpublishする。 | 主要なcopy/event wait/record sitesをchecked operationへ変更し、stager waitがerror時にbufferを返さず、`copy_blob`失敗をDMA前に消費者へ返す。追加checked sitesはR323/R325報告参照。 |
+| `StagerDone` normal / unwind drains | **未修正。** base/latest guard destructorは`finish()`のみ。両queue drain→worker retirement→buffer destructionを保証するcomplete pathなし。 | normal completeでcancel → checked compute drain → checked copy drain → finish/failure rethrow。stream-all `IssuerJoin`はproducer join後に両queueをdrainする。Unwind cleanupはfailed drainを`_Exit(74)`でbuffer destructorより前にfail-stop。 |
+| unconfirmed cleanup / `_Exit(74)` meaning | upstreamの旧unchecked release/cleanupのまま。 | 意図はfalse drain後にhost vectorsをunwind/destroyしないこと。ただし `_Exit` はC++ destructorを飛ばすだけでありGPU fence、queue完成、Level Zero/driver recovery保証ではない（R327）。さらにcurrent helperはbool APIの全operation errorを「completion unconfirmed」として扱うので、normal/diagnostic errorも過剰にprocess exitへ送る可能性がある。 |
+| sticky worker failure on reuse | **未修正。** upstream start/resetにはcorrected Failure rethrow gateがない。 | worker exceptionを保持し、`Stager::start`の最初でrethrowするため、queue drain/instance reconstructionなしに再利用しない。`copy_blob` がfalseを返すだけのfailureはstored exceptionとは別で、queue-safe cleanup後のretry可能性を同一扱いしない（R325/R326）。 |
+| source/mmap/host-USM lifetime | upstream full deltaに `prefill.cpp`, expert-source lifetime/import implementation, `gpu.cpp`の改変なし。 | corrected pathの直接host-USM sourceは長寿命expert-source arenaから読むため、R318は独立UAFを確立していない。条件付きall-pageable Stager fallbackではcopy drain失敗前に`std::vector`が壊されないようcurrent release/guardsを使う。なおOS/driver完了の証明はない。上流deltaはこの寿命条件を修正していない。 |
+
+## full context、index tail、負荷依存
+
+base..latest のproduction-source差分に含まれるのは `src/program/generate.cpp`, `src/prefill/gemm.cpp`, `src/core/expert_source.cpp`, CPU pool、Xe elementwise/verify/XMX sources。`src/kernels/xe/native_qsa_indexer.cpp`, `src/kernels/xe/qsa.cpp`, `src/prefill/kernels.cpp`, `src/core/layer.cpp`, `src/core/gpu.cpp` はbaseとlatestのSHA256が同一である（各hashは下記）。従ってfull-context storage/4-cell tail guardやGPU helper completion semanticsに、このupstream更新は変更を加えていない。
+
+R329 source arithmeticは legal `max_cells=262144` の終端を、indexer pool rows=65,538に対する最終valid cell 262,143、末尾 sentinel row 65,536として有効範囲内と見た。32768/65536 boundariesも指定geometry内でsource-derived OOBは見つかっていない。これはsource auditであってGPU実行ではない。`Prefill::run`自身に `pos0+n<=max_cells` のentry guardがなく、indexerの `p0+T>max_cells` guardは後段で、先行kernel submit後の可能性がある。generate入口は `max_context < 2^31-8` とprompt+generation capacityを検証するため、通常CLI/serve callerに従うlegal 262,144 requestと任意callerのoverlong 262,145 requestを混同しないこと。262,145入力を安全に処理する証拠はない。
+
+latest `generate.cpp` は `ShortReadCost` を導入し、短いcontinuation prompt suffixをverify windowsかbatched prefillのどちらで読むか適応する。この変更はproducer lifetime fixではないが、request routing/再現条件を変えるため、診断では選択閾値または `--short-read` 設定を記録する。これとは別にserve requestの既存 `n+max_new+8` admissionとCLI prompt+output boundはfull-context slackを要求する（`max_context=262144`なら、`GEN 1`のprompt長は最大262135）。upstream diffでこのboundやindexer tail guardの変更は確認できない。
+
+## 関連するupstream更新の分類
+
+- `src/prefill/gemm.cpp` は `Gemm::path()` の表示を `oneMath (rocBLAS/cuBLAS/oneMKL), own kernels` 等に詳しくするreporting change。production GEMM algorithm/lifetime changeではない。
+- `src/program/generate.cpp` に `--kernel-bench` / `--hw-bench` とdense BF16・MMQ timing codeが追加された。これはbenchmark commandであり、production prefill producer pathの置き換えではない。benchmark allocationsやtiming結果をfull-model safety proofと扱わない。
+- `CMakeLists.txt` はoneMath pinned archiveを`xestrata-2`から`xestrata-3` (SHA `9a5203102002e5e85f1ad4a8b91b9f6134365f016bba1a430b038df95517e61d`)へ変更し、rocBLAS/cuBLAS target-specific optionsとparallel device-link jobsを調整。これはbuild dependency/packaging差分で、R338のbuild再評価が必要。安全レビューで依存更新を実証していない。
+- `src/kernels/xe/elementwise.cpp` はdoorbellのdevice→host通知をsystem-scope acq_rel fence + volatile storeへ変更し、`verify_kernels.cpp`のprobeもvolatile storeへ合わせた。別のring notification機構であり、prefillのcopy/used/dma_done event handoffではない。repoにはB70 store probeの2,000/2,000 visibility recordが追加されたが、別GPU/runtimeの適合やprefill queue-buffer retirementを証明しない。
+- `src/core/expert_source.cpp` とCPU pool filesはQ2_0 CPU dispatch calibration jobに必要なActQを設定し、missing activationをworker fault前にrejectするfixture/testを追加。これは有用なCPU calibration fixで、mmap/host-USM source lifetime変更ではない。
+- compare diffにはrelease/docs/setup/bench artifactsとserve short-readロジックなど多くの変更が混在する。production `prefill.cpp`がunchangedであるため、これらをDMA staging fixとして一括取り込みしない。
+
+## 固定した出典/identity
+
+- Official latest commit page: https://github.com/MistVVK/XeStrata/commit/e32b8b0594095352365db0e140a68d5bf56d8b0f (subject: AGENTS.mdの用語1行追加; 1-file docs-only commit)。
+- Full fixed comparison: https://github.com/MistVVK/XeStrata/compare/39bdadcc9e2b89b1e3c8be7bb2a603b04fa0e197...e32b8b0594095352365db0e140a68d5bf56d8b0f.diff (140 changed files; compare base→fixed head, not only last commit)。
+- Raw fixed-SHA `src/prefill/prefill.cpp`: https://raw.githubusercontent.com/MistVVK/XeStrata/e32b8b0594095352365db0e140a68d5bf56d8b0f/src/prefill/prefill.cpp ; SHA equals pristine above. Raw fixed-SHA publication header path returns 404.
+- Fixed-SHA unchanged geometry/helper SHA256s: `native_qsa_indexer.cpp` `41a4b64a914fd4e6f99c6fcbe71805b171f295214018bb7289dc0b3c9919523c`; `qsa.cpp` `a6bf5966f862adb188bc1ece52ebe668d02a29c4fa10a4aca33593deb2611c6a`; `prefill/kernels.cpp` `2ead1511d2ecb6cb1cdc73ec3e6143ac097e0f0a715716631f351273371079d4`; `core/layer.cpp` `fefc457de582573a8f1132c02139a61161d90fe50dcacda46c8c64cf0b581c97`; `core/gpu.cpp` `a844eeb381e1cb9f1272f1f68f754a73640d44aa6d6e89b743ecfc793bc2a8ef`.
+- Prior source-only records used for risk mapping: R323–R329, especially R323 thread-local status/false publication, R325 Failure terminality, R326 queue/pageable source lifetime, R327 cleanup semantics, R329 full-context/index bounds. These do not constitute a historical fault-cause proof or current runtime pass.
+
+No tests/build/GPU execution was performed. Current corrected Xe still needs the root-owned CPU/ASAN/link + small two-chunk trace + actual 64K diagnostic gates before treating its source fix as qualified; old v7 admission is not reusable as proof for the changed source or upstream binary.

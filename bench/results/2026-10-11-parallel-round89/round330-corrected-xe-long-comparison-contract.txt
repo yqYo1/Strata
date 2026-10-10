@@ -1,0 +1,65 @@
+# Round 330 — Corrected Xe long-context comparison contract
+
+Date: 2026-10-11 (Asia/Tokyo). Read-only report and controller-preparation review. No source/controller edits, build, tests, GPU/device/process/service operation or query, Git operation, or cleanup was performed. The only new artifact is this report. Environment evidence was limited to the comparison controllers' explicit allowlisted keys; dynamic desktop/session values were not read or reproduced. The prohibited B/prefill-gemm-only-contract-root-v1/record.json was not accessed.
+
+## Decision
+
+Use a new source-pinned comparison controller for the corrected Xe binary 6685135337d7538903d6b624bfb5b309ccf0a243d5cfd52b3ccd814ba87685e against baseline 81375b88f043f6b791bd2fee5df7b512e25b584ad5631e0b915d5ac354db237c. The most useful first comparison is a fresh, uncached 65,536-token request with --prefill 8192, --max-context 262144, --kv int8 --kv-resident 32768, --expert-cache 128 --expert-cache-per-layer, --pool-workers 5, --spec 4, --no-prefill-borrow, and the same model/profile/service/draft flags on both arms. The exact token-ID fixture is clean64k-task-fixture-root-r3/coding-review-65536-tokens.txt, SHA-256 5284d8fa53d1ef28f6ba916a629faf901c890bc0c669bf986ee04ed72aa2c3ff.
+
+Three fresh paired repetitions per arm are the minimum for a first timing comparison; alternate order across pairs and retain each individual sample. To compare decode timing, each run must complete all 64 generated tokens with finish_reason=length; an early stop remains usable only for a separately labeled prefill sample. The existing baseline 64K sample stopped after three tokens, so it is not a decode sample. A 32K control is useful only after obtaining a fresh corrected-Xe 32K result with matching baseline settings; the existing baseline 32K execution/math admission is not a matched timing pair.
+
+## Existing evidence and status boundaries
+
+- The root-owned baseline record is complete and passed for its 64K timing run. It used the fixture above, read_n=65536, 65,535 batched prefill positions, prompt_ms=162402.9, decode_ms=813.4, and three generated tokens before an honest stop. Its prefill sample is timing-valid (403.54 tok/s by service accounting); its decode is not eligible for a GEN64 comparison. The record's original baseline status remains FAILED and its original event timing remains invalid. The later derivative admits only 32K execution/math and explicitly preserves that historical status/timing limitation. Neither statement cancels the other.
+- Corrected Xe record xe-prefill-two-chunk-serial-root-v4/record.json is a closed PASS for a two-chunk diagnostic only: 8,193 prompt IDs, 8,192 batched positions, chunks at 4,096 and 8,192, issuer forced OFF, one generated token, and finite output. It reports source/executable stable, fresh health before/after, no runtime errors or new fault messages, and 1,514 MiB free at READY. It explicitly records fork_pristine=false, performance_eligible=false, math_equivalence=false, quality_qualified=false, and full262144_qualified=false. Its 8K result is not a 32K/64K result and must not be promoted into one.
+- The old raw Xe binary 39bdadcc remains failed: default mmap verification did not match; the host-USM 4K/32K two-chunk diagnostic faulted. Those statuses remain attached to that binary and its diagnostic. They are neither repaired nor substituted by the corrected 8K diagnostic.
+
+## Requested conditions and intrinsic differences
+
+The baseline and corrected diagnostic use the same main requested CLI values for context, KV, expert-cache budget, pool workers, speculative mode, and related service flags. Their recorded argv differs in executable and prefill size (baseline 8,192; corrected diagnostic 4,096), so the diagnostic argv is not a comparison pair. For the new comparison, pin the exact shared full argv and substitute only argv[0] for each binary. Use 8,192 positions per prefill chunk in both arms; use 4,096 only as a separate matched chunk-size experiment.
+
+Use the controller's explicit environment allowlist. Common runtime entries include the pinned PATH, locale, oneAPI LD_LIBRARY_PATH, SYCL_CACHE_PERSISTENT=0, the Level Zero adapter path, UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1, ONEAPI_DEVICE_SELECTOR=level_zero:gpu, NEOReadDebugKeys=1, and EnableDirectSubmission=0. Common Strata requests include STRATA_PREFILL_FIRST=0 and STRATA_PREFILL_RING=8. The baseline also sets STRATA_PREFILL_COMPACT=2, STRATA_PREFILL_ATTN_LAYOUT=1, STRATA_PREFILL_LAYER_MAJOR=0, STRATA_KV_STAGE_OWN=1, and STRATA_KV_PREFETCH=0. The Xe arm uses STRATA_ARENA_HOST_USM=1 and the corrected diagnostic explicitly sets STRATA_PREFILL_ISSUER=0. Record the two actual allowlisted environments separately and prove exact process-environment equality to each intended target; do not copy the ambient environment or print dynamic desktop/session values.
+
+Requested equality does not imply equal resource behavior:
+
+| Setting | Baseline 81375… | Xe 668513… | Comparison interpretation |
+|---|---|---|---|
+| Requested expert cache | 128 | 128 | Same requested budget. |
+| Physical expert slots | 128 | 144 in corrected 8K READY | Xe's per-layer allocation yields 144 physical slots from budget 128. Verify this value at each new startup. |
+| Initial resident fill | not separately reported for baseline | 29/144 was established for the old host-USM Xe source in R306 | Keep 29 as a historical expectation, not a corrected-binary measurement; record corrected fill anew before interpreting results. Physical capacity is not actual fill or hits. |
+| Requested ring | 8 | 8 | Same request. |
+| Effective ring | 8 in baseline source contract | 16 in Xe source contract when 8K prefill selects stream-all | Intrinsic path difference; the comparison controller marks runtime ring as not independently measured. Do not call it equal. |
+| Allocator/source | baseline binary's own allocation path | corrected diagnostic uses host-USM | Preserve each actual mode; the baseline receipt's fork_allocator_mode field describes the Xe arm, not the baseline. Default mmap mismatch belongs to the old Xe result. |
+| Issuer | baseline path as recorded by its binary | corrected diagnostic forces issuer OFF | Explicit Xe execution-mode change required by the corrected diagnostic. Keep it visible as a whole-engine comparison condition. |
+
+This supports an end-to-end result for these two configured binaries. It does not isolate prefill code, cache policy, ring size, allocator, or issuer mode as a single cause.
+
+## Measurement boundary and LP5 scope
+
+The prompt is fresh (RESUME 0, REUSED 0), and the 64K request should report read_n=65536. Prompt reading batches 65,535 positions; the final prompt token is consumed by the first verifier window after prompt_ms ends. Service throughput uses read_n / prompt_ms, so that numerator includes one token whose verifier work falls outside the prompt timer. Preserve the protocol PP rows, DONE, timer values, read count, and host send-to-DONE timing separately. Model loading is outside prompt_ms; request setup, cache refill, session/checkpoint work and prompt work can be inside it. Do not compare PP's cumulative progress timestamps as though they were the service prompt timer.
+
+GEN 64 ckpt=1 logprobs=5 is the existing controller shape. A decode timing sample is eligible only for 64 returned T tokens and DONE ... length; preserve all accepted/offered speculative counts. If either arm stops early, keep its clean prefill timing separately and obtain a prompt/run that reaches 64 tokens before making a decode comparison. Three repetitions must be three fresh runs per arm, not repeated decode in one warmed session.
+
+LP5 reports the selected token and five log-prob alternatives at each emitted token under this protocol. It is useful for first-token/top-five and sequence-local comparisons, but it is not full-vocabulary logit equivalence, state equality, quality, or a standalone correctness proof. Keep LP5 observations separate from the performance score; logprob generation is part of the measured protocol on both arms.
+
+## Controller and gates to establish
+
+The existing xestrata-clean-64k-comparison-v4/run_clean.py is not directly admissible for the corrected build. It pins Xe SHA 4e68a686… (pristine 39bd), validates old pristine-Xe diagnostic receipts/controllers, and uses a comparison gate built around that source tree. It does correctly pin the baseline 81375b88…, fixture, model/profile, common CLI, explicit environment, per-arm startup requirements, fresh request protocol and three paired alternating-arm design. xe-prefill-two-chunk-serial-v4/run_root.py is likewise a one-shot diagnostic controller: it derives from the older receipt, sets issuer OFF, and only validates the short two-chunk request. A new versioned controller and closed CPU-only owner qualification must pin the corrected source manifest, corrected binary/link receipt, runner/owner hashes, baseline and fixture; it must not weaken any prelaunch or post-run checks.
+
+Before a corrected Xe long request is admitted, newly establish and record:
+
+1. A closed link/build identity for the exact corrected source and executable; source pins and executable hash must match the current 668513… artifact, and remain stable through the run. The raw 39bd diagnostic gate cannot satisfy this.
+2. A fresh corrected-Xe fault/safety admission at the intended long geometry (32K first if used as a control, preferably a separately owned 64K diagnostic) with issuer OFF, host-USM explicit, exact actual environment, zero runtime error/fault/dump, unchanged boot/no reset, and source/executable stability. The current 8K result does not establish long-path completion.
+3. Fresh health checks with an explicit maximum age at model start, startup READY/INFO settings verified (context 262144, KV int8/resident 32768, spec 4, workers 5, cache capacity), and at least the established 512 MiB free-VRAM admission before GEN. Retain log/error classification, bounded owner lifetime, no retry/reset, and a mandatory post-model health/kernel gate.
+4. Common request and run identity: exact 65,536 fixture hash and token count, full argv match except executable, explicit per-arm environment, RESUME 0/REUSED 0, complete PP positions and DONE accounting, finite T/LP fields, normal owner closure, and individual sample timing validity. Confirm corrected Xe's actual expert-cache fill and any effective-ring evidence available; do not assume the old 29-fill result transferred.
+5. At least three fresh alternating repetitions per arm for initial timing. For decode claims all three retained pairs must be GEN64 with 64 tokens and length completion, or the decode sample count must explicitly exclude early stops. Keep prefill-only and decode-eligible counts distinct.
+6. A separate math/quality gate for any correctness or adoption statement. Neither the corrected 8K receipt nor baseline's 32K execution/math admission establishes corrected-vs-baseline 64K math equality. The 64K timing comparison alone does not qualify quality or full 262,144-cell capacity/lifecycle.
+
+If a requested 32K comparison is preferred first, both engines need the same 32,768-token fixture, prefill chunk, request shape, and at least three fresh runs; baseline's existing math-only 32K admission is not a timing sample. Keep the original event-timing-invalid outcome isolated from any new, properly timed sample.
+
+## Inputs reviewed and boundaries
+
+Read registry v110, rounds 302, 321, 322, and 324–328, the v4 clean-comparison recipe/controller, the corrected two-chunk v4 runner and record, the actual clean 64K baseline record, the canonical fixture identity, round 300 prompt-timer accounting, and round 306 cache/reserve accounting. Round 328 already separated the corrected short diagnostic from performance and called out logging/fresh-health gaps. R324 found no source-derived second-chunk bounds defect; R325–327 cover the corrected fail-closed and lifetime limitations. This report carries those limits forward and does not attribute the historic fault or claim a corrected long-context pass.
+
+Input hashes checked: corrected Xe record ad4ccf79981c14149ad9f886dfbb7b4d5e6ffd840213877bf0a7d371f67084c3; baseline record 9f97faaea66de8258170a85ea11ef653d8632a3d98b0d12c6972e6c441470fd6; clean controller b809c8baba4264898b1b7901c15d7f29a486d4e61faa833da2d090518bc29580; corrected diagnostic runner 934080b118fa4474f673f36c878e27151f7f411bfdd2f241647b03129b830101; fixture 5284d8fa53d1ef28f6ba916a629faf901c890bc0c669bf986ee04ed72aa2c3ff.
+

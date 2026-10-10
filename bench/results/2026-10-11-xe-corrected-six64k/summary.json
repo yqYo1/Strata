@@ -1,0 +1,194 @@
+{
+  "execution_order": [
+    "baseline-r1",
+    "xe-corrected-r1",
+    "xe-corrected-r2",
+    "baseline-r2",
+    "baseline-r3",
+    "xe-corrected-r3"
+  ],
+  "arms": {
+    "baseline": {
+      "samples": [
+        {
+          "prompt_tokens": 65536,
+          "generated_tokens": 64,
+          "actual_batched_positions": 65535,
+          "prompt_ms": 320257.5,
+          "decode_ms": 7227.5,
+          "finish_reason": "length",
+          "mtp_counts": [
+            37,
+            78
+          ],
+          "fresh_complete_finite": true,
+          "prefill_chunk": 4096,
+          "prefill_tps": 204.63533250587417,
+          "decode_performance_eligible": true,
+          "decode_tps": 8.855067450709097,
+          "host_start_to_READY_seconds": 39.653998417000366,
+          "host_send_begin_to_DONE_seconds": 327.5292607520005
+        },
+        {
+          "prompt_tokens": 65536,
+          "generated_tokens": 64,
+          "actual_batched_positions": 65535,
+          "prompt_ms": 330708.8,
+          "decode_ms": 7506.3,
+          "finish_reason": "length",
+          "mtp_counts": [
+            37,
+            78
+          ],
+          "fresh_complete_finite": true,
+          "prefill_chunk": 4096,
+          "prefill_tps": 198.16829791042755,
+          "decode_performance_eligible": true,
+          "decode_tps": 8.526171349399837,
+          "host_start_to_READY_seconds": 33.42031350099933,
+          "host_send_begin_to_DONE_seconds": 338.2646106259999
+        },
+        {
+          "prompt_tokens": 65536,
+          "generated_tokens": 64,
+          "actual_batched_positions": 65535,
+          "prompt_ms": 325509.1,
+          "decode_ms": 7096.6,
+          "finish_reason": "length",
+          "mtp_counts": [
+            37,
+            78
+          ],
+          "fresh_complete_finite": true,
+          "prefill_chunk": 4096,
+          "prefill_tps": 201.33384903832183,
+          "decode_performance_eligible": true,
+          "decode_tps": 9.01840317898712,
+          "host_start_to_READY_seconds": 34.99918120300026,
+          "host_send_begin_to_DONE_seconds": 332.64941803799957
+        }
+      ],
+      "within_arm_token_and_lp5_identical": true,
+      "prefill": {
+        "median_tps": 201.33384903832183,
+        "mean_tps": 201.37915981820785,
+        "min_tps": 198.16829791042755,
+        "max_tps": 204.63533250587417,
+        "sample_stddev_tps": 3.233755388825238
+      },
+      "decode": {
+        "median_tps": 8.855067450709097,
+        "mean_tps": 8.799880659698685,
+        "min_tps": 8.526171349399837,
+        "max_tps": 9.01840317898712,
+        "sample_stddev_tps": 0.2507134418838191
+      }
+    },
+    "xe-corrected": {
+      "samples": [
+        {
+          "prompt_tokens": 65536,
+          "generated_tokens": 64,
+          "actual_batched_positions": 65535,
+          "prompt_ms": 319368.6,
+          "decode_ms": 5513.7,
+          "finish_reason": "length",
+          "mtp_counts": [
+            40,
+            72
+          ],
+          "fresh_complete_finite": true,
+          "prefill_chunk": 4096,
+          "prefill_tps": 205.20489490826589,
+          "decode_performance_eligible": true,
+          "decode_tps": 11.607450532310427,
+          "host_start_to_READY_seconds": 40.230643419000444,
+          "host_send_begin_to_DONE_seconds": 324.8987792450007
+        },
+        {
+          "prompt_tokens": 65536,
+          "generated_tokens": 64,
+          "actual_batched_positions": 65535,
+          "prompt_ms": 314016.7,
+          "decode_ms": 6205.3,
+          "finish_reason": "length",
+          "mtp_counts": [
+            40,
+            72
+          ],
+          "fresh_complete_finite": true,
+          "prefill_chunk": 4096,
+          "prefill_tps": 208.70227602544705,
+          "decode_performance_eligible": true,
+          "decode_tps": 10.313764040417063,
+          "host_start_to_READY_seconds": 40.368935309000335,
+          "host_send_begin_to_DONE_seconds": 320.2381135599999
+        },
+        {
+          "prompt_tokens": 65536,
+          "generated_tokens": 64,
+          "actual_batched_positions": 65535,
+          "prompt_ms": 330642.5,
+          "decode_ms": 5966.9,
+          "finish_reason": "length",
+          "mtp_counts": [
+            40,
+            72
+          ],
+          "fresh_complete_finite": true,
+          "prefill_chunk": 4096,
+          "prefill_tps": 198.2080343573497,
+          "decode_performance_eligible": true,
+          "decode_tps": 10.725837537079556,
+          "host_start_to_READY_seconds": 38.99102116799986,
+          "host_send_begin_to_DONE_seconds": 336.64312634699854
+        }
+      ],
+      "within_arm_token_and_lp5_identical": true,
+      "prefill": {
+        "median_tps": 205.20489490826589,
+        "mean_tps": 204.03840176368755,
+        "min_tps": 198.2080343573497,
+        "max_tps": 208.70227602544705,
+        "sample_stddev_tps": 5.343482641439834
+      },
+      "decode": {
+        "median_tps": 10.725837537079556,
+        "mean_tps": 10.882350703269015,
+        "min_tps": 10.313764040417063,
+        "max_tps": 11.607450532310427,
+        "sample_stddev_tps": 0.6608921721580813
+      }
+    }
+  },
+  "paired_ratios": [
+    {
+      "repetition": 1,
+      "prefill_xe_over_baseline": 1.0027833043073116,
+      "decode_xe_over_baseline": 1.3108257612855252
+    },
+    {
+      "repetition": 2,
+      "prefill_xe_over_baseline": 1.053156727014837,
+      "decode_xe_over_baseline": 1.209659484634103
+    },
+    {
+      "repetition": 3,
+      "prefill_xe_over_baseline": 0.9844744701603695,
+      "decode_xe_over_baseline": 1.189327791650606
+    }
+  ],
+  "adopted": false,
+  "math_equivalence": false,
+  "quality_qualified": false,
+  "full262144_qualified": false,
+  "fork_pristine": false,
+  "prefill_median_ratio": 1.019226999773929,
+  "decode_median_ratio": 1.211265481238164,
+  "cross_arm_common_greedy_prefix": 5,
+  "comparison_scope": "Whole configured engines: baseline slots128/ring8/pageable versus corrected Xe slots144/ring16/host-USM/issuer OFF. 65536 actual input, 4096 chunks, 64 outputs, no reuse, same fixture and requested settings. Different generated paths and MTP acceptance confound causal decode attribution.",
+  "old_8k_403tps_scope": "Historical one-sample baseline used 811614 fixture and 8K chunk; excluded from this new 5284 fixture /4K comparison.",
+  "newer_xe_tip": "e32b8b0594095352365db0e140a68d5bf56d8b0f",
+  "newer_xe_pending": "40 commits/140 files, prefill stock SHA unchanged; do not execute known faulting pristine source. Latest doorbell volatile/fence contract requires new capability/path qualification before GPU.",
+  "official_next": "v0.1.42 tag and main both 61b3fb5dd3f1e8ec09cf7e4e05208bc6d3c46406; after latest Xe assessment. All server features mandatory, prefill/decode inference adoption independent."
+}

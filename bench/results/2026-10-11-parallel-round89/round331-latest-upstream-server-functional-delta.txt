@@ -1,0 +1,56 @@
+# R331 — upstream Strata server/setup/API/web 機能差分（2026-10-11）
+
+## 範囲と確度
+
+公式 GitHub API の読み取りで `Niko1221/Strata` main の先端を確認した。調査時点で HEAD は `61b3fb5dd3f1e8ec09cf7e4e05208bc6d3c46406`（2026-10-10 12:49:37 UTC、merge `f-142-pciefrac`）、直近リリース版は v0.1.42、コミット `cdbf45868440`（2026-10-09 23:23:39 UTC）。比較基準 v0.1.41 は tag commit `fb58e0dbc8399662c0e47c76578c6e878b14f6cf`。GitHub compare API は v0.1.41 から main まで 235 commits ahead と返した。公式 API/commit 情報と公式ソースを読み取り専用で確認した。ビルド、テスト、GPU、サーバー起動はしていないため、以下はソース機能の有無であって実行結果の主張ではない。
+
+実際の比較対象は `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009` の HEAD `8f3e44f8…`。`setup.py` の `MIN_ENGINE` は `(0, 1, 41)`。server.py の履歴基準は統合コミット `b0bc4a70f4915097526615608c293d41e59d76f7`。v0.1.41 と現行作業ツリーの server/setup は完全同一とは仮定せず、対象ファイル・固有テスト・機能文字列を確認した。ローカルにはすでに多数の後続修正が個別に取り込まれている（例: `repeat_penalty` alias、`effort_position`、バッチ slot の `_pump`）；「タグより後の全コミットが未統合」とは扱わない。
+
+## 差分のうち統合優先度が高いもの
+
+1. **エンジン READY timeout 時に開始中の HTTP request を確実に終わらせる** — `32a2439de05908da6829646ba0030a2f998179f4` (`serve/server.py`, 新規 `serve/test_ready_timeout.py`, issue #1527)。lazy start の READY timeout が bare `RuntimeError` となり request handler の 503 経路に入らない問題と、lazy start 前には未生成の `slot_cv` を restart が参照する問題を直す。現行作業ツリーに `serve/test_ready_timeout.py` はなく、該当 guard の新しい回帰テストも確認できなかった。長い load、クラッシュ後 restart、ハングする engine を使った純 Python fake-process/HTTP テストが可能。
+2. **並列要求を「実行中でも待機中でもない」状態にしない** — `caba015bffb55b12af47445599eb3b065ba52b13` (`serve/server.py`, `serve/test_parallel.py`, issue #1603)。枠解放/割当の境界で待機 request を取り落とす競合を扱う。現行に `test_parallel.py` はあるが、この upstream 修正の追加 assertion は未確認。mock engine と barrier/event で長・短要求を同時投入し、全要求が完了・slot が回収されることを検証できる。
+3. **複数 prompt window 間でキャンセルしても復元済み会話を live state として保つ** — `8824e217c4179bad5d6fc0f4a3599567e441d299` は `src/program/generate.cpp` の protocol/state 側、回帰用 `0650f316706d` は `tools/cancel_park_test.py`。serve/server 側だけの変更ではない。SYCL エンジンでも同じ protocol/生成コードを使うか確認し、既存 SYCL route で同じキャンセル点を試す必要がある。CPU fake 側は server state のテストに使えるが、engine state の実統合は GPUなしでは立証できない。
+4. **コンテキスト超過を機械判定できるエラーにする** — `2bf1d07c05614add6d6d3d97bf06c8872ad23040` (`serve/server.py`, `serve/test_context_overflow.py`)。「request exceeds the context window」を安定 prefix として付け、Chat Completions / Messages / Responses の 400 応답を mock engine で検証する。回帰テストは GPU 不要で、現行ツリーには同名テストがない。
+5. **待ち行列中の単一 turn に keep-alive を送り、キャンセル時に列から離脱** — `875d6a922a2c8bb7c5150b04c0f6f82812d52663` (`serve/server.py`, `serve/test_queue_keepalive.py`)。長時間保持される要求の client timeout とキャンセル後の列詰まりを防ぐ。HTTP/SSE と mock engine でテスト可能。現行ツリーに専用テストはない。
+6. **ツール定義の順序が変わっても初回順を保つ** — `1a62f6df6ea7e2ad2dee161eebf17d9c8bcac77a` (`serve/frontend.py`, `serve/test_server.py`, #1624)。同じツール群の順序だけ変わる呼び出しで prompt prefix/cache を保つ。CPU unit test で安定して検証できる。
+
+## API と入力取り扱いの現行仕様
+
+- `5804094b2f1c` は未対応 content part を 400 にする変更だったが、その後の **最終 main** `40bdd86d6d553952ea4e637fba5f17363af290c3` (`serve/frontend.py`, `serve/test_frontend.py`, #1664) で挙動が戻り、認識しない part (`tool_reference`, `document`, `search_result`, server-tool blocks, `file`, `audio`) は従来どおり除外し debug log に出す。現行の最終仕様としては一律400化を移植しないこと。supported/unsupported input fixture で Chat, Messages, Responses の各 route を CPU 検証する。
+- `1f6958c13b37` は誤った sampling field type を named 400 にし、後続 `acee40a597bc` (#1663) が numeric string を適切な型に読めるなら受理するよう調整。現行ツリーには `test_request_hardening.py` があり、この機能の一部は既存の可能性がある。文字列数値、無効文字列、bool/list/object、unknown key を分けて確認する。
+- `a6ae2475612a` (#1641) は run config の `reasoning_effort` を request 側に既定値として適用し、CLI `--reasoning-effort` を config に昇格。request 明示値や `chat_template_kwargs` の明示設定を優先する。`3d247dd49ccb` (#984) は thinking budget を `max_tokens` から回答用 reserve を残して cap し、thinking 中に全予算を使い切って answer を切らない。設定優先と予算境界の mock/service テストが有効。
+- `70ac6dd41f0a648a89611caa2077dfc65dbfd8d0` (#1819) は llama.cpp 名の `repeat_penalty` / `repeat_last_n` を config/request に追加。現行ツリーに `repetition_penalty` / `penalty_last_n` alias 処理は存在するため、互換名と変換/衝突規則をテスト差分で確認し、二重実装しない。
+- `253e09f18dd8c7a58ccb15b1c073651112204a30` (#1753) reasoning loop guard が空白区切りの単語ではない周期文字列も検出。24K長の繰り返しと非反復長文を純 Python で試せる。
+- `b9cba34bc2ea` は `effort_position=end` の機能判定時、SYCL launcher shell script でなく実 engine binary（`STRATA_SYCL_BIN` を含む）を読む (`serve/server.py`, `tools/test_effort_end_args.py`)。現行ツリーに `effort_end_args` はあるが、新テストはない。fake repo/binary で GPU なし検証でき、SYCL 統合上の重要な接続点。
+- `2a91a14414c8` (`serve/frontend.py`, `serve/test_parser_track.py`) は token fragment ごとの string 再結合を block 化する streaming parser 効率化。意図した出力/parser state が各 fragment 境界でも不変か pure Python reference parser と照合する。巨大 stream の性能値は別途測定しない限り主張しない。
+
+## 任意機能・setup/web
+
+- **Data parallel replicas**: `8d276c1997fedb992a14ddc27bfd3d70c159a8a6` は config、`--replicas`、least-loaded dispatch、conversation affinity、server lifecycle (`serve/replicas.py`, `serve/server.py`, `setup.py`, `serve/test_replicas.py`) をまとめて追加。現行作業ツリーではこれらの新規ファイル/設定は確認できず、大きい任意機能である。取り込むなら setup のカード群/config parser から worker engine 起動・停止、エラー伝播、会話 affinity、部分起動失敗まで一体でレビューする。`serve.test_replicas` は mock engine で GPU なしの軸にできる。通常の単一 engine server が動くための必須差分ではない。
+- **Windows prevent_sleep opt-in**: `a084fd2d723e13e500f15b41462e7e3fc7642bf5` (`serve/keepawake.py`, `serve/server.py`, `serve/test_keepawake.py`) は実行/待機要求中に Windows sleep を防ぐ。非Windowsは no-op。Windows API は mock した unit test が可能。任意設定。
+- **setup の再現性/復旧**: `153416719d65778c84c726b853e179adb61ff8b4` (#1797) 壊れた llama.cpp zip の展開失敗時に archive と `.done` を除去し、次回再取得可能にする (`setup.py`, `tools/test_setup_llama_archive.py`)。純ローカル tiny ZIP fixture で検証可能、ネット/GPU不要。`db5b1f19d6b9ec73f1eb92b1f0af690519db8d54` (#881) CUDA 無し構成で `vswhere` に不要な version range を渡さない (`setup.py`)。CUDA 無し VC toolchain mock、`tools/test_setup_*` に適する。`72843d4ca946` は setup model check に source version を利用。SYCL binary/launcher version と setup の model validation を同一条件で確認する。
+- setup/UI周辺の確認可能な commit は `b0eb39652878` (favicon を web app と API Monitor に追加)、`6a7c6f8275a5` (無ラベル telemetry sparkline を noise 自身で scale しない)、`184012cac4ef` (#1760 速度差5%内なら config GPU order 維持)、`47cb731026f7` AMD PCIe telemetry keys + hop walk test。これらは機能/UI品質改善であり単一 SYCL server 起動要件とは区別する。web JS/DOM test は browser/GPU 不要。
+
+## 推奨する着手順とテスト
+
+server correctness の最初の小さな batch は READY timeout (`serve.test_ready_timeout`)、parallel state (`serve.test_parallel` の upstream regression cases)、context overflow (`serve.test_context_overflow`)、cancel conversation (`tools.test_cancel_park` と SYCL protocol source review) を優先する。いずれも fake/mock engine 中心で GPU を要しない。次に frontend/tool order、request validation の最終仕様、reasoning budget、parser fragmentation と effort-end SYCL binary detection を CPU-only で追加する。setup では llama archive regression と CUDA 無し vswhere を先に評価する。
+
+上流 test ファイルをそのままこの作業ツリーで実行できたとは確認していない。未存在のファイル/テストは、上流 test を適用またはローカル fixture に合わせて移植してから実行する。既存 `serve/test_parallel.py`, `serve/test_request_hardening.py`, `serve/test_frontend.py`, `serve/test_server.py`, `tools/test_setup_*.py` は対応する重点回帰箇所。移植時に CUDA/HIP-specific feature は含めず、SYCL protocol/launcher 接続だけを確認する。
+
+## 公式参照
+
+- [Official repository](https://github.com/Niko1221/Strata)
+- [v0.1.41 tag](https://github.com/Niko1221/Strata/tree/v0.1.41)
+- [v0.1.42 release](https://github.com/Niko1221/Strata/releases/tag/v0.1.42)
+- [main commit history](https://github.com/Niko1221/Strata/commits/main)
+- [READY timeout](https://github.com/Niko1221/Strata/commit/32a2439de05908da6829646ba0030a2f998179f4)
+- [Parallel request state](https://github.com/Niko1221/Strata/commit/caba015bffb55b12af47445599eb3b065ba52b13)
+- [Cancel/restored conversation](https://github.com/Niko1221/Strata/commit/8824e217c4179bad5d6fc0f4a3599567e441d299)
+- [Recognizable context overflow](https://github.com/Niko1221/Strata/commit/2bf1d07c05614add6d6d3d97bf06c8872ad23040)
+- [Queued request keepalive](https://github.com/Niko1221/Strata/commit/875d6a922a2c8bb7c5150b04c0f6f82812d52663)
+- [Replica server](https://github.com/Niko1221/Strata/commit/8d276c1997fedb992a14ddc27bfd3d70c159a8a6)
+- [Latest API content handling](https://github.com/Niko1221/Strata/commit/40bdd86d6d553952ea4e637fba5f17363af290c3)
+- [Sampling type compatibility](https://github.com/Niko1221/Strata/commit/acee40a597bcd15da450e41b495febfeb3ae7ed0)
+- [llama.cpp archive recovery](https://github.com/Niko1221/Strata/commit/153416719d65778c84c726b853e179adb61ff8b4)
+- [SYCL effort-end binary lookup](https://github.com/Niko1221/Strata/commit/b9cba34bc2eab7f54f032f1a02ce2c274336dbd9)

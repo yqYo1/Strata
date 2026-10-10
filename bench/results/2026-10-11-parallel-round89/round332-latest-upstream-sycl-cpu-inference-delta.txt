@@ -1,0 +1,42 @@
+# R332 — 最新 upstream と統合 SYCL/CPU 推論の差分
+
+日付: 2026-10-11 (Asia/Tokyo)。GitHub の公式 remote ref と commit API、読み取り専用のローカルソース、R310/R312/R316/R318/R323 および既存の完了済み測定報告を照合した。Git fetch/clone、ソース編集、ビルド、テスト、GPU/サービス操作は行っていない。禁止された `prefill-gemm-only-contract-root-v1/record.json` は読んでいない。
+
+## 判定
+
+公式 `Niko1221/Strata` の `main` は 2026-10-10 12:49:37 UTC 時点で `61b3fb5dd3f1e8ec09cf7e4e05208bc6d3c46406`。ローカル official mirror は `99f3dbd0b21d1401b3769e0c0d963913607f380b`（2026-10-03）に留まり、dirty な未追跡 `.worktree/` がある。mirror のタグは `v0.1.40.2` までで、`sycl/` ディレクトリもない。したがって mirror の HEAD/tag を「最新 upstream」や「SYCL 対応 upstream」として扱えない。最新 remote commit は merge で、実変更は `docs/DETAILS.md` と `src/program/generate.cpp` のみ。
+
+**新規に有用な差分は、CPU pool の実測時間から CUDA 単一 GPU decode の既定 PCIe/CPU 分担を最大3回調整する仕組み。現統合 SYCL 0.1.41 worktree へそのまま採用できる変更ではない。** 最新差分は明示的に CUDA 単一 GPU・no `--pcie-frac` 限定で、HIP と SYCL は対象外と docs に記載。SYCL 専用 prefill/decode kernel、Level Zero event/queue/lifetime、262,144 KV capacity のコード変更はこの commit にない。SYCL 側で別途実測できれば「CPU worker service と link service のオンライン釣り合い」という考え方だけが、条件付き decode 実験候補となる。
+
+## 最新 upstream の変更と統合版との関係
+
+`generate.cpp` に `PcieAuto` が追加された。起動時の PCIe probe を初期値とし、decode window の累積 CPU pool 時間 `ms_run` と missed-expert 件数 `multi_misses` から、1 miss あたり時間と expert-byte service rate を推定。最初の48 window、次に各96 windowで最大3回だけ、`link / (link + 1.85 × CPU-rate)` を0.05刻み、0.10–0.60範囲で反映する。missが少なく統計が足りなければ待ち、request 個別の `pcie_frac`、layer split、batch、peer、全expert residentなどの対象外条件では変更しない。`STRATA_PCIE_FRAC_DEFAULT=old` で旧則を保持する。
+
+最新 docs は RTX 3060 で既定 share 0.55→0.20、decode比1.300 (5/5 pair faster)、Tesla P100 で0.29→0.20–0.25、比1.011 (4/5) と報告し、A4000 は0.30のまま比0.999。計測は interleaved whole-engine pairs、route-tail-skip 有効。明示 share の回答は0.1.41と byte-identical とある一方、新しい既定 share は CPU/GPU丸め差で回答を変え、3060のteacher-forced KLは旧既定に対し0.0015（run-to-run floor 0.0013）。ゆえに速度仮説の根拠はあるが、全機種の勝ちや完全同一出力の根拠ではない。定数1.85は3機種への fit と説明される。
+
+統合 SYCL worktree `perf-sycl-decode-pool-phase-timing-v0141-20261009` は commit `7d0105f2a942ac72ca20fef69d4c2e7960653de3` (2026-10-09)、`sycl/src/program/generate.cpp` SHA-256 `8bb78a21e3cbb9f03e40db3699d056225181e9ebb638d7eea04fadb41d852ced`。ソースは PCIe probe 由来の `pcie_frac` と decode CPU pool phase counters を持ち、`strata::prefill::set_nonresident_share()` は別に prefill の nonresident work split を設定する。remote の新しい式を機械的に適用してはいけない: 統合 fork の GPU/CPU work semantics、route cache、CPU pool timed interval、link measurement protocol が upstream CUDA 仮定と同じである証明はない。SYCL mainline ソースとの直接 git ancestry/code diff も成立しない（official main に `sycl/` が存在しない）。比較したのは機能契約であって、同じ TU の line diff ではない。
+
+## 独立採用候補の順位
+
+1. **Decode / 仮説段階: pool-vs-link share を同一 request 内で測ること。** 新 upstream の中で唯一具体的な性能候補。ただしまず既存 SYCL decode counters を使い、同じ missed expert set/route と worker-count 条件で現 share の pool service と GPU/link service の重なりを記録する。次に offline `--pcie-frac` sweep を interleaved paired run で行い、quality gate と通った場合だけ online adjustment の設計を考える。現資料には SYCLで share sweep が decodeを改善する測定はないため、「有望な測定仮説」であり、移植推奨・期待速度ではない。AMD/CUDA固有のissueや最適値は対象外。
+2. **Prefill: この upstream commit から採る変更なし。** その自動 share は decode window 後の CUDA distribute logic。統合版 `set_nonresident_share` の prefill 値は prefill owner/source population に依存し、decode pool miss-time を流用できない。先行報告では 64K/8K chunk で長文時間が支配的だが、転送時間の attribution は未確定。prefill候補は既存のchunk/source/KV censusと timed phaseを正しく取得してから、QSA、KV prefix staging、MoE prefill各々の支配度を判定すること。
+3. **Lifetime / correctness: 性能移植より先に失敗時契約を満たす必要。** R318 は D caller では release 時に compute/copy `wait_and_throw()` の後で stager を破棄し、最終DMA source lifetimeを守ると確認。一方 R323 は Xe caller の複数 SYCL helper が `bool` failureを無視、stager/issuerが failed copy/eventを成功済みのslot/progressとして公開し得る設計を示した。これは**Xe source 固有の監査**であり、統合 Strata D に同じ欠陥があると外挿しない。SYCL仕様上、USMの利用中 free は前提違反であり、`sycl::free` は queue drain ではない。queue順序は queue 間依存を与えない。従ってこの二つのcallerは別々に照合し、submit/wait/event-record 失敗を状態公開より前に伝搬し、全producer停止後に該当copy queueをdrainし、成功を確認してからbuffer/event/queueを破棄する必要がある。SYCL event wrapperは raw Level Zero eventではないので、Level Zero handle reset/reuseの規則を当てはめない。
+
+## 容量境界と長文測定条件
+
+`--max-context 262144` は最大論理文脈の指定であり、262,144セルを物理的に保持したこと、占有したこと、長文をその境界まで正しく保存したことの証明ではない。R312 の確認済み64K runは `--kv int8 --kv-resident 32768`、実pack 12 QSA layersであり、262,144-cell request ではない。64Kの65,535 batched rowsで、QSA mode 1 prefix の source-required 論理copy payloadは12層合計2,906,652,672 B (2.708 GiB); これは実測PCIe転送バイト/時間ではない。実packは13層でなく12層。容量・論理stage量・物理転送・elapsedを混同しない。
+
+R330 の baseline 64Kは長さ分のprefillを完了しているが、fixture不一致の歴史的 sampleを比較相手にしてはならず、corrected Xe 8K診断もlong qualificationにはならない。現 baseline timingの decode sample は3 tokenでありGEN64比較に使えない。32K/64K gateは fresh matching fixture/argv/envで各arm最低3回、新規の交互ペアが必要。性能対照では同じ入力長・chunk・cache/KV/spec/pool/service設定を使い、各runのsource/executable identity、health admission、READY capacity、RESUME=0/REUSED=0、full prompt count、DONE、per-sample timingを保持する。decode主張は各pairで64 tokenと `finish_reason=length` を要す。early stopはprefill timingだけに残す。
+
+**Pristine 32K/64K候補 gate:** 32Kを先に行う場合、両armに同じ32,768-ID fixture、同じ8,192-position chunk、同じ完全なCLI/env、3 fresh run/armを用意する。既存32K math admissionはtiming pairではない。64Kは別 fixture/別比較として同条件を確立し、baseline `81375b…` と修正Xe `ce704674` を明示 pinする。`ce704674` は task指定の corrected Xe sourceであり、official upstream版でも pristine版でもない。過去64K baselineの403.54 tok/sは measured baseline sampleとして保持し、異なるold fixtureの403.54を清浄fixtureとの対にしない。R330に従い差し替えたclean fixture hashは `5284d8fa53d1ef28f6ba916a629faf901c890bc0c669bf986ee04ed72aa2c3ff`。
+
+**262,144境界 gate:** まず12 QSA層×262,144セルの実容量計画・allocations・host pin/pageable fallback・KV mode・device free/high-waterを別々に記録し、最大context設定でのphysical-fitを示す。続いてfixture長262,144のfresh requestを走らせ、全262,143 batched rowsとterminal token、各QSA/GDN/session state、resume/continuationと最終outputを検証する。正確な長さで完了し、適切な数学/品質照合、正常解放後の健康確認まで通るまで `full262144_qualified` としない。32K/64K完了、起動時の262,144表示、または4/8K diagnosticsから境界適合を推定しない。現調査ではこのrunを実施・許可・推奨せず、実証済みとも主張しない。
+
+## 証拠の境界・出典
+
+- 最新 remote ref は GitHub read-only `git ls-remote` で解決し、commit日時と変更ファイルは公式 GitHub commit APIから確認。公式 diff: [61b3fb5…](https://github.com/Niko1221/Strata/commit/61b3fb5dd3f1e8ec09cf7e4e05208bc6d3c46406)。
+- upstream の設計・測定範囲: [DETAILS.md](https://github.com/Niko1221/Strata/blob/main/docs/DETAILS.md)。SYCLについての公式説明は [INTEL.md](https://github.com/Niko1221/Strata/blob/main/docs/INTEL.md) にあるが、その記述対象は0.1.31–0.1.38-sycl。main HEADが最新のSYCL実装という意味ではない。
+- SYCL host/device pointer lifetime, context と queue wait: [Khronos SYCL 2020 spec §4.6, §4.8](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html)。Level Zero queue/event一般規約は実物のSYCL event APIと区別する。
+- ローカル evidence: R310 (64K実績と性能差)、R312 (KV-modeと論理stage量)、R318 (D/Xe teardown区別)、R323 (Xe fail-closed source audit)、R330 (corrected-Xe long-comparison gates)。これらの既存結果は本source auditで新たにruntime qualificationしたものではない。
+
+決定: 最新 upstream から SYCL prefill に独立採用可能な実装差分は見つからない。decode share adaptation は有用な検証仮説のみ。採用を判断する前に、CPU/link service measurementと正確な長文 correctness・lifetime gateを満たす必要がある。

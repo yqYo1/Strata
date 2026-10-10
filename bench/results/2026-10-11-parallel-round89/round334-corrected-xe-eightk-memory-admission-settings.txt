@@ -1,0 +1,72 @@
+# R334 — corrected Xe の 8K chunk / 64K prompt の既存設定による VRAM admission
+
+日付: 2026-10-11 (Asia/Tokyo)。読み取り専用のソース・既存記録監査。ソース編集、test/build、GPU/プロセス/service 操作、Git 更新は行っていない。調査対象は corrected Xe source tree `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011`、HEAD `ce70467423d97497979b05ef604e2bcecac47b2b`。現在 root が進めている評価には介入していない。
+
+## 判断
+
+**8K chunk / 64K prompt を B570 で起動する既存・対応済みの方法として、`--max-context` を実際の64K prompt + 出力分に絞るのが最も筋がよい。** `--max-context 65600` は65,536 prompt tokensと64 output tokensを収める最小例（実際の tokenized/template prompt と出力予約に合わせて設定すること）。この変更は同じ8K chunkのまま、full-context の QSA index pool、KV stage pool、selection scratch等を小さくする。既存の計算上は raw 8K/262,144-context receipt の READY free 50 MiB から512 MiB guardを越えられるだけの差を作る見込みがある。ただし実行時 free は未検証で、corrected source の8K admission/passを証明するものではない。owner の起動後に `INFO`/`READY`, 実効 chunk と free VRAM を確認し、既存512MiB gateを維持する必要がある。
+
+これは **65.6Kまでの context 対応**であり、262,144 context 対応ではない。64K promptだけを比較するなら両エンジンで同じ `--max-context`、KV mode/resident、expert cache、chunk、出力長を使った別の一致条件の比較が必要。262K capacity または endpoint品質を主張するrunでは max-context を下げられない。
+
+`--kv-resident 32768` からソース最小20,480へ落とすのも対応済みだが、max-contextを維持したままの節約は約148.5 MiBに限られ、50→512MiBに届かない。実際の8K memory pressureを単独で解消する設定ではない。フル262Kを保ったまま8Kを試す場合は、既存設定の組み合わせ（resident 20,480、cache縮小、MTP無しなど）が候補だが、予測余裕が狭く、別の速度/運用条件になる。runtime admissionを通るとは断定できない。
+
+## 比較した既存証拠
+
+- R306 の raw Xe host-USM 8K record は source `39bdadcc9e2b89b1e3c8be7bb2a603b04fa0e197`、`--max-context 262144 --prefill 8192 --no-prefill-borrow --kv int8 --kv-resident 32768 --expert-cache 128 --expert-cache-per-layer --mtp ... --spec 4`、`STRATA_PREFILL_RING=8`。cache fill 29/144を検証しREADYへ到達したが、READY free は50 MiBで、ownerの512 MiB reserve gateがGEN前に拒否した。prompt/DONE/sampleは無い。これは8K実行結果ではなく、旧 source の起動不足を示す記録。
+- R306 によれば `--expert-cache 128 --expert-cache-per-layer` は最大blob基準の予算から48層×3=144 slots、281 MiBを割り当てた。29 filledは29実resident数で、144はcapacity。profile順に各層3slot quotaを埋め、最初のfull layerに当たるとfillを停止する。budgetを縮めた後のfill率・性能は別途測定が必要。
+- 今回指定された corrected source `ce704674…` は修正後の4K/64K評価用source。R330の既存4K短診断（別の corrected artifact）はREADY free1514 MiBだったが、8Kまたは full262Kのpassではなく、本sourceでの8K runtime proofでもない。Root所有の別4K baseline READY free2393 MiBも比較するsource/allocator条件が異なり、Xe予測へ転用しない。
+- R312 がpack indexで確認した実QSA層は12。Q8 KVは1 cellあたり1,056 bytes、262,144 context のfull host KV copyは約3.094 GiB。これらは容量/source arithmeticで、今回のGPU bus traffic測定値ではない。
+
+## 8K chunkを保った64K専用contextにする場合の静的節約
+
+ソースはQSA stateごとに `p.pooled_rows = max_cells / 4 + 2`、`idx_pooled` を `p.pooled_rows × idx_dim × 4` bytesで確保する（`src/core/layer.cpp:614-618, 659-663, 669-768`）。このpackでは `idx_dim=128`, `idx_block=4`, QSA層12。各QSA stateのcontext-dependent poolは約128 bytes/context-cell。262,144から65,600へ下げると差は196,544×128 = 25,157,632 B = 24 MiB/QSA state、12層で**288 MiB**。これはGPU state allocationのsource arithmetic。
+
+同じcontext shrinkには別の実メモリ要素もある。
+
+- **Streamed int8 KV staging pool:** `take_stage` はmode 1の1層分の全context pagesをPrefill staging poolに持つ（`src/prefill/prefill.cpp:485-514`）。12?ではなく一時的に1層分のpool。1 pageは4 cells×1,056B=4,224B。65,600 contextは16,400 pages、262,144は65,536 pagesなので差49,136×4,224 = 207,550,464 B = **198 MiB**。`STRATA_KV_STAGE_OWN=1` の時は別 `cudaMalloc` allocationに分けるが、これは同じVRAM staging storageの所有場所を変える設定で、メモリそのものを削減しない（同ファイル:486-497）。
+- **QSA page tables:** 1 page×int32 per state。差49,136×4×12=2,358,528 B = **2.25 MiB**。
+- **RoPE tables:** `qsa_state_bytes` は `with_rope` stateに max_cells依存のcos/sinを確保する（`layer.cpp:650-666`）。QSA shapeのn_rot=64なら、共有する1 table pairの差は196,544×32×4×2=50,315,264B = **48 MiB**。tableの共有/first ownerは実際のsetup条件で確認する。
+- **Prefill QSA selection scratch:** `qsa_set_bytes` の `sel_batch × max_blocks × float`（`prefill.cpp:566-574`）、ここで `sel_batch=256`, `max_blocks=max_cells/4+2`。差は49,136×256×4 = **48 MiB**。実際の共用 region は GDN/QSA/MoE の最大値である（`prefill.cpp:1028-1039`）。8K/QSA形状では他項目が支配しないことをbuild/run時に確認するまでは、この項目を確定削減として加算しない。
+
+確実に構造を確認できる index pool + KV stage + page tables は約**488.25 MiB**。RoPEが別allocationでcontextに沿って縮むなら約**536.25 MiB**。selection regionの48 MiBも最大領域の中で実際に効くなら合計約**584.25 MiB**。raw 8K free50を基準にすると前者だけでは free約538MiB（512を約26MiB上回るだけ）で変動余裕が無く、RoPEを含む約536MiBで約74MiBの差、selectionも効けば約122MiBの差となる。従って **max-contextだけの64K専用fitは理論上境界付近で、`READY`の実測が必須**。下記のresident最低化を組み合わせればさらに約148.5MiBの静的余裕を加えられる。
+
+実際のtokenized promptまたは生成数に65,600を超える要求があるなら、その合計以上にmax-contextを設定する。例えば4,096 outputを求めるならpromptが65,536なら少なくとも69,632 cell。prompt template/stop/extra request tokensで余分な入力がある場合は engineが受け取るtoken数に合わせる。65,600設定を `INFO` で確認する。
+
+full KV host copyもcontextに比例し、262,144から65,600で約2.32 GiB減る（12 QSA layers, 1,056 B/cell）。これはsystem RAM節約であってGPU reserveには加算しない。より短いcontextでも64K input自体を保持できるが、65,600を超える conversation/history/continuationは扱えない。
+
+## Full 262,144 contextを維持する場合
+
+1. **Resident KV lower bound:** source plannerは`max(requested_kv_resident, 20480)`を使うため、20,480未満への要求はさらに縮まらない（`layer.cpp:628-647`）。32,768→20,480の差は12,288 cells×1,056B×12 layers = 155,713,536 B = **148.5 MiB** GPU slot pool削減。host copyとstagingの full-context extentは残る。少ないresident pagesによりmore KV is served from host/staging; output logits should use the same stored values but transfer/wait pressure and performance differ. 変更後の品質/長promptは測定が要る。
+2. **Expert cache lower:** N=128で144 slots/281 MiBだったR306 cache budgetをN=64へ下げると、per-layer floorが1slotなら48 slotsになり、おおむね93MiB前後（**約188MiB節約見込み**）。厳密bytesはper-layer blob layout/allocator roundingで決まるためstartup INFO/traceで取り直す。profileのactual fill、expert hits、decode速度が落ちる可能性があり、元128 budgetとの差が性能比較を汚す。
+3. **MTPを外す:** sourceは`--mtp` optionalとしており、serveはsuffix/lookup draftsか1 token/roundでtarget verificationを継続する（`generate.cpp` serve setup/comments around 4990; docs/DETAILS.md:499）。R306旧traceはdraft-head 212.9 MiBのbindingを記録するが、start/end free deltaがその値をそのまま表すとは限らず、これを確定差として足さない。MTPなしはdraft/parking/saved conversations条件が変わり、decode性能とserver lifecycleが変わる。Target verificationでqualityが維持される設計でも、実出力/同等品質の証明ではない。
+
+上の三変更を合わせた粗い差は148.5+約188+最大212.9=約549MiBで、50→約599MiB、512 gateに対して87MiB程度しか余裕がない。MTPの212.9はhistorical log observationで差分見積りの上限的参考にすぎず、正確なno-MTP free deltaではない。cache savingsもlayout見積りである。corrected source/runtimeでこの組合せが512MiBを維持すると保証できず、他プロセス利用や起動差で拒否される可能性がある。context/KV/behavior公平性の要求があるなら、これら設定を比較片側だけに入れてはならない。正確な262K capacityを比較する場合は両armをこの同じ設定へ揃えるか、従来条件でguardを満たせないというfail-closed結論を保持する。
+
+## 効かない/副作用のある knobs
+
+- `--vram-reserve-mib` はcache sizingの予約であり、settingを下げても固定のprefill/state allocationが減るわけではない。512MiB owner gateも別概念。reserveを弱めてstartupを通したように見せない。
+- `STRATA_PREFILL_RING=8` は`ring_slots()`で最低16 slotsへclampされる（`prefill.cpp:135-168`）。R306で既にこの指定があったため、`8`から`1`へ下げても解放は増えない。unset時のdefault384前後から8に変えるのは大きく効きうるが、このarmでは適用済み。
+- `--no-prefill-borrow` を外すとserver `plan_lend` は`Prefill::bytes_needed`のslot数をcache末尾から貸せるか確認し、固定chunkを倍々に縮めて合うchunkを探す（`generate.cpp:4851-4924, 5016-5044`）。cacheが足りなければ実効chunkが8K以下になる。borrowはcache末尾slotをprefill buffersとして使うため、**8Kを維持したまま空きVRAMを生むとは限らない**。actual `strata serve: prompt chunk ...` と `borrows ...` / `allocates its own buffers` 行を保存し、8K実効の証拠にする。`--prefill auto`も最大lendに合うchunkを選ぶので8Kを保証しない。
+- `STRATA_KV_STAGE_OWN=1` はstaging poolを他のborrowed prefill slotから分けるA/B用途で、同じfull-context stage poolのallocation bytesは残る。`STRATA_KV_PREFETCH=0` はprefetch-aheadを止めるがcapacityは解放しない。これらをVRAM節約として数えない。
+- `--kv q4` 等のprecision切替は既存候補でも、INT8との数値条件が変わる。今回のno-new-precision比較/品質主張では使わない。別のquality/LP5 gateが必要。
+
+## 32K / 64K / 262K の比較条件
+
+- **32K/64K request向け**: 65,600または必要なprompt+output上限をmax-contextにし、同じ値を両 engineに設定すれば、実行するcontext範囲を共有できる。両方で同じKV int8/resident limit, expert-cache budget/policy/fill, prefill chunk/effective chunk, MTP/spec, allocator environment, input IDs, output length, sampling, temperatureを揃える。どちらもsame source-local startup `INFO` と `READY free>=512MiB` を記録する。64K promptで64 token outputの正常完了を確認して初めてその範囲のperformance/quality比較が有効。
+- Context shrink単独は、実際に使うtoken位置内でのmodel qualityを下げる精度変更ではないが、attention-state capacityとcontext upper limitを変える。QSA selection/host cache backing extentも設定依存であるため、同一条件を守って初めて性能は比較できる。context settingを揃えても engine implementation/allocator違いは残る。
+- **full 262,144 claim**: max-contextを262,144のまま残す。64K request at max-context262kはfull-context capacity lifecycleのproofではなく、実際の262K input/end-boundary inferenceも別 gate。65,600 settingの試験をfull-262K evidenceへ昇格させない。
+- **Chunk comparison**: current root baseline is 4K, historical Xe best mentions8K. 8K vs4K result must use same context/max-context, cache fill policy and capacity, KV resident and precision, MTP/spec, borrow ownership, ring effective slots, source/binary per arm, fixture/output length and test protocol. If 8K only fits after changing `--max-context` or cache/KV/MTP, both 8K and4K arms need that same revised setting to isolate chunk effect. Keep original R306 8K admission failure status; corrected run records get their own status and cannot retroactively turn old READY free50 into success.
+
+## Sources and prior report links
+
+- Corrected Xe source pin: `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011`, HEAD `ce70467423d97497979b05ef604e2bcecac47b2b`.
+- Context/KV state formula: `src/core/layer.cpp` lines 614–667 (minimum resident 20480; page table, pooled indexer, rope, int8 slot pool); `qsa_state_init` lines 669–768.
+- KV stage ownership/size: `src/prefill/prefill.cpp` lines 485–514; `bytes_needed`/shared QSA region lines 1020–1067; QSA selection formula lines 566–574; ring minimum/effective selection lines 135–168.
+- Cache borrowing/adaptive chunk source: `src/program/generate.cpp` lines 4851–4924 and 5016–5044.
+- Existing behavior/settings description: `docs/DETAILS.md` lines 92–123, 353–370, 499–502.
+- Historical exact cache/reserve audit: `round306-xestrata-8k-reserve-and-4k-admission-accounting.txt`.
+- Matched KV-cell and 12-QSA-layer arithmetic: `round312-current64k-qsa-kv-mode-and-logical-staging-bytes.txt`.
+- Corrected 4K short diagnostic vs 64K/full-context limits: `round330-corrected-xe-long-comparison-contract.txt`.
+- Long-context page/index boundary audit: `round329-xe-longcontext-resident-and-index-bounds.txt`.
+
+This is static fit analysis only. It does not show a corrected 8K READY, 64K request, 32K/64K output, 262K context run, quality equivalence, or speed result.
