@@ -1,0 +1,119 @@
+{
+  "schema": "clean64k-historical-task-fixture-v1",
+  "passed": true,
+  "active": false,
+  "builder_sha256": "10a065c15ee785eafc0cd639e2ed3cf17edebfa7b484b5d743b1173e1a03882b",
+  "source": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-copy-off/coding-context-256k-tokens.txt",
+    "sha256": "cc29e4427bcacb21c9f7df2d1f1a7d41897fce5bd76a8ca43d8c3c34d914dd2a",
+    "tokens": 262145
+  },
+  "historical32k": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coding-review-32k-tokens.txt",
+    "sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449",
+    "tokens": 32768
+  },
+  "historical_metadata": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coding-review-32k-fixture.json",
+    "sha256": "2df376e5f5e6cab14e5caee90acd7acf316ab401194c83f828b9182668834dc6"
+  },
+  "historical_tokenizer_source_sha256": "0a1d68e33f8563f2f3791d00e2ad33147eac6cb4b53460026e102c3554524703",
+  "actual_tokenizer": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/tools/strata_tokenizer.py",
+    "sha256": "9b0327e25aa62754406a924db6cc137e6edb1d93c7af76a4f3d14a8920ea72c8",
+    "api": "Tokenizer(tokens, merges, token_types); encode(parse_special=True); decode(errors=strict)",
+    "pre": "qwen35",
+    "vocab_size": 248320,
+    "n_merges": 247587,
+    "special_ids": {
+      "tokenizer.ggml.eos_token_id": 248046,
+      "tokenizer.ggml.padding_token_id": 248044,
+      "tokenizer.ggml.bos_token_id": 248044
+    }
+  },
+  "assets": {
+    "vocab.json": {
+      "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/vocab.json",
+      "sha256": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4",
+      "bytes": 5737005
+    },
+    "merges.txt": {
+      "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/merges.txt",
+      "sha256": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332",
+      "bytes": 3353258
+    },
+    "token_type.json": {
+      "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/token_type.json",
+      "sha256": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b",
+      "bytes": 744960
+    },
+    "tokenizer.json": {
+      "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/tokenizer.json",
+      "sha256": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf",
+      "bytes": 541
+    },
+    "chat_template.jinja": {
+      "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja",
+      "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce",
+      "bytes": 9993
+    }
+  },
+  "template_rendered": false,
+  "template_status": "pinned asset recorded; historical suffix reused after exact API verification",
+  "body": {
+    "tokens": 65487,
+    "serialization": "ASCII decimal IDs separated by spaces, final LF",
+    "sha256": "77b96e34edc2981f4dc0318351580c0aa03837c6d4491c92a9df297876eb3a98"
+  },
+  "fixture": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/clean64k-task-fixture-root-r3/coding-review-65536-tokens.txt",
+    "tokens": 65536,
+    "sha256": "5284d8fa53d1ef28f6ba916a629faf901c890bc0c669bf986ee04ed72aa2c3ff",
+    "first_ids": [
+      248045,
+      846,
+      198,
+      18842,
+      279,
+      2614,
+      42903,
+      47953
+    ],
+    "last_ids": [
+      198,
+      248045,
+      74455,
+      198,
+      248068,
+      198,
+      248069,
+      271
+    ]
+  },
+  "suffix": {
+    "tokens": 49,
+    "text_sha256": "fa5a454195a295ea073db017ff1dd5665805a73737ed577e113531ce43982224",
+    "ids_sha256": "25ee7e85e0861e365ff61459aae155156817783497076dddf7ea35de6663574f",
+    "encode_exact": true,
+    "decode_exact": true,
+    "original32k_tail_exact": true
+  },
+  "token_domain": {
+    "minimum": 1,
+    "maximum": 248069,
+    "vocabulary_size": 248320,
+    "all_valid": true
+  },
+  "scope": "historical corpus prefix plus verified49-token task/chat tail; no model inference",
+  "limitations": [
+    "Body prefix may cut source code; suffix closes code fence and request.",
+    "Historical corpus lineage overlaps32K; not independent quality data or natural new conversation.",
+    "Current host tokenizer differs from historical recorded source; exact suffix encode/decode must agree.",
+    "No canonical chat re-rendering of full body; only historical task/chat boundary restored.",
+    "No causal early-EOS repair proof or guaranteed64-token decode; root must evaluate baseline first.",
+    "No full262144 lifecycle or GPU qualification."
+  ],
+  "gpu_executed": false,
+  "model_executed": false,
+  "environment_logged": false
+}

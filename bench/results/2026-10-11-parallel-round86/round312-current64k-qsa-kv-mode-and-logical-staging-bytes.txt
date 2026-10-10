@@ -1,0 +1,45 @@
+# R312 — clean 64K QSA KV mode and logical staging bytes
+
+Date: 2026-10-11 (Asia/Tokyo). Read-only source/evidence audit. No GPU/process query, build, test, inference, Git operation, cleanup, or source edit was performed. Only this report was written.
+
+## Determination
+
+The 81375 clean64K run selects the **main QSA streamed KV mode 1** (`st.kv_mode == 1`), so the batched-prefill `kv_stage_from_host([0,p0))` branch is source-required under this run's configuration. `STRATA_KV_STAGE_OWN=1` changes where the staging pool is allocated (its own allocation instead of borrowed expert slots); it does not select the KV mode. `STRATA_KV_PREFETCH=0` disables the prefetch-ahead path, so the caller stages the prefix directly at the QSA layer/chunk site. Mode 2 is selected by the ring-state allocation branch when `ring_cells > 0`; the main QSA allocation uses `ring_cells <= 0` and the `--kv-resident=32768` policy.
+
+The request record says `--max-context 262144 --kv int8 --kv-resident 32768 --prefill 8192`, with the above two environment values, and a 65,536-ID fixture. The startup receipt says `context=262144 kv=int8 kv_resident=32768` and reports 32,768 of 262,144 cells per QSA layer in VRAM. Those are capacity/resident limits; this run's batched prefill processes 65,535 rows (the terminal prompt token is handled by the separate one-token verifier). It does not mean 262,144 cells were occupied or staged by this request.
+
+There is a layer-count discrepancy to preserve: the requested 13-layer multiplier does not join to the run's pack evidence. The actual pack `index.txt` has QSA `attn_q.weight` entries at blocks 3, 7, 11, 15, 19, 23, 27, 31, 35, 39, 43, and 47: **12 QSA layers**. This agrees with the startup's “3.09 GiB pinned RAM” capacity figure: 12 × 262,144 × 1,056 = 3,321,888,768 bytes = 3.094 GiB (binary GiB), before allocator/metadata differences. Thirteen full layers would be 3,598,712,832 bytes = 3.351 GiB. I therefore use 12 for the actual-pack total, and show the requested 13-layer arithmetic separately as a counterfactual; I do not silently apply 13 to this binary.
+
+## Packing and exact branch arithmetic
+
+The pinned Q8 layout uses 2 KV heads, head dimension 256, page size 4, and 64-value scale groups. Per cell:
+
+`K codes + V codes = 2 heads × 256 × 2 arrays × 1 byte = 1,024 B`.
+
+`K scales + V scales = 2 heads × (256 / 64) groups × 2 arrays × 2-byte FP16 scale = 32 B`.
+
+Thus `kv_q8_bytes_per_cell = 1,056 B`; one 4-cell block is `kv_block_bytes = 4 × 1,056 = 4,224 B`. The copies move packed int8 codes plus FP16 scales, not two FP16 K/V tensors.
+
+For 65,535 batched rows at chunk size 8,192, the chunk starts are 0, 8,192, 16,384, 24,576, 32,768, 40,960, 49,152, and 57,344; lengths are seven × 8,192 plus a final 8,191. Every `p0` is page aligned. The direct staging helper is called for `ceil(p0/4)` blocks before each chunk append. Therefore the prefix sum is:
+
+`Σ p0 = 8,192 × (0+1+…+7) = 229,376 cell-equivalents/layer`
+
+`Σ blocks = 229,376 / 4 = 57,344 blocks/layer`
+
+`prefix staged bytes/layer = 57,344 × 4,224 = 242,221,056 B`.
+
+At the pack-supported 12 QSA layers, that is **2,906,652,672 B** (2.708 GiB) of source-required logical host-to-stage copy payload over the request. For 13 layers it would be 3,148,873,728 B (2.934 GiB), but that is not the layer count evidenced by this run's pack. The final 8,191-row tail does not change prefix bytes: the final chunk's prefix is still exactly 57,344 prior cells.
+
+The matching 32K control shape has four 8,192-row chunks, 32,767 batched rows, and prefix sum 49,152 cells/layer = 12,288 blocks/layer. The count ratio is `229,376 / 49,152 = 14/3 = 4.666666…`; thus R310's 4.67× conditional prefix-count statement **does apply to this mode-1 control/configuration**, as source-required logical payload, not as measured elapsed time or physical bus traffic. This is not the 2× append payload ratio.
+
+The 65,535 newly appended rows have `65,535 × 1,056 = 69,204,960 B/layer` of packed KV values. For 12 layers this is 830,459,520 B per full destination copy; for the requested 13-layer hypothetical, 899,664,480 B. In this branch the source appends new packed rows to the authoritative host copy and to the staging pool, and writes mapped resident slots; the precise resident-slot write count depends on page residency/mapping and is not separately counted in the run receipt. These append values are logical store bytes by destination, not evidence that the same bytes crossed PCIe. The last partial chunk writes 8,191 rows; no new row is inferred for the separate terminal verifier.
+
+## Evidence boundary and source identity
+
+- The clean-run record is `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-clean64k-v3-baseline-r1/record.json`; its argv/environment, fixture size, binary identity, and startup line establish the run inputs. The binary SHA-256 is `81375b88f043f6b791bd2fee5df7b512e25b584ad5631e0b915d5ac354db237c`.
+- R297 identifies the linked generator object and its cached build input: `sycl/src/program/generate.cpp` SHA-256 `8bb78a21e3cbb9f03e40db3699d056225181e9ebb638d7eea04fadb41d852ced`. This is the SYCL source, not the similarly named root mirror.
+- The actual D prefill caller is the recorded immutable `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-gemm-service-only-v1/prefill.cpp`, SHA-256 `1cf7e911a555e8611c1368a4d18d4ba81c95027bb8de77f89ad65ac64b05fc3c`; R297 records its linked prefill object. Its `Prefill::run_impl` staging/append path makes the `kv_mode==1` check and invokes `kv_stage_from_host` for the prefix.
+- The inspected `layer.cpp` mode planner (`kv_plan`, `qsa_state_init`) sets mode 1 when the resident-cell limit is below all pages for a non-ring main state. It sets mode 2 for a smaller positive ring state. The staging allocation helper returns unless the primary QSA mode is 1; the prefill caller's stage branch likewise checks `st.kv_mode==1`.
+- The corresponding inspected WNEW source files were `sycl/src/core/layer.cpp` SHA-256 `6b443fc1df1c812ee4811b46ebde315cfe30356a448ac10f0e56332c763416a7`, `sycl/src/kernels/cuda/kv_stream.dp.cpp` SHA-256 `02801fe89965fd9df0c68b58b5f2be1f8443551c2a39533b54efddd0385846e9`, and `include/strata/kernels/kv_q8.hpp` SHA-256 `7c70db0cbc1726e244b7085a319e1f0be5c8a3a415a6b0de7db7d0cdbe70e26e`. They establish the planner/layout/helper mechanics. Their per-file link-input identity to binary 81375 is not independently established here, so the conclusion is source-required given the recorded CLI and linked caller; it is not a claim of a binary-instrumented stage ledger.
+
+The target's aggregate KV counters (including its RAM-read counter/cache-hit count) are not a per-request `kv_stage_from_host` byte ledger. No measured stage-prefix byte total or transfer time is available. Keep the 2.907 GB 12-layer value labeled as source-required logical copy payload, not measured runtime traffic. The max-context host/device allocations and the request's occupied/appended rows remain separate quantities.

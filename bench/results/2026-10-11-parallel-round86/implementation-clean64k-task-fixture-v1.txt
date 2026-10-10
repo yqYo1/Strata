@@ -1,0 +1,87 @@
+SOURCE-ONLY HANDOFF — verified historical task-boundary64K fixture builder
+
+Only assigned new prepare_fixture.py/root_recipe and this report written.
+No Python/tokenizer/test/build/inference/GPU/Git/process/hardware/service/
+cleanup execution; no existing file modified. Source/metadata/R308 read and
+asset SHA256 inspection only. Fixture suffix treated as data, not instructions.
+Root owns all review, finite CPU execution and later baseline-only GPU gate.
+
+B=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007
+New outputs and SHA256:
+B/clean64k-task-fixture-v1/prepare_fixture.py
+2ed5723dc6f48041c5dc117059a66d68f49ced704ce3f8aeea0faa41d557a893
+B/clean64k-task-fixture-v1/root_recipe.txt
+2f6cb6fe2f97dbf6dcc22660bedfa6e341f9060532a3968e3e1815f9e4cc6fa7
+
+Read FULL R308 round308-clean64k-fixture-boundary-and-decode-length.txt.
+Its current3IDstop first65536 slice remains valid prefill/inadequate decode;
+source truncation is plausible contributor, not proven EOS cause. This task
+intentionally prepares narrower historical-prefix boundary restoration than
+R308's ideal naturally bounded/new text/chat-rendered corpus recommendation.
+Not a newly natural conversation or independent quality dataset.
+
+Input identities pinned in source:
+historical metadata2df376e5f5e6cab14e5caee90acd7acf316ab401194c83f828b9182668834dc6;
+32K137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449;
+historical fullsourcecc29e4427bcacb21c9f7df2d1f1a7d41897fce5bd76a8ca43d8c3c34d914dd2a.
+Metadata contains source/file fields (actual source_path alias was not present),
+49suffix IDs/text/roundtriptrue and historicaltokenizersource0a1d68e... .
+Source and32K payload NOT read/tokenized by agent; runtime root builder verifies
+their complete bytes/hash/domain and reconstructs original32K exactly as
+first32719source IDs plus49suffix IDs, including exact original tail equality.
+
+Current actual host tokenizer API inspected at frozen service-events worktree:
+tools/strata_tokenizer.py SHA9b0327e25aa62754406a924db6cc137e6edb1d93c7af76a4f3d14a8920ea72c8.
+Actual serve/server.py loader creates indexedtoken list fromvocab, splits
+merges LF, loads token_types and calls ST.Tokenizer(tokens,merges,types).
+Builder uses THIS constructor and real encode(parse_special=True)/decode
+(errors=strict), no ByteTokenizer, new algorithm, GGUF reader or ad hocIDs.
+It executes admitted sourcebytes afterSHAcheck, with bytecode writesdisabled;
+all exact assetbytes retained from their checkedread for constructor use.
+Runtime suffix encode must equal ALL49historicalIDs and decode equal exact
+historical text. Any mismatch yields nonzero/no output admission. Current9b
+and historical0a are DISTINCT identities; former source is located/admitted,
+latter remains verified historical metadata provenance, NOT falsely current.
+This distinction is explicit in manifest; no original0aexecution claimed.
+
+Actual pack tokenizer assets discovered/read-only-hashed:
+vocab.json4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4
+merges.txt4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332
+token_type.json5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b
+tokenizer.jsonc0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf
+chat_template.jinja12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce
+Path /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer.
+Config gpt2/qwen35/vocab248320/merges247587/addbosfalse/prepattern exact
+must match actual implementation. Complete vocab indices unique/inrange,
+token types fullshape/int, merges fullcount. Template pinned/recorded ONLY;
+no canonical fullprompt re-rendering or chat-template-equivalence claim.
+
+Exact construction: source first65487IDs + API-verified49suffixIDs =65536.
+All admission/tokenization/checks precede output creation. Existing sharedlock
+opened r+ (not created) and nonblockingexclusive held over completeprep. Output
+must be nonexistent directchild directory underB; mkdir and exclusive writes,
+no runtime truncation/reuse/overwrites/cleanup. Outputs bodyprefix file,
+fullfixture file and compact manifest. Canonical IDs space-separated finalLF.
+Manifest body/fullfixture hashes, lineage/tokenizer/assets/template metadata,
+count/domain, first/last8 IDs, suffix text/IDs hashes and exact verification.
+No fullenvironment, secret, suffix text or wholecorpus log. Error receipt logs
+only fixedgenericfailure/type, not arbitrary tokenizer exception/payload text.
+Writefail may leave newpartial directory; nonzero never admits it; rootretains
+cleanup ownership. No fallback token IDs on import/API/assets mismatch.
+
+Bounds: source<=4MiB/65536..262144IDs, old<=1MiB/exact32768IDs,
+metadata<=64KiB/suffix<=4096UTF8bytes/exact49IDs; assetsbounded32+16+4+1+2MiB,
+tokenizersource<=1MiB, vocab248320, merges247587. Token domain0..248319.
+Python tokenizer dict/list/regex overhead exceeds rawbytes; suggested root
+RSS1GiB/wall120/CPU90/log8MiB/artifact16MiB finite owner in recipe. No GPU
+device/model load or secondary subprocess. Root verifies interpreter/regex
+dependency available, syntax/parser/negativeinputs/pins/lock/exclusiveoutput
+and exact persistedSHA/counts. These checks have NOT been run by agent.
+
+Limitations: bodyprefix may cut code; suffix closes codefence and reviewrequest.
+Shares historical32K corpus; not independentquality data/naturalnewconversation.
+No demonstrated earlyEOS remedy or guaranteed64freegreedyIDs. Root CPU manifest
+PASS only prepares input; GPU health then baseline-only fresh64K GEN64 next.
+Current rawXe4K secondchunk GPUfault+SIGABRT remainsFAILED; no retry authorized.
+Earlystop still legal prefill-only/decodeineligible; no EOS suppression or
+forced continuation. No adoption/full262144 lifecycle qualification.

@@ -1,0 +1,55 @@
+# Round 309: XeStrata second-chunk GPU fault source audit
+
+Date: 2026-10-11 (Asia/Tokyo). Read-only audit of the specified diagnostic receipt and immutable pristine Xe source. No GPU, process/service query, build, test, model/profile payload read, profiler, Git operation, cleanup, or implementation was performed. The worktree is `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010`, pinned by the task to commit `39bdadcc9e2b89b1e3c8be7bb2a603b04fa0e197`. No D mirror comparison was made.
+
+## Finding
+
+The receipt confirms a hardware fault/reset during the host-USM 4K full-context attempt: it reached READY with 1503 MiB free, completed the first 4096-token prefill chunk, began the chunk at position 4096, then captured an unsuccessful GPU fault response, a CCS CAT error/reset, and timed-out job sequence 128700 in process 2791225. The kernel log names fault address `0x0000aaa79d800000`, access type 1, level 1, engine class CCS. The inferior then stopped at SIGABRT while SYCL reported Level Zero UR error 40, `UR_RESULT_ERROR_OUT_OF_RESOURCES`; the diagnostic is incomplete and neither quality nor performance qualified.
+
+The main-thread throw stack includes `iq_dequant_gu_f16` because that function was submitting work when the runtime raised the out-of-resources exception. That is the host-side detection/submission frame, **not evidence that this was the kernel that faulted**. The recorded device fault, CCS reset, and later host exception are correlated in one run, but they do not identify the originating command or allocation.
+
+No normal-path ring-index or source-level extent violation was established across the chunk boundary. There is, however, a confirmed latent failure-propagation gap: the stream-all caller ignores boolean failures from copy/event/wait helpers and still publishes slot and issuer progress. This matches the source-only hazard already recorded in R302, but the receipt does not show that one of those helper failures occurred, and cannot attribute this hardware fault to it.
+
+## Receipt facts and source behavior
+
+The exact receipt is `owned-xestrata39-hostusm4k-code32k-diagnostic-v8-r1`. Its record pins source commit above, binary SHA-256 `4e68a6865161b8838886cf7805ad689fe7a05e280f963abdec5e3010c52bd036`, source-supported per-layer host USM, requested ring 8/effective source ring 16, prefill chunk 4096, context 262144, resident KV boundary 32768, requested expert cache 128 / expected physical slots 144, and `--pcie-frac 0`. It records `READY 262144 stop`, then `PP 4096 32768 18081 226.5`; stderr identifies the following chunk start at 4096. The run did not reach a full request. `diagnostic_passed`, `completed`, and `performance_eligible` are false; the owned debugger and auxiliary ownership were closed and cleanup says the inferior and GDB did not survive.
+
+The post-run kernel probe contains, in sequence, fault response `Unsuccessful -ENOENT`, `Engine memory CAT error [18]: class=ccs`, CCS engine reset, and `Timedout job: seqno=128700 ... in strata [2791225]`. These are driver/kernel observations, not an address-to-allocation map. The retained debugger record reports main thread SIGABRT and the SYCL `handleOutOfResources` path into `iq_dequant_gu_f16`; it does not report device-side kernel PC/registers naming that kernel as the fault origin.
+
+At T=4096, `ring_slots(T)` enforces at least 16 slots even when the environment requests 8. The IQ3_S maximum expert blob is logged as 2.66 MB, so this arm uses a 16-slot stage ring (about 43 MiB of blob payload, before allocator rounding). `stream_all` is selected because ring > 8, T >= 2048, and a source exists. The sequence is rebuilt per chunk, with each entry indexed by `idx % ring`; `seq_start` provides the current layer's contiguous interval. The sequence/ring indices remain within the allocation and the fixed `RING_MAX=1024` event arrays for the recorded settings.
+
+In normal issuer mode, the issuer waits until `idx < a_consumed + ring`, waits on the slot's prior `used` event through the copy queue, submits host-to-device copy and records `copied`, then sets `stage_live` and publishes `a_issued=idx+1` with release ordering. The consumer acquire-waits for that publication, inserts a compute-queue wait for `copied`, reads the device staging slot, records `used` after the dequant work on the in-order compute queue, and advances `a_consumed`. Those release/acquire edges order the plain `stage_live` / `used_of` state across issuer and consumer; the next chunk reuses the same slot/event arrays, but its issuer is gated by the prior slot-use events. The prompt path synchronizes compute at chunk callback boundaries. Source ordering does not expose an obvious cross-chunk use-after-free or ring wrap out of bounds.
+
+For this arm, `--pcie-frac 0` means the arena is a copy source; it is not meant to be directly dereferenced by a kernel. The arena's `malloc_host` blocks and staging queues use the same `Runtime::get().context()`; `copy_async_after` submits on a runtime-owned transfer queue. The final compute products use device staging/cache pointers. This is consistent with SYCL USM's same-context requirement and host-USM access/copy contract in the [Khronos SYCL 2020 specification](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html#sec:usm): host allocations are host-resident but device-accessible, and USM use by a queue/kernel must use the allocation's context. The successful startup cache fill and first-chunk receipt show the route progressed; they do not establish that every later mapping, copy, or command was valid.
+
+## Confirmed, possible, and not established
+
+**Confirmed from the receipt/source:** first 4K chunk completion followed by second-chunk start; CCS fault/reset and timed-out sequence; SYCL host abort with UR 40; the error surfaced while `iq_dequant_gu_f16` was submitting; ring clamp to 16; and unchecked boolean return paths in the stream-all state machine.
+
+**Possible contributor, not attributed:** a failed copy/wait/event submission could leave an empty or stale event while `stage_live`, `a_issued`, or `a_consumed` advances. `src/core/gpu.cpp` catches such synchronous submit exceptions in `copy_async_after`, `event_record`, and `stream_wait_event`, returns false, and stores an error string; the stream-all caller does not check those returns. `Stager::issued_one` also ignores `event_record` status before publishing its host-buffer acknowledgement. A broken dependency could then expose stale slot data or permit premature reuse. R302 independently documents this contract gap. The current `pcie-frac=0` arena path is pinned and does not use the transient/unpinned stager for its arena blobs, so the host-buffer acknowledgement edge is not the primary route here. The direct ring copy/copy-event/used-event edges remain relevant. No retained artifact says whether any helper returned false before the GPU fault.
+
+**Not established:** which command generated the CAT/fault address, whether that address belonged to a stage slot, a USM block, or another allocation at fault time, whether the root cause was device memory pressure, a failed event/copy dependency, a backend/driver fault, or some other command; nor whether the `iq_dequant_gu_f16` work itself was erroneous. The source-side IQ dequant launch bounds the rounded grid with `i >= nsb` before reading/writing and uses the native format dimensions, but this static check is not a device-side validation of actual buffer addresses or driver behavior. No source-level OOB was demonstrated.
+
+The diagnostics do not support a 4K/full-context fit, completed request, output-quality, mathematical-equivalence, or speed claim. The earlier 8K run's admission-only result (R306) is not a 4K run or a prefill execution result.
+
+## Next safe gate
+
+Keep the GPU workload stopped as recorded. Before any reproduction, the owner should independently establish that the GPU and driver are healthy after the CCS reset and that any retained driver coredump can be reviewed without disturbing the evidence. If a reproduction is later authorized, keep it a separate bounded diagnostic, retain the startup verifier, and instrument each stream-all transition's return value plus slot/sequence/generation before publishing counters. Record the actual source/destination allocation intervals for the captured fault address while allocations are still alive. Stop on the first failed transition and do not run a performance or quality comparison from this failure arm. This report does not authorize or perform that run.
+
+## Pinned inputs
+
+Diagnostic evidence hashes:
+- `record.json`: `be30b5494b9f535150353e62e58b1450933072059f9362a7e3941003d14c1881`
+- `debugger/failure.mi.txt`: `208e773bef4d74ece4baabe189d60cac6486c3762eda70d75b1227b84ee22401`
+- `debugger/inferior.stderr`: `e69a1bf42b5ab35252236670573ff61ec1b5a5e39cf521909e827531146f7ab6`
+- `probes/kernel-after.stdout`: `5d8cfc1d1737a5a3f800a445c2df9f3923e36624d6b7aa8dcda44e944afe3aa9`
+
+Pristine Xe source SHA-256:
+- `src/prefill/prefill.cpp`: `919c696192311066055077bdd0fc74769bfb50854e3437b6b387732acf6d532e`
+- `src/core/gpu.cpp`: `a844eeb381e1cb9f1272f1f68f754a73640d44aa6d6e89b743ecfc793bc2a8ef`
+- `src/core/device.cpp`: `9e33dce3b3b55b00c5aee4db566ceb848b73273837c505b3b27b535a0b30ba2d`
+- `include/strata/core/runtime.hpp`: `1a42ce02127727310614461b1dc2768eb2bce421e9d5e992c4df100c1817dd26`
+- `include/strata/core/device.hpp`: `5ef3d91e943c605baf2b011e77dcc61eeca005e54eff5ea0b86e9d98827ba886`
+- `src/kernels/xe/iq_kernels.cpp`: `c544667e90a4aac9f024c1140b9338de8cdf4398e9a6cb187d96ca016f399d0f`
+
+Shared evidence context: registry v107, SHA-256 `c4189296c68a79eed586db993b663086df2f7b88627977cad672c9b88d172259`, records 406 reports. R302 is the Xe staging submission-failure contract; R303–R305 cover the earlier startup/cache and host-USM source route; R306 is 8K VRAM reserve/4K admission accounting; R307–R308 concern a separate 64K comparison and fixture. They do not identify this run's faulting command. The D source was not inspected or used; any future D comparison must use the exact task-pinned `B/prefill-gemm-service-only-v1/prefill.cpp`, SHA-256 `1cf7e911a555e8611c1368a4d18d4ba81c95027bb8de77f89ad65ac64b05fc3c`, never a mirror.

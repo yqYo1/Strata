@@ -1,0 +1,40 @@
+# R311 — XeStrata skipped ring-entry happens-before audit
+
+Date: 2026-10-11 (Asia/Tokyo)
+Scope: source-only audit of `stream_all` in XeStrata; no execution, GPU, build, test, inference, or cleanup was performed. The inspected worktree is `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010`, requested baseline commit `b8cc2046`. File hashes:
+
+- `src/prefill/prefill.cpp`: `919c696192311066055077bdd0fc74769bfb50854e3437b6b387732acf6d532e`
+- `src/core/gpu.cpp`: `a844eeb381e1cb9f1272f1f68f754a73640d44aa6d6e89b743ecfc793bc2a8ef`
+- `include/strata/core/gpu.hpp`: `2f11e948fcadd14be31b79a994a2908585cfda3b4fef404f648530dce3945af6`
+- `include/strata/core/runtime.hpp`: `1a42ce02127727310614461b1dc2768eb2bce421e9d5e992c4df100c1817dd26`
+
+## Finding
+
+There is a C++ happens-before edge from a completed chunk's `release_to()` writes to the issuer thread created for the following chunk: the consumer thread joins the current chunk's issuer at `prefill.cpp` around line 2270; the next loop iteration creates its issuer after that join. Thread completion synchronizes with successful `join()`, and same-thread sequencing then orders the following thread construction. Thus, **for a later chunk**, prior-chunk writes to `m.used_of` and `Event.ev` (and any prior `stage_live` writes) happen before that next issuer's reads. The atomic objects `a_issued` / `a_consumed` are also freshly initialized for each chunk.
+
+That cross-chunk edge does not cover the issuer and `release_to()` operating concurrently **within the same chunk**. In the skipped-entry branch (`prefill.cpp` around 2155–2161), the consumer calls `event_record(m.used[slot], m.cs)`, writes `m.used_of[slot]`, increments `consumed`, then calls `give_back(consumed)`. It does not call `wait_issued(k)` before these writes. The issuer reads `m.stage_live[sl]`, then `m.used_of[sl]`, and the selected `Event.ev` around lines 1356–1365; its only slot gate is `idx >= a_consumed.load(acquire) + ring` around line 1347.
+
+For an index still inside the initial ring window, the issuer can load the initial `a_consumed == 0`, pass that gate, and then overlap the consumer's writes to the same `used_of` entry and `Event.ev`. The consumer's later release-store in `give_back` cannot synchronize retroactively with an acquire that already read the old value. `wait_issued(k)` would provide the reverse-direction edge for entries it waits on, but the skipped branch does not call it. Consequently, if a skipped entry is concurrently in this window, the plain `used_of` access and the optional `Event.ev` read/write have a potential C++ data race absent another external synchronization edge. The source alone does not establish that routing actually skips an entry in a particular run.
+
+`m.stage_live` is read/written by the issuer in this threaded path; the skipped branch itself does not write it. Its initialization occurs before the chunk issuer is started, and prior-chunk issuer writes are joined before a later chunk. I found no `stage_live` race specifically between this skipped branch and issuer. Do not group it with the `used_of` / `Event.ev` race.
+
+## Minimal conditional interleaving
+
+Within one chunk: (1) issuer loads the old `a_consumed` value and passes the ring-window condition for index `k`; (2) consumer's `release_to()` treats `k` as skipped and calls `event_record` on `m.used[k % ring]`, then updates `m.used_of[k % ring]`; (3) issuer reads `m.used_of` and accesses `m.used[...]->ev` for its `copy_async_after` submission before/while those writes complete; (4) only afterward does the consumer release-store the updated `a_consumed`. The later release/acquire pair cannot make step (1) or the intervening reads happen after the store.
+
+## Synchronization implications
+
+The minimal correction would ensure the issuer has finished the relevant index before the consumer mutates the slot metadata/event (e.g. call `wait_issued(k)` in the skip path before `event_record` / `used_of` update), while preserving the ring's intended device dependency ordering. Alternatively, protect all accesses to the shared slot metadata and event object with a common host mutex or publish a redesigned immutable/atomic slot state. A release/acquire `a_consumed` handshake only protects issuer accesses that acquire a value from the relevant release (or a later release); it does not protect an access whose window check already observed an older value.
+
+The `Event` type in `src/core/gpu.cpp` stores `std::optional<sycl::event> ev`; `event_record` assigns it without application locking, and `copy_async_after` reads it while constructing the SYCL command group. SYCL queue submission/event dependencies order device commands; they do not by themselves order unrelated plain C++ metadata accesses between these host threads. The SYCL specification describes `queue::submit` as immediately invoking the command-group function and returning an event for the submitted command, not as a host synchronization primitive for these objects.
+
+## Evidence and limits
+
+- `prefill.cpp` around lines 1342–1380: per-chunk issuer, acquire window gate, shared slot reads, release/acquire counters, and `wait_issued` helper.
+- `prefill.cpp` around lines 2155–2172: skipped-entry writes and contrast with selected-entry `wait_issued(k)`.
+- `prefill.cpp` around line 2270: current issuer join, before the next chunk-loop iteration.
+- `gpu.cpp` lines 23, 242–251, and 339–348: `Event.ev` representation, read in `copy_async_after`, and unsynchronized assignment in `event_record`.
+- The C++ working draft defines a data race as potentially concurrent conflicting actions, at least one non-atomic, with neither happening before the other; it defines happens-before through sequencing and synchronization: [C++ draft, data races and happens-before](https://eel.is/c%2B%2Bdraft/intro.races).
+- Khronos describes the synchronous host invocation and asynchronous device scheduling semantics of `queue::submit`: [SYCL 2020 specification, queue::submit](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html).
+
+This audit establishes a conditional source-level race possibility for same-chunk skip handling and a happens-before edge across the chunk boundary. It does not establish that a skip occurred in the runs under investigation, nor identify this as the cause of any observed failure. Existing routing/fault conclusions remain unchanged.

@@ -1,0 +1,92 @@
+# R310 — actual 64K capacity and work-scaling gap
+
+Date: 2026-10-11 (Asia/Tokyo). Read-only source/evidence audit. No build, CPU test, model/GPU run, device query, profiler/event-timestamp collection, Git operation, cleanup, or source edit was performed. Only this report was written. R309's in-progress fault-source audit and any fault evidence remain outside this scope.
+
+## Decision
+
+The current accepted input-length condition is met by the reported 65,536-ID request, but its observed prefill rate does not meet the 1,000-token/s goal: 162,402.9 ms for 65,536 input IDs is 403.5396 tokens/s, excluding model load. The target wall budget is 65.536 seconds; the observed request is 2.478x that budget, a 96.8669-second gap. It is not a failure of capacity admission: the request completed its prefill. It is a performance shortfall for this run.
+
+Source accounting explains why a 64K prompt is not simply “twice the 32K work.” Most token-row and chunk-execution work approximately doubles under unchanged chunk/config and similar per-token routing. QSA's block-score/top-k selection traverses a causal prefix and grows approximately quadratically in prompt length, while attention gathers a fixed capped set of selected cells per query and therefore grows approximately linearly after the cap is reached. With host-staged KV, a separate source branch recopies earlier prefix blocks at each chunk; that component can grow faster than 2x. Per-request setup and per-chunk setup must be split: the former is mostly fixed per request, the latter repeats with chunks (eight rather than four at 8,192-token chunks).
+
+The 32K production route census is useful for a conditional scenario, not a 64K forecast. Its 190,240,998,400 logical stager-RAM packed bytes would be 380,481,996,800 bytes and about 59.018 seconds at the standalone 6.4468 GB/s Host-USM H2D rate **only if** a 64K request doubled the same format/source/call distribution and all those logical bytes were transferred through that path once at that separately measured rate. This leaves just 6.518 seconds of a 65.536-second target for all other work in that intentionally severe serialized scenario. Neither the doubled byte count nor that service time has been measured at 64K, and the rate is not a production DMA interval or lower bound. The actual 64K gap cannot be assigned to MoE H2D, GEMM, QSA, GDN, PLE, or overlap from the available evidence.
+
+## Evidence and source pins
+
+- Current compiled D prefill caller: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-gemm-service-only-v1/prefill.cpp`, SHA-256 `1cf7e911a555e8611c1368a4d18d4ba81c95027bb8de77f89ad65ac64b05fc3c`; R297 records linked prefill object `5f16be55…` and the immutable caller identity. Its chunk loop is `Prefill::run_impl`, lines ~2900–3077; QSA work is around ~3780–4110. Do not replace this with a similarly named workspace mirror.
+- Cached generator in the linked executable: W0141 `sycl/src/program/generate.cpp`, SHA-256 `8bb78a21…`, cached object `292bbf76…` (R297). The serve path passes already parsed token IDs to prefill and leaves the last prompt token for separate first-token verification. For this 65,536-ID request the reported accounting is 65,535 batched positions plus that final token; at 8,192 effective chunk size, the batched loop has eight chunks, with a final 8,191-position tail. Do not include the separately verified tail as another full prefill row.
+- The 32K route/capacity join is `actual-prefill-census-capacity-join-v1.json`, SHA-256 `b0afc60f795f47ea699281717d312cbd944b5d35fd25a0dff7949b7e14fbffb3` (R272). Its associated one-request diagnostic has 32,768 input IDs, 32,767 census positions, four 8,192-sized chunks, 93,505 generic GU calls and the same number of generic Down calls, 92,998 `source=3` stager-RAM transfer calls, and 190,240,998,400 logical packed bytes. It is performance-ineligible and does not provide a matched transfer timeline.
+- R300 documents the 8,192 chunk, 32,768 resident KV boundary, 262,144 maximum-context setting and fixed-vs-growing accounting. R301 gives the current compact workspace maximum and explains why the Dm16 candidate's raw plane reduction does not reduce the shared-region ceiling at T=8,192. R235 is the operation-specific B570 capacity audit (Ryzen 5 5600X, 128 GB RAM, Arc B570 10 GiB); the one-way H2D Host-USM rate is 6.446833643 GB/s. These are capacity controls, not a joined 64K production trace.
+
+## 32K actual MoE route census: counted, not physical-bus telemetry
+
+The exact paired-format census is useful because it preserves call, row, logical copy-call and source-byte counts. `transfer_bytes` is the census's logical packed payload attributed to `source=3`; it does not prove an equal number of bytes traversed PCIe or identify active DMA duration. The resident-source calls do not appear in this transfer table.
+
+| Native pair (GU/Down) | Calls | Routed rows | source=3 copy calls | source=3 logical packed bytes |
+|---|---:|---:|---:|---:|
+| 18/20 | 27,283 | 4,587,380 | 27,171 | 59,124,096,000 |
+| 18/42 | 5,801 | 983,010 | 5,777 | 9,908,710,400 |
+| 21/20 | 17,634 | 2,949,030 | 17,562 | 40,912,435,200 |
+| 21/42 | 2,005 | 327,670 | 1,997 | 3,731,993,600 |
+| 22/20 | 29,271 | 4,915,050 | 29,151 | 57,462,451,200 |
+| 22/42 | 9,662 | 1,638,350 | 9,627 | 14,540,620,800 |
+| 23/20 | 1,849 | 327,670 | 1,713 | 4,560,691,200 |
+| **Total** | **93,505** | **15,728,160** | **92,998** | **190,240,998,400** |
+
+Format pairs and counts can change with actual prompt content, chunk boundaries, route selection, resident cache state and model-source policy. In the current D source, the stream-all branch is conditional: ring size must exceed the small `STAGE` ring, the current chunk must meet `stream_all_min()` (1,024 in this source family), and the model-source/nonresident-share policy or explicit environment override must select it. Otherwise the routed-only staging branch applies. A configured setting alone is insufficient evidence that stream-all or all-expert copies occurred. Use actual source and effective `T`, ring, source/cache state, and census branch fields for the 64K receipt.
+
+## Work that approximately doubles at fixed 8K chunk
+
+For a fresh unresumed prompt, the batched row count is `n-1`: 32,767 versus 65,535, a factor of 2.00003. Under identical `T=8,192`, the count is four versus eight chunks. The following per-row/per-chunk work therefore has a first-order 2x workload hypothesis, not a guaranteed 2x time prediction:
+
+- Embedding and hyper-connection/residual row operations, model layer projections and products, shared expert rows, and MoE route/group work execute on new token rows. Per-format MoE calls and copied expert blobs depend on realized routing and source/cache policy; use a fresh census instead of assuming the 32K route density repeats.
+- GDN projections, convolution, recurrence and output projection are run for each newly processed row in GDN layers. Recurrent state is carried across chunks; state capacity is a session allocation, while update work is on new rows.
+- QSA Q/K/V and indexer projections, indexer append, KV append for newly added cells, and selected-attention query rows run for each new row in QSA layers. KV append payload across all new rows is approximately 2x under identical KV format/mode, though its host/staging/resident destinations depend on configuration.
+- Setup inside each chunk repeats. With the fixed 8K chunk policy, embedding/ID preparation, routing/grouping, chunk queue/control and expert admission run eight times at 64K instead of four. Thus there is no basis to label all “setup” as a fixed request cost.
+
+One-time request/session reconciliation, admission, and any applicable initial cache refill can be approximately fixed for one request if the same fresh/warm state, cache policy and model remain in force. Model load is outside the stated prompt time. Do not label cache refill or PLE reads fixed without recording whether they occur and their row count. The terminal prompt-token verification is a separate one-token step.
+
+## QSA: score/selection is prefix-shaped; selected attention is capped
+
+The compiled D caller provides a concrete split:
+
+1. Each QSA layer projects query/indexer keys, appends indexer rows and forms a per-query `n_bid` (completed 4-cell blocks). `qsa_block_scores` receives an `active` bound equal to the last query's `n_bid + 1` for each selection batch (default `sel_batch=256`). The score/top-k kernels operate over the completed causal block prefix for each query. The padded score scratch is sized from `max_blocks` at the session's maximum context, but active work rises with the query's position. Summed query-block work is approximately `Σ_i i/4`, or Θ(N²) over N prompt rows; under otherwise fixed assumptions, 32K→64K can approach 4x QSA score/selection work. Batch-tail padding and exact kernel implementation change the constant; this is a structural scaling statement, not a measured time multiplier.
+2. The caller's selected-cell capacity is `m.cap=qsa_selection_width(kTopkMaxCells,s)`. With `idx_top_k=2048` cells and `idx_block=4`, this reserves a maximum selection width of 2,051 cells, independent of a 64K request's total context. For prompts beyond that width, each query gathers/attends over the selected capped set rather than all earlier KV cells. That attention payload is approximately linear in query count (about 2x from 32K to 64K) for the same width and format. The growing prefix search that picks those cells is a distinct and potentially larger-than-linear operation.
+3. In `kv_mode==1`, the caller invokes `kv_stage_from_host` at each QSA layer/chunk for all earlier blocks `[0,p0)`, before appending the new chunk. The pinned helper copies the first requested blocks of the host KV copy into the identity-layout staging pool. With 8K chunks this repeats prior-prefix staging. At 32K the pre-chunk prefix lengths are 0, 8K, 16K, 24K cells (48K cell-equivalents per QSA layer); at 64K they are 0, 8K, …, 56K (224K cell-equivalents per layer), a 4.67x prefix-copy count if the branch stages the whole requested prefix each time. The total bytes are `Σ_chunks n_blocks(p0) * kv_block_bytes(shape,fmt)` per QSA layer, not the MoE census bytes. This is conditional on the active staged-KV branch and must be confirmed with the run's actual KV mode/format and a count-only receipt. The per-chunk append bytes also grow with the new rows.
+
+The 32K MoE census does not count this QSA KV staging. The current 64K request's ability to fit establishes this run's admission only; it does not establish the traffic or peak occupancy for a different chunk size, KV format/mode or full 262,144-cell lifecycle.
+
+## What stays capacity-fixed, and what does not
+
+With unchanged `T`, the prefill scratch arena is carved per chunk and reused; its size depends on `T`, geometry and configured session maxima, not total prompt rows. The top-level shared region is `max(HC, PLE, GDN, QSA, MoE)`; R301's current compact numbers show PLE remains larger than MoE after a 16-bit Dm plane reduction at `T=8,192`, so that candidate saves zero bytes at the shared-region maximum. A longer 64K prompt with the same chunk does not allocate a second scratch arena for each extra chunk.
+
+QSA's capacity terms include `max_blocks` and the fixed maximum selection width; with the same configured max context they do not double when the actual request goes from 32K to 64K. Persistent QSA/GDN/session backing and the expert ring are capacity allocations; actual occupied/prefix cells, KV append and host→stage traffic grow with processed positions. Consequently the 64K success demonstrates one configuration fits at the chosen hardware and settings, not that all physical 256K states fit, nor that capacity is the source of the remaining speed gap. The audited capacity map has no joined request-time free-VRAM/host-memory margin or 64K high-water receipt, so it does not quantify how close that successful allocation was to a limit.
+
+## Minimal next diagnostic for the 64K production-work gap
+
+Use one separately labeled count-only run on the *same 65,536-token input, model, binary and route/cache/chunk settings* as the accepted clean timing request. Do not enable event profiling or the rejected v101 event-timestamp ledger. Do not insert per-operation waits. Keep the existing clean request wall clock as the performance result; keep the diagnostic as accounting evidence only.
+
+The existing `STRATA_PREFILL_ROUTE_CENSUS=1` path has an admission predicate that also requires a peer, next-stage, residual-transfer context, or portable-peer route. For a single-GPU request that has none of these, setting the environment variable alone may leave the count hook off. First verify the exact predicate and output in the source; the minimal source-level diagnostic, if needed, is to make the same count-only collector available on the actual single-GPU branch without changing decisions, copies, queue waits or kernels. Do not mistake a disabled hook for zero route traffic.
+
+The smallest useful structured receipt is one row per `(chunk, layer, native format pair, source/path)` plus request totals, with:
+
+- actual input count, `n-1` batched rows, resume/read counts, effective chunk starts/lengths, `T`, `LB/LE`, cache/ring/source and exact branch decisions;
+- routed expert calls/rows by GU/Down native pair and exact `ne`, and source-separated logical packed-copy calls/bytes (resident, host/stager, file, peer as applicable);
+- per QSA layer/chunk: active query rows, sum of active prefix blocks scored, sum of selected widths, actual KV format/mode, blocks and logical bytes staged from host by `kv_stage_from_host`, new-cell append bytes by host/stage/resident destination, and any selection/gather counters already maintained in-kernel without extra synchronization;
+- one monotonic host clock for request wall and coarse chunk/phase submit or wait spans, recorded without GPU timestamps. Label submit duration as host enqueue/dispatch time and queue-wait duration as host-observed wait on preceding asynchronous work; neither is exclusive kernel or DMA time. Avoid multiplying per-call clock reads unless a bounded diagnostic shows their overhead is negligible.
+
+The first output should compare counts against 32K only as actual 64K/32K ratios for the same prompt source and settings. It should not attempt to infer physical bus service from logical bytes or exclusive GPU busy time from host waits. If counts reveal a dominant repeated class, only then design a distinct targeted timing pass; preserve separate quiet wall samples for performance.
+
+The immediate unknowns are: 64K format-pair/call distribution and source cache misses; actual production H2D payload and completion/overlap; whether all 8 chunks took the same staging branch; per-QSA-layer host KV prefix bytes and selected attention work; per-phase 64K contribution to the 96.867 s gap; and critical-path overlap among copies, expert products and attention. Existing isolated capacity rates, 32K counts, and the 64K completion do not fill these gaps.
+
+## External primary implementation references and scope
+
+- [Hugging Face Transformers Qwen3-Next model implementation](https://github.com/huggingface/transformers/blob/main/src/transformers/models/qwen3_next/modeling_qwen3_next.py) makes the architecture split explicit in code: decoder layers select either `Qwen3NextGatedDeltaNet` linear attention or `Qwen3NextAttention` full attention. This supports separating recurrent/linear row work from full-attention context work. It is Qwen3-Next code, not Strata's Qwen3.8 Flash-Next implementation, and does not establish Strata's QSA selection multiplier.
+- [SGLang attention-backend documentation](https://github.com/sgl-project/sglang/blob/main/docs/docs/advanced_features/attention_backend.mdx) describes GDN as linear-attention O(n) and explicitly keeps standard full-attention layers in hybrid GDN models. It is an implementation-maintainer reference for the broad scaling distinction, not a matched architecture benchmark, and supplies no transferable 64K throughput or capacity value.
+
+Neither reference justifies a numeric 2x/4x runtime prediction or claim about Strata's actual QSA. They corroborate only the qualitative distinction already established from the pinned D call sites. No unrelated engine's benchmark was used as a Strata estimate.
+
+## Conclusion
+
+The directly measured 64K run is below the goal by 96.867 seconds. At 8K chunks, token-row work and appended KV approximately double; QSA causal block scoring can approach 4x while capped selected attention approximately doubles; host-staged prefix restoration can approach 4.67x in the explicit KV staging branch; and per-request initialization remains approximately fixed while chunk-local overhead doubles. Scratch allocation is mostly governed by chunk and configured maximum context, not by multiplying the request length.
+
+The R272 32K census's 190.241 GB is not a 64K answer. The smallest next step is a matched 64K route/QSA/KV count receipt with monotonic host wall/submit/wait buckets, no event timestamps or injected synchronization. Until those counts and a matched production timing join exist, the capacity report remains an operation map and the remaining goal gap has no measured bottleneck attribution.

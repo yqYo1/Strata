@@ -1,0 +1,181 @@
+{
+  "active": false,
+  "passed": true,
+  "complete": true,
+  "gpu_executed": false,
+  "model_executed": false,
+  "source_sha256": "10a065c15ee785eafc0cd639e2ed3cf17edebfa7b484b5d743b1173e1a03882b",
+  "owner_sha256": "8b40cc573b9abd069f8386deb6af65f0a55f7992bcda2a6a62b51a5c9a47b686",
+  "commands": [
+    {
+      "label": "dependency",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-refresh-20261007/test-venv/bin/python",
+        "-c",
+        "import hashlib,json,sys,regex,regex._regex,regex._regex_core;from pathlib import Path\np=[Path(regex.__file__),Path(regex._regex.__file__),Path(regex._regex_core.__file__)]\nprint(json.dumps(dict(python=sys.version,regex_version=regex.__version__,files=[dict(path=str(x),sha256=hashlib.sha256(x.read_bytes()).hexdigest())for x in p])))"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-10T16:16:32.057791+00:00",
+      "wall_seconds": 10,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2870853,
+          "start_ticks": 33867117,
+          "sid": 2870853,
+          "pgid": 2870853
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 338671.17070155,
+      "pid": 2870853,
+      "spawn_return_monotonic": 338671.172262306,
+      "direct_identity": {
+        "pid": 2870853,
+        "state": "R",
+        "ppid": 2870813,
+        "pgid": 2870853,
+        "sid": 2870853,
+        "start_ticks": 33867117,
+        "rss_bytes": 466944
+      },
+      "peak_session_rss_bytes": 13266944,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:16:32.226057+00:00",
+      "elapsed_seconds": 0.16799452301347628,
+      "logs": {
+        "dependency.stdout": {
+          "bytes": 852,
+          "sha256": "847419ac9670fb8030c9ee480b814e4400e3a5e28dc162320834b900ca232970"
+        },
+        "dependency.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "prepare",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-refresh-20261007/test-venv/bin/python",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/clean64k-task-fixture-v2/prepare_fixture.py",
+        "--output",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/clean64k-task-fixture-root-r3"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-10T16:16:32.226763+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2870868,
+          "start_ticks": 33867133,
+          "sid": 2870868,
+          "pgid": 2870868
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 338671.339570368,
+      "pid": 2870868,
+      "spawn_return_monotonic": 338671.341096247,
+      "direct_identity": {
+        "pid": 2870868,
+        "state": "R",
+        "ppid": 2870813,
+        "pgid": 2870868,
+        "sid": 2870868,
+        "start_ticks": 33867133,
+        "rss_bytes": 581632
+      },
+      "peak_session_rss_bytes": 181628928,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:16:33.049129+00:00",
+      "elapsed_seconds": 0.822173592983745,
+      "logs": {
+        "prepare.stdout": {
+          "bytes": 516,
+          "sha256": "e013507c960c755c93417c67a03bf67fb92324f48699d65599a9a6f49894dcc7"
+        },
+        "prepare.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "interpreter": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-refresh-20261007/test-venv/bin/python",
+    "executable_sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+    "venv_cfg_sha256": "23815661cda6f8219de5f9851244eecb926baa8a6b85e8491fc91a8eae1f4c17"
+  },
+  "dependency": {
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "regex_version": "2026.9.10",
+    "files": [
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-refresh-20261007/test-venv/lib/python3.12/site-packages/regex/__init__.py",
+        "sha256": "039934ae6f0b9fb1cab1f1bef2c11661e85e93ccc22847bab105b94065009925"
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-refresh-20261007/test-venv/lib/python3.12/site-packages/regex/_regex.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "3b256d8804e812bb9aad6aed4ff60379057c38110bad5741ee8c60bd63092be3"
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-refresh-20261007/test-venv/lib/python3.12/site-packages/regex/_regex_core.py",
+        "sha256": "604eb46253402336c66362f32c4a20af095d3bd0b5505501b44e6077e92951a2"
+      }
+    ]
+  },
+  "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/clean64k-task-fixture-root-r3/manifest.json",
+  "manifest_sha256": "0fbf6a16a90b55a3767145d1217b2027e218c0537a487faa428ab6527e6771b1",
+  "fixture": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/clean64k-task-fixture-root-r3/coding-review-65536-tokens.txt",
+    "tokens": 65536,
+    "sha256": "5284d8fa53d1ef28f6ba916a629faf901c890bc0c669bf986ee04ed72aa2c3ff",
+    "first_ids": [
+      248045,
+      846,
+      198,
+      18842,
+      279,
+      2614,
+      42903,
+      47953
+    ],
+    "last_ids": [
+      198,
+      248045,
+      74455,
+      198,
+      248068,
+      198,
+      248069,
+      271
+    ]
+  },
+  "independent_persisted_hash_count_domain_passed": true
+}

@@ -1,0 +1,73 @@
+{
+  "active": false,
+  "passed": false,
+  "complete": false,
+  "gpu_executed": false,
+  "model_executed": false,
+  "source_sha256": "10a065c15ee785eafc0cd639e2ed3cf17edebfa7b484b5d743b1173e1a03882b",
+  "owner_sha256": "8b40cc573b9abd069f8386deb6af65f0a55f7992bcda2a6a62b51a5c9a47b686",
+  "commands": [
+    {
+      "label": "prepare",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/clean64k-task-fixture-v2/prepare_fixture.py",
+        "--output",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/clean64k-task-fixture-root-r2"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-10T16:15:24.149669+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2864709,
+          "start_ticks": 33860326,
+          "sid": 2864709,
+          "pgid": 2864709
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 338603.262427276,
+      "pid": 2864709,
+      "spawn_return_monotonic": 338603.263945461,
+      "direct_identity": {
+        "pid": 2864709,
+        "state": "R",
+        "ppid": 2864653,
+        "pgid": 2864709,
+        "sid": 2864709,
+        "start_ticks": 33860326,
+        "rss_bytes": 466944
+      },
+      "peak_session_rss_bytes": 13393920,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-10T16:15:24.495880+00:00",
+      "elapsed_seconds": 0.34604998998111114,
+      "logs": {
+        "prepare.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "prepare.stderr": {
+          "bytes": 125,
+          "sha256": "67313b09e53b028197456ad418f14ea67deff142f7efc3ba3d457d42e387e273"
+        }
+      }
+    }
+  ],
+  "error_type": "AssertionError",
+  "error": "bounded fixture CPU preparation or persisted verification failed; no GPU admission"
+}

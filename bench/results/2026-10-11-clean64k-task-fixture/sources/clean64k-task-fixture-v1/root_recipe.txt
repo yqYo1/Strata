@@ -1,0 +1,76 @@
+SOURCE ONLY. Implementer did not execute Python, tokenizer, tests or inference.
+B=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007
+Q=$B/clean64k-task-fixture-v1
+
+Root reviews source then serializes CPU qualification/execution with ALL GPU,
+model/build/profiler work and owned-v0141-measurement.lock. Builder itself opens
+EXISTING lock r+ and takes LOCK_EX|LOCK_NB; external wrapper must not retain
+a conflicting independent flock while invoking it. No new locks replace it.
+Suggested finite root CPU owner: wall120s/CPU90s/RSS1GiB/log8MiB/artifacts16MiB.
+No GPU or model dependency. Root chooses verified interpreter with regex package.
+Use explicit env from creation, no full inherited environment or secret logging.
+
+Root syntax admission first (not executed by agent):
+env -i PATH=/usr/bin:/bin HOME=/home/yayoi LANG=C.UTF-8 LC_ALL=C.UTF-8 \
+ PYTHONDONTWRITEBYTECODE=1 /usr/bin/python3 -m py_compile "$Q/prepare_fixture.py"
+Root-owned CPU execution, new direct child output under B:
+env -i PATH=/usr/bin:/bin HOME=/home/yayoi LANG=C.UTF-8 LC_ALL=C.UTF-8 \
+ PYTHONDONTWRITEBYTECODE=1 /usr/bin/python3 "$Q/prepare_fixture.py" \
+ --output "$B/clean64k-task-fixture-root-r1"
+Use the finite qualified CPU owner for these operations, not unmanaged launches.
+Python syntax compilation can create __pycache__; root owns its artifact policy.
+
+Actual admitted host API/source selection:
+W=/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010
+W/tools/strata_tokenizer.py SHA9b0327e25aa62754406a924db6cc137e6edb1d93c7af76a4f3d14a8920ea72c8
+Pristine host serve/server.py lines5668..5676 creates ordered tokens from
+vocab.json, merges.txt splitLF and token_type.json, then ST.Tokenizer(tokens,
+merges,types). Builder uses that ACTUAL API, not ByteTokenizer/from_gguf.
+It checks encode(suffix_text,parse_special=True) equals every49 historical ID
+and decode(ids,errors=strict) equals exact suffix_text. No ad hoc fallback.
+Pack=/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s
+Admitted tokenizer assets: vocab.json, merges.txt, token_type.json,
+tokenizer.json and chat_template.jinja; fixed full hashes are in source/manifest.
+No GGUF payload or metadata reader; no weight shard access.
+
+Historical metadata coding-review-32k-fixture.json exactSHA
+2df376e5f5e6cab14e5caee90acd7acf316ab401194c83f828b9182668834dc6.
+Recorded historical tokenizer SHA0a1d68e... is DIFFERENT from current admitted
+9b0327e... and is retained separately, not asserted current code identity.
+The historical implementation was not located/claimed executed. Current API
+suffix encode/decode equivalence is mandatory; disagreement fails closed.
+Original32K SHA137fa115... and full source SHA cc29e442... checked as constants
+before parsing; original32K must equal source first32719 plus all49suffix IDs.
+New fixture is EXACT source first65487 plus verified49suffix IDs=65536.
+No runtime truncation, old fixture rewrite or silent reuse.
+
+Root qualification gates:
+- New output, return0, passed manifesttrue/activefalse, exact65536 fixture;
+  independent fileSHA/count/domain checks, body65487 and itsSHA, suffix49;
+  every original32K tail ID and both host API suffix equivalence checks true.
+- Recompute SHA of written files and all original/asset/source pins under lock;
+  first/last8 IDs only in compact manifest; do not log suffix_text or wholecorpus.
+- Check normal finite CPU owner exit/closure; no output if any admission fails.
+  Write failure may leave incomplete NEW directory; nonzero exit never admits it,
+  no automatic cleanup/retry; root owns any retained failure artifact policy.
+- CPU negatives root can prepare private stub fixtures/module after reviewing
+  an isolated test import: modified metadata/source/old/API/asset pin, suffix
+  wrong ID/text/roundtrip, incorrect vocab/index/type/merge count, tokenoutside
+  domain, invalid/duplicate CLI, existing output, lockbusy, unknown outputparent.
+  Do not edit actual originals or weaken pins to force success.
+
+Manifest records source/metadata/script/assets/template identities, body and
+fullfixture hashes/counts, first/last8 IDs, suffix hash/49-ID equivalence and
+original32K tail, exact construction limits. Template is recorded/pinned but
+NOT rendered; boundary restoration uses historical verified task/chat suffix.
+Historical corpus body may cut code, suffix closes fence and request. This is
+not natural new conversation, independent quality dataset or causal EOS fix.
+Greedy64 decode is not guaranteed. No execution/result qualification yet.
+
+After GPU health passes, ROOT FIRST evaluates BASELINE ONLY fresh65536 GEN64
+with this explicit newfixture path/SHA and unchanged clean controller gates.
+Current rawXe4K secondchunk GPUfault/SIGABRT remainsFAILED; no fork retry
+authorized by fixture prep. Preserve old first65536 slice prefillvalid/3IDstop
+decodeineligible result. New earlystop also prefillonly, no EOS suppression or
+forcedcontinuation. Root evaluates64-ID free generation before decode timing;
+no adoption/full262144 lifecycle/quality claim from this CPU preparation.
