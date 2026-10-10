@@ -40,6 +40,7 @@
 #include "strata/prefill/moe_mmq.hpp"
 #include "strata/core/peer_experts.hpp"
 #include "strata/prefill/kernels.hpp"
+#include "strata/prefill/route_group.hpp"
 
 #include <algorithm>
 #include <chrono>
@@ -691,6 +692,9 @@ struct Prefill::Impl {
     float *logits = nullptr, *w = nullptr, *GU = nullptr, *Dm = nullptr, *sgate = nullptr, *sup = nullptr,
           *shared = nullptr, *sg = nullptr;
     int32_t *ids = nullptr, *slot_dev = nullptr, *src_dev = nullptr;
+#if defined(STRATA_SYCL_ROUTE_GROUP)
+    RouteGroupScratch route_scratch;
+#endif
     uint16_t *Xs = nullptr, *Hh = nullptr, *sh_h = nullptr;
     // step 2b (MMQ): the activations quantized per layer, H in FP32 and its group's quantized rows, the identity
     // row map, the group bounds, the group buffers of gathered experts
@@ -1030,6 +1034,12 @@ uint64_t moe_set_bytes(size_t T, int64_t n_expert, bool fused, bool compact = fa
     Alloc a; a.count_only = true; bool ok = true;
     a.take<float>(T * n_expert, ok); a.take<float>(T * K, ok); a.take<int32_t>(T * K, ok); a.take<int32_t>(T * K, ok);
     a.take<int32_t>(T * K, ok);
+#if defined(STRATA_SYCL_ROUTE_GROUP)
+    if (route_group_requested() && !compact && !fused) {
+        const size_t words = route_group_scratch_words(n_expert);
+        if (words) a.take<int32_t>(words, ok);
+    }
+#endif
     if (mp.fallback) a.take<uint16_t>(T * (compact ? 1 : K) * N, ok);
     a.take<float>(mb.gu, ok);
     if (mp.fallback) a.take<uint16_t>(T * (compact ? 1 : K) * 640, ok);
@@ -1049,6 +1059,8 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
                    const core::ExpertCache *cache, const int32_t *host_res,
                    int64_t chunk, void *stream, std::string &err, void *borrow,
                    uint64_t borrow_bytes) try {
+    (void) route_group_requested();
+
     Impl& m = *impl_;
     m.wt = &wt; m.g = &g; m.ss = &ss; m.src = src; m.cache = cache; m.host_res = host_res;
     m.T = chunk; m.cs = strata::q_of(stream); m.stats = &stats_;
@@ -1334,6 +1346,13 @@ bool Prefill::carve(size_t T, void* alloc) {
         c.base = base; c.cap = region; c.owned = &m.owned;
         m.logits = c.take<float>(T * m.g->n_expert, ok); m.w = c.take<float>(T * K, ok); m.ids = c.take<int32_t>(T * K, ok);
         m.slot_dev = c.take<int32_t>(T * K, ok); m.src_dev = c.take<int32_t>(T * K, ok);
+#if defined(STRATA_SYCL_ROUTE_GROUP)
+        m.route_scratch = {};
+        if (route_group_requested() && !m.compact && !fz) {
+            const size_t words = route_group_scratch_words(m.g->n_expert);
+            if (words) m.route_scratch = {c.take<int32_t>(words, ok), words};
+        }
+#endif
         const MmqPlan& mp = mmq_plan();
         m.Xs = mp.fallback ? c.take<uint16_t>(T * (m.compact ? 1 : K) * N, ok) : nullptr;
         m.GU = c.take<float>(mb.gu, ok);
@@ -1996,6 +2015,8 @@ uint64_t Prefill::bytes_needed_owned(const core::ModelGeometry& g, const core::S
 
 uint64_t Prefill::bytes_needed_impl(const core::ModelGeometry& g, const core::SessionState& ss, int64_t chunk,
                                     bool owned_pages) {
+    (void) route_group_requested();
+
     // the same allocation sequence as `init`, counted
     const size_t T = (size_t) chunk;
     bool ok = true;
@@ -2379,6 +2400,8 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
 }
 
 bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) try {
+    (void) route_group_requested();
+
     err.clear();
     Impl& m = *impl_;
     const core::OnDevice on_device(m.device);
@@ -2793,6 +2816,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
 
 bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                   std::string &err) try {
+    (void) route_group_requested();
+
     err.clear();
     Impl& m = *impl_;
     const core::OnDevice on_device(m.device);
@@ -4080,9 +4105,38 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                         // (the sync below also orders this layer's writes of slot/src/bounds after the previous
                         // layer's kernels that read them)
                         const bool grp_mapped = m.grp_host != nullptr;
+                        bool device_group = false;
+#if defined(STRATA_SYCL_ROUTE_GROUP)
+                        // Conservative prototype: whole run_impl input>=32K; short tail
+                        // chunks stay host. No measured crossover threshold implied.
+                        device_group = route_group_requested() && n >= 32768 && T >= 1024 &&
+                            !m.compact && !m.fused_bufs && !use_mmq && !fused_l &&
+                            lay.native && mmq_gt == 21 && no_peer && !m.pp && !pe.on &&
+                            !next_ && !helper_ && !hand_in_ && !on_chunk && !on_stage_chunk &&
+                            LB == 0 && LE == g.n_layers &&
+                            route_group_supported(T,K,m.g->n_expert,size_t(m.T_max)*K,
+                                size_t(m.T_max)*K,size_t(m.T_max)*K,m.route_scratch,m.cs);
+                        if (device_group) {
+                            route_group_submit(m.ids,m.slot_dev,m.src_dev,T,K,m.g->n_expert,
+                                size_t(m.T_max)*K,size_t(m.T_max)*K,size_t(m.T_max)*K,m.route_scratch,m.cs);
+                            auto view = route_group_view(m.route_scratch,m.g->n_expert);
+                            m.cs->memcpy(m.cnt.data(),view.counts,size_t(m.g->n_expert)*sizeof(int32_t));
+                            core::progress_at("reading the prompt (batched): waiting for GPU route counts at layer",l,p0);
+                            m.cs->wait_and_throw(); // Maps and counts completed before any consumer.
+                            core::progress_at("reading the prompt (batched): layer",l,p0);
+                            pt.fold();
+                            int64_t sum = 0;
+                            for (int32_t count : m.cnt) {
+                                if (count < 0 || count > T*K) { err="prefill: routed count out of range"; return false; }
+                                sum += count;
+                            }
+                            if (sum != T*K) { err="prefill: routed id out of range"; return false; }
+                        }
+#endif
                         int32_t* ids_h = grp_mapped ? m.grp_host : m.ids_host.data();
                         int32_t* slot_h = grp_mapped ? m.grp_host + m.grp_tk : m.slot_host.data();
                         int32_t* src_h = grp_mapped ? m.grp_host + 2 * m.grp_tk : m.src_host.data();
+                        if (!device_group) {
                         if (grp_mapped) copy_i32(m.grp_dev, m.ids, T * K, m.cs);
                         /*
                         DPCT1124: cudaMemcpyAsync is migrated to
@@ -4121,6 +4175,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                             if (e < 0 || e >= m.g->n_expert) { err = "prefill: routed id out of range"; return false; }
                             ++m.cnt[(size_t) e];
                         }
+                        }
                         // multi-GPU: the rows of the experts the peer computes go last, as one block [rows_local, T*K)
                         const bool pre_mmq = mmq_plan().any && mmq_plan().layer[(size_t) l];
                         std::vector<char> on_peer;
@@ -4153,12 +4208,14 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                                     if (on_peer[(size_t) e] == kind) { m.off[(size_t) e] = r; r += m.cnt[(size_t) e]; }
                             m.off[(size_t) m.g->n_expert] = r;
                         }
+                        if (!device_group) {
                         std::vector<int32_t> fill(m.off.begin(), m.off.end() - 1);
                         for (int64_t i = 0; i < T * K; ++i) {
                             const int32_t e = ids_h[(size_t) i];
                             const int32_t p = fill[(size_t) e]++;
                             slot_h[(size_t) i] = p;
                             src_h[(size_t) p] = (int32_t) (i / K);
+                        }
                         }
                         // the experts, in id order: resident ones from VRAM, the others through the staging ring
                         std::vector<int32_t> order, order_peer;
@@ -4175,6 +4232,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                                 m.cache != nullptr, m.host_res ? m.host_res + (size_t) l * m.g->n_expert : nullptr,
                                 m.g->n_expert, stream_all, !stream_all || seq_start[(size_t) l] == seq_start[(size_t) l + 1]))
                             detail::mmq_resident_sort_rows(ids_h, T * K, (int32_t) K, m.cnt, m.off, order, slot_h, src_h);
+                        if (!device_group) {
                         if (grp_mapped) {
                             copy_i32(m.slot_dev, m.grp_dev + m.grp_tk, T * K, m.cs);
                             copy_i32(m.src_dev, m.grp_dev + 2 * m.grp_tk, T * K, m.cs);
@@ -4199,6 +4257,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                             */
                             m.cs->memcpy(m.src_dev, m.src_host.data(),
                                          (size_t)T * K * 4);
+                        }
                         }
                         n_order = order.size();
                         const size_t mmq_gub = use_mmq ? mmq::matrix_bytes(mmq_gt, 1280, N) : 0;

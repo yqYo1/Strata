@@ -1,0 +1,134 @@
+Active compiled SYCL native-IQ route grouping prototype v1
+SOURCE ONLY / UNBUILT / UNTESTED. No compiler/build/test/runtime/GPU/device/model/
+payload/profile/Git/cleanup executed. Root owns all serial qualification and
+process/error/lifetime supervision. Only assigned four sourcefiles/report edited.
+Worktree owner base609a270d:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-active-route-grouping-20261010
+AGENTS read; explicit source-only task overrides build/commit workflow. Full R146
+compiled-route correction read (a2366cedbb511b45b293d2ef82eff6bfb572f726f5b75127d7ac4b9575eb4cf4).
+R144 referenced only as corrected inactive-MMQ premise; no fused::group/moe_mmq
+implementation reused. Latest registry-v59 owner SHA
+ dc3ce37565d0bf9afb268012fe6667a7cb0623511497b57aa6fa9cc032b1db8d,
+storagee2c712f79c315bfbe15b3a6c6ff0d2a5948e9e0b is historical inventory.
+
+Changed paths relative to worktree, bytes/SHA256:
+sycl/src/prefill/prefill.cpp
+322941 6e672c9b7abaef2387aeaa495a4b0e16d7daff1cb1fe1bab49bc56f59a065178
+sycl/src/prefill/route_group.dp.cpp (new)
+3180 059130a981518a78d6bdb89aa76c61a85d5c99e35fbf6a2a7732ff12f0e0c865
+sycl/include/strata/prefill/route_group.hpp (new private)
+1566 07f3c00aac098ce235da6d52ac0b736bbb0f835190e035f0d1f9a218bd305047
+sycl/CMakeLists.txt
+26639 537e5d04dd53cc28019ed5e3756c04eeaaadf967748a346d8513efa5b1d5d94c
+Public/fused/MMQ/CUDA/HIP/decode, kernel math, GDN worktree, generated/build/results
+files unchanged. No automatic benchmark or correctness-success assertion added.
+
+Build STRATA_SYCL_ROUTE_GROUP OFF default; ON explicitly adds new route_group.dp.cpp
+only to strata_prefill and defines private macro. Runtime same-name exact0/1,
+absence0; malformed throws; OFF/env1 throws before init/run work. No source flags,
+production ISA/math/library changes. Header inline requested getter works OFF;
+module API symbols exist in ON target only. Parent's private oracle must use ON
+build/module. Runtime configuration must remain fixed across bytes_needed/init/
+carve/relayout/run; late enabling without preallocated capacity falls back to host.
+Existing process-environment mutation concurrency is not supported.
+
+Private typed API:
+RouteGroupScratch{int32_t* data,size_t words}; RouteGroupView{counts,offsets,fill}.
+route_group_scratch_words(E)=3E+1 for1<=E<=1024 else0;
+route_group_scratch_bytes(E)=words*sizeof(int32_t).
+view layout counts[E],offsets[E+1],fill[E]. Checked view refuses bad bounds.
+route_group_supported(T,K,E,idscap,slotcap,srccap,scratch,stream) checks before submit:
+T>=0,K>0,E1..1024,T<=INT32_MAX/K, all map capacities>=T*K, typed scratch nonnull/
+words>=3E+1,nonnull stream,in-order selected queue. False permits original host
+choice; no mutation. Query exception is propagated, not retried. submit repeats
+checks; T0 valid no-op; nonempty maps nonnull/aligned, all4 active memory intervals
+nonoverlapping and integer address-add bounds checked before any q.fill. Caller
+must supply valid USM in stream context; source does not claim adversarial pointer
+extent validation beyond capacities/address checks.
+
+New module phases same compute in-order queue:
+q.fill count[E]0; atomic relaxed-device-int32 count valid IDs only;
+single_task bounded E prefix scan writes offsets[E+1],fill[E] starts;
+atomic place valid IDs to slot[i]=p,src[p]=i/K using fill[e].
+Invalid IDs skipped both kernels; counts sum<=T*K, no int32 prefix overflow.
+No atomics across host/device concurrently. In-order phase boundaries publish
+counts/scan/place; no submitted-error catch/fallback/retry. Caller queues only
+Ecounts D2H behind place, waits wait_and_throw, checks each count and int64 sum==T*K
+before map consumers. InvalidIDs stop with existing routed-id error, not stale-map
+consumption. Partial submit/errors propagate through current caller handling;
+no new cleanup/free/recovery. Root validates existing async handler/fault contract.
+
+Workspace accounting and noalias:
+Impl holds typed scratch descriptor under buildguard, no standalone allocations.
+moe_set_bytes adds one Alloc::take<int32_t>(3E+1) only envON/noncompact/nonfused/
+supportedE, same condition/order as carve just after src_dev. Existing count-only
+max-region accounting in bytes_needed, init and relayout therefore includes it.
+Carve creates distinct typed integer interval in same chunk shared region before
+Xs/GU; never reinterpret GU float storage or overwrite live float/GEMM data.
+Alloc rounds each take(bytes+256+255)&~255, 256Balignment/guard overhead included.
+E512 logical6148B, accounted6656B; maxE1024 logical12292B, accounted12800B.
+Region is max of all attention/MoE scratch; only this local per-chunk view added,
+no allcontextT allocation. Actual region increment may be zero if another half
+already dominates, but no such capacity assumption is used. IDs/maps remain old
+T*K buffers. Shared region reuse is after preceding half/consumer work on same
+in-order queue; integer scratch/map lifetime through gather/GEMM/combine is same
+region/session-owned/borrowed lifetime as old maps. ON/env0 and OFF take no scratch,
+so workspace byte layout/capacity stays legacy. Host Impl structure ON adds only
+descriptor, not hidden device storage. Root checks raw-USM typed lifetime/alignment
+and borrowing capacity; source caps do not prove device/RSS/runtime health.
+
+Integration eligibility at original IDs-after host-group seam:
+compiledON/env1, whole run_impl n>=32768, currentchunk T>=1024, nativeIQ3S GUtype21,
+ordinary noncompact/nonfused/nonMMQ; no portable peer/pp/pe/next/helper/hand_in,
+no chunk/stage callbacks (layermajor scheduling excluded), fullstageLB0/LEn_layers,
+checked capacity/in-order supported module. Other formats, compact/layermajor,
+peer/helper/split/shortchunks/unsupportedshape/capacity stay originalhost before
+candidate submission. This is explicit conservative prototype eligibility, NOT
+measured1024 crossover/performance threshold. Owner measures>=32K wholeinput;
+if an outer caller slices original request into smaller run_impl windows, no new
+request field is invented and this branch may remain ineligible. Root must report
+actual selection/path/chunkshape, not infer execution from env1.
+
+Candidate replaces only fullID D2H/hostcount/hostplace/fullmapsH2D. It transfers
+Ecounts,drains,checks, then uses ORIGINAL host expert-ID-ascending off/order code.
+Original host blocks remain text-preserved behind !device_group wrappers, including
+mapped/nonmapped modes/old waits/peer handling/host errors/MMQ resident sort path.
+Common cnt/off/order/bounds/source/ring/expert scheduling/GEMM/gather/combiner code
+unchanged. use_mmqfalse makes resident sort ineligible in candidate. No full IDs or
+slot/src copies in candidate; IDs/maps host arrays may be stale but are not consumed
+by that branch. Existing mapped arrays remain allocated by old layout choices but
+are not used for candidate route transfer. No changed weight source/preload/cache/
+resident ranking/expert-ring or FP16 dequant/oneMKL GEMM/SwiGLU/orderedk combine.
+Old source uses fused_stub/MMQstub; new module does not call either group helper.
+
+Atomic place is NOT stable host row order, NOT bit-identical map arrays claim.
+Root independent integer oracle must compare counts/off, each route slot in its
+expert interval, unique permutation/inverse src[slot[i]]==floor(i/K), all routes
+including repeatedID and duplicate-token/expert cases, guards and untouched tails.
+Then compare de-permuted per-route FP16-GEMM products, combined output/logits/
+complete state bitwise. oneMKL row-permutation numerical invariance is unproven;
+no harmless-difference assumption/tolerance change. No correctness or speed PASS.
+
+Root build/parity recipe UNEXECUTED:
+Fresh sameflags pinned IntelLLVM/oneAPI/ggml SYCL configure
+-DSTRATA_SYCL_ROUTE_GROUP=ON; link parent private oracle to strata_prefill/new module.
+OFF build/env1/malformed admission must refuse before work; ON env0 same source/
+workspace/default behavior. Root creates exact targets/argv/controller/self/binary/
+model/input/environment receipts; no names invented or executable run here.
+Module tests zero/negative/K0/overflow/E0/1024/1025/capacity/in-order/null/alias/
+misalignment/invalidIDs/tails/reuse and all-route permutation/guard checks. Shape/
+capacity ineligible must leave buffers untouched before original host path. Errors
+postsubmit propagate/no fallback/no early free of submitted endpoints.
+
+Root remaining gates: complete diff/source/typedlifetime/count-only-carve accounting
+review, actual ON/OFF compile/link/sourcepins, exact compiled route selection,
+no fused/MMQ helper reach, originalworkspace/bytes/source scheduling unchanged.
+Independent kernel oracle, actual ordinary nativeIQ3S noncompact host-vsGPU mapping
+and per-route/combined/modelbitwise math>=32768 with small/odd finalchunk/reuse,
+physical262144 lifecycle state/logit/ID/LP/MTP/decode continuation/fault closure.
+Root owns allGPU/CPU/build serialization/shared lock, boundedprocess/RSS/wall/output,
+async handling/normalexit/cleanup/survivors and capture-retention named consumers.
+Only after numeric/physical qualification quiet same-day matched timing of group/
+counts wait/dequant/GEMM/combine/end-to-end may be considered. Copy delta12*T*K-4E
+is logical sourcebyte bound only; mapped traffic/kernel/DRAM/bus/performance cannot
+be inferred. No adoption/defaultchange/modelpass/servicebandwidth claim.

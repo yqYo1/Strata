@@ -279,6 +279,12 @@ add_library(strata_prefill STATIC ${_prefill}
 target_compile_options(strata_prefill PUBLIC -qmkl=sequential)
 target_link_options(strata_prefill PUBLIC -qmkl=sequential)
 target_link_libraries(strata_prefill PUBLIC strata_engine)
+option(STRATA_SYCL_ROUTE_GROUP "Build private active native-IQ route grouping prototype" OFF)
+if(STRATA_SYCL_ROUTE_GROUP)
+ target_sources(strata_prefill PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/prefill/route_group.dp.cpp)
+ target_compile_definitions(strata_prefill PRIVATE STRATA_SYCL_ROUTE_GROUP=1)
+endif()
+
 
 strata_resolve(_main src/program/generate.cpp)
 add_executable(strata ${_main})
