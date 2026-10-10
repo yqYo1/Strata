@@ -1,0 +1,29 @@
+# R252 — seven-pair GPU dequant oracle arithmetic and half contract
+
+## Scope and evidence
+
+This is a read-only source audit of the seven requested expert-type pairs: (18,20), (18,42), (21,20), (21,42), (22,20), (22,42), (23,20). The production SYCL tree inspected was Strata worktree `diag-sycl-prefill-service-events-20261010`, commit `495369cf4dc6e6da564095a1c26504dd3694e3f2`; GGML reference was the pinned tree at commit `3cf03257f219afbe7334045ff7c6a06ac68c627d`. Relevant code: `sycl/src/kernels/cuda/iq_kernels.dp.cpp` (`store_run`, `dq_iq3_xxs`, `dq_iq3_s`, `dq_iq2_s`, `dq_iq4_nl`, `dq_iq4_xs`, `dq_q2_0`, `dq_dispatch`); pinned `ggml/src/ggml-quants.c` (`dequantize_row_q2_0`, `dequantize_row_iq2_s`, `dequantize_row_iq3_xxs`, `dequantize_row_iq3_s`, `dequantize_row_iq4_nl`, `dequantize_row_iq4_xs`); pinned `ggml/src/ggml-impl.h` (`ggml_compute_fp16_to_fp32`, `ggml_compute_fp32_to_fp16`). SYCL compilation uses `-fp-model=precise` in `sycl/CMakeLists.txt:66`.
+
+## Pair mapping and arithmetic result
+
+All six distinct type combinations map to the generic dequant dispatch (type 18 IQ3_XXS, 20 IQ4_NL, 21 IQ3_S, 22 IQ2_S, 23 IQ4_XS, 42 Q2_0). The output permutations inspected agree with GGML's reference row order and the scalar formulas agree. In detail:
+
+| Pair(s) | Reference and device mapping/formula | Source-audit result |
+|---|---|---|
+| 18/20, 18/42 | IQ3_XXS: each 32-value group selects two `iq3xxs_grid` entries per lane, reconstructs packed scale/signs, then evaluates `d * (0.5 + scale_nibble) * 0.5 * grid * sign`. IQ4_NL: low nibbles occupy positions 0–15 and high nibbles 16–31, each as `d * kvalues_iq4nl[nibble]`. | Mapping/order and float expression match GGML. |
+| 21/20, 21/42 | IQ3_S: `d * (1 + 2*scale_nibble) * grid * sign`; each paired scale byte feeds the low and high 32-value groups in turn. IQ4_NL and Q2_0 as above. | Mapping/order and float expression match GGML. |
+| 22/20, 22/42 | IQ2_S: `d * (0.5 + scale_nibble) * 0.25 * iq2s_grid[index] * sign`; each 32-value block alternates its two scale nibbles across four 8-value runs. | Mapping/order and float expression match GGML. |
+| 23/20, 23/42 | IQ4_XS: per 32-value subblock reconstructs `ls`, uses `d * (ls - 32)`, then low/high `iq4nl` table values at output offsets 0 and 16. | Mapping/order and float expression match GGML. |
+| All `/42` | Q2_0: 4 blocks of 64 values; 2-bit code order is low-to-high within each byte; value is `d * (code - 1)` (same finite arithmetic as GGML `(code - 1) * d`). | Mapping/order and float expression match GGML. |
+
+For valid finite scales and table values, no source-level arithmetic or output-index disagreement was found. Multiplication operand reversal in Q2_0 is exact for ordinary finite values; signed-zero sign is preserved by the same sign rule. This establishes the f32 dequantization expression as the pair-specific oracle. It does not by itself establish that a GPU's conversion of those f32 values to binary16 yields identical output bits.
+
+## Half conversion contract and verdict
+
+GGML's reference half-to-float decoder is a software bit decoder, including half subnormals. Its reference float-to-half helper is a software rounding implementation (`ggml_compute_fp32_to_fp16`), and is the correct source for a bit-exact binary16 round-to-nearest-even candidate oracle. The current generic SYCL kernel's half path is different: `store_run<sycl::half, 4/8>` stores `sycl::half(v[j])` for each result. The nearby `cvt<sycl::half>` specialization instead uses `sycl::vec<float,1>::convert<sycl::half, sycl::rounding_mode::automatic>()`, which the SYCL 2020 specification defines as round-to-nearest-even for floating-point element types. However, that explicitly specified `vec.convert` operation is not the operation used by `store_run` for these run sizes. The source audit and `-fp-model=precise` flag do not prove the constructor's device code-generation, binary16 subnormal preservation, or equivalence to GGML's software encoder on every supported device.
+
+Therefore: the f32 values and indexing have a source-justified universal oracle; the exact output-half bit contract for the live `store_run` path remains unresolved from source alone. A universal *device-bit* expectation should not be claimed yet. Candidate expected bits can be computed by applying GGML's software half encoder to the source-matched f32 oracle, but acceptance as the GPU oracle requires one targeted device diagnostic covering normal rounding ties, subnormal outputs, underflow, overflow, and signed zero for the actual compiled `store_run` path. If that diagnostic shows the required IEEE RNE behavior across supported device backends, the candidate becomes the exact half-bit oracle. If not, record the backend/compiler-specific behavior and keep reference-vs-device parity as a separate contract.
+
+Rounding authority: Khronos SYCL 2020 specification, §4.14.2.5 (“automatic” is round-to-nearest-even for floating-point vector elements): https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html . This citation is used only for the explicit `vec.convert` behavior and is not evidence about the `sycl::half(float)` constructor.
+
+No compilation, test, profile, inference, model access, GPU query, source edit, Git edit, or cleanup was performed for this report.

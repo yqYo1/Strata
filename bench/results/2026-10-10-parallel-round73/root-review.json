@@ -1,0 +1,44 @@
+{
+  "created_utc": "2026-10-10T11:52:05.048474+00:00",
+  "reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round251-layer-major-mixed-inplace-state-semantics-and-lifetime-audit.txt",
+      "bytes": 12262,
+      "sha256": "6009cca822881bd142013c0d04fe3d46b62517262d06f249d0029667521d7385",
+      "agent": "/root/research_bottleneck_evidence_audit_v203",
+      "model": "gpt-6-luna",
+      "scope": "Layer-major mixed alias/state/first-chunk consistency audit",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round252-seven-pair-gpu-dequant-oracle-arithmetic-and-half-contract.txt",
+      "bytes": 5310,
+      "sha256": "f5fe5eb1f998aea09fdfdb09a13b08e52fc554951b9a9bdfa9b63fce156abe5d",
+      "agent": "/root/research_native_iq4nl_esimd_k640_v202",
+      "model": "gpt-6-luna",
+      "scope": "Actual seven-pair device/GGML decode arithmetic and half-bit contract",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    }
+  ],
+  "corrections": {
+    "R251": "Conditional original/full-cache versus temporary-cache schedule defect independently reproduced using exact source calculations and span oracle. Fixed outer cache selection and pre-copy guard in separate committed branch2ae6a00a.12freshCPUprocesses/96768evaluations release+UBSan, zero fixedbadspans;416originalhazards eachunsetprocess, allguardrejected. SYCLTUcompilePASS. No historicalhang attribution, GPU/wholemodel/cancellation/numerical/fullcontext inference claim.",
+    "R252": "Sevenactualpair arithmetic/order audit accepted with target-half-bit gate. Wording sixdistincttypecombinations refers to sixdistincttypes, notpairs. Table mentions23/42genericeligibleextra, which is absent from current seven-pair pack; do not count it as actual. Source equivalence doesnotprove emittedtargetfloat/half operations ordevice denorms. Independent baseline bit qualifier remains required.",
+    "receipt_fields": "Prefix regression named_unset_original_first_host_offset stores -oldG even when FIRSTexplicit; only unsetFIRSTcounterexampletakes that negative hostspan. Original receipt unchanged, scope explanation in fixbranch README."
+  },
+  "registry_identity": {
+    "bytes": 262283,
+    "sha256": "20441035614e6e9ed23d5ad322e90a27a6222a5c74a97b69012edec5c9ffaeea"
+  },
+  "fix_branch": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/fix-sycl-layer-major-prefix-boundary-20261010",
+    "commit": "2ae6a00acc4aeae5699542bc2f658f12ccf0b6d4",
+    "receipt": {
+      "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/fix-sycl-layer-major-prefix-boundary-20261010/bench/results/2026-10-10-layer-major-prefix-boundary/record.json",
+      "bytes": 39920,
+      "sha256": "0c7bdedb498b58827e0c68f30bce6f3a1f1647d954ebb338b86486a08099685f"
+    }
+  },
+  "adopted_performance_change": false
+}
