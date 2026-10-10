@@ -1,0 +1,38 @@
+# R165 — IQ4_NL direct-call half oracle contract
+
+Scope: static source/spec review. No candidate execution, payload inspection, target query, or device/compiler measurement was performed. This report is an oracle qualification, not a numerical result.
+
+## Reviewed source identities
+
+- Immutable WPROBE source: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-gate-factor-probe-20261010`, HEAD `609a270daac23c9b1a26d26ec092b2f60d2da335`.
+- `iq_kernels.dp.cpp` SHA-256 `22c2fb9c379804c2fc20ae302be05ad0f1c66bc623c6134bd7822057ffbba13a`.
+- Pack-format provenance reviewed separately in pinned GGML `/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned`, commit `3cf03257f219afbe7334045ff7c6a06ac68c627d`; `ggml/src/ggml-quants.c` SHA-256 `07143d7068936ae46b3c528b2f3d4bbb666e74d88992165716174d243573965d`.
+
+## Kernel expression and conversion path
+
+The IQ4_NL direct-call path converts the packed half scale to float, multiplies it by an integer-valued nonlinear-table entry, and writes eight results through `store_run<dst_t,8>`. The half specialization constructs each `sycl::half(v[j])` and vector-stores it. This is distinct from the nearby `cvt<half>` helper, which uses `sycl::vec<float,1>(v).convert<sycl::half, sycl::rounding_mode::automatic>()`; the helper is not the conversion used by this store specialization.
+
+SYCL 2020 defines `half` as the IEEE 754-2008 binary16 storage type. Its `vec::convert` API defines `automatic` as round-to-nearest-even for floating-point destination types. That is a source-level rounding contract for the explicit vector conversion API, not enough to establish the exact semantics of the `sycl::half(float)` constructor used by `store_run`. The reviewed kernel source does not spell a rounding mode at that construction site. Therefore an independent host oracle must not claim portable constructor tie behavior solely from the `cvt<half>` helper or from the half storage representation. Sources: [SYCL 2020 specification](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html) (half type, half_fp_config, vector convert rounding); [SYCL scalar types reference](https://github.khronos.org/SYCL_Reference/iface/scalar-types.html).
+
+The half_fp_config exposes target capabilities for denormals, infinities/NaNs and RNE support; fp16 support does not by itself establish every capability. No target receipt was available in this static review. In particular, subnormal output preservation or flushing cannot be decided from this source snapshot. Nor does a host FTZ/DAZ setting describe device half conversion. OpenCL's specific `vstore_half` conversion guarantees should not be silently transferred to this SYCL half-constructor-plus-vector-store path. Sources: [SYCL 2020 specification](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html), [OpenCL half data type reference](https://registry.khronos.org/OpenCL/specs/unified/refpages/man/html/halfDataType.html), [Intel FTZ documentation](https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2026-0/ftz-qftz.html).
+
+## Oracle policy
+
+Use two separately named checks:
+
+1. **A/B parity:** compare all output half bits from baseline and candidate for each identical input and launch. Because both arms use the same multiply, constructor, and store expressions, exact parity is a valid regression check under a fixed build and target. It does not prove that either arm matches a separately specified conversion result.
+2. **Independent expected bits:** use a scalar binary32-to-binary16 reference with an explicitly selected rule (for example RNE), and label that rule as the oracle contract. Do not use a tolerance for this check and do not silently calibrate expected bits from observed device output. If the constructor's target conversion rule is not independently established, mark ties/overflow/subnormal cases as specification-unresolved rather than calling an observed common result correct.
+
+The source-only evidence supports normal finite, exactly representable products having their exact binary16 encoding, and preserves the sign of an exact signed-zero product in an IEEE conversion. It does not resolve constructor rounding at midpoints or conversion overflow behavior. Subnormal half outputs are target-dependent here until the relevant half_fp_config and effective compiler/runtime mode are recorded. The exact bit oracle should therefore separate: exact normal products; midpoint cases; values at/around overflow; signed zero; and subnormal outputs. Nonfinite scale inputs are not established as valid packed IQ4_NL inputs by this review. A mismatch common to A and B is a common oracle-contract issue, not a candidate regression.
+
+Intel documents explicit `float2half_rn` conversion APIs as RNE, but that documentation does not establish the behavior of the kernel's constructor call: [Intel half casting functions](https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2026-0/type-casting-functions-for-half-precision-types.html).
+
+## IQ4_NL packed scale provenance (separate from output conversion)
+
+At pinned GGML commit above, `quantize_row_iq4_nl_impl` stores a half scale. In the one-block path it writes `scales[0]` through `GGML_FP32_TO_FP16`; `scales[0]` is computed from signed dot/squared sums and can be negative or zero, while small-magnitude blocks set it to zero. Thus a test fixture may legitimately need positive, negative, and zero finite half-scale cases; scale sign comes from quantizer/pack provenance, not from an assumption about the output conversion. The dequantizer multiplies the unpacked scale by the nonlinear codebook value. This does not imply that every arbitrary half bit pattern is a valid packed model scale.
+
+## Unresolved evidence needed for a stronger portable oracle
+
+- A target/device `half_fp_config` receipt and effective compilation/runtime denormal mode for half results.
+- An authoritative rule for the actual `sycl::half(float)` constructor implementation used by the selected toolchain, particularly midpoint, overflow and subnormal behavior.
+- If the intended oracle is specifically RNE, either use a source path/API that specifies RNE or establish that constructor contract from the selected SYCL implementation before treating independent expected bits as normative.

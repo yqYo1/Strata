@@ -1,0 +1,43 @@
+# R166 — selected oneAPI 2026.1 `sycl::half(float)` constructor contract
+
+Scope: read-only source/spec inspection. No compiler, disassembler, test, runtime, device query, build, profiler, GPU, or Git operation was run. This distinguishes what the installed DPC++ headers prove from actual device emission and runtime FP mode.
+
+## Selected source site
+
+Immutable WPROBE checkout: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-gate-factor-probe-20261010`, HEAD `609a270daac23c9b1a26d26ec092b2f60d2da335`. `sycl/src/kernels/cuda/iq_kernels.dp.cpp` SHA-256 `22c2fb9c379804c2fc20ae302be05ad0f1c66bc623c6134bd7822057ffbba13a`.
+
+The unchanged `store_run<dst_t,N>` specialization constructs each element with `sycl::half(v[j])` and then vector-stores the half vector (for N=4/8). This call site does not use the nearby `cvt` helper or its `vec<float,1>::convert<half, automatic>()` path. Keep this constructor intact for the proposed direct-call experiment and parity measurement.
+
+## Installed oneAPI 2026.1 implementation
+
+Installed compiler root inspected: `/opt/intel/oneapi/compiler/2026.1/include`.
+
+`sycl/half_type.hpp` SHA-256 `6321bb1d428814c964685275374204f0eae94f7153bbcd38a4bb071b7d177fce` contains an explicit compile-time branch at the `half(float const&)` constructor:
+
+- Host compilation (`!__SYCL_DEVICE_ONLY__`) initializes storage with `float2Half(rhs)`. That routine decodes float bits itself, maps sufficiently large finite values to half infinity, handles NaNs as a quiet half NaN, performs ties-to-even rounding for normal-range mantissas, and preserves sign. Its subnormal branch shifts the significand directly without rounding discarded bits. Thus this host implementation is not full binary32-to-binary16 RNE for subnormal results: it truncates them toward zero (and values below its exponent cutoff become signed zero). The source comment's nearest/tie-even description appears only inside the normal-range branch. This distinction matters for host-side constructor fixtures.
+- Device compilation (`__SYCL_DEVICE_ONLY__`) initializes storage as `Data(rhs)`, where the device representation is the compiler's native half type; the header contains no software conversion algorithm or explicit rounding selector for this branch.
+
+Consequently the selected implementation has different host/device source paths. Header presence establishes this conditional source lowering, not the actual emitted instruction or effective target behavior. For the selected Intel Arc target, LLVM's normal FP conversion model and the OpenCL SPIR-V environment point toward an `fptrunc`/`OpFConvert` style conversion with RNE by default; however, without compiler output the precise lowering is not proven, and without target/runtime FP-control evidence, half denormal preservation/flush behavior is unresolved. SPIR-V's OpenCL environment says FP-to-FP `OpFConvert` defaults to RNE absent an explicit rounding decoration; it also permits denormal FP16 inputs/results to be flushed depending on implementation mode. LLVM's `fptrunc` default-environment semantics are IEEE-correctly-rounded absent controls that change behavior. These are conditional standards expectations, not proof about this build's generated SPIR-V or device mode.
+
+`sycl/vector.hpp` SHA-256 `041342ea4c883d19e7cc9212ce56ae7e05cd6e0ec5b68bb365eecf36eeda560d` exposes `vec::convert` with `rounding_mode::automatic` as the default, and vector conversion internals document automatic/RTE handling. That is a separate source operation and cannot be substituted as evidence for the constructor call under study.
+
+## Spec-level limits and useful receipts
+
+SYCL 2020 `device::half_fp_config` is a vector of advertised capability flags. It can report `denorm`, `inf_nan`, `round_to_nearest`, and other capabilities, but the spec says there is no minimum FP capability requirement just because `aspect::fp16` is present. Therefore record both `aspect::fp16` and every returned `half_fp_config` enum value. This is a capability receipt, not proof that the specific constructor conversion emitted RNE or that subnormals are preserved under effective compiler/runtime controls.
+
+Minimal root-owned addition: in the existing target parity/diagnostic harness, query the already-selected device once and emit backend/device identity, `aspect::fp16`, and the sorted `half_fp_config` values beside compiler flags. Add a tiny kernel that executes the unchanged scalar expression `sycl::half(x)` on inputs whose float bit patterns exercise exact normal, positive/negative midpoint ties with even/odd retained mantissas, finite overflow threshold/above, signed zero, largest subnormal, smallest normal, and below-half-min-subnormal. Write the resulting raw `uint16_t` bits to host-visible output. Do not replace the production arithmetic or conversion with a different helper. The harness should separately report (a) candidate-vs-generic/baseline exact-bit parity, and (b) observed constructor bits vs an independently implemented RNE binary16 oracle. Do not calibrate expected values from outputs or add tolerances. Label the RNE comparison as independent expected-bits evidence; flag the host software subnormal discrepancy separately. Include active compiler options controlling FP/denorm handling, and only claim emitted semantics once the corresponding IR/SPIR-V/codegen receipt and runtime mode are collected.
+
+The test is diagnostic for the constructor itself; existing full-kernel parity still needs to compare the unchanged complete IQ4_NL arithmetic path. It does not validate nonfinite packed scales, which are outside established fixture provenance.
+
+## References
+
+- SYCL 2020 spec (half type, `half_fp_config`, vector conversion): https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html
+- Khronos SYCL scalar types reference: https://github.khronos.org/SYCL_Reference/iface/scalar-types.html
+- LLVM Language Reference, floating-point semantics and `fptrunc`: https://llvm.org/docs/LangRef.html
+- OpenCL SPIR-V Environment, default `OpFConvert` rounding and denormal handling: https://registry.khronos.org/OpenCL/specs/unified/html/OpenCL_Env.html
+- SPIR-V FP rounding mode decorations: https://registry.khronos.org/SPIR-V/specs/unified1/SPIRV.html
+- Intel explicit half casting APIs (`float2half_rn` et al.; distinct from this constructor): https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2026-0/type-casting-functions-for-half-precision-types.html
+
+## Evidence gaps
+
+No target query receipt, generated LLVM IR/SPIR-V, instruction disassembly, effective target denormal/FTZ control, or runtime constructor output was collected. Do not infer the emitted device instruction from `half_type.hpp` alone. Device midpoint/overflow behavior follows the expected standards lowering only if the documented conversion path and default controls survive compilation; subnormal preservation is particularly unresolved absent target and control evidence. Host constructor source is inspectable and demonstrably truncates half subnormal outputs.
