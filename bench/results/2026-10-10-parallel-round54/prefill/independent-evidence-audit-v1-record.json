@@ -1,0 +1,172 @@
+{
+  "audit_passed": true,
+  "active": false,
+  "complete": true,
+  "created_utc": "2026-10-10T07:40:39.095230+00:00",
+  "original_failed_receipt": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-prefill-phase-validity-32769-v2/record.json",
+    "bytes": 101208,
+    "sha256": "a48427878a54dd75b4ff056b67db897de8dff16882d81584dbd4726bc5cc76a2"
+  },
+  "original_controller_whole_pass": false,
+  "original_status_preserved": true,
+  "audit_controller": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/audit_prefill_phase_v2_evidence_v1.py",
+    "bytes": 8870,
+    "sha256": "b1457e1b385b5d5cbeb3e4270a3246b2189837200bdcf24a1397406b682de4c9"
+  },
+  "baseline_receipt": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-decode-pool-phase-32769-v1-baseline/record.json",
+    "bytes": 87861,
+    "sha256": "0742ea2f84a7a017c400149420154f61920dff72a990cda09b76874f05344478"
+  },
+  "build_receipt": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-phase-validity-cpu-build-v1/record.json",
+    "bytes": 29840,
+    "sha256": "c66c6fbac52e28c6c32c3ca0f2dcb8c828fb88cd8932659488a6519f385c63f1"
+  },
+  "original_failure_explanation": {
+    "frozen_expected_commit": "7d0105f2a942ac72ca20fef69d4c2e7960653de3",
+    "actual_pinned_commit": "185fa78098bee4be01ac81ad4f791673d24246f3",
+    "source_status_after": "",
+    "assertion": "assert not record['source_status_after'] and git('rev-parse', 'HEAD') == commits[mode]",
+    "stage": "after QUIT/normal exit and individual request math checks, before aggregate completed flag"
+  },
+  "numerical_evidence_independently_verified": [
+    {
+      "name": "fresh32769-firstdecode",
+      "exact_output_and_first_head": true,
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32769,
+        "actual_batched_positions": 32768,
+        "prompt_ms": 87187.6,
+        "decode_ms": 4909.1,
+        "wall_seconds": 92.28392667300068,
+        "purpose": "Diagnostic phase observation; excluded from clean throughput"
+      }
+    },
+    {
+      "name": "restored-decode1",
+      "exact_output_and_first_head": true,
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32833,
+        "actual_batched_positions": 0,
+        "prompt_ms": 5.7,
+        "decode_ms": 4313.9,
+        "wall_seconds": 4.518492809031159,
+        "purpose": "Diagnostic phase observation; excluded from clean throughput"
+      }
+    },
+    {
+      "name": "restored-decode2",
+      "exact_output_and_first_head": true,
+      "measurement": {
+        "generated_tokens": 64,
+        "prompt_tokens": 32833,
+        "actual_batched_positions": 0,
+        "prompt_ms": 5.7,
+        "decode_ms": 4571.1,
+        "wall_seconds": 4.780875802971423,
+        "purpose": "Diagnostic phase observation; excluded from clean throughput"
+      }
+    }
+  ],
+  "state_parts_independently_hashed": 66,
+  "state_files": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-prefill-phase-validity-32769-v2/fresh32769-firstdecode.state.bin",
+      "bytes": 583637576,
+      "sha256": "2f608659a628e686f5601e233ce9f37defd5ec39be7e4617d46eefedb2d8dc14"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-decode-pool-phase-32769-v1-baseline/fresh32769-firstdecode.state.bin",
+      "bytes": 583637576,
+      "sha256": "2f608659a628e686f5601e233ce9f37defd5ec39be7e4617d46eefedb2d8dc14"
+    }
+  ],
+  "original_processes_closed": [
+    {
+      "role": "inferior",
+      "original": {
+        "pid": 830344,
+        "start_ticks": 30691197,
+        "state": "t"
+      },
+      "current_start_ticks": null,
+      "original_identity_alive": false
+    },
+    {
+      "role": "debugger",
+      "original": {
+        "pid": 830333,
+        "start_ticks": 30691190,
+        "state": "R"
+      },
+      "current_start_ticks": null,
+      "original_identity_alive": false
+    }
+  ],
+  "engine_log": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-prefill-phase-validity-32769-v2/debugger/inferior.stderr",
+    "bytes": 13107,
+    "sha256": "ea0f15875dcbcdeafd5584e3f4200ab9d366caee00722731408723bf5fb10bc1"
+  },
+  "phase_validity": {
+    "status": "valid",
+    "reason": "none",
+    "queue_admitted": true,
+    "marker_attempts": 469556,
+    "markers_submitted": 469556,
+    "retained_markers": 1,
+    "intervals_attempted": 469555,
+    "intervals_valid": 469555,
+    "query_attempts": 939110,
+    "query_successes": 939110,
+    "query_failures": 0,
+    "nonmonotonic": 0,
+    "incomplete": 0,
+    "raw_begin_ns": 307054463212708,
+    "raw_end_ns": 307054465557708
+  },
+  "phase_observation": {
+    "gpu_timeline_ms": 86686.950729,
+    "host_setup_ms": 16.034958,
+    "host_chunk_wait_ms": 61.377839,
+    "host_after_chunk_ms": 330.380183,
+    "ple_gather_wall_ms": 22255.596963,
+    "ple_host_wait_ms": 5942.902019,
+    "phase_ms": {
+      "embed+steps": 270.130311,
+      "hc read": 3057.163335,
+      "gdn": 2287.676347,
+      "qsa proj": 3494.81062,
+      "qsa indexer": 35.065004,
+      "qsa select": 2698.547081,
+      "qsa attn": 10696.721774,
+      "router+shared": 637.480423,
+      "host grouping": 4683.562295,
+      "gather": 2321.542752,
+      "wait copy": 849.548445,
+      "dequant": 5973.010993,
+      "gemm gate/up": 4833.617304,
+      "gemm down": 32893.296534,
+      "combine": 571.689903,
+      "ple": 156.642083,
+      "kv stage": 98.750831,
+      "gdn conv+gates": 494.345938,
+      "gdn recurrence": 2247.115008,
+      "gdn out proj": 1243.098013,
+      "ple read wait": 5942.785105,
+      "hc write+norm": 1200.35063,
+      "layer weight preload": 0.0,
+      "residual copy": 0.0
+    }
+  },
+  "independent_phase_observation_admitted": true,
+  "performance_eligible": false,
+  "adopted": false,
+  "full_256K_capacity_proven": false,
+  "scope": "Valid opt-in marker intervals include queued work, dependency waits and host-induced queue idle; they are not exclusive kernel or DMA service. No speed/adoption/retry claim."
+}

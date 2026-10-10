@@ -1,0 +1,71 @@
+# R212 — Prefill Down interval attribution and the remaining critical-path gap
+
+Date: 2026-10-10 (Asia/Tokyo). Read-only source and closed-receipt audit of the valid-marker prefill diagnostic. No source changes, builds, tests, profiling, inference, GPU/device/process state query, service action, Git operation or cleanup was performed. Only this report was written.
+
+## Finding
+
+The `gemm down 32,893.297 ms` value is the sum of elapsed device-timestamp intervals between adjacent markers on the in-order compute queue, labeled by the phase of the earlier marker. It is **not 32.893 seconds of measured oneMKL kernel busy time**. For the observed compact-hc native-IQ route, the marked Down operation is the oneMKL FP16-input / FP32-output Down GEMM, so the true queued Down work is inside the interval. But host-side delay before the following marker can also extend that same interval while the compute queue has no work. The phase counter cannot divide these causes.
+
+The receipt therefore ranks a large Down-labelled compute-queue interval, not a proven Down-kernel or memory/compute bottleneck. We have no per-call Down event duration, no current copy-event service/byte ledger, and no dependency-resolved overlap graph. Reordering remains a plausible scheduling/locality hypothesis; changing GEMM/dequant or data volume remains a plausible architecture hypothesis. This diagnostic alone does not select between them.
+
+## Receipt status and measured context
+
+Frozen worktree: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-phase-validity-20261010`, source commit `185fa78098bee4be01ac81ad4f791673d24246f3`. The relevant `sycl/src/prefill/prefill.cpp` hash is `1a6598a158e0b11e79c7a9f93ba7e452e3c316f108e38a07ed88c88a04cc8b72`.
+
+The closed diagnostic directory is `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-prefill-phase-validity-32769-v2/`. Its `record.json` SHA-256 is `a48427878a54dd75b4ff056b67db897de8dff16882d81584dbd4726bc5cc76a2`; the collected `project-messages.txt` is `82c43fa4973ecb67c1992ebb8bc92a484c98287345b732437be989955369ed2e`; `debugger/inferior.stderr` is `ea0f15875dcbcdeafd5584e3f4200ab9d366caee00722731408723bf5fb10bc1`.
+
+Separate the phase-timer admission from the whole-run result. The phase validity receipt says `status=valid`, with 469,556/469,556 markers submitted, 469,555/469,555 intervals valid, 939,110/939,110 profiling queries successful, and zero failed, non-monotonic or incomplete intervals. The three requests individually passed their math/output checks; the fresh request has 32,768 actual batched positions. However, the overall controller record is `completed=false`, `healthy=false`, `math_gate_passed=false`, and the run failed its final assertion: the frozen expected commit dictionary still named the earlier `7d0105…` source while the actual source/build commit was `185fa780…`. The inferior exited normally with code 0 and no new faults; this does not turn the aggregate run into a PASS. Treat the phase numbers as a valid diagnostic observation from its individual request, not a clean performance result, whole-run PASS, lifecycle qualification or adoption.
+
+The fresh request reports 86,686.951 ms of marker timeline and 86,798 ms request wall. Relevant marker totals are Down 32,893.297 ms (37.9% of marker timeline), GU 4,833.617 ms, dequant 5,973.011 ms, compute-queue wait-copy 849.548 ms, QSA attention 10,696.722 ms and PLE-read-wait 5,942.785 ms. Separate host summaries are staging 25,144 ms, PLE gather wall 22,255.597 ms and PLE host wait 5,942.902 ms. These categories have different scopes and can overlap; do not add them, subtract them from Down, or treat the Down percentage as a share of active GPU cycles.
+
+## Exact source boundary around Down
+
+`PfTimer::mark` records ordered barriers on the compute queue. `fold()` queries each adjacent pair's `command_end` timestamps and adds `end(next)-end(previous)` to the phase stored with the earlier marker. `report()` sums those disjoint intervals into `gpu_timeline_ms`; per-phase percentages use that marker-timeline sum as their denominator. The timer documentation in source explicitly says queue gaps while the host groups experts or waits for copies accrue to the phase that was open. The elapsed value includes everything between these marker endpoints, not just a named kernel.
+
+The actual request logs `compact-hc layout`. In source, compact-hc requires `compact_prefill()`, which requires `mmq_plan().any == false`; consequently `use_mmq` and the fused-native path are false for this recorded route. For each non-MMQ expert, source queues native GGUF block dequantization to FP16; optionally gathers compact rows; marks `gemm gate/up`; submits `Gemm::f16` GU; queues `swiglu_interleaved`; marks `gemm down`; and submits `Gemm::f16` Down (`prefill.cpp:4865–4890`). `gemm.dp.cpp` confirms that SYCL `Gemm::f16` dispatches the FP16/FP16-input, FP32-output operation through DPCT/oneMKL (`:750–789`). The Down calculation depends on the prior GU output and SwiGLU output. Those submissions are ordered on the same compute queue. This makes the Down GEMM part of the Down interval; it does not make the entire interval kernel service.
+
+The preceding `gemm gate/up` interval also is not a pure GU duration: its marker is before the GU product, and its next marker is after `swiglu_interleaved`. The direct FP16 route keeps the FF activation in FP16, so there is no separate MMQ `H` quantization charged to Down in this request. In the alternative MMQ branch the Down marker is followed by an explicit `mmq::quantize(H, ..., Hq, ...)` and grouped Down product, so the label would include that activation quantization as well as the grouped product; labels are route-dependent.
+
+For this routed non-MMQ loop, a streamed expert gets a `wait copy` marker immediately before the compute-queue barrier on its copy-completion event, then the next `dequant` marker inside `compute()`. The device-side wait on that barrier is consequently charged to the `wait copy` interval, not the following Down interval. However, host work before that wait-copy marker can be charged to the prior open Down interval: the loop stages lookahead experts before processing the current expert, and `stage_one()` can wait for a host staging buffer (`m.stager->wait(...)`), rotate/release a ring slot, submit a copy, and record its event before the next compute-queue marker is issued. If that delays the next marker after the previous Down submission, the compute-queue timeline can contain the resulting idle gap under the previous Down label. If the next expert is resident, the next phase marker is `dequant`; the same principle applies to any host scheduling delay before it.
+
+Host grouping at the next layer begins with its own marker before ID transfers, a compute-queue wait and CPU grouping, so that later work is labeled `host grouping`; it is not retroactively all part of Down. The separate copy queue can be transferring future expert blobs while a Down or another compute command runs. Such concurrent DMA does not appear as a measured amount inside the compute queue's Down total. Likewise, the 25.144 s host-staging summary is elapsed host staging work as separately accumulated by the controller; it is not a Down sub-counter, not PCIe-active time, and not safely attributable to Down by subtraction.
+
+Thus the exact answer is:
+
+| Can contribute to the Down-labelled span | What the current report cannot tell |
+|---|---|
+| The in-order oneMKL Down commands between its opening marker and the next compute-queue marker. | How much of 32.893 s was actual Down kernel execution versus compute-queue bubbles. |
+| Any other work on the same compute queue between those marker events. | Per-call or per-layer/chunk Down service time and M histogram. |
+| Host scheduling/staging delay before the host submits the next phase marker, when the compute queue is waiting for further submissions. | Whether such delay is from `Stager::wait`, host grouping, runtime submission, memory pressure or another host cause for each interval. |
+| Wait dependencies only if they occur before a new marker is submitted; the explicit streamed-copy barrier wait following `wait copy` is separately labeled `wait copy`. | Copy-engine utilization, exact transferred bytes, copy service time, or whether DMA overlapped the Down commands. |
+
+## Why this is not yet a ceiling or critical-path decomposition
+
+The timestamp sequence covers the intervals between compute-queue marker `command_end`s. Even with valid monotonic timestamps and complete marker reconciliation, a long gap may be actual command execution, queued dependencies, command-queue starvation, or a mixture. The full 32.893 s is not an exclusive execution period for oneMKL and is not an upper bound on what a reordering can save. At the same time, since true Down GEMMs are among the commands being timed, it is not evidence that the Down arithmetic is cheap. Both possibilities remain open.
+
+The `wait copy` sum is not transfer service: it is the compute-queue interval around barriers and may contain queue idle time. The host staging sum measures host-side staging intervals, not link payload throughput. PLE wait/gather and QSA intervals are other marker/host scopes and cannot be added to or subtracted from Down to reconstruct independent resource service. The whole-run assertion failure is material to status, while the per-request math checks and valid event ledger permit this narrow source/timer attribution discussion.
+
+## Minimal measurements to distinguish scheduling from architecture/data volume
+
+Use one unchanged, math-gated actual-32K route as the comparison control, and keep the measurement diagnostic-only. A small joined ledger should be sufficient before attempting another optimization:
+
+1. **Tag the work and preserve the denominator.** For every layer/chunk/expert, record unique routed rows `M`, actual GU and Down calls and dimensions/dtypes, resident versus streamed status, and exact expert-copy payload bytes with source allocation type. Keep output, routes and work coverage identical in a reorder comparison.
+2. **Measure actual compute service separately from phase span.** Retain the returned event for each `Gemm::f16` Down call (or stable groups of calls), record valid device `command_start/end` service intervals and host submit-to-return spans, and join them by layer/chunk/call ID to the existing marker intervals. Record queue dependencies and any gaps before next submits. Validate timer order/domain on this backend and reject missing, backward or wrapped timestamps; do not repair them. The current marker-only counter cannot do this join itself.
+3. **Measure the transfer side with the same request IDs.** For each expert copy, capture bytes, host-source-ready time, copy submit/completion event and layer/expert ID; separately sum DMA-active intervals and first-to-last copy span. Join copy completion to the compute-queue barrier that consumes its ring slot. Keep host staging wait separate from DMA active time. Do not infer bytes or bandwidth from the `wait copy` total.
+4. **Keep the wall control uninstrumented.** The timed event diagnostic should not replace a timer-off throughput control. Preserve identical input and routes, validate outputs, compare physical request wall, and check how much host/queue idle shrinks versus actual kernel and copy service.
+
+The existing source has an opt-in `ExpertTransferTimer` under `STRATA_PREFILL_TRANSFER_TIMING`, which stores copy byte counts and event start/end times. It was **not enabled** in this run (the recorded environment has `STRATA_PREFILL_TIMING=1`, no transfer-timing variable). Its current source subtracts unsigned `command_start/end` values without its own reversed-timestamp/complete-ledger guard; validate or harden that path before using its numbers as authoritative. The phase marker fix does not by itself validate copy-event timing.
+
+Interpretation after the join: if reorder preserves call/work/byte totals and per-call kernel/copy service but reduces host-submit gaps, queue wait and request wall, that supports a scheduling/overlap benefit. If the compute queue remains occupied by long Down calls with little idle and the exact routed GEMM work has high service demand, that supports optimizing GEMM/dequant or changing data volume/representation. If copy service is long while the compute queue waits on matching copy dependencies, the evidence supports copy scheduling or residency/transfer-volume work. If timer-on service improves but timer-off request wall does not, the phase ranking was not an exposed critical-path opportunity. A changed route, expert M histogram, total bytes or numerical work is an architecture/different-work comparison, not a reorder-only result.
+
+## Primary and local references
+
+The SYCL 2020 specification defines `event_profiling::command_end` as the timestamp when the associated action finishes; the benchmark source itself defines how adjacent event endpoints are charged to a phase: <https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html>. Intel oneMKL documents the asynchronous queue GEMM interface and FP16-input/FP32-output combinations: <https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-dpcpp/2026-0/gemm.html>.
+
+- Frozen `sycl/src/prefill/prefill.cpp`: SHA-256 `1a6598a158e0b11e79c7a9f93ba7e452e3c316f108e38a07ed88c88a04cc8b72`; phase timer around lines 2099–2255, direct expert path around 4797–4917, stream-copy event submit and barrier around 4680–4760.
+- Frozen `sycl/src/prefill/gemm.dp.cpp`: SHA-256 `11a2c943ccc323c328b58d99119d77b3b4ed95c92a0f680480bf5ede96bcb705`; `Gemm::f16` at lines 750–789.
+- Frozen `include/strata/prefill/gemm.hpp`: SHA-256 `f0c30f5f73df10506be20c83aa538b06b5e10692ea82e5063249e6fe89e69bf7`.
+- R205 timer attribution and validity contract: SHA-256 `26ca2d435e2b1a980113161b28a543ed5613bee0f20dbcf93d6a872b2b31cae9`.
+- R211 production GEMM contract and NT1 service limits: SHA-256 `9662f9f73f7749afa704dab96448390dc533bd357e6b51627b4d47bc30c4a03b`.
+
+No hardware maximum, memory-controller bandwidth, PCIe busy fraction, per-kernel service time, or optimization benefit is claimed.

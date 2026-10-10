@@ -1,0 +1,1953 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "stage": "cpu",
+  "started_utc": "2026-10-10T07:37:03.075955+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "source": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/hardware_ceiling_cpu_v1.cpp",
+    "bytes": 4485,
+    "sha256": "5b1d4bf706c8e9299a021a14a10acbd4f025ba3361549b4ec5cc0a7b8b795e04"
+  },
+  "controller": {
+    "bytes": 7735,
+    "sha256": "d81da2ad3becbbc1410620d1f904f13062790b3d05d7dc5f822b558f84200c95"
+  },
+  "parent_owner": {
+    "bytes": 24299,
+    "sha256": "7df012ee4d9bd047a6094ccedb37fddb3d56d4b054d9fdf468534b0fb6e94e1f"
+  },
+  "commands": [
+    {
+      "label": "benchmark",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/hardware-ceiling-cpu-v1"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T07:37:03.081659+00:00",
+      "wall_seconds": 240,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 866042,
+          "start_ticks": 30750219,
+          "sid": 866042,
+          "pgid": 866042
+        }
+      ],
+      "pid": 866042,
+      "direct_identity": {
+        "pid": 866042,
+        "state": "R",
+        "ppid": 866039,
+        "pgid": 866042,
+        "sid": 866042,
+        "start_ticks": 30750219,
+        "rss_bytes": 413696
+      },
+      "peak_session_rss_bytes": 1613664256,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T07:37:30.711293+00:00",
+      "elapsed_seconds": 27.6293895530398,
+      "logs": {
+        "benchmark.stdout": {
+          "bytes": 26262,
+          "sha256": "f43ff1863f49264e4d1549c1968e5f6afc458137e5f6c891d0a79f57e030e9f4"
+        },
+        "benchmark.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "adopted": false,
+  "model_executed": false,
+  "scope": "Hardware streaming and production-shape dense GEMM characterization; logical traffic is not hardware-counter DRAM traffic. Host-inclusive monotonic time, no GPU profiling timestamps. Not model throughput.",
+  "limits": {
+    "AS_each_bytes": 17179869184,
+    "RSS_session_sampled_bytes": 2147483648,
+    "CPU_each_seconds": [
+      120,
+      121
+    ],
+    "wall_seconds": 240
+  },
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/hardware-ceiling-cpu-v1",
+    "bytes": 31792,
+    "sha256": "9ba2a8c6608cbd1a98296daabe02956b340972e79af88dad5860eaa6e840aa6e"
+  },
+  "build_receipt": {
+    "bytes": 3364,
+    "sha256": "f06670bebf9c31c0738407a2a0fa0aba26484aba65d03a087f026604587f4bdb"
+  },
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8"
+  },
+  "host_configuration": {
+    "/proc/cpuinfo": "processor\t: 0\nvendor_id\t: AuthenticAMD\ncpu family\t: 25\nmodel\t\t: 33\nmodel name\t: AMD Ryzen 5 5600X 6-Core Processor\nstepping\t: 0\nmicrocode\t: 0xa201030\ncpu MHz\t\t: 3712.554\ncache size\t: 512 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 0\ncpu cores\t: 6\napicid\t\t: 0\ninitial apicid\t: 0\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 16\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nbugs\t\t: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso ibpb_no_ret spectre_v2_user tsa vmscape\nbogomips\t: 7386.19\nTLB size\t: 2560 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]\n\nprocessor\t: 1\nvendor_id\t: AuthenticAMD\ncpu family\t: 25\nmodel\t\t: 33\nmodel name\t: AMD Ryzen 5 5600X 6-Core Processor\nstepping\t: 0\nmicrocode\t: 0xa201030\ncpu MHz\t\t: 4641.310\ncache size\t: 512 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 1\ncpu cores\t: 6\napicid\t\t: 2\ninitial apicid\t: 2\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 16\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nbugs\t\t: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso ibpb_no_ret spectre_v2_user tsa vmscape\nbogomips\t: 7386.19\nTLB size\t: 2560 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]\n\nprocessor\t: 2\nvendor_id\t: AuthenticAMD\ncpu family\t: 25\nmodel\t\t: 33\nmodel name\t: AMD Ryzen 5 5600X 6-Core Processor\nstepping\t: 0\nmicrocode\t: 0xa201030\ncpu MHz\t\t: 3716.876\ncache size\t: 512 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 2\ncpu cores\t: 6\napicid\t\t: 4\ninitial apicid\t: 4\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 16\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nbugs\t\t: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso ibpb_no_ret spectre_v2_user tsa vmscape\nbogomips\t: 7386.19\nTLB size\t: 2560 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]\n\nprocessor\t: 3\nvendor_id\t: AuthenticAMD\ncpu family\t: 25\nmodel\t\t: 33\nmodel name\t: AMD Ryzen 5 5600X 6-Core Processor\nstepping\t: 0\nmicrocode\t: 0xa201030\ncpu MHz\t\t: 3713.308\ncache size\t: 512 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 3\ncpu cores\t: 6\napicid\t\t: 6\ninitial apicid\t: 6\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 16\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nbugs\t\t: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso ibpb_no_ret spectre_v2_user tsa vmscape\nbogomips\t: 7386.19\nTLB size\t: 2560 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]\n\nprocessor\t: 4\nvendor_id\t: AuthenticAMD\ncpu family\t: 25\nmodel\t\t: 33\nmodel name\t: AMD Ryzen 5 5600X 6-Core Processor\nstepping\t: 0\nmicrocode\t: 0xa201030\ncpu MHz\t\t: 3706.986\ncache size\t: 512 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 4\ncpu cores\t: 6\napicid\t\t: 8\ninitial apicid\t: 8\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 16\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nbugs\t\t: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso ibpb_no_ret spectre_v2_user tsa vmscape\nbogomips\t: 7386.19\nTLB size\t: 2560 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]\n\nprocessor\t: 5\nvendor_id\t: AuthenticAMD\ncpu family\t: 25\nmodel\t\t: 33\nmodel name\t: AMD Ryzen 5 5600X 6-Core Processor\nstepping\t: 0\nmicrocode\t: 0xa201030\ncpu MHz\t\t: 3720.084\ncache size\t: 512 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 5\ncpu cores\t: 6\napicid\t\t: 10\ninitial apicid\t: 10\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 16\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nbugs\t\t: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso ibpb_no_ret spectre_v2_user tsa vmscape\nbogomips\t: 7386.19\nTLB size\t: 2560 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]\n\nprocessor\t: 6\nvendor_id\t: AuthenticAMD\ncpu family\t: 25\nmodel\t\t: 33\nmodel name\t: AMD Ryzen 5 5600X 6-Core Processor\nstepping\t: 0\nmicrocode\t: 0xa201030\ncpu MHz\t\t: 3713.101\ncache size\t: 512 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 0\ncpu cores\t: 6\napicid\t\t: 1\ninitial apicid\t: 1\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 16\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nbugs\t\t: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso ibpb_no_ret spectre_v2_user tsa vmscape\nbogomips\t: 7386.19\nTLB size\t: 2560 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]\n\nprocessor\t: 7\nvendor_id\t: AuthenticAMD\ncpu family\t: 25\nmodel\t\t: 33\nmodel name\t: AMD Ryzen 5 5600X 6-Core Processor\nstepping\t: 0\nmicrocode\t: 0xa201030\ncpu MHz\t\t: 4639.685\ncache size\t: 512 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 1\ncpu cores\t: 6\napicid\t\t: 3\ninitial apicid\t: 3\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 16\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nbugs\t\t: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso ibpb_no_ret spectre_v2_user tsa vmscape\nbogomips\t: 7386.19\nTLB size\t: 2560 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]\n\nprocessor\t: 8\nvendor_id\t: AuthenticAMD\ncpu family\t: 25\nmodel\t\t: 33\nmodel name\t: AMD Ryzen 5 5600X 6-Core Processor\nstepping\t: 0\nmicrocode\t: 0xa201030\ncpu MHz\t\t: 3713.002\ncache size\t: 512 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 2\ncpu cores\t: 6\napicid\t\t: 5\ninitial apicid\t: 5\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 16\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nbugs\t\t: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso ibpb_no_ret spectre_v2_user tsa vmscape\nbogomips\t: 7386.19\nTLB size\t: 2560 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]\n\nprocessor\t: 9\nvendor_id\t: AuthenticAMD\ncpu family\t: 25\nmodel\t\t: 33\nmodel name\t: AMD Ryzen 5 5600X 6-Core Processor\nstepping\t: 0\nmicrocode\t: 0xa201030\ncpu MHz\t\t: 3710.565\ncache size\t: 512 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 3\ncpu cores\t: 6\napicid\t\t: 7\ninitial apicid\t: 7\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 16\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nbugs\t\t: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso ibpb_no_ret spectre_v2_user tsa vmscape\nbogomips\t: 7386.19\nTLB size\t: 2560 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]\n\nprocessor\t: 10\nvendor_id\t: AuthenticAMD\ncpu family\t: 25\nmodel\t\t: 33\nmodel name\t: AMD Ryzen 5 5600X 6-Core Processor\nstepping\t: 0\nmicrocode\t: 0xa201030\ncpu MHz\t\t: 3711.353\ncache size\t: 512 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 4\ncpu cores\t: 6\napicid\t\t: 9\ninitial apicid\t: 9\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 16\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nbugs\t\t: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso ibpb_no_ret spectre_v2_user tsa vmscape\nbogomips\t: 7386.19\nTLB size\t: 2560 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]\n\nprocessor\t: 11\nvendor_id\t: AuthenticAMD\ncpu family\t: 25\nmodel\t\t: 33\nmodel name\t: AMD Ryzen 5 5600X 6-Core Processor\nstepping\t: 0\nmicrocode\t: 0xa201030\ncpu MHz\t\t: 3712.995\ncache size\t: 512 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 5\ncpu cores\t: 6\napicid\t\t: 11\ninitial apicid\t: 11\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 16\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nbugs\t\t: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso ibpb_no_ret spectre_v2_user tsa vmscape\nbogomips\t: 7386.19\nTLB size\t: 2560 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]",
+    "/proc/meminfo": "MemTotal:       131823184 kB\nMemFree:        60177916 kB\nMemAvailable:   88968144 kB\nBuffers:              12 kB\nCached:         29878144 kB\nSwapCached:       242084 kB\nActive:         23378392 kB\nInactive:       24459912 kB\nActive(anon):   10025632 kB\nInactive(anon): 14112864 kB\nActive(file):   13352760 kB\nInactive(file): 10347048 kB\nUnevictable:         152 kB\nMlocked:             152 kB\nSwapTotal:      14064636 kB\nSwapFree:       10718004 kB\nZswap:                 0 kB\nZswapped:              0 kB\nDirty:              2156 kB\nWriteback:             0 kB\nAnonPages:      17882268 kB\nMapped:          7800280 kB\nShmem:           6670108 kB\nKReclaimable:    6301080 kB\nSlab:           17275360 kB\nSReclaimable:    6301080 kB\nSUnreclaim:     10974280 kB\nKernelStack:       44960 kB\nPageTables:       220028 kB\nSecPageTables:     12104 kB\nNFS_Unstable:          0 kB\nBounce:                0 kB\nWritebackTmp:          0 kB\nCommitLimit:    79976228 kB\nCommitted_AS:   43026008 kB\nVmallocTotal:   34359738367 kB\nVmallocUsed:     1600724 kB\nVmallocChunk:          0 kB\nPercpu:            22272 kB\nHardwareCorrupted:     0 kB\nAnonHugePages:      2048 kB\nShmemHugePages:        0 kB\nShmemPmdMapped:        0 kB\nFileHugePages:         0 kB\nFilePmdMapped:         0 kB\nCmaTotal:              0 kB\nCmaFree:         8827024 kB\nUnaccepted:            0 kB\nBalloon:               0 kB\nGPUActive:        145992 kB\nGPUReclaim:            0 kB\nHugePages_Total:       0\nHugePages_Free:        0\nHugePages_Rsvd:        0\nHugePages_Surp:        0\nHugepagesize:       2048 kB\nHugetlb:               0 kB\nDirectMap4k:      354456 kB\nDirectMap2M:    14247936 kB\nDirectMap1G:    119537664 kB",
+    "/proc/sys/kernel/perf_event_paranoid": "4"
+  },
+  "cpu_affinity": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "cpu_topology": {
+    "cpu11": "5,11",
+    "cpu9": "3,9",
+    "cpu7": "1,7",
+    "cpu5": "5,11",
+    "cpu3": "3,9",
+    "cpu1": "1,7",
+    "cpu10": "4,10",
+    "cpu8": "2,8",
+    "cpu6": "0,6",
+    "cpu4": "4,10",
+    "cpu2": "2,8",
+    "cpu0": "0,6"
+  },
+  "cpu_frequency_policy": {
+    "/sys/devices/system/cpu/cpufreq/policy11/scaling_governor": "powersave",
+    "/sys/devices/system/cpu/cpufreq/policy8/scaling_governor": "powersave",
+    "/sys/devices/system/cpu/cpufreq/policy6/scaling_governor": "powersave",
+    "/sys/devices/system/cpu/cpufreq/policy4/scaling_governor": "powersave",
+    "/sys/devices/system/cpu/cpufreq/policy2/scaling_governor": "powersave",
+    "/sys/devices/system/cpu/cpufreq/policy0/scaling_governor": "powersave",
+    "/sys/devices/system/cpu/cpufreq/policy9/scaling_governor": "powersave",
+    "/sys/devices/system/cpu/cpufreq/policy10/scaling_governor": "powersave",
+    "/sys/devices/system/cpu/cpufreq/policy7/scaling_governor": "powersave",
+    "/sys/devices/system/cpu/cpufreq/policy5/scaling_governor": "powersave",
+    "/sys/devices/system/cpu/cpufreq/policy3/scaling_governor": "powersave",
+    "/sys/devices/system/cpu/cpufreq/policy1/scaling_governor": "powersave",
+    "/sys/devices/system/cpu/cpufreq/policy11/scaling_min_freq": "1738349",
+    "/sys/devices/system/cpu/cpufreq/policy8/scaling_min_freq": "1738349",
+    "/sys/devices/system/cpu/cpufreq/policy6/scaling_min_freq": "1738349",
+    "/sys/devices/system/cpu/cpufreq/policy4/scaling_min_freq": "1738349",
+    "/sys/devices/system/cpu/cpufreq/policy2/scaling_min_freq": "1738349",
+    "/sys/devices/system/cpu/cpufreq/policy0/scaling_min_freq": "1738349",
+    "/sys/devices/system/cpu/cpufreq/policy9/scaling_min_freq": "1738349",
+    "/sys/devices/system/cpu/cpufreq/policy10/scaling_min_freq": "1738349",
+    "/sys/devices/system/cpu/cpufreq/policy7/scaling_min_freq": "1738349",
+    "/sys/devices/system/cpu/cpufreq/policy5/scaling_min_freq": "1738349",
+    "/sys/devices/system/cpu/cpufreq/policy3/scaling_min_freq": "1738349",
+    "/sys/devices/system/cpu/cpufreq/policy1/scaling_min_freq": "1738349",
+    "/sys/devices/system/cpu/cpufreq/policy11/scaling_max_freq": "4654288",
+    "/sys/devices/system/cpu/cpufreq/policy8/scaling_max_freq": "4654288",
+    "/sys/devices/system/cpu/cpufreq/policy6/scaling_max_freq": "4654288",
+    "/sys/devices/system/cpu/cpufreq/policy4/scaling_max_freq": "4654288",
+    "/sys/devices/system/cpu/cpufreq/policy2/scaling_max_freq": "4654288",
+    "/sys/devices/system/cpu/cpufreq/policy0/scaling_max_freq": "4654288",
+    "/sys/devices/system/cpu/cpufreq/policy9/scaling_max_freq": "4654288",
+    "/sys/devices/system/cpu/cpufreq/policy10/scaling_max_freq": "4654288",
+    "/sys/devices/system/cpu/cpufreq/policy7/scaling_max_freq": "4654288",
+    "/sys/devices/system/cpu/cpufreq/policy5/scaling_max_freq": "4654288",
+    "/sys/devices/system/cpu/cpufreq/policy3/scaling_max_freq": "4654288",
+    "/sys/devices/system/cpu/cpufreq/policy1/scaling_max_freq": "4654288",
+    "/sys/devices/system/cpu/cpufreq/policy11/energy_performance_preference": "power",
+    "/sys/devices/system/cpu/cpufreq/policy8/energy_performance_preference": "power",
+    "/sys/devices/system/cpu/cpufreq/policy6/energy_performance_preference": "power",
+    "/sys/devices/system/cpu/cpufreq/policy4/energy_performance_preference": "power",
+    "/sys/devices/system/cpu/cpufreq/policy2/energy_performance_preference": "power",
+    "/sys/devices/system/cpu/cpufreq/policy0/energy_performance_preference": "power",
+    "/sys/devices/system/cpu/cpufreq/policy9/energy_performance_preference": "power",
+    "/sys/devices/system/cpu/cpufreq/policy10/energy_performance_preference": "power",
+    "/sys/devices/system/cpu/cpufreq/policy7/energy_performance_preference": "power",
+    "/sys/devices/system/cpu/cpufreq/policy5/energy_performance_preference": "power",
+    "/sys/devices/system/cpu/cpufreq/policy3/energy_performance_preference": "power",
+    "/sys/devices/system/cpu/cpufreq/policy1/energy_performance_preference": "power"
+  },
+  "result_rows": [
+    {
+      "kind": "configuration",
+      "array_bytes": 536870912,
+      "arrays": 3,
+      "passes": 4,
+      "samples": 7,
+      "logical_cpu_order": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ]
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 1,
+      "sample": -1,
+      "warmup": true,
+      "seconds": 0.075732873,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 28.35603
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 1,
+      "sample": 0,
+      "warmup": false,
+      "seconds": 0.073124872,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 29.367349
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 1,
+      "sample": 1,
+      "warmup": false,
+      "seconds": 0.072479243,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 29.628947
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 1,
+      "sample": 2,
+      "warmup": false,
+      "seconds": 0.086891051,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 24.71467
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 1,
+      "sample": 3,
+      "warmup": false,
+      "seconds": 0.092090934,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 23.319165
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 1,
+      "sample": 4,
+      "warmup": false,
+      "seconds": 0.087812259,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 24.455397
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 1,
+      "sample": 5,
+      "warmup": false,
+      "seconds": 0.074989781,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 28.637017
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 1,
+      "sample": 6,
+      "warmup": false,
+      "seconds": 0.080191076,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 26.779584
+    },
+    {
+      "kind": "validation",
+      "case": "read",
+      "threads": 1,
+      "passed": true,
+      "validated_elements": 67108864
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 1,
+      "sample": -1,
+      "warmup": true,
+      "seconds": 0.220026424,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 19.520234
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 1,
+      "sample": 0,
+      "warmup": false,
+      "seconds": 0.214351424,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 20.037036
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 1,
+      "sample": 1,
+      "warmup": false,
+      "seconds": 0.205688414,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 20.880939
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 1,
+      "sample": 2,
+      "warmup": false,
+      "seconds": 0.219650593,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 19.553634
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 1,
+      "sample": 3,
+      "warmup": false,
+      "seconds": 0.210581378,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 20.39576
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 1,
+      "sample": 4,
+      "warmup": false,
+      "seconds": 0.207723996,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 20.676318
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 1,
+      "sample": 5,
+      "warmup": false,
+      "seconds": 0.21347546,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 20.119255
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 1,
+      "sample": 6,
+      "warmup": false,
+      "seconds": 0.212651795,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 20.197183
+    },
+    {
+      "kind": "validation",
+      "case": "copy_cached",
+      "threads": 1,
+      "passed": true,
+      "validated_elements": 67108864
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 1,
+      "sample": -1,
+      "warmup": true,
+      "seconds": 0.148195403,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 28.981785
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 1,
+      "sample": 0,
+      "warmup": false,
+      "seconds": 0.139618847,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 30.762088
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 1,
+      "sample": 1,
+      "warmup": false,
+      "seconds": 0.147159808,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 29.185736
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 1,
+      "sample": 2,
+      "warmup": false,
+      "seconds": 0.148777371,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 28.868418
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 1,
+      "sample": 3,
+      "warmup": false,
+      "seconds": 0.155964284,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 27.538146
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 1,
+      "sample": 4,
+      "warmup": false,
+      "seconds": 0.15385867,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 27.915016
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 1,
+      "sample": 5,
+      "warmup": false,
+      "seconds": 0.13552489,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 31.691354
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 1,
+      "sample": 6,
+      "warmup": false,
+      "seconds": 0.140953274,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 30.470859
+    },
+    {
+      "kind": "validation",
+      "case": "copy_nontemporal",
+      "threads": 1,
+      "passed": true,
+      "validated_elements": 67108864
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 1,
+      "sample": -1,
+      "warmup": true,
+      "seconds": 0.281746937,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 22.86609
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 1,
+      "sample": 0,
+      "warmup": false,
+      "seconds": 0.279954785,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 23.012469
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 1,
+      "sample": 1,
+      "warmup": false,
+      "seconds": 0.287395756,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 22.416653
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 1,
+      "sample": 2,
+      "warmup": false,
+      "seconds": 0.317033908,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 20.321015
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 1,
+      "sample": 3,
+      "warmup": false,
+      "seconds": 0.295776682,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 21.78147
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 1,
+      "sample": 4,
+      "warmup": false,
+      "seconds": 0.277848577,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 23.186914
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 1,
+      "sample": 5,
+      "warmup": false,
+      "seconds": 0.262729895,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 24.521195
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 1,
+      "sample": 6,
+      "warmup": false,
+      "seconds": 0.282790462,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 22.781712
+    },
+    {
+      "kind": "validation",
+      "case": "triad_cached",
+      "threads": 1,
+      "passed": true,
+      "validated_elements": 67108864
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 2,
+      "sample": -1,
+      "warmup": true,
+      "seconds": 0.059579186,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 36.044192
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 2,
+      "sample": 0,
+      "warmup": false,
+      "seconds": 0.061873125,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 34.707858
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 2,
+      "sample": 1,
+      "warmup": false,
+      "seconds": 0.059965415,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 35.812037
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 2,
+      "sample": 2,
+      "warmup": false,
+      "seconds": 0.061858917,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 34.71583
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 2,
+      "sample": 3,
+      "warmup": false,
+      "seconds": 0.058492876,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 36.713593
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 2,
+      "sample": 4,
+      "warmup": false,
+      "seconds": 0.061292518,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 35.036636
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 2,
+      "sample": 5,
+      "warmup": false,
+      "seconds": 0.065673998,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 32.699146
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 2,
+      "sample": 6,
+      "warmup": false,
+      "seconds": 0.061723843,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 34.791801
+    },
+    {
+      "kind": "validation",
+      "case": "read",
+      "threads": 2,
+      "passed": true,
+      "validated_elements": 67108864
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 2,
+      "sample": -1,
+      "warmup": true,
+      "seconds": 0.188994422,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 22.725365
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 2,
+      "sample": 0,
+      "warmup": false,
+      "seconds": 0.187656878,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 22.887343
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 2,
+      "sample": 1,
+      "warmup": false,
+      "seconds": 0.196243814,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 21.885874
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 2,
+      "sample": 2,
+      "warmup": false,
+      "seconds": 0.202530297,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 21.206542
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 2,
+      "sample": 3,
+      "warmup": false,
+      "seconds": 0.194373582,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 22.096456
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 2,
+      "sample": 4,
+      "warmup": false,
+      "seconds": 0.195366367,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 21.984169
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 2,
+      "sample": 5,
+      "warmup": false,
+      "seconds": 0.191163284,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 22.467532
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 2,
+      "sample": 6,
+      "warmup": false,
+      "seconds": 0.175338851,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 24.49524
+    },
+    {
+      "kind": "validation",
+      "case": "copy_cached",
+      "threads": 2,
+      "passed": true,
+      "validated_elements": 67108864
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 2,
+      "sample": -1,
+      "warmup": true,
+      "seconds": 0.11308066,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 37.981449
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 2,
+      "sample": 0,
+      "warmup": false,
+      "seconds": 0.111934387,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 38.370401
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 2,
+      "sample": 1,
+      "warmup": false,
+      "seconds": 0.11540201,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 37.217439
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 2,
+      "sample": 2,
+      "warmup": false,
+      "seconds": 0.115499304,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 37.186088
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 2,
+      "sample": 3,
+      "warmup": false,
+      "seconds": 0.115622006,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 37.146625
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 2,
+      "sample": 4,
+      "warmup": false,
+      "seconds": 0.118022666,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 36.391038
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 2,
+      "sample": 5,
+      "warmup": false,
+      "seconds": 0.111691828,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 38.453729
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 2,
+      "sample": 6,
+      "warmup": false,
+      "seconds": 0.11315482,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 37.956556
+    },
+    {
+      "kind": "validation",
+      "case": "copy_nontemporal",
+      "threads": 2,
+      "passed": true,
+      "validated_elements": 67108864
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 2,
+      "sample": -1,
+      "warmup": true,
+      "seconds": 0.256225424,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 25.143683
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 2,
+      "sample": 0,
+      "warmup": false,
+      "seconds": 0.253059238,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 25.458272
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 2,
+      "sample": 1,
+      "warmup": false,
+      "seconds": 0.237806915,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 27.0911
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 2,
+      "sample": 2,
+      "warmup": false,
+      "seconds": 0.224495494,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 28.697462
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 2,
+      "sample": 3,
+      "warmup": false,
+      "seconds": 0.226152692,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 28.487173
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 2,
+      "sample": 4,
+      "warmup": false,
+      "seconds": 0.233101493,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 27.637965
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 2,
+      "sample": 5,
+      "warmup": false,
+      "seconds": 0.236957681,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 27.188192
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 2,
+      "sample": 6,
+      "warmup": false,
+      "seconds": 0.244637864,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 26.334644
+    },
+    {
+      "kind": "validation",
+      "case": "triad_cached",
+      "threads": 2,
+      "passed": true,
+      "validated_elements": 67108864
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 4,
+      "sample": -1,
+      "warmup": true,
+      "seconds": 0.062367846,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 34.432545
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 4,
+      "sample": 0,
+      "warmup": false,
+      "seconds": 0.065000454,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 33.037979
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 4,
+      "sample": 1,
+      "warmup": false,
+      "seconds": 0.055684213,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 38.565395
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 4,
+      "sample": 2,
+      "warmup": false,
+      "seconds": 0.0548821,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 39.129036
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 4,
+      "sample": 3,
+      "warmup": false,
+      "seconds": 0.05707088,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 37.628361
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 4,
+      "sample": 4,
+      "warmup": false,
+      "seconds": 0.055898267,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 38.417714
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 4,
+      "sample": 5,
+      "warmup": false,
+      "seconds": 0.056616282,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 37.930496
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 4,
+      "sample": 6,
+      "warmup": false,
+      "seconds": 0.056201359,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 38.210529
+    },
+    {
+      "kind": "validation",
+      "case": "read",
+      "threads": 4,
+      "passed": true,
+      "validated_elements": 67108864
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 4,
+      "sample": -1,
+      "warmup": true,
+      "seconds": 0.183671731,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 23.383932
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 4,
+      "sample": 0,
+      "warmup": false,
+      "seconds": 0.186470463,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 23.032963
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 4,
+      "sample": 1,
+      "warmup": false,
+      "seconds": 0.18292934,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 23.478832
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 4,
+      "sample": 2,
+      "warmup": false,
+      "seconds": 0.185092853,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 23.204393
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 4,
+      "sample": 3,
+      "warmup": false,
+      "seconds": 0.185320733,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 23.17586
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 4,
+      "sample": 4,
+      "warmup": false,
+      "seconds": 0.184462813,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 23.283648
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 4,
+      "sample": 5,
+      "warmup": false,
+      "seconds": 0.181996319,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 23.599199
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 4,
+      "sample": 6,
+      "warmup": false,
+      "seconds": 0.182379152,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 23.549662
+    },
+    {
+      "kind": "validation",
+      "case": "copy_cached",
+      "threads": 4,
+      "passed": true,
+      "validated_elements": 67108864
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 4,
+      "sample": -1,
+      "warmup": true,
+      "seconds": 0.108785632,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 39.481016
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 4,
+      "sample": 0,
+      "warmup": false,
+      "seconds": 0.110049657,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 39.027539
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 4,
+      "sample": 1,
+      "warmup": false,
+      "seconds": 0.112589068,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 38.147285
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 4,
+      "sample": 2,
+      "warmup": false,
+      "seconds": 0.111049222,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 38.676248
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 4,
+      "sample": 3,
+      "warmup": false,
+      "seconds": 0.110077769,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 39.017572
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 4,
+      "sample": 4,
+      "warmup": false,
+      "seconds": 0.117317712,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 36.609709
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 4,
+      "sample": 5,
+      "warmup": false,
+      "seconds": 0.112353945,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 38.227116
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 4,
+      "sample": 6,
+      "warmup": false,
+      "seconds": 0.111352916,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 38.570766
+    },
+    {
+      "kind": "validation",
+      "case": "copy_nontemporal",
+      "threads": 4,
+      "passed": true,
+      "validated_elements": 67108864
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 4,
+      "sample": -1,
+      "warmup": true,
+      "seconds": 0.242016281,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 26.619907
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 4,
+      "sample": 0,
+      "warmup": false,
+      "seconds": 0.248679405,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 25.906653
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 4,
+      "sample": 1,
+      "warmup": false,
+      "seconds": 0.244918808,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 26.304435
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 4,
+      "sample": 2,
+      "warmup": false,
+      "seconds": 0.241545281,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 26.671815
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 4,
+      "sample": 3,
+      "warmup": false,
+      "seconds": 0.244177759,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 26.384266
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 4,
+      "sample": 4,
+      "warmup": false,
+      "seconds": 0.246393329,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 26.147019
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 4,
+      "sample": 5,
+      "warmup": false,
+      "seconds": 0.245832822,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 26.206635
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 4,
+      "sample": 6,
+      "warmup": false,
+      "seconds": 0.249558702,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 25.815373
+    },
+    {
+      "kind": "validation",
+      "case": "triad_cached",
+      "threads": 4,
+      "passed": true,
+      "validated_elements": 67108864
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 6,
+      "sample": -1,
+      "warmup": true,
+      "seconds": 0.060996006,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 35.206955
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 6,
+      "sample": 0,
+      "warmup": false,
+      "seconds": 0.059876403,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 35.865275
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 6,
+      "sample": 1,
+      "warmup": false,
+      "seconds": 0.058763162,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 36.544726
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 6,
+      "sample": 2,
+      "warmup": false,
+      "seconds": 0.058798308,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 36.522882
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 6,
+      "sample": 3,
+      "warmup": false,
+      "seconds": 0.058245224,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 36.869695
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 6,
+      "sample": 4,
+      "warmup": false,
+      "seconds": 0.058222321,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 36.884199
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 6,
+      "sample": 5,
+      "warmup": false,
+      "seconds": 0.058062319,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 36.98584
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 6,
+      "sample": 6,
+      "warmup": false,
+      "seconds": 0.058239403,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 36.87338
+    },
+    {
+      "kind": "validation",
+      "case": "read",
+      "threads": 6,
+      "passed": true,
+      "validated_elements": 67108864
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 6,
+      "sample": -1,
+      "warmup": true,
+      "seconds": 0.192495256,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 22.312068
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 6,
+      "sample": 0,
+      "warmup": false,
+      "seconds": 0.192114148,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 22.35633
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 6,
+      "sample": 1,
+      "warmup": false,
+      "seconds": 0.188372226,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 22.800428
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 6,
+      "sample": 2,
+      "warmup": false,
+      "seconds": 0.275543346,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 15.587266
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 6,
+      "sample": 3,
+      "warmup": false,
+      "seconds": 0.203810248,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 21.073363
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 6,
+      "sample": 4,
+      "warmup": false,
+      "seconds": 0.191596009,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 22.416789
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 6,
+      "sample": 5,
+      "warmup": false,
+      "seconds": 0.209190711,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 20.531348
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 6,
+      "sample": 6,
+      "warmup": false,
+      "seconds": 0.191943474,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 22.376209
+    },
+    {
+      "kind": "validation",
+      "case": "copy_cached",
+      "threads": 6,
+      "passed": true,
+      "validated_elements": 67108864
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 6,
+      "sample": -1,
+      "warmup": true,
+      "seconds": 0.118408888,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 36.272339
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 6,
+      "sample": 0,
+      "warmup": false,
+      "seconds": 0.115927966,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 37.048587
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 6,
+      "sample": 1,
+      "warmup": false,
+      "seconds": 0.116669966,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 36.812964
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 6,
+      "sample": 2,
+      "warmup": false,
+      "seconds": 0.118554241,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 36.227867
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 6,
+      "sample": 3,
+      "warmup": false,
+      "seconds": 0.113814998,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 37.736391
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 6,
+      "sample": 4,
+      "warmup": false,
+      "seconds": 0.122693863,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 35.005559
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 6,
+      "sample": 5,
+      "warmup": false,
+      "seconds": 0.114728031,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 37.436076
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 6,
+      "sample": 6,
+      "warmup": false,
+      "seconds": 0.120404744,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 35.67108
+    },
+    {
+      "kind": "validation",
+      "case": "copy_nontemporal",
+      "threads": 6,
+      "passed": true,
+      "validated_elements": 67108864
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 6,
+      "sample": -1,
+      "warmup": true,
+      "seconds": 0.249324674,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 25.839604
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 6,
+      "sample": 0,
+      "warmup": false,
+      "seconds": 0.273149854,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 23.585775
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 6,
+      "sample": 1,
+      "warmup": false,
+      "seconds": 0.243858209,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 26.41884
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 6,
+      "sample": 2,
+      "warmup": false,
+      "seconds": 0.265344835,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 24.279542
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 6,
+      "sample": 3,
+      "warmup": false,
+      "seconds": 0.243305654,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 26.478838
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 6,
+      "sample": 4,
+      "warmup": false,
+      "seconds": 0.242149422,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 26.605271
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 6,
+      "sample": 5,
+      "warmup": false,
+      "seconds": 0.250283802,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 25.740583
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 6,
+      "sample": 6,
+      "warmup": false,
+      "seconds": 0.249020238,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 25.871194
+    },
+    {
+      "kind": "validation",
+      "case": "triad_cached",
+      "threads": 6,
+      "passed": true,
+      "validated_elements": 67108864
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 12,
+      "sample": -1,
+      "warmup": true,
+      "seconds": 0.061235235,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 35.069411
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 12,
+      "sample": 0,
+      "warmup": false,
+      "seconds": 0.058777076,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 36.536075
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 12,
+      "sample": 1,
+      "warmup": false,
+      "seconds": 0.061129225,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 35.130229
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 12,
+      "sample": 2,
+      "warmup": false,
+      "seconds": 0.058265731,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 36.856719
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 12,
+      "sample": 3,
+      "warmup": false,
+      "seconds": 0.060100063,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 35.731804
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 12,
+      "sample": 4,
+      "warmup": false,
+      "seconds": 0.061690173,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 34.81079
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 12,
+      "sample": 5,
+      "warmup": false,
+      "seconds": 0.062364796,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 34.434229
+    },
+    {
+      "kind": "sample",
+      "case": "read",
+      "threads": 12,
+      "sample": 6,
+      "warmup": false,
+      "seconds": 0.079686103,
+      "logical_bytes": 2147483648,
+      "logical_GBps": 26.949287
+    },
+    {
+      "kind": "validation",
+      "case": "read",
+      "threads": 12,
+      "passed": true,
+      "validated_elements": 67108864
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 12,
+      "sample": -1,
+      "warmup": true,
+      "seconds": 0.190948212,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 22.492839
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 12,
+      "sample": 0,
+      "warmup": false,
+      "seconds": 0.200174261,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 21.456142
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 12,
+      "sample": 1,
+      "warmup": false,
+      "seconds": 0.192241852,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 22.341479
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 12,
+      "sample": 2,
+      "warmup": false,
+      "seconds": 0.189425016,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 22.673707
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 12,
+      "sample": 3,
+      "warmup": false,
+      "seconds": 0.18458903,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 23.267728
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 12,
+      "sample": 4,
+      "warmup": false,
+      "seconds": 0.187427256,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 22.915383
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 12,
+      "sample": 5,
+      "warmup": false,
+      "seconds": 0.184492939,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 23.279846
+    },
+    {
+      "kind": "sample",
+      "case": "copy_cached",
+      "threads": 12,
+      "sample": 6,
+      "warmup": false,
+      "seconds": 0.194782895,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 22.050023
+    },
+    {
+      "kind": "validation",
+      "case": "copy_cached",
+      "threads": 12,
+      "passed": true,
+      "validated_elements": 67108864
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 12,
+      "sample": -1,
+      "warmup": true,
+      "seconds": 0.119215476,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 36.026927
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 12,
+      "sample": 0,
+      "warmup": false,
+      "seconds": 0.115765575,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 37.100557
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 12,
+      "sample": 1,
+      "warmup": false,
+      "seconds": 0.113269074,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 37.91827
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 12,
+      "sample": 2,
+      "warmup": false,
+      "seconds": 0.113933868,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 37.69702
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 12,
+      "sample": 3,
+      "warmup": false,
+      "seconds": 0.132967587,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 32.300859
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 12,
+      "sample": 4,
+      "warmup": false,
+      "seconds": 0.117098261,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 36.678318
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 12,
+      "sample": 5,
+      "warmup": false,
+      "seconds": 0.116046715,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 37.010675
+    },
+    {
+      "kind": "sample",
+      "case": "copy_nontemporal",
+      "threads": 12,
+      "sample": 6,
+      "warmup": false,
+      "seconds": 0.113431641,
+      "logical_bytes": 4294967296,
+      "logical_GBps": 37.863926
+    },
+    {
+      "kind": "validation",
+      "case": "copy_nontemporal",
+      "threads": 12,
+      "passed": true,
+      "validated_elements": 67108864
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 12,
+      "sample": -1,
+      "warmup": true,
+      "seconds": 0.247743903,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 26.004478
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 12,
+      "sample": 0,
+      "warmup": false,
+      "seconds": 0.250162547,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 25.753059
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 12,
+      "sample": 1,
+      "warmup": false,
+      "seconds": 0.251967263,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 25.568603
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 12,
+      "sample": 2,
+      "warmup": false,
+      "seconds": 0.250930404,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 25.674254
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 12,
+      "sample": 3,
+      "warmup": false,
+      "seconds": 0.256271313,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 25.139181
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 12,
+      "sample": 4,
+      "warmup": false,
+      "seconds": 0.267095238,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 24.120426
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 12,
+      "sample": 5,
+      "warmup": false,
+      "seconds": 0.255730492,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 25.192346
+    },
+    {
+      "kind": "sample",
+      "case": "triad_cached",
+      "threads": 12,
+      "sample": 6,
+      "warmup": false,
+      "seconds": 0.252418641,
+      "logical_bytes": 6442450944,
+      "logical_GBps": 25.522881
+    },
+    {
+      "kind": "validation",
+      "case": "triad_cached",
+      "threads": 12,
+      "passed": true,
+      "validated_elements": 67108864
+    }
+  ],
+  "benchmark_stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "finished_utc": "2026-10-10T07:37:30.712633+00:00"
+}

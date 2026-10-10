@@ -1,0 +1,154 @@
+{
+  "scope": "Opt-in valid prefillphase measurement, actual32768PP and two matchedcheckpoint-restored decodes; original native arithmetic and schedules unchanged, no extra permark waits. Numerical parity required; phase admission parsed separately. Not clean model speed orfull256K/adoption.",
+  "started_utc": "2026-10-10T07:25:37.058694+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "active": false,
+  "completed": false,
+  "healthy": false,
+  "math_gate_passed": false,
+  "requests": [],
+  "snapshots": [],
+  "steps": [
+    {
+      "label": "kernel-gap",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=bfb01b0;b=0a908c16e292429980ff082da39f4bb9;m=2adb7b3cd8;t=65d5acad72394;x=fecd3b667a1b649c",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "pid": 824686,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.45124511199537665
+    },
+    {
+      "label": "embedding-state",
+      "argv": [
+        "/usr/bin/systemctl",
+        "--user",
+        "show",
+        "llama-server-qwen3embed.service",
+        "-p",
+        "ActiveState"
+      ],
+      "pid": 824729,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050638576969504356
+    },
+    {
+      "label": "health-runtime",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import ctypes,sys; ctypes.CDLL(sys.argv[1])",
+        "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0"
+      ],
+      "pid": 824731,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05074879602761939
+    },
+    {
+      "label": "before-health-cursor",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "pid": 824733,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.05074493703432381
+    },
+    {
+      "label": "health",
+      "argv": [
+        "/home/yayoi/.local/bin/strata-xe-health",
+        "0000:05:00.0"
+      ],
+      "pid": 824735,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.10078786400845274
+    },
+    {
+      "label": "health-kernel",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=c0358d4;b=0a908c16e292429980ff082da39f4bb9;m=476c40a19d;t=65d775b9c8859;x=5c88b8b0b074f707",
+        "--no-pager",
+        "-o",
+        "short-iso-precise"
+      ],
+      "pid": 824747,
+      "exit_code": 0,
+      "timed_out": false,
+      "still_alive": false,
+      "elapsed_seconds": 0.050649428041651845
+    }
+  ],
+  "mode": "pool0",
+  "phase": "diagnostic",
+  "repetition": 1,
+  "deadline_seconds": 1800,
+  "protocol_timeout_seconds": 450,
+  "log_limit_bytes": 67108864,
+  "commit": "185fa78098bee4be01ac81ad4f791673d24246f3",
+  "compiled_engine_base_commit": "7d0105f2a942ac72ca20fef69d4c2e7960653de3",
+  "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-phase-validity-20261010",
+  "controller_review_root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-phase-validity-20261010",
+  "binary_sha256": "f71b7296a3e41552b99baf09a7ff6f0c403a8badfcb76185073db8397ba2a64f",
+  "build_receipt_sha256": "c66c6fbac52e28c6c32c3ca0f2dcb8c828fb88cd8932659488a6519f385c63f1",
+  "telemetry_build_receipt_sha256": "3632b1514544ef2dd89046c112b823c75a27d0215aca2fce58c4b8df9e43d7f8",
+  "candidate_source_sha256": "8bb78a21e3cbb9f03e40db3699d056225181e9ebb638d7eea04fadb41d852ced",
+  "candidate_header_sha256": "adbcbd0ac45995348e37ac3f5ca42d9f3d4b0555031aeb1781a1e2166a74ed52",
+  "source_preparation_receipt_sha256": "a2c1fc95912ff0f58ce940c981d8a6bab6dbc8b072b45dcc2b670e5721b13794",
+  "uniform_flags_receipt_sha256": "a85a6bd9e93c3d35a5596831ad888e57a657d79713bd28da6dc708d91ed6bc24",
+  "completed_host_quiet_sequence_sha256": "d57fba6b0826ad8402505571b8cdc92eee4e0fa5bbd1c1a9b779531bd2f4bc83",
+  "reference_binary_sha256": "86972697ecb1903750d202f8be29a7a1da351eb3415678c3e3b6af790804d1c8",
+  "reference_four_fresh_receipt_sha256": "95ae2a0a7e61f2240f6138f21fdcb35c1a70ec54300b22a7b99fd6b92873b4a7",
+  "baseline_full_capacity_receipt_sha256": "168d7896cbe3a60dfc604a08b6fe310f16d823a17d13d8a013260bfc7facb0a4",
+  "baseline_quiet_sequence_receipt_sha256": "606e8b8befda5e3720f4197bc4a88894087dcc0ded9b3732fcc7c1300fafe22c",
+  "performance_eligible": false,
+  "full_lifecycle_passed": false,
+  "adopted": false,
+  "C_original_math_gate_passed": false,
+  "C_failure_receipt_sha256": "a3413ac4c3f20ae593d8507a7db0ac405cd7fab2de286547460e6ba82b0d9404",
+  "T_source_review_sha256": "d58482d3fa6d8dbe55d3f672a2142862e07c32b465bcc7a9ffcc1bd2efb9325f",
+  "T_cli_receipt_sha256": "99c95ae009337bec49b3b2c79f5959c88b182a9bdc66f297e32cc76bafd61103",
+  "previous_D_fourfresh_math_receipt_sha256": "116604dfa1206464b668c9e391d6a66f09350fe35abec7071402a1621641323f",
+  "source_status_before": "",
+  "source_sha256": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_owned_prefill_phase_validity_32769_v1.py": "de23c6ddef79802aaaddc0c60120926845b07e52150fb37b9a715654519f20c5",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/recover-xe.sh": "2f90005f79d2309747d917cff51dc53d8ee6192d68cb1feca074f84af8b0796c",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/sycl/tools/owned_gdb.py": "61e1d206bf57bb320051cdd65943d23722bc523a602d80c54b7e7a2ad0d3f0d1",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/capture_owned_native_counter_v01402_v1.py": "7928a49c52c2bfba52fab0d453127d71954d085a955951a07960fe1db7c9632a",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compare_live_prefill_state_v01402_v2.py": "9a4f55a4760d316045c1ec5179a946de9a9024f7e42fe09032012ceae2475a72",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/sycl/src/program/generate.cpp": "8bb78a21e3cbb9f03e40db3699d056225181e9ebb638d7eea04fadb41d852ced",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/sycl/include/dpct/device.hpp": "adbcbd0ac45995348e37ac3f5ca42d9f3d4b0555031aeb1781a1e2166a74ed52",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-pool-phase-timing-v0141-uniform-build-flags-v1.json": "a85a6bd9e93c3d35a5596831ad888e57a657d79713bd28da6dc708d91ed6bc24",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-phase-validity-20261010/sycl/src/prefill/prefill.cpp": "1a6598a158e0b11e79c7a9f93ba7e452e3c316f108e38a07ed88c88a04cc8b72"
+  },
+  "prefill_validity_build_receipt_sha256": "c66c6fbac52e28c6c32c3ca0f2dcb8c828fb88cd8932659488a6519f385c63f1",
+  "elapsed_seconds": 0.792118069017306,
+  "active_request": null,
+  "cpu_debugger_guard_sha256": "e9925535b6a1753c89f71c32fe4b67b52c20ae7d423df269cccabe14d3b64d21",
+  "preflight_fault_messages": [],
+  "error": "AssertionError()",
+  "finished_utc": "2026-10-10T07:25:37.882473+00:00"
+}
