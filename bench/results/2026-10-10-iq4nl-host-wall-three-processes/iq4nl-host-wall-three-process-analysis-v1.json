@@ -1,0 +1,413 @@
+{
+  "source_commit": "984fb5f7e7762ea66c3bbd023021c3c4bd3e7cec",
+  "metric": "inclusive instrumented helper host batch wall, not device kernel service",
+  "clean_processes": 3,
+  "blocks_per_process": 8,
+  "calls_per_cell": 64,
+  "sequential_processes": true,
+  "hierarchical_bootstrap": {
+    "replicates": 20000,
+    "seed": 197196,
+    "outer_unit": "fresh process (3)",
+    "inner_unit": "whole paired block within process (8)",
+    "limitations": "Three process clusters and four deterministic order families; interval is descriptive, not proof of order independence."
+  },
+  "original_receipts": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq4nl-host-wall-runtime-measure-v1/record.json",
+      "bytes": 1361780,
+      "sha256": "7edb81dda0e5cac6ea1b6e27822d8c89dd01cb4e27ce29afea032e6141556b2d"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq4nl-host-wall-runtime-measure-v1-repeat2/record.json",
+      "bytes": 1361771,
+      "sha256": "35c20c9545aa5669294a038718e805e615e98cb3096572d274cdd71528cf50a4"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq4nl-host-wall-runtime-measure-v1-repeat3/record.json",
+      "bytes": 1361784,
+      "sha256": "869374773530c570b278831659837b1a85d62bea24b9909a8d434151f94822e1"
+    }
+  ],
+  "contrasts": {
+    "same_address": {
+      "per_process": [
+        {
+          "process": "iq4nl-host-wall-runtime-measure-v1",
+          "generic_median_ns": 1279717.5,
+          "private_median_ns": 1274623.5,
+          "generic_sum_ns": 10217371,
+          "private_sum_ns": 10196984,
+          "private_minus_generic_sum_pct": -0.19953273694377494,
+          "pairs": [
+            {
+              "block": 0,
+              "generic_ns": 1252176,
+              "private_ns": 1285488,
+              "difference_ns": 33312
+            },
+            {
+              "block": 1,
+              "generic_ns": 1278846,
+              "private_ns": 1271812,
+              "difference_ns": -7034
+            },
+            {
+              "block": 2,
+              "generic_ns": 1285969,
+              "private_ns": 1277494,
+              "difference_ns": -8475
+            },
+            {
+              "block": 3,
+              "generic_ns": 1280589,
+              "private_ns": 1274027,
+              "difference_ns": -6562
+            },
+            {
+              "block": 4,
+              "generic_ns": 1275449,
+              "private_ns": 1275220,
+              "difference_ns": -229
+            },
+            {
+              "block": 5,
+              "generic_ns": 1270500,
+              "private_ns": 1280990,
+              "difference_ns": 10490
+            },
+            {
+              "block": 6,
+              "generic_ns": 1287011,
+              "private_ns": 1264178,
+              "difference_ns": -22833
+            },
+            {
+              "block": 7,
+              "generic_ns": 1286831,
+              "private_ns": 1267775,
+              "difference_ns": -19056
+            }
+          ]
+        },
+        {
+          "process": "iq4nl-host-wall-runtime-measure-v1-repeat2",
+          "generic_median_ns": 1263637.5,
+          "private_median_ns": 1257480.5,
+          "generic_sum_ns": 10090976,
+          "private_sum_ns": 10074603,
+          "private_minus_generic_sum_pct": -0.16225387910941969,
+          "pairs": [
+            {
+              "block": 0,
+              "generic_ns": 1235705,
+              "private_ns": 1281581,
+              "difference_ns": 45876
+            },
+            {
+              "block": 1,
+              "generic_ns": 1251956,
+              "private_ns": 1251595,
+              "difference_ns": -361
+            },
+            {
+              "block": 2,
+              "generic_ns": 1262686,
+              "private_ns": 1244922,
+              "difference_ns": -17764
+            },
+            {
+              "block": 3,
+              "generic_ns": 1252436,
+              "private_ns": 1247647,
+              "difference_ns": -4789
+            },
+            {
+              "block": 4,
+              "generic_ns": 1264589,
+              "private_ns": 1253488,
+              "difference_ns": -11101
+            },
+            {
+              "block": 5,
+              "generic_ns": 1273105,
+              "private_ns": 1261473,
+              "difference_ns": -11632
+            },
+            {
+              "block": 6,
+              "generic_ns": 1271372,
+              "private_ns": 1265390,
+              "difference_ns": -5982
+            },
+            {
+              "block": 7,
+              "generic_ns": 1279127,
+              "private_ns": 1268507,
+              "difference_ns": -10620
+            }
+          ]
+        },
+        {
+          "process": "iq4nl-host-wall-runtime-measure-v1-repeat3",
+          "generic_median_ns": 1280068.5,
+          "private_median_ns": 1273450.5,
+          "generic_sum_ns": 10215910,
+          "private_sum_ns": 10174180,
+          "private_minus_generic_sum_pct": -0.40848049757682414,
+          "pairs": [
+            {
+              "block": 0,
+              "generic_ns": 1246455,
+              "private_ns": 1279347,
+              "difference_ns": 32892
+            },
+            {
+              "block": 1,
+              "generic_ns": 1281010,
+              "private_ns": 1277874,
+              "difference_ns": -3136
+            },
+            {
+              "block": 2,
+              "generic_ns": 1293523,
+              "private_ns": 1280028,
+              "difference_ns": -13495
+            },
+            {
+              "block": 3,
+              "generic_ns": 1279988,
+              "private_ns": 1266783,
+              "difference_ns": -13205
+            },
+            {
+              "block": 4,
+              "generic_ns": 1280149,
+              "private_ns": 1264720,
+              "difference_ns": -15429
+            },
+            {
+              "block": 5,
+              "generic_ns": 1272755,
+              "private_ns": 1274317,
+              "difference_ns": 1562
+            },
+            {
+              "block": 6,
+              "generic_ns": 1273967,
+              "private_ns": 1272584,
+              "difference_ns": -1383
+            },
+            {
+              "block": 7,
+              "generic_ns": 1288063,
+              "private_ns": 1258527,
+              "difference_ns": -29536
+            }
+          ]
+        }
+      ],
+      "generic_median_ns": 1274708.0,
+      "private_median_ns": 1270159.5,
+      "private_minus_generic_sum_pct": -0.2571397560962696,
+      "private_shorter_pairs": 19,
+      "equal_pairs": 0,
+      "pairs": 24,
+      "hierarchical_bootstrap_95pct_delta_pct": [
+        -0.7773748305200945,
+        0.342294567413548
+      ]
+    },
+    "rotation64": {
+      "per_process": [
+        {
+          "process": "iq4nl-host-wall-runtime-measure-v1",
+          "generic_median_ns": 1390836.5,
+          "private_median_ns": 1368193.5,
+          "generic_sum_ns": 11115242,
+          "private_sum_ns": 10977572,
+          "private_minus_generic_sum_pct": -1.238569524622135,
+          "pairs": [
+            {
+              "block": 0,
+              "generic_ns": 1392970,
+              "private_ns": 1391708,
+              "difference_ns": -1262
+            },
+            {
+              "block": 1,
+              "generic_ns": 1400485,
+              "private_ns": 1383834,
+              "difference_ns": -16651
+            },
+            {
+              "block": 2,
+              "generic_ns": 1382371,
+              "private_ns": 1361912,
+              "difference_ns": -20459
+            },
+            {
+              "block": 3,
+              "generic_ns": 1381269,
+              "private_ns": 1365499,
+              "difference_ns": -15770
+            },
+            {
+              "block": 4,
+              "generic_ns": 1376230,
+              "private_ns": 1365049,
+              "difference_ns": -11181
+            },
+            {
+              "block": 5,
+              "generic_ns": 1400244,
+              "private_ns": 1364146,
+              "difference_ns": -36098
+            },
+            {
+              "block": 6,
+              "generic_ns": 1392039,
+              "private_ns": 1374536,
+              "difference_ns": -17503
+            },
+            {
+              "block": 7,
+              "generic_ns": 1389634,
+              "private_ns": 1370888,
+              "difference_ns": -18746
+            }
+          ]
+        },
+        {
+          "process": "iq4nl-host-wall-runtime-measure-v1-repeat2",
+          "generic_median_ns": 1376785.0,
+          "private_median_ns": 1357419.0,
+          "generic_sum_ns": 10988894,
+          "private_sum_ns": 10859122,
+          "private_minus_generic_sum_pct": -1.180937772263524,
+          "pairs": [
+            {
+              "block": 0,
+              "generic_ns": 1376800,
+              "private_ns": 1377452,
+              "difference_ns": 652
+            },
+            {
+              "block": 1,
+              "generic_ns": 1370558,
+              "private_ns": 1357534,
+              "difference_ns": -13024
+            },
+            {
+              "block": 2,
+              "generic_ns": 1362704,
+              "private_ns": 1334862,
+              "difference_ns": -27842
+            },
+            {
+              "block": 3,
+              "generic_ns": 1347946,
+              "private_ns": 1351583,
+              "difference_ns": 3637
+            },
+            {
+              "block": 4,
+              "generic_ns": 1385357,
+              "private_ns": 1345071,
+              "difference_ns": -40286
+            },
+            {
+              "block": 5,
+              "generic_ns": 1382080,
+              "private_ns": 1357304,
+              "difference_ns": -24776
+            },
+            {
+              "block": 6,
+              "generic_ns": 1376770,
+              "private_ns": 1366040,
+              "difference_ns": -10730
+            },
+            {
+              "block": 7,
+              "generic_ns": 1386679,
+              "private_ns": 1369276,
+              "difference_ns": -17403
+            }
+          ]
+        },
+        {
+          "process": "iq4nl-host-wall-runtime-measure-v1-repeat3",
+          "generic_median_ns": 1384810.0,
+          "private_median_ns": 1369812.5,
+          "generic_sum_ns": 11099363,
+          "private_sum_ns": 10956015,
+          "private_minus_generic_sum_pct": -1.2914975390930117,
+          "pairs": [
+            {
+              "block": 0,
+              "generic_ns": 1400525,
+              "private_ns": 1374176,
+              "difference_ns": -26349
+            },
+            {
+              "block": 1,
+              "generic_ns": 1399524,
+              "private_ns": 1367904,
+              "difference_ns": -31620
+            },
+            {
+              "block": 2,
+              "generic_ns": 1376860,
+              "private_ns": 1357655,
+              "difference_ns": -19205
+            },
+            {
+              "block": 3,
+              "generic_ns": 1373945,
+              "private_ns": 1358826,
+              "difference_ns": -15119
+            },
+            {
+              "block": 4,
+              "generic_ns": 1382401,
+              "private_ns": 1383143,
+              "difference_ns": 742
+            },
+            {
+              "block": 5,
+              "generic_ns": 1386809,
+              "private_ns": 1374686,
+              "difference_ns": -12123
+            },
+            {
+              "block": 6,
+              "generic_ns": 1396488,
+              "private_ns": 1369878,
+              "difference_ns": -26610
+            },
+            {
+              "block": 7,
+              "generic_ns": 1382811,
+              "private_ns": 1369747,
+              "difference_ns": -13064
+            }
+          ]
+        }
+      ],
+      "generic_median_ns": 1382606.0,
+      "private_median_ns": 1366972.0,
+      "private_minus_generic_sum_pct": -1.2371888878337844,
+      "private_shorter_pairs": 21,
+      "equal_pairs": 0,
+      "pairs": 24,
+      "hierarchical_bootstrap_95pct_delta_pct": [
+        -1.5552761489745381,
+        -0.907945084433337
+      ]
+    }
+  },
+  "model": false,
+  "adopted": false,
+  "full_physical_262144": false
+}
