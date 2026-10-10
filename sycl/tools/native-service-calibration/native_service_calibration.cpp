@@ -264,6 +264,7 @@ static int index_correctness(const std::vector<Case>& cases,std::vector<Buffers>
 }
 
 // Private dot timing: expected words are immutable and prepared before clocks.
+static uint64_t index_order_hash(const std::vector<size_t>& order){uint64_t h=14695981039346656037ULL;for(size_t v:order){for(unsigned shift=0;shift<32;shift+=8){h^=(v>>shift)&255;h*=1099511628211ULL;}}return h;}
 static int index_timing(const std::vector<Case>& cases,std::vector<Buffers>& work,
  const std::array<LayerInput,48>& inputs,size_t aggregate,int host,unsigned entry,uint64_t seed){
  require((entry&0xffc0U)==0x1f80U&&(_mm_getcsr()&0xffc0U)==0x1f80U,"timing requires nearest-even FTZ/DAZ off");
@@ -290,7 +291,7 @@ static int index_timing(const std::vector<Case>& cases,std::vector<Buffers>& wor
    if(stratum==1)std::cout<<"INDEX_HOT_ID,"<<split<<','<<i<<','<<item.layer<<','<<item.expert<<'\n';
    for(int r=0;r<640;++r)for(int role=0;role<2;++role)rows[split][stratum].push_back({reinterpret_cast<const block_iq2_s*>(item.blob.data()+size_t(role)*item.fmt.up_off+size_t(r)*item.fmt.gu_row),static_cast<const block_q8_K*>(work[i].ap[0]),&out[i].values[r*2+role]});
   }
-  std::cout<<"INDEX_WORKING_SET,"<<split<<','<<(stratum?"hot8":"stream192")<<','<<orders[split][stratum].size()<<','<<bytes<<','<<order_hash(orders[split][stratum])<<'\n';
+  std::cout<<"INDEX_WORKING_SET,"<<split<<','<<(stratum?"hot8":"stream192")<<','<<orders[split][stratum].size()<<','<<bytes<<','<<index_order_hash(orders[split][stratum])<<'\n';
  }
  uint64_t samples=0,warmups=0;
  for(int split=0;split<2;++split)for(int stratum=0;stratum<2;++stratum)for(int round=0;round<21;++round)for(int position=0;position<3;++position){
@@ -316,7 +317,7 @@ static int index_timing(const std::vector<Case>& cases,std::vector<Buffers>& wor
   }
   require(strata::core::release_gpu_fn().load()==nullptr,"GPU callback changed");
   if(round<3)++warmups;else ++samples;
-  std::cout<<"INDEX_TIMING,"<<split<<','<<(stratum?"hot8":"stream192")<<','<<(arm==0?"trait":arm==1?"direct":"register")<<','<<round-3<<','<<(round<3?1:0)<<','<<position<<','<<order.size()<<','<<order.size()*640<<','<<calls.size()<<','<<bytes<<','<<order_hash(order)<<','<<hash<<','<<ms(start,end)<<','<<host_cpu()<<'\n';
+  std::cout<<"INDEX_TIMING,"<<split<<','<<(stratum?"hot8":"stream192")<<','<<(arm==0?"trait":arm==1?"direct":"register")<<','<<round-3<<','<<(round<3?1:0)<<','<<position<<','<<order.size()<<','<<order.size()*640<<','<<calls.size()<<','<<bytes<<','<<index_order_hash(order)<<','<<hash<<','<<ms(start,end)<<','<<host_cpu()<<'\n';
  }
  require(samples==216&&warmups==36,"timing sample completeness");
  std::cout<<"INDEX_TIMING_COMPLETE,216,36,18,3,2,2,3\nRESULT,iq2s_index_timing_complete,not_model_performance_or_adoption\n";
