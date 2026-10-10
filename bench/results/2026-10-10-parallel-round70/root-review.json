@@ -1,0 +1,34 @@
+{
+  "created_utc": "2026-10-10T11:14:36.033483+00:00",
+  "reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round245-host-copy-control-independent-concurrency-and-capacity-audit.txt",
+      "bytes": 7579,
+      "sha256": "95379979a598ce1d6ad150801b28be3a4a1c8ceaa48fd17550498313e75d42b7",
+      "agent": "/root/research_bottleneck_evidence_audit_v203",
+      "model": "gpt-6-luna",
+      "scope": "Independent completed hostcopy concurrency/byte/timing/receipt audit",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round246-ple-valid-row-eof-short-read-and-cache-lifetime-audit.txt",
+      "bytes": 11616,
+      "sha256": "3673a658a83077c40236c0d780867f7620708f3a6170d007948cf88e6e1385cf",
+      "agent": "/root/research_native_iq4nl_esimd_k640_v202",
+      "model": "gpt-6-luna",
+      "scope": "Production validPLErow EOF/short-read/cache lifetime and genericAPI validation audit",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    }
+  ],
+  "corrections": {
+    "R245": "Independent source/receipt audit accepted:104sample records/19968full comparedjobs/39936tailcanarychecks; all84rates recompute. Externalgoldencorpusnotused, fullmemcmp establishescopyequality. Conservative wording doesnotmake plainRAM rate a bound forSYCLhostUSM. Productionstager allocation/source/handshake/actualroutegates remain.",
+    "R246": "Actualsource accepts positive shortEOF onlywhen ALL requested uses lie in actualbytes before copying/cache.4Kfinalrow useends3264;8Kstraddler useends4120within7360. ActivePleTable extentparservalidated; generic PleReader unchecked arithmetic is optionaldirectAPIhardeningoutside admittedproductioncontract, not observedfullcontextfailure. Sourceauditnotactualread/fullinference. Agent disclosedone prohibitedreadonlygitrevparse, noGitstatechange; disclosurepreserved andnoqualificationstatusaltered."
+  },
+  "registry_identity": {
+    "bytes": 255111,
+    "sha256": "14ddd7844b7ea8f4044cb765b36cb649b859e7f41ee76a361748b96fd9f53c77"
+  },
+  "adopted": false
+}
