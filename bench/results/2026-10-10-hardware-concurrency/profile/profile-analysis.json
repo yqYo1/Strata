@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "passed": true,
+  "device_executed": false,
+  "receipt": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/hardware-concurrency-v1-profile/record.json",
+    "bytes": 28643,
+    "sha256": "391280792e19a07012c0016cb1762da9684fbdfacccbfb86abb3e565b1c54b92"
+  },
+  "analyzer_identity": {
+    "bytes": 8648,
+    "sha256": "301796f4ec3ac4743b3e5bdbe979a437bae3bbd6e418b5c97cb252bb55ac9e46"
+  },
+  "trace": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/hardware-concurrency-v1-profile/hardware-concur.1107780.json",
+    "bytes": 5159273,
+    "sha256": "78e09c273cae266854d0e436f54cbae0be8b6a1a8dac61c27fd092c091c62a0f"
+  },
+  "compact_operations": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/hardware-concurrency-v1-profile/compact-operation-intervals.json",
+    "bytes": 616409,
+    "sha256": "3470a701b808e7011a87a5ec4c76374197e21189ad4d663bb1eb4881e9aff740"
+  },
+  "GPU_operations": 3330,
+  "host_API_calls": 16516,
+  "host_append_joins": 3330,
+  "target_copy_calls": 144,
+  "target_copy_logical_bytes": 1207959552,
+  "target_GEMM_kernels": 3168,
+  "expected_source_counts": {
+    "copy": "6 shapes * 2 passes * 3 modes * 4 copies",
+    "gemm": "4 small shapes * 2 passes * 3 modes * 128 + 2 large shapes * 2 passes * 3 modes * 8"
+  },
+  "device_name_counts": {
+    "main::{lambda(sycl::_V1::id<1>)#1}[SIMD32 {25600; 1; 1} {1024; 1; 1}]": 1,
+    "main::{lambda(sycl::_V1::id<1>)#2}[SIMD32 {20480; 1; 1} {1024; 1; 1}]": 1,
+    "zeCommandListAppendMemoryCopy(H2D)[16777216]": 1,
+    "zeCommandListAppendMemoryCopy(H2D)[8388608]": 144,
+    "zeCommandListAppendMemoryCopy(M2D)[4]": 1,
+    "binary_test[SIMD16 {1; 1; 1} {4; 2; 1}]": 1,
+    "zeCommandListAppendMemoryCopy(D2M)[4]": 1,
+    "gemm_f16f16f32_nocopy_tn_32x32_4x2x4[SIMD16 {10; 2; 1} {64; 2; 4}]": 768,
+    "zeCommandListAppendMemoryCopy(D2M)[16777216]": 6,
+    "zeCommandListAppendMemoryCopy(D2M)[409600]": 1,
+    "gemm_f16f16f32_nocopy_tn_16x32_8x4[SIMD16 {10; 2; 1} {128; 4; 1}]": 768,
+    "zeCommandListAppendMemoryCopy(D2M)[819200]": 2,
+    "gemm_f16f16f32_nocopy_tn_32x64_8x4[SIMD16 {20; 1; 1} {128; 4; 1}]": 96,
+    "zeCommandListAppendMemoryCopy(D2M)[41943040]": 1,
+    "gemm_f16f16f32_nocopy_tn_16x32_8x4[SIMD16 {20; 1; 1} {128; 4; 1}]": 768,
+    "gemm_f16f16f32_nocopy_tn_16x64_16x2[SIMD16 {10; 2; 1} {256; 2; 1}]": 768,
+    "zeCommandListAppendMemoryCopy(D2M)[1638400]": 1,
+    "zeCommandListAppendMemoryCopy(D2M)[83886080]": 1
+  },
+  "target_lane_counts": {
+    "copy": {
+      "4259518335": 144
+    },
+    "GEMM": {
+      "4259518335": 3167,
+      "4259518334": 1
+    }
+  },
+  "lane_names": [
+    {
+      "pid": 4259518335,
+      "tid": 4259518335,
+      "label": "Thread 1107780 L0 Compute Engine<0,0>"
+    },
+    {
+      "pid": 4259518335,
+      "tid": 4259518334,
+      "label": "Thread 1107780 L0 Compute Engine<0,0>"
+    }
+  ],
+  "device_copy_union_ns": 188535878,
+  "device_GEMM_union_ns": 175603167,
+  "device_copy_GEMM_intersection_ns": 0,
+  "closest_cross_role_gap_ns": 5084,
+  "serialization_guard_ns": 1000,
+  "scope": "All target GPU intervals, including warm, solo, forced serial and concurrent modes; zero intersection over all implies zero over the concurrent subset.",
+  "limitations": [
+    "Instrumented qualification process; excluded from clean capacity timings.",
+    "Independent next-slot copies, not exact Strata operands/rings/routes/dependencies.",
+    "PTI engine label is recorded ordinal/index, not a hardware utilization counter.",
+    "Both PTI device flow directions anchor command_start, not command_end/completion.",
+    "Serialized epoch-microsecond timestamps have submicrosecond precision; closest cross-role gap exceeds the conservative 1us guard.",
+    "No production oneMKL returned-event/internal-kernel span join is established.",
+    "Device GPU timestamps are compared only within this PTI trace; no host steady-clock join.",
+    "Probe validates both copy buffers and final surviving products, not overwritten products.",
+    "No model correctness, clean performance or full physical 262144-context qualification."
+  ]
+}

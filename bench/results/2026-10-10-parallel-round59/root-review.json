@@ -1,0 +1,36 @@
+{
+  "created_utc": "2026-10-10T08:58:10.079697+00:00",
+  "new_reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round223-prefill-service-ledger-independent-admission.txt",
+      "bytes": 8530,
+      "sha256": "f155470482323725b9858c60f4e3ab10081e6d741f86ae144717259b596dbd6b",
+      "agent": "/root/research_bottleneck_evidence_audit_v203",
+      "model": "gpt-6-luna",
+      "scope": "Actual production returned-event ledger admission, boundedness and producer join",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round224-native-gu-emitted-code-and-zen3-capacity.txt",
+      "bytes": 9021,
+      "sha256": "d6284e26a94ca96cf5a38938559382bcfa9d62bd47af80d7c282164cbaa5290e",
+      "agent": "/root/research_native_iq4nl_esimd_k640_v202",
+      "model": "gpt-6-luna",
+      "scope": "Pinned emitted AVX2 IQ2_S NT2–4 code and Zen3 capacity boundaries",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    }
+  ],
+  "completed_reports": 331,
+  "registry": {
+    "bytes": 232526,
+    "sha256": "726b6d305b57b7e13b822180b3aeaa1f08374bfc215b822089d36c2540bf9a64"
+  },
+  "corrections": {
+    "R223_unprofiled_admission": "Root read the actual complete ServiceLedger header. admit() invalidates an unprofiled lane before record() retention. Subsequent records increment dropped and keep only latest for completion; no pending timestamp queries exist in that first-admission case. The report claim that this case later queries retained events is unsupported.",
+    "R223_query_failure_exit": "Timestamp query catches increment query_failures/invalidate and continue; they do not call fatal/_Exit. Completion/async/submission uncertainty can be fatal, a separate mechanism. No admission-related runtime defect is established by R223. Explicit fallback/reject remains an optional design suggestion, not a proven necessary fix.",
+    "R223_coverage_cap": "Cumulative 512-token chunk ×48layer ×2role geometry can exceed16384 bucket cap at262144 positions. Telemetry is bounded and invalidated/suppressed; this is not an engine memory bug or full-context qualification.4096 chunks need6144 coverage buckets.",
+    "R224_scope": "Direct emitted NT4 YMM stack spills are a credible cost to measure; no measured spill dominance or NT3/NT4 speed ordering. Existing calibration accepts NT1/2 and two-token buffers only, so it must be extended and correctness-qualified before NT3/4 timing."
+  }
+}

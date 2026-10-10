@@ -1,0 +1,111 @@
+{
+  "commit": "6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033",
+  "excerpts": [
+    {
+      "source": "tools/unitrace/src/chromelogger.h",
+      "source_identity": {
+        "bytes": 87196,
+        "sha256": "3f34ed620df70270afe2bac30c3dcebe2ae68cb66448244bedfc1c15e246a493"
+      },
+      "first_line": 269,
+      "last_line": 288,
+      "lines": [
+        "",
+        "    // Build the device thread display name (shared by both output formats).",
+        "    std::string device_thread_name;",
+        "    if (device_logging_no_thread_) {",
+        "      if (device_logging_no_engine_) {",
+        "        device_thread_name = \"L0\";",
+        "      } else {",
+        "        device_thread_name = GetZeEngineName(device, tid_key.engine_ordinal_);",
+        "        device_thread_name += \"<\" + std::to_string(tid_key.engine_ordinal_) + \",\" + std::to_string(tid_key.engine_index_) + \">\";",
+        "      }",
+        "    } else {",
+        "      if (device_logging_no_engine_) {",
+        "        device_thread_name = \"Thread \" + std::to_string(tid_key.host_tid_) + \" L0\";",
+        "      } else {",
+        "        device_thread_name = \"Thread \" + std::to_string(tid_key.host_tid_);",
+        "        device_thread_name += \" \" + GetZeEngineName(device, tid_key.engine_ordinal_);",
+        "        device_thread_name += \"<\" + std::to_string(tid_key.engine_ordinal_) + \",\" + std::to_string(tid_key.engine_index_) + \">\";",
+        "      }",
+        "    }",
+        ""
+      ]
+    },
+    {
+      "source": "tools/unitrace/src/chromelogger.h",
+      "source_identity": {
+        "bytes": 87196,
+        "sha256": "3f34ed620df70270afe2bac30c3dcebe2ae68cb66448244bedfc1c15e246a493"
+      },
+      "first_line": 1024,
+      "last_line": 1055,
+      "lines": [
+        "      str += \", \\\"cat\\\": \\\"gpu_op\\\"\";",
+        "      str += \", \\\"ts\\\": \" + std::to_string(UniTimer::GetEpochTimeInUs(rec.start_time_));",
+        "      str += \", \\\"dur\\\": \" + std::to_string(UniTimer::GetTimeInUs(rec.end_time_ - rec.start_time_));",
+        "      str += \", \\\"args\\\": {\\\"id\\\": \\\"\" + std::to_string(rec.kid_) + \"\\\"\";",
+        "      if (metrics_enabled_) {",
+        "        // viewing the metrics on the same local host, no need to use https",
+        "        str += \", \\\"metrics\\\": \\\"http://localhost:8000/\" + EncodeURI(kname) + \"/\" + std::to_string(rec.kid_) + \"/\" + std::to_string(device_id) + \"\\\"\";",
+        "      }",
+        "      str += \"}}\";",
+        "",
+        "      if (!rec.implicit_scaling_) {",
+        "        str += \",\\n{\";",
+        "        str += \"\\\"ph\\\": \\\"t\\\"\";",
+        "        str += \", \\\"tid\\\": \" + std::to_string(tid);",
+        "        str += \", \\\"pid\\\": \" + std::to_string(pid);",
+        "        str += \", \\\"name\\\": \\\"dep\\\"\";",
+        "        str += \", \\\"cat\\\": \\\"Flow_H2D_\" + std::to_string(rec.kid_) + \"_\" + std::to_string(mpi_rank) + \"\\\"\";",
+        "        str += \", \\\"ts\\\": \" + std::to_string(UniTimer::GetEpochTimeInUs(rec.start_time_));",
+        "        str += \", \\\"id\\\": \" + std::to_string(rec.kid_);",
+        "        str += \"},\\n\";",
+        "",
+        "        str += \"{\";",
+        "        str += \"\\\"ph\\\": \\\"s\\\"\";",
+        "        str += \", \\\"tid\\\": \" + std::to_string(tid);",
+        "        str += \", \\\"pid\\\": \" + std::to_string(pid);",
+        "        str += \", \\\"name\\\": \\\"dep\\\"\";",
+        "        str += \", \\\"cat\\\": \\\"Flow_D2H_\" + std::to_string(rec.kid_) + \"_\" + std::to_string(mpi_rank) + \"\\\"\";",
+        "        str += \", \\\"ts\\\": \" + std::to_string(UniTimer::GetEpochTimeInUs(rec.start_time_));",
+        "        str += \", \\\"id\\\": \" + std::to_string(rec.kid_);",
+        "        str += \"}\";",
+        "      }",
+        ""
+      ]
+    },
+    {
+      "source": "tools/unitrace/src/levelzero/ze_collector.h",
+      "source_identity": {
+        "bytes": 253227,
+        "sha256": "6ee0130e2b03918a5e4bb5d310dacb94e5ba06bf67c21a23d3134dc406aa9122"
+      },
+      "first_line": 1216,
+      "last_line": 1235,
+      "lines": [
+        "inline std::string GetZeEngineName(ze_device_handle_t device, uint32_t ordinal) {",
+        "  std::string engine_name = \"\";",
+        "  devices_mutex_.lock_shared();",
+        "  if (devices_ != nullptr) {",
+        "    auto it = devices_->find(device);",
+        "    if (it != devices_->end()) {",
+        "      if (it->second.queue_engine_prop_[ordinal] == ZE_QUEUE_COMPUTE_ENGINE) {",
+        "        engine_name = \"L0 Compute Engine\";",
+        "      } else if (it->second.queue_engine_prop_[ordinal] == ZE_QUEUE_COPY_ENGINE) {",
+        "        engine_name = \"L0 Copy Engine\";",
+        "      } else {",
+        "        engine_name = \"L0 Engine\";",
+        "      }",
+        "    }",
+        "  }",
+        "  devices_mutex_.unlock_shared();",
+        "  return engine_name;",
+        "}",
+        "",
+        "inline ze_pci_ext_properties_t *GetZeDevicePciPropertiesAndId(ze_device_handle_t device, int32_t *parent_device_id, int32_t *device_id, int32_t *subdevice_id){"
+      ]
+    }
+  ],
+  "conclusion": "PTI labels queue group ordinal,index using tracked group properties; both flow directions are anchored at command_start. Device duration comes from command_end-command_start. Engine ordinal/index is not physical utilization."
+}
