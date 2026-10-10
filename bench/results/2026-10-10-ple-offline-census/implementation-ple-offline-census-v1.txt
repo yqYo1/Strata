@@ -1,0 +1,247 @@
+Implementation handoff: bounded offline PLE census v1
+Date: 2026-10-10. SOURCE ONLY; no builds, tests, oracle, census, benchmark,
+inference, GPU, process/device queries or Git operations were performed.
+Parent explicitly clarified that read-only cat/sed/rg and source digest reads
+are allowed. Only the three assigned files were created.
+
+Files and SHA256 (filesystem digest read):
+ple_offline_census_v1.py
+ab2d69f1d664aa96efc1994deb33777229dadb482694acd97c6ca8f4e5a96ba2
+ple_ngram_oracle_v1.cpp
+f5f395cb32a8948a57d522a759045619a68dd68d2dee5a3cc35feee1cac8611e
+
+Both source files reside in:
+B=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007
+This handoff resides in B/research-20261009.
+
+Frozen engine source root:
+F=/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010
+Declared commit: 495369cf4dc6e6da564095a1c26504dd3694e3f2
+No Git queries were used to independently prove the commit. The Python census
+requires exact filesystem source digests before admitting any aggregate:
+src/kernels/ngram.cpp
+e609caf1bb0812f366d96a5304c0f98e2864c1c0d22a0bef7b35d818e09debd5
+include/strata/kernels/ngram.hpp
+edc6d36eaf6062e8c377577de787ed9e5576ede19e04c5964dc7e6b83b8d01ac
+src/ngram/ple_reader.cpp
+ddec6dbcc8afd8186c724403d5aaa54b70b9fbd551fea733ce422974131ede9e
+src/prefill/prefill.cpp
+c2f6249f855241ff06cb7441d9e11a380b29c9183ea96b84b74b5591503d1815
+sycl/src/prefill/prefill.cpp
+f6cbc4acb9f84b19480a25892a2e6864896a3e3ab0f68ace3c3f51a788591f69
+sycl/src/core/session.cpp
+939e49516eb8586b51bfd686261a2cae167ca3e1e9af375d00618940a7df9158
+
+Exact contract implemented
+--------------------------
+The C++ oracle includes the original public ngram.hpp and calls actual
+ple_artifact_consts() and ngram_rows(). It contains no hash implementation or
+copied multiplier/vocabulary arrays. Root must link the frozen ngram.cpp with
+function/data sections and gc-sections, keeping unrelated table-I/O functions
+unreferenced. No SYCL, GPU, model shard or table payload is needed.
+
+Oracle CLI:
+ORACLE INPUT_TOKEN_TEXT PP_COUNT NEW_ROWS_BINARY
+       [--insert198] [--prev OLDEST NEWEST]
+PP_COUNT is 1..262144. --insert198 requires exactly 32768 original tokens,
+inserts token 198 before zero-based index 32759, and produces 32769 tokens.
+Both implementations independently apply that transformation.
+--prev defaults to {-1,-1}; custom histories are for tiny CPU contract fixtures.
+Every token is int32; only whitespace-separated strict decimal text is accepted.
+Both tools reject plus signs and leading-zero decimal forms. The qualification
+plan includes strict-parser failure cases for both tools.
+The C++ oracle processes at most 8192 tokens per call. prev is oldest-first:
+for absolute token position i its pair is stream[i-2], stream[i-1], replacing
+negative absolute positions with initial prev entries. This exactly reproduces
+both frozen Prefill::ple_gather histories, preserving history across chunks.
+The session source initializes both predecessors to -1.
+The actual original hash treats predecessor EOS 248044 or ANY negative
+predecessor as a cut before storage, cutting that position and every older
+position. An EOS in the current token does not cut its own history. uint64
+products wrap modulo 2^64. Python translates those operations independently.
+
+Oracle binary is pure token-major/head-major uint32 little-endian, 16 rows/token.
+No header or host-endian reinterpretation. Output is O_EXCL, so existing files
+are never overwritten. Root must require exit 0 AND success:true and exact byte
+counts before use. Failure can leave a partial NEW output; the agent does not
+delete it, and root must never use it as a successful oracle.
+
+Python CLI:
+python3 B/ple_offline_census_v1.py --input INPUT
+  --fixture 32k|32k-insert198|256k|tiny --prefix PP_COUNT
+  --oracle-rows ROWS --oracle-bin ORACLE [--source-root F]
+  [--include-tail] [--prev OLDEST NEWEST]
+
+Python NEVER executes ORACLE. It hashes the supplied oracle binary, oracle C++
+source, itself, all frozen engine source files, and the original token fixture.
+Pinned 32k fixture SHA:
+137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449
+Pinned full-context fixture SHA:
+cc29e4427bcacb21c9f7df2d1f1a7d41897fce5bd76a8ca43d8c3c34d914dd2a
+Fixture lengths must be exactly 32768 or 262144 respectively.
+tiny is explicitly unpinned, labeled non-model contract input.
+Custom initial prev is forbidden for pinned model fixtures.
+Without --include-tail oracle file must cover exactly the PP prefix.
+With --include-tail it must cover exactly prefix+1, still <=262144; the next
+one-token geometry is a separate cache-empty control, outside PP totals.
+For the actual 32769 request use 32k-insert198 prefix32768 and, optionally,
+oracle count32769 with --include-tail. No decode execution is claimed.
+
+ALL rows, including all 16 heads of every token, compare to the independent
+Python algorithm before any JSON aggregates print. Exact oracle file size,
+short reads, trailing bytes, out-of-table rows, coverage reconciliation,
+source/fixture hashes and consumed-file SHA are enforced. A mismatch reports
+the first PP token/head and actual/expected row. Errors produce failure JSON
+on stderr and nonzero status, without normal census output. The binary digest
+alone cannot establish which executable produced a row file; root must retain
+the actual build/run command and successful oracle receipt. This handoff makes
+no claim that an arbitrary supplied binary was used.
+
+Geometry
+--------
+Each <=8192-token PP chunk is an independent CACHE-EMPTY control.
+There are <=131072 descriptor uses/chunk. Every row has offset
+192 + row_id*90 in the admitted [160,320001536] IQ4_NL geometry.
+No shard is opened. The admitted file/table end is 28800138432.
+
+Matching frozen PleReader::issue's grouping geometry only, rows group by FIRST
+aligned 4096-byte page; a job extends to 8192 bytes if any of its uses straddles
+the page. It is NOT a global union-merge optimization: adjacent extended jobs
+can overlap. All descriptors remain uses, including duplicate row IDs; cache
+find/insert timing is deliberately absent.
+Each chunk reports requests, unique rows/payload, straddling requests,
+dedup job count/4K/8K counts, use and unique-row occupancy, baseline sum-of-job
+logical bytes (overlap retained), expanded-page union count/bytes, row-payload
+records and baseline-job records including straddlers.
+
+128KiB records are ASSUMED at whole-file offsets divisible by 131072, NOT
+discovered physical ZFS blocks. Occupancy counts UNIQUE expanded 4K pages
+per assumed record, with a second histogram of baseline jobs touching records.
+Conditional coalescing reads each touched assumed record once; reports full
+record spans and an EOF-clipped logical read plan, plus the ratio to baseline
+sum-of-job bytes. This compares logical geometry, not latency/capacity.
+
+The admitted file end is NOT 4096-aligned (remainder3264), nor 128KiB-aligned
+(remainder81088). Baseline aligned job geometry can therefore extend beyond
+EOF for last-page rows; explicit counts/bytes record that possibility. There
+are no actual reads, so no assertion is made about production EOF handling.
+The conditional coalesced plan clips at EOF and can include header bytes and
+unrequested rows. It is not a proposal to submit invalid aligned reads.
+
+Whole-context totals are clearly labeled SUM OF INDEPENDENT CHUNKS. Summed
+unique-row or record counts are NOT global unique counts. No default 8-way
+cache simulation, cache-hit claim, completion-order approximation, or
+unbounded-cache scenario is included.
+
+Bounds / root-owned resource budget
+-----------------------------------
+C++ input <=8MiB, <=262144 original tokens (one admitted insertion allowed);
+prefix <=262144; rows <=4194304; output <=16777216 bytes.
+C++ work buffers: prev65536B, rows524288B, encoded524288B, token vector about
+1MiB (insertion may double its capacity once). No recursion or giant stack
+arrays. Paths <=4096 bytes, individual decimal words <=11 bytes.
+Python input <=8MiB; tokens <=262144 plus one permitted insertion; only one
+chunk's <=131072 rows and bounded page/job/record sets live at a time.
+No whole-context row/page/record list survives chunk retirement. At most32
+PP summaries plus optional one-token tail. JSON contains histograms/counts,
+never full descriptor or record lists. File hashing streams65536B blocks;
+source cap8MiB/file, binary cap64MiB, oracle row cap16MiB.
+Root should use an owned process limit RSS1GiB / CPU300s / wall360s initially
+and record actual limits and exits. These are conservative execution budgets,
+not measured runtime/memory promises. Parent owns scheduling/serialization.
+
+Suggested exact build/run recipes (NOT executed)
+------------------------------------------------
+Assign shell variables with the exact B/F paths printed above. Pick NEW output
+paths; oracle deliberately refuses existing outputs. Preserve commands and
+individual oracle/census receipts under root's current retention boundary.
+
+g++ -std=c++20 -O2 -Wall -Wextra -Wpedantic -ffunction-sections -fdata-sections \
+  -I"$F/include" "$B/ple_ngram_oracle_v1.cpp" "$F/src/kernels/ngram.cpp" \
+  -Wl,--gc-sections -pthread -o "$B/ple_ngram_oracle_v1"
+
+If unresolved references remain, do not copy/reimplement the hash or silently
+link production I/O libraries. Inspect the section/link failure and report it.
+Root can first use -O0/-g with ASan+UBSan on tiny cases and bound parser cases,
+then build the above non-sanitized oracle for pinned fixtures. No timings are
+reported by either tool.
+
+32K PP original:
+"$B/ple_ngram_oracle_v1" "$B/coding-review-32k-tokens.txt" 32768 \
+  "$B/ple-original32k-rows-v1.bin" > "$B/ple-original32k-oracle-v1.json"
+python3 "$B/ple_offline_census_v1.py" --fixture 32k \
+  --input "$B/coding-review-32k-tokens.txt" --prefix 32768 \
+  --oracle-rows "$B/ple-original32k-rows-v1.bin" \
+  --oracle-bin "$B/ple_ngram_oracle_v1" > "$B/ple-original32k-census-v1.json"
+
+Actual32769 request, PP32768 plus separate optional one-token tail:
+"$B/ple_ngram_oracle_v1" "$B/coding-review-32k-tokens.txt" 32769 \
+  "$B/ple-insert198-32769-rows-v1.bin" --insert198 \
+  > "$B/ple-insert198-32769-oracle-v1.json"
+python3 "$B/ple_offline_census_v1.py" --fixture 32k-insert198 \
+  --input "$B/coding-review-32k-tokens.txt" --prefix 32768 --include-tail \
+  --oracle-rows "$B/ple-insert198-32769-rows-v1.bin" \
+  --oracle-bin "$B/ple_ngram_oracle_v1" > "$B/ple-insert198-32769-census-v1.json"
+For PP only, oracle count32768 and omit --include-tail.
+
+Full-context offline geometry only, if fixture is available and hash passes:
+"$B/ple_ngram_oracle_v1" \
+  "$B/full-context-copy-off/coding-context-256k-tokens.txt" 262144 \
+  "$B/ple-offline256k-rows-v1.bin" > "$B/ple-offline256k-oracle-v1.json"
+python3 "$B/ple_offline_census_v1.py" --fixture 256k \
+  --input "$B/full-context-copy-off/coding-context-256k-tokens.txt" --prefix 262144 \
+  --oracle-rows "$B/ple-offline256k-rows-v1.bin" \
+  --oracle-bin "$B/ple_ngram_oracle_v1" > "$B/ple-offline256k-census-v1.json"
+
+Root qualification gates before interpreting model-fixture geometry
+------------------------------------------------------------------
+1. Tiny hand-audited tokens containing 0, -1, -17, INT32_MIN, INT32_MAX and
+248044. Cover missing predecessor; newest EOS; older EOS; own EOS; negative
+own token; negative predecessor; two distinct predecessors reversed.
+Use initial --prev 7 11, and separately --prev -17 248044, in BOTH CLIs.
+Validate expected cut contexts manually; compare ALL original-C++ rows.
+Use e.g. [0,7,11,248044,19,23,-17,29,0,-2147483648,2147483647].
+This is a qualification plan, not an already executed selftest.
+
+2. Deterministic >=8194-token tiny fixture placing EOS/negative/distinct
+tokens near indices8190..8193 and16382..16385 when length permits. Confirm
+prefix8191,8192,8193 preserve history and first-chunk row prefix identity.
+A root tiny driver can call original ngram_rows with explicit known prev
+for boundary tokens and assert equality to oracle-file rows independently
+of the CLI's history-builder. This detects a shared chunk-reset mistake.
+
+3. Mutate one oracle uint32 to a DIFFERENT in-range row and require census
+failure with token/head; change only the last row and require failure.
+Truncate/add byte and require exact-size failure. Swap heads or reverse
+history tiny fixture and require detection, rather than aggregate-hash match.
+Corrupt fixture/source hash, prefix0/262145, prefixpastinput, empty input,
+malformed text, int32overflow, wordlength/8MiB/count limits, duplicate/unknown
+options, missing arguments, existing output and invalid tail should fail.
+
+4. Independently test geometry (import Python source under root-owned execution):
+Use independently calculated byte addresses for synthetic cases.
+The first page-straddling row is43: at4062, end4152, creating an8K job.
+Rows42/43 share first page0; row44 starts4152 on page1. Their two first-page
+jobs overlap page1; baselinebytes12288, distinctpageunion8192.
+Row1454 starts131052, end131142: crosses the assumed128KiB boundary.
+Last row NROWS-1 ends exactly EOF; last aligned page job extends832B past EOF.
+Assert these independent addresses/counts and descriptor reconciliation.
+Test duplicate row requests preserve uses while unique counts shrink.
+No payload read is part of this test.
+
+5. Require JSON success, ALL row comparisons=16*oracle count, PP chunkcount4
+for32768 or32 for262144, rowrequests=16*PPcount, per-chunk job uses exact,
+and tailexcluded from PP sums. Record root build command/binary SHA,
+source/fixture hashes and failure results. Link/bounds/qualification failure
+must block adopting the census as trusted offline evidence.
+
+Limitations / decision
+----------------------
+No production engine source, kernel, build configuration or model fixture
+was changed. No optimization or inference adoption was attempted.
+This implementation establishes an independently checked offline row stream
+and conditional logical geometry when root's qualification gates pass.
+It cannot establish actual PleReader cache misses/bytes, ZFS physical reads,
+SSD peak/service, prefetch overlap, GPU bottlenecks, or full262144-input
+inference correctness. A successful full256K offline census is never proof
+of full-context GPU/model qualification. No measured performance claim.

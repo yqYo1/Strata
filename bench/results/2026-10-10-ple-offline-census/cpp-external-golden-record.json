@@ -1,0 +1,176 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "source": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple_hash_golden_root_v1.cpp",
+    "bytes": 915,
+    "sha256": "26190fce87c089cc1c1f451570de3ecf1535093298cea0d0f613b25b60f6a58c"
+  },
+  "actual_source_object": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-source-object-build-v1/ngram.cpp.o",
+    "bytes": 120496,
+    "sha256": "0e56a389046c1825d66ce82d7fec2f60cefa6725e6ec36a235b79396fa3141e3"
+  },
+  "golden": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/src/kernels/ple_oracle_vectors.inc",
+    "bytes": 7639,
+    "sha256": "81db49806af4a3c8d333cb00ad0353a322b61f34f62e96a1eaffe4b782611fd3"
+  },
+  "parent_owner": {
+    "bytes": 24299,
+    "sha256": "7df012ee4d9bd047a6094ccedb37fddb3d56d4b054d9fdf468534b0fb6e94e1f"
+  },
+  "commands": [
+    {
+      "label": "compile-golden",
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++20",
+        "-O2",
+        "-ffunction-sections",
+        "-fdata-sections",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/src/kernels",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple_hash_golden_root_v1.cpp",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-source-object-build-v1/ngram.cpp.o",
+        "-Wl,--gc-sections",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-hash-golden-root-v1/ple-hash-golden"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T10:26:41.930179+00:00",
+      "wall_seconds": 120,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1496521,
+          "start_ticks": 31768104,
+          "sid": 1496521,
+          "pgid": 1496521
+        },
+        {
+          "pid": 1496522,
+          "start_ticks": 31768104,
+          "sid": 1496521,
+          "pgid": 1496521
+        },
+        {
+          "pid": 1496560,
+          "start_ticks": 31768163,
+          "sid": 1496521,
+          "pgid": 1496521
+        },
+        {
+          "pid": 1496561,
+          "start_ticks": 31768163,
+          "sid": 1496521,
+          "pgid": 1496521
+        }
+      ],
+      "pid": 1496521,
+      "direct_identity": {
+        "pid": 1496521,
+        "state": "R",
+        "ppid": 1496486,
+        "pgid": 1496521,
+        "sid": 1496521,
+        "start_ticks": 31768104,
+        "rss_bytes": 475136
+      },
+      "peak_session_rss_bytes": 69791744,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T10:26:42.876085+00:00",
+      "elapsed_seconds": 0.9457036679959856,
+      "logs": {
+        "compile-golden.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-golden.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "run-golden",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-hash-golden-root-v1/ple-hash-golden"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T10:26:42.876333+00:00",
+      "wall_seconds": 30,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1496570,
+          "start_ticks": 31768198,
+          "sid": 1496570,
+          "pgid": 1496570
+        }
+      ],
+      "pid": 1496570,
+      "direct_identity": {
+        "pid": 1496570,
+        "state": "R",
+        "ppid": 1496486,
+        "pgid": 1496570,
+        "sid": 1496570,
+        "start_ticks": 31768198,
+        "rss_bytes": 315392
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T10:26:43.031149+00:00",
+      "elapsed_seconds": 0.15462529397336766,
+      "logs": {
+        "run-golden.stdout": {
+          "bytes": 77,
+          "sha256": "87a88a48807dec08d784805cb96f75eed2e85dbfdcd1229ec074c0f886069365"
+        },
+        "run-golden.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "gpu_work_submitted": false,
+  "model_inference": false,
+  "adopted": false,
+  "scope": "Actual unchanged ngram_rows against six external-origin golden row-vector cases, CPU only; no shard read, PleReader run or model fullcontext qualification.",
+  "result": {
+    "passed": true,
+    "golden_cases": 6,
+    "row_ids_checked": 304,
+    "GPU_submitted": false
+  },
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-hash-golden-root-v1/ple-hash-golden",
+    "bytes": 23048,
+    "sha256": "f1e108ef320c59220abe5052d3152293b05b3a92aad8bfce5b09d43ad97dfb12"
+  }
+}

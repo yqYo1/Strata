@@ -1,0 +1,241 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "commands": [
+    {
+      "label": "matched-clean",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple_offline_census_v2.py",
+        "--input",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-v2-owned/qualification/tiny.txt",
+        "--fixture",
+        "tiny",
+        "--prefix",
+        "11",
+        "--oracle-rows",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-v2-owned/qualification/tiny-0.rows",
+        "--oracle-bin",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-v2-owned/ple-ngram-oracle",
+        "--prev",
+        "7",
+        "11"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T10:39:11.616040+00:00",
+      "wall_seconds": 30,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1540123,
+          "start_ticks": 31843072,
+          "sid": 1540123,
+          "pgid": 1540123
+        }
+      ],
+      "pid": 1540123,
+      "direct_identity": {
+        "pid": 1540123,
+        "state": "R",
+        "ppid": 1540103,
+        "pgid": 1540123,
+        "sid": 1540123,
+        "start_ticks": 31843072,
+        "rss_bytes": 581632
+      },
+      "peak_session_rss_bytes": 10620928,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T10:39:11.782386+00:00",
+      "elapsed_seconds": 0.16610694403061643,
+      "logs": {
+        "matched-clean.stdout": {
+          "bytes": 3876,
+          "sha256": "7c7f9da40eb0d8b250e3e0a78ffb66b4d703cfe7a35cca5ca7804f2f51ae9950"
+        },
+        "matched-clean.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "first-corrupted",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple_offline_census_v2.py",
+        "--input",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-v2-owned/qualification/tiny.txt",
+        "--fixture",
+        "tiny",
+        "--prefix",
+        "11",
+        "--oracle-rows",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-census-mutation-qualification-v1/first.rows",
+        "--oracle-bin",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-v2-owned/ple-ngram-oracle",
+        "--prev",
+        "7",
+        "11"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T10:39:11.783118+00:00",
+      "wall_seconds": 30,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1540127,
+          "start_ticks": 31843089,
+          "sid": 1540127,
+          "pgid": 1540127
+        }
+      ],
+      "pid": 1540127,
+      "direct_identity": {
+        "pid": 1540127,
+        "state": "R",
+        "ppid": 1540103,
+        "pgid": 1540127,
+        "sid": 1540127,
+        "start_ticks": 31843089,
+        "rss_bytes": 466944
+      },
+      "peak_session_rss_bytes": 10579968,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T10:39:11.942282+00:00",
+      "elapsed_seconds": 0.15900035499362275,
+      "logs": {
+        "first-corrupted.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "first-corrupted.stderr": {
+          "bytes": 127,
+          "sha256": "62d4675ac65a3d0051bbbb1bd21af85efe45c1a7cd25472bb9580c2b8e03124f"
+        }
+      }
+    },
+    {
+      "label": "last-corrupted",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple_offline_census_v2.py",
+        "--input",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-v2-owned/qualification/tiny.txt",
+        "--fixture",
+        "tiny",
+        "--prefix",
+        "11",
+        "--oracle-rows",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-census-mutation-qualification-v1/last.rows",
+        "--oracle-bin",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-v2-owned/ple-ngram-oracle",
+        "--prev",
+        "7",
+        "11"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T10:39:11.942881+00:00",
+      "wall_seconds": 30,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1540136,
+          "start_ticks": 31843105,
+          "sid": 1540136,
+          "pgid": 1540136
+        }
+      ],
+      "pid": 1540136,
+      "direct_identity": {
+        "pid": 1540136,
+        "state": "R",
+        "ppid": 1540103,
+        "pgid": 1540136,
+        "sid": 1540136,
+        "start_ticks": 31843105,
+        "rss_bytes": 466944
+      },
+      "peak_session_rss_bytes": 10321920,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T10:39:12.098837+00:00",
+      "elapsed_seconds": 0.15576441399753094,
+      "logs": {
+        "last-corrupted.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "last-corrupted.stderr": {
+          "bytes": 131,
+          "sha256": "b44e449d89ae25431c06806fa80b1ebc9c4829def460123624991f3fb16cb4a1"
+        }
+      }
+    }
+  ],
+  "source": {
+    "bytes": 15520,
+    "sha256": "81732251aef5b19e7f896578aaba8a5c8a51fcfb9f39c7aa29bd45dea730b513"
+  },
+  "binary": {
+    "bytes": 35920,
+    "sha256": "0f4b5e719de1c4559339e96b516f8b191c7aca82966395536b7bf293e4627972"
+  },
+  "original_row_file": {
+    "bytes": 704,
+    "sha256": "934158ad5ca80dd30246cd26bed6cd7a0cbf058565a89f9f96f141751802c9b5"
+  },
+  "input_fixture": {
+    "bytes": 52,
+    "sha256": "15edf24bda2b8daea4472886fecd03f1c9f61d8cb4adc23737473abc6f7f6351"
+  },
+  "parent_owner": {
+    "bytes": 24299,
+    "sha256": "7df012ee4d9bd047a6094ccedb37fddb3d56d4b054d9fdf468534b0fb6e94e1f"
+  },
+  "gpu_work_submitted": false,
+  "model_inference": false,
+  "scope": "Root corrects negative-test history alignment from previous40check qualifier; source/oracle/positive all-row model-census results unchanged. First/last corruption must fail at expected token/head using same initialprev7,11 as clean oracle. Original qualifier receipt unchanged.",
+  "first_rejection": {
+    "success": false,
+    "error": "oracle mismatch token=0 head=0 actual=16919052 expected=16919051",
+    "no_census_aggregates_valid": true
+  },
+  "last_rejection": {
+    "success": false,
+    "error": "oracle mismatch token=10 head=15 actual=318097757 expected=318097756",
+    "no_census_aggregates_valid": true
+  }
+}

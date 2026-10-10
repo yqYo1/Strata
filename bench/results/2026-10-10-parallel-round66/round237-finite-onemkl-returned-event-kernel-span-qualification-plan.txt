@@ -1,0 +1,87 @@
+# R237 — finite oneMKL returned-event versus kernel-span qualification plan
+
+Date: 2026-10-10. Read-only recipe for the next bounded discriminator. I inspected registry v88 and committed compact evidence only; no build, test, profile, inference, GPU/process/device query, cleanup, Git operation, or implementation edit was performed. This report is the only write.
+
+The source worktree is `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-qualification-20261010` (requested immutable source commit `a32f86bbc1fe027fd7c6e49c7fc7fa5d8f7b360c`; compiled source snapshot `7c5ad75a45c7e188ecef7a947b49b829dc5c5710`). The committed `qualify_prefill_f16_event` binary is SHA-256 `d2350d5ba47f83d12047019de5bc91fe5fbfabce237375ad1f51bb6c92305432`. PTI source is `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/pti-gpu-profiler-source`, commit `6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033`. Registry v88 SHA-256 is `1e0f37e1c09f93b5bc861d7e7ad433ff133b46d376fc45adce3527130450feea`; result mirror commit is `7935f73c5b5b497e2c74937254457ef0d7322c38`.
+
+## Decision and existing boundary
+
+The existing device canary proves the wrapper returns a completing event and exposes monotone submit/start/end fields for one tiny `T=7,N=11,K=13,ldy=17` call. It does not prove that the returned interval covers oneMKL's internal work. The preserved PTI side outputs from that canary show no device kernel entries, so a new trace must first prove collector visibility with a known SYCL marker kernel and the actual target operation before any span verdict.
+
+The built wrapper is currently hard-coded to the tiny dimensions. It cannot qualify production geometry unchanged. The finite plan below keeps its same `Gemm::f16_event` call and linked oneMKL/DPCT implementation, while adding a separate shape-manifest mode and marker records to the qualification harness. This is a new profiling qualification build, not evidence already supplied by the current binary; the tiny original path remains the control. The current executable has no `--case-manifest` parser, so do not run it with that option: add the separate manifest mode, compile a new pinned qualification binary, and use that new binary in the command below. Do not use M80/M160 synthetic points or the tiny canary in place of routed row counts.
+
+The public contract distinction is material: oneMKL's USM event is a completion dependency; its profiling timestamps are not documented as the envelope of every internal library submission. The test must compare the returned event to PTI's complete observed operation set on the exact B570/runtime/queue/shape. Registry v88 corrects the same point and the ordinary negative `submit(next)-end(previous)` case; no cross-event gap should be treated as idle.
+
+## Finite case manifest
+
+Use a committed clean, non-PTI route census as input. It must identify the exact native fallback calls as `(chunk,layer,expert,role,T,N,K,ldy)` and distinguish GU from Down. For the current model geometry the source call is:
+
+| Role | `T` | `N` | `K` | Input leading dimension | `ldy` | Layout/type |
+|---|---:|---:|---:|---:|---:|---|
+| GU | actual routed `ne` | 1280 | 2560 | 2560 | 1280 | row-major FP16 X and W; FP32 Y |
+| Down | actual routed `ne` | 2560 | 640 | 640 | 2560 | row-major FP16 X and W; FP32 Y |
+
+These shapes follow `expert_product` and the `f16_event` descriptor path: column-major oneMKL `trans/nontrans`, `m=N,n=T,k=K`, alpha 1, beta 0, FP32 compute/output, descriptor bound to the in-order profiling queue. The exact `T=ne` is route data. A row count from token count, top-K, or another benchmark is not a substitute.
+
+To keep the first end-to-end instance finite, prepare one natural request chunk of at most 64 prompt tokens, without an intermediate callback, and use all distinct `(role,T,N,K,ldy)` classes actually found in that chunk. There are at most 64 T values and two roles (128 shape cases). If the offline census already supplies a different bounded production route, retain that route's exact histogram and state its larger finite case count. A result from the <=64-token route qualifies only its observed classes; it does not qualify a 32K route that contains other T values.
+
+For each shape case, run one warmup and three measured repetitions. The harness delta is a case-manifest mode plus begin/end marker and per-case receipt support; leave the existing tiny canary unchanged. No production-path code change is needed for the isolated shape pass. Make the harness emit its case ID and dimensions, call sequence, and returned event timestamps. Use device-USM buffers of exact extents allocated and initialized before the measured marker window. Use deterministic finite FP16 values, verify the full FP32 output, and verify the unchanged `f16` path for the same case outside the target window. Do not count initialization, allocation, JIT or output validation as GEMM device work. Keep a single `Gemm` descriptor, single host submitter, one in-order profiling-enabled queue, and sequential oneMKL mode, matching the compiled diagnostic configuration. The matrix values can be synthetic because this test is about command coverage, but the type, allocation class, call geometry and descriptor must match.
+
+For a one-chunk actual service request, R223's source bounds give at most 512 active experts/layer, 49,152 expert GEMM events and 24,576 GU/Down pairs for 48 layers; both fit the existing 65,536 event/pair limits. Its cumulative role coverage is at most `48 × 2 = 96` buckets, below 16,384. Precompute bounds from the actual route before admitting the request. If the request spans multiple chunks or a source count exceeds the limit, reject it before profiling and select a naturally smaller one-chunk request; never accept capped or partial output as complete.
+
+## Collector-positive shape pass
+
+Add two distinct tiny marker kernels to the harness, `case_begin` and `case_end`, with distinct compiled names/IDs and one-word device writes so PTI can identify them. Query and retain their SYCL profiling timestamps. For each measured repetition:
+
+1. Submit `case_begin` on the same in-order queue and let it complete before the target call (outside the timing claim).
+2. Record host `steady_clock` immediately before/after the `f16_event` API call, retain its returned event, and log `command_submit/start/end` only after completion.
+3. Submit `case_end` with an explicit dependency on that returned event. Do not host-wait between the call and the marker. At the end of the batch, wait once on the final marker, then drain queue async errors and query all profiling fields. This checks the wrapper's completion dependency without inserting a wait into the target submit path.
+4. Repeat three times for each manifest row. The warmup and setup operations have separate IDs and are excluded from target windows.
+
+Run one collector process for the complete finite manifest. Use the existing unfiltered PTI path with explicit output directory and event cap, for example:
+
+```sh
+unitrace --kernel-submission --device-timeline \
+  --chrome-kernel-logging --chrome-call-logging \
+  --chrome-event-buffer-size 262144 --result-dir "$OUT/pti-shapes" \
+  "$OUT/qualify_prefill_f16_event_span_v1" \
+  --case-manifest "$OUT/actual-route-shapes.json"
+```
+
+`--chrome-kernel-logging` is required because it retains device operations and host/device flows; `--chrome-call-logging`, `--kernel-submission`, and `--device-timeline` supply host calls, queue submission details and device intervals. The 262,144 event buffer is per host thread; check PTI stdout/stderr and output counts for loss/overflow and reconcile every marker and target call. If the actual host/API event count approaches the cap, the trace is truncated, or PTI reports loss, mark the run invalid and reduce the case manifest/request before retrying. Do not filter records on the first pass. Add `--chrome-sycl-logging` only if the unfiltered host calls do not disambiguate queue submission. Confirm both marker kernels and an actual GEMM kernel are visible in the same trace before interpreting any event span.
+
+## Analysis and pass gates
+
+Use the existing offline PTI operation/flow analyzer, preserving raw operation IDs, process/thread IDs, flow keys, queue/engine labels, names, and full start/end intervals. Join each harness sequence to its `case_begin`, target host API call(s), oneMKL device operations, and `case_end`. For the isolated harness, the marked window contains only its identified target GEMM and the two markers; allocation, warmup, result copies and validation are outside it. Treat every target-window device operation caused by the oneMKL call as part of the operation set, including helper kernels or device copies if present. Do not infer a missing operation from a matching duration or kernel name alone.
+
+Do not subtract raw SYCL nanoseconds from PTI Chrome timestamps by assumption. Pair each marker's SYCL event interval with its PTI device interval in this same trace; fit the clock conversion from the before/after markers and compute the maximum observed residual plus PTI timestamp resolution as the comparison uncertainty. Retain the fit, residual, operation IDs and interval table. If markers do not map consistently or their queues/engines differ from the operation stream so a common device clock cannot be established, stop with “clock correlation unqualified.”
+
+For every repetition, require all of the following: output correctness; `submit <= start <= end`; returned event completes; PTI shows both marker commands and every relevant target device operation; host/device flows and queue identity attribute those operations to this call; the returned event end is no earlier than the last associated operation within the measured uncertainty; and the returned `start..end` covers the PTI first-to-last operation envelope within that same uncertainty. Repeat three times to reject a one-off ordering. The event need not cover marker kernels. Check rather than assume that the returned event starts no later than the earliest target operation. Any hidden/unclassified operation, lost event, or timing match only to a terminal kernel fails the full-span gate for that shape.
+
+The PTI first-to-last envelope is not the sum of kernel times or exclusive GPU busy time: retain individual intervals and their union separately. If intervals overlap on different engines, report that explicitly. The returned event can safely be described as containing the complete observed device-operation span for the tested call only when all required work is visible and attributed; it cannot be relabeled as a universal active-service rate.
+
+Pass means: “For the tested `(role,T,N,K,ldy)` classes on this pinned B570/software/queue configuration, PTI observed the complete associated device operation set and the returned event interval covered its first-to-last span within measured clock uncertainty.” It does not establish unprofiled speed, occupancy, physical link bytes, other shapes/devices/runtimes, or total model service. If completion passes but start/end coverage fails, retain the event as a dependency and report only the narrower event command interval; do not label it full oneMKL service.
+
+## One actual prefill confirmation
+
+Only after the shape pass, make one short actual native-expert prefill request of one natural <=64-token chunk using the normal route and staging path, with the same safe runtime settings and PTI enabled. Do not inject waits, barriers, or per-call queue markers into production; leave the copy stager and its overlap behavior unchanged. The existing public service ledger aggregates by shape and `(chunk,layer,role)` and does not emit individual event timestamps/IDs. Therefore, before claiming a one-to-one production join, add a bounded opt-in per-call receipt keyed by monotonic sequence and including `(pid,tid,chunk,layer,expert,role,T,N,K,ldy,queue/source)`, host-clock call-entry/return, returned-event fields, attempted/submitted/retained/folded/queried status and completion/error state. Add no device command for this receipt. Join it to PTI only through verified host API submission flow and same-thread call order; host steady timestamps are not compared directly with PTI or SYCL device time. Preserve existing fail-closed caps and suppress the whole aggregate if any call is dropped. If that receipt or a unique flow join is not available, report only aggregate route/shape and PTI coverage; do not claim per-call production event-span qualification.
+
+In the actual trace, reconcile route-expected pairs and submitted/returned/folded/queried counts exactly; match one GU and one Down per expected routed expert/row count; retain all queue and source identities; and reconcile all PTI internal GEMM/helper operations against that source coverage. `command_submit(next) - command_end(previous)` is not a validity test or idle metric. Queue gaps between different operations remain unclassified unless PTI and source account for all work.
+
+Keep CPU host work and H2D/device-copy work on separate lanes. Record the CPU stager's host wall/worker intervals, host API submission spans, copy-queue event timestamps/payload bytes, and PTI copy-operation intervals independently from returned-GEMM events and their PTI kernels. The GEMM event span is not CPU stager time or H2D time. The logical copy payload is not physical PCIe bytes. Host steady-clock and device profiling clocks are separate; do not subtract them without a measured cross-clock correlation. Preserve the normal production scheduling, but make no clean throughput or performance claim from this profiling-perturbed request.
+
+## Stop, retention, and claims
+
+Stop as invalid on a fault/status change, route/call-count mismatch, queue change, incomplete event set, dropped/capped ledger record, async error, buffer overrun, missing marker/GEMM visibility, or clock-map failure. Preserve the original status and one representative diagnostic if the failure is new. For a passing run, retain a compact normalized table containing each case and repetition, marker/event/PTI intervals, clock-map error, operation IDs/names/counts, flow/queue IDs and hashes. The raw PTI trace's owner is the root oneMKL span qualification, consumer is this follow-up report, byte budget is 64 MiB, and review point is immediately after call/operation reconciliation. If it passes, retire the raw trace only after its SHA-256/path/reason is entered in the serialized deletion manifest; keep the compact table and receipt. PTI is deliberately not used as clean timing.
+
+## Evidence pins
+
+- Registry v88: `1e0f37e1c09f93b5bc861d7e7ad433ff133b46d376fc45adce3527130450feea`.
+- R228 event-span audit: `ae41a7a56cb3b13f54ea49885d5c5324b16dc4120f3286ac2e30cbb7f170aac3`.
+- R223 ledger admission/bounds audit: `f155470482323725b9858c60f4e3ab10081e6d741f86ae144717259b596dbd6b`.
+- R225 PTI operation/flow audit: `c4d4cb547bdf628de527fb2cbd92731ff7b038c107314cf2f2282a65c3dfafa2`.
+- Current device qualification README / device receipt: `ffab369467a727a5607cbf8c2c8307ea7b09a41d913251d9d4dbc1e0d74b168d` / `8a2715ca0391c728eac6bf8cade73e400da40eeadd3894b17c71176983d374d5`.
+- WQUAL small binary: `d2350d5ba47f83d12047019de5bc91fe5fbfabce237375ad1f51bb6c92305432`; its source harness currently fixes the tiny case at `T=7,N=11,K=13,ldy=17`.
+- PTI unitrace README / collector source: `00eacd9512a5d7141cf606c76061b35e75e9119600e7b020db48516ce3d27649` / `d5a275a78d6d99a4aa82b1e7cb464ff4974c4eb4c46f068f9f1f5b9978d04293`.
+
+Primary references: [oneMKL USM GEMM completion event](https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-dpcpp/2025-2/gemm.html), [oneMKL asynchronous completion-event contract](https://oneapi-spec.uxlfoundation.org/specifications/oneapi/v1.2-rev-1/elements/onemkl/source/architecture/architecture), [SYCL 2020 event profiling](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html), and the [pinned PTI unitrace README](https://github.com/intel/pti-gpu/blob/master/tools/unitrace/README.md). R228 retains the source-specific interpretation. This is a recipe only; none of the planned captures were run here.

@@ -1,0 +1,1122 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "started_utc": "2026-10-10T10:36:38.028347+00:00",
+  "controller": {
+    "bytes": 5260,
+    "sha256": "6aefde0a89d9cdbc190735b525109dd7e38d6523eaeffb77e41b1f35438e0ae9"
+  },
+  "parent_owner": {
+    "bytes": 24299,
+    "sha256": "7df012ee4d9bd047a6094ccedb37fddb3d56d4b054d9fdf468534b0fb6e94e1f"
+  },
+  "modified_owner_sha256": "1e44ea7e165ba9c4d22ae9dbd51984aac729f27e51fdf36e1de80a05e7975e19",
+  "commands": [
+    {
+      "label": "compile",
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++20",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+        "-ffunction-sections",
+        "-fdata-sections",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/include",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple_ngram_oracle_v2.cpp",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-source-object-build-v1/ngram.cpp.o",
+        "-Wl,--gc-sections",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-v2-owned/ple-ngram-oracle"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T10:36:38.029330+00:00",
+      "wall_seconds": 120,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1531470,
+          "start_ticks": 31827714,
+          "sid": 1531470,
+          "pgid": 1531470
+        },
+        {
+          "pid": 1531471,
+          "start_ticks": 31827714,
+          "sid": 1531470,
+          "pgid": 1531470
+        },
+        {
+          "pid": 1531496,
+          "start_ticks": 31827784,
+          "sid": 1531470,
+          "pgid": 1531470
+        }
+      ],
+      "pid": 1531470,
+      "direct_identity": {
+        "pid": 1531470,
+        "state": "R",
+        "ppid": 1531421,
+        "pgid": 1531470,
+        "sid": 1531470,
+        "start_ticks": 31827714,
+        "rss_bytes": 450560
+      },
+      "peak_session_rss_bytes": 116387840,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T10:36:38.888913+00:00",
+      "elapsed_seconds": 0.8593987529748119,
+      "logs": {
+        "compile.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "dependencies",
+      "argv": [
+        "/usr/bin/readelf",
+        "-d",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-v2-owned/ple-ngram-oracle"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T10:36:38.889144+00:00",
+      "wall_seconds": 30,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1531501,
+          "start_ticks": 31827800,
+          "sid": 1531501,
+          "pgid": 1531501
+        }
+      ],
+      "pid": 1531501,
+      "direct_identity": {
+        "pid": 1531501,
+        "state": "R",
+        "ppid": 1531421,
+        "pgid": 1531501,
+        "sid": 1531501,
+        "start_ticks": 31827800,
+        "rss_bytes": 405504
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T10:36:39.053513+00:00",
+      "elapsed_seconds": 0.16418020601850003,
+      "logs": {
+        "dependencies.stdout": {
+          "bytes": 1658,
+          "sha256": "47813645a9ee1016ea91715e77b5b7d8e2304f8f677628a99b530f24e7c8c04d"
+        },
+        "dependencies.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "qualify",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qualify_ple_census_v2.py",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-v2-owned/ple-ngram-oracle",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-v2-owned/qualification"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T10:36:39.054090+00:00",
+      "wall_seconds": 120,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1531511,
+          "start_ticks": 31827816,
+          "sid": 1531511,
+          "pgid": 1531511
+        },
+        {
+          "pid": 1531521,
+          "start_ticks": 31827830,
+          "sid": 1531511,
+          "pgid": 1531511
+        },
+        {
+          "pid": 1531527,
+          "start_ticks": 31827840,
+          "sid": 1531511,
+          "pgid": 1531511
+        },
+        {
+          "pid": 1531535,
+          "start_ticks": 31827850,
+          "sid": 1531511,
+          "pgid": 1531511
+        },
+        {
+          "pid": 1531577,
+          "start_ticks": 31827911,
+          "sid": 1531511,
+          "pgid": 1531511
+        },
+        {
+          "pid": 1531604,
+          "start_ticks": 31827977,
+          "sid": 1531511,
+          "pgid": 1531511
+        },
+        {
+          "pid": 1531651,
+          "start_ticks": 31828035,
+          "sid": 1531511,
+          "pgid": 1531511
+        }
+      ],
+      "pid": 1531511,
+      "direct_identity": {
+        "pid": 1531511,
+        "state": "R",
+        "ppid": 1531421,
+        "pgid": 1531511,
+        "sid": 1531511,
+        "start_ticks": 31827816,
+        "rss_bytes": 581632
+      },
+      "peak_session_rss_bytes": 142610432,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T10:36:41.944088+00:00",
+      "elapsed_seconds": 2.8898301550070755,
+      "logs": {
+        "qualify.stdout": {
+          "bytes": 1398,
+          "sha256": "4f3ac43fd412e975f18921b8c6a7b02912b75ecef8105801479b04829aea62b6"
+        },
+        "qualify.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "actual32K-oracle",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-v2-owned/ple-ngram-oracle",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coding-review-32k-tokens.txt",
+        "32769",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-v2-owned/actual32K.rows.bin",
+        "--insert198"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T10:36:41.944691+00:00",
+      "wall_seconds": 360,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1531696,
+          "start_ticks": 31828105,
+          "sid": 1531696,
+          "pgid": 1531696
+        }
+      ],
+      "pid": 1531696,
+      "direct_identity": {
+        "pid": 1531696,
+        "state": "R",
+        "ppid": 1531421,
+        "pgid": 1531696,
+        "sid": 1531696,
+        "start_ticks": 31828105,
+        "rss_bytes": 434176
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T10:36:42.112966+00:00",
+      "elapsed_seconds": 0.16798620100598782,
+      "logs": {
+        "actual32K-oracle.stdout": {
+          "bytes": 306,
+          "sha256": "2caa7a3c272c91e0a36d222e64c8055286ca7714ab170ec19e624c3e5c9b0fa9"
+        },
+        "actual32K-oracle.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "actual32K-census",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple_offline_census_v2.py",
+        "--input",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/coding-review-32k-tokens.txt",
+        "--fixture",
+        "32k-insert198",
+        "--prefix",
+        "32768",
+        "--oracle-rows",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-v2-owned/actual32K.rows.bin",
+        "--oracle-bin",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-v2-owned/ple-ngram-oracle",
+        "--include-tail"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T10:36:42.113272+00:00",
+      "wall_seconds": 360,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1531701,
+          "start_ticks": 31828122,
+          "sid": 1531701,
+          "pgid": 1531701
+        }
+      ],
+      "pid": 1531701,
+      "direct_identity": {
+        "pid": 1531701,
+        "state": "R",
+        "ppid": 1531421,
+        "pgid": 1531701,
+        "sid": 1531701,
+        "start_ticks": 31828122,
+        "rss_bytes": 466944
+      },
+      "peak_session_rss_bytes": 98177024,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T10:36:43.805877+00:00",
+      "elapsed_seconds": 1.6921065210481174,
+      "logs": {
+        "actual32K-census.stdout": {
+          "bytes": 10112,
+          "sha256": "8d71931e81b0e8657e4dcadd3a24c55d2cb8e8bf62a2c469283dd8723edfd1f3"
+        },
+        "actual32K-census.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "context262144-oracle",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-v2-owned/ple-ngram-oracle",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-copy-off/coding-context-256k-tokens.txt",
+        "262144",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-v2-owned/context262144.rows.bin"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T10:36:43.810198+00:00",
+      "wall_seconds": 360,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1531785,
+          "start_ticks": 31828292,
+          "sid": 1531785,
+          "pgid": 1531785
+        }
+      ],
+      "pid": 1531785,
+      "direct_identity": {
+        "pid": 1531785,
+        "state": "R",
+        "ppid": 1531421,
+        "pgid": 1531785,
+        "sid": 1531785,
+        "start_ticks": 31828292,
+        "rss_bytes": 487424
+      },
+      "peak_session_rss_bytes": 4702208,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T10:36:43.973434+00:00",
+      "elapsed_seconds": 0.16281481500482187,
+      "logs": {
+        "context262144-oracle.stdout": {
+          "bytes": 314,
+          "sha256": "97d44beb260ae1fc3a549c8c30252af7cf0aac41e435447f51fba6951966d9ca"
+        },
+        "context262144-oracle.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "context262144-census",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple_offline_census_v2.py",
+        "--input",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/full-context-copy-off/coding-context-256k-tokens.txt",
+        "--fixture",
+        "256k",
+        "--prefix",
+        "262143",
+        "--oracle-rows",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-v2-owned/context262144.rows.bin",
+        "--oracle-bin",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-v2-owned/ple-ngram-oracle",
+        "--include-tail"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T10:36:43.973738+00:00",
+      "wall_seconds": 360,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1531793,
+          "start_ticks": 31828308,
+          "sid": 1531793,
+          "pgid": 1531793
+        }
+      ],
+      "pid": 1531793,
+      "direct_identity": {
+        "pid": 1531793,
+        "state": "R",
+        "ppid": 1531421,
+        "pgid": 1531793,
+        "sid": 1531793,
+        "start_ticks": 31828308,
+        "rss_bytes": 466944
+      },
+      "peak_session_rss_bytes": 107819008,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T10:36:55.111279+00:00",
+      "elapsed_seconds": 11.137029822974,
+      "logs": {
+        "context262144-census.stdout": {
+          "bytes": 54087,
+          "sha256": "06dd9eda178e54b6f0963963c56a317e89d06066af8f031ba6ca234338da1ecf"
+        },
+        "context262144-census.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "sources": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple_ngram_oracle_v2.cpp": {
+      "bytes": 6940,
+      "sha256": "f91ab4871b38e93dc15837eab4fd27e5a8f59338d4984ad1d8e9ceb5e71757f3"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple_offline_census_v2.py": {
+      "bytes": 15520,
+      "sha256": "81732251aef5b19e7f896578aaba8a5c8a51fcfb9f39c7aa29bd45dea730b513"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qualify_ple_census_v2.py": {
+      "bytes": 4634,
+      "sha256": "1d15e05b814ecd4402c252c2d135921474da6a4fd3751348c5b5845c54fbc767"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_ple_census_v2.py": {
+      "bytes": 5260,
+      "sha256": "6aefde0a89d9cdbc190735b525109dd7e38d6523eaeffb77e41b1f35438e0ae9"
+    }
+  },
+  "original_ngram_object": {
+    "bytes": 120496,
+    "sha256": "0e56a389046c1825d66ce82d7fec2f60cefa6725e6ec36a235b79396fa3141e3"
+  },
+  "scope": "CPU-only independently checked offline PLE request geometry. No hardware/performance/GPU/cache/shard data or fullcontext inference claim.",
+  "gpu_work_submitted": false,
+  "model_inference": false,
+  "adopted": false,
+  "limits": {
+    "wall_per_process_seconds": 360,
+    "RSS_session_bytes": 1073741824,
+    "CPU_each_seconds": [
+      120,
+      121
+    ],
+    "AS_each_bytes": 17179869184,
+    "output_file_bytes": 33554432,
+    "text_per_process_bytes": 4194304
+  },
+  "dependencies": "\nDynamic section at offset 0x6cb0 contains 30 entries:\n  Tag        Type                         Name/Value\n 0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]\n 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]\n 0x000000000000000c (INIT)               0x2000\n 0x000000000000000d (FINI)               0x4a78\n 0x0000000000000019 (INIT_ARRAY)         0x6c80\n 0x000000000000001b (INIT_ARRAYSZ)       16 (bytes)\n 0x000000000000001a (FINI_ARRAY)         0x6c90\n 0x000000000000001c (FINI_ARRAYSZ)       8 (bytes)\n 0x000000006ffffef5 (GNU_HASH)           0x3b0\n 0x0000000000000005 (STRTAB)             0x868\n 0x0000000000000006 (SYMTAB)             0x400\n 0x000000000000000a (STRSZ)              1359 (bytes)\n 0x000000000000000b (SYMENT)             24 (bytes)\n 0x0000000000000015 (DEBUG)              0x0\n 0x0000000000000003 (PLTGOT)             0x6ed0\n 0x0000000000000002 (PLTRELSZ)           696 (bytes)\n 0x0000000000000014 (PLTREL)             RELA\n 0x0000000000000017 (JMPREL)             0x1070\n 0x0000000000000007 (RELA)               0xf08\n 0x0000000000000008 (RELASZ)             360 (bytes)\n 0x0000000000000009 (RELAENT)            24 (bytes)\n 0x000000000000001e (FLAGS)              BIND_NOW\n 0x000000006ffffffb (FLAGS_1)            Flags: NOW PIE\n 0x000000006ffffffe (VERNEED)            0xe18\n 0x000000006fffffff (VERNEEDNUM)         4\n 0x000000006ffffff0 (VERSYM)             0xdb8\n 0x000000006ffffff9 (RELACOUNT)          4\n 0x0000000000000000 (NULL)               0x0\n",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-v2-owned/ple-ngram-oracle",
+    "bytes": 35920,
+    "sha256": "0f4b5e719de1c4559339e96b516f8b191c7aca82966395536b7bf293e4627972"
+  },
+  "qualification": {
+    "passed": true,
+    "checks": [
+      "python_external_golden_0_0",
+      "python_external_golden_0_1",
+      "python_external_golden_0_2",
+      "python_external_golden_0_3",
+      "python_external_golden_1_0",
+      "python_external_golden_1_1",
+      "python_external_golden_1_2",
+      "python_external_golden_2_0",
+      "python_external_golden_2_1",
+      "python_external_golden_3_0",
+      "python_external_golden_3_1",
+      "python_external_golden_4_0",
+      "python_external_golden_4_1",
+      "python_external_golden_4_2",
+      "python_external_golden_5_0",
+      "python_external_golden_5_1",
+      "python_external_golden_5_2",
+      "python_external_golden_5_3",
+      "python_external_golden_5_4",
+      "all304_independent_golden_rows",
+      "negative_own_token_EOS_null_wrap_history_0",
+      "first_in_range_corruption_rejected",
+      "last_in_range_corruption_rejected",
+      "short_size_rejected",
+      "long_size_rejected",
+      "existing_output_refused",
+      "negative_own_token_EOS_null_wrap_history_1",
+      "cross8192_history_allrows_8191",
+      "cross8192_history_allrows_8192",
+      "cross8192_history_allrows_8193",
+      "cross8192_history_allrows_8208",
+      "chunk_prefix_identity",
+      "dedup_straddler_overlap_kept",
+      "record_boundary_two_records",
+      "EOF_geometry_832_not_IO_pass",
+      "out_of_table_geometry_rejected",
+      "out_of_table_geometry_rejected",
+      "plus_parser_rejected",
+      "overflow_parser_rejected",
+      "malformed_parser_rejected"
+    ],
+    "checks_count": 40,
+    "external_golden_rows": 304,
+    "scope": "CPU offline equation/history/geometry qualification only; no GPU/shard/actualcache/IO/model context result."
+  },
+  "cases": [
+    {
+      "label": "actual32K",
+      "oracle": {
+        "success": true,
+        "scope": "CPU offline original ngram_rows only",
+        "input_tokens": 32768,
+        "transformed_tokens": 32769,
+        "pp_count": 32769,
+        "chunk_tokens": 8192,
+        "chunks": 5,
+        "heads": 16,
+        "initial_prev": [
+          -1,
+          -1
+        ],
+        "insert198_before_index32759": true,
+        "row_count": 524304,
+        "row_bytes": 2097216,
+        "rows_le_fnv1a64": 5433395255860623928
+      },
+      "oracle_rows": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-v2-owned/actual32K.rows.bin",
+        "bytes": 2097216,
+        "sha256": "39a0d30ee2544b6907690246ca12673a62ed3e9ade9fb1519ddf41c87ac29189"
+      },
+      "census_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-v2-owned/actual32K-census.stdout",
+      "census_identity": {
+        "bytes": 10112,
+        "sha256": "8d71931e81b0e8657e4dcadd3a24c55d2cb8e8bf62a2c469283dd8723edfd1f3"
+      },
+      "summary": {
+        "row_requests": 524288,
+        "unique_rows": 340732,
+        "first_page_dedup_jobs": 338705,
+        "baseline_job_page_bytes_sum_with_overlap": 1417633792,
+        "distinct_page_union_bytes": 1417297920,
+        "baseline_jobs_assumed_records_touched": 281872,
+        "conditional_record_coalesced_bytes_clipped_at_shard_eof": 36945476800
+      },
+      "chunk_count": 4,
+      "all_rows_compared": 524304,
+      "first_chunk": {
+        "scope": "cache-empty per-chunk control; logical geometry only",
+        "start_token": 0,
+        "tokens": 8192,
+        "row_requests": 131072,
+        "unique_rows": 91901,
+        "logical_requested_row_bytes": 11796480,
+        "unique_row_payload_bytes": 8271090,
+        "row_request_page_straddlers": 2736,
+        "row_request_assumed_record_straddlers": 126,
+        "first_page_dedup_jobs": 91325,
+        "dedup_uses_beyond_first": 39747,
+        "jobs_4k": 89354,
+        "jobs_8k": 1971,
+        "baseline_job_page_bytes_sum_with_overlap": 382140416,
+        "baseline_jobs_extending_beyond_admitted_eof": 0,
+        "baseline_job_bytes_beyond_eof_geometry_only": 0,
+        "distinct_expanded_pages": 93275,
+        "distinct_page_union_bytes": 382054400,
+        "row_payload_assumed_records_touched": 75042,
+        "baseline_jobs_assumed_records_touched": 75042,
+        "record_occupancy_unique_4k_pages_histogram": {
+          "1": 59407,
+          "2": 13311,
+          "3": 2071,
+          "4": 233,
+          "5": 19,
+          "6": 1
+        },
+        "record_baseline_job_occupancy_histogram": {
+          "1": 60676,
+          "2": 12562,
+          "3": 1646,
+          "4": 147,
+          "5": 11
+        },
+        "job_row_use_count_histogram": {
+          "1": 78045,
+          "2": 8248,
+          "3": 1963,
+          "4": 1118,
+          "5": 452,
+          "6": 333,
+          "7": 249,
+          "8": 177,
+          "9": 106,
+          "10": 64,
+          "11": 33,
+          "12": 25,
+          "13": 40,
+          "14": 32,
+          "15": 16,
+          "16": 32,
+          "18": 7,
+          "19": 41,
+          "20": 16,
+          "21": 24,
+          "22": 32,
+          "26": 8,
+          "28": 24,
+          "29": 8,
+          "30": 8,
+          "31": 7,
+          "32": 25,
+          "33": 22,
+          "34": 17,
+          "35": 1,
+          "36": 8,
+          "39": 7,
+          "40": 9,
+          "41": 8,
+          "45": 8,
+          "46": 8,
+          "47": 30,
+          "48": 18,
+          "53": 8,
+          "54": 8,
+          "55": 8,
+          "58": 16,
+          "77": 8,
+          "193": 8
+        },
+        "job_unique_row_count_histogram": {
+          "1": 90751,
+          "2": 572,
+          "3": 2
+        },
+        "conditional_record_coalesced_jobs": 75042,
+        "conditional_full_record_span_bytes": 9835905024,
+        "conditional_record_coalesced_bytes_clipped_at_shard_eof": 9835855040,
+        "conditional_coalesced_to_baseline_logical_byte_ratio": 25.738850506720546
+      },
+      "last_chunk": {
+        "scope": "cache-empty per-chunk control; logical geometry only",
+        "start_token": 24576,
+        "tokens": 8192,
+        "row_requests": 131072,
+        "unique_rows": 82380,
+        "logical_requested_row_bytes": 11796480,
+        "unique_row_payload_bytes": 7414200,
+        "row_request_page_straddlers": 2851,
+        "row_request_assumed_record_straddlers": 162,
+        "first_page_dedup_jobs": 81929,
+        "dedup_uses_beyond_first": 49143,
+        "jobs_4k": 80160,
+        "jobs_8k": 1769,
+        "baseline_job_page_bytes_sum_with_overlap": 342827008,
+        "baseline_jobs_extending_beyond_admitted_eof": 0,
+        "baseline_job_bytes_beyond_eof_geometry_only": 0,
+        "distinct_expanded_pages": 83683,
+        "distinct_page_union_bytes": 342765568,
+        "row_payload_assumed_records_touched": 68614,
+        "baseline_jobs_assumed_records_touched": 68614,
+        "record_occupancy_unique_4k_pages_histogram": {
+          "1": 55610,
+          "2": 11179,
+          "3": 1607,
+          "4": 197,
+          "5": 20,
+          "6": 1
+        },
+        "record_baseline_job_occupancy_histogram": {
+          "1": 56810,
+          "2": 10382,
+          "3": 1285,
+          "4": 132,
+          "5": 5
+        },
+        "job_row_use_count_histogram": {
+          "1": 67599,
+          "2": 7962,
+          "3": 2802,
+          "4": 1129,
+          "5": 588,
+          "6": 388,
+          "7": 209,
+          "8": 241,
+          "9": 129,
+          "10": 80,
+          "11": 88,
+          "12": 47,
+          "13": 113,
+          "14": 56,
+          "15": 25,
+          "16": 17,
+          "17": 31,
+          "18": 41,
+          "19": 22,
+          "20": 18,
+          "23": 16,
+          "24": 8,
+          "25": 24,
+          "26": 16,
+          "27": 8,
+          "28": 16,
+          "29": 32,
+          "30": 23,
+          "31": 1,
+          "32": 16,
+          "37": 7,
+          "38": 1,
+          "39": 8,
+          "47": 8,
+          "49": 16,
+          "51": 15,
+          "52": 1,
+          "54": 8,
+          "57": 16,
+          "59": 15,
+          "60": 1,
+          "62": 8,
+          "63": 8,
+          "66": 8,
+          "70": 8,
+          "82": 8,
+          "108": 24,
+          "110": 8,
+          "111": 8,
+          "144": 8
+        },
+        "job_unique_row_count_histogram": {
+          "1": 81478,
+          "2": 451
+        },
+        "conditional_record_coalesced_jobs": 68614,
+        "conditional_full_record_span_bytes": 8993374208,
+        "conditional_record_coalesced_bytes_clipped_at_shard_eof": 8993374208,
+        "conditional_coalesced_to_baseline_logical_byte_ratio": 26.232980477430765
+      },
+      "tail": {
+        "scope": "one-token offline tail; separate cache-empty control, no decode execution",
+        "start_token": 32768,
+        "tokens": 1,
+        "row_requests": 16,
+        "unique_rows": 16,
+        "logical_requested_row_bytes": 1440,
+        "unique_row_payload_bytes": 1440,
+        "row_request_page_straddlers": 0,
+        "row_request_assumed_record_straddlers": 0,
+        "first_page_dedup_jobs": 16,
+        "dedup_uses_beyond_first": 0,
+        "jobs_4k": 16,
+        "jobs_8k": 0,
+        "baseline_job_page_bytes_sum_with_overlap": 65536,
+        "baseline_jobs_extending_beyond_admitted_eof": 0,
+        "baseline_job_bytes_beyond_eof_geometry_only": 0,
+        "distinct_expanded_pages": 16,
+        "distinct_page_union_bytes": 65536,
+        "row_payload_assumed_records_touched": 16,
+        "baseline_jobs_assumed_records_touched": 16,
+        "record_occupancy_unique_4k_pages_histogram": {
+          "1": 16
+        },
+        "record_baseline_job_occupancy_histogram": {
+          "1": 16
+        },
+        "job_row_use_count_histogram": {
+          "1": 16
+        },
+        "job_unique_row_count_histogram": {
+          "1": 16
+        },
+        "conditional_record_coalesced_jobs": 16,
+        "conditional_full_record_span_bytes": 2097152,
+        "conditional_record_coalesced_bytes_clipped_at_shard_eof": 2097152,
+        "conditional_coalesced_to_baseline_logical_byte_ratio": 32.0
+      }
+    },
+    {
+      "label": "context262144",
+      "oracle": {
+        "success": true,
+        "scope": "CPU offline original ngram_rows only",
+        "input_tokens": 262145,
+        "transformed_tokens": 262145,
+        "pp_count": 262144,
+        "chunk_tokens": 8192,
+        "chunks": 32,
+        "heads": 16,
+        "initial_prev": [
+          -1,
+          -1
+        ],
+        "insert198_before_index32759": false,
+        "row_count": 4194304,
+        "row_bytes": 16777216,
+        "rows_le_fnv1a64": 15122129080612365585
+      },
+      "oracle_rows": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-v2-owned/context262144.rows.bin",
+        "bytes": 16777216,
+        "sha256": "6c311b030b6626277a752749f72b1f3f7691d54761362f217f6956f657501252"
+      },
+      "census_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ple-offline-census-v2-owned/context262144-census.stdout",
+      "census_identity": {
+        "bytes": 54087,
+        "sha256": "06dd9eda178e54b6f0963963c56a317e89d06066af8f031ba6ca234338da1ecf"
+      },
+      "summary": {
+        "row_requests": 4194288,
+        "unique_rows": 2263994,
+        "first_page_dedup_jobs": 2252383,
+        "baseline_job_page_bytes_sum_with_overlap": 9422749696,
+        "distinct_page_union_bytes": 9420742656,
+        "baseline_jobs_assumed_records_touched": 1926025,
+        "conditional_record_coalesced_bytes_clipped_at_shard_eof": 252447698880
+      },
+      "chunk_count": 32,
+      "all_rows_compared": 4194304,
+      "first_chunk": {
+        "scope": "cache-empty per-chunk control; logical geometry only",
+        "start_token": 0,
+        "tokens": 8192,
+        "row_requests": 131072,
+        "unique_rows": 91901,
+        "logical_requested_row_bytes": 11796480,
+        "unique_row_payload_bytes": 8271090,
+        "row_request_page_straddlers": 2736,
+        "row_request_assumed_record_straddlers": 126,
+        "first_page_dedup_jobs": 91325,
+        "dedup_uses_beyond_first": 39747,
+        "jobs_4k": 89354,
+        "jobs_8k": 1971,
+        "baseline_job_page_bytes_sum_with_overlap": 382140416,
+        "baseline_jobs_extending_beyond_admitted_eof": 0,
+        "baseline_job_bytes_beyond_eof_geometry_only": 0,
+        "distinct_expanded_pages": 93275,
+        "distinct_page_union_bytes": 382054400,
+        "row_payload_assumed_records_touched": 75042,
+        "baseline_jobs_assumed_records_touched": 75042,
+        "record_occupancy_unique_4k_pages_histogram": {
+          "1": 59407,
+          "2": 13311,
+          "3": 2071,
+          "4": 233,
+          "5": 19,
+          "6": 1
+        },
+        "record_baseline_job_occupancy_histogram": {
+          "1": 60676,
+          "2": 12562,
+          "3": 1646,
+          "4": 147,
+          "5": 11
+        },
+        "job_row_use_count_histogram": {
+          "1": 78045,
+          "2": 8248,
+          "3": 1963,
+          "4": 1118,
+          "5": 452,
+          "6": 333,
+          "7": 249,
+          "8": 177,
+          "9": 106,
+          "10": 64,
+          "11": 33,
+          "12": 25,
+          "13": 40,
+          "14": 32,
+          "15": 16,
+          "16": 32,
+          "18": 7,
+          "19": 41,
+          "20": 16,
+          "21": 24,
+          "22": 32,
+          "26": 8,
+          "28": 24,
+          "29": 8,
+          "30": 8,
+          "31": 7,
+          "32": 25,
+          "33": 22,
+          "34": 17,
+          "35": 1,
+          "36": 8,
+          "39": 7,
+          "40": 9,
+          "41": 8,
+          "45": 8,
+          "46": 8,
+          "47": 30,
+          "48": 18,
+          "53": 8,
+          "54": 8,
+          "55": 8,
+          "58": 16,
+          "77": 8,
+          "193": 8
+        },
+        "job_unique_row_count_histogram": {
+          "1": 90751,
+          "2": 572,
+          "3": 2
+        },
+        "conditional_record_coalesced_jobs": 75042,
+        "conditional_full_record_span_bytes": 9835905024,
+        "conditional_record_coalesced_bytes_clipped_at_shard_eof": 9835855040,
+        "conditional_coalesced_to_baseline_logical_byte_ratio": 25.738850506720546
+      },
+      "last_chunk": {
+        "scope": "cache-empty per-chunk control; logical geometry only",
+        "start_token": 253952,
+        "tokens": 8191,
+        "row_requests": 131056,
+        "unique_rows": 50967,
+        "logical_requested_row_bytes": 11795040,
+        "unique_row_payload_bytes": 4587030,
+        "row_request_page_straddlers": 2875,
+        "row_request_assumed_record_straddlers": 113,
+        "first_page_dedup_jobs": 50780,
+        "dedup_uses_beyond_first": 80276,
+        "jobs_4k": 49713,
+        "jobs_8k": 1067,
+        "baseline_job_page_bytes_sum_with_overlap": 212365312,
+        "baseline_jobs_extending_beyond_admitted_eof": 0,
+        "baseline_job_bytes_beyond_eof_geometry_only": 0,
+        "distinct_expanded_pages": 51842,
+        "distinct_page_union_bytes": 212344832,
+        "row_payload_assumed_records_touched": 45341,
+        "baseline_jobs_assumed_records_touched": 45341,
+        "record_occupancy_unique_4k_pages_histogram": {
+          "1": 39398,
+          "2": 5430,
+          "3": 469,
+          "4": 43,
+          "5": 1
+        },
+        "record_baseline_job_occupancy_histogram": {
+          "1": 40249,
+          "2": 4726,
+          "3": 346,
+          "4": 20
+        },
+        "job_row_use_count_histogram": {
+          "1": 29901,
+          "2": 9753,
+          "3": 3131,
+          "4": 2733,
+          "5": 1002,
+          "6": 1019,
+          "7": 685,
+          "8": 389,
+          "9": 340,
+          "10": 272,
+          "11": 175,
+          "12": 144,
+          "13": 209,
+          "14": 97,
+          "15": 97,
+          "16": 47,
+          "17": 89,
+          "18": 40,
+          "19": 166,
+          "20": 27,
+          "21": 32,
+          "22": 8,
+          "23": 40,
+          "25": 8,
+          "26": 24,
+          "27": 8,
+          "28": 8,
+          "29": 8,
+          "30": 40,
+          "31": 24,
+          "32": 16,
+          "34": 16,
+          "37": 16,
+          "38": 8,
+          "39": 24,
+          "40": 8,
+          "41": 8,
+          "43": 8,
+          "46": 16,
+          "47": 8,
+          "48": 8,
+          "49": 16,
+          "51": 8,
+          "53": 8,
+          "56": 8,
+          "61": 8,
+          "64": 8,
+          "80": 7,
+          "83": 1,
+          "88": 8,
+          "89": 8,
+          "91": 8,
+          "92": 8,
+          "97": 8,
+          "100": 8,
+          "118": 8,
+          "120": 8
+        },
+        "job_unique_row_count_histogram": {
+          "1": 50593,
+          "2": 187
+        },
+        "conditional_record_coalesced_jobs": 45341,
+        "conditional_full_record_span_bytes": 5942935552,
+        "conditional_record_coalesced_bytes_clipped_at_shard_eof": 5942885568,
+        "conditional_coalesced_to_baseline_logical_byte_ratio": 27.984257466680813
+      },
+      "tail": {
+        "scope": "one-token offline tail; separate cache-empty control, no decode execution",
+        "start_token": 262143,
+        "tokens": 1,
+        "row_requests": 16,
+        "unique_rows": 16,
+        "logical_requested_row_bytes": 1440,
+        "unique_row_payload_bytes": 1440,
+        "row_request_page_straddlers": 0,
+        "row_request_assumed_record_straddlers": 0,
+        "first_page_dedup_jobs": 16,
+        "dedup_uses_beyond_first": 0,
+        "jobs_4k": 16,
+        "jobs_8k": 0,
+        "baseline_job_page_bytes_sum_with_overlap": 65536,
+        "baseline_jobs_extending_beyond_admitted_eof": 0,
+        "baseline_job_bytes_beyond_eof_geometry_only": 0,
+        "distinct_expanded_pages": 16,
+        "distinct_page_union_bytes": 65536,
+        "row_payload_assumed_records_touched": 16,
+        "baseline_jobs_assumed_records_touched": 16,
+        "record_occupancy_unique_4k_pages_histogram": {
+          "1": 16
+        },
+        "record_baseline_job_occupancy_histogram": {
+          "1": 16
+        },
+        "job_row_use_count_histogram": {
+          "1": 16
+        },
+        "job_unique_row_count_histogram": {
+          "1": 16
+        },
+        "conditional_record_coalesced_jobs": 16,
+        "conditional_full_record_span_bytes": 2097152,
+        "conditional_record_coalesced_bytes_clipped_at_shard_eof": 2097152,
+        "conditional_coalesced_to_baseline_logical_byte_ratio": 32.0
+      }
+    }
+  ],
+  "finished_utc": "2026-10-10T10:36:55.136158+00:00"
+}

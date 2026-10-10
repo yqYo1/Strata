@@ -1,0 +1,18 @@
+# Actual-input offline PLE request geometry
+
+This is a CPU-only source/fixture census, not a storage/GPU benchmark or inference correctness result. Original unchanged `ngram_rows` was compiled with function/data sections and linked into the bounded oracle without GPU dependencies. Its external-origin golden cases pass all 304 rows; independent Python also passes the same golden vectors. Every generated row then matches the independent Python equation: 524,304 rows for actual A (32,768 PP tokens + one separate tail), and 4,194,304 rows for the full-context-shaped prefix (262,143 PP + one separate tail). The source full fixture actually has 262,145 IDs; root v2 corrects input admission while keeping prefix/output at most 262,144. Original Sol v1 sources/handoff remain unchanged.
+
+Cold controls reset the hypothetical row cache independently for every 8,192-token chunk. They match first-page dedup and 4K/8K extension, preserving overlapping page jobs. They do not model completion-order-dependent eight-way row-cache replacement. Records are assumed to be 128KiB at whole-file offsets, not a discovered physical ZFS extent map. Values below are sums of separate chunks, never global unique counts.
+
+| Shape | PP chunks | Row requests | Page jobs | Baseline logical page bytes | Conditional all-record bytes |
+| --- | ---: | ---: | ---: | ---: | ---: |
+|Actual A /32768PP|4|524,288|338,705|1,417,633,792|36,945,476,800|
+|Full-context-shaped /262143PP|32|4,194,288|2,252,383|9,422,749,696|252,447,698,880|
+
+In actual A, 79.2–81.1% of assumed records have only one expanded requested 4K page. Unconditionally reading all touched full records increases returned logical bytes 25.74–26.25 times per chunk. This rules out assuming that larger reads are automatically faster. It does not prove slower media service: the separate ZFS control counts full 128K DMU blocks for small requests, and the cold page census is not actual cached ReaderStats. Density-gated grouping, row caching and actual reader service need a matched fresh-state 32K comparison.
+
+Qualification covers negative/null/EOS/current-EOS/token0/uint64-wrap history, all rows across prefixes8191/8192/8193/8208, independently derived page/record straddlers and EOF geometry, parser rejection and output overwrite refusal. The first 40-check qualifier's first/last mutation cases omitted its custom history, so those labels alone did not establish the location of the corrupt row. Root's separate matched-history control first passes all176 clean rows and then rejects exactly token0/head0 and token10/head15 after first/last in-range mutations. Original receipts remain unchanged; the correction is explicit. Numerical source/census algorithms and positive full row-stream results were unchanged.
+
+Peak observed owned session RSS is142,610,432B, below the1GiB bound. No model shard payload is read and noGPU command is submitted. Aligned baseline last-page geometry can extend832B past admittedEOF; this is reported as geometry, not an actual successful read. Conditional record plans are clipped atEOF and are not an implementation of direct I/O. Full262144-position inference and a production implementation remain separate gates.
+
+All exact source/fixture/binary/object hashes, commands, ownership, normal closures, expected failure statuses and structured per-chunk histograms are retained. Large derived row streams are reproducible temporary comparator inputs, not resume checkpoints; once the independent review completes they can be retired with a hash/replacement manifest. Original token fixtures and current numerical/RESTORE inputs stay.
