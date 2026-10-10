@@ -1,0 +1,91 @@
+GDN probe exact selected PCI admission v1
+SOURCE ONLY / UNBUILT / UNTESTED for this interface change. No compiler, build,
+program/test/runtime/device-query/model/payload/GPU/profile/Git/cleanup executed.
+Only assigned three standalone files edited plus this report. Root owns all
+serialized execution/controller/build review and process/driver fault handling.
+Worktree owner basecfc549fb491b69b54ad4285da14f301b75bf05a8:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-gate-factor-probe-20261010
+Read full R129 exact PCI contract, R127 numerical and R128 sticky async/lifetime
+safeguards; latest committed registry-v55 read as historical inventory, storage
+205bb5e34aa5250c1f5d02fc18a49582aa878449. No live receipt queried.
+
+Changed paths relative to worktree, bytes/SHA256:
+sycl/tools/gdn-gate-factor-probe/CMakeLists.txt
+1233 ef0482284ca72f1a86a71edaed0cf9cc2abec3dcc65af353dd3aeb404212c756
+sycl/tools/gdn-gate-factor-probe/gdn_gate_factor_probe.cpp
+13969 90ea82156b8be58aa59d64c1c0cf70552f5e2cdc0a47c91a6cf81a238711bfc9
+sycl/tools/gdn-gate-factor-probe/README.md
+7684 c3ebe8cadf56a53f46e20b6d7109eb09dd98eaa3795b3b5b18d26b74045b89d7
+
+Installed declarations read (not executed): /usr/include/level_zero/ze_api.h
+ze_device_properties_t,ze_driver_properties_t,ze_driver_extension_properties_t,
+ze_pci_ext_properties_t,BDFtyped uint32,extension1.0 constants and ZE_APICALL PCI
+signature. Installed oneAPI2026.1 sycl/detail/backend_traits_level_zero.hpp device
+native ze_device_handle_t and platformnative ze_driver_handle_t; explicit supported
+sycl/ext/oneapi/backend/level_zero.hpp include used. Filesystem metadata only:
+/usr/lib/x86_64-linux-gnu/libze_loader.so ->libze_loader.so.1 ->libze_loader.so.1.32.0
+loader exists777528bytes; no loader opened/runtime queried. CMake explicitly
+find_path level_zero/ze_api.h and find_library ze_loader REQUIRED, privateinclude/
+link only. Existing precision/subgroup/per_kernel/JITflags unmodified.
+
+Admission sequence after GPU LevelZero/in_order queue selection and before ANY
+USM allocation/probe submission:
+1 get_native for q.get_device() and only its platform. Require nonnull handles.
+  No zeDriverGet/device::get_devices/machineGPU enumeration/ordinal matching.
+2 initialized stype DEVICE_PROPERTIES,pNextnullptr; zeDeviceGetProperties checked.
+  Require vendor0x8086/device0xe20c, no SUBDEVICE flag. No tile translation.
+3 initialized DRIVER_PROPERTIES/pNextnullptr; zeDriverGetProperties checked and
+  nonzero driver version required.
+4 zeDriverGetExtensionProperties count and data calls checked, count1..256 fixed
+  array, returnedcount>0<=original, terminated all names. Exactly one PCI extension
+  advertisement version>=1.0. No dynamic/unbounded extension storage.
+5 zeDriverGetExtensionFunctionAddress exact zeDevicePciGetPropertiesExt name,
+  checked status+nonnull pointer; callable ZE_APICALL typed signature matches
+  installed API. Initialized PCI_EXT_PROPERTIES/pNextnullptr; query same selected
+  device only, check every result. Typed domain0/bus5/device0/function0 required.
+6 print bounded sanitized IDENTITY vendor/device/BDF/root/flags/driver version/
+  PCIversion/name/pass then IDENTITY_ENV ZE_FLAT_DEVICE_HIERARCHY,ZE_AFFINITY_MASK,
+  ONEAPI_DEVICE_SELECTOR (max511bytes each or refusal), flushchecked before work.
+  Existing Intel/name/USM/SG16/SG32/WG128 requirements remain additional.
+
+Any unsupported extension/error/null callback/wrong native IDs/subdevice/BDF/
+malformed names/count/oversizedenv/flush failure throws normal prework failure,
+terminalfail/nonzero. No fallback, retry, recovery/service or payload query. Queue
+exists already but no application kernel/USM endpoint exists at identity failure.
+Native API results retained in bounded exception reason (operation/numeric result).
+Receipt describes selected runtime native handle's reported identity at startup;
+not uniqueness per tile, continuedhealth, or physical-device immutable proof.
+Partial printed identity/pass before later env/flush failure NEVER overrides
+nonzeroexit/missingcomplete output. Owner must enforce full identity+environment
+normal process receipt. Startup queries have no intrinsic wall timeout; root's
+owned finite session deadline covers them.
+
+Preserved numerical/input/geometry/counts/async USM invariants: unchanged producer
+and reader kernel math, outputcompare, canaries, inputs,15cases/7970640compares,
+three full fingerprints, <16MiB allocations; sticky async collector/lifetime/
+no-free submittederror _Exit2 handling retained. No production/rootCMake changes.
+Ordinary drained numericalfail normal1; submittedstagefail2/no unwind/unknown GPU
+completion; no cancellation/cleanup success inferred. Original CPU candidate and
+all failed statuses unchanged. Necessary isolated screen not actual recurrence/
+compiler-context/model/full256K/performance/adoption evidence.
+
+README now distinguishes original source-only handoff from root's closed prior
+CPU builds; GPU unrun and this NEW interface unbuilt/untested. Root-only unrun
+recipe unchanged: fresh private standalone CMake IntelLLVM2026.1 release build,
+complete compile_commands/link/JITflags capture, ze_loader/header identities,
+then intended-device/root environment exact admission under owner serial lock.
+$PRIVATE_BUILD/gdn_gate_factor_probe [--include-artificial-nonfinite]
+Rootcontroller supplies diagnosticenv/wall/CPU/RSS/AS/FSize/NOFILE/output bounds,
+normalexit/count/error/fault/ownedPID/session/closure gates, no old outputoverwrite.
+Do not run/build based only on this source-only report without root review.
+
+Pending root gates: inspect native traits/header/library resolution and explicit
+loader linkage; fresh actual build/compileflag parity and exact binary pin. Test
+intendedBDF admission and unsupported/error/null/subdevice/wrongBDF rejection in
+root's controlled qualification, with no allocation/submission on failure. Require
+onecompleteIDENTITY,allENV records priorCASE/STAGE, normal0/finalflush/counts and
+clean async/faults. Record absolute typed devicee20c numeric and rootflag with exact
+hierarchy/selectorenv. Owner separately validates source/kernel context/math
+limits and modelrecurrence/state/norm/fullcontext before any optimization. This
+source handoff has no GPU identity observation, numericalpass, runtime result,
+compiled ABI proof, or adoption claim.

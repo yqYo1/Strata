@@ -1,6 +1,8 @@
 # Private GDN gate-factor numerical screen
 
-Source-only, unbuilt and unrun. This standalone SYCL tool is a fail-fast necessary
+The original handoff was source-only. Root has closed CPU build checks for the
+prior source; GPU execution remains unrun. This exact-PCI interface change is
+source-only, unbuilt and untested. This standalone SYCL tool is a fail-fast necessary
 screen for moving gate exp into its producer. A pass does not qualify recurrence
 contexts, compiler/backend contexts, model outputs, full256K, or adoption.
 No production source, public gate representation or selector changes.
@@ -78,3 +80,36 @@ token/final state and normalized output, real reachable inputs, carry/multiple
 layers/repeated prompts/physical262144, errors and model math. Convolution and
 postnorm/state are absent. Earlier rejected CPU candidate remains rejected; this
 screen cannot establish speed or adoption.
+
+## Exact selected-device PCI admission (new source-only interface)
+
+Before USM allocation or submissions, the already selected LevelZero queue device
+and its platform yield native ze_device_handle_t/ze_driver_handle_t. No GPU or
+driver enumeration, ordinal selection, tile translation or matching fallback.
+Core device query requires vendor0x8086/device0xe20c and SUBDEVICE flag clear;
+driver properties supply nonzero version. Extension discovery is confined to this
+driver, count1..256 with fixed storage, all names terminated, unique PCI extension
+version>=1.0. Every LevelZero result checked. Non-null function address resolves
+zeDevicePciGetPropertiesExt with installed ZE_APICALL signature, initialized
+stype/pNext, and typed BDF must equal domain0/bus5/device0/function0.
+
+IDENTITY reports decimal typed PCI/vendor/device/root/flags/driver/extension/name
+then bounded sanitized IDENTITY_ENV for ZE_FLAT_DEVICE_HIERARCHY, ZE_AFFINITY_MASK
+and ONEAPI_DEVICE_SELECTOR, flushed before work. Unsupported/error/missing/null/
+subdevice/mismatch/oversized environment fails nonzero without allocations or
+probe submission. Receipt proves the runtime-selected handle's reported identity
+at startup, not unique tile identity or later health. Existing name/Intel/USM/
+SG/WG admission remains additional. Parent binds intended board/environment and
+normal exit; no re-query after work starts or reset/recovery.
+
+Standalone CMake explicitly finds level_zero/ze_api.h and ze_loader; no production
+dependency. Installed header native traits map device to ze_device_handle_t and
+platform to ze_driver_handle_t. Loader existence was inspected only, not loaded.
+Root-only recipe above remains unexecuted for this change; fresh private build
+plus complete compile/link/header/loader-source pins and exact interface review
+required. Root controller must require exactly one successful IDENTITY and all
+bounded environment lines before any CASE/STAGE, plus prior count/error/guard/
+owned-exit/fault gates. Wrong board/root/extension/error paths must refuse.
+No change to expressions, inputs, geometry,15case counts, async sticky errors or
+fail-stop endpoint lifetime. Startup API calls have no internal watchdog; root
+owned-session wall limit covers admission too. No GPU run/pass claim is made.

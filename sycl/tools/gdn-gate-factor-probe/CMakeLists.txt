@@ -14,3 +14,9 @@ target_compile_features(gdn_gate_factor_probe PRIVATE cxx_std_20)
 target_compile_options(gdn_gate_factor_probe PRIVATE -fsycl -fp-model=precise -fsycl-default-sub-group-size=32 -fsycl-device-code-split=per_kernel)
 target_link_options(gdn_gate_factor_probe PRIVATE -fsycl -fsycl-device-code-split=per_kernel
  -Xsycl-target-backend=spir64 -cl-fp32-correctly-rounded-divide-sqrt)
+
+# Explicit host loader dependency for selected-device PCI identity only.
+find_path(LEVEL_ZERO_INCLUDE_ROOT NAMES level_zero/ze_api.h REQUIRED)
+find_library(LEVEL_ZERO_LOADER NAMES ze_loader REQUIRED)
+target_include_directories(gdn_gate_factor_probe PRIVATE "${LEVEL_ZERO_INCLUDE_ROOT}")
+target_link_libraries(gdn_gate_factor_probe PRIVATE "${LEVEL_ZERO_LOADER}")

@@ -1,6 +1,9 @@
 // Expression provenance: immutable gdn-gate-consumers-cd353f30 snapshot,
 // kernels.dp.cpp SHA256 cc5254f688b9138fc71800884c853211771067c0f07a0a44a237fd45b59b4bfa.
 #include <sycl/sycl.hpp>
+#include <sycl/ext/oneapi/backend/level_zero.hpp>
+#include <level_zero/ze_api.h>
+#include <cstring>
 #include <algorithm>
 #include <array>
 #include <atomic>
@@ -26,6 +29,56 @@ struct Errors {std::mutex mutex;std::vector<std::string> messages;std::atomic<bo
  void check(){require(!failed.load()&&!overflow.load(),"asynchronous SYCL error");}
  void print(){std::lock_guard<std::mutex> lock(mutex);for(const auto& s:messages)std::cerr<<"ASYNC,"<<s<<'\n';if(overflow)std::cerr<<"ASYNC,overflow_or_nonstandard_exception\n";}
 };
+
+void ze_ok(ze_result_t result,const char* operation){
+ if(result!=ZE_RESULT_SUCCESS)throw std::runtime_error(std::string("identity query failed:")+operation+":"+std::to_string(static_cast<uint32_t>(result)));
+}
+// Sanitized bounded text only; typed identity fields are the assertion.
+std::string identity_text(const char* text,size_t capacity){
+ require(text!=nullptr,"null identity text");size_t n=0;while(n<capacity&&text[n])++n;
+ require(n<capacity,"unterminated/oversized identity text");std::string out;out.reserve(n);
+ for(size_t i=0;i<n;++i){unsigned char c=static_cast<unsigned char>(text[i]);out+=(c>=32&&c<=126&&c!=',')?char(c):'_';}return out;
+}
+void exact_identity(sycl::queue& q){
+ const auto selected=q.get_device();
+ const ze_device_handle_t device=sycl::get_native<sycl::backend::ext_oneapi_level_zero>(selected);
+ const ze_driver_handle_t driver=sycl::get_native<sycl::backend::ext_oneapi_level_zero>(selected.get_platform());
+ require(device&&driver,"null selected native handle");
+ ze_device_properties_t properties{};properties.stype=ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES;properties.pNext=nullptr;
+ ze_ok(zeDeviceGetProperties(device,&properties),"zeDeviceGetProperties");
+ require(properties.vendorId==0x8086&&properties.deviceId==0xe20c,"selected native vendor/device mismatch");
+ require((properties.flags&ZE_DEVICE_PROPERTY_FLAG_SUBDEVICE)==0,"selected native device is a subdevice");
+ ze_driver_properties_t driver_properties{};driver_properties.stype=ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;driver_properties.pNext=nullptr;
+ ze_ok(zeDriverGetProperties(driver,&driver_properties),"zeDriverGetProperties");
+ require(driver_properties.driverVersion!=0,"invalid driver version");
+ uint32_t count=0;ze_ok(zeDriverGetExtensionProperties(driver,&count,nullptr),"extension count");
+ require(count>0&&count<=256,"driver extension count outside finite bound");
+ std::array<ze_driver_extension_properties_t,256> extensions{};const uint32_t original=count;
+ ze_ok(zeDriverGetExtensionProperties(driver,&count,extensions.data()),"extension properties");
+ require(count>0&&count<=original,"driver extension list count changed");
+ bool advertised=false;uint32_t version=0;
+ for(uint32_t i=0;i<count;++i){
+  require(std::memchr(extensions[i].name,0,sizeof(extensions[i].name))!=nullptr,"unterminated extension name");
+  if(std::strcmp(extensions[i].name,ZE_PCI_PROPERTIES_EXT_NAME)==0){require(!advertised,"duplicate PCI extension");advertised=true;version=extensions[i].version;}
+ }
+ require(advertised&&version>=ZE_PCI_PROPERTIES_EXT_VERSION_1_0,"PCI extension unsupported/version too old");
+ void* address=nullptr;ze_ok(zeDriverGetExtensionFunctionAddress(driver,"zeDevicePciGetPropertiesExt",&address),"PCI function address");
+ require(address!=nullptr,"null PCI function");
+ using PciQuery=ze_result_t (ZE_APICALL *)(ze_device_handle_t,ze_pci_ext_properties_t*);
+ const auto query=reinterpret_cast<PciQuery>(address);
+ ze_pci_ext_properties_t pci{};pci.stype=ZE_STRUCTURE_TYPE_PCI_EXT_PROPERTIES;pci.pNext=nullptr;
+ ze_ok(query(device,&pci),"zeDevicePciGetPropertiesExt");
+ require(pci.address.domain==0&&pci.address.bus==5&&pci.address.device==0&&pci.address.function==0,"selected PCI BDF mismatch");
+ std::cout<<"IDENTITY,backend,LevelZero,vendor,"<<properties.vendorId<<",device,"<<properties.deviceId
+ <<",domain,"<<pci.address.domain<<",bus,"<<pci.address.bus<<",pci_device,"<<pci.address.device<<",function,"<<pci.address.function
+ <<",root,1,flags,"<<static_cast<uint32_t>(properties.flags)<<",driver_version,"<<driver_properties.driverVersion
+ <<",pci_extension_version,"<<version<<",name,"<<identity_text(properties.name,sizeof(properties.name))<<",passed,1\n";
+ for(const char* key:{"ZE_FLAT_DEVICE_HIERARCHY","ZE_AFFINITY_MASK","ONEAPI_DEVICE_SELECTOR"}){
+  const char* value=std::getenv(key);std::cout<<"IDENTITY_ENV,"<<key<<','<<(value?identity_text(value,512):"unset")<<'\n';
+ }
+ std::cout.flush();require(bool(std::cout),"identity output failed");
+}
+
 struct Buffer {sycl::queue* q;float* base=nullptr;size_t n;
  Buffer(sycl::queue& queue,size_t count):q(&queue),n(count){base=sycl::malloc_shared<float>(n+2*G,queue);require(base,"USM allocation failed");reset();}
  Buffer(const Buffer&)=delete;Buffer& operator=(const Buffer&)=delete;
@@ -75,6 +128,7 @@ int main(int argc,char** argv){try{
  sycl::queue q(sycl::gpu_selector_v,[&](sycl::exception_list es){errors.collect(es);},{sycl::property::queue::in_order{}});
  require(q.get_backend()==sycl::backend::ext_oneapi_level_zero&&q.get_device().is_gpu(),"Level Zero GPU required");
  require(q.is_in_order(),"in-order queue required");
+ exact_identity(q);
  auto device_name=q.get_device().get_info<sycl::info::device::name>();
  auto vendor=q.get_device().get_info<sycl::info::device::vendor_id>();
  require(vendor==0x8086&&device_name.find("B570")!=std::string::npos,"Intel Arc B570 required");
