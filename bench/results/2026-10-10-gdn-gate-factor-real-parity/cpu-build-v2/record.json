@@ -1,0 +1,720 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "GPU_executed": false,
+  "model_opened": false,
+  "adopted": false,
+  "scope": "Production-flag incremental corrected GDN factor parity CPU build only",
+  "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010",
+  "source_head": "622a53eb9551aa4edca3720279a17cc1d2f2be19",
+  "build": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/build-sycl-gdn-factor-real-v1",
+  "source_pins": {
+    "sycl/CMakeLists.txt": {
+      "bytes": 27220,
+      "sha256": "0f162e7f123f4ceb11ce611b402549d56c9b37b64be2817194efcdce2af661c8"
+    },
+    "sycl/src/prefill/kernels.dp.cpp": {
+      "bytes": 207400,
+      "sha256": "ee745dbc335748709023dd349829d0300b797adefae0e951f975bae4e5408e3f"
+    },
+    "sycl/src/prefill/prefill.cpp": {
+      "bytes": 321397,
+      "sha256": "064d6789aeb55c7c44e7fe703d4fcabfee9524c4e14f164610236a6c84257d6a"
+    },
+    "sycl/src/prefill/gdn_gate_factor_parity.cpp": {
+      "bytes": 16817,
+      "sha256": "46ccf7ac95bc86cc183a42f969b253fc6ec4d012d46bf1325509d9f7ab3b25c3"
+    },
+    "sycl/include/strata/prefill/gdn_gate_factor.hpp": {
+      "bytes": 841,
+      "sha256": "938c794907f8a7af7999219adb80d80aa87a8d8aa6a706ae92829b21b71bf6f6"
+    },
+    "sycl/include/strata/prefill/gdn_variant.hpp": {
+      "bytes": 2819,
+      "sha256": "d9b0c169486205c636658c92db90351f5a9f091bb8e108c07ddce2ec56cd3ef0"
+    },
+    "sycl/include/dpct/device.hpp": {
+      "bytes": 34564,
+      "sha256": "adbcbd0ac45995348e37ac3f5ca42d9f3d4b0555031aeb1781a1e2166a74ed52"
+    },
+    "sycl/include/strata/sycl_error.hpp": {
+      "bytes": 1160,
+      "sha256": "4b64f82b0805e9a113077ea7abc57d18044bff7240d8fe956abe651eb4f90ce4"
+    }
+  },
+  "controller_sha256": "9bb5aa0785e90e3c05609a7c9f79e534182a4e4ce63bc0a556db0f9f13555607",
+  "parent_owner_sha256": "7df012ee4d9bd047a6094ccedb37fddb3d56d4b054d9fdf468534b0fb6e94e1f",
+  "host_owner_receipt": {
+    "bytes": 9311,
+    "sha256": "e817846665509a94891343d5320bd765b3b559afb81cd0c1a35cef72494a4b36"
+  },
+  "limits": {
+    "AS_each_bytes": 34359738368,
+    "RSS_session_sampled_bytes": 12884901888,
+    "CPU_each_seconds": [
+      600,
+      601
+    ],
+    "stage_wall_seconds": 1200,
+    "text_cap_bytes": 33554432,
+    "file_cap_each_bytes": 134217728,
+    "owned_cleanup_grace_seconds": 6
+  },
+  "commands": [
+    {
+      "label": "owner-cpu-closure",
+      "argv": [
+        "/usr/bin/true"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T02:40:36.601867+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3956727,
+          "start_ticks": 28971572,
+          "sid": 3956727,
+          "pgid": 3956727
+        }
+      ],
+      "pid": 3956727,
+      "direct_identity": {
+        "pid": 3956727,
+        "state": "R",
+        "ppid": 3956683,
+        "pgid": 3956727,
+        "sid": 3956727,
+        "start_ticks": 28971572,
+        "rss_bytes": 458752
+      },
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T02:40:36.690319+00:00",
+      "elapsed_seconds": 0.07923033100087196,
+      "logs": {
+        "owner-cpu-closure.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "owner-cpu-closure.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "toolchain-environment",
+      "argv": [
+        "/bin/bash",
+        "-c",
+        "source /opt/intel/oneapi/setvars.sh >/dev/null 2>&1 && env -0"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T02:40:36.691178+00:00",
+      "wall_seconds": 30,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3956729,
+          "start_ticks": 28971580,
+          "sid": 3956729,
+          "pgid": 3956729
+        },
+        {
+          "pid": 3957178,
+          "start_ticks": 28971659,
+          "sid": 3956729,
+          "pgid": 3956729
+        }
+      ],
+      "pid": 3956729,
+      "direct_identity": {
+        "pid": 3956729,
+        "state": "R",
+        "ppid": 3956683,
+        "pgid": 3956729,
+        "sid": 3956729,
+        "start_ticks": 28971580,
+        "rss_bytes": 442368
+      },
+      "peak_session_rss_bytes": 6938624,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T02:40:37.806401+00:00",
+      "elapsed_seconds": 1.1146928070229478,
+      "logs": {
+        "toolchain-environment.stdout": {
+          "bytes": 4499,
+          "sha256": "e7d4b9c86e9a17fb185e1410b0022af78bad8097ce122777d30d84581e2a4937"
+        },
+        "toolchain-environment.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "configure",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/build-sycl-gdn-factor-real-v1",
+        "-G",
+        "Ninja",
+        "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DCMAKE_C_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icx",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DSTRATA_GGML_DIR=/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned",
+        "-DSTRATA_NATIVE_EXPERTS=ON",
+        "-DSTRATA_SYCL_PARITY=OFF",
+        "-DSTRATA_IQ2S_GCC=OFF",
+        "-DSTRATA_SYCL_AOT=",
+        "-DSTRATA_SYCL_SPIN_MAX=",
+        "-DSTRATA_NATIVE_POOL_TASK_FACTOR=0",
+        "-DSTRATA_GDN_PREFILL_GATE_FACTOR=ON",
+        "-DSTRATA_GDN_GATE_FACTOR_PARITY=ON"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+        "ONEAPI_ROOT": "/opt/intel/oneapi",
+        "CMAKE_PREFIX_PATH": "/opt/intel/oneapi/tbb/2023.1/env/..:/opt/intel/oneapi/pti/1.1/lib/cmake/pti:/opt/intel/oneapi/mkl/2026.1/lib/cmake:/opt/intel/oneapi/ipp/2026.0/lib/cmake/ipp:/opt/intel/oneapi/dpl/2022.13/lib/cmake/oneDPL:/opt/intel/oneapi/dnnl/2026.0/lib/cmake:/opt/intel/oneapi/compiler/2026.1:/opt/intel/oneapi/ccl/2022.1/lib/cmake/oneCCL",
+        "PKG_CONFIG_PATH": "/opt/intel/oneapi/vtune/2026.4/include/pkgconfig/lib64:/opt/intel/oneapi/tbb/2023.1/env/../lib/pkgconfig:/opt/intel/oneapi/mpi/2021.18/lib/pkgconfig:/opt/intel/oneapi/mkl/2026.1/lib/pkgconfig:/opt/intel/oneapi/ippcp/2026.0/lib/pkgconfig:/opt/intel/oneapi/dpl/2022.13/lib/pkgconfig:/opt/intel/oneapi/dnnl/2026.0/lib/pkgconfig:/opt/intel/oneapi/compiler/2026.1/lib/pkgconfig:/opt/intel/oneapi/ccl/2022.1/lib/pkgconfig/",
+        "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T02:40:37.852801+00:00",
+      "wall_seconds": 120,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3957266,
+          "start_ticks": 28971696,
+          "sid": 3957266,
+          "pgid": 3957266
+        },
+        {
+          "pid": 3957279,
+          "start_ticks": 28971703,
+          "sid": 3957266,
+          "pgid": 3957266
+        },
+        {
+          "pid": 3957280,
+          "start_ticks": 28971703,
+          "sid": 3957266,
+          "pgid": 3957266
+        },
+        {
+          "pid": 3957282,
+          "start_ticks": 28971704,
+          "sid": 3957266,
+          "pgid": 3957266
+        }
+      ],
+      "pid": 3957266,
+      "direct_identity": {
+        "pid": 3957266,
+        "state": "R",
+        "ppid": 3956683,
+        "pgid": 3957266,
+        "sid": 3957266,
+        "start_ticks": 28971696,
+        "rss_bytes": 294912
+      },
+      "peak_session_rss_bytes": 70492160,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T02:40:38.169310+00:00",
+      "elapsed_seconds": 0.3157456489861943,
+      "logs": {
+        "configure.stdout": {
+          "bytes": 541,
+          "sha256": "63d3891f90b503c159e96c8ecf8b6df2f2991ae5fdae311132e9541324742355"
+        },
+        "configure.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "build",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/build-sycl-gdn-factor-real-v1",
+        "--target",
+        "gdn_gate_factor_parity",
+        "--parallel",
+        "2"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+        "ONEAPI_ROOT": "/opt/intel/oneapi",
+        "CMAKE_PREFIX_PATH": "/opt/intel/oneapi/tbb/2023.1/env/..:/opt/intel/oneapi/pti/1.1/lib/cmake/pti:/opt/intel/oneapi/mkl/2026.1/lib/cmake:/opt/intel/oneapi/ipp/2026.0/lib/cmake/ipp:/opt/intel/oneapi/dpl/2022.13/lib/cmake/oneDPL:/opt/intel/oneapi/dnnl/2026.0/lib/cmake:/opt/intel/oneapi/compiler/2026.1:/opt/intel/oneapi/ccl/2022.1/lib/cmake/oneCCL",
+        "PKG_CONFIG_PATH": "/opt/intel/oneapi/vtune/2026.4/include/pkgconfig/lib64:/opt/intel/oneapi/tbb/2023.1/env/../lib/pkgconfig:/opt/intel/oneapi/mpi/2021.18/lib/pkgconfig:/opt/intel/oneapi/mkl/2026.1/lib/pkgconfig:/opt/intel/oneapi/ippcp/2026.0/lib/pkgconfig:/opt/intel/oneapi/dpl/2022.13/lib/pkgconfig:/opt/intel/oneapi/dnnl/2026.0/lib/pkgconfig:/opt/intel/oneapi/compiler/2026.1/lib/pkgconfig:/opt/intel/oneapi/ccl/2022.1/lib/pkgconfig/",
+        "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T02:40:38.170320+00:00",
+      "wall_seconds": 1200,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3957302,
+          "start_ticks": 28971728,
+          "sid": 3957302,
+          "pgid": 3957302
+        },
+        {
+          "pid": 3957303,
+          "start_ticks": 28971729,
+          "sid": 3957302,
+          "pgid": 3957302
+        },
+        {
+          "pid": 3957304,
+          "start_ticks": 28971730,
+          "sid": 3957302,
+          "pgid": 3957304
+        },
+        {
+          "pid": 3957305,
+          "start_ticks": 28971730,
+          "sid": 3957302,
+          "pgid": 3957305
+        },
+        {
+          "pid": 3957306,
+          "start_ticks": 28971731,
+          "sid": 3957302,
+          "pgid": 3957305
+        },
+        {
+          "pid": 3957307,
+          "start_ticks": 28971731,
+          "sid": 3957302,
+          "pgid": 3957304
+        },
+        {
+          "pid": 3957308,
+          "start_ticks": 28971731,
+          "sid": 3957302,
+          "pgid": 3957304
+        },
+        {
+          "pid": 3957309,
+          "start_ticks": 28971731,
+          "sid": 3957302,
+          "pgid": 3957305
+        },
+        {
+          "pid": 3957311,
+          "start_ticks": 28971732,
+          "sid": 3957302,
+          "pgid": 3957305
+        },
+        {
+          "pid": 3957312,
+          "start_ticks": 28971732,
+          "sid": 3957302,
+          "pgid": 3957304
+        },
+        {
+          "pid": 3957552,
+          "start_ticks": 28972114,
+          "sid": 3957302,
+          "pgid": 3957304
+        },
+        {
+          "pid": 3957579,
+          "start_ticks": 28972173,
+          "sid": 3957302,
+          "pgid": 3957305
+        },
+        {
+          "pid": 3957803,
+          "start_ticks": 28972620,
+          "sid": 3957302,
+          "pgid": 3957803
+        },
+        {
+          "pid": 3957804,
+          "start_ticks": 28972620,
+          "sid": 3957302,
+          "pgid": 3957803
+        },
+        {
+          "pid": 3957805,
+          "start_ticks": 28972620,
+          "sid": 3957302,
+          "pgid": 3957803
+        },
+        {
+          "pid": 3957807,
+          "start_ticks": 28972621,
+          "sid": 3957302,
+          "pgid": 3957803
+        },
+        {
+          "pid": 3958078,
+          "start_ticks": 28973041,
+          "sid": 3957302,
+          "pgid": 3957803
+        },
+        {
+          "pid": 3958303,
+          "start_ticks": 28973430,
+          "sid": 3957302,
+          "pgid": 3958303
+        },
+        {
+          "pid": 3958304,
+          "start_ticks": 28973430,
+          "sid": 3957302,
+          "pgid": 3958303
+        },
+        {
+          "pid": 3958305,
+          "start_ticks": 28973430,
+          "sid": 3957302,
+          "pgid": 3958303
+        },
+        {
+          "pid": 3958356,
+          "start_ticks": 28973452,
+          "sid": 3957302,
+          "pgid": 3958303
+        },
+        {
+          "pid": 3958495,
+          "start_ticks": 28973555,
+          "sid": 3957302,
+          "pgid": 3958303
+        },
+        {
+          "pid": 3958601,
+          "start_ticks": 28973586,
+          "sid": 3957302,
+          "pgid": 3958303
+        },
+        {
+          "pid": 3958716,
+          "start_ticks": 28973651,
+          "sid": 3957302,
+          "pgid": 3958303
+        }
+      ],
+      "pid": 3957302,
+      "direct_identity": {
+        "pid": 3957302,
+        "state": "R",
+        "ppid": 3956683,
+        "pgid": 3957302,
+        "sid": 3957302,
+        "start_ticks": 28971728,
+        "rss_bytes": 262144
+      },
+      "peak_session_rss_bytes": 952778752,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T02:40:58.532430+00:00",
+      "elapsed_seconds": 20.361262593010906,
+      "logs": {
+        "build.stdout": {
+          "bytes": 157601,
+          "sha256": "5e0928096e9cda3991b91578b29c16ba8d38cfa0fd6ce662ce354050dd19482e"
+        },
+        "build.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "direct-imports",
+      "argv": [
+        "/usr/bin/readelf",
+        "-d",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/build-sycl-gdn-factor-real-v1/gdn_gate_factor_parity"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T02:40:58.535342+00:00",
+      "wall_seconds": 30,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3958857,
+          "start_ticks": 28973764,
+          "sid": 3958857,
+          "pgid": 3958857
+        }
+      ],
+      "pid": 3958857,
+      "direct_identity": {
+        "pid": 3958857,
+        "state": "R",
+        "ppid": 3956683,
+        "pgid": 3958857,
+        "sid": 3958857,
+        "start_ticks": 28973764,
+        "rss_bytes": 339968
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T02:40:58.693877+00:00",
+      "elapsed_seconds": 0.15765844302950427,
+      "logs": {
+        "direct-imports.stdout": {
+          "bytes": 2662,
+          "sha256": "6e9dc238e007391b58bc17146ead098602837e97b8a7272a7456d14d0c560509"
+        },
+        "direct-imports.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "target-commands",
+      "argv": [
+        "/usr/bin/ninja",
+        "-C",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/build-sycl-gdn-factor-real-v1",
+        "-t",
+        "commands",
+        "gdn_gate_factor_parity"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T02:40:58.695141+00:00",
+      "wall_seconds": 30,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3958906,
+          "start_ticks": 28973780,
+          "sid": 3958906,
+          "pgid": 3958906
+        }
+      ],
+      "pid": 3958906,
+      "direct_identity": {
+        "pid": 3958906,
+        "state": "R",
+        "ppid": 3956683,
+        "pgid": 3958906,
+        "sid": 3958906,
+        "start_ticks": 28973780,
+        "rss_bytes": 438272
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T02:40:58.851668+00:00",
+      "elapsed_seconds": 0.15567985299276188,
+      "logs": {
+        "target-commands.stdout": {
+          "bytes": 124714,
+          "sha256": "eef4f1a0475d9ab7f6a401646e6490755b3aad8401b4de544f92fb37408c3988"
+        },
+        "target-commands.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "started_utc": "2026-10-10T02:40:36.601806+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "environment": {
+    "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+    "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+    "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+    "ONEAPI_ROOT": "/opt/intel/oneapi",
+    "CMAKE_PREFIX_PATH": "/opt/intel/oneapi/tbb/2023.1/env/..:/opt/intel/oneapi/pti/1.1/lib/cmake/pti:/opt/intel/oneapi/mkl/2026.1/lib/cmake:/opt/intel/oneapi/ipp/2026.0/lib/cmake/ipp:/opt/intel/oneapi/dpl/2022.13/lib/cmake/oneDPL:/opt/intel/oneapi/dnnl/2026.0/lib/cmake:/opt/intel/oneapi/compiler/2026.1:/opt/intel/oneapi/ccl/2022.1/lib/cmake/oneCCL",
+    "PKG_CONFIG_PATH": "/opt/intel/oneapi/vtune/2026.4/include/pkgconfig/lib64:/opt/intel/oneapi/tbb/2023.1/env/../lib/pkgconfig:/opt/intel/oneapi/mpi/2021.18/lib/pkgconfig:/opt/intel/oneapi/mkl/2026.1/lib/pkgconfig:/opt/intel/oneapi/ippcp/2026.0/lib/pkgconfig:/opt/intel/oneapi/dpl/2022.13/lib/pkgconfig:/opt/intel/oneapi/dnnl/2026.0/lib/pkgconfig:/opt/intel/oneapi/compiler/2026.1/lib/pkgconfig:/opt/intel/oneapi/ccl/2022.1/lib/pkgconfig/",
+    "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+    "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+  },
+  "compiler_pins": {
+    "icx": {
+      "bytes": 2102696,
+      "sha256": "be7fa7c3c74c2ba2b8e1b50b0a61e37986441727899e25f3545636bde157c083"
+    },
+    "icpx": {
+      "bytes": 2102696,
+      "sha256": "be7fa7c3c74c2ba2b8e1b50b0a61e37986441727899e25f3545636bde157c083"
+    }
+  },
+  "binary": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/build-sycl-gdn-factor-real-v1/gdn_gate_factor_parity",
+    "bytes": 1342536,
+    "sha256": "4adadb0e1ab3f486f5641f1a6441e99e0479e987664d7f121de3585bd33574ed"
+  },
+  "compile_commands": {
+    "bytes": 148242,
+    "sha256": "b418423ea4cf65ba3da4c4846142c5eb8c38b24524a00f1f6bcbf388c56b9a38"
+  },
+  "selected_compile_commands": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl/src/prefill/kernels.dp.cpp": [
+      "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+      "-DSTRATA_GDN_PREFILL_GATE_FACTOR=1",
+      "-DSTRATA_NATIVE_EXPERTS=1",
+      "-DSTRATA_SYCL_SAMPLER_FP64=1",
+      "-DSTRATA_VERSION=\"0.1.41\"",
+      "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl/include",
+      "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl/../include",
+      "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include",
+      "-O3",
+      "-DNDEBUG",
+      "-std=c++20",
+      "-fsycl",
+      "-fsycl-default-sub-group-size=32",
+      "-fsycl-device-code-split=per_kernel",
+      "-fp-model=precise",
+      "-Wno-unused-parameter",
+      "-Wno-unused-variable",
+      "-Wno-deprecated-declarations",
+      "-qmkl=sequential",
+      "-Wall",
+      "-Wextra",
+      "-o",
+      "CMakeFiles/strata_prefill.dir/src/prefill/kernels.dp.cpp.o",
+      "-c",
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl/src/prefill/kernels.dp.cpp"
+    ],
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl/src/prefill/prefill.cpp": [
+      "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+      "-DSTRATA_GDN_PREFILL_GATE_FACTOR=1",
+      "-DSTRATA_NATIVE_EXPERTS=1",
+      "-DSTRATA_SYCL_SAMPLER_FP64=1",
+      "-DSTRATA_VERSION=\"0.1.41\"",
+      "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl/include",
+      "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl/../include",
+      "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include",
+      "-O3",
+      "-DNDEBUG",
+      "-std=c++20",
+      "-fsycl",
+      "-fsycl-default-sub-group-size=32",
+      "-fsycl-device-code-split=per_kernel",
+      "-fp-model=precise",
+      "-Wno-unused-parameter",
+      "-Wno-unused-variable",
+      "-Wno-deprecated-declarations",
+      "-qmkl=sequential",
+      "-Wall",
+      "-Wextra",
+      "-o",
+      "CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o",
+      "-c",
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl/src/prefill/prefill.cpp"
+    ],
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl/src/prefill/gdn_gate_factor_parity.cpp": [
+      "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+      "-DSTRATA_GDN_FACTOR_PARITY_ENABLED=1",
+      "-DSTRATA_NATIVE_EXPERTS=1",
+      "-DSTRATA_SYCL_SAMPLER_FP64=1",
+      "-DSTRATA_VERSION=\"0.1.41\"",
+      "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl/include",
+      "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl/../include",
+      "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include",
+      "-O3",
+      "-DNDEBUG",
+      "-std=c++20",
+      "-fsycl",
+      "-fsycl-default-sub-group-size=32",
+      "-fsycl-device-code-split=per_kernel",
+      "-fp-model=precise",
+      "-Wno-unused-parameter",
+      "-Wno-unused-variable",
+      "-Wno-deprecated-declarations",
+      "-qmkl=sequential",
+      "-Wall",
+      "-Wextra",
+      "-o",
+      "CMakeFiles/gdn_gate_factor_parity.dir/src/prefill/gdn_gate_factor_parity.cpp.o",
+      "-c",
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl/src/prefill/gdn_gate_factor_parity.cpp"
+    ]
+  },
+  "target_commands": {
+    "bytes": 124714,
+    "sha256": "eef4f1a0475d9ab7f6a401646e6490755b3aad8401b4de544f92fb37408c3988"
+  },
+  "finished_utc": "2026-10-10T02:40:58.948308+00:00"
+}
