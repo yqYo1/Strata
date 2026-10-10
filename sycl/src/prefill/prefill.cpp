@@ -6,6 +6,9 @@
 #include "strata/sycl_allocation.hpp"
 #include "strata/prefill/prefill.hpp"
 #include "iq4nl_dequant.hpp"
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+#include "iq4nl_async_boundary.hpp"
+#endif
 #include "strata/core/gguf_expert_source.hpp"
 #include "../../../src/prefill/mmq_resident_sort.hpp"
 #include "../../../src/prefill/wmma_gemm.h"
@@ -2816,6 +2819,12 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                   std::string &err) try {
     err.clear();
     Impl& m = *impl_;
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+    bool iq4nl_submitted = false;
+    auto iq4nl_boundary = [&]() {
+        return !iq4nl_submitted || detail::iq4nl_completed_boundary(*m.cs, err);
+    };
+#endif
     const core::OnDevice on_device(m.device);
     const core::ModelGeometry& g = *m.g;
     core::SessionState& ss = *m.ss;
@@ -2993,7 +3002,12 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
         auto lap = [&](const char* what) {
             if (pt.on) { std::fprintf(stderr, "strata prefill timing: setup %s %.1f ms\n", what, ms_since(tlap)); tlap = Clock::now(); }
         };
-        if (pt.on) { m.cs->wait(); lap("work queued before the chunk"); }
+        if (pt.on) {
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+        if (iq4nl_submitted) { if (!detail::iq4nl_wait_boundary(*m.cs, err)) return false; }
+        else
+#endif
+        m.cs->wait(); lap("work queued before the chunk"); }
         // ---- embeddings, broadcast to the four streams - or, in a later stage of a layer split, the rows the
         // previous stage handed on
         if (hand_in_ != nullptr) {
@@ -3043,7 +3057,12 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
             lap("token ids uploaded");
             if (nemb) {
                 nemb->gather_dev(m.tok_dev, T, m.emb, m.cs);
-                if (pt.on) { m.cs->wait(); lap("embedding gather (waited)"); }
+                if (pt.on) {
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+        if (iq4nl_submitted) { if (!detail::iq4nl_wait_boundary(*m.cs, err)) return false; }
+        else
+#endif
+        m.cs->wait(); lap("embedding gather (waited)"); }
             } else {
                 const auto* codes = (const uint8_t*) wemb->data;
                 const auto* scales = (const float*) (codes + wemb->codes_bytes);
@@ -3496,7 +3515,11 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
         if (!step_sync) return;
             core::progress_at(what, layer, p0);
             const auto ts = Clock::now();
-            const dpct::err0 a = DPCT_CHECK_ERROR(m.cs->wait()),
+            const dpct::err0 a = (
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+                iq4nl_submitted ? (detail::iq4nl_wait_boundary(*m.cs, err) ? 0 : 1) :
+#endif
+                DPCT_CHECK_ERROR(m.cs->wait())),
                              b = DPCT_CHECK_ERROR(m.copy->wait());
             const double ms = ms_since(ts);
             if (ms > 250.0 || a != 0 || b != 0)
@@ -3639,7 +3662,12 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                         API to ensure synchronization behavior.
                         */
                         m.cs->memcpy(got.data(), m.mixed, got.size() * 4);
-                        m.cs->wait();
+
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+        if (iq4nl_submitted) { if (!detail::iq4nl_wait_boundary(*m.cs, err)) return false; }
+        else
+#endif
+        m.cs->wait();
                         double e2 = 0, r2 = 0, emax = 0;
                         for (size_t i = 0; i < ref.size(); ++i) {
                             const double dd = (double) got[i] - ref[i];
@@ -3826,7 +3854,12 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                         API to ensure synchronization behavior.
                         */
                         m.cs->memcpy(ids.data(), m.sel_ids, ids.size() * 4);
-                        m.cs->wait();
+
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+        if (iq4nl_submitted) { if (!detail::iq4nl_wait_boundary(*m.cs, err)) return false; }
+        else
+#endif
+        m.cs->wait();
                         double sum_w = 0, sum_u = 0;
                         for (int64_t t0 = 0; t0 + 16 <= T; t0 += 16) {
                             std::vector<int32_t> u;
@@ -3894,7 +3927,12 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                         API to ensure synchronization behavior.
                         */
                         m.cs->memcpy(b.data(), ids16, b.size() * 4);
-                        m.cs->wait();
+
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+        if (iq4nl_submitted) { if (!detail::iq4nl_wait_boundary(*m.cs, err)) return false; }
+        else
+#endif
+        m.cs->wait();
                         for (int64_t t = 0; t < T; ++t) {
                             const int64_t w = m.steps_host[(size_t) (t * strata::kernels::kStepCount + strata::kernels::kStepWidth)];
                             const int32_t *x = a.data() + t * m.cap, *y = b.data() + t * m.cap;
@@ -3928,7 +3966,12 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                             behavior.
                             */
                             m.cs->memcpy(h.data(), m.sel_ids, h.size() * 4);
-                            m.cs->wait();
+
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+        if (iq4nl_submitted) { if (!detail::iq4nl_wait_boundary(*m.cs, err)) return false; }
+        else
+#endif
+        m.cs->wait();
                             if (std::FILE* f = std::fopen(dump, "ab")) {
                                 const int32_t hdr[4] = {(int32_t) qsa_index, (int32_t) p0, (int32_t) T, (int32_t) m.cap};
                                 std::fwrite(hdr, 4, 4, f);
@@ -3948,7 +3991,12 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                     // STRATA_DUMP_SEL=<file>: the selected cells of every prompt position of the first QSA layer of the
                     // last chunk (int32 T, cap, then T*cap ids and T widths) - the input to the grouped-gather study
                     if (static const char* dsel = std::getenv("STRATA_DUMP_SEL"); dsel && c0 + T >= n && qsa_index == 0) {
-                        m.cs->wait();
+
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+        if (iq4nl_submitted) { if (!detail::iq4nl_wait_boundary(*m.cs, err)) return false; }
+        else
+#endif
+        m.cs->wait();
                         std::vector<int32_t> ids_h((size_t) T * m.cap), st_h((size_t) T * strata::kernels::kStepCount);
                         m.cs->memcpy(ids_h.data(), m.sel_ids, ids_h.size() * 4).wait();
                         m.cs->memcpy(st_h.data(), m.steps_dev, st_h.size() * 4).wait();
@@ -4118,7 +4166,12 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                         // work), not the host: the watchdog's report says so (only its text changes)
                         core::progress_at("reading the prompt (batched): waiting for the GPU (attention, router) at layer",
                                           l, p0);
-                        m.cs->wait();
+
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+        if (iq4nl_submitted) { if (!detail::iq4nl_wait_boundary(*m.cs, err)) return false; }
+        else
+#endif
+        m.cs->wait();
                         core::progress_at("reading the prompt (batched): layer", l, p0);
                         pt.fold();
                         if (pe.on) {   // the peer's marks so far are done: the primary waited for its last rows
@@ -4805,6 +4858,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                                 if (m.iq4nl_down_dequant && f.d_type == 20) {
                                     strata::kernels::iq_dequant_f16_prefill_iq4nl(f.d_type, blob_dev + f.down_off,
                                                                              f.n_embd * f.n_ff, m.dq_d[q], m.cs);
+                                    iq4nl_submitted = true;
                                 } else
 #endif
                                 strata::kernels::iq_dequant_f16(f.d_type, blob_dev + f.down_off, f.n_embd * f.n_ff, m.dq_d[q], m.cs);
@@ -4915,7 +4969,12 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                     moe_combine(m.Dm, m.slot_dev, m.w, m.shared, m.sg, m.bo, T, m.cs);
                     // debug: STRATA_DBG_NAN=1 reports the first layer of a chunk whose MoE produced non-finite values
                     if (static const bool dbg = std::getenv("STRATA_DBG_NAN") != nullptr; dbg) {
-                        m.cs->wait();
+
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+        if (iq4nl_submitted) { if (!detail::iq4nl_wait_boundary(*m.cs, err)) return false; }
+        else
+#endif
+        m.cs->wait();
                         auto bad = [&](const float *d, int64_t n) {
                             try {
                         std::vector<float> h((size_t)n);
@@ -5065,7 +5124,12 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                         API to ensure synchronization behavior.
                         */
                         m.cs->memcpy(xb.data(), xc, xb.size() * 2);
-                        m.cs->wait();
+
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+        if (iq4nl_submitted) { if (!detail::iq4nl_wait_boundary(*m.cs, err)) return false; }
+        else
+#endif
+        m.cs->wait();
                         sycl::free(Rc, dpct::get_in_order_queue());
                             sycl::free(rc, dpct::get_in_order_queue());
                             sycl::free(xc, dpct::get_in_order_queue());
@@ -5111,7 +5175,11 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
             */
             if (DPCT_CHECK_ERROR(m.cs->memcpy(h, m.R, (size_t)T * D * 4)) !=
                     0 ||
-                DPCT_CHECK_ERROR(m.cs->wait()) != 0) {
+                (
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+                iq4nl_submitted ? (detail::iq4nl_wait_boundary(*m.cs, err) ? 0 : 1) :
+#endif
+                DPCT_CHECK_ERROR(m.cs->wait())) != 0) {
                 /*
                 DPCT1009: SYCL reports errors using exceptions and does not
                 use error codes. Please replace the
@@ -5123,10 +5191,17 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                 use the error codes. The cudaGetLastError function call was
                 replaced with 0. You need to rewrite this code.
                 */
-                err = std::string("prefill: the layer split's hand-off: ") +
+
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+        if (err.empty())
+#endif
+        err = std::string("prefill: the layer split's hand-off: ") +
                       dpct::get_error_string_dummy(0);
                 return false;
             }
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+            if (!iq4nl_boundary()) return false;
+#endif
             // Wait only for the DIRECT successor's previous chunk. That successor
             // may already have forwarded its older chunk to later GPUs.
             if (on_stage_chunk && !on_stage_chunk(p0 + T, err)) return false;
@@ -5141,7 +5216,15 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
             continue;   // the last stage reports the chunk (on_chunk)
         }
         if (const char* dump = (m.transfer_context && LE < g.n_layers) ? nullptr : std::getenv("STRATA_PREFILL_DUMP_R")) {   // debug: the final residuals, every 64th
-            m.cs->wait(); // position (A/B quality of this path)
+
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+        if (iq4nl_submitted) { if (!detail::iq4nl_wait_boundary(*m.cs, err)) return false; }
+        else
+#endif
+        m.cs->wait(); // position (A/B quality of this path)
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+        if (!iq4nl_boundary()) return false;
+#endif
             if (std::FILE* f = std::fopen(dump, c0 == 0 ? "wb" : "ab")) {
                 std::vector<float> row((size_t) D);
                 const int64_t stride = std::getenv("STRATA_PREFILL_DUMP_R_ALL") ? 1 : 64;
@@ -5159,7 +5242,15 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
         if (const char* dump = std::getenv("STRATA_PREFILL_DUMP_R_ALL")) {
             // S25 (draft-layer distillation data, opt-in): every position's final multi-stream residual as BF16
             // (round-to-nearest-even), rows in position order, appended across chunks and requests: [n][hc*n_embd]
-            m.cs->wait();
+
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+        if (iq4nl_submitted) { if (!detail::iq4nl_wait_boundary(*m.cs, err)) return false; }
+        else
+#endif
+        m.cs->wait();
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+        if (!iq4nl_boundary()) return false;
+#endif
             if (std::FILE* f = std::fopen(dump, "ab")) {
                 constexpr int64_t kRows = 512;
                 std::vector<float> rows((size_t) (kRows * D));
@@ -5182,7 +5273,11 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
         }
         if (on_chunk || on_stage_chunk) {
             const auto toc = Clock::now();
-            if (DPCT_CHECK_ERROR(m.cs->wait()) != 0) {
+            if ((
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+                iq4nl_submitted ? (detail::iq4nl_wait_boundary(*m.cs, err) ? 0 : 1) :
+#endif
+                DPCT_CHECK_ERROR(m.cs->wait())) != 0) {
                 /*
                 DPCT1009: SYCL reports errors using exceptions and does not
                 use error codes. Please replace the
@@ -5194,10 +5289,17 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                 use the error codes. The cudaGetLastError function call was
                 replaced with 0. You need to rewrite this code.
                 */
-                err =
+
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+        if (err.empty())
+#endif
+        err =
                     std::string("prefill: ") + dpct::get_error_string_dummy(0);
                 return false;
             }
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+            if (!iq4nl_boundary()) return false;
+#endif
             const auto toc2 = Clock::now();
             if (on_stage_chunk && !on_stage_chunk(p0 + T, err)) return false;
             if (on_chunk && !on_chunk(m.R, T, p0, err)) return false;
@@ -5210,7 +5312,15 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
     ss.ple_prev[0] = prev[0];
     ss.ple_prev[1] = prev[1];
     if (last_chunk_len > 0 && std::getenv("STRATA_DBG_NAN") != nullptr) {   // debug: the state the prompt leaves for the token path
+
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+        if (iq4nl_submitted) { if (!detail::iq4nl_wait_boundary(*m.cs, err)) return false; }
+        else
+#endif
         m.cs->wait();
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+        if (!iq4nl_boundary()) return false;
+#endif
         auto bad = [&](const float *d, int64_t n) {
             try {
         std::vector<float> h((size_t)n);
@@ -5236,7 +5346,11 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
         bad(ss.gdn_state, 64 * 1024);
         std::fprintf(stderr, "\n");
     }
-    if (DPCT_CHECK_ERROR(m.cs->wait()) != 0) {
+    if ((
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+                iq4nl_submitted ? (detail::iq4nl_wait_boundary(*m.cs, err) ? 0 : 1) :
+#endif
+                DPCT_CHECK_ERROR(m.cs->wait())) != 0) {
         /*
         DPCT1009: SYCL reports errors using exceptions and does not use
         error codes. Please replace the "get_error_string_dummy(...)" with a
@@ -5247,9 +5361,16 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
         error codes. The cudaGetLastError function call was replaced with 0. You
         need to rewrite this code.
         */
+
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+        if (err.empty())
+#endif
         err = std::string("prefill: ") + dpct::get_error_string_dummy(0);
         return false;
     }
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+            if (!iq4nl_boundary()) return false;
+#endif
     // (PR #121) an expert copy that failed on the copy stream surfaces here, not in the next request
     /*
     DPCT1000: Error handling if-stmt was detected but could not be
@@ -5327,6 +5448,11 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
         }
     }
     if (std::getenv("STRATA_STATE_HASH_GDN") != nullptr) {   // debug: the GDN states as the prompt path leaves them
+
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+        if (iq4nl_submitted) { if (!detail::iq4nl_wait_boundary(*m.cs, err)) return false; }
+        else
+#endif
         m.cs->wait();
         std::vector<uint8_t> b((size_t) gdn_floats * 4);
         std::string line;
