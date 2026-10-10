@@ -1,0 +1,39 @@
+{
+  "created_utc": "2026-10-10T11:26:32.282713+00:00",
+  "reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round247-host-usm-publication-dma-reuse-and-nt-fence-contract.txt",
+      "bytes": 10769,
+      "sha256": "d64d5ac3178f82ff2c17b1dc80b7e61966d56213100aa07f6e6941eea048d631",
+      "agent": "/root/research_bottleneck_evidence_audit_v203",
+      "model": "gpt-6-luna",
+      "scope": "Production host-USM context/publication/DMA reuse and explicit NT fence contract",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round248-layer-major-full-context-live-memory-and-eligibility-budget.txt",
+      "bytes": 13160,
+      "sha256": "601da38175f6446e42449c31cb1cc21f8f965be2a5df6b19b4ac222ec6445644",
+      "agent": "/root/research_native_iq4nl_esimd_k640_v202",
+      "model": "gpt-6-luna",
+      "scope": "Current layer-major resident-KV eligibility and simultaneous full-context memory budget",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    }
+  ],
+  "corrections": {
+    "R247": "Static allocation/context, ordinary-store release/acquire publication, copy dependency and completion-before-reuse contract accepted. No definite UB found in this scope. Explicit NT must fence before publication; tagged glibc fence does not attest target IFUNC. No unsupported extra fence or weakening adopted; actual host-USM/device consumer remains unqualified.",
+    "R248": "Accepted critical D=10240 residual correction and current resident-KV guard. Root independently recomputed all byte/rate arithmetic. Guard is at frozen source line2507 (report approximate2489-2495). QSA subtotal is6.437511444GiB retaining +2 indexer rows, not exactly6.4375; exact bytes take precedence. Historical MAXBLOB is not current-pack metadata; no memory-fit or inference proof. Original report is preserved unchanged.",
+    "root": "Earlier residual worksheet incorrectly used expert N=2560 instead of four-stream D=10240. Corrected current arithmetic with separate original-commit/hash/values receipt. Previous14.2159s32K serial copy estimate is33.4603s; measurements and expert weight/FLOP counts are unchanged."
+  },
+  "registry_identity": {
+    "bytes": 257759,
+    "sha256": "0d435fede6563c949ec411feb1e79ff5295675b9f4a05d1eb4f228aea65c5ccc"
+  },
+  "residual_correction_identity": {
+    "bytes": 4736,
+    "sha256": "dbae3d393bd7a172872ecbc133dcb7aa3827d899fa4cda78f262d80e56154412"
+  },
+  "adopted": false
+}

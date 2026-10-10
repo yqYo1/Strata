@@ -1,24 +1,48 @@
-# Decisions enabled by the hardware capacity controls
+# Hardware capacities and the architectural budget
 
-The measured capacity map and original samples are frozen in the preceding commit. This worksheet distinguishes the effect of submission order from data reuse. It adds no model/GPU measurement and adopts no candidate.
+Measured on Ryzen 5 5600X, 128GB RAM and Arc B570 on 2026-10-10. The [capacity matrix](component-capacity-matrix.json) pins individual samples, units and three-process ranges. These are attained rates for specified operations, not absolute hardware maxima or new model throughput.
 
-For32768positions, the1000token/s budget is32.768seconds. Historical190.2GB expert payload at the separate attained6.447GB/s host-USM rate takes29.50seconds. Assigning every expert GEMM hypothetically M80/160/640 yields12.95/6.57/3.85seconds of GEMM arithmetic respectively. With serial execution and no other work, corresponding target payload budgets are127.79/168.89/186.43GB. These are conditional scenarios, not actual model times or physical lower bounds: the current route shape histogram, actual payload/path/dependencies and all remaining service must be measured. M8192hot is not an attainable assumption for every expert.
+| Component / operation | Attained rate | What the number covers |
+| --- | ---: | --- |
+| CPU FP32 FMA | 0.818 TFLOP/s | Six physical cores, register arithmetic |
+| RAM read | 36.87 GB/s | Six physical cores, arrays larger than LLC |
+| RAM copy | 37.58 GB/s | Non-temporal, logical source read plus destination write |
+| Packed host-copy jobs | 13.74 GB/s | One-way payload, three workers; ordinary RAM, source/copy/wakeup/ack control |
+| RAM→GPU | 6.447 GB/s | Host USM, one-way 256MiB payload, host-inclusive completion |
+| GPU→RAM | 5.643 GB/s | Host USM, one-way 256MiB payload |
+| Pageable RAM→GPU / GPU→RAM | 4.605 / 5.274 GB/s | The path used in the residual estimate below |
+| VRAM copy | 330.07 GB/s | Logical source read plus destination write |
+| GPU GU / Down GEMM, M8192 | 52.69 / 41.61 TFLOP/s | FP16 inputs, FP32 output, hot weights |
+| GPU GU / Down GEMM, M80 | 13.16 / 10.08 TFLOP/s | Eight rotating weights, synthetic useful row grouping |
+| SSD sequential, 1MiB | 2.266 GB/s | Same-file ZFS path, 16 workers |
+| SSD random, 4KiB | 0.05099 GB/s; 12,450 IOPS | Same-file ZFS path, 16 workers |
 
-| Change | What can change | Evidence gate |
+RAM/VRAM copy counts read and write; PCIe and host packed-copy rates count payload once. They are not directly comparable utilization ratios. Hot large GEMM rates cannot predict small expert service. Register FP32 FMA does not set the native quantized CPU dot-product roof. Device IQ dequantization and actual model service remain gaps.
+
+For 32,768 positions, the 1000 token/s budget is 32.768 seconds. Historical 190.2GB expert payload at the separate attained 6.447GB/s host-USM rate takes 29.50 seconds. Assigning every expert GEMM hypothetically M80/160/640 yields 12.95/6.57/3.85 seconds of GEMM arithmetic respectively. With serial execution and no other work, corresponding target payload budgets are 127.79/168.89/186.43GB. These are conditional scenarios, not measured model times or physical lower bounds. Current route shape/format/source histograms, actual bytes and all remaining work must be measured.
+
+| Change | What can change | Evidence needed |
 | --- | --- | --- |
-| Reorder independent submissions | Queue overhead/overlap, with the same bytes and work | Exact operation timeline and dependencies; safe two-queue control had zero target overlap |
-| Keep one layer's packed weights across all chunks | Fewer packed transfers and potentially fewer host copies | Selected source route, actual expert reuse, peak live VRAM, full-context numerical/state proof |
-| Group more useful routed rows per weight load | GEMM attained rate and transfer/dequant amortization | Actual per-expert `ne` histogram and same-request correctness/latency |
-| Keep intermediate rows in VRAM | Fewer intermediate H2D/D2H transfers | Full simultaneous allocation/KV budget, ownership/lifetime proof and full262144-position validation |
-| Change packed representation/device kernels | Packed bytes or dequant/GEMM service | Exact numerical and full-context tests, separate prefill/decode samples |
-| Group PLE reads by filesystem record | Fewer source calls but more returned logical bytes | Actual cache/reader geometry and service; cold census alone does not select an I/O policy |
+| Reorder independent submissions | Queue overhead and overlap with unchanged bytes/work | Exact operation timeline and dependencies; the safe two-queue control had zero target overlap |
+| Keep one layer's packed weights across all chunks | Fewer packed transfers and host copies | Actual route/reuse, simultaneous memory peaks and full-context state/numerical validation |
+| Group useful routed rows per weight load | Attained GEMM rate and transfer/dequant amortization | Actual per-expert row histogram, correctness and latency |
+| Keep some intermediate rows in VRAM | Fewer residual H2D/D2H transfers | Simultaneous allocations/KV budget and full-context lifetime/numerical validation |
+| Change packed representation/device kernels | Packed bytes or dequant/GEMM service | Operation-specific attribution, numerical tests and separate prefill/decode comparisons |
+| Group PLE reads by filesystem record | Fewer source calls but potentially more returned bytes | Actual cache/reader geometry and service; the cold census alone does not select I/O policy |
 
-Frozen layer-major source loads every expert's packed blob once per layer, then runs all token chunks while retaining those weights. Historical layer-specific packed sizes imply50,292,326,400bytes for the explicit512-expert/layer scenario, versus historical A190,240,998,400bytes (about3.78x less). The largest layer/max-size temporary allocation is1,363,148,800bytes. This shows that a processing-order change can change the byte budget substantially; it is different from submitting the same copies earlier.
+The frozen layer-major source loads every expert's packed blob once per layer and runs all chunks while retaining that layer. Historical layer-specific sizes imply 50,292,326,400 bytes for the explicit 512-expert/layer scenario, versus historical A's 190,240,998,400 bytes: about 3.78 times less. Its largest historical temporary layer-cache allocation was 1,363,148,800 bytes. These are historical pack counts, not current-pack metadata or evidence that the alternative is adopted. Reuse changes the byte budget; submitting the same copies earlier does not.
 
-The source also hands off FP32 H2560 intermediate rows across47layer boundaries. If all rows reside in RAM,32768positions require335,544,320bytes of host row storage and15,770,583,040bytes in each PCIe direction. The separate pageable H2D/D2H controls give a conditional6.41seconds for those residual copies, plus7.80seconds for the once-per-layer packed weights at the separate host-USM rate. Actual paths/chunk sizes/dependencies/otherwork are unmeasured here. Keeping all intermediate rows in VRAM removes these PCIe handoffs but uses the row storage in addition to layer cache, dequant scratch, KV, decode state and other allocations. The existing mixed/inplace source is not validated by this count.
+The residual plane has **D=10240 FP32 elements per position**: expert hidden N=2560 times four streams. The previous worksheet incorrectly used N for this plane. Its preserved original commit/hash and the fourfold correction are in [the correction receipt](residual-dimension-correction.json); original benchmark results are unchanged.
 
-At262144hypotheticalpositions, the residual store is2,684,354,560bytes and each direction's47-boundary payload is126,164,664,320bytes. The conditional pageable residual time scales to about51.32seconds. This count is not evidence that all these tensors/KV fit the10GiB device or that the candidate produces correct output at the full physical context boundary. Existing alternative numerical rejection and its reproducer remain current fixtures. No reset/driver safety setting is changed to improve overlap.
+| Positions | Complete residual plane | Payload per PCIe direction over 47 boundaries | Conditional all-RAM residual copies | Once-per-layer packed copies | Serial copy sum |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 32,768 | 1,342,177,280 B (1.25GiB) | 63,082,332,160 B | 25.66s | 7.80s | 33.46s |
+| 262,144 | 10,737,418,240 B (10GiB) | 504,658,657,280 B | 205.27s | 7.80s | 213.07s |
 
-Host staging copies packed data; its CPU service must be measured separately from GPU IQ dequantization. The384selected IQ2_S/IQ4_NL experts in the CPU capacity fixture do not mean384experts in every production layer. The source RAM-copy thread default is max(2,min(4,hardware_concurrency/4)); with12logical CPUs that is3unless explicitly overridden. Source reads and their32thread/ring128 default are a different arm. Register-only0.818TFLOP/s does not determine this staging or quantized-dot utilization.
+These combine source counts with separate pageable H2D/D2H and host-USM capacity measurements. Actual chunk-sized service, cache/source path, copy overlap and other work are not measured here. Under this serial scenario, all-RAM residual plus weight reuse alone already exceeds the 32K target budget before computation. Partial GPU placement can lower residual PCIe bytes but consumes VRAM; grouping/reuse must therefore be evaluated with placement, not from weight savings alone.
 
-The next production attribution needs actual expert rows, bytes/source/cache hits and distinct host-stager, H2D, device dequant, GU/Down, PLE and graph/cache restoration service. Returned oneMKL events still need internal-operation coverage qualification before they are called entire service spans. Then compare an isolated change using fresh >=32K inputs and independent repetitions, and validate all262144physical positions before adoption.
+Current layer-major explicitly rejects streamed QSA K/V (`kv_mode != 0`). For the cited geometry its resident K/V, indexer and RoPE subtotal is 864,038,912 bytes at 32K and 6,912,212,992 bytes at 262,144 positions. The latter leaves 3,753,902,080 bytes below the whole-device capacity of 10,666,115,072 bytes, before GDN, all weights, caches, prefill/dequant/session scratch, graphs and runtime. This is not free memory. The complete 10GiB residual plane alone exceeds that device capacity by 71,303,168 bytes. Full GPU placement cannot fit; mixed placement has no complete admission receipt yet. Historical streamed-KV C is a different, ineligible route for this source. Existing alternative numerical rejection remains unresolved.
+
+The packed host-copy control reaches 13.74GB/s with three workers, with no clear improvement from four or six. This is ordinary aligned RAM with a synthetic acknowledgment, not production host-USM/DMA/source service. Production allocation kind, actual source path and dependencies still need attribution. The current host-copy default is three workers on 12 logical CPUs; source-reading threads are a separate setting.
+
+Next measure actual expert rows, role formats, bytes/source/cache hits and distinct host stager, H2D, GPU IQ dequant, GU/Down, PLE and graph/cache restoration service. Returned oneMKL events need internal-operation coverage qualification before being called complete service spans. Then compare isolated changes with fresh inputs of at least 32K and independent repetitions; qualify all 262,144 physical positions before adoption. GPU safety settings are unchanged and no candidate is adopted by this worksheet.

@@ -1,0 +1,98 @@
+{
+  "created_utc": "2026-10-10T11:26:32.282713+00:00",
+  "source": "Root arithmetic error found by independent completed R248 source audit",
+  "error": "Expert hidden N=2560 was incorrectly used for the four-stream residual D=N*HC=10240.",
+  "original": {
+    "commit": "ad6193bf8c7d1289941953f1496b6fc15ac2066b",
+    "path": "bench/results/2026-10-10-hardware-architecture-decisions/conditional-reuse-estimates.json",
+    "bytes": 2394,
+    "sha256": "38289f144de3f1feeb295b94a53f3142d4cfed0aa238939e852723d80098e1b1",
+    "residual_scenarios": [
+      {
+        "hypothetical_positions": 32768,
+        "residual_buffer_bytes": 335544320,
+        "all_RAM_residual_H2D_payload_bytes": 15770583040,
+        "all_RAM_residual_D2H_payload_bytes": 15770583040,
+        "conditional_pageable_residual_seconds": 6.4147958225,
+        "conditional_host_USM_packed_weight_seconds": 7.8010895243042
+      },
+      {
+        "hypothetical_positions": 262144,
+        "residual_buffer_bytes": 2684354560,
+        "all_RAM_residual_H2D_payload_bytes": 126164664320,
+        "all_RAM_residual_D2H_payload_bytes": 126164664320,
+        "conditional_pageable_residual_seconds": 51.31836658,
+        "conditional_host_USM_packed_weight_seconds": 7.8010895243042
+      }
+    ],
+    "original_32768_conditional_serial_seconds": 14.2158853468042
+  },
+  "corrected": {
+    "path": "bench/results/2026-10-10-hardware-architecture-decisions/conditional-reuse-estimates.json",
+    "bytes": 2987,
+    "sha256": "50c63fc899596011e70a901cbdbb2b07b73ced52b9ae28e6b0f9d1131d92643a",
+    "residual_scenarios": [
+      {
+        "hypothetical_positions": 32768,
+        "residual_buffer_bytes": 1342177280,
+        "all_RAM_residual_H2D_payload_bytes": 63082332160,
+        "all_RAM_residual_D2H_payload_bytes": 63082332160,
+        "conditional_pageable_residual_seconds": 25.65918329,
+        "conditional_host_USM_packed_weight_seconds": 7.8010895243042,
+        "conditional_serial_residual_and_weight_seconds": 33.460272814304204
+      },
+      {
+        "hypothetical_positions": 262144,
+        "residual_buffer_bytes": 10737418240,
+        "all_RAM_residual_H2D_payload_bytes": 504658657280,
+        "all_RAM_residual_D2H_payload_bytes": 504658657280,
+        "conditional_pageable_residual_seconds": 205.27346632,
+        "conditional_host_USM_packed_weight_seconds": 7.8010895243042,
+        "conditional_serial_residual_and_weight_seconds": 213.0745558443042
+      }
+    ]
+  },
+  "unchanged": "Original measurements, expert GEMM arithmetic, historical packed-weight counts, failed results and candidate adoption status remain unchanged.",
+  "production_source": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/sycl/src/prefill/prefill.cpp",
+    "bytes": 329171,
+    "sha256": "f6cbc4acb9f84b19480a25892a2e6864896a3e3ab0f68ace3c3f51a788591f69",
+    "commit": "495369cf4dc6e6da564095a1c26504dd3694e3f2"
+  },
+  "decision": "All-RAM residual plus once-per-layer weights is conditionally 33.4603s at 32K before compute/other work, exceeding the 32.768s target budget; placement/bytes must be evaluated in addition to weight reuse.",
+  "QSA_geometry_scope": "R248 frozen-source/prior-report geometry, not newly measured model metadata or free/peak-memory receipt.",
+  "device_total_capacity_bytes": 10666115072,
+  "QSA_geometry": {
+    "layers": 12,
+    "kv_heads": 4,
+    "head_dim": 128,
+    "indexer_block": 4,
+    "indexer_dim": 128,
+    "n_rot": 64
+  },
+  "conditional_memory_budgets": [
+    {
+      "positions": 32768,
+      "resident_QSA_FP16_KV_bytes": 805306368,
+      "pooled_indexer_bytes": 50343936,
+      "shared_RoPE_bytes": 8388608,
+      "QSA_subtotal_bytes": 864038912,
+      "QSA_subtotal_GiB": 0.8046989440917969,
+      "whole_device_capacity_minus_QSA_subtotal_bytes": 9802076160,
+      "residual_total_bytes": 1342177280
+    },
+    {
+      "positions": 262144,
+      "resident_QSA_FP16_KV_bytes": 6442450944,
+      "pooled_indexer_bytes": 402665472,
+      "shared_RoPE_bytes": 67108864,
+      "QSA_subtotal_bytes": 6912225280,
+      "QSA_subtotal_GiB": 6.437511444091797,
+      "whole_device_capacity_minus_QSA_subtotal_bytes": 3753889792,
+      "residual_total_bytes": 10737418240
+    }
+  ],
+  "full_context_all_GPU_residual_excess_over_whole_device_bytes": 71303168,
+  "source_eligibility": "Current layer-major rejects kv_mode != 0; historical streamed-KV arm is not eligible for this source.",
+  "limitations": "QSA subtotal excludes GDN, convolution, dense/base weights, session/prefill/dequant scratch, layer/expert caches, graph/runtime and allocator peaks. Historical MAXBLOB is not current-pack metadata. No fit, performance or full-context qualification is claimed."
+}

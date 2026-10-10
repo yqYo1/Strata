@@ -1,0 +1,74 @@
+# R248 — current layer-major eligibility and full-context memory budget
+
+Date: 2026-10-10 (Asia/Tokyo). Read-only audit of the frozen production source and committed architecture/measurement reports. No Git commands, source edits, builds, tests, profiles, inference, GPU/process/hardware queries or cleanup were performed. This is a source eligibility and byte-budget report, not an allocation receipt or qualification.
+
+## Decision
+
+The current production `run_layer_major` cannot run with streamed QSA K/V. It explicitly rejects every owned QSA state with `kv_mode != 0` (`sycl/src/prefill/prefill.cpp`, layer-major guard around lines 2489–2495 in the frozen tree). Therefore a current layer-major run at either 32,768 or 262,144 positions must keep every QSA K/V page resident in GPU memory. The old streamed-KV C-arm allocation failure does not establish whether this different, resident-KV source route fits; the old arm is ineligible here before it reaches memory admission.
+
+The source supports layer-major selection for forced mode `STRATA_PREFILL_LAYER_MAJOR=2`, or mode `=1` when the call has multiple chunks. It additionally requires a full, single-GPU, compact FP16 path, a source, no helper/peer path, and no PLE preload. The caller's actual `n` must exceed one chunk for automatic mode; `--max-context` alone does not prove that. `kv_mode=0` plus those route conditions are necessary, not sufficient: current model-pack metadata, allocation/free-memory receipts, graph capture footprint and cache/MTP lease behavior are not pinned for these requested lengths.
+
+## Frozen inputs and source facts
+
+Inspected source tree: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010`, task-pinned source HEAD `495369cf4dc6e6da564095a1c26504dd3694e3f2`. Inspected committed architecture-decision worksheet in `docs-sycl-storage-retention-20261009`, and prior R219, R241, R160, and streamed-KV source review. No live device or process state was read.
+
+Relevant implementation:
+
+- `sycl/src/prefill/prefill.cpp`: selector/eligibility and `run_layer_major`; one temporary `ExpertCache` sized from `g.n_expert` copies of `MAXBLOB()`; separate host `rows` and device residual allocation; `run_impl` works in `m.T` chunks for each complete layer. Layer cache and residual plane coexist with the session and Prefill workspace.
+- `sycl/src/core/session.cpp`: allocates all owned GDN state, QSA states, one shared QSA buffer arena, MoE/block scratch and PLE history. A session-wide QSA state carries one RoPE table shared by the other QSA states.
+- `sycl/src/core/layer.cpp`: resident K/V byte formula is `cells * n_head_kv * head_dim * 2 * 2` for FP16 K and V; QSA indexer pooled rows are `(max_cells / idx_block + 2)` times `idx_dim * 4`; RoPE is `2 * max_cells * (n_rot/2) * 4` in the first state. Its nonresident/streamed pool/map path is not selected by this layer-major guard.
+- `sycl/src/program/generate.cpp`: PLE row-cache default is `1<<20` rows. PLE table storage itself is file-backed unless explicitly locked/loaded; PLE preload is rejected in layer-major. MTP and decode-cache suspend hooks are optional, and the cache-restore mode distinguishes a snapshot host copy from direct reads out of an already resident expert RAM arena.
+
+Geometry used in the established B570 scenario is `n_head_kv=4`, `head_dim=128`, `n_qsa_layers=12`, `n_gdn_layers=36`, `idx_block=4`, `idx_key_dim=128`, `D=10,240` residual floats per token (`H=2560`, four streams). These are source/report geometry inputs, not a claim that a new run used them. The closed B570 runtime capacity receipt in R219 is 10,666,115,072 bytes; it is a capacity ceiling, not free memory at this source point.
+
+## Required live state at the two lengths
+
+For `kv_mode=0`, FP16 K/V alone is `cells * 4 * 128 * 4 = cells * 2,048` bytes **per QSA layer**. All 12 layers are simultaneously allocated in the session:
+
+| Physical positions (`max_cells`) | Resident FP16 K/V per QSA layer | All 12 QSA layers | Indexer pooled arrays, all 12 | Shared RoPE table, source formula / prior geometry |
+|---:|---:|---:|---:|---:|
+| 32,768 | 67,108,864 B (64 MiB) | 805,306,368 B (768 MiB) | 50,343,936 B (~48 MiB) | 8 MiB |
+| 262,144 | 536,870,912 B (512 MiB) | 6,442,450,944 B (6 GiB) | 402,653,184 B (384 MiB) | 64 MiB |
+
+The indexer values use `(max_cells/4 + 2) * 128 * 4` bytes per layer; the small `+2` is retained. They exclude per-layer tail/dead/block-position fields and page tables, which are small versus the pooled arrays. The 64-MiB full-context RoPE figure is the prior source geometry (`n_rot=64`); if the actual loaded geometry differs, use the source formula rather than this value.
+
+The GDN recurrence alone is `128 * 48 * 128 * 4` = 3 MiB per GDN layer, about 108 MiB for 36, plus convolution history `36 * ssm_conv_channels * (ssm_d_conv-1) * 4` (source-defined; geometry value not pinned here). PLE history is one session allocation. QSA attention scratch is also live: it includes `max_cells * 4` score bytes and bounded top-k/K/V scratch in the shared QSA buffers; other QSA buffers are source formulas in `qsa_buffers_bytes`. Session-level and per-token staging also include MoE/block workspaces. Do not omit these from the VRAM total just because they do not grow at the same rate as K/V.
+
+At 262,144, resident QSA K/V + pooled indexer + RoPE is already `6,442,450,944 + 402,653,184 + 67,108,864 = 6,912,212,992 B` (6.4375 GiB), before GDN, all other session buffers, base/dense weights, temporary layer cache, PLE device scratch, Prefill/MoE workspace, decoder state, graph/runtime allocations or any residual rows placed on GPU. Thus only `3,753,902,080 B` (3.496? GiB) remains under the 10,666,115,072-byte capacity ceiling before those other objects; this is not a free-memory prediction. (K/V alone is exactly 6 GiB.)
+
+At 32,768, the corresponding K/V + pooled indexer + RoPE subtotal is `864,038,912 B` (~0.805 GiB), before the same other live objects. These session states are presently GPU-resident; no host-authoritative streamed-KV copy is admitted by current layer-major.
+
+## Residual backing and workspaces
+
+`run_layer_major` holds one residual plane across layers, split between a host vector and GPU rows. The source `D=10,240` floats/token gives `n * D * 4` total bytes. `STRATA_PREFILL_LAYER_MAJOR_R_GPU` controls the GPU prefix; the default is zero GPU rows, so the default backing is host-side. Mixed placement moves bytes between host and device; it does not reduce total extent. Optional in-place reuse may reuse a first chunk in an existing `m.R` workspace only if all chunks remain on GPU; it is not a general reduction of total backing. Existing `m.T` activation, route, dequant and MoE workspaces remain live.
+
+| Actual layer-major positions | Total residual plane | Default (`gpu_tokens=0`) | All residual rows on GPU (before in-place reuse) |
+|---:|---:|---:|---:|
+| 32,768 | 1,342,177,280 B (1.25 GiB) | 1.25 GiB host | 1.25 GiB VRAM |
+| 262,144 | 10,737,418,240 B (10 GiB) | 10 GiB host | 10 GiB VRAM |
+
+At full context, the all-GPU residual request by itself exceeds the B570 total capacity receipt by `71,303,168 B`, before any other live allocations. Partial GPU placement still requires actual free-memory and allocation receipts. Host placement requires the 10-GiB host vector plus the existing RAM-resident weights/arena, PLE cache or mmap working set, allocator/runtime, and—depending on release mode—a possible snapshot of the released decoder cache. No source admission check reserves the needed host headroom.
+
+PLE: with the default 1,048,576-row cache and 90 bytes/row, the bounded row-cache capacity is 94,371,840 B (90 MiB) host-side. The table's on-disk/logical size is not equivalent to resident RAM; `--ple-io ram` can make it resident and needs separate accounting. Layer-major rejects PLE preload, but ordinary PLE embedding/scratch and the PLE cache still apply when PLE is active. The 8,192-row gather staging figure in older source reports applies only where that PLE implementation/config allocates those buffers; it is not treated as unconditional here.
+
+## Other live allocations and phase overlap
+
+Let `M` denote all non-KV/session base device allocations that remain live (dense and other permanently resident weights, non-layer expert cache kept after any release, runtime/graphs, and unrelated device buffers). Let `S(T)` denote source-sized session buffers other than the K/V, indexer pooled array and RoPE terms above; it includes GDN, attention/MoE/block scratch and PLE history. Let `P(T)` denote Prefill's token, route, PLE, dequant, activation and per-chunk workspace not already in the session. Let `C_L = g.n_expert * aligned_MAXBLOB` be the temporary layer cache's actual device capacity, and `R_g = gpu_tokens * D * 4` minus any measured in-place reuse. The main compute-phase estimate is then:
+
+`VRAM_compute = M + K/V_resident(max_cells) + indexer(max_cells) + RoPE(max_cells) + S(T) + P(T) + C_L + R_g + device_PLE_scratch + allocator/graph overhead`.
+
+No source/config snapshot pins every term for the current pack and run. In particular, there is no current capacity receipt for `C_L`: `open_sized` receives `n_expert` slots of `MAXBLOB()`, but the old `1,363,148,800 B` receipt is from an IQ3_S layout (`MAXBLOB=2,662,400`, 512 experts) and cannot be silently assigned to the current pack. It is useful only as a historical scale reference.
+
+Phase ordering changes the peak. `run_layer_major` optionally snapshots/releases the main expert cache first, then calls MTP/decode-weight suspend, then allocates `C_L`, residual storage and performs layer-major work. If either release hook is not enabled, the corresponding decode cache or MTP weights remain in `M` while the temporary cache is allocated. With snapshot restore, host RAM temporarily carries `restore_bytes` while the full host residual plane remains live; with `STRATA_PREFILL_CACHE_RESTORE=ram`, restore uses spans into the existing fully resident RAM arena and no second host image, but requires that arena and does not remove its RAM footprint. On exit, the source frees the temporary layer cache/residual objects before restoring MTP and the main cache; restoration can therefore have a separate device peak of restored cache/MTP plus persistent weights and session, rather than compute-phase `C_L + residual`. The exact restored cache growth and graph-recapture peak depend on cache layout and release fraction. Snapshot restore also needs host `saved` bytes; verification adds transient `restore_bytes` vectors.
+
+For RAM, the estimate must include at least `M_host` (resident expert arena and non-expert host weights), `R_h=(n-gpu_tokens)*D*4`, PLE host cache/working pages, pinned/staged K/V only if a different eligible route is used, snapshot `restore_bytes` if snapshot mode, plus source reader and system/page-cache overhead. Current layer-major uses `kv_mode=0`, so it does not incur the streamed-KV full host backing from historical C.
+
+## Decision by request length
+
+**32,768 actual positions:** Semantically eligible only with full single-GPU compact FP16/source constraints, `kv_mode=0`, and a multi-chunk call (or forced selector). The irreducible length-scaled GPU state in the cited geometry is 768 MiB K/V + ~48 MiB indexer + 8 MiB RoPE; GDN and other session/workspace state are additional. The default residual plan consumes 1.25 GiB host, with GPU residual storage adjustable from zero upward. This is a potentially testable source path, but no current complete free/peak receipt or exact model-pack metadata proves fit. The prior streamed-KV 1.363-GB layer-cache failure is not a decision about this route.
+
+**262,144 actual positions:** The same semantic constraints apply, including all 12 FP16 K/V pools resident. Source lower bound for length-scaled QSA state is about 6.4375 GiB, before other session buffers and model/runtime objects. Default residual placement adds 10 GiB host. Any all-GPU residual plan cannot fit the closed 10,666,115,072-byte whole-device capacity even in isolation. A partial-GPU/host residual plan remains only symbolically budgeted; no current pack-specific cache, resident dense weights, graph/capture, host arena, RAM-headroom, or full lifecycle receipt supports a fit claim. Current source contains no stream-KV layer-major eligibility; historical streamed-KV C cannot be used to bypass that guard or its terminal cache admission outcome.
+
+## Evidence boundary and next receipt
+
+The report does not qualify 32K or 262K, and does not infer success or failure from the old streamed-KV C arm. Resolve admission only from an actual current build/pack receipt that records `kv_mode`, actual batched `n`, `max_cells`, all source allocation sizes, layer cache `bytes()`, cache/MTP release flags and restore mode, residual host/device extents, phase-aligned free/total VRAM, host resident arena/cache and free RAM, and graph capture/restore peaks. For 262,144 positions, that receipt must accompany the real full-context run and lifecycle/state checks. Until a build changes the explicit guard, a proposed streamed-KV layer-major run is not source-eligible.

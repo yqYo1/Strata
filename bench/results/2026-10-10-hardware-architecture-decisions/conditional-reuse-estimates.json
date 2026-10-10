@@ -1,5 +1,5 @@
 {
-  "scope": "Source/count-derived conditional arithmetic, NOT measured production DMA times, minima or adoption. The source layer-major route is unadopted. Separate capacity rates use256MiB transfers; actual residual chunks/path/cache/perlayer source formats/otherwork require reconciliation.",
+  "scope": "Source/count-derived conditional arithmetic, NOT measured production DMA times, minima, current-pack fit or adoption. Frozen unadopted layer-major source requires resident QSA K/V. Separate capacity rates use 256MiB transfers; actual residual chunks/path/cache/per-layer formats/other work require reconciliation. Corrected residual width is D=N*HC=10240 FP32 elements per position; expert N=2560 is distinct.",
   "capacity_source": {
     "path": "bench/results/2026-10-10-parallel-round54/hardware/validated-three-process-summary.json",
     "bytes": 327788,
@@ -31,19 +31,31 @@
   "residual_scenarios": [
     {
       "hypothetical_positions": 32768,
-      "residual_buffer_bytes": 335544320,
-      "all_RAM_residual_H2D_payload_bytes": 15770583040,
-      "all_RAM_residual_D2H_payload_bytes": 15770583040,
-      "conditional_pageable_residual_seconds": 6.4147958225,
-      "conditional_host_USM_packed_weight_seconds": 7.8010895243042
+      "residual_buffer_bytes": 1342177280,
+      "all_RAM_residual_H2D_payload_bytes": 63082332160,
+      "all_RAM_residual_D2H_payload_bytes": 63082332160,
+      "conditional_pageable_residual_seconds": 25.65918329,
+      "conditional_host_USM_packed_weight_seconds": 7.8010895243042,
+      "conditional_serial_residual_and_weight_seconds": 33.460272814304204
     },
     {
       "hypothetical_positions": 262144,
-      "residual_buffer_bytes": 2684354560,
-      "all_RAM_residual_H2D_payload_bytes": 126164664320,
-      "all_RAM_residual_D2H_payload_bytes": 126164664320,
-      "conditional_pageable_residual_seconds": 51.31836658,
-      "conditional_host_USM_packed_weight_seconds": 7.8010895243042
+      "residual_buffer_bytes": 10737418240,
+      "all_RAM_residual_H2D_payload_bytes": 504658657280,
+      "all_RAM_residual_D2H_payload_bytes": 504658657280,
+      "conditional_pageable_residual_seconds": 205.27346632,
+      "conditional_host_USM_packed_weight_seconds": 7.8010895243042,
+      "conditional_serial_residual_and_weight_seconds": 213.0745558443042
     }
-  ]
+  ],
+  "residual_geometry": {
+    "expert_hidden_N": 2560,
+    "residual_streams_HC": 4,
+    "residual_FP32_elements_D": 10240,
+    "bytes_per_element": 4,
+    "layer_boundaries": 47,
+    "bytes_per_position": 40960,
+    "source_constant_line": 113
+  },
+  "correction_record": "residual-dimension-correction.json"
 }
