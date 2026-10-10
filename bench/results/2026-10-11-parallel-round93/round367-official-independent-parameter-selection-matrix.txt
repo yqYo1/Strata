@@ -1,0 +1,105 @@
+# R367 — official v0.1.42/v0.1.41 settings selection matrix
+
+Date: 2026-10-11 (Asia/Tokyo). Source/report-only follow-up to the official-parameter TODO. No Git commands, source edits, build, tests, compiler/runtime/device queries, GPU/profiler work, process/service operations, benchmark, or cleanup were performed. The prohibited `prefill-gemm-only-contract-root-v1/record.json` was not read. This is a conditional candidate matrix, not a performance result or authorization to launch a pristine B570 route.
+
+## Scope and source identity
+
+The reviewed official pristine trees are v0.1.42 at `/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/bench-upstream-v0142-pristine-20261011` (task-pinned HEAD `61b3fb5dd3f1e8ec09cf7e4e05208bc6d3c46406`) and v0.1.41 at `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/bench-upstream-v0.1.41-20261009` (task-pinned pristine worktree). Key SHA-256 pins:
+
+| Source | v0.1.42 | v0.1.41 |
+|---|---|---|
+| `sycl/src/program/generate.cpp` | `eadfeca185d4ac2f181a9db1a7da84279a6e90b86262fe260701c2e629184018` | `ac294c880aaa3641c7df815855b5e4df1123a9cfe6c2c36dedeb998621188141` |
+| `sycl/src/prefill/prefill.cpp` | `a78a0d30986c665ebf07d8568bdc7bd22b3c380257871694eee84d43c1b60128` | `890e964f5583211fef89a4fabf030f75e230f6785584a1f0d37a3d8b471839f3` |
+| `sycl/src/core/session.cpp` | `b0478a0a17d1a6c9c8c569aa0c629b11b8756ee1f75f2e31e488f279c84346e2` | `0b3127b430156138fc251427bbc7ecf2c7a4ad1a1294879e2daf6eddefbb70fb` |
+| `src/kernels/cpu/pool.cpp` | `4b9b8ec1eeaabca0524a3a4aef39907ad90583e798d1e03a2ae1f6318e9105bc` | `f789078f1e14b6cf72bec5cacc2802d358ad82cbd7bf890f344a4a4a32158611` |
+
+The settings audit used R357/R358/R361, the upstream audit TODO and `audit.json`, registry round92 v115 (476 indexed reports, previous v114 with 473), R344/R365, R349, and the R352/R354 runtime eligibility findings. R361's historical search is bounded to the retained/indexed corpus; it found one repeated pristine long-context recipe per release, not a pristine settings sweep. R349's server/setup feature scope is independent of inference tuning and should remain a later integration lane; it adds no parameter-search evidence.
+
+## Execution gate
+
+R352 refuses ordinary pristine v0.1.42 B570 generation under the supplied `HOST_USM=1, ATOMIC_HOST_USM=0, ZE_HOST_CAPS=3` receipt because the decode CPU-pool doorbell has concurrent host-USM/device accesses. R354 separately refuses >=32K long all-component prefill: the expert stager and PLE upload completion use host-polled device-written host-USM sequences. `--no-pool`, `--no-capture`, `--no-token-graph`, `--no-ple-prefetch`, a positive `--pcie-frac`, or a smaller chunk does not establish a safe normal prefill+decode route. Disabling PLE changes the model path. Therefore do not run this matrix on the pristine B570 source/runtime until Main qualifies both paths with a supported capability/serialization route; do not mutate pristine source to force a run. Any future alternate route must say exactly which model components and output-quality claims it covers.
+
+The values below are the candidates to test only after that gate changes. The selection rule is intentionally small: one screening sample per candidate in serialized, fresh processes; compare to a bracketing baseline to catch drift; retain only rows with correct/healthy completion and the desired quality gate; then run the selected row in at least three independent fresh decode processes and record every sample. No historical row demonstrates that an effective value is best.
+
+## What the old 8192/128 receipt means
+
+The retained v0.1.41 pristine records requested `--prefill 8192`, `--expert-cache 128`, `--expert-profile data/expert-profile.bin`, `--expert-cache-per-layer`, `--pool-workers 5`, `--pcie-frac 0`, MTP/speculation 4, and `--no-prefill-borrow`. Their effective progress increments were 6144 and startup INFO reported 144 slots / 281 MiB. The repeated pristine records share a recipe; they do not show a candidate sweep or a selected optimum. The separately labelled tuned 8192/128 runs were control and integrated builds, not pristine.
+
+The current official source explains mechanisms, but only partly explains that particular observation:
+
+- **128 requested → 144 effective slots:** the per-layer path treats N as a budget of `N * max_blob` bytes, computes a uniform per-layer quota from each layer's actual blob size, and sets actual slots to `quota * n_layers`. Actual slots can therefore exceed N while admitted bytes stay under the budget. The retained runs explicitly requested per-layer mode on the native pack. INFO's `expert_slots` / `expert_slots_primary` and cache MiB, together with the `per-layer slots use each layer's blob` line and `PER-LAYER` line, are the relevant evidence. This source behavior can explain 144 without claiming the cache contained more bytes than budgeted.
+- **8192 requested → 6144 effective chunk:** serve admission first reduces an explicit borrowed chunk by halving until it fits the participating caches. If the prompt buffers allocate their own VRAM, the later `own_fits` check uses a 512 MiB headroom and a descending supported list containing 6144, 4096, 3072, 2048, 1536, 1024, and 512. Either fit path can resolve a request downward; `generate.cpp` prints a clamp message and uses the resolved chunk in `Prefill::init`. The retained audit has 6144 progress, but not the matching clamp/admission line, free-VRAM value at that point, actual buffer allocation/borrow state, ring setting, or full startup sequence. In its particular `--no-prefill-borrow` recipe the own-buffer path is a plausible source explanation; the source alone cannot prove which constraint chose 6144 on that historical run. Preserve the old requested/effective distinction.
+- **v0.1.42 difference that matters:** its `generate.cpp` adds an Intel/Alchemist decision that can force `--no-prefill-borrow` and reduce `auto` to 2048; it also defaults borrowing from context when the operator did not explicitly select it. It documents a >4 GiB oneMKL borrowed-operand issue. This is a source-path change from v0.1.41 and means implicit/default borrowing is not a matched condition across releases. Pin `--prefill-borrow` or `--no-prefill-borrow` explicitly and record whether architecture rules override it. In v0.1.42 the `auto` mode is disabled and converted to fixed 2048 when no borrowing/profile is available; bare `auto` is capped at 8192, with 16384/32768 opt-ins.
+
+For comparisons, report four fields: (a) box defaults with flags omitted, (b) explicit CLI request, (c) parser/admission-resolved setting and clamp message, and (d) actual initialized/used value. `prefill_chunk=0` is source default (token path), not an implicit 8192 batch. `--prefill auto` is a policy request, not an effective chunk. An explicit fixed chunk can also be changed for cache fit/request length or allocation fit.
+
+## Candidate matrix after safe admission
+
+Use identical frozen model/native/PLE files and hashes, tokenizer, exact fresh prompt-token IDs and hashes, sampling, device/driver/compiler/runtime, process warmup, environment, KV type, max context, cache profile/admission policy, and output token budget in each matched row. Run 32K and 64K prompts as separate blocks; the larger input must actually fit the pinned context, and record the actual token count. The last prompt position is handled in the token loop after batched conditioning positions, so report `n_prompt-1` batched positions and the terminal prompt-token/decode work separately. Do not use prompt-cache restore or a reused session as an independent fresh prefill repetition.
+
+### A. Prefill selection, repeated separately at 32K and 64K
+
+Keep decode settings fixed (including `--pool-workers`, PCIe fraction, MTP/speculation, KV type/residency, and generation length), hold cache profile and cache policy fixed, and change only the chunk per row. Start from the actual current default/established recipe for each release, then screen:
+
+| Row | Requested prefill | Purpose and conditions |
+|---|---|---|
+| P0 | Omit `--prefill` (source default 0/token path) | Box-default reference, one screening sample per context. It is a different prompt execution route; label it separately, not as a batched-chunk candidate. |
+| P1 | `--prefill 4096` | Fixed explicit batching candidate. |
+| P2 | `--prefill 6144` | Fixed candidate at the historical v0.1.41 effective value / serve's own-buffer step. |
+| P3 | `--prefill 8192` | Fixed explicit request from the historic recipe; accept only if the initialized chunk is 8192, otherwise report the actual clamp. |
+| P4 (conditional) | `--prefill auto:16384` | A separate lending-policy arm only when profile + borrowing are available and effective log says a value above 8192 is eligible. Pin `--prefill-borrow`, ring environment, and `STRATA_PREFILL_LEND_PCT`; report resolved chunk and ring. Do not compare as if the only change were chunk size: auto changes the admission/lending policy. Stop here unless this has a concrete selection rationale; `auto:32768` is a later ceiling check, not an assumed winner. |
+
+The fixed-chunk set is a compact bracket, not a claim these values are optimal. If source/runtime admits fewer than three fixed chunks, retain the rejected candidate plus reason and avoid substituting a hidden env control. Treat ring width as a separate follow-up: hold `STRATA_PREFILL_RING` and `STRATA_RING_BYTES` constant for P1–P3, then compare the source default ring with one explicitly documented ring only after observing `PP` progress/cache traffic. `STRATA_PREFILL_FIRST`, `STRATA_PREFILL_STREAM_MIN`, `STRATA_PREFILL_STREAM_ALL`, `STRATA_PREFILL_LEND_PCT`, `STRATA_PREFILL_AUTO_MAX`, and `STRATA_RING_BYTES` are actual source controls but interact with admitted buffers/traffic; do not vary them in the chunk screen. `STRATA_PREFILL_TIMING`/`STRATA_PREFILL_SYNC` are diagnostic controls and must be off in clean timing rows.
+
+Use serve chunk resolution output (`prompt chunk auto: N, a R-slot ring` or `prompt chunk N -> M tokens ...`) and per-chunk `PP position prompt_tokens ms tok/s` plus startup INFO. Also capture the `Prefill::init`/serve request's actual chunk and ring from its output. A lone CLI argv is not proof of effective geometry. P0's default token path has no batched prefill geometry and should be reported as such.
+
+### B. Decode selection, separate from A
+
+Freeze one safe, quality-qualified prefill selection and the same prompt/config across decode candidates. For a decode-only comparison, either restore a validated identical prompt state or rerun a matched prompt and report prefill separately; do not let prompt setup contaminate decode wall. Hold cache size/profile/admission, KV format/residency, context, PLE/native path, MTP files and sampling constant in the worker screen.
+
+| Row | Decode candidate | Purpose and limits |
+|---|---|---|
+| D0 | Box default worker count (`--pool-workers` omitted, source value 0) | Records what this hardware/source chooses; INFO must give actual `pool_workers`. |
+| D1 | `--pool-workers 5` | Historical explicit request; compare to D0 only as a worker-count change. |
+| D2 (conditional) | A smaller count chosen from the actual physical/P-core topology (e.g. half of the available worker cores, rounded sensibly) | One extra contention point if D0/D1 differ or the host also serves requests. State actual detected and effective worker count; do not assume five is optimal. Keep `--pool-affinity`, `--host-core`, and `--no-host-worker` unchanged. |
+| D3 (separate axis only if safe) | PCIe share | On the Xe route without `--stream-experts`, source forces an implicit fraction to zero and warns that explicit positive values are unsafe. Keep `--pcie-frac 0`; do not screen positive fractions there. Only on a separately qualified pinned/mirror route may a documented nonzero `--pcie-frac` be tested, as its own CPU-vs-GPU-miss-service comparison. |
+| D4 (separate quality-gated axis) | MTP/speculation width | Keep historical `--spec 4`, `--mtp` and `--spec-min-p 0` fixed for D0–D2. If throughput goal warrants another factor, compare one supported alternative width (for example spec 2 or 6 with MTP depth capped accordingly) after worker selection, and retain teacher-forced/output-quality evidence. Draft acceptance depends on the prompt/model, so a larger width is not automatically faster. |
+
+For each decode candidate use at least one selection sample per fresh process and then at least three independent fresh processes for the chosen setting. Report all decode samples, median and range, output/correctness gate, actual workers, actual cache slots/MiB, actual KV resident cells, `pcie_frac`, effective `spec`/`mtp_max`, and exact environment. Default cache is off; historical `128` was explicit, and `auto` is a distinct VRAM-admission policy. Do not silently switch among them. A later cache screen can compare fixed budget 128 (with per-layer policy pinned if used) against `auto` as a separate arm, with identical profile and all other controls fixed; record post-allocation cache/shrink lines and INFO, since requested slots are not final slots.
+
+## Interactions and controls to keep fixed or defer
+
+- **VRAM/cache admission:** expert cache `auto` prices context/session/KV, owned prefill buffers, MTP/head/graph and reserve; allocation is touched and may shrink again. `--vram-reserve-mib` defaults to 700 MiB and changes expert-cache room; only lower/raise it in an explicit separate cache-admission experiment with free-VRAM/cache-resize logs. `--expert-cache-per-layer` changes slot admission and likely hit distribution, not arithmetic; keep its policy constant. The profile controls fill order and caps cache. Preserve the warning/log lines and INFO.
+- **Borrow/ring/chunks:** v0.1.42 changes borrowing default by architecture/context; explicit borrowing modes and ring/lend env affect whether buffers consume VRAM or cache slots and which experts stream. Pin these in each arm. Auto must be its own policy axis.
+- **KV and contexts:** `--kv int8` / other format affects numerical precision. `--kv-resident 0` means fully resident; nonzero streaming has a 20,480-cell minimum and uses pinned host RAM for the remainder. Keep format and resident cells constant for chunk/worker rows. If 64K admission fails, a separately labelled KV-residency arm may compare 32K vs 64K resident cells, but that changes host-KV traffic and decode latency as well as VRAM headroom.
+- **CPU pool:** `--pool-workers` is the actual expert-pool knob; affinity/core placement and host-worker participation are separate controls. `STRATA_FETCH_THREADS` is for file-backed expert prefetch, not pool worker count. The official CLI does not expose `--pool-tasks` or `STRATA_POOL_TASKS`; `STRATA_POOL_SPIN_US` is a test spin/sleep knob, not task grain. Do not invent these as tuning settings.
+- **PCIe:** `--pcie-frac` apportions distinct decode verifier cache misses to GPU PCIe service vs CPU expert computation. It is not prompt CPU/GPU share; batched prefill uses its own staging/ring policy. `STRATA_FETCH_THREADS`, `--no-ple-prefetch`, and `--stream-experts` are not interchangeable with this fraction.
+- **MTP:** `--spec`, `--mtp`, `--mtp-max-t`, and `--spec-min-p` affect decode work and accepted draft windows. Keep them fixed for worker/cache experiments. Read actual INFO fields and drafted/accepted counters; do not infer effective proposal width from requested `--spec` alone.
+- **Diagnostic/control variables:** preserve `STRATA_PREFILL_FIRST`, `STRATA_PREFILL_RING`, `STRATA_PREFILL_COMPACT`, `STRATA_PREFILL_ATTN_LAYOUT`, `STRATA_PREFILL_LAYER_MAJOR`, `STRATA_KV_STAGE_OWN`, `STRATA_KV_PREFETCH`, device selector, Level Zero adapter/copy-offload settings, and loader path exactly for a matched build/run. The compact/attention/layout/KV-stage variables in the old tuned control/integrated arm are local experiment controls and not proof of official tuning. Keep trace/timing/profiler env off in clean samples.
+
+## Correct evidence locations and selection rule
+
+For each run, persist argv, source/binary hash, runtime/driver/device, complete allowlisted environment, exact prompt token count/hash, cache/profile files and hashes, start/end/status/correctness, all raw timing samples, and requested/resolved/effective values.
+
+- `strata serve` start: its `INFO context=...` line records effective KV cells, total and primary cache slots/MiB, `spec`, `mtp_max`, lookup, free VRAM, pool workers, PCIe fraction, and `spec_min_p`. It does **not** record the resolved prefill chunk; retain adjacent clamp/auto/ring logs too.
+- Chunk resolution: stderr lines `prompt chunk auto: ...` or `prompt chunk X -> Y ...`; initial cache auto sizing, per-layer quota, touch/shrink, reserve and `Prefill::init` messages explain admission. In prompt-serving, retain every `PP position prompt_tokens cumulative_ms fresh_tok/s` line and actual request completion/status.
+- Standalone prompt: final `prefill N tokens in C chunks ...` records batched work; clarify it is normally `n_prompt-1` conditioning positions. The final prompt position plus sample/output are separately performed by token loop. There is no current stock safe full-prefill-only exit as R354 describes.
+- Decode: request and end-of-run counters (`--stats`, drafted/accepted windows) record service/acceptance and wall sections, but are diagnostic instrumentation; clean end-to-end request samples are the latency evidence. Keep prefill, decode, and full request in separate fields. Do not derive one by subtracting overlapping timer spans.
+- Selection: remove rows only for recorded admission failure, correctness/quality failure, or a predeclared objective threshold. Select by the predeclared primary metric (e.g. median fresh prompt tok/s for A; median decode tok/s for B), retain range and memory/admission status, then independently repeat the selected configuration in at least three new processes. A passing speed row with changed output math/cache/profile must not be called equivalent without the required quality comparison.
+
+## Unsupported knobs and scope boundary
+
+Do not propose `--pool-tasks`, `STRATA_POOL_TASKS`, or treating `STRATA_FETCH_THREADS` as CPU compute workers. Do not treat `--pcie-frac` as a prefill split, `--no-ple-prefetch` as disabling completion synchronization, positive PCIe share on pageable Xe reads as supported, `--no-pool` as a prefill bypass, or a lower chunk as a host-USM synchronization fix. `--graph-only`, `--gpu-only-full`, `--no-capture`, or `--no-token-graph` are not a normal full-path qualification shortcut. Don't carry over XeStrata-specific kernel selectors into official settings.
+
+R344/R365 concern XeStrata hardware/kernel diagnostics and do not establish official upstream settings or a safe official engine run. R349's setup/server work is inference-independent and should be evaluated after engine decisions; fake-engine server tests do not show inference throughput or host-USM safety. R352/R354 remain the controlling source/runtime gate. The R357 prospective chunk values and this low-count matrix are future search proposals, not historical measurements. No optimization winner can be selected until the admitted official route is actually measured.
+
+## Read-only evidence references
+
+- Upstream audit: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-upstream-parameter-audit/TODO.md` and `audit.json`.
+- Historical scope/effective controls: `round357-official-pristine-parameter-search-coverage.txt`, `round358-official-v0142-effective-tuning-controls.txt`, and `round361-historical-official-pristine-settings-search.txt` (SHA-256 `58a719285bd066fa640ea577fba06c0ab38607cb8385102f92e9a571986b936e`).
+- Round92 registry v115: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-parallel-round92/report-registry-v115.json`, SHA-256 `f651c2a4a44e9e91ed88ac52b7c7dd9fbfc8bd190d052f34b2df7e3c0f31f725`.
+- Runtime gate: R352 `round352-official-v0142-pristine-sycl-gpu-admission-audit.txt`; R354 `round354-official-pristine-prefill-only-execution-eligibility.txt`.
+- Separate integration scope: R349 `round349-upstream-v0142-server-integration-test-closure.txt`.
+- Measurement-method context: R344 `round344-xe-hwbench-and-production-bottleneck-measurement-selection.txt`; R365 `round365-xe-e32-critical-path-measurement-controls.txt`.
+
+This report preserves the distinction between requested settings, settings resolved by source admission, and settings actually used. It supplies a future low-count search plan only; all performance and best-setting questions remain open.

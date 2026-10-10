@@ -18,3 +18,5 @@ XeStrata 更新版の評価後、本家 v0.1.42 の比較を確定する前に�
 追加の読み取り調査: [R357](../2026-10-11-parallel-round91/round357-official-pristine-parameter-search-coverage.txt)で保持した直近2版の長入力記録を確認し、単一レシピの反復であることを確認した。[R358](../2026-10-11-parallel-round91/round358-official-v0142-effective-tuning-controls.txt)に現行本家の対応設定と実効値の確認方法を記録した。安全な実行経路の資格確認と、本家単体の設定探索・検証は引き続き未完了。
 
 履歴確認を拡張した [R361](../2026-10-11-parallel-round92/round361-historical-official-pristine-settings-search.txt) は、過去索引v113の465件のコンパクトレポートと直近の関連調査を対象にした。この保持範囲でも本家単体の設定候補・選択基準・最良設定の独立検証を確認できなかった。履歴確認は完了し、実際の本家単体の設定探索と選択後の検証は未完了として区別する。比較結果を「最適化済みの本家に対する性能差」とは表現しない。
+
+[R367](../2026-10-11-parallel-round93/round367-official-independent-parameter-selection-matrix.txt)に現行本家で対応する設定に絞った選別案を残した。prefillは固定4096/6144/8192と独立したauto方針、decodeは実効ワーカー数・推測幅・キャッシュを別軸として扱う。要求値、admission後の値、実使用値をそれぞれ保存し、選択後に独立した3回以上のdecode検証を行う。これは未実行の候補表であり、最適化完了ではない。

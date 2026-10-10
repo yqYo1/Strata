@@ -1,0 +1,88 @@
+{
+  "registry_version": 116,
+  "created_utc": "2026-10-10T21:05:12.798627+00:00",
+  "registry_format": "incremental; follow previous_committed_registry for earlier reports",
+  "research_completed": 482,
+  "previous_committed_registry": {
+    "path": "bench/results/2026-10-11-parallel-round92/report-registry-v115.json",
+    "sha256": "f651c2a4a44e9e91ed88ac52b7c7dd9fbfc8bd190d052f34b2df7e3c0f31f725",
+    "reports": 476
+  },
+  "reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round362-official-v0142-final-context-admission.txt",
+      "archive": "bench/results/2026-10-11-parallel-round93/round362-official-v0142-final-context-admission.txt",
+      "sha256": "dad5e13f5211443e03051d6fab4f1bf692c6872be2b6fbbcc38f6559dd2866c5",
+      "bytes": 13671,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "qualification": "source/report-only; main full free build and host helpers subsequently passed separately; no GPU/model/full262144 result"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round363-official-mtp-context-counterexample-recalculation.txt",
+      "archive": "bench/results/2026-10-11-parallel-round93/round363-official-mtp-context-counterexample-recalculation.txt",
+      "sha256": "eccbb9476a5e5c445c156bc11a3e539eed1c4b44c6550fc9d63a0e302275bb75",
+      "bytes": 13890,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "qualification": "source/report-only; main full free build and host helpers subsequently passed separately; no GPU/model/full262144 result"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-e32-context-window-bounds-v5.txt",
+      "archive": "bench/results/2026-10-11-parallel-round93/implementation-xe-e32-context-window-bounds-v5.txt",
+      "sha256": "2e9601a44cc03f55dcb2237fb8c9121be0f1ce7354fe508c55c3a3483335e569",
+      "bytes": 15493,
+      "model": "gpt-6.1-sol",
+      "read_only": false,
+      "qualification": "source/report-only; main full free build and host helpers subsequently passed separately; no GPU/model/full262144 result"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round364-xe-v5-context-and-zero-candidate-caller-review.txt",
+      "archive": "bench/results/2026-10-11-parallel-round93/round364-xe-v5-context-and-zero-candidate-caller-review.txt",
+      "sha256": "a3c3e1f8b64a490d7ff80996f51a43b93c4798714be2009c12c135ce376e4ed9",
+      "bytes": 6932,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "qualification": "source/report-only; main full free build and host helpers subsequently passed separately; no GPU/model/full262144 result"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round365-xe-e32-critical-path-measurement-controls.txt",
+      "archive": "bench/results/2026-10-11-parallel-round93/round365-xe-e32-critical-path-measurement-controls.txt",
+      "sha256": "9a0a23f236315d402528c1b006e6068f13f473fca43655faa13a275e685880c4",
+      "bytes": 19083,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "qualification": "source/report-only; main full free build and host helpers subsequently passed separately; no GPU/model/full262144 result"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round367-official-independent-parameter-selection-matrix.txt",
+      "archive": "bench/results/2026-10-11-parallel-round93/round367-official-independent-parameter-selection-matrix.txt",
+      "sha256": "f4b3e18c8caab901bb69d0c0b8bc6dfa1a74d73f9fc2f4b8c6baee1aba8e97f4",
+      "bytes": 20693,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "qualification": "source-only candidate matrix; no independent search or execution"
+    }
+  ],
+  "new_reports": [
+    "round362-official-v0142-final-context-admission.txt",
+    "round363-official-mtp-context-counterexample-recalculation.txt",
+    "implementation-xe-e32-context-window-bounds-v5.txt",
+    "round364-xe-v5-context-and-zero-candidate-caller-review.txt",
+    "round365-xe-e32-critical-path-measurement-controls.txt",
+    "round367-official-independent-parameter-selection-matrix.txt"
+  ],
+  "recurring_research_policy": "Repeated distinct read-only Luna scopes, actual prior-report paths shared, no mid-task intervention. Main owns and serializes tests/build/GPU/cleanup.",
+  "live_agent_snapshot": {
+    "R366": "source-only physical262144 full-context probe, restore and admission review; report pending",
+    "full-host-asan-ubsan-build-v3": "active; receipt/log not copied"
+  },
+  "root_review_corrections": {
+    "R360/R362_counterexample": "The concrete effective spec4, prompt=C-1, max_new=1 ordinary-caller MTP-overrun example is not reached: output budget is exhausted before draft_first/post-commit draft. Root inspected pristine Xe e32 generate.cpp prompt-loop and speculative-entry guard; R363 independently recalculated official v0142. Keep original report bytes and source-only status. This example is not evidence for any observed GPU fault.",
+    "R362_body_vs_headline": "Final headline partially corrected ordinary spec4; body still contains the invalid max_new=1 example. R363 replaces that specific example. Fixed verifier width can end an admitted tail early; wider effective spec8 or catchup-all has distinct reachable source-level overrun examples. Neither finding is a runtime fault diagnosis.",
+    "R363_path": "R363 says the research R360 path was absent. It exists at archive time and has the same SHA dbbb232660a1f8f3118d9953392d3b0269040418e4438894810e039d813e2fa1 as the archive actually read; its arithmetic evidence is not weakened by this path statement.",
+    "Sol_v5/R364": "Source helper and actual caller bounds do not execute private MTP/commit/cached lifecycle. Main closed release plus ASanUBSan five helper tests (10 PASS) and free full build (10 CPU PASS, expert_multi ISA SKIP). Normal model edges, cached next turn, numerical parity, full physical262144 and restore remain unverified.",
+    "R365": "Effective hardware references are old repeated B570/5600X synthetic rates. Queue phase buckets and inclusive pool timings cannot be added into critical path. Current free/contrib backend comparison and full request trace have not been measured.",
+    "R367": "Native per-layer byte-budget semantics explain requested cache128 vs effective slots144. The old8192-to6144 cause cannot be fixed from source alone without historical clamp/admission memory evidence. Future matrix is not a completed search."
+  }
+}

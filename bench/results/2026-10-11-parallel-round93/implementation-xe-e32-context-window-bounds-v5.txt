@@ -1,0 +1,214 @@
+Xe e32 logical context and remaining-output window bounds — implementation v5
+Date: 2026-10-11, Asia/Tokyo
+Source-only implementer: /root/implement_xe_e32_serial_host_handoff
+Workspace: /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011
+Bound base: e32b8b0594095352365db0e140a68d5bf56d8b0f
+Actual AGENTS.md read. LOCAL.md exists: False.
+
+Execution boundary
+------------------
+No compiler, build, test, lint, GPU/runtime/query, profiler, service/process control,
+Git mutation or cleanup was executed. This is source implementation and review only.
+Main owns all execution, CMake wiring, qualification, commit and push decisions.
+No model parity, GPU bounds safety, performance, fault attribution or successful
+full-context restore is claimed by this report.
+
+Read source reports and historical index
+---------------------------------------
+dbbb232660a1f8f3118d9953392d3b0269040418e4438894810e039d813e2fa1  round360-xe-final-context-speculative-window-bounds.txt
+e0d9eec55d34d3411fbc35c0a7539a601829251e465789441f71d48a6d6f6129  round359-xe-mtp-v4-completion-and-caller-qualification.txt
+40e11de38f6580e860f764c239c63bc43d00977135c9e9b952b919abf06a142f  implementation-xe-e32-full-context-probe-v3.txt
+46df5b537ad739955eb63b51f07ca8c199b116459aacbba4c5d908b0ac4c9fe9  implementation-xe-e32-mtp-completion-v4.txt
+2a37e03b264f43f4b8f0d668e36f3002dd1fedbc457c8d43ee8bce6cbceddd4c  /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-parallel-round91/report-registry-v114.json
+The registry path above exists; it was read directly, without nesting a .worktree
+under the sycl workspace. R360's old missing-index statement is not repeated as a
+current finding. v3/v4, R359 and R360 contracts were read before implementing.
+
+Input source identity
+---------------------
+3ca91108c35d9836a3bcab431d0dc01939e17e9b50150dd68c634d3b3a620fa4  src/core/mtp.cpp
+5fae0c90b5e09e3ba7e708a053cab2bdf310e5433b7f2ba3cdefc65256f5551d  include/strata/core/mtp.hpp
+b482b5f8c2a5086896858bd37e61963363a0e618c0eb26ff34d8d987a415af26  src/program/generate.cpp
+
+Edited paths and final SHA-256
+-----------------------------
+6a0a065b2d424f5ea6f4349f81a6f34e4da1eae7139fbe56f4d8be1f9b4755cd  src/core/mtp.cpp
+19c2bf0b8f89b45eefacd3479be78b79c00da7320bd6c668b37bec63999b872e  include/strata/core/mtp.hpp
+0d3e4d9f4f13a54335491721b284a7cf00d1862210b616f126d3d6b632259ca7  src/program/generate.cpp
+30f66e36b2908518cfd5890f26d0efa9999cc6d52b70dcb635b6d4e865fa99ab  include/strata/core/context_bounds.hpp
+226d6649cea8aa67987b1759419f1401e64418b614bbf31ee313f570ac9fdaba  tools/test_context_bounds.cpp
+
+Production bounds and off-by-one contract
+----------------------------------------
+New pure-host context_bounds.hpp is actually used in MTP and generation. It rejects
+negative positions/counts, impossible original spans and capacities that cannot
+represent exclusive cell+1 in int32. It checks pos<=C before subtracting C-pos;
+there is no unchecked pos+rows overflow in the admission/planning helpers.
+Resident ring slots, 64-cell margins and allocation slack never grant logical rows.
+
+A verifier with T inputs has T-1 candidate inputs and one bonus output. Its usable
+rows are min(requested, C-pos, remaining_outputs); it cannot consume/commit more
+rows than the output budget. After accepting a candidates, next_pos is pos+a+1.
+An MTP proposal is computed at pos+a+j and serves input row j+1 of that next window.
+The MTP plan therefore reserves next window row 0 and the bonus output BEFORE
+calculating usable candidates: min(max_candidates,
+max(0, min(max_rows, C-(pos+a+1), remaining_outputs)-1)). All additions in this
+formula occur only after proving the original span and accepted row are legal.
+This is stricter than merely checking each draft KV cell, because a proposal with
+no legal verifier input row is not useful and must not drive another window.
+
+Exactly one output remaining means zero MTP candidates and a one-row verifier.
+Zero candidates report n_drafts=0 and zeroed unused result slots. When output remains,
+the round still performs its bounded KV-only accepted-prefix catch-up via the existing
+MTP prefill front, so cached conversation reuse does not lose rows the old round would
+have appended. This path performs no attention, experts, prediction head/sampler or
+speculative proposal step; the next verifier has only its bonus row. The front may
+capture/replay a KV-only graph and copy residual/input records, under v4 checked queue
+ownership. Decode catch-up time/rounds stay attributed to draft statistics rather than
+prompt prefill. An exhausted output budget is a checked no-op with no new capture,
+record staging, residual upload or writer. Completion/previous-writer draining still
+occurs before any caller output rewrite.
+The returned candidate count also includes an earlier min_p stop, so callers no
+longer consume padded zeros as nominal candidates when min_p is zero/disabled.
+
+For prompt+max_new==C, the final output is token position C-1. That token remains
+the unconsumed next input; normal decoding needs no verifier input or MTP KV at C.
+In the usual native/non-native serial invariant, final committed input is C-2 and
+next_pos is C-1. The helper also permits an independently valid verifier row at
+C-1 with an exclusive step C, but does not admit an extra normal output beyond
+the prompt+max_new budget. The v3 storage-only probe separately writes row C-1
+with its explicitly marked terminal successor; its semantics were not changed.
+
+MTP API changes
+---------------
+draft/draft_first/chain_launch gained a final remaining_outputs argument, defaulting
+to int64 max for compatibility. Every production generate.cpp caller now supplies
+its actual remaining budget. External callers that omit it still get physical
+capacity bounds but must provide a budget to enforce their own output policy.
+The optional existing n_drafts output communicates usable candidates, including zero.
+
+MtpDrafter::draft validates ORIGINAL T rows and accepted a before any capture or
+record staging, even when CATCHUP_ALL is false. It checks catch-up token IDs against
+the bound vocabulary. Default catch-up retains exactly a+1 rows; CATCHUP_ALL retains
+the whole validated original span. Draft step depth is capped by the shared plan.
+All p+a+j staged positions and exclusive steps remain within the logical extent.
+
+The first-draft bootstrap differs from a real verified span: T originally requests
+repeated copies of one real residual/token pair, not T already-verified rows.
+Its repeated span now shrinks to C-cell before copies and CATCHUP_ALL recording.
+The real row 0 remains at cell. Invalid cell, token and budget reject before copies;
+an exhausted budget skips residual copies entirely. Zero candidates with a remaining
+bonus retain only bounded repeated-row KV catch-up, not a forced proposal. Away from
+the boundary the same repeated rows, source residual and graph math are retained.
+
+Dormant chain_launch checks its original span, accepted row, vocabulary/forcing
+inputs and exact n_out against the capacity/output plan BEFORE record staging or
+writer enqueue. It rejects a chain whose forced/expected shape cannot fit rather
+than silently truncating a chain. -1 remains the existing forcing no-op sentinel.
+The v4 capability refusal remains before all chain preparation/staging/enqueue.
+
+Caller changes and before/after behavior
+---------------------------------------
+1. Standalone native/non-native speculation tracks actual mtp_candidates, applies
+   the max-draft knob before the first bootstrap, and chooses at most 1+candidates
+   rows. Both the initial draft_first and post-verdict draft pass remaining output
+   budgets. A final one-output round uses T=1 without forcing an MTP proposal. KV-only
+   catch-up retains accepted drafter state for later cached-request reuse.
+2. Serial serve follows the same count/budget rule. Its previous prompt+max_new+8
+   admission rejected exact-capacity requests; now subtraction-based admission
+   accepts prompt+max_new==C without adding eight hidden cells.
+3. Both serial loops clamp the verifier window AFTER suffix/lookup-chain selection.
+   T_mtp and chain_n are adjusted to the retained prefix before token/history staging,
+   verifier launch, acceptance/commit, output emission and window statistics. A nominal
+   four-row tail formerly failed/broke on p+4>C; it now runs its legal shorter prefix.
+   Partial rejection computes the next plan from accepted a rather than nominal T.
+4. The standalone later admission no longer sums prompt+output; it uses the shared
+   subtraction check. The pre-existing early positive/capacity admission still applies.
+   The exact no-output probe explicitly bypasses normal positive-output admission.
+5. Batch-MTP slots can stage one or two verifier rows according to remaining outputs,
+   physical cells and draft readiness. Actual per-slot row_count controls comparisons,
+   commit prefixes, residual copies and post-verdict MTP catch-up. No nonexistent second
+   row is read/copied. One useful bonus row no longer requires draft_ready. Admission
+   and post-verdict slot calls pass output budgets; zero-candidate slots retain the
+   accepted KV-only catch-up and then verify one row. Batch row-prefix commit supports
+   the existing variable slot groups.
+6. Pipelined batch's one-row input records get a host span/output check before launch.
+   Its existing unsupported-host-handoff API gate was not removed or weakened.
+7. --pipeline-windows selection now turns off on the current unqualified capability
+   gate before pipeline allocation/preparation and uses the existing serial loop.
+   The debug switch cannot re-enable it because pipe is false. Dormant pipeline chain
+   callers pass remaining budgets; impossible chain shapes reject before enqueue.
+   A future qualified pipeline's terminal transition/output-completion behavior is
+   not claimed by this implementation; it needs separate qualification before enable.
+8. Normal speculative/prompt elastic-KV reserve requests are explicitly capped at C
+   before kvg_ensure. Existing kvg_ensure also clamps its rounded target at C. No KV,
+   resident ring, page-table or RoPE capacity was increased. The unrelated existing
+   +256 prompt/cache reserve requests still use that same bounded growth function.
+
+Ownership and preserved source boundary
+---------------------------------------
+MtpCompletion and v4 Operation guards are unchanged. Entry checks still retire prior
+writers; new bounds validation happens before a submission generation changes or mapped
+record staging. A clean rejected bound does not manufacture a state-write fault;
+a previous sticky queue fault still blocks reuse. Failure/exception paths still drain
+checked MTP/side/all-device queues, with fail-stop before free if completion is unknown.
+No new volatile polling, fences, device spin or concurrent mapped-allocation reads.
+No expert arithmetic, precision, model, sampling/Philox, CPU dispatch, AVX-512 choice,
+KV append, attention kernel, recurrent-state commit or ring layout was changed.
+Prefill, session, verifier, publication, commit helper and full-context probe helper/test
+were not edited. The diagnostic branch and its end-cell/restore contract remain intact.
+No CMake/test registration edit was made; Main owns wiring the new source.
+
+New host-only test SOURCE (UNEXECUTED)
+------------------------------------
+tools/test_context_bounds.cpp includes the actual production helper and v4 completion
+helper. NDEBUG-independent checks cover C=4, nonaligned C=7/11 and C=262144; int64
+position/count overflow; int32 exclusive-step capacity; negative position/accepted/
+budget/depth; huge input row count; valid p+T=C; invalid p+a=C; zero/one-output budgets;
+spec4/maxdraft3 and batch maxdraft1; every small original span/acceptance/remaining
+budget; default and catchup-all plans (including the zero-candidate accepted KV span); and
+native/non-native control transitions under
+full and partial acceptance with exact prompt+max_new=C. The control-plane model checks
+all requested outputs progress without an extra consumed KV cell. It is not GPU/model
+inference, numerical parity or execution of MtpDrafter's private staging guard.
+Invalid-bound cutpoint does not submit through the ownership helper; an injected prior
+sticky completion failure cannot become success because a bounds check was added.
+No test source was compiled or run here.
+
+Main-owned qualification (UNEXECUTED)
+------------------------------------
+- Read the paired real helper/caller source and register/compile/run the host test,
+  including warnings and host address/undefined sanitizers. Also retain v4 ownership
+  test coverage; bounds safety is independent of queue-completion qualification.
+- Build/lint/check the affected free and contrib-llvm targets under actual AGENTS
+  toolchain rules. Missing compiler/device checks must be recorded, not called passes.
+  No contrib-icpx result is claimed. No compiler portability has been executed here.
+- Qualify native and non-native standalone, serial serve and refused pipeline selection
+  with max_new=1, exact prompt+max_new=C, short remaining budgets, spec4/maxdraft3,
+  min_p early stop, partial reject, both CATCHUP_ALL settings and mtp_window0/32768.
+  Reuse a cached conversation after a zero-candidate tail and compare accepted draft
+  KV/catch-up and next-request output against a one-row reference.
+  Compare output count/tokens against a forced one-row reference; use actual logical
+  capacity/status/guard diagnostics to verify no append/RoPE position reaches C.
+- Batch and future qualified pipeline source changes are bounded but remain unverified;
+  the current Xe universal handoff gate refuses those asynchronous verifier APIs.
+  Do not enable them just to execute a bounds test or infer runtime support from source.
+- Recheck v4 fault cutpoints and void-method exception/fail-stop propagation independently.
+  No bounds refusal may free uncertain outstanding work or clear a previous sticky fault.
+- Requalify the v3 exact262144/maxnew0 diagnostic only after Main's build/source gates:
+  262143 real successors, exactly one marked terminal storage probe, all cells through
+  262143, checked capture/poison/full-payload restore and no inference after restore.
+  This task did not execute it and did not replace that probe with normal generation.
+
+Protected source at handoff (read, not edited in v5)
+-------------------------------------------------
+8767f9807e1dd89971a49aa6195be44eb12ae54996ffcc2d9e4ad2819216a5d8  include/strata/core/mtp_completion.hpp
+1272e838d7fecdc253222c92dbcb7661e9e0352e63ffa002ebeddefa5f14667e  tools/test_mtp_completion.cpp
+c7463aee451e41d3b25c7dac12814b93aaa99443a7a78f851dd5cb6faf51f963  include/strata/program/full_context_probe.hpp
+72df5a4c916a81fa186db62de087c815b1e7922e43767d3d21a436eed8027d56  tools/test_full_context_probe.cpp
+fe0b5939b1ebeb0a958f8deebbc6037c1c7ae3dce7de138ab51c08361ee9ea02  src/prefill/prefill.cpp
+c266156f02854f6578ca526203525249e6e9035ca56102a4aeb815280d42e2ee  include/strata/prefill/publication.hpp
+cfcbf3126dc41640d4c8b8a9f1a4994b94c051202126c83f9538d285d245f332  src/core/session.cpp
+44d8667e973c44d889afac2387cf7686a1b3785d31fa22f22cc5c7097927e27a  src/core/verify.cpp
+52106d09b751d00a4ae1c85f555ba50bc10eb227f956423da94cb98cf7d850ad  include/strata/core/commit_transaction.hpp
+54b1a10524c9ee0c9b42979d75bd4f775ee0c45da2839d8129c2a2bd3daa552a  include/strata/core/gpu.hpp

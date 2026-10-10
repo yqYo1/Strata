@@ -1,0 +1,37 @@
+# R364 — Xe v5 context/output bounds and zero-candidate caller review
+
+Date: 2026-10-11 (Asia/Tokyo). Independent static review of the corrected Xe e32 v5 source. This report is the only file written. No test, build, compiler, GPU/runtime, profiler, process control, Git operation, source edit, or cleanup was performed. Conclusions are source-only; they do not qualify generated output, MTP numerical behavior, physical GPU bounds safety, or runtime ownership.
+
+## Evidence and frozen source identity
+
+Reviewed the v5 implementation handoff `implementation-xe-e32-context-window-bounds-v5.txt`, R359 completion/caller report, R360 prior bounds report, and actual registry-v115 at `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-parallel-round92/report-registry-v115.json`.
+
+The implementation's five edited-source hashes match the target worktree:
+
+- `src/core/mtp.cpp`: `6a0a065b2d424f5ea6f4349f81a6f34e4da1eae7139fbe56f4d8be1f9b4755cd`
+- `include/strata/core/mtp.hpp`: `19c2bf0b8f89b45eefacd3479be78b79c00da7320bd6c668b37bec63999b872e`
+- `src/program/generate.cpp`: `0d3e4d9f4f13a54335491721b284a7cf00d1862210b616f126d3d6b632259ca7`
+- `include/strata/core/context_bounds.hpp`: `30f66e36b2908518cfd5890f26d0efa9999cc6d52b70dcb635b6d4e865fa99ab`
+- `tools/test_context_bounds.cpp`: `226d6649cea8aa67987b1759419f1401e64418b614bbf31ee313f570ac9fdaba`
+
+The handoff reports the protected completion helper hash as `8767f9807e1dd89971a49aa6195be44eb12ae54996ffcc2d9e4ad2819216a5d8`. I did not re-audit its runtime behavior here; R359's source-only ownership analysis remains separate.
+
+## Findings
+
+**The logical bounds and one-past arithmetic agree across helper and MTP staging.** `context_bounds::span` checks position before subtracting capacity, caps representable cells at INT32_MAX because records store exclusive cell+1, and permits exactly `pos+count==cells`. `mtp_window` validates the original verifier span and accepted row before calculating `first_cell=pos+accepted`; its candidate count is limited by configured depth and the number of rows in the next verifier after reserving its row 0 and bonus output (`context_bounds.hpp:13-20,25-28,36-49`). A proposal at p+a+j is therefore retained only when the next verifier can consume it and still emit within the remaining budget.
+
+The actual `draft` validates before mapped record staging/submission, limits catch-up and candidate step count, writes candidate positions only for j below that count, and reports the actual early-stop/capped candidate count through `n_drafts` (`mtp.cpp:1164-1200,1203-1223,1249-1279)). Every admitted cell has a representable exclusive step `cell+1<=INT32_MAX`; ring slots do not relax the logical span.
+
+**Zero-candidate catch-up preserves accepted KV state and has a no-proposal path.** With outputs remaining, zero candidates use only bounded prefill for `bound.catchup`, reset result/probability slots, and return `n_drafts=0` without round/step attention, expert, head, or sampler graph work (`mtp.cpp:1183-1199)). Default catch-up is a+1 rows; CATCHUP_ALL uses the validated original span. With an exhausted budget it is a checked no-op. Standalone and serve derive T from the actual returned candidate count before indexing draft/probability arrays, so padded proposals are not counted. The next main verifier still has its one-row bonus path while output remains.
+
+**Bootstrap and final-window transitions are bounded.** `draft_first` treats repeated bootstrap width separately from a verified span, clamps repetitions to available cells before copies, then uses the shared candidate plan and budget. At the final cell it can keep the real row but emits no proposal; with one output remaining the caller reaches the ordinary one-row verifier. Native generation begins with a one-row first verifier; non-native generation accounts for its already-produced first token before passing remaining budget to bootstrap (`mtp.cpp:1422-1450; generate.cpp:10619-10631`). Admission uses subtraction-safe `prompt+outputs<=C` without the old speculative +8 margin (`generate.cpp:3458-3463,8145-8152`).
+
+**Shortened verifier windows are applied before indexing and commit.** In serial serve and standalone, requested MTP/suffix/lookup-chain width is reduced by physical rows and remaining outputs before the verifier input window is filled; MTP and chain lengths are recomputed from the retained prefix. Acceptance stays bounded by T, commit uses a+1, and output is capped by the remaining budget (`generate.cpp:9628-9637,10701-10717`; commit/emission and post-round draft `10765-10817`). The subsequent MTP call receives the post-emission budget. This avoids consuming nominal draft or cbuf entries after physical shortening. The host test models native/non-native transitions, rejection, both catch-up policies, small/nonaligned capacities, and exact prompt+output capacity; it is source only and was not executed.
+
+**Batch and chain paths pass budgets and use actual row counts.** Batch-MTP admits one or two rows from each slot's current capacity/output budget; row_count bounds comparison, prefix commit, residual copy, and later draft. After commit, draft receives `sl.max_new-sl.produced`; zero candidates set `draft_ready=false`, so the next batch verifier is one row. Batch bootstrap also passes its remaining budget (`generate.cpp:7371-7390,7410-7448,9954-9963)). Chain launch validates `n_out<=bound.candidates` before staging, and production chain callers pass `max_new-produced_n` (`mtp.cpp:1320-1354; generate.cpp:9513,9536`). The separate pipelined-batch host path checks one-row span/output budget before launch (`generate.cpp:7588-7602`). The current pipeline capability gate remains per the handoff; these checks do not qualify future async pipeline execution.
+
+No concrete source-level indexing or output-count blocker was found in the requested v5 paths.
+
+## Scope limits and Main-owned verification
+
+The helper test is useful source coverage, but its decode model does not execute private MTP staging, verifier commit, or cached-conversation lifecycle. No execution establishes output parity, performance, queue completion, or backend-specific bounds safety. Main's planned qualification remains necessary: compile/run the helper test under warnings and host sanitizers; run the v4 ownership test separately; build affected backends; then compare native/non-native and serial serve against a one-row reference at max_new=1, exact prompt+output=C, short budgets, partial rejection, min_p truncation, spec4/maxdraft3, and both catch-up settings/window sizes. Specifically reuse a cached conversation after a zero-candidate tail and compare next-turn behavior/KV state with the one-row reference. Batch bounds and any future pipeline enablement need separate runtime qualification. Keep full-context diagnostic qualification separate from normal-generation bounds.

@@ -1,0 +1,68 @@
+# Round 362 — official v0.1.42 final-context admission
+
+Date: 2026-10-11 (Asia/Tokyo). Read-only source audit of official v0.1.42. The only write is this report. No implementation, test, build/compiler, GPU/runtime, profiler, process/service operation, Git command/mutation, or cleanup was performed. No current runtime capability was queried. No performance, correctness, or fault result is claimed.
+
+## Source pin and prior evidence
+
+Official worktree: `/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/bench-upstream-v0142-pristine-20261011`. HEAD was supplied as `61b3fb5dd3f1e8ec09cf7e4e05208bc6d3c46406`; I did not verify it with Git.
+
+Relevant current source SHA-256:
+
+- `sycl/src/program/generate.cpp`: `eadfeca185d4ac2f181a9db1a7da84279a6e90b86262fe260701c2e629184018`
+- `sycl/src/core/mtp.cpp`: `ff69e7476038c21e2da4734ab7d9f59cb164c081068470ecfebaa78cd7119ed7`
+- `sycl/src/core/verify.cpp`: `ef837214f0af819ce1618a3567b2b48eb05cb40aa76343d46efe48bf9b9b1c57`
+- `sycl/src/core/layer.cpp`: `5b42e51dadef75bac4e011b7131942211429e48faeae88a9a92d0788e20fc493`
+- `sycl/src/core/session.cpp`: `b0478a0a17d1a6c9c8c569aa0c629b11b8756ee1f75f2e31e488f279c84346e2`
+
+Read prior R354 (official prefill execution eligibility), R357 (official parameter search coverage), R358 (v0.1.42 tuning controls), R360 (Xe e32 final-context bounds), and the supplied report-registry-v114. R360 described a related Xe source gap; it is not evidence about this separate official tree. R357 found no independent pristine B570 parameter sweep in the bounded archived record. R352/R354/R358 and the registry say the recorded B570 tuple still lacks a supported host-USM concurrency/serialization path for ordinary decode and long prefill; the newer LLVM runtime query was still pending in the registry. I did not inspect the excluded private B570 contract record.
+
+## Main conclusion
+
+Official v0.1.42 has two different results depending on the route:
+
+- **Normal text `--serve` requests:** source admission requires `prompt_tokens + max_new + 8 <= max_context`. With current verifier windows capped at 8 rows and MTP's maximum of seven draft rows per round, that eight-cell margin bounds the current standard serve routes' `p+T` and MTP candidate positions for a text request. Batch MTP is narrower still: it allows one proposal and checks context slack before retaining a two-row prefix. The reusable `MtpDrafter::draft` method itself has no physical-cell validation, so this safety depends on the present caller and admission limits; it is not an API invariant.
+- **Standalone `generate` speculative requests:** the source accepts `prompt + max_new <= max_context`, without the serve path's extra eight-cell margin. The verifier protects each actual window with `p+T <= max_cells`, but it does not shrink `T` near the end, so an otherwise admitted request can stop before producing its requested final token. For the normal native spec-4 route, the prompt loop starts at the last prompt cell and the three MTP candidates remain within context under this accounting; that is an emergent caller/budget property, not a check in `MtpDrafter::draft`. At wider MTP depth (for example spec 8 with one output still remaining), standalone has no corresponding margin for `p+a+j`, and can stage a candidate beyond `max_context` before a later verifier-window refusal.
+- **All routes:** advertised `max_context` is the QSA state's logical extent. MTP ring slack and elastic-KV growth do not extend it. The full-context probe is a separate diagnostic and does not call normal verifier/MTP generation.
+
+Thus a context-edge normal standalone run is source-refused/inadequately protected even when initial `prompt+max_new` admission passes. Typical long-prompt tuning cases with adequate context headroom are not rejected by this boundary finding, but still cannot proceed on the currently recorded B570 runtime based on R352/R354 until a supported access path/runtime contract is established.
+
+## Call chain and physical extent
+
+The parser requires positive `--max-new`, positive context, and prompt-plus-generation fit (`generate.cpp:2342-2350,2901-2905`). There is no stock ordinary `max-new=0` generation route; R354 also found no normal full-prefill-and-exit option. A prompt at the full context edge cannot be used to claim a complete normal prefill run while also generating an output.
+
+The main and MTP QSA states are initialized from the requested `o.max_context` (`generate.cpp:3789-3794,3981-3985`; `mtp.cpp:379-397)). QSA's page table has `ceil(max_cells/page_size)` logical entries, `st.max_cells=max_cells`, and the MTP state shares the main RoPE table when initialized (`layer.cpp:724-736,851-876`). A streamed MTP ring allocates `window + 4*max_t + 64` cells' worth of *slots* (`mtp.cpp:379-385)); the page count still derives from `max_cells`, and the ring table maps only those existing logical pages. It is a K/V residency/lookback arrangement, not new legal positions.
+
+The `Verifier::run` path explicitly refuses `pos0 + T > ss...max_cells` before staging (`verify.cpp:1989-2003)); the pipelined verifier launch has the same guard (`3641-3643)). The main standalone loop also refuses when `p+T > o.max_context` (`generate.cpp:12317-12324)); the normal serve serial loop breaks on that condition (`11118-11123)). Neither branch shortens the requested window to the remaining cells. The next verifier itself is therefore bounded against an out-of-range main QSA write, but a valid request can end early when the fixed window no longer fits.
+
+The MTP API does not provide the corresponding check. `draft()` validates `T`, `a`, and the outstanding chain state, then optionally shortens the catch-up span to `a+1`; it computes `max_steps=min(max_t-1,max_drafts)`, stages catch-up positions `p+t`, the first proposal at `p+a`, and later proposals at `p+a+j` without comparing them to `st_.max_cells` (`mtp.cpp:1534-1562)). Its row writer stores logical cell and per-head position from that value (`1549-1554)). There is no caller-passed physical limit. `draft_first` writes its residual rows and calls `draft(T,...,cell,0,...)` without validating the cell/window either (`1955-1969)).
+
+For spec 4, `max_tle4) and at most three draft cells are staged: `p+a`, `p+a+1`, `p+a+2`. In normal standalone generation, a concrete admitted edge case is `prompt=C-1, max_new=1, max_context=C`: the prompt/output check passes. The non-native branch calls `draft_first(o.spec,...,p-1)` before entering the speculative loop (`generate.cpp:12227-12250)). At that point its logical cell is `C-2`; with spec 4 and the default full MTP depth, the candidate rows include `C`, beyond the logical extent. The loop later checks `p+T` and refuses the four-row verify window, but that comes after the MTP enqueue/staging. In native standalone generation, the initial one-row window can similarly produce a state with one output remaining and stage an extra proposal beyond C on the post-commit MTP call (`12232-12234,12412-12426)). The final `produced >= max_new` check prevents a draft only after the budget is exhausted; it does not cap draft depth when fewer outputs remain than the normal MTP lookahead.
+
+Default `spec_min_p=0` means draft extension proceeds without a probability cutoff; a nonzero threshold reduces depth based on model probabilities, not based on available cells. `--mtp-max-t` can reduce the MTP's maximum depth but does not repair the missing extent guard as a general API guarantee. Default suffix lookup and optional lookup-chain can widen verifier windows (the parser caps `o.spec` at 8); they do not make MTP positions valid. The bounds check on the main verifier catches an over-wide final window, but callers do not decrement `T` to use the valid remainder (`generate.cpp:2268-2279,12285-12324)).
+
+## Current serve margin and its limits
+
+For ordinary text `GEN`, the serve request is rejected unless `n + max_new + 8 <= o.max_context` (`generate.cpp:9497-9501)). Current verifier/lookup windows are bounded by `kVerifyMaxT=8); MTP loads at most 8 rows for pipeline mode, and the normal depth is at most `max_t-1<=7` (`3981-3985,8453-8458`; `mtp.hpp:44-51`; `mtp.cpp:1544-1562)). For a request that still has output remaining, its current physical position is at most `n+max_new-1). This leaves at least eight logical cells from the last active position. Consequently the largest current standard serve verifier window (eight rows) and MTP candidate offset (at most five cells after the next committed position when max_t=8; one for spec4) stay within the admitted logical context. The serve admission margin is an actual source guard, unlike the ring's resident-slot slack.
+
+Batch MTP is more restrictive: its drafter is set to one proposal (`generate.cpp:3995`); batch code only retains the two-row prefix when one more output and context are available, otherwise one row, and marks the slot done when its subsequent position reaches the end (`8840-8847,8861-8887)). This route is not a substitute for MTP's missing API bound, but its present source caller does not use the three-row spec4 depth.
+
+This argument is limited to current callers, configured window caps, and source-level text-position accounting. It is not a runtime proof, and it does not extend to any future caller that invokes `draft()` directly. The MTP function should validate its catch-up span and cap each candidate position to `st_.max_cells` before any staging or queue submission. Standalone callers should either shorten the final verifier window and candidate count to both physical context and remaining output budget, or refuse the request before the affected write. Keep output count semantics intact.
+
+`--kv-grow` does not provide an extra-context safety margin. Its call sites request `p+T+64` or `prompt+max_new+64`, but `kvg_ensure` clamps its target to `min(o.max_context,...)` (`generate.cpp:6062-6068,11151-11159,11673-11677)); the underlying QSA state retains the same logical `max_cells`. The `--vision` position table has its own +64 rows (`2864-2884`), also unrelated to legal QSA positions.
+
+## Tuning entrance and source refusals
+
+A controlled official tuning request must retain positive `max_new`, preserve the exact model/tokenizer/native pack and precision configuration, use a context that holds the requested prompt, all requested outputs, and the relevant final-window headroom, and record the effective context/spec/MTP settings. For `--serve`, include the source-required eight cells in the request admission. For standalone `--spec 4`, leave enough context slack that the last active MTP call remains in range and the next verifier window fits; otherwise this source has no safe boundary fallback. Do not set `max_context` equal to a 32K/64K prompt and expect ordinary generation to complete, and do not use `--kv-grow`, page rounding, or MTP ring slots as hidden cells. If an exact-boundary storage claim is needed, use a dedicated diagnostic with explicit terminal behavior, not the production speculation path.
+
+Before a B570 parameter search, the prior source/runtime audits still refuse the current recorded tuple: R352 found the ordinary CPU-pool decode path polls device-written host-USM control with ordinary volatile CPU access and no reported concurrent capability; R354 found long prefill's expert-stager and PLE completion loops have separate host-USM polling. The options mapped in R358 (`--no-pool`, `--no-capture`, `--no-token-graph`, pool workers, PCIe fraction, and prefill controls) do not remove both protocols. A new capability receipt or a supported serialized source path is required before measurement. No such fresh evidence was collected here.
+
+There is also an independent source limitation for pristine measurement interpretation: normal prefill batches `n_prompt-1` positions, then the token loop handles the final prompt position and samples an output (`generate.cpp:11679-11729)); output rate/correctness is not a prefill-only result. `--spec` also requires the residency/profile/cache/token-graph support and can refuse before decode when the device residency table is absent (`12031-12034)). These are source-entry conditions in addition to bounds and runtime handoff admission.
+
+## Main-owned validation after admission
+
+1. Add a pure host bounds test over `C), `p), `T), `a), `max_t), and `max_drafts`. Check `p+T=C` as legal, negative/overflowing inputs, a mandatory first proposal with no remaining cell, and spec-4 max depth at `a=T-1`. Require every staged cell to be below `C`.
+2. Exercise standalone native and non-native spec4 with `prompt+max_new=C`, one output remaining, exact-fit and one-cell-short verifier windows, and both a QSA MTP ring and `--mtp-window 0`. Verify the guard is hit before any MTP writer is submitted, or that a shortened window preserves requested output count. Include rejection (`a<T-1`) with `STRATA_MTP_CATCHUP_ALL` both off and on; check overwritten rejected rows are never read before replacement.
+3. Exercise serial serve spec4 and batch-MTP at their context edge, including `max_new=1), and verify the `+8` admission and batch's one-proposal guard. Compare accepted outputs/count with a one-row reference; check no position reaches `max_context` as a token cell.
+4. Only after R352/R354 admission, run the retained fresh 32K/64K tuning fixtures with generous context margin and source-effective `INFO`/prefill/stat logging. Keep source/version/runtime and numerical quality checks fixed. Do not treat historical same-recipe rows in R357 as an independent parameter search.
+
+No test or runtime check was run in this audit; all boundary conclusions are from source arithmetic and call-path inspection.
