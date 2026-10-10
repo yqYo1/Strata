@@ -10,6 +10,7 @@
 #include <atomic>
 #include <bit>
 #include <cmath>
+#include <chrono>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -44,8 +45,8 @@ struct Errors {
         } catch(...) {}
     }
 };
-template<class F> void stage(sycl::queue& q,Errors& errors,const char* name,F action) {
-    std::printf("STAGE,%s\n",name); std::fflush(stdout);
+template<class F> void stage(sycl::queue& q,Errors& errors,const char* name,F action,bool publish=true) {
+    if(publish) { std::printf("STAGE,%s\n",name); std::fflush(stdout); }
     try { action(); q.wait_and_throw(); require(!errors.failed.load(),"asynchronous error"); }
     catch(const std::exception& error) {
         std::fprintf(stderr,"FAIL_STOP,%s,%s,completion_unknown,unwind_skipped\n",name,error.what());
@@ -53,6 +54,14 @@ template<class F> void stage(sycl::queue& q,Errors& errors,const char* name,F ac
           for(const auto& message:errors.messages) std::fprintf(stderr,"ASYNC,%s\n",message.c_str()); }
         std::fflush(stderr); std::_Exit(2);
     } catch(...) { std::fprintf(stderr,"FAIL_STOP,%s,unknown\n",name); std::fflush(stderr); std::_Exit(2); }
+}
+using ServiceClock=std::chrono::steady_clock;
+template<class F> double service_stage(sycl::queue& q,Errors& errors,const char* name,F action) {
+    // Progress precedes the interval. stage retains the same fail-stop/drain path.
+    std::printf("STAGE,%s\n",name); require(std::fflush(stdout)==0,"timing progress flush failure");
+    ServiceClock::time_point begin;
+    stage(q,errors,name,[&]{begin=ServiceClock::now();action();},false);
+    return std::chrono::duration<double>(ServiceClock::now()-begin).count();
 }
 uint64_t hash(const void* data,size_t bytes) {
     uint64_t value=14695981039346656037ULL;
@@ -77,9 +86,9 @@ template<class T> struct Buffer {
     void reset() { std::fill(host.begin(),host.end(),poison<T>()); }
     void upload() { q.memcpy(base,host.data(),host.size()*sizeof(T)); }
     void download() { q.memcpy(host.data(),base,host.size()*sizeof(T)); }
-    void immutable(Errors& errors) {
+    void immutable(Errors& errors,bool quiet=false) {
         std::vector<T> observed(host.size());
-        stage(q,errors,"immutable_input_readback",[&]{q.memcpy(observed.data(),base,observed.size()*sizeof(T));});
+        stage(q,errors,"immutable_input_readback",[&]{q.memcpy(observed.data(),base,observed.size()*sizeof(T));},!quiet);
         require(std::memcmp(observed.data(),host.data(),host.size()*sizeof(T))==0,"immutable input changed");
     }
     void guards(size_t live) const {
@@ -111,15 +120,15 @@ struct Fixture {
         bA(q,cap*Heads),bB(q,cap*Heads),z(q,cap*Heads*Width),gamma(q,Width),yA(q,cap*Heads*Width),yB(q,cap*Heads*Width),
         expectedFactor(q,cap*Heads),halfA(q,cap*Heads*Width),halfB(q,cap*Heads*Width) {}
     ~Fixture() noexcept { stage(q,errors,"final_drain",[]{}); }
-    void initialize(bool zero) {
+    void initialize(bool zero,bool quiet=false) {
         for(size_t i=0;i<State;++i) stateA.values()[i]=stateB.values()[i]=zero?0.f:float(int((i*7+i/128*11)%31)-15)*.001f;
         for(size_t i=0;i<History;++i) historyA.values()[i]=historyB.values()[i]=zero?0.f:float(int((i*13)%23)-11)*.002f;
         for(size_t i=0;i<Channels*4;++i) convW.values()[i]=.08f+float(i%7)*.01f;
         for(size_t h=0;h<Heads;++h) { dt.values()[h]=float(int(h%7)-3)*.02f; a.values()[h]=-.04f-float(h%13)*.007f; }
         for(size_t i=0;i<Width;++i) gamma.values()[i]=.9f+float(i%17)*.01f;
-        stage(q,errors,"initialize",[&]{ for(auto* buffer:{&stateA,&stateB,&historyA,&historyB,&convW,&dt,&a,&gamma}) buffer->upload(); });
+        stage(q,errors,"initialize",[&]{ for(auto* buffer:{&stateA,&stateB,&historyA,&historyB,&convW,&dt,&a,&gamma}) buffer->upload(); },!quiet);
     }
-    void prepare(size_t live,size_t offset) {
+    void prepare(size_t live,size_t offset,bool quiet=false) {
         require(live>0&&live<=cap,"chunk bound");
         for(auto* buffer:{&qkv,&ab,&z,&hA,&hB,&gA,&gB,&bA,&bB,&yA,&yB}) buffer->reset();
         halfA.reset(); halfB.reset(); expectedFactor.reset();
@@ -135,19 +144,22 @@ struct Fixture {
         stage(q,errors,"prepare",[&]{
             for(auto* buffer:{&qkv,&ab,&z,&hA,&hB,&gA,&gB,&bA,&bB,&yA,&yB}) buffer->upload();
             halfA.upload();halfB.upload();expectedFactor.upload();
-        });
+        },!quiet);
     }
-    void run(size_t live,size_t offset,int variant,bool factorFirst) {
-        prepare(live,offset);
+    void run(size_t live,size_t offset,int variant,bool factorFirst,std::array<double,2>* seconds=nullptr,bool quiet=false) {
+        prepare(live,offset,quiet);
         auto arm=[&](bool factor) {
             const Encoding encoding=factor?Encoding::DecayFactor:Encoding::LogGate;
             auto& gate=factor?gB:gA; auto& beta=factor?bB:bA; auto& state=factor?stateB:stateA;
             auto& history=factor?historyB:historyA;auto& h=factor?hB:hA;auto& y=factor?yB:yA;auto& half=factor?halfB:halfA;
-            stage(q,errors,factor?"factor_gates_conv_recurrence":"log_gates_conv_recurrence",[&]{
+            auto submit=[&]{
                 strata::prefill::gdn_gates_encoded(encoding,ab.data(),dt.data(),a.data(),gate.data(),beta.data(),int64_t(live),&q);
                 strata::prefill::gdn_conv(history.data(),qkv.data(),convW.data(),h.data(),int64_t(live),1e-6f,&q);
                 strata::prefill::gdn_recurrence_encoded(encoding,variant,state.data(),h.data(),gate.data(),beta.data(),z.data(),gamma.data(),1e-6f,y.data(),half.data(),int64_t(live),&q);
-            });
+            };
+            const char* label=factor?"factor_gates_conv_recurrence":"log_gates_conv_recurrence";
+            if(seconds) (*seconds)[factor?1:0]=service_stage(q,errors,label,submit);
+            else stage(q,errors,label,submit,!quiet);
         };
         arm(factorFirst);arm(!factorFirst);
         stage(q,errors,"materialized_loggate_exp",[&]{
@@ -156,25 +168,68 @@ struct Fixture {
             q.parallel_for<MaterializedLogGateExp>(sycl::nd_range<1>{global,256},[=](sycl::nd_item<1> item) [[sycl::reqd_sub_group_size(32)]] {
                 const size_t i=item.get_global_linear_id();if(i<liveGates) expected[i]=sycl::native::exp(log[i]);
             });
-        });
+        },!quiet);
         stage(q,errors,"readback",[&]{
             for(auto* buffer:{&stateA,&stateB,&historyA,&historyB,&hA,&hB,&gA,&gB,&bA,&bB,&yA,&yB}) buffer->download();
             halfA.download();halfB.download();expectedFactor.download();
-        });
+        },!quiet);
         equal(stateA,stateB,State,"state");equal(historyA,historyB,History,"conv_history");
         equal(hA,hB,live*Channels,"conv_output");equal(bA,bB,live*Heads,"beta");
         equal(yA,yB,live*Heads*Width,"FP32_output");equal(halfA,halfB,live*Heads*Width,"FP16_output");
         equal(gB,expectedFactor,live*Heads,"materialized_loggate_exp");
         gA.guards(live*Heads);gB.guards(live*Heads);
         for(size_t i=0;i<live*Heads;++i) require(std::isfinite(gA.values()[i])&&std::isfinite(gB.values()[i])&&gB.values()[i]>=0.f&&gB.values()[i]<=1.f,"gate classification");
-        for(auto* buffer:{&ab,&dt,&a,&qkv,&convW,&z,&gamma}) buffer->immutable(errors);
+        for(auto* buffer:{&ab,&dt,&a,&qkv,&convW,&z,&gamma}) buffer->immutable(errors,quiet);
         // These are exact state/output comparisons, not tolerance-based native-exp claims.
-        std::printf("CHUNK_PASS,offset,%zu,live,%zu,variant,%d,first,%s,state,%llu,conv_history,%llu,y,%llu,half,%llu\n",
+        if(!quiet) std::printf("CHUNK_PASS,offset,%zu,live,%zu,variant,%d,first,%s,state,%llu,conv_history,%llu,y,%llu,half,%llu\n",
             offset,live,variant,factorFirst?"factor":"log",(unsigned long long)hash(stateA.host.data(),stateA.host.size()*4),
             (unsigned long long)hash(historyA.host.data(),historyA.host.size()*4),(unsigned long long)hash(yA.host.data(),yA.host.size()*4),
             (unsigned long long)hash(halfA.host.data(),halfA.host.size()*2)); std::fflush(stdout);
     }
 };
+
+void benchmark(Fixture& fixture,size_t chunk,size_t repeats,int variant) {
+    constexpr size_t Prefix=32768;
+    require(chunk>0&&chunk<=8192&&Prefix%chunk==0&&repeats>=3&&repeats<=9,"bench bounds");
+    std::printf("BENCH_SCOPE,synthetic_only,true,model,false,fullKV,false,performance_adopted,false,prefix,32768,chunk,%zu,repeats,%zu,interval,real_gates_conv_recurrence_norm_submissions_queue_wait_async_check_seconds\n",chunk,repeats);
+    require(std::fflush(stdout)==0,"bench metadata flush failure");
+    // Untimed full-prefix warmup: both actual producer/conv/recurrence/norm arms,
+    // every chunk checked, with carry. No warmup duration enters measured sums.
+    fixture.initialize(false,true);
+    for(size_t offset=0,index=0;offset<Prefix;offset+=chunk,++index)
+        fixture.run(chunk,offset,variant,(index%2)!=0,nullptr,true);
+    std::puts("BENCH_WARMUP_COMPLETE,32768,both_arms,excluded,reset_before_every_sample");
+    require(std::fflush(stdout)==0,"warmup flush failure");
+    for(size_t sample=0;sample<repeats;++sample) {
+        fixture.initialize(false,true); // Independent equal nonzero state/history.
+        std::array<double,2> aggregate{};size_t chunks=0;
+        for(size_t offset=0;offset<Prefix;offset+=chunk,++chunks) {
+            const bool factorFirst=((sample+chunks)%2)!=0;
+            std::array<double,2> seconds{};
+            fixture.run(chunk,offset,variant,factorFirst,&seconds,true);
+            // All readback/guard/full-bit/immutable checks completed outside clocks.
+            for(unsigned arm=0;arm<2;++arm){
+                require(std::isfinite(seconds[arm])&&seconds[arm]>=0,"invalid service interval");aggregate[arm]+=seconds[arm];
+                const auto& state=arm?fixture.stateB:fixture.stateA;
+                const auto& history=arm?fixture.historyB:fixture.historyA;
+                const auto& y=arm?fixture.yB:fixture.yA;const auto& half=arm?fixture.halfB:fixture.halfA;
+                std::printf("BENCH_CHUNK,sample,%zu,chunk,%zu,offset,%zu,live,%zu,arm,%s,position,%u,variant,%d,seconds,%.17g,state,%llu,history,%llu,y,%llu,half,%llu\n",
+                    sample,chunks,offset,chunk,arm?"factor":"log",unsigned(bool(arm)!=factorFirst),variant,seconds[arm],
+                    (unsigned long long)hash(state.host.data(),state.host.size()*sizeof(float)),
+                    (unsigned long long)hash(history.host.data(),history.host.size()*sizeof(float)),
+                    (unsigned long long)hash(y.host.data(),y.host.size()*sizeof(float)),
+                    (unsigned long long)hash(half.host.data(),half.host.size()*sizeof(uint16_t)));
+            }
+            require(std::fflush(stdout)==0,"chunk timing flush failure");
+        }
+        require(chunks==Prefix/chunk,"bench prefix completeness");
+        for(unsigned arm=0;arm<2;++arm)std::printf("BENCH_SAMPLE,sample,%zu,arm,%s,prefix,32768,chunks,%zu,seconds,%.17g,paired_chunk_bits,true,warmup_excluded,true\n",sample,arm?"factor":"log",chunks,aggregate[arm]);
+        require(std::fflush(stdout)==0,"sample timing flush failure");
+    }
+    std::printf("BENCH_COMPLETE,prefix,32768,repeats,%zu,arm_samples,%zu,paired_chunks,%zu,synthetic_only,true,model,false,fullKV,false,performance_adopted,false\n",repeats,repeats*2,repeats*(Prefix/chunk));
+    require(std::fflush(stdout)==0,"bench complete flush failure");
+}
+
 size_t decimal(const char* text,size_t limit) {
     require(text&&*text,"empty decimal");size_t value=0;
     for(const char* p=text;*p;++p) { require(*p>='0'&&*p<='9',"nondecimal input"); require(value<=limit/10,"decimal bound"); value=value*10+size_t(*p-'0');require(value<=limit,"decimal bound"); }
@@ -234,8 +289,15 @@ void selected_identity(sycl::queue& q) {
 int main(int argc,char** argv) {
     try {
         if(argc==2&&!std::strcmp(argv[1],"--host-only")) {host_contract();require(std::fflush(stdout)==0,"output failure");return 0;}
-        size_t total=0,cap=257,endpoint=0;int variant=0;
-        if(argc>1) {
+        size_t total=0,cap=257,endpoint=0,repeats=0;int variant=0;
+        const bool bench=argc>1&&!std::strcmp(argv[1],"--bench");
+        if(bench) {
+            require(argc==7&&!std::strcmp(argv[3],"--chunk")&&!std::strcmp(argv[5],"--repeats"),"usage: --bench 32768 --chunk divisor1..8192 --repeats3..9");
+            total=decimal(argv[2],32768);cap=decimal(argv[4],8192);repeats=decimal(argv[6],9);
+            require(total==32768&&cap>0&&32768%cap==0&&repeats>=3,"bench admission");
+            for(const char* name:{"STRATA_TRACE","STRATA_PREFILL_TIMING","UR_LOG_LOADER","UR_LOG_LEVEL_ZERO","UR_LOG_TRACING","UR_ENABLE_LAYERS","ZE_DEBUG","ZE_ENABLE_VALIDATION_LAYER","ZE_ENABLE_PARAMETER_VALIDATION","SYCL_PI_TRACE","SYCL_UR_TRACE","SYCL_TRACE","LD_PRELOAD","LD_DEBUG"})
+                require(std::getenv(name)==nullptr,"bench requires clean tracing/validation/loader environment");
+        } else if(argc>1) {
             require(argc==7&&!std::strcmp(argv[1],"--prefix")&&!std::strcmp(argv[3],"--chunk")&&!std::strcmp(argv[5],"--tail"),"usage: --prefix 32768|262144 --chunk 1..8192 --tail 0|1|4");
             total=decimal(argv[2],262144);cap=decimal(argv[4],8192);endpoint=decimal(argv[6],4);
             require((total==32768||total==262144)&&cap>0&&(endpoint==0||endpoint==1||endpoint==4)&&endpoint<=cap,"prefix admission");
@@ -247,7 +309,9 @@ int main(int argc,char** argv) {
         std::printf("SCOPE,synthetic_real_gdn_component,model,false,performance,false,physical_KV_lifecycle,false,capacity,%zu\n",cap);
         {
             Fixture fixture(q,errors,cap);
-            if(total) {
+            if(bench) {
+                benchmark(fixture,cap,repeats,variant);
+            } else if(total) {
                 fixture.initialize(false);size_t offset=0,calls=0;
                 const size_t body=total-endpoint;
                 while(offset<body) { size_t live=std::min(cap,body-offset);fixture.run(live,offset,variant,(calls++%2)!=0);offset+=live; }
