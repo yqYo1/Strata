@@ -1,0 +1,155 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "stage": "build",
+  "started_utc": "2026-10-10T08:30:32.029409+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "source": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-hardware-concurrency/hardware_concurrency_v1.cpp",
+    "bytes": 7788,
+    "sha256": "6bc104ef6c068814c9a7b513783f27b24844864af0a58e1e4194a187239ea54b"
+  },
+  "controller": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-hardware-concurrency/run_hardware_concurrency_v1.py",
+    "bytes": 10108,
+    "sha256": "e6a90d443e83b2c95058911e9a83e09669cf4406ebbb4444b7f7ec8fa283db82"
+  },
+  "parent_owner": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/run_gdn_gate_factor_probe_v2.py",
+    "bytes": 24299,
+    "sha256": "7df012ee4d9bd047a6094ccedb37fddb3d56d4b054d9fdf468534b0fb6e94e1f"
+  },
+  "source_commit": "245a6fb472cb9ab21e01c6ab86d399b0cd15b34e",
+  "commands": [
+    {
+      "label": "compile",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-std=c++20",
+        "-O3",
+        "-fsycl",
+        "-fp-model=precise",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-qmkl=sequential",
+        "-Xsycl-target-backend=spir64",
+        "-cl-fp32-correctly-rounded-divide-sqrt",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-hardware-concurrency/hardware_concurrency_v1.cpp",
+        "-lze_loader",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/hardware-concurrency-v1"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+        "ONEAPI_ROOT": "/opt/intel/oneapi",
+        "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T08:30:32.030232+00:00",
+      "wall_seconds": 240,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1064117,
+          "start_ticks": 31071114,
+          "sid": 1064117,
+          "pgid": 1064117
+        },
+        {
+          "pid": 1064120,
+          "start_ticks": 31071114,
+          "sid": 1064117,
+          "pgid": 1064117
+        },
+        {
+          "pid": 1064122,
+          "start_ticks": 31071115,
+          "sid": 1064117,
+          "pgid": 1064117
+        },
+        {
+          "pid": 1064345,
+          "start_ticks": 31071449,
+          "sid": 1064117,
+          "pgid": 1064117
+        },
+        {
+          "pid": 1064577,
+          "start_ticks": 31071815,
+          "sid": 1064117,
+          "pgid": 1064117
+        }
+      ],
+      "pid": 1064117,
+      "direct_identity": {
+        "pid": 1064117,
+        "state": "R",
+        "ppid": 1064090,
+        "pgid": 1064117,
+        "sid": 1064117,
+        "start_ticks": 31071114,
+        "rss_bytes": 151552
+      },
+      "peak_session_rss_bytes": 510222336,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T08:30:40.149629+00:00",
+      "elapsed_seconds": 8.119019145029597,
+      "logs": {
+        "compile.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "adopted": false,
+  "model_executed": false,
+  "scope": "Independent copy/GEMM concurrent capacity, no production critical-path or physical-engine claim",
+  "limits": {
+    "AS_each_bytes": 17179869184,
+    "RSS_session_bytes": 2147483648,
+    "CPU_each_seconds": [
+      120,
+      121
+    ],
+    "wall_seconds": 240,
+    "text_bytes": 8388608,
+    "total_profile_bytes": 67108864
+  },
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/hardware-concurrency-v1",
+    "bytes": 396280,
+    "sha256": "fe301f725198e7c2ea24887dbe859055ee80fc21cd6564a89849e36e3aae2ffc"
+  },
+  "environment": {
+    "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+    "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+    "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+    "ONEAPI_ROOT": "/opt/intel/oneapi",
+    "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+    "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+  },
+  "finished_utc": "2026-10-10T08:30:40.247756+00:00"
+}

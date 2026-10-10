@@ -1,0 +1,84 @@
+# R222 — safe hardware-concurrency control admission
+
+Date: 2026-10-10 (Asia/Tokyo). Read-only independent audit of the committed capacity-control source/controller, R216/R218 event and copy semantics, and primary PTI / Level Zero docs. I did not run the probe, inspect current run status, query hardware or processes, build, test, profile, use Git, alter source, or clean artifacts. The only new artifact is this report.
+
+## Admission finding
+
+The benchmark is a bounded, independent-operand capacity control under the recorded safe runtime flags. It compares copy-only, GEMM-only, an explicit copy-then-wait-then-GEMM batch, and two-queue concurrent submission. It is suitable for asking whether this B570/runtime can make progress on independent H2D and GEMM work at these tested sizes. Its unprofiled host-wall improvement can support a combined-capacity or queue-scheduling benefit. It cannot, by itself, prove temporal overlap on the device, map a command to a physical engine, or establish an improvement to Strata prefill/model throughput.
+
+The control's useful isolation is deliberate: same root B570 and PCI BDF, two in-order queues in the same context/device, copy buffers disjoint from all GEMM buffers, and no model or shared output dependency between queues. The concurrent case submits the copies and then GEMMs without an inter-queue wait, then drains both. That makes overlap possible while retaining correctness. The separate serialized case waits for the copy queue before product submission, so it is a reasonable sequential-work control, though it remains two queues and host-inclusive rather than a lower-level engine-boundary measurement.
+
+There is no closed result for R1/R2/R3 or PTI in the evidence reviewed here. Treat the source and controller as an admitted measurement design only; do not report outcome, speedup, fault status, or engine identity before a matching completed receipt exists.
+
+## Exact work and what it represents
+
+The source uses four 8 MiB H2D copies per copy-enabled batch: 32 MiB logical API bytes. Two alternating 8 MiB slots are overwritten twice; source data is two host-USM arrays, destination data is two device-USM arrays. Both are independent of the GEMM operands. This is a real host-to-device copy through the configured SYCL runtime, but its allocation and staging lifecycle is not equivalent to the production expert path's source objects, slot reuse, waits, and routed payloads.
+
+The products use FP16 inputs and FP32 output through oneMKL USM GEMM, with one in-order compute queue. GU uses `(N,K)=(1280,2560)` and Down `(N,K)=(2560,640)`. `M` is 80, 160, or 8192. For M=80/160 it submits 128 products per compute-enabled batch; for M=8192 it submits 8. Dense arithmetic per such batch is:
+
+| Role | M | Calls | Flops per GEMM | Flops per batch |
+|---|---:|---:|---:|---:|
+| GU | 80 | 128 | 0.524288 GF | 67.108864 GF |
+| GU | 160 | 128 | 1.048576 GF | 134.217728 GF |
+| GU | 8192 | 8 | 53.6870912 GF | 429.4967296 GF |
+| Down | 80 | 128 | 0.262144 GF | 33.554432 GF |
+| Down | 160 | 128 | 0.524288 GF | 67.108864 GF |
+| Down | 8192 | 8 | 26.8435456 GF | 214.7483648 GF |
+
+The counts follow `2*N*M*K*calls`; they are code-defined, not measured throughput. A full seven-sample measurement process emits 168 timing samples (2 roles × 3 M values × 4 cases × 7), plus six final-output validation rows. It also performs one warmup batch for each case and M/role. Each sample in `copy_only`, `serialized`, and `concurrent` submits four copies; `compute_only` submits none. The final validation checks all two copy-slot contents and the final GEMM output for each role/M case. Earlier overwritten GEMM outputs are not checked; the source labels that limit explicitly. Thus this is a narrow operation/capacity control, not a general numerical qualification.
+
+The fixed sequence rotates the four cases by sample position; it is balanced across seven repetitions but not randomized. It reduces simple ordering bias without proving a cold-cache run or removing clock, thermal, scheduling, or process-to-process drift. Three fresh measurement processes improve repeatability evidence but still do not establish a population-level model-performance distribution. Preserve and compare the individual observations across all processes; report medians/ranges and per-process direction, not just a pooled best value.
+
+## Model and production-path boundary
+
+The M values and matrix dimensions provide useful rectangular capacity points, including a large M control, but no request-local production histogram is supplied here. Model routing gives each expert a per-chunk `M=ne`; a whole chunk's `M=8192` is not evidence that an actual expert receives 8192 rows. The benchmark does not load the model, compute router selections, perform native dequantization, run SwiGLU, execute attention/GDN, gather/scatter routed rows, stage an expert blob through production's ring, or include PLE/KV/cache work. It does not use production's exact copy sizes or any production copy/compute event dependency. Accordingly:
+
+- A wall improvement is capacity evidence only for this independent synthetic traffic mix, device, runtime and settings.
+- It cannot be translated into a prefill speedup or a memory/PCIe ceiling without production bytes, route shapes, allocation classes, overlap graph and request wall.
+- The control's host-USM to device-USM copy is closer to a pinned host transfer than a pageable copy, but must not be called the exact production expert-copy path without a source-allocation match.
+- The benchmark reuses `x`, `y`, and eight rotating packed-weight slices. Warmup and rotation establish neither cold-cache nor production cache pressure.
+
+R218 remains the applicable production boundary: two logical SYCL queues and their events establish ordering and potential scheduling freedom; source/flags alone do not reveal the Level Zero engine identity or realized overlap. The safe environment remains `UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1` and `EnableDirectSubmission=0`. Do not change either flag for this audit or infer that a favorable result under those flags makes an offload-enabled configuration safe or faster.
+
+## Safety, ownership, and receipt gates
+
+The standalone source rejects implicit mode and hard-requires the Intel Level Zero B570 root device at `0000:05:00.0`, required FP16/USM aspects, same context/device, and in-order queues. It checks the native PCI/device identity and does not select a subdevice. The controller holds the shared nonblocking measurement lock, checks the frozen owner script digest, snapshots the committed source/binary hashes, and requires closed successful prior build/qualification receipts before measurements. R1/R2/R3 are serially gated on earlier receipts; `profile` is gated on all three. Its clean worktree/HEAD assertions and artifact records are admission controls, not proof of benchmark correctness.
+
+The owner wrapper has a bounded 240 s wall deadline, 16 GiB address-space limit, 120/121 s soft/hard CPU limits, sampled 2 GiB session-RSS cap, 8 MiB combined stdout/stderr limit, per-file limit, 256-file-descriptor cap, no core dump, PID/start-time/session tracking, and session-empty/normal-exit checks. On a timed-out or failed child it attempts TERM then KILL and records cleanup; any cleanup/error prevents a passed receipt. The control's C++ failure path uses `_Exit(70)`, so it deliberately bypasses queue draining/free/destructors on failure; a nonzero/abrupt exit must remain a failed receipt and be reviewed with the owner’s closure, journal/devcoredump and error evidence, not treated as an ordinary PASS. The runner checks before/after for the selected device's devcoredump path and filters new kernel-journal entries for `xe`, `i915`, `GPU HANG`, and devcoredump signals. This is a useful, bounded fault screen, not proof that every possible driver/runtime warning is absent. It separately records launch/exit/session and limited matching kernel evidence. Normal success drains both queues, validates output, frees USM and host buffers, destroys queues, and prints `PASS` only after normal release.
+
+The build stage inherits the recorded oneAPI toolchain environment, uses sequential MKL and precise FP settings, and does not execute the model. Qualification uses one sample per case with loader/validation diagnostics; R1–R3 use seven samples and require empty stderr. The PTI stage also uses `--qualify` (one sample) and records profiler files within a 64 MiB total cap. PTI runs are instrumented diagnostics, never accepted as unprofiled performance samples. The controller checks JSON sample/schema, dimensions, work counters, exact requested flops/logical bytes, all six validation records and a final normal-release PASS; it does not itself perform statistical analysis or determine overlap.
+
+## What wall time can and cannot say
+
+Each `batch()` starts host `steady_clock` after both queues have been drained and stops after the relevant submissions and both queues' completion waits. Thus it includes host submission, driver/runtime scheduling, copy and GEMM completion, and the two queue drains. In serialized mode, the copy wait occurs before GEMM submission. In concurrent mode, copies are submitted first and GEMMs immediately afterward; the host is not synchronized to the device start of either stream. The queues can execute asynchronously, but queue submission order and whole-batch wall time do not measure actual operation intersection.
+
+If repeated uninstrumented concurrent batches are faster than the matching serialized batches while copy-only and compute-only controls are stable, that supports the conclusion that this combined independent workload benefits from not serializing the two queues. It remains consistent with several mechanisms: overlapping device work, differences in host submission/drain overhead, runtime queue scheduling, or their combination. If concurrent time is near the larger single-resource time instead of the serialized sum, that is a useful capacity signal, not a direct measurement of the overlap interval. Use PTI to test device-time intersection independently.
+
+## PTI visibility gap and evidence needed
+
+The committed `profile` invocation currently wraps one qualification pass with `unitrace -d --chrome-device-logging`. The current PTI README documents `--device-timeline` (`-t`) for device-operation timestamps and `--chrome-device-logging` for device activities. Engine/queue fields are retained unless `--chrome-no-engine-on-device` is passed; this controller does not pass the suppressing flag. However, the README specifically says `--chrome-kernel-logging` also records host-device interactions and dependencies in addition to device events. The committed profile invocation omits that flag and also omits `--chrome-call-logging` and `--kernel-submission`. Its trace may show device activity/engine fields, but as written it does not request the full call/dependency view needed to confidently associate each copy and oneMKL product with its host submission and dependency chain. This is a coverage gap for the requested physical mapping question, not a reason to infer from the wall results.
+
+For a trace intended to classify the two streams, retain `--chrome-kernel-logging` (with engine fields enabled), and include host call logging or SYCL/UR tracing as needed to correlate actual `queue::memcpy` / oneMKL submissions to the device records. Use `--device-timeline` or the trace timestamps, and confirm both copy and all GEMM-associated device work appear. Keep the existing no-engine-suppression behavior. First test whether the PTI wrapper's own output is separate from the JSON-only benchmark stdout; the controller parses every captured stdout line as a JSON record. Preserve full logs for this named trace check within the byte budget, then reduce promptly to a small table with benchmark call, device-operation IDs, queue/engine IDs, start/end times and coverage totals.
+
+A defensible conclusion requires all of the following, under the same binary, B570, Level Zero adapter/driver, safe flags, queue properties and copy/GEMM shapes:
+
+1. Map each API copy and each GEMM to every PTI-observed device operation associated with it; reconcile operation counts and bytes/shapes with source output. If oneMKL expands one GEMM into a chain or the copy expands into multiple transfers, include the chain instead of one terminal event.
+2. Record host submit calls/dependencies and the observed device queue/engine identifiers. Retain identifiers by the Level Zero command-queue group ordinal and queue index when available; Level Zero defines the queue-group capability flags and `numQueues` as the physical engines in the group. A PTI “engine” string/ID is an observed runtime/driver identity; call it a specific physical engine only after correlating it to this Level Zero device/group/index data (and note any ambiguity).
+3. Intersect the complete copy and GEMM device-operation spans on the shared trace timebase; report overlap duration and share of each operation, with timestamp uncertainty and trace coverage. Distinct queue handles or host wall speedup alone are not engine mapping. A trace can establish observed concurrent device activity and runtime-reported engine assignment; it cannot by itself establish exclusive hardware saturation, link bandwidth, or how much application wall time that concurrency saves.
+4. Compare uninstrumented per-process copy-only, compute-only, serialized and concurrent wall times separately from the PTI run; state profiler perturbation and do not use profiled time as the accepted speedup. Check whether PTI changes ordering, errors or correctness. If copies, GEMM subcommands, identities, dependencies, or their coverage totals are missing, classify overlap/mapping as unknown.
+
+PTI-GPU's unitrace README states that device logging emits device activity traces, kernel logging adds host-device interactions/dependencies, and the engine/queue details can be suppressed by a dedicated option. Level Zero specifies queue-group capability flags and `numQueues`, and describes the queue index as the engine selection within a group. Those APIs define what can be queried; they do not prove how this exact SYCL runtime mapped the two queues during the future run. R216 additionally limits oneMKL returned events to completion semantics until PTI establishes full operation-span coverage for each shape.
+
+Primary references:
+
+- [Intel PTI-GPU unitrace README](https://github.com/intel/pti-gpu/blob/master/tools/unitrace/README.md) — device timelines, Chrome trace modes, and engine/queue-field option.
+- [Level Zero command queue group properties](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/device.html) and [command queues](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/command_queue.html) — capabilities, `numQueues`, and queue group/index semantics.
+- [Level Zero programming guide](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html) — mapping of command queues to physical-engine indices in a group.
+
+## Pinned evidence
+
+- Frozen worktree: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009`, assigned HEAD `245a6fb472cb9ab21e01c6ab86d399b0cd15b34e`.
+- Registry v80: `bench/results/2026-10-10-parallel-round57/report-registry-v80.json`, SHA-256 `4159522091b621e38f31c6f34f944fb706b61ab8b5a8dd1338eb4fb4b0f56896` (326 reviewed reports).
+- `hardware_concurrency_v1.cpp`: SHA-256 `6bc104ef6c068814c9a7b513783f27b24844864af0a58e1e4194a187239ea54b` (7,788 bytes).
+- `run_hardware_concurrency_v1.py`: SHA-256 `e6a90d443e83b2c95058911e9a83e09669cf4406ebbb4444b7f7ec8fa283db82`.
+- Local evidence reviewed: R216 oneMKL event coverage/PTI qualification; R218 safe runtime copy-offload/engine-overlap; R219 layer-major reuse and full-context memory envelope. No R222 run record was read or assumed.

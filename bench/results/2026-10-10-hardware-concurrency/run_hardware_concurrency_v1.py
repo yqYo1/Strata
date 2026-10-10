@@ -27,7 +27,14 @@ with (B / 'owned-v0141-measurement.lock').open('a') as lock:
     head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=W, text=True).strip()
     assert not subprocess.check_output(['git', 'status', '--porcelain'], cwd=W, text=True)
     module = types.ModuleType('hardware_concurrency_owner')
-    exec(compile(OWNER.read_text().split('\ndef parse_probe(', 1)[0], str(OWNER), 'exec'), module.__dict__)
+    owner_source = OWNER.read_text().split('\ndef parse_probe(', 1)[0]
+    if STAGE == 'profile':
+        # Enforce the total trace budget during supervision and again at exit,
+        # in addition to the original stdout/stderr and per-file limits.
+        needle = 'so.stat().st_size + se.stat().st_size <= text_cap'
+        assert owner_source.count(needle) == 2
+        owner_source = owner_source.replace(needle, needle + ' and sum(p.stat().st_size for p in self.output.rglob("*") if p.is_file()) <= (64 << 20)')
+    exec(compile(owner_source, str(OWNER), 'exec'), module.__dict__)
     out = B / f'hardware-concurrency-v1-{STAGE}'
     assert not out.exists(); out.mkdir(mode=0o700); module.W = out
     owner = module.Owner(out)
@@ -35,6 +42,7 @@ with (B / 'owned-v0141-measurement.lock').open('a') as lock:
                   boot_id=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
                   source=dict(path=str(SOURCE), **ident(SOURCE)), controller=dict(path=__file__, **ident(__file__)),
                   parent_owner=dict(path=str(OWNER), **ident(OWNER)), source_commit=head,
+                  owner_source_sha256=hashlib.sha256(owner_source.encode()).hexdigest(),
                   commands=owner.commands, adopted=False, model_executed=False,
                   scope='Independent copy/GEMM concurrent capacity, no production critical-path or physical-engine claim',
                   limits=dict(AS_each_bytes=16<<30, RSS_session_bytes=2<<30, CPU_each_seconds=[120,121], wall_seconds=240, text_bytes=8<<20, total_profile_bytes=64<<20))
@@ -81,7 +89,7 @@ with (B / 'owned-v0141-measurement.lock').open('a') as lock:
                 assert sha(profiler)=='5f90c453fbaf0b90a357a065cf4392f1ce3b157d5269af165c7cfe565cef1362'
                 assert sha(library)=='c544dd2f6d2f6531cd529a9cc4ab9076b705eca8d63df56505e500942d128266'
                 record['profiler']={str(p):ident(p) for p in [profiler,library]}
-                args=[str(profiler),'-d','--chrome-device-logging','--output-dir-path',str(out),'-o',str(out/'device-summary.txt')]+args
+                args=[str(profiler),'-d','--chrome-kernel-logging','--chrome-call-logging','--output-dir-path',str(out),'-o',str(out/'device-summary.txt')]+args
                 record['profiling_perturbation']=True
             record['environment']=env; save()
             stdout, stderr = run('benchmark',args,env,wall=240,file_cap=32<<20)

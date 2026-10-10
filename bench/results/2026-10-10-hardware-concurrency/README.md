@@ -3,3 +3,9 @@
 The independent-capacity probe uses two in-order queues with the same context and device. Next-slot host-USM copies do not touch GEMM operands. Compare copy-only, compute-only, forced serial and concurrent submission, with four8MiB copies and production-shaped GU/Down products at M80/M160/M8192. Record every sample in three fresh processes after a separately logged qualification, then qualify device trace visibility and observed engine identities using the pinned unitrace build. Both previously qualified safety flags remain unchanged.
 
 This source is a capacity control, not production critical-path or model performance evidence. Queues have profiling disabled; host-inclusive steady-clock timings include submissions and both queue drains. Fixed balanced sample order and eight rotating weights do not prove cold caches. Full copies and the final surviving product are checked; overwritten products are not observed. No optimization is adopted. Root owns all finite serial tests under the shared lock.
+
+## Closed measurements
+
+Build, loggedqualification and3freshprocesses passed normalexit/output/fault gates. All504samples are preserved. GU M160 copy5.250ms, GEMM5.201ms, serial10.438ms, concurrent10.376ms (medianofprocessmedians). AllGUshapes show littlewallbenefit; DownM80/M160 improves variably. Noobserveddeviceintersection/enginemapping yet.
+
+After R222, firstprofile now requests kernel plushostcalllogging and polledaggregate64MiB budget. Historicalbuild/qualification/repeatreceipts retain originalcontrollerhashes; upcomingprofile pins revisedrecipe/currentcommit. Profilingtimingexcluded.

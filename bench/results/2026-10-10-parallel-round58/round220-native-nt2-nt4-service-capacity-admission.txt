@@ -1,0 +1,79 @@
+# R220 — NT2–4 native CPU service capacity admission
+
+Date: 2026-10-10 (Asia/Tokyo). Read-only source and closed-evidence audit for the production-shape IQ2_S GU22 / IQ4_NL Down20 CPU route. Question: what must be added to the standalone host-only calibration fixture to admit NT2–4 service, and what bounded measurement separates grouped-kernel capacity from pool scheduling? No source/build/test/profile/PMU/inference/GPU/device/process/Git/service/cleanup operation was performed. Only this report was written.
+
+## Finding
+
+The NT1–2 service fixture can be extended to NT3 and NT4 without changing production kernels or routing. The production API/data model allows up to `MAXT=8`, and the IQ2_S GU and IQ4_NL Down AVX2 row kernels explicitly instantiate NT1, NT2, NT3 and NT4. On the recorded 5600X AVX2 path with default minimum NT=2, NT1 runs the GGML `vec_dot` fallback; NT2–4 select the custom grouped kernels when the AVX2/format gates are satisfied and relevant disable variables are absent. Those are distinct implementations and need separate rows, dispatch receipts and correctness gates.
+
+The immediate gap is in the fixture: CLI admission accepts only NT1/2, and per-token input, quantized activation, intermediate/output, and pointer arrays are dimensioned to two. Its current NT2 check enforces quantizer equality, finite/guard checks, deterministic repeat, and pool/direct partition equality, but it only **prints** maximum absolute differences against independent GGML for multi-token GU/Down. The deltas are not compared against a tolerance. A passing NT2 process therefore does not establish useful numerical closeness to an independent oracle.
+
+## Pins and earlier evidence
+
+- Latest committed registry v80 SHA-256: `4159522091b621e38f31c6f34f944fb706b61ab8b5a8dd1338eb4fb4b0f56896` (326 reports); committed archive `bench/results/2026-10-10-parallel-round57`, docs worktree HEAD `08b16f1cd4f7a2cec529dd7b71f3bf14d5b93b93`.
+- Frozen CPU source worktree: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010`, assigned HEAD `af12591ca840deb4649b703cbb7469fbc2417fc5`.
+- Calibration source `sycl/tools/native-service-calibration/native_service_calibration.cpp`: SHA-256 `d8853bce01f42ecb553bea223ce9984a4045d129a82e0440e7983594a4abf435`.
+- Production dispatch source `src/kernels/cpu/native_expert.cpp`: SHA-256 `767f02f33aca4da9fabbe113c50ce1d7cb2aa9f25b4234df59224ec46a5985cd`.
+- Grouped row source `src/kernels/cpu/iq_avx2.cpp`: SHA-256 `58e9c7e49b8158f698cda59aff06c245f62aaecd33556b1e88e234140890fded`; `iq_avx2_rows.inl`: SHA-256 `94da07f977ef20288d65747604f9c3a7a87cba3237f36d216dbb624bddd9be23`.
+- `include/strata/kernels/cpu/pool.hpp` records `MAXT=8` through its included `expert.hpp`; `ExpertJobMulti` token pointers are arrays of that size. `ExpertPool` worker count is currently hardcoded to five in the calibration fixture.
+- Closed NT1 22/20 calibration remains actual host-resident weights with synthetic activations. It had 192 train plus 192 disjoint holdout IDs and per-phase cohort weight extents above 64 MiB, with total 384 selected blobs 756,940,800 bytes. NT1 component samples remain an NT1-only control; its pool fit gates failed. R206/R211/R213 do not supply NT2–4 service, real activation service, an effective CPU roof or physical RAM traffic.
+
+Earlier reports consulted to avoid repeating their findings: R46 protocol; R77/R78 host-only harness admission and correction; R81/R82 fixture/source review and first-cell limits; R206 hardware/work-count boundary; R211 production GEMM contract; R213 NT1-only CPU roof and NT gap; R215 worker CPU-time insertion contract; R217 logical extent versus physical traffic. Their original statuses and claims are not changed by this report.
+
+## Exact production work and implementation selected
+
+The inspected pack pair is H=2560, FF=640. One distinct GU22/Down20 expert blob has:
+
+| Work component, per expert and token | GU22 / IQ2_S | Down20 / IQ4_NL |
+|---|---:|---:|
+| Output rows | 640 gate + 640 up | 2,560 |
+| Input values per output row | 2,560 | 640 |
+| Packed row-blocks | 10 blocks × 82 B per row; two matrices | 20 blocks × 18 B per row |
+| Logical packed weight extent | 1,049,600 B per job | 921,600 B per job |
+| Dense-equivalent MAC convention | 3,276,800 × NT per job | 1,638,400 × NT per job |
+| Result/intermediate | 640 SwiGLU floats × NT | 2,560 FP32 floats × NT |
+
+Dense-equivalent MACs normalize the mathematical dot workload. They are not instruction counts or a FLOP roof. GU also does 640 sigmoid/SiLU products per token. The per-expert Down-input quantizer processes 640 FF values per token into 680 bytes of Q8_0 data; it is a separate phase and scales with NT. Input activation quantization into the GU activation type is once per layer/token, outside this fixture’s expert-call intervals. Keep these terms separate.
+
+At default `STRATA_IQ_MT_MIN=2`, GU type 22 NT1 reaches GGML's single-token `vec_dot` loop, which processes Gate and Up rows for each token. For NT≥2, a supported AVX2 worker selects `NativeDispatch::Iq256`; if the ISA/format gate fails or `STRATA_NO_IQ256` is set, it falls back to GGML. The concrete IQ2_S custom path decodes packed 82-byte blocks into grid values, signs and scales, then reuses that decode across each grouped token's Q8_K activation dot. The implementation has per-token activation loads, signed-byte/multiply-add accumulation and per-token floating accumulation; grouping amortizes parts of codebook/sign/scale decode, not the dot product or the complete weight operand extent. Gather versus non-gather IQ2_S decode is selected separately by the compiled kernel/runtime setting and may be core-sensitive; record the actual setting and dispatch variant without forcing a different setting.
+
+For Down20, NT1 uses GGML's single-token `vec_dot`. NT≥2 uses the custom `Iq4nl256` AVX2 path when AVX2 is available, `STRATA_NO_IQ4NL` is absent, and the NT threshold is met; otherwise it falls back to GGML. The grouped kernel decodes each 18-byte IQ4_NL block's packed nibbles through a lookup/shuffle and prepares absolute weights once per block; for every token it reads its Q8_0 activation values and performs signed-byte dot products, integer reduction and FP accumulation. Again the packed-weight decode is shared over tokens but the per-token dot work remains. NT3 and NT4 are explicit specializations, not the generic NT>4 chunk fallback.
+
+This source gives concrete operation classes, not a counted instruction schedule. Exact instruction/uop count, gather latency, register allocation/spills, cache misses and worker service by NT require a matching emitted-binary audit or measurement. No dense-FMA arithmetic peak can answer the native IQ service question.
+
+## What an NT3/4 fixture admission change needs
+
+A narrowly scoped follow-on fixture version needs to:
+
+1. Accept NT=1,2,3,4 and grow every per-token storage in `LayerInput` and `Buffers` from two to four: float inputs, quantized GU inputs, FF outputs/references/expected values, Down quantized inputs/refs/expected, Q2 placeholders if retained, output/reference/expected rows, and the pointer arrays passed to the kernels. Keep the separate `ExpertJobMulti::act/out/nact[MAXT]` contract as-is. Audit all loops and bound checks, not just the CLI comparison.
+2. Keep the same exact 384 22/20 selected weights and provenance, per-cohort >64 MiB GU/Down extent, and <1 GiB total blob cap. The existing cohort geometry already exceeds those floors; no larger or duplicated raw weight capture is required. The existing `work(384)` and expert batch size (`BATCH=1|6`) describe expert jobs per round and must not be confused with NT, tokens per expert.
+3. Generate four distinct finite token input vectors per layer; quantize all four once outside timing and verify each meaningful packed input against the selected GGML quantizer. Preserve exact source/build/ISA/environment metadata, especially `STRATA_IQ_MT_MIN`, `STRATA_NO_IQ256`, `STRATA_NO_IQ4NL`, `STRATA_IQ256_GATHER`, `STRATA_IQ_PREFETCH`, and the compiled IQ AVX-VNNI setting. Record separate GU and Down actual selected dispatch for each NT and confirm worker-local path where core-sensitive variants matter.
+4. Add a real numerical oracle for every NT token and expert before timing. Retain the existing exact NT1 byte checks. For NT2–4, compute independent GGML Gate/Up rows, SwiGLU, quantize those reference FF values using the production activation quantizer, then compute independent GGML Down rows. Compare custom outputs to this independent full reference with **predeclared** per-phase/per-NT absolute and relative/normalized error thresholds chosen by the model owner from existing numerical contract evidence; report worst case and distribution, and fail on any threshold breach. The current `ggml_reference` reports `fd` and `od`, but for Down it quantizes the production FF, not the reference FF, and has no NT>1 threshold. Thus it is useful diagnostic attribution, not an independent full-chain NT2–4 oracle. If owner-approved thresholds are unavailable, mark the new NT numerical admission incomplete; do not use repeat equality as a substitute or invent thresholds from timing data.
+5. Continue exact production quantizer meaningful-byte checks, finite outputs/intermediates, untouched row/activation guards, repeat checksum and direct-vs-pool output partition/equality checks for all four tokens. Check independent reference tolerances across both disjoint cohorts, not only the pool result. Preserve the NT1 exact branch as a control.
+6. Use untimed correctness-only admission on a fresh process and preserve a complete normal exit before timing, as in the previous fixture protocol. The calibration process remains host-only and non-inference; no model/serve claim follows.
+
+Source-level NT1/2/3/4 support is not proof that every `nt` routes to that grouped branch in a live request. A future same-request production histogram must supply actual NT counts by format, phase and worker/path before those service cells are weighted into a serving estimate. The prior task-6 route patterns reported NT1/2 but no NT3/4 for the sampled patterns; that establishes absence in those samples only, not zero NT3/4 for the current workload.
+
+## Smallest useful no-PMU capacity/scheduling comparison
+
+Use one frozen cell—GU22/Down20, NT1–4, same selected expert IDs, same compile flags and same CPU affinity—then compare two weight-residency geometries and a small worker sweep. Treat this as characterization, not candidate adoption:
+
+- **Hot weight set:** choose eight exact selected expert blobs from the 15 eligible pair layers. Their combined full blob bytes are about 15 MiB, below the 32 MiB L3 nominal capacity, leaving room for codebooks, activations, outputs and runtime data. Reuse the same eight blobs for repeated rounds after warmup. Call this “intended L3-fit,” not proof every byte is cache-resident.
+- **Streaming set:** reuse the already frozen 192-ID train/192-ID holdout cohorts, each with >64 MiB GU and >64 MiB Down logical weight extent (more than 2× the nominal L3). Shuffle the fixed IDs per round as in R46. Call it “host-resident streaming beyond nominal L3,” not cold RAM or a DRAM byte count.
+- **Direct-service arms:** measure GU, FF quantization, Down and a complete serial call per expert/token-group at NT1/2/3/4, using same weights and deterministic inputs. Report per-job and per-token results separately; do not divide full service by NT and call it per-request service. Use at least the established 25 full-corpus timing rounds per train/holdout and bootstrap over rounds, not over expert IDs. Preserve all individual rounds and correctness outcomes.
+- **Pool scaling arms:** for the streaming set, replay the same homogeneous expert batch and NT mix through `ExpertPool` with 1, 2, 4 and 5 workers plus its host participant, keeping batch size and row-task factor fixed. The fixture currently hardcodes five workers, so a measurement-only fixture extension must expose actual worker count and audit each worker's singleton CPU placement; setting `TASKS=0|6` alone changes row-task partitioning while leaving five workers and the host, and is not worker scaling. Optionally compare the existing 6/18 task granularity only after the worker-count contrast, and keep those effects distinct. Repeat the same sweep on the hot set only if the streaming result leaves scheduling versus data-residency ambiguous.
+
+Interpretive limits without PMU: if NT2–4 reduce direct per-token service relative to NT1 in both intended-L3-fit and streaming cells, that supports the source's shared-decode mechanism for this CPU/build. If streaming service degrades more with worker count than hot service, shared-cache or memory-system pressure is plausible; if only pool phase wall/tail changes with worker count while direct service stays stable, scheduling/partition/worker-tail effects are plausible. These patterns do not prove instruction-bound versus latency-bound versus bandwidth-bound behavior. Thread CPU time versus wall time from the R215 diagnostic can separate scheduled CPU service from descheduling/wait/tail; without admitted PMU/uncore counters it still cannot distinguish cache-hit latency, DRAM latency, physical bandwidth saturation, or instruction throughput. Do not infer a CPU roof from packed logical bytes divided by nominal/spec bandwidth.
+
+For the serving decision, the calibration needs to be joined to the same clean actual request’s format/NT/job histogram and worker active/wait/tail spans; CPU phase spans remain nested host wall durations, not exclusive service or additive decode latency. If NT3/4 are absent in the qualified request, report their service cells as shape capability only, not as weighted current-route contribution.
+
+## Source references
+
+- Frozen `src/kernels/cpu/native_expert.cpp`: `native_gu_mt_min`, `native_gu_dispatch`, `native_gu_rows`, `native_down_dispatch`, `native_down_rows`.
+- Frozen `src/kernels/cpu/iq_avx2.cpp`: IQ2_S block decode (`Fmt32<22>`/gather variant) and NT-specialized GU dispatch.
+- Frozen `src/kernels/cpu/iq_avx2_rows.inl`: `row_dot`/`gu_rows`, IQ4_NL `iq4nl_rows<NT>` and NT1–4 switch cases.
+- Frozen `include/strata/kernels/cpu/expert.hpp`, `pool.hpp`: `MAXT=8`, fixed per-token job/output storage.
+- Frozen `sycl/tools/native-service-calibration/native_service_calibration.cpp`: current NT1/2 CLI gate and `[2]` arrays; reference, quantizer, repeat and pool gates.
+- Closed evidence: R46 (sample/uncertainty protocol); R82 (22/20 cohort feasibility and homogeneous pool limits); R206 (nominal hardware vs unmeasured CPU/RAM ceilings); R211/R213 (production geometry and NT1-only calibration); R215 (thread CPU vs wall and worker scaling boundaries); R217 (logical extents are not physical RAM bytes).
+
+No new external performance claim is needed here: the pinned production source already exposes the NT1 versus grouped decode distinction. Neither NT3/4 numerical service, current route frequency, worker scaling, nor a CPU architectural ceiling is measured by this audit.
