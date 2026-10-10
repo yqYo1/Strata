@@ -1,0 +1,55 @@
+# R156 — IQ4_NL specialization phase ownership
+
+Date: 2026-10-10 (Asia/Tokyo). Read-only source/link/admission audit of fixed WPROBE 609a270daac23c9b1a26d26ec092b2f60d2da335. No source edit, build/compiler/disassembly, test/runtime/model payload, GPU/profiler, Git, lock, cleanup, service, or reset operation was performed. This is a source-level proposal boundary, not implementation or performance evidence.
+
+## Finding
+
+R151's type-20 IQ4_NL flat/down specialization is active in the native MoE prefill path at one direct call site: sycl/src/prefill/prefill.cpp:4783. The helper itself is a public general kernel API, linked in strata_kernels. Putting an environment-controlled type-20 branch inside that public helper would make the behavior process-global for every present/future direct caller, including bench/diagnostic callers, and would make the public routine's generic behavior depend on a prefill tuning variable. Current source does not show a production decode call to iq_dequant_f16 for type 20, but retaining that separation is the safer and smaller contract.
+
+The bounded seam is a prefill-only private call path, selected only at the existing native down-dequant call when the opt-in is explicitly enabled and f.d_type==20. Keep public iq_dequant_f16 unchanged and continue using it for every other type and every other phase. The private type-20 kernel must call the existing dq_iq4_nl and store_run unchanged, with the same 32-lane group, n/256 group count, offsets, input checks, fp16 capability check, queue, and error boundary. Do not specialize gate/up, alter admission or fallback, add a buffer, or change DQ ring reuse.
+
+## Linked path and all helper uses
+
+The linked SYCL build resolves iq_kernels.cu to iq_kernels.dp.cpp and includes it in the strata_kernels static library (sycl/CMakeLists.txt:71-90, 249-273). Its public declaration is include/strata/kernels/iq_kernels.hpp:29; the implementation of iq_dequant_f16 validates n%256 and is_iq(t), checks fp16 capability, submits the generic dequant_flat_kernel with one 32-work-item group per 256 values, then calls check() (sycl/src/kernels/cuda/iq_kernels.dp.cpp:4292-4317). The flat kernel sends the runtime type to dq_dispatch, whose type-20 arm is the existing dq_iq4_nl implementation (2721-2762). This public function accepts many formats, so the narrow candidate must not replace its general contract.
+
+Current direct references within the fixed SYCL tree:
+
+- Production native MoE prefill: prefill.cpp:4781-4783 calls iq_dequant_gu_f16 for GU and iq_dequant_f16 for Down, only inside the lay.native branch. The loaded layout/type checks and this caller's shapes are upstream of the helper. This is the only current direct production prefill type-20 call.
+- Generic f16 matrix conversion: dequant_bf16.dp.cpp:302-310 has a wrapper that calls iq_dequant_f16 only for iq_only(t)={16,17,18,21,22,29}. It excludes 20. Gemm::native in gemm.dp.cpp:891/896 calls dequant_f16, including from prefill dense/native projections (prefill.cpp:1534,2085,3536); this wrapper does not route type 20 into the public IQ helper. Thus changing iq_dequant_f16 globally does not currently select type 20 through this dense conversion seam.
+- Embeddings and native head: iq_embed_rows uses the generic float-output dq_dispatch kernel; native_head.cpp calls iq_dequant_f32. Neither calls iq_dequant_f16.
+- Expert cache preload: layer-major preloads compressed expert blobs into layer_cache; it does not call iq_dequant_f16. The active ordinary prefill computes the selected expert down matrix through the direct site above.
+- Nonproduction direct callers: sycl/src/kernels/dequant_bench.cpp and xmx_gemm_bench.cpp call iq_dequant_f16 for their own cases. A public-helper environment branch would affect them too if they run in a process where the flag is set. Other parity tools exercise related f32 or generic conversion APIs, not this type-20 production path.
+
+So this screen does not find a current type-20 decode/embedding/cache-preload invocation of the helper. The ownership risk is API-wide opt-in behavior, unrelated tools, and future callers; it is not a claim of a presently active type-20 decode call. The prefill-only seam avoids that ambiguity.
+
+## Smallest prefill-owned seam
+
+Use a build option that defaults OFF, for example STRATA_SYCL_PREFILL_IQ4NL_DEQUANT, and an opt-in runtime setting that defaults OFF. Keep the new internal declaration out of the public iq_kernels.hpp API; expose a narrowly named out-of-line private symbol from iq_kernels.dp.cpp to prefill.cpp, such as iq_dequant_f16_prefill_iq4nl. At the existing call site:
+
+- If the build and runtime opt-ins are both on and the already validated lay.native expert has f.d_type==20, call the private IQ4_NL entry point.
+- Otherwise call the existing public iq_dequant_f16 exactly as today.
+- Do not let the private helper become a new general format dispatcher; it accepts only type 20 and the same valid flat-input geometry. A non-20 call must be rejected before launch.
+- Preserve the current GGUF/native expert admission and generic blob fallback unchanged. This is only a call-site choice after those existing decisions.
+
+Parse the runtime value strictly (unset/0 = off; 1 = on; malformed values return an error) and freeze the result for the Prefill instance before its run submits work. Do not silently treat malformed opt-in as off. Perform all existing format/shape/capability checks before launching either arm. Once a specialized command is submitted, surface its asynchronous failure through the current queue/error path; do not retry the generic kernel after submission because the specialized command may have partially written the DQ slot.
+
+Keep CMake feature definitions private to the two implementation targets that need them: strata_prefill for its caller branch and strata_kernels for the optional private implementation. Do not conditionally change an inline definition in the public header or expose a target-private macro through a public inline API; different macro values across translation units could create inconsistent definitions/ODR hazards. With the option OFF, the prefill call remains the existing public helper and there is no extra workspace, DQ slot, allocation, or change to default resource layout. If the goal also excludes extra device code in the default binary, compile the private specialization only under the corresponding strata_kernels private definition and ensure the paired target option controls both targets together.
+
+No changes are in scope to dq_iq4_nl math, nibble order, output store, flags/rounding, GU dequant, native format admission, generic fallback, GEMM dimensions, or the existing two-slot DQ ownership. The existing call writes the down weights to dq_d[j%DQ] on m.cs; preserve its queue position and do not let that slot be reused before the already queued GEMM consumes it. This specialization adds no scratch or persistent weight cache.
+
+## Cold-code and measurement discriminator
+
+The CMake toolchain uses -fsycl-device-code-split=per_kernel (sycl/CMakeLists.txt near lines 63-70); its comment records a prior first-launch image cost in the prompt path, not a measurement for this candidate. Intel's compiler reference defines per_kernel as one device module per SYCL kernel ([device code split option](https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2024-0/fsycl-device-code-split.html)); Intel's optimization guide states that per_kernel JIT is paid on first use and later invocations are warmer ([JIT compilation](https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2023-2/just-in-time-compilation.html)). A new specialized kernel therefore needs its first-use/module/JIT time recorded separately from warm repeats. Do not fold cold setup into a steady-state dequant claim or assume it is negligible.
+
+After a separate implementation authorization, use paired generic-vs-specialized tests on the same selected native-IQ3_S workload and type-20 down matrices. Establish per-layer f.d_type and call counts first; isolate dequant kernel/event duration without inserting per-call waits into the production schedule; report first use, warmed calls, aggregate dequant time, MoE time, and whole prefill separately. Compare every FP16 output bit against the generic path before timing conclusions. Keep the timing and byte-hash runs separate to avoid validation synchronization changing the schedule. A specialization that is not observed or whose warm gain is within variation should be dropped. This is only a measurement plan; no speed, cold JIT cost, or adoption result is asserted.
+
+## Pins and prior scope
+
+Fixed WPROBE: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-gate-factor-probe-20261010, HEAD 609a270daac23c9b1a26d26ec092b2f60d2da335.
+
+- sycl/src/kernels/cuda/iq_kernels.dp.cpp SHA-256 22c2fb9c379804c2fc20ae302be05ad0f1c66bc623c6134bd7822057ffbba13a
+- sycl/src/kernels/cuda/dequant_bf16.dp.cpp SHA-256 af62aba821491b6b1e1f52325736be6b01c2fbbb612b402a94e9b03a8624b79b
+- sycl/src/prefill/prefill.cpp SHA-256 f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77
+- sycl/src/prefill/gemm.dp.cpp SHA-256 11a2c943ccc323c328b58d99119d77b3b4ed95c92a0f680480bf5ede96bcb705
+- sycl/CMakeLists.txt SHA-256 5911b38ff78b7d185ffd92ee34d0360f272e003b558ae7a3fa0707a1e684f9b6
+- R148 proposes the broad runtime format-switch removal; R151 narrowed it to type-20 flat/down only. R156 adds phase ownership and build/runtime admission, not another numerical decoder proposal.

@@ -1,0 +1,5 @@
+# Parallel research and corrected timing admission
+
+Returned R154–156 were read in full and originals retained.263 reports are now reviewed. Independent R154 found missing loader-debug admission in the new32K timer; root corrected it before compilation (5ab8ab0a). Timer still unbuilt/unrun at this boundary. The old six-route component parity proof remains separate. Source has balanced per-sample arm order, so original handoff odd-repeat imbalance note is corrected separately.
+
+R155 compact GPU-map transfer remains conditional on actual numerical parity and grouping hotspot evidence; the GDN timer cannot establish that hotspot. R156 proposes a private prefill-only type20 dequant seam preserving the public helper and resource layout; unimplemented/unmeasured. Root continues build/test qualification while R157 finite-domain and R158 profiler investigations run read-only with distinct scopes. Future assignments must share this newest committed registry and past reports; actual agent status must be inspected at resume. No performance/adoption/model/full-physical262144 claim is made.
