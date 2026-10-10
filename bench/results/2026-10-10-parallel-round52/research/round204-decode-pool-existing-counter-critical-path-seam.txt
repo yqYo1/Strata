@@ -1,0 +1,78 @@
+# R204 — Decode-pool counters: existing critical-path seam and output checks
+
+Date: 2026-10-10 (Asia/Tokyo). Read-only audit of the frozen v0.1.41 decode-pool phase-timing source, existing closed diagnostic receipts, CLI/build proof, and round 51 root corrections. Only this report was written. No source edit, build, test, model/GPU/profiler run, device/live-process inspection, Git operation, cleanup, or service action was performed.
+
+## Decision
+
+The shipped pool code already times the three useful native multi-token pool spans: gate/up (GU), feed-forward activation quantization (FF-quant), and Down. R204 confirms the counter semantics from source and an already closed four-request task-6 diagnostic. These are host elapsed spans around serial phases, not worker CPU-time sums or SIMD-only durations. GU/Down spans include pool synchronization and scheduling; GPU work can overlap them. FF-quant is the serial caller-thread pass between those worker phases.
+
+The phase values give a first view of the decode pool, with no per-worker instrumentation. They cannot split the separate `123.7767 ms` CPU-dispatch counter into exclusive CPU busy time, worker wait, and dispatch overhead. The measured spans do not form a disjoint partition of that number: in the four-request task-6 diagnostic the per-window GU + FF-quant + Down totals are 153.823, 153.161, 156.265 and 160.918 ms, while the fresh-first host-counter mean for `CPU` dispatch is 123.7767 ms/window. Treat these as distinct observed scopes pending a precise runtime join; do not subtract or force them to reconcile.
+
+Root correction to R203 also stands: native-copy-on has an established fresh-first decode regression in the closed 32K workload. Across six paired independent processes, first-64 decode is -7.9851% vs baseline (95% CI [-12.8063%, -2.8972%]) and -5.8660% vs native-copy-off ([-10.1665%, -1.3596%]). Restored decode has a separate CI that crosses zero. Do not carry that restored result over to fresh-first decode.
+
+## Existing timing boundaries from the frozen source
+
+The frozen source tree is `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009`, source commit `7d0105f2a942ac72ca20fef69d4c2e7960653de3`. The relevant active implementation files are `src/kernels/cpu/pool.cpp`, `sycl/src/core/expert_source.cpp`, and `sycl/src/program/generate.cpp`. There is no `expert_pool.cpp` file in this frozen tree; `ExpertPool` methods are in `pool.cpp`.
+
+For native multi-token decode, `expert_pool_dispatch_multi` starts a host dispatch sequence. In `expert_source.cpp`, `c0-c1` covers plan/cache/routing setup and any associated setup/submission; `c1-c2` covers input activation quantization where CPU misses need it; `c2-c3` prepares the CPU expert jobs; `c3-c4` calls the CPU pool and completes remote/peer work. The request `CPU` counter is `ms_run` from `c3` to `c4`, the host elapsed duration of this callback portion. It is not a sum of CPU core-time and can include waits and work whose GPU counterpart runs concurrently.
+
+Within `ExpertPool::run_split_multi_native`, each batch is ordered as GU pool phase, serial FF-intermediate quantization, then Down pool phase. The `ms_multi_gu`, `ms_multi_q`, and `ms_multi_down` counters take `steady_clock` differences around those phases. GU and Down call `run_phase`, which performs `wait_parked`, publishes/starts the batch, lets workers and optionally the host thread drain tasks, waits for task completion, then waits for workers to park again. The corresponding elapsed values therefore include barrier, dispatch, host-drain and scheduling time around the task body. They are not per-worker time. The `ms_multi_q` interval is the serial `native_quant_h`/Q2 activation quantization of the FF intermediate that feeds Down. It differs from `drive.d.ms_actq`, which measures input activation quantization earlier in `expert_source.cpp` (`c1-c2`).
+
+The code emits no per-worker elapsed-time sums, claimed-task distribution, per-task work amount or split between barrier wait and task execution in these counters. `--pool-tasks 6` fixes a task partition count; it does not expose how many tasks each worker claimed. The regular `phase_ms()`/drain telemetry is another path and does not break down the native multi-token GU/Down barriers.
+
+`STRATA_DECODE_TIMING=1` snapshots request-start and request-end counters. Its `strata decode timing:` line reports request windows, physical request/window time, verifier wait/pool/host/stage, dispatch plan/input-actq/jobs/CPU, commit/emit, draft and route counts. The R204 source change prints one additional `strata decode CPU pool phases:` line from request deltas: GU, FF-quant, Down milliseconds per completed window, and packed expert-blob bytes submitted per window. The built diagnostic uses the existing request gates and phase timers; it adds no worker clocks. Zero-window requests get request deltas and no per-window rate.
+
+Those reports are not an additive wall-time equation. In particular:
+
+- `CPU` dispatch is an outer host callback elapsed interval; it is not equivalent to active CPU busy time.
+- GU and Down are host phase spans that include pool barriers and overlap GPU work. They are not GPU kernel time, kernel service, or a sum of worker durations.
+- FF-quant is serial caller-thread work between the pool phases. It is distinct from the earlier input `actq` counter.
+- GPU-reach wait, stage, host callback, pool phase spans and request/window wall can be nested or concurrent. Do not add them to derive a critical path.
+- `packed expert-blob submitted bytes` is logical packed blob extent submitted to CPU work, not measured DRAM reads, cache misses, or bandwidth.
+- Do not interpret GU + FF-quant + Down as an exclusive decomposition of `CPU`, `per-layer host`, `verify`, or request wall. The diagnostic values themselves show that equality fails.
+
+## What the closed receipts establish
+
+**Task-6 phase diagnostic.** `owned-decode-pool-phase-timing-v0141-code32k-tasks6-diagnostic-r1/record.json` (SHA-256 `e770766de708a5ab8842b4aa3ea80a6d1453765059e8b7816e36aed09331148c`) records a completed, healthy, math-gate-passing four-request fresh-32K A/B/A/B diagnostic with 64 visible outputs, first logits and live-state/MTP comparisons. The measured `--pool-tasks 6` task partition is a diagnostic setting; result is explicitly not performance eligible, not full-lifecycle qualified, and not adopted. The per-request pool line records:
+
+| Request | Verify windows | GU ms/window | FF-quant ms/window | Down ms/window | Submitted bytes/window |
+|---|---:|---:|---:|---:|---:|
+| A-read0 | 23 | 111.743 | 0.389 | 41.691 | 2,989,110,539.13 |
+| B-read1 | 26 | 111.869 | 0.675 | 40.617 | 3,008,642,953.85 |
+| A-read2 | 23 | 113.595 | 0.349 | 42.321 | 2,989,110,539.13 |
+| B-read3 | 26 | 116.660 | 0.360 | 43.898 | 3,008,642,953.85 |
+
+This establishes that the existing phase buckets execute, are reported by request, and respond to the task-6 route. It does not establish typical clean serving latency, a baseline-auto comparison in this diagnostic, full physical 262,144 context, or a candidate performance/adoption result.
+
+**Fresh-first versus restored route outcome.** `native-copy-decode-repeat-v0141-summary-v1.json` (SHA-256 `26303e7fdba8f21fb781d898e571b7b33584517e84b8d5fa5870919c551b89e0`) reports six independent paired process blocks. Fresh-first here means the first 64 generated tokens following a fresh 32,768-input prompt; its 32,767 actual batched positions are below the current 32,768-actual-batched-position comparison floor. Fresh-first baseline was 3,803.65 ms (16.826 tok/s), native-copy-on 4,138.58 ms (15.464 tok/s), with paired on-vs-baseline speed change -7.9851%, 95% CI [-12.8063%, -2.8972%]. On-vs-off was -5.8660%, CI [-10.1665%, -1.3596%]. This is evidence of a fresh-first regression under that workload, separate from restored continuation decode.
+
+Restored continuation uses an already restored 32,831-position state plus one input token, 64 generated tokens, and a distinct MTP acceptance profile. Its native-copy repeat comparison has a CI crossing zero. Keep fresh-first and restored rows separate; neither is a direct CPU-pool phase profile.
+
+**Existing first-decode host counters.** `native-copy-decode-repeat-v0141-first-decode-host-counter-summary-v1.json` (SHA-256 `8298f791b79ed64578cf529135cce4e0706905bee6f6db76fa37a2e00dc6559d`) describes the same six-process fresh-first host timing. Baseline means are 165.3783 ms/window physical wall, 150.96 ms verify, 2.7633 ms GPU-reach wait, 124.4467 ms per-layer host, 123.7767 ms CPU-dispatch subcounter, 3.23 ms stage, 6.805 ms commit/emit, and 7.6117 ms draft. These fields are host-observed intervals/counters, some nested or overlapping. The 123.8 ms value prioritizes dispatch/pool inspection, but cannot be called 123.8 ms of exclusive CPU compute. This summary has no GPU timestamps.
+
+**Build, source, and CLI proof.** Source review `decode-pool-phase-timing-v0141-source-review-v1.json` (SHA-256 `d58482d3fa6d8dbe55d3f672a2142862e07c32b465bcc7a9ffcc1bd2efb9325f`) is source-only proof that removing the diagnostic restores the compared original generate source byte-for-byte; it is not a run result. The CPU-only private build receipt `decode-pool-phase-timing-v0141-private-build-v2/record.json` (SHA-256 `3632b1514544ef2dd89046c112b823c75a27d0215aca2fce58c4b8df9e43d7f8`) records successful compile of target `strata`, with no GPU run or adoption. Uniform build flags are verified across 115 compiled objects from 114 distinct sources (`decode-pool-phase-timing-v0141-uniform-build-flags-v1.json`, SHA-256 `a85a6bd9e93c3d35a5596831ad888e57a657d79713bd28da6dc708d91ed6bc24`). CLI validation (`decode-pool-phase-timing-cli-validation-v1.json`, SHA-256 `99c95ae009337bec49b3b2c79f5959c88b182a9bdc66f297e32cc76bafd61103`) checks all 19 parser/help cases against the inherited tasks CLI and says no model/GPU was opened. These receipts qualify source/build/CLI provenance, not phase-counter correctness for all workloads or model speed.
+
+## Bounded root-run output assertions
+
+The existing instrumentation is sufficient for a first bounded comparison. If the root chooses to consume it, retain fresh-first and restored decode as separate request classes, with their own request boundaries and output/status records. No source or counter change is needed for the first pass.
+
+For every request that completes successfully, require exactly one matching `strata decode timing:` line and exactly one matching `strata decode CPU pool phases:` line in its captured stderr. Match each line to the controller’s explicit request name/ordinal; do not infer the request boundary from adjacency alone. Assert that both lines report the same completed verification-window count. If it is zero, require the explicit zero-window form, preserve raw deltas and do not divide by zero. For a positive window count, parse finite nonnegative GU, FF-quant, Down and submitted-byte-per-window fields; preserve the raw line and exact window denominator. Require the independent correctness/MTP/state gate and successful request completion before accepting either timing line as evidence.
+
+For the broader request comparison, retain actual batched input-position count, generated-token count, context/restored-state identity, MTP path/acceptance, task setting, effective environment, binary/source hashes, per-request wall/decode result, failure and math status. Keep six paired process blocks and fresh-first/restored sample sets separate if estimating an intervention effect. A phase line by itself has no clean performance status. Never assert that the three phase values sum to CPU dispatch or request wall, never calculate an exclusive CPU share from the ratio, and never infer a worker-level bottleneck from GU/Down duration alone.
+
+Interpret the first pass as a discriminator:
+
+- Large GU/Down phase-wall values with modest physical request impact leave GPU overlap and barrier/queue tail unresolved; they do not by themselves justify a kernel rewrite.
+- A large FF-quant span is a concrete serial host interval to compare against physical window outcomes, but its contribution may still be hidden by GPU work.
+- A high CPU-dispatch host interval with small plan/actq/jobs components concentrates attention on the pool callback. The present counters still cannot say how much was task computation, sleeping/spinning, host participation or worker imbalance.
+- Per-worker timings/counts or a task-work histogram are a later discriminator only if this existing phase output leaves a specific question open. Such instrumentation would be a new diagnostic intervention and should be evaluated separately for timing perturbation.
+
+## Exact limits
+
+Existing counters can separate the elapsed host span of GU, the serial FF-intermediate quantization loop, and Down pool phase, without adding per-worker instrumentation. They cannot decompose the `123.8 ms` CPU-dispatch counter into exclusive worker compute, caller-thread work, wait/barrier, or imbalance; they do not report each worker’s task claims/work, and do not measure GPU timestamps. The closed phase diagnostic is one task-6 four-request 32K diagnostic, not a production baseline comparison. The fresh-first decode regression is from a separate six-process whole-request candidate comparison and cannot be assigned to these pool phase values. The next precise gap is a paired, actual-batched-position-qualified model comparison that captures both existing per-request pool phase lines and clean physical fresh-first/restored outcomes under identical routing/state; only if those receipts leave worker imbalance or wait exposure ambiguous is per-worker instrumentation warranted.
+
+## Evidence pins
+
+Latest committed catalog supplied by the owner: `research-20261009/report-registry-v74.json`, 310 reports / 217,725 bytes, SHA-256 `10c8793079654b0555b6e9ff46198b32077aaed82577af2ae7b42645104274ff`. Round-51 `root-review-corrections.json` was read first (SHA-256 `7f495338c36fc3b8adde195a89525d1c39efd3aa471ca603957bf08fbe8fc77b`); its R203 correction is incorporated above. Archived round-51 compact evidence is under `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round51`, storage commit `d2b52eeda20761383d12513109e654f5b8215d52`.
+
+Frozen source hashes: `src/kernels/cpu/pool.cpp` SHA-256 `f789078f1e14b6cf72bec5cacc2802d358ad82cbd7bf890f344a4a4a32158611`; `sycl/src/core/expert_source.cpp` `3109bfa4a54cf64f7cf7088fc510370dd49d25d628349324873c8030f52ee028`; `sycl/src/program/generate.cpp` `8bb78a21e3cbb9f03e40db3699d056225181e9ebb638d7eea04fadb41d852ced`. Cataloged neighboring measurement plan: `decode-pool-phase-critical-path-round7.txt`, SHA-256 `a53b1849b16d11a59260b1d9e65ed0feb875cd582be47245d11b1d9da125a90c`; it is a source/measurement plan, not another runtime profile.
