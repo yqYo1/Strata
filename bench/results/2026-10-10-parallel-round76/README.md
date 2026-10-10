@@ -1,0 +1,1 @@
+R259 reviews the CPU reference overflow witness and precision repair without attributing model or driver failures. R260 specifies a bounded decode ownership/NT/accepted-row census. Root separately completed actual GPU IQ capacity; current whole-model critical path is still pending.
