@@ -53,4 +53,4 @@ prefillでは実際のchunk/layer/形式/kernel分岐、expertごとの行数、
 
 実行経路の集計はdefault offの診断で、clean timingとは分ける。ONとOFFの32K数値比較は通った。GEMMだけの追加診断も全66live状態・head・出力が一致して正常終了したが、101個のevent時刻でsubmitがstartより後だったため時間集計を棄却した。矛盾した時刻からボトルネックやFLOPSを推定しない。[元receiptと棄却理由](../2026-10-10-gemm-clock-rejection/RESULTS_JA.md)。
 
-全startup後のfree1565 MiBには既存8K workspaceが含まれている。16Kへのaccounted増分1672.5 MiBはこの残量を超え、512 MiBの余裕も必要になる。まず通常chunk-majorの固定12Kを確認する。増分836.25 MiB、条件付き残量728.75 MiBだが、実際の選択とallocation・全数値を検証してから比較する。新しい候補のphysical262144検証とclean throughput比較は未実施で、採用した最適化はない。元receiptを変更していない。
+全startup後のfree1565 MiBには既存8K workspaceが含まれている。16Kへのaccounted増分1672.5 MiBはこの残量を超え、512 MiBの余裕も必要になる。通常chunk-majorの固定12Kを実行し、選択12288・実残量729 MiBでallocationは通った。ただしheadと63/66 live状態、出力が8K参照と異なりstrict数値照合を棄却した。品質劣化率と原因は未確定で、速度を理由に採用していない。[結果](../2026-10-10-fixed12k-chunk-major/RESULTS_JA.md)。新しい候補のphysical262144検証とclean throughput比較は未実施で、採用した最適化はない。元receiptを変更していない。

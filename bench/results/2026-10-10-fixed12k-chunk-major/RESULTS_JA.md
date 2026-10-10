@@ -1,0 +1,9 @@
+# 固定12Kの通常chunk-major検証
+
+同じsource/binaryでprefill8192から12288だけを変更し、cache128、KV32768、pool5、context capacity262144を保持した。起動時に12288が実際に選択され、VRAMの空き729MiBで512MiBのadmission余裕を満たした。32768位置の入力、32767位置のbatched prefix、64token出力を完了してnormalexit0。新しいxe障害なし、所有プロセスは終了。
+
+8K参照とのstrict数値照合は不合格。headの248320float全てが異なり、maxabs0.8735668659、RMS0.1801613686。最初のgreedy top1は一致したが出力index2から異なり、MTPは38/75対41/66。live stateは63/66partで異なり、PLE historyとblock positionsは一致した。layer-majorを使っていない今回も、以前の12K記録と同じhead差・MTP値だったため、layer-major/leaseだけを原因にはできない。最初のchunk/layer差は最終stateから未特定。旧・今回のfailed receiptは変更しない。
+
+これで実際のallocation fitは確認できたが、品質劣化率、原因、clean performance、physical262144 lifecycleは未確認で、採用していない。低精度の保存方式はuserが許容するnearzero品質劣化を別の比較で評価する。意図的な量子化にbyte一致を要求しない一方、このstrict照合の結果を後からPASSに変えない。
+
+次の独立比較はユーザー指定XeStrata39bdadcc。ghqで別repositoryとして取得し、rootmainを変更せずworktreeでpristine contrib-icpx buildを作る。rawfork>=32K比較の後、優れた変更だけを評価して取り込む。
