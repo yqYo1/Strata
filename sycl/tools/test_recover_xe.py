@@ -129,14 +129,31 @@ class RecoveryTests(unittest.TestCase):
     def test_health_rejects_faults_even_after_exact_pass(self):
         binary = self.directory / 'probe'; binary.write_text(''); binary.chmod(0o755)
         runner = types.SimpleNamespace(output=self.directory, stranded=False)
+        # These spellings occurred in one failed post-fault integer probe.
+        # Exact returned data must not hide the driver's timeout/reset path.
+        failures = [
+            'Engine reset',
+            'Timed out wait for G2H, fence 26233, action 3003, done no',
+            'GuC PC query task state failed: -ETIME',
+            'Check job timeout: seqno=1042947, guc_id=0, not started',
+            'Schedule disable failed to respond, guc_id=0',
+            'trying reset from guc_exec_queue_timedout_job [xe]',
+            'reset queued', 'reset started', 'reset done',
+            'Timedout job: guc_id=0, flags=0x73 in no process [-1]',
+        ]
         def run(label, argv, **kwargs):
             return {'health-runtime': '', 'before-health-cursor': '-- cursor: cursor-1\n',
                     'health': 'PASS 0000:05:00.0: 3 rounds, 16384 exact words each\n',
-                    'health-kernel': 'xe 0000:05:00.0: GT0 Engine reset\n'}[label]
+                    'health-kernel': 'xe 0000:05:00.0: GT0 ' + message + '\n'}[label]
         runner.run = run
         with patch.object(recovery.os, 'geteuid', return_value=1000):
-            with self.assertRaisesRegex(recovery.RecoveryError, 'new xe'):
-                recovery.check_health(self.device, runner, binary)
+            for message in failures:
+                with self.subTest(message=message):
+                    with self.assertRaisesRegex(recovery.RecoveryError, 'new xe'):
+                        recovery.check_health(self.device, runner, binary)
+            # A clean interval remains admitted by the same full check.
+            message = 'job complete; queue idle'
+            recovery.check_health(self.device, runner, binary)
         self.assertTrue((self.directory / 'health-xe.txt').exists())
 
     def test_missing_adapter_dependency_stops_before_gpu_probe(self):

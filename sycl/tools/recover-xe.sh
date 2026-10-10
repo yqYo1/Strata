@@ -21,7 +21,10 @@ import time
 
 BDF_PATTERN = re.compile(r"^[0-9a-f]{4}:[0-9a-f]{2}:[0-9a-f]{2}\.[0-7]$")
 FAULT = re.compile(r"page fault|fault response|timestamp stuck|wedg|engine reset|gt reset|"
-                   r"guc.*(?:timeout|timed out|failed)|memory.*cat|device.*lost", re.I)
+                   r"guc.*(?:timeout|timed out|failed)|memory.*cat|device.*lost|"
+                   r"Timed out wait for G2H|Check job timeout|Timedout job|"
+                   r"Schedule disable failed to respond|trying reset|"
+                   r"\breset (?:queued|started|done)\b", re.I)
 
 
 class RecoveryError(RuntimeError):

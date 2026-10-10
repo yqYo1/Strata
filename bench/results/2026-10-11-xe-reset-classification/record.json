@@ -1,0 +1,83 @@
+{
+  "active": false,
+  "completed": true,
+  "passed": true,
+  "gpu_executed": false,
+  "recovery_executed": false,
+  "model_executed": false,
+  "source_sha256": {
+    "sycl/tools/recover-xe.sh": "51f5ba140613ae6ee81905eeeea153243a6a41742488ac161d76bad241944457",
+    "sycl/tools/test_recover_xe.py": "ba6c23c85aae089a1e800ff7e138753bd015213a72c106bcd58731dec18e4fbd"
+  },
+  "controller_sha256": "f56f94e1993a05cd2ab98e42797e7c0162feaf5f4d5f202255b7e85f7bdcbb08",
+  "started_utc": "2026-10-10T16:45:35.641519+00:00",
+  "commands": [
+    {
+      "label": "unit-tests",
+      "argv": [
+        "/usr/bin/python3",
+        "sycl/tools/test_recover_xe.py"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:45:35.641881+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2995009,
+          "start_ticks": 34041475,
+          "sid": 2995009,
+          "pgid": 2995009
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 340414.754772296,
+      "pid": 2995009,
+      "spawn_return_monotonic": 340414.756412017,
+      "direct_identity": {
+        "pid": 2995009,
+        "state": "R",
+        "ppid": 2994965,
+        "pgid": 2995009,
+        "sid": 2995009,
+        "start_ticks": 34041475,
+        "rss_bytes": 573440
+      },
+      "peak_session_rss_bytes": 23289856,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:45:36.195718+00:00",
+      "elapsed_seconds": 0.5535883670090698,
+      "logs": {
+        "unit-tests.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "unit-tests.stderr": {
+          "bytes": 117,
+          "sha256": "5eb2c2949a9670ac2b18fc99016cdd7d957f401051bade291b5ae35d295c22d7"
+        }
+      }
+    }
+  ],
+  "unittest_summary": "..................\n----------------------------------------------------------------------\nRan 18 tests in 0.342s\n\nOK\n",
+  "replay": {
+    "original_sha256": "7d83b26c2bf260004e83d1c3bab81fe6b73d67a419b763cea458a26d25937ea6",
+    "kernel_entries": 199,
+    "original_regex_matches": 1,
+    "updated_regex_matches": 192,
+    "reset_started_matches": 32,
+    "scope": "existing failed interval replay only; no new live fault/health test"
+  },
+  "finished_utc": "2026-10-10T16:45:36.212981+00:00"
+}

@@ -1,0 +1,5 @@
+GPUの整数チェックが一致していても、同じkernel journal区間にXeのjob timeout、G2H timeout、schedule-disable失敗、reset queued/started/doneがあればhealthを失敗にする。既存のengine reset表記だけではこれらを列挙できなかった。
+
+CPUの既存回復テスト18件と実際に観測した10表記の個別拒否、正常区間の許可がPASS。保存済みの失敗区間199件を再分類すると旧分類1件に対して新分類192件、reset started32件を検出。これは古い失敗記録の再生であり新GPU動作の検証ではない。旧記録は整数16,384個一致・exit0だがkernel gate FAILEDのまま。32組のresetログは独立したhardware reset counterではない。
+
+ソース変更はhealthログ分類とCPUテスト。対象GPUのreset/rebind、サービス変更、ダンプ消去は実行していない。既存測定のhelper/source hashと失敗statusは変更しない。今後の診断controllerはこのhelperの新hashを固定して別途CPU資格を得る。
