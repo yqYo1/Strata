@@ -1,0 +1,30 @@
+{
+  "created_utc": "2026-10-10T00:15:39.756138+00:00",
+  "source_commit": "cd353f30a47dfd42818aace6f464bd227084e779",
+  "instrumented_only": true,
+  "clean_timing_or_model_adoption": false,
+  "complete_normal_exit": true,
+  "no_owned_survivors": true,
+  "visible_kernel_gpu_entries": [],
+  "journal_observation_limit": "User-visible journal only; absence of visible entry is not comprehensive driver proof",
+  "rows": 192,
+  "fresh_processes": 2,
+  "recorded_pairs_per_process": 1,
+  "warmup_pairs_per_process": 2,
+  "full_state_and_guarded_outputs_bitwise": true,
+  "digests_repeat_across_every_pair_and_process": true,
+  "diagnostic_clock_definition": "Host preparation/query/submit intervals are distinct from backend command start/end. Async operations overlap: no addition/subtraction for wait decomposition. No event timestamps compared to host clock.",
+  "warm_admission_ms": [
+    0.591963,
+    0.640633
+  ],
+  "quad_recurrence_ms": [
+    118.194687,
+    147.328852
+  ],
+  "legacy_recurrence_ms": [
+    67.831565,
+    45.465835
+  ],
+  "conclusion": "Host admission alone cannot explain this observed diagnostic slowdown; recurrence device duration is larger in both orders. Exact reason for order effect, spill cost, cache/residency/power remains unproved. Diagnostic compile-on is not clean baseline timing. Earlier ten-pair quiet rejection remains unchanged."
+}
