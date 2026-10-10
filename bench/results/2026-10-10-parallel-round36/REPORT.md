@@ -43,3 +43,8 @@ R133 and R134 are fully reviewed and preserved unchanged, completing ten two-inv
 R134 independently narrows R132's verifier-only claim: native multi-token CPU routing is verifier-window work, while optimized prefill can group T*K prompt rows and execute supported native IQ experts on GPU when its opt-in/layout/device gates hold. General drive_pool refusal cannot establish all-prefill refusal. No observed32K route or new CPU candidate is inferred from that source reachability. Original reports remain unchanged, with scope corrections separate.
 
 Main work remains serialized numerical/build/runtime ownership and tuning decisions; subsequent read-only scopes target concrete owner-controller reuse and this optimized native GPU path. No GPU/model ran in this report batch.
+
+
+## Reviewed follow-ups v58
+
+R135/R136 returned and were read in full. R135 identifies real missed reparented children and incomplete timeout/finalizer records in the older ownership references. Root implemented a narrow owner for the direct primitive process: pidfds, same-SID discovery, unreaped leader PID anchoring, finite resource/output/wall limits, separate signal/reap/session/observation results and exact environment. Five CPU-only checks passed for normal0, preserved nonzero2, deadline, output limit and a reparented child that changes process group. The helper and receipt are the next runtime protocol evidence; GPU remains unrun at this boundary. R136 finds no distinct format-preserving native-IQ GPU factor in the screened leads; source reachability is not a measured hotspot.

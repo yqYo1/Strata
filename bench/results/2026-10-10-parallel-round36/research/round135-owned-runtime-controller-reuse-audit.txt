@@ -1,0 +1,88 @@
+# R135 — owner-controller reuse audit for the GDN probe first run
+
+Date: 2026-10-10. Static-only source/controller review. No execution, compiler, build, test, runtime, GPU query, profiler, model/payload, Git action, source edit, cleanup, or active output read was performed. This is not runtime supervision or device qualification evidence.
+
+## Pinned evidence
+
+- Controller reference snapshot manifest: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-source-snapshots/gdn-owned-controller-reference-v1/manifest.json`, 283 bytes, SHA-256 `856d164cfe4f1fdd6d2593bba80c5aa6e2a241c6ed034d4083996f456c653eef`.
+- `run_gdn_quad_quiet_gates_v1.py`: 16,399 bytes, SHA-256 `320e5f39c8140b9612828d632107adda49e7387cc87f68bcdada47d05e454e58`.
+- `build_iq2s_timing_v2.py`: 9,192 bytes, SHA-256 `cbd98b28266a2b04b67adb7a1fb7127174f916f0999fedee813ff1466507f73d`.
+- Committed owner protocol `wave09-and-owner-protocol.json`: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round36/wave09-and-owner-protocol.json`, SHA-256 `d327d89c36ddb57369dcc9c049d15e69868687e9ba17cd75d2d617efa369a01a`.
+- Probe root-v4 immutable source manifest: SHA-256 `4b488ae17f57bf791594af87dcd93485f00704d10d0cd3d8c2459125a0585f6f` (C++ source `90ea82156b8be58aa59d64c1c0cf70552f5e2cdc0a47c91a6cf81a238711bfc9`).
+
+## Recommendation
+
+Reuse the controller’s ownership primitives, not either complete workload script. The GDN first run is one directly launched probe process with the driver JIT in-process; there is no model server, strace wrapper, profiler or explicit helper process in the probe source. A minimal controller can therefore launch the exact executable directly, put it in a fresh session, pin its PID/start_ticks with a pidfd, monitor same-session members for unexpected descendants, apply the proposal’s bounded limits and logs, and require normal exit plus the complete probe receipt. Do not inherit the GDN controller’s many host/GPU arms, 1,800-second total/96-MiB output budget, or global worktree/service checks. Do not inherit the build runner’s build steps or broader 600-second/16-MiB policies.
+
+For this exact single-process JIT run, direct-PID supervision is the primary ownership contract. A same-session scan is a small containment check for accidental child processes; it also catches children that change process group or are reparented while retaining the session ID. Nothing in the assigned probe path justifies command-name sweeps, systemd/service recovery, strace, profiler processes, a machine-wide kill, or cgroup setup. If evidence later shows a helper deliberately creates a new session, stop and review a stronger containment design before running; do not guess by killing unrelated processes.
+
+## Reference-controller behavior and concrete adaptation risks
+
+### PID and descendant ownership
+
+`run_gdn_quad_quiet_gates_v1.py` parses `/proc/<pid>/stat` after the final `)` and records PID, PPID, `start_ticks`, state and RSS (`:15–19`), opens a pidfd and rechecks `start_ticks` before registering (`:46–51`), and sends signals through stored pidfds (`:62–71`). This is a sound identity pin for each registered process and avoids signaling a later process that reused the PID.
+
+Its descendant finder, however, starts from a `/proc` snapshot and recursively accepts only rows whose current PPID is already owned (`:52–61`). It does not check SID/PGID. Consequently it can miss a child that changes groups (not session) only if PPID discovery also misses it; more concretely, once the original process exits/reaps, a child reparented to init/subreaper no longer has an owned PPID and is not found. If a child changes session before a scan, a PPID scan might find it while parentage remains, but after reparenting it cannot. The termination path calls `discover()` once, sends TERM then waits only for the direct `Popen` child, then signals the currently discovered live set with KILL; it does not rediscover between TERM and KILL (`:63–71`). A newly forked/reparented child can survive these scans. This is immaterial for the intended direct probe if the in-process JIT remains in-process, but it is not a generic descendant proof.
+
+`build_iq2s_timing_v2.py` uses `start_new_session=True`, records the direct process start tick/PGID (`:49–51`), and `session_members(sid)` scans `/proc` by SID while recording PID/start_ticks/PGID/RSS (`:13–20`). This catches a same-session child that changes PGID or is reparented. It does not catch a descendant that calls `setsid()` and leaves the session; there is no such expected child in this probe. It also does not open per-descendant pidfds: cleanup sends signals by PGID (`:86–100`). For the GDN adaptation, use the direct-child pidfd from the first controller and the narrow SID membership scan from the second, revalidating every member’s PID/start_ticks before registering a pidfd. Require same-session emptiness at process return. This gives the PID reuse protection and reparent/group-change check needed here without a global process-name policy.
+
+Both controllers create a new session (`run_gdn :80`; `build_iq2s :50`). This is appropriate for the direct target and lets the owner distinguish its subprocess session from unrelated jobs. The probe itself creates one SYCL queue and runs its SYCL/Level Zero JIT path in the same process; its explicit source has no subprocess API. This is source evidence about the probe, not a guarantee that an uninspected driver never forks.
+
+### Return status, timeout and cleanup receipt
+
+Both reference `run()` functions poll a direct child and treat its return code and absence of owned members as separate success conditions (`run_gdn :82–88`; `build_iq2s :52–58`). Preserve that distinction. The GDN probe prints terminal pass before `main` returns; R128/R133 establish that only observed normal exit 0 plus full receipt establishes a clean run. Destructors run after the terminal line; a cleanup failure can still turn the process into abnormal/nonzero termination. In addition, `_Exit(2)` on any submitted-stage exception intentionally skips unwinding, and neither process termination nor a supervisor signal proves in-flight GPU work completed or was canceled.
+
+There is a material record gap on the GDN controller timeout path. `run()` records exit status, elapsed time and stdout/stderr hashes only after the poll loop completes normally (`run_gdn :86`). A wall-deadline assertion escapes to outer `except`; termination occurs later in `finally`, but no final child return code/signal, timeout timestamp, partial log byte counts/hashes, or per-attempt signal outcome is added to the command record. Cleanup entries record successful pidfd signal sends only (`:63–71`). The build controller likewise only sets command exit status after normal poll completion (`build_iq2s :57`), although it records cleanup members and signal labels in `finally` (`:86–100`). Adaptation should record the timeout cause before signaling, each owner PID/start_ticks and signal attempt/result, `Popen.wait()` result/return code after termination, elapsed wall, exact stdout/stderr sizes/hashes (even partial), remaining same-session identities, and `termination_complete` separately from child exit. A missing wait result or survivor means incomplete/unknown, never a pass.
+
+On a timed-out or `_Exit(2)` probe, record the last observed stage and preserve the designated failure diagnostic. Mark GPU completion/state unknown. Do not rerun on the same endpoints, claim cancellation, reset/rebind a device, or invoke service recovery. For an identity refusal before any submitted stage, or an ordinary fully drained numerical failure, retain the original nonzero result and parseable error rather than calling it a timeout. The controller must never convert exit 1/2, signal termination, timeout, output truncation or missing terminal receipt into success.
+
+### Resource and output bounds
+
+The GDN reference’s policy is broad for this first run: total deadline 1,800 s, per-stage wall 60–600 s, child `RLIMIT_AS=64 GiB`, `RLIMIT_CPU=900/901 s`, `RLIMIT_FSIZE=64 MiB`, `RLIMIT_NOFILE=512`, controller-polled owned RSS 12 GiB, and combined output budget 96 MiB (`:42`, `:73–85`). Those settings do not instantiate the current protocol proposal. The build reference is smaller but still a build policy: 600 s total, `AS=12 GiB`, `CPU=300/301 s`, `FSIZE=128 MiB`, `NOFILE=256`, RSS 8 GiB, and text 16 MiB (`build_iq2s :41, :47–58`).
+
+For the one probe process use the narrower values already proposed in `wave09-and-owner-protocol.json`: wall 120 s; per-process AS 16 GiB; CPU 120/121 s; per-file `RLIMIT_FSIZE` 4 MiB; `NOFILE=256`; core 0; owned RSS 2 GiB; combined stdout/stderr text 8 MiB. Apply rlimits in the child before exec; use parent monotonic wall time and periodic RSS/text checks as independent limits. Track exactly the direct child and any owned same-session process identities, not all system RSS. Because the probe is one process, aggregate process limits are a defensive ceiling; if an unexpected child exists, include its RSS and resource/termination state or fail closed. Include receipt/journal files in the controller’s own bounded artifact budget; child `RLIMIT_FSIZE` does not limit parent-written records. The source output is finite and small, but the controller’s external caps still matter for driver diagnostics and partial output.
+
+The parent controller’s output-budget polling can overshoot its nominal cap by one polling interval plus write/record time; retain a hard per-file FSIZE cap and use short poll intervals. If an output limit is hit, preserve the nonzero/signal/partial-log status; absence of a terminal record is not a pass. Persist receipt updates atomically as the GDN reference does (`record.json.tmp` then replace, `:43–45`), and bound the parent-owned record itself. These are concrete run guards; there is no need to add a special logger inside the numerical probe.
+
+### Exceptions during discovery, stop and finalization
+
+The GDN controller catches `FileNotFoundError`, `PermissionError` and `ProcessLookupError` in `identity()` as if a process were absent (`:15–19`), but other `OSError`s can escape. `discover()` catches only `ProcessLookupError` from `register()` (`:58–60`); `pidfd_open`/signal permission or resource errors can escape. `stop()` catches only `ProcessLookupError` around `pidfd_send_signal`, and silently ignores `TimeoutExpired` from both direct-child waits (`:63–71`). Its `finally` begins with an unguarded `discover()` and `live()` (`:164–167`), then performs an unguarded final `save()` before closing pidfds (`:174–175`). A `/proc`, signal, wait or disk exception there can suppress the final record and skip explicit FD closes. Additionally, `finally`’s outer pin checks are guarded, but not the cleanup preceding them (`:168–173`).
+
+The build controller similarly has a fragile finalizer: `session_members` catches only file/process disappearance (`:13–20`); after KILL, its second `proc.wait(timeout=5)` can raise `TimeoutExpired` (`:94–99`); `killpg` catches only `ProcessLookupError`; and the final direct `record.json` write can fail (`:100`). These are relevant to reuse because a supervision exception must not disappear the final status.
+
+Minimal hardening for the GDN one-run controller:
+
+1. Make each process-table scan return either a complete observed set or an explicit scan error. Missing/inaccessible `/proc` data must not be silently counted as “no survivor”; record `ownership_status=unknown` and fail the clean gate.
+2. Catch/record `OSError`, `PermissionError`, `ProcessLookupError`, `TimeoutExpired`, and other cleanup exceptions around each identity registration, signal, wait and finalizer step. Continue later cleanup attempts when safe. Keep “signal requested,” “signal syscall succeeded,” “direct child reaped with status,” and “session empty” as separate fields.
+3. Nest final save/FD-close attempts in a last-resort `finally`. If saving fails, emit a bounded controller-side error to the supervisor’s stderr and leave the existing record’s `complete=false`; never mark `active=false/complete=true` when child/session state is unresolved. Controller failure itself is a failed/incomplete observation.
+
+This is the minimum justified hardening; there is no need to reproduce the reference’s full recursive PPID registry for a no-helper, one-process run if the same-session audit and direct pidfd are used.
+
+### Exact probe receipt and environment binding
+
+Bind the run record to root-v4 source/CMake snapshot, the fresh executable hash and build/compile/link/JIT receipt, the exact child environment, exact command, launch PID/start_ticks/session ID, start/end UTC, monotonic elapsed/deadline, rlimits and owner-polled RSS/output peaks. Parse exactly one complete `IDENTITY`, all three `IDENTITY_ENV` lines before any `CASE`/`STAGE`, the ordered 15 lengths, 75 stage markers, 15 `CASE_PASS`, 7,970,640 comparisons, three equal full-8K hashes, one final `TERMINAL,pass`, no failure/async/error markers, and normal child exit 0 plus an empty owned session. Never accept a marker without the exit/session gates.
+
+R133 found that probe `IDENTITY_ENV` rendering replaces commas/non-ASCII with `_`, and a literal set value `unset` is indistinguishable from absence. The controller already knows the exact `env` mapping passed to `Popen`; preserve the allowlisted effective values losslessly in its own receipt (and set/unset state), rather than treating those three sanitized stdout values as the only environment record. Any refusal or output/receipt failure remains nonzero. Do not put unrelated parent secrets into the record; construct and record the explicit launch environment.
+
+## Kernel journal: use a bounded cursor interval, preserve unavailable status
+
+`run_gdn_quad_quiet_gates_v1.py` launches `journalctl -k --since <started_utc> --no-pager` only after its entire multistage run (`:158–161`), then filters output. That timestamp starts before multiple unrelated host/GPU phases and is not a strict cursor; it can include unrelated kernel messages. The command is limited to a 30-second stage but still uses the broader 64-MiB per-file and 96-MiB total budget. Its code treats successful empty/nonmatching stdout as no visible fault and does not make journal readability/cursor availability a distinct result field.
+
+For one first-run probe, capture the kernel-journal cursor before launching/submitting the probe, then read only records after that cursor once the owned process has exited. Keep the cursor, interval timestamps, command status, bounded output size/hash, and whether relevant records were observed. If journal access, cursor capture, or bounded retrieval fails, store `journal_status=unavailable/partial` and `fault_status=unknown`; never claim “no new driver fault.” The arithmetic run’s process result and fault-evidence availability should be separate fields. Do not retain a successful full journal dump; record its compact status and follow the artifact-retention rule. A new cursor/interval is a small necessary addition, not a reason to run broad tracing or inspect old journal history.
+
+## Minimal controller shape
+
+For a future root-owned first run, the justified path is: lock the private run slot; verify source/build/environment identities; prepare bounded output files and child rlimits; capture cursor; launch the probe binary directly with a controlled, recorded environment and `start_new_session=True`; pin the direct PID/start_ticks with pidfd; poll monotonic deadline, exact child identity, same-session member set, RSS and aggregate bytes; collect both process output and post-cursor journal interval; strictly validate output plus exit code and empty session; write final record with complete/unknown states; close all pidfds and release lock. No strace, model service, profiler, compiler subprocess, reset or recovery step is needed in this run.
+
+If normal exit is 0 but a descendant remains, record failure and own/terminate only that session’s verified identities before finalizing. If a timed-out/failed submitted stage is terminated, preserve one representative diagnostic and state that GPU completion is unknown. If the journal is inaccessible, keep the process result distinct but do not report a clean-fault interval. An inability to observe is data, never evidence of absence.
+
+## Source/controller limitations
+
+The v57 protocol lists the proposed limits as “awaiting source/controller review, not observed enforcement,” and says no GPU execution occurred. This audit only reviews the immutable controller prototypes and source handoff. It does not prove any limit is enforced in root’s future controller, that `/proc`/pidfd/journal access works in the current session, that the driver stays healthy, or that a run passed. R128’s USM/async contract remains controlling: a timeout/signal or `_Exit(2)` does not prove queue completion or safe device-side cancellation.
+
+## References
+
+- Immutable reference controller source and hashes: `run_gdn_quad_quiet_gates_v1.py` (`:15–20, :42–88, :158–176`) and `build_iq2s_timing_v2.py` (`:13–20, :38–58, :84–102`) in the pinned snapshot above.
+- Committed one-run limits and required ownership/journal/parser gates: `wave09-and-owner-protocol.json`, whose values remain proposals until enforced/observed.
+- Probe async/USM completion and timeout semantics: R128 `round128-gdn-probe-async-source-admission.txt`.
+- Exact PCI receipt/startup order and lossy environment formatting: R133 `round133-exact-pci-source-admission.txt`.
