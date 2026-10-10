@@ -1,0 +1,1 @@
+R293–R298を全文確認した。CPU IQ2_S GU NT1の限定dispatchが移植候補。grouped GEMMのproduction shape/boundsは整合し、ring8要求がXeでは16へclampされる差を記録する。LOGPOSはbatched prefillの独立品質検証には不十分。compiled generatorとroot mirrorを区別し、buildのみのreceiptから後続runtimeが未実行とは推論しない。補正はregistry107のroot_review_corrections_round84に記録、原報告は維持した。R299/R300は別scopeで継続。

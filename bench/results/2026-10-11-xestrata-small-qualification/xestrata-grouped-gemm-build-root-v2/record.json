@@ -1,0 +1,1870 @@
+{
+  "active": false,
+  "passed": true,
+  "complete": true,
+  "gpu_executed": false,
+  "model_executed": false,
+  "started_utc": "2026-10-10T15:04:22.899149+00:00",
+  "controller": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/build_xestrata_grouped_qualifier_v2.py",
+    "bytes": 4555,
+    "sha256": "9e07ce2e6d8b6a4e8c885270d4b6e8a0a12a6b0aad34fd0728642736f17d8751"
+  },
+  "source": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-qualifier-v1/qualify_grouped.cpp",
+    "bytes": 14072,
+    "sha256": "61184b7acc758ef84ece9e341ab7d48c38dc17ce80f13d41d2d662af57ec2b10"
+  },
+  "owner": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-pristine-icpx-build-root-v1/build_owner.py",
+    "bytes": 10387,
+    "sha256": "da37d448cc14450ea4d151a90ada780cae5139cafbd21df3727a0bfd5c2058c8"
+  },
+  "libraries": [
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_kernels.a",
+      "bytes": 12371454,
+      "sha256": "d38b1d88990b74779ae3dcaef1d8ea83bf7e99dc72591ab32c59ac26a068f096"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_core.a",
+      "bytes": 480958,
+      "sha256": "8218a6d74a60ea5b96cb5f1d482968e06342f5d59dd4aaa5a0e7c022e9c0d88c"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_ngram.a",
+      "bytes": 166932,
+      "sha256": "26f5b880ed81b59c16be209e115e8fea2089010427670916ffdeeb6ba8b9e348"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_platform.a",
+      "bytes": 29346,
+      "sha256": "d32d71059c93ad89a72c64c1ffa27e163b8fb50e2ae20d27adffbf106c14f22d"
+    }
+  ],
+  "commands": [
+    {
+      "label": "build",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-std=c++20",
+        "-O3",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsycl",
+        "-foffload-fp32-prec-div",
+        "-foffload-fp32-prec-sqrt",
+        "-I/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/include",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-qualifier-v1/qualify_grouped.cpp",
+        "-Wl,--start-group",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_kernels.a",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_core.a",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_ngram.a",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_platform.a",
+        "-Wl,--end-group",
+        "-pthread",
+        "-Xspirv-translator",
+        "--spirv-ext=+SPV_KHR_integer_dot_product",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:04:22.899756+00:00",
+      "wall_seconds": 600,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2572036,
+          "start_ticks": 33434201,
+          "sid": 2572036,
+          "pgid": 2572036
+        },
+        {
+          "pid": 2572038,
+          "start_ticks": 33434201,
+          "sid": 2572036,
+          "pgid": 2572036
+        },
+        {
+          "pid": 2572058,
+          "start_ticks": 33434209,
+          "sid": 2572036,
+          "pgid": 2572036
+        },
+        {
+          "pid": 2572258,
+          "start_ticks": 33434465,
+          "sid": 2572036,
+          "pgid": 2572036
+        },
+        {
+          "pid": 2572453,
+          "start_ticks": 33434754,
+          "sid": 2572036,
+          "pgid": 2572036
+        },
+        {
+          "pid": 2572473,
+          "start_ticks": 33434759,
+          "sid": 2572036,
+          "pgid": 2572036
+        },
+        {
+          "pid": 2572480,
+          "start_ticks": 33434773,
+          "sid": 2572036,
+          "pgid": 2572036
+        },
+        {
+          "pid": 2572539,
+          "start_ticks": 33434794,
+          "sid": 2572036,
+          "pgid": 2572036
+        },
+        {
+          "pid": 2572574,
+          "start_ticks": 33434817,
+          "sid": 2572036,
+          "pgid": 2572036
+        },
+        {
+          "pid": 2572595,
+          "start_ticks": 33434822,
+          "sid": 2572036,
+          "pgid": 2572036
+        }
+      ],
+      "pid": 2572036,
+      "direct_identity": {
+        "pid": 2572036,
+        "state": "R",
+        "ppid": 2571994,
+        "pgid": 2572036,
+        "sid": 2572036,
+        "start_ticks": 33434201,
+        "rss_bytes": 454656
+      },
+      "peak_session_rss_bytes": 370429952,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:04:29.449278+00:00",
+      "elapsed_seconds": 6.5491779040312394,
+      "logs": {
+        "build.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "build.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "cpu-GU-1",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped",
+        "--role",
+        "GU",
+        "--case",
+        "1",
+        "--cpu-preflight"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:04:29.450305+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2572624,
+          "start_ticks": 33434856,
+          "sid": 2572624,
+          "pgid": 2572624
+        }
+      ],
+      "pid": 2572624,
+      "direct_identity": {
+        "pid": 2572624,
+        "state": "R",
+        "ppid": 2571994,
+        "pgid": 2572624,
+        "sid": 2572624,
+        "start_ticks": 33434856,
+        "rss_bytes": 131072
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:04:29.607897+00:00",
+      "elapsed_seconds": 0.15725271101109684,
+      "logs": {
+        "cpu-GU-1.stdout": {
+          "bytes": 116,
+          "sha256": "14a6a337ba644684d262f00a21b46b401d09fd576bc16150c9520fbf9eb5654d"
+        },
+        "cpu-GU-1.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "cpu-GU-127",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped",
+        "--role",
+        "GU",
+        "--case",
+        "127",
+        "--cpu-preflight"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:04:29.608169+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2572631,
+          "start_ticks": 33434872,
+          "sid": 2572631,
+          "pgid": 2572631
+        }
+      ],
+      "pid": 2572631,
+      "direct_identity": {
+        "pid": 2572631,
+        "state": "R",
+        "ppid": 2571994,
+        "pgid": 2572631,
+        "sid": 2572631,
+        "start_ticks": 33434872,
+        "rss_bytes": 315392
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:04:29.767737+00:00",
+      "elapsed_seconds": 0.1591550559969619,
+      "logs": {
+        "cpu-GU-127.stdout": {
+          "bytes": 122,
+          "sha256": "9f78e6762157807f748753905d9ff1e04c28ad78b54f48484436c49960b97e54"
+        },
+        "cpu-GU-127.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "cpu-GU-128",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped",
+        "--role",
+        "GU",
+        "--case",
+        "128",
+        "--cpu-preflight"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:04:29.767998+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2572636,
+          "start_ticks": 33434888,
+          "sid": 2572636,
+          "pgid": 2572636
+        }
+      ],
+      "pid": 2572636,
+      "direct_identity": {
+        "pid": 2572636,
+        "state": "R",
+        "ppid": 2571994,
+        "pgid": 2572636,
+        "sid": 2572636,
+        "start_ticks": 33434888,
+        "rss_bytes": 131072
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:04:29.938411+00:00",
+      "elapsed_seconds": 0.16998258203966543,
+      "logs": {
+        "cpu-GU-128.stdout": {
+          "bytes": 122,
+          "sha256": "d2fb761ac94fe6c2cd50fb53f6bb7c4a4942aa1f637007bbce92799f97349e0f"
+        },
+        "cpu-GU-128.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "cpu-GU-129",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped",
+        "--role",
+        "GU",
+        "--case",
+        "129",
+        "--cpu-preflight"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:04:29.938676+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2572643,
+          "start_ticks": 33434905,
+          "sid": 2572643,
+          "pgid": 2572643
+        }
+      ],
+      "pid": 2572643,
+      "direct_identity": {
+        "pid": 2572643,
+        "state": "R",
+        "ppid": 2571994,
+        "pgid": 2572643,
+        "sid": 2572643,
+        "start_ticks": 33434905,
+        "rss_bytes": 315392
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:04:30.112305+00:00",
+      "elapsed_seconds": 0.17319331399630755,
+      "logs": {
+        "cpu-GU-129.stdout": {
+          "bytes": 122,
+          "sha256": "19b0d1c1c3c5705966120a6db656414f0fe95e5f56a79e532de5675123522fc7"
+        },
+        "cpu-GU-129.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "cpu-GU-257",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped",
+        "--role",
+        "GU",
+        "--case",
+        "257",
+        "--cpu-preflight"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:04:30.112686+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2572658,
+          "start_ticks": 33434922,
+          "sid": 2572658,
+          "pgid": 2572658
+        }
+      ],
+      "pid": 2572658,
+      "direct_identity": {
+        "pid": 2572658,
+        "state": "R",
+        "ppid": 2571994,
+        "pgid": 2572658,
+        "sid": 2572658,
+        "start_ticks": 33434922,
+        "rss_bytes": 278528
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:04:30.272041+00:00",
+      "elapsed_seconds": 0.15870010800426826,
+      "logs": {
+        "cpu-GU-257.stdout": {
+          "bytes": 122,
+          "sha256": "4e03bfea0beabf88e3917cc9569a109d046edc895d28861d6b02eae45530a327"
+        },
+        "cpu-GU-257.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "cpu-GU-sparse",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped",
+        "--role",
+        "GU",
+        "--case",
+        "sparse",
+        "--cpu-preflight"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:04:30.272298+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2572669,
+          "start_ticks": 33434938,
+          "sid": 2572669,
+          "pgid": 2572669
+        }
+      ],
+      "pid": 2572669,
+      "direct_identity": {
+        "pid": 2572669,
+        "state": "R",
+        "ppid": 2571994,
+        "pgid": 2572669,
+        "sid": 2572669,
+        "start_ticks": 33434938,
+        "rss_bytes": 131072
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:04:30.430190+00:00",
+      "elapsed_seconds": 0.15726738900411874,
+      "logs": {
+        "cpu-GU-sparse.stdout": {
+          "bytes": 126,
+          "sha256": "d7b4ac244391324d8f000071ee58407b3b210daa68266515c42cd8c0cf91cef9"
+        },
+        "cpu-GU-sparse.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "cpu-GU-empty",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped",
+        "--role",
+        "GU",
+        "--case",
+        "empty",
+        "--cpu-preflight"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:04:30.430507+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2572673,
+          "start_ticks": 33434954,
+          "sid": 2572673,
+          "pgid": 2572673
+        }
+      ],
+      "pid": 2572673,
+      "direct_identity": {
+        "pid": 2572673,
+        "state": "R",
+        "ppid": 2571994,
+        "pgid": 2572673,
+        "sid": 2572673,
+        "start_ticks": 33434954,
+        "rss_bytes": 159744
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:04:30.595771+00:00",
+      "elapsed_seconds": 0.164518853998743,
+      "logs": {
+        "cpu-GU-empty.stdout": {
+          "bytes": 121,
+          "sha256": "19597a936d517cdf4a8e7f7b6ac889a4a2f31eb14cde3800d3f0e53c242300fe"
+        },
+        "cpu-GU-empty.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "cpu-Down-1",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped",
+        "--role",
+        "Down",
+        "--case",
+        "1",
+        "--cpu-preflight"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:04:30.596055+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2572695,
+          "start_ticks": 33434971,
+          "sid": 2572695,
+          "pgid": 2572695
+        }
+      ],
+      "pid": 2572695,
+      "direct_identity": {
+        "pid": 2572695,
+        "state": "R",
+        "ppid": 2571994,
+        "pgid": 2572695,
+        "sid": 2572695,
+        "start_ticks": 33434971,
+        "rss_bytes": 151552
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:04:30.754989+00:00",
+      "elapsed_seconds": 0.15810494596371427,
+      "logs": {
+        "cpu-Down-1.stdout": {
+          "bytes": 118,
+          "sha256": "f972fb398c3f65f8ae2ef9ed498b6afdd7b0f438988e839c892c9177a62745c5"
+        },
+        "cpu-Down-1.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "cpu-Down-127",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped",
+        "--role",
+        "Down",
+        "--case",
+        "127",
+        "--cpu-preflight"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:04:30.755239+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2572700,
+          "start_ticks": 33434986,
+          "sid": 2572700,
+          "pgid": 2572700
+        }
+      ],
+      "pid": 2572700,
+      "direct_identity": {
+        "pid": 2572700,
+        "state": "R",
+        "ppid": 2571994,
+        "pgid": 2572700,
+        "sid": 2572700,
+        "start_ticks": 33434986,
+        "rss_bytes": 151552
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:04:30.928944+00:00",
+      "elapsed_seconds": 0.17303566698683426,
+      "logs": {
+        "cpu-Down-127.stdout": {
+          "bytes": 124,
+          "sha256": "09bb10903b85bc2fe8bcfa80ee4a144987fec55e8117c924f916b5005ed9f4ce"
+        },
+        "cpu-Down-127.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "cpu-Down-128",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped",
+        "--role",
+        "Down",
+        "--case",
+        "128",
+        "--cpu-preflight"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:04:30.929202+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2572711,
+          "start_ticks": 33435004,
+          "sid": 2572711,
+          "pgid": 2572711
+        }
+      ],
+      "pid": 2572711,
+      "direct_identity": {
+        "pid": 2572711,
+        "state": "R",
+        "ppid": 2571994,
+        "pgid": 2572711,
+        "sid": 2572711,
+        "start_ticks": 33435004,
+        "rss_bytes": 290816
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:04:31.086921+00:00",
+      "elapsed_seconds": 0.15697836398612708,
+      "logs": {
+        "cpu-Down-128.stdout": {
+          "bytes": 124,
+          "sha256": "edd9e4f25ab7d58373f039ff5fbe112b374e70a80691a076290b8e8a376e420f"
+        },
+        "cpu-Down-128.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "cpu-Down-129",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped",
+        "--role",
+        "Down",
+        "--case",
+        "129",
+        "--cpu-preflight"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:04:31.087178+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2572715,
+          "start_ticks": 33435020,
+          "sid": 2572715,
+          "pgid": 2572715
+        }
+      ],
+      "pid": 2572715,
+      "direct_identity": {
+        "pid": 2572715,
+        "state": "R",
+        "ppid": 2571994,
+        "pgid": 2572715,
+        "sid": 2572715,
+        "start_ticks": 33435020,
+        "rss_bytes": 151552
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:04:31.250549+00:00",
+      "elapsed_seconds": 0.16263425297802314,
+      "logs": {
+        "cpu-Down-129.stdout": {
+          "bytes": 124,
+          "sha256": "84e3b86c7f3924c9ed97b5d27d3dec866f2c9341d1a93f838e09994a77fbf477"
+        },
+        "cpu-Down-129.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "cpu-Down-257",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped",
+        "--role",
+        "Down",
+        "--case",
+        "257",
+        "--cpu-preflight"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:04:31.250807+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2572722,
+          "start_ticks": 33435036,
+          "sid": 2572722,
+          "pgid": 2572722
+        }
+      ],
+      "pid": 2572722,
+      "direct_identity": {
+        "pid": 2572722,
+        "state": "R",
+        "ppid": 2571994,
+        "pgid": 2572722,
+        "sid": 2572722,
+        "start_ticks": 33435036,
+        "rss_bytes": 131072
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:04:31.406147+00:00",
+      "elapsed_seconds": 0.15455070900497958,
+      "logs": {
+        "cpu-Down-257.stdout": {
+          "bytes": 124,
+          "sha256": "49dd263e4fedd2fc4976a84d70d1a603264deef35cb1e7fbc1979edcd06e66f5"
+        },
+        "cpu-Down-257.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "cpu-Down-sparse",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped",
+        "--role",
+        "Down",
+        "--case",
+        "sparse",
+        "--cpu-preflight"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:04:31.406392+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2572729,
+          "start_ticks": 33435052,
+          "sid": 2572729,
+          "pgid": 2572729
+        }
+      ],
+      "pid": 2572729,
+      "direct_identity": {
+        "pid": 2572729,
+        "state": "R",
+        "ppid": 2571994,
+        "pgid": 2572729,
+        "sid": 2572729,
+        "start_ticks": 33435052,
+        "rss_bytes": 131072
+      },
+      "peak_session_rss_bytes": 9666560,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:04:31.563568+00:00",
+      "elapsed_seconds": 0.15639126702444628,
+      "logs": {
+        "cpu-Down-sparse.stdout": {
+          "bytes": 128,
+          "sha256": "cbc15679aa0d52c2d5c1dcd4d4f95f59c5ecd9cef616af98523a1c52647b6ad7"
+        },
+        "cpu-Down-sparse.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "cpu-Down-empty",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped",
+        "--role",
+        "Down",
+        "--case",
+        "empty",
+        "--cpu-preflight"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:04:31.563826+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2572735,
+          "start_ticks": 33435067,
+          "sid": 2572735,
+          "pgid": 2572735
+        }
+      ],
+      "pid": 2572735,
+      "direct_identity": {
+        "pid": 2572735,
+        "state": "R",
+        "ppid": 2571994,
+        "pgid": 2572735,
+        "sid": 2572735,
+        "start_ticks": 33435067,
+        "rss_bytes": 159744
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:04:31.719142+00:00",
+      "elapsed_seconds": 0.1544753359630704,
+      "logs": {
+        "cpu-Down-empty.stdout": {
+          "bytes": 122,
+          "sha256": "0b83a1c3f93a6260e2e4932da0bee5cd25c9cc79d1d20a282589e380d39f33ea"
+        },
+        "cpu-Down-empty.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "negative-0",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped",
+        "--cpu-preflight"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:04:31.719393+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2572768,
+          "start_ticks": 33435083,
+          "sid": 2572768,
+          "pgid": 2572768
+        }
+      ],
+      "pid": 2572768,
+      "direct_identity": {
+        "pid": 2572768,
+        "state": "R",
+        "ppid": 2571994,
+        "pgid": 2572768,
+        "sid": 2572768,
+        "start_ticks": 33435083,
+        "rss_bytes": 131072
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 2,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:04:31.876255+00:00",
+      "elapsed_seconds": 0.1559833079809323,
+      "logs": {
+        "negative-0.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "negative-0.stderr": {
+          "bytes": 127,
+          "sha256": "20ddaaf8e3a8c9464e724881e2db9988c065fcb253b622d32ac7b4297fe2034c"
+        }
+      }
+    },
+    {
+      "label": "negative-1",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped",
+        "--cpu-preflight",
+        "--cpu-preflight"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:04:31.876505+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2572773,
+          "start_ticks": 33435099,
+          "sid": 2572773,
+          "pgid": 2572773
+        }
+      ],
+      "pid": 2572773,
+      "direct_identity": {
+        "pid": 2572773,
+        "state": "R",
+        "ppid": 2571994,
+        "pgid": 2572773,
+        "sid": 2572773,
+        "start_ticks": 33435099,
+        "rss_bytes": 131072
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 2,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:04:32.044044+00:00",
+      "elapsed_seconds": 0.16664470097748563,
+      "logs": {
+        "negative-1.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "negative-1.stderr": {
+          "bytes": 67,
+          "sha256": "5d29a383101627cc0c2cdafe732ed6a71370cbad76336540d7000f782c524f36"
+        }
+      }
+    },
+    {
+      "label": "negative-2",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped",
+        "--role",
+        "bad",
+        "--case",
+        "1",
+        "--cpu-preflight"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:04:32.044293+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2572784,
+          "start_ticks": 33435115,
+          "sid": 2572784,
+          "pgid": 2572784
+        }
+      ],
+      "pid": 2572784,
+      "direct_identity": {
+        "pid": 2572784,
+        "state": "R",
+        "ppid": 2571994,
+        "pgid": 2572784,
+        "sid": 2572784,
+        "start_ticks": 33435115,
+        "rss_bytes": 131072
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 2,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:04:32.211142+00:00",
+      "elapsed_seconds": 0.1658549720305018,
+      "logs": {
+        "negative-2.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "negative-2.stderr": {
+          "bytes": 72,
+          "sha256": "c2329a4a88791f6f6e5c38baadcff18de8091f8e080f115665438cd837b1b9c2"
+        }
+      }
+    },
+    {
+      "label": "negative-3",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped",
+        "--role",
+        "GU",
+        "--case",
+        "bad",
+        "--cpu-preflight"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:04:32.211385+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2572790,
+          "start_ticks": 33435132,
+          "sid": 2572790,
+          "pgid": 2572790
+        }
+      ],
+      "pid": 2572790,
+      "direct_identity": {
+        "pid": 2572790,
+        "state": "R",
+        "ppid": 2571994,
+        "pgid": 2572790,
+        "sid": 2572790,
+        "start_ticks": 33435132,
+        "rss_bytes": 131072
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 2,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:04:32.391247+00:00",
+      "elapsed_seconds": 0.17841394199058414,
+      "logs": {
+        "negative-3.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "negative-3.stderr": {
+          "bytes": 92,
+          "sha256": "8c487730311b2bbbaa59169f763ba964389aa8bd44e371c238c9c0223aa627cf"
+        }
+      }
+    },
+    {
+      "label": "negative-4",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped",
+        "--role",
+        "GU",
+        "--case",
+        "1",
+        "--role",
+        "GU",
+        "--cpu-preflight"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:04:32.391580+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2572795,
+          "start_ticks": 33435150,
+          "sid": 2572795,
+          "pgid": 2572795
+        }
+      ],
+      "pid": 2572795,
+      "direct_identity": {
+        "pid": 2572795,
+        "state": "R",
+        "ppid": 2571994,
+        "pgid": 2572795,
+        "sid": 2572795,
+        "start_ticks": 33435150,
+        "rss_bytes": 147456
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 2,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:04:32.552181+00:00",
+      "elapsed_seconds": 0.15951740799937397,
+      "logs": {
+        "negative-4.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "negative-4.stderr": {
+          "bytes": 67,
+          "sha256": "582716547cb7c5cb1bc6ba056a1f9fe9bbd53100fbed5f027b6848b017547b26"
+        }
+      }
+    },
+    {
+      "label": "negative-5",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped",
+        "--role",
+        "GU",
+        "--case",
+        "1",
+        "--cpu-preflight",
+        "--cpu-preflight"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:04:32.552409+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2572799,
+          "start_ticks": 33435166,
+          "sid": 2572799,
+          "pgid": 2572799
+        }
+      ],
+      "pid": 2572799,
+      "direct_identity": {
+        "pid": 2572799,
+        "state": "R",
+        "ppid": 2571994,
+        "pgid": 2572799,
+        "sid": 2572799,
+        "start_ticks": 33435166,
+        "rss_bytes": 151552
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 2,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:04:32.715560+00:00",
+      "elapsed_seconds": 0.16204727598233148,
+      "logs": {
+        "negative-5.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "negative-5.stderr": {
+          "bytes": 67,
+          "sha256": "5d29a383101627cc0c2cdafe732ed6a71370cbad76336540d7000f782c524f36"
+        }
+      }
+    },
+    {
+      "label": "negative-6",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped",
+        "--unknown",
+        "--cpu-preflight"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:04:32.715823+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2572808,
+          "start_ticks": 33435182,
+          "sid": 2572808,
+          "pgid": 2572808
+        }
+      ],
+      "pid": 2572808,
+      "direct_identity": {
+        "pid": 2572808,
+        "state": "R",
+        "ppid": 2571994,
+        "pgid": 2572808,
+        "sid": 2572808,
+        "start_ticks": 33435182,
+        "rss_bytes": 151552
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 2,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:04:32.881688+00:00",
+      "elapsed_seconds": 0.1647685049683787,
+      "logs": {
+        "negative-6.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "negative-6.stderr": {
+          "bytes": 65,
+          "sha256": "a95ebf4f8b702e2949aee99893dcb6643abd6dd6a62d37f4059be2676f29fcd3"
+        }
+      }
+    },
+    {
+      "label": "negative-7",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped",
+        "--role",
+        "--cpu-preflight"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:04:32.881917+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2572812,
+          "start_ticks": 33435199,
+          "sid": 2572812,
+          "pgid": 2572812
+        }
+      ],
+      "pid": 2572812,
+      "direct_identity": {
+        "pid": 2572812,
+        "state": "R",
+        "ppid": 2571994,
+        "pgid": 2572812,
+        "sid": 2572812,
+        "start_ticks": 33435199,
+        "rss_bytes": 131072
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 2,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:04:33.043411+00:00",
+      "elapsed_seconds": 0.16033468901878223,
+      "logs": {
+        "negative-7.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "negative-7.stderr": {
+          "bytes": 127,
+          "sha256": "20ddaaf8e3a8c9464e724881e2db9988c065fcb253b622d32ac7b4297fe2034c"
+        }
+      }
+    },
+    {
+      "label": "negative-8",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped",
+        "--role",
+        "GU",
+        "--case",
+        "--cpu-preflight"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:04:33.043658+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2572816,
+          "start_ticks": 33435215,
+          "sid": 2572816,
+          "pgid": 2572816
+        }
+      ],
+      "pid": 2572816,
+      "direct_identity": {
+        "pid": 2572816,
+        "state": "R",
+        "ppid": 2571994,
+        "pgid": 2572816,
+        "sid": 2572816,
+        "start_ticks": 33435215,
+        "rss_bytes": 131072
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 2,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:04:33.207817+00:00",
+      "elapsed_seconds": 0.162874655041378,
+      "logs": {
+        "negative-8.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "negative-8.stderr": {
+          "bytes": 92,
+          "sha256": "8c487730311b2bbbaa59169f763ba964389aa8bd44e371c238c9c0223aa627cf"
+        }
+      }
+    },
+    {
+      "label": "negative-9",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped",
+        "--role",
+        "XXXXXXXXXXXXXXXXX",
+        "--case",
+        "1",
+        "--cpu-preflight"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:04:33.208059+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2572824,
+          "start_ticks": 33435232,
+          "sid": 2572824,
+          "pgid": 2572824
+        }
+      ],
+      "pid": 2572824,
+      "direct_identity": {
+        "pid": 2572824,
+        "state": "R",
+        "ppid": 2571994,
+        "pgid": 2572824,
+        "sid": 2572824,
+        "start_ticks": 33435232,
+        "rss_bytes": 131072
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 2,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:04:33.376649+00:00",
+      "elapsed_seconds": 0.1672611020039767,
+      "logs": {
+        "negative-9.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "negative-9.stderr": {
+          "bytes": 58,
+          "sha256": "79265ee28eaaa0b6df988b3c34d466ebb1cf1f70b67158b046b7dae48ee0583f"
+        }
+      }
+    }
+  ],
+  "tests": [
+    {
+      "passed": true,
+      "gpu_executed": false,
+      "role": "GU",
+      "case": "1",
+      "groups": 1,
+      "rows": 1,
+      "max_rows": 1,
+      "device_bytes": 6564424
+    },
+    {
+      "passed": true,
+      "gpu_executed": false,
+      "role": "GU",
+      "case": "127",
+      "groups": 1,
+      "rows": 127,
+      "max_rows": 127,
+      "device_bytes": 7854664
+    },
+    {
+      "passed": true,
+      "gpu_executed": false,
+      "role": "GU",
+      "case": "128",
+      "groups": 1,
+      "rows": 128,
+      "max_rows": 128,
+      "device_bytes": 7864904
+    },
+    {
+      "passed": true,
+      "gpu_executed": false,
+      "role": "GU",
+      "case": "129",
+      "groups": 1,
+      "rows": 129,
+      "max_rows": 129,
+      "device_bytes": 7875144
+    },
+    {
+      "passed": true,
+      "gpu_executed": false,
+      "role": "GU",
+      "case": "257",
+      "groups": 1,
+      "rows": 257,
+      "max_rows": 257,
+      "device_bytes": 9185864
+    },
+    {
+      "passed": true,
+      "gpu_executed": false,
+      "role": "GU",
+      "case": "sparse",
+      "groups": 5,
+      "rows": 387,
+      "max_rows": 257,
+      "device_bytes": 36731736
+    },
+    {
+      "passed": true,
+      "gpu_executed": false,
+      "role": "GU",
+      "case": "empty",
+      "groups": 3,
+      "rows": 0,
+      "max_rows": 1,
+      "device_bytes": 19671760
+    },
+    {
+      "passed": true,
+      "gpu_executed": false,
+      "role": "Down",
+      "case": "1",
+      "groups": 1,
+      "rows": 1,
+      "max_rows": 1,
+      "device_bytes": 3288904
+    },
+    {
+      "passed": true,
+      "gpu_executed": false,
+      "role": "Down",
+      "case": "127",
+      "groups": 1,
+      "rows": 127,
+      "max_rows": 127,
+      "device_bytes": 4740424
+    },
+    {
+      "passed": true,
+      "gpu_executed": false,
+      "role": "Down",
+      "case": "128",
+      "groups": 1,
+      "rows": 128,
+      "max_rows": 128,
+      "device_bytes": 4751944
+    },
+    {
+      "passed": true,
+      "gpu_executed": false,
+      "role": "Down",
+      "case": "129",
+      "groups": 1,
+      "rows": 129,
+      "max_rows": 129,
+      "device_bytes": 4763464
+    },
+    {
+      "passed": true,
+      "gpu_executed": false,
+      "role": "Down",
+      "case": "257",
+      "groups": 1,
+      "rows": 257,
+      "max_rows": 257,
+      "device_bytes": 6238024
+    },
+    {
+      "passed": true,
+      "gpu_executed": false,
+      "role": "Down",
+      "case": "sparse",
+      "groups": 5,
+      "rows": 387,
+      "max_rows": 257,
+      "device_bytes": 20843096
+    },
+    {
+      "passed": true,
+      "gpu_executed": false,
+      "role": "Down",
+      "case": "empty",
+      "groups": 3,
+      "rows": 0,
+      "max_rows": 1,
+      "device_bytes": 9842640
+    },
+    {
+      "case": "negative-0",
+      "rejected": true,
+      "output": {
+        "passed": false,
+        "gpu_executed": false,
+        "error": "require --role GU|Down --case 1|127|128|129|257|sparse|empty [--cpu-preflight]"
+      }
+    },
+    {
+      "case": "negative-1",
+      "rejected": true,
+      "output": {
+        "passed": false,
+        "gpu_executed": false,
+        "error": "duplicate cpu flag"
+      }
+    },
+    {
+      "case": "negative-2",
+      "rejected": true,
+      "output": {
+        "passed": false,
+        "gpu_executed": false,
+        "error": "role must be GU or Down"
+      }
+    },
+    {
+      "case": "negative-3",
+      "rejected": true,
+      "output": {
+        "passed": false,
+        "gpu_executed": false,
+        "error": "case must be 1/127/128/129/257/sparse/empty"
+      }
+    },
+    {
+      "case": "negative-4",
+      "rejected": true,
+      "output": {
+        "passed": false,
+        "gpu_executed": false,
+        "error": "duplicate CLI flag"
+      }
+    },
+    {
+      "case": "negative-5",
+      "rejected": true,
+      "output": {
+        "passed": false,
+        "gpu_executed": false,
+        "error": "duplicate cpu flag"
+      }
+    },
+    {
+      "case": "negative-6",
+      "rejected": true,
+      "output": {
+        "passed": false,
+        "gpu_executed": false,
+        "error": "unknown CLI flag"
+      }
+    },
+    {
+      "case": "negative-7",
+      "rejected": true,
+      "output": {
+        "passed": false,
+        "gpu_executed": false,
+        "error": "require --role GU|Down --case 1|127|128|129|257|sparse|empty [--cpu-preflight]"
+      }
+    },
+    {
+      "case": "negative-8",
+      "rejected": true,
+      "output": {
+        "passed": false,
+        "gpu_executed": false,
+        "error": "case must be 1/127/128/129/257/sparse/empty"
+      }
+    },
+    {
+      "case": "negative-9",
+      "rejected": true,
+      "output": {
+        "passed": false,
+        "gpu_executed": false,
+        "error": "CLI bound"
+      }
+    }
+  ],
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v2/qualify_grouped",
+    "bytes": 1419288,
+    "sha256": "d77905f58d889f985ed5480c28eb895596c9c10ed6444a6bae8a39c11fa47c52"
+  }
+}

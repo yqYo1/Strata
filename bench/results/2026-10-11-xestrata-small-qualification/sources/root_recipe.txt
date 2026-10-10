@@ -1,0 +1,104 @@
+SOURCE ONLY; the implementer executed none of these commands.
+W=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010
+S=$W/build/eval-b570-icpx-v1
+B=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007
+Q=$B/xestrata-grouped-gemm-qualifier-v1
+All operations below belong to root and must be serialized with ALL GPU,
+model, profiling, build and test work using the existing owned lock/owner.
+
+Prerequisite: root verifies pristine39bdadcc9e2b89b1e3c8be7bb2a603b04fa0e197
+checkout, root static-library build receipt, actualicpx2026.1.1 compiler/link
+identity and library hashes. No fork source/build modification or recompile
+of grouped kernel here. Root supplies private binary/artifact destination.
+Existing library uses source per-kernel XMX subgroup16 and256GRF property;
+DO NOT globally force subgroup32 onto this grouped kernel. Other production
+per-kernel settings remain exactly the already built pristine objects.
+
+Standalone source/link recipe (shell vars above expand only root-owned paths):
+/opt/intel/oneapi/compiler/2026.1/bin/icpx -std=c++20 -O3 \
+ -ffp-model=precise -ffp-contract=off -Wall -Wextra -Werror -fsycl \
+ -foffload-fp32-prec-div -foffload-fp32-prec-sqrt \
+ -I"$W/include" "$Q/qualify_grouped.cpp" \
+ -Wl,--start-group "$S/libstrata_kernels.a" "$S/libstrata_core.a" \
+ "$S/libstrata_ngram.a" "$S/libstrata_platform.a" -Wl,--end-group \
+ -pthread -Xspirv-translator --spirv-ext=+SPV_KHR_integer_dot_product \
+ -o "$Q/qualify_grouped"
+The inspected pristine build.ninja uses generic-fsycl link with precise div,
+sqrt and this SPIRV translator extension. If root's exact library receipt
+requires additional target/device-link flags, copy those frozen flags exactly
+and retain compiler/link command/diagnostics; don't silently retarget objects.
+This source contains no device kernel and links the real pristine implementation.
+No oneMath/GGML reference path is substituted for xmx_gemm_grouped.
+
+CPU parser/shape checks first, no Runtime::get() called in this branch:
+"$Q/qualify_grouped" --role GU --case sparse --cpu-preflight
+"$Q/qualify_grouped" --role Down --case empty --cpu-preflight
+Root runs every legal case/role CPU branch and negative absent/unknown/duplicate
+CLI, invalidrole/case/overlong values. Fixed named cases rather than arbitrary
+numeric allocation avoid overflow and unbounded dimensions. CPU half decode
+controls include1/-1/signedzero/minsubnormal. CPU preflight is not GPU PASS.
+
+Root finite GPU qualification, one role/case per owned process:
+"$Q/qualify_grouped" --role GU --case 1
+Then each case127,128,129,257,sparse,empty separately; repeat forDown.
+Group1 cases exercise row tileboundary andtail. Sparse has counts0/1/129/257/0
+(G5, leading/trailingempty); empty G3 allzero withmax_rows1 actual launch.
+Predeclare whole matrix before runs; no tolerance adjustment from observed data.
+Root can stop at firstfailure and preserve distinctmechanism evidence.
+Owner before/afterhealth, actualPID/start/exe/env checks, freshbinary/library
+hashes, functions-offGDB optional, detailedinitialL0 log<=64MiB and finite
+wall/CPU/RSS/artifact budgets. Suggested wall700s/CPU600s/RSS512MiB/artifact
+128MiB perprocess; root chooses/reviews. Existingruntimewatchdog unchanged.
+Do not run these inline commands without root's owner/lock/health wrapper.
+No profiling/timing/warmup/loop or adoption claim. No retries/reset on fault.
+
+Admission and result gates:
+- Actual runtime xmx_available(f16) true AND gemm_path(f16) "XMX"; otherwise
+  exit3, passedfalse/XMXunqualified, NO grouped fallback mislabeled as XMX.
+- Existing Runtime compute() must be in_order and samecontext/device. Device
+  name/driver/subgroup16 and actualsource selection printed as capabilityJSON.
+- All operands/bounds aredeviceUSM in exactruntimecontext and64bytealigned
+  offsets; publicxmx_gemm_ok admission; monotone bounds, totalrows387max,
+  group5max, exactmax_rows. GU N1280K2560/DownN2560K640, packedrow-major.
+- Weightstride N*K+32 half elements (64-byte padding) tests nontrivial stride.
+  Inputs, weightsincludingpadding/guards, deviceboundsincludingguards read
+  back byte-exact. EveryF32output activecell finite and within bound; output
+  head/tail64byteguards unchanged. Empty outputallunchanged. No perrowpitch
+  padding because real groupedAPI ldy=N; all source/stridepadding checked.
+- Device copyevents sent/received statuscomplete afterrt.finish(q). All copies,
+  real launch and readbacks use SAME productionorderedcomputequeue withnon-null
+  stream pointer. No copyqueue/profiling/newqueue. Runtime finishchecks async
+  and retains production watchdog. Sources stayalive throughdrain and all
+  productionqueues aredrained before successfulfree.
+- Any GPU-phase exception conservatively _Exit90 without hostbuffer/deviceUSM
+  destruction/replay; precise bounded fatalreceipt stderr. Root owner checks
+  normalexit/no-survivor/no-fault for a normalPASS. Arithmetic mismatch emits
+  up to8 firstdifferences and fullcounters, exits1 after safely completedfrees.
+
+Frozen mathematical tolerance proposal (root reviews BEFOREexecution):
+actual halfbits independently decoded intoFP64; percell CPUloop computes
+ref=sum(x_k*w_k), sumabs=sum(abs(x_k*w_k)) overexactinputbytes. Finite normal
+dyadics expfields9..13/full10bits keep products exact inFP32 andFP64 with no
+underflow/overflow. This fixture's exact FP64 sumfits53significandbits (half
+products need22bits, exponentrange8, reductionlength<=2560adds12bits).
+Conservative allowance assumesordinaryFP32-rounding matrixaccumulation:
+u32=2^-24; gamma32=(2K*u32)/(1-2K*u32);
+u64=2^-53; gamma64=(K*u64)/(1-K*u64);
+allowed=(gamma32+gamma64)*sumabs + u32*abs(ref).
+This is a conservative absolute percell forwarderror bound, not bitexactness
+or model-quality margin. It accounts conservatively for product/add/reduction
+rounding and reference/store; source dyadics avoid inputconversion uncertainty.
+No arbitrary nearzero relative threshold/epsilon or modeladoption gate.
+The fixture has no overflow/subnormal GPU-arithmetic-domain qualification.
+Record maxabs,maxnonzerorefrelative, normalizedRMS,squaredsum-derived ratio,
+maxerror/allowed,maxsumabs, gamma and failed/nonfinite/fullcheckedcounts.
+If target matrixaccumulation violates ordinaryFP32 errorassumption, investigate
+the primitive specification/precision; do not tune gamma from observederrors.
+
+Limits: synthetic halfGEMM only. Does not qualify actualsevenIQformats,
+dequantizer/SwiGLU, actualroutebounds/layout/DQring/residentfusedroute, graph
+capture/replay/copyoverlap, complete32K model logits/quality or capacity/perf.
+R290/R288correction read and no NVIDIA/TensorCore/full-K compact claim made.
+Actual-data gathered activation/dequant-weight qualifier and independent
+currentoneMKL comparison are laterroot gates, not silently supplied here.
+No GPU timinguntil this and additional relevant qualification pass.

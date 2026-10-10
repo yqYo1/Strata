@@ -1,0 +1,128 @@
+{
+  "active": false,
+  "passed": false,
+  "complete": false,
+  "gpu_executed": false,
+  "model_executed": false,
+  "started_utc": "2026-10-10T15:03:24.422527+00:00",
+  "controller": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/build_xestrata_grouped_qualifier_v1.py",
+    "bytes": 4559,
+    "sha256": "d4fbd430355b82856c4d119c589610842c0727adc8388ace624a3a2bc7f369b1"
+  },
+  "source": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-qualifier-v1/qualify_grouped.cpp",
+    "bytes": 14072,
+    "sha256": "61184b7acc758ef84ece9e341ab7d48c38dc17ce80f13d41d2d662af57ec2b10"
+  },
+  "owner": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-pristine-icpx-build-root-v1/build_owner.py",
+    "bytes": 10387,
+    "sha256": "da37d448cc14450ea4d151a90ada780cae5139cafbd21df3727a0bfd5c2058c8"
+  },
+  "libraries": [
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_kernels.a",
+      "bytes": 12371454,
+      "sha256": "d38b1d88990b74779ae3dcaef1d8ea83bf7e99dc72591ab32c59ac26a068f096"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_core.a",
+      "bytes": 480958,
+      "sha256": "8218a6d74a60ea5b96cb5f1d482968e06342f5d59dd4aaa5a0e7c022e9c0d88c"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_ngram.a",
+      "bytes": 166932,
+      "sha256": "26f5b880ed81b59c16be209e115e8fea2089010427670916ffdeeb6ba8b9e348"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_platform.a",
+      "bytes": 29346,
+      "sha256": "d32d71059c93ad89a72c64c1ffa27e163b8fb50e2ae20d27adffbf106c14f22d"
+    }
+  ],
+  "commands": [
+    {
+      "label": "build",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-std=c++20",
+        "-O3",
+        "-ffp-model=precise",
+        "-ffp-contract=off",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsycl",
+        "-foffload-fp32-prec-div",
+        "-foffload-fp32-prec-sqrt",
+        "-I/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/include",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-qualifier-v1/qualify_grouped.cpp",
+        "-Wl,--start-group",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_kernels.a",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_core.a",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_ngram.a",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_platform.a",
+        "-Wl,--end-group",
+        "-pthread",
+        "-Xspirv-translator",
+        "--spirv-ext=+SPV_KHR_integer_dot_product",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-build-root-v1/qualify_grouped"
+      ],
+      "environment": {
+        "HOME": "/home/yayoi",
+        "LANG": "ja_JP.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0vItY6t:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LC_ALL": "C",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T15:03:24.423003+00:00",
+      "wall_seconds": 600,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2568602,
+          "start_ticks": 33428353,
+          "sid": 2568602,
+          "pgid": 2568602
+        }
+      ],
+      "pid": 2568602,
+      "direct_identity": {
+        "pid": 2568602,
+        "state": "R",
+        "ppid": 2568530,
+        "pgid": 2568602,
+        "sid": 2568602,
+        "start_ticks": 33428353,
+        "rss_bytes": 339968
+      },
+      "peak_session_rss_bytes": 3076096,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:03:24.581548+00:00",
+      "elapsed_seconds": 0.15832531999330968,
+      "logs": {
+        "build.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "build.stderr": {
+          "bytes": 214,
+          "sha256": "5230732bc47b1dce6a0aa09b10db9b8d6e89a1082b294d76fa27df4b92d2d662"
+        }
+      }
+    }
+  ],
+  "tests": [],
+  "error": "AssertionError: build failed"
+}

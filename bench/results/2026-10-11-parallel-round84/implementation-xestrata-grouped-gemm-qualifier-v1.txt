@@ -1,0 +1,110 @@
+Implementation handoff: private grouped XMX qualifier v1, 2026-10-10
+
+SOURCE ONLY. No builds/tests/qualifier/source execution, model/GPU/profiler,
+Git/service/process/hardware query or cleanup performed. Frozen text/source
+reads and assigned private file writes/hashes only. Fork tree, pristine static
+libraries and preceding first-diagnostic v1 are unchanged. Root owns all
+validation and serial execution. Root correctly identified preceding v1 PP
+total bug: prompt total32768 with lastprefixposition32767; parent preserves
+v1 and owns separate controller correction. This qualifier uses no PP logic.
+
+Files under
+/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-grouped-gemm-qualifier-v1:
+qualify_grouped.cpp
+SHA25661184b7acc758ef84ece9e341ab7d48c38dc17ce80f13d41d2d662af57ec2b10
+root_recipe.txt
+SHA2564916395d4cce1d2c4854dc3b6136d42e0ad1f726acbb7205128a6593dc77c97f
+
+Provenance read: pinned W=.../MistVVK/XeStrata/.worktree/eval-b570-20261010
+at parent-supplied39bdadcc9e2b89b1e3c8be7bb2a603b04fa0e197, its AGENTS
+fully read; no LOCAL.md found in scoped filename search. R290 and separate
+round288-correction-after-r290 fully read. Runtime/public XMX APIs, actual
+GroupedKernel, selection/probe/finish source and frozen build.ninja/CMake
+link configuration reviewed. Original xmx_gemm.cpp SHA256
+8f58783e5ac359d14ba3f3980ae4a73e8c80a72217c8bda850f525777056dfb2
+Original src/core/device.cpp SHA256
+9e33dce3b3b55b00c5aee4db566ceb848b73273837c505b3c27b535a0b30ba2d
+No actual library hashes/run status inferred from the filename census; root
+must link and receipt the original existing frozen static libraries.
+
+Actual implementation call, not duplicated kernel: public
+strata::kernels::xmx_gemm_grouped(X,W,w_stride,Y,bounds,G,max_rows,N,K,&q)
+uses non-null exact Runtime::get().compute() pointer. Parent pristine API
+source finishes/waits internally only for nullstream, so this non-nullstream
+qualifier queues launch then readbacks before one explicit Runtime::finish(q).
+All H2D/D2H copies use that same existing ordered runtimequeue/context/device;
+no newqueue, transferqueue or profilingproperty/timestamp/eventmarker.
+Existing runtime finish adds its standard drain barrier and watchdog/async
+check; separate final allqueue drain precedes successfulfree. These are
+qualification operations, not modified production schedule or a timing arm.
+Copy sent/received events queried for complete only after controlled drain.
+
+Runtime selection fail closed: xmx_available(f16) and gemm_path(f16) queried
+from linked pristine implementation. Actualreportedpath, XMXavailable,
+device/driver/subgroup16 recorded. If unavailable or path!=XMX, finish and
+exit3 with passedfalse/XMXunqualified; don't run or relabel joint_matrix/DP4a.
+Runtime probe availability is not itself numerical or kernel launch PASS.
+
+Finite CLI --role GU|Down --case 1|127|128|129|257|sparse|empty,
+optional --cpu-preflight. Parser disallows unknown/duplicate/missing/long
+values and completes before any Runtime/GPU use. Fixed GU N1280K2560 and
+DownN2560K640. Named group1 rowcounts1/127/128/129/257; sparse G5 counts
+0/1/129/257/0, total387; empty G3 allzero withmax_rows1 real zero-worklaunch.
+Bounds oldest cumulative0..totalrows, exact maxRows and monotonic/population
+checked beforedevicecopy. Sparse exercises genuine expert-weight stride
+N*K+32halfs (64bytepadding), leading/trailingempty andmultitiletail.
+
+Storage/lifetime: each device buffer256aligned with64byteprefix pointer,
+64bytetail; xmx_gemm_ok verifies admitted actualptrs/shape, USM type verified
+in exactruntimecontext. Host source/readbackvectors allocated beforecommands.
+All sourceinputs/weightsincludingperexpertpadding/devicebounds fullybyteequal
+onreadback andoutputprefix/tail unchanged. Empty outputallunchanged. Every
+activeoutputrow,column checked finite andcompared; expectedcount rows*N.
+Synthetic halfvalues are finite normals expfields9..13 with full10bit
+significands and distinctrow/col/expert pattern. No modelpayload access.
+Deviceallocation<40MiB; device+twohostcopies<128MiB, fixed387rows/G5 bounds.
+CPU reference streams percell with no unboundedreferencearray or outputlog;
+max8 firstdifferences then all counters; print compact JSON capability/bounds
+andresult. Fullhashes are FNV1a64 evidence, not cryptographic qualification.
+
+Mathematical gate proposal frozen in source for root prereview:
+Independent half bitdecoder converts toFP64, no SYCL halfconverter/oracle
+reuse. ReferenceCPU dot product overexacthalfbytes andsumabs forEVERYcell.
+Products exact inFP32/FP64 for this finite dyadicdomain. FP64 referenceexact
+for thefixture's boundedexponent/reductionextent. Peroutput conservative
+forwardallowance=(gamma32_2K+gamma64_K)*sumabs + u32*abs(ref), u32=2^-24,
+u64=2^-53, gamma_n=n*u/(1-n*u). No observation-derived/autotuned threshold.
+Assumes ordinaryFP32 accumulation/reduction rounding; not bitwiseequivalence.
+Root must review actual primitive semantics before accepting gate; failure
+requires investigation, not wideninglimit fromobservederror. maxabs,
+nonzeroref-relative,normalizedRMS,maxerror/allowed,maxsumabs,gamma32, full
+checked/failed/nonfinite counts stored. No arbitrary nearzero-model tolerance
+or downstream quality claim. Signedzero/1/-1/minsubnormal CPUdecodercontrols
+checked, but GPUarithmetic is finite-normaldomainonly; no overflow/subnormal
+GPUqualification implied.
+
+Error safety: any exception inside GPUphase conservatively exits90 without
+unwinding host/source or freeingpossiblyliveUSM. FatalJSON bounded4096 error
+chars written allocation-free then _Exit; no replay/reuse/recovery. Arithmetic
+failures after completeddrain safelyfree and exit1. Missingcapabilityexit3,
+badparser/hostsetup exit2. Parent root must require normalexit/no-survivor/
+health before/after forPASS. Existing productionwatchdog unchanged. Hardwall
+andCPU/RSS limits are externalrootowner, not newruntimewatchdog or driverfix.
+
+Root recipe supplies preciseO3/no-contraction/-fsycl existingarchive link,
+core/kernel/ngram/platform dependencies plus exact SPIRV intdot extension
+seen in pinned build. No CMake/forksource additions. Existing XMX functor
+subgroup16/256GRF preserved; never globally SG32-force this groupedkernel.
+Root confirms actualicpx2026.1.1 build/link flags/libraries beforeexecution.
+Suggestedexternalwall700/CPU600/RSS512MiB/artifacts128MiB/log64MiB percell,
+under rootownedlock/health/PIDstart/executable/env/cleanup controller. Test
+all legalCPUcases and parsernegativecases first, then separatefreshprocesses
+GU/Down×7cases serial. No GPUtiminguntilqualified. Allcommands unexecuted.
+
+Scope limits fromR290: synthetic dequantizedhalfGEMM firstlaunch/shape/queue
+qualification only. No actualsevenIQformat/dequantizer/SwiGLU/realgathered
+activation/rawroutebounds/DQring/copyoverlap/residentfused/graphcoverage.
+No currentD perexpertoneMKL comparison included. Root later qualifies actual
+data/route and complete32K/modelquality/capacity, separate cleanperf arms.
+No B570 performance prediction, optimization/adoption or full262144 claim.
+Parent retains reportreview/testing/retention/Git ownership.
