@@ -1,0 +1,95 @@
+# R286 — current native CPU service and capacity fixture join
+
+Date: 2026-10-10 (Asia/Tokyo). Read-only reconciliation of the closed `(GU22,Down20)` CPU capacity fixture with cached decoder sources W0141 and current W495, plus retained hardware controls. No source change, build, test, model run, GPU action, profiler/PMU collection, process/service query, Git operation, environment dump, or cleanup was performed. Only this report was written.
+
+## Finding
+
+The CPU capacity fixture is eligible as a component control only when a current decoder call has all of these properties: actual loaded layer pair `(gu_type,d_type)=(22,20)`, `H=2560`, `FF=640`, a CPU-owned expert job, the same `nt` bucket, the same relevant dispatch branch/ISA settings, and the same direct or five-worker-plus-host pool mode. Default pool task value `0` is a row-partition policy (18 partitions for five workers plus host), not an NT value. It neither implies a single-token call nor changes an expert job's NT.
+
+For the Ryzen 5 5600X AVX2 configuration, the source routes `(22,20)` NT1 through GGML's single-token dot functions; NT2–4 can use Strata's custom AVX2 `iq256_gu_rows` for GU22 and `iq4nl256_down_rows` for Down20. The capacity fixture measures that exact pair with actual packed expert weights and synthetic prequantized activations. It does not measure current W495 route frequency, production activations, worker CPU-time shares, or physical memory traffic. NT3/4 capacity values cannot be weighted into ordinary decode until those actual NT cohorts are recorded; the closed route histogram R282 reached NT2 only.
+
+Neither the measured six-core FP32 FMA rate of 0.81822 TFLOP/s nor the separate 36.869 GB/s host RAM-read control is a meaningful roof for these integer/table-lookup kernels. A hypothetical division can be calculated, but it compares unlike operations and unobserved traffic. The first relevant production-normalized service measure is per-worker thread CPU time around the exact native row-kernel call, grouped by `(request,window,layer,role,format,NT,branch)` and divided by the actual CPU expert-token row count; pair it with wall envelope and separately counted pool waits. R284 defines that instrumentation contract. Existing default task-0 phase clocks are elapsed wall spans and have no NT join.
+
+## Pins and provenance
+
+- Cached decode W0141: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009`, commit `7d0105f2a942ac72ca20fef69d4c2e7960653de3`.
+- Current prefill/service source W495: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010`, commit `495369cf4dc6e6da564095a1c26504dd3694e3f2`. The linked cached CPU sources have the same hashes in W0141 and W495: `src/kernels/cpu/pool.cpp` `f789078f1e14b6cf72bec5cacc2802d358ad82cbd7bf890f344a4a4a32158611`; `src/kernels/cpu/native_expert.cpp` `694e86a623889ed03c5157d68f70651692eee9d265d7c2f99d44877ada37a146`. W495 route/job source `sycl/src/core/expert_source.cpp` is pinned by R282 as `5cc617c9887e80175f5325957b02cd034ac1f7ce7a5fb310cda5492e1e25d5f1`.
+- Capacity harness source: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-service-capacity-20261010/sycl/tools/native-service-calibration/native_service_calibration.cpp`, Strata commit `dba6bea90192f907cbeecdb75c29aa0e7d1fa449`, source SHA-256 `f062f24ea57443c4cd59d09d2b56d498165ea497254ae9fa8998375b062b2ac3`; native timing binary SHA-256 `36bd02ed7a471febaa15d5d73611662c27e3701e4bd33bf000f622f438108889`. The capacity build's `native_expert.cpp` (SHA `767f02f33aca4da9fabbe113c50ce1d7cb2aa9f25b4234df59224ec46a5985cd`) factors dispatch selection into enum-returning helpers; its NT/type conditions match the W0141/W495 call bodies, which perform the selected kernel call directly. The capacity runner/source is a separate frozen source and binary, so its timing is not a W495 request measurement.
+- Capacity archive: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-cpu-capacity`, storage worktree commit `792bb6f694088c14bb3e62c4eb4df6db94926a62`; `native-three-process-summary.json` SHA-256 `a1747b55421027223ab543ab2d2fc3c184ee41de602ff67a3873b1325ece8d09`; `native-capacity-v2-matrix-plan-v1.json` SHA-256 `53aa16ea08562c08ff1d43ccd099ec3b1170522b43026c96c818499733fe95bd`; controller2 SHA-256 `93a996dc21416a76bd8073bfd57f395a97d2037a62e63aa831d980bcbd39497d`.
+- The exact capacity workload owns 384 selected actual expert payloads in two disjoint 192-ID cohorts, H=2560, FF=640, synthetic prequantized activations, direct single-pinned-caller and unchanged five-worker pool plus host. It measures hot-eight and streaming-192 conditions, 3 fresh processes per NT/set, 25 timed rounds per cohort/process. Results are capacity observations, not model inference. NT1–4 correctness-only qualifier receipts exist and pass; controller2 timing cells are complete and pass their declared receipt/timing gates, but `performance_eligible=false`, `full_lifecycle_passed=false`, and `adopted=false` at the whole-model level. R231's frozen summary and retained receipts preserve the earlier failed controller final-marker parse separately; do not rewrite it as a pass.
+- Registry v104 (390 reports), latest storage checkpoint `638e827e`, and archived R284/R285 are context only. Read R282, R215, R229, R231, R244, R258, R284 and R285 before selecting this scope.
+
+## Exact production branch eligibility
+
+In W0141 `native_gu_rows` (`src/kernels/cpu/native_expert.cpp:125–176`), default `native_gu_mt_min` is 2 (`:106–123`). On the target Zen 3 CPU, with AVX2 and without AVX-512 or `STRATA_NO_IQ256`, NT1 falls through to `traits(IQ2_S)->vec_dot` for both gate and up rows; NT2–4 take `iq256_gu_rows` (`:154–173`). `STRATA_IQ_MT_MIN`, `STRATA_NO_IQ256`, ISA support, and CPU selection can alter this, so source eligibility is not a runtime branch receipt.
+
+In W0141 `native_down_rows` (`:178–206`), IQ4_NL NT1 falls through to its GGML `vec_dot`; NT2–4 take `iq4nl256_down_rows` only when AVX2 is enabled, `STRATA_NO_IQ4NL` is absent, and default `mt_min=2` is met (`:180–203`). Q2 Down uses a separate pool branch and is not this fixture. The target current host recorded as Ryzen 5 5600X / Zen 3 has AVX2 and no AVX-512 in the capacity/R231 source receipts. The four capacity rows therefore cover NT1 and NT2–4 as two kernel families, not four NT variants of one kernel.
+
+W495 `expert_pool_dispatch_multi` first classifies each routed token/top-k entry, then deduplicates only CPU-owned misses by expert and increments `ExpertJobMulti.nt` once per such row (`sycl/src/core/expert_source.cpp:2583–2693, 2718–2735, 2745–2798`). Its `NativeFmt` is per loaded layer. A current call is not fixture-eligible if it is GU18/21/23, Down42, another geometry, a non-CPU route, NT outside 1–4, a changed ISA/override, or a fallback implementation not matching the fixture. Actual per-layer GU/Down pair and NT frequency are not present in existing default task-0 receipts.
+
+At `pool.cpp:716–718`, `phase_tasks()` returns `3*(n_workers + host_works)` for `tasks_=0`; with the measured five workers and host this is 18 row partitions. At `:627–661`, the pool splits flattened output rows into expert-local subranges and calls native GU / Down for the fragment's expert. This maps task-0 timing only when the same pool topology, host participation, and row-partition policy are used. GU, caller-side FF quantization, and Down remain separate phases at `:759–787`. Existing `ms_multi_gu`, `ms_multi_q`, and `ms_multi_down` are elapsed wall spans around phases and barriers; they are not summed worker service or per-NT timings.
+
+The capacity build records `dba6bea...` dispatch helpers, while cached W0141/W495 share exact `pool.cpp` and `native_expert.cpp` hashes above. Relevant branch conditions are unchanged, but source/binary identity and the diagnostic instrumentation are different. Keep component values labeled by their measured binary and environment, and do not splice capacity medians into a current request total.
+
+## Arithmetic and bytes supported by the source
+
+The fixed shape supplies exact dense-equivalent dot-work counts. One MAC is defined here as one multiply-accumulate over one input dimension; dense-equivalent FLOPs count a MAC as two operations. This is a normalization convention, not the native instruction count. SwiGLU, activation quantization, integer decode/reduction, and other scalar/vector operations are not included in the MAC totals.
+
+For one expert-token at H=2560, FF=640:
+
+- GU has two `FF × H` products: `2 × 640 × 2560 = 3,276,800 MAC`, or 6,553,600 dense-equivalent FLOPs.
+- Down has one `H × FF` product: `2560 × 640 = 1,638,400 MAC`, or 3,276,800 dense-equivalent FLOPs.
+- GU+Down totals 4,915,200 MAC, or 9,830,400 dense-equivalent FLOPs per expert-token.
+
+NT multiplies the number of output vectors but does not multiply the per-job unique packed weight extent. Per expert job, logical weight bytes are GU 1,049,600 B (gate 524,800 + up 524,800), Down 921,600 B, combined 1,971,200 B. The exact data extents are in the selected payload manifest/receipts and R229; they are logical packed extents. Their FP32-sized logical equivalents are `2×640×2560×4 = 13,107,200 B` for GU, `2560×640×4 = 6,553,600 B` for Down, and 19,660,800 B combined. These FP32 equivalents do not materialize in the native path and do not describe its runtime resident set.
+
+| NT | GU MAC/job | Down MAC/job | combined MAC/job | combined dense-eq FLOPs/job | packed weight bytes/job | logical packed B/expert-token if divided evenly by NT |
+|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 3,276,800 | 1,638,400 | 4,915,200 | 9,830,400 | 1,971,200 | 1,971,200 |
+| 2 | 6,553,600 | 3,276,800 | 9,830,400 | 19,660,800 | 1,971,200 | 985,600 |
+| 3 | 9,830,400 | 4,915,200 | 14,745,600 | 29,491,200 | 1,971,200 | 657,066⅔ |
+| 4 | 13,107,200 | 6,553,600 | 19,660,800 | 39,321,600 | 1,971,200 | 492,800 |
+
+The last column is arithmetic amortization over tokens in a grouped job; it is not per-token measured DRAM traffic. For a cohort per timed round, multiply the per-job operation counts by `logical_jobs` (8 or 192), not by both cohort sizes. Aggregate packed payload extent is independent of NT: hot-eight is 15,769,600 B (15.039 MiB); streaming-192 is 378,470,400 B (360.938 MiB). FP32-sized equivalents are 157,286,400 B (150 MiB) and 3,774,873,600 B (3.516 GiB), respectively. Hot/streaming labels specify selected active-set extents; they do not certify cache residency, a DRAM miss for every packed byte, or cold-start disk behavior.
+
+The fixture's intermediate FF quantizer produces Q8_0 activation data of 680 B per active token for `FF=640` (R229); it has no packed-weight-byte or MAC denominator. The pool does this quantization serially between GU and Down. Keep it out of GU/Down MAC rates and include it only in a separately measured complete-service total. Input activation quantization into GU's input format is another caller-side stage outside the direct `GU` measurement.
+
+## Attained fixture service and its boundary
+
+R231's accepted matrix reports median microseconds per active expert-token across the six process/cohort medians (3 processes × 2 disjoint cohorts). The direct arm is one pinned caller; pool is five workers plus host with `tasks=0`.
+
+| NT | intended hot8: direct complete | intended hot8: pool complete | streaming192: direct complete | streaming192: pool complete |
+|---:|---:|---:|---:|---:|
+| 1 | 261.405 µs | 72.204 µs | 286.466 µs | 90.978 µs |
+| 2 | 198.422 µs | 48.452 µs | 197.137 µs | 54.215 µs |
+| 3 | 163.160 µs | 39.076 µs | 161.989 µs | 42.931 µs |
+| 4 | 147.419 µs | 34.736 µs | 148.362 µs | 38.738 µs |
+
+These are medians from actual 22/20 weight payloads and deterministic synthetic prequantized activations, using the capacity harness's own declared complete-service interval. The pool includes task publication, barriers, row splits, caller FF quantization and wait/tail effects; the direct arm has a different execution topology. Neither has per-worker CPU-time or actual route data. Their time per token supports only this fixture's capacity comparison. It is not a production decoder service rate, not an instruction roof, not a memory-bound diagnosis, and not an end-to-end tokens/s result.
+
+## Hardware control comparison: why the simple roofs fail
+
+The separate FMA control reached 818.22 GFLOP/s aggregate on six physical cores; it is a register-only FP32 FMA loop with twelve independent YMM accumulators and no loop spills. The RAM control reached 36.869 GB/s on its selected read-stream loop. These are valid controls for their own loops and host, not CPU roofs for IQ2_S/IQ4_NL.
+
+For scale only, the deliberately naive FMA division `19,660,800 dense-equivalent FLOPs / 818.22 GFLOP/s` is about 24.03 µs per expert-token. This is not a lower bound or utilization estimate: native IQ2_S/IQ4_NL do packed index/sign/scale decoding, byte table lookups/shuffles, integer dot/reduction and floating accumulation; `2 MAC = 2 FLOPs` is only a dense-work convention. Much of the operation count does not execute as FP32 FMA, and the FMA loop's occupancy and dependencies do not match these kernels.
+
+Likewise, `1,971,200 logical packed bytes / 36.869 GB/s` is about 53.46 µs per full expert job if one imagines every packed byte fetched once at the control's rate. Dividing by NT gives 53.46/26.73/17.82/13.37 µs per expert-token for NT1/2/3/4 under the additional ideal assumption that one job's unique weights are fetched once and shared across all rows. Neither assumption is measured: the control has its own access pattern, the packed extent is not memory-controller bytes, cache reuse changes physical requests, and grouped kernels can reread or retain blocks differently. Do not compare those invented values to the pool timings, infer an L3/DRAM fraction, or label the native service memory-bound.
+
+No AVX2 FMA peak calculation improves this comparison. The measured FMA loop is more useful as evidence that six-core register FP math is available on this host; it does not bound integer table lookups, vector integer dot, dependent loads, or their scheduling. The RAM stream establishes a host read control, not sustained kernel transaction bandwidth. Current records mark PMU access unavailable, so there is no same-interval cycle, instruction, cache-miss, or memory-controller-byte counter to refine these limits.
+
+No external quantized-kernel blog or other engine is used to transfer a performance claim. The NT2–4 implementations here are Strata's own `iq256_gu_rows` and `iq4nl256_down_rows`; another engine would be relevant only if the exact compiled function, format, NT, dispatch, and architecture matched. NT1's fallback is pinned GGML `vec_dot`, but no separate GGML benchmark is needed to establish the current branch or normalize its production service.
+
+## First normalizable production component
+
+R284's smallest useful next measurement is the first attributable service metric, not a generic roofline: around each actual `native_gu_rows` / `native_down_rows` fragment in `pool.cpp::drain`, capture current-thread CPU-time delta and steady wall delta after the fragment's expert `e`, `[r0,r1)`, and `mjobs_[e].nt` are known. Join each observation to request/window/layer, role, exact `NativeFmt` type, NT, and actual selected branch. Count CPU expert jobs and expert-token rows once at the dispatcher after it constructs `jobs_multi`. For each exact cell, report total worker+host thread CPU ns divided by the observed expert-token rows (ns/CPU-expert-token), each worker's wall-call sum, earliest-to-latest phase kernel envelope, and separate active-drain/wait/quantization spans. Preserve the actual default `tasks=0` topology and report absent NT cells as absent.
+
+This produces a same-request component service rate that can be compared to matching fixture components without confusing a fixture median with a production ceiling. Validate disabled-path parity and clocks-on overhead; use timer-off timings for performance conclusions. It still cannot distinguish integer execution from cache/DRAM effects without valid same-interval hardware counters. For an available PMU later, the first useful counters would be cycles and retired instructions on the exact branch interval, followed by CPU-family-validated L3/memory-controller events with enabled/running coverage. No existing receipt has those counters.
+
+## Source and prior artifact map
+
+- W0141 `native_expert.cpp:106–206`: MT threshold and concrete GU/Down branch selection; `pool.cpp:627–661,716–787`: expert-fragment rows, task-0 partition count and three native service phases.
+- W495 `expert_source.cpp:2583–2693,2718–2735,2745–2798`: route classification, input quantization, CPU job deduplication/NT and pool call.
+- Capacity `native_service_calibration.cpp` SHA `f062f24e...`; primary summary `native-three-process-summary.json` SHA `a1747b55421027223ab543ab2d2fc3c184ee41de602ff67a3873b1325ece8d09`; R231 holds the full timing, correctness and disassembly boundary. R229 defines the denominator equations and exact packed extents. R258 defines the 22/20 eligibility, source route and capacity qualification limits. R282 documents absence of current production per-layer format/NT service joins and PMU.
+- R284 `round284-default-task0-decode-service-instrumentation-contract.txt` is the concrete clock/counter and bounded-storage proposal. R215 and R244 describe existing caller and pool timing boundaries.
+
+This report adds no W495 decode service result, no physical traffic estimate, no `FMA`/RAM-derived roof, and no performance or adoption decision.

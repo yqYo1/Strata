@@ -1,0 +1,92 @@
+SOURCE-ONLY PREPARATION; NO COMMAND BELOW WAS RUN BY THE IMPLEMENTER.
+
+Scope: FIRST ONE raw XeStrata fresh32768 diagnostic only. No clean timing
+loops, no candidate adoption, no full262144 inference claim, no GPU reset.
+Unmodified fork 39bdadcc9e2b89b1e3c8be7bb2a603b04fa0e197. Root alone creates
+the eval-b570-20261010 worktree/build. contrib-icpx compiler2026.1, pinned
+GGML3cf03257f219afbe7334045ff7c6a06ac68c627d. Build using fork's documented
+native GGML configuration; this controller does not configure or compile.
+
+Root build receipt schema (explicit keys, no speculative existing schema):
+{
+ "passed":true,"active":false,"completed":true,
+ "source_commit":"39bdadcc9e2b89b1e3c8be7bb2a603b04fa0e197",
+ "fork_sources_unchanged":true,"license_mode":"contrib-icpx",
+ "compiler_version":"2026.1",
+ "ggml_commit":"3cf03257f219afbe7334045ff7c6a06ac68c627d",
+ "root":"/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010",
+ "binary":"ABSOLUTE ROOT-BUILT STRATA PATH UNDER root",
+ "binary_sha256":"ACTUAL ROOT HASH",
+ "source_sha256":{"src/program/generate.cpp":"25854acf5a75ba7cba4e7aa7f27d762c8a961385cd6c45df7c3deeab7b293802",
+                   "OTHER EXECUTION RELEVANT SOURCE RELATIVE PATH":"ROOT HASH"}
+}
+Root must attest pristine identity and complete source/build/link/compiler
+provenance (including native refs and generated build inputs), not simply
+populate passed=true. Require root-reviewed host-only OwnedGdb ownership
+contracts before GPU launch. Controller verifies manifest bytes but cannot
+prove a build used them solely from JSON. Receipt status itself is an attestation.
+
+CPU-only preflight (no process/device/service queries or child launch):
+python3 B/xestrata-owned-comparison-v1/run_first_diagnostic.py \
+ --build-receipt ROOT_CLOSED_BUILD_RECEIPT --cpu-preflight
+Expand B=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007.
+This requires root-built executable/fixture/reference/profile and hashes.
+Root CPU gates: py_compile; import by runpy.run_path with run_name not
+__main__ then validate() synthetic DONE/PP/LP fixtures; reject truncated
+DONE/LP, NaN/Inf, missing/duplicate RESUME, reused input, bad read_n,
+wrongPPchunk/end, missing IDs, invalid finish/draft counts. Exercise altered
+source/binary/receipt hashes, absent executable, unsupported CLI, wrong
+license/compiler/GGML/prefill values, exact fixture count (never sliced).
+Any fixture modifications for CPU testing must be root-owned/private; don't
+change the original reference/controller files. Preflight itself uses only
+read-only file operations and does not acquire the measurement lock.
+
+Root serialized diagnostic after CPU gates and health admission:
+python3 B/xestrata-owned-comparison-v1/run_first_diagnostic.py \
+ --build-receipt ROOT_CLOSED_BUILD_RECEIPT \
+ --output B/owned-xestrata39-first32k-diagnostic-r1
+One new output directory; existing directory rejects. No automatic retry.
+Global owned-v0141-measurement.lock held through health, launch, request,
+QUIT, owner cleanup and post-run journal receipt. Root must hold equivalent
+serialization for builds/tests/profiling external to this controller.
+Owner uses pinned owned_gdb.py61e1d206... start ticks and pidfd cleanup.
+Wall1000s; perlineprotocol700s; input20s; normalQUIT30s; stderr/stdout/raw
+combined64MiB; fullartifact2GiB; inferiorRSS104GiB; freeRAM>64GiB and
+disk>8GiB. GDB functions disabled. Existing health_environment with V2,
+copy offload disabled, DirectSubmission0/NEOReadDebugKeys1; diagnostic ZE
+validation/warnings/progress preserved, verbose tracing removed. No reset,
+watchdog change, profiling flags, dump flags or driver workaround.
+
+Configuration: exact original fixture SHA137fa115...32768 positions, GEN64
+ckpt1 logprobs5, greedy. Baseline argv unchanged except executable and
+absolute BASELINE expert-profile path. cache128/pool5/spec4/KV32768,
+maxcontext262144/prefill8192/no-prefill-borrow, pack/native/MTP same paths.
+Explicit ring8 matches current control; remaining fork paths use pristine
+defaults. No assumption that equal flags imply same implementation/math.
+INFO startup settings checked; PP exactly8192/16384/24576/32767 and fresh
+DONE prompt/read_n32768 checked. Final token handled by first verify window.
+
+Fork source has LP and ID protocol but no STRATA_DUMP_FIRST_LOGITS or
+STRATA_PREFILL_DUMP_STATE hook. No fork source modifications/dump emulation.
+ID/LP comparison against frozen qualified8192 reference is retained even if
+different. diagnostic_passed is ONLY fresh-complete-finite-normal/nofault
+and owned cleanup. math_equivalence=false ALWAYS because complete head/live
+state are unavailable. It is not a quality or output-equivalence waiver.
+Prompt/decode reported milliseconds are diagnostic only, performance_eligible
+false. Record relevant environment allowlist only, never whole os.environ;
+actual inferior executable/hash/start identity and allowlisted env checked.
+
+Future performance stage NOT implemented: root first reviews diagnostic.
+Then design separate plain owner three fresh paired clean control8192/fork
+arms, same32K input64maxoutputs/parameters, separate individual prompt and
+decode samples. No GDB/LP5/dumps/ZE instrumentation in timedarms; no timing
+reuse from this controller. Preserve any output divergence as result and
+math_equivalence=false; raw speed cannot establish quality/adoption. Root
+must validate numerical comparison limits before deciding comparability.
+
+Residual limits: helper/root health script dependencies must remain qualified;
+health script hash2f90005f... is checked before its existing heredoc is loaded.
+It reads and compiles the same existing heredoc helper as prior owner.
+Linux /proc/PTY/GDB/LevelZero health layout is intentionally machine-specific
+external benchmark control. No source portability/product behavior claim.
+Root must review source-only controller and run CPU/error/ownership gates.

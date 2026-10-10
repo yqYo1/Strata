@@ -1,0 +1,58 @@
+# R287 — MoE next shared-scratch ceiling and 16K capacity
+
+Status: source and prior-report review only. No source edits, build, run, test, GPU/profiler/process query, service action, Git operation, or cleanup. The candidate is a design for review, not an implementation, correctness result, allocation receipt, fit claim, or performance claim.
+
+## Pins and prior work
+
+The target source is D, `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-gemm-service-only-v1/prefill.cpp`, SHA-256 `1cf7e911a555e8611c1368a4d18d4ba81c95027bb8de77f89ad65ac64b05fc3c`. Its shared-kernel implementation is from W source `sycl/src/prefill/kernels.dp.cpp`, SHA-256 `3a5077a284048b4fde24a4146e3b02e8d84d259480f755e4b0e94cfc52e54f1c`. Scope is ordinary chunk-major, compact=2, layer-major=0, ring 8, KV stage own, single GPU; the special route/service ledgers are OFF. This is the same D source and environment pinned for R285. The current 12K diagnostic was not run as part of this review.
+
+R283 (`round283-compact-ple-workspace-plane-retirement-for16k.txt`) already examined the PLE `key`/`gated` alias proposal and reported a conditional net shared-region reduction of about 149.7 MiB at T=16,384. It also found the next MoE per-token bound of 132,772 B/T and the GDN bound of 107,264 B/T. R279's post-8K 1,565 MiB free reading and 512 MiB MTP admission headroom remain historical conditional arithmetic. This report investigates the large native fallback Dm plane and the gap after the R283 proposal; it does not repeat or endorse the PLE alias.
+
+## Exact branch and current storage
+
+`compact_prefill()` permits compact mode only when MMQ has fallback layers, no MMQ layer is active, NaN diagnostics are off, and the prompt attention restriction is met (991–1006). With `m.compact`, native weights, no MMQ product, and `!fused_l`, the routed expert reaches the compact branch at 4955–5004. The source's model constants are `N=2560`, `K=10`, `NE=512`, `C=10240`, `ZV=6144`, and `HV=48` (114–115); `DQ=2` is the dequantized-weight ring (244). Native IQ weights go through `iq_dequant_gu_f16` and `iq_dequant_f16`; this is the plain `m.gemm.f16` fallback, not the separate MMQ grouped-product path (4955–4963, 4976–5003). The existing `ne > m.T` check rejects a compact expert with more than T routed rows (4970–4972).
+
+The ordinary initializer takes one region sized as the maximum of HC, PLE, GDN, QSA, and MoE, not their sum; the carve at 1341–1350 is reused across attention/MoE phases. The compact fallback MoE term from `moe_set_bytes` is 132,772 B/T (1020–1045):
+
+| Buffer in current D compact native fallback | Extent | Bytes per prompt row | Producer and last consumer |
+|---|---:|---:|---|
+| `logits` | `T*NE` FP32 | 2,048 | Router projection writes; route kernel consumes. |
+| `w` | `T*K` FP32 | 40 | Route kernel writes; ordered output combination consumes. |
+| `ids`, `slot_dev`, `src_dev` | each `T*K` int32 | 120 total | Router IDs are counted/grouped; `slot_dev` maps original `(token,rank)` to grouped row; `src_dev` maps grouped row to token for activation gather. |
+| `Xs` | `T*N` FP16/BF16 | 5,120 | For each expert, `gather_rows16` packs its `ne` input rows at scratch row zero; F16 gate/up GEMM reads them. |
+| `GU` | `T*1280` FP32 | 5,120 | Native F16 gate/up GEMM writes it; SwiGLU reads it. |
+| `Hh` | `T*640` FP16/BF16 | 1,280 | SwiGLU writes the down-GEMM input; down GEMM reads it. |
+| `Dm` | `T*K*N` FP32 | 102,400 | Each expert's down GEMM writes to grouped rows at `o0*N`; `moe_combine` later gathers through `slot_dev`. |
+| `sgate`, `sup` | each `T*640` FP32 | 5,120 total | Shared-expert gate/up projections feed SwiGLU. |
+| `sh_h` | `T*640` FP16/BF16 | 1,280 | Shared SwiGLU writes; shared down projection reads. |
+| `shared` | `T*N` FP32 | 10,240 | Shared-expert down projection writes; final combine reads. |
+| `sg` | `T` FP32 | 4 | Shared gate; final combine uses its sigmoid. |
+
+The exact sum is 132,772 B/T before the per-allocation 256-byte accounting round-ups. The two DQ slots are outside the shared region and independent of T: each holds 1,280*2,560 + 2,560*640 FP16 values (9,830,400 B); DQ=2 therefore holds about 18.75 MiB. `q=j%DQ` alternates slots. Dequant writes to the selected slot, and the same in-order compute queue enqueues both GEMMs before that slot is reused. A staged blob slot is released after the dequant read has been ordered, so it need not stay alive through the two products (4965–4968, 4976–5003). These fixed weights are not the 16K workspace ceiling.
+
+The key liveness chain is exact: host grouping builds `off`, `slot` and `src` over all `T*K` route entries (4262–4305); input rows are gathered per expert; the full native F16 gate/up product has shape `(ne,1280,2560)`, then SwiGLU produces FP16 `(ne,640)`, then the down product has shape `(ne,2560,640)` and writes FP32 `(ne,2560)` into `Dm[o0]` (4970–5003). Every expert's output remains live in `Dm` until `moe_combine` reads all ten route values in route-rank order and adds the shared output (5086–5092). `moe_combine_kernel` uses float FMA in `k=0..9` order and then adds `shared*sigm(sg)` (kernels.dp.cpp 1814–1832); preserving that order matters for bitwise equivalence.
+
+## Bounded candidate: reuse `shared` as one expert-output tile and replay ranks
+
+A candidate that preserves each existing `ne` and GEMM shape can eliminate the full `Dm[T*K*N]` plane, but only by recomputing expert products in route-rank passes. It is not a drop-in alias of one `Dm` slice: the current output for every route is live until the final combine, and expert-ID order is not route-rank order.
+
+The bounded schedule is:
+
+1. Keep routing and host grouping unchanged. After original IDs have been consumed to build counts/order/slot/source, retain each grouped row's original route rank `i % K`. The existing `ids[T*K]` allocation is no longer read by the compact native fallback after grouping; it can hold this rank-by-grouped-row map, or a separate `T*K` int32 map can be counted explicitly. Keep `slot_dev` and `src_dev` unchanged for ordinary gather semantics.
+2. Zero `bo[T*N]`. For route rank k from 0 through 9, walk the same expert `order`. For each expert, keep its exact `ne` rows; gather the same inputs; dequantize the same native gate/up and down weights through the existing two-slot DQ ring; call the same GEMM shapes and SwiGLU in the same order. Write the down GEMM's `ne*N` FP32 output to row zero of the existing `shared[T*N]` plane, which has room because `ne <= T`. No extra output plane is needed.
+3. After that expert's down GEMM on the same in-order queue, scatter-accumulate only the grouped rows whose retained rank is k into `bo[token,d]` using `fma(w[token*K+k], shared[local_row,d], bo[token,d])`. Because the rank passes are ordered and each route maps to one grouped row, every token's FP32 accumulator sees exactly the current `moe_combine` FMA order. Avoid atomics; the rank map must make each `(token,k)` destination unique. If expert IDs can repeat within a token, the stored per-row rank disambiguates them.
+4. Defer only the shared-expert down GEMM that currently writes `m.shared` (line 4123) until all routed passes finish. Its input `sh_h` and gate `sg` are separate live arrays. Then `shared` takes its original role. Run the final `bo += shared*sigm(sg)` step with the same expression as the current combine. In compact mode `bo` aliases the embedding/mixed image, but routed expert inputs are gathered from `mixed_h`; confirm no later use of the old FP32 mixed input before writing `bo`.
+
+This schedule preserves the `(ne,1280,2560)` and `(ne,2560,640)` GEMM dimensions, the source row order, F16 quantization/dequantization inputs, the per-expert SwiGLU, and the per-token FMA order. It recomputes gate/up, SwiGLU, and down for every routed expert once per rank (up to 10 passes), and restages/re-dequantizes experts as needed. It is consequently a memory-versus-work candidate with severe potential throughput and I/O cost, not a performance optimization. Keeping only one rank's output without replay or without changing GEMM M cannot preserve all route outputs needed later.
+
+The same in-order `main_cs` is a hard dependency: GEMM writes the `shared` tile; the rank scatter reads it; the next tile may overwrite only after that scatter; rank k+1 may update `bo` only after all rank-k scatter work. `Prefill::init` requires an in-order queue (1057–1059), the caller binds it to the main in-order queue, and current `moe_combine` uses it (kernels.dp.cpp 2942–2979). Do not assume pointer reuse is safe on a changed/out-of-order queue. Any implementation must preserve expert staging `used`/`copied` events and DQ-slot lifetime on every replay. The current Dm diagnostics, peer output path, census/service hooks, and NaN scans refer to the full Dm plane; guard or update them. This candidate is only for the single-GPU compact native fallback with those diagnostics OFF, `mp.fallback && !mp.any`, `lay.native`, `!use_mmq`, and `!fused_l`. It does not apply to MMQ/fused, peer, noncompact, or per-token branches.
+
+## Capacity clipping and remaining gap
+
+At T=16,384 the raw full Dm plane is 1,677,721,600 B = 1,600 MiB. Removing it from the MoE bound reduces that term from 132,772 to 30,372 B/T (about 474.56 MiB). But the shared region then becomes GDN's 107,264 B/T = 1,676 MiB, not the smaller MoE term. After R283's compact PLE reduction, the relevant bounds are PLE 101,392 B/T (1584.25 MiB, with BF16X2 off), MoE 132,772 B/T (2074.56 MiB), and GDN 107,264 B/T (1676 MiB). The MoE replay candidate therefore lowers the region only from 132,772 to 107,264 B/T: 25,508*16,384 = 417,923,072 B = 398.56 MiB, before outer alignment. Do not book the raw 1,600 MiB Dm plane as a region saving.
+
+The parent’s conditional gap after R283 is about 470 MiB to restore the 512 MiB admission reserve. Even this Dm-removal candidate leaves roughly 71.4 MiB of that gap. To cover 470 MiB solely through the new ceiling, the remaining maximum would need to fall by at least about 4,572 B/T from GDN's 107,264 B/T (rounded conditional arithmetic); to make the R283 PLE bound the next ceiling requires 5,872 B/T (91.75 MiB). With optional PLE BF16X2 the PLE bound is 106,512 B/T and must be used in that comparison. No reviewed source-supported GDN reduction of the needed size that preserves current live inputs, GEMM shapes, and output was established here. A second GDN scratch-lifetime design and actual allocator accounting are required before claiming the ~470 MiB target or 16K fit.
+
+## Qualification boundary
+
+Do not implement/adopt based on this report. A future proposal must first prove the native fallback is the active exact layer branch for the pinned source, formalize the per-row rank map and unique scatter writes, preserve GEMM `ne` and output row order, prove exact FMA/shared addition order, and demonstrate event ordering for repeated stage reads and DQ reuse. Then use same-source fixed chunk controls to compare all live prefill state, full head, IDs/logprobs, MTP counts and finish status before any quiet performance samples. Recompute exact region counts with alignment after Dm removal and any GDN change; check the server's 512 MiB headroom against actual admission, not just this source arithmetic. The full-context occupancy/repeat/restore/tail gates remain separate. The prior 12K layer-major rejection does not qualify or explain this MoE candidate.

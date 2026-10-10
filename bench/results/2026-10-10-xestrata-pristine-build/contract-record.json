@@ -1,0 +1,180 @@
+{
+  "passed": true,
+  "active": false,
+  "completed": true,
+  "gpu_executed": false,
+  "model_executed": false,
+  "created_utc": "2026-10-10T14:54:44.268388+00:00",
+  "controller": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-diagnostic-contract-root-v3/run_first_diagnostic_v3.py",
+    "bytes": 19115,
+    "sha256": "6fd92497a1005ee0c3097dfb6021a2b56152bb57706f0a83ded24dffc5619498"
+  },
+  "parent_controller": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-owned-comparison-v1/run_first_diagnostic.py",
+    "bytes": 19110,
+    "sha256": "199806ce1e12e3181b1a6a0e7b478ed08a655f52ff60efcf65e505334e045a6c"
+  },
+  "build_adapter": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-diagnostic-contract-root-v3/build-receipt-adapter.json",
+    "bytes": 2439,
+    "sha256": "5934bfa88b1d40181f5411c2e92c834792e2e0abbe8eb784c138e998057fc3d2"
+  },
+  "original_build_receipt": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-pristine-icpx-build-root-v1/record.json",
+    "bytes": 93095,
+    "sha256": "bcb7497eb3aa016a86129b96956f6962b66cb0606bbdc176ca21dd244e46ace5"
+  },
+  "tests": [
+    {
+      "case": "canonical32768-with-32767-batched-position",
+      "passed": true
+    },
+    {
+      "case": "wrong-PP-total",
+      "passed": true
+    },
+    {
+      "case": "wrong-last-PP-position",
+      "passed": true
+    },
+    {
+      "case": "wrong-DONE-prompt",
+      "passed": true
+    },
+    {
+      "case": "wrong-DONE-read-n",
+      "passed": true
+    },
+    {
+      "case": "reused-DONE",
+      "passed": true
+    },
+    {
+      "case": "nonfinite-prompt-time",
+      "passed": true
+    },
+    {
+      "case": "zero-decode-time",
+      "passed": true
+    },
+    {
+      "case": "negative-drafts",
+      "passed": true
+    },
+    {
+      "case": "bad-finish",
+      "passed": true
+    },
+    {
+      "case": "resumed-input",
+      "passed": true
+    },
+    {
+      "case": "reused-input",
+      "passed": true
+    },
+    {
+      "case": "missing-DONE",
+      "passed": true
+    },
+    {
+      "case": "duplicate-DONE",
+      "passed": true
+    },
+    {
+      "case": "missing-PP",
+      "passed": true
+    },
+    {
+      "case": "duplicate-RESUME",
+      "passed": true
+    },
+    {
+      "case": "bad-token-id",
+      "passed": true
+    },
+    {
+      "case": "missing-LP",
+      "passed": true
+    },
+    {
+      "case": "nonfinite-LP",
+      "passed": true
+    },
+    {
+      "case": "bad-LP-top-id",
+      "passed": true
+    }
+  ],
+  "argv": [
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/strata",
+    "--pack",
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+    "--native",
+    "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+    "--serve",
+    "--max-context",
+    "262144",
+    "--spec",
+    "4",
+    "--spec-min-p",
+    "0",
+    "--mtp",
+    "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+    "--suffix-draft",
+    "0",
+    "--prefill",
+    "8192",
+    "--no-prefill-borrow",
+    "--expert-cache",
+    "128",
+    "--expert-profile",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/data/expert-profile.bin",
+    "--expert-cache-per-layer",
+    "--pool-workers",
+    "5",
+    "--pcie-frac",
+    "0",
+    "--spec-split",
+    "--adapt-swaps",
+    "0",
+    "--conversation-cache-mib",
+    "0",
+    "--conversation-cache-slots",
+    "4",
+    "--greedy",
+    "--short-read",
+    "0",
+    "--kv",
+    "int8",
+    "--kv-resident",
+    "32768",
+    "--prompt-cache",
+    "1",
+    "--prompt-cache-every",
+    "262139",
+    "--prompt-cache-root",
+    "0",
+    "--turn-token",
+    "-1"
+  ],
+  "prompt_tokens": 32768,
+  "profile": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/data/expert-profile.bin",
+    "bytes": 196632,
+    "sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+  },
+  "source_unchanged": true,
+  "correction": "PP total counts all32768 input tokens; last batched position32767 plus final prompt token; full compiler version2026.1.1; missing kernel-fault-filter closing parenthesis repaired without changing intended filter",
+  "future_performance_criterion": {
+    "actual_input_tokens": 65536,
+    "minimum_comparison_input": 32768,
+    "prefill_goal_tps": 1000,
+    "decode_goal_tps": 70,
+    "equal_input_per_arm": true,
+    "fresh_no_reuse": true,
+    "fixed_costs_separately_reported": true,
+    "physical_context_qualification": 262144
+  }
+}
