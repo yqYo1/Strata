@@ -1,0 +1,51 @@
+# R198 — SYCL cached submit timestamp source path
+
+Date: 2026-10-10 (Asia/Tokyo). Read-only primary-source investigation. Only this report was written; no repository checkout, build, test, binary inspection, fixture access, device/process/GPU action, or inference was performed.
+
+## Finding
+
+The missing source layer is in SYCL itself. At public `intel/llvm` `sycl` branch HEAD `fbccb466cc122c294a6c746dcf0d37e45ff70f3c` (committer time 2026-10-09T20:27:03Z), `sycl/source/detail/event_impl.cpp`:
+
+- `event_impl::setSubmissionTime()` (lines 669-678) skips events without profiling and profiling-tag events. Otherwise it selects the associated queue/device and caches `MSubmitTime = getTimestamp(&Device)`.
+- `getTimestamp()` (lines 129-141) calls `Device->getCurrentDeviceTime()` for a device event.
+- `device_impl::getCurrentDeviceTime()` in `sycl/source/detail/device_impl.cpp:312-317` calls `urDeviceGetGlobalTimestamps(MDevice, &DeviceTime, nullptr)`. The SYCL event therefore caches the device-time result from the UR global-timestamp API; the ordinary SYCL command_submit getter returns that cached `MSubmitTime` (event_impl.cpp:457-488), it does not invoke the UR event command_submit getter.
+- For the direct kernel scheduler-bypass path, `queue_impl::submit_kernel_scheduler_bypass()` calls `ResultEvent->setSubmissionTime()` immediately before `enqueueImpKernel(...)` (queue_impl.cpp:404-480; call at 472). This is a SYCL host-side sample before low-level kernel enqueue, not a timestamp recorded by the enqueued kernel event.
+- The scheduler path also samples in `Scheduler::addCG` after creating the command/event and before `enqueueCommandForCG` (scheduler.cpp:137-148). Other scheduler-bypass submissions sample immediately before their enqueue calls (queue_impl.cpp:525, 676, 1289).
+
+This identifies a credible mechanism for the observed ordering: submit is a pre-enqueue sampled clock value, whereas `command_start` is a device event's kernel timestamp. SYCL's current source explicitly documents that for a command buffer, submit time uses an estimated clock and can be ahead of the start time from the actual device clock (event_impl.cpp:463-479); it says this was seen empirically, typically under 0.5 ms on an integrated Intel GPU. A +1333 ns submit-start inversion is within that documented direction and scale. This is a source-supported plausible mechanism, not a diagnosis of the recorded run or proof the pinned public candidate matches the shipped runtime.
+
+There is a getter-side adjustment, but it is scoped: the cached submit getter reads START and clamps `MSubmitTime` down to START only when `MEventFromSubmittedExecCommandBuffer && !MIsHostEvent && Handle` (event_impl.cpp:481-487). That condition identifies events from submitted command buffers. Direct ordinary kernel events do not meet this guard, so this is not a general ordering correction for ordinary kernel submissions. The source comment calls the small adjustment a hack to keep profiled times meaningful and notes its performance rationale; it is not evidence of broad clamp/tolerance/retry policy. Do not infer that it applied to this capture without proof it was a submitted command-buffer event.
+
+The public Level Zero v2 adapter path located in R196 remains a separate layer: its ordinary START query uses `zeEventQueryKernelTimestamp` kernelStart, while QUEUED/SUBMIT event-query cases return zero and comment that submit is implemented by sampling global timestamps before enqueue. Together the sources explain why SYCL needs its own cached submit value. The captured 512 UR START/END queries and absence of SUBMIT are consistent with that split, but do not prove which SYCL candidate or exact event route ran.
+
+## Pin and source identity
+
+GitHub API `GET https://api.github.com/repos/intel/llvm/commits/sycl` returned `fbccb466cc122c294a6c746dcf0d37e45ff70f3c`, dated 2026-10-09T20:27:03Z, subject `[SYCL] Fix sycl-jit build with LLVM_LINK_LLVM_DYLIB (#23439)`. Raw source was fetched by immutable SHA from `https://raw.githubusercontent.com/intel/llvm/fbccb466cc122c294a6c746dcf0d37e45ff70f3c/`.
+
+SHA-256 of fetched raw files:
+
+- `sycl/source/detail/event_impl.cpp`: `c0d53f2d6fe60e19d8c08ae90fda7d594d1d060ab873a086f9dd61371d1a987c`
+- `sycl/source/detail/event_impl.hpp`: `321ec81936679f9adfbe4701b43324abf67f9d7570241de96da758b0df96009f`
+- `sycl/source/detail/device_impl.cpp`: `334915b146926c06a9cf3441ab4d4f5615ab0507462bb34ca3329ab5cc31b9a7`
+- `sycl/source/detail/queue_impl.cpp`: `3596656fd750dc83a277c185ff173fd4a501b2727585425195761eb096d5514a`
+- `sycl/source/detail/queue_impl.hpp`: `38030a588eb51f937b69da1516e8cb619a19eebf92c6b4fc7d5b605ddecf1610`
+- `sycl/source/detail/scheduler/scheduler.cpp`: fetched to inspect call ordering; its SHA-256 was not recorded.
+- `sycl/source/detail/scheduler/commands.cpp`, `sycl/source/detail/scheduler/graph_processor.cpp`, `sycl/source/enqueue_functions.cpp`: fetched for bounded cross-check; hashes not recorded.
+
+The exact public candidate is now pinned. This still does not map oneAPI compiler 2026.1 / shipped UR 0.12.0 binaries to that source SHA. The R196 release mapping caveat remains: no official source manifest or release tag mapping was established. Do not state this is the shipped implementation.
+
+## Limits and bounded next diagnostic
+
+Unknown: which exact SYCL/UR revision is in the recorded binary; whether the recorded event was an ordinary direct kernel event or submitted command-buffer event; whether the direct scheduler-bypass branch ran; and the exact source/implementation behind the installed `urDeviceGetGlobalTimestamps` call. Thus the public candidate supports mechanism plausibility only. It does not establish a clock-correlation defect, a 2026.1 fix, or a change to the failed result.
+
+Keep the captured failed result and its existing evidence unchanged. No offset, clamp, tolerance, or retry is justified from this source review. If an exact-binary follow-up is authorized later, the narrow discriminator is a passive caller/source identity trace: determine whether the event is marked `MEventFromSubmittedExecCommandBuffer`, whether the ordinary kernel bypass sample at `queue_impl.cpp:472` is the caller, and what implementation answers `urDeviceGetGlobalTimestamps` for that binary. This can distinguish the conditional graph correction from the ordinary cached path without treating the completed non-faulting inversion as a GPU hang.
+
+Primary source URLs:
+
+- https://api.github.com/repos/intel/llvm/commits/sycl
+- https://raw.githubusercontent.com/intel/llvm/fbccb466cc122c294a6c746dcf0d37e45ff70f3c/sycl/source/detail/event_impl.cpp
+- https://raw.githubusercontent.com/intel/llvm/fbccb466cc122c294a6c746dcf0d37e45ff70f3c/sycl/source/detail/event_impl.hpp
+- https://raw.githubusercontent.com/intel/llvm/fbccb466cc122c294a6c746dcf0d37e45ff70f3c/sycl/source/detail/device_impl.cpp
+- https://raw.githubusercontent.com/intel/llvm/fbccb466cc122c294a6c746dcf0d37e45ff70f3c/sycl/source/detail/queue_impl.cpp
+- https://raw.githubusercontent.com/intel/llvm/fbccb466cc122c294a6c746dcf0d37e45ff70f3c/sycl/source/detail/scheduler/scheduler.cpp
+- R196 report: `round196-pinned-level-zero-v2-event-profiling-source.txt`
