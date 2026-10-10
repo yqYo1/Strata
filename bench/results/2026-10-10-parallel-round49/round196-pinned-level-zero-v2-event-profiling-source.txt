@@ -1,0 +1,56 @@
+# R196 — public Level Zero v2 event profiling source follow-up
+
+Date: 2026-10-10 (Asia/Tokyo). Read-only source and primary GitHub history investigation, requested after R194. Only this report was written; no repository checkout, build, test, compiler/runtime binary inspection, fixture access, device/process/GPU action, or inference was performed.
+
+## Finding
+
+The actual public Level Zero v2 implementation is now examined. The public `intel/llvm` `sycl` branch source has an unambiguous split for ordinary kernel-event profiling:
+
+- `unified-runtime/source/adapters/level_zero/v2/event.cpp:322-327`: `UR_PROFILING_INFO_COMMAND_START` queries `zeEventQueryKernelTimestamp`, takes `tsResult.global.kernelStart`, masks it with `hDevice->getTimestampMask()`, and multiplies by `hDevice->getTimerResolution()`.
+- `event.cpp:329-338`: END/COMPLETE query the same kernel timestamp record. END is masked/scaled and `adjustEndEventTimestamp` accounts for a wrap by comparing the adjusted end against the adjusted start; helper at lines 22-36 says multiple wraps are not handled.
+- `event.cpp:340-347`: QUEUED and SUBMIT query cases return literal zero. The adjacent comment says command_submit is implemented by recording submission timestamp through `urDeviceGetGlobalTimestamps` before command enqueue; comment says there are no users of this getter case.
+- `event.cpp:296-315`: normal profiling query requires profiling enabled (or timestamp-recording event); an event without its queue-associated device returns PROFILING_INFO_NOT_AVAILABLE. This distinguishes the special timestamp-recording path at lines 305-310, which reports one GPU-written completion timestamp for all properties.
+- `common/device.cpp:1769-1826`: `urDeviceGetGlobalTimestamps` calls Level Zero's `zeDeviceGetGlobalTimestamps`; for requested device time it masks device count and scales by the device timer resolution (1812-1824). Its API comments say host and device timestamps correlate (1772-1777). If only host timestamp is requested, it instead reads CLOCK_MONOTONIC_RAW on Linux or QueryPerformanceCounter on Windows (1779-1810). This is the helper explicitly named by the v2 event.cpp submit comment.
+- `v2/device.cpp:15-21,80-82` delegates common device properties; the v2 event path gets timer resolution and mask through the common device handle. In event.cpp lines 74-79 those values are cached in profiling data for timestamp-recording events; for normal profiling, lines 320-321 obtain them before the property switch.
+- The public helper for device timestamp conversion is based on `getTimestampMask()`, not a floating clock-offset correction in event.cpp. The v2 event file has no host/device subtraction or offset adjustment in the ordinary START case.
+
+These facts refine R194's comparative-v1-only caveat and identify the public v2 algorithm. They do not establish that this current public code produced the captured run.
+
+## Source pin and 2026.1 / UR 0.12 mapping
+
+The public source inspected is the mutable `intel/llvm` branch `sycl`, at:
+
+- https://github.com/intel/llvm/blob/sycl/unified-runtime/source/adapters/level_zero/v2/event.cpp
+- https://raw.githubusercontent.com/intel/llvm/sycl/unified-runtime/source/adapters/level_zero/v2/event.cpp
+- https://raw.githubusercontent.com/intel/llvm/sycl/unified-runtime/source/adapters/level_zero/common/device.cpp
+- https://raw.githubusercontent.com/intel/llvm/sycl/unified-runtime/source/adapters/level_zero/v2/device.cpp
+
+The fetched raw event file reports 427 lines. GitHub's blob page renders 464 lines (including formatting/metadata); source locations above use raw-file numbering. The browser did not expose a commit SHA for the branch file, so this is a branch-head public candidate, not a SHA-pinned source snapshot. No compiler 2026.1 release tag or official source manifest mapping the shipped compiler/UR binary to a precise `intel/llvm` commit was found in this bounded primary-source search. The public standalone UR repository currently declares `project(unified-runtime VERSION 0.12.0)` in CMake, but that is a project version string, not evidence of the exact source revision packaged in oneAPI 2026.1. A reported compiler build identifier such as 2026.1.0.20260617 likewise does not by itself establish a source commit.
+
+Accordingly, the strongest supportable identification is: **public current-sycl-branch v2 candidate, exact source SHA unavailable; shipped oneAPI 2026.1 / UR 0.12.0 source mapping unestablished.** Do not describe this as the exact shipped implementation.
+
+## What this means for the captured negative ordering
+
+The known captured value remains `start-submit = -1333 ns`, with normal completion, successful receipt, no GPU-fault indication, and the original device-profiling result still failed. No offset, clamp, tolerance, or retry is warranted.
+
+The public candidate offers a concrete route to inspect if its exact source revision can be matched: START comes from masked/scaled event `global.kernelStart`; SUBMIT is described as captured before enqueue via the global-timestamp API, while the profiling getter branch itself returns zero. If an equivalent pre-enqueue device timestamp is stored and later returned for the same event, both values are masked/scaled against the device counter and should share the device counter domain; the pre-enqueue ordering gives a plausible code path to audit for event association and route parity. That last statement is conditional inference, not a diagnosis. Importantly, the public event.cpp does not itself show where/how the captured submit value is stored or copied to the event; the enqueue route and exact shipped source revision remain necessary to establish that.
+
+There is no source evidence here that the current candidate has a 1333 ns clock-correlation bug or fixes the failure. A constant host/device epoch offset cannot explain a same-domain subtraction if both stored values really follow these conversions. No issue/release note located in this bounded primary search ties the observed failure to a confirmed v2 profiling fix.
+
+## Release/history limits
+
+- Public current v2 source is in `intel/llvm` under `sycl/unified-runtime/source/adapters/level_zero/v2/`; the historical `oneapi-src/unified-runtime` standalone repository is not the present source-of-development location.
+- Its public main CMake file declares Unified Runtime 0.12.0, which is only a package/project version statement.
+- Search of official intel/llvm GitHub release/tag material did not establish a compiler 2026.1.0 tag-to-commit mapping for this adapter. Release notes or issue reports for 2026.1 establish user-reported binary versions but do not identify the source SHA.
+- The official issue trail shows that v2 source has changed since the 2026.1 binary: issue #23034 compares shipped 2026.1 behavior against a later source revision and explicitly notes structural differences. This is further reason not to use branch head as an exact binary proxy, but it concerns graph-capture behavior and says nothing about profiling.
+- No finding here demonstrates a shipped-binary defect fix or resolves whether the captured values were attributed to the intended event.
+
+Primary references:
+
+- Current public v2 event code: https://github.com/intel/llvm/blob/sycl/unified-runtime/source/adapters/level_zero/v2/event.cpp
+- Current public v2 device properties: https://raw.githubusercontent.com/intel/llvm/sycl/unified-runtime/source/adapters/level_zero/v2/device.cpp
+- Current public common global timestamp helper: https://raw.githubusercontent.com/intel/llvm/sycl/unified-runtime/source/adapters/level_zero/common/device.cpp
+- UR 0.12.0 project version string: https://github.com/oneapi-src/unified-runtime/blob/main/CMakeLists.txt
+- Example evidence that the shipped 2026.1 v2 differs from later source: https://github.com/intel/llvm/issues/23034
+- R194 remains controlling for SYCL's required SUBMIT <= START ordering and the failure disposition; this report adds source-specific evidence and does not re-adjudicate the specification.
+

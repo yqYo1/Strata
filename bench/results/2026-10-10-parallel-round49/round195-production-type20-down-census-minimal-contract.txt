@@ -1,0 +1,55 @@
+# R195 — minimal production type-20 Down caller census contract
+
+Date: 2026-10-10 (Asia/Tokyo). Read-only review for the immutable SYCL worktree at HEAD `910874e2d7b3324ea33fafe0227abc1924635b4a`, source baseline `2ab09413117044d7499ac6acc6c12db404024f9d`. No code, build, test, compiler, device/process query, profiler, service, model, or payload action was performed. Only this report was written.
+
+## Decision
+
+The smallest useful production census is caller-side, compile-time diagnostic instrumentation in a disposable diagnostic build, with a fixed-capacity record array allocated before timing and append-only writes during the measured prefill. Count at the existing per-expert decision/call sites, and summarize after the prefill has reached its existing completion boundary. Do not log, allocate, lock, format strings, query clocks, or wait per expert inside the timed path. Keep instrumentation disabled by default and leave the production token route unchanged.
+
+It can establish actual eligibility, wrapper selection, selected arithmetic path, routed-row work, matrix sizes, and staging bytes. It does not establish speed or prove a private helper improvement. A successful census is a prerequisite to the separate real-model A/B; no A/B or eligibility claim follows from the installed metadata alone.
+
+## Exact source pins and caller map
+
+- Worktree: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-prefill-iq4nl-direct-20261010`, HEAD `910874e2d7b3324ea33fafe0227abc1924635b4a`; tree reported clean by task owner.
+- `sycl/src/prefill/prefill.cpp`: SHA-256 `b3b8cab8394be20065c1a5671d0268a6a294e6f0887589e52636232c3db655fd`.
+- `sycl/src/kernels/cuda/iq_kernels.dp.cpp`: SHA-256 `df880d310c4dc880d8ae187da7adbb0af35548e168dc6cb1c4930802d64e2731`.
+- `sycl/src/prefill/gemm.dp.cpp`: SHA-256 `11a2c943ccc323c328b58d99119d77b3b4ed95c92a0f680480bf5ede96bcb705`.
+
+In `prefill.cpp`, `Prefill::run` chooses ordinary `run_impl` or layer-major, and layer-major calls `run_impl` per layer (2353 onward; route selection 2353-2362 and layer-major body around 2690-2780). Per chunk and layer, routing fills `m.cnt[e]` from actual IDs (4139-4168), then `order` contains positive-count local experts (around 4180-4190). The fused branch is decided before ordinary expert execution (4021-4086). In the ordinary expert lambda, the MMQ route returns before direct native dequant (4748 onward); the direct native Down call is at 4799-4810. There, the loaded `f.d_type`, `f.n_embd`, `f.n_ff`, and `n=f.n_embd*f.n_ff` are authoritative. The direct arm calls either the private IQ4NL helper or generic `iq_dequant_f16`; a call returning normally means its queue submission and immediate `check()` returned, not that asynchronous work completed.
+
+The helper in `iq_kernels.dp.cpp:4297-4316` rejects invalid type, pointer, extent, or alignment, submits one fixed-type kernel to the passed queue, then calls `check("iq_dequant_f16")`. There is no generic retry. Do not add one. The same direct path then invokes two `m.gemm.f16` calls (GU and Down) at `prefill.cpp:4820-4825`; `gemm.dp.cpp:750-783` routes these through DPCT/oneMKL with transposed FP16 weights, FP16 inputs, FP32 output/compute. MMQ and fused are distinct route counts and should not be recast as direct calls. In this pinned build, MMQ and fused are disabled stubs; still record their selected status rather than assuming it from that source fact.
+
+## Minimum fixed diagnostic schema
+
+Use a fixed array sized before the measured call, with an explicit hard maximum and overflow flag. A practical conservative cap is 262,144 fixed-size records (about 8 MiB at 32 bytes/record); if it overflows, the census fails closed. No dynamic growth or per-event heap ownership. A record is appended once for each positive-count expert decision, including bypass decisions, and contains:
+
+- monotonically increasing chunk ordinal and actual chunk `c0,T`; layer and expert `l,e`;
+- actual routed rows `m.cnt[e]`, loaded `f.gu_type,f.d_type,f.n_embd,f.n_ff` when native layout exists, and computed `n`;
+- selected route: fused, MMQ (and group/batched route where relevant), generic direct native, private direct native, or non-native direct;
+- selected Down wrapper; record `not-called` for bypass. For each helper call, set a temporary outcome before the call and mark `returned` immediately after it; failed/throw/early exit leaves incomplete census;
+- Down source payload bytes: `n/256 * 18` for type 20, dequant destination bytes `n * 2`, and the selected underlying arithmetic label (native Down IQ4NL-to-FP16 then two FP16 oneMKL GEMMs for the direct path);
+- for expert staging, whether the blob was cache-resident or staged, and bytes actually transferred for this expert. On the existing path, a nonresident staged expert uses `lay.blob_bytes(l)` bytes (see `stage_one`, 4630-4670); cache-resident expert is zero staging bytes. Count the established transfer at the staging site or tie it to the matching expert record without reconstructing it from model-wide totals. Do not call compressed source bytes or dequant output bytes “copy bytes.”
+
+No event handles, timestamps, profiler hooks, additional queue submissions, waits, or oneMKL event tracking are required for this census. The record is only host-side factual context. The exact event/service-attribution question belongs to R190 and is deliberately out of scope.
+
+After the existing chunk/prefill drain, emit compact aggregates keyed by `(layer, expert, d_type, route, wrapper)`: call/return counts; summed routed rows; unique chunks; `n`, compressed bytes and FP16 output bytes (counted once per returned call); staged versus resident counts/bytes; and overflow/incomplete/error flags. Also print model/runtime identity and the effective values of build option, frozen private opt-in, `STRATA_PREFILL_MMQ`, prefill mode, native layout and peer/multi-GPU status. Avoid an unbounded per-call text dump; retain the fixed records only if a separate diagnostic consumer needs them.
+
+Reconcile these invariants in the summarizer, not with estimated formulas: every `m.cnt[e]>0` local `order` entry has exactly one route decision record; all direct calls map to exactly one generic or private wrapper-return record; the two direct GEMM calls follow only a completed direct dequant wrapper; every bypass decision is accounted for; per-chunk routed-row totals equal `T*K` across all local/peer/fused decisions; copy bytes equal the staging transfer ledger, with cache hits at zero. Any mismatch, capacity overflow, failed call, incomplete prefill, or missing drain means “census invalid.” For fused execution, which does not create the same host expert order, record per-expert rows from the already available route/sequence metadata where possible; otherwise label that branch aggregate opaque and fail any claim requiring per-expert attribution.
+
+## Workload and gates
+
+The census must observe actual `n_batched >= 32768` passed to `Prefill::run`, with chunk ordinals and `(c0,T)` summing to that count. Prompt length by itself is insufficient; ordinary CLI processing may leave the final prompt token outside the batched prefill, so use at least 32,769 prompt tokens if that path is used and verify the runtime count. Keep route-affecting settings at the intended production values and record them. If a forced direct-path qualification is separately required, label it as such; do not substitute it for the production route census.
+
+Keep three outcomes distinct:
+
+1. **Prefill census gate:** exact count reconciliation and successful prefill completion at >=32,768 actual positions; no counter overflow or async error.
+2. **Decode-success gate:** the application continues through its requested decode check successfully. This separately establishes decode viability; the prefill census alone does not.
+3. **262,144-position full integration gate:** separately required longer real-model end-to-end run, including its own success/correctness status. Passing the 32K census or decode check does not satisfy this gate.
+
+Only after the relevant production census is valid should the owner run a real-model baseline/private A/B in fresh processes under identical inputs and route settings. First require exact output equivalence and preserved correctness/fault status; collect per-sample prefill and end-to-end timings separately. The per-call ledger may itself perturb host execution slightly, so keep the census diagnostic build separate from clean timing binaries and do not use census-run elapsed time as an A/B result. No speed threshold or performance result is asserted here.
+
+## Prior evidence boundary
+
+R171 already established that the current kernel has vectorized 8-half stores and found no externally supported new arithmetic candidate. R186 already established the installed pack metadata has type-20 Down in 39/48 layers, while proving no runtime load, route, or wrapper calls. R190 owns event/oneMKL phase attribution. This report narrows the missing evidence to a bounded actual-caller census and a concrete no-allocation instrumentation contract; it does not repeat metadata as runtime evidence, infer actual calls, or claim eligibility from layer inventory.
+
+MMQ/fused remain disabled in the pinned build, and production native direct route is IQ packed blob → FP16 dequant → oneMKL. Source availability of MMQ or fused kernels is not evidence that those routes execute. The census records route selection so an altered future build cannot silently be described as this route.
