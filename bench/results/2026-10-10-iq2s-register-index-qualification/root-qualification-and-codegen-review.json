@@ -1,0 +1,41 @@
+{
+  "time_utc": "2026-10-09T23:58:58.837657+00:00",
+  "source_commit": "22064c0b26232b0964afd70e7d9fe47535b39224",
+  "passed_receipt_sha256": "be9fbe4246e0e420584e5baf98240bbbd4170efa19e299aadb2dcb1cefb6e548",
+  "failed_controller_receipt_preserved_sha256": "60cdb36ed8979a3744a83b27f46a0133bcc1191822eae31d43372ac24c225365",
+  "original_failure": "Exited /proc entry raised ProcessLookupError during sanitizer build; controller interrupted two known owned processes. No survivors. Release fixture passed but whole v1 gate remains failed/incomplete.",
+  "fix": "Fresh v2 tolerates only missing/exited process entries; no fixture or correctness threshold change.",
+  "correctness": "Fresh release and IntelLLVM ASan/UBSan,101lines each,96profiles/1536GU pairs/9216dots, all96profile rows identical to earlier qualified source. Mixed4194304active checks/1048576vectors/16alignments, uniform262144/all1024indices; MXCSR controls unchanged.",
+  "root_full_new_control_candidate_instructions_reviewed": true,
+  "codegen": {
+    "old_candidate_frame_bytes": 184,
+    "new_candidate_frame_bytes": 32,
+    "direct_control_frame_bytes": 40,
+    "new_candidate_four_64value_inner_iterations": true,
+    "old_materialized_index_roundtrips_absent": true,
+    "old_extra_YMM_accumulator_spills_absent": true,
+    "eight_literal_PEXTRW_per_inner_iteration": true,
+    "intentional_32byte_sign_scratch_retained": true,
+    "new_two_HiSpread_loads_per_inner_iteration": true,
+    "scalar_grid_reads_and_sign_scale_madd_accum_blockFMA_hsum_postscale_preserved": true,
+    "hot_helpers_or_gathers": false,
+    "speed_measured": false
+  },
+  "mechanism_gate": "Root and independently reviewed Luna R103 accept static linked-codegen gate; timing/actual-weight/model gates remain unqualified.",
+  "model_opened": false,
+  "live_activations": false,
+  "GPU_executed": false,
+  "performance_adopted": false,
+  "production_default_changed": false,
+  "remaining_gates": [
+    "actual-weight frozen train/holdout cohort and all GU row bits/nonfinite counts",
+    "live quantizer/path/worker FP domain",
+    "repeated real workload >=32768 prefill and distinct repeated decode phases",
+    "physical262144 context lifecycle before production adoption"
+  ],
+  "independent_review": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/iq2s-register-index-actual-linked-codegen-round103.txt",
+    "sha256": "ec808d80eafc4b4c4fc5e02d20f7a166e29e096e5cce90c47db9bf4ca36ee127",
+    "root_read_full_report": true
+  }
+}

@@ -1,0 +1,552 @@
+{
+  "active": false,
+  "complete": false,
+  "passed": false,
+  "source_head": "22064c0b26232b0964afd70e7d9fe47535b39224",
+  "dependency_head": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+  "source_pins": {
+    "CMakeLists.txt": "fbbe43744582bcd320349392e3e90f81e7b1299128c76639d4b96de285cb255d",
+    "iq2s_index_spread.cpp": "c51f580bc72cb303e7fe30b1cfb6f7c09ad82332ffd60d441af0eac2dbe77b89",
+    "README.md": "f47b8a21ef399c8ae9b2f235ec27f9ea8547bd989290c80d3c674824aa311c2f"
+  },
+  "dependency_pins": {
+    "src/ggml-cpu/arch/x86/quants.c": "3c489fdc77e3ab484a5f188bff9c60c0e9483c951ed65c1a562a04c249d5628e",
+    "src/ggml-common.h": "0061131b615c5721fc88a78feeb22c1f8c450f1c2646a317d80796a653bf595c",
+    "src/ggml-cpu/ggml-cpu.c": "7b451e6528cec3bc27bfd812a1314859c92d22a00c2db371d543cde5b7d5ca94",
+    "src/ggml-quants.c": "07143d7068936ae46b3c528b2f3d4bbb666e74d88992165716174d243573965d"
+  },
+  "controller_sha256": "58a71267f15ee8a68b17d49101b4c4d90f1a51cd3275209ab8dc72384c3107a8",
+  "compiler_pins": {
+    "/opt/intel/oneapi/compiler/2026.1/bin/icpx": "be7fa7c3c74c2ba2b8e1b50b0a61e37986441727899e25f3545636bde157c083",
+    "/opt/intel/oneapi/compiler/2026.1/bin/icx": "be7fa7c3c74c2ba2b8e1b50b0a61e37986441727899e25f3545636bde157c083"
+  },
+  "commands": [
+    {
+      "label": "compiler",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "--version"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "wall_seconds": 180,
+      "AS_each_bytes": 17179869184,
+      "RSS_owned_poll_bytes": 3221225472,
+      "CPU_each_seconds": [
+        180,
+        181
+      ],
+      "FSIZE_each_bytes": 67108864,
+      "NOFILE": 256,
+      "CORE_bytes": 0,
+      "cpu_placement": null,
+      "owners": [],
+      "peak_owned_rss_bytes": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 0.07074140198528767,
+      "stdout_sha256": "119a0a4ee0badbc5231f46aa701b7ad3f97cc23f478eecb25ab2f77a66c92bac",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "release-configure",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/sycl/tools/native-iq2s-nt1-index-spread",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-register-index-release-v1",
+        "-G",
+        "Ninja",
+        "-DCMAKE_C_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icx",
+        "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DGGML_SOURCE_DIR=/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml",
+        "-DCMAKE_BUILD_TYPE=Release"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "wall_seconds": 180,
+      "AS_each_bytes": 17179869184,
+      "RSS_owned_poll_bytes": 3221225472,
+      "CPU_each_seconds": [
+        180,
+        181
+      ],
+      "FSIZE_each_bytes": 67108864,
+      "NOFILE": 256,
+      "CORE_bytes": 0,
+      "cpu_placement": null,
+      "owners": [
+        {
+          "pid": 3299847,
+          "state": "D",
+          "pgid": 3299847,
+          "start_ticks": 27963461,
+          "rss_bytes": 13598720
+        },
+        {
+          "pid": 3299855,
+          "state": "S",
+          "pgid": 3299847,
+          "start_ticks": 27963476,
+          "rss_bytes": 3305472
+        },
+        {
+          "pid": 3299856,
+          "state": "S",
+          "pgid": 3299847,
+          "start_ticks": 27963476,
+          "rss_bytes": 41107456
+        },
+        {
+          "pid": 3299878,
+          "state": "S",
+          "pgid": 3299847,
+          "start_ticks": 27963501,
+          "rss_bytes": 3342336
+        },
+        {
+          "pid": 3299914,
+          "state": "S",
+          "pgid": 3299847,
+          "start_ticks": 27963514,
+          "rss_bytes": 3375104
+        },
+        {
+          "pid": 3300014,
+          "state": "S",
+          "pgid": 3299847,
+          "start_ticks": 27963573,
+          "rss_bytes": 3387392
+        },
+        {
+          "pid": 3300046,
+          "state": "S",
+          "pgid": 3299847,
+          "start_ticks": 27963604,
+          "rss_bytes": 3227648
+        },
+        {
+          "pid": 3300047,
+          "state": "S",
+          "pgid": 3299847,
+          "start_ticks": 27963604,
+          "rss_bytes": 41054208
+        },
+        {
+          "pid": 3300056,
+          "state": "R",
+          "pgid": 3299847,
+          "start_ticks": 27963605,
+          "rss_bytes": 10526720
+        }
+      ],
+      "peak_owned_rss_bytes": 72232960,
+      "exit_code": 0,
+      "elapsed_seconds": 2.397197069018148,
+      "stdout_sha256": "0a09a7c5857a486825e5da6f7a2cc4c45ac367af91650fb29287279b0ecd963b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "release-build",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-register-index-release-v1",
+        "--target",
+        "iq2s_index_spread",
+        "--parallel",
+        "2"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "wall_seconds": 420,
+      "AS_each_bytes": 17179869184,
+      "RSS_owned_poll_bytes": 4294967296,
+      "CPU_each_seconds": [
+        360,
+        361
+      ],
+      "FSIZE_each_bytes": 67108864,
+      "NOFILE": 256,
+      "CORE_bytes": 0,
+      "cpu_placement": null,
+      "owners": [
+        {
+          "pid": 3300127,
+          "state": "S",
+          "pgid": 3300127,
+          "start_ticks": 27963701,
+          "rss_bytes": 12722176
+        },
+        {
+          "pid": 3300128,
+          "state": "S",
+          "pgid": 3300127,
+          "start_ticks": 27963702,
+          "rss_bytes": 3604480
+        }
+      ],
+      "peak_owned_rss_bytes": 16588800,
+      "exit_code": 0,
+      "elapsed_seconds": 29.81296446896158,
+      "stdout_sha256": "c8c97325115a6dbb55805f44df5721278a3bea790d9acccdcd7a430cf8933ad9",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "release-target-commands",
+      "argv": [
+        "/usr/bin/ninja",
+        "-C",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-register-index-release-v1",
+        "-t",
+        "commands",
+        "iq2s_index_spread"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "wall_seconds": 180,
+      "AS_each_bytes": 17179869184,
+      "RSS_owned_poll_bytes": 3221225472,
+      "CPU_each_seconds": [
+        180,
+        181
+      ],
+      "FSIZE_each_bytes": 67108864,
+      "NOFILE": 256,
+      "CORE_bytes": 0,
+      "cpu_placement": null,
+      "owners": [],
+      "peak_owned_rss_bytes": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 0.0544694599811919,
+      "stdout_sha256": "9658b899e776c40bea6fd36492c43cd81b6e052b04aba2dd8d4272d69a5dce19",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "release-imports",
+      "argv": [
+        "/usr/bin/readelf",
+        "-d",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-register-index-release-v1/iq2s_index_spread"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "wall_seconds": 180,
+      "AS_each_bytes": 17179869184,
+      "RSS_owned_poll_bytes": 3221225472,
+      "CPU_each_seconds": [
+        180,
+        181
+      ],
+      "FSIZE_each_bytes": 67108864,
+      "NOFILE": 256,
+      "CORE_bytes": 0,
+      "cpu_placement": null,
+      "owners": [],
+      "peak_owned_rss_bytes": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 0.05328884598566219,
+      "stdout_sha256": "a3c7a08f53611112ed5d4e3c09c58a475aa2a704a3701cbf0e1b5258e3e3b70e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "release-fixtures",
+      "argv": [
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-register-index-release-v1/iq2s_index_spread"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "wall_seconds": 180,
+      "AS_each_bytes": 536870912,
+      "RSS_owned_poll_bytes": 536870912,
+      "CPU_each_seconds": [
+        150,
+        151
+      ],
+      "FSIZE_each_bytes": 2097152,
+      "NOFILE": 256,
+      "CORE_bytes": 0,
+      "cpu_placement": 0,
+      "owners": [
+        {
+          "pid": 3302405,
+          "state": "R",
+          "pgid": 3302405,
+          "start_ticks": 27966694,
+          "rss_bytes": 3334144
+        }
+      ],
+      "peak_owned_rss_bytes": 3334144,
+      "exit_code": 0,
+      "elapsed_seconds": 0.1279404719825834,
+      "stdout_sha256": "9860f4482052ae2b4d09c4bc4fb3473bdf676526a41e4f4fb99bba4629fc1249",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "asan-ubsan-configure",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/sycl/tools/native-iq2s-nt1-index-spread",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-register-index-asan-ubsan-v1",
+        "-G",
+        "Ninja",
+        "-DCMAKE_C_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icx",
+        "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DGGML_SOURCE_DIR=/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DCMAKE_C_FLAGS=-O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer",
+        "-DCMAKE_CXX_FLAGS=-O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer",
+        "-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=address,undefined"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "wall_seconds": 180,
+      "AS_each_bytes": 17179869184,
+      "RSS_owned_poll_bytes": 3221225472,
+      "CPU_each_seconds": [
+        180,
+        181
+      ],
+      "FSIZE_each_bytes": 67108864,
+      "NOFILE": 256,
+      "CORE_bytes": 0,
+      "cpu_placement": null,
+      "owners": [
+        {
+          "pid": 3302409,
+          "state": "R",
+          "pgid": 3302409,
+          "start_ticks": 27966707,
+          "rss_bytes": 13402112
+        },
+        {
+          "pid": 3302427,
+          "state": "S",
+          "pgid": 3302409,
+          "start_ticks": 27966712,
+          "rss_bytes": 3350528
+        },
+        {
+          "pid": 3302428,
+          "state": "S",
+          "pgid": 3302409,
+          "start_ticks": 27966712,
+          "rss_bytes": 42020864
+        },
+        {
+          "pid": 3302443,
+          "state": "D",
+          "pgid": 3302409,
+          "start_ticks": 27966717,
+          "rss_bytes": 11698176
+        },
+        {
+          "pid": 3302506,
+          "state": "S",
+          "pgid": 3302409,
+          "start_ticks": 27966809,
+          "rss_bytes": 3182592
+        },
+        {
+          "pid": 3302507,
+          "state": "S",
+          "pgid": 3302409,
+          "start_ticks": 27966809,
+          "rss_bytes": 41566208
+        },
+        {
+          "pid": 3302511,
+          "state": "R",
+          "pgid": 3302409,
+          "start_ticks": 27966814,
+          "rss_bytes": 8753152
+        },
+        {
+          "pid": 3302557,
+          "state": "S",
+          "pgid": 3302409,
+          "start_ticks": 27966901,
+          "rss_bytes": 3489792
+        },
+        {
+          "pid": 3302626,
+          "state": "S",
+          "pgid": 3302409,
+          "start_ticks": 27966979,
+          "rss_bytes": 3428352
+        },
+        {
+          "pid": 3302716,
+          "state": "S",
+          "pgid": 3302409,
+          "start_ticks": 27967079,
+          "rss_bytes": 3514368
+        },
+        {
+          "pid": 3302744,
+          "state": "S",
+          "pgid": 3302409,
+          "start_ticks": 27967149,
+          "rss_bytes": 3129344
+        },
+        {
+          "pid": 3302745,
+          "state": "S",
+          "pgid": 3302409,
+          "start_ticks": 27967149,
+          "rss_bytes": 41455616
+        },
+        {
+          "pid": 3302747,
+          "state": "R",
+          "pgid": 3302409,
+          "start_ticks": 27967150,
+          "rss_bytes": 9977856
+        }
+      ],
+      "peak_owned_rss_bytes": 96686080,
+      "exit_code": 0,
+      "elapsed_seconds": 5.176555523998104,
+      "stdout_sha256": "8a66848c21d8f6dccd0b15e2a7b9e72e7f61ef6e862f46a4eb1481cb91ba2292",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "asan-ubsan-build",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-register-index-asan-ubsan-v1",
+        "--target",
+        "iq2s_index_spread",
+        "--parallel",
+        "2"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "wall_seconds": 420,
+      "AS_each_bytes": 17179869184,
+      "RSS_owned_poll_bytes": 4294967296,
+      "CPU_each_seconds": [
+        360,
+        361
+      ],
+      "FSIZE_each_bytes": 67108864,
+      "NOFILE": 256,
+      "CORE_bytes": 0,
+      "cpu_placement": null,
+      "owners": [
+        {
+          "pid": 3302785,
+          "state": "S",
+          "pgid": 3302785,
+          "start_ticks": 27967225,
+          "rss_bytes": 12894208
+        },
+        {
+          "pid": 3302786,
+          "state": "S",
+          "pgid": 3302785,
+          "start_ticks": 27967226,
+          "rss_bytes": 3690496
+        }
+      ],
+      "peak_owned_rss_bytes": 16715776,
+      "elapsed_seconds": 4.0836794240167364,
+      "stdout_sha256": "2b4c376ffa0c8bd7a43228314086df057bd3007a0de9229e41998076b494aa8a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "cleanup": [
+    {
+      "label": "asan-ubsan-build",
+      "pid": 3302785,
+      "start_ticks": 27967225,
+      "signal": "SIGTERM"
+    },
+    {
+      "label": "asan-ubsan-build",
+      "pid": 3302786,
+      "start_ticks": 27967226,
+      "signal": "SIGTERM"
+    }
+  ],
+  "survivors": [],
+  "started_utc": "2026-10-09T23:52:35.433251+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "previous_qualified_source_receipt_sha256": "36f1359468e6c383a749c8b36619e7ffd850c3b9e2598245ef66ac2c3cd299c8",
+  "scope": "standalone CPU synthetic three-arm exactness and sanitizer gate; no timings, model, GPU or adoption",
+  "gpu_executed": false,
+  "model_opened": false,
+  "performance_eligible": false,
+  "adopted": false,
+  "cpu_metadata": "processor\t: 0\nvendor_id\t: AuthenticAMD\ncpu family\t: 25\nmodel\t\t: 33\nmodel name\t: AMD Ryzen 5 5600X 6-Core Processor\nstepping\t: 0\nmicrocode\t: 0xa201030\ncpu MHz\t\t: 4491.701\ncache size\t: 512 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 0\ncpu cores\t: 6\napicid\t\t: 0\ninitial apicid\t: 0\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 16\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nbugs\t\t: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso ibpb_no_ret spectre_v2_user tsa vmscape\nbogomips\t: 7386.19\nTLB size\t: 2560 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]\n\nprocessor\t: 1\nvendor_id\t: AuthenticAMD\ncpu family\t: 25\nmodel\t\t: 33\nmodel name\t: AMD Ryzen 5 5600X 6-Core Processor\nstepping\t: 0\nmicrocode\t: 0xa201030\ncpu MHz\t\t: 4491.731\ncache size\t: 512 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 1\ncpu cores\t: 6\napicid\t\t: 2\ninitial apicid\t: 2\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 16\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nbugs\t\t: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso ibpb_no_ret spectre_v2_user tsa vmscape\nbogomips\t: 7386.19\nTLB size\t: 2560 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]\n\nprocessor\t: 2\nvendor_id\t: AuthenticAMD\ncpu family\t: 25\nmodel\t\t: 33\nmodel name\t: AMD Ryzen 5 5600X 6-Core Processor\nstepping\t: 0\nmicrocode\t: 0xa201030\ncpu MHz\t\t: 4491.765\ncache size\t: 512 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 2\ncpu cores\t: 6\napicid\t\t: 4\ninitial apicid\t: 4\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 16\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nbugs\t\t: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso ibpb_no_ret spectre_v2_user tsa vmscape\nbogomips\t: 7386.19\nTLB size\t: 2560 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]\n\nprocessor\t: 3\nvendor_id\t: AuthenticAMD\ncpu family\t: 25\nmodel\t\t: 33\nmodel name\t: AMD Ryzen 5 5600X 6-Core Processor\nstepping\t: 0\nmicrocode\t: 0xa201030\ncpu MHz\t\t: 3593.235\ncache size\t: 512 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 3\ncpu cores\t: 6\napicid\t\t: 6\ninitial apicid\t: 6\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 16\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nbugs\t\t: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso ibpb_no_ret spectre_v2_user tsa vmscape\nbogomips\t: 7386.19\nTLB size\t: 2560 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]\n\nprocessor\t: 4\nvendor_id\t: AuthenticAMD\ncpu family\t: 25\nmodel\t\t: 33\nmodel name\t: AMD Ryzen 5 5600X 6-Core Processor\nstepping\t: 0\nmicrocode\t: 0xa201030\ncpu MHz\t\t: 3613.148\ncache size\t: 512 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 4\ncpu cores\t: 6\napicid\t\t: 8\ninitial apicid\t: 8\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 16\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nbugs\t\t: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso ibpb_no_ret spectre_v2_user tsa vmscape\nbogomips\t: 7386.19\nTLB size\t: 2560 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]\n\nprocessor\t: 5\nvendor_id\t: AuthenticAMD\ncpu family\t: 25\nmodel\t\t: 33\nmodel name\t: AMD Ryzen 5 5600X 6-Core Processor\nstepping\t: 0\nmicrocode\t: 0xa201030\ncpu MHz\t\t: 4516.561\ncache size\t: 512 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 5\ncpu cores\t: 6\napicid\t\t: 10\ninitial apicid\t: 10\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 16\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nbugs\t\t: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso ibpb_no_ret spectre_v2_user tsa vmscape\nbogomips\t: 7386.19\nTLB size\t: 2560 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]\n\nprocessor\t: 6\nvendor_id\t: AuthenticAMD\ncpu family\t: 25\nmodel\t\t: 33\nmodel name\t: AMD Ryzen 5 5600X 6-Core Processor\nstepping\t: 0\nmicrocode\t: 0xa201030\ncpu MHz\t\t: 4508.351\ncache size\t: 512 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 0\ncpu cores\t: 6\napicid\t\t: 1\ninitial apicid\t: 1\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 16\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nbugs\t\t: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso ibpb_no_ret spectre_v2_user tsa vmscape\nbogomips\t: 7386.19\nTLB size\t: 2560 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]\n\nprocessor\t: 7\nvendor_id\t: AuthenticAMD\ncpu family\t: 25\nmodel\t\t: 33\nmodel name\t: AMD Ryzen 5 5600X 6-Core Processor\nstepping\t: 0\nmicrocode\t: 0xa201030\ncpu MHz\t\t: 4514.437\ncache size\t: 512 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 1\ncpu cores\t: 6\napicid\t\t: 3\ninitial apicid\t: 3\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 16\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nbugs\t\t: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso ibpb_no_ret spectre_v2_user tsa vmscape\nbogomips\t: 7386.19\nTLB size\t: 2560 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]\n\nprocessor\t: 8\nvendor_id\t: AuthenticAMD\ncpu family\t: 25\nmodel\t\t: 33\nmodel name\t: AMD Ryzen 5 5600X 6-Core Processor\nstepping\t: 0\nmicrocode\t: 0xa201030\ncpu MHz\t\t: 4516.460\ncache size\t: 512 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 2\ncpu cores\t: 6\napicid\t\t: 5\ninitial apicid\t: 5\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 16\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nbugs\t\t: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso ibpb_no_ret spectre_v2_user tsa vmscape\nbogomips\t: 7386.19\nTLB size\t: 2560 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]\n\nprocessor\t: 9\nvendor_id\t: AuthenticAMD\ncpu family\t: 25\nmodel\t\t: 33\nmodel name\t: AMD Ryzen 5 5600X 6-Core Processor\nstepping\t: 0\nmicrocode\t: 0xa201030\ncpu MHz\t\t: 3611.366\ncache size\t: 512 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 3\ncpu cores\t: 6\napicid\t\t: 7\ninitial apicid\t: 7\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 16\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nbugs\t\t: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso ibpb_no_ret spectre_v2_user tsa vmscape\nbogomips\t: 7386.19\nTLB size\t: 2560 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]\n\nprocessor\t: 10\nvendor_id\t: AuthenticAMD\ncpu family\t: 25\nmodel\t\t: 33\nmodel name\t: AMD Ryzen 5 5600X 6-Core Processor\nstepping\t: 0\nmicrocode\t: 0xa201030\ncpu MHz\t\t: 3612.865\ncache size\t: 512 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 4\ncpu cores\t: 6\napicid\t\t: 9\ninitial apicid\t: 9\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 16\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nbugs\t\t: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso ibpb_no_ret spectre_v2_user tsa vmscape\nbogomips\t: 7386.19\nTLB size\t: 2560 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]\n\nprocessor\t: 11\nvendor_id\t: AuthenticAMD\ncpu family\t: 25\nmodel\t\t: 33\nmodel name\t: AMD Ryzen 5 5600X 6-Core Processor\nstepping\t: 0\nmicrocode\t: 0xa201030\ncpu MHz\t\t: 4516.524\ncache size\t: 512 KB\nphysical id\t: 0\nsiblings\t: 12\ncore id\t\t: 5\ncpu cores\t: 6\napicid\t\t: 11\ninitial apicid\t: 11\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 16\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nbugs\t\t: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso ibpb_no_ret spectre_v2_user tsa vmscape\nbogomips\t: 7386.19\nTLB size\t: 2560 4K pages\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 48 bits physical, 48 bits virtual\npower management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]\n\n",
+  "cpu_affinity": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "variants": {
+    "release": {
+      "binary": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-register-index-release-v1/iq2s_index_spread",
+      "binary_sha256": "749162ce18845310fa08d80f0d53c7fc96b1280753f0eb840aa733c01f5da295",
+      "binary_bytes": 2944720,
+      "profiles": 96,
+      "GU_pairs": 1536,
+      "dot_calls": 9216,
+      "uniform_index_comparisons": 262144,
+      "mixed_active_index_comparisons": 4194304,
+      "mixed_vector_comparisons": 1048576,
+      "alignment_offsets": 16,
+      "complete_normal_exit": true,
+      "stdout_sha256": "9860f4482052ae2b4d09c4bc4fb3473bdf676526a41e4f4fb99bba4629fc1249"
+    }
+  },
+  "previous_profile_pins": {
+    "release": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq2s-index-spread-cpu-validation-v2/release-fixtures.stdout",
+      "sha256": "9860f4482052ae2b4d09c4bc4fb3473bdf676526a41e4f4fb99bba4629fc1249",
+      "all96profile_rows_identical": true
+    }
+  },
+  "error": "ProcessLookupError: [Errno 3] No such process",
+  "exit_pin_gate_passed": true,
+  "elapsed_seconds": 41.90474348596763,
+  "finished_utc": "2026-10-09T23:53:17.294869+00:00"
+}
