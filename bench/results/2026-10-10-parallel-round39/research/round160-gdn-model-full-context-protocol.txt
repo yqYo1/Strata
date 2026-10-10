@@ -1,0 +1,43 @@
+# R160 — actual 262,144-token GDN-factor prefill boundary
+
+Date: 2026-10-10 (Asia/Tokyo). Read-only source and protocol audit. No model/tensor payload, runtime, build/compiler/disassembly, test, GPU/device query, profiler, Git operation, cleanup, lock, service or reset was used. This records the current interface boundary and a qualification protocol; it is not a model or candidate pass.
+
+## Decision
+
+The current generate CLI and GEN service cannot admit an exactly 262,144-token prompt with max_context=262144: both require a positive output budget and require prompt length plus that budget to fit max_context. Both reject max_new=0. No prefill-only mode was found. Therefore a strict full-context no-output request is not expressible through the current interface.
+
+For prompt N=262144, normal generation batches the first N-1=262143 prompt positions, then processes the final prompt token at position 262143 through the token/verify path. This consumes N prompt positions only if that final stage completes; the factor prefill caller sees only the first 262143. The final prompt position can produce a prediction, but that output is not appended to the consumed prompt state. Feeding it as an additional input would require position N and exceed the physical context.
+
+A strict qualification requires a reviewed test-only no-output path: admit N prompt inputs, process the final prompt token and compute final logits, drain work and snapshot state, then stop before sampling or appending output. It may bypass only the output-reservation admission check in this explicit test mode; retain the physical position bound N and ordinary generation behavior. Until such a path exists, do not report an exact physical full-context candidate pass.
+
+If a positive-output run is used with max_context=N+1 and max_new=1, it may corroborate that N input positions were consumed if the saved endpoint proves position N was never consumed. Label it as occupancy with a logical cap of N+1, not as strict max_context=N qualification.
+
+## Source pins and path semantics
+
+Generate/state source is WPROBE HEAD 609a270daac23c9b1a26d26ec092b2f60d2da335. generate.cpp SHA-256: eb591e263398abd9b178ab00c61e4f6af53a53bad37f837b18cd323af8dbab05. Its prefill.cpp SHA-256 is f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77.
+
+Factor source is WTimer HEAD 5ab8ab0a45b98a987b7ec77cb8b19007a35ea5d9. prefill.cpp SHA-256: 064d6789aeb55c7c44e7fe703d4fcabfee9524c4e14f164610236a6c84257d6a; kernels.dp.cpp SHA-256: ee745dbc335748709023dd349829d0300b797adefae0e951f975bae4e5408e3f. Factor runtime selection occurs in Prefill::run_impl per eligible layer/chunk (prefill.cpp:2800-2805, 3672-3693); the shared GDN producer/recurrence means layer-major reaches it too. The final token route is outside this factor caller.
+
+The CLI defaults n_batched to n_prompt-1. At N=262144, factor prefill receives 262143 positions (31×8192 + 8191), then the token loop processes the final prompt ID at position 262143. The predicted first output is sampled from that position; with max_new=1 the loop ends without feeding it back into KV.
+
+--prefill-until applies only when 0 < value < n_prompt-1. For N=262144, value 262143 is not a distinct case; it resolves to the default split. Value 262140 yields 262140 prefill positions (31×8192 + 8188), followed by four token-path positions. It does not batch the final four through factor prefill. The four positions are part of the prompt, not generated tokens.
+
+CLI checks at generate.cpp:2352-2355 and 2906-2909 reject zero output budget and enforce prompt plus budget within max_context. GEN parsing/checks at 9396 and 9509-9513 do the same. Serve reads the prompt through n-1, then verification starts at p=n-1 with the final prompt ID (10396-10400, 11236-11242). Resume/callback details: mtp.kv_restore is used only on resume (9802-9804); fresh prompt prefill callbacks pass next prompt IDs into draft_kv/mtp.prefill (11762-11777). A new qualification arm must start fresh.
+
+Prefill::run_layer_major is restricted to full single-GPU compact FP16 with resident K/V and no PLE preload (WTimer prefill.cpp:2381-2413). It processes layers and preserves chunk residual callbacks (2722-2745, 5156-5179). Keep mode, callbacks, state transfer, MTP configuration, and runtime selectors identical across arms.
+
+## Qualification protocol
+
+Use identical canonical prompt IDs, model weights, binary except for the factor selector, device/cache configuration, and runtime selectors. Start each arm from clean equivalent state. Require a fresh-session receipt (RESUME0, REUSED0), prompt/read count N, completion of the final input position, no context sliding, and a saved session endpoint showing exactly positions 0 through N-1 consumed. Record final logits/top-5 and output IDs where applicable.
+
+Compare full GDN state by layer and chunk, including all recurrence matrices and convolution histories. Compare full QSA state, including KV code and scales, paged host authority/page tables, indexer tail/dead/pool/block-position/selected IDs, plus PLE and MTP KV/history when enabled. Capture first-difference location per layer/chunk and final comparator results. Run same-arm repeats as well as legacy-versus-factor comparisons to establish repeatability. Retain compact hashes and first-difference evidence; raw state only under the project retention rules.
+
+For a normal production prompt of length N, the relevant split is 262143 factor-prefill positions plus one token-path position. A CLI split at 262140 has 262140 factor-prefill positions plus four token-path positions. R141's 262140+4 GDN fixture uses bounded GDN chunk calls; it does not establish physical model context or factor-prefill on the final four. Exercising those four through the candidate prefill requires a real model/session-state driver that calls the production prefill chunk body at explicit T boundaries; a synthetic prefix fixture is insufficient. Do not launch a single T=262144 kernel.
+
+R21 records a prior layer-major 262140+4 first run that passed and a repeat after an intervening 32K run that diverged in observed K/V code/scale near position 98328. That remains a repeat defect, not causal localization. Avoid intervening unrelated runs and preserve the original result status.
+
+## Reusable evidence and status
+
+R155 confirms normal N-token prompt batching leaves the last token for the token path. R141 provides split arithmetic; R145 is synthetic-fixture/source review; R72/R77 provide controller framing and full-state comparator protocol, but their actual collector prompts were 36,004 and 37,462 tokens, not candidate full context. Existing full-context baseline receipts are prerequisites/reference only and do not establish this candidate's pass. R158 FULLREAD and R159 controller audit are separate work.
+
+Result: source/protocol qualification only. No full-context model run was performed; no candidate adoption or pass is claimed.

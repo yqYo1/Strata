@@ -1,0 +1,46 @@
+# R162 — active native-IQ MoE route: no new transferable prefill candidate
+
+Date: 2026-10-10 (Asia/Tokyo). Read-only source and upstream implementation review. No source edit, build/compiler/disassembly, test, model/runtime/payload, GPU/device query, profiler, Git, lock, cleanup, service, reset, or import was performed. This is a candidate screen, not a measurement or performance claim.
+
+## Disposition
+
+No new candidate is justified from the reviewed implementations for the active native-IQ-to-FP16/oneMKL MoE prefill route. The clearest external ideas—grouped GEMM, fusing the routed MoE pipeline, and overlapping expert transfer with compute—are already represented by prior local candidates or by the production staging path. The reviewed systems target NVIDIA Hopper/CUDA or multi-GPU expert parallelism and do not supply evidence that a new mechanism transfers to this single-device SYCL route.
+
+Hold new work. Do not infer that the CPU native-expert AVX2/AVX-512 kernels, files for fused/MMQ expert kernels, or other unlinked implementations run on the measured GPU path. The relevant production route is the ordinary native-packed IQ path in prefill.cpp: read packed expert blob, dequantize to FP16, FP16/FP32-output oneMKL GEMM, interleaved SwiGLU, second GEMM, then ordered combine. Active route counts and cost remain unmeasured in this audit.
+
+## Fixed active-source identity
+
+Worktree: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-factor-component-timing-20261010, HEAD 5ab8ab0a45b98a987b7ec77cb8b19007a35ea5d9. Read-only hashes:
+
+- sycl/src/prefill/prefill.cpp: 064d6789aeb55c7c44e7fe703d4fcabfee9524c4e14f164610236a6c84257d6a
+- sycl/src/prefill/gemm.dp.cpp: 11a2c943ccc323c328b58d99119d77b3b4ed95c92a0f680480bf5ede96bcb705
+- sycl/src/kernels/cuda/iq_kernels.dp.cpp: 22c2fb9c379804c2fc20ae302be05ad0f1c66bc623c6134bd7822057ffbba13a
+- sycl/CMakeLists.txt: 0f162e7f123f4ceb11ce611b402549d56c9b37b64be2817194efcdce2af661c8
+
+The SYCL CMake target resolves gemm.cu, kernels.cu, prefill.cpp and iq_kernels.cu to their compiled sources; strata_prefill links strata_engine, which links strata_kernels. The fused MoE source in this target is explicitly moe_fused_stub.cpp. The active prefill branch at prefill.cpp:4805-4829 calls iq_dequant_gu_f16 / iq_dequant_f16 for native formats, then Gemm::f16 for GU and down. gemm.dp.cpp:776-783 maps Gemm::f16 to dpct::blas::gemm / oneMKL with half A/B, float C and f32 compute mode. In contrast, src/kernels/cpu/native_expert.cpp exposes separate CPU-native row kernels; their presence in the repository is not evidence that the above SYCL caller executes them.
+
+Per active expert, the current code submits GU and down dequantization, marks the packed blob reusable after its queued reads, then submits GU GEMM, SwiGLU, and down GEMM. The SYCL queue m.cs is the same in-order queue used by the standard operations. Noncompact scratch rows are expert-disjoint. Two DQ slots (DQ=2) are allocated for dequant outputs (prefill.cpp:712, 1352), with reuse currently ordered by that queue. Expert staging has a separate ring and copied/used event tracking; the streamed path waits on the copied event before compute and retires source slots through used events (around prefill.cpp:4720-4748, 4857-4905). `STRATA_PREFILL_EXPERT_WAIT_BATCH` can add host waits; default is zero.
+
+These source facts describe a possible same-device dequant/compute overlap opportunity only as a hypothesis. They do not show current overlap between dequant for expert j+1 and GEMMs for expert j: both are submitted in order to m.cs. They also do not show that concurrent dequant and GEMM improves total time rather than competing for device execution resources.
+
+## External screen and overlap decisions
+
+1. **Grouped/persistent GEMM.** PyTorch's implementer post describes persistent Triton grouped GEMM and reports up to 2.62x over a manual loop in DeepSeek-v3 training on H100. It also explains that grouped GEMM schedules multiple expert GEMMs in one launch. This maps to the already-screened per-expert GEMM submission/grouping family, not a new transfer: local R149 already proposes same-row-count adjacent-expert oneMKL batch calls, and R146/R150/R152/R153/R155 cover route grouping and its reachability/order risks. The H100/BF16 training result is not evidence for variable-ne FP16/FP32-output oneMKL calls on B570. [PyTorch grouped-GEMM implementation blog](https://pytorch.org/blog/accelerating-moes-with-a-triton-persistent-cache-aware-grouped-gemm-kernel/).
+
+2. **Whole-path fusion and dependent-stage launch chaining.** The vLLM × HPC-Ops author post describes fusing routing, gather/index creation, Gate-Up, activation/quantization, Down, and reduction, with a persistent task map and PDL chained stages. It reports its results on Hopper H20 for FP8 models; its backend supports Hopper and its MoE benchmark compares low-latency small expert batches. This is not a plug-in adjustment to the active IQ-dequant → oneMKL path. It would replace the arithmetic/quantization route, while the local fused/MMQ sources are stubs or inactive in this build. No same-format, SYCL, B570, or 32K Strata result transfers. [vLLM × HPC-Ops implementation post](https://github.com/vllm-project/vllm-project.github.io/blob/main/_posts/2026-07-06-vllm-hpc-ops.md).
+
+3. **Expert-transfer overlap.** SGLang's current EP documentation describes dispatch/compute/combine stages and overlap mechanisms for multi-GPU EP; DuoServe-MoE describes a two-stream CUDA prefill pipeline that prefetches the next expert while the current expert computes. These are relevant design patterns, but Strata already overlaps expert staging through its copy/compute event ring. The DuoServe experiments use vLLM/CUDA and Mixtral 8x7B/8x22B on NVIDIA GPUs, not the same-device dequant-to-GEMM dependency. Reapplying a second host-to-device prefetch pipeline is duplicate work. [SGLang expert-parallelism documentation](https://github.com/sgl-project/sglang/blob/main/docs/docs/advanced_features/expert_parallelism.mdx), [DuoServe-MoE paper](https://arxiv.org/abs/2509.07379).
+
+4. **SGLang single-batch overlap / shared-expert overlap.** The documented example overlaps shared-expert computation with EP communication. The current Strata route has no EP communication stage in the one-device caller; the local multi-GPU path is not the fixed route under review. It does not identify a transferable operation here.
+
+Accordingly I do not nominate a second-queue/pipelined dequant candidate. That would be different from the existing host-copy staging and R149's batched GEMM proposal, but the sources establish no idle interval to fill, no device concurrency on this B570 path, and no benefit at >=32K. It would add cross-queue producer/consumer ordering and new DQ-buffer retirement requirements without evidence.
+
+## Reuse, exclusions, and missing measurement
+
+Read latest supplied registry report-registry-v61.json (166331 bytes; SHA-256 04a5a59986bbebb8cd0b5afa7351a0cba54b7848bf22565cc2e2fcd5706877d6) and the recent reports R148-R156, plus R158/R159/R160 as needed. The prior decisions exclude repeated route grouping, same-ne batched GEMM, cache-residency/weight reuse, decode-pool changes, and IQ4NL/type-20 direct-call specialization. R148/R151 already cover format-switch specialization; R149 covers the oneMKL submission-shape candidate; R146 and R152 establish that inactive MMQ/fused code and layer-major/server callback routes do not prove production selection. R158 says there is no admitted profile that splits the active MoE kernels or attributes device versus host submission time. R159 is synthetic GDN-only controller evidence. R160 is full-context GDN protocol, not MoE evidence.
+
+No actual >=32K model route receipt or model-phase timing was gathered here. If root's later, independently admitted model run is to reopen this screen, the discriminating evidence is bounded per-layer/per-chunk counts for native type, active experts/ne histogram, stage-resident versus streamed expert counts, actual dequant/GU GEMM/SwiGLU/down GEMM/combine call counts, waits and copy events, paired with quiet MoE and total-prefill timing. It must show the currently chosen route and preserve the same prompt, chunk boundaries, cache/ring settings and runtime selectors. A candidate needs to reduce an observed measured bottleneck and improve total prefill beyond run variation, while exact FP16 dequant outputs, intermediate GEMM/activation outputs and downstream state/logits meet the existing correctness gate.
+
+Any future queue-pipeline experiment must keep the existing decode route independent. Its own gate must prove dequant completion before each GEMM consumes the DQ buffer; no DQ slot reuse until the prior down GEMM has finished; packed-blob source retirement only after both required dequant reads finish; and all cross-queue events/errors drained before buffer reuse or teardown. Compare dequant bytes exactly, then intermediate and full model outputs/state. Without those receipts, an apparent overlap or speed result is not admissible.
+
+Decision: no new transferable candidate; hold. No performance claim, model result, route-selection result, or adoption recommendation is asserted.

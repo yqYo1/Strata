@@ -1,0 +1,62 @@
+# R163 — minimal exact-bit discriminator for private IQ4_NL Down dequant
+
+Date: 2026-10-10 (Asia/Tokyo). Read-only numerical-test design against immutable WPROBE609a source and R151/R156. No model/payload read, source edit, build/compiler/disassembly, test, runtime, GPU/device query, profiler, Git, lock, cleanup, service, or recovery/intervention was performed.
+
+## Decision
+
+Use two complementary correctness inputs before considering timing: (1) a deterministic synthetic IQ4_NL byte corpus that exhausts nibble position/lane/block mapping and finite half-scale classes, compared against both the generic type-20 path and a small independent scalar oracle; and (2) exact full-output-bit comparisons on the real production Down matrices encountered in every type-20 layer during an admitted >=32K model run. The synthetic corpus catches indexing and scale-class mistakes; real matrices validate pack offsets, actual input range and the prefill-only call seam. A model-level route/logit/state comparison remains a later integration gate, not a substitute for direct output comparison.
+
+The proposed private path can remove the per-work-item runtime format switch at source level only if its kernel bypasses dq_dispatch and calls the unchanged dq_iq4_nl directly (or uses a compile-time type branch that resolves to that direct call). It retains the lane-dependent low/high-nibble branch. It reuses the same arithmetic and store_run, so no source-level rounding change is proposed. Source inspection cannot prove emitted device code or runtime bit identity; the comparator is required.
+
+## Exact mapping for one flat 256-value group
+
+Fixed source is WPROBE609a270daac23c9b1a26d26ec092b2f60d2da335 at `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-gate-factor-probe-20261010`. `iq_kernels.dp.cpp` SHA-256 is `22c2fb9c379804c2fc20ae302be05ad0f1c66bc623c6134bd7822057ffbba13a`; `third_party/ggml/ggml-common.h` SHA-256 is `0061131b615c5721fc88a78feeb22c1f8c450f1c2646a317d80796a653bf595c`. R151 and R156 use this same WPROBE pin.
+
+GGML defines `block_iq4_nl` as a 16-bit `ggml_half d` followed by 16 packed bytes `qs[16]`; QK4_NL=32 and the struct is 18 bytes (ggml-common.h:447-452). A flat dispatch group covers QK_K=256 values. For group index `g`, dq_iq4_nl sets the first block pointer to `src + g*8*sizeof(block_iq4_nl)`: there are eight consecutive 32-value blocks. The output group starts at `dst + g*256`.
+
+Within each block, lane `tid` maps to `ib=tid/4` (block 0..7) and `il=tid%4` (run 0..3). The half scale is converted exactly to float by `(float)x[ib].d`. The 16-entry signed-byte codebook is `[-127,-104,-83,-65,-49,-35,-22,-10,1,13,25,38,53,69,89,113]` (`kvalues_iq4nl` in ggml-common.h:1120-1122). For each `j=0..7`, output is the existing float product `d * kvalues_iq4nl[code]`, then stored through `store_run<half,8>`.
+
+Exact byte/nibble and output offset mapping:
+
+- `il=0`: `q4=qs+0`, low nibble of `qs[0..7]`, output `32*ib + 0 + j`.
+- `il=1`: `q4=qs+8`, low nibble of `qs[8..15]`, output `32*ib + 8 + j`.
+- `il=2`: `q4=qs+0`, high nibble of `qs[0..7]`, output `32*ib + 16 + j`.
+- `il=3`: `q4=qs+8`, high nibble of `qs[8..15]`, output `32*ib + 24 + j`.
+
+Thus each packed byte contributes its low nibble to the first 16 values of the block and its high nibble to the corresponding value +16. A correct test must use asymmetric low/high values and distinguish adjacent bytes; all-equal or repeated-byte-only data will mask nibble swap and run-offset errors.
+
+For the active model Down shape, `n_embd=2560`, `n_ff=640`, and flat `n=n_embd*n_ff=1,638,400`. One row has 2560 values = 10 flat groups = 80 IQ4_NL blocks. The matrix has 640 rows, 51,200 blocks, 6,400 groups and 921,600 packed bytes; output is 1,638,400 FP16 values = 3,276,800 bytes. For group `g=0..6399`, the implementation's group pointer/output mapping is exactly the same formula above; the test should verify row/group boundaries at every 10-group transition, plus first and last groups.
+
+## Synthetic exact-bit corpus
+
+Use a deterministic byte generator/table, not an unconstrained pseudo-random stream as the only correctness input. For each of the eight 32-value blocks in a group, populate all 16 code values in low-nibble positions and all 16 in high-nibble positions across the 16 `qs` bytes. Use at least two distinct patterns: one with code `i` low and a different permutation high, and one with adjacent `qs` bytes deliberately different. Across blocks, permute/reverse these assignments so every `ib` and `il` lane receives every code and so group 0/1 offsets are distinguishable. Keep an independent scalar expected-output loop using the stated byte mapping, table, float multiplication and exact half conversion; compare every output `uint16_t` bit for generic and specialized arms against it.
+
+Run scale cases as separate full 256-value groups or a short multi-group tensor with a distinct marker pattern per group, so the same corpus exercises nonzero `g` source and destination offsets. For every code and lane/block mapping, include finite half scales covering +0, smallest positive subnormal (`0x0001`), largest positive subnormal (`0x03ff`), smallest normal (`0x0400`), adjacent normal (`0x0401`), representative ordinary value (`1.0`, `0x3c00`), and largest finite (`0x7bff`). Include negative finite counterparts only if accepted by the valid-pack contract; otherwise keep them as separately labelled robustness inputs, not valid-pack evidence. For large finite scale, expected half outputs may overflow to infinity; compare exact output bits and classification, with no tolerance. Do not include NaN/Inf scale payloads in the valid-input suite or make claims about their NaN payload behavior.
+
+Minimum shape points: one valid group (`n=256`), two groups (`n=512`, distinct contents to catch group offset), and a multi-group/tensor shape containing row boundaries. Test `n=1,638,400` for model geometry. The private helper should be called only with validated type 20 and a positive, divisible-by-256 shape at the chosen prefill seam. Preserve public `iq_dequant_f16` validation/fallback for every other format. Do not redefine current zero-length behavior: its present code checks divisibility and type but would submit a zero-group range; the prefill candidate does not need a zero-length call. Test invalid nonmultiples in a subprocess only if the owning API validation suite requires it, preserving its existing fail behavior.
+
+## Candidate/control semantics and rounding
+
+The generic baseline launches `dequant_flat_kernel<half>` with runtime `t`; each work-item calls `dq_dispatch<half>(t,...)`, whose type-20 arm calls `dq_iq4_nl` (iq_kernels.dp.cpp:2721-2762, 2757-2762, 4292-4317). The private type-20 launch must use the same nd_range (one 32-work-item group per 256 values), same group index and pointer arithmetic, and directly invoke the same `dq_iq4_nl`. That removes `switch(ty)` and its other-format arms from each type-20 work-item's source-level call path. It does not remove `if (il < 2)`, codebook indexing, half-scale conversion, or any arithmetic.
+
+The generic and direct calls both reach `store_run<sycl::half,8>`. That specialization constructs each `sycl::half` from the same float value and performs the same aligned 8-half vector store; the fallback `cvt` overload using vector.convert is not selected for this N=8 half case. Keep `d * kvalues_iq4nl[...]` in the same order, with no fast-math/rounding flags or replacement conversion. Source establishes identical source expressions, not compiler lowering or observed byte equality. The test therefore rejects any differing output bit, including signed zero or infinity differences; no epsilon is appropriate for this conversion-only discriminator.
+
+## Real model and reusable fixture decision
+
+Yes, run a real-model direct dequant comparison after the synthetic corpus. The model metadata previously reviewed in R151 identifies 39 of 48 layers with `d_type=20`; metadata is not a runtime reachability receipt. In a matched run, compare the generic and private dequant outputs for every actual type-20 Down matrix call encountered in each of those eligible layers (every output element, exact bits), keeping the same packed source bytes, format/offset, `n`, queue, and destination geometry. Report per-layer/call hashes and mismatch counts, and confirm all 39 layer families were actually exercised before claiming per-layer coverage. This need not retain all matrices: compute deterministic hashes plus first-difference details while comparing outputs and retire temporary buffers under the project retention policy. It also need not dequantize all 512 experts per layer unless the separate pack-wide contract explicitly requires it; report the exact active call coverage.
+
+Existing fixture review:
+
+- `sycl/src/kernels/dequant_bench.cpp` SHA-256 `37bd52234d6a4d436f3206a23f44cd6eb0c6fdd773f0c668df80d16293fa7a91` is reusable as a harness/launch scaffold and deterministic source-byte setup, but not as the correctness fixture unchanged. It generates one pseudorandom packed block pattern, calls only public generic kernels, prints hashes for the first and last expert, and uses `n_ff=1280` with `n_embd=2560` for Down, rather than the actual model `n_ff=640`. It does not compare every output, exhaustively schedule scale/code positions, or invoke both arms in one controlled comparison.
+- `sycl/src/kernels/xmx_gemm_bench.cpp` SHA-256 `fc64986e4b4c26ca646c0fe47afa87e8ecff86be714d170ccbf36b504cb61234` uses random packed bytes and calls generic dequant followed by oneMKL; it compares against XMX GEMM with a tolerance. That is neither a direct IQ4_NL dequant parity test nor an exact-bit oracle.
+- `sycl/src/kernels/native_expert_parity.cpp` SHA-256 `9c8e8421550cb31d6166acbc0716acfaa7dddde1bf5beef9fcf29956a05cad8e` checks CPU native IQ4_NL multi-token down rows against ggml-cpu and has a GPU grouped-expert path. It does not call the direct FP16 flat dequant helper or compare every FP16 dequant bit, so it cannot replace this test.
+
+Therefore avoid duplicating harness infrastructure where practical, but add a deterministic exact-output fixture/arm comparison; the existing tests do not satisfy the numerical contract. The model-level >=32K run should separately compare direct dequant outputs and then preserve the existing MoE/logit/state gates. Keep timing runs separate from full byte readback/compare so synchronization does not alter the timed schedule.
+
+## Scope, provenance, and status
+
+R151 is the type-20 Down specialization and deterministic-corpus proposal; R156 establishes the prefill-owned private seam and unchanged API/fallback contract. This report adds the exact mapping and minimal test-consumer plan only. It does not change the chosen prototype or introduce another candidate.
+
+Only static source was reviewed at WPROBE609a. The latest registry supplied for this task is report-registry-v61.json, 166331 bytes, SHA-256 `04a5a59986bbebb8cd0b5afa7351a0cba54b7848bf22565cc2e2fcd5706877d6`; storage commit recorded by root is `02485902f14ad0543607a43472387b75145ef46f`. The root-reported new closed GDN synthetic 32K result is unrelated to IQ4_NL correctness and is not used as evidence here.
+
+Decision: synthetic corpus plus actual per-layer type-20 call comparisons are required for a useful exact-bit gate. No test was implemented or run; no payload/model data were read; no speed or parity result is claimed.

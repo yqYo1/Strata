@@ -1,0 +1,33 @@
+{
+  "new_reports_fullread": 7,
+  "corrections": [
+    {
+      "report": "R157",
+      "note": "Agent reported one inadvertent read-only git rev-parse despite internal noGit task; no mutation/build/test/GPU. Preserve exception; no hidden compliance claim."
+    },
+    {
+      "report": "R159",
+      "note": "Audit missed exact rootv5 'FAIL ' mismatch versus CSV 'FAIL,'. Audit source-only, not live test pass. Rootv6 exact messages/orderedtags/stages fixed;v5 remains failed."
+    },
+    {
+      "report": "R161",
+      "note": "v5 task-time status is historical;root later closedv6 quiet32K. Fusion remains conditional, not justified by wholeGDN timer."
+    },
+    {
+      "report": "R163",
+      "note": "Correct Down orientation:2560 output rows by640 inputs,20 IQ4NL blocks/row; odd row boundary splits a256-value group,5groups per2rows. Original reversed row/column labels. Totals1638400values/6400groups/51200blocks/921600packedB/3276800outputB and flat mapping are correct. Root verified productiondownGemm(ne,N,640) and expert_source.cpp rows=n_embd,cols=n_ff. Preserve original; use corrected row boundaries."
+    }
+  ],
+  "actual_root_timing_receipt": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-factor-component-timing-quad-runtime-v6/record.json",
+    "bytes": 57739,
+    "sha256": "f7cec1a94703ddacd76d7c45c4ae1f4e994ee5621329de68ae9651ae795c7b17"
+  },
+  "source_snapshot": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-source-snapshots/prefill-iq4nl-direct-sol-v1/manifest.json",
+    "bytes": 888,
+    "sha256": "a0d839eac084ef602d459fc204e82542e5bd4ae46ae6c9e816378da5a806c433"
+  },
+  "adopted": false,
+  "model_performance": false
+}
