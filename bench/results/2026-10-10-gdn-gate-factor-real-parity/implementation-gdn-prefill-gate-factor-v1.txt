@@ -1,0 +1,140 @@
+Prefill-only GDN decay-factor representation v1
+SOURCE ONLY / UNBUILT / UNTESTED. No compiler/configure/build/test/runtime/
+GPU/device/model/payload/profiler/Git/cleanup executed. Root owns qualification.
+Only four assigned source files plus this report edited; no production decode,
+public include API, verifier, HIP/CUDA source or other worktree edited.
+Owner worktree base609a270daac23c9b1a26d26ec092b2f60d2da335:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010
+AGENTS read; explicit source-only task overrides its build/commit workflow.
+R137 production-interface and R140 multiplicity read. Latest registry-v58 owner
+SHA91e875d1abf0023b04986f26283803b3ba4143de4d29cd20039aef70c985dce2.
+R140 unique-gates typo corrected in this handoff:48 unique gates per token,
+24576 recurrence work-item expressions per token, not24576 unique gates.
+Primitive B57015case/7970640comparison PASS is owner evidence ONLY; no actual
+recurrence/model/math/performance adoption follows.
+
+Changed paths, bytes/SHA256:
+sycl/src/prefill/kernels.dp.cpp
+207400 ee745dbc335748709023dd349829d0300b797adefae0e951f975bae4e5408e3f
+sycl/src/prefill/prefill.cpp
+321397 064d6789aeb55c7c44e7fe703d4fcabfee9524c4e14f164610236a6c84257d6a
+sycl/include/strata/prefill/gdn_gate_factor.hpp (new private header)
+683 28aaa4c9b5e0d25a32af603d1d4676861c5950ca7c63dfc6f44f9401575ed08e
+sycl/CMakeLists.txt
+26559 a1b3987ebcaf3c857158a9cc8642d6a58c5634bdce490ac67540c039b83b8ecf
+No gdn_variant.hpp edit. No root harness/controller edits; parent owns those.
+
+Exact requested private interface preserved, namespace strata::prefill:
+enum class GdnGateEncoding {LogGate,DecayFactor};
+bool gdn_prefill_gate_factor_enabled();
+void gdn_gates_encoded(encoding,ab,dt,ssm_a,gate,beta,T,stream);
+void gdn_recurrence_encoded(encoding,variant,state,h,gate,beta,z,gamma,eps,y,y16,T,stream,ld16=0).
+Header always declares host wrappers; OFF build provides refusal, so caller need
+not inherit private macro to compile. Build feature option same-name
+STRATA_GDN_PREFILL_GATE_FACTOR OFF default, private definition on strata_prefill
+only when ON. No compiler/GRF/fastmath/default subgroup/device split changes.
+
+Runtime getter accepts absence/"0" false, exact"1" true only in feature-enabled
+SYCL build. Other strings throw; OFF/unsupported backend env1 throws. Direct
+DecayFactor API OFF refuses before queue lookup/submission even T0. Unknown encoding
+rejects. New API length0..262144 bound is explicit, caller still owns correct
+buffer extents; negative/over-physical length refuses. Producer T0 no-op. Recurrence
+variants only0(current selectors)/2(explicitserial), other variants refuse; ld16
+only0 orHV*S, padded/negative refuse, including empty. Valid enabled T0 no queue
+lookup/state/output/norm submission or pointer access. LogGate producer delegates
+legacy gdn_gates; LogGate recurrence0 delegates legacy public gdn_recurrence and2
+legacy gdn_recurrence_variant(2). Existing public ABI/log-gate contract unchanged.
+
+Default-OFF proof at source level:
+Legacy device functions/launches/public wrappers are not edited. Dedicated copied
+factor functions/host helpers are entirely under feature guard and !HIP guard.
+Default prefill calls the same legacy producer and recurrence statements; enabled
+build env0 also takes those exact legacy statements. Only entry validation/new
+host choices are added. OFF code contains no factor device instantiation. This
+is a source preservation claim, not compiled image/codegen equality; root must
+verify resolved OFF compile/default parity. No default-on decision.
+
+Mechanical mapping inside kernels.dp.cpp anonymous namespace:
+gdn_gates_factor_kernel copied producer with sole math addition: existing float
+loggate expression then native::exp(loggate) stored in same gate[i]. Beta unchanged.
+gdn_rec_factor_kernel copied serial, g=gate[t*HV+head].
+gdn_rec_cols_factor_kernel copied columns, same direct g load.
+gdn_rec_cols_pipe_factor_kernel copied pipeline, g=cg (staged factor).
+gdn_rec_quad_pipeline_sg32_factor_kernel copied quad, g=cg.
+gdn_rec_kh_factor_kernel copied key-head, g[j]=sg[bb][i][j].
+All FMA/exp(other expressions)/sqrt/norm/delta/reduction/staging/publication/order
+remain copied unchanged. No per-element encoding branch, no exp(factor). Host
+factor producer preserves actual3D/WG256 launch. Keyhead tuning uses same arithmetic
+copy with originalSG16/GRF256 properties. No new GRF/flag/kernel-arithmetic tuning.
+Existing S128/HK16/HV48 and head%HK mapping retained. Separate factor kernel names
+avoid changing legacy kernel identities. No extra gate/loggate buffer/global pass;
+existing m.gate T*HV FP32 scratch overwritten as factor, beta scratch unchanged.
+Producer register loggate materialization remains actual-context numerical question.
+
+Factor host selector is mechanical copy of legacy gdn_recurrence_variant, with
+kernel/helper names mapped to factor family and unique launch names. SYCL exact
+precedence: quad only variant0/no REC_HEADS, pipeline allowed and explicit keyhead/
+tuned selectors absent/nonzero checks as legacy; admitted quad returns. Pre-submit
+quad denial falls into factor-only normal route. Serial if REC_HEADS is present or
+explicitvariant2. Otherwise pipeline defaultsON; tunedkeyhead if pipe+tuned and
+T>=256; else keyhead if pipe and gdn_keyhead_ok; else pipe or nonpipelinecolumns.
+STRATA_GDN_HEAD is AMD-only dispatch shape; public LogGate0 delegates old wrapper,
+factor0 is current SYCL selectors. Legacy static selector cache semantics preserved
+in separate factor host functions; root uses fresh processes/profile environments.
+Malformed STRATA_GDN_QUAD is rejected for factor API before producer/recurrence.
+
+Quad private copy admits EXACT GdnRecQuadFactorPipelineSG32 kernel bundle in same
+queue/context/device, compileSG32/WG128/device limits; resource fields report-only.
+Same pre-submit query-only refusal region and handler.use_kernel_bundle binding.
+Same no catch/fallback around submitted recurrence/norm/check. Event diagnostic
+host hooks preserved when its existing macro is enabled, recording factor
+recurrence event and unchanged norm event. Default event/default API paths unchanged.
+Tuned helper refuses only T<256 before submit; no post-submit legacy retry. Common
+launch_gdn_out_norm reused unchanged for quad/tuned; normal copied columns norm
+body/math unchanged, with separate launch identity. Existing check placeholder
+still not an async drain; owner harness must explicitly wait_and_throw/handleerrors.
+
+Shared prefill integration:
+run_impl validates feature getter once at entry and captures one const encoding/
+boolean; all layers/chunks in that call pair the same producer/consumer. Layer-major
+entry also validates before its scheduling work, then its shared run_impl call
+captures the encoding used by actual GDN block. Root must hold environment fixed;
+no support for concurrent process-env mutation is claimed. The shared GDN block
+selects encoded pair only when factor enabled; conv/projections/state/output stay
+unchanged. Unsupported padded factor output layout is checked before factor
+producer/conv state work. No new session field/allcontextallocation. Decode after
+prefill sees unchanged state layout/public loggate APIs; its numerical equality
+still requires real parity/model gates, not assumed from unchanged source.
+
+Root build recipe UNEXECUTED: configure fresh isolated same-flags SYCL build with
+-DSTRATA_GDN_PREFILL_GATE_FACTOR=ON plus root's separate new harness target;
+existing IntelLLVM2026.1/ggml/oneAPI identities and all precision/JIT/GRF flags
+must remain pinned. envSTRATA_GDN_PREFILL_GATE_FACTOR=1 for candidate;0/absent for
+legacy. Separate OFF build must refuse env1/directfactor before submit and preserve
+legacy/default kernel/codegen/numeric behavior. Root controls named build/output
+paths, exactbinary/self/controller/sourcepins, ownedprocess locks and budgets.
+No build/test command was run or target invented by implementer.
+
+Required root gates before model/performance/adoption:
+- Complete source/diff/mechanical-copy review and backend guard/declaration/build
+  review; actual sameflags ON/OFF compile; default public ABI/kernel body/name/
+  selector parity and OFFrefusal/malformedenv/unknownencoding/variant/T/ld checks.
+- Root independent harness exact production producer loggate/beta/factor bit checks
+  and every actual serial/cols/pipe/keyhead+tuned/quad recurrence context. Complete
+  state,FP32y,FP16y,guards,inputimmutability after every prefix/chunk/carry; actual
+  selected route and queue/async errors recorded. No tolerance widening.
+- Empty/negative/unsupported/quadadmissiondenial no-mutating-submission evidence;
+  submissionerrors propagated/no legacy retry/free in-flight endpoints. Eventhooks
+  validate only post-successfuldrain per existing ownership contract.
+- >=32768 bounded prefixcarry/oddpartialchunks/reuse/multiplelayers/repeats;
+  fullphysical262144 actual lifecycle and near-end/endpoint math with qualified
+  unchanged baseline; run_impl and layer-major where eligible. Compare complete
+  session/GDNconv/QSA/PLE/indexer states and logits/IDs/LP/MTP before adoption.
+- Decode continuation/publicloggate/verifier remain baseline, but actual model
+  continuation math must be checked. Captures named consumer/retention only;
+  no modelpayload accessed by implementation. Primitive pass alone insufficient.
+- Root serial GPU/build/process supervision, driverfault/normalexit/cleanup/
+  survivorgates; quiet performance only after real numeric admission, same-day
+  matched settings/binary/source/model/token/taskshape and individualsamples.
+No speedup/SFU count/state/model/fullcontext/performance claim in this source report.
+Rejected IQ2S and quad-default decisions untouched.

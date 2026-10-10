@@ -6,6 +6,7 @@
 #include "strata/sycl_queue.hpp"
 #include "strata/prefill/kernels.hpp"
 #include "strata/prefill/gdn_variant.hpp"
+#include "strata/prefill/gdn_gate_factor.hpp"
 #include "strata/kernels/mrope.hpp"
 #include "strata/kernels/gfx_arch.hpp"
 #include "strata/kernels/router_top10.hpp"
@@ -40,6 +41,9 @@ GdnEventDiagnosticCapture* gdn_set_event_diagnostic_capture(GdnEventDiagnosticCa
 #endif
 class GdnRecQuadPipelineSG32;
 class GdnLegacyPipelineReference;
+#if defined(STRATA_GDN_PREFILL_GATE_FACTOR) && !defined(__HIPCC__)
+class GdnRecQuadFactorPipelineSG32;
+#endif
 namespace {
 
 constexpr int N = 2560, HC = 4, D = N * HC, LR = 320;
@@ -2212,6 +2216,577 @@ __global__ void __launch_bounds__(256) gr_upmix_kernel(const uint16_t* __restric
     }
 }
 #endif
+#if defined(STRATA_GDN_PREFILL_GATE_FACTOR) && !defined(__HIPCC__)
+// Mechanical private copies: only gate encoding/load and function identity differ.
+__dpct_inline__ void gdn_gates_factor_kernel(const float *__restrict__ ab,
+                                      const float *__restrict__ dt,
+                                      const float *__restrict__ ssm_a,
+                                      float *__restrict__ gate,
+                                      float *__restrict__ beta, int64_t T) {
+    auto item_ct1 = sycl::ext::oneapi::this_work_item::get_nd_item<3>();
+    const int64_t i =
+        (int64_t)item_ct1.get_group(2) * item_ct1.get_local_range(2) +
+        item_ct1.get_local_id(2);
+    if (i >= T * HV) return;
+    const int64_t t = i / HV, h = i % HV;
+    const float v = ab[t * 2 * HV + h] + dt[h];
+    const float loggate = (v > 20.0f ? v : sycl::log1p(sycl::native::exp(v))) * ssm_a[h];
+    gate[i] = sycl::native::exp(loggate);
+    beta[i] = sigm(ab[t * 2 * HV + HV + h]);
+}
+
+__dpct_inline__ void
+gdn_rec_factor_kernel(float *__restrict__ state, const float *__restrict__ h,
+               const float *__restrict__ gate, const float *__restrict__ beta,
+               const float *__restrict__ z, const float *__restrict__ gamma,
+               float eps, float *__restrict__ y, uint16_t *__restrict__ y16,
+               int64_t T, int64_t ld16) {
+    auto item_ct1 = sycl::ext::oneapi::this_work_item::get_nd_item<3>();
+auto &sk = *sycl::ext::oneapi::group_local_memory_for_overwrite<float[S]>(
+    sycl::ext::oneapi::this_work_item::get_work_group<3>());
+    auto &sq = *sycl::ext::oneapi::group_local_memory_for_overwrite<float[S]>(
+        sycl::ext::oneapi::this_work_item::get_work_group<3>());
+    auto &red =
+        *sycl::ext::oneapi::group_local_memory_for_overwrite<float[RG][S]>(
+            sycl::ext::oneapi::this_work_item::get_work_group<3>());
+    auto &wsum =
+        *sycl::ext::oneapi::group_local_memory_for_overwrite<float[16]>(
+            sycl::ext::oneapi::this_work_item::get_work_group<3>());
+    const int head = item_ct1.get_group(2), col = item_ct1.get_local_id(2),
+              rg = item_ct1.get_local_id(1), tid = rg * S + col;
+    const int qh = head % HK;
+    float s[RPG];
+    float* base = state + ((size_t) (rg * RPG) * HV + head) * S + col;
+    const size_t rs = (size_t) HV * S;
+#pragma unroll
+    for (int r = 0; r < RPG; ++r) s[r] = base[r * rs];
+    const float g_col = gamma[col];
+    for (int64_t t = 0; t < T; ++t) {
+        const float* ht = h + t * C;
+        /*
+        DPCT1118: SYCL group functions and algorithms must be encountered in
+        converged control flow. You may need to adjust the code.
+        */
+        /*
+        DPCT1065: Consider replacing sycl::nd_item::barrier() with
+        sycl::nd_item::barrier(sycl::access::fence_space::local_space) for
+        better performance if there is no access to global memory.
+        */
+        item_ct1.barrier();
+        if (tid < S) { sq[tid] = ht[qh * S + tid]; sk[tid] = ht[HK * S + qh * S + tid]; }
+        /*
+        DPCT1118: SYCL group functions and algorithms must be encountered in
+        converged control flow. You may need to adjust the code.
+        */
+        /*
+        DPCT1065: Consider replacing sycl::nd_item::barrier() with
+        sycl::nd_item::barrier(sycl::access::fence_space::local_space) for
+        better performance if there is no access to global memory.
+        */
+        item_ct1.barrier();
+        const float g = gate[t * HV + head];
+        float kv = 0.0f;
+#pragma unroll
+        for (int r = 0; r < RPG; ++r)
+            kv = sycl::fma(s[r], sk[rg * RPG + r], kv);
+        red[rg][col] = kv;
+        /*
+        DPCT1118: SYCL group functions and algorithms must be encountered in
+        converged control flow. You may need to adjust the code.
+        */
+        /*
+        DPCT1065: Consider replacing sycl::nd_item::barrier() with
+        sycl::nd_item::barrier(sycl::access::fence_space::local_space) for
+        better performance if there is no access to global memory.
+        */
+        item_ct1.barrier();
+        const float kv_col = red[0][col] + red[1][col] + red[2][col] + red[3][col];
+        const float delta = (ht[2 * HK * S + head * S + col] - g * kv_col) * beta[t * HV + head];
+        float o = 0.0f;
+#pragma unroll
+        for (int r = 0; r < RPG; ++r) {
+            s[r] = sycl::fma((float)g, s[r], sk[rg * RPG + r] * delta);
+            o = sycl::fma(s[r], sq[rg * RPG + r], o);
+        }
+        /*
+        DPCT1118: SYCL group functions and algorithms must be encountered in
+        converged control flow. You may need to adjust the code.
+        */
+        /*
+        DPCT1065: Consider replacing sycl::nd_item::barrier() with
+        sycl::nd_item::barrier(sycl::access::fence_space::local_space) for
+        better performance if there is no access to global memory.
+        */
+        item_ct1.barrier();
+        red[rg][col] = o;
+        /*
+        DPCT1118: SYCL group functions and algorithms must be encountered in
+        converged control flow. You may need to adjust the code.
+        */
+        /*
+        DPCT1065: Consider replacing sycl::nd_item::barrier() with
+        sycl::nd_item::barrier(sycl::access::fence_space::local_space) for
+        better performance if there is no access to global memory.
+        */
+        item_ct1.barrier();
+        float oc = 0.0f, sp = 0.0f;
+        if (rg == 0) {
+            oc = (red[0][col] + red[1][col] + red[2][col] + red[3][col]) *
+                 sycl::rsqrt((float)S);
+            sp = oc * oc;
+        }
+        sp = warp_sum(sp);
+        if ((tid & 31) == 0) wsum[tid >> 5] = sp;
+        /*
+        DPCT1118: SYCL group functions and algorithms must be encountered in
+        converged control flow. You may need to adjust the code.
+        */
+        /*
+        DPCT1065: Consider replacing sycl::nd_item::barrier() with
+        sycl::nd_item::barrier(sycl::access::fence_space::local_space) for
+        better performance if there is no access to global memory.
+        */
+        item_ct1.barrier();
+        if (rg == 0) {
+            const float ss = wsum[0] + wsum[1] + wsum[2] + wsum[3];
+            const float v = oc * sycl::rsqrt(ss / (float)S + eps) * g_col *
+                            sigm(z[t * HV * S + head * S + col]);
+            y[t * HV * S + head * S + col] = v;
+            y16[t * ld16 + head * S + col] = hf(v);
+        }
+    }
+#pragma unroll
+    for (int r = 0; r < RPG; ++r) base[r * rs] = s[r];
+}
+
+__dpct_inline__ void gdn_rec_cols_factor_kernel(float *__restrict__ state,
+                                         const float *__restrict__ h,
+                                         const float *__restrict__ gate,
+                                         const float *__restrict__ beta,
+                                         float *__restrict__ oc_out,
+                                         int64_t T) {
+    auto item_ct1 = sycl::ext::oneapi::this_work_item::get_nd_item<3>();
+auto &sk = *sycl::ext::oneapi::group_local_memory_for_overwrite<float[S]>(
+    sycl::ext::oneapi::this_work_item::get_work_group<3>());
+    auto &sq = *sycl::ext::oneapi::group_local_memory_for_overwrite<float[S]>(
+        sycl::ext::oneapi::this_work_item::get_work_group<3>());
+    auto &red =
+        *sycl::ext::oneapi::group_local_memory_for_overwrite<float[RG][CB]>(
+            sycl::ext::oneapi::this_work_item::get_work_group<3>());
+    const int head = item_ct1.get_group(2) / NCB,
+              cb = item_ct1.get_group(2) % NCB;
+    const int c = item_ct1.get_local_id(2), rg = item_ct1.get_local_id(1),
+              tid = rg * CB + c, col = cb * CB + c;
+    const int qh = head % HK;
+    float s[RPG];
+    float* base = state + ((size_t) (rg * RPG) * HV + head) * S + col;
+    const size_t rs = (size_t) HV * S;
+#pragma unroll
+    for (int r = 0; r < RPG; ++r) s[r] = base[r * rs];
+    for (int64_t t = 0; t < T; ++t) {
+        const float* ht = h + t * C;
+        /*
+        DPCT1118: SYCL group functions and algorithms must be encountered in
+        converged control flow. You may need to adjust the code.
+        */
+        /*
+        DPCT1065: Consider replacing sycl::nd_item::barrier() with
+        sycl::nd_item::barrier(sycl::access::fence_space::local_space) for
+        better performance if there is no access to global memory.
+        */
+        item_ct1.barrier();
+        if (tid < S) { sq[tid] = ht[qh * S + tid]; sk[tid] = ht[HK * S + qh * S + tid]; }
+        /*
+        DPCT1118: SYCL group functions and algorithms must be encountered in
+        converged control flow. You may need to adjust the code.
+        */
+        /*
+        DPCT1065: Consider replacing sycl::nd_item::barrier() with
+        sycl::nd_item::barrier(sycl::access::fence_space::local_space) for
+        better performance if there is no access to global memory.
+        */
+        item_ct1.barrier();
+        const float g = gate[t * HV + head];
+        float kv = 0.0f;
+#pragma unroll
+        for (int r = 0; r < RPG; ++r)
+            kv = sycl::fma(s[r], sk[rg * RPG + r], kv);
+        red[rg][c] = kv;
+        /*
+        DPCT1118: SYCL group functions and algorithms must be encountered in
+        converged control flow. You may need to adjust the code.
+        */
+        /*
+        DPCT1065: Consider replacing sycl::nd_item::barrier() with
+        sycl::nd_item::barrier(sycl::access::fence_space::local_space) for
+        better performance if there is no access to global memory.
+        */
+        item_ct1.barrier();
+        const float kv_col = red[0][c] + red[1][c] + red[2][c] + red[3][c];
+        const float delta = (ht[2 * HK * S + head * S + col] - g * kv_col) * beta[t * HV + head];
+        float o = 0.0f;
+#pragma unroll
+        for (int r = 0; r < RPG; ++r) {
+            s[r] = sycl::fma((float)g, s[r], sk[rg * RPG + r] * delta);
+            o = sycl::fma(s[r], sq[rg * RPG + r], o);
+        }
+        /*
+        DPCT1118: SYCL group functions and algorithms must be encountered in
+        converged control flow. You may need to adjust the code.
+        */
+        /*
+        DPCT1065: Consider replacing sycl::nd_item::barrier() with
+        sycl::nd_item::barrier(sycl::access::fence_space::local_space) for
+        better performance if there is no access to global memory.
+        */
+        item_ct1.barrier();
+        red[rg][c] = o;
+        /*
+        DPCT1118: SYCL group functions and algorithms must be encountered in
+        converged control flow. You may need to adjust the code.
+        */
+        /*
+        DPCT1065: Consider replacing sycl::nd_item::barrier() with
+        sycl::nd_item::barrier(sycl::access::fence_space::local_space) for
+        better performance if there is no access to global memory.
+        */
+        item_ct1.barrier();
+        if (rg == 0) oc_out[t * HV * S + head * S + col] =
+            (red[0][c] + red[1][c] + red[2][c] + red[3][c]) *
+            sycl::rsqrt((float)S);
+    }
+#pragma unroll
+    for (int r = 0; r < RPG; ++r) base[r * rs] = s[r];
+}
+
+__dpct_inline__ void gdn_rec_cols_pipe_factor_kernel(float *__restrict__ state,
+                                              const float *__restrict__ h,
+                                              const float *__restrict__ gate,
+                                              const float *__restrict__ beta,
+                                              float *__restrict__ oc_out,
+                                              int64_t T) {
+    auto item_ct1 = sycl::ext::oneapi::this_work_item::get_nd_item<3>();
+    constexpr int NT = CB * RG,
+                  LPT = S / NT; // threads, q/k rows loaded per thread
+    auto &sk = *sycl::ext::oneapi::group_local_memory_for_overwrite<float[S]>(
+        sycl::ext::oneapi::this_work_item::get_work_group<3>());
+    auto &sq = *sycl::ext::oneapi::group_local_memory_for_overwrite<float[S]>(
+        sycl::ext::oneapi::this_work_item::get_work_group<3>());
+    auto &red =
+        *sycl::ext::oneapi::group_local_memory_for_overwrite<float[RG][CB]>(
+            sycl::ext::oneapi::this_work_item::get_work_group<3>());
+    const int head = item_ct1.get_group(2) / NCB,
+              cb = item_ct1.get_group(2) % NCB;
+    const int c = item_ct1.get_local_id(2), rg = item_ct1.get_local_id(1),
+              tid = rg * CB + c, col = cb * CB + c;
+    const int qh = head % HK;
+    float s[RPG];
+    float* base = state + ((size_t) (rg * RPG) * HV + head) * S + col;
+    const size_t rs = (size_t) HV * S;
+#pragma unroll
+    for (int r = 0; r < RPG; ++r) s[r] = base[r * rs];
+    float nq[LPT], nk[LPT], nv = 0.0f, ng = 0.0f, nb = 0.0f;
+    auto fetch = [&](int64_t t) {
+        const float* ht = h + t * C;
+#pragma unroll
+        for (int u = 0; u < LPT; ++u) { nq[u] = ht[qh * S + tid + u * NT]; nk[u] = ht[HK * S + qh * S + tid + u * NT]; }
+        nv = ht[2 * HK * S + head * S + col];
+        ng = gate[t * HV + head];
+        nb = beta[t * HV + head];
+    };
+    if (T > 0) fetch(0);
+    for (int64_t t = 0; t < T; ++t) {
+        float cq[LPT], ck[LPT];
+#pragma unroll
+        for (int u = 0; u < LPT; ++u) { cq[u] = nq[u]; ck[u] = nk[u]; }
+        const float cv = nv, cg = ng, cbt = nb;
+        /*
+        DPCT1118: SYCL group functions and algorithms must be encountered in
+        converged control flow. You may need to adjust the code.
+        */
+        /*
+        DPCT1065: Consider replacing sycl::nd_item::barrier() with
+        sycl::nd_item::barrier(sycl::access::fence_space::local_space) for
+        better performance if there is no access to global memory.
+        */
+        item_ct1.barrier();
+#pragma unroll
+        for (int u = 0; u < LPT; ++u) { sq[tid + u * NT] = cq[u]; sk[tid + u * NT] = ck[u]; }
+        /*
+        DPCT1118: SYCL group functions and algorithms must be encountered in
+        converged control flow. You may need to adjust the code.
+        */
+        /*
+        DPCT1065: Consider replacing sycl::nd_item::barrier() with
+        sycl::nd_item::barrier(sycl::access::fence_space::local_space) for
+        better performance if there is no access to global memory.
+        */
+        item_ct1.barrier();
+        if (t + 1 < T) fetch(t + 1);
+        const float g = cg;
+        float kv = 0.0f;
+#pragma unroll
+        for (int r = 0; r < RPG; ++r)
+            kv = sycl::fma(s[r], sk[rg * RPG + r], kv);
+        red[rg][c] = kv;
+        /*
+        DPCT1118: SYCL group functions and algorithms must be encountered in
+        converged control flow. You may need to adjust the code.
+        */
+        /*
+        DPCT1065: Consider replacing sycl::nd_item::barrier() with
+        sycl::nd_item::barrier(sycl::access::fence_space::local_space) for
+        better performance if there is no access to global memory.
+        */
+        item_ct1.barrier();
+        const float kv_col = red[0][c] + red[1][c] + red[2][c] + red[3][c];
+        const float delta = (cv - g * kv_col) * cbt;
+        float o = 0.0f;
+#pragma unroll
+        for (int r = 0; r < RPG; ++r) {
+            s[r] = sycl::fma((float)g, s[r], sk[rg * RPG + r] * delta);
+            o = sycl::fma(s[r], sq[rg * RPG + r], o);
+        }
+        /*
+        DPCT1118: SYCL group functions and algorithms must be encountered in
+        converged control flow. You may need to adjust the code.
+        */
+        /*
+        DPCT1065: Consider replacing sycl::nd_item::barrier() with
+        sycl::nd_item::barrier(sycl::access::fence_space::local_space) for
+        better performance if there is no access to global memory.
+        */
+        item_ct1.barrier();
+        red[rg][c] = o;
+        /*
+        DPCT1118: SYCL group functions and algorithms must be encountered in
+        converged control flow. You may need to adjust the code.
+        */
+        /*
+        DPCT1065: Consider replacing sycl::nd_item::barrier() with
+        sycl::nd_item::barrier(sycl::access::fence_space::local_space) for
+        better performance if there is no access to global memory.
+        */
+        item_ct1.barrier();
+        if (rg == 0) oc_out[t * HV * S + head * S + col] =
+            (red[0][c] + red[1][c] + red[2][c] + red[3][c]) *
+            sycl::rsqrt((float)S);
+    }
+#pragma unroll
+    for (int r = 0; r < RPG; ++r) base[r * rs] = s[r];
+}
+
+__dpct_inline__ void gdn_rec_quad_pipeline_sg32_factor_kernel(float *__restrict__ state, const float *__restrict__ h,
+                                                      const float *__restrict__ gate, const float *__restrict__ beta,
+                                                      float *__restrict__ oc_out, int64_t T) {
+    auto item = sycl::ext::oneapi::this_work_item::get_nd_item<3>();
+    auto sg = item.get_sub_group();
+    const int lane = sg.get_local_id()[0], sgid = sg.get_group_id()[0];
+    const int rg = lane / 8, c = lane % 8;
+    const int head = item.get_group(2) / NCB, cb = item.get_group(2) % NCB;
+    const int col = cb * CB + sgid * 8 + c;
+    const int stage = item.get_local_linear_id(); // Unique0..127; never derived from quad roles.
+    const int qh = head % HK;
+    auto &sk = *sycl::ext::oneapi::group_local_memory_for_overwrite<float[S]>(item.get_group());
+    auto &sq = *sycl::ext::oneapi::group_local_memory_for_overwrite<float[S]>(item.get_group());
+    float s[RPG];
+    float *base = state + ((size_t)(rg * RPG) * HV + head) * S + col;
+    const size_t rs = (size_t)HV * S;
+#pragma unroll
+    for (int r = 0; r < RPG; ++r) s[r] = base[r * rs];
+    float nq = 0.f, nk = 0.f, nv = 0.f, ng = 0.f, nb = 0.f;
+    auto fetch = [&](int64_t t) {
+        const float *ht = h + t * C;
+        nq = ht[qh * S + stage]; nk = ht[HK * S + qh * S + stage];
+        nv = ht[2 * HK * S + head * S + col];
+        ng = gate[t * HV + head]; nb = beta[t * HV + head];
+    };
+    if (T > 0) fetch(0);
+    for (int64_t t = 0; t < T; ++t) {
+        const float cq = nq, ck = nk, cv = nv, cg = ng, cbt = nb;
+        item.barrier(); // Previous token's Q/K reads complete before overwrite.
+        sq[stage] = cq; sk[stage] = ck;
+        item.barrier(); // Publish all128 Q/K rows before state-owner reads.
+        if (t + 1 < T) fetch(t + 1);
+        const float g = cg;
+        float kv = 0.f;
+#pragma unroll
+        for (int r = 0; r < RPG; ++r) kv = sycl::fma(s[r], sk[rg * RPG + r], kv);
+        const float p0 = sycl::select_from_group(sg, kv, c);
+        const float p1 = sycl::select_from_group(sg, kv, c + 8);
+        const float p2 = sycl::select_from_group(sg, kv, c + 16);
+        const float p3 = sycl::select_from_group(sg, kv, c + 24);
+        const float kv_col = ((p0 + p1) + p2) + p3;
+        const float delta = (cv - g * kv_col) * cbt;
+        float o = 0.f;
+#pragma unroll
+        for (int r = 0; r < RPG; ++r) {
+            s[r] = sycl::fma((float)g, s[r], sk[rg * RPG + r] * delta);
+            o = sycl::fma(s[r], sq[rg * RPG + r], o);
+        }
+        const float o0 = sycl::select_from_group(sg, o, c);
+        const float o1 = sycl::select_from_group(sg, o, c + 8);
+        const float o2 = sycl::select_from_group(sg, o, c + 16);
+        const float o3 = sycl::select_from_group(sg, o, c + 24);
+        if (rg == 0) oc_out[t * HV * S + head * S + col] =
+            (((o0 + o1) + o2) + o3) * sycl::rsqrt((float)S);
+    }
+#pragma unroll
+    for (int r = 0; r < RPG; ++r) base[r * rs] = s[r];
+}
+
+__dpct_inline__ void gdn_rec_kh_factor_kernel(float *__restrict__ state,
+                                       const float *__restrict__ h,
+                                       const float *__restrict__ gate,
+                                       const float *__restrict__ beta,
+                                       float *__restrict__ oc_out, int64_t T) {
+    auto item_ct1 = sycl::ext::oneapi::this_work_item::get_nd_item<3>();
+    constexpr int TB = GDN_TB, NT = CB * RG, QKP = S / 4,
+                  VP = CB / 4; // threads, 16-byte pieces of a q/k row, of v
+    auto &sq =
+        *sycl::ext::oneapi::group_local_memory_for_overwrite<float[2][TB][S]>(
+            sycl::ext::oneapi::this_work_item::get_work_group<3>());
+    auto &sk =
+        *sycl::ext::oneapi::group_local_memory_for_overwrite<float[2][TB][S]>(
+            sycl::ext::oneapi::this_work_item::get_work_group<3>());
+    auto &sv = *sycl::ext::oneapi::group_local_memory_for_overwrite<
+        float[2][TB][VPK][CB]>(
+        sycl::ext::oneapi::this_work_item::get_work_group<3>());
+    auto &sg =
+        *sycl::ext::oneapi::group_local_memory_for_overwrite<float[2][TB][VPK]>(
+            sycl::ext::oneapi::this_work_item::get_work_group<3>());
+    auto &sb =
+        *sycl::ext::oneapi::group_local_memory_for_overwrite<float[2][TB][VPK]>(
+            sycl::ext::oneapi::this_work_item::get_work_group<3>());
+    auto &rkv = *sycl::ext::oneapi::group_local_memory_for_overwrite<
+        float[VPK][RG][CB]>(
+        sycl::ext::oneapi::this_work_item::get_work_group<3>());
+    auto &ro = *sycl::ext::oneapi::group_local_memory_for_overwrite<
+        float[VPK][RG][CB]>(
+        sycl::ext::oneapi::this_work_item::get_work_group<3>());
+    const int qh = item_ct1.get_group(2) / NCB,
+              cb = item_ct1.get_group(2) % NCB;
+    const int c = item_ct1.get_local_id(2), rg = item_ct1.get_local_id(1),
+              tid = rg * CB + c, col = cb * CB + c;
+    float s[VPK][RPG];
+    const size_t rs = (size_t) HV * S;
+#pragma unroll
+    for (int j = 0; j < VPK; ++j) {
+        const float* base = state + ((size_t) (rg * RPG) * HV + qh + j * HK) * S + col;
+#pragma unroll
+        for (int r = 0; r < RPG; ++r) s[j][r] = base[r * rs];
+    }
+    const int64_t nblk = (T + TB - 1) / TB;
+    auto stage = [&](int64_t k) {   // tokens [k * TB, k * TB + TB) into buffer k & 1
+        const int bb = (int) (k & 1);
+        const int64_t t0 = k * TB;
+        for (int p = tid; p < TB * 2 * QKP; p += NT) {
+            const int i = p / (2 * QKP), w = p % (2 * QKP), isk = w / QKP, jj = (w % QKP) * 4;
+            if (t0 + i < T)
+                gdn_cp16(isk ? &sk[bb][i][jj] : &sq[bb][i][jj], h + (t0 + i) * C + (isk ? HK * S : 0) + qh * S + jj);
+        }
+        for (int p = tid; p < TB * VPK * VP; p += NT) {
+            const int i = p / (VPK * VP), w = p % (VPK * VP), j = w / VP, jj = (w % VP) * 4;
+            if (t0 + i < T)
+                gdn_cp16(&sv[bb][i][j][jj], h + (t0 + i) * C + 2 * HK * S + (qh + j * HK) * S + cb * CB + jj);
+        }
+        for (int p = tid; p < 2 * TB * VPK; p += NT) {
+            const int isb = p / (TB * VPK), w = p % (TB * VPK), i = w / VPK, j = w % VPK;
+            if (t0 + i < T)
+                gdn_cp4(isb ? &sb[bb][i][j] : &sg[bb][i][j], (isb ? beta : gate) + (t0 + i) * HV + qh + j * HK);
+        }
+    };
+    if (nblk > 0) stage(0);
+    gdn_cp_commit();
+    for (int64_t k = 0; k < nblk; ++k) {
+        // buffer (k + 1) & 1 was read by block k - 1, whose last token's second __syncthreads every thread has passed
+        if (k + 1 < nblk) stage(k + 1);
+        gdn_cp_commit();
+        gdn_cp_wait_prev();
+        /*
+        DPCT1118: SYCL group functions and algorithms must be encountered in
+        converged control flow. You may need to adjust the code.
+        */
+        /*
+        DPCT1065: Consider replacing sycl::nd_item::barrier() with
+        sycl::nd_item::barrier(sycl::access::fence_space::local_space) for
+        better performance if there is no access to global memory.
+        */
+        item_ct1.barrier();
+        const int bb = (int) (k & 1);
+        const int n = (int) ((T - k * TB) < TB ? (T - k * TB) : TB);
+        for (int i = 0; i < n; ++i) {
+            const int64_t t = k * TB + i;
+            float kc[RPG];
+#pragma unroll
+            for (int r = 0; r < RPG; ++r) kc[r] = sk[bb][i][rg * RPG + r];
+            float g[VPK], kv[VPK], delta[VPK], o[VPK];
+#pragma unroll
+            for (int j = 0; j < VPK; ++j) {
+                g[j] = sg[bb][i][j]; kv[j] = 0.0f;
+                o[j] = 0.0f;
+            }
+#pragma unroll
+            for (int r = 0; r < RPG; ++r)
+#pragma unroll
+                for (int j = 0; j < VPK; ++j)
+                    kv[j] = sycl::fma(s[j][r], kc[r], kv[j]);
+#pragma unroll
+            for (int j = 0; j < VPK; ++j) rkv[j][rg][c] = kv[j];
+            /*
+            DPCT1118: SYCL group functions and algorithms must be
+            encountered in converged control flow. You may need to adjust the
+            code.
+            */
+            /*
+            DPCT1065: Consider replacing sycl::nd_item::barrier() with
+            sycl::nd_item::barrier(sycl::access::fence_space::local_space) for
+            better performance if there is no access to global memory.
+            */
+            item_ct1.barrier();
+#pragma unroll
+            for (int j = 0; j < VPK; ++j) {
+                const float kv_col = rkv[j][0][c] + rkv[j][1][c] + rkv[j][2][c] + rkv[j][3][c];
+                delta[j] = (sv[bb][i][j][c] - g[j] * kv_col) * sb[bb][i][j];
+            }
+#pragma unroll
+            for (int r = 0; r < RPG; ++r) {
+                const float qr = sq[bb][i][rg * RPG + r];
+#pragma unroll
+                for (int j = 0; j < VPK; ++j) {
+                    s[j][r] = sycl::fma(g[j], s[j][r], kc[r] * delta[j]);
+                    o[j] = sycl::fma(s[j][r], (float)qr, o[j]);
+                }
+            }
+#pragma unroll
+            for (int j = 0; j < VPK; ++j) ro[j][rg][c] = o[j];
+            /*
+            DPCT1118: SYCL group functions and algorithms must be
+            encountered in converged control flow. You may need to adjust the
+            code.
+            */
+            /*
+            DPCT1065: Consider replacing sycl::nd_item::barrier() with
+            sycl::nd_item::barrier(sycl::access::fence_space::local_space) for
+            better performance if there is no access to global memory.
+            */
+            item_ct1.barrier();
+            if (rg < VPK)   // row group j writes head j's output
+                oc_out[t * HV * S + (qh + rg * HK) * S + col] =
+                    (ro[rg][0][c] + ro[rg][1][c] + ro[rg][2][c] +
+                     ro[rg][3][c]) *
+                    sycl::rsqrt((float)S);
+        }
+    }
+#pragma unroll
+    for (int j = 0; j < VPK; ++j) {
+        float* base = state + ((size_t) (rg * RPG) * HV + qh + j * HK) * S + col;
+#pragma unroll
+        for (int r = 0; r < RPG; ++r) base[r * rs] = s[j][r];
+    }
+}
+#endif
+
 }  // namespace
 
 void kv_append(const float* K, const float* V, int64_t T, int64_t pos0, const int32_t* page_table, int64_t page_size,
@@ -2973,6 +3548,345 @@ void gdn_recurrence(float* state, const float* h, const float* gate, const float
     static const bool serial = std::getenv("STRATA_GDN_REC_HEADS") != nullptr;
     gdn_recurrence_variant(head && !serial ? 1 : 0, state, h, gate, beta, z, gamma, eps, y, y16, T, stream, ld16);
 }
+#if defined(STRATA_GDN_PREFILL_GATE_FACTOR) && !defined(__HIPCC__)
+namespace {
+void gdn_gates_factor_private(const float* ab, const float* dt, const float* ssm_a, float* gate, float* beta, int64_t T, void* stream) {
+    {
+        auto exp_props = sycl::ext::oneapi::experimental::properties{
+            };
+
+        strata::q_of(stream)
+            ->parallel_for<dpct_kernel_name<class gdn_gates_factor_kernel_private_e66d35>>(
+                sycl::nd_range<3>(sycl::range(1, 1, blocks_for(T * HV)) *
+                                      sycl::range(1, 1, 256),
+                                  sycl::range(1, 1, 256)),
+                exp_props, [=](sycl::nd_item<3> item_ct1) {
+                    gdn_gates_factor_kernel(ab, dt, ssm_a, gate, beta, T);
+                });
+    }
+    check("gdn_gates");
+}
+
+bool gdn_recurrence_quad_variant_factor_private(float *state, const float *h, const float *gate, const float *beta, const float *z,
+                                const float *gamma, float eps, float *y, uint16_t *y16, int64_t T, void *stream,
+                                int64_t ld16, GdnQuadReport *report = nullptr, bool diagnostic_deny = false) {
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+    auto* capture=event_capture;
+    const auto entry=capture?DiagnosticClock::now():DiagnosticClock::time_point{};
+    DiagnosticClock::time_point admission_start{};
+    bool admission_started=false;
+#endif
+    GdnQuadReport result;
+    auto denied = [&](const char *why) {
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+        if(capture&&admission_started){capture->admission_ns=diagnostic_ns(admission_start);capture->admission_observed=true;capture->admitted=false;}
+#endif
+        result.reason = why; if (report) *report = result; return false; };
+    if (T < 0) throw std::invalid_argument("GDN quad: negative T");
+    if (T == 0) {
+        result.status = GdnQuadReport::Status::Empty; result.reason = "empty_no_submission";
+        if (report) *report = result;
+        return true; // Before even queue lookup; state/output may be null.
+    }
+    if (ld16 != 0 && ld16 != HV * S) throw std::invalid_argument("GDN quad: padded rows");
+    if (diagnostic_deny) return denied("diagnostic_pre_submit_denial");
+#if !defined(__HIPCC__)
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+    if(capture)capture->prevalidation_ns=diagnostic_ns(entry);
+    const auto lookup_start=capture?DiagnosticClock::now():DiagnosticClock::time_point{};
+#endif
+    auto &q = *strata::q_of(stream);
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+    if(capture)capture->queue_lookup_ns=diagnostic_ns(lookup_start);
+#endif
+    if (!q.has_property<sycl::property::queue::in_order>()) return denied("queue_not_in_order");
+    std::optional<sycl::kernel_bundle<sycl::bundle_state::executable>> executable;
+    // Only this read-only pre-submit region may convert query exceptions into fallback.
+    try {
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+        if(capture){admission_start=DiagnosticClock::now();admission_started=true;}
+#endif
+        const auto device = q.get_device();
+        const auto sizes = device.get_info<sycl::info::device::sub_group_sizes>();
+        result.device_max_workgroup = device.get_info<sycl::info::device::max_work_group_size>();
+        const auto dimensions = device.get_info<sycl::info::device::max_work_item_sizes<3>>();
+        if (dimensions[0] < 1 || dimensions[1] < RG || dimensions[2] < CB)
+            return denied("device_local_dimensions_unsupported");
+        if (std::find(sizes.begin(), sizes.end(), size_t(32)) == sizes.end() || result.device_max_workgroup < 128)
+            return denied("device_no_SG32_or_WG128");
+        const auto id = sycl::get_kernel_id<GdnRecQuadFactorPipelineSG32>();
+        executable.emplace(sycl::get_kernel_bundle<sycl::bundle_state::executable>(q.get_context(), {device}, {id}));
+        const auto &bundle = *executable;
+        if (!bundle.has_kernel(id, device)) return denied("exact_executable_kernel_unavailable");
+        const auto kernel = bundle.get_kernel(id);
+        result.compiled_subgroup = kernel.get_info<sycl::info::kernel_device_specific::compile_sub_group_size>(device);
+        result.kernel_max_workgroup = kernel.get_info<sycl::info::kernel_device_specific::work_group_size>(device);
+        if (result.compiled_subgroup != 32 || result.kernel_max_workgroup < 128)
+            return denied("compiled_SG_or_WG_mismatch");
+        // Informational only: missing resource descriptors are not support/performance rejection criteria.
+        try { result.private_bytes = kernel.get_info<sycl::info::kernel_device_specific::private_mem_size>(device); result.private_known = true; }
+        catch (const std::exception &) {}
+        try { result.spill_bytes = kernel.get_info<sycl::ext::intel::info::kernel_device_specific::spill_memory_size>(device); result.spill_known = true; }
+        catch (const std::exception &) {}
+    } catch (const std::exception &) { return denied("pre_submit_query_exception"); }
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+    if(capture){capture->admission_ns=diagnostic_ns(admission_start);capture->admission_observed=true;capture->admitted=true;}
+#endif
+    // No catch/fallback encloses either submission or check: mutation may be partial on error.
+    result.status = GdnQuadReport::Status::Submitted; result.reason = "candidate_submission_attempted";
+    if (report) *report = result;
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+    const auto submit_start=capture?DiagnosticClock::now():DiagnosticClock::time_point{};
+    auto recurrence_event=
+#endif
+    q.submit([=](sycl::handler &handler) {
+        handler.use_kernel_bundle(*executable); // Bind exactly the executable image admitted above.
+        handler.parallel_for<GdnRecQuadFactorPipelineSG32>(
+            sycl::nd_range<3>(sycl::range(1, 1, HV * NCB) * sycl::range(1, RG, CB), sycl::range(1, RG, CB)),
+            [=](sycl::nd_item<3>) [[sycl::reqd_sub_group_size(32)]] {
+                gdn_rec_quad_pipeline_sg32_factor_kernel(state, h, gate, beta, y, T);
+            });
+    });
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+    if(capture){capture->recurrence_submit_ns=diagnostic_ns(submit_start);capture->recurrence.emplace(std::move(recurrence_event));}
+#endif
+    launch_gdn_out_norm(z, gamma, eps, y, y16, T, stream);
+    check("gdn_recurrence_quad_variant_factor_private");
+    return true;
+#else
+    return denied("not_SYCL_quad_backend");
+#endif
+}
+
+bool gdn_recurrence_keyhead_variant_factor_private(float *state, const float *h, const float *gate, const float *beta, const float *z,
+                                    const float *gamma, float eps, float *y, uint16_t *y16, int64_t T, void *stream) {
+    if (T < 256)
+        return false;
+    // The original key-head arithmetic; SG16 and 256 GRFs avoid the B570's register spills.
+    const auto props = sycl::ext::oneapi::experimental::properties{sycl::ext::intel::experimental::grf_size<256>};
+    strata::q_of(stream)->parallel_for<dpct_kernel_name<class gdn_rec_kh_tuned_kernel_factor_private>>(
+        sycl::nd_range<3>(sycl::range(1, 1, HK * NCB) * sycl::range(1, RG, CB), sycl::range(1, RG, CB)), props,
+        [=](sycl::nd_item<3>) [[sycl::reqd_sub_group_size(16)]] { gdn_rec_kh_factor_kernel(state, h, gate, beta, y, T); });
+    launch_gdn_out_norm(z, gamma, eps, y, y16, T, stream);
+    check("gdn_recurrence_keyhead_variant_factor_private");
+    return true;
+}
+
+void gdn_recurrence_variant_factor_private(int variant, float* state, const float* h, const float* gate, const float* beta,
+                            const float* z, const float* gamma, float eps, float* y, uint16_t* y16, int64_t T,
+                            void* stream, int64_t ld16) {
+    if (ld16 != 0 && ld16 != HV * S)
+        throw std::invalid_argument("gdn_recurrence: padded output rows are not supported by SYCL");
+    if (ld16 <= 0) ld16 = (int64_t) HV * S;
+#if !defined(__HIPCC__)
+    static const bool quad = [] {
+        const char *v = std::getenv("STRATA_GDN_QUAD");
+        if (!v || std::strcmp(v, "0") == 0) return false;
+        if (std::strcmp(v, "1") == 0) return true;
+        throw std::invalid_argument("STRATA_GDN_QUAD must be 0 or 1");
+    }();
+    if (quad && variant == 0 && std::getenv("STRATA_GDN_REC_HEADS") == nullptr) {
+        const char *pv = std::getenv("STRATA_GDN_PIPELINE");
+        const char *kv = std::getenv("STRATA_GDN_KEYHEAD");
+        const char *tv = std::getenv("STRATA_GDN_KEYHEAD_TUNED");
+        // Explicit existing serial/nonpipeline/keyhead/tuned selectors keep their old precedence.
+        if ((!pv || std::atoi(pv) != 0) && (!kv || std::atoi(kv) == 0) && (!tv || std::atoi(tv) == 0) &&
+            gdn_recurrence_quad_variant_factor_private(state, h, gate, beta, z, gamma, eps, y, y16, T, stream, ld16))
+            return;
+    }
+#endif
+#if defined(__HIPCC__)
+    if (variant == 3) {   // diagnostics: the quad recurrence + the old norm kernel
+        if (T > 0) {
+            gdn_rec_quad_kernel<<<HV * (S / QCB), QTH, 0, (cudaStream_t) stream>>>(state, h, gate, beta, y, T);
+            gdn_out_norm_kernel<<<dim3((unsigned) T, HV), S, 0, (cudaStream_t) stream>>>(z, gamma, eps, y, y16, ld16);
+        }
+        return;
+    }
+    if (variant == 4 || variant == 5) {   // diagnostics: the quad recurrence's PP / two-column kernels + the norm
+        if (T > 0) {
+            if (variant == 5)
+                gdn_rec_quad2c_kernel<<<HV * (S / C2CB), QTH, 0, (cudaStream_t) stream>>>(state, h, gate, beta, y, T);
+            else
+                gdn_rec_quad_pp_kernel<<<HV * (S / QCB), QTH, 0, (cudaStream_t) stream>>>(state, h, gate, beta, y, T);
+            gdn_out_norm_loop_kernel<true><<<(unsigned) std::min<int64_t>(T * HV, 4096), S, 0, (cudaStream_t) stream>>>(
+                z, gamma, eps, y, y16, T * HV, ld16);
+        }
+        check("gdn_recurrence (quad pp)");
+        return;
+    }
+    if (variant == 1) {
+        if (T > 0) {
+            static const int pp = [] { const char* v = std::getenv("STRATA_GDN_PP"); return v ? std::atoi(v) : 0; }();
+            if (pp == 2)
+                gdn_rec_quad2c_kernel<<<HV * (S / C2CB), QTH, 0, (cudaStream_t) stream>>>(state, h, gate, beta, y, T);
+            else if (pp)
+                gdn_rec_quad_pp_kernel<<<HV * (S / QCB), QTH, 0, (cudaStream_t) stream>>>(state, h, gate, beta, y, T);
+            else
+                gdn_rec_quad_kernel<<<HV * (S / QCB), QTH, 0, (cudaStream_t) stream>>>(state, h, gate, beta, y, T);
+            static const bool noy = [] { const char* v = std::getenv("STRATA_GDN_NOY"); return v && std::atoi(v) != 0; }();
+            if (noy)
+                gdn_out_norm_loop_kernel<false><<<(unsigned) std::min<int64_t>(T * HV, 4096), S, 0, (cudaStream_t) stream>>>(
+                    z, gamma, eps, y, y16, T * HV, ld16);
+            else
+                gdn_out_norm_loop_kernel<true><<<(unsigned) std::min<int64_t>(T * HV, 4096), S, 0, (cudaStream_t) stream>>>(
+                    z, gamma, eps, y, y16, T * HV, ld16);
+        }
+        check("gdn_recurrence (quad)");
+        return;
+    }
+#else
+    (void) variant;   // the quad recurrence kernels are AMD-only
+#endif
+    static const bool serial = std::getenv("STRATA_GDN_REC_HEADS") != nullptr;   // the one-block-per-head kernel (A/B)
+    if (serial || T <= 0 || variant == 2) {
+        /*
+        DPCT1049: The work-group size passed to the SYCL kernel may exceed
+        the limit. To get the device limit, query
+        info::device::max_work_group_size. Adjust the work-group size if needed.
+        */
+        auto exp_props = sycl::ext::oneapi::experimental::properties{
+            };
+
+        strata::q_of(stream)
+            ->parallel_for<dpct_kernel_name<class gdn_rec_factor_kernel_923fed_factor_private>>(
+                sycl::nd_range<3>(sycl::range(1, 1, HV) * sycl::range(1, RG, S),
+                                  sycl::range(1, RG, S)),
+                exp_props,
+                [=](sycl::nd_item<3> item_ct1)
+                    [[sycl::reqd_sub_group_size(32)]] {
+                        gdn_rec_factor_kernel(state, h, gate, beta, z, gamma, eps, y,
+                                       y16, T, ld16);
+                    });
+    } else {
+        static const bool pipe = [] { const char* v = std::getenv("STRATA_GDN_PIPELINE"); return v == nullptr || std::atoi(v) != 0; }();
+        static const bool tuned = [] {
+            const char* value = std::getenv("STRATA_GDN_KEYHEAD_TUNED");
+            return value && std::atoi(value) == 1;
+        }();
+        if (pipe && tuned && gdn_recurrence_keyhead_variant_factor_private(state, h, gate, beta, z, gamma, eps, y, y16, T, stream))
+            return;
+#if !defined(__HIPCC__)
+        if (pipe && gdn_keyhead_ok())   // the value heads of a key head in one thread (same bits)
+        {
+            auto exp_props = sycl::ext::oneapi::experimental::properties{
+                };
+
+            strata::q_of(stream)
+                ->parallel_for<
+                    dpct_kernel_name<class gdn_rec_kh_factor_kernel_c88399_factor_private>>(
+                    sycl::nd_range<3>(sycl::range(1, 1, HK * NCB) *
+                                          sycl::range(1, RG, CB),
+                                      sycl::range(1, RG, CB)),
+                    exp_props, [=](sycl::nd_item<3> item_ct1) {
+                        gdn_rec_kh_factor_kernel(state, h, gate, beta, y, T);
+                    });
+        } else
+#endif
+            if (pipe) // the software-pipelined loads (same bits)
+        {
+            auto exp_props = sycl::ext::oneapi::experimental::properties{
+                };
+
+            strata::q_of(stream)
+                ->parallel_for<
+                    dpct_kernel_name<class gdn_rec_cols_pipe_factor_kernel_c6cea3_factor_private>>(
+                    sycl::nd_range<3>(sycl::range(1, 1, HV * NCB) *
+                                          sycl::range(1, RG, CB),
+                                      sycl::range(1, RG, CB)),
+                    exp_props, [=](sycl::nd_item<3> item_ct1) {
+                        gdn_rec_cols_pipe_factor_kernel(state, h, gate, beta, y, T);
+                    });
+        } else {
+            auto exp_props = sycl::ext::oneapi::experimental::properties{
+                };
+
+            strata::q_of(stream)
+                ->parallel_for<
+                    dpct_kernel_name<class gdn_rec_cols_factor_kernel_496541_factor_private>>(
+                    sycl::nd_range<3>(sycl::range(1, 1, HV * NCB) *
+                                          sycl::range(1, RG, CB),
+                                      sycl::range(1, RG, CB)),
+                    exp_props, [=](sycl::nd_item<3> item_ct1) {
+                        gdn_rec_cols_factor_kernel(state, h, gate, beta, y, T);
+                    });
+        }
+        {
+            auto exp_props = sycl::ext::oneapi::experimental::properties{
+                };
+
+            strata::q_of(stream)
+                ->parallel_for<
+                    dpct_kernel_name<class gdn_out_norm_kernel_43e92c_factor_private>>(
+                    sycl::nd_range<3>(sycl::range(1, HV, (unsigned)T) *
+                                          sycl::range(1, 1, S),
+                                      sycl::range(1, 1, S)),
+                    exp_props,
+                    [=](sycl::nd_item<3> item_ct1)
+                        [[sycl::reqd_sub_group_size(32)]] {
+                            gdn_out_norm_kernel(z, gamma, eps, y, y16, ld16);
+                        });
+        }
+    }
+    check("gdn_recurrence");
+}
+} // namespace
+#endif
+
+bool gdn_prefill_gate_factor_enabled() {
+    const char* value = std::getenv("STRATA_GDN_PREFILL_GATE_FACTOR");
+    if (!value || std::strcmp(value, "0") == 0) return false;
+    if (std::strcmp(value, "1") != 0)
+        throw std::invalid_argument("STRATA_GDN_PREFILL_GATE_FACTOR must be 0 or 1");
+#if defined(STRATA_GDN_PREFILL_GATE_FACTOR) && !defined(__HIPCC__)
+    return true;
+#else
+    throw std::invalid_argument("prefill GDN gate factor is not enabled in this SYCL build");
+#endif
+}
+namespace {
+void validate_gate_encoding(GdnGateEncoding encoding, int64_t T) {
+    if (encoding != GdnGateEncoding::LogGate && encoding != GdnGateEncoding::DecayFactor)
+        throw std::invalid_argument("unknown GDN gate encoding");
+    if (encoding == GdnGateEncoding::DecayFactor) {
+        const char* quad = std::getenv("STRATA_GDN_QUAD");
+        if (quad && std::strcmp(quad, "0") != 0 && std::strcmp(quad, "1") != 0)
+            throw std::invalid_argument("STRATA_GDN_QUAD must be 0 or 1");
+    }
+    if (T < 0 || T > 262144)
+        throw std::invalid_argument("encoded GDN length outside checked range");
+#if !defined(STRATA_GDN_PREFILL_GATE_FACTOR) || defined(__HIPCC__)
+    if (encoding == GdnGateEncoding::DecayFactor)
+        throw std::invalid_argument("GDN factor API unavailable in this build/backend");
+#endif
+}
+}
+void gdn_gates_encoded(GdnGateEncoding encoding, const float* ab, const float* dt, const float* ssm_a,
+                       float* gate, float* beta, int64_t T, void* stream) {
+    validate_gate_encoding(encoding, T);
+    if (T == 0) return;
+    if (encoding == GdnGateEncoding::LogGate) { gdn_gates(ab, dt, ssm_a, gate, beta, T, stream); return; }
+#if defined(STRATA_GDN_PREFILL_GATE_FACTOR) && !defined(__HIPCC__)
+    gdn_gates_factor_private(ab, dt, ssm_a, gate, beta, T, stream);
+#endif
+}
+void gdn_recurrence_encoded(GdnGateEncoding encoding, int variant, float* state, const float* h,
+ const float* gate, const float* beta, const float* z, const float* gamma, float eps, float* y,
+ uint16_t* y16, int64_t T, void* stream, int64_t ld16) {
+    validate_gate_encoding(encoding, T);
+    if (variant != 0 && variant != 2) throw std::invalid_argument("encoded GDN supports variants0/2 only");
+    if (ld16 != 0 && ld16 != HV * S) throw std::invalid_argument("encoded GDN padded rows unsupported");
+    if (T == 0) return; // No queue lookup, state/norm submission or pointer dereference.
+    if (encoding == GdnGateEncoding::LogGate) {
+        if (variant == 0) gdn_recurrence(state,h,gate,beta,z,gamma,eps,y,y16,T,stream,ld16);
+        else gdn_recurrence_variant(2,state,h,gate,beta,z,gamma,eps,y,y16,T,stream,ld16);
+        return;
+    }
+#if defined(STRATA_GDN_PREFILL_GATE_FACTOR) && !defined(__HIPCC__)
+    gdn_recurrence_variant_factor_private(variant,state,h,gate,beta,z,gamma,eps,y,y16,T,stream,ld16);
+#endif
+}
+
 void route(const float* logits, int32_t* ids, float* weights, int64_t T, int64_t n_expert, void* stream) {
     if (n_expert == 512)
     {

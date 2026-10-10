@@ -40,6 +40,7 @@
 #include "strata/prefill/moe_mmq.hpp"
 #include "strata/core/peer_experts.hpp"
 #include "strata/prefill/kernels.hpp"
+#include "strata/prefill/gdn_gate_factor.hpp"
 
 #include <algorithm>
 #include <chrono>
@@ -2380,6 +2381,8 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
 
 bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) try {
     err.clear();
+    (void) gdn_prefill_gate_factor_enabled(); // Refuse invalid/build-OFF mode before layer-major work.
+
     Impl& m = *impl_;
     const core::OnDevice on_device(m.device);
     const auto& g = *m.g;
@@ -2794,6 +2797,14 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
 bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                   std::string &err) try {
     err.clear();
+    // Validate once before any work; producer and consumer share this snapshot.
+    const bool gate_factor_enabled = gdn_prefill_gate_factor_enabled();
+#if defined(STRATA_GDN_PREFILL_GATE_FACTOR)
+    const GdnGateEncoding gate_encoding = gate_factor_enabled ? GdnGateEncoding::DecayFactor : GdnGateEncoding::LogGate;
+#else
+    (void) gate_factor_enabled;
+#endif
+
     Impl& m = *impl_;
     const core::OnDevice on_device(m.device);
     const core::ModelGeometry& g = *m.g;
@@ -3658,10 +3669,26 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                     if (!bf16_proj(m.gemm, wa, m.mixed_bf, m.ab, T, v.name("ssm_alpha.weight"), err, 2 * HV, m.mixed_bf_lo)) return false;
                     if (!bf16_proj(m.gemm, wb, m.mixed_bf, m.ab + HV, T, v.name("ssm_beta.weight"), err, 2 * HV, m.mixed_bf_lo)) return false;
                     pt.mark(kPfGdnConv, cs);   // "gdn" is the projections in; the rest on their own lines
+#if defined(STRATA_GDN_PREFILL_GATE_FACTOR)
+                    if (gate_factor_enabled) {
+                        // Refuse an unsupported output layout before producer/conv state work.
+                        const int64_t candidate_ld = pf_pad() && T >= std::max<int64_t>(pf_switch_min_t(), 64) ? ZV + ZV_PAD : 0;
+                        if (candidate_ld != 0 && candidate_ld != HV * g.ssm_state_size)
+                            throw std::invalid_argument("prefill factor padded output rows unsupported");
+                    }
+                    if (gate_factor_enabled)
+                        gdn_gates_encoded(gate_encoding, m.ab, (const float*) wdt->data, (const float*) wsa->data, m.gate, m.beta, T, m.cs);
+                    else
+#endif
                     gdn_gates(m.ab, (const float*) wdt->data, (const float*) wsa->data, m.gate, m.beta, T, m.cs);
                     gdn_conv(conv, m.qkv, (const float*) wc->data, m.hbuf, T, EPS, m.cs);
                     pt.mark(kPfGdnRec, cs);
                     const int64_t ld_y = pf_pad() && T >= std::max<int64_t>(pf_switch_min_t(), 64) ? ZV + ZV_PAD : 0;
+#if defined(STRATA_GDN_PREFILL_GATE_FACTOR)
+                    if (gate_factor_enabled)
+                        gdn_recurrence_encoded(gate_encoding, 0, state, m.hbuf, m.gate, m.beta, m.z, (const float*) wnm->data, EPS, m.y, m.y_h, T, m.cs, ld_y);
+                    else
+#endif
                     gdn_recurrence(state, m.hbuf, m.gate, m.beta, m.z, (const float*) wnm->data, EPS, m.y, m.y_h, T, m.cs,
                                    ld_y);
                     pt.mark(kPfGdnOut, cs);
