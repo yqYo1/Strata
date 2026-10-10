@@ -1,0 +1,76 @@
+{
+  "created_utc": "2026-10-10T13:00:24.002403+00:00",
+  "scope": "Conditional transfer-path arithmetic only. No model/hardware execution, speed result, allocation/pinning admission or architecture adoption.",
+  "controller": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-hardware-architecture-decisions/derive_transfer_path_sensitivity_v1.py",
+    "bytes": 3673,
+    "sha256": "b4eb510932b8c0cf6e6b5a324f11438a059f95a3d5b22d3b05c5a248dd355d57"
+  },
+  "sources": {
+    "component-capacity-matrix-v2.json": {
+      "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-hardware-architecture-decisions/component-capacity-matrix-v2.json",
+      "bytes": 12648,
+      "sha256": "fbcaf9a0c9e268ae43c388b321d9c3c22599e188fbbb1fca88a9356fc07186b3"
+    },
+    "residual-dimension-correction.json": {
+      "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-hardware-architecture-decisions/residual-dimension-correction.json",
+      "bytes": 4736,
+      "sha256": "dbae3d393bd7a172872ecbc133dcb7aa3827d899fa4cda78f262d80e56154412"
+    },
+    "physical-bandwidth-reference.json": {
+      "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-hardware-architecture-decisions/physical-bandwidth-reference.json",
+      "bytes": 2885,
+      "sha256": "5bd8ccdfe50bdfe6f3afaf68d4861ac831ae54dc49eb7c9b8fd4f716d4d834fc"
+    }
+  },
+  "packed_census": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-current-native-pack-census/receipt.json",
+    "bytes": 78372,
+    "sha256": "902283e324b339127a9eb197954260ab606e32767b4e9acaf1d17e2463d31f84"
+  },
+  "positions": 32768,
+  "residual_width_FP32": 10240,
+  "layer_boundaries": 47,
+  "residual_H2D_payload_bytes": 63082332160,
+  "residual_D2H_payload_bytes": 63082332160,
+  "one_unique_packed_population_bytes": 50292326400,
+  "formula": "residual_H2D/(H2D_GBps*1e9)+residual_D2H/(D2H_GBps*1e9)+packed/(packed_H2D_GBps*1e9)",
+  "cases": [
+    {
+      "case": "attained_pageable",
+      "residual_H2D_GBps": 4.605214183505477,
+      "residual_D2H_GBps": 5.273931067459783,
+      "packed_H2D_GBps": 6.446833643341082,
+      "residual_seconds": 25.65918329,
+      "packed_seconds": 7.8010895243042,
+      "serial_transfer_seconds": 33.460272814304204,
+      "seconds_remaining_for_all_other_work_at_1000_tokens_s": -0.692272814304201
+    },
+    {
+      "case": "conditional_direct_host_USM",
+      "residual_H2D_GBps": 6.446833643341082,
+      "residual_D2H_GBps": 5.642945848801954,
+      "packed_H2D_GBps": 6.446833643341082,
+      "residual_seconds": 20.963981813750003,
+      "packed_seconds": 7.8010895243042,
+      "serial_transfer_seconds": 28.765071338054202,
+      "seconds_remaining_for_all_other_work_at_1000_tokens_s": 4.0029286619457976
+    },
+    {
+      "case": "ideal_encoded_external_link",
+      "residual_H2D_GBps": 7.876923076923077,
+      "residual_D2H_GBps": 7.876923076923077,
+      "packed_H2D_GBps": 7.876923076923077,
+      "residual_seconds": 16.0169984,
+      "packed_seconds": 6.384767999999999,
+      "serial_transfer_seconds": 22.4017664,
+      "seconds_remaining_for_all_other_work_at_1000_tokens_s": 10.366233600000003
+    }
+  ],
+  "limitations": [
+    "All cases serialize copies and exclude computation, dequant, attention, staging, protocol/other traffic, scheduling and allocation overhead.",
+    "USM rates were measured with 256MiB buffers; direct placement/registration of the residual plane is not implemented or admitted. A staging implementation must add its actual CPU copies and memory peak.",
+    "Ideal encoded link rate excludes packet/protocol overhead and does not assert full-duplex concurrency. It is not an attained payload rate.",
+    "Pageable-rate violation of a serial budget is conditional on that transfer path; it does not prove all-RAM architectures cannot fit at other rates. Full262144 all-GPU residual exceeds entire recorded device capacity independently."
+  ]
+}

@@ -1,0 +1,42 @@
+# Round 266 — Sysman memory bandwidth counter normalization contract
+
+Status: research-only, no host/runtime/GPU/process actions. This report separates the Level Zero API contract from NEO source behavior and from the installed `.14` binary. It does not claim the `.13` source is identical to the installed PPA package.
+
+## Environment identity inherited from recorded evidence
+
+The frozen evidence reports `libze-intel-gpu1 26.31.39395.14-1~24.04~ppa1`, installed driver library `/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395`, and driver version `1.17.39395+14`. It records Level Zero loader 1.32.0 and Sysman API/spec 1.17.24. The public compute-runtime release tag available for source comparison is 26.31.39395.13; no exact public `.14` source tag or source-to-installed-binary identity was established. Therefore every NEO implementation conclusion below is explicitly `.13` source evidence, not proof of `.14` behavior.
+
+## What the API reports
+
+In Level Zero v1.32.0 `include/zes_api.h` (`v1.17-r1.17.24`), `zesMemoryGetBandwidth` says its output contains total bytes read and written and current maximum bandwidth. The struct fields `readCounter`, `writeCounter`, `maxBandwidth`, and `timestamp` are all `uint64_t`; the comments label the first two “Total bytes” and max bandwidth “bytes/sec”. Timestamp is microseconds and is intended only for differences between snapshots from this application.
+
+The same header has a contradictory detail block: it says the counters are counts of 32-byte transactions, so a delta must be multiplied by 32; its rollover example uses `2^32`. The API struct nevertheless declares 64-bit fields. The header also defines `zes_mem_bandwidth_counter_bits_exp_properties_t.validBitsCount` to report the number of valid read/write counter bits through `zesMemoryGetProperties`'s `pNext`. The older `zes_mem_ext_bandwidth_t` describes timestamp bits and is marked deprecated/no longer supported. Thus field width alone does not establish counter width; the advertised `validBitsCount` (if returned) should control wrap arithmetic. The official header itself is internally inconsistent about whether values at the API boundary are bytes or 32-byte transaction counts.
+
+For a supported implementation, calculate unsigned deltas using the reported valid-bit width `w`: `delta = (new - old) mod 2^w`; if that property is unavailable, record width/wrap behavior as unknown rather than silently assuming 32 bits. Bandwidth rate is `(delta_read + delta_write) / (timestamp_delta_us * 1e-6)`. Use maxBandwidth only as the API's reported current limit; it does not normalize counters.
+
+## What the nearest public NEO source does
+
+At `https://github.com/intel/compute-runtime/blob/26.31.39395.13/level_zero/tools/source/sysman/memory/linux/os_memory_imp.cpp`, `LinuxMemoryImp::getBandwidth` dispatches only `IGFX_DG2` and `IGFX_PVC`. The default returns `ZE_RESULT_ERROR_UNSUPPORTED_FEATURE`; a null PMT object also returns unsupported. The DG2 path sums IDI_READS, IDI_WRITES, and DISPLAY_VC1_READS over 16 channels and multiplies the raw aggregate once by 32 before assigning the returned read/write counters. PVC's supported PMT paths likewise apply a factor of 32 once (including its split high/low counter path). This is direct evidence that those source paths normalize PMT transaction counts into byte totals before returning the API struct. A consumer of those returned counters must not multiply their deltas by 32 again.
+
+BMG is a distinct product family: the NEO device table maps PCI ID `0xE20C` (Arc B570) to `IGFX_BMG`. Since BMG has no case in the `.13` Linux memory bandwidth switch, `.13` source predicts unsupported for BMG. This remains only a nearest-source inference for the installed `.14` binary. Do not infer `.14` support or unsupported status until its exact source or a read-only API call demonstrates it. If `.14` returns `ZE_RESULT_ERROR_UNSUPPORTED_FEATURE`, there is no API counter to normalize. If it returns success, the `.13` implementation is insufficient to decide whether the exported values are already bytes or raw transactions.
+
+The code's factor of 32 is an implementation normalization, not a universal rule for every Sysman device, memory module, or PMT field. It also should not be conflated with PCI RX/TX statistics, fabric-port throughput, host-memory traffic, or logical copy volume; those are different telemetry domains and may count different traffic or protocol overhead.
+
+## Raw PMT interpretation limits
+
+Intel's PMT repository describes per-platform XML schemas for low-level sample fields (container, offset, LSB/MSB) and high-level counter transformations/units. A raw PMT register value therefore has no universal byte unit by itself. The NEO `.13` code's `*32` documents the conversion for the selected DG2/PVC counter paths only. No BMG-specific XML-to-NEO-to-installed-binary mapping was established here. Do not apply the factor based solely on the name “IDI” or because the API header contains the 32-byte note.
+
+Primary references:
+
+- Level Zero v1.32.0 Sysman header: https://github.com/oneapi-src/level-zero/blob/v1.32.0/include/zes_api.h (struct, function, valid-bit extension; lines 4983–5008, 5147–5152, 7706–7721).
+- NEO 26.31.39395.13 Linux implementation: https://github.com/intel/compute-runtime/blob/26.31.39395.13/level_zero/tools/source/sysman/memory/linux/os_memory_imp.cpp (dispatch and per-platform scaling).
+- NEO 26.31.39395.13 PMT implementation: https://github.com/intel/compute-runtime/blob/26.31.39395.13/level_zero/tools/source/sysman/memory/linux/pmt.cpp.
+- NEO device table (B570 `0xE20C` => `IGFX_BMG`): https://github.com/intel/compute-runtime/blob/26.31.39395.13/shared/source/dll/devices/devices_base.inl.
+- Intel PMT schema overview: https://github.com/intel/Intel-PMT (XML defines low-level fields and high-level transformations/units).
+- Prior recorded environment identity and release/source caveat: `bench/results/2026-10-10-parallel-round35/research/bmg-installed-igc-register-contract-round103.txt` in frozen worktree commit `e221cb7315009135fbf9be1d0f1efed936293a8b`.
+
+## Read-only validation proposal for the installed `.14`
+
+First enumerate memory modules and query properties, including the valid-bits extension if supported; call `zesMemoryGetBandwidth` twice around a bounded known-byte operation. Record the exact result code, all raw API fields, timestamps, property extension result, device PCI/product identity, and loaded driver/version. If the API is unsupported, stop: report unsupported rather than trying PMT or changing driver/system settings.
+
+If it succeeds, take a pre-operation snapshot, execute and synchronize a single known-size device-local copy on the already chosen queue, then take a post-operation snapshot; collect a same-duration idle pair as a baseline and repeat enough samples to establish stability. Keep read and write deltas separate. Logical copy size is not guaranteed to equal physical memory traffic due to caching, write allocation, compression, migration, or unrelated GPU activity, so this test is diagnostic rather than an exact byte oracle. A result matching known traffic at approximately 1x versus 32x can distinguish API-byte normalization from exposed 32-byte transaction counts only when background/noise and actual device traffic are bounded. Do not multiply or convert production measurements until this check or exact `.14` source resolves the ambiguity. Preserve raw snapshots so the normalization decision can be audited.
