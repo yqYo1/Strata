@@ -1,0 +1,639 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "mode": "timing",
+  "seed": 2026101003,
+  "commands": [
+    {
+      "label": "owned-sample",
+      "argv": [
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-actual-cohort-timing-20261010/build-iq2s-timing-release-v2/native_service_calibration",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-calibration-cohort-22-20-nt1-v2/cohort.tsv",
+        "22",
+        "20",
+        "1",
+        "0",
+        "1",
+        "2026101003",
+        "--iq2s-index-timing-only"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-actual-cohort-timing-20261010",
+      "start_observation": {
+        "utc": "2026-10-10T01:02:17.836913+00:00",
+        "loadavg": "3.35 3.89 4.22 2/2746 3573413",
+        "cpu_model": "AMD Ryzen 5 5600X 6-Core Processor",
+        "flags": "fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap",
+        "allowed_cpu_list": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "governors": {
+          "/sys/devices/system/cpu/cpufreq/policy0/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy1/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy10/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy11/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy2/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy3/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy4/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy5/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy6/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy7/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy8/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy9/scaling_governor": "powersave"
+        }
+      },
+      "deadline_seconds": 180,
+      "owner": {
+        "pid": 3573414,
+        "pgid": 3573414,
+        "start_ticks": 28381695
+      },
+      "peak_group_rss_bytes": 1472475136,
+      "exit_code": 0,
+      "elapsed_seconds": 7.275870018987916,
+      "end_observation": {
+        "utc": "2026-10-10T01:02:25.113788+00:00",
+        "loadavg": "3.37 3.87 4.21 1/2759 3573818",
+        "cpu_model": "AMD Ryzen 5 5600X 6-Core Processor",
+        "flags": "fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap",
+        "allowed_cpu_list": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "governors": {
+          "/sys/devices/system/cpu/cpufreq/policy0/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy1/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy10/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy11/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy2/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy3/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy4/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy5/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy6/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy7/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy8/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy9/scaling_governor": "powersave"
+        }
+      },
+      "whole_child_rusage_delta": {
+        "user_seconds": 6.699631,
+        "system_seconds": 0.444246,
+        "minor_faults": 218397,
+        "major_faults": 0
+      },
+      "files": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq2s-timing-timing-r3-v1/owned-sample/stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq2s-timing-timing-r3-v1/owned-sample/stdout.csv": {
+          "bytes": 324894,
+          "sha256": "c3563e30c02e08100a89542ca6c069f55cbcb2ca199d0a860e624df0a72aeb28"
+        }
+      }
+    }
+  ],
+  "cleanup": [],
+  "survivors": [],
+  "controller_sha256": "37853bf1e8b9cbba3df452ab5e4847a5e90c5f1e26b512c6b08f3bd527ba0898",
+  "build_receipt_sha256": "f929eafc0c0c86d98658eca2881fbee50e7b356c33f6dddbeca6fa17b5dbc19d",
+  "binary": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-actual-cohort-timing-20261010/build-iq2s-timing-release-v2/native_service_calibration",
+    "bytes": 3749728,
+    "sha256": "86ccf7eb6aac167ad0143982a0b908adf993f88eba85c7fb29e2c3638dbd0597"
+  },
+  "source_snapshot_sha256": "bf44394cdbe744514015b756c9560702560e1778ba62868b63732100c5be4c90",
+  "helper_sha256": "5d16615452013fbfdba190e382e750ab7ddaad87013daaa879b5348558b0e676",
+  "helper_effective_sha256": "5d16615452013fbfdba190e382e750ab7ddaad87013daaa879b5348558b0e676",
+  "gpu_work_submitted": false,
+  "inference_run": false,
+  "performance_eligible": false,
+  "adopted": false,
+  "full_lifecycle_passed": false,
+  "scope": "Selected actual weights with synthetic finite inputs; CPU caller-dot comparison only",
+  "started_utc": "2026-10-10T01:02:11.578039+00:00",
+  "limits": {
+    "AS_each": 103079215104,
+    "RSS_group_poll_bytes": 1610612736,
+    "wall_child_seconds": 180,
+    "CPU_soft_seconds": 900,
+    "CPU_hard_seconds": 901,
+    "FSIZE_each_bytes": 4194304,
+    "text_budget_bytes": 8388608,
+    "NOFILE": 256,
+    "CORE": 0
+  },
+  "model_identity": [
+    {
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "bytes": 54817524224,
+      "dev": 40,
+      "ino": 2640848,
+      "mtime_ns": 1791009083688077826,
+      "ctime_ns": 1791009083692077878
+    },
+    {
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf",
+      "bytes": 28800138432,
+      "dev": 40,
+      "ino": 2623800,
+      "mtime_ns": 1790924461554234294,
+      "ctime_ns": 1791008604221189761
+    }
+  ],
+  "selected_extents_before": {
+    "extents": 1152,
+    "bytes": 756940800,
+    "canonical_json_sha256": "b8a9834741ca63637ead3f0b72ad63e90ced6d4182f0b48e9687b7818962a58d",
+    "expected_source_receipt_sha256": "62707c2acbc0c1ab8baef915b4a2bb3c24d2b795ee31cae1235f644a1000b8bb",
+    "all_individual_sha256_match": true
+  },
+  "phase": "owned-sample",
+  "numerical_admission": {
+    "experts": 384,
+    "layers": 15,
+    "row_pairs": 245760,
+    "dot_calls": 1474560,
+    "baseline_control_register_Gate_Up_finish_all_bits_equal": true,
+    "nonfinite_values": 0,
+    "split_rows": [
+      122880,
+      122880
+    ],
+    "mxcsr": {
+      "entry": 8064,
+      "prepared": 8123,
+      "final": 8123
+    },
+    "mxcsr_control": "0x1f80",
+    "rounding": "nearest-even",
+    "FTZ": false,
+    "DAZ": false,
+    "activation_hash_by_layer": {
+      "2": "9998319220224507624",
+      "3": "7409824270656452520",
+      "4": "13709357601008864010",
+      "5": "12165695162156275890",
+      "6": "199049746152132543",
+      "9": "12000031759277121767",
+      "11": "13632951148989301819",
+      "15": "11368814126305167667",
+      "19": "14044718536455411226",
+      "23": "8431128090105167121",
+      "24": "1082031835109878896",
+      "26": "7372685919381071587",
+      "32": "13366400912829093232",
+      "34": "18382280203142070326",
+      "39": "5506078733368697669"
+    },
+    "no_pool_or_timing_records": true
+  },
+  "timing_validation": {
+    "recorded_samples": 216,
+    "warmups": 36,
+    "output_hashes": {
+      "0/stream192": "10107395113598727008",
+      "0/hot8": "10169275044955887171",
+      "1/stream192": "6616796834858155689",
+      "1/hot8": "10893890428148907127"
+    },
+    "process_cell_summaries": {
+      "0/stream192": {
+        "register/trait": {
+          "median": 1.2912649677973307,
+          "minimum": 1.0118574840418957,
+          "maximum": 1.4089572655708777,
+          "individual_paired_ratios": [
+            1.3101341033667975,
+            1.3542647795281184,
+            1.2819332002214936,
+            1.2927351631712232,
+            1.269353486956926,
+            1.2647516231479403,
+            1.2954031013407092,
+            1.0118574840418957,
+            1.4089572655708777,
+            1.289794772423438,
+            1.3147911132048684,
+            1.3052377034171725,
+            1.3611088002095826,
+            1.344405714288873,
+            1.1515091122858945,
+            1.270410768349176,
+            1.2745481611333966,
+            1.2524506766221293
+          ]
+        },
+        "direct/trait": {
+          "median": 1.061898558608445,
+          "minimum": 0.8844790368572844,
+          "maximum": 1.496672568852605,
+          "individual_paired_ratios": [
+            1.029178323956301,
+            1.1260023055360717,
+            1.0511705991958604,
+            1.0663880096878096,
+            1.0488988109353534,
+            1.0608155628380547,
+            1.1157082944606922,
+            0.8844790368572844,
+            1.0629815543788357,
+            1.0643508502789267,
+            1.0655807373284516,
+            1.1373241089416304,
+            1.0174230295275726,
+            1.496672568852605,
+            0.9729665831415601,
+            1.028273677135676,
+            1.1129109073986687,
+            1.0069083168574258
+          ]
+        },
+        "register/direct": {
+          "median": 1.210995399359342,
+          "minimum": 0.8982630818974222,
+          "maximum": 1.3378002666615438,
+          "individual_paired_ratios": [
+            1.272990377732077,
+            1.2027193664433702,
+            1.2195291622522217,
+            1.2122559063184497,
+            1.2101772580188004,
+            1.192244596944152,
+            1.1610589504193634,
+            1.144015224642531,
+            1.3254766837362635,
+            1.2118135406998836,
+            1.233872823659725,
+            1.147639176163951,
+            1.3378002666615438,
+            0.8982630818974222,
+            1.18350324896858,
+            1.2354792275612743,
+            1.1452382689936438,
+            1.2438577134123239
+          ]
+        },
+        "arm_median_ms": {
+          "trait": 34.348907499999996,
+          "direct": 37.093571999999995,
+          "register": 45.2582495
+        },
+        "arm_position_median_ms": {
+          "trait": {
+            "0": 34.874532,
+            "1": 34.2814195,
+            "2": 34.348907499999996
+          },
+          "direct": {
+            "0": 38.4744925,
+            "1": 36.7641965,
+            "2": 37.218021500000006
+          },
+          "register": {
+            "0": 44.9415335,
+            "1": 45.2582495,
+            "2": 45.038972
+          }
+        }
+      },
+      "0/hot8": {
+        "register/trait": {
+          "median": 1.3178913994527703,
+          "minimum": 0.859573570598247,
+          "maximum": 1.5573956432792961,
+          "individual_paired_ratios": [
+            1.1089147726470834,
+            1.1005242950442193,
+            1.3996148649032087,
+            1.351272681880596,
+            1.3704360184392255,
+            1.4304655622653826,
+            1.308582591114838,
+            1.3423212020219584,
+            0.859573570598247,
+            1.1763464846508667,
+            1.3186642384566576,
+            0.9258842810551574,
+            1.4618654993177536,
+            1.473629232570869,
+            1.5573956432792961,
+            1.1578339576309467,
+            1.3008983182754463,
+            1.3171185604488833
+          ]
+        },
+        "direct/trait": {
+          "median": 1.0913188839582968,
+          "minimum": 0.7070791989366242,
+          "maximum": 1.380516853230169,
+          "individual_paired_ratios": [
+            0.8487075573825077,
+            0.8548605816718075,
+            1.1280139122802482,
+            1.3610866025124544,
+            1.3240180019313814,
+            1.2180396877210162,
+            1.0576464734730535,
+            1.0751982812324583,
+            0.7070791989366242,
+            1.1074394866841353,
+            1.2297667697662302,
+            0.8505820146849536,
+            0.9498269284302854,
+            1.380516853230169,
+            1.1517632343982995,
+            0.9138113681226403,
+            1.0468912545884252,
+            1.149040257341656
+          ]
+        },
+        "register/direct": {
+          "median": 1.2264634978287106,
+          "minimum": 0.9927896427650212,
+          "maximum": 1.5390861803988645,
+          "individual_paired_ratios": [
+            1.30659231557579,
+            1.2873728402495526,
+            1.2407780167125129,
+            0.9927896427650212,
+            1.0350584481782972,
+            1.1743997972199254,
+            1.2372589744640963,
+            1.2484406136543553,
+            1.2156680211933246,
+            1.0622219080999638,
+            1.0722880719140964,
+            1.0885302828770662,
+            1.5390861803988645,
+            1.0674474774594989,
+            1.3521838488731632,
+            1.2670382510228924,
+            1.2426298458161076,
+            1.146277123045351
+          ]
+        },
+        "arm_median_ms": {
+          "trait": 1.4402080000000002,
+          "direct": 1.6443625,
+          "register": 1.8927745
+        },
+        "arm_position_median_ms": {
+          "trait": {
+            "0": 1.6446575,
+            "1": 1.5282084999999999,
+            "2": 1.386196
+          },
+          "direct": {
+            "0": 1.6137044999999999,
+            "1": 1.6443625,
+            "2": 1.6364465
+          },
+          "register": {
+            "0": 1.983045,
+            "1": 1.8691655,
+            "2": 1.944527
+          }
+        }
+      },
+      "1/stream192": {
+        "register/trait": {
+          "median": 1.2891765657830345,
+          "minimum": 1.0283182969706561,
+          "maximum": 1.4656257360426383,
+          "individual_paired_ratios": [
+            1.0283182969706561,
+            1.3921581084872432,
+            1.2777246156072173,
+            1.2329745777998296,
+            1.3474661254856337,
+            1.3165727842416644,
+            1.279904359295285,
+            1.1785186558375873,
+            1.4656257360426383,
+            1.2984487722707838,
+            1.4226156413717657,
+            1.263604913824507,
+            1.3161179920251953,
+            1.276380105999475,
+            1.0327509778034076,
+            1.3981647748286359,
+            1.3059073997948518,
+            1.2352958332339914
+          ]
+        },
+        "direct/trait": {
+          "median": 1.0522848599137853,
+          "minimum": 0.9042008354576819,
+          "maximum": 1.2097630726597928,
+          "individual_paired_ratios": [
+            0.9042008354576819,
+            1.2097630726597928,
+            1.0573795236094792,
+            1.0245366204709077,
+            1.0803444495103305,
+            1.0821790223455903,
+            1.053923141996846,
+            1.0506465778307243,
+            1.0012317346537982,
+            1.067333293548158,
+            1.1186239361616623,
+            1.0257031245745765,
+            1.082353392625565,
+            1.0041174544480993,
+            0.9864526195923664,
+            1.1583570473186189,
+            0.9244230969268615,
+            1.0262557990344507
+          ]
+        },
+        "register/direct": {
+          "median": 1.215198569940246,
+          "minimum": 1.046934193585672,
+          "maximum": 1.4638226949023108,
+          "individual_paired_ratios": [
+            1.1372675811012156,
+            1.1507692208081997,
+            1.2083878939187005,
+            1.2034460781237057,
+            1.2472560266277823,
+            1.2165942575638111,
+            1.2144190674760944,
+            1.121707985068472,
+            1.4638226949023108,
+            1.2165354347322228,
+            1.2717550513474536,
+            1.231940201360509,
+            1.215978072404398,
+            1.2711462193444507,
+            1.046934193585672,
+            1.2070240156652279,
+            1.4126728379420537,
+            1.2036919395692722
+          ]
+        },
+        "arm_median_ms": {
+          "trait": 35.940375,
+          "direct": 37.8670635,
+          "register": 46.0478975
+        },
+        "arm_position_median_ms": {
+          "trait": {
+            "0": 36.022404,
+            "1": 35.9182425,
+            "2": 35.840697500000005
+          },
+          "direct": {
+            "0": 39.0255055,
+            "1": 38.316405,
+            "2": 36.991575
+          },
+          "register": {
+            "0": 44.9856865,
+            "1": 47.758665,
+            "2": 46.572295
+          }
+        }
+      },
+      "1/hot8": {
+        "register/trait": {
+          "median": 1.2289660778137066,
+          "minimum": 0.8606096235021802,
+          "maximum": 1.5539824868445606,
+          "individual_paired_ratios": [
+            1.0220238667212505,
+            1.3709287627920002,
+            1.3293406612671366,
+            1.2979291113592704,
+            0.9741161523940378,
+            0.8606096235021802,
+            1.3417651689276098,
+            1.3397641967676412,
+            1.1689615031831044,
+            1.5539824868445606,
+            1.0234957256372756,
+            1.0464341339950411,
+            1.0671830766380799,
+            1.0849372566974878,
+            1.0824840948965104,
+            1.2889706524443088,
+            1.3151870899121818,
+            1.3413370980734993
+          ]
+        },
+        "direct/trait": {
+          "median": 1.0592137350827198,
+          "minimum": 0.6377484220398143,
+          "maximum": 1.2880619093879715,
+          "individual_paired_ratios": [
+            1.0641291437351943,
+            1.1823158080932779,
+            1.1315478068791418,
+            1.0461034871831292,
+            0.6377484220398143,
+            0.8961293025900308,
+            1.0640129761526744,
+            1.2880619093879715,
+            0.9184937575000102,
+            1.207865490502074,
+            0.650942286916751,
+            1.040841208496934,
+            1.0520000685499964,
+            1.0616850466457144,
+            0.7824842182476652,
+            1.0567424235197254,
+            1.0794543183157952,
+            1.0894160247090607
+          ]
+        },
+        "register/direct": {
+          "median": 1.2190700090579805,
+          "minimum": 0.9603632210383143,
+          "maximum": 1.5723294464170685,
+          "individual_paired_ratios": [
+            0.9604321737997418,
+            1.1595284046847845,
+            1.174798495640689,
+            1.240727258116918,
+            1.5274301256259704,
+            0.9603632210383143,
+            1.261042110387835,
+            1.0401395981069235,
+            1.2726940097718535,
+            1.2865525996595994,
+            1.5723294464170685,
+            1.005373466627233,
+            1.01443251625355,
+            1.021901231561315,
+            1.3833941562689662,
+            1.2197585937272146,
+            1.2183814243887465,
+            1.231244141494721
+          ]
+        },
+        "arm_median_ms": {
+          "trait": 1.5762239999999998,
+          "direct": 1.5992475,
+          "register": 1.9668545000000002
+        },
+        "arm_position_median_ms": {
+          "trait": {
+            "0": 1.403278,
+            "1": 1.976242,
+            "2": 1.8773665
+          },
+          "direct": {
+            "0": 1.5992475,
+            "1": 1.5809425,
+            "2": 1.7441149999999999
+          },
+          "register": {
+            "0": 1.9668545000000002,
+            "1": 2.0970195,
+            "2": 2.014604
+          }
+        }
+      }
+    },
+    "scope": "Paired same-round caller-dot screen; process is replication unit, no confidence interval/model/adoption claim",
+    "duration_interpretation": "replicated screen, not model performance"
+  },
+  "selected_extents_after": {
+    "extents": 1152,
+    "bytes": 756940800,
+    "canonical_json_sha256": "b8a9834741ca63637ead3f0b72ad63e90ced6d4182f0b48e9687b7818962a58d",
+    "expected_source_receipt_sha256": "62707c2acbc0c1ab8baef915b4a2bb3c24d2b795ee31cae1235f644a1000b8bb",
+    "all_individual_sha256_match": true
+  },
+  "exit_source_pin_gate_passed": true,
+  "elapsed_seconds": 20.600457776978146,
+  "finished_utc": "2026-10-10T01:02:32.178736+00:00"
+}

@@ -1,0 +1,244 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "mode": "correctness",
+  "seed": 2026101001,
+  "commands": [
+    {
+      "label": "owned-sample",
+      "argv": [
+        "/usr/bin/strace",
+        "-f",
+        "-yy",
+        "-s",
+        "512",
+        "-e",
+        "trace=open,openat,openat2,close,close_range,mmap,ioctl,execve",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq2s-timing-correctness-r1-v1/syscalls.txt",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-actual-cohort-timing-20261010/build-iq2s-timing-release-v2/native_service_calibration",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-calibration-cohort-22-20-nt1-v2/cohort.tsv",
+        "22",
+        "20",
+        "1",
+        "0",
+        "1",
+        "2026101001",
+        "--iq2s-index-correctness-only"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_DEBUG": "libs"
+      },
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-actual-cohort-timing-20261010",
+      "start_observation": {
+        "utc": "2026-10-10T00:58:54.172192+00:00",
+        "loadavg": "4.16 4.47 4.46 2/2748 3562097",
+        "cpu_model": "AMD Ryzen 5 5600X 6-Core Processor",
+        "flags": "fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap",
+        "allowed_cpu_list": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "governors": {
+          "/sys/devices/system/cpu/cpufreq/policy0/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy1/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy10/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy11/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy2/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy3/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy4/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy5/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy6/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy7/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy8/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy9/scaling_governor": "powersave"
+        }
+      },
+      "deadline_seconds": 180,
+      "owner": {
+        "pid": 3562098,
+        "pgid": 3562098,
+        "start_ticks": 28361328
+      },
+      "peak_group_rss_bytes": 1392148480,
+      "exit_code": 0,
+      "elapsed_seconds": 1.7627702939789742,
+      "end_observation": {
+        "utc": "2026-10-10T00:58:55.936022+00:00",
+        "loadavg": "4.16 4.47 4.46 3/2776 3562190",
+        "cpu_model": "AMD Ryzen 5 5600X 6-Core Processor",
+        "flags": "fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap",
+        "allowed_cpu_list": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "governors": {
+          "/sys/devices/system/cpu/cpufreq/policy0/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy1/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy10/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy11/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy2/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy3/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy4/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy5/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy6/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy7/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy8/scaling_governor": "powersave",
+          "/sys/devices/system/cpu/cpufreq/policy9/scaling_governor": "powersave"
+        }
+      },
+      "whole_child_rusage_delta": {
+        "user_seconds": 1.09343,
+        "system_seconds": 0.45821999999999996,
+        "minor_faults": 211759,
+        "major_faults": 81
+      },
+      "files": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq2s-timing-correctness-r1-v1/owned-sample/stderr.txt": {
+          "bytes": 4200,
+          "sha256": "4960ea8692c97c912fddec22dd20084002305b175d58e9f1c5ebc41b8469a1e6"
+        },
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq2s-timing-correctness-r1-v1/owned-sample/stdout.csv": {
+          "bytes": 293418,
+          "sha256": "59c9013d1b6392279f9aad3a4b07ab3e625fa9a6bad2d07879d50d8a0dca2f17"
+        }
+      }
+    }
+  ],
+  "cleanup": [],
+  "survivors": [],
+  "controller_sha256": "37853bf1e8b9cbba3df452ab5e4847a5e90c5f1e26b512c6b08f3bd527ba0898",
+  "build_receipt_sha256": "f929eafc0c0c86d98658eca2881fbee50e7b356c33f6dddbeca6fa17b5dbc19d",
+  "binary": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-actual-cohort-timing-20261010/build-iq2s-timing-release-v2/native_service_calibration",
+    "bytes": 3749728,
+    "sha256": "86ccf7eb6aac167ad0143982a0b908adf993f88eba85c7fb29e2c3638dbd0597"
+  },
+  "source_snapshot_sha256": "bf44394cdbe744514015b756c9560702560e1778ba62868b63732100c5be4c90",
+  "helper_sha256": "5d16615452013fbfdba190e382e750ab7ddaad87013daaa879b5348558b0e676",
+  "helper_effective_sha256": "5d16615452013fbfdba190e382e750ab7ddaad87013daaa879b5348558b0e676",
+  "gpu_work_submitted": false,
+  "inference_run": false,
+  "performance_eligible": false,
+  "adopted": false,
+  "full_lifecycle_passed": false,
+  "scope": "Selected actual weights with synthetic finite inputs; CPU caller-dot comparison only",
+  "started_utc": "2026-10-10T00:58:47.494290+00:00",
+  "limits": {
+    "AS_each": 103079215104,
+    "RSS_group_poll_bytes": 1610612736,
+    "wall_child_seconds": 180,
+    "CPU_soft_seconds": 900,
+    "CPU_hard_seconds": 901,
+    "FSIZE_each_bytes": 4194304,
+    "text_budget_bytes": 8388608,
+    "NOFILE": 256,
+    "CORE": 0
+  },
+  "model_identity": [
+    {
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "bytes": 54817524224,
+      "dev": 40,
+      "ino": 2640848,
+      "mtime_ns": 1791009083688077826,
+      "ctime_ns": 1791009083692077878
+    },
+    {
+      "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf",
+      "bytes": 28800138432,
+      "dev": 40,
+      "ino": 2623800,
+      "mtime_ns": 1790924461554234294,
+      "ctime_ns": 1791008604221189761
+    }
+  ],
+  "selected_extents_before": {
+    "extents": 1152,
+    "bytes": 756940800,
+    "canonical_json_sha256": "b8a9834741ca63637ead3f0b72ad63e90ced6d4182f0b48e9687b7818962a58d",
+    "expected_source_receipt_sha256": "62707c2acbc0c1ab8baef915b4a2bb3c24d2b795ee31cae1235f644a1000b8bb",
+    "all_individual_sha256_match": true
+  },
+  "phase": "owned-sample",
+  "numerical_admission": {
+    "experts": 384,
+    "layers": 15,
+    "row_pairs": 245760,
+    "dot_calls": 1474560,
+    "baseline_control_register_Gate_Up_finish_all_bits_equal": true,
+    "nonfinite_values": 0,
+    "split_rows": [
+      122880,
+      122880
+    ],
+    "mxcsr": {
+      "entry": 8064,
+      "prepared": 8123,
+      "final": 8123
+    },
+    "mxcsr_control": "0x1f80",
+    "rounding": "nearest-even",
+    "FTZ": false,
+    "DAZ": false,
+    "activation_hash_by_layer": {
+      "2": "9998319220224507624",
+      "3": "7409824270656452520",
+      "4": "13709357601008864010",
+      "5": "12165695162156275890",
+      "6": "199049746152132543",
+      "9": "12000031759277121767",
+      "11": "13632951148989301819",
+      "15": "11368814126305167667",
+      "19": "14044718536455411226",
+      "23": "8431128090105167121",
+      "24": "1082031835109878896",
+      "26": "7372685919381071587",
+      "32": "13366400912829093232",
+      "34": "18382280203142070326",
+      "39": "5506078733368697669"
+    },
+    "no_pool_or_timing_records": true
+  },
+  "runtime_audit": {
+    "trace_sha256": "1b0bb8a820f2a3e64c5b910c30d4b1595c823467b84535fa29800b139ec7e4f1",
+    "trace_bytes": 68480,
+    "scope": "pre-exec to exit scoped no GPU/runtime observation"
+  },
+  "selected_extents_after": {
+    "extents": 1152,
+    "bytes": 756940800,
+    "canonical_json_sha256": "b8a9834741ca63637ead3f0b72ad63e90ced6d4182f0b48e9687b7818962a58d",
+    "expected_source_receipt_sha256": "62707c2acbc0c1ab8baef915b4a2bb3c24d2b795ee31cae1235f644a1000b8bb",
+    "all_individual_sha256_match": true
+  },
+  "exit_source_pin_gate_passed": true,
+  "elapsed_seconds": 15.618019062036183,
+  "finished_utc": "2026-10-10T00:59:03.112502+00:00"
+}

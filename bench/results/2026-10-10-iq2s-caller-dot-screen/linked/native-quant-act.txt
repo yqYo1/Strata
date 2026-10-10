@@ -1,0 +1,74 @@
+
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-actual-cohort-timing-20261010/build-iq2s-timing-release-v2/native_service_calibration:     file format elf64-x86-64
+
+
+Disassembly of section .init:
+
+Disassembly of section .plt:
+
+Disassembly of section .plt.got:
+
+Disassembly of section .text:
+
+0000000000424830 <_ZN6strata7kernels3cpu16native_quant_actERKNS1_9NativeFmtEPKfPv>:
+  424830:	push   %rbp
+  424831:	push   %r15
+  424833:	push   %r14
+  424835:	push   %rbx
+  424836:	push   %rax
+  424837:	mov    %rdx,%rbx
+  42483a:	mov    %rsi,%r14
+  42483d:	mov    %rdi,%r15
+  424840:	mov    0x8(%rdi),%ebp
+  424843:	movzbl 0x343a5e(%rip),%eax        # 7682a8 <_ZGVZN6strata7kernels3cpu12_GLOBAL__N_18q8k_avx2EiE2on>
+  42484a:	test   %al,%al
+  42484c:	je     424897 <_ZN6strata7kernels3cpu16native_quant_actERKNS1_9NativeFmtEPKfPv+0x67>
+  42484e:	cmpb   $0x0,0x343a4f(%rip)        # 7682a4 <_ZZN6strata7kernels3cpu12_GLOBAL__N_18q8k_avx2EiE2on>
+  424855:	je     424875 <_ZN6strata7kernels3cpu16native_quant_actERKNS1_9NativeFmtEPKfPv+0x45>
+  424857:	cmp    $0xf,%ebp
+  42485a:	jne    424875 <_ZN6strata7kernels3cpu16native_quant_actERKNS1_9NativeFmtEPKfPv+0x45>
+  42485c:	mov    0x10(%r15),%rdx
+  424860:	mov    %r14,%rdi
+  424863:	mov    %rbx,%rsi
+  424866:	add    $0x8,%rsp
+  42486a:	pop    %rbx
+  42486b:	pop    %r14
+  42486d:	pop    %r15
+  42486f:	pop    %rbp
+  424870:	jmp    449110 <_ZN6strata7kernels3cpu14q8k_quant_avx2EPKfPvl>
+  424875:	mov    0x8(%r15),%edi
+  424879:	call   4d8d40 <ggml_get_type_traits_cpu>
+  42487e:	mov    (%rax),%rax
+  424881:	mov    0x10(%r15),%rdx
+  424885:	mov    %r14,%rdi
+  424888:	mov    %rbx,%rsi
+  42488b:	add    $0x8,%rsp
+  42488f:	pop    %rbx
+  424890:	pop    %r14
+  424892:	pop    %r15
+  424894:	pop    %rbp
+  424895:	jmp    *%rax
+  424897:	mov    $0x7682a8,%edi
+  42489c:	call   405a10 <__cxa_guard_acquire@plt>
+  4248a1:	test   %eax,%eax
+  4248a3:	je     42484e <_ZN6strata7kernels3cpu16native_quant_actERKNS1_9NativeFmtEPKfPv+0x1e>
+  4248a5:	call   41df40 <_ZN6strata7kernels3cpu11cpu_avx2_okEv>
+  4248aa:	test   %al,%al
+  4248ac:	je     4248c0 <_ZN6strata7kernels3cpu16native_quant_actERKNS1_9NativeFmtEPKfPv+0x90>
+  4248ae:	mov    $0x6e53c1,%edi
+  4248b3:	call   405630 <getenv@plt>
+  4248b8:	test   %rax,%rax
+  4248bb:	sete   %al
+  4248be:	jmp    4248c2 <_ZN6strata7kernels3cpu16native_quant_actERKNS1_9NativeFmtEPKfPv+0x92>
+  4248c0:	xor    %eax,%eax
+  4248c2:	mov    %al,0x3439dc(%rip)        # 7682a4 <_ZZN6strata7kernels3cpu12_GLOBAL__N_18q8k_avx2EiE2on>
+  4248c8:	mov    $0x7682a8,%edi
+  4248cd:	call   405340 <__cxa_guard_release@plt>
+  4248d2:	jmp    42484e <_ZN6strata7kernels3cpu16native_quant_actERKNS1_9NativeFmtEPKfPv+0x1e>
+  4248d7:	mov    %rax,%rbx
+  4248da:	mov    $0x7682a8,%edi
+  4248df:	call   405320 <__cxa_guard_abort@plt>
+  4248e4:	mov    %rbx,%rdi
+  4248e7:	call   4059d0 <_Unwind_Resume@plt>
+
+Disassembly of section .fini:

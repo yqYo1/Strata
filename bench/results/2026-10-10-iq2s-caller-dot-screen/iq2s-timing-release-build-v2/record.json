@@ -1,0 +1,152 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "variant": "release",
+  "controller_sha256": "cbd98b28266a2b04b67adb7a1fb7127174f916f0999fedee813ff1466507f73d",
+  "base_build_receipt_sha256": "292849fedd2f0b9460304f3c3f317d3b9fcab483734e3d95103d23e4c1131de1",
+  "helper_sha256": "1ef9245586c14264a374d0a6e702e70c1d5fb30f19f67948709148fbb9b2cb2f",
+  "commands": [
+    {
+      "label": "configure",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-actual-cohort-timing-20261010/sycl/tools/native-service-calibration",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-actual-cohort-timing-20261010/build-iq2s-timing-release-v2",
+        "-G",
+        "Ninja",
+        "-DCMAKE_C_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icx",
+        "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DSTRATA_ROOT=/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-actual-cohort-timing-20261010",
+        "-DGGML_SOURCE_DIR=/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml",
+        "-DSTRATA_CALIBRATION_IQ2S_INDEX_CHECK=ON"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-actual-cohort-timing-20261010",
+      "owner": {
+        "pid": 3543554,
+        "pgid": 3543554,
+        "start_ticks": 28330495
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 1.3114634119556285
+    },
+    {
+      "label": "build",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-actual-cohort-timing-20261010/build-iq2s-timing-release-v2",
+        "--target",
+        "native_service_calibration",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-actual-cohort-timing-20261010",
+      "owner": {
+        "pid": 3543867,
+        "pgid": 3543867,
+        "start_ticks": 28330629
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 27.446943786984775
+    },
+    {
+      "label": "direct-imports",
+      "argv": [
+        "/usr/bin/readelf",
+        "-d",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-actual-cohort-timing-20261010/build-iq2s-timing-release-v2/native_service_calibration"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-actual-cohort-timing-20261010",
+      "owner": {
+        "pid": 3545485,
+        "pgid": 3545485,
+        "start_ticks": 28333376
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.12762193597154692
+    }
+  ],
+  "cleanup": [],
+  "survivors": [],
+  "environment": {
+    "PATH": "/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8"
+  },
+  "gpu_work_submitted": false,
+  "inference_run": false,
+  "model_opened": false,
+  "performance_eligible": false,
+  "adopted": false,
+  "owner_scope": "Entire inherited session, including Ninja compiler process groups",
+  "source_commit": "156bef6ddbf59c7f017f46b21fd80bda316f3661",
+  "started_utc": "2026-10-10T00:53:45.841746+00:00",
+  "limits": {
+    "AS_each_bytes": 12884901888,
+    "RSS_group_bytes": 8589934592,
+    "CPU_each_soft_seconds": 300,
+    "CPU_each_hard_seconds": 301,
+    "FSIZE_each_bytes": 134217728,
+    "NOFILE": 256,
+    "CORE": 0,
+    "wall_total_seconds": 600,
+    "text_budget_bytes": 16777216
+  },
+  "peak_group_rss_bytes": 684777472,
+  "compile_comparison": {
+    "common_units": 38,
+    "mismatches": [],
+    "added_units": [],
+    "missing_units": [],
+    "excluded_flags": [
+      "-fsanitize=address,undefined",
+      "-fno-omit-frame-pointer",
+      "-DSTRATA_CALIBRATION_IQ2S_INDEX_CHECK=1"
+    ]
+  },
+  "binary": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-actual-cohort-timing-20261010/build-iq2s-timing-release-v2/native_service_calibration",
+    "bytes": 3749728,
+    "sha256": "86ccf7eb6aac167ad0143982a0b908adf993f88eba85c7fb29e2c3638dbd0597"
+  },
+  "compile_commands": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-actual-cohort-timing-20261010/build-iq2s-timing-release-v2/compile_commands.json",
+    "bytes": 42181,
+    "sha256": "000aaeb07f0207cd7f07efa2b23fff6836254c6febb5108eafff88441346b2e3"
+  },
+  "default_option_omitted": false,
+  "production_source_pins_stable": true,
+  "elapsed_seconds": 30.695556366990786,
+  "finished_utc": "2026-10-10T00:54:16.537325+00:00",
+  "logs": {
+    "build.stdout": {
+      "bytes": 4266,
+      "sha256": "7bc21ada2939fc22c2402e3dd270a6c916232cfed89627244530b8019e2606aa"
+    },
+    "direct-imports.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "configure.stdout": {
+      "bytes": 1424,
+      "sha256": "363eaa3f354e9699388f27ee942e2d256054c4b0364c48e5b71e17184659dba7"
+    },
+    "build.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "direct-imports.stdout": {
+      "bytes": 1542,
+      "sha256": "e3b58ccfa8c1a0760c08896d089b0888d5b28227bf2f32a9d4b194143615afe0"
+    },
+    "configure.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}
