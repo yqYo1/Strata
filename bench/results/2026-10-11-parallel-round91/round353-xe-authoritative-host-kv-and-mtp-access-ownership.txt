@@ -1,0 +1,78 @@
+# Round 353 — Xe authoritative host-KV and MTP access ownership
+
+Date: 2026-10-11 (Asia/Tokyo). Read-only source and primary-specification audit. I read the assigned R329/R350/R351 reports, R340/R346/R347 and the archived registry v113. I inspected only the stable XeStrata source/header files listed under identity below, plus the supplied host-capability receipt. I did not inspect the live `src/program/generate.cpp`, run project code/build/tests, query a device/runtime/process/service, or change source.
+
+## Finding
+
+For the specified single-GPU, `cpu_share=0`, `pciefrac=0` setup, I found no source-derived simultaneous CPU/device access to the authoritative QSA or MTP KV host-USM allocations in the traced prefill, decode, ring-restore, and high-level snapshot paths. The device writes/appends and device reads/copies are serialized on the same in-order queue per allocation; CPU capture and restore are preceded by device quiescence and use synchronous copies. The host-authoritative KV allocations remain full-context sized at 262,144 cells even when the main QSA VRAM residency is 32,768 cells. That changes transfer volume and residency only; it does not make main-QSA and MTP allocations alias.
+
+This is a conditional source-level clearance for those KV payload lifetimes, not a fresh runtime qualification. The supplied capability receipt is an icpx 2026.1.1 / Level Zero v2 query for B570 0000:05:00.0: HOST_USM=1, ATOMIC_HOST_USM=0, ZE_HOST_CAPS=3 (RW|ATOMIC, no CONCURRENT or CONCURRENT_ATOMIC), SHARED_USM=1, ATOMIC_SHARED_USM=0. The record explicitly says query-only and created no queue/allocation/kernel/model. The free/new LLVM runtime query is pending; I do not extend this receipt to it.
+
+A separate live host-USM handoff in `MtpDrafter::draft` remains outside that KV clearance: the GPU publishes `h_out_` while the CPU polls it through volatile loads, then reads `h_prob_`. That is CPU/device overlap on a distinct mapped output allocation, and the tested B570 host capability does not permit relying on it. I cannot say from this audit whether the edited live generate caller still reaches that function, because the instruction explicitly excluded `generate.cpp`. Until the caller is audited or the path is removed, do not claim the entire MTP generation route is cleared. A minimal safe path is to write MTP outputs to device USM, queue a device-to-host copy, and wait for completion before host reads; the current in-kernel early-output polling must be bypassed when host/device concurrent access is false.
+
+## Allocation ownership and live call paths
+
+- Main QSA `qsa_state_init` obtains one `gpu::alloc_host` allocation per streamed layer, gets its device-visible pointer, then carves format-specific K/V arrays from that pointer. It does not CPU-zero the authoritative host copy. For max_context=262144/page_size=4 there are 65,536 logical pages; with resident=32,768 cells the mode-1 VRAM map has 8,192 slots, while the host copy still covers all 65,536 pages. The 32K boundary is a mapping/residency boundary; the next logical page is still written in the full-context host copy.
+- The layer's device append kernels write the current cell into the host copy unconditionally and into the VRAM pool only if that page is resident (`qsa.cpp:111-136`; Q8 and Q4 variants use the same split at `kv_q8.cpp:55-75` and `kv_q4.cpp:109-120`). The prompt path first submits `kv_stage_from_host` for prefix blocks `[0,ceil(p0/4))`, then appends current chunk `[p0,p0+T)` to host and stage pools (`prefill.cpp:1573-1607`). At a partial-page boundary the stage copy can include the old remainder of its final page, but the append follows on the same queue and overwrites the new chunk cells before attention consumes the stage. Source and destination KV cells do not overlap as CPU/device accesses.
+- `kv_stage_from_host`, the KV appender and prompt attention are submitted through the same per-prefill in-order queue (`device.cpp:186-225); the stage memcpy therefore precedes append and attention. During decode, QSA appends, stream-map resolve, host-block-to-slot copy, and selected attention are submitted to that layer's same stream. Resolve's host reads are a GPU kernel's loads from host-USM; they are not CPU reads. The stream-map arrays and VRAM slots are device allocations, so their same-device ordering is distinct from the host/device concurrency capability.
+- MTP's own `qsa_state_init` allocates its host copy separately. Under a short attention window it uses `kv_mode=2`, a ring with a slot count derived from window plus write-ahead cells, while its authoritative host copy still uses the full logical page count. The MTP prefill path uses `mtp.idle` before it begins a competing MTP-KV write, then appends rows to `st_.host` on the prefill queue and syncs that queue before returning (`prefill.cpp:950-1025)). The direct MTP path appends its own draft rows on `cs_` (`mtp.cpp:634-650`). `kv_restore` refills the ring from the same host copy and syncs `cs_` before return (`mtp.cpp:882-893`). Main QSA and MTP do not share a host allocation.
+- MTP metadata inputs (`h_tok_`, `h_step_`, `h_pos_`, `h_row_`) are separate host-USM buffers. The ordinary draft call fills them before launching its graph. Prior draft completion is synchronized at the end of `draft`; the per-group prefill branch also syncs before reusing these buffers. The batched prefill branch instead uploads its temporary records to device memory before graph launches. These are ordered producer-to-device-input lifetimes, not evidence of CPU touching the authoritative KV host allocation.
+- The indexer tail, dead row, pooled rows and block position are device-state fields allocated from the state arena, not host-USM fields. QSA prefill's append batch writes them, then selection reads the pooled/dead rows later on the same in-order queue (`prefill.cpp:1617+`; `native_qsa_indexer.cpp:161-249)). Decode's indexer append and following selection also share its queue. I found no CPU direct dereference of tail/dead/pooled state. Snapshot payloads copy the pooled rows through the GPU copy API after quiescence; the low-level snapshot does not directly read the device pointer from the CPU.
+- The high-level `conversation_snapshot_save`, `conversation_snapshot_sources`, and restore orchestration call device synchronization before touching session payloads (`conversation_state.cpp:273-317,353-380)). Device sync finishes compute, transfer and stream queues (`runtime.hpp:31-61`, `gpu.cpp:121-124`). Each `conversation_kv_save` transfer then uses `gpu::copy`, which waits for its memcpy event (`conversation_snapshot.cpp:118-123`, `gpu.cpp:230-234)). Restore performs the same initial quiesce, waits each transfer, resets the residency map/refills ring, and device-syncs before success (`conversation_snapshot.cpp:207-229`). Callers using the lower-level `conversation_kv_save` directly must provide the quiescence that its high-level wrapper supplies. Snapshot/restore must not run concurrently with inference.
+- The prefill CPU expert share is now disabled on this backend: `host_handoff_concurrent()` is a compile-time false, and `cpu_share_on()` also requires it (`gpu.hpp:48`, `prefill.cpp:137-142). With explicit CPU share zero, the CPU expert pool is additionally skipped. Thus the R351 conditional host-USM expert-arena overlap—CPU reading one expert while the GPU copy queue DMA-reads another span of that same allocation—does not apply to this requested configuration. `pciefrac=0` does not alter the QSA/MTP host-KV queue ordering and is not treated as a concurrency capability.
+
+## Access matrix
+
+| Access pair on one allocation | Finding in the traced paths |
+|---|---|
+| Main QSA GPU append vs same-queue GPU prefix-stage memcpy | Queue ordered. Prefix is earlier cells; append writes current chunk. No host/device overlap. |
+| Main QSA GPU append vs same-queue GPU resolve copy from host KV | Queue ordered; resolve follows append in decode. Both are accesses from the same device context. |
+| MTP GPU append vs MTP ring restore | MTP restore is followed by stream sync; normal appends are ordered on its stream. No concurrent CPU access to KV payload found. |
+| CPU snapshot read/write vs QSA/MTP GPU K/V or index payload | High-level snapshot quiesces the device; synchronous transfer waits before CPU image use. Safe at that API boundary. |
+| CPU and GPU on `MtpDrafter::draft` output `h_out_` | Concurrent volatile poll/publication on host USM. Unsupported under the supplied capability; caller reachability is unreviewed due live-generate exclusion. |
+| CPU overwrite of QSA `host_step/host_pos` while an earlier queued copy/kernel still consumes them | The layer routine enqueues the consumer and returns without its own stream wait. Caller must complete/drain before reusing these mapped input buffers. I did not inspect the live caller in generate.cpp, so this audit cannot independently certify every replay/reuse boundary. |
+
+The SYCL 2020 specification says host-USM is device-accessible and applications must synchronize host execution and kernels; `usm_atomic_host_allocations` is the aspect that allows concurrent host/device atomic access. The B570 record's HOST_USM=1 establishes access, not simultaneous host/device access. Level Zero defines host allocation CONCURRENT at whole-allocation granularity, and explicitly says accesses are undefined when concurrency is attempted without that capability. Disjoint regions in one host allocation do not bypass that restriction. This applies to an actual CPU-vs-device overlap; it does not turn device/device operations on an in-order same-GPU queue into a host/device race.
+
+## Countermeasure and limits
+
+For authoritative QSA/MTP KV storage in the stated GPU-only prompt/decode configuration, no source countermeasure is indicated by this ownership audit. Preserve same-queue staging/append ordering, keep CPU sharing off when host-USM concurrent access is unqualified, and keep device quiescence at snapshot/restore boundaries.
+
+For the separate metadata risks, require a successful queue/event completion before reusing QSA mapped step/position inputs, and disable MTP's mapped-output polling when host/device concurrency is false. A serialized output copy plus completion wait is the portable fallback. These are source-level requirements; this audit did not edit them or claim a tested implementation.
+
+No fault attribution is made. This report is static evidence only; it does not prove a full 262,144-cell run, exercise the final physical page, establish latest-source runtime compatibility, or qualify the pending free/new LLVM backend.
+
+## Primary references and source identity
+
+Primary specification references:
+
+- [Khronos SYCL 2020 Specification rev. 12, USM aspects and host/device synchronization](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html)
+- [oneAPI Level Zero Core Programming Guide v1.19.12, Access Capabilities](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#access-capabilities)
+
+Capability receipt: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-host-capabilities-root-v2/record.json`, SHA-256 `d0124508abd48d7bc4deda05a12fd4b328ae1ff45faf2da8890ebb9e328ab315`; PASS/query only, selected device `0000:05:00.0`, compiler Intel oneAPI DPC++/C++ 2026.1.1.
+
+Target source tree: `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011` (basee32). Stable source/header SHA-256 values observed before and after the audit are listed below. `src/program/generate.cpp` was intentionally excluded because it is being edited concurrently.
+
+- `src/core/layer.cpp` — `fefc457de582573a8f1132c02139a61161d90fe50dcacda46c8c64cf0b581c97`
+- `src/kernels/xe/qsa.cpp` — `a6bf5966f862adb188bc1ece52ebe668d02a29c4fa10a4aca33593deb2611c6a`
+- `src/kernels/xe/kv_stream.cpp` — `82c83a59525741c6d4f9cc644037b4a4cf87798d2d49fd4cca939a035ddc2ef7`
+- `include/strata/kernels/kv_stream.hpp` — `f364fc0cb9ffb6ddc1002f5251344d391d976cc8de2f5881b7c8790ef48ecf8f`
+- `src/kernels/xe/qsa_prompt_attn.cpp` — `6b5bb8c4b38245299bda06f2bce4fe785c4b4cc82dca7986389459cf8ff054b6`
+- `include/strata/kernels/qsa_prompt_attn.hpp` — `98e20dd2a44138381698273895dbdcae1714dead94db90717935f03d5f1a0a32`
+- `src/kernels/xe/kv_q4.cpp` — `1f3a13370686f24272fe2f09ca3d3faf59b1a85249315e67dbe544b28df84d9d`
+- `src/kernels/xe/kv_q8.cpp` — `3294bf29b48ccfcd7c8e10b5673534aafa70d6c7f4bc3cb765e7d8546120dda6`
+- `include/strata/kernels/kv_q4.hpp` — `839ef5ccef128b1897350c33c173e6cdbd21cd03529cdd73458cc15f593d8afd`
+- `include/strata/kernels/kv_q8.hpp` — `3f0009d6fca6d9ce9ca5ddde6f5fe160aa7599dcb0231359dd4585d4e9cfeb69`
+- `src/kernels/xe/native_qsa.cpp` — `ce9df4beac44999faf8d11ad58e14a725f38c76e11c88647e2f7ee8d5b0375ee`
+- `include/strata/kernels/native_qsa.hpp` — `80ce576a039c4772172d80a097a8a7a8e3c0104ab538ee66352f2b5edab36637`
+- `src/kernels/xe/native_qsa_indexer.cpp` — `41a4b64a914fd4e6f99c6fcbe71805b171f295214018bb7289dc0b3c9919523c`
+- `include/strata/kernels/native_qsa_indexer.hpp` — `e469794e1c93718659ee85d2c01305301b7cef21d947e10132a3a3597dd5fccf`
+- `src/prefill/prefill.cpp` — `fe0b5939b1ebeb0a958f8deebbc6037c1c7ae3dce7de138ab51c08361ee9ea02`
+- `src/core/conversation_snapshot.cpp` — `fd0b79e2e56e0ef52da9d82e889631b1ed6d5f992d26adf4ec38551d253a7047`
+- `include/strata/core/conversation_snapshot.hpp` — `0c07b2e1ea5791ad28c8c375e6aaf46766ba5b024045493bd14e0d2d0b8600da`
+- `src/core/mtp.cpp` — `abce052fd7c38ad8e5a3632c8eb604df5510089f16e8bd428a74b75bca404bb8`
+- `include/strata/core/mtp.hpp` — `57ba3a22ed993e4880934dd1b2e89c107cff19d38056c78f879c48628e41a69d`
+- `include/strata/core/gpu.hpp` — `54b1a10524c9ee0c9b42979d75bd4f775ee0c45da2839d8129c2a2bd3daa552a`
+- `src/core/gpu.cpp` — `a844eeb381e1cb9f1272f1f68f754a73640d44aa6d6e89b743ecfc793bc2a8ef`
+- `include/strata/core/runtime.hpp` — `1a42ce02127727310614461b1dc2768eb2bce421e9d5e992c4df100c1817dd26`
+- `src/core/device.cpp` — `9e33dce3b3b55b00c5aee4db566ceb848b73273837c505b3c27b535a0b30ba2d`

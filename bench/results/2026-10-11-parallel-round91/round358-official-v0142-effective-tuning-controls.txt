@@ -1,0 +1,95 @@
+# Round 358 — official v0.1.42 effective tuning controls
+
+Date: 2026-10-11 (Asia/Tokyo). Read-only source review. No project command, build, test, compiler, GPU/runtime operation, profiler, process/service control, Git mutation, cleanup, or benchmark was run. This report is the only file written.
+
+## Source pin and admission
+
+Official pristine tree: `/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/bench-upstream-v0142-pristine-20261011`, HEAD `61b3fb5dd3f1e8ec09cf7e4e05208bc6d3c46406`.
+
+Reviewed source pins:
+
+- `sycl/src/program/generate.cpp`: `eadfeca185d4ac2f181a9db1a7da84279a6e90b86262fe260701c2e629184018`
+- `sycl/src/core/session.cpp`: `b0478a0a17d1a6c9c8c569aa0c629b11b8756ee1f75f2e31e488f279c84346e2`
+- `sycl/src/prefill/prefill.cpp`: `a78a0d30986c665ebf07d8568bdc7bd22b3c380257871694eee84d43c1b60128`
+- `src/kernels/cpu/pool.cpp`: `4b9b8ec1eeaabca0524a3a4aef39907ad90583e798d1e03a2ae1f6318e9105bc`
+- `include/strata/kernels/cpu/pool.hpp`: `5f7e7ee3f48ce6505ad25975c320310e647551df3304a87052ce3c7e2b414936`
+- `sycl/src/core/expert_source.cpp`: `8c59920c0317a35be12c2562593b997f20be5221561528a698bfbbd78c67b541`
+- `sycl/src/core/layer.cpp`: `5b42e51dadef75bac4e011b7131942211429e48faeae88a9a92d0788e20fc493`
+- `sycl/src/core/mtp.cpp`: `ff69e7476038c21e2da4734ab7d9f59cb164c081068470ecfebaa78cd7119ed7`
+
+R352 refuses ordinary official B570 generation with the supplied `HOST_USM=1, ATOMIC_HOST_USM=0, ZE_HOST_CAPS=3` receipt because the CPU-pool decode doorbell concurrently accesses host-USM control words through ordinary device operations and host volatile loads/stores. R354 separately refuses long all-component SYCL prefill: the expert stager and PLE-upload completion paths host-poll device-written host-USM sequences. This source map does not change either admission result. No flag, PCIe share, worker count, or prefill setting legalizes those concurrent volatile protocols. In particular, `--no-pool` and `--no-capture` may remove some decode paths, but do not remove the long-prefill handoffs. Do not launch a pristine B570 tuning run until Main has a supported serialization/capability gate for both prefill and decode.
+
+The path `/home/yayoi/orca/workspaces/Strata/sycl/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-upstream-parameter-audit` was not present in the workspace search during this pass. R357 owns historical recipe coverage; this report stays on current official source wiring.
+
+## Effective controls and admission behavior
+
+### Prompt batching and cache-slot borrowing
+
+- `--prefill N` is parsed as the requested chunk. Explicit fixed values are subject to cache-buffer fit and request-size changes; the actual chunk can be reduced. `--prefill auto` normally has an 8,192-token ceiling; `auto:16384`, `auto:32768`, or `STRATA_PREFILL_AUTO_MAX` request a larger ceiling. The cap is rounded to 8,192/16,384/32,768 levels (`generate.cpp:1790-1798`).
+- Auto is changed back to fixed 2,048 when prefill buffers cannot borrow from an expert cache or there is no expert profile (`generate.cpp:2221-2224`). Device/context and architecture rules can also switch borrowing off; on the documented Alchemist path it disables borrowing and caps an auto chunk at 2,048 (`2198-2203`). The default borrowing choice otherwise depends on context and explicit flags.
+- In the standalone prompt path, request-sized chunks may be smaller than the requested maximum, auto prints the selected chunk, and an explicit chunk can be reported as reduced to fit the request. A fixed chunk that cannot borrow may allocate its own buffers instead. In serve, the admission scan can reduce fixed chunks by halving down toward 256; auto scans chunk/ring combinations under the cache lend cap, then prints `prompt chunk auto: ...` and the resolved ring (`generate.cpp:6566-6652`). Always record requested and effective values from logs and the actual `Prefill::init` configuration, not just CLI arguments.
+- `--prefill-borrow` / `--no-prefill-borrow` control whether the prompt path borrows cache tail slots for temporary buffers and refills those slots after the prompt. Borrowing avoids withholding the same VRAM twice; it also streams borrowed experts during prefill and costs refill work. `--no-prefill-borrow` keeps the buffers resident for the session and charges them against available VRAM.
+- Relevant official env controls include `STRATA_PREFILL_AUTO_MAX`, `STRATA_PREFILL_LEND_PCT`, `STRATA_PREFILL_RING`, `STRATA_RING_BYTES`, `STRATA_PREFILL_STREAM_MIN`, and `STRATA_PREFILL_STREAM_ALL`. They change the auto ceiling/lend budget, ring size/selection, stream-all threshold, or whether all nonresident experts are walked. These affect buffer fit and expert traffic; they do not bypass host-USM waits. `STRATA_PREFILL_TIMING` adds phase timing, and `STRATA_PREFILL_SYNC` adds synchronization for diagnosis, so they should not be silently mixed into timing comparisons.
+- Effective evidence: standalone logs `prompt chunk auto: N` or the prefill summary `prefill N tokens in C chunks, ... tok/s`; serve also emits per-chunk `PP position prompt_tokens ms tok/s`. The prefill count is normally (n_prompt-1), then the token loop processes the last prompt position and samples. The stock source has no safe prefill-only normal-exit mode per R354. Do not call the line a full prompt-prefill measurement without reporting that terminal token path.
+
+### KV residency and memory reserve
+
+- `--kv-resident N` keeps N cells per main QSA layer in VRAM and stores the whole KV in pinned host RAM; zero means fully resident. The minimum streaming residency is 20,480 cells. At or below the context extent, the code decides between full residency and streamed mode and clamps pages/slots (`generate.cpp:720-732,2263-2267`; `layer.cpp:614-631)). Nonzero streaming trades VRAM for host-KV traffic and can leave more VRAM for experts; it does not change the unsupported prefill/doorbell synchronization.
+- `--kv fp16|int8|q4_0|k8v4` changes KV format and, for quantized choices, numerical precision. Keep the original KV setting fixed for the first tuning comparison if output quality must remain fixed. Do not use a precision change as a memory-only control.
+- `--vram-reserve-mib` sets the free-VRAM margin used by cache sizing (default 700 MiB). With `--expert-cache auto`, the source subtracts context/session, prefill-owned-buffer, MTP/head, graph, and reserve needs; on small cards it may adapt the default reserve down to 300 MiB to leave the minimum working cache. An explicitly supplied reserve is retained. Cache allocation is zeroed/touched and rechecked; auto sizing can shrink if actual post-touch free VRAM is short (`generate.cpp:4291-4361,4499-4565)). These log lines are part of effective-setting evidence.
+- `--vram-reserve-later-mib` is for later GPUs in a split. `--vram-elastic` is NVIDIA-only serve behavior for resizing between requests; it is not a general SYCL tuning switch.
+
+### Expert cache and cache admission
+
+- `--expert-cache N|auto` is the VRAM expert tier; default is off. Auto chooses a slot budget from free VRAM after reserves and any profile ceiling. Native packs use variable-size per-layer blobs, so the initial slot budget is not necessarily the final number of resident experts.
+- `--expert-cache-per-layer` changes admission, not expert math: each layer receives its own uniform expert quota instead of the first routed layer/windows consuming a global arrival-order cache. For native packs it computes a per-layer quota from the N-largest-blob budget and free space, prints the resolved quota, and later `INFO` reports actual cache slots/MiB (`generate.cpp:4381-4418,4571-4591,8400-8417`). The source itself records materially different hit rates for global versus per-layer policy; that is prior source commentary, not a fresh measurement here.
+- `--expert-profile PATH` chooses which experts are filled before requests; it changes residency order and caps auto size. `--expert-cache-per-layer` plus a profile still faces size/fit and profile admission. Startup reports final slots, GiB, and policy (compulsory-miss, profile, or per-layer). `--stats` reports runtime hits/lookups, refused/admitted entries, cache fullness, and whether hit work was ready when the CPU pool returned (`generate.cpp:12648-12663)).
+- For an initial controlled sweep, hold profile and cache policy fixed, or compare them as separate arms. GPU expert math rounds differently from CPU math according to the official source; cache changes can alter near-tie tokens. If preserving output quality is a requirement, compare teacher-forced outputs/quality before accepting a cache-policy change.
+
+### Pool workers, tasks, data prefetch, and PCIe share
+
+- The official options are `--pool-workers N`, `--pool-affinity all|auto|p-cores`, `--host-core first|last`, and `--no-host-worker`. Worker count zero means all detected worker physical cores (or P-core count minus one under a hybrid affinity mode). The pool is constructed with `host_works=!no_host_worker` and default task argument zero (`generate.cpp:1748-1766,4245`). The CPU pool then defaults to three tasks per participating thread for batched row phases; explicit task counts are supported by `ExpertPool` internally but are not exposed by this official CLI call (`pool.hpp:150-153`; `pool.cpp:437-449,718-720`). There is no official `--pool-tasks` or `STRATA_POOL_TASKS` control in this source. `STRATA_POOL_SPIN_US` is marked as a test knob for worker spin/sleep, not task grain; `STRATA_POOL_TRACE` prints dispatch trace and does not tune work.
+- `STRATA_FETCH_THREADS` changes the file-backed/mmap expert source prefetch thread count only (`generate.cpp:4168-4180`). It is not a CPU-expert-pool worker control. `--no-ple-prefetch` disables the PLE gather's row-prefetch path; it is not expert prefetch and does not disable PLE completion handoffs. `--stream-experts` switches to the native GGUF-backed source and pinned mirror arrangement; it is not the same as `--pcie-frac`.
+- `--pcie-frac F` is the GPU share of distinct experts missed by the VRAM cache in the decode verifier plan; the CPU receives the remaining misses. The worker computes a 0..256 fixed-point proportion and sends the final misses in routing order to GPU PCIe service (`generate.cpp:2533-2570,7712-7716`; `expert_source.cpp:2581-2639`). It is not a prefill CPU-share dial: prefill stages streamed experts using its own ring/walk policy.
+- For native packs, absent an explicit fraction, the default starts at 0.55 and is adjusted from the measured host-to-device bandwidth; the canonical pack uses 0.2. With the Xe driver and no `--stream-experts`, an implicit fraction is forced to zero because pageable host reads fault/hang on this driver; an explicit positive value is retained but warned as unsafe. With `--stream-experts`, a pinned mirror can service the GPU's share. None of these cases removes the host-pool handoff. The startup log prints the probe/final fraction; serve `INFO` includes `pcie_frac`, and `--stats` reports CPU pool time/phase and GPU/PCIe hit counters.
+
+### Speculation and native/ggml projection path
+
+- `--spec T` sets the verifier-window upper bound; `--mtp PATH` enables MTP proposals; `--mtp-max-t M` limits the MTP part; `--spec-min-p P` stops extending a draft when proposal probability drops below P. Defaults are source-defined (`spec_min_p=0)); effective serve INFO reports `spec`, `mtp_max`, and `spec_min_p`. End-of-run output reports drafted/accepted windows. These change how much decode work is amortized, but do not change the host-USM handoff contract.
+- `--native SHARD1` requires the native IQ pack and PLE shard and selects stream-token/native GDN/QSA/MoE/PLE projection settings as a bundle (`generate.cpp:2282-2320)). Individual `--native-*` flags remain A/B controls; `--native-bf16`, `--native-bf16-extra`, `--gr-fp32-activations`, and `--gr-native-mmvf` alter the projection implementation or activation contract. Keep them fixed to the approved model/run configuration during throughput selection. On the pinned current backend, changing the projection flavor does not create a safe prefill-only or decode path.
+- `--no-token-graph`, `--sync-every-layer`, `--no-capture`, and `--no-pool` are implemented controls, but R352/R354 explain why they do not repair all unsupported accesses. In particular, `--no-capture --no-pool` can avoid the decode graph doorbell route, but the stock long-prompt stager and PLE upload remain. Do not use the resulting GPU-only decode floor to claim normal generation quality.
+
+## What confirms effective settings
+
+- Serve emits one startup `INFO` line with context, KV format/resident cells, total and primary expert slots/MiB, speculation width/MTP width, VRAM free, arena size, actual pool worker count, PCIe fraction, and min-p threshold (`generate.cpp:8375-8417`). It does not carry the resolved prefill chunk; capture the adjacent `prompt chunk auto` / chunk-adjustment logs too.
+- Each serve prefill chunk emits `PP <position> <prompt_tokens> <cumulative_ms> <fresh_tok/s>` (`generate.cpp:7655-7663`). Standalone prefill reports actual token/chunk totals and Prefill phase times (`11611-11729`).
+- `--stats` reports total wall-clock ms/token, PLE/embed/layers/head/readback/sample phases, CPU expert-pool ms per actual position, wait-park/drain/re-park, expert blob reads, cache hits/admissions/refusals, and elastic-KV changes (`generate.cpp:12609-12668`). Use these counters to distinguish a setting that was accepted by the parser from one that actually changed resource use.
+- For cache admission, also retain the startup cache auto/shrink/per-layer quota lines and final `INFO`; requested `--expert-cache N` is not proof that N slots survived the VRAM reserve check.
+
+## Controlled selection after safe admission only
+
+No admissible fresh-input results exist from this review. Once Main has a source/runtime path that serializes or safely gates both the prefill stager/PLE handoffs and decode doorbell, a small sequence can isolate variables:
+
+1. Freeze the original model/native pack, tokenizer, GGUF shard set, quantization/KV format, runtime/compiler/device, sampling policy, and exact fresh token inputs. Make one accepted baseline at each fresh 32K and 64K prompt length; preserve hashes and state whether the report counts (n-1) batched positions plus last-token/decode work.
+2. Tune prefill alone at each prompt length: compare fixed chunks (e.g. 2K, 4K, 8K), then only if admission permits compare `auto:16384` or `auto:32768`. Record requested/effective chunk, ring, cache slots, PLE settings, actual Prefill token/chunk/time counters, and PP progress. Do not change KV precision, projection arithmetic, cache admission policy, or PCIe fraction in the same arm.
+3. Freeze the selected prefill configuration. Sweep decode-only worker count/affinity and PCIe share with `spec`, `spec_min_p`, KV format/residency, cache profile/policy, and prompts held constant. Where an option changes CPU-vs-GPU arithmetic or cache hit ordering, require teacher-forced quality comparison before treating it as acceptable. Keep prompt and decode timing in separate columns.
+4. After selecting the decode configuration, collect at least three independent long decode repetitions from fresh session/process state using the same fixed prompt and generation length/quality settings. Retain each raw sample, not only an average; compare spread and all effective startup/INFO/stats fields. Do not reuse warm session/cache state as if it were an independent repetition.
+
+This is a conditional measurement plan, not authorization or an assertion that current B570 runs are safe. Main owns the source change, build/test, runtime admission, and measurements. The current capability receipt plus R352/R354 mean no official pristine tuning launch should proceed now.
+
+## Official versus fork-only environment names
+
+- Official v0.1.42 reads `STRATA_PREFILL_AUTO_MAX`, `STRATA_PREFILL_LEND_PCT`, `STRATA_PREFILL_RING`, `STRATA_RING_BYTES`, `STRATA_PREFILL_STREAM_MIN`, `STRATA_PREFILL_STREAM_ALL`, `STRATA_FETCH_THREADS`, `STRATA_POOL_SPIN_US`, `STRATA_POOL_TRACE`, and `STRATA_PF_PEER_COMPACT` in the source paths above.
+- `STRATA_PF_PEER_COMPACT` is the actual official name and only controls grouped peer prefill buffers. It is irrelevant to a single-GPU run. There is no generic `STRATA_COMPACT` setting in this official path.
+- The local SYCL fork contains `STRATA_SYCL_MMQ_XMX_COMPACT`; that exact name is absent from the pinned official v0.1.42 source. Do not carry fork-only variable names into an official runbook.
+- `STRATA_POOL_TASKS` is absent from the official tree; pool task count is not exposed through the generated `ExpertPool` constructor call. `STRATA_POOL_SPIN_US` is a test spin-wait setting, not a task or worker count.
+- Read of the archived report registry and prior R352/R354 informs context only. No source or performance result is newly measured here.
+
+## References
+
+- `sycl/src/program/generate.cpp:1740-1825,2198-2224,2282-2320,2533-2570,4280-4418,4499-4591,5845-5868,5927-6008,6566-6652,7655-7663,8375-8417,11601-11729,12609-12668`
+- `sycl/src/core/session.cpp:954-1042,1335-1418` — current host-poll/CPU-service decode flow.
+- `sycl/src/prefill/prefill.cpp:113-225,1736-1741` — stream thresholds, ring, and peer compact scope.
+- `include/strata/kernels/cpu/pool.hpp:134-153,215-223`; `src/kernels/cpu/pool.cpp:437-449,718-720` — workers/tasks and default task grain.
+- `sycl/src/core/expert_source.cpp:2581-2639` — effective PCIe and CPU miss assignment.
+- R352 `round352-official-v0142-pristine-sycl-gpu-admission-audit.txt`; R354 `round354-official-pristine-prefill-only-execution-eligibility.txt`.

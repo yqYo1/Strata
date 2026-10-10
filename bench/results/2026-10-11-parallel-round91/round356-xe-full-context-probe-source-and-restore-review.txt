@@ -1,0 +1,57 @@
+# Round 356 — Xe full-context probe source and restore review
+
+Date: 2026-10-11 (Asia/Tokyo). Independent read-only source review. No build, compiler, tests, GPU/device/runtime query, process/service operation, Git operation, cleanup, or source edit was performed. This report is the only file written by this review.
+
+## Identity and prior evidence
+
+Target: `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011`, based on e32. The three audited files match the hashes in the implementation handoff:
+
+- `src/program/generate.cpp`: `c51786a9688b09dd9769b920a48d126da9a79c6962b02238bf126375177ea342`
+- `include/strata/program/full_context_probe.hpp`: `c7463aee451e41d3b25c7dac12814b93aaa99443a7a78f851dd5cb6faf51f963`
+- `tools/test_full_context_probe.cpp`: `72df5a4c916a81fa186db62de087c815b1e7922e43767d3d21a436eed8027d56`
+
+I read the implementation handoff `implementation-xe-e32-full-context-probe-v3.txt`, the R350 design `round350-xe-exact-full262144-context-diagnostic-design.txt`, R353 `round353-xe-authoritative-host-kv-and-mtp-access-ownership.txt`, and archived registry v113. The supplied reports are useful design and ownership context; none is execution evidence for these exact source hashes.
+
+## Conclusion
+
+I found no source-level blocker in the corrected full-context branch for its stated diagnostic scope. It admits exactly 262,144 input IDs and an equally sized physical session; writes a draft row for every target residual while marking the final row as a storage-only terminal probe; checks gapless completed chunk coverage; captures all authoritative KV payloads and the draft ring; deliberately poisons and restores state through production snapshot/checkpoint routines; and exits before elastic-KV growth, verifier, sampler, or generation.
+
+This is a static source conclusion only. It does not establish that the code builds, that a 262,144-cell Xe run completes, that target KV values are numerically correct against an independent reference, or that the impossible one-past MTP prediction is meaningful.
+
+## Boundary, coverage, and generation exclusion
+
+- The diagnostic parser requires a full 262,144-token input and max-context, max-new zero, native pack/preset, MTP/speculation, fixed positive prefill chunks, no prefill borrowing, and a valid draft window. It rejects no-pool/no-capture, batch/split/remote/pipeline/vision/benchmark/dump/ablation and related modes, then selects the synchronized per-group MTP record path in this process (`generate.cpp:2456-2479`). It validates all input IDs and the terminal probe against the loaded vocabulary before prefill (`3919-3924)).
+- Main and draft capacities are checked at 262,144, with a full non-split session and resident draft ring; the draft's `first_needed()==0` requirement prevents the normal window-based prefix skip (`1237-1241`). The load path sets prompt length to zero only for this mode (`3884-3897)).
+- The production helper validates the entire callback range before indexing. It maps each real row through cell 262,142 to input token `cell+1`, and maps exactly cell 262,143 to the explicit terminal ID (`full_context_probe.hpp:38-51`). The callback runs MTP and synchronizes its stream before advancing coverage (`generate.cpp:1306-1322)). Coverage only accepts the next contiguous interval and only reaches full after 262,143 real-next rows plus one probe row (`full_context_probe.hpp:21-35)).
+- The diagnostic calls target prefill with `n=262144,pos0=0`, synchronizes main, draft, and device work, then requires complete coverage and matching target prefill token/chunk statistics (`generate.cpp:1324-1340`). R350's source trace records that Prefill invokes the callback after the target chunk synchronization; this remains a source contract, not an observed run.
+- The diagnostic branch returns at `generate.cpp:10133-10141`, before normal prefill's `kvg_ensure` at 10151 and before the token/verifier loop at 10201 onward. The diagnostic excludes elastic KV growth in its own admission logic (`3471-3476)); no hidden lookahead call is reached on the diagnostic branch. On both success and failure it returns from the process path; there is no inference after restore or after partial failure.
+- Outside the opt-in mode, the production MTP callback and generation path remain below the diagnostic early-return and retain their prior behavior (`generate.cpp:10143-10160`). The diagnostic-specific parser exception for max-new zero and prompt-length setting are conditional on the mode.
+
+The terminal row is intentionally not a legal continuation position. The reports say `real_next_rows=262143`, `probe_rows=1`; no output or prediction-quality claim should be attached to that row.
+
+## Snapshot, poison, and restore
+
+- Before prefill, the code estimates the production snapshot size plus two checkpoint-sized allowances and a 1 MiB reserve, fails closed on overflow or unknown/insufficient physical RAM, and repeats admission immediately before capture (`generate.cpp:1270-1295,1344-1348`). This prevents the known large restore allocation from being attempted without a RAM gate.
+- The typed view contains the exact token IDs and no image/checkpoint payloads (`1250-1254)). Production `conversation_snapshot_save` captures the running checkpoint, every owned main QSA payload, and the draft payload using the common full token extent; validation checks geometry, layer count, and payload sizes (`conversation_state.cpp:273-299,353-365)). The diagnostic additionally checks saved cells, page count, and all per-layer full payloads through `conversation_kv_verify` before poisoning (`1356-1369)).
+- The poison path selects authoritative host pools for streamed QSA states and device pools for resident states, inverts every captured authoritative byte using a fixed 64 KiB workspace, and separately poisons only the physical ring/slot extents, computed as full-image bytes per logical page times physical slots (`generate.cpp:1167-1218)). It deliberately omits the draft's pooled-index payload because the draft snapshot has no indexer payload. The production verifier compares the complete authoritative payload and, for the draft ring, the last physical ring pages (`conversation_snapshot.cpp:259-299)). For main streamed mode the poisoned replaceable slots are invalidated by production restore; no stale slot is consumed after the diagnostic.
+- The checkpoint copy is complemented, restored through `conversation_checkpoint_restore`, then checked by recapturing running fields and PLE history (`generate.cpp:1370-1374,1403-1408`). Production snapshot restore validates, synchronizes, restores each authoritative KV image, resets streamed residency or refills a draft ring, restores running state, and waits before reporting success (`conversation_state.cpp:367-377`; `conversation_snapshot.cpp:207-228)).
+- After restore the diagnostic verifies every authoritative payload against the captured image, including the draft resident ring, and requires the same fingerprint; it then invalidates main residency and synchronizes again (`generate.cpp:1388-1417`). Any failed operation returns failure; drain guards call device sync before owned probe buffers die and fail-stop if completion is uncertain (`1156-1165,1180-1187,1254-1263`). A main-scope guard also covers Prefill initialization and MTP bind failure returns (`10074-10081)). The synchronized MTP path avoids the temporary host-record upload path, and each per-group invocation waits before record reuse (`generate.cpp:2475-2479,1312-1317`; `mtp.cpp:947-1024)).
+
+I found no invalid full-context extent passed into a smaller physical ring: authoritative capture/poison use full logical extents, while replaceable ring slots use per-page bytes multiplied by the ring slot count. The production restore remains responsible for refill/reset; the diagnostic verifies the draft ring afterward and invalidates streamed main residency before exit.
+
+## Remaining evidence limits and follow-up checks
+
+1. The helper test is meaningful for exact capacity, gap/overlap/overshoot, regular and uneven final intervals, real successor mapping, exactly one terminal probe, invalid token narrowing, and byte-count overflow (`tools/test_full_context_probe.cpp:7-51`). It was not compiled or run in this review. Main should compile and run it with the authorized host toolchain before device work.
+2. There is no per-layer append-row counter. Full target token/chunk stats plus completed callback coverage establish the intended source path, while the post-prefill snapshot proves only that captured live bytes can round-trip. A future real-run receipt should retain the final callback range, exact per-layer capacities/formats/byte sizes, restore status, and the fact that the live full-state payloads were compared.
+3. The FNV-style fingerprints are compact corruption checks, not cryptographic identity or an independent numerical oracle. A later run needs external SHA-256 binding for token/model/source/runtime/device/compiler provenance. A correct restore against the just-captured image does not prove the model's full-span numerical output matches a reference.
+4. The host test does not exercise production snapshot restore, resident-slot sizing, queue-drain behavior, or target kernel execution. Those require the normal build/test gates followed by an owned actual Xe full-span run; do not infer those results from this review.
+5. I saw no source-level issue requiring a code correction in this scope. This assessment does not qualify the implementation as tested or suitable for a normal generation path.
+
+## Source references
+
+- `src/program/generate.cpp:1156-1165,1180-1218,1231-1418` — drain, poison, admission, full-span call, restore verification.
+- `src/program/generate.cpp:2456-2479,3471-3476,3884-3897,3919-3924,10074-10160,10201+` — mode guard, disabled growth, draft prompt setup, vocabulary check, early return before generation.
+- `include/strata/program/full_context_probe.hpp:12-59` and `tools/test_full_context_probe.cpp:7-51` — bounds and coverage helpers/test.
+- `src/core/conversation_state.cpp:180-219,248-299,353-377` and `src/core/conversation_snapshot.cpp:24-115,150-228,259-299` — checkpoint, snapshot, restore, and byte verification.
+- `src/core/layer.cpp:614-631,669-767` — logical page counts, ring slots, and indexer extents.
+- `src/core/mtp.cpp:927-1024` — full-row drafting and synchronized per-group MTP records.

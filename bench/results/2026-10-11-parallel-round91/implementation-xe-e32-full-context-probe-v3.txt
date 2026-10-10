@@ -1,0 +1,179 @@
+Xe e32 exact physical full-context probe — implementation v3
+Date: 2026-10-11, Asia/Tokyo
+Role: source-only implementer, /root/implement_xe_e32_serial_host_handoff.
+Workspace: /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011
+Bound base: e32b8b0594095352365db0e140a68d5bf56d8b0f
+Input generate.cpp SHA-256: 63b4235bebc52c97c2ffa3b0ec27a1093cabe5df1aab35e6f33b2e806ae0142b
+Design read: round350-xe-exact-full262144-context-diagnostic-design.txt
+Design SHA-256: 0526ed0ef6ef6e788a59d351babb63351bc07ad23e708a178710360cdcef400b
+Actual AGENTS.md read. LOCAL.md absent.
+
+Only these repository files were edited in this task:
+c51786a9688b09dd9769b920a48d126da9a79c6962b02238bf126375177ea342  src/program/generate.cpp
+c7463aee451e41d3b25c7dac12814b93aaa99443a7a78f851dd5cb6faf51f963  include/strata/program/full_context_probe.hpp
+72df5a4c916a81fa186db62de087c815b1e7922e43767d3d21a436eed8027d56  tools/test_full_context_probe.cpp
+
+No compiler, build, lint, test, GPU/query, service/process control, Git operation,
+cleanup or benchmark was executed. This report is an implementation description,
+not runtime qualification. Main owns all those actions and commit/push decisions.
+No prefill/session/verifier/commit/kernel source was edited in v3. The universal
+host_handoff_concurrent=false gate and prior serialized/commit lifecycle work remain.
+
+CLI and source boundary
+-----------------------
+New opt-in: --full-context-probe TERMINAL_TOKEN_ID.
+Requires an actual native pack, --native and --mtp, --spec >=2, exactly 262144 input
+IDs, --max-context 262144, --max-new 0, fixed positive --prefill N (no auto), and
+--no-prefill-borrow. Requires a positive draft window smaller than physical capacity,
+and checks the actual draft KV mode is a resident ring (mode 2). Token IDs, including
+the terminal probe ID, must be nonnegative int32 values within actual vocabulary.
+Strict numeric checks for max-context/max-new are applied only to this diagnostic;
+ordinary parsing/behavior is retained.
+Rejects serve, batch/group/slot/split/remote GPU paths, vision, partial-prefill,
+hardware/kernel/graph/full-GPU/stage benchmarks, output dumps, oracle/follow/corrupt
+and window-hash paths, explicit async adaptation/elastic KV, PLE ablation and missing
+capture/CPU pool. An argv preflight rejects the early hardware/kernel benchmark
+bypass before it can execute. Verifier device tuning is skipped for this mode.
+No model/vendor/device-name gating, CPU dispatch change or expert-math change.
+
+The branch reuses normal session, MTP, CPU pool and Prefill initialization, then
+returns directly from the MTP-bound Prefill branch. It invokes Prefill::run with
+n=262144,pos0=0 and verifies ss.max_cells and every owned main/draft QSA capacity
+are exactly262144. It never reaches normal n_prompt-1 batching, tokens[pos_start],
+verifier/sampler, or kvg_ensure(n_prompt+max_new+64). Elastic KV is disabled for this
+mode independently of its environment override, so there is no hidden capacity
+increase or lookahead beyond the physical session.
+
+Draft full extent and terminal safety
+------------------------------------
+A further source finding beyond R350: MtpDrafter::first_needed() normally skips old
+prompt rows outside prompt_len-window-64. Both E-9 and ordinary MTP prefill honor it.
+The diagnostic sets prompt_len=0 before load and checks first_needed()==0, so ALL
+262144 draft rows are written, not merely the final window.
+The production host-only helper validates the entire successor span before indexing.
+Rows0..262142 use real input IDs at cell+1. Exactly row262143 uses the explicit
+terminal storage probe ID. Logs state real_next_rows=262143, probe_rows=1 and no
+prediction-quality claim. No token index262144 is read.
+
+The diagnostic intentionally uses production MtpDrafter::prefill's synchronized
+per-group path, selected by STRATA_MTP_PREFILL_SYNC=1 before its first invocation.
+It bypasses E-9/E-4 temporary record uploads. This avoids their local host staging
+vectors on early asynchronous enqueue/graph failure without editing forbidden
+Prefill/MTP source. The selected path uses persistent mapped records and a checked
+stream wait before the CPU changes them for the next group. It records KV only,
+not a speculative prediction or attention at position262144. This is slower and is
+not a benchmark of either batched draft path. This process exits after the probe,
+so its diagnostic environment override cannot alter a later normal request.
+
+Coverage and state verification
+-------------------------------
+A production Coverage helper checks ordered, nonoverlapping, gapless completed
+callback intervals. Coverage advances only after draft completion. Require end262144,
+real-next262143, probe1, target PrefillStats.tokens262144, matching chunks and
+ceil(262144/actual_chunk). For chunk4096 the last record is begin258048,count4096;
+actual final position is printed as262143. Target expert/DMA/CPU/resident and PLE
+stats are also printed. No per-layer append counter was added to prefill.cpp.
+
+Use production typed ConversationView (int32 IDs, no images/checkpoints, cvec on),
+conversation_snapshot_capture_bytes and conversation_session_sizes. Before prefill,
+and again immediately before capture, admit the actual snapshot allocation plus
+TWO extra running-checkpoint allocations and a1MiB metadata/workspace reserve through
+conversation_available_memory/conversation_memory_admit. The RAM floor is at least
+2560MiB or the user's larger existing conversation floor. Unknown physical RAM and
+arithmetic overflow fail closed. Snapshot bytes are retained only in-process for the
+current restore consumer; no large files, tensors or full API traces are written.
+
+After completion, set ss.ple_prev to the actual final two input IDs for the running
+checkpoint. Capture and validate one production aggregate snapshot, then baseline
+conversation_kv_verify ALL authoritative bytes for every main layer and the draft,
+including the draft's resident ring. Print common extent, full18-field geometry,
+owned layer range, pages, physical slots, formats, host-pool presence, exact five-part
+byte sizes and per-layer fingerprints. Verify captured cells equal262144 and pages
+cover the exact physical context.
+
+Copy only the smaller running checkpoint, complement every running-state byte and
+restore that poison through production checkpoint_restore. Complement every live
+authoritative KV/index byte with a fixed64KiB workspace; also poison physical resident
+slots using per-page-byte * physical-slot extents (never full context extents into
+small slots). Require the production KV verifier to report its exact byte-mismatch
+negative result for each layer. Restore the original through production aggregate
+conversation_snapshot_restore; print actual restored/invalid/transfer_failed status.
+Require full authoritative-byte and resident-ring verification and matching before/
+after per-layer hashes. Recapture running state into the reused checkpoint allocation
+and compare all gdn/ple/tails/dead/block_pos vectors and final two-token PLE history.
+Reset streamed main residency and check completion before exit. No inference follows
+successful restore or any partial/failed restore.
+
+Lifetime and errors
+-------------------
+Copies/memsets use the existing synchronous gpu API, whose Xe implementation waits
+on the submitted event with Runtime::wait(event.wait_and_throw + async check); stalled
+waits already fail-stop under the Runtime watchdog. Added guards drain all registered
+queues before owned snapshot/checkpoint/callback/poison buffers die, including exceptions
+and failed init/bind. The poison workspace has its own guard declared after it. An
+unsuccessful queue drain terminates the process; it never frees uncertain in-flight
+storage, resumes inference, or converts an error into a pass. The callback is cleared
+on every diagnostic exit. Direct operation errors preserve actual runtime messages.
+
+Caveats / qualification still required
+--------------------------------------
+1. No execution has established this diagnostic passes. Source-only admission,
+   coverage and byte-comparison code cannot prove numerical correctness or completion.
+2. The final draft row is storage-probe-only. There is no legal generation position
+   262144, no semantic MTP final-row quality claim, and no inference-after-restore test.
+3. The compact token/KV/running fingerprints use the existing repository FNV-style
+   64-bit implementation and seed, explicitly labeled fnv1a. They are neither SHA-256
+   nor model/tokenizer identity. Main's measurement receipt must bind input/model/
+   tokenizer, source hashes, runtime/device/driver and compiler with external SHA-256.
+4. The aggregate snapshot assumes common main/draft extent; the no-skip setting and
+   marked terminal probe satisfy that assumption here. The source requires compatible
+   canonical attention/residual draft geometry; incompatible geometry refuses the run.
+5. Production snapshot_save does not fill its layer-range metadata like snapshot_sources
+   does, and validate does not gate that field. This diagnostic checks the full owned
+   carve separately and prints the real session range; it does not repair or claim
+   broader layer-split snapshot compatibility.
+6. Full KV comparison is against the captured live state, not an independent model
+   reference. Target prefill stats, gapless callbacks and existing source append sites
+   qualify full-span execution only when later observed; there is no independent
+   per-layer append counter. A numerical reference or additional instrumentation,
+   if required, remains Main's separately authorized work.
+7. If production checkpoint_restore's pooled spare-row reconstruction differs from
+   the captured full-context image, the full KV comparison reports failure. No
+   special masking or manual repair hides that discrepancy.
+8. Normal source initialization still creates/captures session graphs and loads the
+   head/logits allocation, as requested for initialization reuse, but never launches
+   verifier/sampler inference in this diagnostic. No E-9/E-4 performance equivalence
+   or historical fault attribution is claimed.
+9. Free/contrib-llvm build, warnings, sanitizer, actual Xe full-span run and reduced
+   device/resource configuration remain unverified. Missing source LLVM compiler
+   qualifications are owned separately by Main. No contrib-icpx result is claimed.
+
+Suggested serialized qualification (NOT EXECUTED)
+-------------------------------------------------
+Main should first compile/run tools/test_full_context_probe.cpp against include/ with
+its available authorized host toolchain. It exercises actual production bounds,
+vocabulary, ordered/gapped/overlapping/one-past spans, irregular final chunks, real
+successors and exactly one terminal probe, invalid int64 token conversion, and RAM
+arithmetic overflow. It has no SYCL/GPU dependency and is not automatically CTest-wired
+because this role was restricted to the three source paths above.
+Then Main owns lint, free/contrib-llvm engine builds and relevant existing tests.
+Review complete queue/snapshot error paths and use sanitizer for the host helper.
+Only after those source/build gates, Main can run one owned exact physical262144
+native-model diagnostic with --max-new0 --prefill4096 --no-prefill-borrow --specT,
+--kv-resident32768 and default draft window32768. Capture the compact stderr receipt
+with token/model/source/runtime identities and actual restore status. Expect64 gapless
+completed chunks, final_pos262143, real-next262143, probe1, common cells262144, all
+13 KV records in default48-layer geometry, full running match and zero output. Refuse
+GPU run if RAM admission is unknown/insufficient. Smaller-resource qualification may
+correctly refuse this exact-full-context diagnostic if its physical allocations do
+not fit; do not increase capacity to get a passing boundary result.
+
+Protected source snapshot read at report boundary (not edited in v3):
+fe0b5939b1ebeb0a958f8deebbc6037c1c7ae3dce7de138ab51c08361ee9ea02  src/prefill/prefill.cpp
+c266156f02854f6578ca526203525249e6e9035ca56102a4aeb815280d42e2ee  include/strata/prefill/publication.hpp
+49a3ed21ebe4dd04e7ec424dd00d78426141473a7e5bd953cb7a46449423fa35  src/core/session.cpp
+44d8667e973c44d889afac2387cf7686a1b3785d31fa22f22cc5c7097927e27a  src/core/verify.cpp
+52106d09b751d00a4ae1c85f555ba50bc10eb227f956423da94cb98cf7d850ad  include/strata/core/commit_transaction.hpp
+54b1a10524c9ee0c9b42979d75bd4f775ee0c45da2839d8129c2a2bd3daa552a  include/strata/core/gpu.hpp
+The current prefill SHA differs from R350's earlier overlay SHA; this report records
+actual source at handoff rather than asserting that historical overlay is current.

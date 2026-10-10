@@ -14,3 +14,5 @@ XeStrata 更新版の評価後、本家 v0.1.42 の比較を確定する前に�
 別の「tuned」比較で実効8192/128を測った対象は control と integrated であり、本家 pristine は含まれていない。今回確認した範囲では本家単体の設定探索を証明できないため、この TODO は未完了。最新 v0.1.42 の新規性能測定もまだ行っていない。
 
 根拠のパス、SHA-256、要求設定、実効 INFO/PP、元の測定ステータスは [audit.json](audit.json)。この確認では GPU、ビルド、テスト、サービス操作、ログ削除を行っていない。GPU実行には同期・寿命の確認を先に満たし、未修正の危険な経路を設定探索のために実行しない。
+
+追加の読み取り調査: [R357](../2026-10-11-parallel-round91/round357-official-pristine-parameter-search-coverage.txt)で保持した直近2版の長入力記録を確認し、単一レシピの反復であることを確認した。[R358](../2026-10-11-parallel-round91/round358-official-v0142-effective-tuning-controls.txt)に現行本家の対応設定と実効値の確認方法を記録した。安全な実行経路の資格確認と、本家単体の設定探索・検証は引き続き未完了。

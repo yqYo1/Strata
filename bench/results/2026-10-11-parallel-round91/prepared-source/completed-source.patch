@@ -1,0 +1,2946 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 25ebe0d8..44149d43 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -713,6 +713,15 @@ add_library(strata_spec STATIC src/spec/suffix_drafter.cpp src/spec/controller.c
+             src/spec/draft_source.cpp)
+ target_include_directories(strata_spec PUBLIC include)
+ if(STRATA_BUILD_TESTS)
++  # Exercise the production handoff and physical-context helpers on the host.
++  # Release builds must retain the publication test's assertion checks.
++  foreach(helper IN ITEMS prefill_publication commit_transaction full_context_probe mtp_completion)
++    add_executable(${helper}_test tools/test_${helper}.cpp)
++    target_include_directories(${helper}_test PRIVATE include)
++    target_link_libraries(${helper}_test PRIVATE strata_warnings)
++    target_compile_options(${helper}_test PRIVATE -UNDEBUG)
++    add_test(NAME ${helper}_test COMMAND ${helper}_test)
++  endforeach()
+   add_executable(suffix_drafter_test src/spec/suffix_drafter_test.cpp)
+   target_link_libraries(suffix_drafter_test PRIVATE strata_spec)
+   add_test(NAME suffix_drafter_test COMMAND suffix_drafter_test)
+diff --git a/include/strata/core/gpu.hpp b/include/strata/core/gpu.hpp
+index 9d7801f9..f436f10f 100644
+--- a/include/strata/core/gpu.hpp
++++ b/include/strata/core/gpu.hpp
+@@ -41,6 +41,12 @@ bool stream_sync(Stream s);
+ bool stream_idle(Stream s);
+ bool device_sync();
+ 
++/// The current Xe controls use volatile accesses, not matching host/device atomics.  No capability report
++/// makes that protocol legal.  Keep every device on queue-completed handoffs until a qualified atomic
++/// implementation (including the actual host-USM allocation contract) replaces it; unknown is unsupported.
++/// This is a protocol gate, deliberately independent of vendor, device name and visibility probes.
++inline constexpr bool host_handoff_concurrent(Stream = nullptr) { return false; }
++
+ void* alloc_device(size_t bytes);
+ void* alloc_host(size_t bytes);
+ template <class T> bool alloc_device(T** p, size_t bytes) { *p = static_cast<T*>(alloc_device(bytes)); return *p; }
+diff --git a/include/strata/core/layer.hpp b/include/strata/core/layer.hpp
+index d1be1941..b13922b0 100644
+--- a/include/strata/core/layer.hpp
++++ b/include/strata/core/layer.hpp
+@@ -420,6 +420,8 @@ bool qsa_layer(const WeightTable& tables, const ModelGeometry& g, int64_t layer,
+ /// The memory is MAPPED PINNED, so it has one address for the device and another for the host and both refer
+ /// to the same bytes.  Pinned as well as mapped, because a pageable destination would turn the device's write
+ /// into a staged copy and give back the overlap this exists for.
++// Xe ownership: device writes only during pre; host reads only after its checked completion.  The legacy
++// token-graph flag handshake below is disabled until matching legal host/device atomics are implemented.
+ struct Doorbell {
+     int64_t n_embd = 0;
+     int64_t k = 0;
+@@ -439,10 +441,10 @@ struct Doorbell {
+     uint32_t* d_flag = nullptr;
+ };
+ 
+-/// Allocates the four mapped-pinned regions.  Returns the bytes, or 0 on failure.
++/// Allocates the five mapped-pinned regions.  Returns the bytes, or 0 on failure.
+ uint64_t doorbell_init(const ModelGeometry& g, int64_t k, Doorbell& db);
+ void doorbell_free(Doorbell& db);
+-/// Zeroes `h_seq` (and `h_flag`), so a caller can wait for it to become `expected` from a known state.
++/// Zeroes `h_seq` and `h_flag`; the caller must first complete every device use of these allocations.
+ void doorbell_reset(const Doorbell& db);
+ 
+ // ================================ ONE WHOLE BLOCK ================================
+diff --git a/include/strata/core/mtp.hpp b/include/strata/core/mtp.hpp
+index cbf9ff6d..602c94d7 100644
+--- a/include/strata/core/mtp.hpp
++++ b/include/strata/core/mtp.hpp
+@@ -27,6 +27,7 @@
+ #include "strata/kernels/sampler.hpp"
+ 
+ #include "strata/core/gpu.hpp"
++#include "strata/core/mtp_completion.hpp"
+ 
+ #include <cstdint>
+ #include <string>
+@@ -65,6 +66,7 @@ public:
+     const QsaState& kv_state() const { return st_; }
+     /// KV streaming: refill the ring of the drafter's window from its host copy for a sequence that continues at
+     /// `upto` (a conversation-cache resume). No-op unless the drafter's K/V is a ring.
++    /// Waits checked completion; throws on a fault and fail-stops if quiescence is unknown.
+     void kv_restore(int64_t upto);
+     /// The VRAM bind() will allocate for a native head of `head_row_bytes` per vocabulary row: the draft logits and
+     /// the draft head over rt/draft_vocab.bin's subset.  The expert cache is sized before bind(), so it reserves this.
+@@ -75,7 +77,8 @@ public:
+ 
+     /// Prompt cells [cell0, cell0 + n): residual rows `R_rows` (device, hc*n_embd each) and `next_tokens` (host,
+     /// the token at position cell+1).  Runs in batches of up to max_t rows.
+-    /// `sync` false: returns without waiting for the drafter's stream (the caller orders on it: `stream()`).
++    /// `sync` false: keeps input upload storage owned until checked completion; the caller
++    /// keeps R_rows alive and orders on stream(). A later host-staging call first drains it.
+     bool prefill(const float* R_rows, const int32_t* next_tokens, int64_t n, int64_t cell0, std::string& err,
+                  bool sync = true);
+     /// --pipeline-windows: capture the prefill graphs and size its input records for windows of up to max_t rows now,
+@@ -97,6 +100,7 @@ public:
+     /// sampling.  A sampled request (temperature > 0, not greedy) then drafts by SAMPLING with the target's chain and
+     /// the target's Philox draw for the verifying row, and `probs` is the draft's probability under that chain; a
+     /// greedy one keeps the argmax drafts and their graphs.  A no-op when the switch is off.
++    /// Mapped sampling/history staging waits for earlier readers; throws on a sticky fault.
+     void set_draft_sampling(const strata::kernels::SamplerParams& sp);
+     /// Coupled mode with penalties: the history the next draft() chain starts from - what the session holds after the
+     /// window's commit (`tail`) and the window's pick at its last accepted row (`next`, the next window's row 0).
+@@ -105,7 +109,8 @@ public:
+ 
+     // ---- --pipeline-windows 2 (upstream 8ba583fe): the chain as one asynchronous launch (the round and its steps back
+     // to back, no host wait), its first `n_force` steps fed the given tokens instead of their own picks (teacher
+-    // forcing: the drafts of a window already in flight), each output read once the event after its step has completed.
++    // forcing: the drafts of a window already in flight). Refused when concurrent host handoff is
++    // unqualified. Host output reads require completion of the ENTIRE allocation's writer chain.
+     /// Before `load`: the round/step graphs get the forcing kernel (a no-op while its token is -1).
+     void set_force_capture(bool on) { force_on_ = on; }
+     /// The rows the next round reads (null: the bound `window_R`), copied into the bound buffer before the round.
+@@ -117,10 +122,11 @@ public:
+     /// `n_early`: an event after each of the first `n_early` outputs (chain_outputs_ready).
+     bool chain_launch(int T, const int32_t* tokens, int64_t p, int a, const int32_t* force, int n_force, int n_out,
+                       int n_early, std::string& err);
+-    /// 1: every output is in chain_tok()/chain_prob(); 0: still running; -1: an error.
++    /// Checked whole-chain completion: 1 when every output is in chain_tok()/chain_prob(); -1 on error.
++    /// Never treats a false query as completion or reads an allocation with later writers in flight.
+     int chain_poll(std::string& err);
+-    /// How many of the chain's first outputs (up to `n_early`; all of them once the chain is done) have landed in
+-    /// chain_tok()/chain_prob(); -1: an error.
++    /// Refused under the serialized handoff gate. Otherwise completes the whole writer chain
++    /// before reading the mapped allocation and returns its output count; -1 on error.
+     int chain_outputs_ready(std::string& err);
+     bool chain_live() const { return chain_live_; }
+     const int32_t* chain_tok() const { return chain_tok_; }
+@@ -140,6 +146,14 @@ public:
+     bool idle(std::string& err);
+ 
+ private:
++    struct Operation;
++    MtpCompletion completion_;
++    bool capturing_ = false;
++    bool complete(std::string& err, bool all_queues = false);
++    void drain_or_stop(bool all_queues = false);
++    bool check(bool ok, const char* what, std::string& err);
++    bool copy_checked(void* dst, const void* src, size_t bytes, const char* what, std::string& err);
++    bool finish_capture(bool ok, strata::gpu::Graph*& exec, const char* what, std::string& err);
+     bool record_forward(int T, int step_row0, strata::gpu::Stream cs, std::string& err, bool rest_only = false);
+     bool capture_prefill(int T, std::string& err);
+     bool capture_prefill_dev(int T, std::string& err);   ///< E-4: without the mapped staging (inputs copied on device)
+@@ -170,7 +184,7 @@ private:
+     int device_ = -1;   ///< the device `load` ran on: the public calls switch to it (layer split)
+     int max_drafts_ = 1 << 30;
+     bool hnorm_stream_ = false;
+-    void record_top2(int j);
++    bool record_top2(int j, std::string& err);
+     std::vector<int32_t> top2_, dvocab_host_;
+     std::vector<float> lg_host_;
+     int64_t n_vocab_ = 0;
+@@ -191,6 +205,7 @@ private:
+     float chain_prob_[8] = {};
+     int32_t* pf_dev_ = nullptr;   ///< E-4: a prompt's rows' token / step / position records, uploaded at once
+     int64_t pf_cap_ = 0;          ///< its capacity in ints
++    std::vector<int32_t> pf_host_; ///< upload source kept alive until checked completion, including errors
+     strata::gpu::Graph* round_exec_[9] = {};
+ 
+     struct Tensor { std::string name, kind; int64_t rows = 0, cols = 0; uint64_t off = 0, bytes = 0; };
+diff --git a/include/strata/core/session.hpp b/include/strata/core/session.hpp
+index 102a8c66..2cc37877 100644
+--- a/include/strata/core/session.hpp
++++ b/include/strata/core/session.hpp
+@@ -323,21 +323,10 @@ using PoolFn = void (*)(void* user, const float* x_f, const int32_t* ids, const
+ /// A null pointer means "no VRAM tier" - the default, and what every caller had before R4.
+ // The hit hook's type lives in its own header - see `hit_hook.hpp` for why and for the ordering it wants.
+ 
+-/// `phases/phase-2-correct-engine.md` P2.S5's host loop, which is the point of everything above it:
+-///
+-///     launch G[l] -> poll the doorbell -> read the miss list -> dispatch the pool -> wait for it ->
+-///     write y_miss -> launch G[l+1]
+-///
+-/// **NO `cudaStreamSynchronize` IN THE LOOP**, which is P2.X3.  Waiting is `cudaEventQuery` on an event recorded
+-/// right after the launch - a QUERY, and it is not optional: round 195 measured a host spin that only read
+-/// memory never running the kernel at all, 5,907,703 spins over 500 ms with the datum flipping only when
+-/// `cudaStreamSynchronize` was called.
+-///
+-/// **THE OVERLAP IS THE ONE-LAYER DELAY.**  A layer publishes `x_f` at ~71% of its own duration, so the pool has
+-/// the remaining 29% of that layer to work in; its result is consumed by the NEXT layer, which is why the
+-/// combine is not waiting on it.  `overlap = false` runs the same sequence with a synchronisation after every
+-/// layer, which is the comparison that says whether the pipeline is worth its complexity - and it is a
+-/// parameter rather than a second function so that the two cannot drift.
++/// Runs each layer's pre graph to checked completion, reads its host-USM routing payload, runs the pool,
++/// then enqueues that layer's result copy and post graph.  The next pre completion also completes those
++/// consumers before host staging is reused.  Xe currently cannot qualify a concurrent atomic handoff;
++/// `overlap` never permits live sequence polling. `false` additionally waits after every post graph.
+ ///
+ /// **`dump_layers`, WHEN NOT NULL, IS THE C1 ORACLE AND IT IS A HOST BUFFER OF `(n_layers + 1) * hc * n_embd`
+ /// FLOATS.**  Slot 0 is the residual the function was ENTERED with - the token's embedding broadcast to every
+@@ -382,6 +371,8 @@ bool session_loop(const ModelGeometry& g, int64_t pos, int32_t pos_base, Session
+ 
+ // ================================ plan v0.3 P3: THE WHOLE TOKEN AS ONE GRAPH ================================
+ //
++// Xe refuses capture and replay of this legacy protocol: its volatile controls do not qualify concurrent
++// host-USM access. Generation uses the checked per-layer loop above.
+ // The per-layer loop above makes 96 graph launches per token. The token graph holds
+ // all 48 layers.  Between `pre[l]` (which rings the doorbell) and the parts copy, a one-thread kernel waits ON
+ // THE DEVICE until the host writes the ring value into `db.h_flag`; the host only polls rings, runs the pool
+diff --git a/include/strata/core/verify.hpp b/include/strata/core/verify.hpp
+index 1803e3b0..de7278ba 100644
+--- a/include/strata/core/verify.hpp
++++ b/include/strata/core/verify.hpp
+@@ -24,6 +24,7 @@
+ // selection, native indexer) and a profile-filled VRAM expert tier with its residency table on the device.
+ #pragma once
+ 
++#include "strata/core/commit_transaction.hpp"
+ #include <cstdio>
+ 
+ #include "strata/core/expert_source.hpp"
+@@ -132,7 +133,7 @@ public:
+     /// run) calls wait_commit() first (upstream 42b4299, a454dbb).  STRATA_COMMIT_SYNC=1 keeps the wait.
+     static void set_commit_async(bool on);
+     /// Waits for the last commit graph when commit() did not (an event recorded after it, not the whole device);
+-    /// false with `err` when it failed.  Free when nothing is pending.
++    /// false with `err` when it failed. A failed transaction stays invalid even after a successful drain.
+     bool wait_commit(std::string& err);
+ 
+     // ---- PIPELINED WINDOWS (--pipeline-windows, a layer split on two GPUs; upstream bfa532e9).  One conversation's
+@@ -360,9 +361,8 @@ private:
+     bool fetch_branch_ = false;
+     strata::gpu::Graph* exec_[9] = {};
+     strata::gpu::Graph* commit_exec_ = nullptr;
+-    // A device whose running kernels do not see the host's writes (doorbell_visible: the UHD 770) runs a window as
+-    // segments the host launches one after another, cut before each layer group's experts; no kernel waits on a
+-    // flag.  STRATA_VERIFY_SEGMENTED=1 / 0 forces it either way.
++    // An unqualified concurrent host-USM protocol uses completed segments, cut before each layer group's
++    // experts; no device kernel waits for the host. STRATA_VERIFY_SEGMENTED=0 cannot bypass this safety gate.
+     bool segmented_ = false;
+     std::vector<strata::gpu::Graph*> segs_[9];
+     std::vector<strata::gpu::Graph*>* seg_out_ = nullptr;   // the segments of the window being captured
+@@ -382,10 +382,9 @@ private:
+     uint32_t* h_flagA_ = nullptr; uint32_t* m_flagA_ = nullptr;  // the GPU plan is in place
+     uint32_t* h_flagB_ = nullptr; uint32_t* m_flagB_ = nullptr;  // the PCIe share's DMA copies have landed
+     strata::gpu::Event* commit_done_ = nullptr;   // recorded after an async commit (set_commit_async)
+-    bool commit_pending_ = false;
++    CommitTransaction commit_state_;   // pending before submit; failures remain sticky through checked drains
+     strata::gpu::Stream copy_ = nullptr;                                 // the copy engine's stream (DMA of missed experts)
+-    struct FlagSet { uint32_t* flag; uint32_t value; };
+-    FlagSet flag_sets_[2 * 64 * 2] = {};                          // host-function arguments, one per (layer, group)
++    std::string dma_error_;   // enqueue errors from the synchronous pool fetch hook; checked before the next segment
+     static void fetch_dma(void* ctx, const uint8_t* const* src, int n, size_t bytes);
+     static void raise_flag(uint32_t* flag, uint32_t value);
+     int32_t* h_plan_ = nullptr;  int32_t* m_plan_ = nullptr;     // counts | start | dst | tok | ptr (as int32 pairs)
+diff --git a/include/strata/kernels/elementwise.hpp b/include/strata/kernels/elementwise.hpp
+index 6475c87a..26bb816a 100644
+--- a/include/strata/kernels/elementwise.hpp
++++ b/include/strata/kernels/elementwise.hpp
+@@ -97,12 +97,11 @@ void rms_norm_weighted(float* x, const float* w, int64_t rows, int64_t cols, flo
+ /// *seq += 1 - AN INCREMENT, NOT A STORE OF A CALLER-SUPPLIED VALUE.  A value passed in is evaluated on the
+ /// HOST at CAPTURE time, so a captured graph would ring the same number on every replay.  Reading and
+ /// incrementing in memory is what makes the count advance under cudaGraphLaunch.
++/// Xe: host reads the sequence only after the submitting queue/graph completes.
+ void doorbell_ring(uint32_t* d_seq, void* stream);
+ 
+-/// Plan v0.3 P3 token graph: one thread spins until the host-written `*d_flag` equals the ring value `*d_seq`
+-/// (both mapped pinned memory), then fences so everything the host wrote before the flag is visible to the
+-/// nodes that follow.  Captured once per layer between `pre[l]` and the parts copy; it is what lets one graph
+-/// hold the whole token (bench/micro/device_wait.cu: 5.2 us per handoff, no driver call).
++/// Legacy resident handshake; Xe rejects valid non-null controls before submission because concurrent
++/// host-USM access is unqualified. Use completed pre/post graph segments for CPU work instead.
+ void doorbell_wait(const uint32_t* d_flag, const uint32_t* d_seq, void* stream);
+ 
+ /// Plan v0.3 P3 token graph: copy `n` floats from MAPPED pinned host memory (`src` is its device pointer) into
+@@ -114,7 +113,8 @@ void copy_rows_from_mapped(float* dst, const float* src, int64_t rows, int64_t w
+                            const int32_t* count, void* stream);
+ 
+ /// Plan v0.3 P3: the doorbell's payload and its ring in ONE kernel.  Copies `x` (n floats), `ids` and `weights`
+-/// (k each) into the mapped host regions, fences, and increments the mapped sequence number - replacing three
++/// (k each) into the mapped host regions and increments the sequence; Xe host reads require queue completion.
++/// Replaces three
+ /// device-to-host memcpy nodes (copy-engine operations in the middle of the layer chain) and the ring kernel.
+ void doorbell_publish(const float* x, const int32_t* ids, const float* weights, int64_t n, int64_t k, float* x_out,
+                       int32_t* ids_out, float* weights_out, uint32_t* d_seq, void* stream);
+diff --git a/include/strata/kernels/verify_kernels.hpp b/include/strata/kernels/verify_kernels.hpp
+index aa2058ac..a14816e6 100644
+--- a/include/strata/kernels/verify_kernels.hpp
++++ b/include/strata/kernels/verify_kernels.hpp
+@@ -50,12 +50,10 @@ void gdn_step_tune(int conv_channels, int h_k, int h_v, void* stream);
+ /// (forked from `stream` and joined back, as the window's GDN layer branches), each graph replayed in turns; true when
+ /// the branched graph takes at most 95% of the other's time.  Call it before any graph is recorded on these queues.
+ bool graph_branch_pays(void* stream, void* side0, void* side1);
+-/// Spin until *flag >= value (a mapped host flag).  The value is fixed at capture, so several rings can be
+-/// outstanding at once (the split verify window keeps two).
++/// Legacy resident handshake; Xe rejects it before submission (concurrent host-USM access is unqualified).
+ void wait_flag_ge(const uint32_t* flag, uint32_t value, void* stream);
+-/// Whether a running kernel sees the host's write to host memory, as wait_flag_ge needs: a kernel rings, then spins
+-/// (bounded) on a flag the host sets once it has seen the ring.  The UHD 770 sees neither direction while the
+-/// kernel runs (the verify window then runs in host-launched segments); the B70 sees both.  Synchronizes `stream`.
++/// Xe returns false without submitting a visibility probe: a functional probe cannot qualify legal
++/// concurrent host/device atomic access. Verification uses checked queue-completed segments.
+ bool doorbell_visible(void* stream);
+ /// The device clock into buf[i] (a one-thread kernel: the verify window's stage profiler).  CUDA wrote %globaltimer
+ /// in ns; SYCL's device-scope clock counts ticks of an unspecified rate, so stamps are only compared with each other.
+diff --git a/src/core/mtp.cpp b/src/core/mtp.cpp
+index abb0c01a..cbaaed62 100644
+--- a/src/core/mtp.cpp
++++ b/src/core/mtp.cpp
+@@ -32,15 +32,14 @@
+ #include "strata/kernels/verify_kernels.hpp"
+ 
+ #include <algorithm>
+-#include <atomic>
+ #include <chrono>
+ #include <cstdio>
+ #include <cstdlib>
+ #include <cstring>
+ #include <exception>
+ #include <fstream>
+-#include <immintrin.h>
+ #include <sstream>
++#include <stdexcept>
+ #include <vector>
+ 
+ namespace strata::core {
+@@ -110,8 +109,94 @@ bool read_file(const std::string& path, std::vector<uint8_t>& out) {
+ 
+ }  // namespace
+ 
++// Every operation retires its queues before an error return or unwind. Only an
++// explicitly successful asynchronous submission can retain ownership. Persistent
++// mapped records and pf_host_ cannot be rewritten until complete() succeeds.
++struct MtpDrafter::Operation {
++    MtpDrafter& owner;
++    std::string& err;
++    int exceptions = std::uncaught_exceptions();
++    uint64_t submissions = owner.completion_.submissions();
++    bool released = false;
++    ~Operation() {
++        if (released) return;
++        try {
++            // Also covers an exception while selecting the device at API entry.
++            // The entry's OnDevice may already have restored the caller's device.
++            const OnDevice on_device(owner.device_);
++            if (std::uncaught_exceptions() > exceptions) owner.completion_.fail("mtp: exception during an operation");
++            else if ((owner.completion_.pending() || owner.completion_.submissions() != submissions) && !err.empty())
++                owner.completion_.fail(err);
++            if (owner.capturing_) {
++                strata::gpu::abandon_capture(owner.cs_);
++                owner.capturing_ = false;
++                owner.coupled_rec_ = false;
++            }
++            owner.drain_or_stop(true);
++        } catch (...) {
++            std::fprintf(stderr, "strata mtp: cannot qualify cleanup on its device; fail-stop\n");
++            std::terminate();
++        }
++    }
++    bool finish(bool async = false) {
++        if (async ? !owner.completion_.healthy(err) : !owner.complete(err)) return false;
++        released = true;
++        return true;
++    }
++};
++
++bool MtpDrafter::complete(std::string& err, bool all_queues) {
++    return completion_.complete([&] {
++        bool ok = true;
++        // A failed join can leave the shared-expert branch outside cs_'s wait.
++        if (cs_ && !strata::gpu::stream_sync(cs_)) {
++            completion_.fail(std::string("mtp completion: ") + strata::gpu::last_error()); ok = false;
++        }
++        if (side_ && !strata::gpu::stream_sync(side_)) {
++            completion_.fail(std::string("mtp branch completion: ") + strata::gpu::last_error()); ok = false;
++        }
++        // Initialization uses the compute queue. A rejected wait/submission needs
++        // a checked device drain, not an idle/query hint, before cleanup can run.
++        if ((all_queues || !cs_ || !ok || completion_.faulted()) && device_ >= 0) {
++            if (!strata::gpu::device_sync()) {
++                completion_.fail(std::string("mtp device drain: ") + strata::gpu::last_error()); return false;
++            }
++            ok = true;
++        }
++        return ok;
++    }, [] { return std::string("mtp: completion remains unknown"); }, err);
++}
++
++void MtpDrafter::drain_or_stop(bool all_queues) {
++    std::string error;
++    (void) complete(error, all_queues);   // a drained sticky fault is not a reusable/valid state
++    if (completion_.pending()) {
++        std::fprintf(stderr, "strata mtp: %s; completion unknown, fail-stop before cleanup\n", error.c_str());
++        std::terminate();
++    }
++}
++
++bool MtpDrafter::check(bool ok, const char* what, std::string& err) {
++    if (ok) return true;
++    completion_.fail(std::string(what) + ": " + strata::gpu::last_error());
++    drain_or_stop(true);
++    (void) completion_.healthy(err);
++    return false;
++}
++
++bool MtpDrafter::copy_checked(void* dst, const void* src, size_t bytes, const char* what, std::string& err) {
++    Operation operation{*this, err};
++    if (!completion_.submit(err)) return false;
++    if (!check(strata::gpu::copy(dst, src, bytes), what, err)) return false;
++    // The source may be a local vector. Retire this synchronous copy's ownership
++    // before its caller can destroy/reuse that vector, also on failed completion.
++    return operation.finish();
++}
++
+ MtpDrafter::~MtpDrafter() {
+-    if (cs_) strata::gpu::stream_sync(cs_);
++    const OnDevice on_device(device_);
++    if (capturing_) { strata::gpu::abandon_capture(cs_); capturing_ = false; }
++    drain_or_stop(true);
+     for (auto& e : prefill_exec_) if (e) strata::gpu::graph_destroy(e);
+     for (auto& e : prefill_dev_exec_) if (e) strata::gpu::graph_destroy(e);
+     if (pf_dev_) strata::gpu::free(pf_dev_);
+@@ -157,6 +242,8 @@ const void* MtpDrafter::q8(const char* name) const {
+ bool MtpDrafter::load(const std::string& rt_dir, const ModelGeometry& g, SessionState& ss, int max_t, std::string& err,
+                       int64_t window, const MtpDrafter* shared) {
+     device_ = current_device();   // with a layer split, the last stage's GPU (OnDevice)
++    Operation operation{*this, err};
++    if (!complete(err)) return false;
+     g_ = &g;
+     ss_ = &ss;
+     max_t_ = max_t;
+@@ -200,7 +287,7 @@ bool MtpDrafter::load(const std::string& rt_dir, const ModelGeometry& g, Session
+                   (info ? std::to_string(free_bytes >> 20) + " MiB" : "unknown");
+             return false;
+         }
+-        strata::gpu::copy(dense_, blob.data(), blob.size());
++        if (!copy_checked(dense_, blob.data(), blob.size(), "mtp dense upload", err)) return false;
+         vram_ += blob.size();
+     }
+     // ---- the 512 routed experts, one blob each
+@@ -220,7 +307,7 @@ bool MtpDrafter::load(const std::string& rt_dir, const ModelGeometry& g, Session
+         for (uint64_t off = 0; off < bytes;) {
+             const uint64_t n = std::min<uint64_t>(chunk.size(), bytes - off);
+             if (std::fread(chunk.data(), 1, (size_t) n, f) != (size_t) n) { err = "mtp: experts.bin is truncated"; return false; }
+-            strata::gpu::copy(experts_ + off, chunk.data(), n);
++            if (!copy_checked(experts_ + off, chunk.data(), n, "mtp expert upload", err)) return false;
+             off += n;
+         }
+         vram_ += bytes;
+@@ -251,14 +338,17 @@ bool MtpDrafter::load(const std::string& rt_dir, const ModelGeometry& g, Session
+     } restore{kv_hybrid_was, kv_int8_was};
+     uint64_t sb = qsa_state_bytes(g, max_cells, false, ring);
+     if (!strata::gpu::alloc_device(&state_arena_, sb)) { err = "mtp: the K/V state does not fit"; return false; }
++    if (!completion_.submit(err)) return false;
+     if (qsa_state_init(g, max_cells, state_arena_, st_, &ss.qsa_states[ss.qsa_primary()], ring) == 0) {
+         if (st_.kv_mode == 0) { err = "mtp: state init failed"; return false; }
+         std::fprintf(stderr, "strata mtp: no pinned RAM left for the draft layer's K/V copy; keeping it in VRAM\n");
++        if (!complete(err)) return false;
+         strata::gpu::free(state_arena_);
+         st_ = QsaState{};
+         ring = -1;   // fully resident
+         sb = qsa_state_bytes(g, max_cells, false, ring);
+         if (!strata::gpu::alloc_device(&state_arena_, sb)) { err = "mtp: the K/V state does not fit"; return false; }
++        if (!completion_.submit(err)) return false;
+         if (qsa_state_init(g, max_cells, state_arena_, st_, &ss.qsa_states[ss.qsa_primary()], ring) == 0) {
+             err = "mtp: state init failed";
+             return false;
+@@ -266,8 +356,9 @@ bool MtpDrafter::load(const std::string& rt_dir, const ModelGeometry& g, Session
+     }
+     qsa_set_kv_int8(kv_int8_was);
+     qsa_set_kv_hybrid(kv_hybrid_was);
++    if (!completion_.submit(err)) return false;
+     qsa_state_zero(st_, g, nullptr);
+-    strata::gpu::device_sync();
++    if (!check(strata::gpu::device_sync(), "mtp state initialization", err)) return false;
+     vram_ += sb;
+ 
+     // ---- buffers
+@@ -317,7 +408,7 @@ bool MtpDrafter::load(const std::string& rt_dir, const ModelGeometry& g, Session
+     Bump count;
+     carve(count);
+     if (!strata::gpu::alloc_device(&arena_, count.used)) { err = "mtp: buffers do not fit"; return false; }
+-    strata::gpu::memset(arena_, 0, count.used);
++    if (!completion_.submit(err) || !check(strata::gpu::memset(arena_, 0, count.used), "mtp buffer zero", err)) return false;
+     Bump real;
+     real.base = (uint8_t*) arena_;
+     carve(real);
+@@ -326,7 +417,7 @@ bool MtpDrafter::load(const std::string& rt_dir, const ModelGeometry& g, Session
+         std::vector<int32_t> id((size_t) (T * (uint64_t) cap_));
+         for (uint64_t t = 0; t < T; ++t)
+             for (int64_t i = 0; i < cap_; ++i) id[(size_t) (t * (uint64_t) cap_ + (uint64_t) i)] = (int32_t) i;
+-        strata::gpu::copy(ident_, id.data(), id.size() * 4);
++        if (!copy_checked(ident_, id.data(), id.size() * 4, "mtp identity upload", err)) return false;
+     }
+     cs_ = strata::gpu::stream_create();
+     side_ = cs_ ? strata::gpu::stream_create() : nullptr;
+@@ -345,7 +436,7 @@ bool MtpDrafter::load(const std::string& rt_dir, const ModelGeometry& g, Session
+                      (double) tensors_.back().off / 1048576.0, files_s,
+                      files_s > 0 ? ((double) g.n_expert * strata::kernels::cpu::BLOB + (double) tensors_.back().off) /
+                                        1048576.0 / files_s : 0.0);
+-    return true;
++    return operation.finish();
+ }
+ 
+ namespace {
+@@ -364,15 +455,14 @@ bool MtpDrafter::top2_env() {
+ 
+ // STRATA_MTP_TOP2=1 (a diagnostic for tree drafts): draft j's runner-up under the draft layer, from the head logits
+ // the step just wrote (row 0), on the host.  Slow; only for measuring what a second branch would have caught.
+-void MtpDrafter::record_top2(int j) {
++bool MtpDrafter::record_top2(int j, std::string& err) {
++    Operation operation{*this, err};
++    if (!complete(err)) return false;
+     const int64_t nv = dhead_ != nullptr ? n_dvocab_ : n_vocab_;
+     if ((int64_t) lg_host_.size() < nv) lg_host_.resize((size_t) nv);
+     if ((int) top2_.size() < max_t_) top2_.assign((size_t) max_t_, -1);
+-    if (j < 0 || j >= max_t_) return;
+-    if (!strata::gpu::copy(lg_host_.data(), head_logits_, (size_t) nv * sizeof(float))) {
+-        top2_[(size_t) j] = -1;
+-        return;
+-    }
++    if (j < 0 || j >= max_t_) return operation.finish();
++    if (!copy_checked(lg_host_.data(), head_logits_, (size_t) nv * sizeof(float), "mtp top2 read", err)) return false;
+     int64_t b1 = -1, b2 = -1;
+     for (int64_t i = 0; i < nv; ++i) {
+         const float v = lg_host_[(size_t) i];
+@@ -380,6 +470,7 @@ void MtpDrafter::record_top2(int j) {
+         else if (b2 < 0 || v > lg_host_[(size_t) b2]) b2 = i;
+     }
+     top2_[(size_t) j] = b2 < 0 ? -1 : dhead_ != nullptr ? dvocab_host_[(size_t) b2] : (int32_t) b2;
++    return operation.finish();
+ }
+ 
+ uint64_t MtpDrafter::bind_bytes(uint64_t head_row_bytes, int64_t n_vocab) const {
+@@ -400,12 +491,14 @@ uint64_t MtpDrafter::bind_bytes(uint64_t head_row_bytes, int64_t n_vocab) const
+ }
+ 
+ bool MtpDrafter::setup_coupled(std::string& err) {
++    Operation operation{*this, err};
++    if (!complete(err)) return false;
+     const int64_t nv = dhead_ != nullptr ? n_dvocab_ : n_vocab_;
+     const size_t scratch = strata::kernels::coupled_draft_scratch_bytes((int) nv);
+     if (scratch == 0) {
+         std::fprintf(stderr, "strata mtp: STRATA_SPEC_COUPLED: %lld draft logits are too wide for the coupled sampler; "
+                              "argmax drafts\n", (long long) nv);
+-        return true;
++        return operation.finish();
+     }
+     const size_t ring = (size_t) (kCoupledHistCap + max_t_) * sizeof(int32_t);
+     if (strata::gpu::alloc_device((void**) &cparams_, sizeof(strata::kernels::SamplerParams)) != true ||
+@@ -415,42 +508,55 @@ bool MtpDrafter::setup_coupled(std::string& err) {
+         err = "mtp: the coupled draft sampler's buffers do not fit";
+         return false;
+     }
+-    strata::gpu::memset(cring_, 0xff, ring);   // -1: no token
++    if (!completion_.submit(err) || !check(strata::gpu::memset(cring_, 0xff, ring), "mtp coupled ring zero", err)) return false;   // -1: no token
+     std::fill(h_chist_, h_chist_ + kCoupledHistCap, -1);
+     vram_ += sizeof(strata::kernels::SamplerParams) + ring + scratch;
+     if (dhead_ != nullptr) {   // token id -> subset index (-1: not in the draft head), for the penalties
+         std::vector<int32_t> sub((size_t) n_dvocab_), inv((size_t) n_vocab_, -1);
+-        strata::gpu::copy(sub.data(), dvocab_, sub.size() * sizeof(int32_t));
++        if (!copy_checked(sub.data(), dvocab_, sub.size() * sizeof(int32_t), "mtp coupled vocabulary read", err)) return false;
+         for (size_t i = 0; i < sub.size(); ++i)
+             if (sub[i] >= 0 && sub[i] < n_vocab_ && inv[(size_t) sub[i]] < 0) inv[(size_t) sub[i]] = (int32_t) i;
+         if (strata::gpu::alloc_device((void**) &dinv_, inv.size() * sizeof(int32_t)) != true) {
+             err = "mtp: the coupled draft sampler's token map does not fit";
+             return false;
+         }
+-        strata::gpu::copy(dinv_, inv.data(), inv.size() * sizeof(int32_t));
++        if (!copy_checked(dinv_, inv.data(), inv.size() * sizeof(int32_t), "mtp coupled map upload", err)) return false;
+         vram_ += inv.size() * sizeof(int32_t);
+     }
+-    if (strata::gpu::device_sync() != true) {
+-        err = std::string("mtp: coupled setup: ") + strata::gpu::last_error();
+-        return false;
+-    }
++    if (!check(strata::gpu::device_sync(), "mtp coupled setup", err)) return false;
+     coupled_ok_ = true;
+     std::fprintf(stderr, "strata mtp: coupled draft sampling on (STRATA_SPEC_COUPLED): sampled requests draft with the "
+                          "target's chain and Philox draw over %lld tokens\n", (long long) nv);
+-    return true;
++    return operation.finish();
+ }
+ 
+ void MtpDrafter::set_draft_sampling(const strata::kernels::SamplerParams& sp) {
++    std::string err;
++    Operation operation{*this, err};
++    const OnDevice on_device(device_);
++    if (!complete(err)) throw std::runtime_error(err);
+     coupled_active_ = coupled_ok_ && !sp.greedy && sp.temperature > 0.0f;
+-    if (!coupled_active_) return;
++    if (!coupled_active_) {
++        if (!operation.finish()) throw std::runtime_error(err);
++        return;
++    }
+     *h_cparams_ = sp;   // read by the next round graph (after the previous one has synced)
+     std::fill(h_chist_, h_chist_ + kCoupledHistCap, -1);
++    if (!operation.finish()) throw std::runtime_error(err);
+ }
+ 
+ void MtpDrafter::set_draft_history(const int32_t* tail, int64_t n_tail, int32_t next) {
+-    if (!coupled_active_) return;
++    std::string err;
++    Operation operation{*this, err};
++    const OnDevice on_device(device_);
++    if (!complete(err)) throw std::runtime_error(err);
++    if (!coupled_active_) {
++        if (!operation.finish()) throw std::runtime_error(err);
++        return;
++    }
+     const int h = coupled_hist_len(h_cparams_->penalty_last_n, kCoupledHistCap);
+     coupled_hist_base(tail, n_tail, next, h, h_chist_ + (kCoupledHistCap - h));
++    if (!operation.finish()) throw std::runtime_error(err);
+ }
+ 
+ namespace {
+@@ -493,7 +599,9 @@ void draft_head_hint(int64_t n_tokens, int64_t row_bytes) {
+ 
+ bool MtpDrafter::bind(const WeightTable& wt, const NativeHead* head, const float* window_R, std::string& err,
+                       const MtpDrafter* shared) {
++    Operation operation{*this, err};
+     const OnDevice on_device(device_);
++    if (!complete(err)) return false;
+     wt_ = &wt;
+     head_ = head;
+     window_R_ = window_R;
+@@ -529,18 +637,19 @@ bool MtpDrafter::bind(const WeightTable& wt, const NativeHead* head, const float
+                 draft_head_hint(n_dvocab_, row_bytes);
+                 return false;
+             }
+-            strata::gpu::copy(dvocab_, raw.data(), raw.size());
++            if (!copy_checked(dvocab_, raw.data(), raw.size(), "mtp draft vocabulary upload", err)) return false;
+             dvocab_host_.resize((size_t) n_dvocab_);
+             std::memcpy(dvocab_host_.data(), raw.data(), raw.size());
++            if (!completion_.submit(err)) return false;
+             strata::kernels::gather_rows((const uint8_t*) head->weights(), row_bytes, dvocab_, n_dvocab_, dhead_, nullptr);
+-            strata::gpu::device_sync();
++            if (!check(strata::gpu::device_sync(), "mtp draft head gather", err)) return false;
+             vram_ += (uint64_t) (n_dvocab_ * row_bytes) + raw.size();
+             std::fprintf(stderr, "strata mtp: draft head over %lld tokens (%.1f MiB)\n", (long long) n_dvocab_,
+                          (double) (n_dvocab_ * row_bytes) / 1048576.0);
+         }
+     }
+     if (coupled_draft_env() && cparams_ == nullptr && !setup_coupled(err)) return false;
+-    return true;
++    return operation.finish();
+ }
+ 
+ // The layer for T rows.  full = false stops after the K/V append (the prompt only needs the cache).
+@@ -790,45 +899,58 @@ bool MtpDrafter::record_forward(int T, int step_row0, strata::gpu::Stream cs, st
+     return true;
+ }
+ 
+-namespace {
+-bool finish_capture(strata::gpu::Stream cs, bool ok, strata::gpu::Graph*& exec, const char* what, std::string& err) {
++bool MtpDrafter::finish_capture(bool ok, strata::gpu::Graph*& exec, const char* what, std::string& err) {
+     if (!ok) {
+-        strata::gpu::abandon_capture(cs);
++        strata::gpu::abandon_capture(cs_);
++        capturing_ = false;
++        completion_.fail(err.empty() ? std::string("mtp: ") + what + " recording failed" : err);
++        drain_or_stop();
+         return false;
+     }
+-    if (!strata::gpu::end_capture(cs, &exec)) {
+-        err = std::string("mtp: ") + what + " capture: " + strata::gpu::last_error();
+-        return false;
+-    }
+-    strata::gpu::stream_sync(cs);
+-    return true;
++    const bool ended = strata::gpu::end_capture(cs_, &exec);
++    if (!ended) strata::gpu::abandon_capture(cs_);
++    capturing_ = false;
++    if (!check(ended, what, err)) return false;
++    // Recording is not execution; a checked completion still qualifies any
++    // earlier upload, and a capture wait error must not be reported as success.
++    return complete(err);
+ }
+-}  // namespace
+ 
+ bool MtpDrafter::capture_prefill(int T, std::string& err) {
+-    if (prefill_exec_[T]) return true;
++    if (prefill_exec_[T]) return completion_.healthy(err);   // immutable graph; no mapped input read/rewrite
++    Operation operation{*this, err};
++    if (!complete(err)) return false;
+     using namespace strata::kernels;
+-    if (!strata::gpu::begin_capture(cs_)) { err = "mtp: begin capture"; return false; }
++    if (!check(strata::gpu::begin_capture(cs_), "mtp begin capture", err)) return false;
++    capturing_ = true;
+     copy_i32_from_mapped(tok_, m_tok_, T, cs_);
+     copy_i32_from_mapped(step_, m_step_, (int64_t) T * 4, cs_);
+     copy_i32_from_mapped(pos_, m_pos_, (int64_t) T * g_->n_head, cs_);
+     const bool ok = record_forward(T, -1, cs_, err);   // K/V only, rows [0, T)
+-    return finish_capture(cs_, ok, prefill_exec_[T], "prefill", err);
++    if (!finish_capture(ok, prefill_exec_[T], "prefill", err)) return false;
++    return operation.finish();
+ }
+ 
+ bool MtpDrafter::capture_prefill_dev(int T, std::string& err) {
+-    if (prefill_dev_exec_[T]) return true;
+-    if (!strata::gpu::begin_capture(cs_)) { err = "mtp: begin capture"; return false; }
++    if (prefill_dev_exec_[T]) return completion_.healthy(err);   // immutable graph; no mapped input read/rewrite
++    Operation operation{*this, err};
++    if (!complete(err)) return false;
++    if (!check(strata::gpu::begin_capture(cs_), "mtp begin capture", err)) return false;
++    capturing_ = true;
+     const bool ok = record_forward(T, -1, cs_, err);   // K/V only, rows [0, T); tok_/step_/pos_ filled before launch
+-    return finish_capture(cs_, ok, prefill_dev_exec_[T], "prefill (device inputs)", err);
++    if (!finish_capture(ok, prefill_dev_exec_[T], "prefill (device inputs)", err)) return false;
++    return operation.finish();
+ }
+ 
+ bool MtpDrafter::capture_round(int T, bool coupled, std::string& err) {
+     strata::gpu::Graph*& exec = coupled ? round_exec_c_[T] : round_exec_[T];
+-    if (exec) return true;
++    if (exec) return completion_.healthy(err);
++    Operation operation{*this, err};
++    if (!complete(err)) return false;
+     using namespace strata::kernels;
+     const int64_t HCN = g_->hc * g_->n_embd;
+-    if (!strata::gpu::begin_capture(cs_)) { err = "mtp: begin capture"; return false; }
++    if (!check(strata::gpu::begin_capture(cs_), "mtp begin capture", err)) return false;
++    capturing_ = true;
+     bool ok = true;
+     // coupled: the request's chain and the penalty history's base, for this round's drafts
+     if (coupled) coupled_draft_stage(m_cparams_, m_chist_, cparams_, cring_, kCoupledHistCap, cs_);
+@@ -858,18 +980,22 @@ bool MtpDrafter::capture_round(int T, bool coupled, std::string& err) {
+     }
+     if (ok) mtp_select(R_, HCN, out_ids_, row_ + 1, Rin_, tok_, m_out_, 0, cs_, probs_, m_prob_);
+     if (ok && force_on_ && !coupled) force_token(tok_, m_force_, 0, cs_);   // chain_launch: step 1's input
+-    return finish_capture(cs_, ok, exec, coupled ? "round (coupled)" : "round", err);
++    if (!finish_capture(ok, exec, coupled ? "round (coupled)" : "round", err)) return false;
++    return operation.finish();
+ }
+ 
+ // Chain step j (1..max_t-2): one row at the cell staged in step row `max_t + j - 1`, from the previous step's
+ // residual and token (left in Rin_[0] / tok_[0] by mtp_select); draft j and its probability to the mapped outputs.
+ bool MtpDrafter::capture_step(int j, bool coupled, std::string& err) {
+     strata::gpu::Graph*& exec = coupled ? step_exec_c_[j] : step_exec_[j];
+-    if (exec) return true;
++    if (exec) return completion_.healthy(err);
++    Operation operation{*this, err};
++    if (!complete(err)) return false;
+     using namespace strata::kernels;
+     const int64_t HCN = g_->hc * g_->n_embd;
+     const int row = max_t_ + j - 1;
+-    if (!strata::gpu::begin_capture(cs_)) { err = "mtp: begin capture"; return false; }
++    if (!check(strata::gpu::begin_capture(cs_), "mtp begin capture", err)) return false;
++    capturing_ = true;
+     const int64_t sr = (int64_t) row * 4, pr = (int64_t) row * g_->n_head;
+     const MappedCopy in[2] = {{step_ + sr, m_step_ + sr, 4}, {pos_ + pr, m_pos_ + pr, g_->n_head}};
+     copy_from_mapped_multi(in, 2, cs_);
+@@ -879,30 +1005,38 @@ bool MtpDrafter::capture_step(int j, bool coupled, std::string& err) {
+     coupled_rec_ = false;
+     if (ok) mtp_select(R_, HCN, out_ids_, row_ + 1, Rin_, tok_, m_out_, j, cs_, probs_, m_prob_);
+     if (ok && force_on_ && !coupled) force_token(tok_, m_force_, j, cs_);   // chain_launch: step j+1's input
+-    return finish_capture(cs_, ok, exec, coupled ? "step (coupled)" : "step", err);
++    if (!finish_capture(ok, exec, coupled ? "step (coupled)" : "step", err)) return false;
++    return operation.finish();
+ }
+ 
+ void MtpDrafter::kv_restore(int64_t upto) {
++    std::string err;
++    Operation operation{*this, err};
+     const OnDevice on_device(device_);
+-    if (st_.kv_mode != 2 || upto <= 0) return;
+-    // the ring's blocks below `upto`, from the host copy: a checkpoint resume may have left later cells in them
++    if (!complete(err)) throw std::runtime_error(err);
++    if (upto < 0 || upto > st_.max_cells) throw std::runtime_error("mtp: restore extent out of range");
++    if (st_.kv_mode != 2 || upto == 0) {
++        if (!operation.finish()) throw std::runtime_error(err);
++        return;
++    }
+     const strata::kernels::QsaShapes s = shapes_of(*g_);
+     const int64_t b1 = (upto + s.page_size - 1) / s.page_size, b0 = std::max<int64_t>(0, b1 - st_.n_slots);
++    if (!completion_.submit(err)) throw std::runtime_error(err);
+     strata::kernels::kv_ring_restore(qsa_attn_pools(st_), st_.host, qsa_kv_format(st_), b0, b1, st_.n_slots, s, cs_);
+-    strata::gpu::stream_sync(cs_);
++    if (!operation.finish()) throw std::runtime_error(err);
+ }
+ 
+ bool MtpDrafter::idle(std::string& err) {
++    Operation operation{*this, err};
+     const OnDevice on_device(device_);
+-    if (cs_ && !strata::gpu::stream_sync(cs_)) {
+-        err = std::string("mtp: its stream failed: ") + strata::gpu::last_error();
+-        return false;
+-    }
+-    return true;
++    return operation.finish();
+ }
+ 
+ bool MtpDrafter::prepare_prefill(std::string& err) {
++    Operation operation{*this, err};
+     const OnDevice on_device(device_);
++    if (!complete(err)) return false;
++    if (!g_ || !cs_ || max_t_ < 1) { err = "mtp: prefill preparation before load"; return false; }
+     const int64_t per_row = 1 + 4 + g_->n_head;
+     if (pf_cap_ < (int64_t) max_t_ * per_row) {
+         if (pf_dev_) strata::gpu::free(pf_dev_);
+@@ -916,12 +1050,16 @@ bool MtpDrafter::prepare_prefill(std::string& err) {
+     }
+     for (int T = 1; T <= max_t_; ++T)
+         if (!capture_prefill_dev(T, err)) return false;
+-    return true;
++    return operation.finish();
+ }
+ 
+ bool MtpDrafter::prefill(const float* R_rows, const int32_t* next_tokens, int64_t n, int64_t cell0, std::string& err,
+                          bool sync) {
++    Operation operation{*this, err};
+     const OnDevice on_device(device_);
++    if (!complete(err)) return false;
++    if (!g_ || !cs_ || max_t_ < 1 || n < 0 || cell0 < 0 || cell0 > st_.max_cells || n > st_.max_cells - cell0 ||
++        (n > 0 && (!R_rows || !next_tokens))) { err = "mtp: prefill span or inputs out of range"; return false; }
+     const Clock::time_point t0 = Clock::now();
+     const int64_t HCN = g_->hc * g_->n_embd;
+     // cells the window can never reach again need no K/V
+@@ -956,8 +1094,8 @@ bool MtpDrafter::prefill(const float* R_rows, const int32_t* next_tokens, int64_
+             }
+             pf_cap_ = n * per_row;
+         }
+-        std::vector<int32_t> rec((size_t) (n * per_row));
+-        int32_t* tk = rec.data();
++        pf_host_.resize((size_t) (n * per_row));
++        int32_t* tk = pf_host_.data();
+         int32_t* stp = tk + n;
+         int32_t* ps = stp + 4 * n;
+         for (int64_t i = 0; i < n; ++i) {
+@@ -969,10 +1107,9 @@ bool MtpDrafter::prefill(const float* R_rows, const int32_t* next_tokens, int64_
+             stp[i * 4 + 3] = (int32_t) (cell + 1);
+             for (int64_t h = 0; h < NHp; ++h) ps[i * NHp + h] = (int32_t) cell;
+         }
+-        if (!strata::gpu::copy_async(pf_dev_, rec.data(), rec.size() * sizeof(int32_t), cs_)) {
+-            err = "mtp prefill: the input records upload failed";
+-            return false;
+-        }
++        if (!completion_.submit(err) ||
++            !check(strata::gpu::copy_async(pf_dev_, pf_host_.data(), pf_host_.size() * sizeof(int32_t), cs_),
++                   "mtp prefill records upload", err)) return false;
+         const int32_t* d_tk = pf_dev_;
+         const int32_t* d_stp = d_tk + n;
+         const int32_t* d_ps = d_stp + 4 * n;
+@@ -980,6 +1117,7 @@ bool MtpDrafter::prefill(const float* R_rows, const int32_t* next_tokens, int64_
+             const int T = (int) std::min<int64_t>(max_t_, n - c);
+             if (cell0 + c + T <= skip_below) continue;
+             if (!capture_prefill_dev(T, err)) return false;
++            if (!completion_.submit(err)) return false;
+             if (!strata::gpu::copy_async(tok_, d_tk + c, (size_t) T * 4, cs_) ||
+                 !strata::gpu::copy_async(step_, d_stp + c * 4, (size_t) T * 16, cs_) ||
+                 !strata::gpu::copy_async(pos_, d_ps + c * NHp, (size_t) (T * NHp) * 4, cs_) ||
+@@ -991,14 +1129,11 @@ bool MtpDrafter::prefill(const float* R_rows, const int32_t* next_tokens, int64_
+         }
+         if (!sync) {   // the caller orders on stream(); the records are staged
+             ms_prefill += ms_since(t0);
+-            return true;
+-        }
+-        if (!strata::gpu::stream_sync(cs_)) {
+-            err = std::string("mtp prefill: ") + strata::gpu::last_error();
+-            return false;
++            return operation.finish(true);
+         }
++        if (!complete(err)) return false;
+         ms_prefill += ms_since(t0);
+-        return true;
++        return operation.finish();
+     }
+     for (int64_t c = 0; c < n; c += max_t_) {
+         const int T = (int) std::min<int64_t>(max_t_, n - c);
+@@ -1013,21 +1148,26 @@ bool MtpDrafter::prefill(const float* R_rows, const int32_t* next_tokens, int64_
+             h_step_[t * 4 + 3] = (int32_t) (cell + 1);
+             for (int64_t h = 0; h < g_->n_head; ++h) h_pos_[t * g_->n_head + h] = (int32_t) cell;
+         }
++        if (!completion_.submit(err)) return false;
+         if (!strata::gpu::copy_async(Rin_, R_rows + (size_t) c * HCN, (size_t) T * HCN * sizeof(float), cs_) ||
+-            !strata::gpu::graph_launch(prefill_exec_[T], cs_) ||
+-            !strata::gpu::stream_sync(cs_)) {
++            !strata::gpu::graph_launch(prefill_exec_[T], cs_)) {
+             err = std::string("mtp prefill: ") + strata::gpu::last_error();
+             return false;
+         }
++        if (!complete(err)) return false;   // before the next CPU write to mapped records
+     }
+     ms_prefill += ms_since(t0);
+-    return true;
++    return operation.finish();
+ }
+ 
+ bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t* drafts, std::string& err,
+                        float* probs, float min_p, int* n_drafts) {
++    Operation operation{*this, err};
+     const OnDevice on_device(device_);
+-    if (T < 1 || T > max_t_ || a < 0 || a >= T) { err = "mtp: draft arguments out of range"; return false; }
++    if (!complete(err)) return false;
++    if (T < 1 || T > max_t_ || a < 0 || a >= T || !tokens || !drafts || !g_ || !cs_ || !window_R_) {
++        err = "mtp: draft arguments out of range"; return false;
++    }
+     if (chain_live_) { err = "mtp: a pipelined chain is still in flight"; return false; }
+     // the round runs for the cells up to the accepted row a (T = a + 1): the K/V of the rejected rows is not caught
+     // up - no later read reaches a cell past the one being drafted and the next round writes it first
+@@ -1052,11 +1192,10 @@ bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t*
+     }
+     put(2 * max_t_ - 1, coupled_draft_cell(p, a, 0));   // p + a: draft 0's cell
+     for (int j = 1; j < max_steps; ++j) put(max_t_ + j - 1, coupled_draft_cell(p, a, j));   // p + a + j
+-    for (int j = 0; j < max_t_ - 1; ++j) ((volatile int32_t*) h_out_)[j] = -1;   // mtp_select writes each token last
++    for (int j = 0; j < max_t_ - 1; ++j) h_out_[j] = -1;   // prior allocation writers have completed
+     h_row_[0] = a;
+     h_row_[1] = 0;
+     if (h_force_ != nullptr) for (int j = 0; j < 16; ++j) h_force_[j] = -1;   // the forcing kernels: no-ops here
+-    std::atomic_thread_fence(std::memory_order_seq_cst);
+     if (!stage_source_R(T, err)) return false;
+     // The next verify window's PLE rows are read while the GPU drafts (upstream a36be1db): its first token is tokens[a],
+     // the drafts follow; the window's gather_batch takes them when they are its rows.
+@@ -1070,66 +1209,69 @@ bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t*
+         ple_prev[1] = tok;
+         ss_->ple.table->prefetch_rows(rows16);
+     };
+-    // each draft is read once its token reaches the mapped row (written after its probability), not after a stream
+-    // sync: the next step starts sooner
++    // Queue completion transfers ownership of the entire mapped allocation.
++    // Volatile/token-last publication and idle hints do not qualify that transfer.
+     auto wait_step = [&](int j) {
+-        uint32_t spins = 0;
+-        while (((volatile int32_t*) h_out_)[j] < 0) {
+-            _mm_pause();
+-            if ((++spins & 1023u) == 0 && strata::gpu::stream_idle(cs_)) break;
+-        }
++        if (!complete(err)) return false;
++        if (h_out_[j] >= 0) return true;
++        err = "mtp: completed graph did not publish a draft";
++        completion_.fail(err);
++        return false;
+     };
++    if (!completion_.submit(err)) return false;
+     if (!strata::gpu::graph_launch(cp ? round_exec_c_[T] : round_exec_[T], cs_)) {
+         err = std::string("mtp draft: ") + strata::gpu::last_error();
+         return false;
+     }
+-    (void) strata::gpu::stream_idle(cs_);
+     prefetch_ple(tokens[a]);
+-    wait_step(0);
+-    drafts[0] = ((volatile int32_t*) h_out_)[0];
+-    if (top2_env()) { strata::gpu::stream_sync(cs_); record_top2(0); }
+-    float pj = ((volatile float*) h_prob_)[0];
++    if (!wait_step(0)) return false;
++    drafts[0] = h_out_[0];
++    if (top2_env() && !record_top2(0, err)) return false;
++    float pj = h_prob_[0];
+     if (probs) probs[0] = pj;
+     int n = 1;
+     // the chain continues while the last draft is likely enough to be verified
+     for (int j = 1; j < max_steps && pj >= min_p; ++j) {
++        if (!completion_.submit(err)) return false;
+         if (!strata::gpu::graph_launch(cp ? step_exec_c_[j] : step_exec_[j], cs_)) {
+             err = std::string("mtp draft step: ") + strata::gpu::last_error();
+             return false;
+         }
+-        (void) strata::gpu::stream_idle(cs_);
+         prefetch_ple(drafts[j - 1]);
+-        wait_step(j);
+-        drafts[j] = ((volatile int32_t*) h_out_)[j];
+-        if (top2_env()) { strata::gpu::stream_sync(cs_); record_top2(j); }
+-        pj = ((volatile float*) h_prob_)[j];
++        if (!wait_step(j)) return false;
++        drafts[j] = h_out_[j];
++        if (top2_env() && !record_top2(j, err)) return false;
++        pj = h_prob_[j];
+         if (probs) probs[j] = pj;
+         ++n;
+     }
+     prefetch_ple(drafts[n - 1]);
+-    if (!strata::gpu::stream_sync(cs_)) {
+-        err = std::string("mtp draft: ") + strata::gpu::last_error();
+-        return false;
+-    }
++    if (!complete(err)) return false;
+     for (int j = n; j < max_t_ - 1; ++j) { drafts[j] = 0; if (probs) probs[j] = 0.0f; }
+     if (n_drafts) *n_drafts = n;
+     ms_draft += ms_since(t0);
+     ++rounds;
+-    return true;
++    return operation.finish();
+ }
+ 
+ bool MtpDrafter::stage_source_R(int T, std::string& err) {
+-    if (src_R_ == nullptr || src_R_ == window_R_) return true;
++    if (src_R_ == nullptr || src_R_ == window_R_) return completion_.healthy(err);
++    if (!completion_.submit(err)) return false;
+     if (!strata::gpu::copy_async((void*) window_R_, src_R_, (size_t) T * (size_t) (g_->hc * g_->n_embd) * sizeof(float),
+                                  cs_)) {
+-        err = "mtp: staging the window's residual rows failed";
++        err = std::string("mtp: staging the window's residual rows failed: ") + strata::gpu::last_error();
+         return false;
+     }
+     return true;
+ }
+ 
+ bool MtpDrafter::prepare_chain(std::string& err) {
++    Operation operation{*this, err};
+     const OnDevice on_device(device_);
++    if (!complete(err)) return false;
++    if (!strata::gpu::host_handoff_concurrent(cs_)) {
++        err = "mtp: asynchronous chains require a qualified host handoff"; return false;
++    }
+     if (!force_on_ || h_force_ == nullptr) { err = "mtp: chains need set_force_capture before load"; return false; }
+     for (int T = 1; T <= max_t_; ++T)
+         if (!capture_round(T, false, err)) return false;
+@@ -1144,12 +1286,17 @@ bool MtpDrafter::prepare_chain(std::string& err) {
+             err = "mtp: event creation failed";
+             return false;
+         }
+-    return true;
++    return operation.finish();
+ }
+ 
+ bool MtpDrafter::chain_launch(int T, const int32_t* tokens, int64_t p, int a, const int32_t* force, int n_force,
+                               int n_out, int n_early, std::string& err) {
++    Operation operation{*this, err};
+     const OnDevice on_device(device_);
++    if (!complete(err)) return false;
++    if (!strata::gpu::host_handoff_concurrent(cs_)) {
++        err = "mtp: asynchronous chains require a qualified host handoff"; return false;
++    }
+     if (chain_live_) { err = "mtp: a chain is already in flight"; return false; }
+     if (!force_on_ || ev_chain_ == nullptr) { err = "mtp: chains need prepare_chain"; return false; }
+     if (T < 1 || T > max_t_ || a < 0 || a >= T || n_out < 1 || n_out > max_t_ - 1 || n_force < 0 || n_force > n_out ||
+@@ -1179,7 +1326,8 @@ bool MtpDrafter::chain_launch(int T, const int32_t* tokens, int64_t p, int a, co
+     for (int j = 0; j < 16; ++j) h_force_[j] = j < n_force ? force[j] : -1;
+     h_row_[0] = a;
+     h_row_[1] = 0;
+-    std::atomic_thread_fence(std::memory_order_seq_cst);
++    if (!completion_.submit(err)) return false;
++    chain_live_ = true;   // ownership begins before even a residual copy or partial graph launch
+     if (!stage_source_R(T, err)) return false;
+     chain_early_ = std::max(0, std::min(n_early, n_out));
+     bool ok = strata::gpu::graph_launch(round_exec_[T], cs_);
+@@ -1193,51 +1341,56 @@ bool MtpDrafter::chain_launch(int T, const int32_t* tokens, int64_t p, int a, co
+         return false;
+     }
+     steps_seen_ = 0;
+-    chain_live_ = true;
+     chain_n_ = n_out;
+     ms_draft += ms_since(t0);
+     ++rounds;
+-    return true;
++    return operation.finish(true);
+ }
+ 
+ int MtpDrafter::chain_outputs_ready(std::string& err) {
+-    (void) err;
+-    if (!chain_live_) return chain_n_;
++    Operation operation{*this, err};
+     const OnDevice on_device(device_);
+-    while (steps_seen_ < chain_early_ && strata::gpu::event_query(ev_step_[steps_seen_])) {
+-        chain_tok_[steps_seen_] = ((volatile int32_t*) h_out_)[steps_seen_];
+-        chain_prob_[steps_seen_] = ((volatile float*) h_prob_)[steps_seen_];
+-        ++steps_seen_;
++    if (!complete(err)) return -1;
++    if (!strata::gpu::host_handoff_concurrent(cs_)) {
++        err = "mtp: early chain outputs require a qualified host handoff"; return -1;
+     }
+-    return steps_seen_;
++    // An event for output j does not retire a later writer to this same host
++    // allocation. Read only after the entire chain completes, even on a future backend.
++    if (chain_poll(err) < 0) return -1;
++    return operation.finish() ? chain_n_ : -1;
+ }
+ 
+ int MtpDrafter::chain_poll(std::string& err) {
+-    (void) err;
+-    if (!chain_live_) return 1;
++    Operation operation{*this, err};
+     const OnDevice on_device(device_);
+-    if (!strata::gpu::event_query(ev_chain_)) return 0;
+-    chain_live_ = false;
++    if (!complete(err)) return -1;
++    if (!chain_live_) return operation.finish() ? 1 : -1;
+     for (int j = 0; j < chain_n_; ++j) {
+-        chain_tok_[j] = ((volatile int32_t*) h_out_)[j];
+-        chain_prob_[j] = ((volatile float*) h_prob_)[j];
++        chain_tok_[j] = h_out_[j];
++        chain_prob_[j] = h_prob_[j];
+     }
+     for (int j = chain_n_; j < 8; ++j) { chain_tok_[j] = 0; chain_prob_[j] = 0.0f; }
+-    return 1;
++    steps_seen_ = chain_n_;
++    chain_live_ = false;   // only after checked whole-allocation completion and output transfer
++    return operation.finish() ? 1 : -1;
+ }
+ 
+ bool MtpDrafter::draft_first(int T, const float* R_row, int32_t token, int64_t cell, int32_t* drafts, std::string& err,
+                              float* probs, float min_p, int* n_drafts) {
++    Operation operation{*this, err};
+     const OnDevice on_device(device_);
++    if (!complete(err)) return false;
++    if (T < 1 || T > max_t_ || !g_ || !window_R_ || !R_row || !drafts) {
++        err = "mtp: first draft inputs out of range"; return false;
++    }
+     // row 0 is the real pair; rows 1.. repeat it and only write cells the next round overwrites
+     const int64_t HCN = g_->hc * g_->n_embd;
+     for (int t = 0; t < T; ++t)
+-        if (!strata::gpu::copy((void*) (window_R_ + (size_t) t * HCN), R_row, (size_t) HCN * sizeof(float))) {
+-            err = "mtp: staging the first residual failed";
+-            return false;
+-        }
++        if (!copy_checked((void*) (window_R_ + (size_t) t * HCN), R_row, (size_t) HCN * sizeof(float),
++                          "mtp first residual upload", err)) return false;
+     std::vector<int32_t> toks((size_t) T, token);
+-    return draft(T, toks.data(), cell, 0, drafts, err, probs, min_p, n_drafts);
++    if (!draft(T, toks.data(), cell, 0, drafts, err, probs, min_p, n_drafts)) return false;
++    return operation.finish();
+ }
+ 
+ }  // namespace strata::core
+diff --git a/src/core/session.cpp b/src/core/session.cpp
+index 6fc45105..42ab7170 100644
+--- a/src/core/session.cpp
++++ b/src/core/session.cpp
+@@ -20,6 +20,7 @@
+ #include <cstdio>
+ #include <cstdlib>
+ #include <cstring>
++#include <exception>
+ #include <vector>
+ 
+ // `_mm_pause` for the doorbell spin.  Guarded because it is x86-only; a target without it still builds, the
+@@ -275,6 +276,12 @@ bool session_replay(const ModelGeometry& g, int64_t pos, int32_t pos_base, Sessi
+                     void* stream, std::string& err) {
+     if (!gr.captured || gr.n != g.n_layers) { err = "session_replay: not captured"; return false; }
+     strata::gpu::Stream cs = stream;
++    // A preceding replay may still read these persistent mapped records.
++    // Even writing identical values again requires completion first.
++    if (!strata::gpu::stream_sync(cs)) {
++        err = std::string("session_replay: staging completion: ") + strata::gpu::last_error();
++        return false;
++    }
+     stage_token(g, pos, pos_base, s);
+     for (int64_t l = 0; l < g.n_layers; ++l) {
+         const bool e = strata::gpu::graph_launch(gr.execs[l], cs);
+@@ -293,6 +300,10 @@ bool session_replay_full(const ModelGeometry& g, int64_t pos, int32_t pos_base,
+         return false;
+     }
+     strata::gpu::Stream cs = stream;
++    if (!strata::gpu::stream_sync(cs)) {
++        err = std::string("session_replay_full: staging completion: ") + strata::gpu::last_error();
++        return false;
++    }
+     stage_token(g, pos, pos_base, s);
+     for (int64_t l = 0; l < g.n_layers; ++l) {
+         // `pre[l]` then `post[l]`, in the order `session_loop` uses.  The two are ordered on one stream, and
+@@ -585,6 +596,11 @@ bool session_loop(const ModelGeometry& g, int64_t pos, int32_t pos_base, Session
+     // value, and that is exactly why the buffers are pinned and fixed."  `session_replay` calls `stage_token`;
+     // `session_loop` did not.  **A single-token test cannot see a position that never advances** - which is why
+     // the whole suite passed while a 20-token prompt rotated every token at position 0.
++    // Host staging and the ring must not be rewritten while an earlier submission still uses them.
++    if (!strata::gpu::stream_sync(cs)) {
++        err = "session_loop: sync before staging: " + std::string(strata::gpu::last_error());
++        return false;
++    }
+     stage_token(g, pos, pos_base, s);
+ 
+     // ---- **THE TOKEN PATH ALLOCATES NOTHING (P2.T10, review finding H3).**
+@@ -611,6 +627,14 @@ bool session_loop(const ModelGeometry& g, int64_t pos, int32_t pos_base, Session
+         return false;
+     }
+ 
++    struct Drain {
++        strata::gpu::Stream stream;
++        bool active = true;
++        ~Drain() {
++            if (active && !strata::gpu::stream_sync(stream)) std::terminate();
++        }
++    } drain{cs};   // declared after LocalFree: drain async users before local staging can be freed
++
+     // HOST-side staging for the pool's answer.  It is copied to `gr.parts_dev` before the next launch, on the
+     // same stream, so the ordering is the stream's and no captured node is needed for it.
+     //
+@@ -626,7 +650,10 @@ bool session_loop(const ModelGeometry& g, int64_t pos, int32_t pos_base, Session
+ 
+     // the first layer has no previous layer's experts: `y_miss` starts at zero, which is what "hits are empty
+     // in this phase" means once every miss has been computed
+-    strata::gpu::copy_async(gr.parts_dev, y_miss, parts_bytes, cs);
++    if (!strata::gpu::copy_async(gr.parts_dev, y_miss, parts_bytes, cs)) {
++        err = "session_loop: initial parts copy: " + std::string(strata::gpu::last_error());
++        return false;
++    }
+     doorbell_reset(*s.db);
+     uint32_t expected = 0;
+ 
+@@ -651,41 +678,24 @@ bool session_loop(const ModelGeometry& g, int64_t pos, int32_t pos_base, Session
+             err = "session_loop: launch pre[0]: " + std::string(strata::gpu::last_error());
+             return false;
+         }
+-        strata::gpu::event_record(probe, cs);
++        if (!strata::gpu::event_record(probe, cs)) {
++            err = "session_loop: record pre[0]: " + std::string(strata::gpu::last_error());
++            return false;
++        }
+         (void) t0;
+     }
+ 
+     for (int64_t l = 0; l < g.n_layers; ++l) {
+         const auto t_launch = std::chrono::steady_clock::now();
+ 
+-        // ---- poll for the ring.  **THE DRIVER CALL IS NOW A FALLBACK, NOT THE MECHANISM.**
+         const uint32_t want = ++expected;
+-        bool rang = false;
+-        bool mid_graph = false;
+-        // VOLATILE, because the device writes this through mapped pinned memory and a cached host line would
+-        // never see it.  Read through a volatile pointer so the compiler re-issues the load every iteration -
+-        // otherwise this whole spin collapses into `while (true) { }`.
+-        volatile uint32_t* const seq = s.db->h_seq;
+-        for (;;) {
+-            // **THE PER-ITERATION DRIVER CALL IS REQUIRED, AND THREE EXPERIMENTS NOW SAY SO.**  Round 287
+-            // throttled this to one call in 64 and broke tests 51 and 56; adding `__threadfence_system()` to
+-            // `doorbell_ring_kernel` and a volatile read here, then throttling, broke them again.  So the call
+-            // is not merely flushing submission (round 195's reading) and it is not a missing fence either: on
+-            // this driver, the device's write to mapped pinned memory becomes host-visible only when the driver
+-            // is entered.  The fence and the volatile read are kept because they are correct and cost nothing -
+-            // without them the ring's ordering against `x_f`/`ids`/`weights` is unstated - but they do not
+-            // remove the need for the call, and nothing here should be read as claiming they do.
+-            // On Xe the event query also enters the driver; a failed query surfaces at the next runtime wait.
+-            const bool done = strata::gpu::event_query(probe);
+-            if (!rang && *seq >= want) {
+-                rang = true;
+-                mid_graph = !done;
+-            }
+-            if (done) break;              // the graph has ended
+-            if (rang) break;                             // rung, and the graph is still running: the overlap
+-            STRATA_SPIN_PAUSE();
++        // Completion is the host/device ownership boundary. Never read host-USM seq or payload while
++        // pre is running; a volatile load plus a fence cannot synchronize concurrent CPU/GPU access.
++        if (!strata::gpu::event_sync(probe)) {
++            err = "session_loop: wait pre[" + std::to_string(l) + "]: " + strata::gpu::last_error();
++            return false;
+         }
+-        if (mid_graph) ++gr.rings_mid_graph;
++        const bool rang = *s.db->h_seq >= want;
+         // the window, from just before the launch to the instant the ring was seen
+         const auto t_ring = std::chrono::steady_clock::now();
+         gr.ms_to_ring += std::chrono::duration<double, std::milli>(t_ring - t_launch).count();
+@@ -712,7 +722,10 @@ bool session_loop(const ModelGeometry& g, int64_t pos, int32_t pos_base, Session
+         // `sum_j w_{l+1}[j] * expert_{ids_l,j}(x_l)` - both the selection and the input one layer stale while
+         // the weights were current.  It produced finite, fluent, deterministic tokens that were not the
+         // model's, and no timing test could see it.
+-        strata::gpu::copy_async(gr.parts_dev, y_miss, parts_bytes, cs);
++        if (!strata::gpu::copy_async(gr.parts_dev, y_miss, parts_bytes, cs)) {
++            err = "session_loop: parts copy at layer " + std::to_string(l) + ": " + strata::gpu::last_error();
++            return false;
++        }
+         // ---- **AND THEN THE COMBINE.**  Stream-ordered after the copy above, so `hit_out` is added to misses
+         // that are already in `parts`, and before `post[l]`, whose `moe_combine` reads the sum.  A no-op when
+         // there is no VRAM tier or nothing is resident, which is every layer until the cache warms.
+@@ -753,7 +766,10 @@ bool session_loop(const ModelGeometry& g, int64_t pos, int32_t pos_base, Session
+                 err = "session_loop: launch pre[" + std::to_string(l + 1) + "]: " + strata::gpu::last_error();
+                 return false;
+             }
+-            strata::gpu::event_record(probe, cs);
++            if (!strata::gpu::event_record(probe, cs)) {
++                err = "session_loop: record pre[" + std::to_string(l + 1) + "]: " + strata::gpu::last_error();
++                return false;
++            }
+         }
+         // ---- **THE SECOND HALF OF THE ROUND TRIP, AND THE HALF NOTHING WAS MEASURING.**
+         //
+@@ -767,6 +783,7 @@ bool session_loop(const ModelGeometry& g, int64_t pos, int32_t pos_base, Session
+         gr.ms_host += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t_ring).count();
+     }
+     if (!strata::gpu::stream_sync(cs)) { err = "session_loop: final sync"; return false; }
++    drain.active = false;
+     return true;
+ }
+ 
+@@ -821,6 +838,12 @@ namespace strata::core {
+ bool session_capture_token(const WeightTable& tables, const ModelGeometry& g, SessionState& s, float* parts_dev,
+                            const float* y_miss_host, size_t parts_bytes, TokenGraph& tg, std::string& err,
+                            const TokenHits* hits) {
++    // A whole-token graph contains device waits for CPU flags.  Waiting for that graph cannot serialize
++    // the handoff: it would wait on the host work itself.  Use SessionGraphs pre/post pairs instead.
++    if (!strata::gpu::host_handoff_concurrent()) {
++        err = "session_capture_token: concurrent host-USM handoff is unqualified; use per-layer graphs";
++        return false;
++    }
+     if (hits != nullptr && !hits->on()) { err = "session_capture_token: incomplete hit configuration"; return false; }
+     if (tg.captured) return true;
+     if (s.db == nullptr || s.db->d_flag == nullptr || s.db->d_seq == nullptr) {
+@@ -891,6 +914,10 @@ bool session_capture_token(const WeightTable& tables, const ModelGeometry& g, Se
+ 
+ bool session_run_token(const ModelGeometry& g, int64_t pos, int32_t pos_base, SessionState& s, TokenGraph& tg,
+                        PoolFn pool, void* user, float* y_miss_host, void* stream, std::string& err) {
++    if (!strata::gpu::host_handoff_concurrent(stream)) {
++        err = "session_run_token: concurrent host-USM handoff is unqualified; use per-layer graphs";
++        return false;
++    }
+     if (!tg.captured) { err = "session_run_token: not captured"; return false; }
+     if (y_miss_host != tg.y_src) { err = "session_run_token: the staging buffer is not the captured one"; return false; }
+     strata::gpu::Stream cs = stream;
+diff --git a/src/core/verify.cpp b/src/core/verify.cpp
+index dbcebc5b..875433f6 100644
+--- a/src/core/verify.cpp
++++ b/src/core/verify.cpp
+@@ -47,6 +47,7 @@
+ #include <cstdlib>
+ #include <cstring>
+ #include <exception>
++#include <exception>
+ #include <immintrin.h>
+ 
+ namespace strata::core {
+@@ -137,6 +138,10 @@ void diag_active_verifier(std::FILE* f) {
+ }  // namespace
+ 
+ void Verifier::diag(std::FILE* f) const {
++    if (!strata::gpu::host_handoff_concurrent(cs_)) {
++        std::fprintf(f, "  verify: serialized host/device handoff; live control words are not read\n");
++        return;
++    }
+     auto rd = [](const uint32_t* p) { return p ? *(const volatile uint32_t*) p : 0u; };
+     // outside a verify stage these are the last window's numbers (it finished), not the stalled work's (upstream
+     // 9631c96)
+@@ -150,7 +155,11 @@ void Verifier::diag(std::FILE* f) const {
+ Verifier::~Verifier() {
+     const Verifier* self = this;
+     g_diag_verifier.compare_exchange_strong(self, nullptr);
+-    if (cs_) strata::gpu::stream_sync(cs_);
++    // Do not destroy callback state or graphs while completion is uncertain.  Runtime::free uses the same
++    // fail-stop rule for USM; callbacks also own members of this object until their queue has drained.
++    const bool compute_done = !cs_ || strata::gpu::stream_sync(cs_);
++    const bool copies_done = !copy_ || strata::gpu::stream_sync(copy_);
++    if (!compute_done || !copies_done) std::terminate();
+     for (auto& e : exec_)
+         if (e) strata::gpu::graph_destroy(e);
+     for (auto& e : exec_res_)
+@@ -401,10 +410,12 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
+     }
+     {
+         const char* v = std::getenv("STRATA_VERIFY_SEGMENTED");
+-        segmented_ = v != nullptr ? std::strtol(v, nullptr, 10) != 0 : !strata::kernels::doorbell_visible(cs_);
++        // Visibility probes and an environment override cannot qualify volatile concurrent accesses.
++        segmented_ = !strata::gpu::host_handoff_concurrent(cs_) ||
++                     (v != nullptr && std::strtol(v, nullptr, 10) != 0);
+         if (segmented_)
+-            std::fprintf(stderr, "strata verify: the GPU's running kernels do not see the host's writes: each window "
+-                                 "runs as segments the host launches (slower)\n");
++            std::fprintf(stderr, "strata verify: queue-completed host/device handoff: each window runs as "
++                                 "segments the host launches\n");
+     }
+     // E-6: a layer whose routed experts are all resident is planned on the device (STRATA_VERIFY_DEVICE_PLAN=1: on;
+     // exact, but neutral on RIBPC 1-2 GPUs: off by default)
+@@ -488,7 +499,7 @@ bool Verifier::record_window(int T, strata::gpu::Stream cs, std::string& err) {
+     // copied in at layer 1 after the GPU's wait for layer 0's flag (upstream a36be1db reads them at layer 0's ring):
+     // the reads no longer hold the window's launch back (0.35 ms a window on the RTX 4070).  Not where the host
+     // raises no flag for layer 0 before layer 1: the resident graph, a batch window, a stage that starts after layer 0.
+-    const bool ple_late = ple_on && !recording_res_ && !batch_rec_ && lb_ == 0;
++    const bool ple_late = ple_on && !segmented_ && !recording_res_ && !batch_rec_ && lb_ == 0;
+     if (ple_on && !ple_late) copy_from_mapped(ple_, m_ple_, (int64_t) T * N, cs);
+ 
+     // ---- the embeddings, broadcast to the hc streams - or, in a later stage of a layer split, the previous stage's
+@@ -1313,6 +1324,7 @@ bool Verifier::capture(int T, std::string& err) {
+     const bool synced = strata::gpu::stream_sync(cs_);
+     std::fprintf(stderr, "strata verify: captured the %d-token window (sync %s)\n", T,
+                  synced ? "ok" : strata::gpu::last_error());
++    if (!synced) { err = "verify: capture sync: " + std::string(strata::gpu::last_error()); return false; }
+     return true;
+ }
+ 
+@@ -1350,6 +1362,7 @@ bool Verifier::capture_res(int T, std::string& err) {
+     const bool synced = strata::gpu::stream_sync(cs_);
+     std::fprintf(stderr, "strata verify: captured the %d-token window with every expert resident (sync %s)\n", T,
+                  synced ? "ok" : strata::gpu::last_error());
++    if (!synced) { err = "verify: capture sync: " + std::string(strata::gpu::last_error()); return false; }
+     return true;
+ }
+ 
+@@ -1425,6 +1438,23 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
+                    std::string& err) {
+     using namespace strata::kernels;
+     const OnDevice on_device(device_);
++    // No window may reuse state or host staging after an unconfirmed/failed commit.
++    if (!wait_commit(err)) return false;
++    if (!strata::gpu::stream_sync(cs_) || !strata::gpu::stream_sync(copy_)) {
++        err = "verify: sync before staging: " + std::string(strata::gpu::last_error());
++        return false;
++    }
++    struct Drain {
++        strata::gpu::Stream compute, copies;
++        bool active = true;
++        ~Drain() {
++            if (!active) return;
++            const bool a = strata::gpu::stream_sync(compute);
++            const bool b = strata::gpu::stream_sync(copies);
++            if (!a || !b) std::terminate();   // no return with callbacks or device accesses still uncertain
++        }
++    } drain{cs_, copy_};
++    dma_error_.clear();
+     last_batch_ = false;
+     if (T < 1 || T > max_t_) { err = "verify: window size out of range"; return false; }
+     const ModelGeometry& g = *g_;
+@@ -1448,7 +1478,7 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
+         for (int64_t h = 0; h < g.idx_q_heads; ++h) pi[t * g.idx_q_heads + h] = (int32_t) (pos0 + t);
+     }
+     const bool do_ple = ss.ple.ready() && ple_stage();
+-    const bool ple_late = do_ple && !res && lb_ == 0;   // read after the launch below (record_window's ple_late)
++    const bool ple_late = do_ple && !segmented_ && !res && lb_ == 0;   // read after the launch below (record_window's ple_late)
+     uint32_t ple_rows[kVerifyMaxT * PLE_N_HEADS];
+     if (do_ple) {
+         int32_t prev[2] = {ss.ple_prev[0], ss.ple_prev[1]};
+@@ -1470,6 +1500,13 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
+     for (int t = 0; t < T; ++t) last_tokens_[t] = tokens[t];
+     ms_host += ms_since(t0);
+     VDBG("staged; launching\n");
++    if (!res && segmented_) {
++        const int G = groups_[T] > 0 ? groups_[T] : 1;
++        if (segs_[T].size() != (size_t) ((le_ - lb_) * G + 1)) {
++            err = "verify: incomplete segmented window";
++            return false;
++        }
++    }
+     const bool le = strata::gpu::graph_launch(res ? exec_res_[T] : segmented_ ? segs_[T][0] : exec_[T], cs_);
+     if (!le) { err = std::string("verify: launch: ") + strata::gpu::last_error(); return false; }
+     (void) strata::gpu::stream_idle(cs_);
+@@ -1507,7 +1544,11 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
+             err = std::string("verify: segment ") + std::to_string(k) + ": " + strata::gpu::last_error();
+             return false;
+         }
+-        while (*seq < want) {
++        if (segmented_ && *seq < want) {
++            err = "verify: layer " + std::to_string(l) + " never rang (segment completed)";
++            return false;
++        }
++        while (!segmented_ && *seq < want) {
+             _mm_pause();
+             if ((++spins & 1023u) != 0) continue;
+             const auto now = Clock::now();
+@@ -1529,6 +1570,13 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
+         if (pool != nullptr)
+             pool(user, h_x_ + (size_t) tb * g.n_embd, h_ids_ + (size_t) tb * ss.k, n, ss.k,
+                  h_ymiss_ + (size_t) tb * ss.k * g.n_embd, l);
++        // The copy callback raises B using host atomics.  Drain before inspecting any callback result and
++        // before handing staging back to the GPU.  An enqueue failure must never publish successful DMA.
++        if (segmented_ && !strata::gpu::stream_sync(copy_)) {
++            err = "verify: expert copies: " + std::string(strata::gpu::last_error());
++            return false;
++        }
++        if (!dma_error_.empty()) { err = dma_error_; return false; }
+         VDBG("layer %lld served\n", (long long) l);
+         progress_tick();
+         std::atomic_thread_fence(std::memory_order_seq_cst);
+@@ -1545,7 +1593,7 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
+         }
+         *flag = want;
+         if (segmented_) {   // the PCIe share's copies too, then the next segment
+-            if (!strata::gpu::stream_sync(copy_) || *(volatile uint32_t*) h_flagB_ < want) {
++            if (__atomic_load_n(h_flagB_, __ATOMIC_SEQ_CST) < want) {
+                 err = "verify: the PCIe share of layer " + std::to_string(l) + " did not land";
+                 return false;
+             }
+@@ -1561,9 +1609,16 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
+     const bool se = strata::gpu::stream_sync(cs_);
+     if (!se) { err = std::string("verify: ") + strata::gpu::last_error(); return false; }
+     progress_at("verify window: waiting for the expert copies", (int64_t) T);
+-    strata::gpu::stream_sync(copy_);   // no host function of this window may raise flag B in the next one
++    if (!strata::gpu::stream_sync(copy_)) {
++        err = "verify: final expert copies: " + std::string(strata::gpu::last_error());
++        return false;
++    }
++    drain.active = false;   // both queues completed; mapped results and callback state belong to the host
+     if (prof_on_ && G == 1) {       // the window's GPU stage stamps
+-        strata::gpu::copy(prof_h_.data(), prof_, prof_h_.size() * 8);
++        if (!strata::gpu::copy(prof_h_.data(), prof_, prof_h_.size() * 8)) {
++            err = "verify: reading profile: " + std::string(strata::gpu::last_error());
++            return false;
++        }
+         accumulate_profile(prof_h_.data());
+     }
+     // ---- a sampled or penalized request: the head's sampling again, host-side so its parameters are this call's
+@@ -1678,12 +1733,16 @@ void Verifier::fetch_dma(void* ctx, const uint8_t* const* src, int n, size_t byt
+     const uint32_t want = v->cur_layer_ + 1;
+     if (n <= 0) { raise_flag(v->h_flagB_, want); return; }
+     uint8_t* stage = (uint8_t*) v->sink_.staging;                  // this group's half in a split window
+-    for (int i = 0; i < n; ++i) strata::gpu::copy_async(stage + (size_t) i * bytes, src[i], bytes, v->copy_);
+-    FlagSet& fs = v->flag_sets_[v->cur_layer_ % (sizeof v->flag_sets_ / sizeof v->flag_sets_[0])];
+-    fs.flag = v->h_flagB_;
+-    fs.value = want;
+-    FlagSet* set = &fs;
+-    strata::gpu::launch_host(v->copy_, [set] { raise_flag(set->flag, set->value); });
++    for (int i = 0; i < n; ++i) {
++        if (!strata::gpu::copy_async(stage + (size_t) i * bytes, src[i], bytes, v->copy_)) {
++            v->dma_error_ = "verify: enqueue expert copy: " + std::string(strata::gpu::last_error());
++            return;
++        }
++    }
++    // Capture the callback arguments by value; a later layer cannot overwrite an in-flight argument slot.
++    uint32_t* flag = v->h_flagB_;
++    if (!strata::gpu::launch_host(v->copy_, [flag, want] { raise_flag(flag, want); }))
++        v->dma_error_ = "verify: enqueue copy completion: " + std::string(strata::gpu::last_error());
+ }
+ 
+ void Verifier::publish_plan(void* ctx) {
+@@ -1702,15 +1761,17 @@ bool Verifier::read_logits(int rows, float* host, std::string& err) const {
+ }
+ 
+ bool Verifier::wait_commit(std::string& err) {
+-    if (commit_pending_) {
+-        const OnDevice on_device(device_);
+-        commit_pending_ = false;
+-        if (!strata::gpu::event_sync(commit_done_)) {
+-            err = std::string("verify: commit: ") + strata::gpu::last_error();
+-            return false;
+-        }
+-    }
+-    return next_ == nullptr || next_->wait_commit(err);
++    const OnDevice on_device(device_);
++    const bool local = commit_state_.wait(
++        [&] { return strata::gpu::event_sync(commit_done_); },
++        [&] { return strata::gpu::stream_sync(cs_); },
++        [] { return "verify: commit completion: " + std::string(strata::gpu::last_error()); }, err);
++    // Drain later stages too even if this stage is poisoned; preserve this stage's original error.
++    std::string next_error;
++    const bool later = next_ == nullptr || next_->wait_commit(next_error);
++    if (!local) return false;
++    if (!later) { err = next_error; return false; }
++    return true;
+ }
+ 
+ // ================================ BATCH WINDOWS (see init_slots; upstream PR #559) ================================
+@@ -1718,7 +1779,7 @@ bool Verifier::wait_commit(std::string& err) {
+ bool Verifier::init_slots(const std::vector<SessionState*>& slots, std::string& err) {
+     const OnDevice on_device(device_);
+     if (g_ == nullptr || ss_ == nullptr) { err = "verify: init_slots before init"; return false; }
+-    if (segmented_) { err = "verify: batch windows need a GPU whose running kernels see the host's writes"; return false; }
++    if (segmented_) { err = "verify: batch windows require a qualified concurrent host-USM handoff"; return false; }
+     if (slots.empty()) {
+         err = "verify: init_slots needs at least one session";
+         return false;
+@@ -1870,6 +1931,10 @@ bool Verifier::run_slots(int S, const int32_t* tokens, const int64_t* pos, PoolM
+ 
+ bool Verifier::stage_batch(const int* rows, int S, int hbase, const int32_t* tokens, const int64_t* pos,
+                            std::string& err) {
++    if (!strata::gpu::host_handoff_concurrent(cs_)) {
++        err = "verify: batch/pipelined windows require a qualified concurrent host-USM handoff";
++        return false;
++    }
+     using namespace strata::kernels;
+     if (S < 1 || S > max_t_ || hbase < 0 || (next_ != nullptr && hbase + S > (int) slots_.size())) {
+         err = "verify: batch rows out of range (init_slots)";
+@@ -2265,6 +2330,9 @@ void Verifier::set_commit_async(bool on) { g_commit_async = on && std::getenv("S
+ bool Verifier::commit(int n_keep, std::string& err) {
+     const OnDevice on_device(device_);
+     if (n_keep < 1 || n_keep > last_t_) { err = "verify: commit count out of range"; return false; }
++    // Complete the previous transaction before overwriting its mapped commit arguments. A poison remains
++    // an error even after successful completion because device writes may have outlived host bookkeeping.
++    if (!wait_commit(err)) return false;
+     const Clock::time_point t0 = Clock::now();
+     h_commit_[0] = n_keep;
+     h_commit_[1] = n_keep - 1;
+@@ -2280,21 +2348,26 @@ bool Verifier::commit(int n_keep, std::string& err) {
+         return next_ == nullptr || next_->commit(n_keep, err);
+     }
+     std::atomic_thread_fence(std::memory_order_seq_cst);
++    if (!commit_state_.begin(err)) return false;
+     const bool le = strata::gpu::graph_launch(commit_exec_, cs_);
+-    if (!le) { err = std::string("verify: commit launch: ") + strata::gpu::last_error(); return false; }
+-    // set_commit_async: no wait here - the next window runs on the same queue after it, and the drafter (its own
+-    // queue) reads only this window's final rows and its own K/V.  h_commit_ is next written after the next window's
+-    // results are read, i.e. after this graph has run.  Everything else waits on commit_done_ (wait_commit, which
+-    // goes on into a layer split's later stages).  Each stage's commit graph writes its own layers' state on its own
+-    // queue, so a layer split's stages commit without a wait as well (upstream kept the wait there).
++    if (!le) {
++        commit_state_.fail("verify: commit launch: " + std::string(strata::gpu::last_error()));
++        (void) wait_commit(err);   // submission failure may still leave queue work to retire
++        if (commit_state_.pending()) std::terminate();
++        return false;
++    }
++    // The state is pending before launch. A recorded event is used only after the recording succeeds;
++    // event failure drains this queue immediately and poisons the transaction even if completion succeeds.
+     if (!g_commit_async) {
+-        if (!strata::gpu::stream_sync(cs_)) { err = std::string("verify: commit: ") + strata::gpu::last_error(); return false; }
++        if (!wait_commit(err)) return false;
+     } else {
+         if (!strata::gpu::event_record(commit_done_, cs_)) {
+-            err = std::string("verify: commit event: ") + strata::gpu::last_error();
++            commit_state_.fail("verify: commit event: " + std::string(strata::gpu::last_error()));
++            (void) wait_commit(err);
++            if (commit_state_.pending()) std::terminate();
+             return false;
+         }
+-        commit_pending_ = true;
++        commit_state_.recorded();
+     }
+     if (ple_stage())   // stages that share one session must advance it once
+         for (int t = 0; t < n_keep; ++t) {
+@@ -2317,6 +2390,10 @@ double now_ms() { return std::chrono::duration<double, std::milli>(Clock::now().
+ 
+ void Verifier::diag_pipelined(std::FILE* f, const char* name) const {
+     // host-side state only: a GPU call from the watchdog's thread can wait behind a window that waits for the host
++    if (!strata::gpu::host_handoff_concurrent(cs_)) {
++        std::fprintf(f, "  %s: serialized handoff; pipelined windows unavailable\n", name);
++        return;
++    }
+     auto rd = [](const uint32_t* p) { return p ? *(const volatile uint32_t*) p : 0u; };
+     std::fprintf(f, "  %s: %s T=%d pos %lld served %lld/%lld; GPU rang %u, flags served %u A %u B %u; commit launched %d\n",
+                  name, fl_active_ ? "IN FLIGHT" : "idle", last_t_, (long long) last_pos0_, (long long) fl_k_,
+@@ -2326,7 +2403,7 @@ void Verifier::diag_pipelined(std::FILE* f, const char* name) const {
+ bool Verifier::capture_all(std::string& err) {
+     const OnDevice on_device(device_);
+     if (g_ == nullptr) { err = "verify: capture_all before init"; return false; }
+-    if (segmented_) { err = "verify: pipelined windows need a GPU whose running kernels see the host's writes"; return false; }
++    if (segmented_) { err = "verify: pipelined windows require a qualified concurrent host-USM handoff"; return false; }
+     if (!always_publish_) { err = "verify: pipelined windows need set_always_publish before init"; return false; }
+     for (int T = 1; T <= max_t_; ++T)
+         if (!capture(T, err)) return false;
+@@ -2376,6 +2453,10 @@ bool Verifier::pl_stage(int T, const int32_t* tokens, int64_t pos0, const int32_
+ }
+ 
+ bool Verifier::prestage(int T, const int32_t* tokens, int64_t pos0, const int32_t ple_prev[2], std::string& err) {
++    if (!strata::gpu::host_handoff_concurrent(cs_)) {
++        err = "verify: batch/pipelined windows require a qualified concurrent host-USM handoff";
++        return false;
++    }
+     if (fl_active_) { err = "verify: a window is in flight on this verifier"; return false; }
+     if (T < 1 || T > max_t_) { err = "verify: window size out of range"; return false; }
+     const Clock::time_point t0 = Clock::now();
+@@ -2386,6 +2467,10 @@ bool Verifier::prestage(int T, const int32_t* tokens, int64_t pos0, const int32_
+ }
+ 
+ bool Verifier::pl_launch(int T, const int32_t* tokens, int64_t pos0, std::string& err) {
++    if (!strata::gpu::host_handoff_concurrent(cs_)) {
++        err = "verify: batch/pipelined windows require a qualified concurrent host-USM handoff";
++        return false;
++    }
+     const OnDevice on_device(device_);
+     if (fl_active_) { err = "verify: a window is already in flight on this verifier"; return false; }
+     if (T < 1 || T > max_t_) { err = "verify: window size out of range"; return false; }
+@@ -2534,6 +2619,10 @@ bool Verifier::pl_finish(int32_t* out, std::string& err) {
+ }
+ 
+ bool Verifier::pl_commit_async(int n_keep, std::string& err) {
++    if (!strata::gpu::host_handoff_concurrent(cs_)) {
++        err = "verify: pipelined commits require a qualified concurrent host-USM handoff";
++        return false;
++    }
+     const OnDevice on_device(device_);
+     if (n_keep < 1 || n_keep > last_t_) { err = "verify: commit count out of range"; return false; }
+     if (commit_exec_ == nullptr || ev_commit_ == nullptr) { err = "verify: pipelined commit not prepared"; return false; }
+diff --git a/src/kernels/xe/elementwise.cpp b/src/kernels/xe/elementwise.cpp
+index c7aa7a59..7e4b48a2 100644
+--- a/src/kernels/xe/elementwise.cpp
++++ b/src/kernels/xe/elementwise.cpp
+@@ -116,28 +116,10 @@ void f32_to_bf16_bulk(const float* x, uint16_t* y, int64_t n, void* stream) {
+     sync_if_needed(stream, event);
+ }
+ 
+-// ---- the doorbell (see the header).  bench/results/2026-09-30-xe-doorbell measured what a spinning kernel sees:
+-// a volatile read followed by a system-scope acquire fence observes the host's write; a system-scope atomic load
+-// alone sometimes never does.  The GPU-to-host direction is a system-scope fence, then a plain volatile store,
+-// not an atomic one: no GPU here reports usm_atomic_host_allocations, and the xe driver serves a discrete
+-// GPU's atomic page fault on system memory only by moving the page to VRAM (a userptr cannot move), where a read or
+-// a write is simply bound again (xe_vma_need_vram_for_atomic).  The ring has one writer, so it needs no atomicity;
+-// the B70 saw the store while the kernel ran in 2,000 of 2,000 runs, sooner than the atomic one (median 4.9 us
+-// against 11.0; bench/results/2026-10-11-xe-doorbell-store).
++// The host observes these writes only after the containing pre graph completes.  Queue completion, not
++// volatile accesses or system fences, transfers ownership of the host-USM payload and sequence to the host.
+ namespace {
+-inline uint32_t read_host(const uint32_t* p) {
+-    const uint32_t v = *reinterpret_cast<const volatile uint32_t*>(p);
+-    sycl::atomic_fence(sycl::memory_order::acquire, sycl::memory_scope::system);
+-    return v;
+-}
+-// *p += 1, with one fence between the load and the store: a release fence right after read_host's acquire fence
+-// crashed intel/llvm 7.1's sycl-optimize-barriers pass (an assertion in CallBase::setArgOperand).
+-inline void bump_host(uint32_t* p) {
+-    volatile uint32_t* v = p;
+-    const uint32_t n = *v + 1u;
+-    sycl::atomic_fence(sycl::memory_order::acq_rel, sycl::memory_scope::system);
+-    *v = n;
+-}
++inline void bump_host(uint32_t* p) { *p += 1u; }
+ }  // namespace
+ 
+ // *seq += 1, read and incremented in memory so a captured graph advances it on every replay
+@@ -149,16 +131,11 @@ void doorbell_ring(uint32_t* d_seq, void* stream) {
+     sync_if_needed(stream, event);
+ }
+ 
+-// Spins until the host's flag equals the ring, then everything the host wrote before the flag is visible to the
+-// commands that follow.  Unbounded, as in CUDA: a stalled host is reported by the runtime's watchdog on the next
+-// host wait, not by the kernel.
++// A resident device wait cannot be used with the current unqualified concurrent host-USM protocol.
+ void doorbell_wait(const uint32_t* d_flag, const uint32_t* d_seq, void* stream) {
+     if (d_flag == nullptr || d_seq == nullptr) return;
+-    queue_for(stream).single_task([=] {
+-        const uint32_t want = read_host(d_seq);
+-        while (read_host(d_flag) != want) {
+-        }
+-    });
++    (void) stream;
++    throw core::DeviceError("doorbell_wait: concurrent host-USM handoff is unqualified");
+ }
+ 
+ void copy_from_mapped(float* dst, const float* src, int64_t n, void* stream) {
+@@ -194,7 +171,7 @@ void copy_rows_from_mapped(float* dst, const float* src, int64_t rows, int64_t w
+     });
+ }
+ 
+-// the routing payload and its ring in one kernel: copy, fence, then the increment the host polls
++// The routing payload and sequence in one kernel; the host reads both after queue completion.
+ void doorbell_publish(const float* x, const int32_t* ids, const float* weights, int64_t n, int64_t k, float* x_out,
+                       int32_t* ids_out, float* weights_out, uint32_t* d_seq, void* stream) {
+     if (k > 1024) throw core::DeviceError("doorbell_publish: k too large");
+@@ -205,12 +182,8 @@ void doorbell_publish(const float* x, const int32_t* ids, const float* weights,
+         const int t = (int) it.get_local_id(0);
+         for (int i = t; i < ni; i += wg) x_out[i] = x[i];
+         for (int i = t; i < ki; i += wg) { ids_out[i] = ids[i]; weights_out[i] = weights[i]; }
+-        sycl::atomic_fence(sycl::memory_order::release, sycl::memory_scope::system);
+         sycl::group_barrier(it.get_group());
+-        if (t == 0) {
+-            sycl::atomic_fence(sycl::memory_order::acq_rel, sycl::memory_scope::system);
+-            bump_host(d_seq);
+-        }
++        if (t == 0 && d_seq != nullptr) bump_host(d_seq);
+     });
+ }
+ 
+diff --git a/src/kernels/xe/verify_kernels.cpp b/src/kernels/xe/verify_kernels.cpp
+index 05dd65e9..b0f92000 100644
+--- a/src/kernels/xe/verify_kernels.cpp
++++ b/src/kernels/xe/verify_kernels.cpp
+@@ -6,9 +6,8 @@
+ // the small gathers, copies and selections around them.
+ //
+ // The per-token arithmetic of each kernel is its single-token original's (fused_gdn, elementwise) with the same
+-// operation order, so a verify window reproduces plain decode.  The flag waits use the reading measured in
+-// bench/results/2026-09-30-xe-doorbell: a volatile read followed by a system-scope acquire fence.  gpu_stamp writes
+-// device-clock ticks, not the nanoseconds of CUDA's %globaltimer.
++// operation order, so a verify window reproduces plain decode.  Concurrent host-USM flag waits are refused;
++// segmented verification uses queue completion. gpu_stamp writes device-clock ticks, not nanoseconds.
+ #include "strata/kernels/verify_kernels.hpp"
+ #include "strata/core/runtime.hpp"
+ #include "device_caps.hpp"
+@@ -62,11 +61,6 @@ inline void q8_1_store(const sycl::sub_group& sg, const float xi, uint8_t* block
+     block[4 + lane] = (uint8_t) xe::q8_1_quant(xi, d, amax);
+     if (lane == 0) *reinterpret_cast<sycl::half2*>(block) = sycl::half2(sycl::half(d), sycl::half(xe::q8_1_finite(sum)));
+ }
+-inline uint32_t read_host(const uint32_t* p) {
+-    const uint32_t v = *reinterpret_cast<const volatile uint32_t*>(p);
+-    sycl::atomic_fence(sycl::memory_order::acquire, sycl::memory_scope::system);
+-    return v;
+-}
+ 
+ }  // namespace
+ 
+@@ -710,39 +704,17 @@ bool graph_branch_pays(void* stream, void* side0, void* side1) {
+ }
+ 
+ void wait_flag_ge(const uint32_t* flag, uint32_t value, void* stream) {
+-    Q(stream).single_task([=] {
+-        while (read_host(flag) < value) {
+-        }
+-    });
++    (void) flag;
++    (void) value;
++    (void) stream;
++    fail("wait_flag_ge: concurrent host-USM handoff is unqualified");
+ }
+ 
+ bool doorbell_visible(void* stream) {
+-    auto& q = Q(stream);
+-    auto* m = sycl::malloc_host<uint32_t>(4, q);
+-    if (m == nullptr) return false;
+-    volatile uint32_t* hm = m;
+-    hm[0] = 0;
+-    hm[1] = 0;
+-    hm[2] = 0;
+-    uint32_t* ring = m;
+-    uint32_t* flag = m + 1;
+-    uint32_t* seen = m + 2;
+-    // at most 2^21 reads (well under a second on the UHD 770, a few microseconds where the flag arrives)
+-    q.single_task([=] {   // the ring as doorbell_ring stores it: volatile, not atomic (elementwise.cpp says why)
+-        *reinterpret_cast<volatile uint32_t*>(ring) = 1u;
+-        sycl::atomic_fence(sycl::memory_order::release, sycl::memory_scope::system);
+-        for (uint32_t i = 0; i < (1u << 21); ++i)
+-            if (read_host(flag) == 1u) { *seen = 1u; break; }
+-    });
+-    const auto t0 = std::chrono::steady_clock::now();
+-    bool rang = false;
+-    while (!(rang = hm[0] == 1u) && std::chrono::steady_clock::now() - t0 < std::chrono::seconds(2)) {}
+-    std::atomic_thread_fence(std::memory_order_seq_cst);
+-    hm[1] = 1u;
+-    q.wait();
+-    const bool ok = rang && hm[2] == 1u;
+-    sycl::free(m, q);
+-    return ok;
++    // A functional visibility probe would itself race on unqualified host USM.  It cannot establish the
++    // allocation's atomic contract, so do not submit it.  All current Xe handoffs use completed segments.
++    (void) stream;
++    return false;
+ }
+ 
+ void resident_plan(const int32_t* ids, int n, int k, const int32_t* res, int n_expert, const uint8_t* cache_base,
+@@ -821,11 +793,11 @@ void resident_plan(const int32_t* ids, int n, int k, const int32_t* res, int n_e
+ }
+ 
+ void wait_flag_ge_or(const uint32_t* flag, uint32_t value, const uint32_t* skip, void* stream) {
+-    Q(stream).single_task([=] {
+-        if (read_host(skip) == value) return;
+-        while (read_host(flag) < value) {
+-        }
+-    });
++    (void) flag;
++    (void) value;
++    (void) skip;
++    (void) stream;
++    fail("wait_flag_ge_or: concurrent host-USM handoff is unqualified");
+ }
+ 
+ void copy_i32_from_mapped_unless(int32_t* dst, const int32_t* src, long long n, const uint32_t* skip, uint32_t value,
+diff --git a/src/prefill/prefill.cpp b/src/prefill/prefill.cpp
+index e1a6ade5..069a86f3 100644
+--- a/src/prefill/prefill.cpp
++++ b/src/prefill/prefill.cpp
+@@ -39,6 +39,7 @@
+ 
+ #include "strata/core/gpu.hpp"
+ 
++#include "strata/prefill/publication.hpp"
+ #include <algorithm>
+ #include <chrono>
+ #include <cmath>
+@@ -98,11 +99,11 @@ public:
+     T& operator[](size_t i) { return data()[i]; }
+     void from_device(const T* src, strata::gpu::Stream s) {   // the first size() values, queued on `s`
+         if (pinned_ != nullptr) strata::kernels::copy_i32_from_mapped(pinned_, src, (int64_t) n_, s);
+-        else strata::gpu::copy_async(fallback_.data(), src, n_ * sizeof(T), s);
++        else publication::require(strata::gpu::copy_async(fallback_.data(), src, n_ * sizeof(T), s), "HostVec from_device", strata::gpu::last_error);
+     }
+     void to_device(T* dst, strata::gpu::Stream s) {
+         if (pinned_ != nullptr) strata::kernels::copy_i32_from_mapped(dst, pinned_, (int64_t) n_, s);
+-        else strata::gpu::copy_async(dst, fallback_.data(), n_ * sizeof(T), s);
++        else publication::require(strata::gpu::copy_async(dst, fallback_.data(), n_ * sizeof(T), s), "HostVec to_device", strata::gpu::last_error);
+     }
+ private:
+     static_assert(sizeof(T) == 4, "copied as int32");
+@@ -133,7 +134,12 @@ inline double cpu_share_env() {   // -1: measured
+     }();
+     return v;
+ }
+-inline bool cpu_share_on() { return cpu_share_env() != 0.0; }
++inline bool cpu_share_on() {
++    // CPU experts and direct H2D copies can read different spans of one host-USM arena allocation.
++    // Without qualified concurrent access the whole allocation must take turns, even for read-only spans.
++    // Keep small/tail chunks on the GPU under the serialized protocol until that source overlap is qualified.
++    return cpu_share_env() != 0.0 && strata::gpu::host_handoff_concurrent();
++}
+ double g_pinned_share = 1.0;
+ int g_ring_override = 0;
+ // The streamed ring: 384 slots when (nearly) every streamed expert is DMA'd from pinned RAM - measured on Q2_0,
+@@ -239,7 +245,8 @@ struct Stager {
+     // `from` set: a transient source (the GGUF read in place) copies the blob of (l, e) itself (copy_blob), since its
+     // blob() pointers do not outlast a chunk's queue
+     struct Job { const uint8_t* src; size_t bytes; core::ExpertSource* from = nullptr; int32_t l = 0, e = 0; };
+-    std::atomic<bool> failed{false};
++    std::atomic<bool> failed{false}, cancelled{false};
++    publication::Failure failure;
+     std::vector<uint8_t*> buf;
+     std::vector<char> pinned;
+     std::vector<std::vector<uint8_t>> pageable;   // the fallback when no more RAM can be pinned
+@@ -305,19 +312,23 @@ struct Stager {
+                                   // with --mmap-experts the 32 spinning stagers starved the launching thread)
+                     for (int v = issued.load(std::memory_order_acquire); v <= j - kRing;
+                          v = issued.load(std::memory_order_acquire)) {
++                        if (cancelled.load(std::memory_order_acquire)) break;
+                         if (stager_sleep()) issued.wait(v, std::memory_order_acquire);   // STRATA_STAGER_SLEEP=0: spin
+                         else std::this_thread::yield();
+                     }
++                if (cancelled.load(std::memory_order_acquire)) { active.fetch_sub(1, std::memory_order_acq_rel); break; }
++                try {
+                 // and done - for a generation's first kRing jobs that is the previous generation's last DMA from
+                 // the buffer, which nothing else waits for when a chunk ends without a sync (no MTP) or the DMA
+                 // was a ring entry the routing skipped (an event never recorded returns at once)
+-                strata::gpu::event_sync(dma_done[b]);
++                publication::require(strata::gpu::event_sync(dma_done[b]), "strata::gpu::event_sync(dma_done[b])", strata::gpu::last_error);
+                 const Job& jb = jobs[(size_t) j];
+                 if (jb.from != nullptr) {
+                     if (!jb.from->copy_blob(jb.l, jb.e, buf[b])) failed.store(true, std::memory_order_release);
+                 } else {
+                     std::memcpy(buf[b], jb.src, jb.bytes);
+                 }
++                } catch (...) { failure.capture(); failed.store(true, std::memory_order_release); cancel(); }
+                 ready[(size_t) j].store(1, std::memory_order_release);
+                 active.fetch_sub(1, std::memory_order_acq_rel);
+             }
+@@ -334,7 +345,12 @@ struct Stager {
+     }
+     /// A layer's jobs; the previous layer's are finished (finish()).
+     void start(std::vector<Job>&& js) {
++        // A worker exception makes this instance terminal. Reconstruct only
++        // after the owning Prefill has drained both queues and released it.
++        failure.rethrow();
+         if (js.empty()) return;
++        cancelled.store(false);
++        failed.store(false);
+         std::lock_guard<std::mutex> lk(mu);
+         jobs = std::move(js);
+         if (ready_cap < jobs.size()) {
+@@ -349,13 +365,22 @@ struct Stager {
+     }
+     /// Job j's bytes, in a pinned buffer (waits for the copy).
+     const uint8_t* wait(int j) {
+-        while (!ready[(size_t) j].load(std::memory_order_acquire)) std::this_thread::yield();
++        while (!ready[(size_t) j].load(std::memory_order_acquire)) {
++            if (cancelled.load(std::memory_order_acquire)) { failure.rethrow(); throw std::runtime_error("stager aborted"); }
++            std::this_thread::yield();
++        }
++        failure.rethrow();
++        if (failed.load(std::memory_order_acquire)) throw std::runtime_error("stager copy or event failed");
+         return buf[j % kRing];   // a failed copy_blob leaves `failed` set: the chunk ends in an error
+     }
+     /// The launching thread queued job j's DMA on `copy`: its buffer is free once that is done.
+     void issued_one(int j, strata::gpu::Stream copy) {
+-        strata::gpu::event_record(dma_done[j % kRing], copy);
+-        issued.store(j + 1, std::memory_order_release);
++        publication::require(strata::gpu::event_record(dma_done[j % kRing], copy), "strata::gpu::event_record(dma_done[j % kRing], copy)", strata::gpu::last_error);
++        publication::publish_staged(issued, j + 1);
++    }
++    void cancel() {
++        cancelled.store(true, std::memory_order_release);
++        issued.store(1 << 30, std::memory_order_release);
+         issued.notify_all();
+     }
+     /// No job is running after this (the end of a layer, or an early return in the middle of one).
+@@ -507,9 +532,10 @@ Prefill::~Prefill() { release(); }
+ void Prefill::reset() { release(); impl_ = std::make_unique<Impl>(); stats_ = {}; }
+ void Prefill::release() {
+     if (!impl_) return;
++    if (impl_->stager) impl_->stager->cancel();
++    if (impl_->cs) publication::cleanup_require(strata::gpu::stream_sync(impl_->cs), "release/catch cs drain", strata::gpu::last_error);
++    if (impl_->copy) publication::cleanup_require(strata::gpu::stream_sync(impl_->copy), "release/catch copy drain", strata::gpu::last_error);
+     impl_->stager.reset();
+-    if (impl_->cs) strata::gpu::stream_sync(impl_->cs);
+-    if (impl_->copy) strata::gpu::stream_sync(impl_->copy);
+     for (float* p : {impl_->cpu_x, impl_->cpu_rows})
+         if (p) strata::gpu::free(p);
+     for (strata::gpu::Event* e : impl_->cpu_ev)
+@@ -1086,12 +1112,12 @@ struct PfTimer {
+         if (!on) return;
+         if (used == ev.size()) {
+             strata::gpu::Event* e = nullptr;
+-            strata::gpu::event_create(&e, true);
++            publication::require(strata::gpu::event_create(&e, true), "timer event_create", strata::gpu::last_error);
+             ev.push_back(e);
+             ph.push_back(0);
+         }
+         ph[used] = phase;
+-        strata::gpu::event_record(ev[used], s);
++        publication::require(strata::gpu::event_record(ev[used], s), "strata::gpu::event_record(ev[used], s)", strata::gpu::last_error);
+         ++used;
+     }
+     // every recorded mark has completed (the stream was synchronized): charge the gaps, keep the last mark
+@@ -1111,12 +1137,18 @@ struct PfTimer {
+ };
+ }  // namespace
+ 
+-bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) {
++bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) try {
+     err.clear();
+     Impl& m = *impl_;
++    core::SessionState& ss = *m.ss;
++    if (!publication::valid_span(n, pos0, ss.max_cells)) {
++        err = "prefill: input span exceeds the physical context capacity";
++        return false;
++    }
++    if (n == 0) return true;
++    if (tokens == nullptr) { err = "prefill: missing input tokens"; return false; }
+     const core::OnDevice on_device(m.device);
+     const core::ModelGeometry& g = *m.g;
+-    core::SessionState& ss = *m.ss;
+     const auto t_start = Clock::now();
+     const int64_t LB = stage_lb_, LE = stage_le_;
+     // the next stage reads chunk c on a thread while this one reads chunk c + 1 (declared first: an early return
+@@ -1245,10 +1277,10 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                 err = ple_next_err;
+                 return false;
+             }
+-            strata::gpu::copy_async(m.ple_emb, m.ple_emb_host[ple_buf], (size_t) T * N * 4, m.cs);
+-            strata::gpu::event_record(m.ple_copied[ple_buf], m.cs);
++            publication::require(strata::gpu::copy_async(m.ple_emb, m.ple_emb_host[ple_buf], (size_t) T * N * 4, m.cs), "copy_async", strata::gpu::last_error);
++            publication::require(strata::gpu::event_record(m.ple_copied[ple_buf], m.cs), "strata::gpu::event_record(m.ple_copied[ple_buf], m.cs)", strata::gpu::last_error);
+             if (c0 + m.T < n) {
+-                strata::gpu::event_sync(m.ple_copied[ple_buf ^ 1]);   // the other buffer's upload (a chunk ago) is done
++                publication::require(strata::gpu::event_sync(m.ple_copied[ple_buf ^ 1]), "strata::gpu::event_sync(m.ple_copied[ple_buf ^ 1])", strata::gpu::last_error);   // the other buffer's upload (a chunk ago) is done
+                 ple_next = std::async(std::launch::async, [&ple_gather, &ple_next_err, c1 = c0 + m.T, b = ple_buf ^ 1] {
+                     return ple_gather(c1, b, ple_next_err);
+                 });
+@@ -1260,7 +1292,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+         for (int64_t t = 0; t < T; ++t) { prev[0] = prev[1]; prev[1] = (int32_t) tokens[c0 + t]; }
+         // ---- the QSA step records of every position in the chunk
+         for (int64_t t = 0; t < T; ++t) strata::kernels::qsa_step_fill(m.steps_host.data() + t * strata::kernels::kStepCount, p0 + t, s);
+-        strata::gpu::copy_async(m.steps_dev, m.steps_host.data(), (size_t) T * strata::kernels::kStepCount * 4, m.cs);
++        publication::require(strata::gpu::copy_async(m.steps_dev, m.steps_host.data(), (size_t) T * strata::kernels::kStepCount * 4, m.cs), "copy_async", strata::gpu::last_error);
+ 
+         int64_t qsa_index = 0, gdn_index = 0;
+         for (int64_t l = 0; l < LB; ++l) (core::is_qsa_layer(g, l) ? qsa_index : gdn_index) += 1;
+@@ -1296,8 +1328,25 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+         }
+         struct StagerDone {
+             Stager* st;
+-            ~StagerDone() { if (st) st->finish(); }
+-        } chunk_stager_done{stream_all ? m.stager.get() : nullptr};
++            strata::gpu::Stream cs, copy;
++            void complete() {
++                if (!st) return;
++                st->cancel();
++                publication::cleanup_require(strata::gpu::stream_sync(cs), "stager compute drain", strata::gpu::last_error);
++                publication::cleanup_require(strata::gpu::stream_sync(copy), "stager copy drain", strata::gpu::last_error);
++                st->finish();
++                st->failure.rethrow();
++                st = nullptr;
++            }
++            ~StagerDone() {
++                if (st) {
++                    st->cancel();
++                    publication::cleanup_require(strata::gpu::stream_sync(cs), "unwind cs drain", strata::gpu::last_error);
++                    publication::cleanup_require(strata::gpu::stream_sync(copy), "unwind copy drain", strata::gpu::last_error);
++                    st->finish();
++                }
++            }
++        } chunk_stager_done{stream_all ? m.stager.get() : nullptr, m.cs, m.copy};
+         auto issue_until = [&](size_t limit) {
+             limit = std::min(limit, seq.size());
+             while (issued < limit) {
+@@ -1308,11 +1357,11 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                 // the slot's last reader, the copy and its mark in one submission (copy_async_after)
+                 const strata::gpu::Event* after = m.stage_live[sl] ? m.used[m.used_of[sl]] : nullptr;
+                 if (en.job < 0) {
+-                    strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl]);
++                    publication::require(strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl]), "strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
+                     ++stats_.experts_dma;
+                 } else {
+                     const uint8_t* hb = m.stager->wait(en.job);
+-                    strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl]);
++                    publication::require(strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl]), "strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
+                     m.stager->issued_one(en.job, m.copy);
+                 }
+                 m.stage_live[sl] = true;
+@@ -1331,23 +1380,34 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+         }();
+         std::atomic<size_t> a_issued{0}, a_consumed{0};
+         std::atomic<bool> a_stop{false};
++        publication::Failure issuer_failure;
+         double iss_ms = 0;
+         int64_t iss_streamed = 0, iss_dma = 0;
+         std::thread issuer;
+         struct IssuerJoin {
+             std::atomic<bool>* stop;
+             std::thread* t;
+-            ~IssuerJoin() { if (t->joinable()) { stop->store(true); t->join(); } }
+-        } issuer_join{&a_stop, &issuer};
++            Stager* st;
++            strata::gpu::Stream cs, copy;
++            ~IssuerJoin() {
++                publication::stop_join(*stop, *t, [&] { st->cancel(); }, [&] {
++                    // No producer can submit now. Drain both queues before stager buffers retire.
++                    publication::cleanup_require(strata::gpu::stream_sync(cs), "unwind cs drain", strata::gpu::last_error);
++                    publication::cleanup_require(strata::gpu::stream_sync(copy), "unwind copy drain", strata::gpu::last_error);
++                });
++            }
++        } issuer_join{&a_stop, &issuer, m.stager.get(), m.cs, m.copy};
+         const bool threaded_issue = stream_all && issuer_on;
+         if (threaded_issue) {
+             issuer = std::thread([&] {
++                try {
+                 const core::OnDevice od(m.device);
+                 for (size_t idx = 0; idx < seq.size(); ++idx) {
+                     while (idx >= a_consumed.load(std::memory_order_acquire) + (size_t) m.ring) {
+                         if (a_stop.load(std::memory_order_acquire)) return;
+                         std::this_thread::yield();
+                     }
++                    if (a_stop.load(std::memory_order_acquire)) return;
+                     const StreamEntry& en = seq[idx];
+                     const int sl = (int) (idx % (size_t) m.ring);
+                     const auto th = Clock::now();
+@@ -1355,11 +1415,11 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                     // the slot's last reader, the copy and its mark in one submission (copy_async_after)
+                     const strata::gpu::Event* after = m.stage_live[sl] ? m.used[m.used_of[sl]] : nullptr;
+                     if (en.job < 0) {
+-                        strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl]);
++                        publication::require(strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl]), "strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
+                         ++iss_dma;
+                     } else {
+                         const uint8_t* hb = m.stager->wait(en.job);
+-                        strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl]);
++                        publication::require(strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl]), "strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
+                         m.stager->issued_one(en.job, m.copy);
+                     }
+                     m.stage_live[sl] = true;
+@@ -1367,6 +1427,11 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                     ++iss_streamed;
+                     a_issued.store(idx + 1, std::memory_order_release);
+                 }
++                } catch (...) {
++                    issuer_failure.capture();
++                    a_stop.store(true, std::memory_order_release);
++                    m.stager->cancel();
++                }
+             });
+         } else if (stream_all) {
+             issue_until((size_t) m.ring);   // layer 0's first experts, behind the embedding and the PLE
+@@ -1374,9 +1439,10 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+         // the consumer's side: entry k's copy is on the copy stream (the thread issued it), then k is given back
+         auto wait_issued = [&](size_t k) {
+             if (!threaded_issue) return;
+-            while (a_issued.load(std::memory_order_acquire) <= k) std::this_thread::yield();
++            publication::wait_issued(a_issued, a_stop, issuer_failure, k);
+         };
+         auto give_back = [&](size_t upto) {
++            issuer_failure.rethrow();
+             if (threaded_issue) a_consumed.store(upto, std::memory_order_release);
+             else issue_until(upto + (size_t) m.ring);
+         };
+@@ -1587,8 +1653,8 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                     // Per tile of 16 queries: the union of their selected cells against the sum of their widths.
+                     if (static const bool ovl = std::getenv("STRATA_SEL_OVERLAP") != nullptr; ovl && qsa_index == 0) {
+                         std::vector<int32_t> ids((size_t) (T * m.cap));
+-                        strata::gpu::copy_async(ids.data(), m.sel_ids, ids.size() * 4, m.cs);
+-                        strata::gpu::stream_sync(m.cs);
++                        publication::require(strata::gpu::copy_async(ids.data(), m.sel_ids, ids.size() * 4, m.cs), "copy_async", strata::gpu::last_error);
++                        publication::cleanup_require(strata::gpu::stream_sync(m.cs), "strata::gpu::stream_sync(m.cs)", strata::gpu::last_error);
+                         double sum_w = 0, sum_u = 0;
+                         for (int64_t t0 = 0; t0 + 16 <= T; t0 += 16) {
+                             std::vector<int32_t> u;
+@@ -1631,9 +1697,9 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                                                             ids16 + t0 * m.cap, m.cs);
+                         }
+                         std::vector<int32_t> a((size_t) (T * m.cap)), b((size_t) (T * m.cap));
+-                        strata::gpu::copy_async(a.data(), m.sel_ids, a.size() * 4, m.cs);
+-                        strata::gpu::copy_async(b.data(), ids16, b.size() * 4, m.cs);
+-                        strata::gpu::stream_sync(m.cs);
++                        publication::require(strata::gpu::copy_async(a.data(), m.sel_ids, a.size() * 4, m.cs), "copy_async", strata::gpu::last_error);
++                        publication::require(strata::gpu::copy_async(b.data(), ids16, b.size() * 4, m.cs), "copy_async", strata::gpu::last_error);
++                        publication::cleanup_require(strata::gpu::stream_sync(m.cs), "strata::gpu::stream_sync(m.cs)", strata::gpu::last_error);
+                         for (int64_t t = 0; t < T; ++t) {
+                             const int64_t w = m.steps_host[(size_t) (t * strata::kernels::kStepCount + strata::kernels::kStepWidth)];
+                             const int32_t *x = a.data() + t * m.cap, *y = b.data() + t * m.cap;
+@@ -1658,8 +1724,8 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                                                           ? std::atoll(std::getenv("STRATA_QSA_DUMP_LAST")) : 4096;
+                         if (p0 + T > pos0 + n - last) {
+                             std::vector<int32_t> h((size_t) (T * m.cap));
+-                            strata::gpu::copy_async(h.data(), m.sel_ids, h.size() * 4, m.cs);
+-                            strata::gpu::stream_sync(m.cs);
++                            publication::require(strata::gpu::copy_async(h.data(), m.sel_ids, h.size() * 4, m.cs), "copy_async", strata::gpu::last_error);
++                            publication::cleanup_require(strata::gpu::stream_sync(m.cs), "strata::gpu::stream_sync(m.cs)", strata::gpu::last_error);
+                             if (std::FILE* f = std::fopen(dump, "ab")) {
+                                 const int32_t hdr[4] = {(int32_t) qsa_index, (int32_t) p0, (int32_t) T, (int32_t) m.cap};
+                                 std::fwrite(hdr, 4, 4, f);
+@@ -1725,9 +1791,9 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                             }
+                             m.cpu_x_n = want;
+                         }
+-                        strata::gpu::copy_async(m.cpu_x, m.mixed, want * sizeof(float), m.cs);
++                        publication::require(strata::gpu::copy_async(m.cpu_x, m.mixed, want * sizeof(float), m.cs), "copy_async", strata::gpu::last_error);
+                     }
+-                    strata::gpu::stream_sync(m.cs);
++                    publication::cleanup_require(strata::gpu::stream_sync(m.cs), "strata::gpu::stream_sync(m.cs)", strata::gpu::last_error);
+                     pt.fold();
+                     if (m.cpu_pend) {   // auto: the last CPU-sharing layer's GPU time is final now
+                         m.cpu_pend = false;
+@@ -1853,7 +1919,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                                 err = "prefill: CPU share events";
+                                 return false;
+                             }
+-                            strata::gpu::event_record(m.cpu_ev[0], m.cs);
++                            publication::require(strata::gpu::event_record(m.cpu_ev[0], m.cs), "strata::gpu::event_record(m.cpu_ev[0], m.cs)", strata::gpu::last_error);
+                         }
+                         cpu_fut = std::async(std::launch::async, [&m, &cf, &cpu_ms, q2, T, rows_gpu, pool = cpu_pool_]() -> bool {
+                             const auto t0 = std::chrono::steady_clock::now();
+@@ -1953,7 +2019,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                         }
+                         m.stager->start(std::move(js));
+                     }
+-                    StagerDone stager_done{stream_all ? nullptr : m.stager.get()};
++                    StagerDone stager_done{stream_all ? nullptr : m.stager.get(), m.cs, m.copy};
+                     // MMQ in place (MMQ_RING): expert j's blob in ring slot j % MMQ_RING, its group's slots released
+                     // together; else the STAGE ring, a slot at a time
+                     const bool mmq_direct = use_mmq && m.mring != nullptr;
+@@ -1970,9 +2036,9 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                         const int par = (int) (j / MMQ_GROUP % 2);
+                         auto wait_slot = [&] {
+                             if (mmq_direct) {
+-                                if (m.mgrp_live[par]) strata::gpu::stream_wait_event(m.copy, m.mgrp_used[par]);
++                                if (m.mgrp_live[par]) publication::require(strata::gpu::stream_wait_event(m.copy, m.mgrp_used[par]), "strata::gpu::stream_wait_event", strata::gpu::last_error);
+                             } else if (m.stage_live[sl]) {
+-                                strata::gpu::stream_wait_event(m.copy, m.used[m.used_of[sl]]);
++                                publication::require(strata::gpu::stream_wait_event(m.copy, m.used[m.used_of[sl]]), "strata::gpu::stream_wait_event(m.copy, m.used[m.used_of[sl]])", strata::gpu::last_error);
+                             }
+                         };
+                         const auto th = Clock::now();
+@@ -1982,17 +2048,17 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                         if (!tr && m.src->pinned(l, e)) {
+                             // DMA straight from the page-locked arena: the copy stream only waits for the slot
+                             wait_slot();
+-                            strata::gpu::copy_async(slot_ptr(sl), b, (size_t) lay.blob_bytes(l), m.copy);
++                            publication::require(strata::gpu::copy_async(slot_ptr(sl), b, (size_t) lay.blob_bytes(l), m.copy), "copy_async", strata::gpu::last_error);
+                             ++stats_.experts_dma;
+                         } else {
+                             // copied to a pinned buffer by the stager (waits only if it is behind), then DMA
+                             const uint8_t* hb = m.stager->wait(job_of[j]);
+                             if (m.stager->failed.exchange(false)) { err = "prefill: the expert source could not copy a blob"; return false; }
+                             wait_slot();
+-                            strata::gpu::copy_async(slot_ptr(sl), hb, (size_t) lay.blob_bytes(l), m.copy);
++                            publication::require(strata::gpu::copy_async(slot_ptr(sl), hb, (size_t) lay.blob_bytes(l), m.copy), "copy_async", strata::gpu::last_error);
+                             m.stager->issued_one(job_of[j], m.copy);
+                         }
+-                        strata::gpu::event_record(m.copied[sl], m.copy);
++                        publication::require(strata::gpu::event_record(m.copied[sl], m.copy), "strata::gpu::event_record(m.copied[sl], m.copy)", strata::gpu::last_error);
+                         if (!mmq_direct) m.stage_live[sl] = true;
+                         stage_of[j] = sl;
+                         stats_.ms_experts_host += ms_since(th);
+@@ -2019,7 +2085,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                             const auto& f = lay.fmt[(size_t) l];
+                             if (gg_nslots > 0) {
+                                 pt.mark(kPfWaitCopy, cs);
+-                                strata::gpu::stream_wait_event(m.cs, m.copied[gg_slots[gg_nslots - 1]]);
++                                publication::require(strata::gpu::stream_wait_event(m.cs, m.copied[gg_slots[gg_nslots - 1]]), "strata::gpu::stream_wait_event(m.cs, m.copied[gg_slots[gg_nslots - 1]])", strata::gpu::last_error);
+                                 pt.mark(kPfDequant, cs);
+                             }
+                             if (!mmq::gather_native_group(gg, f.up_off, mmq_gub / 2, f.down_off, mmq_db, m.grp_gu, mmq_gub,
+@@ -2032,7 +2098,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                             }
+                             if (gg_nslots > 0) {
+                                 const int rel = gg_slots[gg_nslots - 1];
+-                                strata::gpu::event_record(m.used[rel], m.cs);
++                                publication::require(strata::gpu::event_record(m.used[rel], m.cs), "strata::gpu::event_record(m.used[rel], m.cs)", strata::gpu::last_error);
+                                 for (int i = 0; i < gg_nslots; ++i) m.used_of[gg_slots[i]] = rel;
+                             }
+                             gg_nslots = 0;
+@@ -2053,8 +2119,8 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                             if (mmq_direct) {
+                                 // a resident expert into its ring slot (the slot's last group is done: same stream)
+                                 if (slot < 0)
+-                                    strata::gpu::copy_async(slot_ptr((int) (j % MMQ_RING)), blob_dev,
+-                                                            (size_t) lay.blob_bytes(l), m.cs);
++                                    publication::require(strata::gpu::copy_async(slot_ptr((int) (j % MMQ_RING)), blob_dev,
++                                                            (size_t) lay.blob_bytes(l), m.cs), "copy_async", strata::gpu::last_error);
+                             } else if (group_gather) {
+                                 gg.blob[q] = blob_dev;
+                                 gg.n = (int) q + 1;
+@@ -2066,7 +2132,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                                 // gather the expert into its group slot (its GGUF blocks; mmq_plan takes native packs)
+                                 mmq::gather_native(blob_dev, blob_dev + f.up_off, mmq_gub / 2, blob_dev + f.down_off,
+                                                    mmq_db, m.grp_gu + q * mmq_gub, m.grp_d + q * mmq_db, m.cs);
+-                                if (slot >= 0) { strata::gpu::event_record(m.used[slot], m.cs); m.used_of[slot] = slot; }
++                                if (slot >= 0) { publication::require(strata::gpu::event_record(m.used[slot], m.cs), "strata::gpu::event_record", strata::gpu::last_error); m.used_of[slot] = slot; }
+                             }
+                             if (q + 1 < MMQ_GROUP && j + 1 < order.size()) return true;
+                             // the group's products: gate/up, swiglu, the group's H to int8, down
+@@ -2095,7 +2161,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                             m.mmq_ctx->run(dn, m.cs);
+                             if (mmq_direct) {
+                                 const int par = (int) (g % 2);
+-                                strata::gpu::event_record(m.mgrp_used[par], m.cs);
++                                publication::require(strata::gpu::event_record(m.mgrp_used[par], m.cs), "strata::gpu::event_record(m.mgrp_used[par], m.cs)", strata::gpu::last_error);
+                                 m.mgrp_live[par] = true;
+                             }
+                             return true;
+@@ -2112,7 +2178,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                         } else {
+                             blob_dequant_f16(blob_dev, gu16, d16, m.cs);
+                         }
+-                        if (slot >= 0) { strata::gpu::event_record(m.used[slot], m.cs); m.used_of[slot] = slot; }
++                        if (slot >= 0) { publication::require(strata::gpu::event_record(m.used[slot], m.cs), "strata::gpu::event_record", strata::gpu::last_error); m.used_of[slot] = slot; }
+                         if (q + 1 < G && j + 1 < order.size()) return true;
+                         const size_t j0 = j - (size_t) q;
+                         int64_t maxr = 0;
+@@ -2143,7 +2209,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                                 if (!compute(j, m.cache->device_slot(m.host_res[(size_t) l * m.g->n_expert + e]), -1)) return false;
+                             } else {
+                                 pt.mark(kPfWaitCopy, cs);
+-                                strata::gpu::stream_wait_event(m.cs, m.copied[stage_of[j]]);
++                                publication::require(strata::gpu::stream_wait_event(m.cs, m.copied[stage_of[j]]), "strata::gpu::stream_wait_event(m.cs, m.copied[stage_of[j]])", strata::gpu::last_error);
+                                 if (!compute(j, slot_ptr(stage_of[j]), stage_of[j])) return false;
+                             }
+                         }
+@@ -2153,12 +2219,16 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                         size_t k = seq_start[(size_t) l];
+                         const size_t kend = seq_start[(size_t) l + 1];
+                         auto release_to = [&](int32_t e_stop) {
+-                            if (group_gather && k < kend && seq[k].e < e_stop) flush();
+                             while (k < kend && seq[k].e < e_stop) {
+-                                strata::gpu::event_record(m.used[k % (size_t) m.ring], m.cs);
+-                                m.used_of[k % (size_t) m.ring] = (int) (k % (size_t) m.ring);
+-                                consumed = ++k;
+-                                give_back(consumed);
++                                publication::skipped_entry(
++                                    [&] { if (group_gather) flush(); },
++                                    [&] { wait_issued(k); },
++                                    [&] {
++                                        publication::require(strata::gpu::event_record(m.used[k % (size_t) m.ring], m.cs), "skipped entry event_record", strata::gpu::last_error);
++                                        m.used_of[k % (size_t) m.ring] = (int) (k % (size_t) m.ring);
++                                        consumed = ++k;
++                                        give_back(consumed);
++                                    });
+                             }
+                         };
+                         for (size_t j = nf; j < order.size(); ++j) {   // from nf on: id order again
+@@ -2171,7 +2241,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                                 if (group_gather) {
+                                     gg_consumed = k + 1;   // given back by the flush that gathers it
+                                 } else {
+-                                    strata::gpu::stream_wait_event(m.cs, m.copied[sl]);
++                                    publication::require(strata::gpu::stream_wait_event(m.cs, m.copied[sl]), "strata::gpu::stream_wait_event(m.cs, m.copied[sl])", strata::gpu::last_error);
+                                 }
+                                 if (!compute(j, m.stage_dev[sl], sl)) return false;
+                                 ++k;
+@@ -2186,9 +2256,10 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                         }
+                         release_to(m.g->n_expert);
+                     }
++                    stager_done.complete();
+                     pt.mark(kPfCombine, cs);
+                     if (cpu_fut.valid()) {   // set_cpu_pool: the CPU's rows into Dm's tail
+-                        if (cpu_share_env() < 0.0) strata::gpu::event_record(m.cpu_ev[1], m.cs);   // after the GPU's experts
++                        if (cpu_share_env() < 0.0) publication::require(strata::gpu::event_record(m.cpu_ev[1], m.cs), "strata::gpu::event_record", strata::gpu::last_error);   // after the GPU's experts
+                         if (!cpu_fut.get()) { err = "prefill: the CPU experts failed"; return false; }
+                         if (cpu_share_env() < 0.0 && n_stream > n_cpu) {
+                             m.cpu_pend = true;
+@@ -2197,8 +2268,8 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                             m.pend_n_gpu = n_stream - n_cpu;
+                         }
+                         stats_.cpu_share = cpu_share_env() >= 0.0 ? cpu_share_env() : m.cpu_share_now;
+-                        strata::gpu::copy_async(m.Dm + (size_t) rows_gpu * N, m.cpu_rows, (size_t) rows_cpu * N * sizeof(float),
+-                                                m.cs);
++                        publication::require(strata::gpu::copy_async(m.Dm + (size_t) rows_gpu * N, m.cpu_rows, (size_t) rows_cpu * N * sizeof(float),
++                                                m.cs), "copy_async", strata::gpu::last_error);
+                         stats_.experts_cpu += n_cpu;
+                         if (static bool said = false; !said) {
+                             said = true;
+@@ -2210,10 +2281,10 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                     moe_combine(m.Dm, m.slot_dev, m.w, m.shared, m.sg, m.bo, T, m.cs);
+                     // debug: STRATA_DBG_NAN=1 reports the first layer of a chunk whose MoE produced non-finite values
+                     if (static const bool dbg = std::getenv("STRATA_DBG_NAN") != nullptr; dbg) {
+-                        strata::gpu::stream_sync(m.cs);
++                        publication::cleanup_require(strata::gpu::stream_sync(m.cs), "strata::gpu::stream_sync(m.cs)", strata::gpu::last_error);
+                         auto bad = [&](const float* d, int64_t n) {
+                             std::vector<float> h((size_t) n);
+-                            strata::gpu::copy(h.data(), d, (size_t) n * 4);
++                            publication::cleanup_require(strata::gpu::copy(h.data(), d, (size_t) n * 4), "diagnostic copy", strata::gpu::last_error);
+                             int64_t c = 0;
+                             for (float v : h) c += !std::isfinite(v);
+                             return c;
+@@ -2267,6 +2338,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+         if (!ple_land()) return false;   // a stage that ends before layer 1: the rows land anyway, the next gather starts
+         if (issuer.joinable()) {
+             issuer.join();
++            issuer_failure.rethrow();
+             stats_.ms_experts_host += iss_ms;
+             stats_.experts_streamed += iss_streamed;
+             stats_.experts_dma += iss_dma;
+@@ -2275,6 +2347,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+             err = "prefill: the expert source could not copy a blob";
+             return false;
+         }
++        chunk_stager_done.complete();
+         stats_.tokens += T;
+         core::progress_at("reading the prompt (batched): finishing the chunk from token", p0);
+         pt.mark(kPfStart, cs);
+@@ -2297,11 +2370,11 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+             continue;   // the last stage reports the chunk (on_chunk)
+         }
+         if (const char* dump = std::getenv("STRATA_PREFILL_DUMP_R")) {   // debug: the final residuals, every 64th
+-            strata::gpu::stream_sync(m.cs);                                  // position (A/B quality of this path)
++            publication::cleanup_require(strata::gpu::stream_sync(m.cs), "strata::gpu::stream_sync(m.cs)", strata::gpu::last_error);                                  // position (A/B quality of this path)
+             if (std::FILE* f = std::fopen(dump, c0 == 0 ? "wb" : "ab")) {
+                 std::vector<float> row((size_t) D);
+                 for (int64_t t = (64 - p0 % 64) % 64; t < T; t += 64) {
+-                    strata::gpu::copy(row.data(), m.R + t * D, (size_t) D * 4);
++                    publication::cleanup_require(strata::gpu::copy(row.data(), m.R + t * D, (size_t) D * 4), "diagnostic copy", strata::gpu::last_error);
+                     const int64_t pos = p0 + t;
+                     std::fwrite(&pos, sizeof pos, 1, f);
+                     std::fwrite(row.data(), 4, row.size(), f);
+@@ -2313,14 +2386,14 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+             // draft-layer distillation data (opt-in, upstream 48d10a49): every position's final multi-stream residual
+             // as BF16 (round-to-nearest-even), rows in position order, appended across chunks and requests:
+             // [n][hc*n_embd]
+-            strata::gpu::stream_sync(m.cs);
++            publication::cleanup_require(strata::gpu::stream_sync(m.cs), "strata::gpu::stream_sync(m.cs)", strata::gpu::last_error);
+             if (std::FILE* f = std::fopen(dump, "ab")) {
+                 constexpr int64_t kRows = 512;
+                 std::vector<float> rows((size_t) (kRows * D));
+                 std::vector<uint16_t> out((size_t) (kRows * D));
+                 for (int64_t t0 = 0; t0 < T; t0 += kRows) {
+                     const int64_t nr = std::min<int64_t>(kRows, T - t0);
+-                    strata::gpu::copy(rows.data(), m.R + t0 * D, (size_t) (nr * D) * 4);
++                    publication::cleanup_require(strata::gpu::copy(rows.data(), m.R + t0 * D, (size_t) (nr * D) * 4), "diagnostic copy", strata::gpu::last_error);
+                     for (int64_t i = 0; i < nr * D; ++i) {
+                         uint32_t u;
+                         std::memcpy(&u, &rows[(size_t) i], 4);
+@@ -2349,10 +2422,10 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+     ss.ple_prev[0] = prev[0];
+     ss.ple_prev[1] = prev[1];
+     if (std::getenv("STRATA_DBG_NAN") != nullptr) {   // debug: the state the prompt leaves for the token path
+-        strata::gpu::stream_sync(m.cs);
++        publication::cleanup_require(strata::gpu::stream_sync(m.cs), "strata::gpu::stream_sync(m.cs)", strata::gpu::last_error);
+         auto bad = [&](const float* d, int64_t n) {
+             std::vector<float> h((size_t) n);
+-            strata::gpu::copy(h.data(), d, (size_t) n * 4);
++            publication::cleanup_require(strata::gpu::copy(h.data(), d, (size_t) n * 4), "diagnostic copy", strata::gpu::last_error);
+             int64_t c = 0;
+             double mx = 0;
+             for (float v : h) { c += !std::isfinite(v); if (std::isfinite(v)) mx = std::max(mx, (double) std::fabs(v)); }
+@@ -2389,12 +2462,12 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                              "PLE %.0f ms\n", host_setup_ms, host_sync_ms, host_chunk_ms, stats_.ms_ple);
+     }
+     if (std::getenv("STRATA_STATE_HASH_GDN") != nullptr) {   // debug: the GDN states as the prompt path leaves them
+-        strata::gpu::stream_sync(m.cs);
++        publication::cleanup_require(strata::gpu::stream_sync(m.cs), "strata::gpu::stream_sync(m.cs)", strata::gpu::last_error);
+         std::vector<uint8_t> b((size_t) gdn_floats * 4);
+         std::string line;
+         char h[8];
+         for (int64_t i = 0; i < ss.gdn_alloc; ++i) {   // the GDN layers this session owns
+-            strata::gpu::copy(b.data(), ss.gdn_state + (size_t) i * gdn_floats, b.size());
++            publication::cleanup_require(strata::gpu::copy(b.data(), ss.gdn_state + (size_t) i * gdn_floats, b.size()), "diagnostic copy", strata::gpu::last_error);
+             uint64_t x = 1469598103934665603ull;
+             for (uint8_t c : b) x = (x ^ c) * 1099511628211ull;
+             std::snprintf(h, sizeof(h), "%04llx ", (unsigned long long) (x & 0xffff));
+@@ -2403,6 +2476,16 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+         std::fprintf(stderr, "strata prefill: GDN_HASH %s\n", line.c_str());
+     }
+     return true;
++} catch (const std::exception& e) {
++    err = std::string("prefill: ") + e.what();
++    if (impl_->cs) publication::cleanup_require(strata::gpu::stream_sync(impl_->cs), "release/catch cs drain", strata::gpu::last_error);
++    if (impl_->copy) publication::cleanup_require(strata::gpu::stream_sync(impl_->copy), "release/catch copy drain", strata::gpu::last_error);
++    return false;
++} catch (...) {
++    err = "prefill: unknown asynchronous submission failure";
++    if (impl_->cs) publication::cleanup_require(strata::gpu::stream_sync(impl_->cs), "release/catch cs drain", strata::gpu::last_error);
++    if (impl_->copy) publication::cleanup_require(strata::gpu::stream_sync(impl_->copy), "release/catch copy drain", strata::gpu::last_error);
++    return false;
+ }
+ 
+ }  // namespace strata::prefill
+diff --git a/src/program/generate.cpp b/src/program/generate.cpp
+index 5346ab9f..6a2fdc82 100644
+--- a/src/program/generate.cpp
++++ b/src/program/generate.cpp
+@@ -57,6 +57,8 @@
+ #include "strata/prefill/prefill.hpp"
+ #include "strata/core/native_dense.hpp"
+ #include "strata/program/logits_selection.hpp"
++#include "strata/program/full_context_probe.hpp"
++#include "strata/kernels/kv_stream.hpp"
+ #include "strata/program/conv_cache.hpp"
+ #include "strata/program/message_boundary.hpp"
+ #include "strata/spec/draft_policy.hpp"
+@@ -73,6 +75,7 @@
+ #include <sys/resource.h>
+ #include <filesystem>
+ #include <cerrno>
++#include <exception>
+ 
+ #include "strata/core/gpu.hpp"
+ 
+@@ -205,6 +208,8 @@ struct Options {
+     std::vector<int64_t> tokens;      // the prompt, PRE-TOKENIZED
+     int64_t max_new = 16;
+     int64_t max_context = 4096;
++    bool full_context_probe = false;  // opt-in development diagnostic, no generated output
++    int32_t full_context_terminal = 0;
+     /// The context extension (rope scaling, rope_scaling.hpp; upstream #84): one process configuration, set once before
+     /// session_init builds the rope table and captures the kernels (K sits in the cache after RoPE, so one run takes one
+     /// scaling).  An explicit flag wins over the model file's rope keys over the defaults; `none` and `1` are explicit.
+@@ -516,6 +521,9 @@ void usage() {
+                  "  --pack DIR           the pack directory (default pack/full)\n"
+                  "  --tokens LIST        the prompt as comma-separated token IDS (required)\n"
+                  "  --tokens-file PATH   pretokenized prompt, commas or whitespace (alternative to --tokens)\n"
++                 "  --full-context-probe ID  development: exactly 262144 cells, explicit terminal storage probe;\n"
++                 "                       requires --max-context 262144 --max-new 0 --native --mtp --spec >=2,\n"
++                 "                       fixed --prefill N and --no-prefill-borrow; restores in RAM then exits\n"
+                  "  --ple-gguf PATH      the PLE table (with --native: default the shard of --native's model that holds it)\n"
+                  "  --no-ple             explicit diagnostic ablation of the PLE layer\n"
+                  "  --ple-io direct|mmap|ram  n-gram table reads (plan v0.3 P2). direct (default): unbuffered SSD\n"
+@@ -1145,6 +1153,271 @@ uint64_t fnv1a(const void* data, size_t n, uint64_t h = 1469598103934665603ull)
+     return h;
+ }
+ 
++// Every diagnostic exit drains registered queues before its snapshot/checkpoint
++// buffers die. An uncertain completion is terminal, never a reusable session.
++struct FullProbeDrain {
++    ~FullProbeDrain() {
++        if (!strata::gpu::device_sync()) {
++            std::fprintf(stderr, "full-context-probe: completion unknown: %s; fail-stop\n", strata::gpu::last_error());
++            std::terminate();
++        }
++    }
++};
++
++std::array<void*, 5> full_probe_pools(const strata::core::QsaState& st, bool resident = false) {
++    const bool host = st.kv_mode != 0 && !resident;
++    if (st.kv_hybrid)
++        return {host ? st.host.k_q : st.k_q, host ? st.host.v_q4 : st.v_q4,
++                host ? st.host.k_scale : st.k_scale, nullptr, st.idx_pooled};
++    if (st.kv_q4)
++        return {host ? st.host.k_q4 : st.k_q4, host ? st.host.v_q4 : st.v_q4, nullptr, nullptr, st.idx_pooled};
++    if (st.kv_int8)
++        return {host ? st.host.k_q : st.k_q, host ? st.host.v_q : st.v_q,
++                host ? st.host.k_scale : st.k_scale, host ? st.host.v_scale : st.v_scale, st.idx_pooled};
++    return {host ? st.host.k_pool : st.k_pool, host ? st.host.v_pool : st.v_pool, nullptr, nullptr, st.idx_pooled};
++}
++
++bool full_probe_poison(const strata::core::ConversationKv& image, const strata::core::QsaState& st,
++                       std::string& err) {
++    const std::array<const strata::core::ConversationBuffer*, 5> parts = {
++        &image.k, &image.v, &image.k_scale, &image.v_scale, &image.pooled};
++    const auto dst = full_probe_pools(st);
++    std::array<uint8_t, 65536> work;
++    FullProbeDrain drain;   // must run before the copy workspace dies, including on exceptions
++    for (size_t part = 0; part < parts.size(); ++part) {
++        if (!parts[part]->empty() && !dst[part]) { err = "probe poison: missing authoritative pool"; return false; }
++        if (!parts[part]->visit(0, parts[part]->size(), [&](const uint8_t* p, size_t n, size_t at) {
++                for (size_t off = 0; off < n;) {
++                    const size_t count = std::min(work.size(), n - off);
++                    for (size_t j = 0; j < count; ++j) work[j] = uint8_t(p[off + j] ^ 0xff);
++                    if (!strata::gpu::copy(static_cast<uint8_t*>(dst[part]) + at + off, work.data(), count)) {
++                        err = std::string("probe poison copy: ") + strata::gpu::last_error(); return false;
++                    }
++                    off += count;
++                }
++                return true;
++            })) return false;
++    }
++    // Also spoil the replaceable slots. Their byte extents are physical slots,
++    // not the full authoritative extent; production restore must refill the ring.
++    if (st.kv_mode != 0) {
++        const auto slots = full_probe_pools(st, true);
++        if (image.page_size <= 0 || image.cells <= 0) { err = "probe poison: invalid page extent"; return false; }
++        const int64_t pages = image.cells / image.page_size;
++        if (pages <= 0 || st.n_slots <= 0 || st.n_slots > pages) { err = "probe poison: invalid slot geometry"; return false; }
++        for (size_t part = 0; part < 4; ++part) {
++            const size_t bytes = parts[part]->size();
++            if (bytes == 0) continue;
++            if (bytes % size_t(pages) || !slots[part]) { err = "probe poison: invalid resident pool"; return false; }
++            const size_t slot_bytes = bytes / size_t(pages) * size_t(st.n_slots);
++            if (!strata::gpu::memset(slots[part], 0xa5, slot_bytes)) {
++                err = std::string("probe poison slots: ") + strata::gpu::last_error(); return false;
++            }
++        }
++    }
++    return true;
++}
++
++uint64_t full_probe_checkpoint_hash(const ConvCheckpoint& checkpoint) {
++    uint64_t hash = 1469598103934665603ull;
++    for (const auto* part : {&checkpoint.gdn, &checkpoint.ple, &checkpoint.tails, &checkpoint.dead, &checkpoint.block_pos}) {
++        const uint64_t bytes = part->size();
++        hash = fnv1a(&bytes, sizeof bytes, hash);
++        hash = fnv1a(part->data(), part->size(), hash);
++    }
++    return hash;
++}
++
++bool run_full_context_probe(const Options& o, strata::prefill::Prefill& prefill, strata::core::MtpDrafter& mtp,
++                            strata::core::SessionState& ss, const strata::core::ModelGeometry& g,
++                            void* main_cs, std::string& err) {
++    namespace probe = strata::program::full_context_probe;
++    using namespace strata::core;
++    const size_t main_layers = size_t(g.n_qsa_layers());
++    if (prefill.chunk() <= 0 || prefill.chunk() > probe::cells) { err = "probe: invalid physical prefill chunk"; return false; }
++    if (!probe::exact_extent(o.tokens.size(), ss.max_cells) || ss.layer_lo != 0 || ss.layer_hi != g.n_layers ||
++        ss.qsa_ord0 != 0 || ss.qsa_alloc != int64_t(main_layers) || !ss.qsa_states ||
++        mtp.kv_state().max_cells != probe::cells || mtp.kv_state().kv_mode != 2 || mtp.first_needed() != 0) {
++        err = "probe requires an exact full session and full-extent draft with a resident ring"; return false;
++    }
++    // Snapshot and drafter use the same payload geometry. Pruned expert counts
++    // are allowed; incompatible attention/residual shapes are rejected.
++    const ModelGeometry canonical;
++    if (g.n_head_kv != canonical.n_head_kv || g.head_dim != canonical.head_dim || g.n_head != canonical.n_head ||
++        g.n_embd != canonical.n_embd || g.hc != canonical.hc || g.idx_key_dim != canonical.idx_key_dim) {
++        err = "probe: target/draft geometry is incompatible"; return false;
++    }
++    std::vector<int32_t> ids(o.tokens.begin(), o.tokens.end());
++    const std::vector<ConversationImageKey> images;
++    const std::vector<ConversationCheckpoint> checkpoints;
++    const ConversationView view{ids, images, checkpoints, true};
++    SavedConversation image;
++    ConvCheckpoint running;
++    std::vector<QsaState*> states;
++    std::vector<uint64_t> before(main_layers + 1);
++    probe::Coverage coverage;
++    FullProbeDrain drain;   // declared after every owned transfer/snapshot buffer
++    struct ResetCallback {
++        strata::prefill::Prefill& prefill;
++        ~ResetCallback() { prefill.on_chunk = {}; }
++    } reset_callback{prefill};
++    for (size_t layer = 0; layer < main_layers; ++layer) {
++        auto& st = ss.qsa_states[layer];
++        if (st.max_cells != probe::cells) { err = "probe: main K/V capacity differs from physical context"; return false; }
++        states.push_back(&st);
++    }
++    states.push_back(&mtp.kv_state_rw());
++    size_t snapshot_bytes = 0;
++    ConversationStateSizes sizes;
++    if (!conversation_snapshot_capture_bytes({}, view, ss, g, mtp.kv_state(), snapshot_bytes, err) ||
++        !conversation_session_sizes(g, ss, sizes, err)) return false;
++    // Reserve an extra checkpoint plus a second checkpoint's worth of transient
++    // vector capacity, metadata and the fixed copy workspace. Never use swap as admission.
++    uint64_t checkpoint_bytes = sizeof(ConvCheckpoint), required = snapshot_bytes;
++    if (!probe::add_bytes(checkpoint_bytes, ids.size(), sizeof(int32_t)) ||
++        !probe::add_bytes(checkpoint_bytes, sizes.gdn) ||
++        !probe::add_bytes(checkpoint_bytes, ss.ple_hist ? sizes.ple : 0) ||
++        !probe::add_bytes(checkpoint_bytes, sizes.tail, main_layers) ||
++        !probe::add_bytes(checkpoint_bytes, sizes.dead, main_layers) ||
++        !probe::add_bytes(checkpoint_bytes, sizes.block_pos, main_layers) ||
++        !probe::add_bytes(required, checkpoint_bytes, 2) || !probe::add_bytes(required, 1ull << 20)) {
++        err = "probe: snapshot RAM estimate overflow"; return false;
++    }
++    const uint64_t floor_mib = uint64_t(std::max<int64_t>(2560, o.conversation_cache_min_free_mib));
++    uint64_t floor = 0;
++    if (!probe::add_bytes(floor, floor_mib, 1ull << 20)) { err = "probe: RAM floor overflow"; return false; }
++    const auto available = conversation_available_memory();
++    std::fprintf(stderr, "full-context-probe: RAM snapshot=%llu extra_checkpoint_budget=%llu required=%llu "
++                         "available=%llu known=%d floor=%llu consumer=in-process-restore\n",
++                 (unsigned long long) snapshot_bytes, (unsigned long long) (required - snapshot_bytes),
++                 (unsigned long long) required, (unsigned long long) available.value_or(0), int(available.has_value()),
++                 (unsigned long long) floor);
++    if (!conversation_memory_admit(available, required, floor)) { err = "probe: insufficient or unknown physical RAM"; return false; }
++    std::fprintf(stderr, "full-context-probe: begin capacity=%lld tokens=%zu pos0=0 chunk=%lld precision=%s "
++                         "resident=%lld mtp_window=%lld terminal_probe_token=%d real_next_rows=262143 probe_rows=1 "
++                         "mtp_path=per-group-synchronized skip_below=0 token_i32_fnv1a=%016llx pack=%s native=%s mtp=%s\n",
++                 (long long) ss.max_cells, ids.size(), (long long) prefill.chunk(), o.kv.c_str(),
++                 (long long) o.kv_resident, (long long) o.mtp_window, o.full_context_terminal,
++                 (unsigned long long) fnv1a(ids.data(), ids.size() * sizeof(int32_t)),
++                 o.pack.c_str(), o.native_preset.c_str(), o.mtp.c_str());
++    std::fprintf(stderr, "full-context-probe: geometry layers=%lld qsa=%zu heads=%lld kv_heads=%lld dim=%lld embd=%lld hc=%lld "
++                         "terminal row is a storage probe; no prediction-quality claim\n", (long long) g.n_layers, main_layers,
++                 (long long) g.n_head, (long long) g.n_head_kv, (long long) g.head_dim, (long long) g.n_embd, (long long) g.hc);
++    prefill.on_chunk = [&](const float* residual, int64_t count, int64_t begin, std::string& error) {
++        std::vector<int32_t> next;
++        FullProbeDrain chunk_drain;
++        if (!coverage.accepts(begin, count) || !probe::successors(o.tokens, begin, count, o.full_context_terminal, next)) {
++            error = "probe: chunk gap, overlap or successor bounds error"; return false;
++        }
++        // Explicitly select the persistent mapped-record path. Each group waits
++        // before the CPU updates those records; E-9/E-4 temporary uploads are unused.
++        if (!mtp.prefill(residual, next.data(), count, begin, error, true) ||
++            !strata::gpu::stream_sync(mtp.stream())) {
++            if (error.empty()) error = std::string("probe draft completion: ") + strata::gpu::last_error();
++            return false;
++        }
++        if (!coverage.complete(begin, count)) { error = "probe: completion coverage error"; return false; }
++        std::fprintf(stderr, "full-context-probe: chunk=%lld begin=%lld count=%lld end=%lld\n",
++                     (long long) coverage.chunks, (long long) begin, (long long) count, (long long) coverage.end);
++        return true;
++    };
++    // This branch never calls kvg_ensure(n + output + 64) or reads tokens[n].
++    if (!prefill.run(o.tokens.data(), probe::cells, 0, err)) return false;
++    if (!strata::gpu::stream_sync(main_cs) || !strata::gpu::stream_sync(mtp.stream()) || !strata::gpu::device_sync()) {
++        err = std::string("probe prefill completion: ") + strata::gpu::last_error(); return false;
++    }
++    const auto& stats = prefill.stats();
++    const int64_t expected_chunks = (probe::cells - 1) / prefill.chunk() + 1;
++    if (!coverage.full() || stats.tokens != probe::cells || stats.chunks != coverage.chunks ||
++        stats.chunks != expected_chunks) { err = "probe: incomplete target/draft chunk coverage"; return false; }
++    // Publish only the running checkpoint's two-token history, at the actual
++    // exclusive extent; this does not put a terminal token into the generation path.
++    ss.ple_prev[0] = ids[ids.size() - 2]; ss.ple_prev[1] = ids.back();
++    std::fprintf(stderr, "full-context-probe: prefill_complete tokens=%lld chunks=%lld end=%lld final_pos=262143 "
++                         "last_begin=%lld last_count=%lld real_next_rows=%lld probe_rows=%lld ms=%.1f\n",
++                 (long long) stats.tokens, (long long) stats.chunks, (long long) coverage.end,
++                 (long long) coverage.last_begin, (long long) coverage.last_count,
++                 (long long) coverage.real_next_rows, (long long) coverage.probe_rows, stats.ms_total);
++    std::fprintf(stderr, "full-context-probe: experts streamed=%lld dma=%lld resident=%lld cpu=%lld host_ms=%.1f ple_ms=%.1f\n",
++                 (long long) stats.experts_streamed, (long long) stats.experts_dma, (long long) stats.experts_resident,
++                 (long long) stats.experts_cpu, stats.ms_experts_host, stats.ms_ple);
++    // Re-admit immediately before capture: expert/prefill initialization may have
++    // consumed RAM since the first estimate. The large image has this single consumer.
++    if (!conversation_memory_admit(conversation_available_memory(), required, floor)) {
++        err = "probe: physical RAM no longer admits capture"; return false;
++    }
++    if (!conversation_snapshot_save(image, view, ss, g, mtp.kv_state(), err) ||
++        !conversation_snapshot_validate(image, ss, g, mtp.kv_state(), err)) return false;
++    std::fprintf(stderr, "full-context-probe: snapshot_geometry=");
++    for (size_t field = 0; field < image.geometry.size(); ++field)
++        std::fprintf(stderr, "%s%lld", field ? "," : "", (long long) image.geometry[field]);
++    std::fprintf(stderr, " owned_layers=%lld:%lld final_page=%lld\n", (long long) ss.layer_lo,
++                 (long long) ss.layer_hi, (long long) (probe::cells / image.kv.front().page_size - 1));
++    for (size_t layer = 0; layer < states.size(); ++layer) {
++        const auto& st = *states[layer];
++        const auto& saved = image.kv[layer];
++        if (saved.cells != probe::cells || saved.page_size <= 0 || saved.cells / saved.page_size != st.n_pages) {
++            err = "probe: captured K/V extent is not the exact physical context"; return false;
++        }
++        if (!conversation_kv_verify(saved, st, g, probe::cells, layer < main_layers, before[layer], err)) return false;
++        std::fprintf(stderr, "full-context-probe: kv=%zu kind=%s capacity=%lld cells=%lld mode=%d format=%d "
++                             "pages=%lld slots=%lld host=%d pooled_rows=%lld bytes=%zu,%zu,%zu,%zu,%zu before_fnv1a=%016llx\n",
++                     layer, layer < main_layers ? "main" : "draft", (long long) st.max_cells, (long long) saved.cells,
++                     st.kv_mode, saved.format, (long long) st.n_pages, (long long) st.n_slots, int(st.host.present()),
++                     (long long) saved.pooled_rows, saved.k.size(), saved.v.size(), saved.k_scale.size(),
++                     saved.v_scale.size(), saved.pooled.size(), (unsigned long long) before[layer]);
++    }
++    const uint64_t running_before = full_probe_checkpoint_hash(image.live);
++    running = image.live;
++    for (auto* part : {&running.gdn, &running.ple, &running.tails, &running.dead, &running.block_pos})
++        for (auto& byte : *part) byte ^= 0xff;
++    if (!conversation_checkpoint_restore(running, ss, g, err)) return false;
++    for (size_t layer = 0; layer < states.size(); ++layer)
++        if (!full_probe_poison(image.kv[layer], *states[layer], err)) return false;
++    if (!strata::gpu::device_sync()) {
++        err = std::string("probe poison completion failed: ") + strata::gpu::last_error(); return false;
++    }
++    for (size_t layer = 0; layer < states.size(); ++layer) {
++        uint64_t hash = 0;
++        std::string poison_error;
++        if (conversation_kv_verify(image.kv[layer], *states[layer], g, probe::cells, layer < main_layers, hash, poison_error) ||
++            poison_error != "conversation snapshot: restored K/V bytes differ") {
++            err = "probe: poisoned K/V negative check failed: " + poison_error; return false;
++        }
++    }
++    const ConversationRestore restored = conversation_snapshot_restore(image, ss, g, mtp.kv_state(), err);
++    std::fprintf(stderr, "full-context-probe: restore_status=%s method=in-place-poison-restore\n",
++                 restored == ConversationRestore::restored ? "restored" :
++                 restored == ConversationRestore::invalid ? "invalid" : "transfer_failed");
++    if (restored != ConversationRestore::restored || !strata::gpu::device_sync()) {
++        if (err.empty()) err = std::string("probe restore completion failed: ") + strata::gpu::last_error();
++        return false;
++    }
++    for (size_t layer = 0; layer < states.size(); ++layer) {
++        uint64_t after = 0;
++        if (!conversation_kv_verify(image.kv[layer], *states[layer], g, probe::cells, layer < main_layers, after, err)) return false;
++        if (after != before[layer]) { err = "probe: restored K/V fingerprint differs"; return false; }
++        std::fprintf(stderr, "full-context-probe: kv=%zu after_fnv1a=%016llx authoritative_bytes_verified=all ring_verified=%d\n",
++                     layer, (unsigned long long) after, int(states[layer]->kv_mode == 2));
++    }
++    // Reuse the small checkpoint allocation; never recapture another full K/V image.
++    if (!conversation_checkpoint_save(running, ss, g, err)) return false;
++    if (running.gdn != image.live.gdn || running.ple != image.live.ple || running.tails != image.live.tails ||
++        running.dead != image.live.dead || running.block_pos != image.live.block_pos ||
++        ss.ple_prev[0] != ids[ids.size() - 2] || ss.ple_prev[1] != ids.back()) {
++        err = "probe: restored running checkpoint differs"; return false;
++    }
++    for (size_t layer = 0; layer < main_layers; ++layer)
++        if (states[layer]->kv_mode == 1) strata::kernels::kv_stream_reset(states[layer]->map, main_cs);
++    if (!strata::gpu::stream_sync(main_cs) || !strata::gpu::device_sync()) {
++        err = std::string("probe residency invalidation completion failed: ") + strata::gpu::last_error(); return false;
++    }
++    std::fprintf(stderr, "full-context-probe: PASS capacity=262144 final_pos=262143 running_before_fnv1a=%016llx "
++                         "running_after_fnv1a=%016llx main_residency=invalidated generated=0 inference_after_restore=0\n",
++                 (unsigned long long) running_before, (unsigned long long) full_probe_checkpoint_hash(running));
++    return true;
++}
++
+ using ConvStateSizes = strata::core::ConversationStateSizes;
+ 
+ ConvStateSizes conv_state_sizes(const strata::core::ModelGeometry& g) {
+@@ -1851,6 +2124,15 @@ int main(int argc, char** argv) {
+     // below consumes the value again.
+     for (int i = 1; i + 1 < argc; ++i)
+         if (std::string(argv[i]) == "--gpu") { setenv("STRATA_GPU_PCI", argv[i + 1], 1); break; }
++    bool raw_full_probe = false, raw_benchmark = false;
++    for (int i = 1; i < argc; ++i) {
++        const std::string flag = argv[i];
++        raw_full_probe = raw_full_probe || flag == "--full-context-probe";
++        raw_benchmark = raw_benchmark || flag == "--hw-bench" || flag == "--kernel-bench";
++    }
++    if (raw_full_probe && raw_benchmark) {
++        std::fprintf(stderr, "full-context-probe: incompatible with hardware/kernel benchmarks\n"); return 2;
++    }
+     for (int i = 1; i < argc; ++i) {   // setup's --bench: the machine and the kernels alone, no model loaded
+         const std::string a = argv[i];
+         if (a != "--hw-bench" && a != "--kernel-bench") continue;
+@@ -1864,6 +2146,7 @@ int main(int argc, char** argv) {
+     Options o;
+     bool have_tokens = false;
+     bool have_logits_stride = false;
++    bool probe_numbers_valid = true;
+     for (int i = 1; i < argc; ++i) {
+         const std::string a = argv[i];
+         auto next = [&](const char* what) -> const char* {
+@@ -1890,8 +2173,24 @@ int main(int argc, char** argv) {
+             }
+             have_tokens = true;
+         }
+-        else if (a == "--max-new") o.max_new = std::atoll(next("--max-new"));
+-        else if (a == "--max-context") o.max_context = std::atoll(next("--max-context"));
++        else if (a == "--full-context-probe") {
++            if (o.full_context_probe) { std::fprintf(stderr, "duplicate --full-context-probe\n"); return 2; }
++            const char* value = next("--full-context-probe");
++            int64_t token = -1;
++            const auto parsed = std::from_chars(value, value + std::strlen(value), token);
++            if (parsed.ec != std::errc{} || *parsed.ptr != '\0' || token < 0 || token > INT32_MAX) {
++                std::fprintf(stderr, "full-context-probe: terminal ID must be a nonnegative int32 token\n"); return 2;
++            }
++            o.full_context_probe = true; o.full_context_terminal = int32_t(token);
++        }
++        else if (a == "--max-new" || a == "--max-context") {
++            const char* value = next(a.c_str());
++            int64_t exact = 0;
++            const auto parsed = std::from_chars(value, value + std::strlen(value), exact);
++            probe_numbers_valid = probe_numbers_valid && parsed.ec == std::errc{} && *parsed.ptr == '\0';
++            if (a == "--max-new") o.max_new = std::atoll(value);
++            else o.max_context = std::atoll(value);
++        }
+         else if (a == "--rope-scaling") o.rope_scaling = next("--rope-scaling");
+         else if (a == "--rope-scale") o.rope_scale = std::strtod(next("--rope-scale"), nullptr);
+         else if (a == "--rope-freq-base") o.rope_freq_base = std::strtod(next("--rope-freq-base"), nullptr);
+@@ -2154,6 +2453,31 @@ int main(int argc, char** argv) {
+             return 2;
+         }
+     }
++    if (o.full_context_probe) {
++        namespace probe = strata::program::full_context_probe;
++        bool remote = false;
++        for (int slots : o.expert_cache_remote) remote = remote || slots != 0;
++        if (!have_tokens || !probe_numbers_valid || !probe::exact_extent(o.tokens.size(), o.max_context) || o.max_new != 0 ||
++            o.native_preset.empty() || o.mtp.empty() || o.spec < 2 || o.prefill_chunk <= 0 || o.prefill_auto ||
++            !o.no_prefill_borrow || o.prefill_until != 0 || o.serve || o.batch != 0 || o.batch_groups != 1 ||
++            o.batch_mtp == 1 || o.batch_cpu_split[0] != 0 || o.batch_cpu_split[1] != 0 ||
++            !o.layer_split.empty() || !o.split_device.empty() || remote || o.pipeline_windows != 0 || o.vision ||
++            o.graph_only || o.gpu_only_full || o.gpu_stages || o.stage_timing || o.no_pool || o.no_capture ||
++            !o.spec_oracle.empty() || !o.spec_follow.empty() || o.spec_corrupt != 0 || !o.window_hashes.empty() ||
++            !o.dump_logits.empty() || !o.dump_residual.empty() || !o.dump_mixed.empty() || !o.dump_layers.empty() ||
++            !o.dump_halves.empty() || !o.dump_routing.empty() || !o.dump_final_r.empty() ||
++            !o.conversation_save.empty() || !o.expert_profile_save.empty() || o.adapt_async > 0 || o.kv_grow > 0 ||
++            o.mtp_window <= 0 || o.mtp_window >= probe::cells || o.no_ple || o.keep_canonical) {
++            std::fprintf(stderr, "full-context-probe: requires native/MTP full262144 input and physical capacity, "
++                                 "--max-new 0, fixed batched prefill without borrowing, a draft ring, and one GPU; "
++                                 "serve/batch/benchmarks/dumps/ablations are incompatible\n"); return 2;
++        }
++        // First MTP prefill call reads this setting. This dedicated process uses
++        // persistent records and checked per-group completion, with no E-4 upload.
++        if (setenv("STRATA_MTP_PREFILL_SYNC", "1", 1) != 0) {
++            std::fprintf(stderr, "full-context-probe: cannot select synchronized MTP records\n"); return 2;
++        }
++    }
+     // Layer split (multi-GPU): the later stages run layers [K_i, K_i+1) on their own GPUs (--split-device, default
+     // the next discrete ones); "auto" chooses the K before anything is loaded (below).  The helper caches
+     // (--expert-cache-remote) are not carried by the Xe engine at all (remote_experts.cpp).
+@@ -2428,8 +2752,8 @@ int main(int argc, char** argv) {
+         std::fprintf(stderr, "strata generate: --max-context must be below 2^31\n");
+         return 2;
+     }
+-    if (o.max_new <= 0 || o.max_context <= 0 || o.max_new > o.max_context ||
+-        o.tokens.size() > (size_t) (o.max_context - o.max_new)) {
++    if (!o.full_context_probe && (o.max_new <= 0 || o.max_context <= 0 || o.max_new > o.max_context ||
++        o.tokens.size() > (size_t) (o.max_context - o.max_new))) {
+         std::fprintf(stderr, "strata generate: positive --max-new and --max-context must fit the prompt and generation\n");
+         return 2;
+     }
+@@ -2532,6 +2856,9 @@ int main(int argc, char** argv) {
+         }
+     }
+     const bool native_pack = strata::kernels::cpu::expert_layout().native;
++    if (o.full_context_probe && !native_pack) {
++        std::fprintf(stderr, "full-context-probe: requires a native model pack\n"); return 2;
++    }
+     if (o.expert_cache_remote[0] > 0) {
+         // Keep CUDA1's proven startup order: initialise its context before
+         // allocating GPU0 weights or mapping the large host expert arena.
+@@ -3146,7 +3473,7 @@ int main(int argc, char** argv) {
+         // expert cache in 2 MiB physical segments ran its prompts 45% slower there (the K/V alone was as fast as
+         // before); the RTX 4070 reports 2 MiB and was faster in every measure (DETAILS).
+         const bool asked = want > 0 || (want < 0 && strata::core::vmm_large_pages());
+-        const bool on = asked && !multi_gpu && o.kv_resident <= 0 && !o.expert_profile.empty() &&
++        const bool on = !o.full_context_probe && asked && !multi_gpu && o.kv_resident <= 0 && !o.expert_profile.empty() &&
+                         !o.resident_cpu_experts && o.expert_cache != 0 && !remote && strata::core::vmm_available() &&
+                         // the batch slots carve their own K/V and --vram-elastic's cache is not one VMM range
+                         o.batch == 0 && !o.vram_elastic;
+@@ -3559,7 +3886,7 @@ int main(int argc, char** argv) {
+             std::fprintf(stderr, "strata generate: --mtp is ignored without --spec T (T >= 2)\n");
+             o.mtp.clear();
+         }
+-        if (!o.mtp.empty()) mtp.set_prompt_len((int64_t) o.tokens.size());
++        if (!o.mtp.empty()) mtp.set_prompt_len(o.full_context_probe ? 0 : (int64_t) o.tokens.size());
+         mtp.set_hnorm_per_stream(o.mtp_hnorm_stream);   // --mtp-hnorm stream (opt-in), before any capture
+         // with a layer split across GPUs the drafter reads the last stage's residual: it lives on that device
+         const strata::core::OnDevice on_mtp(last_st ? last_st->dev : -1);
+@@ -3589,6 +3916,13 @@ int main(int argc, char** argv) {
+     const strata::core::WeightRef* wo = wt.find("output.weight");
+     if (wo == nullptr) { std::fprintf(stderr, "strata generate: output.weight is missing\n"); return 1; }
+     const int64_t n_vocab = wo->ne1;
++    if (o.full_context_probe) {
++        namespace probe = strata::program::full_context_probe;
++        if (!probe::valid_token(o.full_context_terminal, n_vocab) ||
++            !std::all_of(o.tokens.begin(), o.tokens.end(), [&](int64_t id) { return probe::valid_token(id, n_vocab); })) {
++            std::fprintf(stderr, "full-context-probe: every input and terminal probe ID must be in the vocabulary\n"); return 2;
++        }
++    }
+     strata::core::NativeHead native_head;
+     if (!o.native_head_gguf.empty() && !multi_gpu) {   // a layer split's head is on its last stage
+         const auto head_t0 = std::chrono::steady_clock::now();
+@@ -4464,7 +4798,7 @@ int main(int argc, char** argv) {
+     }
+ 
+     mem_mark("the expert cache and the graphs");
+-    if (o.spec > 0) {   // the verify windows' kernel forms, measured now rather than after the first prompt
++    if (o.spec > 0 && !o.full_context_probe) {   // the verify windows' kernel forms, measured now rather than after the first prompt
+         void* ts = strata::gpu::stream_create();
+         try {
+             if (ts != nullptr) strata::core::Verifier::tune_device(g, ts);
+@@ -4516,7 +4850,10 @@ int main(int argc, char** argv) {
+                     return false;
+                 }
+         }
+-        return o.stream_token || strata::gpu::device_sync();
++        // Direct QSA layers rewrite persistent mapped step/position inputs.
++        // Keep their previous reader complete even with --stream-token when
++        // concurrent host-USM handoff has not been qualified.
++        return (o.stream_token && strata::gpu::host_handoff_concurrent(token_stream)) || strata::gpu::device_sync();
+     };
+ 
+     strata::kernels::SamplerParams sp;
+@@ -5078,7 +5415,8 @@ int main(int argc, char** argv) {
+     };
+     strata::core::TokenHits thits;
+     const bool graph_hits = hit_fn != nullptr && !profile.empty() && !o.no_pool;
+-    if (graph_hits && !o.no_capture && !o.no_token_graph && layer_dump == nullptr && half_dump == nullptr) {
++    if (strata::gpu::host_handoff_concurrent(main_cs) && graph_hits && !o.no_capture && !o.no_token_graph &&
++        layer_dump == nullptr && half_dump == nullptr) {
+         host_res.assign((size_t) (g.n_layers * g.n_expert), strata::core::kNotResident);
+         int64_t resident = 0;
+         for (int64_t l = 0; l < g.n_layers; ++l)
+@@ -5135,8 +5473,8 @@ int main(int argc, char** argv) {
+         std::fprintf(stderr, "strata generate: token graph hit path: %lld resident experts, decided on the device\n",
+                      (long long) resident);
+     }
+-    if (!o.no_capture && !o.no_token_graph && layer_dump == nullptr && half_dump == nullptr &&
+-        (hit_fn == nullptr || thits.on()) && !native_pack) {
++    if (strata::gpu::host_handoff_concurrent(main_cs) && !o.no_capture && !o.no_token_graph &&
++        layer_dump == nullptr && half_dump == nullptr && (hit_fn == nullptr || thits.on()) && !native_pack) {
+         if (!strata::core::session_capture_token(wt, g, ss, d_parts, loop_scratch.y_miss, loop_scratch.parts_bytes,
+                                                  tgraph, err, thits.on() ? &thits : nullptr)) {
+             std::fprintf(stderr, "strata generate: %s\n", err.c_str());
+@@ -9742,6 +10080,8 @@ int main(int argc, char** argv) {
+     std::FILE* final_r = o.dump_final_r.empty() ? nullptr : std::fopen(o.dump_final_r.c_str(), "wb");
+     std::vector<float> final_r_host(final_r ? (size_t) (g.hc * g.n_embd) : 0);
+     std::vector<std::pair<int32_t, int32_t>> lent;     // (residency index, slot) lent to the prompt path
++    std::optional<FullProbeDrain> diagnostic_drain;
++    if (o.full_context_probe) diagnostic_drain.emplace();   // also covers Prefill init / MTP bind failures
+     if (o.prefill_chunk > 0 && n_prompt > 1) {
+         void* borrow = nullptr;
+         uint64_t borrow_bytes = 0;
+@@ -9793,6 +10133,16 @@ int main(int argc, char** argv) {
+                 std::fprintf(stderr, "strata generate: %s\n", err.c_str());
+                 return 1;
+             }
++            if (o.full_context_probe) {
++                try {
++                    if (run_full_context_probe(o, prefill, mtp, ss, g, main_cs, err)) return 0;
++                } catch (const std::exception& exception) {
++                    err = exception.what();
++                }
++                // No verifier, sampler or further inference on a failed/partial restore.
++                std::fprintf(stderr, "full-context-probe: FAIL: %s\n", err.c_str());
++                return 1;
++            }
+             prefill.on_chunk = [&](const float* R_rows, int64_t T, int64_t p0, std::string& e) -> bool {
+                 // cell i pairs R_i with the token at i + 1 (every such token is in the prompt)
+                 std::vector<int32_t> nxt((size_t) T);

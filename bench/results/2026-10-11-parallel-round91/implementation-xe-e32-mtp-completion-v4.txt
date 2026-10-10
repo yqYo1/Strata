@@ -1,0 +1,179 @@
+Xe e32 MTP mapped-output completion and lifetime implementation v4
+Date: 2026-10-11, Asia/Tokyo
+Source-only implementer: /root/implement_xe_e32_serial_host_handoff
+Workspace: /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011
+Bound base: e32b8b0594095352365db0e140a68d5bf56d8b0f
+Original mtp.cpp: abce052fd7c38ad8e5a3632c8eb604df5510089f16e8bd428a74b75bca404bb8
+Original mtp.hpp: 57ba3a22ed993e4880934dd1b2e89c107cff19d38056c78f879c48628e41a69d
+R353 report read: round353-xe-authoritative-host-kv-and-mtp-access-ownership.txt
+R353 SHA-256: 5f93b6e746e007231e52d224ee866a1c7cbd3e6c5ed012337d4d1160ee5aa581
+Actual AGENTS.md read; LOCAL.md exists: False.
+v1/v2/v3 implementation reports read. R355 caller review is independently owned.
+
+Execution boundary
+------------------
+Only source reads, four assigned source/header/test-source writes and this report.
+No compiler/build/lint/test/GPU/query/profiler, service/process control, Git mutation,
+cleanup or benchmark was executed. No runtime, numerical, performance or fault result
+is claimed. Main owns serialized qualification and commit/push.
+Generate, full-context probe, prefill, session, verifier, commit and kernel source were
+not edited. The universal host_handoff_concurrent=false gate remains unchanged.
+No CPU dispatch, AVX-512, expert arithmetic, tensor precision, routing, KV geometry or
+KV append/attention kernel changes. Existing same-queue KV ownership is retained.
+
+Edited paths and SHA-256
+-----------------------
+3ca91108c35d9836a3bcab431d0dc01939e17e9b50150dd68c634d3b3a620fa4  src/core/mtp.cpp
+5fae0c90b5e09e3ba7e708a053cab2bdf310e5433b7f2ba3cdefc65256f5551d  include/strata/core/mtp.hpp
+8767f9807e1dd89971a49aa6195be44eb12ae54996ffcc2d9e4ad2819216a5d8  include/strata/core/mtp_completion.hpp
+1272e838d7fecdc253222c92dbcb7661e9e0352e63ffa002ebeddefa5f14667e  tools/test_mtp_completion.cpp
+
+Production ownership helper
+---------------------------
+New host-only MtpCompletion is used by the real MtpDrafter. submit() marks pending
+BEFORE a residual/record copy, graph launch or state-writing initialization. Several
+same-queue writers remain one outstanding allocation ownership interval. Completion
+is checked through real queue callbacks, never an idle/query hint. Failed waits and
+exceptions retain pending; success clears pending only after the queues are confirmed.
+The first fault remains sticky after a successful drain and blocks another submission,
+idle/successful reuse and host-ready status. A submission generation also lets error
+cleanup recognize writes earlier in the same operation even after they completed.
+
+MtpDrafter Operation guards cover public GPU/mapped-staging operations and capture
+helpers. The guard is created before public device selection; its cleanup reselects
+the drafter device after an entry failure or after the entry scope restored the caller
+device. Failure to select the cleanup device fail-stops before buffer destruction.
+Only an explicitly successful asynchronous operation can leave pending work.
+Error/exception exits abandon any active capture, reset capture bookkeeping, then check
+both cs_ and side_ and ALL registered device queues before return/unwind. Unknown
+quiescence fail-stops before host buffer reuse/free. Destructor selects the drafter's
+own device, retires capture and performs the same all-queue drain before graph/event/
+mapped-buffer destruction. This also protects persistent E4 upload vector destruction.
+Normal synchronous success paths use checked MTP stream and shared-expert branch
+completion. Initialization, wait failures, sticky faults and error/destructor cleanup
+also check device-wide completion, including the default compute queue. A failed MTP
+stream wait followed by a successful global drain may release ownership, but preserves
+the original fault and still returns failure. It never becomes successful inference.
+
+Mapped output and chain safety
+------------------------------
+draft() completes earlier work before host staging/record reset. Each graph submission
+marks pending first. It waits checked stream/branch completion BEFORE reading h_out_
+or h_prob_ and before submitting the next step. The mapped output allocations are
+retained, with plain host reads only after ownership transfer; no new D2H output route
+or output allocation is needed. The volatile polling loop, _mm_pause, stream_idle
+probes and fences as publication claims were removed from mtp.cpp. A completed graph
+that did not publish a nonnegative draft is an immediate sticky error, not a spin.
+The graph math, catch-up row selection, output padding/count, probability and min_p
+chain-stop behavior are unchanged. Optional top2 copy failures now propagate as faults
+instead of quietly returning an unknown diagnostic value.
+
+prepare_chain and chain_launch refuse the unqualified current backend gate before
+chain graph preparation, mapped chain staging or writer enqueue. chain_outputs_ready
+also refuses the gate. Existing outstanding work is safely drained at these boundaries;
+a clean refusal with no new submission does not poison an otherwise healthy drafter.
+For completeness, even the dormant qualified chain output readers now wait for the
+ENTIRE writer chain before any host read: per-step event completion never grants CPU
+access while another step writes a different region of the same output allocation.
+chain_poll is therefore a checked, blocking whole-chain completion operation rather
+than an unchecked event-query poll. No event_query call remains in this source.
+For dormant chain submission, chain_live_ and pending begin before any source residual
+copy/partial graph launch; a rejected launch/event record is drained and sticky rather
+than forgotten. The live mark clears only after successful whole-allocation completion
+and host output transfer. No unsupported async chain is silently approximated.
+
+Prefill, staging, capture and copy lifetime
+-----------------------------------------
+E4's upload source changed from a function-local vector to pf_host_, owned by the
+MtpDrafter. The entry completion boundary runs before resizing or writing it. Thus
+prefill(sync=false) can retain queued device work without freeing its host record
+source; a later operation/idle/destructor drains before rewrite/free. Returned async
+success is still only enqueue success; the caller must retain R_rows and order/wait
+on stream(). Errors retire those borrowed residual readers before returning.
+The per-group mapped-input path waits after EACH graph before the next CPU record
+write. Both paths check their copy/launch errors; failed submissions remain pending
+until checked cleanup. Prefill validates its physical span/required pointers before
+staging. Actual no-skip/full-context behavior remains owned by the v3 caller.
+prepare_prefill checks completion before replacing pf_dev_. Cached immutable graph
+lookups do not inspect/rewrite mapped input storage and do not wait each E4 group;
+a fresh capture waits first, and later caller staging still requires completion.
+
+finish_capture now checks end_capture and completion instead of ignoring its wait.
+Failed body/capture and exceptional recording abandon the capture before queue cleanup.
+Capture is recorded graph construction, not an executed state writer; no capture-only
+success is claimed to prove graph execution. The existing void abandon_capture API
+has no independent return status; checked queue completion and sticky state rejection
+are the execution/lifetime qualification used here.
+
+All formerly ignored synchronous copies/memsets/device waits in MTP load/bind/coupled
+setup are checked. copy_checked has its own nested lifetime guard, so even a failed
+compute-queue copy or exceptional completion drains before a caller's local dense/
+expert/vocabulary/index vector can die. State initialization/fallback and head gather
+mark pending before kernels; their completion is checked. Source layout/math is
+unchanged. No precision conversion or expert-file layout was changed.
+
+idle() reports a sticky fault even when ownership has drained. kv_restore retains its
+void API but throws on bounds/transfer/completion failure and fail-stops on unknown
+quiescence, instead of silently ignoring stream_sync failure. set_draft_sampling and
+set_draft_history likewise retain their void APIs, complete earlier mapped readers
+before host writes, and throw on a sticky fault. Those errors must be handled by the
+caller or end the process; this role did not modify forbidden caller source.
+
+New host-only test SOURCE, not executed
+--------------------------------------
+tools/test_mtp_completion.cpp includes the production helper. Checks are not disabled
+by NDEBUG. Fault cutpoints cover pending-before-submit, multiple later writers to one
+allocation, whole-queue ownership transfer, external stream-user completion checks,
+rejected partial graph/upload/event record, failed wait retaining ownership, successful
+later drain retaining the first fault, blocked reuse, and exceptional wait ownership.
+The test is a standalone source, not a CTest registration; Main must explicitly compile
+and execute it. It does not execute SYCL, mapped memory, graph replay, MTP math or the
+private MtpDrafter Operation guard, and does not establish runtime lifetime proof.
+
+Remaining caveats and Main qualification plan (UNEXECUTED)
+---------------------------------------------------------
+1. Review the real paired source/helper transitions and every graph/copy/error cutpoint.
+   Assert no h_out_/h_prob_ CPU access precedes checked completion, and no mapped record
+   overwrite or E4 vector resize happens while that allocation has pending writers.
+2. R355 must independently qualify the callers: borrowed residual lifetimes, producer
+   queue ordering, external kv_state_rw users, whole-session/snapshot exclusion and
+   exception propagation from the three existing void staging/restore methods remain
+   caller obligations. The MtpDrafter is not a concurrent host-thread API.
+3. Copy/capture/queue fault handling is conservative, not GPU recovery. An outstanding
+   operation that cannot be drained terminates. Other device queues are drained on
+   errors/destruction; that may wait unrelated same-device work. Runtime watchdog and
+   driver failure behavior still require actual qualification. No historical CAT18/
+   UR40/B570 fault attribution or old-run memory-contract claim is made.
+4. After a fault, reconstruct the drafter/session. A successful drain does not repair
+   state or make future inference valid. Invalid clean arguments/refused chains with
+   no new submission drain safely without manufacturing a prior state-write fault.
+5. Per-step graph completion adds synchronization and changes timing/overlap. Dormant
+   chain_poll is blocking; current universal gate prevents that async route entirely.
+   Retained pf_host_ capacity consumes RAM until resize/destruction. No throughput or
+   parity result is claimed. Normal numerical behavior needs reference comparisons.
+6. Source remains compatible with the common C++/GPU interfaces and does not depend
+   on icpx-specific language extensions, but no compiler actually checked it here.
+   Main owns AGENTS-required free/contrib-llvm warning/lint/build/tests; unavailable
+   compiler or missing device checks must be recorded separately, not called passes.
+7. First compile/run the helper source with Main's authorized host toolchain and host
+   sanitizer. Then serially build/check affected engine targets and existing tests.
+   Review min_p early stop, top2, coupled/greedy, first-round/catch-up, sync/async prefill
+   and KV ring restore under actual Xe queue completion. Fault-inject partial launch,
+   rejected copy/event recording, failed cs/side/device wait and capture teardown in
+   a production-compatible harness where available; verify fail-stop before free for
+   unknown completion and sticky error on every later reuse boundary.
+8. Only after source/build/caller gates should Main attempt the v3 exact262144 probe
+   and regular model tests. V3 still explicitly uses synchronized per-group prefill,
+   one marked terminal storage probe and no inference after restore. V4 does not
+   change that diagnostic, the serialized verifier, or the publication overlay.
+
+Protected source read at handoff (not edited by v4):
+b482b5f8c2a5086896858bd37e61963363a0e618c0eb26ff34d8d987a415af26  src/program/generate.cpp
+c7463aee451e41d3b25c7dac12814b93aaa99443a7a78f851dd5cb6faf51f963  include/strata/program/full_context_probe.hpp
+72df5a4c916a81fa186db62de087c815b1e7922e43767d3d21a436eed8027d56  tools/test_full_context_probe.cpp
+fe0b5939b1ebeb0a958f8deebbc6037c1c7ae3dce7de138ab51c08361ee9ea02  src/prefill/prefill.cpp
+c266156f02854f6578ca526203525249e6e9035ca56102a4aeb815280d42e2ee  include/strata/prefill/publication.hpp
+cfcbf3126dc41640d4c8b8a9f1a4994b94c051202126c83f9538d285d245f332  src/core/session.cpp
+44d8667e973c44d889afac2387cf7686a1b3785d31fa22f22cc5c7097927e27a  src/core/verify.cpp
+52106d09b751d00a4ae1c85f555ba50bc10eb227f956423da94cb98cf7d850ad  include/strata/core/commit_transaction.hpp
+54b1a10524c9ee0c9b42979d75bd4f775ee0c45da2839d8129c2a2bd3daa552a  include/strata/core/gpu.hpp
