@@ -142,3 +142,71 @@ unchanged default correctness/timing behavior, normal exit/flush and no-GPU
 observations remain pending. No actual weights were read by the implementer.
 Synthetic layer activations are not live model activations. No timing,32K model
 parity, performance, adoption or full-context qualification follows from this mode.
+
+## Private actual-weight dot timing (source-only, unexecuted)
+
+The same OFF-by-default `STRATA_CALIBRATION_IQ2S_INDEX_CHECK` option admits
+`--iq2s-index-timing-only`. Root uses a new private release build and result
+location with the existing IntelLLVM/pinned GGML recipe and exact cohort pins:
+
+```
+"$CAL_BUILD/native_service_calibration" "$PACK" "$PRIMARY" "$COHORT_TSV" \
+  22 20 1 0 1 "$FROZEN_SEED" --iq2s-index-timing-only \
+  > "$PRIVATE_RUN/index-timing.csv" 2> "$PRIVATE_RUN/index-timing.stderr"
+```
+
+OFF/invalid-cell rejection occurs before pack opening. Entry and prepared caller
+MXCSR control bits must be exactly0x1f80 (nearest-even, FTZ/DAZ off), and
+STRATA_NO_Q8K_AVX2 must be absent. Timing always rejects LD_DEBUG, LD_PRELOAD and
+LD_AUDIT. Root must keep clean STRATA settings and independently verify the new
+binary's linked dispatch/quantizer/dot paths. No modes are changed.
+
+Before any interval, the unchanged384-ID three-arm Gate/Up/finish exact admission
+runs. Its correctness RESULT is an admission marker only; timing success also
+requires INDEX_TIMING_COMPLETE and the final timing RESULT/normal exit0/flush.
+Immutable pretiming expected Gate/Up bits are then saved from the actual trait.
+Output buffers and all row/input/output pointers are preallocated/prebound. Each
+round verifies every output against these saved bits, including nonfinite bits,
+and checks guards and input quantizer parity outside the clocks.
+
+Two fixed strata per split: stream192 visits all192 frozen-order IDs, Gate+Up
+201523200 bytes; hot8 selects within-split indices0,24,48,72,96,120,144,168,
+Gate+Up8396800 bytes. INDEX_HOT_ID enumerates the IDs; INDEX_WORKING_SET records
+count/bytes/order FNV. No cache flush, cold-load or DRAM claim. All384 owned full
+blobs remain756940800 bytes; Down payload is not accessed by the timed dot arm.
+
+Each split/stratum runs3 warmup rounds then18 recorded rounds; every round has
+trait/direct/register arms with position `(position+round+seed%3)%3`. All arms
+traverse identical bound row pointers in frozen ID, row, Gate/Up order. Eighteen
+recorded rounds balance six samples per arm position. Splits and strata are
+visited in fixed split0/1 then stream/hot order; root must counterbalance fresh
+processes separately to assess drift. No automatic long timing or profiler.
+
+The host steady_clock interval surrounds the arm switch plus the bounded dot
+call traversal and preallocated output stores. It includes real trait ABI/call
+and loop overhead; no dispatch subtraction or kernel-only claim. The trait uses
+its real eight-argument ABI; direct/register helpers use their typed three-argument
+ABI. No finish, Down, quantization, allocation, metadata, checks, hashes or logging
+occurs inside. Expected-check/FNV work follows the end clock. Per-sample output
+is outside timing and may affect the next sample's conditions.
+
+INDEX_TIMING fields: split,stratum,arm,round(-3..-1 warmup;0..17 recorded),
+warmup0/1,arm_position,IDs,rowpairs,dotcalls,GUweightbytes,order_fnv,output_fnv,
+outer_ms,host_cpu. stream has122880 rowpairs/245760 calls per arm; hot has5120/
+10240. Output FNV encodes four little-endian bytes per FP32 in ID/row/Gate-Up
+order. INDEX_TIMING_COMPLETE requires216 recorded and36 warmup rows. Successful
+flush and owned normal exit0 are mandatory; earlier admission PASS alone cannot
+qualify this mode. Existing default/correctness-only modes remain separate.
+
+Root requirements: review diff; same-flags fresh release and sanitizer exactness,
+absolute MXCSR/clean-environment evidence, opt-out/argument/source/flush negatives,
+complete sample/count/hash identity, immutable expected checks,1152 selected
+role SHA256 verification and before/after stable-source checks. Preserve existing
+8MiB text/1536MiB RSS and finite wall/CPU/AS/FSize supervision, shared serial lock,
+no GPU imports/device observations and fresh-process replication. Two384-by1280
+float buffers add3932160 bytes plus guards and bounded prebound row tables; these
+caps are not RSS guarantees. No raw weights/Q8/per-row output is persisted.
+
+This measures actual selected weights with synthetic per-layer inputs on one
+caller, not workers, live model activation, whole-model32K speed, memory bandwidth,
+full lifecycle or adoption. Source implementation has not been built or run.

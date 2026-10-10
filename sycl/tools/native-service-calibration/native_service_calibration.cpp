@@ -262,22 +262,84 @@ static int index_correctness(const std::vector<Case>& cases,std::vector<Buffers>
  require(totals[0].mismatches==0&&totals[1].mismatches==0,"three-arm bits differ");
  std::cout<<"RESULT,iq2s_index_correctness_only_pass,no_timing_no_adoption\n";std::cout.flush();std::cerr.flush();require(bool(std::cout)&&bool(std::cerr),"output failure");return 0;
 }
+
+// Private dot timing: expected words are immutable and prepared before clocks.
+static int index_timing(const std::vector<Case>& cases,std::vector<Buffers>& work,
+ const std::array<LayerInput,48>& inputs,size_t aggregate,int host,unsigned entry,uint64_t seed){
+ require((entry&0xffc0U)==0x1f80U&&(_mm_getcsr()&0xffc0U)==0x1f80U,"timing requires nearest-even FTZ/DAZ off");
+ require(std::getenv("STRATA_NO_Q8K_AVX2")==nullptr,"custom Q8K quantizer must be enabled");
+ // Reuse the unchanged all-row Gate/Up/finish admission. Its RESULT is only an
+ // admission marker in this mode; final timing completion is required separately.
+ require(index_correctness(cases,work,inputs,aggregate,host,entry)==0,"timing admission failed");
+ Affinity affinity(host);const auto* tr=ggml_get_type_traits_cpu(GGML_TYPE_IQ2_S);
+ struct Outputs {std::array<float,1280> values{};std::array<uint8_t,64> guard{};};
+ std::vector<Outputs> expected(384),out(384);
+ for(size_t i=0;i<384;++i){out[i].guard.fill(0xa5);const auto& item=cases[i];
+  for(int r=0;r<640;++r)for(int role=0;role<2;++role)
+   tr->vec_dot(2560,&expected[i].values[r*2+role],0,item.blob.data()+size_t(role)*item.fmt.up_off+size_t(r)*item.fmt.gu_row,0,work[i].ap[0],0,1);
+ }
+ std::array<std::array<std::vector<size_t>,2>,2> orders;
+ for(int split=0;split<2;++split)for(size_t k=0;k<192;++k){orders[split][0].push_back(size_t(split)*192+k);if(k%24==0)orders[split][1].push_back(size_t(split)*192+k);}
+ // Prebind every row once; the same pointer sequence is used by all arms.
+ struct Row {const block_iq2_s* x;const block_q8_K* y;float* result;};
+ std::array<std::array<std::vector<Row>,2>,2> rows;
+ std::cout<<std::setprecision(17)<<"META,index_timing_scope,actual_weights_synthetic_inputs_caller_dot_only\nMETA,index_timing_seed,"<<seed
+ <<"\nMETA,index_timing_order,(position+round+seed_mod3)%3\nMETA,index_timing_boundary,steady_clock_dot_calls_and_preallocated_output_writes\nMETA,index_timing_expected,immutable_pretiming_trait_bits\nMETA,index_timing_owned_blob_bytes,"<<aggregate<<"\n";
+ for(int split=0;split<2;++split)for(int stratum=0;stratum<2;++stratum){
+  uint64_t bytes=0;for(size_t i:orders[split][stratum]){const auto& item=cases[i];bytes+=item.fmt.down_off;
+   if(stratum==1)std::cout<<"INDEX_HOT_ID,"<<split<<','<<i<<','<<item.layer<<','<<item.expert<<'\n';
+   for(int r=0;r<640;++r)for(int role=0;role<2;++role)rows[split][stratum].push_back({reinterpret_cast<const block_iq2_s*>(item.blob.data()+size_t(role)*item.fmt.up_off+size_t(r)*item.fmt.gu_row),static_cast<const block_q8_K*>(work[i].ap[0]),&out[i].values[r*2+role]});
+  }
+  std::cout<<"INDEX_WORKING_SET,"<<split<<','<<(stratum?"hot8":"stream192")<<','<<orders[split][stratum].size()<<','<<bytes<<','<<order_hash(orders[split][stratum])<<'\n';
+ }
+ uint64_t samples=0,warmups=0;
+ for(int split=0;split<2;++split)for(int stratum=0;stratum<2;++stratum)for(int round=0;round<21;++round)for(int position=0;position<3;++position){
+  unsigned arm=(unsigned(position)+unsigned(round)+unsigned(seed%3))%3;
+  const auto& order=orders[split][stratum];const auto& calls=rows[split][stratum];
+  require((_mm_getcsr()&0xffc0U)==0x1f80U,"timing MXCSR controls changed");
+  for(size_t i:order)input_check(cases[i].fmt,inputs[cases[i].layer],1);
+  // The switch and dot traversal are timed; no exp/Down/pool/check/hash/log here.
+  auto start=Clock::now();
+  switch(arm){
+   case 0:for(const auto& row:calls)tr->vec_dot(2560,row.result,0,row.x,0,row.y,0,1);break;
+   case 1:for(const auto& row:calls)*row.result=isolated_iq2s::direct_control(2560,row.x,row.y);break;
+   case 2:for(const auto& row:calls)*row.result=isolated_iq2s::index_candidate(2560,row.x,row.y);break;
+  }
+  auto end=Clock::now();
+  require((_mm_getcsr()&0xffc0U)==0x1f80U,"timing arm changed MXCSR controls");
+  uint64_t hash=14695981039346656037ULL,bytes=0;
+  for(size_t i:order){
+   require(!std::memcmp(out[i].values.data(),expected[i].values.data(),sizeof(out[i].values)),"timed dots differ from immutable expected bits");
+   for(auto b:out[i].guard)require(b==0xa5,"timed output guard changed");
+   input_check(cases[i].fmt,inputs[cases[i].layer],1);bytes+=cases[i].fmt.down_off;
+   for(float f:out[i].values){uint32_t word=std::bit_cast<uint32_t>(f);for(unsigned k=0;k<4;++k){hash^=(word>>(k*8))&255U;hash*=1099511628211ULL;}}
+  }
+  require(strata::core::release_gpu_fn().load()==nullptr,"GPU callback changed");
+  if(round<3)++warmups;else ++samples;
+  std::cout<<"INDEX_TIMING,"<<split<<','<<(stratum?"hot8":"stream192")<<','<<(arm==0?"trait":arm==1?"direct":"register")<<','<<round-3<<','<<(round<3?1:0)<<','<<position<<','<<order.size()<<','<<order.size()*640<<','<<calls.size()<<','<<bytes<<','<<order_hash(order)<<','<<hash<<','<<ms(start,end)<<','<<host_cpu()<<'\n';
+ }
+ require(samples==216&&warmups==36,"timing sample completeness");
+ std::cout<<"INDEX_TIMING_COMPLETE,216,36,18,3,2,2,3\nRESULT,iq2s_index_timing_complete,not_model_performance_or_adoption\n";
+ std::cout.flush();std::cerr.flush();require(bool(std::cout)&&bool(std::cerr),"output failure");return 0;
+}
 #endif
 
 int main(int argc,char** argv){try{
  require(argc==10||argc==11,"usage: native_service_calibration PACK PRIMARY TSV GU DOWN NT TASKS BATCH SEED [--correctness-only]");
  bool correctness_only=argc==11&&std::string(argv[10])=="--correctness-only";
  bool index_only=argc==11&&std::string(argv[10])=="--iq2s-index-correctness-only";
- require(argc==10||correctness_only||index_only,"unknown mode");
+ bool index_timing_only=argc==11&&std::string(argv[10])=="--iq2s-index-timing-only";
+ require(argc==10||correctness_only||index_only||index_timing_only,"unknown mode");
 #ifndef STRATA_CALIBRATION_IQ2S_INDEX_CHECK
- require(!index_only,"IQ2S index mode disabled at build time");
+ require(!(index_only||index_timing_only),"IQ2S index mode disabled at build time");
 #else
- const unsigned index_entry_mxcsr=index_only?_mm_getcsr():0;
+ const unsigned index_entry_mxcsr=(index_only||index_timing_only)?_mm_getcsr():0;
+ if(index_timing_only){require((index_entry_mxcsr&0xffc0U)==0x1f80U,"timing requires absolute MXCSR controls0x1f80");require(std::getenv("STRATA_NO_Q8K_AVX2")==nullptr,"timing requires STRATA_NO_Q8K_AVX2 absent");}
 #endif
  uint64_t gu_type=decimal(argv[4]),down_type=decimal(argv[5]),nt_value=decimal(argv[6]),tasks_value=decimal(argv[7]),batch_value=decimal(argv[8]),seed=decimal(argv[9]);
  require(gu_type==18||gu_type==21||gu_type==22||gu_type==23,"GU cell type");require(down_type==20||down_type==42,"Down cell type");
  require(nt_value==1||nt_value==2,"NT cell");require(tasks_value==0||tasks_value==6,"tasks cell");require(batch_value==1||batch_value==6,"batch cell");
- require(!index_only||(gu_type==22&&down_type==20&&nt_value==1&&tasks_value==0&&batch_value==1),"index mode requires GU22 Down20 NT1 tasks0 batch1");
+ require(!(index_only||index_timing_only)||(gu_type==22&&down_type==20&&nt_value==1&&tasks_value==0&&batch_value==1),"index mode requires GU22 Down20 NT1 tasks0 batch1");
  int nt=int(nt_value),tasks=int(tasks_value),batch=int(batch_value);require(sizeof(void*)==8&&c::cpu_avx2_ok(),"64-bit AVX2 host required");
  require(std::getenv("LD_PRELOAD")==nullptr&&std::getenv("LD_AUDIT")==nullptr,"preload/audit forbidden");
  if(correctness_only||index_only){const char* debug=std::getenv("LD_DEBUG");require(debug==nullptr||std::string(debug)=="libs","correctness loader observation accepts LD_DEBUG=libs only");}
@@ -307,7 +369,8 @@ int main(int argc,char** argv){try{
  }
  std::vector<Buffers> work(384);double gu_delta=0,down_delta=0;
 #ifdef STRATA_CALIBRATION_IQ2S_INDEX_CHECK
- if(index_only){for(size_t i=0;i<cases.size();++i)work[i].bind(inputs[cases[i].layer],1);
+ if(index_only||index_timing_only){for(size_t i=0;i<cases.size();++i)work[i].bind(inputs[cases[i].layer],1);
+  if(index_timing_only)return index_timing(cases,work,inputs,aggregate,topology.host_core,index_entry_mxcsr,seed);
   return index_correctness(cases,work,inputs,aggregate,topology.host_core,index_entry_mxcsr);}
 #endif
  for(size_t i=0;i<cases.size();++i){auto& b=work[i];const auto& item=cases[i];b.bind(inputs[item.layer],nt);

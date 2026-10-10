@@ -1,0 +1,103 @@
+IQ2S real-cohort private timing implementation v1
+SOURCE ONLY / UNEXECUTED. No configure/build/compiler/preprocess/syntax/test/import/
+runtime/model-payload/inference/device/profiler/objdump/Git/cleanup performed.
+Root owns all execution/qualification under shared lock. New isolated worktree:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-actual-cohort-timing-20261010
+Owner-supplied base508da185; parent IQ worktree and shared GGML not modified.
+Read full returned R116 SHA3e9f1404780dcc1f7d05e3a90dc3e9c815e6ea0a8dcbf44e5df32b2e1e92ff93,
+R111,R115 and root committed actual-linked REVIEW.md. Historical registry-v52
+SHA2f573bc46f79e78c7fa231a786cdf9ab39fd7ed62781f7349e5b8f83f9dfb900.
+
+Edited files, bytes/SHA256:
+sycl/tools/native-service-calibration/native_service_calibration.cpp
+36174 cef3a25e5360a07405e5fac32e454689781cf11d479bac92df616ed40b44bf80
+sycl/tools/native-service-calibration/README.md
+21427 f62ba8cf334fc7edb2cfbf78b1b2b4ca79c29d683a4a526324246afc6581925a
+Unchanged CMake SHA b00f32668d59bea9d7e0380393046f44d1ad1616577f9c8611934f9d4d54a203;
+unchanged isolated dot TU bb20df83d7f76429f7c65dd4f03868a2cc8e161680092e49aa31cf2e6cf93bfd;
+unchanged header40497188e7079ad87c2f831b7556d5f1ce51d45b4582aec03583d5ee4f178720.
+Production/standalone fixture/source/table/flags remain untouched.
+
+Private optional argc11 --iq2s-index-timing-only uses existing OFF-default
+STRATA_CALIBRATION_IQ2S_INDEX_CHECK. OFF rejection, unknown-mode rejection, exact
+GU22 Down20 NT1 tasks0 batch1 checks, absolute caller MXCSR control0x1f80 and
+STRATA_NO_Q8K_AVX2 absence all occur before pack/model opens. Existing default and
+correctness modes retain their branches/thresholds. Timing forbids LD_DEBUG in
+addition to existing preload/audit rejection; no worker pool/profiler is started.
+
+Reuse existing16KiB frozen TSV192+192, NativeRolePlan/384blob/input/work.ap preparation,
+exact756940800B owned geometry and1GiB bound. Same unchanged all384 Gate/Up/finish
+three-arm exact admission runs before any clocks. Its old correctness RESULT is
+an admission marker only in timing mode, NOT final timing completion. Then saved
+immutable expected Gate/Up bits are generated from actual trait before timing.
+No altered current arm acts as the round's oracle. All IEEE bits participate.
+Two384*1280 float buffers plus guards and finite prebound Row tables are allocated
+before timing (~4MiB floats); source memory bounds are not RSS guarantees.
+Caller production host pin/RAII covers timing; no workers/Down/fullfinish calls.
+Absolute MXCSR is rechecked before/after each arm; production input bytes are
+rechecked with GGML outside clocks. No runtime FP controls are changed.
+
+Fixed per-split frozen-order strata:
+stream192 all192 IDs,122880 Gate/Up rowpairs245760calls,201523200 GUweightbytes;
+hot8 within-split indices0,24,48,72,96,120,144,168,5120rowpairs10240calls,
+8396800 GUweightbytes. Hot lists enumerate actual IDs. No cache flush/cold/DRAM
+claim. Down blobs remain owned but are not traversed by timed arms. Bound pointers
+are identical between arms and repeated rounds, ID then row then Gate/Up order.
+Strata/split traversal fixed split0/1 then stream/hot; root controls fresh-process
+counterbalance/replication and CPU/frequency observations separately.
+
+Each split/stratum3warmups+18recorded rounds, three arm positions per round:
+arm=(position+round+seed%3)%3; trait/direct/register. Recorded18 rounds balance
+six samples per position per arm. Total36warmup rows216recorded rows. Real trait
+retains wider ABI; isolated helpers retain typed noinline3argument ABI. No ABI
+cost subtraction or worker inference. No new sign-scratch/index/scale/FMA/order
+candidate introduced; R116's sign-scratch hypothesis is explicitly outside scope.
+
+Timer: host steady_clock immediately before arm switch, then bounded prebound
+row loop dot calls and preallocated result stores, end clock after loop. Includes
+switch/traversal/real-call overhead. Excludes assembly, quantization, allocation,
+fileIO, comparisons, hashing, finish, Down, logging, order construction and metadata.
+No assumed kernel-only or pure-instruction time; no subtraction of dispatch overhead.
+Post-clock full bit compare against pretiming expected every ID/row/role, guards,
+input parity and observable FNV. Logs outside interval; they can affect later
+conditions. Existing kernel arithmetic/table bodies unchanged byte-for-byte.
+
+CSV schema:
+INDEX_HOT_ID split,globalindex,layer,expert (16records).
+INDEX_WORKING_SET split,stratum,IDs,GUbytes,orderFNV (4records).
+INDEX_TIMING split,stratum,arm,round(-3..-1 or0..17),warmup0/1,position,
+IDs,rowpairs,dotcalls,GUbytes,orderFNV,outputFNV,outer_ms,host_cpu (252records).
+outputFNV consumes four little-endian FP32word bytes in frozen ID/row/GateUp order;
+orderFNV uses existing ID index hash. INDEX_TIMING_COMPLETE216,36,18,3,2,2,3
+requires counts; final RESULT explicitly not model performance/adoption.
+Owner requires complete records, exact hashes/counts, successful final flush and
+normal owned exit0. Early admission PASS or sample rows do not establish success.
+Mismatched expected bits/guards/input/modes throw exit1. No rawpair/perrow output,
+activation/weight dump or policy file is saved. Existing original statuses preserved.
+
+Root reproduction UNEXECUTED:
+Fresh private build using unchanged standalone IntelLLVM2026.1/pinnedGGML recipe,
+-DSTRATA_CALIBRATION_IQ2S_INDEX_CHECK=ON, no globalmarch/fastmath/ISA substitutions.
+$CAL_BUILD/native_service_calibration $PACK $PRIMARY $COHORT_TSV 22 20 1 0 1 $FROZEN_SEED --iq2s-index-timing-only
+Private index-timing.csv/stderr, no old receipt overwrite. Shared lock plus existing
+finite CPU/wall/AS/FSize/NOFILE,1536MiB groupRSS and8MiB text budget required.
+Root must inspect new linked symbols/quantizer/flags even though dot TU unchanged.
+
+Pending qualification:
+Full diff/source review; fresh release+production ASAN/UBSAN; OFF rejection before
+payload opening; wrong arguments/cell/MXCSR/STRATA_NO_Q8K_AVX2 presence negatives;
+old modes unchanged. Verify exact frozen384 TSV/manifest/1152 role content SHA256
+identity before admitting copied blobs, stable pack lock/sourceidentity afterward.
+Reader still trusted-stable-source, not adversarial concurrent-writer proof.
+Verify clean STRATA environment, actual AVX2 gate/quantizer selected path, linked
+ABI/arithmetic and MXCSR nearest-even FTZ/DAZoff. Owner no-GPU imports/device check
+belongs separate correctness run, not a traced timing process. Require all216+
+36 rows, each stratum/order/position/count/hash, complete final/normal0/flush/no
+cleanup/survivors. Fresh-process replicated/counterbalanced analysis belongs root;
+no statistical performance qualification is claimed by source samples.
+
+Scope: actual selected IQ2S weights with fixed synthetic per-layer activations.
+No live activation/model inference, worker service, memory bandwidth/cold traffic,
+32K model speed, full262144 lifecycle, performance adoption or quota/policy claim.
+Root's previous unchanged384 release/sanitizer correctness PASS is prior evidence,
+not execution of this changed harness. This implementation remains untested.
