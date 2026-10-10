@@ -1,0 +1,351 @@
+{
+  "active": false,
+  "complete": false,
+  "passed": false,
+  "started_utc": "2026-10-10T20:41:58.799534+00:00",
+  "controller_sha256": "c589bd852e3bad321e34743d97182c6e41d993577183459495463ec25282ec8f",
+  "scope": "Private source-built Intel LLVM7.1.1 compiler/runtime for latest Xe free and Intel-only contrib-llvm qualification",
+  "model_executed": false,
+  "gpu_executed": false,
+  "queue_created": false,
+  "system_packages_installed": false,
+  "clone_manager": "ghq",
+  "source_tag": "v7.1.1",
+  "source_commit_expected": "504366f4b82ff00bbac7b0c956635eed8bc599d8",
+  "install_consumer": "latest e32 corrected free/contrib-llvm full engine builds",
+  "build_jobs": 6,
+  "link_jobs": 1,
+  "raw_log_budget_bytes": 67108864,
+  "total_wall_budget_seconds": 7200,
+  "compile_wall_budget_seconds": 5400,
+  "owner_sha256": "a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f",
+  "live_identity_cap": 256,
+  "cumulative_identity_cap": 200000,
+  "build_storage_review": "After successful install/hash and engine configure, retire compiler build intermediates; keep installed compiler and pinned source as current rebuild consumer.",
+  "prereq_scope": "lld18/hwloc/zstd development files extracted privately; no sudo/global install; no automatic xmx probe",
+  "owner_lifecycle_receipt_sha256": "913ad207f5674ff44b9741086e28023227a12bbf19a78097cbe2d9e4b8b97fb7",
+  "prerequisite_packages": [
+    {
+      "package": "libhwloc-dev=2.10.0-1build1",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-llvm-v711-source-root-v1/packages/libhwloc-dev_2.10.0-1build1_amd64.deb",
+      "bytes": 267592,
+      "sha256": "896791d90e996c00091a88cd349738d954cf0077e82458f992cd5dc810221d5e"
+    },
+    {
+      "package": "libzstd-dev=1.5.5+dfsg2-2build1.1",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-llvm-v711-source-root-v1/packages/libzstd-dev_1.5.5+dfsg2-2build1.1_amd64.deb",
+      "bytes": 363956,
+      "sha256": "6c9d2b5677a4677e9ead62f74723bb919113621a8028ed543a4d78952d54d165"
+    },
+    {
+      "package": "lld-18=1:18.1.3-1ubuntu1",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-llvm-v711-source-root-v1/packages/lld-18_1%3a18.1.3-1ubuntu1_amd64.deb",
+      "bytes": 1371582,
+      "sha256": "c574594d714bf445f4c2323fa99374c05b79be09a3899edbf9d4b7265c9ccc57"
+    }
+  ],
+  "previous_failed_receipt_sha256": "974432bd22fa49dd51765472f86deec55e56facd3cc9b2a87d56ae70b229e054",
+  "artifact_file_cap_bytes": 17179869184,
+  "previous_failure_diagnosis": "Prior compile-install exited1 at3283 of3865 targets because the privately extracted Debian hwloc header has its generated config.h in a multiarch directory absent from the include search path. Add a private exact-file relative alias; reuse closed build cache. No GPU executed; prior status unchanged.",
+  "private_hwloc_config_alias": {
+    "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/deps/usr/include/hwloc/autogen/config.h",
+    "target": "../../x86_64-linux-gnu/hwloc/autogen/config.h",
+    "canonical_path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/deps/usr/include/x86_64-linux-gnu/hwloc/autogen/config.h",
+    "sha256": "2aa3ed9c9258a73c329c63efae7bbfaf8c1b16c3ce80c0e1041fa676425b4f62",
+    "bytes": 6934,
+    "system_paths_modified": false
+  },
+  "build_environment": {
+    "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/bin:/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "CMAKE_PREFIX_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/deps/usr",
+    "PKG_CONFIG_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/deps/usr/lib/x86_64-linux-gnu/pkgconfig"
+  },
+  "mirror_default_branch": "sycl",
+  "source_commit": "504366f4b82ff00bbac7b0c956635eed8bc599d8",
+  "source_worktree": "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+  "source_patches": [
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/01-cuda-sync-points.patch",
+      "sha256": "aed73fb03f14ff4e75e0d14b3b27e4c66b7f04019a53cd2a68def112decc5526"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/02-hip-sync-points.patch",
+      "sha256": "5da9efb1437c8115bfee3d2d67a79c480994ecc1d577812e82503c9fa5a7d2b2"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/03-cuda-select-binary-2.patch",
+      "sha256": "207c324d9fe1df11c28ebbf02b80b3eaac9ca3b44b378032fd900ec926bb05da"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/04-cuda-binary-to-adapter.patch",
+      "sha256": "d268bbee9e0dc38390da406b3177b9fa7218f224524af6bb3aa7d28ecd1313c6"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/05-cuda-binaries-to-adapter.patch",
+      "sha256": "710394640eb4eb9400c136ed3cfed5800b043019802a5272d1be2a89464bf400"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/06-cuda-host-register.patch",
+      "sha256": "728f527ed08e1136ad145c34b84fa3ba66ae485a048c5d464776bf83698b795c"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/07-cuda-host-register-table.patch",
+      "sha256": "344e44f9bc8464600ba4d927226aa39d9166827c352ac1a02e2b76c50fcdc14e"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/08-cuda-newer-matrix.patch",
+      "sha256": "493c01c756e2fdd91b10e66ccbeed4fb01c2d6006257fa0991b4d6f0eb6a50a6"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/09-cuda-binaries-to-adapter-2.patch",
+      "sha256": "eef0be7028a19fba1c2eae3a42c7e5bac8bd07234f6c213a82f1d76ae75521d6"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/10-cuda-temp-lists.patch",
+      "sha256": "f5166470e6ebe3c6fa08d837f6dcee486c950e217a5e7d03c0260a720dbf59a8"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/11-build-job-pools.patch",
+      "sha256": "93d5bade32db36b51aa572d9d592202da4097031ce536bb2285b6e78cc2c36ea"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/12-hip-libclc-target.patch",
+      "sha256": "e37f7a1ad7c2d26bb3c4a4f457d4fca3aa19bed7f7dc77b5ddaa64dfdf44382e"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/13-hip-host-register.patch",
+      "sha256": "56708234b14fbaf4f572f125d37a5e2481b8d3986802b5bdaa63aea1f474c1cc"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/14-hip-queue-empty.patch",
+      "sha256": "daf1d5e4c0db33666966b202d4370894dc4bfcb656d115376b727030ae700acc"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/15-hip-exit-unload.patch",
+      "sha256": "54df74b5dbe5469b8f8d9859a154025c1c4d6efeed3031315ebeb3ae14f2db63"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/16-hip-libclc-fma.patch",
+      "sha256": "ea151faca4acc8a24f1aa7805f1750d7ba3c6b35a1890278b143b49b08d0250e"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/intel-llvm/patches/17-hip-bundle-arch.patch",
+      "sha256": "7444a09ca27972b2fd48122b87d29bb3a0aac1be3db08b5b26f3f414328fb0f5"
+    }
+  ],
+  "configuration_complete": true,
+  "cache_sha256": "5275fb208738e3fde22ceb945d246841d2be5b5a9ce5ebce36914421112a9f6c",
+  "source_diff_sha256": "749489163d93c2f5f8a73d8f5f70e5d1e6c66f163ec3b89d9502ce95d2f48e27",
+  "configure_script_sha256": "83ff12b8e9dc03fcc6c5a079b93961df37503bbd480aebe55f5200a77da7ed8e",
+  "compile_script_sha256": "8303e946a5a3114969d61093ce1364bb9f7dd57704dbd4abdae349e1699f2f0c",
+  "error": "RuntimeError('closed normal compile-install')",
+  "finished_utc": "2026-10-10T20:42:06.294258+00:00",
+  "commands": [
+    {
+      "label": "lld-version",
+      "argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/bin/ld.lld",
+        "--version"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "CMAKE_PREFIX_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/deps/usr",
+        "PKG_CONFIG_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/deps/usr/lib/x86_64-linux-gnu/pkgconfig"
+      },
+      "started_utc": "2026-10-10T20:41:58.814902+00:00",
+      "finished_utc": "2026-10-10T20:41:58.941180+00:00",
+      "wall_seconds": 60,
+      "elapsed_seconds": 0.12607403900074132,
+      "exit_code": 0,
+      "errors": [],
+      "survivors": [],
+      "observation_complete": true,
+      "session_empty": true,
+      "direct_child_reaped": true,
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "logs": {
+        "lld-version.stdout": {
+          "bytes": 48,
+          "sha256": "1479084e18fdeec3181dd42501959b88ee5ba6093df14b89ffa418b07afadcd4"
+        },
+        "lld-version.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "default-branch",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm",
+        "symbolic-ref",
+        "--short",
+        "HEAD"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T20:41:58.942070+00:00",
+      "finished_utc": "2026-10-10T20:41:59.055829+00:00",
+      "wall_seconds": 60,
+      "elapsed_seconds": 0.11345736200019019,
+      "exit_code": 0,
+      "errors": [],
+      "survivors": [],
+      "observation_complete": true,
+      "session_empty": true,
+      "direct_child_reaped": true,
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "logs": {
+        "default-branch.stdout": {
+          "bytes": 5,
+          "sha256": "f2dfefb936e07cab81fefb7efde95d7e0ba2ee935cab3bb7cfaa45a5a56eed62"
+        },
+        "default-branch.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "source-head",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "rev-parse",
+        "HEAD"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T20:41:59.056399+00:00",
+      "finished_utc": "2026-10-10T20:41:59.177385+00:00",
+      "wall_seconds": 60,
+      "elapsed_seconds": 0.12076237300061621,
+      "exit_code": 0,
+      "errors": [],
+      "survivors": [],
+      "observation_complete": true,
+      "session_empty": true,
+      "direct_child_reaped": true,
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "logs": {
+        "source-head.stdout": {
+          "bytes": 41,
+          "sha256": "cc8ecd0d7059046202e6dceabf098d84c8f0a250183432dcd3b97db16e4ed5d2"
+        },
+        "source-head.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "source-diff",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011",
+        "diff",
+        "HEAD"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T20:41:59.181983+00:00",
+      "finished_utc": "2026-10-10T20:41:59.420188+00:00",
+      "wall_seconds": 60,
+      "elapsed_seconds": 0.23771421799938253,
+      "exit_code": 0,
+      "errors": [],
+      "survivors": [],
+      "observation_complete": true,
+      "session_empty": true,
+      "direct_child_reaped": true,
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 37507072,
+      "logs": {
+        "source-diff.stdout": {
+          "bytes": 29379,
+          "sha256": "749489163d93c2f5f8a73d8f5f70e5d1e6c66f163ec3b89d9502ce95d2f48e27"
+        },
+        "source-diff.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "compile-install",
+      "argv": [
+        "/usr/bin/nice",
+        "-n",
+        "10",
+        "/usr/bin/python3",
+        "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011/buildbot/compile.py",
+        "-o",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/build",
+        "-j",
+        "6"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "CMAKE_PREFIX_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/deps/usr",
+        "PKG_CONFIG_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/deps/usr/lib/x86_64-linux-gnu/pkgconfig"
+      },
+      "started_utc": "2026-10-10T20:41:59.421279+00:00",
+      "finished_utc": "2026-10-10T20:42:06.293343+00:00",
+      "wall_seconds": 5400,
+      "elapsed_seconds": 6.871713389000433,
+      "exit_code": 1,
+      "errors": [],
+      "survivors": [],
+      "observation_complete": true,
+      "session_empty": true,
+      "direct_child_reaped": true,
+      "peak_live_owned_identities": 21,
+      "peak_session_rss_bytes": 1036173312,
+      "logs": {
+        "compile-install.stdout": {
+          "bytes": 10569,
+          "sha256": "ba5685498d61a4713a5da7a2bb8b5c6013f6915b6c75fa842ecda2e36e4108eb"
+        },
+        "compile-install.stderr": {
+          "bytes": 950,
+          "sha256": "39f47babcfd7860094740a9ae249acd058ebd23bea8ae55ef7efa4606af4240b"
+        }
+      }
+    }
+  ],
+  "derivative": true,
+  "original_receipt": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-llvm-v711-source-root-v4/record.json",
+    "sha256": "5c8723b62ce7fb48ea3e7c759dfd811a390589f4ebec38ed0fe0be2f685ceb0d",
+    "bytes": 26811
+  },
+  "original_status_unchanged": true
+}

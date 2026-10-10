@@ -1,0 +1,56 @@
+{
+  "registry_version": 115,
+  "created_utc": "2026-10-10T20:47:24.582908+00:00",
+  "registry_format": "incremental; follow previous_committed_registry for earlier reports",
+  "research_completed": 476,
+  "previous_committed_registry": {
+    "path": "bench/results/2026-10-11-parallel-round91/report-registry-v114.json",
+    "sha256": "2a37e03b264f43f4b8f0d668e36f3002dd1fedbc457c8d43ee8bce6cbceddd4c",
+    "reports": 473
+  },
+  "reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round359-xe-mtp-v4-completion-and-caller-qualification.txt",
+      "archive": "bench/results/2026-10-11-parallel-round92/round359-xe-mtp-v4-completion-and-caller-qualification.txt",
+      "sha256": "e0d9eec55d34d3411fbc35c0a7539a601829251e465789441f71d48a6d6f6129",
+      "bytes": 8186,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "qualification": "source/report-only; no fresh build/test/GPU measurement"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round360-xe-final-context-speculative-window-bounds.txt",
+      "archive": "bench/results/2026-10-11-parallel-round92/round360-xe-final-context-speculative-window-bounds.txt",
+      "sha256": "dbbb232660a1f8f3118d9953392d3b0269040418e4438894810e039d813e2fa1",
+      "bytes": 9887,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "qualification": "source/report-only; no fresh build/test/GPU measurement"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round361-historical-official-pristine-settings-search.txt",
+      "archive": "bench/results/2026-10-11-parallel-round92/round361-historical-official-pristine-settings-search.txt",
+      "sha256": "58a719285bd066fa640ea577fba06c0ab38607cb8385102f92e9a571986b936e",
+      "bytes": 8466,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "qualification": "source/report-only; no fresh build/test/GPU measurement"
+    }
+  ],
+  "new_reports": [
+    "round359-xe-mtp-v4-completion-and-caller-qualification.txt",
+    "round360-xe-final-context-speculative-window-bounds.txt",
+    "round361-historical-official-pristine-settings-search.txt"
+  ],
+  "recurring_research_policy": "Repeated distinct read-only Luna scopes, actual prior-report paths shared, no mid-task intervention. Main owns and serializes tests/build/GPU/cleanup.",
+  "live_agent_snapshot": {
+    "R362": "read-only official v0142 final-context bounds source review",
+    "Sol_v5": "source-only Xe normal generate/serve/MTP physical context/output window correction; report pending",
+    "source-llvm-bootstrap-v5": "active; no receipt/log copied"
+  },
+  "root_review_corrections": {
+    "R360": "Prior registry unavailable because an incorrect path under sycl/.worktree was used; exact existing docs worktree path supplied in subsequent R362. Root independently read the actual R359/R360 reports.",
+    "R359": "Static v4 caller ownership qualification only. It does not cover final-context indices; R360 found a separate bound hazard now delegated to Sol v5. No normal model execution/build/tests has qualified the full overlay.",
+    "R361": "465 indexed prior compact reports plus direct recent evidence audited. Bounded absence of independent official/pristine search; explicit parameters and local tuned sequence do not demonstrate an official optimum."
+  }
+}

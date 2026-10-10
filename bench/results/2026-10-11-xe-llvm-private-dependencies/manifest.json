@@ -1,0 +1,77 @@
+{
+  "created_utc": "2026-10-10T20:46:02.640487+00:00",
+  "scope": "Closed host compiler bootstrap failures and exact private dependency corrections; no GPU test, no source-countermeasure adoption",
+  "failures": [
+    {
+      "version": 3,
+      "passed": false,
+      "active": false,
+      "complete": false,
+      "exit_code": 1,
+      "seconds": 2429.265034926,
+      "receipt": "compiler-v3-receipt.json",
+      "diagnostic": "compiler-v3-failure.txt",
+      "diagnosis": "private Debian multiarch hwloc generated config.h missing from include search",
+      "diagnostic_sha256": "f858a8182cf1423bc4b5f9789b075eb220e1e9682dec7445e2e2e3a7efb70a10",
+      "diagnostic_bytes": 5155
+    },
+    {
+      "version": 4,
+      "passed": false,
+      "active": false,
+      "complete": false,
+      "exit_code": 1,
+      "seconds": 6.871713389000433,
+      "receipt": "compiler-v4-receipt.json",
+      "diagnostic": "compiler-v4-failure.txt",
+      "diagnosis": "private hwloc dev symlink target and GCC library search missing",
+      "diagnostic_sha256": "4b90726fcb0e10058623f6ac75add2b912f33a01f773bb1a7300d1ab6932fc4b",
+      "diagnostic_bytes": 3963
+    }
+  ],
+  "controllers": [
+    {
+      "source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-llvm-v711-source-v3/run_root.py",
+      "archive": "bench/results/2026-10-11-xe-llvm-private-dependencies/controllers/source-v3/run_root.py",
+      "sha256": "9dccb7e829c1ad4dadacef03f9c3695ecd9f61da74636237395e6e553db79cf5",
+      "bytes": 7627
+    },
+    {
+      "source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-llvm-v711-source-v3/direct_owner.py",
+      "archive": "bench/results/2026-10-11-xe-llvm-private-dependencies/controllers/source-v3/direct_owner.py",
+      "sha256": "a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f",
+      "bytes": 14781
+    },
+    {
+      "source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-llvm-v711-source-v4/run_root.py",
+      "archive": "bench/results/2026-10-11-xe-llvm-private-dependencies/controllers/source-v4/run_root.py",
+      "sha256": "c589bd852e3bad321e34743d97182c6e41d993577183459495463ec25282ec8f",
+      "bytes": 8545
+    },
+    {
+      "source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-llvm-v711-source-v4/direct_owner.py",
+      "archive": "bench/results/2026-10-11-xe-llvm-private-dependencies/controllers/source-v4/direct_owner.py",
+      "sha256": "a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f",
+      "bytes": 14781
+    },
+    {
+      "source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-llvm-v711-source-v5/run_root.py",
+      "archive": "bench/results/2026-10-11-xe-llvm-private-dependencies/controllers/source-v5/run_root.py",
+      "sha256": "283b2bd1624ed818e12162f5ea66c458dec58b07724351416104d74ce2a04058",
+      "bytes": 9410
+    },
+    {
+      "source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-llvm-v711-source-v5/direct_owner.py",
+      "archive": "bench/results/2026-10-11-xe-llvm-private-dependencies/controllers/source-v5/direct_owner.py",
+      "sha256": "a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f",
+      "bytes": 14781
+    }
+  ],
+  "active_result_archived": false,
+  "compiler_v5_state_at_archive": "active; original receipt/logs not copied",
+  "system_paths_modified": false,
+  "deletions": [],
+  "consumer": "current source LLVM bootstrap v5, then corrected e32 free/contrib-llvm build",
+  "next_review": "after compiler install closure; only lock-serialized cleanup after evidence verification",
+  "archive_validation": "Compact receipt closure/status, controller/report SHA256, registry counts and document links passed. Compiler diagnostic bytes retain original trailing spaces via narrowly scoped .gitattributes; source whitespace checks remain separate."
+}

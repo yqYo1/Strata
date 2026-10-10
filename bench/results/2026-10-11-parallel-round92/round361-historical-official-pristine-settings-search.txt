@@ -1,0 +1,43 @@
+# R361 — historical official/pristine settings-search audit
+
+Date: 2026-10-11 (Asia/Tokyo). Read-only follow-up to R357. The question is whether retained historical evidence shows a settings search performed on official/pristine Strata itself, rather than a local/control/integrated tuning exercise later compared with upstream. No builds, tests, benchmark/GPU/runtime runs, process/service operations, Git mutations, log cleanup, or source edits were made. This report is the only write. The prohibited `prefill-gemm-only-contract-root-v1/record.json` was not read.
+
+## Finding
+
+I found no retained evidence that a parameter search was independently run on the official/pristine v0.1.40.2 or v0.1.41 build. The available pristine long-prompt receipts are repeated runs of one requested recipe per version. Non-default arguments were specified, but there is no recorded alternate pristine arm, candidate range, per-setting screening, selection rule, or selected-best verification. Thus the effective values below are observed settings, not demonstrated optima. This is a bounded finding about the inspected retained corpus; it is not proof that no unindexed or unretained historical experiment ever existed.
+
+## Search boundary
+
+The user TODO and `audit.json` were read at their exact requested location: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-upstream-parameter-audit/`. Their hashes are respectively `2b5f568c86c91e144dcd4eaff94e345b198dc4b06f3837b204fbeaad9d4ac66d` and `0de01ed45ba37a6f072a9997ce0ea4257f216fb5554a2b8901b2fa3a7fab8312`.
+
+The retained index is `bench/results/2026-10-11-parallel-round91/report-registry-v114.json`, SHA-256 `2a37e03b264f43f4b8f0d668e36f3002dd1fedbc457c8d43ee8bce6cbceddd4c`. It contains eight new report entries and points to the prior v113 registry with 465 entries. I searched those 465 indexed compact `.txt` reports by content for official/upstream/pristine provenance combined with parameter/search/sweep/tuning terms; all 465 report paths existed. The scan did not include raw API traces, per-token logs, full runtime dumps, or environment dumps. I read the directly relevant prior compact reports: R331–R333, R338, R343, R349, R352, R354, R357, and R358. R331–R333 cover source/API/inference deltas; R343/R349 cover server integration/tests; R352/R354 are source/runtime eligibility audits; none is a pristine settings-search result. R338 is an older release comparison and reports rates for XeStrata versus upstream, not an isolated official settings search. R357 is the direct retained-run audit and R358 checks current official controls. Registry v114 adds no earlier pristine tuning result.
+
+The primary audit is intentionally derivative and does not change original run status. Its records and explicit scope flags say `pristine_independent_parameter_search_demonstrated=false`, `historical_search_exhaustively_audited=false`, `v0141_pristine_tuned_arm_found=false`, and `latest_official_measured=false`. The “not exhaustive” field is consistent with the boundary above.
+
+## What the retained pristine measurements actually did
+
+- **v0.1.40.2 pristine, two clean 32K runs:** both requested `--prefill 8192`, `--expert-cache 128`, `--pool-workers 5`, `--pcie-frac 0`, MTP/speculation width 4, int8 KV, and 32,768 prompt tokens. They used the same argument-vector digest and configuration. The recorded effective prefill progress is 8,192-token increments; engine startup reports 144 expert slots / 281 MiB despite the request for 128. Reported per-process prefill/decode rates are 393.48/17.12 and 393.82/17.16 tok/s. These are repeats of a single recipe, with no setting alternatives or selection rule.
+- **v0.1.41 pristine, two clean 32K processes:** both used commit `fb58e0dbc8399662c0e47c76578c6e878b14f6cf`, the same argument-vector digest and requested recipe, with `STRATA_PREFILL_FIRST=0` and `STRATA_PREFILL_RING=8`. Both reached 6,144-token prefill progress increments and 144 expert slots / 281 MiB, not requested 8,192 and 128. The records include additional quality/health/performance eligibility fields, but again show no alternate pristine configuration. The compact summary reports two independent processes per mode and four fresh A/B/A/B reads per process; the reads within each process are not independent process launches. Its pure rates are split between first and later reads (331.59/16.71 and 348.89/17.13 prefill/decode tok/s), not a setting sweep.
+
+The exact receipts, hashes, effective progress, and status are enumerated in the audit JSON and R357. An independent 128-token smoke recipe is outside the long-context workload and supplies no long-context tuning point.
+
+## Similar-looking evidence that is not a pristine search
+
+The v0.1.41 “same-request” comparison ran pure, control, and integrated build modes with one shared request. The pure arm is pristine; control and integrated are distinct builds. It compares implementations at requested settings and does not vary settings within pristine. Actual chunk/cache admission also differs: pure used 6,144/144 slots while control and integrated used 6,144/128. This is a cross-build comparison, not selection of a pristine optimum.
+
+The separate v0.1.41 “tuned” sequence is even clearer: its recorded job order is control, integrated, integrated, control. It asserts effective 8,192-token chunks and 128 slots, but contains no pristine arm and no parameter grid. Its `STRATA_PREFILL_COMPACT`, `STRATA_PREFILL_ATTN_LAYOUT`, `STRATA_PREFILL_LAYER_MAJOR`, `STRATA_KV_STAGE_OWN`, and `STRATA_KV_PREFETCH` controls are local tuning inputs. The fact that integrated beats control under that recipe cannot be credited to a pristine parameter search.
+
+R338's older public XeStrata/upstream release matrix also does not qualify: it compares release implementations and their rates, rather than isolating an official/pristine setting axis, screening candidates, and independently verifying the chosen setting. The official v0.1.42 reports R331–R354 are feature/source/runtime investigations, not new pristine GPU performance runs. TODO and audit explicitly record no latest v0.1.42 performance measurement.
+
+## Search range, selection rule, and current disposition
+
+There is no historical pristine candidate range or selection rule in the examined records to recover, and therefore no historical chosen-best effective value. The only historical values established are the single-recipe requests and the actual geometries listed above. Requested 8,192/128 should not be presented as optimal merely because they appeared on the command line; nor should the local tuned comparison's 8,192/128 be relabeled as a pristine result.
+
+R357 contains a *future* search proposal, not evidence of a past search: after the exact official source/runtime path passes the safety gate, screen chunk 4,096/6,144/8,192 and selected supported cache/worker/PCIe/KV/speculation axes one at a time; keep only correct rows whose actual admission is recorded and whose metric improves; then repeat the chosen configuration in independent processes and validate at a separate longer context. That proposal's ranges and rule must remain labeled prospective. Current official v0.1.42 remains unmeasured, and R352/R354 say the present B570 long-prefill/ordinary CPU-pool path does not pass the access-safety gate. No settings search should be inferred from or substituted for that missing measurement.
+
+## Evidence files
+
+- TODO: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-upstream-parameter-audit/TODO.md`.
+- Run index and status: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-upstream-parameter-audit/audit.json`.
+- v114 index: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-parallel-round91/report-registry-v114.json`.
+- Direct coverage/effective-control reports: `round357-official-pristine-parameter-search-coverage.txt` (SHA-256 `97757d5c304cb83469bf9c1f438070d0610051c44acdd6fdd94382727f2cee2d`) and `round358-official-v0142-effective-tuning-controls.txt` (SHA-256 `75a6fb870e9de5b158138364836736abc8ad1d868ac5c9f39074d67453830841`) in the same round91 directory. R354 official eligibility report SHA-256: `e8918a55f196d48ab07eaa8d6aec713d533c0e543f066a60ea46897c9e4ac047`.

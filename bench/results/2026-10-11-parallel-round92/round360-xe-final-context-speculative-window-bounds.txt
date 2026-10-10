@@ -1,0 +1,61 @@
+# Round 360 — Xe final-context speculative-window bounds
+
+Date: 2026-10-11 (Asia/Tokyo). Static, read-only source review of the corrected e32 tree. This report is the only file written. No test, build, compiler, GPU/runtime, profiler, process control, Git mutation, source edit, or cleanup was performed. No runtime or numerical result is claimed.
+
+## Source and prior evidence
+
+Target: `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011`, based on e32. Read the R350 exact-full-context diagnostic design, R353 authoritative host/KV ownership review, R355 metadata/caller-reachability review, R356 full-context probe/restore review, and implementation handoff `implementation-xe-e32-mtp-completion-v4.txt`. These reports do not cover physical bounds of normal speculative MTP draft lookahead. The supplied round-91 registry-v114 path was absent under the stated Strata workspace, so I could not consult it.
+
+Reviewed file hashes:
+
+- `src/program/generate.cpp`: `b482b5f8c2a5086896858bd37e61963363a0e618c0eb26ff34d8d987a415af26`
+- `src/core/mtp.cpp`: `3ca91108c35d9836a3bcab431d0dc01939e17e9b50150dd68c634d3b3a620fa4`
+- `src/core/session.cpp`: `cfcbf3126dc41640d4c8b8a9f1a4994b94c051202126c83f9538d285d245f332`
+- `src/core/verify.cpp`: `44d8667e973c44d889afac2387cf7686a1b3785d31fa22f22cc5c7097927e27a`
+- `src/core/layer.cpp`: `not captured in this pass; no edit was made`
+
+## Finding
+
+The verifier's main rows have a physical-context bound, but normal MTP lookahead does not. `MtpDrafter::draft` accepts `p` and `a` without checking them against `st_.max_cells`, then unconditionally stages draft cell `p+a` and up to `max_steps-1` further cells `p+a+j` before graph launch (`mtp.cpp:1163-1199)). The step records also set position `cell`, exclusive step `cell+1`, and block counter `(cell+1)/4` (`1182-1187)); QSA position/RoPE and KV append then consume those values. For spec 4, the usual `max_t_=4`, `max_drafts_=3` setup permits draft cells `p+a`, `p+a+1`, and `p+a+2` (`generate.cpp:7122-7125,10614-10615`; `mtp.cpp:1177-1179,1193-1194)). No per-call capacity or remaining-output cap reduces that depth.
+
+This is reachable near the edge. Standalone generation admits `prompt + max_new <= max_context` (`generate.cpp:3458-3462)), and the native speculative loop checks only `p+T <= max_context` before verifier execution (`10642-10680)). It stops calling draft after the emitted-token budget is exhausted (`10755-10756,10785-10790`), but that budget test does not constrain a draft made while one or more output tokens remain. For example, with a full-budget prompt, a next-window position at `C-1`, and one output remaining, the loop may attempt a verifier window of size four and currently reports out-of-context; before the next-window guard can do so, an earlier `draft_first` or post-commit `draft` can stage candidate rows beyond `C-1`. In the non-native first-window path, `draft_first` calls `draft(T, ..., cell=n_prompt-1, a=0)` (`generate.cpp:10594-10599); with `n_prompt=C-1`, spec 4, and the default no-catch-up-all behavior, draft cells include `C-1` and `C`, so the latter is outside the physical session. In the subsequent loop, the same extra rows are not bounded by the exact verifier span.
+
+The normal serve path has the same missing bound. It sets `max_drafts_` from `S_mtp` (`generate.cpp:7119-7125)), checks the verify span before `ver.run` (`9612,9647-9649)), then calls `mtp.draft(T, ...)` after commit when output remains (`9716-9719)). The main context test is not an admission for the additional MTP rows. The separate batch-MTP route limits each slot to one draft (`3906,7403-7404)) and only retains two-token rows when output and context slack permit; its case is narrower, but the MTP API itself still has no invariant enforcing that caller policy (`7437-7445)).
+
+This is a logical-capacity hazard, even though MTP KV streaming reserves extra physical *slots*. Default `mtp_window` is 32,768 (`generate.cpp:419)); MTP allocates a ring of `window + 4*max_t + 64` cells when applicable (`mtp.cpp:322-329)). That ring changes the number of resident slots, not the logical extent: `kv_plan` computes page count from `max_cells`, the `QsaState` keeps `st.max_cells=max_cells`, and its ring table maps those existing pages to slots (`layer.cpp:614-631,749-755,832-843)). The MTP state is initialized with the main state's exact `max_cells` and shares its RoPE tables (`mtp.cpp:322-342)); there is no extra page-table or RoPE-table allowance. A draft cell equal to `max_context` therefore is not made legal by ring slack, `--kv-grow`, or a larger VRAM resident tier. In the ordinary non-windowed MTP case, no ring slack is selected at all.
+
+## Catch-up, rejection, and state semantics
+
+The default `mtp_catchup_all()==false` changes `T` to `a+1` before capturing the MTP round (`mtp.cpp:1172-1179)). Thus a rejected verifier suffix is not caught up into the drafter's KV. With `STRATA_MTP_CATCHUP_ALL=1`, the entire verified window is appended, rejected rows included. The following draft writes its accepted-prefix/candidate rows at their logical positions before reading them; this is the existing overwrite-forward strategy, rather than an explicit KV rollback. The v4 lifetime implementation improves completion/ownership of those writes but does not add position validation. Do not reinterpret this strategy as permission to stage a cell outside capacity.
+
+Prefix catch-up is also separate from the end bound. `set_prompt_len(n)` and `first_needed()` can skip old MTP K/V below the configured lookback (`mtp.hpp:53,144)); the MTP ring's window and 64-cell margin support that rolling history. It does not extend the upper logical address range.
+
+## Minimal source correction and generation behavior
+
+Before any record write or submission, make `draft()` validate its catch-up span against the drafter's logical extent using overflow-safe subtraction (at minimum `p >= 0` and `p <= st_.max_cells - T`). Then calculate the usable draft-step count from the cells remaining after `p+a`, and cap the existing `max_steps` by that count. Keep the mandatory first proposal only when `p+a < st_.max_cells`; otherwise return a checked “no room for MTP draft” condition for the caller to handle. For each retained `j), require `p+a+j < st_.max_cells`. This bounds the KV page, QSA position/RoPE, and exclusive step fields without relying on allocation slack. It also preserves all existing draft behavior away from the boundary.
+
+The caller should reduce the verifier window to the number of real cells remaining (`T <= max_context-p`) rather than fail a valid generation request solely because the nominal speculation width is too large near the end. After the accepted prefix is known, pass an explicit remaining-output/position budget or compute the equivalent allowed draft count before calling MTP. If no useful candidate remains, use the ordinary one-row verifier path. A cap on draft lookahead must not reduce the count of tokens the user requested: the verifier's bonus row can still produce a valid token, and the next iteration can shrink its window again. For the exact-boundary request `prompt+max_new == max_context`, the last generated token may be verified at the last in-range cell, but no speculative KV/rope write may target the next cell. Do not increase advertised context, allocate hidden cell slack, or change KV precision to mask this boundary.
+
+The source-level audit cannot determine whether callers prefer a one-row verifier fallback or a clean context-exhaustion response when they have no remaining physical row. Main should choose one behavior and keep it consistent across standalone and serve.
+
+## Main-owned verification
+
+Useful tests for Main to add/run after implementation:
+
+1. A host-side bounds helper test for `C=4`/unaligned and production-size extents: legal `p+T=C`, invalid negative/overflowing `p`, `p+a=C`, and spec-4 maximum depth at `a=T-1). Verify the computed candidate count never stages a cell `>=C).
+2. Production MTP boundary cases with spec 4, `max_drafts=3`, `mtp_window=0` and 32768, including the first `draft_first`, a post-commit partial acceptance, and exact `p+T=C). Put guard bytes around page table/RoPE backing in a host-testable indexing harness if available; at runtime check the device status and no append/step position above `C-1`.
+3. Compare a shortened final verifier window against a forced one-token reference run on the same model and token stream. Verify output count and final token match the ordinary no-spec path, including `max_new=1`, a remaining budget smaller than spec width, and a rejected window. Repeat for native standalone and serial serve. Cover both catch-up settings and a QSA ring.
+4. Ensure a capacity refusal happens before any MTP enqueue and leaves no newly pending writer. Retain separate queue/lifetime fault tests from v4; a completion pass does not validate cell bounds.
+
+This review did not build or execute any test. It finds a source-level bounds gap, not evidence of an observed GPU fault or of numerical mismatch.
+
+## Source references
+
+- `src/program/generate.cpp:3458-3462` — prompt/output budget admission.
+- `src/program/generate.cpp:7119-7125,9612-9650,9716-9747` — serve MTP depth, verifier boundary and post-commit draft caller.
+- `src/program/generate.cpp:10594-10680,10742-10795` — initial draft, bounded verifier span, output-budget check and subsequent draft.
+- `src/core/mtp.cpp:322-342` — MTP logical capacity and ring allocation.
+- `src/core/mtp.cpp:1163-1254` — unchecked draft positions, graph submissions and output steps.
+- `src/core/layer.cpp:614-631,749-755,832-843` — ring slots versus logical page-table extent.
+- `src/core/verify.cpp:2475-2479` — verifier's own main-session span check.
+- `include/strata/core/mtp.hpp:53-55,144,185` — prompt lookback and draft-depth state.
