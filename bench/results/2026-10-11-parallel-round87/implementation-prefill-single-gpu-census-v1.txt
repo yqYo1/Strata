@@ -1,0 +1,91 @@
+SOURCE-ONLY HANDOFF — single-GPU census eligibility correction and CPU contract
+
+DECISION: NO missing single-GPU enablement was found in the pinned actual
+caller/header. R310's predicate interpretation is inverted. The final
+constructor argument is unsupported_multi_gpu; true invalidates, false admits.
+With envexact1 and m.pp/next_/transfer_context/peer_portable allabsent, original
+callerpassesFALSE, headeronTRUE and allocates the collector. Defaultquiet env
+absent intentionallyonFALSE. Removing the rejection would wrongly admit peer/
+pipeline/layermajor modes whose reconciliation is not supported. No behavioral
+enablement change is justified. Report correction sent to parent duringreview.
+
+Assigned NEW files only, under B/prefill-single-gpu-census-v1:
+prefill.cpp SHA812f0790aad1f4cef052747c112308faf99f22b47d9b105c8c184b89dacfe42e
+include/strata/prefill_route_census.hpp SHAc673382e9f4bf63919489cf00daa71bec793ff7b4584c203291380b827dc110b
+qualify_census.cpp SHA737ae6ac3f93f610798fa4b234e7acd369bb46da9511ef3dd206d61e8984dd6f
+check_receipt.py SHAdaa39bbe3c0da63fc4d1f05c3bfc8448bf6dcdbb11485727a21fb3c5a8038608
+root_recipe.txt SHA2ee3d68308551c19c20005c26bb41e50252dd274c8354055e44793220a8c57ef
+B=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007
+
+Base actual caller1cf7e911a555e8611c1368a4d18d4ba81c95027bb8de77f89ad65ac64b05fc3c
+and required one-waitfixed private basee0685a85bc391b6ef916c33ea3f959680088832b8a9a7d706668acba3c47f8d0
+preserved. Header copied BYTE-IDENTICALLY from actualTU include:
+B/prefill-gemm-only-tu-root-v1/include/strata/prefill_route_census.hpp.
+Read FULL header and relevant full caller lifecycle/hooks/issuer/source/compute/
+fold/finish contracts; R310 fullreport read (truncatedsegment separatelyread).
+No sourceexecution/build/test/GPU/process/hardware/Git/service/cleanup. No
+active receipt/payload inspected. Parent owns all validation under sharedlock.
+
+Minimal caller delta: existing exact short-circuit rejectionexpression moved
+into named constbool census_unsupported_multi_gpu_or_pipeline, then passed to
+unchanged constructor; two comments explain rejection rather than enablement.
+Expression/order/getenvcount unchanged, peer_portable only evaluated if env1
+and previouspredicateoperandsfalse, including original defaultOFF shortcircuit.
+No defaultallocation/log/clock/devicecommands/waits, no kernel/copy/math/route
+schedule change. Prior one-wait fix retained. Root may retain existingbase
+without this clarityrefactor; optin alreadyeligible, CPUcontract is the useful
+new verification. No claimed newlyenabled path or ability/performance gain.
+
+Routed-only reconciliation inspected:
+- begin_chunk(p0,T) for each actualchunk beforeplanning, headerresets bounded
+  scratch only after precedingchunkjoin. Header T<=8192 retained.
+- layer uses actualm.cnt with sumT*K, actualloadednativeformat/geometry/branch,
+  actualstream_allfalse and peerroute exclusion. GenericIQ/GGUF and MMQ are
+  classified separately; nonnative packgeometry intentionally rejects.
+- Routed-only planning skipsresident andpinned; stager source exactGGUF/
+  transient/RAM classified when jobprepared. Pinned source planned where
+  stage_one decides pinned; copiedcount recorded AFTERactualsuccessfulcopy
+  submission. Resident stage_one returns withoutcopy, executed(slot<0) counts
+  resident source and end_chunk requiresnocopy.
+- Compute executed once peractualexpert; generic products GU+Down eachonce,
+  MMQ requiresnoproductledgercalls. Fuseddeviceonlygrouping/peerroute invalidates.
+- end_chunk after existing issuerjoin validates alladmittedlayers/expertIDs,
+  exacttransferplan/copy/sourcebytes, T*Kpartition and products. No addedwait.
+  Routed-only copy callbacks run oncompute issuerthread inline; no concurrent
+  producer assumed. Existing threadedstream_all disjointlanes preserved.
+- finishtrue at successfulrunend, destructor invalidates earlyreturn/exception;
+  invaliddata emits only invalidreceipt, no bufferedlayeraggregateoutput.
+
+Unsupportedmode guard correctlycovers m.pp/next_/transfer_context/portablepeer;
+transfer_context is set by layermajor sharedtransfer lease, not normal standalone
+singleGPUcopyqueue. Helper/other pre-existing exclusions not widened orclaimed
+newlyqualified. Headerprimary-only owner/peer0 not a portablepeer ledger.
+All existing512experts/64layers/2MiBscratch/16KiBbins/32MiBoutput/4MiBblob,
+7nativepair/geometry/ID/copyfault/cap failclosed contracts unchanged.
+
+Count geometry: actual65536input => n65535batchedpositions,8chunks including
+last8191 with pos0fresh0; header permits32767<=n<=262144. Physical262144input
+normally=>n262143,32chunks last8191. Header n262144 collectorupperbound is NOT
+physical262145input qualification. Header pos checked nonnegative/int64sum
+overflow, NOT totalpos+n<=262144; productiongenerator/sessioncontext handles
+physicalcontextadmission. No capwidening or fullcontextcapacity claim here.
+
+Prepared meaningful bounded CPUcontract (NOT EXECUTED): actualunchangedheader,
+synthetic complete48layer512expertK10 route counts, actual22/20geometry
+(gurow820/downrow360/blob1971200), resident128+nonresident384calls eachlayer,
+sourcespinned/stagerRAM, noSYCLdependency. Positives32767/65535/262143 and
+collector262144 check completechunks/tail, exactrow/call/copy/byte/product totals.
+Offcase absentenv emitsnothing. Negatives unsupportedconstructortrue,
+missingDownproduct, unroutedcopy, unknownbranch requireinvalidreceiptONLY and
+zeroaggregatecounts/no layerrows. Checker reads bounded CLOSEDstderr, doesnot
+launch processes. Compiler/rootowner/receipts remainrootgate; return0 from
+qualifier alone is notledgerPASS. Broader existingheader CPUcontracts should
+be rerun separately byroot; this source doesnot replace GPUcallerqualification.
+
+Recipe includes exactg++/checker flags/finiteCPUbudgets and source/arg admission
+recommendations. Future diagnostic setONLY routecensus1, avoid all eventflags;
+preserve actualquietring8/ownedchunk/math/health/ownership checks. Since GPUwork
+is currentlystopped, noGPUtest suggestedinline or authorized bythisprep.
+Sourcecensus hostclock accounting/logicalpackedbytes is notphysicalPCIe bandwidth,
+exclusivecriticalpath timing, performance result, optimization/adoption or
+fullphysical262144lifecycle proof. All priorfailures/statuses stayunchanged.

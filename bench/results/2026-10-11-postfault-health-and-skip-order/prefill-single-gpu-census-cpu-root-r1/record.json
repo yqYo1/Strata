@@ -1,0 +1,1406 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "gpu_executed": false,
+  "model_executed": false,
+  "caller_refactor_adopted": false,
+  "source_sha256": {
+    "qualify_census.cpp": "737ae6ac3f93f610798fa4b234e7acd369bb46da9511ef3dd206d61e8984dd6f",
+    "check_receipt.py": "daa39bbe3c0da63fc4d1f05c3bfc8448bf6dcdbb11485727a21fb3c5a8038608",
+    "include/strata/prefill_route_census.hpp": "c673382e9f4bf63919489cf00daa71bec793ff7b4584c203291380b827dc110b"
+  },
+  "controller_sha256": "c7f0dc97ae5a1d8ce706c552f902d3fda58cedea2499f4a870cf746a9078eca1",
+  "started_utc": "2026-10-10T16:47:36.786861+00:00",
+  "scope": "actual unchanged header, synthetic complete single-GPU counts and rejected invalid routes",
+  "cases": [
+    {
+      "case": "valid32",
+      "check": {
+        "passed": true,
+        "case": "valid32",
+        "gpu_executed": false
+      },
+      "raw_stderr_sha256": "31ba8aab20a0618b7b008001686805102ad9288db533a52fcc55f6d08148c9dd",
+      "raw_stderr_bytes": 202370,
+      "layer_rows": 192,
+      "receipt": {
+        "kind": "prefill_route_census_receipt",
+        "valid": true,
+        "reason": "none",
+        "scope": "host_accounting_only_no_capacity_prediction",
+        "requested_tokens": 32767,
+        "pos0": 0,
+        "chunks": 4,
+        "layers": 192,
+        "calls": 98304,
+        "routed_rows": 15728160,
+        "transfer_calls": 73728,
+        "transfer_bytes": 145332633600,
+        "routed_transfer_calls": 73728,
+        "output_bytes": 201896,
+        "histogram_fnv1a64": "2e46d08aaf43da43",
+        "host_accumulation_ns": 10436710,
+        "host_serialization_ns": 1558496,
+        "device_commands_added": 0,
+        "capacity_join": false
+      }
+    },
+    {
+      "case": "valid64",
+      "check": {
+        "passed": true,
+        "case": "valid64",
+        "gpu_executed": false
+      },
+      "raw_stderr_sha256": "040881f199f9f5edf16d9a93a115d551f5ae7fc7d149b5cccdd715d8ca54ebb6",
+      "raw_stderr_bytes": 389917,
+      "layer_rows": 384,
+      "receipt": {
+        "kind": "prefill_route_census_receipt",
+        "valid": true,
+        "reason": "none",
+        "scope": "host_accounting_only_no_capacity_prediction",
+        "requested_tokens": 65535,
+        "pos0": 0,
+        "chunks": 8,
+        "layers": 384,
+        "calls": 196608,
+        "routed_rows": 31456800,
+        "transfer_calls": 147456,
+        "transfer_bytes": 290665267200,
+        "routed_transfer_calls": 147456,
+        "output_bytes": 389440,
+        "histogram_fnv1a64": "c30f139d12a35ce9",
+        "host_accumulation_ns": 19692967,
+        "host_serialization_ns": 3557443,
+        "device_commands_added": 0,
+        "capacity_join": false
+      }
+    },
+    {
+      "case": "valid262",
+      "check": {
+        "passed": true,
+        "case": "valid262",
+        "gpu_executed": false
+      },
+      "raw_stderr_sha256": "e56b1cdc8f4e487e2bed1f69dfe4a7150c38ecd2f122b900e47fe7d5175fae46",
+      "raw_stderr_bytes": 1516100,
+      "layer_rows": 1536,
+      "receipt": {
+        "kind": "prefill_route_census_receipt",
+        "valid": true,
+        "reason": "none",
+        "scope": "host_accounting_only_no_capacity_prediction",
+        "requested_tokens": 262143,
+        "pos0": 0,
+        "chunks": 32,
+        "layers": 1536,
+        "calls": 786432,
+        "routed_rows": 125828640,
+        "transfer_calls": 589824,
+        "transfer_bytes": 1162661068800,
+        "routed_transfer_calls": 589824,
+        "output_bytes": 1515616,
+        "histogram_fnv1a64": "cf2df45fd07cc61d",
+        "host_accumulation_ns": 79678288,
+        "host_serialization_ns": 12176434,
+        "device_commands_added": 0,
+        "capacity_join": false
+      }
+    },
+    {
+      "case": "collector-bound",
+      "check": {
+        "passed": true,
+        "case": "collector-bound",
+        "gpu_executed": false
+      },
+      "raw_stderr_sha256": "45d3126c24083f922fe86e8537ea4bb0367d6cfc627a41d2dd66fc6c59588b40",
+      "raw_stderr_bytes": 1501508,
+      "layer_rows": 1536,
+      "receipt": {
+        "kind": "prefill_route_census_receipt",
+        "valid": true,
+        "reason": "none",
+        "scope": "host_accounting_only_no_capacity_prediction",
+        "requested_tokens": 262144,
+        "pos0": 0,
+        "chunks": 32,
+        "layers": 1536,
+        "calls": 786432,
+        "routed_rows": 125829120,
+        "transfer_calls": 589824,
+        "transfer_bytes": 1162661068800,
+        "routed_transfer_calls": 589824,
+        "output_bytes": 1501024,
+        "histogram_fnv1a64": "c902fa1876676ccb",
+        "host_accumulation_ns": 79875231,
+        "host_serialization_ns": 12591858,
+        "device_commands_added": 0,
+        "capacity_join": false
+      }
+    },
+    {
+      "case": "off",
+      "check": {
+        "passed": true,
+        "case": "off"
+      },
+      "raw_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_stderr_bytes": 0,
+      "layer_rows": 0,
+      "receipt": null
+    },
+    {
+      "case": "unsupported",
+      "check": {
+        "passed": true,
+        "case": "unsupported",
+        "gpu_executed": false
+      },
+      "raw_stderr_sha256": "dddd1d82d6ee61e2cb6a411fdea9b3358c04fe1b536bc64d2982095c9558bfb9",
+      "raw_stderr_bytes": 454,
+      "layer_rows": 0,
+      "receipt": {
+        "kind": "prefill_route_census_receipt",
+        "valid": false,
+        "reason": "unsupported_multi_gpu_or_pipeline",
+        "scope": "host_accounting_only_no_capacity_prediction",
+        "requested_tokens": 65535,
+        "pos0": 0,
+        "chunks": 0,
+        "layers": 0,
+        "calls": 0,
+        "routed_rows": 0,
+        "transfer_calls": 0,
+        "transfer_bytes": 0,
+        "routed_transfer_calls": 0,
+        "output_bytes": 0,
+        "histogram_fnv1a64": "0000000000000000",
+        "host_accumulation_ns": 0,
+        "host_serialization_ns": 0,
+        "device_commands_added": 0,
+        "capacity_join": false
+      }
+    },
+    {
+      "case": "missing-product",
+      "check": {
+        "passed": true,
+        "case": "missing-product",
+        "gpu_executed": false
+      },
+      "raw_stderr_sha256": "fa503ed25a5ebff07bea2e44de257f0a511fa24eb1a8082b9fbcc5e01735742d",
+      "raw_stderr_bytes": 465,
+      "layer_rows": 0,
+      "receipt": {
+        "kind": "prefill_route_census_receipt",
+        "valid": false,
+        "reason": "call_pair_or_transfer_reconciliation",
+        "scope": "host_accounting_only_no_capacity_prediction",
+        "requested_tokens": 65535,
+        "pos0": 0,
+        "chunks": 1,
+        "layers": 0,
+        "calls": 0,
+        "routed_rows": 0,
+        "transfer_calls": 0,
+        "transfer_bytes": 0,
+        "routed_transfer_calls": 0,
+        "output_bytes": 0,
+        "histogram_fnv1a64": "0000000000000000",
+        "host_accumulation_ns": 2483292,
+        "host_serialization_ns": 330,
+        "device_commands_added": 0,
+        "capacity_join": false
+      }
+    },
+    {
+      "case": "unrouted-copy",
+      "check": {
+        "passed": true,
+        "case": "unrouted-copy",
+        "gpu_executed": false
+      },
+      "raw_stderr_sha256": "83a49183f044cc72f6a8217e31fef5a9d31bfeea02aa51b9582d6f4134f2a309",
+      "raw_stderr_bytes": 461,
+      "layer_rows": 0,
+      "receipt": {
+        "kind": "prefill_route_census_receipt",
+        "valid": false,
+        "reason": "transfer_extent_or_unrouted_copy",
+        "scope": "host_accounting_only_no_capacity_prediction",
+        "requested_tokens": 65535,
+        "pos0": 0,
+        "chunks": 1,
+        "layers": 0,
+        "calls": 0,
+        "routed_rows": 0,
+        "transfer_calls": 0,
+        "transfer_bytes": 0,
+        "routed_transfer_calls": 0,
+        "output_bytes": 0,
+        "histogram_fnv1a64": "0000000000000000",
+        "host_accumulation_ns": 2680934,
+        "host_serialization_ns": 501,
+        "device_commands_added": 0,
+        "capacity_join": false
+      }
+    },
+    {
+      "case": "unknown-branch",
+      "check": {
+        "passed": true,
+        "case": "unknown-branch",
+        "gpu_executed": false
+      },
+      "raw_stderr_sha256": "ab4d563796ca4b0e83c1d9de1a9bbb7baec1a0fc9b1711d8f481d68c359da72f",
+      "raw_stderr_bytes": 457,
+      "layer_rows": 0,
+      "receipt": {
+        "kind": "prefill_route_census_receipt",
+        "valid": false,
+        "reason": "layer_geometry_or_unknown_branch",
+        "scope": "host_accounting_only_no_capacity_prediction",
+        "requested_tokens": 65535,
+        "pos0": 0,
+        "chunks": 0,
+        "layers": 0,
+        "calls": 0,
+        "routed_rows": 0,
+        "transfer_calls": 0,
+        "transfer_bytes": 0,
+        "routed_transfer_calls": 0,
+        "output_bytes": 0,
+        "histogram_fnv1a64": "0000000000000000",
+        "host_accumulation_ns": 35276,
+        "host_serialization_ns": 0,
+        "device_commands_added": 0,
+        "capacity_join": false
+      }
+    }
+  ],
+  "commands": [
+    {
+      "label": "build",
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++20",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-pthread",
+        "-I",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-v1/include",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-v1/qualify_census.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-cpu-root-r1/qualify-census"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:47:36.804633+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3002186,
+          "start_ticks": 34053591,
+          "sid": 3002186,
+          "pgid": 3002186
+        },
+        {
+          "pid": 3002187,
+          "start_ticks": 34053591,
+          "sid": 3002186,
+          "pgid": 3002186
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 340535.917492381,
+      "pid": 3002186,
+      "spawn_return_monotonic": 340535.919012063,
+      "direct_identity": {
+        "pid": 3002186,
+        "state": "R",
+        "ppid": 3002148,
+        "pgid": 3002186,
+        "sid": 3002186,
+        "start_ticks": 34053591,
+        "rss_bytes": 442368
+      },
+      "peak_session_rss_bytes": 159858688,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:47:38.128216+00:00",
+      "elapsed_seconds": 1.3233457270544022,
+      "logs": {
+        "build.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "build.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "valid32",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-cpu-root-r1/qualify-census",
+        "valid32"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:47:38.128802+00:00",
+      "wall_seconds": 20,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3002247,
+          "start_ticks": 34053724,
+          "sid": 3002247,
+          "pgid": 3002247
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 340537.241590269,
+      "pid": 3002247,
+      "spawn_return_monotonic": 340537.243145288,
+      "direct_identity": {
+        "pid": 3002247,
+        "state": "R",
+        "ppid": 3002148,
+        "pgid": 3002247,
+        "sid": 3002247,
+        "start_ticks": 34053724,
+        "rss_bytes": 303104
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:47:38.245392+00:00",
+      "elapsed_seconds": 0.11641211400274187,
+      "logs": {
+        "valid32.stdout": {
+          "bytes": 40,
+          "sha256": "14f00275007c9e699bc2c715de279f3b1620d02a30697808b4515435c88e688e"
+        },
+        "valid32.stderr": {
+          "bytes": 202370,
+          "sha256": "31ba8aab20a0618b7b008001686805102ad9288db533a52fcc55f6d08148c9dd"
+        }
+      }
+    },
+    {
+      "label": "valid32-check",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-v1/check_receipt.py",
+        "valid32",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-cpu-root-r1/commands/valid32.stderr"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:47:38.246019+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3002250,
+          "start_ticks": 34053735,
+          "sid": 3002250,
+          "pgid": 3002250
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 340537.358844195,
+      "pid": 3002250,
+      "spawn_return_monotonic": 340537.360367443,
+      "direct_identity": {
+        "pid": 3002250,
+        "state": "R",
+        "ppid": 3002148,
+        "pgid": 3002250,
+        "sid": 3002250,
+        "start_ticks": 34053735,
+        "rss_bytes": 466944
+      },
+      "peak_session_rss_bytes": 11038720,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:47:38.379447+00:00",
+      "elapsed_seconds": 0.13321347598684952,
+      "logs": {
+        "valid32-check.stdout": {
+          "bytes": 59,
+          "sha256": "759d98c91e5e9b4eada248343a453beff9d71b58bd80acfd3e8cf7a1ab8bd4cf"
+        },
+        "valid32-check.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "valid64",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-cpu-root-r1/qualify-census",
+        "valid64"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:47:38.382481+00:00",
+      "wall_seconds": 20,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3002254,
+          "start_ticks": 34053749,
+          "sid": 3002254,
+          "pgid": 3002254
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 340537.495375992,
+      "pid": 3002254,
+      "spawn_return_monotonic": 340537.496854195,
+      "direct_identity": {
+        "pid": 3002254,
+        "state": "R",
+        "ppid": 3002148,
+        "pgid": 3002254,
+        "sid": 3002254,
+        "start_ticks": 34053749,
+        "rss_bytes": 311296
+      },
+      "peak_session_rss_bytes": 4304896,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:47:38.527276+00:00",
+      "elapsed_seconds": 0.144533168990165,
+      "logs": {
+        "valid64.stdout": {
+          "bytes": 40,
+          "sha256": "946003806cc0eac90f751a9efa1ec5c4d49aafd7875277ac4163af0d9fb9b909"
+        },
+        "valid64.stderr": {
+          "bytes": 389917,
+          "sha256": "040881f199f9f5edf16d9a93a115d551f5ae7fc7d149b5cccdd715d8ca54ebb6"
+        }
+      }
+    },
+    {
+      "label": "valid64-check",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-v1/check_receipt.py",
+        "valid64",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-cpu-root-r1/commands/valid64.stderr"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:47:38.528057+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3002272,
+          "start_ticks": 34053764,
+          "sid": 3002272,
+          "pgid": 3002272
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 340537.64095644,
+      "pid": 3002272,
+      "spawn_return_monotonic": 340537.642550914,
+      "direct_identity": {
+        "pid": 3002272,
+        "state": "R",
+        "ppid": 3002148,
+        "pgid": 3002272,
+        "sid": 3002272,
+        "start_ticks": 34053764,
+        "rss_bytes": 581632
+      },
+      "peak_session_rss_bytes": 11186176,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:47:38.676370+00:00",
+      "elapsed_seconds": 0.14803242299240083,
+      "logs": {
+        "valid64-check.stdout": {
+          "bytes": 59,
+          "sha256": "e8beabad28842d7cacc31dc494f6f65e3b638861f3075a74588e010e5f1ebb72"
+        },
+        "valid64-check.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "valid262",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-cpu-root-r1/qualify-census",
+        "valid262"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:47:38.683021+00:00",
+      "wall_seconds": 20,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3002280,
+          "start_ticks": 34053779,
+          "sid": 3002280,
+          "pgid": 3002280
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 340537.795971549,
+      "pid": 3002280,
+      "spawn_return_monotonic": 340537.797730293,
+      "direct_identity": {
+        "pid": 3002280,
+        "state": "R",
+        "ppid": 3002148,
+        "pgid": 3002280,
+        "sid": 3002280,
+        "start_ticks": 34053779,
+        "rss_bytes": 319488
+      },
+      "peak_session_rss_bytes": 4304896,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:47:38.948361+00:00",
+      "elapsed_seconds": 0.26500400400254875,
+      "logs": {
+        "valid262.stdout": {
+          "bytes": 41,
+          "sha256": "56ec96e16221a40a18a12ac1b29645886c5acc8c446a49b906c0545282c317a2"
+        },
+        "valid262.stderr": {
+          "bytes": 1516100,
+          "sha256": "e56b1cdc8f4e487e2bed1f69dfe4a7150c38ecd2f122b900e47fe7d5175fae46"
+        }
+      }
+    },
+    {
+      "label": "valid262-check",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-v1/check_receipt.py",
+        "valid262",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-cpu-root-r1/commands/valid262.stderr"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:47:38.949885+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3002286,
+          "start_ticks": 34053806,
+          "sid": 3002286,
+          "pgid": 3002286
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 340538.062863952,
+      "pid": 3002286,
+      "spawn_return_monotonic": 340538.06445086,
+      "direct_identity": {
+        "pid": 3002286,
+        "state": "R",
+        "ppid": 3002148,
+        "pgid": 3002286,
+        "sid": 3002286,
+        "start_ticks": 34053806,
+        "rss_bytes": 466944
+      },
+      "peak_session_rss_bytes": 11034624,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:47:39.124464+00:00",
+      "elapsed_seconds": 0.17421500297496095,
+      "logs": {
+        "valid262-check.stdout": {
+          "bytes": 60,
+          "sha256": "b2ce4d4d062b59eb406f00f469d4c545e72bf8e2aacc8aaf20588c3f1d896183"
+        },
+        "valid262-check.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "collector-bound",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-cpu-root-r1/qualify-census",
+        "collector-bound"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:47:39.148183+00:00",
+      "wall_seconds": 20,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3002294,
+          "start_ticks": 34053826,
+          "sid": 3002294,
+          "pgid": 3002294
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 340538.261258871,
+      "pid": 3002294,
+      "spawn_return_monotonic": 340538.263245686,
+      "direct_identity": {
+        "pid": 3002294,
+        "state": "R",
+        "ppid": 3002148,
+        "pgid": 3002294,
+        "sid": 3002294,
+        "start_ticks": 34053826,
+        "rss_bytes": 475136
+      },
+      "peak_session_rss_bytes": 4296704,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:47:39.421087+00:00",
+      "elapsed_seconds": 0.2724462960031815,
+      "logs": {
+        "collector-bound.stdout": {
+          "bytes": 48,
+          "sha256": "3a74cde004964ff5992fd85aec54e71be9cb69c975e8f00392610ca09ee53d85"
+        },
+        "collector-bound.stderr": {
+          "bytes": 1501508,
+          "sha256": "45d3126c24083f922fe86e8537ea4bb0367d6cfc627a41d2dd66fc6c59588b40"
+        }
+      }
+    },
+    {
+      "label": "collector-bound-check",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-v1/check_receipt.py",
+        "collector-bound",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-cpu-root-r1/commands/collector-bound.stderr"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:47:39.422864+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3002307,
+          "start_ticks": 34053853,
+          "sid": 3002307,
+          "pgid": 3002307
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 340538.535996758,
+      "pid": 3002307,
+      "spawn_return_monotonic": 340538.538051812,
+      "direct_identity": {
+        "pid": 3002307,
+        "state": "R",
+        "ppid": 3002148,
+        "pgid": 3002307,
+        "sid": 3002307,
+        "start_ticks": 34053853,
+        "rss_bytes": 466944
+      },
+      "peak_session_rss_bytes": 11157504,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:47:39.573678+00:00",
+      "elapsed_seconds": 0.15030271100113168,
+      "logs": {
+        "collector-bound-check.stdout": {
+          "bytes": 67,
+          "sha256": "bd2a3a9464dd05df5384fdba2aab40166c64b5c41c6d4e1f28762f6c8bee4020"
+        },
+        "collector-bound-check.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "off",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-cpu-root-r1/qualify-census",
+        "off"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:47:39.595860+00:00",
+      "wall_seconds": 20,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3002311,
+          "start_ticks": 34053870,
+          "sid": 3002311,
+          "pgid": 3002311
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 340538.708944485,
+      "pid": 3002311,
+      "spawn_return_monotonic": 340538.711123664,
+      "direct_identity": {
+        "pid": 3002311,
+        "state": "R",
+        "ppid": 3002148,
+        "pgid": 3002311,
+        "sid": 3002311,
+        "start_ticks": 34053870,
+        "rss_bytes": 446464
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:47:39.723401+00:00",
+      "elapsed_seconds": 0.12707673700060695,
+      "logs": {
+        "off.stdout": {
+          "bytes": 36,
+          "sha256": "1cd2fdfa2a3ccc1eea3ef92210b1d72d501981147c176318bab48664e9422569"
+        },
+        "off.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "off-check",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-v1/check_receipt.py",
+        "off",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-cpu-root-r1/commands/off.stderr"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:47:39.724321+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3002355,
+          "start_ticks": 34053883,
+          "sid": 3002355,
+          "pgid": 3002355
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 340538.837453109,
+      "pid": 3002355,
+      "spawn_return_monotonic": 340538.839583595,
+      "direct_identity": {
+        "pid": 3002355,
+        "state": "R",
+        "ppid": 3002148,
+        "pgid": 3002355,
+        "sid": 3002355,
+        "start_ticks": 34053883,
+        "rss_bytes": 466944
+      },
+      "peak_session_rss_bytes": 10498048,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:47:39.860542+00:00",
+      "elapsed_seconds": 0.1356998539995402,
+      "logs": {
+        "off-check.stdout": {
+          "bytes": 32,
+          "sha256": "f6087832bc98824b00ba96cd35cbc4b2d0175fca1453f15b3257933c283e6797"
+        },
+        "off-check.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "unsupported",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-cpu-root-r1/qualify-census",
+        "unsupported"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:47:39.865920+00:00",
+      "wall_seconds": 20,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3002372,
+          "start_ticks": 34053897,
+          "sid": 3002372,
+          "pgid": 3002372
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 340538.979032775,
+      "pid": 3002372,
+      "spawn_return_monotonic": 340538.980973372,
+      "direct_identity": {
+        "pid": 3002372,
+        "state": "R",
+        "ppid": 3002148,
+        "pgid": 3002372,
+        "sid": 3002372,
+        "start_ticks": 34053897,
+        "rss_bytes": 331776
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:47:40.005334+00:00",
+      "elapsed_seconds": 0.13892732397653162,
+      "logs": {
+        "unsupported.stdout": {
+          "bytes": 44,
+          "sha256": "cee1eb1af2e74be4b99f4729801bc2010ce4db4d1c068204cee1530971e43a4d"
+        },
+        "unsupported.stderr": {
+          "bytes": 454,
+          "sha256": "dddd1d82d6ee61e2cb6a411fdea9b3358c04fe1b536bc64d2982095c9558bfb9"
+        }
+      }
+    },
+    {
+      "label": "unsupported-check",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-v1/check_receipt.py",
+        "unsupported",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-cpu-root-r1/commands/unsupported.stderr"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:47:40.006425+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3002376,
+          "start_ticks": 34053912,
+          "sid": 3002376,
+          "pgid": 3002376
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 340539.119625476,
+      "pid": 3002376,
+      "spawn_return_monotonic": 340539.122619875,
+      "direct_identity": {
+        "pid": 3002376,
+        "state": "R",
+        "ppid": 3002148,
+        "pgid": 3002376,
+        "sid": 3002376,
+        "start_ticks": 34053912,
+        "rss_bytes": 573440
+      },
+      "peak_session_rss_bytes": 11317248,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:47:40.156718+00:00",
+      "elapsed_seconds": 0.1497132660006173,
+      "logs": {
+        "unsupported-check.stdout": {
+          "bytes": 63,
+          "sha256": "1cd1bb29fe570db9c32c32f4890018624397bf0c94ae95f8f54f7e10a4b9f4a3"
+        },
+        "unsupported-check.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "missing-product",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-cpu-root-r1/qualify-census",
+        "missing-product"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:47:40.158797+00:00",
+      "wall_seconds": 20,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3002393,
+          "start_ticks": 34053927,
+          "sid": 3002393,
+          "pgid": 3002393
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 340539.272235226,
+      "pid": 3002393,
+      "spawn_return_monotonic": 340539.274326198,
+      "direct_identity": {
+        "pid": 3002393,
+        "state": "R",
+        "ppid": 3002148,
+        "pgid": 3002393,
+        "sid": 3002393,
+        "start_ticks": 34053927,
+        "rss_bytes": 491520
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:47:40.315052+00:00",
+      "elapsed_seconds": 0.15545365400612354,
+      "logs": {
+        "missing-product.stdout": {
+          "bytes": 48,
+          "sha256": "be871f8a07a91e6f7f60e45213f9bfbe727f9aed0ccc90671e1c3be1af3cbccb"
+        },
+        "missing-product.stderr": {
+          "bytes": 465,
+          "sha256": "fa503ed25a5ebff07bea2e44de257f0a511fa24eb1a8082b9fbcc5e01735742d"
+        }
+      }
+    },
+    {
+      "label": "missing-product-check",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-v1/check_receipt.py",
+        "missing-product",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-cpu-root-r1/commands/missing-product.stderr"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:47:40.316042+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3002401,
+          "start_ticks": 34053943,
+          "sid": 3002401,
+          "pgid": 3002401
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 340539.429652461,
+      "pid": 3002401,
+      "spawn_return_monotonic": 340539.431656569,
+      "direct_identity": {
+        "pid": 3002401,
+        "state": "R",
+        "ppid": 3002148,
+        "pgid": 3002401,
+        "sid": 3002401,
+        "start_ticks": 34053943,
+        "rss_bytes": 573440
+      },
+      "peak_session_rss_bytes": 11321344,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:47:40.480158+00:00",
+      "elapsed_seconds": 0.16315576003398746,
+      "logs": {
+        "missing-product-check.stdout": {
+          "bytes": 67,
+          "sha256": "a59d7baf40abe840c36ab35de7bc770907f8343c5f856efe99d6bc2cfa88c4df"
+        },
+        "missing-product-check.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "unrouted-copy",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-cpu-root-r1/qualify-census",
+        "unrouted-copy"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:47:40.482119+00:00",
+      "wall_seconds": 20,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3002410,
+          "start_ticks": 34053959,
+          "sid": 3002410,
+          "pgid": 3002410
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 340539.595581463,
+      "pid": 3002410,
+      "spawn_return_monotonic": 340539.597656073,
+      "direct_identity": {
+        "pid": 3002410,
+        "state": "R",
+        "ppid": 3002148,
+        "pgid": 3002410,
+        "sid": 3002410,
+        "start_ticks": 34053959,
+        "rss_bytes": 430080
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:47:40.614076+00:00",
+      "elapsed_seconds": 0.13111743301851675,
+      "logs": {
+        "unrouted-copy.stdout": {
+          "bytes": 46,
+          "sha256": "91d8405184578ce49a6577f4c31e77addda7ab31dafd3d15343509d33cedab5e"
+        },
+        "unrouted-copy.stderr": {
+          "bytes": 461,
+          "sha256": "83a49183f044cc72f6a8217e31fef5a9d31bfeea02aa51b9582d6f4134f2a309"
+        }
+      }
+    },
+    {
+      "label": "unrouted-copy-check",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-v1/check_receipt.py",
+        "unrouted-copy",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-cpu-root-r1/commands/unrouted-copy.stderr"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:47:40.615114+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3002416,
+          "start_ticks": 34053972,
+          "sid": 3002416,
+          "pgid": 3002416
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 340539.728670792,
+      "pid": 3002416,
+      "spawn_return_monotonic": 340539.730970418,
+      "direct_identity": {
+        "pid": 3002416,
+        "state": "R",
+        "ppid": 3002148,
+        "pgid": 3002416,
+        "sid": 3002416,
+        "start_ticks": 34053972,
+        "rss_bytes": 466944
+      },
+      "peak_session_rss_bytes": 11534336,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:47:40.747150+00:00",
+      "elapsed_seconds": 0.1310967530007474,
+      "logs": {
+        "unrouted-copy-check.stdout": {
+          "bytes": 65,
+          "sha256": "2188fe97fd2ea33f4358a7439895ba14c161ff00d29cdd32774b1ab55ed2c803"
+        },
+        "unrouted-copy-check.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "unknown-branch",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-cpu-root-r1/qualify-census",
+        "unknown-branch"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:47:40.749202+00:00",
+      "wall_seconds": 20,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3002420,
+          "start_ticks": 34053986,
+          "sid": 3002420,
+          "pgid": 3002420
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 340539.862821086,
+      "pid": 3002420,
+      "spawn_return_monotonic": 340539.864835022,
+      "direct_identity": {
+        "pid": 3002420,
+        "state": "R",
+        "ppid": 3002148,
+        "pgid": 3002420,
+        "sid": 3002420,
+        "start_ticks": 34053986,
+        "rss_bytes": 442368
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:47:40.903460+00:00",
+      "elapsed_seconds": 0.15327097999397665,
+      "logs": {
+        "unknown-branch.stdout": {
+          "bytes": 47,
+          "sha256": "70be5a64b64c981a430c0c0a7f1975d6f037840a48141b7c6bfd79404961b3db"
+        },
+        "unknown-branch.stderr": {
+          "bytes": 457,
+          "sha256": "ab4d563796ca4b0e83c1d9de1a9bbb7baec1a0fc9b1711d8f481d68c359da72f"
+        }
+      }
+    },
+    {
+      "label": "unknown-branch-check",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-v1/check_receipt.py",
+        "unknown-branch",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-cpu-root-r1/commands/unknown-branch.stderr"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:47:40.904712+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3002425,
+          "start_ticks": 34054001,
+          "sid": 3002425,
+          "pgid": 3002425
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 340540.01847011,
+      "pid": 3002425,
+      "spawn_return_monotonic": 340540.020710744,
+      "direct_identity": {
+        "pid": 3002425,
+        "state": "R",
+        "ppid": 3002148,
+        "pgid": 3002425,
+        "sid": 3002425,
+        "start_ticks": 34054001,
+        "rss_bytes": 466944
+      },
+      "peak_session_rss_bytes": 11210752,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:47:41.044290+00:00",
+      "elapsed_seconds": 0.13845860603032634,
+      "logs": {
+        "unknown-branch-check.stdout": {
+          "bytes": 66,
+          "sha256": "a11145f624b7ecae1dcacf6b023ed5bd0c2449afc9b0b45d106650f6f8a76dba"
+        },
+        "unknown-branch-check.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "compiler": {
+    "path": "/usr/bin/x86_64-linux-gnu-g++-13",
+    "sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769"
+  },
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-single-gpu-census-cpu-root-r1/qualify-census",
+    "sha256": "9e78437ea6c3b6025a5a91bf28f7f516ed4afb5743006b9d1f49e829853969cf",
+    "bytes": 30200
+  },
+  "checked": [
+    "valid32",
+    "valid64",
+    "valid262",
+    "collector-bound",
+    "off",
+    "unsupported",
+    "missing-product",
+    "unrouted-copy",
+    "unknown-branch"
+  ],
+  "finished_utc": "2026-10-10T16:47:41.046971+00:00"
+}

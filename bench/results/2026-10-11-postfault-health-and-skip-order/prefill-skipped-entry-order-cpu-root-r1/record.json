@@ -1,0 +1,232 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "gpu_executed": false,
+  "model_executed": false,
+  "production_SYCL_compiled": false,
+  "adopted": false,
+  "controller_sha256": "2b853a2b96051847b4e758d98a7ba8f470cf92cc4ddb3dab1c4b86334f7c93b8",
+  "source_sha256": {
+    "prefill.cpp": "e0685a85bc391b6ef916c33ea3f959680088832b8a9a7d706668acba3c47f8d0",
+    "extract_contract.py": "01db5837c11d2a872b37f8efc9e129585a61ac26048883d3dc889eafdb4018cb",
+    "qualify_order.cpp": "20108c5a18c7967d5a79c647f2a633f0752a52fb3dcadf77f3849befeb3a3e45"
+  },
+  "started_utc": "2026-10-10T16:35:31.224094+00:00",
+  "scope": "actual source-extracted consumer ordering with safe instrumented issuer/event stand-ins",
+  "commands": [
+    {
+      "label": "extract",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-skipped-entry-order-v1/extract_contract.py",
+        "--output",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-skipped-entry-order-cpu-root-r1/extracted"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:35:31.225832+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2947973,
+          "start_ticks": 33981033,
+          "sid": 2947973,
+          "pgid": 2947973
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 339810.338672215,
+      "pid": 2947973,
+      "spawn_return_monotonic": 339810.340106233,
+      "direct_identity": {
+        "pid": 2947973,
+        "state": "R",
+        "ppid": 2947931,
+        "pgid": 2947973,
+        "sid": 2947973,
+        "start_ticks": 33981033,
+        "rss_bytes": 397312
+      },
+      "peak_session_rss_bytes": 12697600,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:35:31.356380+00:00",
+      "elapsed_seconds": 0.13033439201535657,
+      "logs": {
+        "extract.stdout": {
+          "bytes": 414,
+          "sha256": "c5478e29246a3a02f756ccf8246eb3b3e4bdefd9a4a20e360cc11fa4b59c8776"
+        },
+        "extract.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "build",
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++20",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-pthread",
+        "-I",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-skipped-entry-order-cpu-root-r1/extracted",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-skipped-entry-order-v1/qualify_order.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-skipped-entry-order-cpu-root-r1/qualify-order"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:35:31.373238+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2947977,
+          "start_ticks": 33981048,
+          "sid": 2947977,
+          "pgid": 2947977
+        },
+        {
+          "pid": 2947978,
+          "start_ticks": 33981048,
+          "sid": 2947977,
+          "pgid": 2947977
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 339810.486173989,
+      "pid": 2947977,
+      "spawn_return_monotonic": 339810.487858079,
+      "direct_identity": {
+        "pid": 2947977,
+        "state": "R",
+        "ppid": 2947931,
+        "pgid": 2947977,
+        "sid": 2947977,
+        "start_ticks": 33981048,
+        "rss_bytes": 286720
+      },
+      "peak_session_rss_bytes": 159068160,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:35:32.672630+00:00",
+      "elapsed_seconds": 1.2990867299959064,
+      "logs": {
+        "build.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "build.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "qualify",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-skipped-entry-order-cpu-root-r1/qualify-order"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:35:32.673206+00:00",
+      "wall_seconds": 20,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2948049,
+          "start_ticks": 33981178,
+          "sid": 2948049,
+          "pgid": 2948049
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 339811.786034555,
+      "pid": 2948049,
+      "spawn_return_monotonic": 339811.78758884,
+      "direct_identity": {
+        "pid": 2948049,
+        "state": "R",
+        "ppid": 2947931,
+        "pgid": 2948049,
+        "sid": 2948049,
+        "start_ticks": 33981178,
+        "rss_bytes": 331776
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:35:32.786656+00:00",
+      "elapsed_seconds": 0.11324571899604052,
+      "logs": {
+        "qualify.stdout": {
+          "bytes": 123,
+          "sha256": "3e9fc1974ac77d8d58ba027b38377e307e4bd7a432814b1731f2d8517efe0580"
+        },
+        "qualify.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "extraction": {
+    "source_sha256": [
+      "1cf7e911a555e8611c1368a4d18d4ba81c95027bb8de77f89ad65ac64b05fc3c",
+      "e0685a85bc391b6ef916c33ea3f959680088832b8a9a7d706668acba3c47f8d0"
+    ],
+    "extracted_sha256": [
+      "2546ba38cc04e6ccfcc9a3057d7412c5648e6ae105c1d5ef717e27798b9cfab3",
+      "96a2033b4e48a9313c3a7b0326e31e80895262d68317807bb13a2e95bb76e4fb"
+    ],
+    "scope": "actual pinned primary lambda, GPU event call stubbed and slot metadata atomic stand-ins"
+  },
+  "compiler": {
+    "path": "/usr/bin/x86_64-linux-gnu-g++-13",
+    "sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769"
+  },
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-skipped-entry-order-cpu-root-r1/qualify-order",
+    "sha256": "1e7e61405566559136b236d177fbdada202fc4ee3f5cb46fab6a582a8072febd",
+    "bytes": 28656
+  },
+  "result": {
+    "passed": true,
+    "cases": 112,
+    "old_threaded_expected_negative": true,
+    "new_publication_order_passed": true,
+    "gpu_executed": false
+  },
+  "finished_utc": "2026-10-10T16:35:32.788726+00:00"
+}

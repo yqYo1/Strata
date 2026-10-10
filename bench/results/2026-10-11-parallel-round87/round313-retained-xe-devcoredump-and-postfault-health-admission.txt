@@ -1,0 +1,43 @@
+# R313 — Retained Xe devcoredump and post-fault health admission
+
+Date: 2026-10-11
+Scope: read-only source/evidence review. No GPU, process, system-query, build, inference, cleanup, or repository operation was performed. This report does not authorize a probe or any recovery action.
+
+## Decision
+
+A `/sys/bus/pci/devices/0000:05:00.0/devcoredump` entry still present about 20 minutes after the V8 CCS CAT18 / engine-reset event is compatible with a retained diagnostic snapshot. Its presence alone does not establish that the GPU is still faulted, unavailable, or making no progress. Xe's upstream devcoredump implementation expressly describes a snapshot from the hang that can differ from the device's later recovered state; it holds the snapshot until userspace releases it or a kernel timer expires. The current upstream Xe source uses a one-hour timeout. The generic Linux devcoredump API allows a driver-selected timeout, so there is no universal timeout to infer from the sysfs entry.
+
+The installed kernel version is absent from the V8 receipt. Consequently, the current upstream Xe timeout and behavior are authoritative design references, not proof of the exact running kernel's implementation or expiry time. The dump payload is root-only and was not read. Do not write to the entry, remove it, reset the device, or treat timeout expiry as a recovery procedure. Keep the original snapshot intact.
+
+A future, separately authorized, bounded integer health probe could test whether a new context/queue can execute after the known fault job is closed. A newly created context does not itself prove device availability or repair an affected context. The probe must first require a fresh successful Level Zero device-status result, then perform one small H2D/kernel/D2H operation and stop on any failure. `DEVICE_LOST` is an immediate stop condition. This candidate gate is not a recommendation to run now and is not authorization.
+
+## Local evidence and limits
+
+The committed registry v108 lists V8 (`owned-xestrata39-hostusm4k-code32k-diagnostic-v8-r1`) as incomplete, timing-invalid, and not adopted. Its recorded fault includes an unsuccessful `-ENOENT` fault response, CCS engine-memory CAT error [18], and CCS engine reset. Runtime in the receipt is `compute-runtime 1.17.39395+14`; the receipt does not record the installed kernel release. The corresponding V8 decision explicitly stopped further GPU work after this new fault, with no reset/rebind/service change.
+
+R309 records READY and completion of the first 4096-token chunk, then failure entering chunk two. The UR 40 / out-of-resources surfaced in a dequant submission frame; the actual faulting kernel is not established. The GDB inferior did not survive cleanup. None of this identifies a proven kernel-level cause or says the current device remains unavailable.
+
+The V8 health output was a pre-fault check: three rounds of 16,384 exact words. It is not evidence of post-reset health. The older `run_first_diagnostic_v8.py` guard rejects an already-present devcoredump. That guard is a conservative *pre-run/no-existing-fault* admission rule. It should not be conflated with a possible post-fault diagnostic whose explicit purpose is to test a closed device while preserving the one known dump. Any post-fault test still needs to ensure the existing dump remains the same snapshot and that no new fault is recorded.
+
+The primary kernel Xe source says the coredump represents state at the hang and can coexist with later recovery; it also retains only the first failure snapshot until release/expiry. Therefore a retained old snapshot can mask a later snapshot. A fresh kernel journal cursor and before/after identity check are required to distinguish the known old evidence from a new fault. Do not use dump absence as the sole pass criterion or dump presence as the sole fail criterion.
+
+## Source basis
+
+- Linux Xe `xe_devcoredump.c`: snapshot timing, release/expiry, first-snapshot retention, and current upstream one-hour timeout: https://github.com/torvalds/linux/blob/master/drivers/gpu/drm/xe/xe_devcoredump.c
+- Linux generic devcoredump API: delayed cleanup is configured by the driver; no single universal timeout: https://github.com/torvalds/linux/blob/master/drivers/base/devcoredump.c
+- Linux DRM UAPI reset and wedging documentation: reset can invalidate affected contexts and submissions; userspace must handle loss/recreate contexts, while a wedged device rejects new access: https://github.com/torvalds/linux/blob/master/Documentation/gpu/drm-uapi.rst
+- Level Zero 1.19.12 context/device status specification: `ZE_RESULT_ERROR_DEVICE_LOST` represents a hung, reset, removed, or updated device; contexts can be invalid after loss/reset; status success/device-lost meanings: https://oneapi-src.github.io/level-zero-spec/level-zero/1.19.12/core/api/apis/context.html
+- Intel compute-runtime tag `26.31.39395.14`, matching the receipt's `1.17.39395+14` version: `Device::getStatus` returns DEVICE_LOST when resources are released or any engine CSR reports a GPU hang, otherwise SUCCESS: https://github.com/intel/compute-runtime/blob/26.31.39395.14/level_zero/core/source/device/device.cpp
+
+The runtime-source match identifies the public source tag corresponding to the receipt's version string, but does not prove byte identity with the installed binary. The Level Zero status is a necessary gate, not a promise that every API call or longer workload will succeed. Reset effects on old contexts and the ability of a fresh simple queue to work must be tested only under the bounded gate below.
+
+## Candidate admission gate (not executed or authorized)
+
+1. Confirm from recorded ownership that the V8 faulting job/process (job 2791225) and all its workers/FD owners are closed. If this cannot be established from existing records, do not start.
+2. Capture a fresh kernel journal cursor before the candidate run. Record the existing devcoredump node identity using metadata only; do not read its payload, write to it, release it, or alter it. Compare identity before/after. Any replacement/change, disappearance/reappearance, or new fault/reset event fails the gate and stops work. Preserve the original diagnostic and record the new event separately.
+3. Freeze the exact approved environment and executable. Use a single finite owner with an explicit PID, session/FD ownership, wall-clock deadline, and output directory. No daemonization, background polling, automatic retry, queue fallback, context retry, or restart.
+4. Require a fresh `zeDeviceGetStatus` on the selected device. If it returns `ZE_RESULT_ERROR_DEVICE_LOST`, another error, or stalls past the deadline, stop without creating a queue or attempting recovery. Do not infer success merely because the sysfs dump exists or is absent.
+5. Only after status success, create one fresh context and one simple queue; transfer one fixed 16,384-word `uint32_t` known pattern H2D, run one small deterministic integer transform/checksum kernel once, copy D2H, synchronize once, and compare every output word exactly. Use no model/runtime path. A mismatch, API failure, asynchronous fault, or timeout is a failed probe; stop at first failure and do not retry.
+6. Capture the journal after the probe from the saved cursor, compare the dump metadata identity, record the exact environment, command, individual transfer/kernel/readback results, status result, timestamps, return codes, and any fault messages. Close the owner normally. Preserve the V8 outcome as failed/incomplete and report the candidate result only as a bounded post-fault simple integer-device check; it cannot qualify model inference, performance, or general device health.
+
+There is no evidence in this review that the device has recovered, no request to clear or recover it, and no authorization to run this candidate. Any new GPU work remains stopped unless separately directed by the owner.

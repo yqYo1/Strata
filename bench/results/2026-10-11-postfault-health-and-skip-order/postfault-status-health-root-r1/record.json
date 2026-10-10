@@ -1,0 +1,135 @@
+{
+  "active": false,
+  "completed": false,
+  "passed": false,
+  "model_executed": false,
+  "reset_executed": false,
+  "recovery_executed": false,
+  "retry_count": 0,
+  "scope": "new context: one status-gated 64KiB integer round only",
+  "source_sha256": "a1026e6bde651beea9f420b86859c81a48b6583a401b6a22d15ad8783b25ca3f",
+  "controller_sha256": "4eac5fc10244ce09309316ee321df3240bd576721c72f08330a3bec942d409c3",
+  "owner_sha256": "8b40cc573b9abd069f8386deb6af65f0a55f7992bcda2a6a62b51a5c9a47b686",
+  "helper_sha256": "2f90005f79d2309747d917cff51dc53d8ee6192d68cb1feca074f84af8b0796c",
+  "old_fault_receipt_sha256": "be30b5494b9f535150353e62e58b1450933072059f9362a7e3941003d14c1881",
+  "old_fault_status": "FAILED/incomplete",
+  "started_utc": "2026-10-10T16:32:48.516584+00:00",
+  "kernel_release": "7.0.0-38-generic",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "commands": [
+    {
+      "label": "build",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-fsycl",
+        "-O2",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/postfault-status-health-v1/health.cpp",
+        "-lze_loader",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/postfault-status-health-v1/health"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/umf/1.1/lib:/usr/lib/x86_64-linux-gnu",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0"
+      },
+      "started_utc": "2026-10-10T16:32:48.547959+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2936388,
+          "start_ticks": 33964766,
+          "sid": 2936388,
+          "pgid": 2936388
+        },
+        {
+          "pid": 2936389,
+          "start_ticks": 33964766,
+          "sid": 2936388,
+          "pgid": 2936388
+        },
+        {
+          "pid": 2936391,
+          "start_ticks": 33964767,
+          "sid": 2936388,
+          "pgid": 2936388
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 339647.660987862,
+      "pid": 2936388,
+      "spawn_return_monotonic": 339647.663033522,
+      "direct_identity": {
+        "pid": 2936388,
+        "state": "R",
+        "ppid": 2936342,
+        "pgid": 2936388,
+        "sid": 2936388,
+        "start_ticks": 33964766,
+        "rss_bytes": 274432
+      },
+      "peak_session_rss_bytes": 281014272,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-10T16:32:50.258010+00:00",
+      "elapsed_seconds": 1.709649310039822,
+      "logs": {
+        "build.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "build.stderr": {
+          "bytes": 294,
+          "sha256": "800dde0ca590073ffbab140824c7e8ded05d5f2b50f291ff2da4c9a6df47aabb"
+        }
+      }
+    }
+  ],
+  "known_fault_owners_gone": true,
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/umf/1.1/lib:/usr/lib/x86_64-linux-gnu",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "ZEL_ENABLE_LOADER_LOGGING": "1",
+    "ZEL_LOADER_LOG_CONSOLE": "1",
+    "ZEL_LOADER_LOGGING_LEVEL": "trace",
+    "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+    "ZE_ENABLE_VALIDATION_LAYER": "1",
+    "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+    "UR_LOG_LOADER": "level:debug;flush:debug;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:debug;flush:debug;output:stderr",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+    "STRATA_TRACE": "1",
+    "UR_ENABLE_LAYERS": "UR_LAYER_TRACING"
+  },
+  "compiler": {
+    "path": "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+    "sha256": "be7fa7c3c74c2ba2b8e1b50b0a61e37986441727899e25f3545636bde157c083"
+  },
+  "error": "RuntimeError('normal owned utility: build')",
+  "boot_unchanged": true,
+  "elapsed_seconds": 1.7419159990386106,
+  "finished_utc": "2026-10-10T16:32:50.258634+00:00"
+}

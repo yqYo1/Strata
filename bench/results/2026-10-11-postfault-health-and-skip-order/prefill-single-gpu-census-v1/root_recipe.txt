@@ -1,0 +1,53 @@
+SOURCE ONLY, no agent execution/build/test/GPU/model work. Root owns all runs.
+B=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007
+Q=$B/prefill-single-gpu-census-v1
+
+CORRECTION TO R310: RouteCensus final constructor bool is named
+unsupported_multi_gpu. Predicate false ENABLES admitted single-GPU collector
+when envexact1; predicate true INVALIDATES unsupported modes. Existing hook
+already eligible; do not remove rejection or claim missing traffic was zero.
+Private caller only names/comments that bool; semantic behavior unchanged.
+Use one-waitfixed base; exact unchanged actual-TU header is privately copied.
+
+Root CPU qualification first under sharedlock/finite CPU owner:
+g++ -std=c++20 -O2 -Wall -Wextra -Werror -I"$Q/include" \
+ "$Q/qualify_census.cpp" -o "$Q/qualify_census-root-r1"
+ONE case per owner invocation: valid32,valid64,valid262,collector-bound,off,
+unsupported,missing-product,unrouted-copy,unknown-branch.
+Root captures finite stdout/stderr/exit; e.g. wall30/CPU20/RSS128MiB/log32MiB.
+Then checker reads CLOSED stderr (root finite CPU owner):
+/usr/bin/python3 "$Q/check_receipt.py" valid64 /absolute/root/closed-case.stderr
+Each case uses its own log/path; do not overwrite artifacts or run in parallel.
+Compiler/source/header identities and actual command retained. Return0 from
+qualifier is NOT enough for invalidcases; checker must enforce expected receipt.
+No GPU dependency/calls; uses actual unchanged header, synthetic complete route
+counts and resident/pinned/stager sources. It does not validate actual modelroutes.
+
+Positive gates: requested n32767/65535/262143 (physicalinput32768/65536/262144
+ONLY if generator leaves one terminaltoken outside batchedprefill); upperbound
+collector n262144 is a HEADERBOUND test, NOT physical262145input qualification.
+8Ki chunks and partialtail,48layers,512experts,K10; exact T*K rows perlayer;
+resident128calls withnocopy,384successful planned/submittedtransfers; generic
+512GU/512Down products; native22/20 geometryblob1971200; compact bins/receipt
+totalsreconcile; branchprimary/stream_allfalse and peer0. Offcase emitsnostderr.
+Negatives must emitONLYinvalidreceipt/no layerrows/noaggregatecounts: unsupported
+constructortrue, missingDownproduct, unroutedcopy, unknownbranch. Reason exact.
+Existing caps/outputbudget/environment parsing unchanged. Root's prior broader
+CPU census contract should additionally be rerun for unchanged actualheader.
+
+No GPU operation until root independently admits health/state/test ownership.
+If root later chooses count-only diagnostic, exact intended caller+header/TU
+and binaryreceipt need provenance; set ONLY STRATA_PREFILL_ROUTE_CENSUS=1
+in separately labeled diagnostic, keep actual explicitring8/chunk8192/native
+pack/cache128/greedy/session/math gates. No service/transfer/phase eventprofiling,
+copyqueue changes, new waits, traces or diagnostic comparisons labeled clean.
+Check actualreceiptvalid and n65535 for65536 total;48MoElayers coverage is
+collector admitted range fromactualg.n_layers, not synthetic hardcodedclaim.
+Freshphysical262144 execution/terminaltoken/fulllifecycle remains rootgate.
+Optin census output is host accounting/logicalbytes, not physicalPCIe traffic,
+exclusive criticalpath, performance result or ability/adoption qualification.
+
+Root may prefer NO semantic patch beyond previously qualified skipwait: current
+caller alreadyadmits this exactsingleGPU optin. Refactor is review clarity only.
+If actualrun lacksrows, inspect effective env/header/TU identity, geometry,
+branchinvalidreceipt/earlyreturn; do not blindly delete unsupportedmode guard.

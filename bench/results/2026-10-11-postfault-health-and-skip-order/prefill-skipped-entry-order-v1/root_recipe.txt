@@ -1,0 +1,54 @@
+SOURCE ONLY: implementer ran no extraction/compile/CPU/GPU/model test.
+B=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007
+Q=$B/prefill-skipped-entry-order-v1
+Root owns all execution under shared measurement lock and finite owner.
+
+Root first inspect SHA pins and one-line caller diff; old original preserved.
+Finite CPU extraction (new output, no overwrite):
+/usr/bin/python3 "$Q/extract_contract.py" --output "$Q/extracted-root-r1"
+Extraction verifies full old/new SHA, ONLY added wait line in wholefile, unique
+fixed primary lambda anchor/end and exact extracted body delta. Includes are
+actual fulllambda body, not a copied model. Immutable source pins make simple
+delimiter extraction admissible here; not a general C++ parser.
+
+Root CPU compile/run serially, e.g. finite wall30/CPU20/RSS256MiB/log8MiB:
+g++ -std=c++20 -O2 -Wall -Wextra -Werror -pthread \
+ -I"$Q/extracted-root-r1" "$Q/qualify_order.cpp" -o "$Q/qualify_order-root-r1"
+"$Q/qualify_order-root-r1"
+Optional root TSAN build -O1 -g -fsanitize=thread, separately CPU-owned; a TSAN
+PASS checks stub ownership only, does not qualify GPU/SYCL/actual source race.
+No inline unmanaged runs; root receipt retains commands/compiler/hashes/logs.
+
+Expected return0 JSON passedtrue/cases112, old_threaded_expected_negative=true,
+new_publication_order_passed=true/gpu_executedfalse. Geometry counts0/1/3/4/5/
+17/65, ring4; each old/new x inline/threaded x groupflush x all/split skips.
+Old threaded eventpublication call boundary must be reached while controlled
+producer read is in progress for EVERYskipped entry; new must observe NONE.
+New wait count exactcount; old waitcount0; events/counts/consumed/publication/
+producerread totals reconcile. Inline wait is no-op and consumer makes progress.
+Per-case5s finite schedule deadline uses _Exit2 (no stuck join/unwind).
+
+IMPORTANT fixture scope: allmetadata/event objects are atomic/immutable standins.
+sync_barrier stub detects call boundary then ALLOWS producerread to finish BEFORE
+any real atomic metadata mutation. Therefore expected oldnegative does NOT
+execute a real data race/UB. Controlled pause in producer and permit in wait/
+eventstub is harness scheduling, not productioncode. It tests ordering of ACTUAL
+release_to body, not SYCL barriers/copy/stager/GPUfault prevention. Eventev and
+plain used_of races remain sourceaudit assertions, not dynamic TSANproof here.
+Ringwrap/multiskip/split invocation and finite consumerprogress covered; no
+selectedcompute/peer/stager reproduction or complete ring throughput test.
+
+New wait remains AFTERflush: opengroup's previously consumed slots must get
+their events/give_back before waiting for currentk. Sequential issuer only
+needs a_consumed window; afterflush currentk is nextconsumed entry, within
+available ringwindow. Waiting beforeflush could unnecessarily block on slots
+retained by group. Producer release a_issued after slot reads and submission;
+wait acquire obtains ordering BEFORE consumer skipped event/used_of writes.
+Inlinewait returns; selected/peer paths unchanged. GPUevents stillsameorder;
+new HOSTwait changes synchronization only on primary stream_all skippedpath.
+
+Root later exact SYCL TU build/link using private caller, numerical request
+gates/parity/health/ownership separate. No GPUtest authorized by this recipe;
+main reviews/schedules. Explicit STRATA_PREFILL_RING8 givesSTAGE8 and disables
+stream_all, including largerT; current routed-only behavior unchanged. No
+performance/GPUfaultcause/prevention/quality/adoption/full262144 claim.

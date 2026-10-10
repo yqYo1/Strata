@@ -1,0 +1,48 @@
+{
+  "original_receipt": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/postfault-status-health-root-r2/record.json",
+    "sha256": "7d83b26c2bf260004e83d1c3bab81fe6b73d67a419b763cea458a26d25937ea6",
+    "status": "FAILED unchanged"
+  },
+  "classifier_source_sha256": "be94cd889bfd054a88caa762a23825a2c842db69a19aca371df4e44082c6ea9f",
+  "gpu_executed": false,
+  "model_executed": false,
+  "reset_by_controller": false,
+  "data_path_completed_exact": true,
+  "kernel_health_passed": false,
+  "kernel_entries": 199,
+  "classification_patterns": {
+    "G2H_timeout": "Timed out wait for G2H",
+    "GuC_PC_query_failure": "GuC PC query task state failed",
+    "job_timeout_check": "Check job timeout",
+    "schedule_disable_failure": "Schedule disable failed to respond",
+    "reset_attempt": "trying reset",
+    "reset_queued": "\\breset queued\\b",
+    "reset_started": "\\breset started\\b",
+    "reset_done": "\\breset done\\b",
+    "timedout_job": "Timedout job",
+    "CAT_error": "memory.*CAT error",
+    "fault_response": "Fault response"
+  },
+  "counts": {
+    "G2H_timeout": 1,
+    "GuC_PC_query_failure": 1,
+    "job_timeout_check": 30,
+    "schedule_disable_failure": 1,
+    "reset_attempt": 32,
+    "reset_queued": 32,
+    "reset_started": 32,
+    "reset_done": 32,
+    "timedout_job": 31,
+    "CAT_error": 0,
+    "fault_response": 0
+  },
+  "first_timestamp": "1791650000424505",
+  "last_timestamp": "1791650011061506",
+  "dump_unchanged": true,
+  "boot_unchanged": true,
+  "attribution": "no-process/guc_id0 do not establish old or new process ownership",
+  "classification_limit": "32 logged reset sequences; not an independent hardware reset counter",
+  "original_regex_limit": "enumerated only GuC PC query failure; complete original199entries also contain resets/job timeouts",
+  "decision": "No further GPU/model probe; CPU/source work continues; no reset/rebind/service/dumpclear"
+}
