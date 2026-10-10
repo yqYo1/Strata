@@ -30,8 +30,14 @@ void run(bool fault) {
  auto* qp=dpct::get_current_device().create_queue(true);auto& q=*qp;
  identity(q); // before USM allocation
  std::atomic<unsigned> marker{0}; // owned until queue destruction
- std::array<unsigned char,160> input{}; // one 136-byte IQ4_XS block, guarded
- // zero scale/input produces exact zero output
+ std::array<unsigned char,160> input{}; // eight18-byte IQ4NL blocks with8-byte guards
+ input.fill(0x6d);
+ for(unsigned block=0;block<8;++block) {
+  auto* packed=input.data()+8+18*block;
+  packed[0]=0;packed[1]=0x3c; // exact positive unit scale
+  std::memset(packed+2,0,16); // code0 is exactly-127
+ }
+ // Independent literal binary16 encoding of-127 is0xd7f0.
  std::array<uint16_t,288> output{};output.fill(0x55aa);
  auto* src=sycl::malloc_device<unsigned char>(input.size(),q);
  auto* dst=sycl::malloc_device<uint16_t>(output.size(),q);
@@ -50,7 +56,7 @@ void run(bool fault) {
   if(fault)require(err.find("IQ4NL_HOST_TASK_ONE_SHOT")!=std::string::npos,"concrete error");
   progress("later_drain");completed=false;q.wait_and_throw();completed=true; // same injected error must already be consumed
   progress("readback");completed=false;q.memcpy(output.data(),dst,sizeof(output));q.wait();completed=true;q.throw_asynchronous();
-  for(unsigned i=0;i<output.size();++i)require(output[i]==(i>=16&&i<272?0:0x55aa),"output or canary");
+  for(unsigned i=0;i<output.size();++i)require(output[i]==(i>=16&&i<272?0xd7f0:0x55aa),"output or canary");
   progress("input_readback");completed=false;std::array<unsigned char,160> check{};q.memcpy(check.data(),src,check.size());q.wait();completed=true;q.throw_asynchronous();require(check==input,"input changed");
   std::printf("CASE,%s,completed_wait,1,boundary_ok,%u,callback,%u,generic_retry,%u,private_calls,%u,host_task,%u,later_drain,normal\n",fault?"fault":"control",unsigned(ok),callbacks,retries,calls,marker.load());std::fflush(stdout);
  }catch(...){if(!completed)iq4nl_unknown_completion("fixture_submission");throw;}
@@ -60,6 +66,6 @@ void run(bool fault) {
 }
 int main(int argc,char** argv) {
  if(argc!=2||std::strcmp(argv[1],"--run")!=0){std::fprintf(stderr,"usage: prefill_iq4nl_async_parity --run\n");return 2;}
- try {run(false);run(true);std::puts("PASS,host_origin_async_boundary_only,2_cases,device_fault_unqualified");return 0;}
+ try {run(false);run(true);std::puts("TERMINAL,pass,host_origin_async_boundary_only,2_cases,production_unintegrated,device_fault_unqualified,adoption_false");return 0;}
  catch(const std::exception& e){std::fprintf(stderr,"FAIL,%s\n",e.what());return 1;}
 }
