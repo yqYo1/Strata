@@ -1,0 +1,74 @@
+# R217 — native logical extents and minimum-read contract
+
+Status: read-only source and closed-report analysis. No source edit, build, test, profiler, inference, GPU/process query, Git command, service action or cleanup was performed. This report is the only artifact created for R217.
+
+## Finding
+
+The `multi_bytes` counter plus successful native row-code coverage can support a narrow, conditional lower bound on logical packed weight-address coverage: each completed CPU expert job executes every GU and Down output row, and its row kernels traverse the packed blocks needed for those outputs. For a normal completed native callback, `n * NativeFmt.bytes` therefore represents the sum of full packed weight extents referenced per unique CPU job in that callback.
+
+This is not a lower bound on bytes fetched from DRAM, not a count of unique addresses over a whole request, and not an exact machine load-byte count. The closed pool0 receipt's 3.177867264 GB per-window figure may be described as logical submitted packed extent. It cannot be reported as 3.18 GB of physical RAM reads per window or used alone to prove the CPU is memory-bound, instruction-bound, or unable to meet a rate target.
+
+## Source and evidence pins
+
+- Frozen pool timing source: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009`, HEAD `7d0105f2a942ac72ca20fef69d4c2e7960653de3`.
+- Frozen caller census source: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq4nl-caller-census-20261010`, HEAD `0961c16d3c5b7f1191f4df139ea3e7b7a2c7859f`.
+- Current closed evidence baseline supplied by the owner: round55, registry v78, worktree `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-round55`, HEAD `f493473b9dad724e121af0a14922d875225d2fff`, registry SHA-256 `ef801a7212d63b90abbf4a895edebc3e7c09c38bf3edbe2cffbfee71dbce244e`.
+- Closed matched pool0 evidence remains the 32769-input request with 32768 actual prefill positions, 25 decode windows and 64 outputs. Its 262144 value was configured context capacity, not an input of 262144 positions. The restored host CPU spans were 145.04/145.81 ms per window; GU 104.159/104.009 ms, activation quantization 0.363/0.330 ms and Down 40.493/41.448 ms. These spans are nested wall intervals, not exclusive CPU service.
+- Round54 hardware receipt reports RAM read around 37 GB/s, non-temporal copy 37.6 GB/s and cached copy 23.0 GB/s. These are measured logical rates for those test kernels, not mathematical ceilings or controller-counter results. The same receipt records `perf_event_paranoid=4`; the prior R95 record reported no effective CAP_PERFMON. No current counter permission change is assumed.
+
+The pool0 figures above are taken from closed owner reports/corrections, not from a live repeat or transient tensor/session capture.
+
+## What `multi_bytes` counts
+
+In frozen `pool.cpp`, `ExpertPool::run_split_multi_native` adds `n * f.bytes` to `multi_bytes` after its GU, quantize and Down work. For the non-native grouped path, `run_split_multi` adds `n * BLOB`. The shared counter therefore reports a submitted full-expert extent for both code paths; it is not separated by path, format, layer, expert, or NT. Its interpretation for a native-only pool0 request depends on the request's native-mode/source receipt. It must not be silently treated as native-only if the request could mix the ordinary grouped path.
+
+`native_fmt` constructs the native extent as:
+
+- `gu_row = ggml_row_size(gu_type, n_embd)`;
+- `up_off = gu_row * n_ff`;
+- `down_off = 2 * up_off`;
+- `d_row = ggml_row_size(d_type, n_ff)`;
+- `bytes = down_off + d_row * n_embd`.
+
+That is two packed GU matrices plus one packed Down matrix, with no extra matrix included. `expert_layout.cpp` rejects a native-pack layer when its declared expert blob length differs from `f.bytes`. For the inspected IQ2_S GU type 22 and IQ4_NL Down type 20 geometry, this is the exact packed blob payload extent. `multi_bytes` is incremented once per distinct job extent, not once for each of its three phase traversals.
+
+The counter does not report activation bytes, output writes, codebook/table accesses, prefetch overfetch, cache-line fetches, page reads, speculative accesses, or any memory-controller traffic. It also does not carry the row or job identities needed to deduplicate repeated routes across windows.
+
+## Static coverage for GU22 and Down20
+
+`run_split_multi_native` sets `mrows = nb * FF` for mode 5 (GU) and `mrows = nb * H` for mode 6 (Down). `phase_tasks` partitions that flattened row domain into ranges `[g0,g1)`. `claim()` gives each task index to one participant; `wait_done` and the final `wait_parked` complete each phase before the next one proceeds. Each task may split at an expert boundary or cover several experts. Consequently, a job may generate several worker calls, and those calls cannot be added and compared directly to the expert-job count. R215's correction requires reconciling the union of each job's row intervals to `[0, FF)` for GU and `[0, H)` for Down, checking for gaps and overlaps.
+
+For each row, the native GU wrapper computes both the gate row and the up row using the complete input width. In IQ2_S type 22 blocks, both AVX2 `Fmt32<22>` and AVX-512 `Fmt<22>` walk every input block; the decoded fields cover the 82-byte block (scale, grid indices, high bits, signs and scales). The GGML fallback also walks the full row's block loop. For each Down20 row, the IQ4_NL block loop covers all `n_ff / 32` blocks. The multi-token kernel loads the FP16 scale at the block start and the 16 packed nibble bytes at offset `+2`, i.e. the full 18-byte weight block. The single-token GGML fallback iterates the same blocks and consumes the scale and nibble payload. Completing all Down rows therefore covers every packed Down row.
+
+The row coverage is a source-level operand statement. For the custom multi-token IQ4_NL kernel, each block's weight decode is shared across the NT activation rows in that call. The GGML NT1 fallback loops over tokens and invokes a dot per token, so the same weight addresses can be referenced more than once in the instruction stream. GU22 has the same dispatch distinction: default `mt_min` is 2, so NT1 falls back to GGML; grouped NT>=2 can use an IQ2_S custom kernel when the per-thread ISA gate permits. The `multi_bytes` total deliberately does not multiply by NT and is neither a load-instruction byte count nor a count of distinct addresses over repeated windows.
+
+## Jobs, identity and reuse
+
+In `expert_source.cpp`, the callback scans `(token, top-k slot)` entries. A negative CPU route creates a job only when `job_of[expert]` is unset; later occurrences of the same expert in that layer append activation/output rows to that job and increment its `nt`. On successful callback completion, the referenced `job_of` entries are reset. Thus each layer callback has at most one CPU `ExpertJobMulti` per expert index, while its `nt` counts routed token appearances. Different layers are distinct logical expert blobs even when the numeric expert index is the same.
+
+This establishes no duplicate job identity within a successful layer callback, but it does not prove a request-wide set of unique byte addresses. The same `(layer, expert)` can recur in later decode windows, and `multi_bytes` adds the extent again. Native GGUF/mmap sources can also use file/shard offsets while resident/cache paths may hand the CPU a different virtual pointer to the same logical tensor. The current counter contains no stable `(request, layer, expert, pack identity, byte offset)` key; it cannot count the unique-address union or identify cross-window cache reuse. Page/cache residency further breaks any equivalence between repeated logical operand references and repeated DRAM transfers.
+
+## What can be said about the closed 3.177867264 GB/window figure
+
+If the closed request's `multi_bytes` delta is confirmed to be native-only, each contributing callback completed normally, and every job's GU/Down ranges passed the interval-coverage reconciliation, then the strongest static statement is:
+
+> Across the CPU jobs in that window, at least 3.177867264 GB of packed-weight byte locations were covered by the successful row computations when counted once per distinct `(layer callback, expert job)` extent.
+
+This is a per-job address-coverage sum. It is not a claim that 3.177867264 GB of different virtual addresses or physical bytes were fetched during that window. The current pool0 receipt does not include the layer/expert/row coverage ledger needed to independently verify this conditional statement against runtime jobs. The source counter and static complete-row loops make the bound defensible only when the route/build and successful completion assumptions are attached.
+
+A rate conversion is possible only as a conditional scenario: 3.177867264 GB divided by the observed approximately 37 GB/s stream-read rate is about 85.9 ms/window if every logical byte had to be delivered from RAM at that rate. This assumes one physical fetch for the complete extent, no cache hits, and transfers that behave like the dependent stream test. None of those assumptions is measured for pool0. A value in that range cannot be asserted as a lower bound on DRAM service or added to/excluded from the 145 ms host phase span. That CPU phase is nested with GPU work and includes synchronization/dispatch; memory stalls are charged to CPU thread time as well as wall time, so CPU time does not separate instruction work from cache/DRAM waits.
+
+## Minimal bridge ledger
+
+A later diagnostic can keep a bounded, request-scoped ledger without logging every event:
+
+1. Record, for each completed layer callback and CPU job, request ordinal, layer, expert id, stable source/pack identity, blob offset and length, GU/Down types, NT and phase expected row-domain size. Retain per-job interval coverage for GU and Down so that the union equals the exact row domain with no gaps or overlap. Do not treat worker call count as job count; worker events should carry `[r0,r1)` and worker id and be reconciled to the caller's job record.
+2. For each worker row-call, record type, NT, phase, range and actual selected kernel path. Sum the row extents by job and reconcile them to the phase exposure/job counts. The existing caller-census snapshot's native exposure histogram has only aggregated phase/type/NT expert, token and row totals and says exposure only; it does not add a layer/expert identity key or physical-byte evidence. It is not a substitute for the row-coverage ledger.
+3. To count unique logical addresses for a request, union stable byte ranges by source identity and `(layer,expert)` across windows. Record aliases, staged/resident copies, source files and any transformations explicitly. Keep this distinct from per-job accessed-byte references.
+4. To say anything about actual hierarchy traffic, add an independently qualified counter/trace on the same process and interval: per-core cache events and, for DRAM, memory-controller bytes with enabled/running, affinity, sampling/multiplex and event definitions recorded. If PMU/uncore access remains gated, leave physical-byte claims unresolved. Cache-residency and clean/timer-off request wall still need separate receipts.
+
+This ledger should be bounded by the known request geometry and aggregate ranges; no per-row logging or extra waits belong in the production hot path. The diagnostic must preserve normal output correctness, dispatch thresholds, job order and row partition. Keep wall-clock timing, per-thread CPU time and physical counter intervals as separate measurements, then align them by request/layer/phase without subtracting clocks from different domains.
+
+## Decision
+
+The source supports a conditional minimum logical operand-address coverage statement, but the currently closed model receipt does not supply the runtime coverage and stable identity joins needed to promote the pool0 number beyond a submitted logical extent. Scheduling can change how jobs overlap, which worker finishes last, and whether time is lost to claims/barriers; it cannot eliminate the complete weight operands required by completed GU/Down rows. The 3.177867264 GB/window figure alone cannot decide whether those operands came from cache or RAM, whether address reuse occurred, or whether scheduling or kernel architecture limits the request. No physical 3.18 GB/window read claim, impossibility claim, optimization or adoption follows here.

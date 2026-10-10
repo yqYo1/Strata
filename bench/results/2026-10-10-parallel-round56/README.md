@@ -1,0 +1,3 @@
+# Event coverage and minimum logical reads
+
+R216 and R217 were fully read. A library completion event does not establish routine-wide profiling coverage, and submitted native packed extents do not establish physical DRAM reads. Keep these limits when interpreting the measured hardware envelope. The event-ledger implementer works only on source in a new worktree based on185fa780; the root owns all tests. No new source is adopted or GPU measurement claimed. Registryv79 contains324 reviewed reports. Next research concerns physicalcopy/compute engine selection under the safe runtime flags and the existing layer-major route's reuse/memory tradeoff, using immutable185fa source.

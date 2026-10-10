@@ -1,0 +1,69 @@
+# R216 — oneMKL event coverage and PTI qualification
+
+Date: 2026-10-10 (Asia/Tokyo). Read-only contract/source-history and primary-document audit. Assigned immutable source: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-phase-validity-20261010`, HEAD `185fa78098bee4be01ac81ad4f791673d24246f3`; the prefill source SHA-256 is `1a6598a158e0b11e79c7a9f93ba7e452e3c316f108e38a07ed88c88a04cc8b72`. Source implementation worktree was not inspected or changed. No build, test, model/GPU run, process/device query, Git operation, profiler run, service action, or cleanup was performed. Only this report was written.
+
+## Decision
+
+A returned oneMKL USM GEMM event is a completion/dependency token, not a documented whole-operation timing envelope. The public contract requires the event to remain incomplete until the GEMM routine has finished accessing its USM arguments. It does not promise that `event_profiling::command_start` is the start of all internal work, nor that `command_end - command_start` sums or spans all internal commands. SYCL profiling timestamps describe the command associated with that event; they do not upgrade the oneMKL completion contract into a routine-wide start/end contract.
+
+Therefore, do not call the returned event’s `command_start..command_end` a complete GEMM service interval until a PTI comparison on the exact B570 driver/runtime, binary, queue properties, types, and shapes shows that it covers the full associated device work. If oneMKL uses multiple internal submissions, the returned event may only expose its terminal command’s timestamps while still correctly waiting for all prerequisites. That is a contract-based possibility, not proof that the current B570 GEMM actually splits.
+
+The existing SYCL path is in-order: the frozen source validates `m.cs->is_in_order()`. R214’s source audit established that DPCT currently discards the oneMKL return event; the parent’s proposed event capture will make the completion token available, but it cannot by itself validate the timestamp envelope. The copy event is similarly a completion token for its submitted `queue::memcpy`; if the runtime expands or stages that copy internally, full physical copy-engine coverage also requires PTI validation.
+
+## Evidence and interpretation
+
+The oneMKL USM GEMM reference returns `sycl::event` and describes it as the event to wait on to ensure computation is complete. The oneMKL architecture spec further says the routine’s output event shall not complete until the routine has finished accessing its USM pointer arguments. These are completion and dependency guarantees. Neither document specifies that the returned event’s profiling start is the earliest internal device command or that its end-start difference represents the aggregate interval of every command used by the routine.
+
+SYCL defines `command_submit`, `command_start`, and `command_end` as timestamps for the associated command group/action; querying start/end can block until that event reaches a relevant status. Timestamps for events sharing a backend use a common timebase. This permits cross-queue event comparisons after completion, but does not make `submit`-to-`end` timestamps a reliable operation envelope for a library routine that may use multiple commands.
+
+The exact Intel oneMKL implementation selected by the installed B570 runtime is not available in the reviewed source. Public docs and the interface example do not establish whether this implementation emits one kernel, a kernel chain, a copy plus kernel, or a host-assisted operation for the production shapes. That implementation fact must be measured. The interface example stores the GEMM event and separately waits the queue before post-processing; it does not claim the event’s profiling timestamps enclose all internal kernels.
+
+## Minimal qualification matrix
+
+Run this only after the event-capture patch is built by its owner, in a fresh, small qualification binary with the same DPC++/oneMKL/Level Zero versions and the same exact B570 device. This report proposes the test; it does not execute it. Use the same in-order profiling-enabled compute queue, FP16 A/B and FP32 C, USM allocation types, compute mode, transpose/leading dimensions, and arguments as the observed `Gemm::f16` route. Exclude allocation, JIT/warmup, initialization and correctness checking from the timed interval. Use fresh queue/buffers for each case and preserve the full binary/runtime/device receipt.
+
+1. **Single-command control:** one simple FP16×FP16→FP32 GEMM that PTI shows as one device operation, plus a `queue::memcpy` control on the exact copy queue and host/device USM classes used by the application. Compare the returned event timestamps against PTI’s one-command timeline. Verify result correctness and exact copied bytes.
+2. **Target-shape cases:** call oneMKL at the same `(T,N,K)` dimensions as actual GU and Down requests, including the smallest, common, and largest `T=ne` values from a request-local shape histogram. Historical synthetic GEMM shapes M=80/160 are useful controls only; they do not stand in for the still-unmeasured production histogram. The qualification cannot be called production-shape complete until it includes every shape class used by that route, or reports uncovered classes.
+3. **Multi-command canary:** in a separate small test, submit two known dependent device kernels and retain only the second event, then collect a full PTI timeline. This checks that the analysis detects the difference between a completion event and the full chain envelope. It validates the comparator and event-timestamp handling; it does **not** prove that oneMKL itself uses multiple kernels.
+4. **Queue-gap canary:** submit GEMM A, an explicitly identified intervening device command (for example, a small `memset` or test kernel), then GEMM B, without host waits between submissions. PTI must show the intervening operation and the in-order relationships. This demonstrates why `start(B)-end(A)` is an unaccounted interval unless every intervening queue operation is represented.
+5. **Host-inclusive control:** for each GEMM, capture host `steady_clock` immediately before the API call, immediately after it returns, and after waiting on its returned event in the standalone harness. Compare (a) host submit-call cost, (b) host-inclusive call-plus-completion elapsed, (c) event profiling interval, and (d) PTI’s earliest-to-latest associated device-operation span. Host and device clocks must not be subtracted directly unless the PTI trace supplies a valid correlation.
+
+Use warmup before recording, then enough repetitions to detect stable event/timeline relationships without turning the exercise into a performance comparison. Preserve individual cases and counts. Mark a shape qualified for a full event span only when: all PTI device operations associated with the call are identified; the returned event completes after them; the returned event’s profiling interval covers the full first-to-last internal device span within measured timestamp uncertainty; and repeated samples preserve that relationship. If `command_start` aligns only with a last kernel or no reliable PTI correlation exists, retain the event as a completion dependency but report only terminal-command timing or mark routine-wide timing unqualified. Do not infer a missing start from host call entry.
+
+For copies, separately compare returned-copy-event end against all associated PTI copy/staging operations on the copy queue and record the source-reported byte count. If device copy commands are not visible or one host copy expands into multiple copy-engine commands, the event remains useful for safe completion and dependency ordering, while its event bandwidth is not a complete transfer-service rate. The event byte count is the logical API payload; PTI/driver evidence is needed before calling it physical link bytes.
+
+## Same-queue gaps and event validation
+
+Do not use `submit(current) - end(previous)` as an idle or monotonicity test. It can be negative when the host submits current work before the previous command finishes; that is normal queue pipelining. Check order within an event (`submit <= start <= end`) and checked timestamp availability, not this cross-event subtraction.
+
+A positive `start(next) - end(previous)` is only the unaccounted span between two sampled endpoints. It can contain work not retained by the current ledger, including native dequantization, gather, SwiGLU, quantization, submitted barriers, and other kernels. It may also reflect host submission delay or runtime/device scheduling. The event ledger’s GU/Down/copy subset cannot prove that the device was idle during the gap. Use PTI’s full kernel/device timeline, queue/engine identifiers, submission intervals, host API trace, and dependency view; then reconcile the PTI operations against source call coverage before naming true idle time. If trace coverage is incomplete, label it unclassified gap.
+
+SYCL guarantees same-backend events share a profiling timebase, so completed compute and copy event intervals may be intersected to describe observed event overlap. A copy event and GEMM completion event still do not by themselves identify their full internal operation spans. Keep `command_submit`, `command_start`, and `command_end` distinct; keep host wall/steady-clock durations in host-clock fields; do not insert waits to force interval boundaries. The application measurement should query profiling fields only after its already-required queue completion and async-error drain, so reading fields adds no synchronization to the workload path.
+
+## PTI scope and cost
+
+For the narrow qualification request, Intel `unitrace` offers a suitable independent view: `--kernel-submission` for queued/submission/execution intervals, `--device-timeline` for device operations, and `--chrome-kernel-logging --chrome-call-logging` for device events plus host-device interactions/dependencies. Keep queue/engine identifiers and capture the entire small request, with an explicit event-buffer limit; verify that the actual oneMKL work and memcpy operations appear before relying on it. If filtering removes required copy or host records, use the short unfiltered run and reduce it immediately to a compact table. Keep the raw trace only for that named qualification question and its recorded byte budget/review point.
+
+Prior project evidence in `docs/INTEL_GPU_RECOVERY.md` reports a B570 PTI/unitrace capture at 2K/1024 mode 1 with roughly 30% overhead. Preserve that as evidence that profiling can perturb this GPU workload. It is not proof of the overhead on the current binary, current runtime, current event-ledger path, or these GEMM/copy shapes. Use PTI to establish visibility and timestamp coverage, not to claim unprofiled throughput. Compare an uninstrumented run with an otherwise identical queue-profiling-only run and a PTI run, with correctness/fault gates held fixed; report each timing state separately. If PTI changes correctness/fault status or changes event/kernel ordering, the capture is not qualified.
+
+## Qualification decision table
+
+| Observation | Admissible conclusion |
+|---|---|
+| Returned event completes after every PTI-associated operation, and its interval covers first through last operation for a tested shape | Routine-wide event timing qualified for that exact shape/runtime/route, within observed timestamp uncertainty. |
+| Event completes after all work, but its start/end cover only the terminal command | Completion semantics qualified; routine-wide service interval not qualified. Use the PTI operation span for this shape, subject to PTI overhead/coverage limits. |
+| PTI misses kernels/copies, timestamps cannot be correlated, queue identity is uncertain, or coverage counts do not reconcile | Event duration is not attributable to full service; keep completion use only and report unclassified timing. |
+| `submit(next) < end(previous)` | Normal asynchronous pipeline behavior; not a clock or validity failure. |
+| `start(next) > end(previous)` with intervening source operations or incomplete PTI coverage | Unclassified gap, not proven idle. |
+
+Round54’s three fresh hardware processes and the R212 phase-validity receipt remain as their committed records. The phase total stays a marker interval, not a kernel-busy measurement; this report makes no performance, physical-traffic, optimization, or adoption claim.
+
+## Primary references
+
+- [oneMKL Architecture, asynchronous execution and USM completion-event requirements](https://oneapi-spec.uxlfoundation.org/specifications/oneapi/v1.3-rev-1/elements/onemkl/source/architecture/architecture)
+- [oneMKL BLAS GEMM, USM signature and output-event semantics](https://oneapi-spec.uxlfoundation.org/specifications/oneapi/v1.2-rev-1/elements/onemkl/source/domains/blas/gemm)
+- [SYCL 2020 profiling descriptors and shared backend timebase](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html)
+- [Intel PTI-GPU unitrace host/device timeline, submission and kernel logging options](https://github.com/intel/pti-gpu/blob/master/tools/unitrace/README.md)
+- [oneMath USM GEMM example retaining the returned event](https://github.com/uxlfoundation/oneMath/blob/develop/examples/blas/run_time_dispatching/level3/gemm_usm.cpp)
+
+Source-history pin: R214 report SHA-256 `39ed30de57cae794dd9d29354a914d67323a8becb44d4cca3121ff41f7648e93`. Committed archive registry v78 SHA-256 `ef801a7212d63b90abbf4a895edebc3e7c09c38bf3edbe2cffbfee71dbce244e5`.
