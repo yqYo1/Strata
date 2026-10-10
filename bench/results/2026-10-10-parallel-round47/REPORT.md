@@ -1,0 +1,9 @@
+# Recurring parallel research, round 47
+
+Six new Luna reports were read in full and retained unchanged. They cover corrected receipt source, fused SwiGLU's FP16 output contract, oneMKL completion versus profiling-window semantics, balanced input-address/order measurement controls, installed IQ4NL model metadata and a new conditional Q8-KV scale-broadcast candidate. The registry now contains 294 fully read research reports.
+
+Root built source9e54ed18, completed the actual GPU diagnostic and pushed compact qualification evidence2bd3a77ead87012a80af09c0bbab8ddc29801c14. The original controller remains FAILED for its initial output-order mistake. Separate offline revalidation passed84 numerical pairs and168 exact-submit records without another GPU launch. The owned GPU process exited0, the fresh journal was clean and no devcoredump appeared. This is no model-speed result or adoption.
+
+R185's four-cell, same-address versus64-address rotation protocol is being implemented by a separate6.1Sol in two assigned source files. Root continues evidence review and owns all later tests/builds. R186 shows39/48 native Down layer rows are format20, but no running-model caller census. R187 proposes subgroup reuse of identical Q8 scale loads only where the actual layout and collective participation admit it; no source implementation or timing is claimed.
+
+Separate corrections preserve the originals. R182's q_of placement is inside try/catch. R186's MMQ/fused bypass warning is conditional; pinned SYCL stubs are false. Agent task-time status is not rewritten when root later obtains evidence. Actual list_agents showed the latest two researchers completed and Sol still working; completed records are not described as active. Assign fresh distinct Luna scopes with this committed registry after review, while root continues actual implementation/measurement.
