@@ -63,7 +63,8 @@ limits and retained LevelZero diagnostic environment. Suggested stdout+stderr
 cap1MiB, wall120s, RSS1GiB; root reviews actual limits before execution. No timings
 are emitted. STAGE/CASE/CASE_PASS/FULL_REPEAT_HASH and terminal counts are finite;
 first difference reports case/T/index/field/baseline/candidate uint32bits/domain.
-Require all15cases and clean normal0/flush plus fault/closure checks; a parseable
+Source asserts15cases/7,970,640comparisons/three full8K repeats before its terminal.
+Require these counts and clean normal0/flush plus fault/closure checks; a parseable
 terminal alone cannot establish process success.
 
 Build uses IntelLLVM C++20, -fsycl/-fp-model=precise, default SG32, per_kernel split

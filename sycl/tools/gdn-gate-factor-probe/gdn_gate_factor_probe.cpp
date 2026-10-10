@@ -66,7 +66,7 @@ template<int SG>void group_reader(sycl::queue& q,size_t active,const float* log,
   if(i<active)factor[i]=sycl::native::exp(log[i]);
  });
 }
-const char* domain(size_t i,bool specials){unsigned k=(i%HV)%16;if(specials&&k>=14)return "artificial_nonfinite";if(k>=8)return "artificial_finite_boundary";return "plausible_synthetic_not_observed_model";}
+const char* domain(size_t i,bool specials){unsigned k=(i%HV)%16;if(specials&&k>=14)return "artificial_nonfinite";if(k>=8)return "artificial_finite_boundary";return "finite_synthetic_domain_unverified";}
 }
 int main(int argc,char** argv){try{
  require(argc==1||(argc==2&&std::string(argv[1])=="--include-artificial-nonfinite"),"unknown argument");bool specials=argc==2;
@@ -90,7 +90,7 @@ int main(int argc,char** argv){try{
  for(size_t h=0;h<HV;++h){dt.data()[h]=0.f;a.data()[h]=h%16==3?-0.000001f:-1.f;}
  for(size_t t=0;t<MaxT;++t)for(size_t h=0;h<HV;++h){ab.data()[t*2*HV+h]=values[h%16];ab.data()[t*2*HV+HV+h]=float(int((t+h)%17)-8)*0.25f;}
  std::vector<uint32_t> immutable(2*N);for(size_t i=0;i<2*N;++i)immutable[i]=bits(ab.data()[i]);
- const std::array<size_t,15> lengths{0,1,3,5,15,16,17,127,128,129,8191,8192,3,8192,8192};uint64_t compared=0,cases=0,full_hash=0;bool full_seen=false;
+ const std::array<size_t,15> lengths{0,1,3,5,15,16,17,127,128,129,8191,8192,3,8192,8192};uint64_t compared=0,cases=0,full_hash=0,full_repeats=0;bool full_seen=false;
  for(size_t T:lengths){require(T<=MaxT,"length bound");size_t active=T*HV;
   for(Buffer* b:{&bl,&bb,&cl,&cb,&cf,&scalar,&sg16,&sg32})b->reset();
   std::cout<<"CASE,"<<cases<<",T,"<<T<<",specials,"<<specials<<'\n';
@@ -103,7 +103,7 @@ int main(int argc,char** argv){try{
    const std::array<std::pair<const char*,std::pair<float,float>>,5> checks{{{"loggate",{bl.data()[i],cl.data()[i]}},{"beta",{bb.data()[i],cb.data()[i]}},{"factor_scalar",{scalar.data()[i],cf.data()[i]}},{"factor_SG16",{sg16.data()[i],cf.data()[i]}},{"factor_SG32",{sg32.data()[i],cf.data()[i]}}}};
    for(const auto& c:checks){++compared;if(bits(c.second.first)!=bits(c.second.second)){std::cerr<<"FIRST_DIFFERENCE,"<<cases<<','<<T<<','<<i<<','<<c.first<<','<<bits(c.second.first)<<','<<bits(c.second.second)<<','<<domain(i,specials)<<'\n';throw std::runtime_error("bitwise mismatch after comparisons="+std::to_string(compared)+" completed_cases="+std::to_string(cases));}}
   }
-  if(T==MaxT){uint64_t hash=14695981039346656037ULL;for(size_t i=0;i<active;++i)for(Buffer* b:{&bl,&bb,&cl,&cb,&cf,&scalar,&sg16,&sg32}){uint32_t word=bits(b->data()[i]);for(unsigned k=0;k<4;++k){hash^=(word>>(8*k))&255U;hash*=1099511628211ULL;}}
+  if(T==MaxT){++full_repeats;uint64_t hash=14695981039346656037ULL;for(size_t i=0;i<active;++i)for(Buffer* b:{&bl,&bb,&cl,&cb,&cf,&scalar,&sg16,&sg32}){uint32_t word=bits(b->data()[i]);for(unsigned k=0;k<4;++k){hash^=(word>>(8*k))&255U;hash*=1099511628211ULL;}}
    if(full_seen)require(hash==full_hash,"large-prefix repeat/reset hash changed");else{full_hash=hash;full_seen=true;}
    std::cout<<"FULL_REPEAT_HASH,"<<hash<<'\n';
   }
@@ -113,6 +113,7 @@ int main(int argc,char** argv){try{
   for(size_t h=0;h<HV;++h){require(bits(dt.data()[h])==bits(0.f),"dt changed");require(bits(a.data()[h])==bits(h%16==3?-0.000001f:-1.f),"ssm_a changed");}
   ++cases;std::cout<<"CASE_PASS,"<<cases<<','<<active<<'\n';std::cout.flush();require(bool(std::cout),"output failure");
  }
+ require(cases==15&&compared==7970640&&full_seen&&full_repeats==3,"terminal count mismatch");
  std::cout<<"TERMINAL,pass,cases,"<<cases<<",comparisons,"<<compared<<",necessary_screen_only,no_state_no_norm_no_model_no_timing\n";
  std::cout.flush();std::cerr.flush();require(bool(std::cout)&&bool(std::cerr),"final output failure");return 0;
  }catch(const std::exception& e){std::cerr<<"TERMINAL,fail,"<<e.what()<<'\n';std::cerr.flush();return 1;}}
