@@ -9,6 +9,9 @@
 #include <cstddef>
 #include <cstdint>
 #include <string>
+#if defined(SYCL_LANGUAGE_VERSION)
+#include <sycl/sycl.hpp>
+#endif
 
 namespace strata::prefill {
 
@@ -39,6 +42,11 @@ public:
     /// Y = X . W^T with both in FP16 (bits).
     void f16(const uint16_t* X, const uint16_t* W, float* Y, int64_t T, int64_t N, int64_t K, int64_t ldy = 0,
              float beta = 0.0f);
+#if defined(SYCL_LANGUAGE_VERSION)
+    /// Diagnostic channel for the existing oneMKL half/half/float returned event.
+    bool f16_event(const uint16_t* X, const uint16_t* W, float* Y, int64_t T, int64_t N, int64_t K,
+                   int64_t ldy, sycl::event& returned_event);
+#endif
 
     /// W given as native GGUF blocks of `ggml_type`, dequantized to FP16 in the scratch, X in FP16.  `ldx` (> K) is
     /// X's padded row stride, taken only by STRATA_PF_PAD's path (0 = K).

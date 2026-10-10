@@ -1,0 +1,103 @@
+{
+  "active": false,
+  "complete": false,
+  "passed": false,
+  "gpu_work_submitted": false,
+  "model_executed": false,
+  "adopted": false,
+  "source_pins": {
+    "include/strata/prefill/gemm.hpp": "c10283413dfda1d7cee16fdb3ffa5bef9bcfd138f03297ea63cc5a3567d01450",
+    "sycl/include/dpct/blas_utils.hpp": "c48890546a906f244a9eb48090944a034ebf30e042a61d51d9668e251ef3043a",
+    "sycl/include/dpct/detail/blas_utils_detail.hpp": "cd97eb892479a654b76219c8764f58d8a674554df0636b5f67caef6158aff84b",
+    "sycl/include/strata/prefill_service_ledger.hpp": "25a469910ac0e1a6f87bd38da8d89c2cbbe377299623394f1e9d49a526fe25e4",
+    "sycl/src/prefill/gemm.dp.cpp": "ad863d0dc122c7e809ec584637820e1796230c1319f1300b2167d89cf3080f04",
+    "sycl/src/prefill/prefill.cpp": "f6cbc4acb9f84b19480a25892a2e6864896a3e3ab0f68ace3c3f51a788591f69",
+    "sycl/tools/test_prefill_service_ledger.py": "5ff0000f960cd59fece3fc9467eeb8fbd0019091c7663195f685df1564d0ad7f",
+    "sycl/tools/qualify_prefill_f16_event.cpp": "3ea1619edb108d1698a756dc7735b65c53333b2c5f7c4865e2f0f9b064bb4cc3"
+  },
+  "commands": [
+    {
+      "label": "host-contract",
+      "argv": [
+        "python3",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/sycl/tools/test_prefill_service_ledger.py"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "CXX": "/usr/bin/c++"
+      },
+      "started_utc": "2026-10-10T08:34:33.527664+00:00",
+      "wall_seconds": 60,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1078317,
+          "start_ticks": 31095264,
+          "sid": 1078317,
+          "pgid": 1078317
+        },
+        {
+          "pid": 1078319,
+          "start_ticks": 31095268,
+          "sid": 1078317,
+          "pgid": 1078317
+        },
+        {
+          "pid": 1078320,
+          "start_ticks": 31095268,
+          "sid": 1078317,
+          "pgid": 1078317
+        },
+        {
+          "pid": 1078346,
+          "start_ticks": 31095335,
+          "sid": 1078317,
+          "pgid": 1078317
+        },
+        {
+          "pid": 1078347,
+          "start_ticks": 31095335,
+          "sid": 1078317,
+          "pgid": 1078317
+        }
+      ],
+      "pid": 1078317,
+      "direct_identity": {
+        "pid": 1078317,
+        "state": "R",
+        "ppid": 1078315,
+        "pgid": 1078317,
+        "sid": 1078317,
+        "start_ticks": 31095264,
+        "rss_bytes": 581632
+      },
+      "peak_session_rss_bytes": 125792256,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T08:34:34.582888+00:00",
+      "elapsed_seconds": 1.0550890730228275,
+      "logs": {
+        "host-contract.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "host-contract.stderr": {
+          "bytes": 1328,
+          "sha256": "d765ed9fd6e48f8d18892bb2c49350bbee5fb30f08d8af4aa4f26368520eb6da"
+        }
+      }
+    }
+  ],
+  "scope": "Actual production ledger host contract including49152events/24576rolepairs per48layer512expert chunk; no model or device proof",
+  "started_utc": "2026-10-10T08:34:33.527636+00:00",
+  "error": "AssertionError: ({'label': 'host-contract', 'argv': ['python3', '/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/sycl/tools/test_prefill_service_ledger.py'], 'environment': {'PATH': '/usr/bin:/bin', 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8', 'CXX': '/usr/bin/c++'}, 'started_utc': '2026-10-10T08:34:33.527664+00:00', 'wall_seconds': 60, 'normal_exit': True, 'session_empty': True, 'observation_complete': True, 'cleanup': [], 'errors': [], 'owners': [{'pid': 1078317, 'start_ticks': 31095264, 'sid': 1078317, 'pgid': 1078317}, {'pid': 1078319, 'start_ticks': 31095268, 'sid': 1078317, 'pgid': 1078317}, {'pid': 1078320, 'start_ticks': 31095268, 'sid': 1078317, 'pgid': 1078317}, {'pid': 1078346, 'start_ticks': 31095335, 'sid': 1078317, 'pgid': 1078317}, {'pid': 1078347, 'start_ticks': 31095335, 'sid': 1078317, 'pgid': 1078317}], 'pid': 1078317, 'direct_identity': {'pid': 1078317, 'state': 'R', 'ppid': 1078315, 'pgid': 1078317, 'sid': 1078317, 'start_ticks': 31095264, 'rss_bytes': 581632}, 'peak_session_rss_bytes': 125792256, 'survivors': [], 'ownership_status': 'observed', 'exit_code': 1, 'direct_child_reaped': True, 'finished_utc': '2026-10-10T08:34:34.582888+00:00', 'elapsed_seconds': 1.0550890730228275, 'logs': {'host-contract.stdout': {'bytes': 0, 'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'}, 'host-contract.stderr': {'bytes': 1328, 'sha256': 'd765ed9fd6e48f8d18892bb2c49350bbee5fb30f08d8af4aa4f26368520eb6da'}}}, '/tmp/strata-service-ledger-g9ptdzpy/contract.cpp: In function \u2018int main(int, char**)\u2019:\\n/tmp/strata-service-ledger-g9ptdzpy/contract.cpp:19:14: warning: unused parameter \u2018argc\u2019 [-Wunused-parameter]\\n   19 | int main(int argc, char** argv) {\\n      |          ~~~~^~~~\\nTraceback (most recent call last):\\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/sycl/tools/test_prefill_service_ledger.py\", line 150, in <module>\\n    main()\\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/sycl/tools/test_prefill_service_ledger.py\", line 122, in main\\n    assert receipt[\\'reason\\']=={**invalid,**fatal}[mode], (mode,receipt)\\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\nAssertionError: (\\'invalid_id\\', {\\'lane\\': \\'test\\', \\'status\\': \\'invalid\\', \\'reason\\': \\'expected_identity\\', \\'fatal_reason\\': \\'none\\', \\'admitted\\': True, \\'attempts\\': 2, \\'submitted\\': 2, \\'retained\\': 0, \\'folded\\': 0, \\'pending\\': 0, \\'dropped\\': 2, \\'query_attempts\\': 0, \\'query_successes\\': 0, \\'query_failures\\': 0, \\'backward\\': 0, \\'raw_submit_ns\\': 0, \\'raw_start_ns\\': 0, \\'raw_end_ns\\': 0, \\'rejected_submit_ns\\': 0, \\'rejected_start_ns\\': 0, \\'rejected_end_ns\\': 0, \\'event_cap\\': 65536, \\'bucket_cap\\': 16384, \\'expected_registered\\': 0, \\'completed_role_pairs\\': 0, \\'expected_pending\\': 0})\\n')",
+  "finished_utc": "2026-10-10T08:34:34.583266+00:00"
+}

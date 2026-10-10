@@ -348,15 +348,28 @@ inline void gemm_impl(sycl::queue &q, oneapi::mkl::transpose a_trans,
                       oneapi::mkl::transpose b_trans, int m, int n, int k,
                       const void *alpha, const void *a, int lda, const void *b,
                       int ldb, const void *beta, void *c, int ldc,
-                      oneapi::mkl::blas::compute_mode cm) {
+                      oneapi::mkl::blas::compute_mode cm, sycl::event* returned_event = nullptr) {
   Ts alpha_value = get_value(reinterpret_cast<const Ts *>(alpha), q);
   Ts beta_value = get_value(reinterpret_cast<const Ts *>(beta), q);
   auto data_a = get_memory<const Ta>(a);
   auto data_b = get_memory<const Tb>(b);
   auto data_c = get_memory<Tc>(c);
+#ifdef DPCT_USM_LEVEL_NONE
+  if (returned_event) throw std::runtime_error("Returned GEMM event capture requires the USM API");
   oneapi::mkl::blas::column_major::gemm(q, a_trans, b_trans, m, n, k,
                                         alpha_value, data_a, lda, data_b, ldb,
                                         beta_value, data_c, ldc, cm);
+#else
+  if (returned_event) {
+    *returned_event = oneapi::mkl::blas::column_major::gemm(q, a_trans, b_trans, m, n, k,
+                                        alpha_value, data_a, lda, data_b, ldb,
+                                        beta_value, data_c, ldc, cm);
+  } else {
+  oneapi::mkl::blas::column_major::gemm(q, a_trans, b_trans, m, n, k,
+                                        alpha_value, data_a, lda, data_b, ldb,
+                                        beta_value, data_c, ldc, cm);
+  }
+#endif
 }
 #endif
 

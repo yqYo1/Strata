@@ -784,6 +784,25 @@ void Gemm::f16(const uint16_t* X, const uint16_t* W, float* Y, int64_t T, int64_
     STRATA_ABSORB_HIPBLAS_STICKY("cublasGemmEx f16");
 }
 
+bool Gemm::f16_event(const uint16_t* X, const uint16_t* W, float* Y, int64_t T, int64_t N, int64_t K,
+                     int64_t ldy, sycl::event& returned_event) {
+#if defined(__INTEL_MKL__) && !defined(DPCT_USM_LEVEL_NONE) && !defined(STRATA_USE_HIP) && !defined(__HIPCC__)
+    if (T <= 0 || N <= 0 || K <= 0 || T > INT_MAX || N > INT_MAX || K > INT_MAX) return false;
+    if (ldy <= 0) ldy = N;
+    if (ldy < N || ldy > INT_MAX) return false;
+    if (((dpct::blas::descriptor_ptr)handle_)->get_queue() != *strata::q_of(stream_)) return false;
+    const float alpha = 1.0f, beta = 0.0f;
+    // Same existing call and arguments; no wrapper macro may swallow a missing event.
+    dpct::blas::gemm((dpct::blas::descriptor_ptr)handle_, oneapi::mkl::transpose::trans,
+        oneapi::mkl::transpose::nontrans, (int)N, (int)T, (int)K, &alpha, W,
+        dpct::library_data_t::real_half, (int)K, X, dpct::library_data_t::real_half, (int)K,
+        &beta, Y, dpct::library_data_t::real_float, (int)ldy, dpct::compute_type::f32, &returned_event);
+    return true;
+#else
+    return false; // Caller executes original path once and invalidates diagnostic coverage.
+#endif
+}
+
 #if defined(STRATA_PREFILL_MMQ) && defined(__HIPCC__)
 bool Gemm::native_mmq(const uint16_t* X, int type, const void* W, float* Y, int64_t T, int64_t N, int64_t K,
                       int64_t ldy) {

@@ -924,7 +924,7 @@ inline void gemm(descriptor_ptr desc_ptr, oneapi::mkl::transpose a_trans,
                  library_data_t a_type, std::int64_t lda, const void *b,
                  library_data_t b_type, std::int64_t ldb, const void *beta,
                  void *c, library_data_t c_type, std::int64_t ldc,
-                 std::variant<compute_type, library_data_t> ct) {
+                 std::variant<compute_type, library_data_t> ct, sycl::event* returned_event = nullptr) {
 #ifndef __INTEL_MKL__
   throw std::runtime_error("The oneAPI Math Kernel Library (oneMKL) Interfaces "
                            "Project does not support this API.");
@@ -954,6 +954,10 @@ inline void gemm(descriptor_ptr desc_ptr, oneapi::mkl::transpose a_trans,
 
   std::uint64_t key = dpct::detail::get_type_combination_id(
       a_type, b_type, c_type, scaling_type);
+  if (returned_event && key != dpct::detail::get_type_combination_id(
+      library_data_t::real_half, library_data_t::real_half,
+      library_data_t::real_float, library_data_t::real_float))
+    throw std::runtime_error("Returned GEMM event capture supports half/half/float only");
   switch (key) {
   case dpct::detail::get_type_combination_id(
       library_data_t::real_float, library_data_t::real_float,
@@ -1004,7 +1008,7 @@ inline void gemm(descriptor_ptr desc_ptr, oneapi::mkl::transpose a_trans,
       library_data_t::real_half, library_data_t::real_half,
       library_data_t::real_float, library_data_t::real_float): {
     dpct::detail::gemm_impl<sycl::half, sycl::half, float, float>(
-        q, a_trans, b_trans, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc, cm);
+        q, a_trans, b_trans, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc, cm, returned_event);
     break;
   }
   case dpct::detail::get_type_combination_id(

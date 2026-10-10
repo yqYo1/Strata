@@ -1,0 +1,115 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "gpu_work_submitted": false,
+  "model_executed": false,
+  "adopted": false,
+  "source_pins": {
+    "include/strata/prefill/gemm.hpp": "c10283413dfda1d7cee16fdb3ffa5bef9bcfd138f03297ea63cc5a3567d01450",
+    "sycl/include/dpct/blas_utils.hpp": "c48890546a906f244a9eb48090944a034ebf30e042a61d51d9668e251ef3043a",
+    "sycl/include/dpct/detail/blas_utils_detail.hpp": "cd97eb892479a654b76219c8764f58d8a674554df0636b5f67caef6158aff84b",
+    "sycl/include/strata/prefill_service_ledger.hpp": "25a469910ac0e1a6f87bd38da8d89c2cbbe377299623394f1e9d49a526fe25e4",
+    "sycl/src/prefill/gemm.dp.cpp": "ad863d0dc122c7e809ec584637820e1796230c1319f1300b2167d89cf3080f04",
+    "sycl/src/prefill/prefill.cpp": "f6cbc4acb9f84b19480a25892a2e6864896a3e3ab0f68ace3c3f51a788591f69",
+    "sycl/tools/test_prefill_service_ledger.py": "2aee7d9c23a7e6117e8708d4a24feb153f1c342d147eae1d82bfb5fc7ab80e94",
+    "sycl/tools/qualify_prefill_f16_event.cpp": "3ea1619edb108d1698a756dc7735b65c53333b2c5f7c4865e2f0f9b064bb4cc3"
+  },
+  "commands": [
+    {
+      "label": "host-contract",
+      "argv": [
+        "python3",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/sycl/tools/test_prefill_service_ledger.py"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "CXX": "/usr/bin/c++"
+      },
+      "started_utc": "2026-10-10T08:35:38.630620+00:00",
+      "wall_seconds": 60,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1082129,
+          "start_ticks": 31101774,
+          "sid": 1082129,
+          "pgid": 1082129
+        },
+        {
+          "pid": 1082131,
+          "start_ticks": 31101778,
+          "sid": 1082129,
+          "pgid": 1082129
+        },
+        {
+          "pid": 1082132,
+          "start_ticks": 31101778,
+          "sid": 1082129,
+          "pgid": 1082129
+        },
+        {
+          "pid": 1082154,
+          "start_ticks": 31101844,
+          "sid": 1082129,
+          "pgid": 1082129
+        },
+        {
+          "pid": 1082155,
+          "start_ticks": 31101844,
+          "sid": 1082129,
+          "pgid": 1082129
+        },
+        {
+          "pid": 1082183,
+          "start_ticks": 31101853,
+          "sid": 1082129,
+          "pgid": 1082129
+        }
+      ],
+      "pid": 1082129,
+      "direct_identity": {
+        "pid": 1082129,
+        "state": "R",
+        "ppid": 1082127,
+        "pgid": 1082129,
+        "sid": 1082129,
+        "start_ticks": 31101774,
+        "rss_bytes": 466944
+      },
+      "peak_session_rss_bytes": 129019904,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T08:35:39.819954+00:00",
+      "elapsed_seconds": 1.1891577680362388,
+      "logs": {
+        "host-contract.stdout": {
+          "bytes": 44,
+          "sha256": "0ddd7aa716ec85c825e887a54841b15defe0aee147b525f4f9d7b159712f2c7e"
+        },
+        "host-contract.stderr": {
+          "bytes": 273,
+          "sha256": "c395729283b5b9a1503f67d23a663227c8c6d440fda209ccd953286a1f23e49e"
+        }
+      }
+    }
+  ],
+  "prior_failed_receipt": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-service-ledger-cpu-contract-v1/record.json",
+    "sha256": "c3fd8b0aa6442596383bd1dc5f13fd9a942535f29e5f3c9716e606d3c4e42ae8"
+  },
+  "fixture_fix": "Exercise invalid submitted N after a valid expectation; add independent invalid expected identity case. First-reason production validation unchanged.",
+  "scope": "Actual production ledger host contract including49152events/24576rolepairs per48layer512expert chunk; no model/device proof",
+  "started_utc": "2026-10-10T08:35:38.630583+00:00",
+  "original_f16_function_byte_identical": true,
+  "cases": 26,
+  "finished_utc": "2026-10-10T08:35:39.826545+00:00"
+}

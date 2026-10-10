@@ -54,6 +54,7 @@
 #include <thread>
 #include <vector>
 #include "strata/event_completion.hpp"
+#include "strata/prefill_service_ledger.hpp"
 namespace strata {
 inline bool dma_completed(const EventCompletion<sycl::event>& state, uint64_t value) {
     return event_completed(state, value, [](const sycl::event& event) {
@@ -1108,7 +1109,8 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
     */
     if (DPCT_CHECK_ERROR(
             m.copy = dpct::get_current_device().create_in_order_queue_with_profiling(
-                true, std::getenv("STRATA_PREFILL_TRANSFER_TIMING") != nullptr)) != 0) {
+                true, std::getenv("STRATA_PREFILL_TRANSFER_TIMING") != nullptr ||
+                      std::getenv("STRATA_PREFILL_SERVICE_TIMING") != nullptr)) != 0) {
         err = "prefill: copy stream"; return false;
     }
     const size_t T = (size_t) chunk;
@@ -2283,75 +2285,87 @@ struct PfTimer {
 // (waiting for routing, host staging or free ring slots) to PCIe transfer time.
 // Only the issuer writes these records; run() reads them after joining it and
 // waiting for the copy queue. No additional GPU commands are submitted.
+struct SyclServiceOps {
+    static bool profiling(sycl::queue& q) {
+        return q.has_property<sycl::property::queue::enable_profiling>() &&
+               q.get_device().has(sycl::aspect::queue_profiling);
+    }
+    static bool complete(const sycl::event& event) {
+        return event.get_info<sycl::info::event::command_execution_status>() == sycl::info::event_command_status::complete;
+    }
+    static void async_errors(sycl::queue& q) { q.throw_asynchronous(); }
+    static uint64_t timestamp(const sycl::event& event, int field) {
+        if (field == 0) return event.get_profiling_info<sycl::info::event_profiling::command_submit>();
+        if (field == 1) return event.get_profiling_info<sycl::info::event_profiling::command_start>();
+        return event.get_profiling_info<sycl::info::event_profiling::command_end>();
+    }
+};
+using ExpertServiceLedger = diagnostic::ServiceLedger<sycl::event, sycl::queue, SyclServiceOps>;
+using ExpertServiceId = diagnostic::ServiceId;
+
 struct ExpertTransferTimer {
-    bool on = std::getenv("STRATA_PREFILL_TRANSFER_TIMING") != nullptr;
-    struct Copy { sycl::event event; uint64_t bytes; int64_t layer; };
-    std::vector<Copy> copies;
-    std::vector<Copy> activations;
-    std::vector<Copy> device_residuals;
+    const bool on = std::getenv("STRATA_PREFILL_TRANSFER_TIMING") != nullptr ||
+                    std::getenv("STRATA_PREFILL_SERVICE_TIMING") != nullptr;
+    // Exactly one issuer owns copies; the compute producer owns the other two lanes.
+    ExpertServiceLedger copies{on, "expert_copy"};
+    ExpertServiceLedger activations{on, "activation_copy"};
+    ExpertServiceLedger device_residuals{on, "device_residual_copy"};
     int64_t residual_gpu_tokens = 0;
     double serial_layer_load_ms = 0;
+    void admit(dpct::queue_ptr copy_queue, dpct::queue_ptr compute_queue) {
+        copies.admit(copy_queue); activations.admit(compute_queue); device_residuals.admit(compute_queue);
+    }
+    template<class F> auto stager_wait(F&& wait, double& wall_ms) {
+        if (!on) return wait();
+        const auto begin = std::chrono::steady_clock::now();
+        auto result = wait();
+        wall_ms = std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now() - begin).count();
+        return result;
+    }
+    sycl::event capture(ExpertServiceLedger& lane, dpct::queue_ptr q, void* dst, const void* src,
+                        size_t bytes, ExpertServiceId id, double stager_ms = 0, double ring_ms = 0) {
+        if (!on) return q->memcpy(dst, src, bytes);
+        lane.attempt();
+        const auto begin = std::chrono::steady_clock::now();
+        try {
+            auto event = q->memcpy(dst, src, bytes);
+            const double host_ms = std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now() - begin).count();
+            lane.record(event, q, id, (uint64_t)bytes, host_ms, stager_ms, ring_ms);
+            return event;
+        } catch (...) { lane.fatal("copy_submission_failure"); }
+    }
     sycl::event device_residual(dpct::queue_ptr q, void* dst, const void* src, size_t bytes, int64_t layer) {
-        auto event = q->memcpy(dst, src, bytes);
-        if (on) device_residuals.push_back({event, (uint64_t) bytes, layer});
-        return event;
+        ExpertServiceId id; id.layer = layer; id.role = 4; id.source = 4;
+        return capture(device_residuals, q, dst, src, bytes, id);
     }
     sycl::event activation(dpct::queue_ptr q, void* dst, const void* src, size_t bytes, int64_t layer) {
-        auto event = q->memcpy(dst, src, bytes);
-        if (on) activations.push_back({event, (uint64_t) bytes, layer});
-        return event;
+        ExpertServiceId id; id.layer = layer; id.role = 3; id.source = 3;
+        return capture(activations, q, dst, src, bytes, id);
     }
-    sycl::event copy(dpct::queue_ptr q, void* dst, const void* src, size_t bytes, int64_t layer) {
-        auto event = q->memcpy(dst, src, bytes);
-        if (on) copies.push_back({event, (uint64_t) bytes, layer});
-        return event;
+    sycl::event copy(dpct::queue_ptr q, void* dst, const void* src, size_t bytes, int64_t layer,
+                     int64_t chunk = -1, int64_t expert = -1, int ring = -1, int source = 0, double stager_ms = 0, double ring_ms = 0) {
+        ExpertServiceId id; id.layer = layer; id.chunk = chunk; id.expert = expert;
+        id.role = 2; id.ring = ring; id.source = source;
+        return capture(copies, q, dst, src, bytes, id, stager_ms, ring_ms);
     }
+    void fold_compute() { activations.fold(); device_residuals.fold(); }
+    void fold_copy(bool required = true) { copies.fold(required); }
     void report(int64_t tokens, int64_t chunks, int64_t layers, double wall_ms, double host_copy_ms,
-                double ple_preload_ms) const {
+                double ple_preload_ms) {
         if (!on) return;
-        uint64_t bytes = 0, active_ns = 0, first = UINT64_MAX, last = 0;
-        std::vector<uint64_t> layer_bytes((size_t) layers), layer_ns((size_t) layers), layer_copies((size_t) layers);
-        for (const auto& c : copies) {
-            const uint64_t start = c.event.get_profiling_info<sycl::info::event_profiling::command_start>();
-            const uint64_t end = c.event.get_profiling_info<sycl::info::event_profiling::command_end>();
-            bytes += c.bytes; active_ns += end - start;
-            first = std::min(first, start); last = std::max(last, end);
-            layer_bytes[(size_t) c.layer] += c.bytes;
-            layer_ns[(size_t) c.layer] += end - start;
-            ++layer_copies[(size_t) c.layer];
+        // Existing final compute/copy waits and issuer join precede this call.
+        fold_compute(); fold_copy();
+        if (!copies.valid || !activations.valid || !device_residuals.valid) {
+            copies.invalidate("transfer_lane_invalid"); activations.invalidate("transfer_lane_invalid");
+            device_residuals.invalidate("transfer_lane_invalid");
         }
-        const double active_ms = (double) active_ns / 1e6;
-        const double span_ms = copies.empty() ? 0 : (double) (last - first) / 1e6;
-        std::fprintf(stderr, "strata prefill transfer: {\"tokens\":%lld,\"chunks\":%lld,\"expert_copies\":%zu,"
-                             "\"expert_bytes\":%llu,\"dma_active_ms\":%.6f,\"copy_span_ms\":%.6f,"
-                             "\"host_copy_worker_ms\":%.6f,\"wall_ms\":%.6f,\"ple_preload_ms\":%.6f,\"layers\":[",
-                     (long long) tokens, (long long) chunks, copies.size(), (unsigned long long) bytes,
-                     active_ms, span_ms, host_copy_ms, wall_ms, ple_preload_ms);
-        for (int64_t l = 0; l < layers; ++l)
-            std::fprintf(stderr, "%s{\"layer\":%lld,\"copies\":%llu,\"bytes\":%llu,\"dma_active_ms\":%.6f}",
-                         l ? "," : "", (long long) l, (unsigned long long) layer_copies[(size_t) l],
-                         (unsigned long long) layer_bytes[(size_t) l], (double) layer_ns[(size_t) l] / 1e6);
-        uint64_t activation_bytes = 0, activation_ns = 0;
-        for (const auto& c : activations) {
-            activation_bytes += c.bytes;
-            activation_ns += c.event.get_profiling_info<sycl::info::event_profiling::command_end>() -
-                             c.event.get_profiling_info<sycl::info::event_profiling::command_start>();
-        }
-        uint64_t device_bytes = 0, device_ns = 0;
-        for (const auto& c : device_residuals) {
-            device_bytes += c.bytes;
-            device_ns += c.event.get_profiling_info<sycl::info::event_profiling::command_end>() -
-                         c.event.get_profiling_info<sycl::info::event_profiling::command_start>();
-        }
-        std::fprintf(stderr, "],\"activation_copies\":%zu,\"activation_bytes\":%llu,"
-                             "\"activation_dma_active_ms\":%.6f,\"total_transfer_bytes\":%llu,"
-                             "\"residual_gpu_tokens\":%lld,\"device_residual_copies\":%zu,"
-                             "\"device_residual_bytes\":%llu,\"device_residual_dma_active_ms\":%.6f,"
-                             "\"serial_layer_load_wall_ms\":%.6f}\n",
-                     activations.size(), (unsigned long long) activation_bytes, (double) activation_ns / 1e6,
-                     (unsigned long long) (bytes + activation_bytes), (long long) residual_gpu_tokens,
-                     device_residuals.size(), (unsigned long long) device_bytes, (double) device_ns / 1e6,
-                     serial_layer_load_ms);
+        copies.report(); activations.report(); device_residuals.report();
+        if (!copies.valid || !activations.valid || !device_residuals.valid) return;
+        std::fprintf(stderr, "strata prefill transfer host context: {\"tokens\":%lld,\"chunks\":%lld,\"layers\":%lld,"
+            "\"host_copy_worker_ms\":%.6f,\"wall_ms\":%.6f,\"ple_preload_ms\":%.6f,"
+            "\"residual_gpu_tokens\":%lld,\"serial_layer_load_wall_ms\":%.6f}\n",
+            (long long)tokens,(long long)chunks,(long long)layers,host_copy_ms,wall_ms,ple_preload_ms,
+            (long long)residual_gpu_tokens,serial_layer_load_ms);
     }
 };
 // multi-GPU: the peer's own timeline (STRATA_PREFILL_TIMING): marks on the peer stream, folded with the primary's
@@ -2789,10 +2803,13 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         }
         m.stager->start(std::move(jobs));
         for (int32_t e = 0; e < g.n_expert; ++e) {
-            const auto dma = transfers.copy(m.copy, const_cast<uint8_t*>(layer_cache.device_slot(e)), m.stager->wait(e), bytes, layer);
+            double stager_ms = 0;
+            const auto host_blob = transfers.stager_wait([&] { return m.stager->wait(e); }, stager_ms);
+            const auto dma = transfers.copy(m.copy, const_cast<uint8_t*>(layer_cache.device_slot(e)), host_blob, bytes, layer, -1, e, -1, 2, stager_ms);
             m.stager->issued_one(e, dma);
         }
         m.copy->wait(); m.stager->finish();
+        if (transfers.on) transfers.fold_copy();
         transfers.serial_layer_load_ms += ms_since(load_started);
         phases.mark(kPfStart, strata::q_of(m.cs));
         if (m.stager->failed.load(std::memory_order_relaxed)) {
@@ -2970,6 +2987,11 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
     PeTimer pe;
     if (m.pp) pe.dev = m.pp->dev; else pe.on = false;
     const dpct::queue_ptr cs = strata::q_of(m.cs);
+    ExpertServiceLedger services{std::getenv("STRATA_PREFILL_SERVICE_TIMING") != nullptr, "expert_gemm"};
+    services.admit(cs);
+    if (services.on && *strata::q_of(m.gemm.stream()) != *cs) services.invalidate("gemm_queue_identity");
+    transfers.admit(m.copy, cs);
+    if (services.on && (m.pp || next_ || core::peer_portable())) services.invalidate("unsupported_multi_gpu_path");
     // the MMQ row table lives in the borrowed cache slots, which the refill after a prompt overwrites with experts:
     // write it again for every prompt (a layout is reused as long as the chunk and the slots are the same)
     if (m.ids_identity != nullptr) mmq::iota(m.ids_identity, m.T * K, m.cs);
@@ -3422,10 +3444,11 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                     call wait() on event return by memcpy API to ensure
                     synchronization behavior.
                     */
-                    transfers.copy(m.copy, m.stage_dev[sl], en.blob, bytes, en.l);
+                    transfers.copy(m.copy, m.stage_dev[sl], en.blob, bytes, en.l, p0, en.e, sl, 1);
                     ++stats_.experts_dma;
                 } else {
-                    const uint8_t* hb = m.stager->wait(en.job);
+                    double stager_ms = 0;
+                    const uint8_t* hb = transfers.stager_wait([&] { return m.stager->wait(en.job); }, stager_ms);
                     /*
                     DPCT1124: cudaMemcpyAsync is migrated to asynchronous
                     memcpy API. While the origin API might be synchronous, it
@@ -3433,7 +3456,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                     call wait() on event return by memcpy API to ensure
                     synchronization behavior.
                     */
-                    const auto dma = transfers.copy(m.copy, m.stage_dev[sl], hb, bytes, en.l);
+                    const auto dma = transfers.copy(m.copy, m.stage_dev[sl], hb, bytes, en.l, p0, en.e, sl, 2, stager_ms);
                     m.stager->issued_one(en.job, dma);
                 }
                 dpct::sync_barrier(m.copied[sl], m.copy);
@@ -3474,10 +3497,12 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                 const core::OnDevice od(m.device);
                 for (size_t idx = 0; idx < seq.size(); ++idx) {
                     if (a_stop.load(std::memory_order_acquire)) return;
+                    const auto ring_begin = transfers.on ? Clock::now() : Clock::time_point{};
                     while (idx >= a_consumed.load(std::memory_order_acquire) + (size_t) m.ring) {
                         if (a_stop.load(std::memory_order_acquire)) return;
                         std::this_thread::yield();
                     }
+                    const double ring_ms = transfers.on ? ms_since(ring_begin) : 0;
                     const StreamEntry& en = seq[idx];
                     const int sl = (int) (idx % (size_t) m.ring);
                     const auto th = Clock::now();
@@ -3492,10 +3517,11 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                         so you may need to call wait() on event return by memcpy
                         API to ensure synchronization behavior.
                         */
-                        transfers.copy(m.copy, m.stage_dev[sl], en.blob, bytes, en.l);
+                        transfers.copy(m.copy, m.stage_dev[sl], en.blob, bytes, en.l, p0, en.e, sl, 1, 0, ring_ms);
                         ++iss_dma;
                     } else {
-                        const uint8_t* hb = m.stager->wait(en.job, &a_stop);
+                        double stager_ms = 0;
+                        const uint8_t* hb = transfers.stager_wait([&] { return m.stager->wait(en.job, &a_stop); }, stager_ms);
                         if (!hb) return;
                         /*
                         DPCT1124: cudaMemcpyAsync is migrated to
@@ -3504,7 +3530,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                         so you may need to call wait() on event return by memcpy
                         API to ensure synchronization behavior.
                         */
-                        const auto dma = transfers.copy(m.copy, m.stage_dev[sl], hb, bytes, en.l);
+                        const auto dma = transfers.copy(m.copy, m.stage_dev[sl], hb, bytes, en.l, p0, en.e, sl, 2, stager_ms, ring_ms);
                         m.stager->issued_one(en.job, dma);
                     }
                     dpct::sync_barrier(m.copied[sl], m.copy);
@@ -4087,6 +4113,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                     const bool fused_only = mmq_plan().any && mmq_plan().fo[(size_t) l];
                     const bool fused_nat = (use_mmq || fused_only) && stream_all && no_peer && lay.native && fused::native_supported(mmq_gt, mmq_dt);
                     const bool fused_l = (use_mmq && stream_all && no_peer && !lay.native && fused::enabled()) || fused_nat;
+                    if (services.on && (use_mmq || fused_l || fused_only)) services.invalidate("unsupported_mmq_or_fused_path");
                     // #583 / #954: the fused layout's GU/H/Xq hold the grouping tables and the int8 rows, sized for
                     // stream_all_min() - 1 tokens of MMQ's rows, so a layer that takes MMQ or the FP16 path at the FULL
                     // chunk would write T*K rows into a (stream_all_min() - 1)*K-row buffer: an illegal access, or a kernel
@@ -4255,6 +4282,13 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                                 (!on_peer.empty() && on_peer[(size_t) e] ? order_peer : order).push_back(e);
                         for (int32_t e = 0; e < m.g->n_expert && !on_peer.empty(); ++e)   // the peer-streamed ones last:
                             if (on_peer[(size_t) e] == 2) order_peer.push_back(e);        // their copies get the most time
+                        if (services.on && !use_mmq && !fused_l) {
+                            for (const int32_t expert : order) {
+                                ExpertServiceId expected; expected.chunk = p0; expected.layer = l;
+                                expected.expert = expert; expected.rows = m.cnt[(size_t)expert];
+                                services.expect_gemm(expected);
+                            }
+                        }
                         // Aurora (STRATA_MMQ_RESIDENT_SORT_NE=1, opt-in): a layer whose experts are ALL resident and
                         // run through MMQ groups takes them in row-count order, so each 16-expert group's max_rows
                         // (its padded tile rows) is close to its experts' own; slot/src/off are rebuilt coherently
@@ -4708,11 +4742,12 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                                 synchronization behavior.
                                 */
                                 transfers.copy(m.copy, m.stage_dev[sl], b,
-                                               (size_t)lay.blob_bytes(l), l);
+                                               (size_t)lay.blob_bytes(l), l, p0, e, sl, 1);
                                 ++stats_.experts_dma;
                             } else {
                                 // copied to a pinned buffer by the stager (waits only if it is behind), then DMA
-                                const uint8_t* hb = m.stager->wait(job_of[j]);
+                                double stager_ms = 0;
+                                const uint8_t* hb = transfers.stager_wait([&] { return m.stager->wait(job_of[j]); }, stager_ms);
                                 if (m.stage_live[sl])(m.copy)
                                     ->ext_oneapi_submit_barrier(
                                         {*m.used[m.used_of[sl]]});
@@ -4725,7 +4760,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                                 synchronization behavior.
                                 */
                                 const auto dma = transfers.copy(m.copy, m.stage_dev[sl], hb,
-                                               (size_t)lay.blob_bytes(l), l);
+                                               (size_t)lay.blob_bytes(l), l, p0, e, sl, 2, stager_ms);
                                 m.stager->issued_one(job_of[j], dma);
                             }
                             dpct::sync_barrier(m.copied[sl], m.copy);
@@ -4883,14 +4918,36 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                                 gather_rows16(m.mixed_h, m.src_dev + o0, m.Xs, ne, N, m.cs);
                             }
                             const int64_t scratch_row = m.compact ? 0 : o0;
+                            auto expert_product = [&](int role, const uint16_t* x, const uint16_t* w,
+                                                      float* y, int64_t out, int64_t inner) {
+                                if (!services.on) {
+                                    m.gemm.f16(x, w, y, ne, out, inner);
+                                    return;
+                                }
+                                services.attempt();
+                                sycl::event event;
+                                const auto begin = Clock::now();
+                                try {
+                                    if (!m.gemm.f16_event(x,w,y,ne,out,inner,out,event)) {
+                                        services.invalidate("unsupported_gemm_event_path");
+                                        m.gemm.f16(x,w,y,ne,out,inner); // No event-path submission occurred.
+                                        return;
+                                    }
+                                    const double host_ms = ms_since(begin);
+                                    ExpertServiceId id; id.chunk = p0; id.layer = l; id.expert = e;
+                                    id.role = role; id.rows = ne; id.n = out; id.k = inner; id.ldy = out;
+                                    services.record(event,cs,id,0,host_ms);
+                                } catch (...) { services.fatal("gemm_submission_failure"); }
+                            };
                             pt.mark(kPfGemmGU, cs);
-                            m.gemm.f16(m.Xs + scratch_row * N, m.dq_gu[q], m.GU + scratch_row * 1280, ne, 1280, N);
+                            expert_product(0, m.Xs + scratch_row * N, m.dq_gu[q], m.GU + scratch_row * 1280, 1280, N);
                             swiglu_interleaved(m.GU + scratch_row * 1280, m.Hh + scratch_row * 640, ne, m.cs);
                             pt.mark(kPfGemmD, cs);
-                            m.gemm.f16(m.Hh + scratch_row * 640, m.dq_d[q], m.Dm + o0 * N, ne, N, 640);
+                            expert_product(1, m.Hh + scratch_row * 640, m.dq_d[q], m.Dm + o0 * N, N, 640);
                             return true;
                         }
                         catch (sycl::exception const &exc) {
+                          if (services.on) services.fatal("expert_compute_failure");
                           std::cerr << exc.what()
                                     << "Exception caught at file:" << __FILE__
                                     << ", line:" << __LINE__ << std::endl;
@@ -5244,6 +5301,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
         if (on_chunk || on_stage_chunk) {
             const auto toc = Clock::now();
             if (DPCT_CHECK_ERROR(m.cs->wait()) != 0) {
+                if (services.on) services.fatal("compute_wait_failure");
                 /*
                 DPCT1009: SYCL reports errors using exceptions and does not
                 use error codes. Please replace the
@@ -5260,6 +5318,8 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                 return false;
             }
             const auto toc2 = Clock::now();
+            if (services.on) services.fold();
+            if (transfers.on) { transfers.fold_compute(); transfers.fold_copy(false); }
             if (on_stage_chunk && !on_stage_chunk(p0 + T, err)) return false;
             if (on_chunk && !on_chunk(m.R, T, p0, err)) return false;
             host_sync_ms += std::chrono::duration<double, std::milli>(toc2 - toc).count();
@@ -5298,6 +5358,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
         std::fprintf(stderr, "\n");
     }
     if (DPCT_CHECK_ERROR(m.cs->wait()) != 0) {
+                if (services.on) services.fatal("compute_wait_failure");
         /*
         DPCT1009: SYCL reports errors using exceptions and does not use
         error codes. Please replace the "get_error_string_dummy(...)" with a
@@ -5317,6 +5378,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
     rewritten.
     */
     if (const dpct::err0 cst = DPCT_CHECK_ERROR(m.copy->wait()); cst != 0) {
+        if (transfers.on) transfers.copies.fatal("copy_wait_failure");
         /*
         DPCT1009: SYCL reports errors using exceptions and does not use
         error codes. Please replace the "get_error_string_dummy(...)" with a
@@ -5351,6 +5413,12 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
         std::fprintf(stderr, "strata KV prefetch: %lld layer prefixes, single existing staging pool\n",
                      (long long) kv_prefetches);
     }
+    if (services.on) {
+        services.fold();
+        if (!services.attempts) services.invalidate("no_supported_gemm_calls");
+        services.report();
+    }
+    if (transfers.on) { transfers.fold_compute(); transfers.fold_copy(); }
     stats_.ms_total += ms_since(t_start);
     if (!m.transfer_context) transfers.report(n, stats_.chunks - chunks_start, g.n_layers, ms_since(t_start),
                      (double) (m.stager->host_copy_ns.load(std::memory_order_relaxed) - host_copy_start) / 1e6,
