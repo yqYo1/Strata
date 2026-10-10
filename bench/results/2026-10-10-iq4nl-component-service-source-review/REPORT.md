@@ -1,0 +1,11 @@
+# Balanced direct IQ4NL component fixture source review
+
+A separate6.1Sol wrote the isolated fixture and appended default-OFF CMake target. Root read the full source/handoff and checked that existing kernel, prefill, numerical fixture and receipt sources are unchanged; the complete old CMake byte prefix is unchanged. These are source checks, not binary/default behavior proofs.
+
+The protocol compares generic/private helper service in same-address and64-address-rotation regimes. Eight blocks rotate all four cell starting positions twice. Each cell submits64 existing helper calls with two output slots and one DQ completion drain. Receipt/timing storage is fixed before submission; queries, output/input reads and logging happen afterwards. Source loss invalidates after known completion; synchronous submission/unknown drain failures fail-stop before USM/event unwind.
+
+Each of64 input views is replayed through both arms before and after measurement against the full independent RNE oracle, input immutability and guards. Timed cells check only the two surviving output occupants and all64 inputs; overwritten timed outputs are not retrospectively proven individually. Requested USM is65,544,448 bytes and principal host payload73,020,032 bytes. Actual runtime overhead/RSS is separately supervised. All input data is identical across addresses with varying finite scales/codes.
+
+Every cell's full-cohort untimed readback changes the state seen by the next cell. This fixed harness condition and balanced ordering are recorded; neither address regime proves cache residency/coldness, DRAM bandwidth or production ring behavior. Raw service, queue delay, host submit and wall fields remain separate. No outliers or arbitrary gain threshold will be introduced. Root will build in the prior closed cache, verify unchanged library/old numerical binary and compile commands, then run a logged qualification before fresh clean timing.
+
+No compile/GPU/timing/model/default-OFF binary/physical262144/adoption result is claimed by this source commit. Production async integration and actual model caller census remain later independent work. Full-context and decode qualification are required before adoption.

@@ -1,0 +1,188 @@
+IQ4NL balanced component service — source-only implementation handoff
+Date: 2026-10-10 Asia/Tokyo
+
+Assigned worktree:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq4nl-event-receipt-20261010
+
+Edited only:
+- sycl/src/kernels/prefill_iq4nl_service.cpp (new isolated fixture)
+- sycl/CMakeLists.txt (one appended isolated default-OFF target block)
+- this handoff at the explicitly assigned external path
+
+No build, compiler, CMake invocation, host test, GPU/device query, model,
+profiling run, Git command, report mutation, artifact cleanup or service action
+was performed by this implementation agent. This is a source handoff, not a
+compile/correctness/event/performance qualification. Root owns all subsequent
+review, source/binary hashes, serial build/test/GPU actions and durable reports.
+
+Read/source references
+Read applicable assigned-worktree AGENTS.md and R176, R177, R179, R185 in full;
+read existing parity fixture, exact receipt header, private interface and both
+existing wrapper submit sites. Assigned worktree docs/ARTIFACT_RETENTION.md is
+absent; read /home/yayoi/orca/workspaces/Strata/sycl/docs/ARTIFACT_RETENTION.md.
+Existing numerical fixture, receipt header, iq_kernels and production prefill
+were not edited. No GPU body is duplicated and no GPU kernel is added.
+
+Reference source baseline (not a runtime verification)
+9e54ed18c0e374289293838b026e3e69b1c1fe70
+Receipt header: 2756 bytes,
+SHA256 5a194e5ad480ae36c63e164c1ae0de51b828919a7aade112ddd29e303c3e0ef0
+Kernel TU: 269005 bytes,
+SHA256 cc5080af0c9e341a69edc423c272726922c95985aa7d3125cd1b344a06ad2b12
+SOURCE CSV explicitly labels these as reference pins requiring owner
+verification. Root may advance HEAD with docs only. This source does not
+reinterpret the original failed controller receipt or the separate corrected
+offline parser result, and does not rerun or extend the prior 84-case gate.
+
+Build and CLI contract
+New option STRATA_SYCL_PREFILL_IQ4NL_SERVICE defaults OFF. ON requires existing
+DEQUANT, EVENT_RECEIPT and IQ4NL_PARITY options ON and public ze_loader.
+prefill_iq4nl_service privately defines DEQUANT+EVENT_RECEIPT and links existing
+strata_kernels plus ze_loader. Existing library/default flags are unchanged.
+Exactly one CLI argument is required:
+- --host-only: canonical host packing/oracle checks, plan/metadata adversaries,
+  empty-event nested scope rejection, seven private invalid guards; no queue.
+- --qualify: full 64-input prephase, fixed warm, one four-cell block, full final
+  replay. All rows timed=0; diagnostic use, no clean timing inference.
+- --service: same pre/post qualification and warm, eight balanced cell blocks;
+  only phase=service/timed=1 CALL rows are component service observations.
+No args, unknown flags and extra args reject before Host/queue creation.
+CONFIG describes the fixed GPU workload blueprint even in host-only mode;
+host-only executes none of that GPU workload and ends with no_queue/no_device.
+
+Exact shape, storage and data
+Type 20, Down 2560x640, n=1638400, 6400 groups, local size 32, existing helpers.
+Exactly 64 distinct input allocations and exactly two output allocations on
+the same exact in_order+enable_profiling queue supplied to every helper call.
+Before USM: Level Zero backend, vendor8086/devicee20c B570 root device,
+PCI 0000:05:00.0, fp16, queue_profiling, USM device aspect, actual profiling
+property/in_order and timer resolution are admitted and recorded; advertised
+half_fp_config flags are recorded without asserting a portable FP contract.
+Aligned device allocations and views are 64-byte aligned. Whole allocation
+ranges are checked pairwise nonoverlapping with address-overflow guards.
+Input allocation: 921600 packed bytes + 64-byte guard each side = 921728 bytes.
+Output allocation: 1638400 half words + 32 guard words each side = 1638464
+words = 3276928 bytes. Guard constants: input 0x6d, output 0xa55a.
+Total requested USM = 65544448 bytes (<96 MiB), 66 allocations. Fixed host
+payload = 73020032 bytes (<256 MiB): one canonical input, full 64-view
+readback, oracle, initial output and two output readbacks. sizeof-based
+principal metadata/container storage is added and static-checked; allocator,
+runtime and total process RSS are not claimed to be measured by that count.
+The host fixture and all receipt/sample/plan arrays exist before submissions.
+
+Every input receives byte-identical data once before qualification. The 51200
+packed 32-value blocks use row=block/20, inrow=block%20, varying low/high code
+pattern from the parity fixture and scale[(block+3*row)%14]. Scales are finite:
+0000,0001,03ff,0400,0401,2000,3c00,8000,8001,83ff,8400,8401,a000,bc00.
+All 16 codes and all 14 scales are host-checked; all workload products/halves
+are finite. Independent scalar IEEE binary16 decode/integer FP32-to-half RNE
+oracle is copied from the existing fixture, with 14 roundtrips and six
+boundary checks. Input/full-oracle FNV1a64 identities are recorded; they are
+explicitly labelled FNV, not SHA. Root still supplies durable SHA source and
+binary/build/environment receipts. The input cohort is not refilled later.
+
+Exact schedule and successful-run accounting
+Cell IDs: 0=generic/same-address, 1=private/same-address,
+2=generic/64-address rotation, 3=private/64-address rotation.
+Each cell has 64 calls. Same-address uses input0. Rotation uses
+input_index=(i+block*9)%64; output_slot=i%2. Eight block orders are:
+[0,1,2,3], [1,2,3,0], [2,3,0,1], [3,0,1,2], repeated once.
+Predecessor is preserved across cell/block boundaries and printed.
+Prephase: for input0..63, generic then private, two-call batch, both slots;
+each input/arm output is compared to FULL oracle including full output guards,
+and that input is read back including full input guards. Closing replay scan
+checks all64 simultaneously. 128 calls, 104857600 active words per arm.
+Warm: pass0..1, input0..63, generic then private; alternating slots; no receipt
+scope and one completion drain after all256 calls. No per-call warm wait.
+Service: 32 cell batches / 2048 calls; qualify: four cell batches / 256 calls.
+Final replay: same full 64-input/both-arm prephase and closing all64 scan,
+explicitly phase=final_replay, timed=0, 128 calls; never used as timed samples.
+Qualify total successful wrappers = 768, completed queue waits = 268.
+Service total successful wrappers = 2560, completed queue waits = 324.
+Receipt CALL rows: qualify512, service2304 (pre/post256 plus cell calls).
+Successful BATCH rows: qualify132, service160 (pre/post128 plus cell batches).
+Each batch has one DQ wait and a separate untimed readback wait. Additional
+waits are upload1, warm1 and replay closing scans2. FINAL_COUNTS checks total
+completed waits/wrapper returns against these fixed expected counts before
+USM release. This is one planned DQ drain per batch; readback copy completion
+is explicitly separate and excluded from host submit/wait/wall timing.
+
+Exact events, bounded loop and lifetime/error boundary
+Persistent arrays contain exactly64 optional event slots, 64 planned records
+and 64 timestamp/host-submit samples. A fresh monotonically assigned scope ID
+is used per replay/cell batch; sink serials restart at1 within that scope.
+Scope setup, capacity checks and plan admission happen before submitting.
+The timed loop contains only planned wrapper calls, counters, steady-clock
+sampling and assignment to existing sample storage. No harness allocation,
+growth, logging, H2D/readback, profile query or wait occurs in that loop.
+The receipt comes only from the existing library's exact-submit hook.
+After the one normal DQ drain, validate independent expected count/order and
+arm/type20/n/queue/src/dst/scope/serial tuple, presence of optional events,
+and pairwise event identity inequality. Query raw uint64 submit/start/end
+only after that drain. Require submit<=start<=end and previous end<=next
+start; equality and zero service are retained. service=end-start and
+queue_delay=start-submit use only one device/backend clock. Host wrapper
+latency, full submission window, wait and batch wall use steady_clock only;
+host/device clocks are never subtracted. Runtime allocation internal to the
+existing SYCL submit/event retention remains part of that instrumented path;
+the fixture introduces no dynamic collection storage in the loop.
+
+Each cell's untimed readback checks both FINAL surviving output occupants
+against full oracle/guards, and every input allocation against the canonical
+bytes/full guards. Logs identify both last occupants and expressly say
+oracle_last_occupants_only=1. This cannot prove correctness of overwritten
+timed outputs. Pre/post replay is the full input/arm qualification instead.
+All arrays/events/USM/queue remain alive until known completion and queries;
+optional events are reset after queries/readback, never before completion.
+Release is explicit after the last successful full readback and event release.
+Terminal GPU PASS is emitted only after all66 USM frees and queue teardown.
+
+The nonthrowing bounded async handler uses one atomic store of a sticky flag,
+not an exception counter; no CAS loop, allocation, iteration or logging.
+Sticky async or receipt retention loss invalidates a batch only AFTER its
+normal completion drain. A receipt loss is not treated as completion loss.
+Post-completion metadata/query/async/numerical/log errors reject and safely
+unwind known-completed state. Actual raw triples queried before a later
+profile failure are kept as QUERY_PARTIAL/timing_valid=0.
+Any synchronous exception during wrapper/copy submission, or failure of the
+planned completion drain, takes bounded FAIL_STOP and _Exit(2), with no USM,
+event, scope or queue unwind. No retry/fallback is attempted. A free error
+similarly takes FAIL_CLEANUP/_Exit(2), no ambiguous-free retry. No GPU fault,
+host-task fault or real retained-event/query exception is injected here.
+
+Deterministic machine-readable schema
+CSV key/value rows, no dynamic strings. SCHEMA version1 then SOURCE, CONFIG,
+ORDER (recorded before work), HOST_PASS, INPUT_PATTERN, QUEUE, FP16_CONFIG,
+INPUT[64], OUTPUT[2], ALLOCATION_RESULT, flushed PROGRESS boundaries,
+REPLAY_BEGIN/END, CALL, BATCH, WARM, FINAL_COUNTS, USM_RELEASED and terminal PASS.
+PROGRESS is flushed before each submitted block and its planned drain, outside
+the timed loop/window. CALL is emitted after known DQ completion and complete
+queries, before untimed readback, to preserve samples if readback rejects.
+CALL carries phase/timed/batch/block/position/cell/predecessor, receipt tuple,
+input/slot mapping, raw submit/start/end, service, queue delay and host submit.
+BATCH carries expected/attempted/successful/receipt/query counts, host submit
+window/wait/wall, DQ/readback wait counts, known completion, sticky status,
+last occupant mapping and exact scope of all input/oracle/guard checks.
+BATCH_REJECT denotes a known-completion failed batch; QUERY_PARTIAL keeps
+already read raw triples without claiming validity. FAIL_STOP is uncertain
+completion with no unwind. FAIL/FAIL_CLEANUP are stderr failure markers.
+No overall pass should be inferred from HOST_PASS, BATCH result=PASS or
+FINAL_COUNTS result=PASS; require terminal row whose first field is PASS,
+matching mode and expected counts, model=0/adoption=0 and, for GPU modes,
+USM_freed=1/queue_teardown=1, plus successful process/controller/fault receipts.
+
+Unimplemented and unverified
+No compilation, host-only execution, device qualification, numerical/event
+validation, diagnostic environment validation, clean service run, performance
+result or artifact hash has been obtained by this agent. Root must serially
+review/build/test and apply the required debug environment for --qualify,
+then use a separate clean environment for --service if admitted. Existing
+84-case fixture/library qualification is neither modified nor newly claimed.
+No paired bootstrap/statistical summary consumer is implemented in C++; the
+complete fixed-order samples and predecessor/block IDs are supplied for the
+root-owned offline paired/order-stratified/zero-count/drift/uncertainty report.
+No outlier removal, minimum gain, frequency target, sleeps, guessed cache
+flush/capacity, production hook change, model route/caller evidence, model
+speed claim or adoption is introduced. Address regimes are labels only;
+neither proves cold data or a particular cache level. Binary/build/environment
+and controller/fault evidence remain separate root-owned work.

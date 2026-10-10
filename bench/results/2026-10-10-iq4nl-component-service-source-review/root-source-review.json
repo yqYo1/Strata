@@ -1,0 +1,39 @@
+{
+  "source_baseline": "2bd3a77ead87012a80af09c0bbab8ddc29801c14",
+  "edited_files": {
+    "sycl/CMakeLists.txt": {
+      "bytes": 28736,
+      "sha256": "94d91cc39cb92c4372f2217b35c361e2aa402cce4e41cd9e86c91f6a83ef1527"
+    },
+    "sycl/src/kernels/prefill_iq4nl_service.cpp": {
+      "bytes": 35174,
+      "sha256": "7d4c1d0218000097c7e03e12a26c73de84ed73ca73099f4bce25828224b99b1b"
+    }
+  },
+  "existing_kernel_prefill_fixture_receipt_source_unchanged": true,
+  "CMake_original_prefix_byte_equal": true,
+  "new_option_default_OFF": true,
+  "timed_window_host_collection_preallocated": true,
+  "all_kernel_bodies_existing_helpers": true,
+  "no_per_call_wait": true,
+  "waits_one_per_batch_then_separate_untimed_readback": true,
+  "sameclock_device_service_only": true,
+  "exact_event_and_independent_tuple_and_count_checks": true,
+  "duplicate_event_identity_rejected": true,
+  "receipts_lost_drain_then_reject": true,
+  "unknown_completion_failstop_before_unwind": true,
+  "host_payload_bytes": 73020032,
+  "USM_requested_bytes": 65544448,
+  "qualifications_not_run": true,
+  "build_not_run": true,
+  "model_performance": false,
+  "adopted": false,
+  "protocol_caveat": "Every cell is followed by untimed full-cohort GPU readback. This conditions the next cell cache state; regime names do not prove cold caches or reproduce streamed prefill.",
+  "fixed_service_cells": 32,
+  "fixed_calls_per_cell": 64,
+  "fixed_service_call_rows": 2048,
+  "prephase_and_final_replay_calls": 256,
+  "warm_calls": 256,
+  "expected_all_successful_wrappers": 2560,
+  "expected_completed_waits": 324
+}
