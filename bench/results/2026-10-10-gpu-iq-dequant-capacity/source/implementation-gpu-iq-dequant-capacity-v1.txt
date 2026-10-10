@@ -1,0 +1,356 @@
+Implementation: actual-data GPU IQ dequant capacity harness v1
+Date: 2026-10-10
+SOURCE ONLY. No builds, tests, profiles, inference, GPU/device/process queries,
+source execution, model payload reads, Git commands or cleanup were performed.
+Only the three assigned files were created. All execution remains root-owned.
+
+Assigned source files, B=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007:
+gpu_iq_dequant_capacity_v1.cpp
+SHA256 de0e86cb4c74df03b51517dce96d223ddc4149f0bb71a97c7da05dd12f9242a7
+gpu_iq_dequant_capacity_v1_CMakeLists.txt
+SHA256 60069c4875f6b1a7ec608e7f583dcabdf5f05e164002d0cf7b31cff8c2e8c278
+This handoff: research-20261009/implementation-gpu-iq-dequant-capacity-v1.txt.
+
+Read provenance
+---------------
+R250 was read in full, supplied SHA
+023ddf0d751413924ea58450008b9716b94a8df4984c21fc41e8443362148344.
+R242 and R244 were also read in full. Current census paired-format table,
+primary identity, pack-manifest identity and geometry were read from
+bench/results/2026-10-10-current-native-pack-census/receipt.json, root-supplied
+SHA902283e324b339127a9eb197954260ab606e32767b4e9acaf1d17e2463d31f84,
+storage commit987bad55d75c7fef36152620fb9518bab9d9f94f.
+
+GPU source:
+P=/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010
+Frozen commit495369cf4dc6e6da564095a1c26504dd3694e3f2.
+iq_kernels.dp.cpp task/reviewed SHA
+22c2fb9c379804c2fc20ae302be05ad0f1c66bc623c6134bd7822057ffbba13a.
+Read exact iq_dequant_gu_f16 and iq_dequant_f16 wrappers, GU output indexing,
+native_expert_supported and the production CMake flags. The harness calls
+these unchanged symbols; no copied decoder, candidate, wrapper replacement,
+caller edit, subgroup attribute change or kernel source change exists.
+
+Host source:
+F=/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-service-capacity-20261010
+Frozen commitdba6bea90192f907cbeecdb75c29aa0e7d1fa449.
+Read NativeRolePlan header/implementation in full, NativeFmt construction,
+ExpertLayout interfaces and host capacity fixture/CMake usage.
+The harness calls actual expert_layout_load/native_fmt indirectly and
+NativeRolePlan::open/copy_blob/extent. It does not implement another weight
+parser or reconstruct role source offsets from an ad hoc manifest parser.
+
+GGML reference:
+G=/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml
+Pinned commit3cf03257f219afbe7334045ff7c6a06ac68c627d.
+Read type-trait and FP32_to_FP16 row contracts. Existing CPU-only static
+reference libraries are required; CMake never configures/rebuilds GGML.
+
+CLI and pre-runtime gates
+-------------------------
+PROBE PACK_DIR PRIMARY_GGUF qualify|timing BATCH16_OR32 SEED GPU_INDEX
+Exactly6 arguments. Paths1..4096 bytes, strict decimal uint64 with no signs
+or leading zeros. Batch only16/32, GPU index0..15, seed uint64.
+All arguments and recorded environment widths are validated BEFORE explicit
+SYCL enumeration/context/queue/USM work or GGML initialization. Binary loader
+and SYCL image registration are not something a C++ main can exclude.
+Requires64-bit little-endian Linux host; source stat uses Linux timespec fields.
+LD_PRELOAD/LD_AUDIT must be absent. Other recorded runtime environment values
+are bounded4096 bytes. No environment value is set/changed by the harness.
+Root must retain and reuse the exact currently qualified runtime flag wrapper,
+including direct-submission/copy-offload settings; recording a variable is
+not proof that a particular runtime recognized it.
+
+Qualify mode intentionally consumes one actual expert for EACH of7 pairs,
+regardless of the configured future timing batch size. It performs the
+device conversion edge test and complete actual-weight output checks.
+It prints no timing samples/rates. It does NOT attest candidate or inference.
+
+Timing mode is a distinct clean process. It uses16/32 distinct actual experts
+per pair, one full warm batch, seven individual timed batches and complete
+untimed source/output validation. No synthetic model-weight bytes.
+It does not run the device edge microkernel in the timing process. Root must
+first admit a successful matching qualify process with the same binary,
+device/backend, compiler/object hashes, runtime flags and source identities.
+The timing JSON says timing_rows_complete, NOT self-admitted timing_eligible,
+and explicitly says qualification_process_required_before_timing:true.
+
+Actual-pack admission / selection
+---------------------------------
+The source requires native48layers, NE512, H2560, FF640, MAXBLOB2662400,
+all48 native layouts well formed and production native_expert_supported.
+Exactly seven paired types with current layer counts:
+18/20:14;18/42:3;21/20:9;21/42:1;22/20:15;22/42:5;23/20:1.
+Unexpected/missing pairs/counts, wrong dimensions/layout, missing decoder,
+different primary size or source changes fail closed.
+Primary is exactly54817524224 bytes, regular file. The current fixture uses
+one primary-only NativeRolePlan; every role extent must name that same primary.
+This intentionally does not silently extend to another multi-shard pack.
+NativeRolePlan validates all144 tensor shapes/types/absolute offsets/payload
+bounds using its original GGUF reader before copying selected blobs.
+
+For each pair, the lowest-index matching layer is selected from the loaded
+layout, not a hard-coded independently parsed weight descriptor.
+Expected current layers are0,12,17,21,2,1,47, respectively.
+Expert j = ((seed%512)+pair_index*53+j*17)%512.
+17 is coprime to512; every selected16/32 expert list is distinct.
+The actual expert IDs, source shard/tensor/absolute expert offset/length,
+packed bytes and full-byte FNV1a64 are retained for EVERY selected source.
+Host assembly is canonical[gate|up|down] through NativeRolePlan.
+Copies and device H2D staging are outside sample timers.
+
+All source/manifest device/inode/size/mtime/ctime states are captured before
+plan opening and checked after metadata open and after all work/plan closure.
+The manifest is bounded64KiB and full FNV checked again at the end.
+Full selected device packed bytes including front/tail guards are read back
+and byte-equal checked against each original staged host blob after all uses.
+Each host packed payload FNV is also rechecked. FNV is noncryptographic.
+The runtime does NOT compute full50+GB shard SHA or claim immutable mappings
+against a malicious concurrent writer. Root must keep original files stable
+and match supplied census identity and metadata/header SHA before admission:
+native_experts.txt SHA
+d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d
+primary header+padding SHA
+d6932b90e1b001f706ee5c8a1aebbab3a8a6ae35892df2fb09af459add1140ef.
+Root preserves exact source/build/object/binary hashes externally. The program
+does not cryptographically attest which frozen object the linker used.
+
+Numerical oracle / metadata-bug distinction
+-------------------------------------------
+For every selected source, GGML's pinned ggml_get_type_traits(type)->to_float
+decodes EVERY original packed FP32 row, with actual role type/row stride.
+GU has gate[640,2560] and up[640,2560]. Expected FP16 layout is interleaved:
+gate row r -> output row2r; up row r -> output row2r+1.
+Down is full[2560,640], no substituted FF1280 dimension.
+Expected indices/complete value counts and GGML trait block-byte equations
+are independently checked against NativeFmt before comparison.
+FP32 scratch rows start NaN; EVERY decoded FP32 value must become finite.
+Each value is converted both with pinned ggml_fp32_to_fp16_row and an
+independent binary32-bit RNE encoder. They must match EXACT bits. Nonfinite
+actual-weight expected half outputs are rejected, not accepted with tolerance.
+All4,915,200 output halves/source compare by uint16 bits. No hash-only,
+first/last-only, tolerance or max-error gate is used.
+
+A fixed24-case independent conversion domain gates host GGML against literal
+expected binary16 bits and the independent RNE encoder:
+signed zero, positive/negative normals, positive/negative even ties around1,
+minimum half subnormal, ties-to-zero, ties-to-even subnormal, minimum normal,
+normal/subnormal boundary tie, max finite half, overflow midpoint, infinities,
+and signed float32 subnormals flushing to signed zero.
+Qualify additionally tests device scalar sycl::half(float) and the actual
+vec<float,8>::convert<half,automatic> form, comparing ALL48 returned half bits.
+NaN-payload canonicalization is deliberately outside the literal edge domain.
+All actual model-oracle values are finite; this is not a NaN semantics claim.
+
+Separate failures distinguish:
+- independent encoder vs literal edge: encoder/test metadata problem;
+- host GGML vs literal/RNE: reference conversion contract problem;
+- GGML trait/role/index/count inconsistency: oracle metadata/layout problem;
+- device scalar/vec8 edge mismatch: baseline device-conversion contract;
+- generic decoded full-output mismatch: baseline generic-vs-independent.
+The first generic difference reports stage, layer/expert, gate/up/down,
+original role row/column, actual bits and expected bits.
+No candidate exists, so candidate-vs-generic is not asserted.
+All failures suppress every timing receipt/rate; no failed cell averages.
+
+Queue, memory and fault lifetimes
+--------------------------------
+One explicit Intel GPU in-order queue, Level Zero backend, fp16 and
+device-USM aspects required. Every allocation belongs to that same queue/
+context. All wrapper calls receive &queue. No default-queue null-stream path.
+No queue factory, production caller or runtime setting is altered.
+
+Two output slots match production DQ2. Each slot has GU6553600B and Down3276800B.
+Source blobs remain immutable/device-resident across first-use, warm, all
+samples and planned untimed validation. No source/output overwrite/free occurs
+before same-queue completion. At j%2 reuse the in-order prior commands have
+completed before the following write command executes, without host waits.
+
+Device source/output buffers each have64-byte front and tail canaries.
+Device allocations explicitly request64-byte alignment (size rounded up to64);
+payload starts at+64, preserving original16-byte vector-store alignment.
+Output payloads start all0xff (NaN half sentinel), and every individually
+validated source has its output reset outside timing before a complete decode.
+Guards of ALL allocated slots, including unused qualifier slot1, are checked.
+Readback/host source lifetimes are protected by a drain guard declared after
+the host buffers and before asynchronous submissions. Pair-scope drain precedes
+host source destruction during exception unwinding. Each DeviceBuffer drains
+before sycl::free. Readback buffers likewise drain before destruction on error.
+
+An asynchronous error sets a sticky fault flag. wait_and_throw failure or
+async fault invokes fixed failure JSON and _Exit(86), with no unwinding/free/
+replay while completion is unknown. Synchronous submission/allocation errors
+unwind through drain guards; if that drain cannot establish safe completion,
+the same _Exit path applies. There is no fallback/candidate recovery.
+The first queue exception is emitted as escaped failure JSON without allocation
+inside the async handler, bounded4096 message bytes with an explicit truncation
+flag. Runtime fault status is never converted into a normal timing receipt.
+A blocked driver wait needs root's external process timeout; no assertion that
+the driver honors an application-side bounded wait is made.
+
+At most32 blobs/pair are held; pair storage retires before the next pair.
+Explicit host+device payload buffers plus an8MiB metadata allowance are bounded
+at220774528B (<512MiB). Main scratch is heap-backed; per-row host arrays total
+about15KiB stack. Sample/identity receipts are bounded7pairs×7samples and at
+most224 selected IDs with3 role descriptors each.
+The original NativeRolePlan maps the whole54.8GB primary VIRTUALLY; this is
+not an owned54.8GB payload copy. Do NOT apply a512MiB address-space/ulimit-v
+cap. Explicit buffers are bounded; overall runtime/library/GGUF-header RSS
+and mapped-page residency require root observation, not a source-only claim.
+Root must retain an actual RSS/process budget receipt.
+
+Timing semantics and counts
+--------------------------
+Each pair's first-use2-wrapper wall span and warm full batch are reported
+separately and excluded. First use is not exclusive JIT time: an earlier pair
+may already have loaded the same runtime-switch kernel module.
+Each sample submits all2*batch wrapper calls with no per-kernel host wait,
+captures host submission end, then ONE wait_and_throw boundary and host end.
+No profiling queue/markers, event query or per-kernel timestamps are used.
+Wrappers return void; this implementation deliberately reports no device
+kernel duration or exclusive busy service. Optional profiling marker bounds
+were not added. Host wall includes submit+completion, not GPU-exclusive work.
+
+After each timed boundary, both final output-slot occupants receive full
+oracle/readback/canary checks OUTSIDE timing before the next sample.
+After all samples each distinct selected source is decoded/fully compared
+untimed with reset outputs. This planned validation is not fault replay; an
+earlier fault or mismatch aborts immediately. These checks can perturb
+caches between batches; the operation is repeated device-resident actual data,
+not cold VRAM, physical DRAM traffic or a selected production-route trace.
+
+Qualifier per pair:2 wrapper calls,1 selected source,4,915,200 halves compared.
+Timing per pair:
+first-use2 + warm2*batch + seven samples14*batch + validation2*batch
+=2+18*batch wrapper calls.
+All-selected compare count=batch*4,915,200.
+Timed-end-slot compare count=7*2*4,915,200=68,812,800 halves.
+Source byte checks=batch*actual_blobbytes.
+These counts reconcile explicitly before a successful final JSON.
+Wrapper calls are counted from unchanged source API submissions, not an
+independently observed hardware kernel count.
+
+Per-sample logical packed-read bytes=batch*actual_blobbytes, logical FP16
+output-write bytes=batch*9830400. Logical combined GB/s = bytes/wall_ns,
+the decimal1e9 factors cancel. No H2D, readback, later GEMM reads or physical
+controller traffic is included in this logical dequant numerator.
+No production route frequency/time share or total-model speedup is inferred.
+
+Build recipe / prerequisites (NOT executed)
+------------------------------------------
+The assigned CMake text is a standalone recipe, not a production CMake edit.
+Root stages it as CMakeLists.txt in a NEW owned diagnostic project directory.
+Root verifies all pinned source/object/library SHA and compile-command flags.
+CMake requires IntelLLVM and explicit existing .o/.a host references; no shared
+reference libs or silent GGML/backend rebuild/substitution.
+AOT intel_gpu_bmg_g21, -fp-model=precise, default SG32, per_kernel split and
+-cl-fp32-correctly-rounded-divide-sqrt match the declared control policy.
+No subgroup/safety or CUDA/HIP build changes.
+
+Reuse root's already-built frozen CPU-only ggml-cpu/ggml-base static closure.
+If the existing NativeRolePlan/layout/native_fmt host objects have suitable
+function sections, reuse them too. Otherwise root can compile ONLY those
+three original host TUs, preserving ordinary host-only precise flags:
+
+icpx -std=c++20 -O2 -fp-model=precise -ffunction-sections -fdata-sections \
+ -DSTRATA_NATIVE_EXPERTS=1 -I"$F/include" -I"$G/include" -I"$G/src" \
+ -I"$G/src/ggml-cpu" -c "$F/src/artifact/native_role_plan.cpp" \
+ -o "$DIAG/native_role_plan.o"
+icpx -std=c++20 -O2 -fp-model=precise -ffunction-sections -fdata-sections \
+ -DSTRATA_NATIVE_EXPERTS=1 -I"$F/include" -I"$G/include" -I"$G/src" \
+ -I"$G/src/ggml-cpu" -c "$F/src/kernels/cpu/expert_layout.cpp" \
+ -o "$DIAG/expert_layout.o"
+icpx -std=c++20 -O2 -fp-model=precise -ffunction-sections -fdata-sections \
+ -DSTRATA_NATIVE_EXPERTS=1 -I"$F/include" -I"$G/include" -I"$G/src" \
+ -I"$G/src/ggml-cpu" -c "$F/src/kernels/cpu/native_expert.cpp" \
+ -o "$DIAG/native_expert.o"
+
+DIAG is root's NEW owned diagnostic build directory. G/F/B/P are exact paths
+above. No -fsycl or -march/forced ISA belongs on those three host TUs.
+Root sets GGML_CPU_A and GGML_BASE_A to the reviewed existing CPU-only static
+libraries from its frozen native-service build, retaining their SHA/build
+receipts and required native ISA requirements. If closure requires additional
+CPU-only static libraries, list them explicitly and preserve that decision.
+Function sections + gc-sections remove unused native matmul/ISA dependencies.
+If link closure fails, inspect it; do not invent another parser/reference.
+
+After root stages the supplied recipe under PROJECT/CMakeLists.txt:
+cmake -S "$PROJECT" -B "$DIAG/build" -DCMAKE_CXX_COMPILER=icpx \
+ "-DHOST_REFERENCE_FILES=$DIAG/native_role_plan.o;$DIAG/expert_layout.o;$DIAG/native_expert.o;$GGML_CPU_A;$GGML_BASE_A"
+cmake --build "$DIAG/build" --parallel 1
+
+Optional exact previously built frozen GPU object:
+add -DGPU_OBJECT=/ABSOLUTE/REVIEWED/iq_kernels.dp.cpp.o
+ONLY if root confirms original source digest, precise/defaultSG32/AOT target/
+per-kernel split/compiler flags and object SHA. Otherwise default recipe
+compiles original frozen iq_kernels.dp.cpp unchanged; no entire engine build.
+Root records all compiler/link commands, icpx identity, referenced .o/.a hashes,
+binary SHA and actual SYCL/runtime library closure. The receipt's compiler_policy
+string is declared policy, not self-attestation of reused-object compile flags.
+
+Execution and predeclared root gates (NOT executed)
+---------------------------------------------------
+Use currently qualified runtime wrapper/flags UNCHANGED. Example arguments:
+PACK=/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s
+PRIMARY=/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf
+PROBE="$DIAG/build/gpu_iq_dequant_capacity_v1"
+"$PROBE" "$PACK" "$PRIMARY" qualify 32 1 0
+GPU_INDEX0 is merely an example after root's existing selector/wrapper, not an
+agent-observed device. Qualify must emit success:true, no timing samples/rates,
+all7 exact pairs/counts,24 host literal checks,48 device edge bits and
+7*4,915,200=34,406,400 actual output half comparisons,7 full packed checks,
+all source/output guards and unchanged source stats.
+The JSON reports half_fp_config enum values, device, driver/backend, compiler
+policy and runtime environment. Failure numerical diagnostics include captured
+capability metadata where queue admission had completed.
+Fatal incomplete/async completion exits86 with no normal timing receipt.
+
+Before actual GPU qualification, root parser-negative tests:
+missing/excess args; modeunknown; batch0/1/15/17/33; seednegative/overflow/
+leading zero/malformed; GPUindex16; path>4096; recorded env>4096 or preload.
+Require nonzero and no successful timing receipt, with rejection preceding
+explicit queue/device work. Root can use instrumentation/loader audit only in
+separate diagnostic qualification if needed; do not adopt altered loader
+timings as clean capacity.
+
+Root CPU-only extracted-function qualification should exercise all24 literal
+RNE cases and arbitrary known binary32 boundary cases versus pinned GGML.
+Test GU coordinate mapping (role0 rowr ->2r, role1 ->2r+1), last GU/down element,
+GGML row-byte equations, first/last mismatch reporting and incomplete NaN
+decoded rows. Inject output bit/canary/source changes in a root-owned
+qualification driver and require complete failure, no retained valid samples.
+No mutable fault-injection production/harness switches were added.
+
+Only after qualify passes, execute three FRESH clean timing processes serially:
+"$PROBE" "$PACK" "$PRIMARY" timing 32 1 0
+Repeat command in3 independently owned processes/receipts, same exact seed,
+binary/reference hashes, source identities and runtime controls. Each process
+has49 individual sample rows (7pairs×7samples), all preserved. Batch16 is a
+separate cell requiring its own matching qualifier/timing commands.
+No clock/rate result has been measured by this implementation agent.
+Initial conservative root budget: RSS1GiB (explicit buffers<512MiB, mappedVSS
+large), CPU600s, wall600s; root selects/records actual GPU process limits and
+fault/termination handling before execution. Limits are not runtime promises.
+Internal queue waits rely on root's external timeout for driver hangs.
+
+Per timing pair require:
+selected16/32 distinct expert IDs; exact expected layer/role source extents;
+all wrapper/compare/source-byte counts above; seven positive host wall spans;
+submit<=wall; logical bytes independently recomputed; every selected-source
+and every end-slot occupant full-bit comparison passing; unchanged source
+stats/manifest and clean normal process exit0.
+Compare each of3 process distributions/medians/ranges by exact pair, not only
+one pooled statistic. Generic-vs-independent failure is baseline-contract
+failure; no timing result is eligible. Candidate comparisons remain absent.
+
+Scope / no adoption
+-------------------
+This is an isolated actual-pack service control. The metadata census does not
+prove that an actual model request selected this pack or generic non-MMQ/
+non-fused FP16 path. The selected lowest layers/experts are deterministic
+qualification/capacity inputs, not routed expert frequencies. NE512 here is
+admitted current-pack geometry, distinct from historical384-selected fixtures.
+No per-format device-exclusive kernel service, controller DRAM traffic,
+production branch/call histogram, prefill/decoder timing share, full262144
+inference correctness, candidate benefit or source adoption is claimed.
+All production files and existing fixtures remain untouched.

@@ -1,0 +1,59 @@
+# Standalone source-only recipe. Root stages this as CMakeLists.txt OUTSIDE any
+# production worktree. Never configures/rebuilds ggml or modifies Strata.
+cmake_minimum_required(VERSION 3.24)
+project(gpu_iq_dequant_capacity_v1 LANGUAGES CXX)
+if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "IntelLLVM")
+  message(FATAL_ERROR "IntelLLVM/icpx required; no compiler substitution")
+endif()
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(PRODUCTION_ROOT "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010" CACHE PATH "Frozen GPU source")
+set(HOST_ROOT "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-service-capacity-20261010" CACHE PATH "Frozen NativeRolePlan source")
+set(GGML_SOURCE "/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml" CACHE PATH "Pinned reference headers")
+set(HARNESS_SOURCE "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu_iq_dequant_capacity_v1.cpp" CACHE FILEPATH "Assigned harness source")
+set(HOST_REFERENCE_FILES "" CACHE STRING "Semicolon list of already-built frozen host objects/libraries, INCLUDING pinned ggml-cpu and ggml-base closure")
+set(GPU_OBJECT "" CACHE FILEPATH "Optional already-built exact frozen SG32/precise/AOT IQ object; empty compiles frozen original TU")
+# Root verifies source/object hashes, pinned commits, compiler flags and
+# static CPU-only closure externally; no silent reference rebuild.
+if(NOT HOST_REFERENCE_FILES)
+  message(FATAL_ERROR "Provide reviewed frozen host object/static reference closure")
+endif()
+foreach(path IN LISTS HOST_REFERENCE_FILES)
+  if(NOT IS_ABSOLUTE "${path}" OR NOT EXISTS "${path}")
+    message(FATAL_ERROR "Missing absolute host reference file: ${path}")
+  endif()
+  if(NOT path MATCHES "\\.(o|a)$")
+    message(FATAL_ERROR "Only reviewed objects/static CPU reference libraries admitted: ${path}")
+  endif()
+endforeach()
+if(CMAKE_CXX_FLAGS MATCHES "ffast-math|fp-model[= ]fast|fsycl|march" OR CMAKE_EXE_LINKER_FLAGS MATCHES "ffast-math|fp-model[= ]fast|fsycl")
+  message(FATAL_ERROR "Global target/fast/SYCL flags rejected; use reviewed per-target recipe")
+endif()
+find_package(Threads REQUIRED)
+add_executable(gpu_iq_dequant_capacity_v1 "${HARNESS_SOURCE}")
+target_include_directories(gpu_iq_dequant_capacity_v1 PRIVATE
+  "${PRODUCTION_ROOT}/sycl/include" "${HOST_ROOT}/include"
+  "${GGML_SOURCE}/include" "${GGML_SOURCE}/src"
+  "${PRODUCTION_ROOT}/third_party/ggml")
+if(GPU_OBJECT)
+  if(NOT IS_ABSOLUTE "${GPU_OBJECT}" OR NOT EXISTS "${GPU_OBJECT}")
+    message(FATAL_ERROR "GPU_OBJECT must be an existing absolute frozen object")
+  endif()
+  target_link_libraries(gpu_iq_dequant_capacity_v1 PRIVATE "${GPU_OBJECT}")
+else()
+  target_sources(gpu_iq_dequant_capacity_v1 PRIVATE
+    "${PRODUCTION_ROOT}/sycl/src/kernels/cuda/iq_kernels.dp.cpp")
+endif()
+target_compile_options(gpu_iq_dequant_capacity_v1 PRIVATE
+  -O2 -Wall -Wextra -fp-model=precise -fsycl -fsycl-targets=spir64_gen
+  -fsycl-default-sub-group-size=32 -fsycl-device-code-split=per_kernel
+  -ffunction-sections -fdata-sections
+  -Wno-unused-parameter -Wno-unused-variable -Wno-deprecated-declarations)
+target_link_options(gpu_iq_dequant_capacity_v1 PRIVATE
+  -fsycl -fsycl-targets=spir64_gen -fsycl-device-code-split=per_kernel
+  -Xsycl-target-backend=spir64_gen
+  "-device intel_gpu_bmg_g21 -options -cl-fp32-correctly-rounded-divide-sqrt"
+  -Wl,--gc-sections)
+target_link_libraries(gpu_iq_dequant_capacity_v1 PRIVATE
+  ${HOST_REFERENCE_FILES} Threads::Threads ${CMAKE_DL_LIBS})

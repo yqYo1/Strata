@@ -1,0 +1,1 @@
+R253 independently accepts the committed prefix-boundary fix and arithmetic proof, with CPU/compile-only limits. R254 identifies the missing runtime route histogram needed to weight capacities. The separate Sol GPU IQ dequant control is archived source-only; root has not built or run it. Original reports and prior receipt statuses remain unchanged.
