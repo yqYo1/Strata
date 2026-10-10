@@ -2719,8 +2719,9 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const char* gpu_env = std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_GPU");
     int64_t gpu_tokens = gpu_env ? std::clamp<int64_t>(std::atoll(gpu_env), 0, n) : 0;
     const char* first_env = std::getenv("STRATA_PREFILL_FIRST");
-    const bool all_cached = impl_->cache && impl_->g &&
-        impl_->cache->slots() >= impl_->g->n_layers * impl_->g->n_expert;
+    // run_impl uses this temporary cache, so resolve its first chunk before
+    // rounding the GPU prefix. The original cache may have held every layer.
+    const bool all_cached = layer_cache.slots() >= g.n_layers * g.n_expert;
     const int64_t first = first_env ? std::atoll(first_env) : (all_cached ? 256 : 0);
     const int64_t first_len = first > 0 && first < m.T && n > 2 * first ? first : std::min(m.T, n);
     if (gpu_tokens < n) {
@@ -3070,6 +3071,10 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
             std::fflush(stderr);
         }
         const int64_t T = chunk_len(c0), p0 = pos0 + c0;
+        if (m.transfer_context && c0 < m.residual_gpu_tokens && c0 + T > m.residual_gpu_tokens) {
+            err = "prefill layer-major: GPU residual prefix splits a chunk";
+            return false;
+        }
         last_chunk_len = T;
         const bool gpu_rows = m.transfer_context && c0 + T <= m.residual_gpu_tokens;
         if (m.residual_inplace)
