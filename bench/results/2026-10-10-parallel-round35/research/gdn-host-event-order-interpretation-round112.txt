@@ -1,0 +1,52 @@
+# GDN host/event order diagnostic: interpretation and next factor — R112
+
+Date: 2026-10-10
+
+Scope: independent read-only interpretation of the closed host/event diagnostic and selection of one bounded follow-up factor. No implementation, Git operation, build, test, compiler or disassembly work, profiling, inference, GPU query, or cleanup was performed.
+
+## Evidence reviewed and pins
+
+- Committed registry v50: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/report-registry-v50.json`, SHA-256 `f6110d9b707b4a83c9fc010f0eb39226fd2670b174b232bbf2f8ccfff6996a36`.
+- Closed result: source-result commit `b7436c79` (per request; no Git lookup). Result directory: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-quad-pipeline-20261010/bench/results/2026-10-10-gdn-host-event-diagnostic`.
+- Core result hashes: `REPORT.md` SHA-256 `3a1d4c1278dce28c0786879608fa13a6d185b878eded706f21fbaa535897936d`; `aggregate-intervals.csv` SHA-256 `486f0b14210525687e15132a084a7442fa981fcd4b752c2fd4824341b80381a4`; `root-decision.json` SHA-256 `873de63277159463d6ee13c96a373aa52b2baf6e27fd7926178d842b893bccba`; runtime receipt SHA-256 `1edeec2e0a9d3c8a7342ae2cf989de70205964ba0665738f4634a204ac6a9241`.
+- GPU/kernel source is read only from immutable snapshot `gdn-gate-consumers-cd353f30`, revision `cd353f30a47dfd42818aace6f464bd227084e779`, manifest SHA-256 `1ac15ccad1b17ca2913f17abdf40a4989f567a39568cb27bf74721af9572dcfb`. The committed diagnostic receipt pins its harness inputs, including `gdn_quad_parity.cpp` SHA-256 `13b19226ec042d82dd51c7ae8fcde7fe2710a28c79cd6c6324958c82f205ddf6`.
+- Prior rounds 104–110 and registry decisions were checked. R104/R106 establish that host service, admission, and backend event elapsed are distinct observations. R107 source-review confirms capture is test-only host wrapper state and timestamp reads follow a successful drain. R108's candidate remains conditional; R109 ownership and R110 native-exp constraints are separate. Earlier ten-pair quiet rejection remains controlling.
+
+## Result interpretation
+
+This was an instrumented synthetic-component diagnostic on Arc B570, not a clean timing qualification or model lifecycle run. Two fresh processes each ran two warmup pairs and one recorded pair at prefix 32768/chunk 2048. First-arm order was counterbalanced. There are 192 chunk-arm event rows in total. Complete carried state and guarded FP32/FP16 output bits matched; digests repeated. Normal closure took 59.7245 s. It was not a clean performance run and does not supersede the earlier ten-pair quad rejection.
+
+In the recorded pairs, recurrence event elapsed was:
+
+- Quad, first arm: 147.329 ms; quad, second arm: 118.195 ms.
+- Legacy, first arm: 67.832 ms; legacy, second arm: 45.466 ms.
+
+The same position-associated slowdown appears for both recurrence choices, with only one recorded pair per process. Candidate admission sums were 0.592 and 0.641 ms per 32768-token prefix, far too small to explain the recurrence differences. Thus admission-only attribution is inadequate. Because sample count is one per process and the build is instrumentation-enabled, these values characterize this diagnostic observation only; they do not establish a clean speed ratio or causal mechanism.
+
+The named output-normalization kernel also has different duration sums by arm: about 17.9 ms after the quad path versus about 12.3 ms after legacy in one sample, despite a shared kernel name. The calls use separate arm-specific state/output buffers and follow different recurrence work, so the name alone does not make those executions equivalent. This is another reason not to assign the effect to recurrence arithmetic alone.
+
+Host service spans wrapper preparation, admission, submission, and successful queue drain; device event elapsed values are from a separate backend profiling timebase. They overlap in execution. Do not add the event durations to, subtract them from, or otherwise use them to manufacture a host waiting interval. Query failures and successful completion are distinct statuses; the receipt reports queries after completion and normal final drain/release.
+
+The instrumentation is relevant to order interpretation. Each arm's host service timer stops after its successful `wait_and_throw()`. The harness then performs four profiling reads (`command_start` and `command_end` for recurrence and norm) before beginning the next arm. Those reads are outside the just-completed arm's service timer and cannot change that arm's completed device timestamps, but they insert host/runtime work and elapsed idle gap before the next arm. The capture build also includes test-only host wrapper instrumentation, so neither service measurement is clean OFF-build timing.
+
+The existing input preparation is once per matching chunk before both arms and is outside service timing. It copies the same input tensors and drains the queue; both arms then consume those shared inputs with separate carried-state/output buffers, followed by comparison. Consequently, arm position also distinguishes an arm that runs just after fresh input preparation from an arm that runs after the first arm has consumed those inputs. Cache reuse or differences in buffer residency are plausible inferences, not measured facts. The two-position association in both recurrence paths supports an order/environment effect, but does not choose among event-query gap, input-cache state, buffer mapping, clocks, queue/runtime behavior, or interactions. Spill, power, cache, and residency causes remain unproved.
+
+## Selected next single factor: defer profiling reads until both arms complete
+
+The least intrusive next discriminator is to change only when the existing event timestamps are read. In the current mode, the two event handles from an arm are queried immediately after its successful drain, before the paired arm starts. In the deferred mode, retain both arms' already-returned recurrence/norm event handles and wait successfully for each arm as today, but perform the four `get_profiling_info` reads for both arms only after both paired arms have completed. Read after successful completion; continue treating profiling-query errors separately from submission/completion errors. Keep the same event capture, kernels, buffers, copies, per-arm host timer placement, exact order, queue and compile flags. This adds no device command and changes no arithmetic; it removes the timestamp reads from the inter-arm gap.
+
+Why this is the first factor: it directly tests one known difference in the measured schedule, leaves the event capture/device action unchanged, and requires no counters, driver controls, power/clock changes, extra tensor copies, or model-sized matrix. Khronos SYCL 2020 defines `command_start`/`command_end` as device action timestamps from an implementation-defined backend timebase. After an already successful wait, their reads are observations, not new device work. However, the API does not promise zero host/runtime cost. Intel's Level Zero extension documentation explicitly notes a performance cost for its *synchronized-timestamp extension*; that is not the API used here and must not be presented as a measured cost for SYCL's ordinary profiling reads. It reinforces only that timestamp observation should not be assumed free. References: [SYCL 2020 revision 12, profiling descriptors](https://registry.khronos.org/SYCL/specs/sycl-2020/pdf/sycl-2020.pdf); [Level Zero synchronized event timestamp extension](https://oneapi-src.github.io/level-zero-spec/level-zero/1.14.33/core/EXT_EventQueryKernelTimestamps.html); [Level Zero kernel timestamp guide](https://oneapi-src.github.io/level-zero-spec/level-zero/1.0.4/core/PROG.html).
+
+Bound the diagnostic to the same 32768 prefix and 2048 chunk. Use two fresh processes, each with the existing two warmups and two recorded pairs; balance immediate/deferred query schedule against legacy-first/quad-first pair order across processes. Reverse the pair schedule in process two. This yields each query policy at both first-arm positions without widening across lengths, shapes, settings, or devices. Preserve all per-chunk rows and event identities; retain only compact aggregate evidence needed for the decision. Treat chunks within one prefix as correlated observations, not as 16 independent benchmark samples.
+
+Keep the result criteria narrow:
+
+- A valid diagnostic requires successful event reads, `end >= start`, successful completion boundaries, bitwise carried-state and guarded-output parity, matching digests, and normal drain/free. Any violation invalidates the pair; do not retry on the same state or relabel query failure as admission denial.
+- Compare recurrence and norm event elapsed by same kernel, same arm position, and same query policy. Keep each arm's host service as a separate observation. Never combine host and device clocks.
+- If the second-arm duration changes materially between immediate and deferred reads while first-arm duration remains stable, the event-query inter-arm gap is a contributor worth recording. It does not prove whether the pathway is host scheduling, runtime activity, or a device-state response.
+- If the position effect remains under deferred reads, the profiling reads are not supported as its main cause. Keep input preparation/shared-input reuse and arm-specific buffer mapping as unisolated hypotheses; do not claim any one is causal from this result.
+- The candidate remains rejected. This diagnostic cannot promote it. Clean compile-OFF timing, a separate full-context gate, and the existing exactness/lifecycle decisions remain separate gates.
+
+## Explicitly excluded explanations and proposals
+
+No event duration is subtracted from host service to invent a wait. No spill, clock, cache, residency, power, or driver cause is asserted from these records. No repeated gate-exp, WY/chunk, GRF, or speculative resource-tuning candidate is reopened. No environment, power, driver, runtime-service, or queue property is changed. No large profiler timeline, broad shape matrix, or full-trace retention is needed to answer this one scheduling question.

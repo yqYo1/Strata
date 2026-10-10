@@ -1,0 +1,35 @@
+# IQ2_S actual-cohort three-arm fixture — independent source review R111
+
+Date: 2026-10-10. Static review only. No source was changed; no build, test, compiler/preprocessor, disassembly, payload access, runtime, profile, inference, or device query was performed.
+
+## Pins and files reviewed
+
+Reviewed the implementation report `implementation-iq2s-real-cohort-correctness-v1.txt` and prior R98 reader/fixture reviews, R97 precise-FP/nonfinite review, R100 linked Q8_K quantizer review, R103 candidate linked-codegen review, and relevant R104 admission notes. All new Strata source observations use only immutable snapshot `iq2s-actual-cohort-d68516f4`, revision `d68516f4baae2f9ddd80d95494e6332532d4017a`, 23 files / 203,738 bytes, manifest SHA-256 `f7354d3966ffbde5dfadc67f665d65cb658f8832e1dec4195026606765bd05b1`.
+
+Reviewed the five changed target files in full:
+
+- `CMakeLists.txt` — SHA-256 `b00f32668d59bea9d7e0380393046f44d1ad1616577f9c8611934f9d4d54a203`
+- `native_service_calibration.cpp` — `fda9a4972ef08d0350d5857ceedd8392fa2857a6906dc432bc8621342f469354`
+- `README.md` — `4c05f432e0b86180532ef1e0954b448d2425de2842e30d563517a3e78f5ed8d0`
+- `iq2s_index_dot.hpp` — `40497188e7079ad87c2f831b7556d5f1ce51d45b4582aec03583d5ee4f178720`
+- `iq2s_index_dot.cpp` — `bb20df83d7f76429f7c65dd4f03868a2cc8e161680092e49aa31cf2e6cf93bfd`
+
+The snapshot does not include the full included production `src/kernels/cpu/iq_avx2.cpp`; its included wrapper is present. Prior R100 source review records that custom AVX2 Q8_K quantization uses explicit multiply then magic-add and differs from GGML reference in source/compiler-contract details. R100's linked reference quantizer capture does not establish emitted instructions for that custom production TU. The wrapper routes IQ2_S NT1 to the IntelLLVM implementation (the GCC wrapper branch is only NT2/NT4), but actual custom-TU emission and runtime quantizer selection remain qualification gates.
+
+## Review result
+
+I found no definite source bug in the new three-arm check. Its scope and guards are consistent with the stated CPU-only, actual-weight dot-comparison purpose. It is not an executed result.
+
+The build option defaults OFF, adds only the isolated dot TU and macro when enabled, and scopes AVX2/FMA/F16C/precise options to that TU; other target source flags remain as before. The off-build rejects the new mode before layout or pack payload opening. With it on, the argc flag check and strict cell predicate constrain execution to GU22/Down20/NT1/tasks0/batch1. The branch to the new check occurs after selected blobs and one-token per-layer activation bytes are prepared, but before full FFN checking, pool construction, schedule generation, and all timing. Existing default and `--correctness-only` paths remain textually distinct. `GGML_TYPE_IQ2_S`'s trait is required to advertise Q8_K as its dot input type.
+
+Geometry checks close the selected cell at H=2560, FF=640, GU row size ten `block_iq2_s` blocks, and activation size ten `block_q8_K` blocks. The original `NativeFmt` geometry also enforces gate/up/down offsets and whole-blob bounds before indexing. The role offset in the three-arm loop selects Gate at zero and Up at `up_off`; Down20 K=640 is never passed to the IQ2_S dot. Aggregate blobs are capped and then pinned to the expected 756,940,800 bytes. Each ID rechecks the same prepared Q8_K activation against GGML before/after its 640 rows and verifies the input pointer is the previously bound layer input. This validates activation-byte reuse at source level, not whether the production custom AVX2 quantizer emitted the reference order on the eventual run.
+
+Every ID covers 640 row pairs, both Gate and Up, with three dot arms (trait baseline, isolated direct control, isolated index candidate), then computes the same scalar finish `(g/(1.f+std::exp(-g)))*u`. The arithmetic comparator compares `uint32_t` representations for Gate, Up and finish without finite filtering, so signed zero and nonfinite encodings enter the mismatch test. Independent class counters categorize finite/Inf/NaN bits for all 3 arms × 3 values. The nested counters and final requirements imply 384 IDs, 245,760 pairs, 491,520 role rows and 1,474,560 dot calls; they require 192 IDs / 122,880 pairs in each split. The pre-finish gate compares both roles independently. No worker pool is created; the report correctly marks worker MXCSR as unobserved. The code snapshots MXCSR at mode entry and checks the control mask `0xffc0` after preparation, throughout rows, and after each ID without setting a mode. Completion, zero mismatch, stream flush checks, and normal exit are all required; a printed completion alone is not success.
+
+The copied dot TU visibly retains the MIT notice and helper, scale/shuffle tables, direct control and register candidate structure; the candidate uses the register-return helper and scalar extraction in its inner loop. This source review did not independently establish byte-for-byte token identity of the copied functions or validate the compiled ABI/instructions. That remains an owner qualification item. The fixture does not write model blobs/Q8 rows/full traces and the README preserves its output cap and owner-run receipt requirements.
+
+## Required qualification and evidence boundary
+
+Before interpreting an actual-weight pass, root should independently verify copied helper/table/control/candidate equivalence to the frozen standalone source, the `ggml_vec_dot` ABI and linked traits, and release plus sanitizer builds. Validate OFF rejection before payload access, invalid argument/cell rejection, old default modes, child normal exit and output flush/completeness. Verify manifest/TSV and all 1,152 selected extent hashes against the frozen content identity; keep source pack stable/read-only under the serial lock and recheck its identity afterward. FNV records and row geometry do not prove copied weight content hashes.
+
+For the production activation path, inspect the linked custom AVX2 `native_quant_act` Q8_K code in the actual new binary and confirm the active runtime branch and its thread MXCSR controls. R100's GGML-reference assembly result and `-fp-model=precise` alone do not establish custom AVX2 emitted order. This new no-pool mode observes only the calling thread, not service pool workers. The selected activation vector is deterministic synthetic input keyed by layer/token and shared among experts; a passing run would not establish live activation coverage, worker-mode behavior, 32K-model/full-context correctness, performance, DRAM service behavior, or adoption. The separate root qualification is still unrun.
