@@ -1,0 +1,46 @@
+{
+  "created_utc": "2026-10-10T14:18:11.639052+00:00",
+  "scope": "Root reviewed R276..283 plus closed main CPU/TU/link/model and two Sol source-only handoffs",
+  "adopted": false,
+  "performance_eligible": false,
+  "current_candidate_physical262144_passed": false,
+  "passed": [
+    "Exact extracted GEMM flag + real private header CPU13 cases, duplicate JSON key rejection and repeatedM7/calls2/rows14",
+    "Actual precise SYCL TU/link, binary81375b88f043f6b791bd2fee5df7b512e25b584ad5631e0b915d5ac354db237c, all cached/nonprefill objects unchanged",
+    "GEMM-only32768 input: all66live states/head/64output/LP/MTP exact; unchanged93505route calls and190.241GB; normalexit/noXE/ownersgone"
+  ],
+  "rejected": [
+    "GEMM returned-event timing:101 submit>start triples; correct invalid latch, no aggregate, laterdroppedrecords not valid subset; no retry or timestampguard relaxation"
+  ],
+  "correction_notes": [
+    "R276 says B580 once; actual hardware is B570.",
+    "R278 returned oneMKL event guarantees completion, not a full-routine profiling envelope. Existing model scope text must not be promoted into a service or FLOPS claim.",
+    "R275 preinit-bind/suspend ordering concerns CLI, not server. Sol design finds server persistent sp.init before bind/READY, optional verification and shared owner/alias gaps. No executable MTP lease was implemented.",
+    "R281 references old residual-reuse708837376B net12K estimator; it is not current ordinary owned-workspace delta. Current accounted12K delta is876871680B/836.25MiB; 16K1672.5MiB. R279 did not execute12K.",
+    "R283 says private caller tree was not found by its search; actual B/prefill-gemm-service-only-v1 exists, pinned by rootTU/link/model identities. Its analysis applies to Wsource, not wholebinaryproof.",
+    "R283 raw retired640MiB PLE plane is capped by next MoEsharedmax; net149.7MiB estimate is insufficient for16K512MiBguard. Actual nativebatchbranch admission unresolved; no alias implementation."
+  ],
+  "next": [
+    "Conditional fixed12K ordinary chunk-major: accounted delta836.25MiB vs measured1565MiB baselinepoststartupfree; expected729MiBremaining. Controller requires actual12288 selection and>=512MiB free atREADY, alltiming/censusflagsOFF, exactwholemodelparity. Source/binary unchanged.",
+    "Only after numerical gates, separate clean repeatedprefill/decode comparisons and candidate physical262144 finaltoken/lifecycle qualification.",
+    "Observed-shape marker/PTI harness is source-only uncompiled; returned-clock contradictions remain rejected; future host-wallbatch denominator independent ofsubmit clock.",
+    "Current defaultdecode needs same-run role/type/NT and worker-service attribution; R282 task6hist cannotbejoinedto task0timing."
+  ],
+  "live_agent_snapshot": [
+    {
+      "agent": "/root/research_bottleneck_evidence_audit_v203",
+      "model": "gpt-6-luna",
+      "status": "completed-read-only-round282"
+    },
+    {
+      "agent": "/root/research_native_iq4nl_esimd_k640_v202",
+      "model": "gpt-6-luna",
+      "status": "completed-read-only-round283"
+    },
+    {
+      "agent": "/root/implement_prefill_phase_timer_validity",
+      "model": "gpt-6.1-sol",
+      "status": "completed-source-only-observed-span-harness"
+    }
+  ]
+}

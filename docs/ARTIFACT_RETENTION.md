@@ -22,6 +22,14 @@ failed samples. Averages alone cannot support a variance comparison. Record:
   abnormal exit, cleanup outcome, and kernel-journal boundaries/fault findings.
 - Reproduction commands, research references, open questions and the next step.
 
+Record environment variables through an explicit allowlist of the compiler,
+library, device and experiment settings used by the command. Do not serialize
+the full inherited environment or credentials into command receipts. Apply the
+same rule to nested per-command records. If an immutable private receipt already
+contains credentials, preserve its identity privately and archive a sanitized
+derivative with a redaction manifest; do not describe the derivative as a
+byte-identical copy or change the recorded result.
+
 Do not rewrite a failed result into a pass during cleanup. A lost or retired
 capture is not a new correctness result. Keep the original structured receipt
 byte-identical when other records pin its hash; a separate manifest records which

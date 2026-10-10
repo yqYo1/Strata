@@ -23,7 +23,9 @@ PCIeの外部経路はupstream bridgeまで確認するとGen4 x4であり、128
 
 ## 順番で改善できる範囲と、転送量を変える必要がある範囲
 
-32K（32768位置）を1000 tok/sで処理する時間予算は32.768秒。以前のモデル測定ではexpertのH2D payloadが190.241 GBだった。この量を今回の独立したH2D測定6.447 GB/sで運ぶと29.50秒になる。PCIeの理想値7.877 GB/sを使っても約24.15秒であり、実際にはprotocol overhead等が加わる。この比較は現在のモデル経路の再測定ではなく、同じバイト量を運ぶ場合の条件付き予算である。
+32K（32768位置）を1000 tok/sで処理する時間予算は32.768秒。今回の実ルートの集計では、32767位置のprefillにexpertのH2D payloadが190.241 GB発生した。この量を独立したH2D測定6.447 GB/sで運ぶと29.51秒相当になる。PCIeの理想値7.877 GB/sなら約24.15秒相当で、実際にはprotocol overhead等も必要になる。実転送バイトと単体の帯域を照合した条件付き予算であり、モデル内の転送待ち時間ではない。[実ルート・全数値の照合](../2026-10-10-actual32k-route-capacity/RESULTS_JA.md)。
+
+実際のexpert呼び出しは93505回で、約49.7%が80行以下だが、その集合の行数は約8.1%。大行列のピークや平均168.2行からGEMM時間を補間しない。同じルーティングを保って隣接chunkをまとめる場合、16Kなら47182～49152回・95.982～100.585 GB、32Kなら23784～24576回・48.372～50.292 GBという重複排除の範囲になる。expert ID自体は保存していないため、新しい行数分布を厳密に再構成はできない。これらは仕事量の削減余地であり、allocation成功や速度の予測ではない。[処理順と容量の算術](../2026-10-10-parallel-round81/round277-actual-route-scheduling-and-capacity-scenario-budget.txt)。
 
 このモデルのexpert GEMMだけの仕事量は32Kで154.619 TFLOP。すべてが今回測った80行の条件なら約12.95秒、160行なら約6.57秒、640行なら約3.85秒、大きな行列の条件なら約3.19秒になる。attention、共有expert、量子化展開、router、host作業等は含まない。実際のexpert別の行数と選択されたkernelが分かるまで、モデルの所要時間とは扱わない。
 
@@ -49,4 +51,6 @@ layer-majorで残差を全てRAMに置く場合、残差幅はD=10240であり�
 
 prefillでは実際のchunk/layer/形式/kernel分岐、expertごとの行数、重みの常駐・コピー元、実転送バイト、GU/Down呼出しを集計し、対応するcapacityと比較する。decodeは別に、CPU miss数、同じexpertを処理する行数、GPU常駐処理、投機検証の採用行数を照合する。70 tok/sのdecode予算は１出力token当たり14.286 msであり、prefillのまとめ方からdecode性能を推定しない。
 
-実行経路の集計はdefault offの診断で、clean timingとは分ける。現段階で新しいモデルthroughputの測定や最適化候補の採用は行っていない。比較に使った元のreceiptは変更せず、このreportを追加した。
+実行経路の集計はdefault offの診断で、clean timingとは分ける。ONとOFFの32K数値比較は通った。GEMMだけの追加診断も全66live状態・head・出力が一致して正常終了したが、101個のevent時刻でsubmitがstartより後だったため時間集計を棄却した。矛盾した時刻からボトルネックやFLOPSを推定しない。[元receiptと棄却理由](../2026-10-10-gemm-clock-rejection/RESULTS_JA.md)。
+
+全startup後のfree1565 MiBには既存8K workspaceが含まれている。16Kへのaccounted増分1672.5 MiBはこの残量を超え、512 MiBの余裕も必要になる。まず通常chunk-majorの固定12Kを確認する。増分836.25 MiB、条件付き残量728.75 MiBだが、実際の選択とallocation・全数値を検証してから比較する。新しい候補のphysical262144検証とclean throughput比較は未実施で、採用した最適化はない。元receiptを変更していない。

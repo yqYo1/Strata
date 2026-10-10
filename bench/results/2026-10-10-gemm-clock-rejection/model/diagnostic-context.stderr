@@ -1,0 +1,80 @@
+strata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)
+strata generate: native pack: /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s experts (largest blob 2.66 MB), token embedding IQ4_XS in mapped host memory (322 MiB, 0.3 s)
+strata generate: 1466 MiB of weights loaded from /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s in 1.1 s (302 canonical tensors skipped: served natively)
+strata generate: 300 native projection matrices, 2018.88 MiB of weights, in 0.8 s
+strata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)
+strata generate: profile data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots
+strata generate: KV streaming: 32768 of 262144 cells per QSA layer in VRAM, the K/V in 3.09 GiB of pinned RAM
+strata generate: PLE on, table 320001536 rows of /home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf
+strata mtp: draft layer loaded, 834 MiB of VRAM (experts 675, dense 111), files read in 1.69 s (466 MiB/s)
+strata generate: experimental native Q5_K head, 521472000 bytes, in 0.2 s
+strata generate: GPU 0: Intel(R) Arc(TM) B570 Graphics, SYCL driver 1.17.39395+14
+strata generate: expert arena read through the file cache (buffered (not Windows))
+strata generate: expert arena: SYCL pageable host arena (queue copies); MAP_HUGETLB unavailable (needed 23983 2 MiB pages, vm.nr_hugepages=0); using 4 KB pages
+strata generate: loaded 46.84 GiB at 1.45 GiB/s
+strata generate: 5 pool workers on logical processors 1,2,3,4,5, the host thread on 0 (draining too) (--host-core first)
+strata trace: 4221 MiB free after the weights, the session and the drafter
+strata generate: expert cache 128 slots, 0.32 GiB of VRAM; policy is
+strata trace: 3896 MiB free after opening the expert cache
+strata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,
+                 so a reply can differ slightly from a run without the cache (same quality:
+                 bench/results/2026-09-27-cache-parity).
+                 R4.2g PER-LAYER: each layer owns 2 slots (0..1).
+strata generate: profile fill: 0.26 GiB in 0.1 s (3.75 GB/s, serial)
+strata trace: 3896 MiB free after the profile fill
+strata generate: pre-filled 128 of 128 slots from the profile in 0.1 s (3752 MB/s); slot 0 verified
+strata trace: 3896 MiB free after the R4 hit path
+strata generate: R4 hit path ON - resident experts are computed on the GPU
+strata generate: 5 expert-pool workers + the host thread
+strata trace: 3896 MiB free after the expert cache and the graphs
+strata generate: session is up (engine 0.1.41)
+strata generate: token graph hit path: 128 resident experts, decided on the device
+strata serve: the prompt path allocates its own buffers (too few cache slots to borrow)
+strata prefill: compact-hc layout for 8192 tokens: 1861857536 accounted bytes, 1166147584 shared workspace bytes
+strata trace: 1852 MiB free after the head and the prompt path
+strata verify: window up to 4 tokens, 64.5 MiB of device buffers
+strata mtp: draft head over 106299 tokens (212.9 MiB)
+strata trace: 1566 MiB free after the verifier and the drafter's binding
+strata serve: 1565 MiB of VRAM free with everything loaded
+strata trace: request 32768 0
+strata trace: prompt start 32767 -1
+strata trace: prompt chunk 0 of 32767, layers [0, 48)
+strata service event rejected: expert_gemm chunk 0 layer 0 expert 0 role 0 submit 330578179897313 start 330578178793958 end 330578179035625
+strata service event rejected: expert_gemm chunk 0 layer 0 expert 0 role 1 submit 330578193179168 start 330578192142187 end 330578192235312
+strata service event rejected: expert_gemm chunk 0 layer 0 expert 1 role 0 submit 330578196181827 start 330578195015208 end 330578195127916
+strata service event rejected: expert_gemm chunk 0 layer 0 expert 1 role 1 submit 330578210840092 start 330578209598229 end 330578209650416
+strata trace: prompt chunk 8192 of 32767, layers [0, 48)
+strata trace: prompt chunk 16384 of 32767, layers [0, 48)
+strata trace: prompt chunk 24576 of 32767, layers [0, 48)
+strata prefill service validity: {"lane":"expert_gemm","status":"invalid","reason":"backward_event_timestamps","fatal_reason":"none","admitted":true,"attempts":187010,"submitted":187010,"retained":46230,"folded":46230,"pending":0,"dropped":140780,"query_attempts":138690,"query_successes":138690,"query_failures":0,"backward":101,"raw_submit_ns":330601671009345,"raw_start_ns":330601677873020,"raw_end_ns":330601677888229,"rejected_submit_ns":330578179897313,"rejected_start_ns":330578178793958,"rejected_end_ns":330578179035625,"event_cap":65536,"bucket_cap":16384,"expected_registered":88651,"completed_role_pairs":23115,"expected_pending":65536}
+strata trace: read 32767 tokens (batched) in 81162.7 ms
+strata trace: prompt done (slots refilled) -1 -1
+strata trace: window 32767 1
+strata verify: captured 1-token window with 48 host expert boundaries
+strata trace: window 32768 4
+strata verify: captured 4-token window with 96 host expert boundaries
+strata trace: window 32772 4
+strata trace: window 32775 4
+strata trace: window 32778 4
+strata trace: window 32780 4
+strata trace: window 32784 4
+strata trace: window 32787 4
+strata trace: window 32791 4
+strata trace: window 32794 4
+strata trace: window 32797 4
+strata trace: window 32801 4
+strata trace: window 32803 4
+strata trace: window 32806 4
+strata trace: window 32809 4
+strata trace: window 32810 4
+strata trace: window 32811 4
+strata trace: window 32812 4
+strata trace: window 32814 4
+strata trace: window 32818 4
+strata trace: window 32822 4
+strata trace: window 32825 4
+strata trace: window 32829 4
+strata serve: prompt 32768 tokens = 0 reused + 32768 read in 81171 ms (403.7 tok/s), 64 generated in 4262 ms (15.0 tok/s), drafts accepted 41 of 66, 0 checkpoints
+strata serve: decode expert cache hit rate: 5.0% (2116 hits / 42720 lookups)
+strata serve: KV streaming: 92.32% of 548412 block reads hit VRAM, 169.6 MiB read from RAM
+strata SYCL shutdown: all queues completed

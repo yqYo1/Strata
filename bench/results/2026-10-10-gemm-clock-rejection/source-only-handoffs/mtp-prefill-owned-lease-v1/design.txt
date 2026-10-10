@@ -1,0 +1,153 @@
+SOURCE-ONLY DESIGN; NOT AN IMPLEMENTED OR ADOPTABLE LEASE
+
+Decision
+Use the assignment's explicit safe-design fallback. No modified engine source
+or executable patch is supplied. Moving the non-server bind/release lines alone
+does not implement the required long-lived server ownership boundary. The
+existing lease API also does not expose the verified/owned/shared eligibility
+needed for an independently strict new switch. Leave all production defaults,
+queue properties, copy profiling, watchdogs and runtime settings unchanged.
+
+Frozen source anchors (495369cf4dc6e6da564095a1c26504dd3694e3f2)
+  generate.cpp:2218 auto+no-borrow becomes2048, not owned16K.
+  generate.cpp:6712 server sp.init occurs BEFORE bind at7085 and READY at8444.
+  generate.cpp:6722..6808 server owned-fit/fallback/init retries can halve chunk.
+  generate.cpp:7608 old layer-major MTP callbacks installed on persistent sp.
+  generate.cpp:9039 main server loop; batch/pipeline pump can execute other work.
+  generate.cpp:10138 read_part may interleave slot decode between prompt chunks.
+  generate.cpp:10320 cancellation completes prompt cleanup then continues server.
+  generate.cpp:11725 CLI-only init,11732 bind,11737 old release callbacks.
+  generate.cpp:12141 CLI verifier residual rebind;12331 existing warm path.
+  mtp.cpp:372 release flag is independently parsed during load;374 verification
+    is STRATA_PREFILL_DRAFT_VERIFY, optional and not implied by release.
+  mtp.cpp:376 shared load aliases owner weights but keeps instance-local graphs.
+  mtp.cpp:145 graph discard only visits this drafter's own graph arrays.
+  mtp.cpp:196 verification returns true immediately unless private verify flag.
+  mtp.cpp:212 suspend sets suspended before partial unmap, preserves dense/KV.
+  mtp.cpp:247 restore checks original VAs, copies and optionally verifies bytes.
+  mtp.cpp:837 bind builds retained subset head/RAM image only in release mode.
+  mtp.cpp:1653/2076 draft/draft_first restore lazily; warm/prepare_chain do not
+    establish the new caller's successful verified lease retirement themselves.
+  prefill.cpp:801 reset calls release and also CLEARS PrefillStats.
+  prefill.cpp:807 release waits compute/copy/KV queues and frees owned buffers.
+  prefill.cpp:2434 run drains its pipeline even when its body returns false.
+
+Exact blockers to a narrow complete patch
+1. Two materially different admission lifetimes. CLI allocates a local Prefill
+   just before prompt execution; server allocates persistent sp before binding
+   the draft head and before READY. A lease around11725 is never reached for
+   server requests. A lease around6712 would have to stay suspended across
+   verifier binding/capture/startup until a request exists, or restore while
+   workspace remains live, which violates the requested peak ordering. Proper
+   server behavior requires deferred fixed-owned allocation AND per-request
+   retirement/reinitialization, bypassing only this opt-in mode's auto-downsize
+   logic. It is not a2-line move of the current callback.
+2. can_release_decode_weights() only returns a private boolean set by the old
+   flag. It is not an ownership/verification/complete-source proof. Verification
+   can be disabled while suspend/restore return success. An aliased drafter has
+   instance-local empty ExpertCache storage and graphs while experts_/dhead_
+   point into another owner. Discarding one instance's graphs does not retire
+   aliases' graph references. There is no owner-generation/user registry or
+   public owner-only verified lease admission predicate. Enabling the new flag
+   solely in generate cannot make retained immutable RAM sources exist after
+   load or prove graph alias retirement. Simply requiring the old release flag
+   would still install the incompatible old layer-major callback unless gated.
+3. A serial main loop is not a universal shared-drafter serialization proof.
+   STOP/input threads only set/queue commands, which is compatible with a lease,
+   but batch slots, shared slot drafters and pipelined asynchronous windows can
+   remain live or be pumped between prompt pieces. Every alias must be rejected
+   before loading/capturing or registered under the same lease owner. There is
+   no current lease guard spanning bind/prefill/draft/warm/prepare_chain/chain
+   launch and all shared instances. Rejecting batch/pipeline/multi-GPU early is
+   the smallest plausible future scope; silently assuming idle is unsafe.
+4. Cancellation and partial init/release/restore are distinct boundaries. A
+   server cancellation may resume request dispatch; CLI return may destroy the
+   drafter. The local RAII object needs a trustworthy explicit retired/quiescent
+   state before restoring. reset() can throw while waiting; an unknown GPU
+   completion cannot be converted into ordinary restore/retry. Failed restore
+   or graph preparation must terminate without destructor replay. No already-
+   existing shared lease status enforces this for subsequent server commands.
+   Merely calling lazy draft restoration misses warm/chain capture and masks
+   a failed release/restore transition.
+5. Fixed-chunk accounting must survive reset. reset clears statistics. Existing
+   caller reads stats after run and expects persistent sp.chunk for read_part /
+   lend decisions. A new path must snapshot final stats before retirement and
+   use admitted fixed chunk in request scheduling while sp is empty. Otherwise
+   successful numerical work can report zero chunks or silently change geometry.
+
+Proposed minimal next implementation contract
+  Flag name candidate STRATA_PREFILL_MTP_OWNED_LEASE, exact absent/0 OFF,1 ON,
+  all other values rejected BEFORE mutable drafter/session allocation. The name
+  is design-only, not implemented. Permit fixed8192..32768 --prefill and explicit
+  --no-prefill-borrow; reject auto, non-native/no-MTP, batch/batch-MTP/shared
+  drafters, pipeline windows/layer split, peer, vision/cooperative yield or
+  other currently unproven route, active old layer-major/cache/draft-release
+  callbacks. Do not silently clamp requested fixed chunk. Explicitly require
+  serialized full-request execution and original final-prompt-token rule.
+
+  Owner API must let this exact opt-in request immutable host copies and
+  mandatory full byte verification BEFORE MTP load, expose owner-only complete
+  lease eligibility and suspended state, and forbid graph capture/replay during
+  the suspended interval except audited prompt-front/KV-only graphs. Do not
+  overload the old optional verification setting as proof. Reuse existing
+  ExpertCache mapping/same-VA restoration, with no main expert-cache shrink.
+
+  Startup/server separation: load main/draft dense and state; construct/bind
+  native head before lease; do not allocate the enabled server's large owned sp
+  at startup. Preserve prompt callbacks and fixed requested geometry. Serialize
+  all requests through the existing main owner thread; rejected other modes
+  cannot construct shared drafters or start background draft consumers.
+
+  Per request state machine:
+    ADMITTED_OWNER -> BOUND -> QUIESCENT_VERIFIED -> SUSPEND_ATTEMPTED
+      -> SUSPENDED -> OWNED_INIT_ATTEMPTED -> OWNED_LIVE -> RUN_DRAINED
+      -> STATS_SNAPSHOTTED -> WORKSPACE_RETIRED -> RESTORED_VERIFIED_SAME_VA
+      -> REBOUND -> REQUIRED_GRAPHS_PREPARED -> DECODE_READY -> IDLE
+  Mark SUSPEND_ATTEMPTED before calling suspend, because partial unmap must be
+  recovered. Keep immutable sources and same-address owner alive until IDLE.
+  Keep mainKV/dense/head/cache and draft dense/KV/recurrent state untouched.
+  Prompt callback uses audited Prefill::draft_kv or MtpDrafter::prefill front/KV
+  path; don't delete callback or skip its state updates to save memory.
+
+  After a successful run, drain/join original producers and no-borrow work,
+  snapshot stats and required final data, then reset owned Prefill. Only AFTER
+  its workspace is gone restore+full-verify the owner bytes at original VAs.
+  Rebind verifier residual pointer and recapture relevant coupled/ordinary
+  graph modes; warm if original policy requires it; prepare_chain only after
+  restore for an explicitly admitted chain mode (initial narrow scope rejects
+  chains). Success doesn't alter graph policy arbitrarily.
+
+  Recoverable cancellation/init failure: prove run/producers quiescent, retire
+  partial workspace, restore+verify weights, invalidate request session as
+  required by existing cancelled semantics, rebuild graphs only before future
+  legitimate decode, then return cancelled/error. No decode for the failed
+  prompt. Unknown completion/reset failure/restore mismatch/recapture failure:
+  emit precise fatal receipt then _Exit, no live-USM cleanup or graph replay.
+  Never restore from an on_chunk callback or inside run_layer_major.
+
+Qualification before any capacity statement
+  Root must reconcile linked generate/mtp/cache/prefill objects and headers with
+  exact source revisions. CPU real-policy extraction/stubs should test strict
+  flag/mode rejection; transition order; aliases; cancel at every transition;
+  partial unmap/init; reset throw; restore VA/byte failures; graph failure and
+  no-unwind subprocess behavior. Off path must call no new lease method.
+  Compile actual SYCL TUs and link before GPU qualification. First8192 fixed
+  no-borrow parity, then16384 only if allocation succeeds; don't call fallback
+  chunks a fixed16K PASS. Compare exact first head/token/LP, final prompt token,
+  complete QSA/GDN/PLE and both ple_prev, draftKV/recurrent state, followed by
+  decode/restoration and a second server request/cancel recovery control.
+  Full physical262144 prompt/finaltoken parity remains mandatory separately.
+  After correctness, three fresh clean processes per matched OFF/ON chunk arm,
+  retain individual startup/init/release/prefill/reset/restore/recapture/first-
+  token/decode/whole-request spans and mapped-byte/workspace/peak admissions.
+  No copy profiling, watchdog, queue safety, reset or driver workaround changes.
+
+Conditional memory accounting only
+  Q=other persistent main+draft dense/state/cache allocations, D=actual mapped
+  lease-owned expert+head bytes, P(T)=exact owned Prefill workspace, G=required
+  temporary verification/recapture overhead. Original overlap includes Q+D+P.
+  Correct lease ordering can replace that overlap with peaks at least Q+D,
+  Q+P(T) and Q+D+G. Binding the head initially still must fit; G and allocator
+  rounding are not zero by proof. It is wrong to promise D bytes of headroom
+  or to add startup834MiB+212.9MiB as released bytes without measured owner
+  mapping. There is no allocator-fit, speed, optimization or full-context claim.

@@ -1,0 +1,94 @@
+ROOT ONLY; PREPARATION, NOT EXECUTED
+One case per process: qualify_observed_gemm_span GU|Down M --observed-shape
+M must be an EXACT observed shapes.M from the root-admitted route/ledger, not
+an illustrative point or all theoretical1..6495. The positional confirmation
+flag does not authenticate membership: controller must pin role/M/N/K/ldy,
+accepted census/ledger and its source/input/environment identities BEFORE run.
+
+Build template (fill only from root's already qualified compiler/link recipe):
+  "$ROOT_ICpx" $ROOT_EXACT_PRECISE_O3_SYCL_PER_KERNEL_FLAGS \
+    -I"$WQ/sycl/include" -I"$WQ/include" \
+    "$D/qualify_observed_gemm_span.cpp" "$ROOT_EXACT_GEMM_OBJECT" \
+    $ROOT_FROZEN_LINK_OBJECTS_AND_LIBRARIES -o "$ROOT_OWNED_EXE"
+D=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qualify-observed-gemm-span-v1
+WQ=/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-qualification-20261010
+Use Gemm object built from the pinned gemm.dp.cpp; don't link a different GEMM
+implementation or duplicate Gemm symbols. Confirm f16_event header comes from
+WQ/include (SYCL guard), correct DPCT and oneMKL versions and precise/no-contraction
+SG32/per-kernel BMG policy. Optional frozen library linkage is root's authority;
+this template is not a claim that arbitrary linker substitutions are equivalent.
+No source-checkout edit required. Harness markers are one SG32 group of32 each.
+
+Finite qualification gates/order
+1. Root compile and argument-only subprocess rejection before GPU: missing or
+   extra args, unknown role, empty/non-digit/sign/whitespace/overflow M,0,6496,
+   missing --observed-shape. Existing full/transfer diagnostic flags PRESENT,
+   even string0, must reject. Malformed parsing never queries a device.
+2. Select one observed role/M with finite root wrapper wall180s, CPU120s,
+   RSS1GiB, raw trace/log64MiB maximum, one owned process/cell and shared lock.
+   Cap exceeds harness explicit memory because SYCL/oneMKL/PTI own runtime
+   storage separately. No full-shape sweep without separate finite budget.
+   Source command count: one warm GEMM outside window; two marker kernels and
+   one target GEMM submission in window; no per-internal-kernel wait. Complete
+   verification/setup use slab copies/waits entirely outside marker window.
+3. Root's existing diagnostic environment/owner wrapper first. Obtain complete
+   output/completion/canary/source PASS and normal owned exit; this grants NO
+   full-span or speed claim. Retain stderr/fault/timeout status independently.
+4. If admitted for PTI, root supplies already checked unitrace and owner wrapper.
+   Candidate documented flags from R278: --device-timeline --kernel-submission
+   --chrome-kernel-logging. Pin tool version/complete command/environment and
+   event-buffer capacity/drop/error indicators. No unknown invented profiler
+   buffer variable or silently unbounded capture. A trace truncated at64MiB or
+   event loss invalidates span qualification; preserve failure compactly.
+   Keep original runtime/driver/watchdog safety; no copy profiling flags.
+5. Repeat only root-approved necessary exact observed classes/processes. Every
+   trace is a coverage diagnostic, NOT clean throughput or model inference.
+
+Mandatory root parser/analysis design (actual PTI schema is version-owned)
+  a. Strict fixture JSON parse; validate exact role/M/N/K/ldy/dtypes, target1,
+     warm1, markers2, all values checked, immutable sources, canaries, monotone
+     stamp triples and marker tags, normal process status. Reject missing JSON,
+     timeout/fault/unknown completion. Full_span_qualified is ALWAYSfalse in the
+     fixture: external analysis can only promote it after every gate below.
+  b. Identify two marker GPU operations by unique begin/end API->submission->
+     queue/context/device/kernel flow plus its tag proof. Kernel names help
+     locate candidates; names/durations/order alone do NOT prove identity.
+     Marker event submit/start/end triples and raw host call brackets are
+     saved. There must be one target f16_event invocation between these host
+     submissions; warm/setup/readback operations stay outside target window.
+  c. Traverse ALL target-caused device operations through actual documented
+     host/device correlation/flow/dependency records. Include helper kernels,
+     library copies/barriers and internal queues/engines if present. Require
+     both markers, target host/API visibility, all GPU command visibility,
+     valid context/queue ownership and causal completion/dependencies. Absence
+     of kernels/flows, unidentified operations, lost events or incomplete
+     attribution => full-operation-span UNQUALIFIED, never empty-set PASS.
+  d. Establish clock units/resolution/domains from PTI metadata/tool contract,
+     not labels alone. SYCL event clock is not assumed equal to PTI device or
+     host clock. Match marker event actions to PTI marker actions with flows.
+     Construct a measured mapping with uncertainty from independently justified
+     timer correlation/anchors. Two endpoint fits alone always fit and do not
+     prove drift/domain equality; verify an independent anchor or documented
+     clock-correlation source and residual/error bounds. Without that, mapping
+     remains unqualified. Harness paired MONOTONIC samples are bracketed by
+     RAW before/after both sides of the window; their widths bound host sampling
+     uncertainty. They help map a PROVEN MONOTONIC PTI host domain, but do not
+     prove that unitrace uses it. Submission host brackets do not bound kernel
+     execution tightly; end-wait raw endpoint is only a host completion bound.
+  e. Map each attributed target interval into a common clock using that proven
+     mapping. Compute first start=min starts and last end=max ends; retain all
+     internal intervals and their union separately. Full event-envelope gate:
+       returned start <= first target start within measured uncertainty
+       returned end   >= last target end within measured uncertainty.
+     Predeclare error bounds from timer resolution/correlation/sample widths;
+     never choose tolerance from observed mismatch. Marker order and completed
+     returned event are completion checks, not substitutes for coverage.
+  f. Publish output/completion result, visibility result, attribution result,
+     clock mapping/uncertainty, envelope containment result and final decision
+     separately. Include first/last interval provenance and raw returned/marker
+     stamps. Missing any gate leaves full-span unqualified; retain event only
+     as its already-established completion token/returned-action duration.
+     No FLOPS/speed from this trace, no sum-as-critical-path/exclusive busy,
+     no transfer to untested classes or native prefill calls without later
+     production attribution qualification. This harness isn't actual model
+     data/inference and says nothing about full physical262144 context.

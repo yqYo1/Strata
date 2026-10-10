@@ -1,0 +1,103 @@
+MTP prefill owned-workspace lease v1 — source-only safety/design handoff
+2026-10-10. Task-authorized DESIGN FALLBACK; no executable feature implemented.
+No build/test/inference/source-program execution, GPU/process/hardware query,
+profiling, Git operation, model payload read, live root-run read or cleanup.
+Root owns all later serial validation and source/binary reconciliation.
+
+Completed output:
+  /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-prefill-owned-lease-v1/design.txt
+  SHA256 2cbce4fc2f09eaa75550f989ce744ab4c9aee425d7066e12ec632097361da3d3
+  The design gives exact source anchors, blockers, admission scope, owner/alias
+  proof obligations, startup/per-request state machine, error/cancel/fatal
+  policy, conditional peaks and root-owned CPU/TU/model/three-process gates.
+  This handoff's SHA256 is supplied separately on return.
+  New engine source SHA: NONE. Patch: NONE. No original source was edited or
+  copied into a misleading purported implementation. This is not ready to
+  apply, compile or measure as a lease candidate.
+
+Decision and why a narrow complete implementation was not proven
+  The assignment expressly allows source-only blockers/design instead of a
+  partially unsafe feature when the shared-server lifecycle cannot be proven.
+  The concrete blocker is that server sp.init at generate.cpp6712 happens
+  before MTP bind7085 and READY8444, whereas the superficially movable init/
+  bind at11725/11732 belongs ONLY to the separate non-server path after serve
+  has returned. A local11725 lease would never enlarge server prefill admission.
+  Suspending before6712 and restoring at startup still overlaps the persistent
+  sp workspace, violating the requested reset-before-restore peak sequence.
+  Serving correctly requires deferred fixed-owned init, per-request reset and
+  reinit, exact fixed chunk admission without current6719..6808 downsize/retry,
+  snapshot of stats reset801 clears, and a lease guard spanning all drafter
+  users. That is an actual missing ownership boundary, not a GPU-fit question.
+
+  Existing can_release_decode_weights returns only release_decode_weights_;
+  verify_decode_payload196 can skip verification entirely. Private old load
+  flags create immutable copies/storage; caller-only new flag cannot prove
+  those sources/owner status after load. Shared load376 and bind859 alias owner
+  expert/head pointers while graphs are per instance; discard_graphs145 only
+  drops this instance's arrays. No public owner/alias-generation proof ensures
+  every consumer graph has been retired. Main server loop9039 is serialized
+  for simple requests, and STOP/input reader is not itself a drafter consumer,
+  but batch/pipeline pump and read_part10138 can run other windows while prompt
+  work is live. An explicit early rejection of these modes plus a real owner
+  guard is necessary; asserting generic main-loop serialization is insufficient.
+
+  restore247 same-VA copies are useful existing building blocks. They do not
+  themselves cover warm/prepare_chain/capture or recover a server cancellation
+  at10320 before the next request. reset807 waits queues and can throw; unknown
+  completion cannot safely be treated as normal restore/retry. Partial unmap
+  sets suspended234 before failure, so RAII must mark suspension attempted
+  before invoking it and recover only after known quiescence/owned retirement.
+  Failure of reset/restore/verification/graph prep must retain explicit fatal
+  no-unwind behavior. A smaller CLI-only prototype or a flag accepted without
+  this boundary would not meet the specified server/cancellation contract.
+
+Read/provenance
+  FULLY read R273 round273-prefill-chunk-growth-decode-memory-lifecycle-eligibility.txt
+  and R275 round275-large-chunk-phase-peak-and-owned-workspace-retirement.txt.
+  Read frozen relevant generate.cpp, MTP load/bind/suspend/restore/shared/warm/
+  chain/prefill APIs, Prefill reset/release/run, ExpertCache shrink/grow, server
+  startup/admission/input/pump/cancel and non-server decode rebind/warm anchors.
+  No GPU/payload behavior inferred as tested. Storage/registry-v102 supplied by
+  parent remain evidence provenance, not new runs or complete linked identity.
+
+Exact ORIGINAL source hashes read independently:
+  W=/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010
+  owner-pinned HEAD495369cf4dc6e6da564095a1c26504dd3694e3f2, no Git query.
+  W/sycl/src/program/generate.cpp
+    8bb78a21e3cbb9f03e40db3699d056225181e9ebb638d7eea04fadb41d852ced
+  W/sycl/src/core/mtp.cpp
+    caea7e8651c6698a6df536834a91a10eafdbea25625ecb21498bee240bc474bf
+  W/sycl/include/strata/core/mtp.hpp
+    ddf97c284ee0b82c46e9fe510bd007e3ff64d35e410a5c7563177347ca79f831
+  W/sycl/src/prefill/prefill.cpp
+    f6cbc4acb9f84b19480a25892a2e6864896a3e3ab0f68ace3c3f51a788591f69
+  Linked base/object identity remains root-owned; equal generate.cpp bytes do
+  not prove all loaded functions/headers/static library objects match W.
+
+Default-off invariance / claims
+  No implementation exists, so original source/math/commands/order/workspace/
+  callbacks/graphs/mainKV/dense/expert cache/default queue or flags are unchanged.
+  No new env flag is active. Candidate flag name/eligibility in design is a
+  proposal, not a supported option. No release amount or larger allocation fit
+  is claimed. Conditional Q,D,P(T),G peak equations are explicitly estimates/
+  ownership conditions, not a measured device capacity or speed promise.
+  Full physical262144 final-token/state/output proof remains mandatory in a
+  future root-qualified candidate; accepted32K census is not that proof.
+
+Root next gate suggestions
+  First review/choose the explicit minimal owner-only server scope in design,
+  rather than trying a11725-only patch. Add verified owner/alias eligibility
+  and deferred per-request owned workspace lifecycle before GPU use. CPU real-
+  policy extraction tests should cover every transition/cancel/failure with
+  known-vs-unknown completion and fatal no-unwind subprocess assertions; actual
+  generate/mtp/prefill SYCL TUs must then compile and link under root's precise
+  flags with source identity receipts. Start fixed8192 no-borrow parity, then
+  fixed16384 allocator admission, complete QSA/GDN/PLE/MTP states, first head/
+  LP/tokens/final prompt-token/decode and second-request cancel recovery gates.
+  Only after those pass, three fresh clean processes with individual mapped
+  release/init/prefill/reset/restore/recapture/full-wall and decode samples;
+  independently qualify full physical262144. Do not add profiling-copy flags,
+  driver/runtime workarounds or watchdog changes to obtain admission/results.
+
+Direct handoff: source contract/design complete; safe executable lease remains
+unimplemented for the listed concrete ownership/admission/recovery reasons.

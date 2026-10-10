@@ -1,0 +1,127 @@
+Observed oneMKL GEMM span fixture — source-only handoff
+2026-10-10. No builds/tests/GPU/profiling/runtime/process/hardware queries,
+source-program execution, Git operations, model payload reads, checkout edits
+or cleanup. Parent/root owns ALL later serial admission/execution/analysis.
+Fully read R278 and the existing real-wrapper f16_event qualifier; read the
+actual qualified Gemm header/TU. No live parent GEMM-only32K run files read.
+
+Private outputs:
+  D=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qualify-observed-gemm-span-v1
+  D/qualify_observed_gemm_span.cpp SHA256
+    566b5671b0b159b6dd16dd8d09742c15f3b262fd0b262db805a8038f3f2145c1
+  D/root_recipe.txt SHA256
+    18b9db0e4fb48a787037d20f395dd9210494c69a4483e3b8fe64b74601dd0e75
+  This report SHA supplied separately; no self-hash recursion.
+
+Immutable source identities independently read:
+  WQ=/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-qualification-20261010
+  WQ/sycl/src/prefill/gemm.dp.cpp
+    ad863d0dc122c7e809ec584637820e1796230c1319f1300b2167d89cf3080f04
+  WQ/sycl/tools/qualify_prefill_f16_event.cpp
+    32a52ab0db317ee63fa187dbaddaddbc51fe6620d63562e7f65ca16fc2064e9c
+  No source-checkout modification or Git identity query was performed. Link
+  object/library/header/device/runtime/tool identities remain root-owned.
+
+CLI and actual call
+  qualify_observed_gemm_span GU|Down M --observed-shape
+  Exactly4 argv entries; role exactcase, decimal M1..6495/max4digits. Invalid
+  args/range/full-or-transfer flags reject BEFORE any GPU/runtime operation.
+  --observed-shape is a required controller assertion, NOT a trusted census
+  parser. Root must admit M from actual observed shapes.M and pin that evidence.
+  GU N1280/K2560/ldy1280; Down N2560/K640/ldy2560. X[M,K]/W[N,K] FP16, output
+  Y[M,N] FP32, same real Gemm::f16_event API and DPCT/oneMKL descriptor. No new
+  GEMM implementation, grouped calls, chains, production marker or code change.
+  The Gemm session is initialized as existing qualifier init(q,1); f16_event
+  does not use its BF16 dequant scratch. Root must link the exact qualified TU,
+  not an alternative library algorithm or custom kernel. Same DPCT factory
+  in-order profiling queue/context property source; no new factory flags. A
+  B570/queue-profiling admission check runs only after valid arguments. Source
+  does not activate copy profiling/transfer ledger/runtime workarounds.
+
+Numerical/source/output gate
+  Inputs repeat [0,1/2,1,1/4] with different row-phase through the same analytic
+  generator. All FP16 bits are exact dyadics. Products are multiples of1/16;
+  positive partial sums are small enough to be exactly FP32 representable at
+  K640/2560 regardless of reduction order/FMA contraction. Independent expected
+  row/column answer is K/4 times the four-term dot, computed from small scalar
+  constants, not by calling another GEMM or reading computed GPU output.
+  It is an analytical finite fixture, not actual model weights/inference.
+  Every output value is checked exactly; NaN/inf/unwritten finite poison fails.
+  Full X and W bit sequences are regenerated and compared after target. Each
+  of X/W/Y has256-byte prefix AND suffix canaries; all are checked and included
+  in full buffer FNV1a64. Payload sources are readback-verified unchanged, not
+  checksum-only. Fixed production ldy=N has zero row padding, explicitly
+  reported; no fabricated padded stride changes production dispatch. Outer
+  allocation guards are the unused padding checked in this exact-shape fixture.
+
+Target window and ownership
+  One same-shape real warm/JIT call fully completes outside target. Output is
+  reinitialized outside target. Two unique marker kernels each use one group
+  of32 with reqd_sub_group_size32, matching root SG32 policy. Begin marker ->
+  ONE real f16_event -> end marker are on SAME in-order queue with no intervening
+  wait/barrier or duplicate target. One end-marker wait and async error delivery
+  precede all profiling/status queries/readback/checks. Warm/setup and slab
+  readback commands exist in whole trace but are outside target marker window.
+  These markers are qualification-only scheduling changes, never production.
+  Returned event and both markers record all submit/start/end fields, checked
+  monotone individually; end order checked. Marker tags must be fully written.
+  Host CLOCK_MONOTONIC_RAW brackets each submission and final wait; paired
+  MONOTONIC inside RAW brackets on both sides supports external host-clock
+  analysis without assuming PTI domain. No device-to-host subtraction/offset,
+  drift tolerance, clock equivalence or full-span computation is done in CPP.
+
+  Owned device allocations are raw owners on failure; catch prints failure
+  then _Exit, bypassing Gemm/USM destruction with unknown completion. Success
+  performs full queue drain/async check, then destroys Gemm/USM/queue and emits
+  final fixture JSON. No replay, driver reset or retry. Receipt write/teardown
+  failure/abnormal exit must invalidate external qualification, even if some
+  receipt bytes appeared. Device-buffer payloads are never overwritten/freed
+  while their queued users may remain alive.
+
+Memory/execution bounds
+  Three guarded device arrays,16-byte marker allocation,2-byte Gemm scratch and
+  ONE reused4MiB host slab; no full host source/output mirrors. At maximum
+  Down M6495, explicit device+host buffers are about82.3MB decimal (<128MiB);
+  GU maximum is smaller. Formula is checked before runtime allocation. Host
+  slab upload/readback loops check every byte/value without20billion scalar
+  dot operations; expected depends on only16 phase pairs. Maximum output count
+  is16627200 floats; maximum input counts are bounded by fixed shape/M cap.
+  USM alignment explicitly256, payload after256-byte prefix remains aligned.
+  SYCL/oneMKL/PTI/allocator internal storage is NOT proven included in explicit
+  buffer count; finite root RSS/trace/wall budget is mandatory. Root recipe
+  proposes one process/cell, wall180s/CPU120s/RSS1GiB/log64MiB and no unbounded
+  role/M sweep. No runtime capacity or normal-exit PASS has been observed here.
+
+Qualification interpretation / parser recipe
+  CPP always emits full_operation_span_qualified=false and performance_eligible
+  false. Output/completion/monotone event fields alone never qualify full routine
+  timing. root_recipe.txt spells out finite build/owner/unitrace template and
+  mandatory external gates: marker/API/queue/context/target flows, all internal
+  kernel/helper/copy/barrier operations, no buffer drops or missing entries,
+  proven SYCL-to-PTI mapping with predeclared uncertainty plus independent
+  anchor, first/last attributed interval containment by returned start/end.
+  Missing visibility/flow/markers/domain proof is UNQUALIFIED, not an empty
+  target set or a speed number. Names or matching durations alone are rejected.
+  Two marker fits alone cannot prove common clock/drift. Host raw call brackets
+  bound host API submissions, not tightly device execution. Root must know
+  actual PTI schema/units/correlation source and timer resolution before using
+  paired host samples or projecting event fields. Tool capabilities/version
+  and event-buffer capacity are root prerequisites, not fabricated flags here.
+  Distinguish individual intervals, union/envelope and critical path/exclusive
+  busy; never sum overlapping intervals into model throughput. Any later PASS
+  is restricted to exact admitted observed role/M, binary/runtime/device/queue/
+  environment and still requires production call attribution before promotion
+  of actual-prefill ledger ratios. No full262144 context or optimization claim.
+
+Root next steps (NOT RUN)
+  Compile/link private TU with frozen qualified Gemm object and root's exact
+  preciseO3/SG32/per-kernel BMG flags, headers and oneMKL link recipe. CPU/stub
+  parser negative cases before first device access; actual TU compile required.
+  Qualify bounded exact observed role/M under safe diagnostic environment and
+  existing serial owner lock; complete numerical/source/canary/status/normal
+  gates before deciding PTI capture. Root supplies unitrace wrapper/options
+  externally. See root_recipe for required raw evidence, correlation checks,
+  finite bounds and rejection outcomes. No clean timing claim from this trace.
+
+Direct handoff: harness and finite external qualification contract prepared;
+uncompiled/unexecuted, no event-envelope or PTI coverage PASS asserted.

@@ -1,0 +1,78 @@
+# R277 — Actual route scheduling and capacity scenario budget
+
+Status: read-only host/data/source analysis. No runtime, inference, GPU/process/hardware query, build, test, Git operation, source edit, or cleanup was performed. Route and hardware-capacity arithmetic is not a performance prediction or admission result.
+
+## Evidence boundary
+
+Reviewed R272, R273, R275, R219, R247, R248, R257, R263 and R47, registry v102 (SHA-256 `66fd91d0d8f35d99d8d41fd9a4c444d42ced257e31a51b224d2548de1a6b40b6`), `actual-prefill-census-capacity-join-v1.json` (SHA-256 `b0afc60f795f47ea699281717d312cbd944b5d35fd25a0dff7949b7e14fbffb3`), and the closed route census (`census.jsonl`, SHA-256 `41f81d6046f98684fd12019d25b06b8f87bf68aab471e7614a3f1de15c257e53`; its receipt is `record.json`, SHA-256 `ad7415ecd477812f812ed3c4068d8c23105dbe2df57cec0b7ac919369f9f2131`). Census source identity is caller `prefill.cpp`, SHA-256 `905f43162ae079b6785584da226d950cec14b13bd413ca51ab1a48f49de6ebaf`, plus `prefill_route_census.hpp`, SHA-256 `c673382e9f4bf63919489cf00daa71bec793ff7b4584c203291380b827dc110b`. Those are accounting instrumentation pins, not a complete production-binary identity. Durable source/document context was the storage worktree at `2a1eb6864420738db7714587f26f517e1718879e`; current implementation claims below remain bounded by the source/version caveats in the prior reports.
+
+The ON census and default-OFF parity request both passed the fresh 32,768-input numerical gates, including first-head and all 66 live-state parts. The request conditions 32,767 prefix positions and handles the final prompt token separately; it used four 8,192-capacity chunks (the last carries 8,191 rows). The census added no device commands. Both receipts mark performance eligibility and full-262,144 qualification false. The instrumentation/dumps exclude throughput timing. A separate combined copy/service profile later timed out under the watchdog without XE faults; the recorded post-failure integer GPU-health check passed. A separate GEMM-only measurement is underway. Neither event changes the accepted route/correctness status or supplies a clean service timeline.
+
+## Actual 32K route and what is retained
+
+The accepted join records 93,505 positive `(layer, chunk, expert)` calls across 48 layers × 4 chunks, 15,728,160 routed rows, 92,998 staged-RAM transfer calls, and 190,240,998,400 logical packed bytes. The generic GU projection and generic Down projection each ran 93,505 calls. The route also accounts 919,191,552,000 logical GU+Down FP16 expansion-output bytes. The 507 resident calls account for 318,580 rows; the 92,998 copied calls account for 15,409,580 rows. These are logical caller counters, not physical DRAM traffic or transfer-active intervals.
+
+| Current 8K chunk start | Expert calls | Routed rows | Staged calls | Logical copied bytes |
+|---:|---:|---:|---:|---:|
+| 0 | 23,115 | 3,932,160 | 22,988 | 47,043,609,600 |
+| 8,192 | 23,367 | 3,932,160 | 23,240 | 47,543,705,600 |
+| 16,384 | 23,264 | 3,932,160 | 23,138 | 47,334,630,400 |
+| 24,576 | 23,759 | 3,931,680 | 23,632 | 48,319,052,800 |
+| **Total** | **93,505** | **15,728,160** | **92,998** | **190,240,998,400** |
+
+The per-call route-size histogram across those four chunks is exact in the census: M=1–16, 19,948 calls / 138,024 rows; 17–80, 26,539 / 1,140,838; 81–160, 16,499 / 1,935,320; 161–640, 26,472 / 8,098,012; 641–6,495, 4,047 / 4,415,966. Its weighted mean is 168.2066 rows/call. Here `M` is an expert's routed row count in one layer and one current chunk. The current `M` values span 1 to 6,495, across 1,891 distinct sizes.
+
+## 16K/32K chunk-growth deduplication bounds
+
+The current census line for each layer/chunk stores marginal counts by exact `M` and source, but not expert IDs. Neither `record.json` nor `census.jsonl` records which expert occupies each bin. Thus exact cross-chunk ID intersections and the exact new per-M histogram are not recoverable from these retained artifacts. I did not infer IDs or run a new inference. The following are rigorous occupancy bounds from each layer's measured active-expert counts and the 512-expert universe, not the often-assumed exact halving:
+
+For one merged group of chunks with active expert sets `A_i`, merged expert calls equal `|∪A_i|`, bounded by `max(|A_i|) <= |∪A_i| <= min(512, Σ|A_i|)`. For copied IDs, apply the same bound to the subset with census `source=3` (stager-RAM), holding each chunk's recorded source label fixed. Each expert blob size is layer-specific but equal for all experts in that layer, so its copied-byte bound is the copied-ID bound times that layer's recorded `blob_bytes`.
+
+| Hypothetical fixed chunking of the same 32,767 prefill rows | Expert-call bound | Staged-copy-call bound | Staged logical-byte bound | Possible call reduction vs 93,505 | Rows |
+|---|---:|---:|---:|---:|---:|
+| Current 8K × 4 | 93,505 exact | 92,998 exact | 190.241 GB exact | — | 15,728,160 |
+| 16K × 2 | 47,182–49,152 | 46,928–49,152 | 95.982–100.585 GB | 47.4–49.5% | 15,728,160 |
+| 32K × 1 | 23,784–24,576 | 23,657–24,576 | 48.372–50.292 GB | 73.7–74.6% | 15,728,160 |
+
+Here GB is decimal. Corresponding conditional payload times are 14.89–15.60 seconds at the independent 6.4468 GB/s pinned/USM attained probe, 20.84–21.84 seconds at 4.6052 GB/s pageable probe, and 12.18–12.77 seconds at the 7.8769 GB/s encoded Gen4x4 line-rate ceiling for 16K; for 32K, 7.50–7.80, 10.50–10.92, and 6.14–6.38 seconds. These are payload÷rate scenarios only. They are not active-copy durations, actual request time, guaranteed candidate savings or upper/lower wall-time bounds. Submission, memory-source mix, caching and overlap remain unmeasured in a clean matched run.
+
+Rows are conserved because chunking changes grouping, not router selections or prompt length. The merged call count changes the mean M to 320.1–333.3 at 16K and 640.0–661.6 at 32K. It does not multiply every existing M by two or four. For example, if one expert has 14 rows in the first 8K chunk and 9 in the next, its merged M is 23; if absent in the second chunk, it remains 14. Since IDs are missing, the exact result distribution is unknown. The current 8K per-chunk maximum M values are 4,889 / 5,722 / 5,713 / 6,495. Thus merged max M is at least 6,495; conservative same-layer upper bounds from these marginals are 12,208 for a 16K pair and 22,476 for the 32K group. Exact per-M bins require recording `(layer, expert_id, chunk, rows, source)`; the present histogram cannot support an exact M-conditioned GEMM/dequant budget.
+
+The packed-byte bounds also assume the joined source labels remain meaningful in the combined schedule and each copied ID is loaded once per merged layer group. A new cache/admission plan can alter resident/staged classification. So the bounds describe reuse available from the recorded routes, not an assertion that the future planner will copy those exact bytes.
+
+## Keep the 50.292 GB and 190.241 GB cases distinct
+
+The **190.241 GB** number is the actual caller-accounted copied payload across four 8K chunks. It must not be replaced by the distinct/full-pack case. Summing `512 × blob_bytes` once for each of the 48 actual layers gives **50,292,326,400 B (50.292 GB; 46.838 GiB)**, the logical payload for a full all-expert pass over the model pack once per layer. It is a useful one-pass scale and is the upper end of the 32K route-union byte bound, but it is not the copied payload of the measured 8K run.
+
+The current layer-major implementation keeps one full layer's packed expert cache and processes every current chunk through that layer before advancing. It therefore already avoids repeated packed-weight loads across chunks for that layer, at the cost of loading every expert in the layer, including experts not routed in the prompt. It still performs route/dequant/GU-GEMM/SwiGLU/Down-GEMM work per chunk; it does not concatenate `M` across chunks. For this pack the single layer cache is sized with 512 uniform `MAXBLOB` slots: 1,363,148,800 B (1.2695 GiB). The one-pass actual packed blob payload over all layers (50.292 GB) is not the cache allocation size and is not the current route's 190.241 GB.
+
+The isolated seven-pair O2 AOT expansion fixture's medians, weighted by the **actual current format-pair call counts**, total 10.743 seconds (10.333–10.828 using process-median ranges). This is a device-resident packed-weight capacity-equivalent for existing calls, not production time or exposed critical path. It cannot be multiplied by the new lower call count as a forecast: merged M changes GEMM/dequant cost and the fixture is not an M-conditioned production build. The current census's 919.192 GB expanded-output count is also not H2D input and must not be added to the 190.241 GB copied payload or this isolated service figure. Do not add packed-copy and dequant scenarios as if serial; their actual operations may overlap.
+
+## Schedule choices and the 10,240-float residual
+
+**Chunk-major plus larger chunks** is the direct route-consolidation experiment. The normal path runs each token tile through all layers and keeps its residual on the device chunk workspace; it does not need a full-prompt residual spill plane. With IDs joined, 16K/32K can combine each expert's rows across adjacent chunks, reducing routed call count and reloading each repeated staged expert once within that larger layer/chunk. The bounds above show meaningful call/copy reuse potential, but only an exact merged-M receipt tells the shape mix. Workspace is chunk-scaled and source-side admission/correctness/performance for 16K or 32K is unproven. Keep fixed chunk sizing distinct from `auto` when no cache borrowing is disabled: R275 documents the auto fallback.
+
+**Existing layer-major, group width one**, has a different trade: it loads all 512 packed blobs for each layer once and reuses them across 8K tiles. It does not reduce the 93,505 expert route/GEMM call count or merge M. It holds a host residual plane between layers. Correct residual width is `D=10,240` FP32 values per token (four streams × 2,560), not 2,560. For this request the batched prefix is `n=32,767`; its plane is `n×D×4 = 1,342,136,320 B` (1.249962 GiB). A host spill after each of the 47 layer boundaries writes this plane D2H and the next layer reads it H2D: 58.748 GiB each direction, 117.496 GiB combined logical residual traffic. For a 262,144-token prompt, the batched prefix is 262,143 and the plane is 10,737,377,280 B (9.999962 GiB); 47 boundaries imply 469.998 GiB each direction. These are host↔device residual extents from the source schedule, not DRAM measurements or time forecasts. Current layer-major additionally requires resident QSA K/V and has other live session, workspace, cache and runtime objects; it is not qualified at full context.
+
+**Adjacent-layer group-major** is a bounded middle order: keep `g` neighboring layers' experts resident, process tiles in increasing token order through the group, spill residual only between groups, then retire the group after its consumers complete. The causal GDN/QSA order can be preserved only if each layer still sees tiles chronologically, the PLE prefix advances once, group slot maps are disjoint and stable, and queue fences precede cache reuse. R263 marks this as a design, not an implementation. It reduces residual boundary crossings relative to layer-major width one, not relative to chunk-major (which has no full-prompt spill). For 48 layers, groups of 2 and 4 leave 23 and 11 boundaries:
+
+| Prompt prefill rows | Group width | Residual bytes per boundary | D2H bytes total | H2D bytes total | Both directions |
+|---:|---:|---:|---:|---:|---:|
+| 32,767 | 1 (existing layer-major) | 1.249962 GiB | 58.748 GiB | 58.748 GiB | 117.496 GiB |
+| 32,767 | 2 | 1.249962 GiB | 28.749 GiB | 28.749 GiB | 57.498 GiB |
+| 32,767 | 4 | 1.249962 GiB | 13.750 GiB | 13.750 GiB | 27.499 GiB |
+| 262,143 | 1 | 9.999962 GiB | 469.998 GiB | 469.998 GiB | 939.996 GiB |
+| 262,143 | 2 | 9.999962 GiB | 229.999 GiB | 229.999 GiB | 459.998 GiB |
+| 262,143 | 4 | 9.999962 GiB | 109.9996 GiB | 109.9996 GiB | 219.9992 GiB |
+
+This grouped schedule does not, by itself, combine M across tiles; with 8K tiles it retains the same per-expert route/dequant/GEMM call totals. Each group must hold its weights simultaneously: R47's metadata budget gives exact packed payload peaks of 2.3071 GiB for width 2 and 4.5288 GiB for width 4; current uniform `MAXBLOB` slots reserve up to 2.5391 and 5.0781 GiB. These are group-cache sizes, not free-memory readings. At full context the resident-QSA subtotal alone is 6.4375 GiB before base weights, GDN/PLE, Prefill, cache, graphs and workspace; width 4 is not admitted by nominal device capacity even when the subtotal is combined only with that QSA value. Width 2 still has no demonstrated simultaneous-allocation margin. At 32K the numerical run's 1,564 MiB startup-free reading is not a post-Prefill/group-cache peak and proves neither fit nor failure after a different lease/order.
+
+Chunk growth and layer grouping can be composed, but their budgets must not be double-counted: if a group retains the packed weights across its tiles, the group has already removed repeated weight fetches like layer-major. Enlarging tile M may then reduce route/dequant/GEMM calls, but will grow per-chunk workspace; it does not further reduce the same within-group packed-weight fetch below one per expert. Conversely, layer-group residual savings do not imply a lower routed-call or expanded-output count.
+
+## Capacity and decision
+
+The independent H2D probe gives 6.4468 GB/s attained for pinned/USM and 4.6052 GB/s for pageable transfer; the encoded Gen4x4 external-link figure 7.8769 GB/s is a physical line-rate ceiling, not achieved application bandwidth. The measured 10.743-second expansion capacity-equivalent and transfer payload scenarios are separate lanes. No valid sum is a request-time estimate because copy, DQ, GEMM, host route preparation and waits can overlap. The failed combined profile supplies no clean overlap intervals; the separate GEMM-only run is the next discriminant. The current `mean M=168.2` must not be used to interpolate the O2 shape fixture into a candidate 16K/32K GEMM estimate.
+
+The most direct architecture question is whether chunk consolidation exposes less repeated staged payload and fewer calls without exceeding owned-workspace capacity. It can plausibly change work materially (bounds above), while preserving the current no-full-residual-plane path. The alternative layer-major path can lower packed reads to a full one-pass pack but adds up to 117.5 GiB of logical residual traffic for 32K under width one and requires resident KV. A grouped order trades the same full residual backing for fewer group boundaries, at the cost of 2.3–4.5 GiB exact group expert payload before other simultaneous owners. None is shown to improve end-to-end wall time.
+
+Before a timing claim, retain an ID-level `(layer, expert, chunk, M, source)` census for an already-authorized same-input run, join it to merged schedules, and record exact merged-M histograms, source bytes, and successful copy/compute completion intervals on the qualified queues. Keep a separate clean application-wall sample. Fixed 16K/32K workspace allocation and capacity, and complete full-262,144-context state/final-token/decode gates remain mandatory. Do not turn the current ON/OFF numerical pass, route census, isolated capacities or group-byte arithmetic into a performance, fit or full-context claim.

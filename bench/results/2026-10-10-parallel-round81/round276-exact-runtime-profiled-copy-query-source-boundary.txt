@@ -1,0 +1,58 @@
+# R276 — Exact runtime source boundary for profiled-copy event status queries
+
+Date: 2026-10-10 (Asia/Tokyo). Read-only research using saved reports and public source/specification pages. No build, test, runtime/API call, GPU/process/service query, reset, cleanup, Git operation, or source change was performed. This report is the only file written.
+
+## Scope correction and artifact identity
+
+Round 274 incorrectly said no exact public compute-runtime `.14` source was found. Round 271 had already established the published `26.31.39395.14` release tag and examined the exact PPA Noble source archive for the installed package version. Correct statement: the published NEO `.14` source is available and is the right source version to inspect; the installed `libze_intel_gpu.so.1.17.39395` has not been hashed against the PPA `.deb` or reproducibly built, so the installed binary is not proven byte-identical to that source.
+
+R271 records PPA source package `intel-compute-runtime 26.31.39395.14-1~24.04~ppa1`, source tarball SHA-256 `7830725ce3fe8979c09de86cc5d74adefc71ec1eeaac0b6ba799ff67c3c06885`, and matching upstream release tag commit `050536f` / source commit `673149da78654f043f9814cc133d2c766a762659`. Its checked PPA files match the upstream `.14` tag byte-for-byte. The package index and those matches establish useful source provenance, not installed-library identity.
+
+Correct caller source SHA-256: `905f43162ae079b6785584da226d950cec14b13bd413ca51ab1a48f49de6ebaf`, `prefill-route-census-v3/prefill.cpp` (same B). R274 printed an incorrect digest transcription. Saved failure remains `owned-prefill-route-service-v3-code32k-diagnostic-r1`: watchdog SIGABRT at first chunk/layer, three workers captured in command-status query, no new XE fault/reset evidence. The later health probe passed. The parent is qualifying GEMM-only timing with copy-queue profiling disabled; this audit does not recommend or make another full combined-mode attempt.
+
+## The status path, layer by layer
+
+**UR Level Zero V2.** The release-era public source snapshot at `intel/llvm` commit `0a42f64adb6c0c3cab02b967ab3e0da4e1991d5d` contains `unified-runtime/source/adapters/level_zero/v2/event.cpp`. Its `urEventGetInfo(UR_EVENT_INFO_COMMAND_EXECUTION_STATUS)` calls `zeEventQueryStatus(event->getZeEvent())` directly. `ZE_RESULT_NOT_READY` maps to UR `SUBMITTED`; every other Level Zero result maps to UR `COMPLETE`. That function takes no event mutex, takes no queue mutex, does not submit/flush a pending batch, and does not synchronize the event. Separate `urEventWait` uses `zeEventHostSynchronize(..., UINT64_MAX)`. These source facts separate a status query from a host wait and identify a concerning error-mapping detail (non-`NOT_READY` errors also become complete), but do not show which Level Zero result the saved call would have returned because the call never returned in the captured state.
+
+The public snapshot is a release-era source reference, **not** a pinned build input for installed `libur_adapter_level_zero_v2.so.0.12.0`. Prior local evidence gives that soname and an adapter-file digest, but no source commit/build manifest tied to that digest. Do not state the source implementation is confirmed to be the exact installed UR binary. The published source path and line-level behavior can guide diagnosis; binary/source equivalence remains an explicit boundary.
+
+**Level Zero validation layer.** The public Level Zero `v1.32.0` generated validation DDI wrapper for `zeEventQueryStatus` logs entry, obtains the DDI function pointer, runs configured validation-handler and handle-lifetime prologues, calls the underlying function pointer, runs configured epilogues, then returns/logs the result. The wrapper has no queue submit/flush or wait operation. The handle-lifetime prologue checks that the event handle is valid. No event-checker `zeEventQueryStatus` callback is defined in `zel_events_checker.cpp`; query status is not itself a DAG wait/deadlock check there. This makes the layer a wrapper/check path, not an app-level copy submitter. The source does not establish that all internals of the layer's handle table are lock-free, and it does not establish exact installed validation-layer binary/build identity from the one captured stack. The saved stack does not identify whether the stop was in prologue bookkeeping, the lower driver, or an epilogue.
+
+**NEO / compute-runtime `.14`.** In exact public tag `26.31.39395.14`, `zeEventQueryStatus` forwards to `Event::queryStatus(0)`. For an ordinary packet event, `queryStatus` calls `queryStatusEventPackets`; for counter-based/in-order events it calls `queryCounterBasedEventStatus`. Those paths poll host-visible packet/counter state with `WaitUtils::waitFunctionWithPredicate`, passing `timeSinceWait=0`; the helper performs one CPU pause/poll (and may yield/monitor depending on wait configuration), returning not-ready if the predicate is still false. This is a single query iteration, not an internal wait-until-complete loop. The entrypoint and these event-query paths do not close/submit a queue or issue an explicit flush. This source provides no positive evidence of a deliberate unbounded host wait or a query-time queue flush in NEO `.14`.
+
+There are caveats: `queryStatus` first runs pre-query bookkeeping (including special paths such as imported two-way IPC refresh, metric notification, and TBX handling), then tests cached completion, and the eventual status path depends on event type. The source does not prove the live event takes the ordinary path, the relevant mapped memory remains readable, or the installed binary exactly matches the source. The `.14` source says what a normal query should do, not why three callers were captured beneath the wrapper/driver stack.
+
+## Specification and issue check
+
+Level Zero's event spec describes `zeEventQueryStatus` as a host query, says implementations **should** be lock-free, and returns `ZE_RESULT_NOT_READY` when unsignaled. `zeEventHostSynchronize` is the separate waiting API; it may wait to its requested timeout, and `UINT64_MAX` waits until completion or device loss. “Should be lock-free” is a recommendation, not proof that this implementation or its validation wrapper cannot block. [Level Zero event API](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/event.html)
+
+The searched primary issues did not reveal a report matching this specific single-GPU B580 Stager stall: profiled SYCL copy queue plus a non-returning V2 event-status query through validation and NEO `.14`. Nearby reports are not causal evidence: Intel LLVM #18424 is a separately described deadlock in the L0 **v1** adapter, Strata #867/#866 concerns a different multi-GPU graph/ring event path, and Strata #1054 describes a separate two-B70 startup spin with an unverified visibility hypothesis. None proves this incident is an adapter, validation-layer, NEO, event-lifetime, or hardware deadlock. [Intel LLVM #18424](https://github.com/intel/llvm/issues/18424), [Strata #867](https://github.com/Niko1221/Strata/issues/867), [Strata fix #866](https://github.com/Niko1221/Strata/pull/866), [Strata #1054](https://github.com/Niko1221/Strata/issues/1054).
+
+## Bounded interpretation and next diagnostic, if needed
+
+At the Strata boundary, `queue::memcpy` returned an event and `Stager::issued_one` published its generation before the worker can query it. That proves the host submission API returned; it does not prove the copy reached or started on hardware. A not-yet-signaled copy should ordinarily yield a returned `submitted` status so the worker can retry. The capture proves only that all three workers were at the same status-query call chain at one watchdog sample and the request thread was waiting for staging readiness; it does not prove the query deadlocked, which event/status was involved, or that a producer was starved. No new XE fault/reset plus a successful later health probe weighs against describing this saved failure as a hardware wedge, but does not localize the stuck call.
+
+If the already-selected GEMM-only qualification succeeds and copy-command time remains necessary, a future separately authorized, owner-controlled, standalone qualification can use a finite four-cell matrix, one preallocated same-size device-local copy and one retained event per cell:
+
+| Queue profiling | Validation layer | Purpose |
+|---|---|---|
+| off | off | control status query and completion fence |
+| on | off | isolate copy-queue profiling property |
+| off | on | isolate validation-wrapper contribution |
+| on | on | test the combined condition |
+
+Keep the copy queue, buffers, event ownership, event status API, and one-copy protocol constant. For each cell, record host monotonic time around the immediate post-enqueue status query and around a single completion boundary; record only scalar return status/result and whether the bounded query returned. Use an external hard deadline for each process and stop at the first non-returning query. Do not poll-log, inject marker/wait commands before the query, alter Stager's dependency ordering, or run model inference. If the query immediately follows submission but the copy has already completed, that cell is still a useful status-query latency observation but cannot test incomplete-event behavior. Repeat only if a valid diagnostic question remains after preserving the first result. This matrix is a proposal, not authorization to execute it.
+
+Until then, retain the R274 isolation boundary: keep the copy queue unprofiled for the current GEMM-only timing path; report existing host-boundary/wait-envelope measurements as such, not per-copy DMA service time. Do not call profiling-info queries on unprofiled events, add work to the Stager queue, remove the validation layer as a workaround, or retry the failed combined 32K request.
+
+## Primary source identities
+
+- NEO `.14` query entrypoint: https://github.com/intel/compute-runtime/blob/26.31.39395.14/level_zero/api/core/ze_event_api_entrypoints.cpp#L1217-L1221
+- NEO `.14` event query dispatch/status: https://github.com/intel/compute-runtime/blob/26.31.39395.14/level_zero/core/source/event/event_impl.inl#L3112-L3364
+- NEO `.14` single-iteration wait helper: https://github.com/intel/compute-runtime/blob/26.31.39395.14/shared/source/utilities/wait_util.h#L59-L82
+- Release-era UR V2 status query: https://github.com/intel/llvm/blob/0a42f64adb6c0c3cab02b967ab3e0da4e1991d5d/unified-runtime/source/adapters/level_zero/v2/event.cpp#L241-L254
+- Validation wrapper `.14` timeframe package source reference `oneapi-src/level-zero v1.32.0`: https://github.com/oneapi-src/level-zero/blob/v1.32.0/source/layers/validation/ze_valddi.cpp#L12033-L12068
+- Handle lifetime event validation: https://github.com/oneapi-src/level-zero/blob/v1.32.0/source/layers/validation/handle_lifetime_tracking/ze_handle_lifetime.cpp#L1561-L1569
+- PPA `.14` exact source archive provenance is recorded in `round271-installed-sysman-source-and-safe-sampler-contract.txt`; source tarball SHA-256 `7830725ce3fe8979c09de86cc5d74adefc71ec1eeaac0b6ba799ff67c3c06885`.
+
+No implementation change, workaround, or cause attribution follows from this audit.
