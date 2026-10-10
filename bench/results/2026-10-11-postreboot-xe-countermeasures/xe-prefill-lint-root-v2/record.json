@@ -1,0 +1,385 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": false,
+  "gpu_executed": false,
+  "model_executed": false,
+  "started_utc": "2026-10-10T18:00:46.430486+00:00",
+  "controller_sha256": "512ef64b29777ca64b744e872404b890719e582b43606c2775021cd41b7f8037",
+  "source_sha256": {
+    "src/prefill/prefill.cpp": "4aefed973dbe6f768b21ec8694d9d040f5d77ce33242e4e6d2027f361e2cd80a",
+    "include/strata/prefill/publication.hpp": "40f3b5dfc26cbba910116d4d9fd92231871355d06eef571ffbfafc28643ee85a",
+    "tools/test_prefill_publication.cpp": "205108edebe58650a46e8fa8d6f844cff692c5ae70e0af61d561706b16a7e71f"
+  },
+  "commands": [
+    {
+      "label": "download-cppcheck-dependency",
+      "argv": [
+        "/usr/bin/apt-get",
+        "download",
+        "libtinyxml2-10"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T18:00:46.430857+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 299269,
+          "start_ticks": 401055,
+          "sid": 299269,
+          "pgid": 299269
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 4010.552253509,
+      "pid": 299269,
+      "spawn_return_monotonic": 4010.553979281,
+      "direct_identity": {
+        "pid": 299269,
+        "state": "R",
+        "ppid": 299265,
+        "pgid": 299269,
+        "sid": 299269,
+        "start_ticks": 401055,
+        "rss_bytes": 282624
+      },
+      "peak_session_rss_bytes": 95711232,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T18:00:46.996247+00:00",
+      "elapsed_seconds": 0.5652442579998933,
+      "logs": {
+        "download-cppcheck-dependency.stdout": {
+          "bytes": 144,
+          "sha256": "b20eebbdb45131394a30372ee12dd6456116b58726129879ce491f73945891e9"
+        },
+        "download-cppcheck-dependency.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "unpack-cppcheck-dependency",
+      "argv": [
+        "/usr/bin/dpkg-deb",
+        "-x",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/.lint/downloads/libtinyxml2-10_10.0.0+dfsg-2_amd64.deb",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/.lint/cppcheck"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T18:00:46.996927+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 299302,
+          "start_ticks": 401111,
+          "sid": 299302,
+          "pgid": 299302
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 4011.118372154,
+      "pid": 299302,
+      "spawn_return_monotonic": 4011.120100992,
+      "direct_identity": {
+        "pid": 299302,
+        "state": "R",
+        "ppid": 299265,
+        "pgid": 299302,
+        "sid": 299302,
+        "start_ticks": 401111,
+        "rss_bytes": 327680
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T18:00:47.093848+00:00",
+      "elapsed_seconds": 0.09675401200001943,
+      "logs": {
+        "unpack-cppcheck-dependency.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "unpack-cppcheck-dependency.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "baseline-tidy",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/compiler/clang-tidy",
+        "--quiet",
+        "-p",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1",
+        "--config-file=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/tools/lint/clang-tidy.yaml",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/src/prefill/prefill.cpp"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/.lint/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/.lint/cppcheck/usr/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "STRATA_LINT_BUILD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/.lint/cppcheck/usr/lib/x86_64-linux-gnu:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T18:00:47.097982+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 299308,
+          "start_ticks": 401121,
+          "sid": 299308,
+          "pgid": 299308
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 4011.219462468,
+      "pid": 299308,
+      "spawn_return_monotonic": 4011.22127351,
+      "direct_identity": {
+        "pid": 299308,
+        "state": "R",
+        "ppid": 299265,
+        "pgid": 299308,
+        "sid": 299308,
+        "start_ticks": 401121,
+        "rss_bytes": 290816
+      },
+      "peak_session_rss_bytes": 666353664,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T18:01:15.412993+00:00",
+      "elapsed_seconds": 28.31480344800002,
+      "logs": {
+        "baseline-tidy.stdout": {
+          "bytes": 23623,
+          "sha256": "e915c1ef11837597f8341c3187010bb7f2c24d1edbb3aba90d3f4117e076115c"
+        },
+        "baseline-tidy.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "lint",
+      "argv": [
+        "/bin/bash",
+        "tools/lint/run.sh",
+        "src/prefill/prefill.cpp",
+        "include/strata/prefill/publication.hpp",
+        "tools/test_prefill_publication.cpp"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/.lint/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/.lint/cppcheck/usr/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "STRATA_LINT_BUILD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/.lint/build",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/.lint/cppcheck/usr/lib/x86_64-linux-gnu:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T18:01:15.413621+00:00",
+      "wall_seconds": 240,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 301264,
+          "start_ticks": 403953,
+          "sid": 301264,
+          "pgid": 301264
+        },
+        {
+          "pid": 301305,
+          "start_ticks": 403957,
+          "sid": 301264,
+          "pgid": 301264
+        },
+        {
+          "pid": 303347,
+          "start_ticks": 406983,
+          "sid": 301264,
+          "pgid": 301264
+        },
+        {
+          "pid": 303393,
+          "start_ticks": 407010,
+          "sid": 301264,
+          "pgid": 301264
+        },
+        {
+          "pid": 303410,
+          "start_ticks": 407039,
+          "sid": 301264,
+          "pgid": 301264
+        },
+        {
+          "pid": 303434,
+          "start_ticks": 407076,
+          "sid": 301264,
+          "pgid": 301264
+        },
+        {
+          "pid": 303464,
+          "start_ticks": 407112,
+          "sid": 301264,
+          "pgid": 301264
+        },
+        {
+          "pid": 303487,
+          "start_ticks": 407146,
+          "sid": 301264,
+          "pgid": 301264
+        },
+        {
+          "pid": 303532,
+          "start_ticks": 407271,
+          "sid": 301264,
+          "pgid": 301264
+        },
+        {
+          "pid": 303537,
+          "start_ticks": 407286,
+          "sid": 301264,
+          "pgid": 301264
+        },
+        {
+          "pid": 303538,
+          "start_ticks": 407287,
+          "sid": 301264,
+          "pgid": 301264
+        },
+        {
+          "pid": 303539,
+          "start_ticks": 407287,
+          "sid": 301264,
+          "pgid": 301264
+        },
+        {
+          "pid": 303541,
+          "start_ticks": 407287,
+          "sid": 301264,
+          "pgid": 301264
+        },
+        {
+          "pid": 303543,
+          "start_ticks": 407287,
+          "sid": 301264,
+          "pgid": 301264
+        },
+        {
+          "pid": 303544,
+          "start_ticks": 407287,
+          "sid": 301264,
+          "pgid": 301264
+        },
+        {
+          "pid": 303545,
+          "start_ticks": 407287,
+          "sid": 301264,
+          "pgid": 301264
+        },
+        {
+          "pid": 303546,
+          "start_ticks": 407287,
+          "sid": 301264,
+          "pgid": 301264
+        },
+        {
+          "pid": 303549,
+          "start_ticks": 407287,
+          "sid": 301264,
+          "pgid": 301264
+        },
+        {
+          "pid": 303550,
+          "start_ticks": 407287,
+          "sid": 301264,
+          "pgid": 301264
+        },
+        {
+          "pid": 303551,
+          "start_ticks": 407287,
+          "sid": 301264,
+          "pgid": 301264
+        },
+        {
+          "pid": 303552,
+          "start_ticks": 407288,
+          "sid": 301264,
+          "pgid": 301264
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 4039.535473952,
+      "pid": 301264,
+      "spawn_return_monotonic": 4039.537388981,
+      "direct_identity": {
+        "pid": 301264,
+        "state": "R",
+        "ppid": 299265,
+        "pgid": 301264,
+        "sid": 301264,
+        "start_ticks": 403953,
+        "rss_bytes": 270336
+      },
+      "peak_session_rss_bytes": 685805568,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-10T18:01:50.062772+00:00",
+      "elapsed_seconds": 34.64859159700018,
+      "logs": {
+        "lint.stdout": {
+          "bytes": 24401,
+          "sha256": "f5c13594dad4e976da2f63d3abec147b1394a7f70540fc5574693d5a330f9aee"
+        },
+        "lint.stderr": {
+          "bytes": 443,
+          "sha256": "628e4b34c0fbf71447d20ba336c91212cde7ce39015c263920a05df37d3f54d4"
+        }
+      }
+    }
+  ],
+  "tinyxml_package_sha256": "7444576728d0886cc58cee1749dc2ab5a680c1756f0a8b49c973fa0cfb180973",
+  "lint_compile_commands_sha256": "9e9fc6f6a187c6fa7f489175ec4804eee22815a4de3a900965249acacaa7075f",
+  "lint_exit_code": 1,
+  "lint_closed": true,
+  "stdout_sha256": "f5c13594dad4e976da2f63d3abec147b1394a7f70540fc5574693d5a330f9aee",
+  "stderr_sha256": "628e4b34c0fbf71447d20ba336c91212cde7ce39015c263920a05df37d3f54d4",
+  "finished_utc": "2026-10-10T18:01:50.065848+00:00"
+}

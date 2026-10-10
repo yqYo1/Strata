@@ -1,0 +1,82 @@
+# Round 323 — Xe prefill fail-closed and cross-thread error audit
+
+Date: 2026-10-11 (Asia/Tokyo). Read-only source and primary-document audit. No code changes, Git operations, build, tests, GPU, process, or device-status queries were made. The only new file is this report.
+
+## Scope and prior-work boundary
+
+Target worktree: `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010`, task-pinned HEAD `39bdadcc9e2b89b1e3c8be7bb2a603b04fa0e197`. The inspected source hashes are:
+
+- `src/prefill/prefill.cpp`: `919c696192311066055077bdd0fc74769bfb50854e3437b6b387732acf6d532e`
+- `src/core/gpu.cpp`: `a844eeb381e1cb9f1272f1f68f754a73640d44aa6d6e89b743ecfc793bc2a8ef`
+- `src/core/device.cpp`: `9e33dce3b3b55b00c5aee4db566ceb848b73273837c505b3c27b535a0b30ba2d`
+- `include/strata/core/gpu.hpp`: `2f11e948fcadd14be31b79a994a2908585cfda3b4fef404f648530dce3945af6`
+- `include/strata/core/runtime.hpp`: `1a42ce02127727310614461b1dc2768eb2bce421e9d5e992c4df100c1817dd26`
+
+I read registry v109 and v110 (v110 records 431 reports), and R302, R309, R313, R315, R317, R318, R319. R302 already identified ignored Boolean results in stream-all and routed staging. R309/R315 keep the V8 CAT18/UR40 finding separate from that source gap. R318 separately analyzed final Stager DMA teardown. This report does not repeat the skip-path `release_to` / `wait_issued` omission or treat it as the incident cause. Its additions are the complete issuer/stager failure handoff and wakeup behavior, ignored synchronization outside those two staging branches, progress publication, and destruction/error-retirement ordering.
+
+## Confirmed source facts
+
+### Boolean helpers convert submit/wait exceptions into status that callers must check
+
+`gpu.cpp` keeps `g_error` as `thread_local` (lines 39–67). Helpers including `copy_async`, `copy_async_after`, `stream_sync`, `event_record`, `event_sync`, and `stream_wait_event` catch `std::exception`, set that thread's error text, and return `false` (lines 111–123, 236–252, 339–368). They do not throw through the caller's ordinary catch boundary. `copy_async_after` only assigns the supplied event on a successful queue submission; `event_record` similarly replaces `Event::ev` only after its record/barrier submission succeeds. On failure, the wrapper therefore retains the previous event, or remains empty on first use. Empty events are treated as a successful no-op by `event_sync` and `stream_wait_event`.
+
+`event_create` is declared to return `bool`, but currently performs `new Event()` without a catch, so allocation exceptions can escape. `event_destroy` only deletes the wrapper. In this implementation the wrapper contains an optional value-semantic `sycl::event`; it is not a raw Level Zero event that is manually reset.
+
+The Xe runtime's queues are constructed in-order (compute and transfer at device.cpp 185–187; engine streams at 223–226). Its asynchronous handler stores the first exception under a mutex and returns (178–183). Runtime waits call `event.wait_and_throw()`, then `check_async()`, which rethrows that stored exception (298–329). By contrast, several `gpu.cpp` submission helpers use `q(s).submit/memcpy/barrier` directly and do not call `Runtime::check_async()`; an asynchronous error may therefore be observed at a later checked wait, after host-side state was already published.
+
+### Issuer failure is neither published nor wakeable as an error today
+
+In stream-all mode, both inline `issue_until` and the optional issuer thread ignore the return from `copy_async_after`; the host-source arm also ignores `Stager::issued_one`'s void result. They then mark the slot live and advance issued counts (prefill.cpp 1301–1322 and 1344–1369). The caller currently advances even when the helper returns false; the false status is not an exception and cannot be caught in the issuer's outer thread.
+
+The threaded consumer's `wait_issued(k)` only spins until `a_issued > k` (1375–1378). It has no failure predicate, notification, deadline, or stop check. The producer's ring-window spin checks `a_stop` (1346–1350), but it has no failure state either. If an implementation change simply stopped incrementing `a_issued` on a failed submission, the consumer could spin forever. If the failure is raised as an uncaught exception in the lambda instead, C++ requires `std::terminate` for an uncaught exception leaving the thread's invocation. If it is thrown on the consumer/main thread while `issuer` is joinable, the current `IssuerJoin` guard normally sets stop and joins during unwinding; however, join may block indefinitely if the issuer is inside a non-cancellable `Stager::wait` or a source read. It is not safe to rely on `std::thread` destruction to join: the C++ working draft requires a joinable thread destructor to terminate.
+
+### Stager failures can be consumed as successful data and slot retirement
+
+`Stager::work` ignores the Boolean from `event_sync(dma_done[b])` before reusing the host slot (line 314). It records `failed=true` if `copy_blob` returns false, but still sets `ready[j]=1`; `Stager::wait` waits only for ready and returns the buffer pointer (317, 353). In stream-all mode, the caller then submits the host-to-device copy and continues; the failure is only tested at the end of the full chunk after the issuer join (2274–2277). Thus a failed/partial source fill can be read by device work before the failure is surfaced. The routed-only `stage_one` path checks `failed` after `wait` (1990), but still has unchecked copy, event and event-wait results around it.
+
+`issued_one` ignores `event_record(dma_done, copy)` and always publishes `issued=j+1` (357–360). The stager's next-generation/slot wait can consequently observe an empty event as success, or wait on an older event left behind after a failed record, then overwrite a source buffer whose new DMA was not correctly represented. The worker's `event_sync` failure is also ignored. This is an adjacent host-buffer reuse hazard to the staging submit gap, independent of the prior skip-release finding.
+
+### The same fail-open pattern exists outside the staging handoff
+
+The prefill path contains additional ignored Boolean results that can let host code or later compute proceed after a failed submission or drain:
+
+- `HostVec::from_device/to_device` discard `copy_async` status (lines 100–105); these carry routing IDs, row maps, and grouping bounds between host and device.
+- PLE uploads and the upload event record / prior-buffer event sync are unchecked (1248–1252). The QSA step upload is unchecked (1263).
+- Several readback paths queue a device-to-host copy and ignore `stream_sync` before consuming the host vector; for example the routed-id readback at 1713–1746. A failed drain can therefore feed invalid host routing into the following grouping / expert work.
+- In `stage_one`, the slot-reuse wait, copy, copied-event record, and later compute-side copied wait are ignored (1971–1997, 2140–2148). A failed wait can make a copy overwrite a slot still being read; a failed copy/record/wait can expose old or partial weights to dequant/gather.
+- Both MMQ gather and the ordinary streamed path ignore cross-queue copied waits and compute-side used-event records (2020–2037, 2067–2069, 2115, 2155–2180). The same direction of hazard applies to the MMQ direct group's used event (2096–2099).
+- `Prefill::release` ignores compute/copy drains (510–512), destroys event wrappers and the copy stream, then frees owned allocations (515–528). The later GPU-USM `gpu::free` calls drain all Runtime queues and fail-stop via `_Exit` on an error, which is a useful last safety barrier for device allocations. It does not return a failure to the caller. Ignored stream destruction/sync status and ordinary host-vector destruction still make this void teardown unsuitable as a reportable successful close. R318's all-pageable Stager-source issue is a distinct case and is not re-audited here.
+
+The per-layer progress update is emitted before the layer's work at 1386–1388. With a failed asynchronous submission that has not yet reached a checked wait, later layer progress and kernels can still be submitted. At the chunk end, the stream-all source error check is late; `stats_.tokens += T` and “finishing chunk” progress follow it (2274–2279). In the ordinary no-callback route the final compute stream drain is checked (2369–2372), but this does not prevent intervening kernels/progress or provide synchronous fail-stop at the failed submission edge. The callback route does check a compute drain before calling callbacks (2335–2344). These checks can eventually mark a request failed; they do not make earlier state publication safe.
+
+## Minimal fail-closed contract
+
+Treat each cross-queue ring transition as a transaction, and publish its state only after every operation in the transition succeeds:
+
+1. **Copy issuer:** check used-event dependency submission, copy submission, and copied-event creation as one required operation. Do not set `stage_live`, `stage_of`, DMA/streamed success counters, or `a_issued/issued` until all succeed and the event belongs to this slot generation.
+2. **Consumer:** check the copied-event wait submission before submitting dequant/gather that reads the slot; check the used-event record before increasing `consumed` / `a_consumed` or returning the slot to the producer. A failed mark must not release the slot.
+3. **Host stager:** `copy_blob` success, ready publication, H2D submission, and `dma_done` record must have distinct states. Do not publish ready on a partial/failed source fill. Do not acknowledge a host buffer as reusable until the correct generation's DMA event is successfully recorded and successfully observed. Treat a failed wait as failure, not as done.
+4. **All failures:** preserve the first failure's operation, queue/stream, slot, generation/sequence, and message; stop admitting new work; publish the failure to every issuer, consumer, and stager wait predicate; wake all waiters. Every spin/condition must wake on `failed || stop || predicate` and return an error. Keep a bounded host-side policy for CPU waits as well as the existing Runtime GPU-wait watchdog; do not detach.
+5. **Quiesce before cleanup:** first stop new producers, signal cancellation, and join issuer/stager/pipeline workers while their inputs still live. Then drain compute and copy queues with checked waits. Only after successful completion destroy dependency state and free device or host-USM buffers. If completion cannot be established, fail-stop without releasing possibly referenced memory. Keep error-reporting teardown available through an explicit status-returning `close/reset`; destructors should be nonthrowing and must not turn a prior failure into apparent success.
+
+A small per-prefill `FailureState` is adequate: mutex-protected first `exception_ptr`/message plus atomic terminal flag, and a condition variable or atomic wait notification. The worker lambda catches all exceptions at its outermost boundary, records the first error, sets stop/failure and wakes waiters; it never throws across a thread boundary. The caller checks status before consuming a slot and before progress/callback/accounting. The existing `IssuerJoin` guard can remain as a join backstop, but stop must wake/cancel producer waits; it is not a substitute for checked operation statuses or an error channel. Do not throw out of the caller until the join guard can safely stop/join, and do not use RAII destructors to free resources while queue completion is unknown.
+
+For minimal migration without changing all helper APIs, each helper boolean must be checked at its callsite and its operation-specific failure captured on that same thread. Because `last_error()` returns the current thread's `thread_local` string, the main thread cannot reliably read the issuer's text after it fails. Transfer a copied message or exception pointer via the synchronized first-error state before waking. Better long-term, return a structured `Status`/event result and keep the bool-only convenience wrappers at narrow boundaries.
+
+## Official contracts and applicability
+
+- The [Khronos SYCL 2020 revision 12 specification](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html) defines immediate enqueue failures as synchronous exceptions and later-detected command failures as asynchronous errors handled through an async handler (§4.6.5.6, §4.13). In-order queues order commands within that queue only; they do not order another queue's commands. `event::wait_and_throw` blocks for associated work and delivers unconsumed async errors; it is an error-reporting point, not a mechanism that prevents the host from submitting more work before the wait.
+- SYCL USM `free` requires that no in-progress/enqueued command uses the allocation; freeing during use is undefined. The [SYCL USM reference](https://github.khronos.org/SYCL_Reference/iface/usm_allocations.html#syclfree) states that free does not wait for commands. Therefore a failed drain cannot be treated as successful lifetime retirement.
+- The [oneAPI Level Zero programming guide](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html) describes explicit event dependencies between command queues and requires the application to ensure a queue is no longer executing before deletion. The inspected Xe event abstraction is SYCL `sycl::event`, not a raw Level Zero event handle. No raw-Level-Zero reset/reuse rules should be assumed for it. Here `event_record` replaces the wrapper's optional SYCL event only on successful submit; failed record retains the old value. SYCL events have reference semantics and already-submitted commands retain their dependency; that does not make an absent/old event represent a new failed submission.
+- The [C++ working draft for `std::thread` destruction](https://eel.is/c++draft/thread.thread.destr) requires termination when the destructor runs while joinable; an uncaught exception leaving a thread's invocation also calls terminate. Thus an implementation must catch exceptions inside issuer/stager thread entry points and communicate failure; adding a throw to the thread's helper call alone would make failure handling worse.
+
+## Incident evidence: separate facts from inference
+
+**Confirmed by prior receipts, not inferred from this source audit:** R309's V8 receipt records first 4096-token chunk success, second chunk start, a CCS CAT18 fault/reset and an abort surfaced as UR40 / out-of-resources while host code was in `iq_dequant_gu_f16` submission. R317 records a subsequent one-round 64 KiB integer probe whose data check succeeded but whose kernel-health gate failed, with GuC timeout/reset records. The task's latest note says reboot occurred and the same faulting code must be addressed before execution. No new device/process status was queried.
+
+**Source finding:** this pinned source has multiple paths where false helper status can be ignored and a stale/empty event or slot can be treated as current. That is a latent robustness and correctness defect, particularly in the copy/compute/stager handoff.
+
+**Inference only:** such a path could allow stale/partial weights or premature host/device slot reuse and could permit further work after the first helper failure. This could be a contributor in a run if the corresponding helper actually failed. It is not established that any helper returned false in V8, that this source gap caused its CAT18 fault, or that the address belonged to a staging allocation.
+
+**Unresolved:** exact failing command/allocation for V8; whether any false helper status occurred; whether the failure was caused by device memory, a driver/runtime issue, a dependency loss, or another command; and how the current post-reboot device state relates to the previously recorded health failure. No source-only result resolves those incident questions.
+

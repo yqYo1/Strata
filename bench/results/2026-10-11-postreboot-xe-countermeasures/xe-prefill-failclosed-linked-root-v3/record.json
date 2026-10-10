@@ -1,0 +1,1473 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "adopted": false,
+  "fork_pristine": false,
+  "gpu_executed": false,
+  "model_executed": false,
+  "full262144_qualified": false,
+  "started_utc": "2026-10-10T17:33:52.360972+00:00",
+  "controller_sha256": "b6f6142504dc47aab516db88c2c9ad92a69e1ba7737aab7acf3184bf3e8614d5",
+  "commands": [
+    {
+      "label": "read-link-recipe",
+      "argv": [
+        "/usr/bin/ninja",
+        "-t",
+        "commands",
+        "strata"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T17:33:52.905435+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 183408,
+          "start_ticks": 239702,
+          "sid": 183408,
+          "pgid": 183408
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 2397.027078598,
+      "pid": 183408,
+      "spawn_return_monotonic": 2397.028982417,
+      "direct_identity": {
+        "pid": 183408,
+        "state": "R",
+        "ppid": 183341,
+        "pgid": 183408,
+        "sid": 183408,
+        "start_ticks": 239702,
+        "rss_bytes": 278528
+      },
+      "peak_session_rss_bytes": 3399680,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T17:33:53.009012+00:00",
+      "elapsed_seconds": 0.103240894999999,
+      "logs": {
+        "read-link-recipe.stdout": {
+          "bytes": 107568,
+          "sha256": "93b31b148b662d68aec1da571df12a13265a44aa2c6a1a47d54f13935329a071"
+        },
+        "read-link-recipe.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "compile-SYCL-prefill",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_BACKEND=\"xe\"",
+        "-DSTRATA_NATIVE_EXPERTS=1",
+        "-DSTRATA_ONEMATH=1",
+        "-DSTRATA_UPSTREAM_COMMIT=\"e8ca9af\"",
+        "-DSTRATA_UPSTREAM_VERSION=\"0.1.40.2\"",
+        "-DSTRATA_VERSION=\"xe0.1.40.2.1\"",
+        "-I/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include",
+        "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include",
+        "-isystem",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/_deps/strata_onemath-src/include",
+        "-isystem",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/onemath/bin",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-ffp-model=precise",
+        "-fsycl",
+        "-foffload-fp32-prec-div",
+        "-foffload-fp32-prec-sqrt",
+        "-Wall",
+        "-Wextra",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/prefill.cpp.o",
+        "-c",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/src/prefill/prefill.cpp",
+        "-MMD",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/prefill.cpp.d"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T17:33:53.205032+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 183418,
+          "start_ticks": 239732,
+          "sid": 183418,
+          "pgid": 183418
+        },
+        {
+          "pid": 183424,
+          "start_ticks": 239758,
+          "sid": 183418,
+          "pgid": 183418
+        },
+        {
+          "pid": 183536,
+          "start_ticks": 240072,
+          "sid": 183418,
+          "pgid": 183418
+        },
+        {
+          "pid": 183917,
+          "start_ticks": 240492,
+          "sid": 183418,
+          "pgid": 183418
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 2397.326842156,
+      "pid": 183418,
+      "spawn_return_monotonic": 2397.336293945,
+      "direct_identity": {
+        "pid": 183418,
+        "state": "R",
+        "ppid": 183341,
+        "pgid": 183418,
+        "sid": 183418,
+        "start_ticks": 239732,
+        "rss_bytes": 294912
+      },
+      "peak_session_rss_bytes": 379342848,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T17:34:07.477997+00:00",
+      "elapsed_seconds": 14.272449575000337,
+      "logs": {
+        "compile-SYCL-prefill.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-SYCL-prefill.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "member-list",
+      "argv": [
+        "/usr/bin/ar",
+        "t",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/libstrata_prefill.a"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T17:34:07.489987+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 184354,
+          "start_ticks": 241161,
+          "sid": 184354,
+          "pgid": 184354
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 2411.611865656,
+      "pid": 184354,
+      "spawn_return_monotonic": 2411.614560369,
+      "direct_identity": {
+        "pid": 184354,
+        "state": "D",
+        "ppid": 183341,
+        "pgid": 184354,
+        "sid": 184354,
+        "start_ticks": 241161,
+        "rss_bytes": 131072
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T17:34:07.620096+00:00",
+      "elapsed_seconds": 0.12950961800015648,
+      "logs": {
+        "member-list.stdout": {
+          "bytes": 53,
+          "sha256": "f10e51967f699fb9b2495f9444df3ab3edf2bd7a46d6a83d1d610e7fff170647"
+        },
+        "member-list.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "member-before-0",
+      "argv": [
+        "/usr/bin/ar",
+        "p",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/libstrata_prefill.a",
+        "gemm.cpp.o"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T17:34:07.620807+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 184371,
+          "start_ticks": 241174,
+          "sid": 184371,
+          "pgid": 184371
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 2411.742565366,
+      "pid": 184371,
+      "spawn_return_monotonic": 2411.744221862,
+      "direct_identity": {
+        "pid": 184371,
+        "state": "R",
+        "ppid": 183341,
+        "pgid": 184371,
+        "sid": 184371,
+        "start_ticks": 241174,
+        "rss_bytes": 442368
+      },
+      "peak_session_rss_bytes": 2154496,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T17:34:07.725121+00:00",
+      "elapsed_seconds": 0.10382843700017474,
+      "logs": {
+        "member-before-0.stdout": {
+          "bytes": 136704,
+          "sha256": "a0a844d63f31a5d05d265dc71853e1da1884c9eac6b3252fab397158165712d2"
+        },
+        "member-before-0.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "member-before-1",
+      "argv": [
+        "/usr/bin/ar",
+        "p",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/libstrata_prefill.a",
+        "kernels.cpp.o"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T17:34:07.725988+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 184380,
+          "start_ticks": 241184,
+          "sid": 184380,
+          "pgid": 184380
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 2411.847688951,
+      "pid": 184380,
+      "spawn_return_monotonic": 2411.849429314,
+      "direct_identity": {
+        "pid": 184380,
+        "state": "R",
+        "ppid": 183341,
+        "pgid": 184380,
+        "sid": 184380,
+        "start_ticks": 241184,
+        "rss_bytes": 270336
+      },
+      "peak_session_rss_bytes": 2158592,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T17:34:07.829059+00:00",
+      "elapsed_seconds": 0.1026395069998216,
+      "logs": {
+        "member-before-1.stdout": {
+          "bytes": 497736,
+          "sha256": "c666cd752b727e762336c357eed76590d67db138e96876dc7089a1d68dbcc8c0"
+        },
+        "member-before-1.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "member-before-2",
+      "argv": [
+        "/usr/bin/ar",
+        "p",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/libstrata_prefill.a",
+        "prefill.cpp.o"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T17:34:07.830330+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 184396,
+          "start_ticks": 241195,
+          "sid": 184396,
+          "pgid": 184396
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 2411.952107785,
+      "pid": 184396,
+      "spawn_return_monotonic": 2411.953764622,
+      "direct_identity": {
+        "pid": 184396,
+        "state": "R",
+        "ppid": 183341,
+        "pgid": 184396,
+        "sid": 184396,
+        "start_ticks": 241195,
+        "rss_bytes": 266240
+      },
+      "peak_session_rss_bytes": 2154496,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T17:34:07.945893+00:00",
+      "elapsed_seconds": 0.11506826100003309,
+      "logs": {
+        "member-before-2.stdout": {
+          "bytes": 300144,
+          "sha256": "3de5c368ca362f2460d027f020f275d3bc9336f0fbbb2c17ad08659c82bf401b"
+        },
+        "member-before-2.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "member-before-3",
+      "argv": [
+        "/usr/bin/ar",
+        "p",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/libstrata_prefill.a",
+        "moe_mmq.cpp.o"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T17:34:07.947129+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 184399,
+          "start_ticks": 241206,
+          "sid": 184399,
+          "pgid": 184399
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 2412.068953599,
+      "pid": 184399,
+      "spawn_return_monotonic": 2412.070885772,
+      "direct_identity": {
+        "pid": 184399,
+        "state": "R",
+        "ppid": 183341,
+        "pgid": 184399,
+        "sid": 184399,
+        "start_ticks": 241206,
+        "rss_bytes": 315392
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T17:34:08.075443+00:00",
+      "elapsed_seconds": 0.12776181299977907,
+      "logs": {
+        "member-before-3.stdout": {
+          "bytes": 59984,
+          "sha256": "efecf91cf67c7af09482024f340bb6aaac73ecb564b497128c588f8d9c5680ea"
+        },
+        "member-before-3.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "replace",
+      "argv": [
+        "/usr/bin/ar",
+        "r",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/libstrata_prefill.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/prefill.cpp.o"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T17:34:08.076441+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 184402,
+          "start_ticks": 241219,
+          "sid": 184402,
+          "pgid": 184402
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 2412.198283392,
+      "pid": 184402,
+      "spawn_return_monotonic": 2412.200678893,
+      "direct_identity": {
+        "pid": 184402,
+        "state": "R",
+        "ppid": 183341,
+        "pgid": 184402,
+        "sid": 184402,
+        "start_ticks": 241219,
+        "rss_bytes": 274432
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T17:34:08.190612+00:00",
+      "elapsed_seconds": 0.1136021150000488,
+      "logs": {
+        "replace.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "replace.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "index",
+      "argv": [
+        "/usr/bin/ar",
+        "s",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/libstrata_prefill.a"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T17:34:08.191469+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 184406,
+          "start_ticks": 241231,
+          "sid": 184406,
+          "pgid": 184406
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 2412.313427978,
+      "pid": 184406,
+      "spawn_return_monotonic": 2412.31539189,
+      "direct_identity": {
+        "pid": 184406,
+        "state": "R",
+        "ppid": 183341,
+        "pgid": 184406,
+        "sid": 184406,
+        "start_ticks": 241231,
+        "rss_bytes": 274432
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T17:34:08.299556+00:00",
+      "elapsed_seconds": 0.10744528099985473,
+      "logs": {
+        "index.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "index.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "member-after-0",
+      "argv": [
+        "/usr/bin/ar",
+        "p",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/libstrata_prefill.a",
+        "gemm.cpp.o"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T17:34:08.300862+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 184413,
+          "start_ticks": 241242,
+          "sid": 184413,
+          "pgid": 184413
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 2412.423102017,
+      "pid": 184413,
+      "spawn_return_monotonic": 2412.424949722,
+      "direct_identity": {
+        "pid": 184413,
+        "state": "R",
+        "ppid": 183341,
+        "pgid": 184413,
+        "sid": 184413,
+        "start_ticks": 241242,
+        "rss_bytes": 425984
+      },
+      "peak_session_rss_bytes": 2330624,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T17:34:08.413327+00:00",
+      "elapsed_seconds": 0.11152651299971694,
+      "logs": {
+        "member-after-0.stdout": {
+          "bytes": 136704,
+          "sha256": "a0a844d63f31a5d05d265dc71853e1da1884c9eac6b3252fab397158165712d2"
+        },
+        "member-after-0.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "member-after-1",
+      "argv": [
+        "/usr/bin/ar",
+        "p",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/libstrata_prefill.a",
+        "kernels.cpp.o"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T17:34:08.414482+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 184418,
+          "start_ticks": 241253,
+          "sid": 184418,
+          "pgid": 184418
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 2412.536412986,
+      "pid": 184418,
+      "spawn_return_monotonic": 2412.538183205,
+      "direct_identity": {
+        "pid": 184418,
+        "state": "R",
+        "ppid": 183341,
+        "pgid": 184418,
+        "sid": 184418,
+        "start_ticks": 241253,
+        "rss_bytes": 274432
+      },
+      "peak_session_rss_bytes": 2150400,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T17:34:08.513134+00:00",
+      "elapsed_seconds": 0.09798637499989127,
+      "logs": {
+        "member-after-1.stdout": {
+          "bytes": 497736,
+          "sha256": "c666cd752b727e762336c357eed76590d67db138e96876dc7089a1d68dbcc8c0"
+        },
+        "member-after-1.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "member-after-2",
+      "argv": [
+        "/usr/bin/ar",
+        "p",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/libstrata_prefill.a",
+        "prefill.cpp.o"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T17:34:08.514573+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 184421,
+          "start_ticks": 241263,
+          "sid": 184421,
+          "pgid": 184421
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 2412.636485682,
+      "pid": 184421,
+      "spawn_return_monotonic": 2412.63807355,
+      "direct_identity": {
+        "pid": 184421,
+        "state": "R",
+        "ppid": 183341,
+        "pgid": 184421,
+        "sid": 184421,
+        "start_ticks": 241263,
+        "rss_bytes": 274432
+      },
+      "peak_session_rss_bytes": 2326528,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T17:34:08.611683+00:00",
+      "elapsed_seconds": 0.09646569300002739,
+      "logs": {
+        "member-after-2.stdout": {
+          "bytes": 315368,
+          "sha256": "31ebc83600eaaeb89a2dc67562a3c2f703c7dabca36442f83d6f2979e72a89bb"
+        },
+        "member-after-2.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "member-after-3",
+      "argv": [
+        "/usr/bin/ar",
+        "p",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/libstrata_prefill.a",
+        "moe_mmq.cpp.o"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T17:34:08.612949+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 184424,
+          "start_ticks": 241273,
+          "sid": 184424,
+          "pgid": 184424
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 2412.735020015,
+      "pid": 184424,
+      "spawn_return_monotonic": 2412.736652275,
+      "direct_identity": {
+        "pid": 184424,
+        "state": "R",
+        "ppid": 183341,
+        "pgid": 184424,
+        "sid": 184424,
+        "start_ticks": 241273,
+        "rss_bytes": 274432
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T17:34:08.710013+00:00",
+      "elapsed_seconds": 0.09629565499972159,
+      "logs": {
+        "member-after-3.stdout": {
+          "bytes": 59984,
+          "sha256": "efecf91cf67c7af09482024f340bb6aaac73ecb564b497128c588f8d9c5680ea"
+        },
+        "member-after-3.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "link",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-O3",
+        "-DNDEBUG",
+        "-fsycl",
+        "-foffload-fp32-prec-div",
+        "-foffload-fp32-prec-sqrt",
+        "-Xspirv-translator",
+        "--spirv-ext=+SPV_KHR_integer_dot_product",
+        "CMakeFiles/strata.dir/src/program/generate.cpp.o",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/strata",
+        "-L/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/lib",
+        "-Wl,-rpath,/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/lib",
+        "libstrata_engine.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/libstrata_prefill.a",
+        "libstrata_spec.a",
+        "libstrata_engine.a",
+        "libstrata_kernels.a",
+        "libstrata_core.a",
+        "libstrata_ngram.a",
+        "libstrata_platform.a",
+        "libstrata_kernels_cpu.a",
+        "ggml/src/libggml-cpu.a",
+        "ggml/src/libggml-base.a",
+        "-lm",
+        "-lonemath"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T17:34:08.711053+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 184427,
+          "start_ticks": 241283,
+          "sid": 184427,
+          "pgid": 184427
+        },
+        {
+          "pid": 184428,
+          "start_ticks": 241283,
+          "sid": 184427,
+          "pgid": 184427
+        },
+        {
+          "pid": 184476,
+          "start_ticks": 241304,
+          "sid": 184427,
+          "pgid": 184427
+        },
+        {
+          "pid": 184498,
+          "start_ticks": 241367,
+          "sid": 184427,
+          "pgid": 184427
+        },
+        {
+          "pid": 184554,
+          "start_ticks": 241410,
+          "sid": 184427,
+          "pgid": 184427
+        },
+        {
+          "pid": 184688,
+          "start_ticks": 241478,
+          "sid": 184427,
+          "pgid": 184427
+        },
+        {
+          "pid": 184747,
+          "start_ticks": 241524,
+          "sid": 184427,
+          "pgid": 184427
+        },
+        {
+          "pid": 184773,
+          "start_ticks": 241564,
+          "sid": 184427,
+          "pgid": 184427
+        },
+        {
+          "pid": 184828,
+          "start_ticks": 241646,
+          "sid": 184427,
+          "pgid": 184427
+        },
+        {
+          "pid": 184829,
+          "start_ticks": 241646,
+          "sid": 184427,
+          "pgid": 184427
+        },
+        {
+          "pid": 184981,
+          "start_ticks": 241739,
+          "sid": 184427,
+          "pgid": 184427
+        },
+        {
+          "pid": 185084,
+          "start_ticks": 241833,
+          "sid": 184427,
+          "pgid": 184427
+        },
+        {
+          "pid": 185160,
+          "start_ticks": 241865,
+          "sid": 184427,
+          "pgid": 184427
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 2412.833047206,
+      "pid": 184427,
+      "spawn_return_monotonic": 2412.834626798,
+      "direct_identity": {
+        "pid": 184427,
+        "state": "R",
+        "ppid": 183341,
+        "pgid": 184427,
+        "sid": 184427,
+        "start_ticks": 241283,
+        "rss_bytes": 331776
+      },
+      "peak_session_rss_bytes": 128966656,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T17:34:15.079257+00:00",
+      "elapsed_seconds": 6.367482431999633,
+      "logs": {
+        "link.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "link.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+  },
+  "cpu_qualification": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-cpu-root-v3/record.json",
+    "bytes": 9134,
+    "sha256": "92c5b0e43e905b2ae793832d2d7e3a23aefb88ec3243a80f5348a7b626e8f841"
+  },
+  "sources": {
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/src/prefill/prefill.cpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/src/prefill/prefill.cpp",
+      "bytes": 158753,
+      "sha256": "0903398e1a3710ba7037ee9431aaa26a7b3ecaa5c456412fdf27f22449eaa946"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/prefill/publication.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/prefill/publication.hpp",
+      "bytes": 2387,
+      "sha256": "f4cc040241ec13a186e83d334dc8c397c2b115570f222762d27c4dff1d9c030e"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/tools/test_prefill_publication.cpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/tools/test_prefill_publication.cpp",
+      "bytes": 4376,
+      "sha256": "4b42c76721aa1ccc0822e73c87a9efd272cf6cec4f70c4bfe5229c33441ed94b"
+    }
+  },
+  "compile_commands": {
+    "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/compile_commands.json",
+    "bytes": 129163,
+    "sha256": "6e6686073e2b9da3813ed046fc4b66b313ab58f1a3210be4872a27db56b760e7"
+  },
+  "effective_compile": [
+    "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+    "-DSTRATA_BACKEND=\"xe\"",
+    "-DSTRATA_NATIVE_EXPERTS=1",
+    "-DSTRATA_ONEMATH=1",
+    "-DSTRATA_UPSTREAM_COMMIT=\"e8ca9af\"",
+    "-DSTRATA_UPSTREAM_VERSION=\"0.1.40.2\"",
+    "-DSTRATA_VERSION=\"xe0.1.40.2.1\"",
+    "-I/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include",
+    "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include",
+    "-isystem",
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/_deps/strata_onemath-src/include",
+    "-isystem",
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/onemath/bin",
+    "-O3",
+    "-DNDEBUG",
+    "-std=c++20",
+    "-ffp-model=precise",
+    "-fsycl",
+    "-foffload-fp32-prec-div",
+    "-foffload-fp32-prec-sqrt",
+    "-Wall",
+    "-Wextra",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/prefill.cpp.o",
+    "-c",
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/src/prefill/prefill.cpp",
+    "-MMD",
+    "-MF",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/prefill.cpp.d"
+  ],
+  "compiler": {
+    "path": "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+    "bytes": 2102696,
+    "sha256": "be7fa7c3c74c2ba2b8e1b50b0a61e37986441727899e25f3545636bde157c083"
+  },
+  "cached_dependencies_before": {
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/CMakeFiles/strata.dir/src/program/generate.cpp.o": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/CMakeFiles/strata.dir/src/program/generate.cpp.o",
+      "bytes": 1127912,
+      "sha256": "28289e655328413799a061ea3b685f670f80055f70b24e999b03224e433adc73"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_engine.a": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_engine.a",
+      "bytes": 1808728,
+      "sha256": "9ce8be42765affdff9f4d9e0baab151a43019b74f173072f74ea48a0d9f76ac4"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_prefill.a": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_prefill.a",
+      "bytes": 1017086,
+      "sha256": "5588d83b5c917db3413c4169d4c3461292d3341800693299084c3c8c444ca233"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_spec.a": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_spec.a",
+      "bytes": 37996,
+      "sha256": "8f5b55607d8312c2cc253c639fd69d03ed93dd68eb3c711306cf34c8e71a6276"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_kernels.a": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_kernels.a",
+      "bytes": 12371454,
+      "sha256": "d38b1d88990b74779ae3dcaef1d8ea83bf7e99dc72591ab32c59ac26a068f096"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_core.a": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_core.a",
+      "bytes": 480958,
+      "sha256": "8218a6d74a60ea5b96cb5f1d482968e06342f5d59dd4aaa5a0e7c022e9c0d88c"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_ngram.a": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_ngram.a",
+      "bytes": 166932,
+      "sha256": "26f5b880ed81b59c16be209e115e8fea2089010427670916ffdeeb6ba8b9e348"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_platform.a": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_platform.a",
+      "bytes": 29346,
+      "sha256": "d32d71059c93ad89a72c64c1ffa27e163b8fb50e2ae20d27adffbf106c14f22d"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_kernels_cpu.a": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/libstrata_kernels_cpu.a",
+      "bytes": 1716146,
+      "sha256": "bc11519373d8c5d752c13b77d6fa80234679c835c33044a1007511422c56ccd2"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/ggml/src/libggml-cpu.a": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/ggml/src/libggml-cpu.a",
+      "bytes": 2040456,
+      "sha256": "1aec4aa4bee82469f30aaca659c644f56fa66e47e0ec19445e4f4cfcf6a31051"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/ggml/src/libggml-base.a": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/ggml/src/libggml-base.a",
+      "bytes": 1288252,
+      "sha256": "ce1b05598207b89043488af66bdfc6368b07ac4dda798cde9aa62a26f70dddc4"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/lib/libonemath.so": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/lib/libonemath.so.0",
+      "bytes": 910136,
+      "sha256": "bd3f74a79a989257ca9da472e3ec1d0363e2b427ef0a17a3e5fd41135a46305f"
+    }
+  },
+  "object": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/prefill.cpp.o",
+    "bytes": 315368,
+    "sha256": "31ebc83600eaaeb89a2dc67562a3c2f703c7dabca36442f83d6f2979e72a89bb"
+  },
+  "actual_included_dependencies": {
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/device.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/device.hpp",
+      "bytes": 3784,
+      "sha256": "5ef3d91e943c605baf2b011e77dcc61eeca005e54eff5ea0b86e9d98827ba886"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/exchange_storage.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/exchange_storage.hpp",
+      "bytes": 5534,
+      "sha256": "08fabdb13ddece9bf9ba82b8d16f52b58cd9608d30e4cdfd8f02049d32eaa7c6"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/expert_cache.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/expert_cache.hpp",
+      "bytes": 16729,
+      "sha256": "ddadb5eb76c2edfff12052a9de02d2b08bc4d264b88b54ecf9a9d1d8cc60fe69"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/expert_source.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/expert_source.hpp",
+      "bytes": 48365,
+      "sha256": "d54b627e363124c6cee733053b9c513f3493ff13f4335b2d54404d57a3d8b2eb"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/gpu.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/gpu.hpp",
+      "bytes": 7381,
+      "sha256": "2f11e948fcadd14be31b79a994a2908585cfda3b4fef404f648530dce3945af6"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/hit_hook.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/hit_hook.hpp",
+      "bytes": 2716,
+      "sha256": "657d58aed20390142da0057442494a7f30a03804078c31d2a34b90d49b4ad79e"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/layer.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/layer.hpp",
+      "bytes": 42913,
+      "sha256": "406aa25d2d036593bba5c9cd69593f431e88a387edf02267b7e0eb5dcdae346a"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/layout.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/layout.hpp",
+      "bytes": 4577,
+      "sha256": "fdebc55612d559de4e516a5f2c33ebde6fb36e414adb45e42edbe200006e8b95"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/mtp.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/mtp.hpp",
+      "bytes": 15084,
+      "sha256": "57ba3a22ed993e4880934dd1b2e89c107cff19d38056c78f879c48628e41a69d"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/native_head.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/native_head.hpp",
+      "bytes": 3119,
+      "sha256": "94b1f3c8789ec537b86c841b9a4961f40928f0cf077ed652b1863b175dce99be"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/on_device.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/on_device.hpp",
+      "bytes": 1150,
+      "sha256": "579d519f33e7868a9546854dc227a329fa2af04877432fc8cfc8b50c2abecc2e"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/per_device.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/per_device.hpp",
+      "bytes": 1005,
+      "sha256": "25e14d2929b36a55b8972a5b7d276ba71533362bb4f5c9f471b6cb9e1d04e678"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/progress.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/progress.hpp",
+      "bytes": 3883,
+      "sha256": "54ef6d3ebff9631439575274a738600cce5786f884e7992797074a9003d70843"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/runtime.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/runtime.hpp",
+      "bytes": 4198,
+      "sha256": "1a42ce02127727310614461b1dc2768eb2bce421e9d5e992c4df100c1817dd26"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/session.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/session.hpp",
+      "bytes": 30036,
+      "sha256": "ead6906bb0edf7de681538df1d0ac7056fb9906d521394e6ab1536d872bd7af5"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/vmm.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/vmm.hpp",
+      "bytes": 3577,
+      "sha256": "0c2da85d506cc98dcb2f9aad46036bdd86da5f13a145e93738e98585a066eb06"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/weights.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/weights.hpp",
+      "bytes": 8321,
+      "sha256": "ee819c03832987a4c23cad9f61f5c24246788b4d115f6ef32d59967fdb1dd213"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/cpu/expert.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/cpu/expert.hpp",
+      "bytes": 12453,
+      "sha256": "2bba8a28370e2da88e6141341c70033b409c86d1501d576138a243605604a511"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/cpu/expert_layout.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/cpu/expert_layout.hpp",
+      "bytes": 5239,
+      "sha256": "6e84ccc039c33f207ef009dff4796a6f39b4c5d1c9a85314aecbf700cacea796"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/cpu/native_expert.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/cpu/native_expert.hpp",
+      "bytes": 3056,
+      "sha256": "67976a240c8209694bcf6c11578f466276413f7f136f9d97d10e8ef5501062be"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/cpu/pool.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/cpu/pool.hpp",
+      "bytes": 15538,
+      "sha256": "67318eeddedb3783916cdb37345d5804ca83eec12294fc1b758ce5619a57aa97"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/cvec.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/cvec.hpp",
+      "bytes": 4127,
+      "sha256": "48283ee2861b69ef96f19502c59e5e9c706dd4dffe634da1009ff6203e15ae17"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/elementwise.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/elementwise.hpp",
+      "bytes": 9210,
+      "sha256": "5176a3caf502e397c7cb7cd6ec5015fa1e5119194af52deb74a895876007a2af"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/gr.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/gr.hpp",
+      "bytes": 8614,
+      "sha256": "502a3264ad8fe2bd00c015b6b4ab27f40333599a64d5b3ecfcc59f849a66303c"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/iq_kernels.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/iq_kernels.hpp",
+      "bytes": 5975,
+      "sha256": "67ad8482fcba88a135d7ba7e5b1a442e1a102b0418df26a4ffcbafd3b64fd887"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/kv_q4.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/kv_q4.hpp",
+      "bytes": 4086,
+      "sha256": "839ef5ccef128b1897350c33c173e6cdbd21cd03529cdd73458cc15f593d8afd"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/kv_stream.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/kv_stream.hpp",
+      "bytes": 6972,
+      "sha256": "f364fc0cb9ffb6ddc1002f5251344d391d976cc8de2f5881b7c8790ef48ecf8f"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/native_ple_postops.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/native_ple_postops.hpp",
+      "bytes": 2811,
+      "sha256": "140d0e0f7143a9ee00c8ffd1ae26003d25654c42b598b66e29a8ca0ac3cf47a2"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/native_qsa.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/native_qsa.hpp",
+      "bytes": 2198,
+      "sha256": "80ce576a039c4772172d80a097a8a7a8e3c0104ab538ee66352f2b5edab36637"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/native_qsa_indexer.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/native_qsa_indexer.hpp",
+      "bytes": 3673,
+      "sha256": "e469794e1c93718659ee85d2c01305301b7cef21d947e10132a3a3597dd5fccf"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/ngram.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/ngram.hpp",
+      "bytes": 14349,
+      "sha256": "ccf3259c9cc84ce2392509d1d2ca03a8fb71087cad4bc4e6f5ceb212faa06e8f"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/ple.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/ple.hpp",
+      "bytes": 8099,
+      "sha256": "7843431b3e720e76e42a829ee7310d9aff49b5142e98f0fa64fa2fc7be24b5fa"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/qsa.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/qsa.hpp",
+      "bytes": 25581,
+      "sha256": "b4cd8272a20d5fdca4c7090261a7acec175bc984cacb13f201846d12d39e8a79"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/qsa_decode_attn.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/qsa_decode_attn.hpp",
+      "bytes": 2836,
+      "sha256": "b057a03c065c567e74fbd3bf417ed6e9b32fc8203f48074ca1c9fc2f22312fdb"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/qsa_prompt_attn.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/qsa_prompt_attn.hpp",
+      "bytes": 2784,
+      "sha256": "98e20dd2a44138381698273895dbdcae1714dead94db90717935f03d5f1a0a32"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/qsa_select.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/qsa_select.hpp",
+      "bytes": 3206,
+      "sha256": "34674c707ad9256fd572846724abccbb6d477552c52606b489f1819fbb17707e"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/rope_scaling.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/rope_scaling.hpp",
+      "bytes": 12761,
+      "sha256": "78eb034c300c2727b909eb3ec581d88d22d1744ea0d50b29f23e8f81f36c6dba"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/sampler.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/sampler.hpp",
+      "bytes": 5633,
+      "sha256": "cbf73af09d1346c6f2311f0ad496684123ce88e43362c5143907d27856d4937d"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/verify_kernels.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/verify_kernels.hpp",
+      "bytes": 10740,
+      "sha256": "7d9fceb9f1868d6961e4512241e066a0ec7616d7fd2b158d74e13b1e53e58bc2"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/xmx_gemm.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/xmx_gemm.hpp",
+      "bytes": 2646,
+      "sha256": "fdae186bbd82d71f6d1d7c3759923091daff4bcdda78ceac2766e6ca253706ef"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/prefill/gemm.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/prefill/gemm.hpp",
+      "bytes": 3818,
+      "sha256": "5cd6cbd7e44076690bba758a0323a25e379df3ccdb2538477be3f8618f851922"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/prefill/kernels.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/prefill/kernels.hpp",
+      "bytes": 7816,
+      "sha256": "08e2fd550d469a9a5e771d0c16a1ed1f90b207a434d938f552b978c7998c1bdc"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/prefill/moe_mmq.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/prefill/moe_mmq.hpp",
+      "bytes": 4130,
+      "sha256": "f51666630c2adbef2c41f51758c6fa15043051e94263b654941f30f39328c138"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/prefill/prefill.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/prefill/prefill.hpp",
+      "bytes": 9070,
+      "sha256": "c3db75e2c4d672504c42b3f6fb31e1ddbf6740e2584573cfea11494d75fa14ae"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/prefill/publication.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/prefill/publication.hpp",
+      "bytes": 2387,
+      "sha256": "f4cc040241ec13a186e83d334dc8c397c2b115570f222762d27c4dff1d9c030e"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/src/prefill/prefill.cpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/src/prefill/prefill.cpp",
+      "bytes": 158753,
+      "sha256": "0903398e1a3710ba7037ee9431aaa26a7b3ecaa5c456412fdf27f22449eaa946"
+    }
+  },
+  "member_comparison": [
+    {
+      "member": "gemm.cpp.o",
+      "before": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/commands/member-before-0.stdout",
+        "bytes": 136704,
+        "sha256": "a0a844d63f31a5d05d265dc71853e1da1884c9eac6b3252fab397158165712d2"
+      },
+      "after": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/commands/member-after-0.stdout",
+        "bytes": 136704,
+        "sha256": "a0a844d63f31a5d05d265dc71853e1da1884c9eac6b3252fab397158165712d2"
+      },
+      "replaced": false
+    },
+    {
+      "member": "kernels.cpp.o",
+      "before": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/commands/member-before-1.stdout",
+        "bytes": 497736,
+        "sha256": "c666cd752b727e762336c357eed76590d67db138e96876dc7089a1d68dbcc8c0"
+      },
+      "after": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/commands/member-after-1.stdout",
+        "bytes": 497736,
+        "sha256": "c666cd752b727e762336c357eed76590d67db138e96876dc7089a1d68dbcc8c0"
+      },
+      "replaced": false
+    },
+    {
+      "member": "prefill.cpp.o",
+      "before": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/commands/member-before-2.stdout",
+        "bytes": 300144,
+        "sha256": "3de5c368ca362f2460d027f020f275d3bc9336f0fbbb2c17ad08659c82bf401b"
+      },
+      "after": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/commands/member-after-2.stdout",
+        "bytes": 315368,
+        "sha256": "31ebc83600eaaeb89a2dc67562a3c2f703c7dabca36442f83d6f2979e72a89bb"
+      },
+      "replaced": true
+    },
+    {
+      "member": "moe_mmq.cpp.o",
+      "before": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/commands/member-before-3.stdout",
+        "bytes": 59984,
+        "sha256": "efecf91cf67c7af09482024f340bb6aaac73ecb564b497128c588f8d9c5680ea"
+      },
+      "after": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/commands/member-after-3.stdout",
+        "bytes": 59984,
+        "sha256": "efecf91cf67c7af09482024f340bb6aaac73ecb564b497128c588f8d9c5680ea"
+      },
+      "replaced": false
+    }
+  ],
+  "effective_link": [
+    "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+    "-O3",
+    "-DNDEBUG",
+    "-fsycl",
+    "-foffload-fp32-prec-div",
+    "-foffload-fp32-prec-sqrt",
+    "-Xspirv-translator",
+    "--spirv-ext=+SPV_KHR_integer_dot_product",
+    "CMakeFiles/strata.dir/src/program/generate.cpp.o",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/strata",
+    "-L/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/lib",
+    "-Wl,-rpath,/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/lib",
+    "libstrata_engine.a",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/libstrata_prefill.a",
+    "libstrata_spec.a",
+    "libstrata_engine.a",
+    "libstrata_kernels.a",
+    "libstrata_core.a",
+    "libstrata_ngram.a",
+    "libstrata_platform.a",
+    "libstrata_kernels_cpu.a",
+    "ggml/src/libggml-cpu.a",
+    "ggml/src/libggml-base.a",
+    "-lm",
+    "-lonemath"
+  ],
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/strata",
+    "bytes": 21141816,
+    "sha256": "35bf9a6b542ba31ad1f823e16597106c7c632e555d46eaa36b9ef9bcab521529"
+  },
+  "archive": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v3/libstrata_prefill.a",
+    "bytes": 1032556,
+    "sha256": "69ca076f20b8b400336c95fd98708f6ceb9d1fa2412383607b62707763874b5e"
+  },
+  "linked": true,
+  "all_other_members_unchanged": true,
+  "cached_inputs_unchanged": true,
+  "finished_utc": "2026-10-10T17:34:15.113642+00:00"
+}

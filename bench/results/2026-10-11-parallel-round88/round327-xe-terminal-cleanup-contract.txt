@@ -1,0 +1,56 @@
+# Round 327 — Xe terminal cleanup and Stager failure contract
+
+Date: 2026-10-11 (Asia/Tokyo). Read-only source and official-spec review. No source changes, Git operations, build, test, GPU/process/device query, or cleanup were performed. The only created file is this report.
+
+## Inputs and boundary
+
+Target: `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011` (the supplied HEAD label is `c3edaa62`; no Git command was used to verify it). I read reports round323–326 first. The start hashes recorded before inspection were:
+
+- `src/prefill/prefill.cpp`: `4aefed973dbe6f768b21ec8694d9d040f5d77ce33242e4e6d2027f361e2cd80a`
+- `include/strata/prefill/publication.hpp`: `54f37e4c9199e7e09d12eb56ac202daa54dfea663a96e28ea7da80a01b8b0c13`
+
+The final recheck after inspection was:
+
+- `src/prefill/prefill.cpp`: `4aefed973dbe6f768b21ec8694d9d040f5d77ce33242e4e6d2027f361e2cd80a`
+- `include/strata/prefill/publication.hpp`: `40f3b5dfc26cbba910116d4d9fd92231871355d06eef571ffbfafc28643ee85a`
+
+Thus `prefill.cpp` was stable during this review. The publication header hash changed while the parallel review was in progress. I did not write either source file. At the final recheck, `cleanup_require` still implements the inspected `noexcept` false-path diagnostic + `fflush(stderr)` + `std::_Exit(74)`; its call-site set and helper control flow remained as recorded below. This is consistent with the task's warning that concurrent comment edits may occur, but a source hash alone cannot establish that the intervening delta was comments-only.
+
+## Determination
+
+`cleanup_require` closes the specific C++ teardown path that previously could destroy pageable Stager/HostVec buffers after an unchecked failed stream drain: on a false drain result it exits before the following reset/destruction. The issuer/Stager ownership order is sound in the reviewed paths: the issuer is joined before its unwind drain, and the Stager worker is finished/joined before its owned buffers are destroyed. This remains a static conclusion, not evidence about what happened in a historical Xe fault.
+
+The new helper conflates “operation reported an error” with “completion is unconfirmed.” Every false value causes `_Exit(74)`, including in ordinary CPU-sharing and opt-in diagnostic/readback code. The official SYCL contract says queue `wait`/`wait_and_throw` block until all earlier queue commands have completed, while also reporting synchronous/asynchronous errors. The prior source review records that this runtime path calls `event.wait_and_throw()` and then checks stored async errors. Consequently a false Boolean can represent an error observed after completion, as well as a backend/device-loss case where the caller cannot establish safe retirement. The current bool API does not let `cleanup_require` distinguish those cases. Some exits can therefore be unnecessarily process-terminal, although the inspected source and standard contract alone do not prove which exact backend errors are returned only after completed work on this machine.
+
+## Lifetime, join, and error ordering
+
+- `Prefill::release` cancels Stager work, checks compute drain and copy drain, and only then resets Stager and frees/destroys dependent state (prefill.cpp:525–530 onward). `StagerDone::complete` similarly cancels, checks both drains, calls `finish`, rethrows worker failure, and disarms its guard only on success (1315–1325).
+- On exceptional scope exit, `IssuerJoin` is destroyed before `StagerDone` because it is declared later. `stop_join` sets stop, cancels the Stager, joins the producer, then invokes the checked drains. `StagerDone` then performs its own checked drain and `finish`. `_Exit` on either failed drain bypasses C++ buffer destruction. On the normal stream-all tail, issuer is explicitly joined and `issuer_failure` rethrown before `chunk_stager_done.complete()` (2325–2336).
+- The Stager destructor calls `finish`, sets quit, joins all worker threads, destroys event wrappers, and frees pinned buffers. Pageable vectors are destroyed with the Stager. In the reviewed successful-drain paths no early destruction of those vectors was found. A failing `cleanup_require` prevents that in-process destruction; it does not establish from the cited language/API specifications that process exit itself is a GPU fence or that an OS/driver has completed every DMA before reclaiming process mappings. The source comment claiming driver retirement is stronger than the official contracts consulted here. It should be treated as the fail-stop intent, not a separately verified Level Zero guarantee.
+- The worker catches exceptions and captures them in `Stager::failure`; issuer catches thread-entry exceptions, captures them, stops, and cancels the Stager. No escaping exception from the issuer thread or direct destruction of a joinable issuer was found in these paths. The earlier round323 concerns about other publication/error routes are not repeated here.
+
+## Stager reuse contract
+
+Treating a Stager after a worker exception as terminal, and rebuilding it only after the old producer/workers and queues have been quiesced, is a sound fail-closed contract. For example, a failed `event_sync(dma_done[b])` means the prior use of a slot cannot be accepted as safely retired; resetting the error and continuing to recycle the same events/buffers would discard that uncertainty. In this source, `Failure::first_` is not cleared by `Stager::start`, so worker exceptions remain observable on future waits/completion checks. This prevents a false-success reuse, but `start` does clear `cancelled` and `failed` without rejecting a terminal instance; the no-reuse rule is implicit rather than enforced at the entry point. The owning `Prefill` should be regarded as unusable after such a worker exception and reconstructed via `release`/fresh initialization.
+
+A `copy_blob` false result is a narrower case: it sets Stager's `failed` flag without storing `Failure::first_`; `wait` throws before the caller submits DMA from that job's buffer. After checked queue drains and worker finish, retrying a new source/job generation may be safe if the source object itself is valid. That case should not be generalized to an exception from slot event synchronization.
+
+## `_Exit(74)` scope and possible overreach
+
+The helper is called in genuine teardown/drain positions: `release`, `StagerDone` completion/unwind, `IssuerJoin` unwind, and the run catch handlers. Those are defensible fail-stop locations if a failed operation really means the queue might still reference owned buffers.
+
+It is also called from ordinary operation flow and opt-in diagnostics: CPU-sharing's `m.cs` sync after copying activations for host experts (around 1782); selection-overlap / FP16-index / QSA-dump readbacks (1643, 1688, 1714); residual dumps and NAN/state-hash diagnostics (2270–2456). These are not cleanup functions. They are cases where a queue/readback error can be returned to the normal `Prefill::run` error boundary if completion is known, rather than necessarily terminating the process. For the diagnostics, process exit also suppresses all later caller cleanup and reporting. The call site that synchronizes before handing a copied activation to CPU code is correctness-critical, but a false result still needs the completion/error distinction; it should fail the request when queue completion is known and use process fail-stop only when it is not.
+
+`cleanup_require` is `noexcept` but calls an arbitrary `text()` callback and C stdio before `_Exit`; if diagnostic construction itself fails, C++ termination is another immediate process-abort path. That still avoids unwinding buffers but may omit the intended operation/error message. This is a minor reporting limitation, not a lifetime escape.
+
+## Completion contracts checked against primary sources
+
+- The [Khronos SYCL 2020 revision 12 specification](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html) says `queue::wait` and `queue::wait_and_throw` block until all commands previously submitted to that queue have completed, with errors reported through exceptions (§4.6.5.3, lines 4937–4950). `event::wait_and_throw` likewise blocks for its event and dependent commands before delivering asynchronous errors (§4.6.5.6, lines 5407–5415). It also says in-order ordering applies within one queue and gives no ordering guarantee against commands on another queue (§4.6.5.9). This supports explicit drains of both queues and means a reported asynchronous error is not by itself proof that a prior queue command remains active.
+- The [oneAPI Level Zero command-queue specification](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/command_queue.html) documents `zeCommandQueueSynchronize`: with `UINT64_MAX` it waits until completion or device loss; returns include success, not-ready for timeout, and device-lost (lines 370–422). It separately requires the application to ensure the device is not currently referencing a queue before destroying it (same page, lines 230–239). This distinguishes confirmed completion from device-loss/timeout/error cases at the native API boundary, but the current source helper returns only `bool`, so this audit cannot map its false result back to those outcomes.
+- The [C++ working draft `_Exit` clause](https://eel.is/c++draft/support.start.term) states that `_Exit` ends the program without executing destructors for automatic, thread, or static objects (lines 15–28). It says nothing about GPU queue completion or driver cleanup ordering.
+
+These contracts describe API semantics; they do not diagnose the historical B570/CAT18 fault or show that any cleanup drain actually failed. No historical incident cause is inferred here.
+
+## Review conclusion for owner
+
+Keep the terminal cleanup behavior for a status that explicitly means “completion could not be established,” and keep the current stop → issuer join → checked drain → Stager finish/free ordering. The important unresolved source-contract issue is that `cleanup_require(bool, ...)` treats every reported operation error as unconfirmed completion, including normal and diagnostic readback paths. A completion-aware result should separate “completed but command/request failed” from “not safely quiesced”; only the latter needs to bypass all destructors. Make worker-exception Stager terminality explicit or reject a subsequent `start`; do not clear the retained failure and recycle its event/buffers.

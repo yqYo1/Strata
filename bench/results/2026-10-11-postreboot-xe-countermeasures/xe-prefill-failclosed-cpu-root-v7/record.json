@@ -1,0 +1,351 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "gpu_executed": false,
+  "model_executed": false,
+  "adopted": false,
+  "started_utc": "2026-10-10T18:03:35.207444+00:00",
+  "source_sha256": {
+    "src/prefill/prefill.cpp": "59e1c4ea18c38da799314439099bcf14e9a19f0b7ce9f4f00629173a534cf9ce",
+    "include/strata/prefill/publication.hpp": "547397243c32126f26caebad4baa39278dcf1471f3bff368af4fc481e5462710",
+    "tools/test_prefill_publication.cpp": "205108edebe58650a46e8fa8d6f844cff692c5ae70e0af61d561706b16a7e71f"
+  },
+  "controller_sha256": "a772a0450452f4ea6db112c9ab9bdd903f0e7ecb5d5fd6c710f3e6779ed4eee3",
+  "harness_sha256": "54317f4cfa2458a8d0947533aedf1b66c190018db944eb3b5fc35b6082bae0f0",
+  "commands": [
+    {
+      "label": "build-helper",
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++20",
+        "-O2",
+        "-pthread",
+        "-Wall",
+        "-Wextra",
+        "-I",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include",
+        "-I",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-cpu-root-v7",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/tools/test_prefill_publication.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-cpu-root-v7/helper"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T18:03:35.225684+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 310765,
+          "start_ticks": 417934,
+          "sid": 310765,
+          "pgid": 310765
+        },
+        {
+          "pid": 310766,
+          "start_ticks": 417934,
+          "sid": 310765,
+          "pgid": 310765
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 4179.347234324,
+      "pid": 310765,
+      "spawn_return_monotonic": 4179.348887739,
+      "direct_identity": {
+        "pid": 310765,
+        "state": "R",
+        "ppid": 310722,
+        "pgid": 310765,
+        "sid": 310765,
+        "start_ticks": 417934,
+        "rss_bytes": 462848
+      },
+      "peak_session_rss_bytes": 167317504,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T18:03:36.452260+00:00",
+      "elapsed_seconds": 1.2263041790001807,
+      "logs": {
+        "build-helper.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "build-helper.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "qualify-helper",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-cpu-root-v7/helper"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T18:03:36.452747+00:00",
+      "wall_seconds": 10,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 310859,
+          "start_ticks": 418057,
+          "sid": 310859,
+          "pgid": 310859
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 4180.574216153,
+      "pid": 310859,
+      "spawn_return_monotonic": 4180.576055509,
+      "direct_identity": {
+        "pid": 310859,
+        "state": "R",
+        "ppid": 310722,
+        "pgid": 310859,
+        "sid": 310859,
+        "start_ticks": 418057,
+        "rss_bytes": 421888
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T18:03:36.554695+00:00",
+      "elapsed_seconds": 0.1017570860003616,
+      "logs": {
+        "qualify-helper.stdout": {
+          "bytes": 51,
+          "sha256": "a1c3465957d63ee0358f5d988d9c370fadbceefc010b967587c84d4716b3e061"
+        },
+        "qualify-helper.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "build-actual-stager",
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++20",
+        "-O2",
+        "-pthread",
+        "-Wall",
+        "-Wextra",
+        "-I",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include",
+        "-I",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-cpu-root-v7",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-root-v7/qualify_stager.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-cpu-root-v7/stager"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T18:03:36.555269+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 310929,
+          "start_ticks": 418067,
+          "sid": 310929,
+          "pgid": 310929
+        },
+        {
+          "pid": 310930,
+          "start_ticks": 418067,
+          "sid": 310929,
+          "pgid": 310929
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 4180.676768191,
+      "pid": 310929,
+      "spawn_return_monotonic": 4180.678479656,
+      "direct_identity": {
+        "pid": 310929,
+        "state": "R",
+        "ppid": 310722,
+        "pgid": 310929,
+        "sid": 310929,
+        "start_ticks": 418067,
+        "rss_bytes": 286720
+      },
+      "peak_session_rss_bytes": 146980864,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T18:03:37.755302+00:00",
+      "elapsed_seconds": 1.199802290999287,
+      "logs": {
+        "build-actual-stager.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "build-actual-stager.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "qualify-actual-stager",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-cpu-root-v7/stager"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T18:03:37.755770+00:00",
+      "wall_seconds": 10,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 311013,
+          "start_ticks": 418187,
+          "sid": 311013,
+          "pgid": 311013
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 4181.877278571,
+      "pid": 311013,
+      "spawn_return_monotonic": 4181.878937576,
+      "direct_identity": {
+        "pid": 311013,
+        "state": "R",
+        "ppid": 310722,
+        "pgid": 311013,
+        "sid": 311013,
+        "start_ticks": 418187,
+        "rss_bytes": 307200
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T18:03:37.853340+00:00",
+      "elapsed_seconds": 0.09733379499994044,
+      "logs": {
+        "qualify-actual-stager.stdout": {
+          "bytes": 62,
+          "sha256": "448d9392a57e2ec9a19524b1b2ccb6fea61a2516b2ab1082a97485ad3288eb76"
+        },
+        "qualify-actual-stager.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "qualify-terminal-cleanup",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-cpu-root-v7/stager",
+        "--cleanup-failure"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T18:03:37.853957+00:00",
+      "wall_seconds": 10,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 311023,
+          "start_ticks": 418197,
+          "sid": 311023,
+          "pgid": 311023
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 4181.975510845,
+      "pid": 311023,
+      "spawn_return_monotonic": 4181.977073258,
+      "direct_identity": {
+        "pid": 311023,
+        "state": "R",
+        "ppid": 310722,
+        "pgid": 311023,
+        "sid": 311023,
+        "start_ticks": 418197,
+        "rss_bytes": 438272
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 74,
+      "finished_utc": "2026-10-10T18:03:37.970838+00:00",
+      "elapsed_seconds": 0.11660341199967661,
+      "logs": {
+        "qualify-terminal-cleanup.stdout": {
+          "bytes": 14,
+          "sha256": "29df3b083c6a54b2ff84b01e57f83be89e80b43b692ec52795bd7b84b554fa20"
+        },
+        "qualify-terminal-cleanup.stderr": {
+          "bytes": 112,
+          "sha256": "94a7ce7edb284fa797a15395b14ed2007d4dc45c13f398900bf8b4be8e8c2560"
+        }
+      }
+    }
+  ],
+  "extracted_actual_production": {
+    "stager-exact.inc": "b38822a8dad34e6ae3666516a205bcc724121b86810d003c610f92ab92bee520",
+    "stager-guard-exact.inc": "084419b958c1546539d8c862980370447a9115489421996d7e189185e6d027b3",
+    "hostvec-exact.inc": "f309c9bf74b0a2f0291c79055c5650f4d81ec808ddecf3e4a7f326b5ac5920ef"
+  },
+  "compiler": {
+    "path": "/usr/bin/g++",
+    "sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769"
+  },
+  "terminal_cleanup_expected_negative": {
+    "passed": true,
+    "expected_exit_code": 74,
+    "buffer_release_destructor_executed": false
+  },
+  "result": {
+    "passed": true,
+    "actual_stager_cases": 11,
+    "gpu_executed": false
+  },
+  "helper_result": "production publication helper qualification passed",
+  "finished_utc": "2026-10-10T18:03:37.972261+00:00"
+}

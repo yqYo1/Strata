@@ -1,0 +1,1 @@
+新規8レポートを原文保存しregistry v111へ追加。Lunaの読み取り専用7件とSolの実装handoff1件。初回R323の未完了とSol harnessの古いhashは別に記録し、資格結果を書き換えない。R322のteacher-forced head品質比較は未実装。R324の静的bounds確認はfault原因証明ではない。R325〜328から終端失敗状態と同期失敗時の寿命、診断ログ／health鮮度gateを修正。R329・R330は読み取り専用で次の長入力比較を並行調査中。

@@ -1,0 +1,200 @@
+{
+  "active": false,
+  "complete": false,
+  "passed": false,
+  "adopted": false,
+  "fork_pristine": false,
+  "performance_eligible": false,
+  "math_equivalence": false,
+  "quality_qualified": false,
+  "full262144_qualified": false,
+  "retry_count": 0,
+  "reset_executed": false,
+  "model_launch_attempted": false,
+  "started_utc": "2026-10-10T18:15:58.446627+00:00",
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "controller_sha256": "069219fcde63c47e3fd40dec1f8092504672987ccc2947ede1752b5fd0ca9920",
+  "helper_sha256": "51f5ba140613ae6ee81905eeeea153243a6a41742488ac161d76bad241944457",
+  "scope": "corrected Xe, issuer OFF, 2x4096 batched positions plus terminal prompt token, one generated token",
+  "commands": [
+    {
+      "label": "embedding-state",
+      "argv": [
+        "/usr/bin/systemctl",
+        "--user",
+        "show",
+        "llama-server-qwen3embed.service",
+        "-p",
+        "ActiveState"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T18:15:58.575306+00:00",
+      "wall_seconds": 10,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 364080,
+          "start_ticks": 492269,
+          "sid": 364080,
+          "pgid": 364080
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 4922.696872524,
+      "pid": 364080,
+      "spawn_return_monotonic": 4922.699203492,
+      "direct_identity": {
+        "pid": 364080,
+        "state": "R",
+        "ppid": 364071,
+        "pgid": 364080,
+        "sid": 364080,
+        "start_ticks": 492269,
+        "rss_bytes": 331776
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-10T18:15:58.674854+00:00",
+      "elapsed_seconds": 0.09925144800035923,
+      "logs": {
+        "embedding-state.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "embedding-state.stderr": {
+          "bytes": 42,
+          "sha256": "746707a49085d66703eb45f2baea0df38a88bab7346195ece161e8e14ef2a3d1"
+        }
+      }
+    }
+  ],
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v7/strata",
+    "bytes": 21141976,
+    "sha256": "6685135337d7538903d6b624bfb5b309ccf0a243d5cfd52b3ccd814ba87685e5"
+  },
+  "source_pins": {
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/src/prefill/prefill.cpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/src/prefill/prefill.cpp",
+      "bytes": 159854,
+      "sha256": "59e1c4ea18c38da799314439099bcf14e9a19f0b7ce9f4f00629173a534cf9ce"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/prefill/publication.hpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/prefill/publication.hpp",
+      "bytes": 3177,
+      "sha256": "547397243c32126f26caebad4baa39278dcf1471f3bff368af4fc481e5462710"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/tools/test_prefill_publication.cpp": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/tools/test_prefill_publication.cpp",
+      "bytes": 4614,
+      "sha256": "205108edebe58650a46e8fa8d6f844cff692c5ae70e0af61d561706b16a7e71f"
+    }
+  },
+  "link_receipt_sha256": "bb2481bdc97ad7ef04ffb4e04af4cfa1eea072e3668741f3c78c7deb7e1d5ed7",
+  "health_before_sha256": "4895ef8bb00a47126aa9cfa111ea70e5e65a0be04a0f55c22a0e0a272b9c1c09",
+  "input": {
+    "parent_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/clean64k-task-fixture-root-r3/coding-review-65536-tokens.txt",
+    "parent_sha256": "5284d8fa53d1ef28f6ba916a629faf901c890bc0c669bf986ee04ed72aa2c3ff",
+    "count": 8193,
+    "purpose": "two-chunk correctness/fault exercise; no independent ability or performance claim",
+    "sha256": "d9c5edfb44047a24c655df6f6a29a2ef2971f53c5f99e4b2a3382a278a8ee581"
+  },
+  "argv": [
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-failclosed-linked-root-v7/strata",
+    "--pack",
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+    "--native",
+    "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+    "--serve",
+    "--max-context",
+    "262144",
+    "--spec",
+    "4",
+    "--spec-min-p",
+    "0",
+    "--mtp",
+    "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+    "--suffix-draft",
+    "0",
+    "--prefill",
+    "4096",
+    "--no-prefill-borrow",
+    "--expert-cache",
+    "128",
+    "--expert-profile",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/data/expert-profile.bin",
+    "--expert-cache-per-layer",
+    "--pool-workers",
+    "5",
+    "--pcie-frac",
+    "0",
+    "--spec-split",
+    "--adapt-swaps",
+    "0",
+    "--conversation-cache-mib",
+    "0",
+    "--conversation-cache-slots",
+    "4",
+    "--greedy",
+    "--short-read",
+    "0",
+    "--kv",
+    "int8",
+    "--kv-resident",
+    "32768",
+    "--prompt-cache",
+    "1",
+    "--prompt-cache-every",
+    "262139",
+    "--prompt-cache-root",
+    "0",
+    "--turn-token",
+    "-1"
+  ],
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_CTYPE": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "COLUMNS": "80",
+    "LINES": "24",
+    "XDG_RUNTIME_DIR": "/run/user/1000",
+    "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus",
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/umf/1.1/lib:/usr/lib/x86_64-linux-gnu:/opt/intel/oneapi/mkl/2026.1/lib",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "ZEL_ENABLE_LOADER_LOGGING": "1",
+    "ZEL_LOADER_LOG_CONSOLE": "1",
+    "ZEL_LOADER_LOGGING_LEVEL": "warn",
+    "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "0",
+    "ZE_ENABLE_VALIDATION_LAYER": "1",
+    "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+    "STRATA_TRACE": "1",
+    "UR_ENABLE_LAYERS": "",
+    "STRATA_PREFILL_RING": "8",
+    "STRATA_PREFILL_FIRST": "0",
+    "STRATA_ARENA_HOST_USM": "1",
+    "STRATA_PREFILL_ISSUER": "0"
+  },
+  "error": "RuntimeError('normal utility embedding-state')",
+  "boot_unchanged": true,
+  "finished_utc": "2026-10-10T18:15:58.675361+00:00"
+}

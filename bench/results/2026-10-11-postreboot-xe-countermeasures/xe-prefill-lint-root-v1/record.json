@@ -1,0 +1,459 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": false,
+  "gpu_executed": false,
+  "model_executed": false,
+  "started_utc": "2026-10-10T17:58:38.257766+00:00",
+  "controller_sha256": "574b1c85c006e4cf973c3a9973894288845982fe16c796e724409d0f3ba77cc2",
+  "source_sha256": {
+    "src/prefill/prefill.cpp": "4aefed973dbe6f768b21ec8694d9d040f5d77ce33242e4e6d2027f361e2cd80a",
+    "include/strata/prefill/publication.hpp": "40f3b5dfc26cbba910116d4d9fd92231871355d06eef571ffbfafc28643ee85a",
+    "tools/test_prefill_publication.cpp": "267c47b77b07557e87205e43542fb51998d610fa70c88c960fa4165f4d789217"
+  },
+  "commands": [
+    {
+      "label": "venv",
+      "argv": [
+        "/usr/bin/python3",
+        "-m",
+        "venv",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/.lint/venv"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T17:58:38.258433+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 290063,
+          "start_ticks": 388238,
+          "sid": 290063,
+          "pgid": 290063
+        },
+        {
+          "pid": 290066,
+          "start_ticks": 388242,
+          "sid": 290063,
+          "pgid": 290063
+        },
+        {
+          "pid": 290068,
+          "start_ticks": 388248,
+          "sid": 290063,
+          "pgid": 290063
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 3882.37993972,
+      "pid": 290063,
+      "spawn_return_monotonic": 3882.381925351,
+      "direct_identity": {
+        "pid": 290063,
+        "state": "R",
+        "ppid": 290054,
+        "pgid": 290063,
+        "sid": 290063,
+        "start_ticks": 388238,
+        "rss_bytes": 458752
+      },
+      "peak_session_rss_bytes": 83570688,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T17:58:40.593813+00:00",
+      "elapsed_seconds": 2.335145117999673,
+      "logs": {
+        "venv.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "venv.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "install-python-lints",
+      "argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/.lint/venv/bin/pip",
+        "install",
+        "--disable-pip-version-check",
+        "codespell==2.4.1",
+        "reuse==6.2.0"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T17:58:40.594273+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 290276,
+          "start_ticks": 388471,
+          "sid": 290276,
+          "pgid": 290276
+        },
+        {
+          "pid": 290319,
+          "start_ticks": 388529,
+          "sid": 290276,
+          "pgid": 290276
+        },
+        {
+          "pid": 290418,
+          "start_ticks": 388683,
+          "sid": 290276,
+          "pgid": 290276
+        },
+        {
+          "pid": 290462,
+          "start_ticks": 388700,
+          "sid": 290276,
+          "pgid": 290276
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 3884.715795287,
+      "pid": 290276,
+      "spawn_return_monotonic": 3884.717569069,
+      "direct_identity": {
+        "pid": 290276,
+        "state": "R",
+        "ppid": 290054,
+        "pgid": 290276,
+        "sid": 290276,
+        "start_ticks": 388471,
+        "rss_bytes": 450560
+      },
+      "peak_session_rss_bytes": 99803136,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T17:58:43.803424+00:00",
+      "elapsed_seconds": 3.208925008999813,
+      "logs": {
+        "install-python-lints.stdout": {
+          "bytes": 4340,
+          "sha256": "f2626fbeab8248fd1b28045f998daafc186f0ccf3d6ac40fbf391a62436c273f"
+        },
+        "install-python-lints.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "download-cppcheck",
+      "argv": [
+        "/usr/bin/apt-get",
+        "download",
+        "cppcheck"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T17:58:44.682542+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 290605,
+          "start_ticks": 388880,
+          "sid": 290605,
+          "pgid": 290605
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 3888.804314127,
+      "pid": 290605,
+      "spawn_return_monotonic": 3888.807628172,
+      "direct_identity": {
+        "pid": 290605,
+        "state": "R",
+        "ppid": 290054,
+        "pgid": 290605,
+        "sid": 290605,
+        "start_ticks": 388880,
+        "rss_bytes": 172032
+      },
+      "peak_session_rss_bytes": 96468992,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T17:58:45.280120+00:00",
+      "elapsed_seconds": 0.5971023709998917,
+      "logs": {
+        "download-cppcheck.stdout": {
+          "bytes": 141,
+          "sha256": "c93004c82c02221757a909f1d9fe02955a2c6173c4413a0b32c3b36dddf35e37"
+        },
+        "download-cppcheck.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "unpack-cppcheck",
+      "argv": [
+        "/usr/bin/dpkg-deb",
+        "-x",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/.lint/downloads/cppcheck_2.13.0-2ubuntu3_amd64.deb",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/.lint/cppcheck"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T17:58:45.280930+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 290658,
+          "start_ticks": 388940,
+          "sid": 290658,
+          "pgid": 290658
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 3889.402548371,
+      "pid": 290658,
+      "spawn_return_monotonic": 3889.407744933,
+      "direct_identity": {
+        "pid": 290658,
+        "state": "D",
+        "ppid": 290054,
+        "pgid": 290658,
+        "sid": 290658,
+        "start_ticks": 388940,
+        "rss_bytes": 131072
+      },
+      "peak_session_rss_bytes": 1605632,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T17:58:45.424167+00:00",
+      "elapsed_seconds": 0.14290479099963704,
+      "logs": {
+        "unpack-cppcheck.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "unpack-cppcheck.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "lint",
+      "argv": [
+        "/bin/bash",
+        "tools/lint/run.sh",
+        "src/prefill/prefill.cpp",
+        "include/strata/prefill/publication.hpp",
+        "tools/test_prefill_publication.cpp"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/.lint/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/.lint/cppcheck/usr/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "STRATA_LINT_BUILD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/.lint/build",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib"
+      },
+      "started_utc": "2026-10-10T17:58:45.429529+00:00",
+      "wall_seconds": 240,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 290670,
+          "start_ticks": 388955,
+          "sid": 290670,
+          "pgid": 290670
+        },
+        {
+          "pid": 290715,
+          "start_ticks": 388960,
+          "sid": 290670,
+          "pgid": 290670
+        },
+        {
+          "pid": 292950,
+          "start_ticks": 392127,
+          "sid": 290670,
+          "pgid": 290670
+        },
+        {
+          "pid": 293013,
+          "start_ticks": 392189,
+          "sid": 290670,
+          "pgid": 290670
+        },
+        {
+          "pid": 293054,
+          "start_ticks": 392225,
+          "sid": 290670,
+          "pgid": 290670
+        },
+        {
+          "pid": 293076,
+          "start_ticks": 392258,
+          "sid": 290670,
+          "pgid": 290670
+        },
+        {
+          "pid": 293115,
+          "start_ticks": 392300,
+          "sid": 290670,
+          "pgid": 290670
+        },
+        {
+          "pid": 293116,
+          "start_ticks": 392300,
+          "sid": 290670,
+          "pgid": 290670
+        },
+        {
+          "pid": 293117,
+          "start_ticks": 392300,
+          "sid": 290670,
+          "pgid": 290670
+        },
+        {
+          "pid": 293118,
+          "start_ticks": 392301,
+          "sid": 290670,
+          "pgid": 290670
+        },
+        {
+          "pid": 293119,
+          "start_ticks": 392301,
+          "sid": 290670,
+          "pgid": 290670
+        },
+        {
+          "pid": 293120,
+          "start_ticks": 392301,
+          "sid": 290670,
+          "pgid": 290670
+        },
+        {
+          "pid": 293121,
+          "start_ticks": 392301,
+          "sid": 290670,
+          "pgid": 290670
+        },
+        {
+          "pid": 293122,
+          "start_ticks": 392301,
+          "sid": 290670,
+          "pgid": 290670
+        },
+        {
+          "pid": 293123,
+          "start_ticks": 392301,
+          "sid": 290670,
+          "pgid": 290670
+        },
+        {
+          "pid": 293124,
+          "start_ticks": 392301,
+          "sid": 290670,
+          "pgid": 290670
+        },
+        {
+          "pid": 293125,
+          "start_ticks": 392301,
+          "sid": 290670,
+          "pgid": 290670
+        },
+        {
+          "pid": 293126,
+          "start_ticks": 392302,
+          "sid": 290670,
+          "pgid": 290670
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 3889.551152061,
+      "pid": 290670,
+      "spawn_return_monotonic": 3889.55367786,
+      "direct_identity": {
+        "pid": 290670,
+        "state": "R",
+        "ppid": 290054,
+        "pgid": 290670,
+        "sid": 290670,
+        "start_ticks": 388955,
+        "rss_bytes": 446464
+      },
+      "peak_session_rss_bytes": 684769280,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-10T17:59:19.694556+00:00",
+      "elapsed_seconds": 34.26468658799968,
+      "logs": {
+        "lint.stdout": {
+          "bytes": 25043,
+          "sha256": "ab400d88b8a3c4b6fe12aea7aa5c314bafa5b401c93a739294761dd7e5955a29"
+        },
+        "lint.stderr": {
+          "bytes": 568,
+          "sha256": "54b506cd6d5b0d76ed73c8bd460654f04f3d2854c0f333e74f45c651e4906d5b"
+        }
+      }
+    }
+  ],
+  "gitleaks": {
+    "version": "8.30.1",
+    "release_url": "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/",
+    "archive_sha256": "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb",
+    "binary_sha256": "88f91962aa2f93ac6ab281d553b9e125f5197bbbce38f9f2437f7299c32e5509"
+  },
+  "cppcheck_package_sha256": "c84251e17148b6b4ff3698bb71ceec0f445896d97888bedad8bba471c00aeadf",
+  "lint_compile_commands_sha256": "9e9fc6f6a187c6fa7f489175ec4804eee22815a4de3a900965249acacaa7075f",
+  "lint_exit_code": 1,
+  "lint_closed": true,
+  "stdout_sha256": "ab400d88b8a3c4b6fe12aea7aa5c314bafa5b401c93a739294761dd7e5955a29",
+  "stderr_sha256": "54b506cd6d5b0d76ed73c8bd460654f04f3d2854c0f333e74f45c651e4906d5b",
+  "finished_utc": "2026-10-10T17:59:19.695332+00:00"
+}

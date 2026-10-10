@@ -1,0 +1,204 @@
+{
+  "active": false,
+  "passed": true,
+  "started_utc": "2026-10-10T18:18:56.135928+00:00",
+  "gpu_model_executed": false,
+  "authorization": "User previously stated embedding service was left enabled accidentally and should remain stopped; stop only the named embedding service.",
+  "commands": [
+    {
+      "label": "before",
+      "argv": [
+        "/usr/bin/systemctl",
+        "--user",
+        "show",
+        "llama-server-qwen3embed.service",
+        "-p",
+        "ActiveState",
+        "-p",
+        "UnitFileState",
+        "-p",
+        "ExecMainPID"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "XDG_RUNTIME_DIR": "/run/user/1000"
+      },
+      "started_utc": "2026-10-10T18:18:56.136025+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 376294,
+          "start_ticks": 510025,
+          "sid": 376294,
+          "pgid": 376294
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 5100.257606626,
+      "pid": 376294,
+      "spawn_return_monotonic": 5100.259127796,
+      "direct_identity": {
+        "pid": 376294,
+        "state": "R",
+        "ppid": 376292,
+        "pgid": 376294,
+        "sid": 376294,
+        "start_ticks": 510025,
+        "rss_bytes": 393216
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T18:18:56.236893+00:00",
+      "elapsed_seconds": 0.10056538900062151,
+      "logs": {
+        "before.stdout": {
+          "bytes": 59,
+          "sha256": "773271a7f3dcd5600732f69864952c660ab157feb7272053d70fedb3601e7294"
+        },
+        "before.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "stop",
+      "argv": [
+        "/usr/bin/systemctl",
+        "--user",
+        "stop",
+        "llama-server-qwen3embed.service"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "XDG_RUNTIME_DIR": "/run/user/1000"
+      },
+      "started_utc": "2026-10-10T18:18:56.237524+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 376298,
+          "start_ticks": 510035,
+          "sid": 376298,
+          "pgid": 376298
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 5100.358968968,
+      "pid": 376298,
+      "spawn_return_monotonic": 5100.360509003,
+      "direct_identity": {
+        "pid": 376298,
+        "state": "R",
+        "ppid": 376292,
+        "pgid": 376298,
+        "sid": 376298,
+        "start_ticks": 510035,
+        "rss_bytes": 303104
+      },
+      "peak_session_rss_bytes": 4538368,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T18:18:57.048069+00:00",
+      "elapsed_seconds": 0.810367715999746,
+      "logs": {
+        "stop.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stop.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "after",
+      "argv": [
+        "/usr/bin/systemctl",
+        "--user",
+        "show",
+        "llama-server-qwen3embed.service",
+        "-p",
+        "ActiveState",
+        "-p",
+        "UnitFileState",
+        "-p",
+        "ExecMainPID"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "XDG_RUNTIME_DIR": "/run/user/1000"
+      },
+      "started_utc": "2026-10-10T18:18:57.048699+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 376503,
+          "start_ticks": 510117,
+          "sid": 376503,
+          "pgid": 376503
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 5101.170313007,
+      "pid": 376503,
+      "spawn_return_monotonic": 5101.171998286,
+      "direct_identity": {
+        "pid": 376503,
+        "state": "R",
+        "ppid": 376292,
+        "pgid": 376503,
+        "sid": 376503,
+        "start_ticks": 510117,
+        "rss_bytes": 446464
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T18:18:57.143454+00:00",
+      "elapsed_seconds": 0.09443027500037715,
+      "logs": {
+        "after.stdout": {
+          "bytes": 61,
+          "sha256": "3f162abdf149c1c559e96de7a216ba35d92be3440d0d086e07c33ab30223c2b9"
+        },
+        "after.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "before": "ExecMainPID=3316\nActiveState=active\nUnitFileState=disabled",
+  "after": "ExecMainPID=3316\nActiveState=inactive\nUnitFileState=disabled",
+  "finished_utc": "2026-10-10T18:18:57.143969+00:00"
+}

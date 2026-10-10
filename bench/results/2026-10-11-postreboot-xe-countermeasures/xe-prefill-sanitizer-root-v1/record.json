@@ -1,0 +1,650 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "gpu_executed": false,
+  "model_executed": false,
+  "full_SYCL_sanitizer_suite_verified": false,
+  "free_SYCL_build_verified": false,
+  "started_utc": "2026-10-10T18:08:47.478997+00:00",
+  "controller_sha256": "f59339213089e453badfca9331b08d79f927fd93a945685c8fa6f8866d300089",
+  "commands": [
+    {
+      "label": "configure-host-safety",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-sanitizer-root-v1/source",
+        "-B",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-sanitizer-root-v1/build",
+        "-G",
+        "Ninja",
+        "-DCMAKE_CXX_COMPILER=/usr/bin/g++",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DSTRATA_SANITIZE=address,undefined",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-10T18:08:47.483013+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 332755,
+          "start_ticks": 449160,
+          "sid": 332755,
+          "pgid": 332755
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 4491.604422236,
+      "pid": 332755,
+      "spawn_return_monotonic": 4491.606911075,
+      "direct_identity": {
+        "pid": 332755,
+        "state": "D",
+        "ppid": 332749,
+        "pgid": 332755,
+        "sid": 332755,
+        "start_ticks": 449160,
+        "rss_bytes": 131072
+      },
+      "peak_session_rss_bytes": 14516224,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T18:08:48.249986+00:00",
+      "elapsed_seconds": 0.7668133569995916,
+      "logs": {
+        "configure-host-safety.stdout": {
+          "bytes": 449,
+          "sha256": "582c6454c009939c6cfc9e0fa6e9e0a29205644d93718580fcc3e2b4c65af7fd"
+        },
+        "configure-host-safety.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "build-host-safety",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-sanitizer-root-v1/build",
+        "--parallel",
+        "2"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-10T18:08:48.250655+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 332832,
+          "start_ticks": 449237,
+          "sid": 332832,
+          "pgid": 332832
+        },
+        {
+          "pid": 332833,
+          "start_ticks": 449238,
+          "sid": 332832,
+          "pgid": 332832
+        },
+        {
+          "pid": 332834,
+          "start_ticks": 449238,
+          "sid": 332832,
+          "pgid": 332834
+        },
+        {
+          "pid": 332835,
+          "start_ticks": 449238,
+          "sid": 332832,
+          "pgid": 332835
+        },
+        {
+          "pid": 332836,
+          "start_ticks": 449238,
+          "sid": 332832,
+          "pgid": 332834
+        },
+        {
+          "pid": 332837,
+          "start_ticks": 449238,
+          "sid": 332832,
+          "pgid": 332835
+        },
+        {
+          "pid": 332838,
+          "start_ticks": 449238,
+          "sid": 332832,
+          "pgid": 332834
+        },
+        {
+          "pid": 332839,
+          "start_ticks": 449238,
+          "sid": 332832,
+          "pgid": 332835
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 4492.372163375,
+      "pid": 332832,
+      "spawn_return_monotonic": 4492.373765379,
+      "direct_identity": {
+        "pid": 332832,
+        "state": "R",
+        "ppid": 332749,
+        "pgid": 332832,
+        "sid": 332832,
+        "start_ticks": 449237,
+        "rss_bytes": 479232
+      },
+      "peak_session_rss_bytes": 419917824,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T18:08:50.131544+00:00",
+      "elapsed_seconds": 1.8806634109996594,
+      "logs": {
+        "build-host-safety.stdout": {
+          "bytes": 327,
+          "sha256": "72e54cff163e2c2b7ab4a6a171482320accc658c9ab7b76ea22fc390f0322a56"
+        },
+        "build-host-safety.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "ctest-host-safety",
+      "argv": [
+        "/usr/bin/ctest",
+        "--test-dir",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-sanitizer-root-v1/build",
+        "--output-on-failure",
+        "--timeout",
+        "15"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-10T18:08:50.132142+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 332996,
+          "start_ticks": 449425,
+          "sid": 332996,
+          "pgid": 332996
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 4494.253648948,
+      "pid": 332996,
+      "spawn_return_monotonic": 4494.256543613,
+      "direct_identity": {
+        "pid": 332996,
+        "state": "D",
+        "ppid": 332749,
+        "pgid": 332996,
+        "sid": 332996,
+        "start_ticks": 449425,
+        "rss_bytes": 131072
+      },
+      "peak_session_rss_bytes": 8843264,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T18:08:50.479067+00:00",
+      "elapsed_seconds": 0.34668727400003263,
+      "logs": {
+        "ctest-host-safety.stdout": {
+          "bytes": 651,
+          "sha256": "3fa946cb1d8fc0c47ad208cd35e99ccd7cfb984d34402d8abda9213207ce173b"
+        },
+        "ctest-host-safety.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "configure-available-project-host",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011",
+        "-B",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-sanitizer-root-v1/project-host-asan",
+        "-G",
+        "Ninja",
+        "-DCMAKE_CXX_COMPILER=/usr/bin/g++",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DSTRATA_ENABLE_XE=OFF",
+        "-DSTRATA_NATIVE_EXPERTS=OFF",
+        "-DSTRATA_BUILD_TESTS=OFF",
+        "-DSTRATA_LICENSE=free",
+        "-DSTRATA_SANITIZE=address,undefined",
+        "-DSTRATA_CUDA_ARCHS=",
+        "-DSTRATA_HIP_ARCHS=",
+        "-DCMAKE_PROJECT_INCLUDE=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-sanitizer-root-v1/enable_ctest.cmake",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-10T18:08:50.479828+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 333087,
+          "start_ticks": 449460,
+          "sid": 333087,
+          "pgid": 333087
+        },
+        {
+          "pid": 333136,
+          "start_ticks": 449487,
+          "sid": 333087,
+          "pgid": 333087
+        },
+        {
+          "pid": 333151,
+          "start_ticks": 449498,
+          "sid": 333087,
+          "pgid": 333087
+        },
+        {
+          "pid": 333152,
+          "start_ticks": 449498,
+          "sid": 333087,
+          "pgid": 333152
+        },
+        {
+          "pid": 333154,
+          "start_ticks": 449498,
+          "sid": 333087,
+          "pgid": 333152
+        },
+        {
+          "pid": 333155,
+          "start_ticks": 449498,
+          "sid": 333087,
+          "pgid": 333152
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 4494.601545215,
+      "pid": 333087,
+      "spawn_return_monotonic": 4494.603177607,
+      "direct_identity": {
+        "pid": 333087,
+        "state": "R",
+        "ppid": 332749,
+        "pgid": 333087,
+        "sid": 333087,
+        "start_ticks": 449460,
+        "rss_bytes": 479232
+      },
+      "peak_session_rss_bytes": 95313920,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T18:08:51.387718+00:00",
+      "elapsed_seconds": 0.9074557239991918,
+      "logs": {
+        "configure-available-project-host.stdout": {
+          "bytes": 716,
+          "sha256": "9573b2a4bef594996732aed59ff43c0675f216181b23bc82a50a4308ff8a055d"
+        },
+        "configure-available-project-host.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "build-available-project-host",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-sanitizer-root-v1/project-host-asan",
+        "--target",
+        "platform_memory_test",
+        "ple_reader_test",
+        "--parallel",
+        "2"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-10T18:08:51.388699+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 333205,
+          "start_ticks": 449551,
+          "sid": 333205,
+          "pgid": 333205
+        },
+        {
+          "pid": 333206,
+          "start_ticks": 449552,
+          "sid": 333205,
+          "pgid": 333205
+        },
+        {
+          "pid": 333207,
+          "start_ticks": 449552,
+          "sid": 333205,
+          "pgid": 333207
+        },
+        {
+          "pid": 333208,
+          "start_ticks": 449552,
+          "sid": 333205,
+          "pgid": 333208
+        },
+        {
+          "pid": 333209,
+          "start_ticks": 449552,
+          "sid": 333205,
+          "pgid": 333207
+        },
+        {
+          "pid": 333210,
+          "start_ticks": 449552,
+          "sid": 333205,
+          "pgid": 333208
+        },
+        {
+          "pid": 333211,
+          "start_ticks": 449552,
+          "sid": 333205,
+          "pgid": 333208
+        },
+        {
+          "pid": 333212,
+          "start_ticks": 449552,
+          "sid": 333205,
+          "pgid": 333207
+        },
+        {
+          "pid": 333248,
+          "start_ticks": 449593,
+          "sid": 333205,
+          "pgid": 333248
+        },
+        {
+          "pid": 333249,
+          "start_ticks": 449593,
+          "sid": 333205,
+          "pgid": 333248
+        },
+        {
+          "pid": 333250,
+          "start_ticks": 449593,
+          "sid": 333205,
+          "pgid": 333248
+        },
+        {
+          "pid": 333328,
+          "start_ticks": 449706,
+          "sid": 333205,
+          "pgid": 333328
+        },
+        {
+          "pid": 333329,
+          "start_ticks": 449706,
+          "sid": 333205,
+          "pgid": 333328
+        },
+        {
+          "pid": 333330,
+          "start_ticks": 449706,
+          "sid": 333205,
+          "pgid": 333328
+        },
+        {
+          "pid": 333350,
+          "start_ticks": 449777,
+          "sid": 333205,
+          "pgid": 333350
+        },
+        {
+          "pid": 333351,
+          "start_ticks": 449777,
+          "sid": 333205,
+          "pgid": 333350
+        },
+        {
+          "pid": 333352,
+          "start_ticks": 449778,
+          "sid": 333205,
+          "pgid": 333350
+        },
+        {
+          "pid": 333398,
+          "start_ticks": 449812,
+          "sid": 333205,
+          "pgid": 333398
+        },
+        {
+          "pid": 333399,
+          "start_ticks": 449812,
+          "sid": 333205,
+          "pgid": 333398
+        },
+        {
+          "pid": 333400,
+          "start_ticks": 449812,
+          "sid": 333205,
+          "pgid": 333398
+        },
+        {
+          "pid": 333542,
+          "start_ticks": 449962,
+          "sid": 333205,
+          "pgid": 333328
+        },
+        {
+          "pid": 333559,
+          "start_ticks": 449998,
+          "sid": 333205,
+          "pgid": 333398
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 4495.510550515,
+      "pid": 333205,
+      "spawn_return_monotonic": 4495.513311237,
+      "direct_identity": {
+        "pid": 333205,
+        "state": "R",
+        "ppid": 332749,
+        "pgid": 333205,
+        "sid": 333205,
+        "start_ticks": 449551,
+        "rss_bytes": 491520
+      },
+      "peak_session_rss_bytes": 581144576,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T18:08:56.215376+00:00",
+      "elapsed_seconds": 4.8261372779998055,
+      "logs": {
+        "build-available-project-host.stdout": {
+          "bytes": 723,
+          "sha256": "ffc2dcde9a309ddc45b78e0a9fd1bdac2b3b04f07fc837905f91a9f4f93c3ab5"
+        },
+        "build-available-project-host.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "ctest-available-project-host",
+      "argv": [
+        "/usr/bin/ctest",
+        "--test-dir",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-sanitizer-root-v1/project-host-asan",
+        "-R",
+        "^(platform_memory_test|ple_reader_selftest)$",
+        "--output-on-failure",
+        "--timeout",
+        "15"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-10T18:08:56.216160+00:00",
+      "wall_seconds": 45,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 333574,
+          "start_ticks": 450033,
+          "sid": 333574,
+          "pgid": 333574
+        },
+        {
+          "pid": 333585,
+          "start_ticks": 450054,
+          "sid": 333574,
+          "pgid": 333574
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 4500.337825591,
+      "pid": 333574,
+      "spawn_return_monotonic": 4500.339452102,
+      "direct_identity": {
+        "pid": 333574,
+        "state": "R",
+        "ppid": 332749,
+        "pgid": 333574,
+        "sid": 333574,
+        "start_ticks": 450033,
+        "rss_bytes": 454656
+      },
+      "peak_session_rss_bytes": 315121664,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T18:09:07.403751+00:00",
+      "elapsed_seconds": 11.18720193199988,
+      "logs": {
+        "ctest-available-project-host.stdout": {
+          "bytes": 563,
+          "sha256": "21d9b6d77af6cc714eabf091efe8958401175567a03cb9b3a8c1145675aec86d"
+        },
+        "ctest-available-project-host.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "lint_qualification": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-lint-root-v3/record.json",
+    "sha256": "01fc88abfc9763b5fb8eded15f54bbd831c4a99e42c5050c6557e7bc3deb7b89",
+    "new_findings": 0,
+    "existing_warning_count": 10,
+    "existing_warning_messages": [
+      "Excessive padding in 'struct strata::core::ExpertDispatch' (105 padding bytes, where 41 is optimal). Optimal fields order: act, pool, src, n_expert, layers, experts, missing, cache, cache_hits, cache_admitted, cache_refused, cache_stream, cache_fail, cache_base, cache_blob, cache_slot_off, hit_scratch, parts_out, hit_out, parts_elems, mixed, x_q8_0_hit, x_q8_0_hit_scale, d_slot, d_dst, host_res, hit_done, hit_ready, hit_late, n_hits, hit_fail, plan, pcie_split, pcie_experts, offload_entries, ms_plan, ms_actq, ms_jobs, ms_run, multi_misses, multi_entries, fail, fail_layer, fail_expert, remote, h_slot, h_dst, is_hit, jobs, act_multi, nact_multi, jobs_multi, job_of, usage, remote_count, pcie_num, decided, split_rows, hit_poke, hit_cpu_order, hit_pending, pcie_overlap, failed, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]",
+      "Excessive padding in 'struct strata::core::QsaState' (35 padding bytes, where 3 is optimal). Optimal fields order: k_pool, v_pool, k_q, v_q, k_scale, v_scale, k_q4, v_q4, page_table, n_pages, max_cells, n_slots, idx_pooled_rows, idx_tail, idx_dead, idx_pooled, idx_block_pos, cos_tab, sin_tab, step, attention_status, pos_dev, host_step, host_pos, host, map, kv_mode, kv_elastic, kv_int8, kv_q4, kv_hybrid, kv_rot, owns_rope, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]",
+      "Excessive padding in 'class strata::kernels::cpu::ExpertPool' (350 padding bytes, where 158 is optimal). Optimal fields order: stop_, host_works_, tasks_, ms_multi_gu, ms_multi_q, ms_multi_down, multi_bytes, jobs_, ms_wait_park_, ms_drain_, done_, n_, ms_repark_, wstate_, hstate_ms_, spin_before_sleep_, mjobs_, mrows_, nfmt_, parked_, njobs_, threads_, scratch_, split_, split_multi_, sleep_mu_, sleep_cv_, epoch_, hstate_, mode_, parts_a_, parts_b_, mtasks_, sleepers_, head_, host_scratch_, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]",
+      "performing an implicit widening conversion to type 'uint64_t' (aka 'unsigned long') of a multiplication performed in type 'int' [bugprone-implicit-widening-of-multiplication-result]",
+      "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "an assignment within an 'if' condition is bug-prone [bugprone-assignment-in-if-condition]",
+      "performing an implicit widening conversion to type 'int64_t' (aka 'long') of a multiplication performed in type 'int' [bugprone-implicit-widening-of-multiplication-result]",
+      "performing an implicit widening conversion to type 'int64_t' (aka 'long') of a multiplication performed in type 'int' [bugprone-implicit-widening-of-multiplication-result]",
+      "'atoll' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtoll' instead [bugprone-unchecked-string-to-number-conversion]",
+      "narrowing conversion from 'int64_t' (aka 'long') to signed type 'int32_t' (aka 'int') is implementation-defined [bugprone-narrowing-conversions]"
+    ]
+  },
+  "source_sha256": {
+    "src/prefill/prefill.cpp": "59e1c4ea18c38da799314439099bcf14e9a19f0b7ce9f4f00629173a534cf9ce",
+    "include/strata/prefill/publication.hpp": "547397243c32126f26caebad4baa39278dcf1471f3bff368af4fc481e5462710",
+    "tools/test_prefill_publication.cpp": "205108edebe58650a46e8fa8d6f844cff692c5ae70e0af61d561706b16a7e71f"
+  },
+  "cpu_qualification_sha256": "269887ecdbf549d33e13afde73de5bcbc8e255e32eeb14800a7ab0b4d851df85",
+  "ctest_host_safety": "Internal ctest changing into directory: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-sanitizer-root-v1/build\nTest project /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-sanitizer-root-v1/build\n    Start 1: production_publication\n1/3 Test #1: production_publication ...........   Passed    0.05 sec\n    Start 2: actual_stager_lifecycle\n2/3 Test #2: actual_stager_lifecycle ..........   Passed    0.02 sec\n    Start 3: terminal_before_release\n3/3 Test #3: terminal_before_release ..........   Passed    0.04 sec\n\n100% tests passed, 0 tests failed out of 3\n\nTotal Test time (real) =   0.14 sec\n",
+  "ctest_available_project_host": "Internal ctest changing into directory: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-sanitizer-root-v1/project-host-asan\nTest project /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-sanitizer-root-v1/project-host-asan\n    Start 1: platform_memory_test\n1/2 Test #1: platform_memory_test .............   Passed    0.20 sec\n    Start 2: ple_reader_selftest\n2/2 Test #2: ple_reader_selftest ..............   Passed   10.89 sec\n\n100% tests passed, 0 tests failed out of 2\n\nTotal Test time (real) =  11.10 sec\n",
+  "scope": "3 ASan/UBSan host tests using exact production publication and extracted actual Stager/HostVec/guard with CPU GPU-API stand-ins; 2 available project CPU-foundation CTests. No SYCL device or full engine sanitized execution.",
+  "unverified": [
+    "Free SYCL mode: no intel/llvm DPC++ 7+ compiler installed; ordinary Clang is not a SYCL replacement.",
+    "Full contrib-icpx sanitizer CTest suite: published source omits tests/core and tests/platform; standalone host safety and available host CTests do not replace it.",
+    "Smaller/no-XMX/iGPU configurations: not executed; target machine B570 only."
+  ],
+  "standalone_compile_commands_sha256": "4979ea3f821db55ec4b0de83e7acebb8a2489d305efd0580fb9d682052f165be",
+  "available_project_compile_commands_sha256": "7f7bf80257cfb7235563eed9ef8c21bf3eaff26f9e7a566ab7693b40977a6abb",
+  "finished_utc": "2026-10-10T18:09:07.405396+00:00"
+}

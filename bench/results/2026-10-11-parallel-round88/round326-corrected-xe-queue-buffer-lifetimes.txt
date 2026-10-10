@@ -1,0 +1,51 @@
+# Round 326 — Corrected Xe queue and host-buffer lifetime review
+
+Date: 2026-10-11 (Asia/Tokyo). Read-only review of the corrected source worktree. No implementation, Git operation, build, test, GPU/process query, cleanup, or device execution was performed. Only this report was written. Current GPU qualification remains unrun.
+
+## Scope and pinned inputs
+
+Worktree: `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011`
+
+- `src/prefill/prefill.cpp`: SHA-256 `0903398e1a3710ba7037ee9431aaa26a7b3ecaa5c456412fdf27f22449eaa946`
+- `include/strata/prefill/publication.hpp`: SHA-256 `f4cc040241ec13a186e83d334dc8c397c2b115570f222762d27c4dff1d9c030e`
+
+Previously reviewed before examining this candidate: registry v110; R315, R318, R323, R324 and `implementation-xe-prefill-failclosed-v1.txt`. R323 concerns thread-failure/wakeup behavior; this report does not re-review it except where it changes buffer retirement ordering.
+
+## Determination
+
+The corrected source materially improves the **normal completion** lifetime path and the **ordinary exception unwind** path:
+
+- Normal non-stream-all staging calls `StagerDone::complete()`, which cancels further staging, checked-syncs compute then copy queues, waits for Stager workers to finish, rethrows any retained worker failure, and only then disarms the guard. This is the right producer-stop → queue-drain → worker-retire sequence before later reuse.
+- Stream-all issuer teardown uses `IssuerJoin`: it cancels Stager work, joins the issuer so it can no longer submit, then drains compute and copy queues before the preceding `StagerDone` guard unwinds. This establishes host-producer quiescence before drain. Its unwind drain statuses are ignored.
+- `release()` now cancels Stager, synchronizes compute and copy before resetting Stager, and does so before destroying queue event wrappers or device allocations. On a successful drain this protects DMA source buffers, including pageable vectors, and event/dependent device storage.
+- All inspected `std::async` host producers are represented by futures whose destruction/get waits for their task before captured host storage leaves scope; PLE buffer reuse also waits on its prior copy event. I found no independent normal-path early destruction of a queued source in these reviewed sites.
+- The direct host-USM expert source path (the prior V8 route) reads longer-lived source arena blobs and has no Stager host-buffer source. This review does not alter earlier bounded conclusions or attribute the historic fault.
+
+The remaining concrete lifetime hole is a **failed-drain path with pageable fallback storage**. The source does not preserve the stated “do not free unless GPU completion is confirmed” contract on every exit:
+
+1. `StagerDone::~Stager()` fallback (around lines 1327–1334) cancels, calls `stream_sync(cs)` and `stream_sync(copy)` without checking either Boolean result, then calls `finish()`. A sync error therefore still allows scope exit to proceed.
+2. `IssuerJoin::~IssuerJoin()` calls `stop_join`; its drain callback likewise ignores both stream-sync results. `stop_join` correctly joins the producer before invoking the callback, but successful producer join is not proof of device completion.
+3. The outer `catch` handlers at the end of `Prefill::run` attempt both stream syncs and ignore their results. They convert the error to `false`, but do not record that host/device retirement failed.
+4. `Prefill::release()` also ignores both stream-sync results and unconditionally resets Stager. When all Stager buffers are pageable (`STRATA_TEST_PAGEABLE=1` or host-USM pin allocation failure), the Stager destructor's vector member destruction has no `gpu::free` barrier. A still-pending DMA could therefore outlive its source vector if the explicit copy drain failed. HostVec pageable fallback vectors have the same general reliance on successful queue drain before their owning Impl is destroyed/reset.
+
+This is a conditional failure-mode finding, not evidence that any run took the all-pageable route or that a DMA remained active. For pinned Stager buffers, `gpu::free` reaches `Runtime::free`, which calls `finish()` and invokes the fatal path on a synchronization exception before `sycl::free`; that is a fail-stop protection, not an unguarded free. It does not protect ordinary `std::vector` fallback storage. The source's checked normal `complete()` is sound provided its queue sync succeeds. If it throws, the destructor fallback repeats unchecked syncs and leaves the failed run unusable as a validated session, but later destruction still needs a fail-stop/retention policy for pageable memory.
+
+## Other ordering observations
+
+`Stager::finish()` closes job claiming and waits for active host workers, but does not itself wait for DMA completion. Correctness therefore depends on draining the queue after the last possible submitter has stopped and before freeing or mutating any pageable source. The corrected normal `complete()` orders this correctly; the corrected `release()` orders it correctly when sync reports success.
+
+The destructor order at run scope is favorable: `IssuerJoin` is declared after `StagerDone`, so it unwinds first, stops and joins issuer, then attempts queue drain; `StagerDone` then cancels/drains/finishes. That avoids destroying a staging worker while the issuer can still enqueue work. It does not make ignored queue errors equivalent to completion.
+
+The `publication::skipped_entry` ordering remains flush → wait for issuer metadata read/publication → record consumer event and update slot metadata. This closes the reviewed same-chunk publication race on that path. No additional buffer lifetime issue was found in that helper. Its CPU harness was inspected but not run.
+
+## Primary contracts and limits
+
+The Khronos SYCL 2020 spec states that queue `wait` / `wait_and_throw` complete previously submitted commands on that queue; independent in-order queues do not gain ordering between each other without an explicit dependency. The official Level Zero programming guide likewise says the application must ensure a device is no longer using a queue before deleting it, commonly through synchronization. These contracts support the explicit drain requirement; they do not imply that a failed wait establishes completion.
+
+Sources: [Khronos SYCL 2020 specification](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html), [Level Zero Core Programming Guide](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html), [Level Zero Command Queue API](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/command_queue.html).
+
+This is a static source conclusion only. It establishes neither runtime path selection nor whether queue sync can fail in the target incident. No new GPU result, numerical result, or fault attribution is claimed. The historic B570/CAT18 incident remains unresolved; current GPU qualification remains unrun.
+
+## Conclusion for owner
+
+Accept the checked normal completion ordering and the producer-join-before-drain design. Keep a focused unresolved item: make exceptional teardown retain or fail-stop pageable host storage when compute/copy drain cannot confirm completion, and apply the same rule to `release()` / catch fallback. Do not treat ignored sync return as successful retirement. No source edit is made or requested by this report.

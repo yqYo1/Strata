@@ -1,0 +1,90 @@
+# Round 324 — Xe second-chunk index and allocation bounds
+
+Date: 2026-10-11 (Asia/Tokyo). Read-only, source-derived audit of the immutable XeStrata worktree at `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010`, pinned commit `39bdadcc9e2b89b1e3c8be7bb2a603b04fa0e197`. Scope is the 4,096-token chunk beginning at absolute position 4,096 after the first 4,096-token chunk, with full context 262,144, resident KV request 32,768, ring request 8/effective 16, and host-USM expert source. I did not inspect the changing `/fix-b570-prefill-publication-20261011` tree. No implementation, Git, build, test, GPU, process, service, cleanup, or fault-address probe was performed. Only this report was written.
+
+## Finding
+
+I found no source-derived second-chunk out-of-bounds access, undersized allocation, invalid overlay, or use-before-initialization in the traced normal path. Several values do change at the chunk boundary: the absolute position and input-token pointer, QSA per-token position/count values, KV page indices and the length of the prefix copied into the per-chunk staging pool, persistent GDN/indexer/KV state contents, and data-dependent router/expert ordering. The corresponding offsets remain below their allocation limits for `[4096,8192)`.
+
+The allocation bases and local row-buffer coordinate system do not advance by 4,096: `Prefill::run` sets `c0=4096`, `T=4096`, `p0=pos0+c0`, then writes token-row scratch at local row `t in [0,4096)`. The source input is addressed as `tokens[c0+t]`; absolute position is separately passed as `p0+t`. Most chunk scratch is carved once for `T=4096` and reused. The QSA and GDN state arrays belong to the session and persist across the chunk boundary.
+
+This does not identify the device command responsible for the recorded CAT18 fault. The prior receipt reports a fault address and an exception surfacing while `iq_dequant_gu_f16` was submitting. It has no live allocation interval map, device faulting-kernel PC, or per-command completion record. The submit stack is not a fault-kernel attribution. The unchecked stream helper result / issuer publication issue documented in R302 and R309 is explicitly outside this audit; it is under separate implementation work and is not repeated here. Valid-input grouped GEMM tails are also outside scope (R295/R298).
+
+## Values that differ at chunk 2
+
+| Quantity | First chunk | Second chunk | Source-derived upper bound / interpretation |
+|---|---:|---:|---|
+| Local token rows `t`, `T` | `0..4095`, 4096 | `0..4095`, 4096 | All chunk-local activation/scratch arrays remain sized for 4096 rows; row offset is `t`, not `p0+t`. |
+| Input token source | `tokens[0+t]` | `tokens[4096+t]` | Host input indexing reaches at most element 8191. |
+| Absolute position `p0+t` | `0..4095` | `4096..8191` | Last written/queried cell is 8191, below `max_cells=262144`. |
+| QSA `n_kv=pos+1` | `1..4096` | `4097..8192` | `qsa_step_fill`; at the second-chunk end `n_bid=floor(8192/4)=2048`. |
+| QSA selected width | `min(n_kv,2051)` | `min(n_kv,2051)` | `idx_top_k=2048`, `idx_block=4`; width at last query is 2051, equal to the per-row capacity `cap`. |
+| QSA indexer blocks completed | up to block 1023, plus pooled sentinel 1024 | blocks 1024..2047, plus pooled sentinel 2048 | Since 4096 is divisible by block size 4, chunk 2 starts on a whole indexer block; it does not need a prior partial-block tail to complete its first block. `idx_pooled_rows=262144/4+2=65538`. |
+| KV page range, page size 4 cells | `0..1023` | `1024..2047` | Second chunk writes page table / host-copy coordinates no higher than 2047, below 65,536 logical pages. The boundary is page-aligned. |
+| `kv_stage_from_host` prefix blocks | 0 | `ceil(4096/4)=1024` | Copies prior KV blocks `[0,1024)` into the beginning of the full-context staging pool before current-chunk attention. |
+| KV request and resident slot count | same | same | `kv_resident=32768` rounds to 8192 four-cell pages (the minimum is 20480); host and full-context stage allocations cover 65,536 pages. |
+| Expert stream order / ring slot | data-dependent, first chunk sequence | data-dependent, rebuilt chunk sequence; effective ring 16 | Ring array limit is 1024; slot index is modulo 16. Each copied blob is bounded by `MAXBLOB`, in a slot with `MMQ_SLOT=round_up(MAXBLOB,256)`. |
+| GDN state / QSA indexer/KV state contents | initialized then updated | continues from chunk 1 | These persistent arrays intentionally carry model history; their pointers do not incorporate `p0`. |
+
+The requested ring 8 is clamped to 16 at `T=4096`. This produces `stream_all` (source has `STREAM_ALL_MIN=2048`, and `ring>STAGE=8`). This ring fact is already established in R298/R309; here it is included only to show that second-chunk slot offsets remain in the fixed arrays and per-slot allocation.
+
+## Source-derived allocation and access bounds
+
+All bounds below describe source geometry and maximum accesses for a complete second chunk. They do not assert that the faulting run executed every listed kernel or reached the end of the chunk.
+
+### Chunk buffers and attention/recurrent overlay
+
+`Prefill::carve(T)` first takes chunk-local buffers and then one `region` of `max(gdn_set_bytes(T), qsa_set_bytes(T,...), moe_set_bytes(T,...))` bytes. Each attention/GDN, QSA, and MoE sublayout starts at that same region base by design. The attention half completes its writeback to `R` before the layer's MoE half; submissions use the same in-order compute queue `m.cs`. QSA selection and QSA attention also use distinct suballocations within the QSA layout (`sel_scores`, `sel_ids`, `attn_scratch`, `attn`). No same-time cross-lifetime alias was found in this call sequence. On chunk 2 these suballocations are reused at identical addresses and for identical `T`; they are not offset by absolute prompt position.
+
+Fixed model dimensions in `prefill.cpp`: `N=2560`, `HC=4`, `D=10240`, `LR=320`, `K=10`, `C=10240`, `ZV=6144`, `HV=48`. Examples of carved extents and maximum row accesses are:
+
+- `R`: `T*D` floats; attention/residual and MoE writeback indices are at most `(T-1)*D + (D-1)`.
+- QSA `Kc`, `Vc`: each `T*512` floats; QSA query `q`: `T*ZV` floats; output `attn`: `T*ZV` floats, plus `T*ZV` half output. Calls use `T`, and QSA row offsets are `t*ZV`, `t<4096`.
+- GDN `qkv`: `T*C`; `z`: `T*ZV`; `ab`: `T*2*HV`; `gate`, `beta`: `T*HV`; `hbuf`: `T*C`; `y`: `T*ZV`; `y_h`: `T*ZV` halves. The recurrence's large state is not overlaid here: it is addressed by the layer's persistent GDN-state ordinal, and the recurrence updates it in queue order.
+- Router/MoE allocations include `logits=T*n_expert`, route arrays `T*K`, `GU=T*K*1280` floats, `Dm=T*K*N` floats, optional `Xs=T*K*N` half, and corresponding down activation arrays. Their element access is driven by the current 4096 rows and top-k 10. Per-expert counts are at most T; grouped row endpoints are cumulative and at most `T*K` for the production router contract reviewed in R298.
+
+The individual `Alloc::take` sequence is also used by the matching byte-count helpers, and `carve` returns failure if any take exceeds its region. This proves internal carve arithmetic is sized consistently; it does not prove arbitrary kernel code respects all provided bounds.
+
+### QSA indexing and attention
+
+`qsa_step_fill` writes one four-int record per local row at `steps_dev + t*kStepCount`. For the second chunk, the absolute `pos` is 4096 through 8191; `n_kv=pos+1` is 4097 through 8192. Given `idx_top_k=2048`, `idx_block=4`, width is `min(n_kv, 2048+4-1)=min(n_kv,2051)`, so it never exceeds `cap=2051`. `n_bid` reaches 2048. `max_blocks` is `max_cells/idx_block+2=65538`; `sel_scores` is `256*65538` floats and `sel_ids` is `T*2051` int32 values. The score kernel is given `steps` and the max-block limit; the attention call gets the same `ids/steps/cap` and the pool page table.
+
+`native_qsa_indexer_append_batch(raw,T,p0,0,...,max_cells,...)` has an explicit guard `p0>=0 && p0+T<=max_cells` and rejects dimensions/positions beyond the int32 range. Here `4096+4096=8192<=262144`. Its largest current-chunk complete block index is 2047; when it writes the following pooled sentinel, the row is 2048. Both are below 65,538. It reads `raw[(cell-p0)*idx_dim+d]` only for cells in the current batch; the partial prefix for block 1024 is empty because `p0%4==0`. It writes indexer tail slots `[0,3) x idx_dim` (384 floats), and the same tail allocation is reused from the preceding chunk.
+
+The KV page size is 4 cells. For each QSA layer in mode 1, `kv_stage_from_host` receives `ceil(p0/page_size)=1024` and copies those prior blocks into the prompt's staging pool. `take_stage` allocates the stage pool for `q0.n_pages=ceil(262144/4)=65536` pages, with all K/V format planes. Current chunk append uses cells `[4096,8192)`, hence logical pages `[1024,2048)`. The session's authoritative host pool, page table, indexer state, and resident pool are sized for the full context. For INT8, the full host/stage plane uses the `kv_q8_bytes_per_cell` layout; format-specific K/V and scale runs are carved together. 32,768 resident cells round to 8,192 pages; nonresident cells remain in host USM and are staged for prompt attention. Both the second chunk's source and destination page ranges fit those source extents.
+
+The query positions are strictly below context max: RoPE rows and native indexer position arguments max at 8191; appending and attention selection read cells no later than 8191. No second-chunk expression here adds `length` twice or uses the full context as a chunk-local offset. Query position is used where required; scratch row positions remain local.
+
+### MoE dequant, grouped products, and expert ring
+
+The main expert-source blobs live in host USM under the stated host-USM arm. Staging copies use the per-slot `stage_dev[slot]` destination, with fixed slot stride `MMQ_SLOT`; data-dependent sequence indices map through `% m.ring`, where `m.ring=16`. Source blob length is bounded by `MAXBLOB`; each slot stride rounds that bound up to 256 bytes. Thus the last possible slot remains inside the `ring*MMQ_SLOT` allocation (or the equivalent per-slot borrowed allocation when borrowing is enabled; this run says no-prefill-borrow). The chunk changes which blob is copied and the sequence order, not the allocation base or slot count.
+
+The non-MMQ native-IQ path dequantizes staged blobs to `dq_gu` / `dq_d` group scratch, then grouped products use `GU`/`Dm` outputs. `iq_dequant_gu_f16` checks `n_embd % 256 == 0`, sets `per_row=n_embd/256` and `nsb=n_ff*per_row`, and returns uniformly for superblock index `i>=nsb`; its output element base is `((2*r+parity)*per_row+c)*QK_K`, within the two gate/up matrices represented by the allocated `GU_ELEMS` group slot for the pack geometry. `iq_dequant_f16` requires `n%256==0`. The call site derives the blob interior pointers from validated native-format offsets `up_off` and `down_off`. R298 establishes that grouped bounds and output row ends in the caller are at most the routed GPU rows, themselves no greater than `T*K`; the separate R295 audit covers valid grouped-kernel tail behavior.
+
+In this 4K arm, the source selection `ring>STAGE && T>=2048 && src!=nullptr` activates stream-all. CPU splitting is disabled by `!stream_all`. `m.Dm`'s CPU tail therefore is not a second-chunk write contributor for these settings. As in the prior reports, this is source selection logic, not independent evidence from a new run.
+
+## Candidate review and evidence gap
+
+No concrete exact-function condition was found that makes a valid second-chunk access exceed its allocation:
+
+- `native_qsa_indexer_append_batch`: explicit `p0+T<=max_cells` check is satisfied; chunk start is aligned to both the four-cell indexer block and four-cell KV page.
+- `kv_stage_from_host`: second-chunk prefix count is 1024 pages, with full-context source and stage allocation of 65,536 pages.
+- QSA append/selection/attention: positions/widths are bounded by 8191 / 2051 and caller buffers are chunk-sized or context-sized as appropriate.
+- GDN: recurrent state is per layer and persistent; chunk-local projection/intermediate arrays are sized for T. The normal code does not form a GDN state pointer from absolute position.
+- MoE and dequant: local token rows, bounds, output endpoints, blob offsets, and modulo ring slots remain within the source-defined capacities reviewed above.
+- Attention/MoE overlay: the layouts intentionally reuse one region, and in-order `m.cs` places their writes/reads sequentially.
+
+The exact unknown is what allocation contained fault address `0x0000aaa79d800000` at fault time and which submitted command dereferenced it. The already retained receipt gives neither allocation intervals nor a device-side faulting-kernel identity. It also does not prove that a failed helper was the trigger. A decisive attribution needs a separately authorized, healthy-device diagnostic that records live allocation intervals and per-command source/destination, position/page or slot index, and kernel identity around the first error. This audit did not perform such a run or recommend changing code based only on the submit stack.
+
+## Primary references
+
+Local pinned Xe sources: `src/prefill/prefill.cpp` (chunk loop 1114–1270, QSA/GDN/MoE path 1450–2210, layouts 721–810); `src/kernels/xe/native_qsa_indexer.cpp` (`native_qsa_indexer_append_batch`, including `p0+n` guard and pooled/tail writes); `src/kernels/xe/qsa.cpp` (`qsa_step_fill`); `src/core/layer.cpp` (`kv_plan`, full-context page, indexer, and resident allocation); `src/kernels/xe/kv_stream.cpp` (`kv_stage_from_host`); `src/kernels/xe/iq_kernels.cpp` (`iq_dequant_gu_f16`, `iq_dequant_f16`); `src/kernels/xe/xmx_gemm.cpp`; `src/core/gpu.cpp` and `src/core/device.cpp` (USM allocation/queue context and command submission).
+
+Official external contracts consulted:
+
+- [Khronos SYCL 2020 revision 12](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html): event dependencies (§3.7.1.3), USM same-context access (§4.8.2), and queue/event semantics. These establish programming requirements, not evidence about which allocation or command caused this hardware fault.
+- [Intel oneAPI joint matrix extension specification](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_matrix/sycl_ext_oneapi_matrix.asciidoc): collective operations must execute in converged control flow; useful background for custom XMX kernels, without a hardware fault attribution.
+- [Level Zero event and command-list specifications](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/event.html), [Level Zero programming guide](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html): explicit event dependencies and event wait/signal scope. These do not expose this receipt's fault address mapping.
+- The inspected Xe attention/projection path uses project SYCL/XMX kernels (`mma_gemm`, `dp4a_gemm`, `xmx_gemm`, custom IQ kernels); no `oneapi::mkl::blas` call is present in the traced path. The [oneMKL USM GEMM documentation](https://oneapi-spec.uxlfoundation.org/specifications/oneapi/v1.2-rev-1/elements/onemkl/source/domains/blas/gemm) was therefore not used to infer this custom kernel's pointer arithmetic or to claim that BLAS caused the fault.
+
+Prior reports checked first: registry v110; R295, R298, R302, R309, R311, R315, and R318. No R323 report was present. The registry was not modified. R309's receipt outcome remains failed/incomplete and is not upgraded by this static audit.

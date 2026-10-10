@@ -1,0 +1,9 @@
+再起動後のXe修正版は、実8193入力・4Kchunk・issuerOFF・1出力の初回診断を完了した。PP4096/8192、finite LP5、正常exit0、全所有process閉鎖。直前・直後の16384整数一致とfresh kernel/dump gateがPASS、新規障害・timeout・resetなし。これは8Kの障害確認で性能比較に使わず、未変更XeのV8失敗は不変。歴史的GPUfaultの原因特定や256K物理境界の資格、能力同等性、採用を主張しない。
+
+公開前のmetadata待機、bool enqueue/event検査、thread-local errorの同一スレッド捕捉、worker failure通知、cancel単調CAS、join-before-drain、failed wait時の解放前_Exit74を追加。worker例外後は同じStagerをstartしない。boolだけでは完了後のasync errorと不明な完了を区別できず、保守的にprocess終端になる場合がある。_ExitはGPU fenceではない。
+
+実コード抽出Stager/HostVec/guard 11件とproduction helperがCPU PASS。ASan/UBSanの対応3件および利用可能な既存CPU基盤2件CTest PASS。lint最終PASS・新規警告0（既存10件は元版との差分で一致）。初回lintの新規main例外警告を修正し、rootless Cppcheck不足dependency/configを補った。SPDX/開発道具の日本語・英語文書更新。contrib-icpx actual SYCL TU/link PASS、prefill memberだけ置換、46 include pins、他3members・native kernels/core/generator不変。free SYCL compilerと公開元欠落test suite、小GPU/非XMX/iGPUはunverified。CPU stand-insはGPU device sanitizeの代わりではない。
+
+実行前v2はuser bus不足、v3はembedding activeで拒否、双方モデル/GPU診断未投入。サービスはdisabledだがactiveだった。既存の停止したままというユーザー指示に従い、対象embeddingだけstopしinactive/disabledを確認した。再起動やrebindは実行していない。v4は修正版初回モデル投入1回だけ。
+
+次は32K以上の現baselineと修正Xeを同じ実入力/要求設定/時間区間で比べる。raw pristine forkとは別armであると明記し、cache/ringの固有差も記録する。prefill1000目標には実64Kを使える。decodeの短い1出力は比較不適格で、採否はprefillとは別に3回以上の長いfresh生成を要する。Xe評価を区切った後、fork元の更新を未変更版と選択的取り込み版で評価する。サーバー機能は取り込み、SYCL/CPUの推論変更は段階別に採否判断、HIP/CUDAは対象外。

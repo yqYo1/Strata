@@ -1,0 +1,827 @@
+diff --git a/docs/DEVTOOLS.ja.md b/docs/DEVTOOLS.ja.md
+index c459d7f2..a58d23f1 100644
+--- a/docs/DEVTOOLS.ja.md
++++ b/docs/DEVTOOLS.ja.md
+@@ -47,6 +47,16 @@ mkdir -p .lint/bin && curl -sSL https://github.com/lycheeverse/lychee/releases/l
+ 
+ `tools/lint/run.sh` は、ディストリビューションの `reuse` があればそれを使い、なければ `.lint/venv/bin/reuse` を使います。
+ 
++B570 の評価機では、root を使わずにリントの道具を `.lint/` に入れる方法も確認しました。
++`codespell` 2.4.1 と `reuse` 6.2.0 は `.lint/venv` に入れます。
++Gitleaks 8.30.1 の Linux x64 リリースは、リリースのチェックサムを確認して `.lint/bin` に置きました。
++Ubuntu noble の `cppcheck` 2.13.0 と `libtinyxml2-10` は `apt-get download` で取得し、
++`dpkg-deb -x` で `.lint/cppcheck` に展開しました。
++この Cppcheck は、`.lint/cppcheck/usr/bin/cfg` から `../lib/x86_64-linux-gnu/cppcheck/cfg` へのリンクが要ります。
++リントのコマンドの `PATH` に `.lint/venv/bin`、`.lint/bin`、`.lint/cppcheck/usr/bin` を、
++ライブラリを探すパスに `.lint/cppcheck/usr/lib/x86_64-linux-gnu` を加えます。
++これらは任意の開発用の道具で、エンジンは使いません。
++
+ ## intel/llvm をソースからビルドする
+ 
+ free のビルドは、intel/llvm の DPC++ でエンジンをコンパイルします（[BUILD.ja.md](BUILD.ja.md#ビルド)）。
+diff --git a/docs/DEVTOOLS.md b/docs/DEVTOOLS.md
+index 38e28d41..51a9b1a7 100644
+--- a/docs/DEVTOOLS.md
++++ b/docs/DEVTOOLS.md
+@@ -47,6 +47,16 @@ mkdir -p .lint/bin && curl -sSL https://github.com/lycheeverse/lychee/releases/l
+ 
+ `tools/lint/run.sh` uses the distribution's `reuse` when there is one and `.lint/venv/bin/reuse` otherwise.
+ 
++On the B570 evaluation host, lint tools were also installed without root into `.lint/`.
++`codespell` 2.4.1 and `reuse` 6.2.0 use `.lint/venv`.
++The Gitleaks 8.30.1 Linux x64 release was checked against its release checksum and placed in `.lint/bin`.
++Ubuntu noble's `cppcheck` 2.13.0 and `libtinyxml2-10` packages were downloaded with `apt-get download`
++and extracted with `dpkg-deb -x` into `.lint/cppcheck`.
++For this relocated Cppcheck, `.lint/cppcheck/usr/bin/cfg` points to `../lib/x86_64-linux-gnu/cppcheck/cfg`.
++The lint command includes `.lint/venv/bin`, `.lint/bin` and `.lint/cppcheck/usr/bin` in `PATH`,
++and `.lint/cppcheck/usr/lib/x86_64-linux-gnu` in its library search path.
++These tools remain optional development tools; the engine does not use them.
++
+ ## intel/llvm from source
+ 
+ The free build compiles the engine with intel/llvm's DPC++ ([BUILD.md](BUILD.md#build-and-run)).
+diff --git a/include/strata/prefill/publication.hpp b/include/strata/prefill/publication.hpp
+new file mode 100644
+index 00000000..e5fbdf43
+--- /dev/null
++++ b/include/strata/prefill/publication.hpp
+@@ -0,0 +1,78 @@
++// SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
++// SPDX-License-Identifier: LGPL-3.0-or-later
++#pragma once
++#include <atomic>
++#include <cstdio>
++#include <cstdlib>
++#include <exception>
++#include <mutex>
++#include <stdexcept>
++#include <string>
++#include <thread>
++namespace strata::prefill::publication {
++template<class ErrorText> void require(bool ok, const char* operation, ErrorText text) {
++    if (!ok) throw std::runtime_error(std::string(operation) + ": " + text());
++}
++// A failed wait does not establish completion. Prevent stack/member host
++// buffers being freed while a device command could still reference them.
++// _Exit skips C++ destruction and initiates process teardown. It is not a
++// GPU fence and does not establish device recovery. The bool API cannot prove
++// quiescence after an error, so this policy intentionally fails conservatively.
++template<class ErrorText> void cleanup_require(bool ok, const char* operation, ErrorText text) noexcept {
++    if (ok) return;
++    std::fprintf(stderr, "prefill: GPU completion unconfirmed at %s: %s; exiting before buffer release\n", operation, text());
++    std::fflush(stderr);
++    std::_Exit(74);
++}
++class Failure {
++    mutable std::mutex mutex_;
++    std::exception_ptr first_;
++public:
++    void capture() noexcept {
++        std::lock_guard<std::mutex> lock(mutex_);
++        if (!first_) first_ = std::current_exception();
++    }
++    void rethrow() const {
++        std::lock_guard<std::mutex> lock(mutex_);
++        if (first_) std::rethrow_exception(first_);
++    }
++};
++inline void wait_issued(const std::atomic<size_t>& issued, const std::atomic<bool>& stop,
++                        const Failure& failure, size_t k) {
++    for (;;) {
++        failure.rethrow();
++        if (stop.load(std::memory_order_acquire)) {
++            failure.rethrow();
++            throw std::runtime_error("issuer aborted before publication");
++        }
++        if (issued.load(std::memory_order_acquire) > k) return;
++        std::this_thread::yield();
++    }
++}
++// Cancellation uses a high terminal value. A racing normal publication must
++// never lower it: atomic::wait is value-based, so notify alone cannot fix ABA.
++inline void publish_staged(std::atomic<int>& issued, int value) {
++    int previous = issued.load(std::memory_order_acquire);
++    while (previous < value &&
++           !issued.compare_exchange_weak(previous, value, std::memory_order_release,
++                                         std::memory_order_acquire)) {}
++    issued.notify_all();
++}
++// Used on every exceptional/early consumer exit; callbacks run in this order.
++template<class Cancel, class Drain>
++void stop_join(std::atomic<bool>& stop, std::thread& producer, Cancel cancel, Drain drain) {
++    if (!producer.joinable()) return;
++    stop.store(true, std::memory_order_release);
++    cancel();
++    producer.join();
++    drain();
++}
++// Shared production ordering: flush queued readers before waiting for the producer;
++// wait for its metadata read before changing the reusable event or plain slot metadata.
++template<class Flush, class Wait, class Release>
++void skipped_entry(Flush flush, Wait wait, Release release) {
++    flush();
++    wait();
++    release();
++}
++}
+diff --git a/src/prefill/prefill.cpp b/src/prefill/prefill.cpp
+index e1a6ade5..68ca2888 100644
+--- a/src/prefill/prefill.cpp
++++ b/src/prefill/prefill.cpp
+@@ -39,6 +39,7 @@
+ 
+ #include "strata/core/gpu.hpp"
+ 
++#include "strata/prefill/publication.hpp"
+ #include <algorithm>
+ #include <chrono>
+ #include <cmath>
+@@ -98,11 +99,11 @@ public:
+     T& operator[](size_t i) { return data()[i]; }
+     void from_device(const T* src, strata::gpu::Stream s) {   // the first size() values, queued on `s`
+         if (pinned_ != nullptr) strata::kernels::copy_i32_from_mapped(pinned_, src, (int64_t) n_, s);
+-        else strata::gpu::copy_async(fallback_.data(), src, n_ * sizeof(T), s);
++        else publication::require(strata::gpu::copy_async(fallback_.data(), src, n_ * sizeof(T), s), "HostVec from_device", strata::gpu::last_error);
+     }
+     void to_device(T* dst, strata::gpu::Stream s) {
+         if (pinned_ != nullptr) strata::kernels::copy_i32_from_mapped(dst, pinned_, (int64_t) n_, s);
+-        else strata::gpu::copy_async(dst, fallback_.data(), n_ * sizeof(T), s);
++        else publication::require(strata::gpu::copy_async(dst, fallback_.data(), n_ * sizeof(T), s), "HostVec to_device", strata::gpu::last_error);
+     }
+ private:
+     static_assert(sizeof(T) == 4, "copied as int32");
+@@ -239,7 +240,8 @@ struct Stager {
+     // `from` set: a transient source (the GGUF read in place) copies the blob of (l, e) itself (copy_blob), since its
+     // blob() pointers do not outlast a chunk's queue
+     struct Job { const uint8_t* src; size_t bytes; core::ExpertSource* from = nullptr; int32_t l = 0, e = 0; };
+-    std::atomic<bool> failed{false};
++    std::atomic<bool> failed{false}, cancelled{false};
++    publication::Failure failure;
+     std::vector<uint8_t*> buf;
+     std::vector<char> pinned;
+     std::vector<std::vector<uint8_t>> pageable;   // the fallback when no more RAM can be pinned
+@@ -305,19 +307,23 @@ struct Stager {
+                                   // with --mmap-experts the 32 spinning stagers starved the launching thread)
+                     for (int v = issued.load(std::memory_order_acquire); v <= j - kRing;
+                          v = issued.load(std::memory_order_acquire)) {
++                        if (cancelled.load(std::memory_order_acquire)) break;
+                         if (stager_sleep()) issued.wait(v, std::memory_order_acquire);   // STRATA_STAGER_SLEEP=0: spin
+                         else std::this_thread::yield();
+                     }
++                if (cancelled.load(std::memory_order_acquire)) { active.fetch_sub(1, std::memory_order_acq_rel); break; }
++                try {
+                 // and done - for a generation's first kRing jobs that is the previous generation's last DMA from
+                 // the buffer, which nothing else waits for when a chunk ends without a sync (no MTP) or the DMA
+                 // was a ring entry the routing skipped (an event never recorded returns at once)
+-                strata::gpu::event_sync(dma_done[b]);
++                publication::require(strata::gpu::event_sync(dma_done[b]), "strata::gpu::event_sync(dma_done[b])", strata::gpu::last_error);
+                 const Job& jb = jobs[(size_t) j];
+                 if (jb.from != nullptr) {
+                     if (!jb.from->copy_blob(jb.l, jb.e, buf[b])) failed.store(true, std::memory_order_release);
+                 } else {
+                     std::memcpy(buf[b], jb.src, jb.bytes);
+                 }
++                } catch (...) { failure.capture(); failed.store(true, std::memory_order_release); cancel(); }
+                 ready[(size_t) j].store(1, std::memory_order_release);
+                 active.fetch_sub(1, std::memory_order_acq_rel);
+             }
+@@ -334,7 +340,12 @@ struct Stager {
+     }
+     /// A layer's jobs; the previous layer's are finished (finish()).
+     void start(std::vector<Job>&& js) {
++        // A worker exception makes this instance terminal. Reconstruct only
++        // after the owning Prefill has drained both queues and released it.
++        failure.rethrow();
+         if (js.empty()) return;
++        cancelled.store(false);
++        failed.store(false);
+         std::lock_guard<std::mutex> lk(mu);
+         jobs = std::move(js);
+         if (ready_cap < jobs.size()) {
+@@ -349,13 +360,22 @@ struct Stager {
+     }
+     /// Job j's bytes, in a pinned buffer (waits for the copy).
+     const uint8_t* wait(int j) {
+-        while (!ready[(size_t) j].load(std::memory_order_acquire)) std::this_thread::yield();
++        while (!ready[(size_t) j].load(std::memory_order_acquire)) {
++            if (cancelled.load(std::memory_order_acquire)) { failure.rethrow(); throw std::runtime_error("stager aborted"); }
++            std::this_thread::yield();
++        }
++        failure.rethrow();
++        if (failed.load(std::memory_order_acquire)) throw std::runtime_error("stager copy or event failed");
+         return buf[j % kRing];   // a failed copy_blob leaves `failed` set: the chunk ends in an error
+     }
+     /// The launching thread queued job j's DMA on `copy`: its buffer is free once that is done.
+     void issued_one(int j, strata::gpu::Stream copy) {
+-        strata::gpu::event_record(dma_done[j % kRing], copy);
+-        issued.store(j + 1, std::memory_order_release);
++        publication::require(strata::gpu::event_record(dma_done[j % kRing], copy), "strata::gpu::event_record(dma_done[j % kRing], copy)", strata::gpu::last_error);
++        publication::publish_staged(issued, j + 1);
++    }
++    void cancel() {
++        cancelled.store(true, std::memory_order_release);
++        issued.store(1 << 30, std::memory_order_release);
+         issued.notify_all();
+     }
+     /// No job is running after this (the end of a layer, or an early return in the middle of one).
+@@ -507,9 +527,10 @@ Prefill::~Prefill() { release(); }
+ void Prefill::reset() { release(); impl_ = std::make_unique<Impl>(); stats_ = {}; }
+ void Prefill::release() {
+     if (!impl_) return;
++    if (impl_->stager) impl_->stager->cancel();
++    if (impl_->cs) publication::cleanup_require(strata::gpu::stream_sync(impl_->cs), "release/catch cs drain", strata::gpu::last_error);
++    if (impl_->copy) publication::cleanup_require(strata::gpu::stream_sync(impl_->copy), "release/catch copy drain", strata::gpu::last_error);
+     impl_->stager.reset();
+-    if (impl_->cs) strata::gpu::stream_sync(impl_->cs);
+-    if (impl_->copy) strata::gpu::stream_sync(impl_->copy);
+     for (float* p : {impl_->cpu_x, impl_->cpu_rows})
+         if (p) strata::gpu::free(p);
+     for (strata::gpu::Event* e : impl_->cpu_ev)
+@@ -1086,12 +1107,12 @@ struct PfTimer {
+         if (!on) return;
+         if (used == ev.size()) {
+             strata::gpu::Event* e = nullptr;
+-            strata::gpu::event_create(&e, true);
++            publication::require(strata::gpu::event_create(&e, true), "timer event_create", strata::gpu::last_error);
+             ev.push_back(e);
+             ph.push_back(0);
+         }
+         ph[used] = phase;
+-        strata::gpu::event_record(ev[used], s);
++        publication::require(strata::gpu::event_record(ev[used], s), "strata::gpu::event_record(ev[used], s)", strata::gpu::last_error);
+         ++used;
+     }
+     // every recorded mark has completed (the stream was synchronized): charge the gaps, keep the last mark
+@@ -1111,7 +1132,7 @@ struct PfTimer {
+ };
+ }  // namespace
+ 
+-bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) {
++bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) try {
+     err.clear();
+     Impl& m = *impl_;
+     const core::OnDevice on_device(m.device);
+@@ -1245,10 +1266,10 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                 err = ple_next_err;
+                 return false;
+             }
+-            strata::gpu::copy_async(m.ple_emb, m.ple_emb_host[ple_buf], (size_t) T * N * 4, m.cs);
+-            strata::gpu::event_record(m.ple_copied[ple_buf], m.cs);
++            publication::require(strata::gpu::copy_async(m.ple_emb, m.ple_emb_host[ple_buf], (size_t) T * N * 4, m.cs), "copy_async", strata::gpu::last_error);
++            publication::require(strata::gpu::event_record(m.ple_copied[ple_buf], m.cs), "strata::gpu::event_record(m.ple_copied[ple_buf], m.cs)", strata::gpu::last_error);
+             if (c0 + m.T < n) {
+-                strata::gpu::event_sync(m.ple_copied[ple_buf ^ 1]);   // the other buffer's upload (a chunk ago) is done
++                publication::require(strata::gpu::event_sync(m.ple_copied[ple_buf ^ 1]), "strata::gpu::event_sync(m.ple_copied[ple_buf ^ 1])", strata::gpu::last_error);   // the other buffer's upload (a chunk ago) is done
+                 ple_next = std::async(std::launch::async, [&ple_gather, &ple_next_err, c1 = c0 + m.T, b = ple_buf ^ 1] {
+                     return ple_gather(c1, b, ple_next_err);
+                 });
+@@ -1260,7 +1281,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+         for (int64_t t = 0; t < T; ++t) { prev[0] = prev[1]; prev[1] = (int32_t) tokens[c0 + t]; }
+         // ---- the QSA step records of every position in the chunk
+         for (int64_t t = 0; t < T; ++t) strata::kernels::qsa_step_fill(m.steps_host.data() + t * strata::kernels::kStepCount, p0 + t, s);
+-        strata::gpu::copy_async(m.steps_dev, m.steps_host.data(), (size_t) T * strata::kernels::kStepCount * 4, m.cs);
++        publication::require(strata::gpu::copy_async(m.steps_dev, m.steps_host.data(), (size_t) T * strata::kernels::kStepCount * 4, m.cs), "copy_async", strata::gpu::last_error);
+ 
+         int64_t qsa_index = 0, gdn_index = 0;
+         for (int64_t l = 0; l < LB; ++l) (core::is_qsa_layer(g, l) ? qsa_index : gdn_index) += 1;
+@@ -1296,8 +1317,25 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+         }
+         struct StagerDone {
+             Stager* st;
+-            ~StagerDone() { if (st) st->finish(); }
+-        } chunk_stager_done{stream_all ? m.stager.get() : nullptr};
++            strata::gpu::Stream cs, copy;
++            void complete() {
++                if (!st) return;
++                st->cancel();
++                publication::cleanup_require(strata::gpu::stream_sync(cs), "stager compute drain", strata::gpu::last_error);
++                publication::cleanup_require(strata::gpu::stream_sync(copy), "stager copy drain", strata::gpu::last_error);
++                st->finish();
++                st->failure.rethrow();
++                st = nullptr;
++            }
++            ~StagerDone() {
++                if (st) {
++                    st->cancel();
++                    publication::cleanup_require(strata::gpu::stream_sync(cs), "unwind cs drain", strata::gpu::last_error);
++                    publication::cleanup_require(strata::gpu::stream_sync(copy), "unwind copy drain", strata::gpu::last_error);
++                    st->finish();
++                }
++            }
++        } chunk_stager_done{stream_all ? m.stager.get() : nullptr, m.cs, m.copy};
+         auto issue_until = [&](size_t limit) {
+             limit = std::min(limit, seq.size());
+             while (issued < limit) {
+@@ -1308,11 +1346,11 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                 // the slot's last reader, the copy and its mark in one submission (copy_async_after)
+                 const strata::gpu::Event* after = m.stage_live[sl] ? m.used[m.used_of[sl]] : nullptr;
+                 if (en.job < 0) {
+-                    strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl]);
++                    publication::require(strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl]), "strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
+                     ++stats_.experts_dma;
+                 } else {
+                     const uint8_t* hb = m.stager->wait(en.job);
+-                    strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl]);
++                    publication::require(strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl]), "strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
+                     m.stager->issued_one(en.job, m.copy);
+                 }
+                 m.stage_live[sl] = true;
+@@ -1331,23 +1369,34 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+         }();
+         std::atomic<size_t> a_issued{0}, a_consumed{0};
+         std::atomic<bool> a_stop{false};
++        publication::Failure issuer_failure;
+         double iss_ms = 0;
+         int64_t iss_streamed = 0, iss_dma = 0;
+         std::thread issuer;
+         struct IssuerJoin {
+             std::atomic<bool>* stop;
+             std::thread* t;
+-            ~IssuerJoin() { if (t->joinable()) { stop->store(true); t->join(); } }
+-        } issuer_join{&a_stop, &issuer};
++            Stager* st;
++            strata::gpu::Stream cs, copy;
++            ~IssuerJoin() {
++                publication::stop_join(*stop, *t, [&] { st->cancel(); }, [&] {
++                    // No producer can submit now. Drain both queues before stager buffers retire.
++                    publication::cleanup_require(strata::gpu::stream_sync(cs), "unwind cs drain", strata::gpu::last_error);
++                    publication::cleanup_require(strata::gpu::stream_sync(copy), "unwind copy drain", strata::gpu::last_error);
++                });
++            }
++        } issuer_join{&a_stop, &issuer, m.stager.get(), m.cs, m.copy};
+         const bool threaded_issue = stream_all && issuer_on;
+         if (threaded_issue) {
+             issuer = std::thread([&] {
++                try {
+                 const core::OnDevice od(m.device);
+                 for (size_t idx = 0; idx < seq.size(); ++idx) {
+                     while (idx >= a_consumed.load(std::memory_order_acquire) + (size_t) m.ring) {
+                         if (a_stop.load(std::memory_order_acquire)) return;
+                         std::this_thread::yield();
+                     }
++                    if (a_stop.load(std::memory_order_acquire)) return;
+                     const StreamEntry& en = seq[idx];
+                     const int sl = (int) (idx % (size_t) m.ring);
+                     const auto th = Clock::now();
+@@ -1355,11 +1404,11 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                     // the slot's last reader, the copy and its mark in one submission (copy_async_after)
+                     const strata::gpu::Event* after = m.stage_live[sl] ? m.used[m.used_of[sl]] : nullptr;
+                     if (en.job < 0) {
+-                        strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl]);
++                        publication::require(strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl]), "strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
+                         ++iss_dma;
+                     } else {
+                         const uint8_t* hb = m.stager->wait(en.job);
+-                        strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl]);
++                        publication::require(strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl]), "strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
+                         m.stager->issued_one(en.job, m.copy);
+                     }
+                     m.stage_live[sl] = true;
+@@ -1367,6 +1416,11 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                     ++iss_streamed;
+                     a_issued.store(idx + 1, std::memory_order_release);
+                 }
++                } catch (...) {
++                    issuer_failure.capture();
++                    a_stop.store(true, std::memory_order_release);
++                    m.stager->cancel();
++                }
+             });
+         } else if (stream_all) {
+             issue_until((size_t) m.ring);   // layer 0's first experts, behind the embedding and the PLE
+@@ -1374,9 +1428,10 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+         // the consumer's side: entry k's copy is on the copy stream (the thread issued it), then k is given back
+         auto wait_issued = [&](size_t k) {
+             if (!threaded_issue) return;
+-            while (a_issued.load(std::memory_order_acquire) <= k) std::this_thread::yield();
++            publication::wait_issued(a_issued, a_stop, issuer_failure, k);
+         };
+         auto give_back = [&](size_t upto) {
++            issuer_failure.rethrow();
+             if (threaded_issue) a_consumed.store(upto, std::memory_order_release);
+             else issue_until(upto + (size_t) m.ring);
+         };
+@@ -1587,8 +1642,8 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                     // Per tile of 16 queries: the union of their selected cells against the sum of their widths.
+                     if (static const bool ovl = std::getenv("STRATA_SEL_OVERLAP") != nullptr; ovl && qsa_index == 0) {
+                         std::vector<int32_t> ids((size_t) (T * m.cap));
+-                        strata::gpu::copy_async(ids.data(), m.sel_ids, ids.size() * 4, m.cs);
+-                        strata::gpu::stream_sync(m.cs);
++                        publication::require(strata::gpu::copy_async(ids.data(), m.sel_ids, ids.size() * 4, m.cs), "copy_async", strata::gpu::last_error);
++                        publication::cleanup_require(strata::gpu::stream_sync(m.cs), "strata::gpu::stream_sync(m.cs)", strata::gpu::last_error);
+                         double sum_w = 0, sum_u = 0;
+                         for (int64_t t0 = 0; t0 + 16 <= T; t0 += 16) {
+                             std::vector<int32_t> u;
+@@ -1631,9 +1686,9 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                                                             ids16 + t0 * m.cap, m.cs);
+                         }
+                         std::vector<int32_t> a((size_t) (T * m.cap)), b((size_t) (T * m.cap));
+-                        strata::gpu::copy_async(a.data(), m.sel_ids, a.size() * 4, m.cs);
+-                        strata::gpu::copy_async(b.data(), ids16, b.size() * 4, m.cs);
+-                        strata::gpu::stream_sync(m.cs);
++                        publication::require(strata::gpu::copy_async(a.data(), m.sel_ids, a.size() * 4, m.cs), "copy_async", strata::gpu::last_error);
++                        publication::require(strata::gpu::copy_async(b.data(), ids16, b.size() * 4, m.cs), "copy_async", strata::gpu::last_error);
++                        publication::cleanup_require(strata::gpu::stream_sync(m.cs), "strata::gpu::stream_sync(m.cs)", strata::gpu::last_error);
+                         for (int64_t t = 0; t < T; ++t) {
+                             const int64_t w = m.steps_host[(size_t) (t * strata::kernels::kStepCount + strata::kernels::kStepWidth)];
+                             const int32_t *x = a.data() + t * m.cap, *y = b.data() + t * m.cap;
+@@ -1658,8 +1713,8 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                                                           ? std::atoll(std::getenv("STRATA_QSA_DUMP_LAST")) : 4096;
+                         if (p0 + T > pos0 + n - last) {
+                             std::vector<int32_t> h((size_t) (T * m.cap));
+-                            strata::gpu::copy_async(h.data(), m.sel_ids, h.size() * 4, m.cs);
+-                            strata::gpu::stream_sync(m.cs);
++                            publication::require(strata::gpu::copy_async(h.data(), m.sel_ids, h.size() * 4, m.cs), "copy_async", strata::gpu::last_error);
++                            publication::cleanup_require(strata::gpu::stream_sync(m.cs), "strata::gpu::stream_sync(m.cs)", strata::gpu::last_error);
+                             if (std::FILE* f = std::fopen(dump, "ab")) {
+                                 const int32_t hdr[4] = {(int32_t) qsa_index, (int32_t) p0, (int32_t) T, (int32_t) m.cap};
+                                 std::fwrite(hdr, 4, 4, f);
+@@ -1725,9 +1780,9 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                             }
+                             m.cpu_x_n = want;
+                         }
+-                        strata::gpu::copy_async(m.cpu_x, m.mixed, want * sizeof(float), m.cs);
++                        publication::require(strata::gpu::copy_async(m.cpu_x, m.mixed, want * sizeof(float), m.cs), "copy_async", strata::gpu::last_error);
+                     }
+-                    strata::gpu::stream_sync(m.cs);
++                    publication::cleanup_require(strata::gpu::stream_sync(m.cs), "strata::gpu::stream_sync(m.cs)", strata::gpu::last_error);
+                     pt.fold();
+                     if (m.cpu_pend) {   // auto: the last CPU-sharing layer's GPU time is final now
+                         m.cpu_pend = false;
+@@ -1853,7 +1908,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                                 err = "prefill: CPU share events";
+                                 return false;
+                             }
+-                            strata::gpu::event_record(m.cpu_ev[0], m.cs);
++                            publication::require(strata::gpu::event_record(m.cpu_ev[0], m.cs), "strata::gpu::event_record(m.cpu_ev[0], m.cs)", strata::gpu::last_error);
+                         }
+                         cpu_fut = std::async(std::launch::async, [&m, &cf, &cpu_ms, q2, T, rows_gpu, pool = cpu_pool_]() -> bool {
+                             const auto t0 = std::chrono::steady_clock::now();
+@@ -1953,7 +2008,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                         }
+                         m.stager->start(std::move(js));
+                     }
+-                    StagerDone stager_done{stream_all ? nullptr : m.stager.get()};
++                    StagerDone stager_done{stream_all ? nullptr : m.stager.get(), m.cs, m.copy};
+                     // MMQ in place (MMQ_RING): expert j's blob in ring slot j % MMQ_RING, its group's slots released
+                     // together; else the STAGE ring, a slot at a time
+                     const bool mmq_direct = use_mmq && m.mring != nullptr;
+@@ -1970,9 +2025,9 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                         const int par = (int) (j / MMQ_GROUP % 2);
+                         auto wait_slot = [&] {
+                             if (mmq_direct) {
+-                                if (m.mgrp_live[par]) strata::gpu::stream_wait_event(m.copy, m.mgrp_used[par]);
++                                if (m.mgrp_live[par]) publication::require(strata::gpu::stream_wait_event(m.copy, m.mgrp_used[par]), "strata::gpu::stream_wait_event", strata::gpu::last_error);
+                             } else if (m.stage_live[sl]) {
+-                                strata::gpu::stream_wait_event(m.copy, m.used[m.used_of[sl]]);
++                                publication::require(strata::gpu::stream_wait_event(m.copy, m.used[m.used_of[sl]]), "strata::gpu::stream_wait_event(m.copy, m.used[m.used_of[sl]])", strata::gpu::last_error);
+                             }
+                         };
+                         const auto th = Clock::now();
+@@ -1982,17 +2037,17 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                         if (!tr && m.src->pinned(l, e)) {
+                             // DMA straight from the page-locked arena: the copy stream only waits for the slot
+                             wait_slot();
+-                            strata::gpu::copy_async(slot_ptr(sl), b, (size_t) lay.blob_bytes(l), m.copy);
++                            publication::require(strata::gpu::copy_async(slot_ptr(sl), b, (size_t) lay.blob_bytes(l), m.copy), "copy_async", strata::gpu::last_error);
+                             ++stats_.experts_dma;
+                         } else {
+                             // copied to a pinned buffer by the stager (waits only if it is behind), then DMA
+                             const uint8_t* hb = m.stager->wait(job_of[j]);
+                             if (m.stager->failed.exchange(false)) { err = "prefill: the expert source could not copy a blob"; return false; }
+                             wait_slot();
+-                            strata::gpu::copy_async(slot_ptr(sl), hb, (size_t) lay.blob_bytes(l), m.copy);
++                            publication::require(strata::gpu::copy_async(slot_ptr(sl), hb, (size_t) lay.blob_bytes(l), m.copy), "copy_async", strata::gpu::last_error);
+                             m.stager->issued_one(job_of[j], m.copy);
+                         }
+-                        strata::gpu::event_record(m.copied[sl], m.copy);
++                        publication::require(strata::gpu::event_record(m.copied[sl], m.copy), "strata::gpu::event_record(m.copied[sl], m.copy)", strata::gpu::last_error);
+                         if (!mmq_direct) m.stage_live[sl] = true;
+                         stage_of[j] = sl;
+                         stats_.ms_experts_host += ms_since(th);
+@@ -2019,7 +2074,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                             const auto& f = lay.fmt[(size_t) l];
+                             if (gg_nslots > 0) {
+                                 pt.mark(kPfWaitCopy, cs);
+-                                strata::gpu::stream_wait_event(m.cs, m.copied[gg_slots[gg_nslots - 1]]);
++                                publication::require(strata::gpu::stream_wait_event(m.cs, m.copied[gg_slots[gg_nslots - 1]]), "strata::gpu::stream_wait_event(m.cs, m.copied[gg_slots[gg_nslots - 1]])", strata::gpu::last_error);
+                                 pt.mark(kPfDequant, cs);
+                             }
+                             if (!mmq::gather_native_group(gg, f.up_off, mmq_gub / 2, f.down_off, mmq_db, m.grp_gu, mmq_gub,
+@@ -2032,7 +2087,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                             }
+                             if (gg_nslots > 0) {
+                                 const int rel = gg_slots[gg_nslots - 1];
+-                                strata::gpu::event_record(m.used[rel], m.cs);
++                                publication::require(strata::gpu::event_record(m.used[rel], m.cs), "strata::gpu::event_record(m.used[rel], m.cs)", strata::gpu::last_error);
+                                 for (int i = 0; i < gg_nslots; ++i) m.used_of[gg_slots[i]] = rel;
+                             }
+                             gg_nslots = 0;
+@@ -2053,8 +2108,8 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                             if (mmq_direct) {
+                                 // a resident expert into its ring slot (the slot's last group is done: same stream)
+                                 if (slot < 0)
+-                                    strata::gpu::copy_async(slot_ptr((int) (j % MMQ_RING)), blob_dev,
+-                                                            (size_t) lay.blob_bytes(l), m.cs);
++                                    publication::require(strata::gpu::copy_async(slot_ptr((int) (j % MMQ_RING)), blob_dev,
++                                                            (size_t) lay.blob_bytes(l), m.cs), "copy_async", strata::gpu::last_error);
+                             } else if (group_gather) {
+                                 gg.blob[q] = blob_dev;
+                                 gg.n = (int) q + 1;
+@@ -2066,7 +2121,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                                 // gather the expert into its group slot (its GGUF blocks; mmq_plan takes native packs)
+                                 mmq::gather_native(blob_dev, blob_dev + f.up_off, mmq_gub / 2, blob_dev + f.down_off,
+                                                    mmq_db, m.grp_gu + q * mmq_gub, m.grp_d + q * mmq_db, m.cs);
+-                                if (slot >= 0) { strata::gpu::event_record(m.used[slot], m.cs); m.used_of[slot] = slot; }
++                                if (slot >= 0) { publication::require(strata::gpu::event_record(m.used[slot], m.cs), "strata::gpu::event_record", strata::gpu::last_error); m.used_of[slot] = slot; }
+                             }
+                             if (q + 1 < MMQ_GROUP && j + 1 < order.size()) return true;
+                             // the group's products: gate/up, swiglu, the group's H to int8, down
+@@ -2095,7 +2150,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                             m.mmq_ctx->run(dn, m.cs);
+                             if (mmq_direct) {
+                                 const int par = (int) (g % 2);
+-                                strata::gpu::event_record(m.mgrp_used[par], m.cs);
++                                publication::require(strata::gpu::event_record(m.mgrp_used[par], m.cs), "strata::gpu::event_record(m.mgrp_used[par], m.cs)", strata::gpu::last_error);
+                                 m.mgrp_live[par] = true;
+                             }
+                             return true;
+@@ -2112,7 +2167,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                         } else {
+                             blob_dequant_f16(blob_dev, gu16, d16, m.cs);
+                         }
+-                        if (slot >= 0) { strata::gpu::event_record(m.used[slot], m.cs); m.used_of[slot] = slot; }
++                        if (slot >= 0) { publication::require(strata::gpu::event_record(m.used[slot], m.cs), "strata::gpu::event_record", strata::gpu::last_error); m.used_of[slot] = slot; }
+                         if (q + 1 < G && j + 1 < order.size()) return true;
+                         const size_t j0 = j - (size_t) q;
+                         int64_t maxr = 0;
+@@ -2143,7 +2198,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                                 if (!compute(j, m.cache->device_slot(m.host_res[(size_t) l * m.g->n_expert + e]), -1)) return false;
+                             } else {
+                                 pt.mark(kPfWaitCopy, cs);
+-                                strata::gpu::stream_wait_event(m.cs, m.copied[stage_of[j]]);
++                                publication::require(strata::gpu::stream_wait_event(m.cs, m.copied[stage_of[j]]), "strata::gpu::stream_wait_event(m.cs, m.copied[stage_of[j]])", strata::gpu::last_error);
+                                 if (!compute(j, slot_ptr(stage_of[j]), stage_of[j])) return false;
+                             }
+                         }
+@@ -2153,12 +2208,16 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                         size_t k = seq_start[(size_t) l];
+                         const size_t kend = seq_start[(size_t) l + 1];
+                         auto release_to = [&](int32_t e_stop) {
+-                            if (group_gather && k < kend && seq[k].e < e_stop) flush();
+                             while (k < kend && seq[k].e < e_stop) {
+-                                strata::gpu::event_record(m.used[k % (size_t) m.ring], m.cs);
+-                                m.used_of[k % (size_t) m.ring] = (int) (k % (size_t) m.ring);
+-                                consumed = ++k;
+-                                give_back(consumed);
++                                publication::skipped_entry(
++                                    [&] { if (group_gather) flush(); },
++                                    [&] { wait_issued(k); },
++                                    [&] {
++                                        publication::require(strata::gpu::event_record(m.used[k % (size_t) m.ring], m.cs), "skipped entry event_record", strata::gpu::last_error);
++                                        m.used_of[k % (size_t) m.ring] = (int) (k % (size_t) m.ring);
++                                        consumed = ++k;
++                                        give_back(consumed);
++                                    });
+                             }
+                         };
+                         for (size_t j = nf; j < order.size(); ++j) {   // from nf on: id order again
+@@ -2171,7 +2230,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                                 if (group_gather) {
+                                     gg_consumed = k + 1;   // given back by the flush that gathers it
+                                 } else {
+-                                    strata::gpu::stream_wait_event(m.cs, m.copied[sl]);
++                                    publication::require(strata::gpu::stream_wait_event(m.cs, m.copied[sl]), "strata::gpu::stream_wait_event(m.cs, m.copied[sl])", strata::gpu::last_error);
+                                 }
+                                 if (!compute(j, m.stage_dev[sl], sl)) return false;
+                                 ++k;
+@@ -2186,9 +2245,10 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                         }
+                         release_to(m.g->n_expert);
+                     }
++                    stager_done.complete();
+                     pt.mark(kPfCombine, cs);
+                     if (cpu_fut.valid()) {   // set_cpu_pool: the CPU's rows into Dm's tail
+-                        if (cpu_share_env() < 0.0) strata::gpu::event_record(m.cpu_ev[1], m.cs);   // after the GPU's experts
++                        if (cpu_share_env() < 0.0) publication::require(strata::gpu::event_record(m.cpu_ev[1], m.cs), "strata::gpu::event_record", strata::gpu::last_error);   // after the GPU's experts
+                         if (!cpu_fut.get()) { err = "prefill: the CPU experts failed"; return false; }
+                         if (cpu_share_env() < 0.0 && n_stream > n_cpu) {
+                             m.cpu_pend = true;
+@@ -2197,8 +2257,8 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                             m.pend_n_gpu = n_stream - n_cpu;
+                         }
+                         stats_.cpu_share = cpu_share_env() >= 0.0 ? cpu_share_env() : m.cpu_share_now;
+-                        strata::gpu::copy_async(m.Dm + (size_t) rows_gpu * N, m.cpu_rows, (size_t) rows_cpu * N * sizeof(float),
+-                                                m.cs);
++                        publication::require(strata::gpu::copy_async(m.Dm + (size_t) rows_gpu * N, m.cpu_rows, (size_t) rows_cpu * N * sizeof(float),
++                                                m.cs), "copy_async", strata::gpu::last_error);
+                         stats_.experts_cpu += n_cpu;
+                         if (static bool said = false; !said) {
+                             said = true;
+@@ -2210,10 +2270,10 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                     moe_combine(m.Dm, m.slot_dev, m.w, m.shared, m.sg, m.bo, T, m.cs);
+                     // debug: STRATA_DBG_NAN=1 reports the first layer of a chunk whose MoE produced non-finite values
+                     if (static const bool dbg = std::getenv("STRATA_DBG_NAN") != nullptr; dbg) {
+-                        strata::gpu::stream_sync(m.cs);
++                        publication::cleanup_require(strata::gpu::stream_sync(m.cs), "strata::gpu::stream_sync(m.cs)", strata::gpu::last_error);
+                         auto bad = [&](const float* d, int64_t n) {
+                             std::vector<float> h((size_t) n);
+-                            strata::gpu::copy(h.data(), d, (size_t) n * 4);
++                            publication::cleanup_require(strata::gpu::copy(h.data(), d, (size_t) n * 4), "diagnostic copy", strata::gpu::last_error);
+                             int64_t c = 0;
+                             for (float v : h) c += !std::isfinite(v);
+                             return c;
+@@ -2267,6 +2327,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+         if (!ple_land()) return false;   // a stage that ends before layer 1: the rows land anyway, the next gather starts
+         if (issuer.joinable()) {
+             issuer.join();
++            issuer_failure.rethrow();
+             stats_.ms_experts_host += iss_ms;
+             stats_.experts_streamed += iss_streamed;
+             stats_.experts_dma += iss_dma;
+@@ -2275,6 +2336,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+             err = "prefill: the expert source could not copy a blob";
+             return false;
+         }
++        chunk_stager_done.complete();
+         stats_.tokens += T;
+         core::progress_at("reading the prompt (batched): finishing the chunk from token", p0);
+         pt.mark(kPfStart, cs);
+@@ -2297,11 +2359,11 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+             continue;   // the last stage reports the chunk (on_chunk)
+         }
+         if (const char* dump = std::getenv("STRATA_PREFILL_DUMP_R")) {   // debug: the final residuals, every 64th
+-            strata::gpu::stream_sync(m.cs);                                  // position (A/B quality of this path)
++            publication::cleanup_require(strata::gpu::stream_sync(m.cs), "strata::gpu::stream_sync(m.cs)", strata::gpu::last_error);                                  // position (A/B quality of this path)
+             if (std::FILE* f = std::fopen(dump, c0 == 0 ? "wb" : "ab")) {
+                 std::vector<float> row((size_t) D);
+                 for (int64_t t = (64 - p0 % 64) % 64; t < T; t += 64) {
+-                    strata::gpu::copy(row.data(), m.R + t * D, (size_t) D * 4);
++                    publication::cleanup_require(strata::gpu::copy(row.data(), m.R + t * D, (size_t) D * 4), "diagnostic copy", strata::gpu::last_error);
+                     const int64_t pos = p0 + t;
+                     std::fwrite(&pos, sizeof pos, 1, f);
+                     std::fwrite(row.data(), 4, row.size(), f);
+@@ -2313,14 +2375,14 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+             // draft-layer distillation data (opt-in, upstream 48d10a49): every position's final multi-stream residual
+             // as BF16 (round-to-nearest-even), rows in position order, appended across chunks and requests:
+             // [n][hc*n_embd]
+-            strata::gpu::stream_sync(m.cs);
++            publication::cleanup_require(strata::gpu::stream_sync(m.cs), "strata::gpu::stream_sync(m.cs)", strata::gpu::last_error);
+             if (std::FILE* f = std::fopen(dump, "ab")) {
+                 constexpr int64_t kRows = 512;
+                 std::vector<float> rows((size_t) (kRows * D));
+                 std::vector<uint16_t> out((size_t) (kRows * D));
+                 for (int64_t t0 = 0; t0 < T; t0 += kRows) {
+                     const int64_t nr = std::min<int64_t>(kRows, T - t0);
+-                    strata::gpu::copy(rows.data(), m.R + t0 * D, (size_t) (nr * D) * 4);
++                    publication::cleanup_require(strata::gpu::copy(rows.data(), m.R + t0 * D, (size_t) (nr * D) * 4), "diagnostic copy", strata::gpu::last_error);
+                     for (int64_t i = 0; i < nr * D; ++i) {
+                         uint32_t u;
+                         std::memcpy(&u, &rows[(size_t) i], 4);
+@@ -2349,10 +2411,10 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+     ss.ple_prev[0] = prev[0];
+     ss.ple_prev[1] = prev[1];
+     if (std::getenv("STRATA_DBG_NAN") != nullptr) {   // debug: the state the prompt leaves for the token path
+-        strata::gpu::stream_sync(m.cs);
++        publication::cleanup_require(strata::gpu::stream_sync(m.cs), "strata::gpu::stream_sync(m.cs)", strata::gpu::last_error);
+         auto bad = [&](const float* d, int64_t n) {
+             std::vector<float> h((size_t) n);
+-            strata::gpu::copy(h.data(), d, (size_t) n * 4);
++            publication::cleanup_require(strata::gpu::copy(h.data(), d, (size_t) n * 4), "diagnostic copy", strata::gpu::last_error);
+             int64_t c = 0;
+             double mx = 0;
+             for (float v : h) { c += !std::isfinite(v); if (std::isfinite(v)) mx = std::max(mx, (double) std::fabs(v)); }
+@@ -2389,12 +2451,12 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                              "PLE %.0f ms\n", host_setup_ms, host_sync_ms, host_chunk_ms, stats_.ms_ple);
+     }
+     if (std::getenv("STRATA_STATE_HASH_GDN") != nullptr) {   // debug: the GDN states as the prompt path leaves them
+-        strata::gpu::stream_sync(m.cs);
++        publication::cleanup_require(strata::gpu::stream_sync(m.cs), "strata::gpu::stream_sync(m.cs)", strata::gpu::last_error);
+         std::vector<uint8_t> b((size_t) gdn_floats * 4);
+         std::string line;
+         char h[8];
+         for (int64_t i = 0; i < ss.gdn_alloc; ++i) {   // the GDN layers this session owns
+-            strata::gpu::copy(b.data(), ss.gdn_state + (size_t) i * gdn_floats, b.size());
++            publication::cleanup_require(strata::gpu::copy(b.data(), ss.gdn_state + (size_t) i * gdn_floats, b.size()), "diagnostic copy", strata::gpu::last_error);
+             uint64_t x = 1469598103934665603ull;
+             for (uint8_t c : b) x = (x ^ c) * 1099511628211ull;
+             std::snprintf(h, sizeof(h), "%04llx ", (unsigned long long) (x & 0xffff));
+@@ -2403,6 +2465,16 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+         std::fprintf(stderr, "strata prefill: GDN_HASH %s\n", line.c_str());
+     }
+     return true;
++} catch (const std::exception& e) {
++    err = std::string("prefill: ") + e.what();
++    if (impl_->cs) publication::cleanup_require(strata::gpu::stream_sync(impl_->cs), "release/catch cs drain", strata::gpu::last_error);
++    if (impl_->copy) publication::cleanup_require(strata::gpu::stream_sync(impl_->copy), "release/catch copy drain", strata::gpu::last_error);
++    return false;
++} catch (...) {
++    err = "prefill: unknown asynchronous submission failure";
++    if (impl_->cs) publication::cleanup_require(strata::gpu::stream_sync(impl_->cs), "release/catch cs drain", strata::gpu::last_error);
++    if (impl_->copy) publication::cleanup_require(strata::gpu::stream_sync(impl_->copy), "release/catch copy drain", strata::gpu::last_error);
++    return false;
+ }
+ 
+ }  // namespace strata::prefill
+diff --git a/tools/test_prefill_publication.cpp b/tools/test_prefill_publication.cpp
+new file mode 100644
+index 00000000..72011009
+--- /dev/null
++++ b/tools/test_prefill_publication.cpp
+@@ -0,0 +1,96 @@
++// SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
++// SPDX-License-Identifier: LGPL-3.0-or-later
++// CPU-only qualification of production publication.hpp; no GPU or model required.
++#include "strata/prefill/publication.hpp"
++#include <cassert>
++#include <chrono>
++#include <future>
++#include <iostream>
++using namespace strata::prefill::publication;
++const char* error_text() { return "injected failure"; }
++int main() try {
++    // Old ordering is the expected negative: release precedes producer metadata read.
++    bool read = false, violated = false;
++    auto release = [&] { if (!read) violated = true; };
++    release(); read = true;
++    assert(violated);
++    // Exercise the very helper called by production release_to; flush opens ring capacity.
++    for (size_t k = 0; k != 64; ++k) {
++        bool flushed = false, waited = false, released = false;
++        skipped_entry([&] { flushed = true; },
++                      [&] { assert(flushed); waited = true; },
++                      [&] { assert(waited); released = true; });
++        assert(released); // includes repeated logical wraps of rings 2, 4, and 8
++    }
++    // Submission/event/wait failure cutpoints: no later metadata or progress publication.
++    for (int cut = 0; cut != 3; ++cut) {
++        int progress = 0;
++        try {
++            skipped_entry([&] { require(cut != 0, "submit", error_text); },
++                          [&] { require(cut != 1, "wait", error_text); },
++                          [&] { require(cut != 2, "event", error_text); ++progress; });
++            assert(false);
++        } catch (const std::runtime_error&) { assert(progress == 0); }
++    }
++    // Producer fault wakes a blocked consumer. Always join before error escapes scope.
++    std::atomic<size_t> issued{0}; std::atomic<bool> stop{false}; Failure failure;
++    std::thread producer([&] {
++        try { require(false, "copy_async_after", error_text); }
++        catch (...) { failure.capture(); stop.store(true, std::memory_order_release); }
++    });
++    bool caught = false;
++    try { wait_issued(issued, stop, failure, 0); }
++    catch (const std::runtime_error& e) {
++        caught = true; assert(std::string(e.what()).find("copy_async_after") != std::string::npos);
++    }
++    bool cancelled = false, drained = false;
++    stop_join(stop, producer, [&] { cancelled = true; }, [&] {
++        assert(cancelled && !producer.joinable()); drained = true;
++    });
++    assert(caught && drained && !producer.joinable());
++    // Early consumer unwind must stop a producer blocked on ring capacity and then drain.
++    stop.store(false);
++    std::atomic<bool> exited{false};
++    std::thread capacity_waiter([&] {
++        while (!stop.load(std::memory_order_acquire)) std::this_thread::yield();
++        exited.store(true, std::memory_order_release);
++    });
++    stop_join(stop, capacity_waiter, [] {}, [&] { assert(exited.load()); });
++    assert(!capacity_waiter.joinable());
++    // Abort without an exception also wakes waiters, while publication permits normal completion.
++    Failure empty;
++    caught = false;
++    try { wait_issued(issued, stop, empty, 0); } catch (...) { caught = true; }
++    assert(caught);
++    stop.store(false); issued.store(1); wait_issued(issued, stop, empty, 0);
++    // Group flush releases enough capacity to allow producer publication before skipped-entry wait.
++    std::atomic<bool> capacity{false}; issued.store(0);
++    std::thread blocked([&] { while (!capacity.load()) std::this_thread::yield(); issued.store(1); });
++    skipped_entry([&] { capacity.store(true); },
++                  [&] { wait_issued(issued, stop, empty, 0); }, [] {});
++    blocked.join();
++    // Old store can overwrite cancellation back to a waiter's sleeping value.
++    std::atomic<int> staged{0};
++    const int sleeping_value = staged.load();
++    staged.store(1 << 30);
++    staged.store(sleeping_value); // old expected negative
++    assert(staged.load() == sleeping_value);
++    staged.store(1 << 30);
++    publish_staged(staged, sleeping_value);
++    assert(staged.load() == (1 << 30));
++    staged.store(0);
++    publish_staged(staged, 4);
++    publish_staged(staged, 2);
++    assert(staged.load() == 4);
++    for (int repeat = 0; repeat < 64; ++repeat) {
++        staged.store(0);
++        std::thread publish([&] { for (int i = 1; i <= 64; ++i) publish_staged(staged, i); });
++        staged.store(1 << 30);
++        publish.join();
++        assert(staged.load() == (1 << 30));
++    }
++    std::cout << "production publication helper qualification passed\n";
++} catch (const std::exception& e) {
++    std::cerr << "publication qualification: " << e.what() << "\n";
++    return 1;
++}

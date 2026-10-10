@@ -1,0 +1,58 @@
+[
+  {
+    "label": "download-cppcheck-dependency",
+    "stream": "stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  },
+  {
+    "label": "download-cppcheck-dependency",
+    "stream": "stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  },
+  {
+    "label": "unpack-cppcheck-dependency",
+    "stream": "stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  },
+  {
+    "label": "unpack-cppcheck-dependency",
+    "stream": "stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  },
+  {
+    "label": "baseline-tidy",
+    "stream": "stdout",
+    "bytes": 23623,
+    "sha256": "e915c1ef11837597f8341c3187010bb7f2c24d1edbb3aba90d3f4117e076115c",
+    "excerpt": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/include/strata/core/expert_source.hpp:215:8: warning: Excessive padding in 'struct strata::core::ExpertDispatch' (105 padding bytes, where 41 is optimal). Optimal fields order: act, pool, src, n_expert, layers, experts, missing, cache, cache_hits, cache_admitted, cache_refused, cache_stream, cache_fail, cache_base, cache_blob, cache_slot_off, hit_scratch, parts_out, hit_out, parts_elems, mixed, x_q8_0_hit, x_q8_0_hit_scale, d_slot, d_dst, host_res, hit_done, hit_ready, hit_late, n_hits, hit_fail, plan, pcie_split, pcie_experts, offload_entries, ms_plan, ms_actq, ms_jobs, ms_run, multi_misses, multi_entries, fail, fail_layer, fail_expert, remote, h_slot, h_dst, is_hit, jobs, act_multi, nact_multi, jobs_multi, job_of, usage, remote_count, pcie_num, decided, split_rows, hit_poke, hit_cpu_order, hit_pending, pcie_overlap, failed, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/include/strata/core/layer.hpp:209:8: warning: Excessive padding in 'struct strata::core::QsaState' (35 padding bytes, where 3 is optimal). Optimal fields order: k_pool, v_pool, k_q, v_q, k_scale, v_scale, k_q4, v_q4, page_table, n_pages, max_cells, n_slots, idx_pooled_rows, idx_tail, idx_dead, idx_pooled, idx_block_pos, cos_tab, sin_tab, step, attention_status, pos_dev, host_step, host_pos, host, map, kv_mode, kv_elastic, kv_int8, kv_q4, kv_hybrid, kv_rot, owns_rope, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/include/strata/kernels/cpu/pool.hpp:91:7: warning: Excessive padding in 'class strata::kernels::cpu::ExpertPool' (350 padding bytes, where 158 is optimal). Optimal fields order: stop_, host_works_, tasks_, ms_multi_gu, ms_multi_q, ms_multi_down, multi_bytes, jobs_, ms_wait_park_, ms_drain_, done_, n_, ms_repark_, wstate_, hstate_ms_, spin_before_sleep_, mjobs_, mrows_, nfmt_, parked_, njobs_, threads_, scratch_, split_, split_multi_, sleep_mu_, sleep_cv_, epoch_, hstate_, mode_, parts_a_, parts_b_, mtasks_, sleepers_, head_, host_scratch_, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/include/strata/kernels/kv_stream.hpp:83:92: warning: performing an implicit widening conversion to type 'uint64_t' (aka 'unsigned long') of a multiplication performed in type 'int' [bugprone-implicit-widening-of-multiplication-result]\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/src/prefill/prefill.cpp:576:74: warning: 'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/src/prefill/prefill.cpp:643:18: warning: an assignment within an 'if' condition is bug-prone [bugprone-assignment-in-if-condition]\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/src/prefill/prefill.cpp:1151:58: warning: performing an implicit widening conversion to type 'int64_t' (aka 'long') of a multiplication performed in type 'int' [bugprone-implicit-widening-of-multiplication-result]\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/src/prefill/prefill.cpp:1658:61: warning: 'atoll' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtoll' instead [bugprone-unchecked-string-to-number-conversion]\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/src/prefill/prefill.cpp:2187:36: warning: narrowing conversion from 'int64_t' (aka 'long') to signed type 'int32_t' (aka 'int') is implementation-defined [bugprone-narrowing-conversions]\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/src/prefill/prefill.cpp:2366:27: warning: performing an implicit widening conversion to type 'int64_t' (aka 'long') of a multiplication performed in type 'int' [bugprone-implicit-widening-of-multiplication-result]"
+  },
+  {
+    "label": "baseline-tidy",
+    "stream": "stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  },
+  {
+    "label": "lint",
+    "stream": "stdout",
+    "bytes": 24070,
+    "sha256": "749a5f472da65a45ad36dcdaf556938c53fa9498e3b49140a7baa38c9309ad6c",
+    "excerpt": "== clang-tidy\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/expert_source.hpp:215:8: warning: Excessive padding in 'struct strata::core::ExpertDispatch' (105 padding bytes, where 41 is optimal). Optimal fields order: act, pool, src, n_expert, layers, experts, missing, cache, cache_hits, cache_admitted, cache_refused, cache_stream, cache_fail, cache_base, cache_blob, cache_slot_off, hit_scratch, parts_out, hit_out, parts_elems, mixed, x_q8_0_hit, x_q8_0_hit_scale, d_slot, d_dst, host_res, hit_done, hit_ready, hit_late, n_hits, hit_fail, plan, pcie_split, pcie_experts, offload_entries, ms_plan, ms_actq, ms_jobs, ms_run, multi_misses, multi_entries, fail, fail_layer, fail_expert, remote, h_slot, h_dst, is_hit, jobs, act_multi, nact_multi, jobs_multi, job_of, usage, remote_count, pcie_num, decided, split_rows, hit_poke, hit_cpu_order, hit_pending, pcie_overlap, failed, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/core/layer.hpp:209:8: warning: Excessive padding in 'struct strata::core::QsaState' (35 padding bytes, where 3 is optimal). Optimal fields order: k_pool, v_pool, k_q, v_q, k_scale, v_scale, k_q4, v_q4, page_table, n_pages, max_cells, n_slots, idx_pooled_rows, idx_tail, idx_dead, idx_pooled, idx_block_pos, cos_tab, sin_tab, step, attention_status, pos_dev, host_step, host_pos, host, map, kv_mode, kv_elastic, kv_int8, kv_q4, kv_hybrid, kv_rot, owns_rope, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/cpu/pool.hpp:91:7: warning: Excessive padding in 'class strata::kernels::cpu::ExpertPool' (350 padding bytes, where 158 is optimal). Optimal fields order: stop_, host_works_, tasks_, ms_multi_gu, ms_multi_q, ms_multi_down, multi_bytes, jobs_, ms_wait_park_, ms_drain_, done_, n_, ms_repark_, wstate_, hstate_ms_, spin_before_sleep_, mjobs_, mrows_, nfmt_, parked_, njobs_, threads_, scratch_, split_, split_multi_, sleep_mu_, sleep_cv_, epoch_, hstate_, mode_, parts_a_, parts_b_, mtasks_, sleepers_, head_, host_scratch_, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/include/strata/kernels/kv_stream.hpp:83:92: warning: performing an implicit widening conversion to type 'uint64_t' (aka 'unsigned long') of a multiplication performed in type 'int' [bugprone-implicit-widening-of-multiplication-result]\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/src/prefill/prefill.cpp:597:74: warning: 'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/src/prefill/prefill.cpp:664:18: warning: an assignment within an 'if' condition is bug-prone [bugprone-assignment-in-if-condition]\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/src/prefill/prefill.cpp:1172:58: warning: performing an implicit widening conversion to type 'int64_t' (aka 'long') of a multiplication performed in type 'int' [bugprone-implicit-widening-of-multiplication-result]\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/src/prefill/prefill.cpp:1713:61: warning: 'atoll' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtoll' instead [bugprone-unchecked-string-to-number-conversion]\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/src/prefill/prefill.cpp:2246:36: warning: narrowing conversion from 'int64_t' (aka 'long') to signed type 'int32_t' (aka 'int') is implementation-defined [bugprone-narrowing-conversions]\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-b570-prefill-publication-20261011/src/prefill/prefill.cpp:2428:27: warning: performing an implicit widening conversion to type 'int64_t' (aka 'long') of a multiplication performed in type 'int' [bugprone-implicit-widening-of-multiplication-result]\n== cppcheck\n== codespell\n== reuse"
+  },
+  {
+    "label": "lint",
+    "stream": "stderr",
+    "bytes": 443,
+    "sha256": "628e4b34c0fbf71447d20ba336c91212cde7ce39015c263920a05df37d3f54d4",
+    "excerpt": ""
+  }
+]
