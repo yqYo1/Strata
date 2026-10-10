@@ -14,6 +14,8 @@ int main() try {
     auto* q = dpct::get_current_device().create_in_order_queue(true);
     if (!q->has_property<sycl::property::queue::enable_profiling>() ||
         !q->get_device().has(sycl::aspect::queue_profiling)) throw std::runtime_error("profiling unavailable");
+    if(q->get_device().get_info<sycl::info::device::name>() != "Intel(R) Arc(TM) B570 Graphics")
+        throw std::runtime_error("B570 qualification device required");
     constexpr int64_t T = 7, N = 11, K = 13, ldy = 17;
     std::vector<uint16_t> x(T*K), w(N*K);
     // 0/1 half inputs make every expected product exactly representable as FP32.
