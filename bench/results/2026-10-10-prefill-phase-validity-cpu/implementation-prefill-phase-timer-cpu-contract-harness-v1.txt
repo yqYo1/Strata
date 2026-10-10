@@ -1,0 +1,20 @@
+PfTimer GPU-free CPU contract harness v1 — 2026-10-10
+
+Prepared implementation-only followup. No tests, compilation, Git, GPU/model, device/process queries, services or cleanup run. The command below is for root, after serialization with active work.
+
+Added file: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-phase-validity-20261010/sycl/tools/test_prefill_phase_timer_validity.py
+SHA256 91ca1c20ba2d5d1633d2dbe44c6bc2e5243ff8fd778a1b3fb9b600b4b79d6240
+Engine unchanged in this followup: sycl/src/prefill/prefill.cpp SHA256 1a6598a158e0b11e79c7a9f93ba7e452e3c316f108e38a07ed88c88a04cc8b72
+
+Root command from worktree root:
+python3 sycl/tools/test_prefill_phase_timer_validity.py
+Optional compiler selection:
+CXX=/usr/bin/c++ python3 sycl/tools/test_prefill_phase_timer_validity.py
+
+Harness extracts engine source verbatim from enum PfPhase through PfTimer ending, excluding ExpertTransferTimer. It concatenates deterministic host-only SYCL/dpct queue/event stubs and a scenario main, compiles C++17 in a temporary directory and runs independent subprocesses. There is no copied timer implementation or SYCL runtime dependency. Actual extraction means subsequent engine changes are tested automatically. Stub counters cover all simulated queue/event calls and waits.
+
+Cases: missing exact-queue profiling property and device aspect; profiling query exception independently on earlier/later endpoint; unsigned timestamp reversal with raw endpoint evidence; unfinished marker, completion query unknown and asynchronous fault fatal cases; destructor unfinished-marker safety; queue pointer change; invalid phase index; zero or one marker; normal five markers over three folds with four reconciled intervals/eight successful queries; equal endpoints yielding valid zero elapsed time; absent TIMING and SYNC with zero queue/event calls; absent TIMING and present SYNC with five preserved waits. TIMING/SYNC are set to value 0 to verify presence semantics. Normal/equal cases assert no waits and exact submissions, retained endpoint and reconciled receipt. Phase sums match expected deterministic totals.
+
+Every invalid case requires one invalid receipt, exact reason, and no phase JSON/GPU timeline/percentage output. Query failures require two attempted endpoint queries, one success/one failure and zero accepted intervals. Reversal requires recorded raw begin=9000000/end=1000000 plus distinct nonmonotonic diagnostic text. Fatal subprocesses require exit 1 and no automatic canary destructor or post-timer counters, demonstrating _Exit bypasses stack unwind and normal continuation. This checks observable no-unwind, not a real USM allocator. Other error receipts return normally with canary destruction.
+
+No run result is claimed. Root must record actual execution, compiler and result. Production SYCL compilation remains required; stub compilation cannot establish runtime ABI or actual device completion/error semantics. No CUDA/HIP work requested or performed.

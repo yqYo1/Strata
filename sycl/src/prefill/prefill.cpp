@@ -2120,6 +2120,36 @@ struct PfTimer {
     // names the stage that never completes
     bool sync = std::getenv("STRATA_PREFILL_SYNC") != nullptr;
     long long n_sync = 0;
+    dpct::queue_ptr admitted_queue = nullptr;
+    bool admitted = false, valid = true;
+    const char* invalid_reason = "none";
+    size_t marker_attempts = 0, markers_submitted = 0, intervals_attempted = 0;
+    size_t intervals_valid = 0, query_attempts = 0, query_successes = 0, query_failures = 0;
+    size_t nonmonotonic = 0, incomplete = 0;
+    uint64_t raw_begin = 0, raw_end = 0;
+    void invalidate(const char* reason) {
+        if (valid) invalid_reason = reason;
+        valid = false;
+    }
+    void receipt() const {
+        std::fprintf(stderr, "strata prefill phase validity: {\"status\":\"%s\",\"reason\":\"%s\","
+                     "\"queue_admitted\":%s,\"marker_attempts\":%zu,\"markers_submitted\":%zu,"
+                     "\"retained_markers\":%zu,\"intervals_attempted\":%zu,\"intervals_valid\":%zu,"
+                     "\"query_attempts\":%zu,\"query_successes\":%zu,\"query_failures\":%zu,"
+                     "\"nonmonotonic\":%zu,\"incomplete\":%zu,\"raw_begin_ns\":%llu,\"raw_end_ns\":%llu}\n",
+                     valid ? "valid" : "invalid", invalid_reason, admitted ? "true" : "false",
+                     marker_attempts, markers_submitted, used, intervals_attempted, intervals_valid,
+                     query_attempts, query_successes, query_failures, nonmonotonic, incomplete,
+                     (unsigned long long) raw_begin, (unsigned long long) raw_end);
+    }
+    // Never unwind model-owned USM after an unknown completion or asynchronous fault.
+    [[noreturn]] void unsafe_completion(const char* reason) {
+        invalidate(reason);
+        ++incomplete;
+        receipt();
+        std::fflush(stderr);
+        std::_Exit(EXIT_FAILURE);
+    }
     void mark(int phase, dpct::queue_ptr s) {
         if (sync) {
             const auto t0 = std::chrono::steady_clock::now();
@@ -2129,41 +2159,87 @@ struct PfTimer {
                          std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count());
         }
         if (!on) return;
-        if (used == ev.size()) {
-            dpct::event_ptr e = nullptr;
-            e = new sycl::event();
-            ev.push_back(e);
-            ph.push_back(0);
+        ++marker_attempts;
+        if (phase < 0 || phase >= kPfCount) { invalidate("phase_index"); return; }
+        if (!admitted_queue) {
+            admitted_queue = s;
+            try {
+                admitted = s && s->has_property<sycl::property::queue::enable_profiling>() &&
+                           s->get_device().has(sycl::aspect::queue_profiling);
+            } catch (...) { invalidate("queue_admission_query"); return; }
+            if (!admitted) { invalidate("queue_profiling_unavailable"); return; }
         }
+        if (s != admitted_queue) { invalidate("queue_changed"); return; }
+        if (!admitted) return;
+        try {
+            if (used == ev.size()) {
+                ev.push_back(new sycl::event());
+                ph.push_back(0);
+            }
+        } catch (...) { unsafe_completion("marker_storage_failure"); }
         ph[used] = phase;
-        dpct::sync_barrier(ev[used], s);
+        try { dpct::sync_barrier(ev[used], s); }
+        catch (...) { unsafe_completion("marker_submission_failure"); }
         ++used;
+        ++markers_submitted;
     }
-    // every recorded mark has completed (the stream was synchronized): charge the gaps, keep the last mark
-    void fold() try {
-        if (!on || used < 2) return;
+    // Caller has already synchronized. Inspect completion and drain errors without another wait.
+    void fold() {
+        if (!on || !used) return;
+        for (size_t i = 0; i < used; ++i) {
+            try {
+                if (ev[i]->get_info<sycl::info::event::command_execution_status>() !=
+                    sycl::info::event_command_status::complete)
+                    unsafe_completion("marker_incomplete");
+            } catch (...) { unsafe_completion("completion_query_failure"); }
+        }
+        try { admitted_queue->throw_asynchronous(); }
+        catch (...) { unsafe_completion("queue_async_failure"); }
         for (size_t i = 0; i + 1 < used; ++i) {
-            float t = 0.0f;
-            if (DPCT_CHECK_ERROR(
-                    t = (ev[i + 1]
-                             ->get_profiling_info<
-                                 sycl::info::event_profiling::command_end>() -
-                         ev[i]
-                             ->get_profiling_info<sycl::info::event_profiling::
-                                                      command_end>()) /
-                        1000000.0f) == 0) ms[ph[i]] += t;
+            ++intervals_attempted;
+            bool endpoints_ok = true;
+            uint64_t endpoints[2] = {};
+            for (size_t j = 0; j < 2; ++j) {
+                ++query_attempts;
+                try {
+                    endpoints[j] = ev[i + j]->get_profiling_info<sycl::info::event_profiling::command_end>();
+                    ++query_successes;
+                } catch (...) {
+                    ++query_failures;
+                    endpoints_ok = false;
+                    invalidate("profiling_query_failure");
+                }
+            }
+            if (!endpoints_ok) {
+                std::fprintf(stderr, "strata prefill phase query failure: interval %zu phase %s\n",
+                             intervals_attempted, kPfNames[ph[i]]);
+                continue;
+            }
+            raw_begin = endpoints[0]; raw_end = endpoints[1];
+            if (raw_end < raw_begin) {
+                ++nonmonotonic;
+                invalidate("nonmonotonic_endpoints");
+                std::fprintf(stderr, "strata prefill phase nonmonotonic: interval %zu begin %llu end %llu\n",
+                             intervals_attempted, (unsigned long long) raw_begin, (unsigned long long) raw_end);
+                continue;
+            }
+            const double elapsed_ms = (raw_end - raw_begin) / 1000000.0;
+            ms[ph[i]] += elapsed_ms;
+            ++intervals_valid;
         }
         std::swap(ev[0], ev[used - 1]);
         std::swap(ph[0], ph[used - 1]);
         used = 1;
     }
-    catch (sycl::exception const &exc) {
-      std::cerr << exc.what() << "Exception caught at file:" << __FILE__
-                << ", line:" << __LINE__ << std::endl;
-      std::exit(1);
-    }
     void report(int64_t n, double wall_ms, double staging_ms, double ple_ms) {
         if (!on) return;
+        if (!admitted || markers_submitted < 2 || used != 1 ||
+            marker_attempts != markers_submitted || intervals_attempted != markers_submitted - 1 ||
+            intervals_valid != intervals_attempted || query_attempts != 2 * intervals_attempted ||
+            query_successes != query_attempts || query_failures || nonmonotonic || incomplete)
+            invalidate("final_reconciliation");
+        receipt();
+        if (!valid) return;
         double total = 0.0;
         for (double v : ms) total += v;
         std::string line;
@@ -2187,6 +2263,18 @@ struct PfTimer {
         std::fprintf(stderr, "}}\n");
     }
     ~PfTimer() {
+        // Error returns can bypass fold. Never destroy model storage with live/unknown marker work.
+        if (on && used) {
+            for (size_t i = 0; i < used; ++i) {
+                try {
+                    if (ev[i]->get_info<sycl::info::event::command_execution_status>() !=
+                        sycl::info::event_command_status::complete)
+                        unsafe_completion("destruction_marker_incomplete");
+                } catch (...) { unsafe_completion("destruction_completion_unknown"); }
+            }
+            try { admitted_queue->throw_asynchronous(); }
+            catch (...) { unsafe_completion("destruction_queue_async_failure"); }
+        }
         for (dpct::event_ptr e : ev) DPCT_CHECK_ERROR(dpct::destroy_event(e));
     }
 };
