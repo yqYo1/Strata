@@ -7,3 +7,10 @@ Root compared twelve original GDN device/host function bodies against parent609a
 The new fixture compares all recurrent and convolution state, FP32/FP16 outputs, beta, factor against native exp of materialized baseline log gate, immutable inputs and poisoned tails/guards. It carries state through short/odd chunks and accepts bounded32768 or262144 synthetic recurrence prefixes, including near-end1/4 tails. It does not exercise physical model KV capacity or establish model correctness or speed. Actual full262144 model lifecycle and >=32768 model performance remain pending.
 
 Status at this source boundary: UNBUILT and UNRUN. Build/runtime outcomes will be recorded separately without rewriting original agent reports.
+
+
+## Root CPU build v1 and OFF-test correction
+
+The production-flag full-dependency build of sourcecbc77580 passed119 steps; build325.807 seconds,normal0,owned session empty,no cleanup/survivors,source/compiler inputs stable. Required precise FP32,SG32,per-kernel split,SPIR64 JIT and rounded divide/sqrt options and public ze_loader import were checked. This is compiler evidence, not actual recurrence numerical or performance evidence. Original successful build log hashes and unique warning counts are retained compactly.
+
+Root fully read independent R145 and fixed its concrete host-only test gap: producer and recurrence empty/refusal calls now run in independent try/assert blocks, so one expected throw cannot skip the other. The private header documents explicit typed selection versus production environment selection. These changes are awaiting rebuild/runtime qualification at this source boundary. R145 original bytes remain unchanged in the shared research archive.

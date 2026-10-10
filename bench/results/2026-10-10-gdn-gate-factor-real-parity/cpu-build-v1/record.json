@@ -1,0 +1,3995 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "GPU_executed": false,
+  "model_opened": false,
+  "adopted": false,
+  "scope": "Production-flag full dependency CPU build, real GDN factor parity target only",
+  "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010",
+  "source_head": "cbc77580050a327538be48b0ba7a759c14f7a49f",
+  "build": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/build-sycl-gdn-factor-real-v1",
+  "source_pins": {
+    "sycl/CMakeLists.txt": {
+      "bytes": 27220,
+      "sha256": "0f162e7f123f4ceb11ce611b402549d56c9b37b64be2817194efcdce2af661c8"
+    },
+    "sycl/src/prefill/kernels.dp.cpp": {
+      "bytes": 207400,
+      "sha256": "ee745dbc335748709023dd349829d0300b797adefae0e951f975bae4e5408e3f"
+    },
+    "sycl/src/prefill/prefill.cpp": {
+      "bytes": 321397,
+      "sha256": "064d6789aeb55c7c44e7fe703d4fcabfee9524c4e14f164610236a6c84257d6a"
+    },
+    "sycl/src/prefill/gdn_gate_factor_parity.cpp": {
+      "bytes": 16537,
+      "sha256": "2204391703c351dca4a9ecbe51bc1c0d93694741b1362867e91250ea385baed3"
+    },
+    "sycl/include/strata/prefill/gdn_gate_factor.hpp": {
+      "bytes": 683,
+      "sha256": "28aaa4c9b5e0d25a32af603d1d4676861c5950ca7c63dfc6f44f9401575ed08e"
+    },
+    "sycl/include/strata/prefill/gdn_variant.hpp": {
+      "bytes": 2819,
+      "sha256": "d9b0c169486205c636658c92db90351f5a9f091bb8e108c07ddce2ec56cd3ef0"
+    },
+    "sycl/include/dpct/device.hpp": {
+      "bytes": 34564,
+      "sha256": "adbcbd0ac45995348e37ac3f5ca42d9f3d4b0555031aeb1781a1e2166a74ed52"
+    },
+    "sycl/include/strata/sycl_error.hpp": {
+      "bytes": 1160,
+      "sha256": "4b64f82b0805e9a113077ea7abc57d18044bff7240d8fe956abe651eb4f90ce4"
+    }
+  },
+  "controller_sha256": "b121ca966349d794d90e81ea265da691b7670cf28072173380057022a9c84b1f",
+  "parent_owner_sha256": "7df012ee4d9bd047a6094ccedb37fddb3d56d4b054d9fdf468534b0fb6e94e1f",
+  "host_owner_receipt": {
+    "bytes": 9311,
+    "sha256": "e817846665509a94891343d5320bd765b3b559afb81cd0c1a35cef72494a4b36"
+  },
+  "limits": {
+    "AS_each_bytes": 34359738368,
+    "RSS_session_sampled_bytes": 12884901888,
+    "CPU_each_seconds": [
+      600,
+      601
+    ],
+    "stage_wall_seconds": 1200,
+    "text_cap_bytes": 33554432,
+    "file_cap_each_bytes": 134217728,
+    "owned_cleanup_grace_seconds": 6
+  },
+  "commands": [
+    {
+      "label": "owner-cpu-closure",
+      "argv": [
+        "/usr/bin/true"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T02:28:07.095305+00:00",
+      "wall_seconds": 10,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3906680,
+          "start_ticks": 28896621,
+          "sid": 3906680,
+          "pgid": 3906680
+        }
+      ],
+      "pid": 3906680,
+      "direct_identity": {
+        "pid": 3906680,
+        "state": "R",
+        "ppid": 3906643,
+        "pgid": 3906680,
+        "sid": 3906680,
+        "start_ticks": 28896621,
+        "rss_bytes": 434176
+      },
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T02:28:07.178755+00:00",
+      "elapsed_seconds": 0.0816603220300749,
+      "logs": {
+        "owner-cpu-closure.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "owner-cpu-closure.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "toolchain-environment",
+      "argv": [
+        "/bin/bash",
+        "-c",
+        "source /opt/intel/oneapi/setvars.sh >/dev/null 2>&1 && env -0"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T02:28:07.179595+00:00",
+      "wall_seconds": 30,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3906682,
+          "start_ticks": 28896629,
+          "sid": 3906682,
+          "pgid": 3906682
+        },
+        {
+          "pid": 3907008,
+          "start_ticks": 28896684,
+          "sid": 3906682,
+          "pgid": 3906682
+        }
+      ],
+      "pid": 3906682,
+      "direct_identity": {
+        "pid": 3906682,
+        "state": "R",
+        "ppid": 3906643,
+        "pgid": 3906682,
+        "sid": 3906682,
+        "start_ticks": 28896629,
+        "rss_bytes": 454656
+      },
+      "peak_session_rss_bytes": 6934528,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T02:28:08.217544+00:00",
+      "elapsed_seconds": 1.0374307410093024,
+      "logs": {
+        "toolchain-environment.stdout": {
+          "bytes": 4499,
+          "sha256": "e7d4b9c86e9a17fb185e1410b0022af78bad8097ce122777d30d84581e2a4937"
+        },
+        "toolchain-environment.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "configure",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/build-sycl-gdn-factor-real-v1",
+        "-G",
+        "Ninja",
+        "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DCMAKE_C_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icx",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DSTRATA_GGML_DIR=/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned",
+        "-DSTRATA_NATIVE_EXPERTS=ON",
+        "-DSTRATA_SYCL_PARITY=OFF",
+        "-DSTRATA_IQ2S_GCC=OFF",
+        "-DSTRATA_SYCL_AOT=",
+        "-DSTRATA_SYCL_SPIN_MAX=",
+        "-DSTRATA_NATIVE_POOL_TASK_FACTOR=0",
+        "-DSTRATA_GDN_PREFILL_GATE_FACTOR=ON",
+        "-DSTRATA_GDN_GATE_FACTOR_PARITY=ON"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+        "ONEAPI_ROOT": "/opt/intel/oneapi",
+        "CMAKE_PREFIX_PATH": "/opt/intel/oneapi/tbb/2023.1/env/..:/opt/intel/oneapi/pti/1.1/lib/cmake/pti:/opt/intel/oneapi/mkl/2026.1/lib/cmake:/opt/intel/oneapi/ipp/2026.0/lib/cmake/ipp:/opt/intel/oneapi/dpl/2022.13/lib/cmake/oneDPL:/opt/intel/oneapi/dnnl/2026.0/lib/cmake:/opt/intel/oneapi/compiler/2026.1:/opt/intel/oneapi/ccl/2022.1/lib/cmake/oneCCL",
+        "PKG_CONFIG_PATH": "/opt/intel/oneapi/vtune/2026.4/include/pkgconfig/lib64:/opt/intel/oneapi/tbb/2023.1/env/../lib/pkgconfig:/opt/intel/oneapi/mpi/2021.18/lib/pkgconfig:/opt/intel/oneapi/mkl/2026.1/lib/pkgconfig:/opt/intel/oneapi/ippcp/2026.0/lib/pkgconfig:/opt/intel/oneapi/dpl/2022.13/lib/pkgconfig:/opt/intel/oneapi/dnnl/2026.0/lib/pkgconfig:/opt/intel/oneapi/compiler/2026.1/lib/pkgconfig:/opt/intel/oneapi/ccl/2022.1/lib/pkgconfig/",
+        "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T02:28:08.262538+00:00",
+      "wall_seconds": 120,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3907202,
+          "start_ticks": 28896737,
+          "sid": 3907202,
+          "pgid": 3907202
+        },
+        {
+          "pid": 3907209,
+          "start_ticks": 28896743,
+          "sid": 3907202,
+          "pgid": 3907202
+        },
+        {
+          "pid": 3907210,
+          "start_ticks": 28896743,
+          "sid": 3907202,
+          "pgid": 3907202
+        },
+        {
+          "pid": 3907252,
+          "start_ticks": 28896767,
+          "sid": 3907202,
+          "pgid": 3907202
+        },
+        {
+          "pid": 3907280,
+          "start_ticks": 28896781,
+          "sid": 3907202,
+          "pgid": 3907202
+        },
+        {
+          "pid": 3907284,
+          "start_ticks": 28896784,
+          "sid": 3907202,
+          "pgid": 3907284
+        },
+        {
+          "pid": 3907285,
+          "start_ticks": 28896784,
+          "sid": 3907202,
+          "pgid": 3907284
+        },
+        {
+          "pid": 3907286,
+          "start_ticks": 28896784,
+          "sid": 3907202,
+          "pgid": 3907284
+        },
+        {
+          "pid": 3907301,
+          "start_ticks": 28896796,
+          "sid": 3907202,
+          "pgid": 3907202
+        },
+        {
+          "pid": 3907302,
+          "start_ticks": 28896796,
+          "sid": 3907202,
+          "pgid": 3907302
+        },
+        {
+          "pid": 3907303,
+          "start_ticks": 28896797,
+          "sid": 3907202,
+          "pgid": 3907302
+        },
+        {
+          "pid": 3907304,
+          "start_ticks": 28896797,
+          "sid": 3907202,
+          "pgid": 3907302
+        },
+        {
+          "pid": 3907337,
+          "start_ticks": 28896837,
+          "sid": 3907202,
+          "pgid": 3907202
+        },
+        {
+          "pid": 3907390,
+          "start_ticks": 28896877,
+          "sid": 3907202,
+          "pgid": 3907202
+        },
+        {
+          "pid": 3907391,
+          "start_ticks": 28896877,
+          "sid": 3907202,
+          "pgid": 3907202
+        },
+        {
+          "pid": 3907393,
+          "start_ticks": 28896878,
+          "sid": 3907202,
+          "pgid": 3907202
+        }
+      ],
+      "pid": 3907202,
+      "direct_identity": {
+        "pid": 3907202,
+        "state": "R",
+        "ppid": 3906643,
+        "pgid": 3907202,
+        "sid": 3907202,
+        "start_ticks": 28896737,
+        "rss_bytes": 290816
+      },
+      "peak_session_rss_bytes": 98160640,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T02:28:10.664158+00:00",
+      "elapsed_seconds": 2.4009620180004276,
+      "logs": {
+        "configure.stdout": {
+          "bytes": 1463,
+          "sha256": "3a6cbbf8ed84af1eeb9301b5d2a49ff2e767761e7f73a844f163cf140a436ea5"
+        },
+        "configure.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "build",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/build-sycl-gdn-factor-real-v1",
+        "--target",
+        "gdn_gate_factor_parity",
+        "--parallel",
+        "2"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+        "ONEAPI_ROOT": "/opt/intel/oneapi",
+        "CMAKE_PREFIX_PATH": "/opt/intel/oneapi/tbb/2023.1/env/..:/opt/intel/oneapi/pti/1.1/lib/cmake/pti:/opt/intel/oneapi/mkl/2026.1/lib/cmake:/opt/intel/oneapi/ipp/2026.0/lib/cmake/ipp:/opt/intel/oneapi/dpl/2022.13/lib/cmake/oneDPL:/opt/intel/oneapi/dnnl/2026.0/lib/cmake:/opt/intel/oneapi/compiler/2026.1:/opt/intel/oneapi/ccl/2022.1/lib/cmake/oneCCL",
+        "PKG_CONFIG_PATH": "/opt/intel/oneapi/vtune/2026.4/include/pkgconfig/lib64:/opt/intel/oneapi/tbb/2023.1/env/../lib/pkgconfig:/opt/intel/oneapi/mpi/2021.18/lib/pkgconfig:/opt/intel/oneapi/mkl/2026.1/lib/pkgconfig:/opt/intel/oneapi/ippcp/2026.0/lib/pkgconfig:/opt/intel/oneapi/dpl/2022.13/lib/pkgconfig:/opt/intel/oneapi/dnnl/2026.0/lib/pkgconfig:/opt/intel/oneapi/compiler/2026.1/lib/pkgconfig:/opt/intel/oneapi/ccl/2022.1/lib/pkgconfig/",
+        "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T02:28:10.674463+00:00",
+      "wall_seconds": 1200,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3907454,
+          "start_ticks": 28896979,
+          "sid": 3907454,
+          "pgid": 3907454
+        },
+        {
+          "pid": 3907458,
+          "start_ticks": 28896980,
+          "sid": 3907454,
+          "pgid": 3907454
+        },
+        {
+          "pid": 3907467,
+          "start_ticks": 28896981,
+          "sid": 3907454,
+          "pgid": 3907467
+        },
+        {
+          "pid": 3907468,
+          "start_ticks": 28896981,
+          "sid": 3907454,
+          "pgid": 3907468
+        },
+        {
+          "pid": 3907469,
+          "start_ticks": 28896981,
+          "sid": 3907454,
+          "pgid": 3907467
+        },
+        {
+          "pid": 3907470,
+          "start_ticks": 28896981,
+          "sid": 3907454,
+          "pgid": 3907468
+        },
+        {
+          "pid": 3907471,
+          "start_ticks": 28896981,
+          "sid": 3907454,
+          "pgid": 3907467
+        },
+        {
+          "pid": 3907472,
+          "start_ticks": 28896981,
+          "sid": 3907454,
+          "pgid": 3907468
+        },
+        {
+          "pid": 3907474,
+          "start_ticks": 28896982,
+          "sid": 3907454,
+          "pgid": 3907468
+        },
+        {
+          "pid": 3907475,
+          "start_ticks": 28896982,
+          "sid": 3907454,
+          "pgid": 3907467
+        },
+        {
+          "pid": 3907557,
+          "start_ticks": 28897097,
+          "sid": 3907454,
+          "pgid": 3907467
+        },
+        {
+          "pid": 3907597,
+          "start_ticks": 28897215,
+          "sid": 3907454,
+          "pgid": 3907468
+        },
+        {
+          "pid": 3907681,
+          "start_ticks": 28897314,
+          "sid": 3907454,
+          "pgid": 3907681
+        },
+        {
+          "pid": 3907682,
+          "start_ticks": 28897314,
+          "sid": 3907454,
+          "pgid": 3907681
+        },
+        {
+          "pid": 3907683,
+          "start_ticks": 28897315,
+          "sid": 3907454,
+          "pgid": 3907681
+        },
+        {
+          "pid": 3907684,
+          "start_ticks": 28897316,
+          "sid": 3907454,
+          "pgid": 3907681
+        },
+        {
+          "pid": 3907707,
+          "start_ticks": 28897390,
+          "sid": 3907454,
+          "pgid": 3907681
+        },
+        {
+          "pid": 3907742,
+          "start_ticks": 28897493,
+          "sid": 3907454,
+          "pgid": 3907742
+        },
+        {
+          "pid": 3907743,
+          "start_ticks": 28897493,
+          "sid": 3907454,
+          "pgid": 3907742
+        },
+        {
+          "pid": 3907744,
+          "start_ticks": 28897494,
+          "sid": 3907454,
+          "pgid": 3907742
+        },
+        {
+          "pid": 3907746,
+          "start_ticks": 28897495,
+          "sid": 3907454,
+          "pgid": 3907742
+        },
+        {
+          "pid": 3907754,
+          "start_ticks": 28897502,
+          "sid": 3907454,
+          "pgid": 3907754
+        },
+        {
+          "pid": 3907755,
+          "start_ticks": 28897502,
+          "sid": 3907454,
+          "pgid": 3907754
+        },
+        {
+          "pid": 3907756,
+          "start_ticks": 28897503,
+          "sid": 3907454,
+          "pgid": 3907754
+        },
+        {
+          "pid": 3907757,
+          "start_ticks": 28897504,
+          "sid": 3907454,
+          "pgid": 3907754
+        },
+        {
+          "pid": 3907767,
+          "start_ticks": 28897546,
+          "sid": 3907454,
+          "pgid": 3907754
+        },
+        {
+          "pid": 3907776,
+          "start_ticks": 28897563,
+          "sid": 3907454,
+          "pgid": 3907742
+        },
+        {
+          "pid": 3907799,
+          "start_ticks": 28897594,
+          "sid": 3907454,
+          "pgid": 3907799
+        },
+        {
+          "pid": 3907800,
+          "start_ticks": 28897594,
+          "sid": 3907454,
+          "pgid": 3907799
+        },
+        {
+          "pid": 3907801,
+          "start_ticks": 28897594,
+          "sid": 3907454,
+          "pgid": 3907799
+        },
+        {
+          "pid": 3907803,
+          "start_ticks": 28897595,
+          "sid": 3907454,
+          "pgid": 3907799
+        },
+        {
+          "pid": 3907831,
+          "start_ticks": 28897647,
+          "sid": 3907454,
+          "pgid": 3907799
+        },
+        {
+          "pid": 3907839,
+          "start_ticks": 28897667,
+          "sid": 3907454,
+          "pgid": 3907839
+        },
+        {
+          "pid": 3907840,
+          "start_ticks": 28897667,
+          "sid": 3907454,
+          "pgid": 3907839
+        },
+        {
+          "pid": 3907841,
+          "start_ticks": 28897667,
+          "sid": 3907454,
+          "pgid": 3907839
+        },
+        {
+          "pid": 3907842,
+          "start_ticks": 28897668,
+          "sid": 3907454,
+          "pgid": 3907839
+        },
+        {
+          "pid": 3907945,
+          "start_ticks": 28897739,
+          "sid": 3907454,
+          "pgid": 3907839
+        },
+        {
+          "pid": 3908037,
+          "start_ticks": 28897948,
+          "sid": 3907454,
+          "pgid": 3908037
+        },
+        {
+          "pid": 3908038,
+          "start_ticks": 28897948,
+          "sid": 3907454,
+          "pgid": 3908037
+        },
+        {
+          "pid": 3908039,
+          "start_ticks": 28897948,
+          "sid": 3907454,
+          "pgid": 3908037
+        },
+        {
+          "pid": 3908040,
+          "start_ticks": 28897949,
+          "sid": 3907454,
+          "pgid": 3908037
+        },
+        {
+          "pid": 3908072,
+          "start_ticks": 28897999,
+          "sid": 3907454,
+          "pgid": 3908037
+        },
+        {
+          "pid": 3908104,
+          "start_ticks": 28898060,
+          "sid": 3907454,
+          "pgid": 3908104
+        },
+        {
+          "pid": 3908105,
+          "start_ticks": 28898060,
+          "sid": 3907454,
+          "pgid": 3908104
+        },
+        {
+          "pid": 3908106,
+          "start_ticks": 28898060,
+          "sid": 3907454,
+          "pgid": 3908104
+        },
+        {
+          "pid": 3908107,
+          "start_ticks": 28898061,
+          "sid": 3907454,
+          "pgid": 3908104
+        },
+        {
+          "pid": 3908118,
+          "start_ticks": 28898099,
+          "sid": 3907454,
+          "pgid": 3908104
+        },
+        {
+          "pid": 3908220,
+          "start_ticks": 28898138,
+          "sid": 3907454,
+          "pgid": 3908220
+        },
+        {
+          "pid": 3908222,
+          "start_ticks": 28898138,
+          "sid": 3907454,
+          "pgid": 3908220
+        },
+        {
+          "pid": 3908224,
+          "start_ticks": 28898138,
+          "sid": 3907454,
+          "pgid": 3908220
+        },
+        {
+          "pid": 3908228,
+          "start_ticks": 28898139,
+          "sid": 3907454,
+          "pgid": 3908220
+        },
+        {
+          "pid": 3908370,
+          "start_ticks": 28898375,
+          "sid": 3907454,
+          "pgid": 3908370
+        },
+        {
+          "pid": 3908371,
+          "start_ticks": 28898375,
+          "sid": 3907454,
+          "pgid": 3908370
+        },
+        {
+          "pid": 3908372,
+          "start_ticks": 28898376,
+          "sid": 3907454,
+          "pgid": 3908370
+        },
+        {
+          "pid": 3908373,
+          "start_ticks": 28898377,
+          "sid": 3907454,
+          "pgid": 3908370
+        },
+        {
+          "pid": 3908451,
+          "start_ticks": 28898449,
+          "sid": 3907454,
+          "pgid": 3908220
+        },
+        {
+          "pid": 3908670,
+          "start_ticks": 28898675,
+          "sid": 3907454,
+          "pgid": 3908370
+        },
+        {
+          "pid": 3908763,
+          "start_ticks": 28898813,
+          "sid": 3907454,
+          "pgid": 3908763
+        },
+        {
+          "pid": 3908764,
+          "start_ticks": 28898813,
+          "sid": 3907454,
+          "pgid": 3908763
+        },
+        {
+          "pid": 3908765,
+          "start_ticks": 28898813,
+          "sid": 3907454,
+          "pgid": 3908763
+        },
+        {
+          "pid": 3908766,
+          "start_ticks": 28898814,
+          "sid": 3907454,
+          "pgid": 3908763
+        },
+        {
+          "pid": 3908778,
+          "start_ticks": 28898844,
+          "sid": 3907454,
+          "pgid": 3908763
+        },
+        {
+          "pid": 3908787,
+          "start_ticks": 28898875,
+          "sid": 3907454,
+          "pgid": 3908787
+        },
+        {
+          "pid": 3908788,
+          "start_ticks": 28898875,
+          "sid": 3907454,
+          "pgid": 3908787
+        },
+        {
+          "pid": 3908789,
+          "start_ticks": 28898875,
+          "sid": 3907454,
+          "pgid": 3908787
+        },
+        {
+          "pid": 3908790,
+          "start_ticks": 28898876,
+          "sid": 3907454,
+          "pgid": 3908787
+        },
+        {
+          "pid": 3908922,
+          "start_ticks": 28899018,
+          "sid": 3907454,
+          "pgid": 3908922
+        },
+        {
+          "pid": 3908923,
+          "start_ticks": 28899018,
+          "sid": 3907454,
+          "pgid": 3908922
+        },
+        {
+          "pid": 3908924,
+          "start_ticks": 28899019,
+          "sid": 3907454,
+          "pgid": 3908922
+        },
+        {
+          "pid": 3908925,
+          "start_ticks": 28899020,
+          "sid": 3907454,
+          "pgid": 3908922
+        },
+        {
+          "pid": 3909019,
+          "start_ticks": 28899258,
+          "sid": 3907454,
+          "pgid": 3908787
+        },
+        {
+          "pid": 3909106,
+          "start_ticks": 28899355,
+          "sid": 3907454,
+          "pgid": 3908922
+        },
+        {
+          "pid": 3909231,
+          "start_ticks": 28899673,
+          "sid": 3907454,
+          "pgid": 3909231
+        },
+        {
+          "pid": 3909232,
+          "start_ticks": 28899673,
+          "sid": 3907454,
+          "pgid": 3909231
+        },
+        {
+          "pid": 3909233,
+          "start_ticks": 28899673,
+          "sid": 3907454,
+          "pgid": 3909231
+        },
+        {
+          "pid": 3909237,
+          "start_ticks": 28899674,
+          "sid": 3907454,
+          "pgid": 3909231
+        },
+        {
+          "pid": 3909251,
+          "start_ticks": 28899702,
+          "sid": 3907454,
+          "pgid": 3909231
+        },
+        {
+          "pid": 3909289,
+          "start_ticks": 28899744,
+          "sid": 3907454,
+          "pgid": 3909289
+        },
+        {
+          "pid": 3909290,
+          "start_ticks": 28899744,
+          "sid": 3907454,
+          "pgid": 3909289
+        },
+        {
+          "pid": 3909291,
+          "start_ticks": 28899744,
+          "sid": 3907454,
+          "pgid": 3909289
+        },
+        {
+          "pid": 3909292,
+          "start_ticks": 28899745,
+          "sid": 3907454,
+          "pgid": 3909289
+        },
+        {
+          "pid": 3909296,
+          "start_ticks": 28899750,
+          "sid": 3907454,
+          "pgid": 3909296
+        },
+        {
+          "pid": 3909297,
+          "start_ticks": 28899750,
+          "sid": 3907454,
+          "pgid": 3909296
+        },
+        {
+          "pid": 3909298,
+          "start_ticks": 28899750,
+          "sid": 3907454,
+          "pgid": 3909296
+        },
+        {
+          "pid": 3909299,
+          "start_ticks": 28899751,
+          "sid": 3907454,
+          "pgid": 3909296
+        },
+        {
+          "pid": 3909303,
+          "start_ticks": 28899764,
+          "sid": 3907454,
+          "pgid": 3909289
+        },
+        {
+          "pid": 3909339,
+          "start_ticks": 28899786,
+          "sid": 3907454,
+          "pgid": 3909339
+        },
+        {
+          "pid": 3909340,
+          "start_ticks": 28899786,
+          "sid": 3907454,
+          "pgid": 3909339
+        },
+        {
+          "pid": 3909341,
+          "start_ticks": 28899786,
+          "sid": 3907454,
+          "pgid": 3909339
+        },
+        {
+          "pid": 3909343,
+          "start_ticks": 28899787,
+          "sid": 3907454,
+          "pgid": 3909339
+        },
+        {
+          "pid": 3909464,
+          "start_ticks": 28900057,
+          "sid": 3907454,
+          "pgid": 3909296
+        },
+        {
+          "pid": 3909518,
+          "start_ticks": 28900087,
+          "sid": 3907454,
+          "pgid": 3909339
+        },
+        {
+          "pid": 3909695,
+          "start_ticks": 28900387,
+          "sid": 3907454,
+          "pgid": 3909695
+        },
+        {
+          "pid": 3909696,
+          "start_ticks": 28900387,
+          "sid": 3907454,
+          "pgid": 3909695
+        },
+        {
+          "pid": 3909697,
+          "start_ticks": 28900387,
+          "sid": 3907454,
+          "pgid": 3909695
+        },
+        {
+          "pid": 3909698,
+          "start_ticks": 28900388,
+          "sid": 3907454,
+          "pgid": 3909695
+        },
+        {
+          "pid": 3909711,
+          "start_ticks": 28900410,
+          "sid": 3907454,
+          "pgid": 3909711
+        },
+        {
+          "pid": 3909712,
+          "start_ticks": 28900410,
+          "sid": 3907454,
+          "pgid": 3909711
+        },
+        {
+          "pid": 3909713,
+          "start_ticks": 28900411,
+          "sid": 3907454,
+          "pgid": 3909711
+        },
+        {
+          "pid": 3909715,
+          "start_ticks": 28900412,
+          "sid": 3907454,
+          "pgid": 3909711
+        },
+        {
+          "pid": 3909827,
+          "start_ticks": 28900694,
+          "sid": 3907454,
+          "pgid": 3909711
+        },
+        {
+          "pid": 3909851,
+          "start_ticks": 28900725,
+          "sid": 3907454,
+          "pgid": 3909695
+        },
+        {
+          "pid": 3910159,
+          "start_ticks": 28901019,
+          "sid": 3907454,
+          "pgid": 3910159
+        },
+        {
+          "pid": 3910160,
+          "start_ticks": 28901019,
+          "sid": 3907454,
+          "pgid": 3910159
+        },
+        {
+          "pid": 3910161,
+          "start_ticks": 28901019,
+          "sid": 3907454,
+          "pgid": 3910159
+        },
+        {
+          "pid": 3910163,
+          "start_ticks": 28901020,
+          "sid": 3907454,
+          "pgid": 3910159
+        },
+        {
+          "pid": 3910191,
+          "start_ticks": 28901099,
+          "sid": 3907454,
+          "pgid": 3910191
+        },
+        {
+          "pid": 3910192,
+          "start_ticks": 28901099,
+          "sid": 3907454,
+          "pgid": 3910191
+        },
+        {
+          "pid": 3910193,
+          "start_ticks": 28901099,
+          "sid": 3907454,
+          "pgid": 3910191
+        },
+        {
+          "pid": 3910195,
+          "start_ticks": 28901100,
+          "sid": 3907454,
+          "pgid": 3910191
+        },
+        {
+          "pid": 3910315,
+          "start_ticks": 28901325,
+          "sid": 3907454,
+          "pgid": 3910159
+        },
+        {
+          "pid": 3910424,
+          "start_ticks": 28901417,
+          "sid": 3907454,
+          "pgid": 3910191
+        },
+        {
+          "pid": 3910541,
+          "start_ticks": 28901678,
+          "sid": 3907454,
+          "pgid": 3910541
+        },
+        {
+          "pid": 3910542,
+          "start_ticks": 28901678,
+          "sid": 3907454,
+          "pgid": 3910541
+        },
+        {
+          "pid": 3910544,
+          "start_ticks": 28901678,
+          "sid": 3907454,
+          "pgid": 3910541
+        },
+        {
+          "pid": 3910545,
+          "start_ticks": 28901679,
+          "sid": 3907454,
+          "pgid": 3910541
+        },
+        {
+          "pid": 3910576,
+          "start_ticks": 28901750,
+          "sid": 3907454,
+          "pgid": 3910576
+        },
+        {
+          "pid": 3910577,
+          "start_ticks": 28901750,
+          "sid": 3907454,
+          "pgid": 3910576
+        },
+        {
+          "pid": 3910579,
+          "start_ticks": 28901750,
+          "sid": 3907454,
+          "pgid": 3910576
+        },
+        {
+          "pid": 3910580,
+          "start_ticks": 28901751,
+          "sid": 3907454,
+          "pgid": 3910576
+        },
+        {
+          "pid": 3910716,
+          "start_ticks": 28901986,
+          "sid": 3907454,
+          "pgid": 3910541
+        },
+        {
+          "pid": 3910754,
+          "start_ticks": 28902061,
+          "sid": 3907454,
+          "pgid": 3910576
+        },
+        {
+          "pid": 3910890,
+          "start_ticks": 28902308,
+          "sid": 3907454,
+          "pgid": 3910890
+        },
+        {
+          "pid": 3910891,
+          "start_ticks": 28902308,
+          "sid": 3907454,
+          "pgid": 3910890
+        },
+        {
+          "pid": 3910892,
+          "start_ticks": 28902308,
+          "sid": 3907454,
+          "pgid": 3910890
+        },
+        {
+          "pid": 3910893,
+          "start_ticks": 28902310,
+          "sid": 3907454,
+          "pgid": 3910890
+        },
+        {
+          "pid": 3910912,
+          "start_ticks": 28902371,
+          "sid": 3907454,
+          "pgid": 3910912
+        },
+        {
+          "pid": 3910913,
+          "start_ticks": 28902371,
+          "sid": 3907454,
+          "pgid": 3910912
+        },
+        {
+          "pid": 3910914,
+          "start_ticks": 28902371,
+          "sid": 3907454,
+          "pgid": 3910912
+        },
+        {
+          "pid": 3910916,
+          "start_ticks": 28902372,
+          "sid": 3907454,
+          "pgid": 3910912
+        },
+        {
+          "pid": 3911109,
+          "start_ticks": 28902661,
+          "sid": 3907454,
+          "pgid": 3910890
+        },
+        {
+          "pid": 3911125,
+          "start_ticks": 28902701,
+          "sid": 3907454,
+          "pgid": 3910912
+        },
+        {
+          "pid": 3911281,
+          "start_ticks": 28903034,
+          "sid": 3907454,
+          "pgid": 3911281
+        },
+        {
+          "pid": 3911282,
+          "start_ticks": 28903034,
+          "sid": 3907454,
+          "pgid": 3911281
+        },
+        {
+          "pid": 3911283,
+          "start_ticks": 28903034,
+          "sid": 3907454,
+          "pgid": 3911281
+        },
+        {
+          "pid": 3911284,
+          "start_ticks": 28903035,
+          "sid": 3907454,
+          "pgid": 3911281
+        },
+        {
+          "pid": 3911291,
+          "start_ticks": 28903048,
+          "sid": 3907454,
+          "pgid": 3911291
+        },
+        {
+          "pid": 3911292,
+          "start_ticks": 28903048,
+          "sid": 3907454,
+          "pgid": 3911291
+        },
+        {
+          "pid": 3911293,
+          "start_ticks": 28903048,
+          "sid": 3907454,
+          "pgid": 3911291
+        },
+        {
+          "pid": 3911294,
+          "start_ticks": 28903049,
+          "sid": 3907454,
+          "pgid": 3911291
+        },
+        {
+          "pid": 3911469,
+          "start_ticks": 28903367,
+          "sid": 3907454,
+          "pgid": 3911291
+        },
+        {
+          "pid": 3911474,
+          "start_ticks": 28903383,
+          "sid": 3907454,
+          "pgid": 3911281
+        },
+        {
+          "pid": 3911654,
+          "start_ticks": 28903717,
+          "sid": 3907454,
+          "pgid": 3911654
+        },
+        {
+          "pid": 3911655,
+          "start_ticks": 28903717,
+          "sid": 3907454,
+          "pgid": 3911654
+        },
+        {
+          "pid": 3911656,
+          "start_ticks": 28903717,
+          "sid": 3907454,
+          "pgid": 3911654
+        },
+        {
+          "pid": 3911657,
+          "start_ticks": 28903718,
+          "sid": 3907454,
+          "pgid": 3911654
+        },
+        {
+          "pid": 3911669,
+          "start_ticks": 28903755,
+          "sid": 3907454,
+          "pgid": 3911669
+        },
+        {
+          "pid": 3911670,
+          "start_ticks": 28903755,
+          "sid": 3907454,
+          "pgid": 3911669
+        },
+        {
+          "pid": 3911671,
+          "start_ticks": 28903756,
+          "sid": 3907454,
+          "pgid": 3911669
+        },
+        {
+          "pid": 3911673,
+          "start_ticks": 28903757,
+          "sid": 3907454,
+          "pgid": 3911669
+        },
+        {
+          "pid": 3911857,
+          "start_ticks": 28904026,
+          "sid": 3907454,
+          "pgid": 3911654
+        },
+        {
+          "pid": 3911882,
+          "start_ticks": 28904063,
+          "sid": 3907454,
+          "pgid": 3911669
+        },
+        {
+          "pid": 3912051,
+          "start_ticks": 28904386,
+          "sid": 3907454,
+          "pgid": 3912051
+        },
+        {
+          "pid": 3912052,
+          "start_ticks": 28904386,
+          "sid": 3907454,
+          "pgid": 3912051
+        },
+        {
+          "pid": 3912053,
+          "start_ticks": 28904386,
+          "sid": 3907454,
+          "pgid": 3912051
+        },
+        {
+          "pid": 3912054,
+          "start_ticks": 28904388,
+          "sid": 3907454,
+          "pgid": 3912051
+        },
+        {
+          "pid": 3912089,
+          "start_ticks": 28904409,
+          "sid": 3907454,
+          "pgid": 3912089
+        },
+        {
+          "pid": 3912095,
+          "start_ticks": 28904409,
+          "sid": 3907454,
+          "pgid": 3912089
+        },
+        {
+          "pid": 3912104,
+          "start_ticks": 28904409,
+          "sid": 3907454,
+          "pgid": 3912089
+        },
+        {
+          "pid": 3912111,
+          "start_ticks": 28904410,
+          "sid": 3907454,
+          "pgid": 3912089
+        },
+        {
+          "pid": 3912271,
+          "start_ticks": 28904708,
+          "sid": 3907454,
+          "pgid": 3912051
+        },
+        {
+          "pid": 3912276,
+          "start_ticks": 28904726,
+          "sid": 3907454,
+          "pgid": 3912089
+        },
+        {
+          "pid": 3912594,
+          "start_ticks": 28905079,
+          "sid": 3907454,
+          "pgid": 3912594
+        },
+        {
+          "pid": 3912595,
+          "start_ticks": 28905080,
+          "sid": 3907454,
+          "pgid": 3912594
+        },
+        {
+          "pid": 3912596,
+          "start_ticks": 28905080,
+          "sid": 3907454,
+          "pgid": 3912594
+        },
+        {
+          "pid": 3912597,
+          "start_ticks": 28905081,
+          "sid": 3907454,
+          "pgid": 3912594
+        },
+        {
+          "pid": 3912604,
+          "start_ticks": 28905092,
+          "sid": 3907454,
+          "pgid": 3912604
+        },
+        {
+          "pid": 3912605,
+          "start_ticks": 28905092,
+          "sid": 3907454,
+          "pgid": 3912604
+        },
+        {
+          "pid": 3912606,
+          "start_ticks": 28905093,
+          "sid": 3907454,
+          "pgid": 3912604
+        },
+        {
+          "pid": 3912607,
+          "start_ticks": 28905094,
+          "sid": 3907454,
+          "pgid": 3912604
+        },
+        {
+          "pid": 3912838,
+          "start_ticks": 28905391,
+          "sid": 3907454,
+          "pgid": 3912594
+        },
+        {
+          "pid": 3913095,
+          "start_ticks": 28905711,
+          "sid": 3907454,
+          "pgid": 3913095
+        },
+        {
+          "pid": 3913096,
+          "start_ticks": 28905711,
+          "sid": 3907454,
+          "pgid": 3913095
+        },
+        {
+          "pid": 3913098,
+          "start_ticks": 28905711,
+          "sid": 3907454,
+          "pgid": 3913095
+        },
+        {
+          "pid": 3913099,
+          "start_ticks": 28905712,
+          "sid": 3907454,
+          "pgid": 3913095
+        },
+        {
+          "pid": 3913499,
+          "start_ticks": 28906195,
+          "sid": 3907454,
+          "pgid": 3913095
+        },
+        {
+          "pid": 3913635,
+          "start_ticks": 28906492,
+          "sid": 3907454,
+          "pgid": 3912604
+        },
+        {
+          "pid": 3913904,
+          "start_ticks": 28906852,
+          "sid": 3907454,
+          "pgid": 3913904
+        },
+        {
+          "pid": 3913905,
+          "start_ticks": 28906852,
+          "sid": 3907454,
+          "pgid": 3913904
+        },
+        {
+          "pid": 3913907,
+          "start_ticks": 28906853,
+          "sid": 3907454,
+          "pgid": 3913904
+        },
+        {
+          "pid": 3913908,
+          "start_ticks": 28906854,
+          "sid": 3907454,
+          "pgid": 3913904
+        },
+        {
+          "pid": 3914057,
+          "start_ticks": 28907165,
+          "sid": 3907454,
+          "pgid": 3913904
+        },
+        {
+          "pid": 3914212,
+          "start_ticks": 28907478,
+          "sid": 3907454,
+          "pgid": 3914212
+        },
+        {
+          "pid": 3914213,
+          "start_ticks": 28907478,
+          "sid": 3907454,
+          "pgid": 3914212
+        },
+        {
+          "pid": 3914214,
+          "start_ticks": 28907478,
+          "sid": 3907454,
+          "pgid": 3914212
+        },
+        {
+          "pid": 3914215,
+          "start_ticks": 28907479,
+          "sid": 3907454,
+          "pgid": 3914212
+        },
+        {
+          "pid": 3914399,
+          "start_ticks": 28907782,
+          "sid": 3907454,
+          "pgid": 3914212
+        },
+        {
+          "pid": 3914580,
+          "start_ticks": 28908109,
+          "sid": 3907454,
+          "pgid": 3914580
+        },
+        {
+          "pid": 3914581,
+          "start_ticks": 28908109,
+          "sid": 3907454,
+          "pgid": 3914580
+        },
+        {
+          "pid": 3914582,
+          "start_ticks": 28908109,
+          "sid": 3907454,
+          "pgid": 3914580
+        },
+        {
+          "pid": 3914584,
+          "start_ticks": 28908110,
+          "sid": 3907454,
+          "pgid": 3914580
+        },
+        {
+          "pid": 3914753,
+          "start_ticks": 28908416,
+          "sid": 3907454,
+          "pgid": 3914580
+        },
+        {
+          "pid": 3914929,
+          "start_ticks": 28908721,
+          "sid": 3907454,
+          "pgid": 3914929
+        },
+        {
+          "pid": 3914930,
+          "start_ticks": 28908721,
+          "sid": 3907454,
+          "pgid": 3914929
+        },
+        {
+          "pid": 3914931,
+          "start_ticks": 28908721,
+          "sid": 3907454,
+          "pgid": 3914929
+        },
+        {
+          "pid": 3914935,
+          "start_ticks": 28908723,
+          "sid": 3907454,
+          "pgid": 3914929
+        },
+        {
+          "pid": 3915159,
+          "start_ticks": 28909073,
+          "sid": 3907454,
+          "pgid": 3914929
+        },
+        {
+          "pid": 3915167,
+          "start_ticks": 28909090,
+          "sid": 3907454,
+          "pgid": 3912604
+        },
+        {
+          "pid": 3915176,
+          "start_ticks": 28909107,
+          "sid": 3907454,
+          "pgid": 3915176
+        },
+        {
+          "pid": 3915177,
+          "start_ticks": 28909107,
+          "sid": 3907454,
+          "pgid": 3915176
+        },
+        {
+          "pid": 3915178,
+          "start_ticks": 28909107,
+          "sid": 3907454,
+          "pgid": 3915176
+        },
+        {
+          "pid": 3915179,
+          "start_ticks": 28909108,
+          "sid": 3907454,
+          "pgid": 3915176
+        },
+        {
+          "pid": 3915490,
+          "start_ticks": 28909410,
+          "sid": 3907454,
+          "pgid": 3915490
+        },
+        {
+          "pid": 3915491,
+          "start_ticks": 28909410,
+          "sid": 3907454,
+          "pgid": 3915490
+        },
+        {
+          "pid": 3915492,
+          "start_ticks": 28909410,
+          "sid": 3907454,
+          "pgid": 3915490
+        },
+        {
+          "pid": 3915494,
+          "start_ticks": 28909412,
+          "sid": 3907454,
+          "pgid": 3915490
+        },
+        {
+          "pid": 3915500,
+          "start_ticks": 28909441,
+          "sid": 3907454,
+          "pgid": 3915176
+        },
+        {
+          "pid": 3915780,
+          "start_ticks": 28909796,
+          "sid": 3907454,
+          "pgid": 3915490
+        },
+        {
+          "pid": 3915808,
+          "start_ticks": 28909806,
+          "sid": 3907454,
+          "pgid": 3915808
+        },
+        {
+          "pid": 3915809,
+          "start_ticks": 28909806,
+          "sid": 3907454,
+          "pgid": 3915808
+        },
+        {
+          "pid": 3915810,
+          "start_ticks": 28909806,
+          "sid": 3907454,
+          "pgid": 3915808
+        },
+        {
+          "pid": 3915811,
+          "start_ticks": 28909807,
+          "sid": 3907454,
+          "pgid": 3915808
+        },
+        {
+          "pid": 3916066,
+          "start_ticks": 28910122,
+          "sid": 3907454,
+          "pgid": 3916066
+        },
+        {
+          "pid": 3916067,
+          "start_ticks": 28910122,
+          "sid": 3907454,
+          "pgid": 3916066
+        },
+        {
+          "pid": 3916068,
+          "start_ticks": 28910122,
+          "sid": 3907454,
+          "pgid": 3915808
+        },
+        {
+          "pid": 3916069,
+          "start_ticks": 28910122,
+          "sid": 3907454,
+          "pgid": 3916066
+        },
+        {
+          "pid": 3916070,
+          "start_ticks": 28910123,
+          "sid": 3907454,
+          "pgid": 3916066
+        },
+        {
+          "pid": 3916351,
+          "start_ticks": 28910442,
+          "sid": 3907454,
+          "pgid": 3916066
+        },
+        {
+          "pid": 3916359,
+          "start_ticks": 28910448,
+          "sid": 3907454,
+          "pgid": 3916359
+        },
+        {
+          "pid": 3916360,
+          "start_ticks": 28910448,
+          "sid": 3907454,
+          "pgid": 3916359
+        },
+        {
+          "pid": 3916361,
+          "start_ticks": 28910448,
+          "sid": 3907454,
+          "pgid": 3916359
+        },
+        {
+          "pid": 3916362,
+          "start_ticks": 28910450,
+          "sid": 3907454,
+          "pgid": 3916359
+        },
+        {
+          "pid": 3916771,
+          "start_ticks": 28910777,
+          "sid": 3907454,
+          "pgid": 3916359
+        },
+        {
+          "pid": 3916773,
+          "start_ticks": 28910778,
+          "sid": 3907454,
+          "pgid": 3916773
+        },
+        {
+          "pid": 3916774,
+          "start_ticks": 28910778,
+          "sid": 3907454,
+          "pgid": 3916773
+        },
+        {
+          "pid": 3916775,
+          "start_ticks": 28910778,
+          "sid": 3907454,
+          "pgid": 3916773
+        },
+        {
+          "pid": 3916776,
+          "start_ticks": 28910779,
+          "sid": 3907454,
+          "pgid": 3916773
+        },
+        {
+          "pid": 3916947,
+          "start_ticks": 28911088,
+          "sid": 3907454,
+          "pgid": 3916773
+        },
+        {
+          "pid": 3916952,
+          "start_ticks": 28911101,
+          "sid": 3907454,
+          "pgid": 3916952
+        },
+        {
+          "pid": 3916954,
+          "start_ticks": 28911101,
+          "sid": 3907454,
+          "pgid": 3916952
+        },
+        {
+          "pid": 3916955,
+          "start_ticks": 28911102,
+          "sid": 3907454,
+          "pgid": 3916952
+        },
+        {
+          "pid": 3916956,
+          "start_ticks": 28911103,
+          "sid": 3907454,
+          "pgid": 3916952
+        },
+        {
+          "pid": 3917177,
+          "start_ticks": 28911394,
+          "sid": 3907454,
+          "pgid": 3917177
+        },
+        {
+          "pid": 3917178,
+          "start_ticks": 28911394,
+          "sid": 3907454,
+          "pgid": 3917177
+        },
+        {
+          "pid": 3917179,
+          "start_ticks": 28911395,
+          "sid": 3907454,
+          "pgid": 3917177
+        },
+        {
+          "pid": 3917180,
+          "start_ticks": 28911396,
+          "sid": 3907454,
+          "pgid": 3917177
+        },
+        {
+          "pid": 3917216,
+          "start_ticks": 28911421,
+          "sid": 3907454,
+          "pgid": 3916952
+        },
+        {
+          "pid": 3917457,
+          "start_ticks": 28911692,
+          "sid": 3907454,
+          "pgid": 3917177
+        },
+        {
+          "pid": 3917485,
+          "start_ticks": 28911748,
+          "sid": 3907454,
+          "pgid": 3917485
+        },
+        {
+          "pid": 3917486,
+          "start_ticks": 28911748,
+          "sid": 3907454,
+          "pgid": 3917485
+        },
+        {
+          "pid": 3917487,
+          "start_ticks": 28911748,
+          "sid": 3907454,
+          "pgid": 3917485
+        },
+        {
+          "pid": 3917488,
+          "start_ticks": 28911750,
+          "sid": 3907454,
+          "pgid": 3917485
+        },
+        {
+          "pid": 3917908,
+          "start_ticks": 28912047,
+          "sid": 3907454,
+          "pgid": 3917908
+        },
+        {
+          "pid": 3917909,
+          "start_ticks": 28912047,
+          "sid": 3907454,
+          "pgid": 3917908
+        },
+        {
+          "pid": 3917910,
+          "start_ticks": 28912048,
+          "sid": 3907454,
+          "pgid": 3917908
+        },
+        {
+          "pid": 3917911,
+          "start_ticks": 28912049,
+          "sid": 3907454,
+          "pgid": 3917908
+        },
+        {
+          "pid": 3917918,
+          "start_ticks": 28912079,
+          "sid": 3907454,
+          "pgid": 3917485
+        },
+        {
+          "pid": 3918061,
+          "start_ticks": 28912358,
+          "sid": 3907454,
+          "pgid": 3917908
+        },
+        {
+          "pid": 3918107,
+          "start_ticks": 28912433,
+          "sid": 3907454,
+          "pgid": 3918107
+        },
+        {
+          "pid": 3918108,
+          "start_ticks": 28912433,
+          "sid": 3907454,
+          "pgid": 3918107
+        },
+        {
+          "pid": 3918109,
+          "start_ticks": 28912434,
+          "sid": 3907454,
+          "pgid": 3918107
+        },
+        {
+          "pid": 3918111,
+          "start_ticks": 28912435,
+          "sid": 3907454,
+          "pgid": 3918107
+        },
+        {
+          "pid": 3918371,
+          "start_ticks": 28912682,
+          "sid": 3907454,
+          "pgid": 3918371
+        },
+        {
+          "pid": 3918372,
+          "start_ticks": 28912682,
+          "sid": 3907454,
+          "pgid": 3918371
+        },
+        {
+          "pid": 3918373,
+          "start_ticks": 28912683,
+          "sid": 3907454,
+          "pgid": 3918371
+        },
+        {
+          "pid": 3918379,
+          "start_ticks": 28912684,
+          "sid": 3907454,
+          "pgid": 3918371
+        },
+        {
+          "pid": 3918470,
+          "start_ticks": 28912749,
+          "sid": 3907454,
+          "pgid": 3918107
+        },
+        {
+          "pid": 3918622,
+          "start_ticks": 28913001,
+          "sid": 3907454,
+          "pgid": 3918371
+        },
+        {
+          "pid": 3918649,
+          "start_ticks": 28913079,
+          "sid": 3907454,
+          "pgid": 3918649
+        },
+        {
+          "pid": 3918650,
+          "start_ticks": 28913079,
+          "sid": 3907454,
+          "pgid": 3918649
+        },
+        {
+          "pid": 3918651,
+          "start_ticks": 28913079,
+          "sid": 3907454,
+          "pgid": 3918649
+        },
+        {
+          "pid": 3918652,
+          "start_ticks": 28913080,
+          "sid": 3907454,
+          "pgid": 3918649
+        },
+        {
+          "pid": 3918867,
+          "start_ticks": 28913326,
+          "sid": 3907454,
+          "pgid": 3918867
+        },
+        {
+          "pid": 3918868,
+          "start_ticks": 28913326,
+          "sid": 3907454,
+          "pgid": 3918867
+        },
+        {
+          "pid": 3918869,
+          "start_ticks": 28913327,
+          "sid": 3907454,
+          "pgid": 3918867
+        },
+        {
+          "pid": 3918872,
+          "start_ticks": 28913328,
+          "sid": 3907454,
+          "pgid": 3918867
+        },
+        {
+          "pid": 3918955,
+          "start_ticks": 28913443,
+          "sid": 3907454,
+          "pgid": 3918649
+        },
+        {
+          "pid": 3919042,
+          "start_ticks": 28913633,
+          "sid": 3907454,
+          "pgid": 3918867
+        },
+        {
+          "pid": 3919267,
+          "start_ticks": 28913913,
+          "sid": 3907454,
+          "pgid": 3919267
+        },
+        {
+          "pid": 3919269,
+          "start_ticks": 28913913,
+          "sid": 3907454,
+          "pgid": 3919267
+        },
+        {
+          "pid": 3919270,
+          "start_ticks": 28913913,
+          "sid": 3907454,
+          "pgid": 3919267
+        },
+        {
+          "pid": 3919271,
+          "start_ticks": 28913914,
+          "sid": 3907454,
+          "pgid": 3919267
+        },
+        {
+          "pid": 3919292,
+          "start_ticks": 28913974,
+          "sid": 3907454,
+          "pgid": 3919292
+        },
+        {
+          "pid": 3919293,
+          "start_ticks": 28913974,
+          "sid": 3907454,
+          "pgid": 3919292
+        },
+        {
+          "pid": 3919294,
+          "start_ticks": 28913974,
+          "sid": 3907454,
+          "pgid": 3919292
+        },
+        {
+          "pid": 3919295,
+          "start_ticks": 28913975,
+          "sid": 3907454,
+          "pgid": 3919292
+        },
+        {
+          "pid": 3919527,
+          "start_ticks": 28914297,
+          "sid": 3907454,
+          "pgid": 3919267
+        },
+        {
+          "pid": 3919531,
+          "start_ticks": 28914314,
+          "sid": 3907454,
+          "pgid": 3919292
+        },
+        {
+          "pid": 3919766,
+          "start_ticks": 28914647,
+          "sid": 3907454,
+          "pgid": 3919766
+        },
+        {
+          "pid": 3919767,
+          "start_ticks": 28914648,
+          "sid": 3907454,
+          "pgid": 3919766
+        },
+        {
+          "pid": 3919768,
+          "start_ticks": 28914648,
+          "sid": 3907454,
+          "pgid": 3919766
+        },
+        {
+          "pid": 3919769,
+          "start_ticks": 28914649,
+          "sid": 3907454,
+          "pgid": 3919766
+        },
+        {
+          "pid": 3919856,
+          "start_ticks": 28914726,
+          "sid": 3907454,
+          "pgid": 3919856
+        },
+        {
+          "pid": 3919857,
+          "start_ticks": 28914726,
+          "sid": 3907454,
+          "pgid": 3919856
+        },
+        {
+          "pid": 3919860,
+          "start_ticks": 28914727,
+          "sid": 3907454,
+          "pgid": 3919856
+        },
+        {
+          "pid": 3919870,
+          "start_ticks": 28914728,
+          "sid": 3907454,
+          "pgid": 3919856
+        },
+        {
+          "pid": 3920035,
+          "start_ticks": 28914976,
+          "sid": 3907454,
+          "pgid": 3919766
+        },
+        {
+          "pid": 3920083,
+          "start_ticks": 28915080,
+          "sid": 3907454,
+          "pgid": 3919856
+        },
+        {
+          "pid": 3920244,
+          "start_ticks": 28915297,
+          "sid": 3907454,
+          "pgid": 3920244
+        },
+        {
+          "pid": 3920245,
+          "start_ticks": 28915297,
+          "sid": 3907454,
+          "pgid": 3920244
+        },
+        {
+          "pid": 3920246,
+          "start_ticks": 28915297,
+          "sid": 3907454,
+          "pgid": 3920244
+        },
+        {
+          "pid": 3920252,
+          "start_ticks": 28915298,
+          "sid": 3907454,
+          "pgid": 3920244
+        },
+        {
+          "pid": 3920438,
+          "start_ticks": 28915482,
+          "sid": 3907454,
+          "pgid": 3920438
+        },
+        {
+          "pid": 3920439,
+          "start_ticks": 28915482,
+          "sid": 3907454,
+          "pgid": 3920438
+        },
+        {
+          "pid": 3920440,
+          "start_ticks": 28915483,
+          "sid": 3907454,
+          "pgid": 3920438
+        },
+        {
+          "pid": 3920443,
+          "start_ticks": 28915484,
+          "sid": 3907454,
+          "pgid": 3920438
+        },
+        {
+          "pid": 3920543,
+          "start_ticks": 28915636,
+          "sid": 3907454,
+          "pgid": 3920244
+        },
+        {
+          "pid": 3920650,
+          "start_ticks": 28915834,
+          "sid": 3907454,
+          "pgid": 3920438
+        },
+        {
+          "pid": 3920752,
+          "start_ticks": 28915982,
+          "sid": 3907454,
+          "pgid": 3920752
+        },
+        {
+          "pid": 3920753,
+          "start_ticks": 28915982,
+          "sid": 3907454,
+          "pgid": 3920752
+        },
+        {
+          "pid": 3920754,
+          "start_ticks": 28915982,
+          "sid": 3907454,
+          "pgid": 3920752
+        },
+        {
+          "pid": 3920755,
+          "start_ticks": 28915983,
+          "sid": 3907454,
+          "pgid": 3920752
+        },
+        {
+          "pid": 3920866,
+          "start_ticks": 28916249,
+          "sid": 3907454,
+          "pgid": 3920866
+        },
+        {
+          "pid": 3920867,
+          "start_ticks": 28916249,
+          "sid": 3907454,
+          "pgid": 3920866
+        },
+        {
+          "pid": 3920868,
+          "start_ticks": 28916249,
+          "sid": 3907454,
+          "pgid": 3920866
+        },
+        {
+          "pid": 3920869,
+          "start_ticks": 28916250,
+          "sid": 3907454,
+          "pgid": 3920866
+        },
+        {
+          "pid": 3921154,
+          "start_ticks": 28916568,
+          "sid": 3907454,
+          "pgid": 3920866
+        },
+        {
+          "pid": 3921217,
+          "start_ticks": 28916695,
+          "sid": 3907454,
+          "pgid": 3920752
+        },
+        {
+          "pid": 3921380,
+          "start_ticks": 28916935,
+          "sid": 3907454,
+          "pgid": 3921380
+        },
+        {
+          "pid": 3921381,
+          "start_ticks": 28916935,
+          "sid": 3907454,
+          "pgid": 3921380
+        },
+        {
+          "pid": 3921382,
+          "start_ticks": 28916936,
+          "sid": 3907454,
+          "pgid": 3921380
+        },
+        {
+          "pid": 3921383,
+          "start_ticks": 28916937,
+          "sid": 3907454,
+          "pgid": 3921380
+        },
+        {
+          "pid": 3921441,
+          "start_ticks": 28917053,
+          "sid": 3907454,
+          "pgid": 3921380
+        },
+        {
+          "pid": 3921561,
+          "start_ticks": 28917257,
+          "sid": 3907454,
+          "pgid": 3921561
+        },
+        {
+          "pid": 3921562,
+          "start_ticks": 28917257,
+          "sid": 3907454,
+          "pgid": 3921561
+        },
+        {
+          "pid": 3921563,
+          "start_ticks": 28917257,
+          "sid": 3907454,
+          "pgid": 3921561
+        },
+        {
+          "pid": 3921565,
+          "start_ticks": 28917258,
+          "sid": 3907454,
+          "pgid": 3921561
+        },
+        {
+          "pid": 3921592,
+          "start_ticks": 28917364,
+          "sid": 3907454,
+          "pgid": 3921561
+        },
+        {
+          "pid": 3921684,
+          "start_ticks": 28917490,
+          "sid": 3907454,
+          "pgid": 3921684
+        },
+        {
+          "pid": 3921685,
+          "start_ticks": 28917490,
+          "sid": 3907454,
+          "pgid": 3921684
+        },
+        {
+          "pid": 3921686,
+          "start_ticks": 28917491,
+          "sid": 3907454,
+          "pgid": 3921684
+        },
+        {
+          "pid": 3921687,
+          "start_ticks": 28917492,
+          "sid": 3907454,
+          "pgid": 3921684
+        },
+        {
+          "pid": 3921836,
+          "start_ticks": 28917708,
+          "sid": 3907454,
+          "pgid": 3920752
+        },
+        {
+          "pid": 3921840,
+          "start_ticks": 28917715,
+          "sid": 3907454,
+          "pgid": 3921840
+        },
+        {
+          "pid": 3921841,
+          "start_ticks": 28917715,
+          "sid": 3907454,
+          "pgid": 3921840
+        },
+        {
+          "pid": 3921842,
+          "start_ticks": 28917715,
+          "sid": 3907454,
+          "pgid": 3921840
+        },
+        {
+          "pid": 3921843,
+          "start_ticks": 28917716,
+          "sid": 3907454,
+          "pgid": 3921840
+        },
+        {
+          "pid": 3921896,
+          "start_ticks": 28917823,
+          "sid": 3907454,
+          "pgid": 3921684
+        },
+        {
+          "pid": 3922104,
+          "start_ticks": 28918038,
+          "sid": 3907454,
+          "pgid": 3921840
+        },
+        {
+          "pid": 3922164,
+          "start_ticks": 28918183,
+          "sid": 3907454,
+          "pgid": 3922164
+        },
+        {
+          "pid": 3922166,
+          "start_ticks": 28918184,
+          "sid": 3907454,
+          "pgid": 3922164
+        },
+        {
+          "pid": 3922176,
+          "start_ticks": 28918223,
+          "sid": 3907454,
+          "pgid": 3922176
+        },
+        {
+          "pid": 3922177,
+          "start_ticks": 28918223,
+          "sid": 3907454,
+          "pgid": 3922176
+        },
+        {
+          "pid": 3922178,
+          "start_ticks": 28918223,
+          "sid": 3907454,
+          "pgid": 3922176
+        },
+        {
+          "pid": 3922182,
+          "start_ticks": 28918225,
+          "sid": 3907454,
+          "pgid": 3922176
+        },
+        {
+          "pid": 3922330,
+          "start_ticks": 28918492,
+          "sid": 3907454,
+          "pgid": 3922330
+        },
+        {
+          "pid": 3922331,
+          "start_ticks": 28918492,
+          "sid": 3907454,
+          "pgid": 3922330
+        },
+        {
+          "pid": 3922332,
+          "start_ticks": 28918492,
+          "sid": 3907454,
+          "pgid": 3922330
+        },
+        {
+          "pid": 3922334,
+          "start_ticks": 28918493,
+          "sid": 3907454,
+          "pgid": 3922330
+        },
+        {
+          "pid": 3922422,
+          "start_ticks": 28918621,
+          "sid": 3907454,
+          "pgid": 3922176
+        },
+        {
+          "pid": 3922685,
+          "start_ticks": 28918909,
+          "sid": 3907454,
+          "pgid": 3922330
+        },
+        {
+          "pid": 3922852,
+          "start_ticks": 28919132,
+          "sid": 3907454,
+          "pgid": 3922852
+        },
+        {
+          "pid": 3922853,
+          "start_ticks": 28919132,
+          "sid": 3907454,
+          "pgid": 3922852
+        },
+        {
+          "pid": 3922854,
+          "start_ticks": 28919132,
+          "sid": 3907454,
+          "pgid": 3922852
+        },
+        {
+          "pid": 3922857,
+          "start_ticks": 28919133,
+          "sid": 3907454,
+          "pgid": 3922852
+        },
+        {
+          "pid": 3923092,
+          "start_ticks": 28919486,
+          "sid": 3907454,
+          "pgid": 3922852
+        },
+        {
+          "pid": 3923244,
+          "start_ticks": 28919724,
+          "sid": 3907454,
+          "pgid": 3923244
+        },
+        {
+          "pid": 3923245,
+          "start_ticks": 28919724,
+          "sid": 3907454,
+          "pgid": 3923244
+        },
+        {
+          "pid": 3923246,
+          "start_ticks": 28919724,
+          "sid": 3907454,
+          "pgid": 3923244
+        },
+        {
+          "pid": 3923248,
+          "start_ticks": 28919725,
+          "sid": 3907454,
+          "pgid": 3923244
+        },
+        {
+          "pid": 3923411,
+          "start_ticks": 28919911,
+          "sid": 3907454,
+          "pgid": 3923411
+        },
+        {
+          "pid": 3923412,
+          "start_ticks": 28919911,
+          "sid": 3907454,
+          "pgid": 3923411
+        },
+        {
+          "pid": 3923414,
+          "start_ticks": 28919911,
+          "sid": 3907454,
+          "pgid": 3923411
+        },
+        {
+          "pid": 3923423,
+          "start_ticks": 28919912,
+          "sid": 3907454,
+          "pgid": 3923411
+        },
+        {
+          "pid": 3923540,
+          "start_ticks": 28920040,
+          "sid": 3907454,
+          "pgid": 3923244
+        },
+        {
+          "pid": 3923656,
+          "start_ticks": 28920223,
+          "sid": 3907454,
+          "pgid": 3923411
+        },
+        {
+          "pid": 3923846,
+          "start_ticks": 28920503,
+          "sid": 3907454,
+          "pgid": 3923846
+        },
+        {
+          "pid": 3923847,
+          "start_ticks": 28920503,
+          "sid": 3907454,
+          "pgid": 3923846
+        },
+        {
+          "pid": 3923848,
+          "start_ticks": 28920503,
+          "sid": 3907454,
+          "pgid": 3923846
+        },
+        {
+          "pid": 3923849,
+          "start_ticks": 28920504,
+          "sid": 3907454,
+          "pgid": 3923846
+        },
+        {
+          "pid": 3923971,
+          "start_ticks": 28920655,
+          "sid": 3907454,
+          "pgid": 3923971
+        },
+        {
+          "pid": 3923972,
+          "start_ticks": 28920655,
+          "sid": 3907454,
+          "pgid": 3923971
+        },
+        {
+          "pid": 3923973,
+          "start_ticks": 28920655,
+          "sid": 3907454,
+          "pgid": 3923971
+        },
+        {
+          "pid": 3923975,
+          "start_ticks": 28920656,
+          "sid": 3907454,
+          "pgid": 3923971
+        },
+        {
+          "pid": 3924054,
+          "start_ticks": 28920816,
+          "sid": 3907454,
+          "pgid": 3923846
+        },
+        {
+          "pid": 3924257,
+          "start_ticks": 28921091,
+          "sid": 3907454,
+          "pgid": 3923971
+        },
+        {
+          "pid": 3924418,
+          "start_ticks": 28921267,
+          "sid": 3907454,
+          "pgid": 3924418
+        },
+        {
+          "pid": 3924419,
+          "start_ticks": 28921267,
+          "sid": 3907454,
+          "pgid": 3924418
+        },
+        {
+          "pid": 3924420,
+          "start_ticks": 28921268,
+          "sid": 3907454,
+          "pgid": 3924418
+        },
+        {
+          "pid": 3924422,
+          "start_ticks": 28921269,
+          "sid": 3907454,
+          "pgid": 3924418
+        },
+        {
+          "pid": 3924741,
+          "start_ticks": 28921712,
+          "sid": 3907454,
+          "pgid": 3924418
+        },
+        {
+          "pid": 3924873,
+          "start_ticks": 28921951,
+          "sid": 3907454,
+          "pgid": 3924873
+        },
+        {
+          "pid": 3924874,
+          "start_ticks": 28921951,
+          "sid": 3907454,
+          "pgid": 3924873
+        },
+        {
+          "pid": 3924875,
+          "start_ticks": 28921951,
+          "sid": 3907454,
+          "pgid": 3924873
+        },
+        {
+          "pid": 3924876,
+          "start_ticks": 28921952,
+          "sid": 3907454,
+          "pgid": 3924873
+        },
+        {
+          "pid": 3925172,
+          "start_ticks": 28922319,
+          "sid": 3907454,
+          "pgid": 3924873
+        },
+        {
+          "pid": 3925195,
+          "start_ticks": 28922345,
+          "sid": 3907454,
+          "pgid": 3925195
+        },
+        {
+          "pid": 3925196,
+          "start_ticks": 28922345,
+          "sid": 3907454,
+          "pgid": 3925195
+        },
+        {
+          "pid": 3925198,
+          "start_ticks": 28922345,
+          "sid": 3907454,
+          "pgid": 3925195
+        },
+        {
+          "pid": 3925199,
+          "start_ticks": 28922346,
+          "sid": 3907454,
+          "pgid": 3925195
+        },
+        {
+          "pid": 3925484,
+          "start_ticks": 28922718,
+          "sid": 3907454,
+          "pgid": 3925195
+        },
+        {
+          "pid": 3925488,
+          "start_ticks": 28922723,
+          "sid": 3907454,
+          "pgid": 3925488
+        },
+        {
+          "pid": 3925489,
+          "start_ticks": 28922723,
+          "sid": 3907454,
+          "pgid": 3925488
+        },
+        {
+          "pid": 3925490,
+          "start_ticks": 28922723,
+          "sid": 3907454,
+          "pgid": 3925488
+        },
+        {
+          "pid": 3925491,
+          "start_ticks": 28922724,
+          "sid": 3907454,
+          "pgid": 3925488
+        },
+        {
+          "pid": 3925517,
+          "start_ticks": 28922767,
+          "sid": 3907454,
+          "pgid": 3925488
+        },
+        {
+          "pid": 3925534,
+          "start_ticks": 28922810,
+          "sid": 3907454,
+          "pgid": 3925534
+        },
+        {
+          "pid": 3925535,
+          "start_ticks": 28922810,
+          "sid": 3907454,
+          "pgid": 3925534
+        },
+        {
+          "pid": 3925536,
+          "start_ticks": 28922810,
+          "sid": 3907454,
+          "pgid": 3925534
+        },
+        {
+          "pid": 3925537,
+          "start_ticks": 28922811,
+          "sid": 3907454,
+          "pgid": 3925534
+        },
+        {
+          "pid": 3925547,
+          "start_ticks": 28922844,
+          "sid": 3907454,
+          "pgid": 3925534
+        },
+        {
+          "pid": 3925586,
+          "start_ticks": 28922890,
+          "sid": 3907454,
+          "pgid": 3925586
+        },
+        {
+          "pid": 3925587,
+          "start_ticks": 28922890,
+          "sid": 3907454,
+          "pgid": 3925586
+        },
+        {
+          "pid": 3925589,
+          "start_ticks": 28922890,
+          "sid": 3907454,
+          "pgid": 3925586
+        },
+        {
+          "pid": 3925599,
+          "start_ticks": 28922891,
+          "sid": 3907454,
+          "pgid": 3925586
+        },
+        {
+          "pid": 3925610,
+          "start_ticks": 28922909,
+          "sid": 3907454,
+          "pgid": 3925586
+        },
+        {
+          "pid": 3925621,
+          "start_ticks": 28922927,
+          "sid": 3907454,
+          "pgid": 3925621
+        },
+        {
+          "pid": 3925622,
+          "start_ticks": 28922927,
+          "sid": 3907454,
+          "pgid": 3925621
+        },
+        {
+          "pid": 3925623,
+          "start_ticks": 28922927,
+          "sid": 3907454,
+          "pgid": 3925621
+        },
+        {
+          "pid": 3925625,
+          "start_ticks": 28922929,
+          "sid": 3907454,
+          "pgid": 3925621
+        },
+        {
+          "pid": 3925715,
+          "start_ticks": 28923076,
+          "sid": 3907454,
+          "pgid": 3925621
+        },
+        {
+          "pid": 3925774,
+          "start_ticks": 28923156,
+          "sid": 3907454,
+          "pgid": 3925774
+        },
+        {
+          "pid": 3925775,
+          "start_ticks": 28923156,
+          "sid": 3907454,
+          "pgid": 3925774
+        },
+        {
+          "pid": 3925776,
+          "start_ticks": 28923156,
+          "sid": 3907454,
+          "pgid": 3925774
+        },
+        {
+          "pid": 3925777,
+          "start_ticks": 28923157,
+          "sid": 3907454,
+          "pgid": 3925774
+        },
+        {
+          "pid": 3925896,
+          "start_ticks": 28923397,
+          "sid": 3907454,
+          "pgid": 3925896
+        },
+        {
+          "pid": 3925897,
+          "start_ticks": 28923397,
+          "sid": 3907454,
+          "pgid": 3925896
+        },
+        {
+          "pid": 3925898,
+          "start_ticks": 28923397,
+          "sid": 3907454,
+          "pgid": 3925896
+        },
+        {
+          "pid": 3925899,
+          "start_ticks": 28923398,
+          "sid": 3907454,
+          "pgid": 3925896
+        },
+        {
+          "pid": 3925921,
+          "start_ticks": 28923425,
+          "sid": 3907454,
+          "pgid": 3925896
+        },
+        {
+          "pid": 3926010,
+          "start_ticks": 28923456,
+          "sid": 3907454,
+          "pgid": 3926010
+        },
+        {
+          "pid": 3926012,
+          "start_ticks": 28923456,
+          "sid": 3907454,
+          "pgid": 3926010
+        },
+        {
+          "pid": 3926013,
+          "start_ticks": 28923456,
+          "sid": 3907454,
+          "pgid": 3926010
+        },
+        {
+          "pid": 3926015,
+          "start_ticks": 28923457,
+          "sid": 3907454,
+          "pgid": 3926010
+        },
+        {
+          "pid": 3926045,
+          "start_ticks": 28923526,
+          "sid": 3907454,
+          "pgid": 3925774
+        },
+        {
+          "pid": 3926266,
+          "start_ticks": 28923811,
+          "sid": 3907454,
+          "pgid": 3926010
+        },
+        {
+          "pid": 3926282,
+          "start_ticks": 28923849,
+          "sid": 3907454,
+          "pgid": 3926282
+        },
+        {
+          "pid": 3926283,
+          "start_ticks": 28923849,
+          "sid": 3907454,
+          "pgid": 3926282
+        },
+        {
+          "pid": 3926284,
+          "start_ticks": 28923850,
+          "sid": 3907454,
+          "pgid": 3926282
+        },
+        {
+          "pid": 3926285,
+          "start_ticks": 28923851,
+          "sid": 3907454,
+          "pgid": 3926282
+        },
+        {
+          "pid": 3926503,
+          "start_ticks": 28924212,
+          "sid": 3907454,
+          "pgid": 3926503
+        },
+        {
+          "pid": 3926504,
+          "start_ticks": 28924212,
+          "sid": 3907454,
+          "pgid": 3926503
+        },
+        {
+          "pid": 3926505,
+          "start_ticks": 28924212,
+          "sid": 3907454,
+          "pgid": 3926503
+        },
+        {
+          "pid": 3926506,
+          "start_ticks": 28924213,
+          "sid": 3907454,
+          "pgid": 3926503
+        },
+        {
+          "pid": 3926533,
+          "start_ticks": 28924275,
+          "sid": 3907454,
+          "pgid": 3926282
+        },
+        {
+          "pid": 3926702,
+          "start_ticks": 28924589,
+          "sid": 3907454,
+          "pgid": 3926503
+        },
+        {
+          "pid": 3926846,
+          "start_ticks": 28924738,
+          "sid": 3907454,
+          "pgid": 3926846
+        },
+        {
+          "pid": 3926847,
+          "start_ticks": 28924738,
+          "sid": 3907454,
+          "pgid": 3926846
+        },
+        {
+          "pid": 3926848,
+          "start_ticks": 28924738,
+          "sid": 3907454,
+          "pgid": 3926846
+        },
+        {
+          "pid": 3926850,
+          "start_ticks": 28924739,
+          "sid": 3907454,
+          "pgid": 3926846
+        },
+        {
+          "pid": 3927080,
+          "start_ticks": 28925070,
+          "sid": 3907454,
+          "pgid": 3927080
+        },
+        {
+          "pid": 3927081,
+          "start_ticks": 28925070,
+          "sid": 3907454,
+          "pgid": 3927080
+        },
+        {
+          "pid": 3927082,
+          "start_ticks": 28925070,
+          "sid": 3907454,
+          "pgid": 3927080
+        },
+        {
+          "pid": 3927085,
+          "start_ticks": 28925075,
+          "sid": 3907454,
+          "pgid": 3927080
+        },
+        {
+          "pid": 3927090,
+          "start_ticks": 28925081,
+          "sid": 3907454,
+          "pgid": 3927090
+        },
+        {
+          "pid": 3927091,
+          "start_ticks": 28925081,
+          "sid": 3907454,
+          "pgid": 3927090
+        },
+        {
+          "pid": 3927092,
+          "start_ticks": 28925082,
+          "sid": 3907454,
+          "pgid": 3927090
+        },
+        {
+          "pid": 3927093,
+          "start_ticks": 28925082,
+          "sid": 3907454,
+          "pgid": 3927090
+        },
+        {
+          "pid": 3927141,
+          "start_ticks": 28925184,
+          "sid": 3907454,
+          "pgid": 3926846
+        },
+        {
+          "pid": 3927247,
+          "start_ticks": 28925384,
+          "sid": 3907454,
+          "pgid": 3927090
+        },
+        {
+          "pid": 3927412,
+          "start_ticks": 28925712,
+          "sid": 3907454,
+          "pgid": 3927412
+        },
+        {
+          "pid": 3927413,
+          "start_ticks": 28925713,
+          "sid": 3907454,
+          "pgid": 3927412
+        },
+        {
+          "pid": 3927414,
+          "start_ticks": 28925713,
+          "sid": 3907454,
+          "pgid": 3927412
+        },
+        {
+          "pid": 3927488,
+          "start_ticks": 28925864,
+          "sid": 3907454,
+          "pgid": 3927488
+        },
+        {
+          "pid": 3927489,
+          "start_ticks": 28925865,
+          "sid": 3907454,
+          "pgid": 3927488
+        },
+        {
+          "pid": 3927490,
+          "start_ticks": 28925865,
+          "sid": 3907454,
+          "pgid": 3927488
+        },
+        {
+          "pid": 3927492,
+          "start_ticks": 28925866,
+          "sid": 3907454,
+          "pgid": 3927488
+        },
+        {
+          "pid": 3927497,
+          "start_ticks": 28925889,
+          "sid": 3907454,
+          "pgid": 3927488
+        },
+        {
+          "pid": 3927510,
+          "start_ticks": 28925909,
+          "sid": 3907454,
+          "pgid": 3927510
+        },
+        {
+          "pid": 3927511,
+          "start_ticks": 28925909,
+          "sid": 3907454,
+          "pgid": 3927510
+        },
+        {
+          "pid": 3927512,
+          "start_ticks": 28925909,
+          "sid": 3907454,
+          "pgid": 3927510
+        },
+        {
+          "pid": 3927530,
+          "start_ticks": 28925945,
+          "sid": 3907454,
+          "pgid": 3927530
+        },
+        {
+          "pid": 3927531,
+          "start_ticks": 28925945,
+          "sid": 3907454,
+          "pgid": 3927530
+        },
+        {
+          "pid": 3927533,
+          "start_ticks": 28925946,
+          "sid": 3907454,
+          "pgid": 3927530
+        },
+        {
+          "pid": 3927534,
+          "start_ticks": 28925947,
+          "sid": 3907454,
+          "pgid": 3927530
+        },
+        {
+          "pid": 3927581,
+          "start_ticks": 28925982,
+          "sid": 3907454,
+          "pgid": 3927530
+        },
+        {
+          "pid": 3927739,
+          "start_ticks": 28926097,
+          "sid": 3907454,
+          "pgid": 3927739
+        },
+        {
+          "pid": 3927740,
+          "start_ticks": 28926098,
+          "sid": 3907454,
+          "pgid": 3927739
+        },
+        {
+          "pid": 3927741,
+          "start_ticks": 28926098,
+          "sid": 3907454,
+          "pgid": 3927739
+        },
+        {
+          "pid": 3927742,
+          "start_ticks": 28926099,
+          "sid": 3907454,
+          "pgid": 3927739
+        },
+        {
+          "pid": 3927813,
+          "start_ticks": 28926162,
+          "sid": 3907454,
+          "pgid": 3927739
+        },
+        {
+          "pid": 3927817,
+          "start_ticks": 28926164,
+          "sid": 3907454,
+          "pgid": 3927817
+        },
+        {
+          "pid": 3927818,
+          "start_ticks": 28926164,
+          "sid": 3907454,
+          "pgid": 3927817
+        },
+        {
+          "pid": 3927819,
+          "start_ticks": 28926165,
+          "sid": 3907454,
+          "pgid": 3927817
+        },
+        {
+          "pid": 3927820,
+          "start_ticks": 28926166,
+          "sid": 3907454,
+          "pgid": 3927817
+        },
+        {
+          "pid": 3927840,
+          "start_ticks": 28926205,
+          "sid": 3907454,
+          "pgid": 3927817
+        },
+        {
+          "pid": 3927867,
+          "start_ticks": 28926280,
+          "sid": 3907454,
+          "pgid": 3927867
+        },
+        {
+          "pid": 3927868,
+          "start_ticks": 28926280,
+          "sid": 3907454,
+          "pgid": 3927867
+        },
+        {
+          "pid": 3927869,
+          "start_ticks": 28926280,
+          "sid": 3907454,
+          "pgid": 3927867
+        },
+        {
+          "pid": 3927870,
+          "start_ticks": 28926282,
+          "sid": 3907454,
+          "pgid": 3927867
+        },
+        {
+          "pid": 3927874,
+          "start_ticks": 28926293,
+          "sid": 3907454,
+          "pgid": 3927867
+        },
+        {
+          "pid": 3927879,
+          "start_ticks": 28926305,
+          "sid": 3907454,
+          "pgid": 3927879
+        },
+        {
+          "pid": 3927880,
+          "start_ticks": 28926305,
+          "sid": 3907454,
+          "pgid": 3927879
+        },
+        {
+          "pid": 3927881,
+          "start_ticks": 28926305,
+          "sid": 3907454,
+          "pgid": 3927879
+        },
+        {
+          "pid": 3927984,
+          "start_ticks": 28926411,
+          "sid": 3907454,
+          "pgid": 3927984
+        },
+        {
+          "pid": 3927985,
+          "start_ticks": 28926411,
+          "sid": 3907454,
+          "pgid": 3927984
+        },
+        {
+          "pid": 3927986,
+          "start_ticks": 28926412,
+          "sid": 3907454,
+          "pgid": 3927984
+        },
+        {
+          "pid": 3927987,
+          "start_ticks": 28926413,
+          "sid": 3907454,
+          "pgid": 3927984
+        },
+        {
+          "pid": 3928012,
+          "start_ticks": 28926466,
+          "sid": 3907454,
+          "pgid": 3927984
+        },
+        {
+          "pid": 3928169,
+          "start_ticks": 28926720,
+          "sid": 3907454,
+          "pgid": 3928169
+        },
+        {
+          "pid": 3928170,
+          "start_ticks": 28926721,
+          "sid": 3907454,
+          "pgid": 3928169
+        },
+        {
+          "pid": 3928171,
+          "start_ticks": 28926721,
+          "sid": 3907454,
+          "pgid": 3928169
+        },
+        {
+          "pid": 3928226,
+          "start_ticks": 28926816,
+          "sid": 3907454,
+          "pgid": 3928226
+        },
+        {
+          "pid": 3928227,
+          "start_ticks": 28926816,
+          "sid": 3907454,
+          "pgid": 3928226
+        },
+        {
+          "pid": 3928228,
+          "start_ticks": 28926817,
+          "sid": 3907454,
+          "pgid": 3928226
+        },
+        {
+          "pid": 3928229,
+          "start_ticks": 28926818,
+          "sid": 3907454,
+          "pgid": 3928226
+        },
+        {
+          "pid": 3928249,
+          "start_ticks": 28926877,
+          "sid": 3907454,
+          "pgid": 3928226
+        },
+        {
+          "pid": 3928275,
+          "start_ticks": 28926946,
+          "sid": 3907454,
+          "pgid": 3928275
+        },
+        {
+          "pid": 3928276,
+          "start_ticks": 28926946,
+          "sid": 3907454,
+          "pgid": 3928275
+        },
+        {
+          "pid": 3928278,
+          "start_ticks": 28926946,
+          "sid": 3907454,
+          "pgid": 3928275
+        },
+        {
+          "pid": 3928279,
+          "start_ticks": 28926947,
+          "sid": 3907454,
+          "pgid": 3928275
+        },
+        {
+          "pid": 3928347,
+          "start_ticks": 28927005,
+          "sid": 3907454,
+          "pgid": 3928275
+        },
+        {
+          "pid": 3928366,
+          "start_ticks": 28927056,
+          "sid": 3907454,
+          "pgid": 3928366
+        },
+        {
+          "pid": 3928367,
+          "start_ticks": 28927056,
+          "sid": 3907454,
+          "pgid": 3928366
+        },
+        {
+          "pid": 3928368,
+          "start_ticks": 28927056,
+          "sid": 3907454,
+          "pgid": 3928366
+        },
+        {
+          "pid": 3928371,
+          "start_ticks": 28927057,
+          "sid": 3907454,
+          "pgid": 3928366
+        },
+        {
+          "pid": 3928384,
+          "start_ticks": 28927112,
+          "sid": 3907454,
+          "pgid": 3928366
+        },
+        {
+          "pid": 3928429,
+          "start_ticks": 28927205,
+          "sid": 3907454,
+          "pgid": 3928429
+        },
+        {
+          "pid": 3928430,
+          "start_ticks": 28927205,
+          "sid": 3907454,
+          "pgid": 3928429
+        },
+        {
+          "pid": 3928431,
+          "start_ticks": 28927205,
+          "sid": 3907454,
+          "pgid": 3928429
+        },
+        {
+          "pid": 3928440,
+          "start_ticks": 28927210,
+          "sid": 3907454,
+          "pgid": 3928440
+        },
+        {
+          "pid": 3928441,
+          "start_ticks": 28927210,
+          "sid": 3907454,
+          "pgid": 3928440
+        },
+        {
+          "pid": 3928442,
+          "start_ticks": 28927210,
+          "sid": 3907454,
+          "pgid": 3928440
+        },
+        {
+          "pid": 3928576,
+          "start_ticks": 28927361,
+          "sid": 3907454,
+          "pgid": 3928576
+        },
+        {
+          "pid": 3928577,
+          "start_ticks": 28927361,
+          "sid": 3907454,
+          "pgid": 3928576
+        },
+        {
+          "pid": 3928578,
+          "start_ticks": 28927361,
+          "sid": 3907454,
+          "pgid": 3928576
+        },
+        {
+          "pid": 3928580,
+          "start_ticks": 28927362,
+          "sid": 3907454,
+          "pgid": 3928576
+        },
+        {
+          "pid": 3928593,
+          "start_ticks": 28927411,
+          "sid": 3907454,
+          "pgid": 3928576
+        },
+        {
+          "pid": 3928614,
+          "start_ticks": 28927457,
+          "sid": 3907454,
+          "pgid": 3928614
+        },
+        {
+          "pid": 3928615,
+          "start_ticks": 28927457,
+          "sid": 3907454,
+          "pgid": 3928614
+        },
+        {
+          "pid": 3928616,
+          "start_ticks": 28927457,
+          "sid": 3907454,
+          "pgid": 3928614
+        },
+        {
+          "pid": 3928617,
+          "start_ticks": 28927458,
+          "sid": 3907454,
+          "pgid": 3928614
+        },
+        {
+          "pid": 3928658,
+          "start_ticks": 28927520,
+          "sid": 3907454,
+          "pgid": 3928614
+        },
+        {
+          "pid": 3928676,
+          "start_ticks": 28927574,
+          "sid": 3907454,
+          "pgid": 3928676
+        },
+        {
+          "pid": 3928677,
+          "start_ticks": 28927574,
+          "sid": 3907454,
+          "pgid": 3928676
+        },
+        {
+          "pid": 3928678,
+          "start_ticks": 28927574,
+          "sid": 3907454,
+          "pgid": 3928676
+        },
+        {
+          "pid": 3928691,
+          "start_ticks": 28927575,
+          "sid": 3907454,
+          "pgid": 3928676
+        },
+        {
+          "pid": 3928724,
+          "start_ticks": 28927640,
+          "sid": 3907454,
+          "pgid": 3928676
+        },
+        {
+          "pid": 3928745,
+          "start_ticks": 28927690,
+          "sid": 3907454,
+          "pgid": 3928745
+        },
+        {
+          "pid": 3928746,
+          "start_ticks": 28927690,
+          "sid": 3907454,
+          "pgid": 3928745
+        },
+        {
+          "pid": 3928747,
+          "start_ticks": 28927690,
+          "sid": 3907454,
+          "pgid": 3928745
+        },
+        {
+          "pid": 3928749,
+          "start_ticks": 28927691,
+          "sid": 3907454,
+          "pgid": 3928745
+        },
+        {
+          "pid": 3928755,
+          "start_ticks": 28927696,
+          "sid": 3907454,
+          "pgid": 3928755
+        },
+        {
+          "pid": 3928756,
+          "start_ticks": 28927697,
+          "sid": 3907454,
+          "pgid": 3928755
+        },
+        {
+          "pid": 3928757,
+          "start_ticks": 28927697,
+          "sid": 3907454,
+          "pgid": 3928755
+        },
+        {
+          "pid": 3928758,
+          "start_ticks": 28927698,
+          "sid": 3907454,
+          "pgid": 3928755
+        },
+        {
+          "pid": 3928774,
+          "start_ticks": 28927743,
+          "sid": 3907454,
+          "pgid": 3928745
+        },
+        {
+          "pid": 3928806,
+          "start_ticks": 28927754,
+          "sid": 3907454,
+          "pgid": 3928755
+        },
+        {
+          "pid": 3928865,
+          "start_ticks": 28927950,
+          "sid": 3907454,
+          "pgid": 3928865
+        },
+        {
+          "pid": 3928866,
+          "start_ticks": 28927950,
+          "sid": 3907454,
+          "pgid": 3928865
+        },
+        {
+          "pid": 3928867,
+          "start_ticks": 28927950,
+          "sid": 3907454,
+          "pgid": 3928865
+        },
+        {
+          "pid": 3928868,
+          "start_ticks": 28927951,
+          "sid": 3907454,
+          "pgid": 3928865
+        },
+        {
+          "pid": 3928926,
+          "start_ticks": 28928004,
+          "sid": 3907454,
+          "pgid": 3928865
+        },
+        {
+          "pid": 3928958,
+          "start_ticks": 28928066,
+          "sid": 3907454,
+          "pgid": 3928958
+        },
+        {
+          "pid": 3928960,
+          "start_ticks": 28928066,
+          "sid": 3907454,
+          "pgid": 3928958
+        },
+        {
+          "pid": 3928962,
+          "start_ticks": 28928066,
+          "sid": 3907454,
+          "pgid": 3928958
+        },
+        {
+          "pid": 3928963,
+          "start_ticks": 28928066,
+          "sid": 3907454,
+          "pgid": 3928963
+        },
+        {
+          "pid": 3928964,
+          "start_ticks": 28928067,
+          "sid": 3907454,
+          "pgid": 3928963
+        },
+        {
+          "pid": 3928965,
+          "start_ticks": 28928067,
+          "sid": 3907454,
+          "pgid": 3928963
+        },
+        {
+          "pid": 3928966,
+          "start_ticks": 28928067,
+          "sid": 3907454,
+          "pgid": 3928958
+        },
+        {
+          "pid": 3928989,
+          "start_ticks": 28928135,
+          "sid": 3907454,
+          "pgid": 3928958
+        },
+        {
+          "pid": 3929023,
+          "start_ticks": 28928145,
+          "sid": 3907454,
+          "pgid": 3929023
+        },
+        {
+          "pid": 3929024,
+          "start_ticks": 28928146,
+          "sid": 3907454,
+          "pgid": 3929023
+        },
+        {
+          "pid": 3929025,
+          "start_ticks": 28928146,
+          "sid": 3907454,
+          "pgid": 3929023
+        },
+        {
+          "pid": 3929026,
+          "start_ticks": 28928147,
+          "sid": 3907454,
+          "pgid": 3929023
+        },
+        {
+          "pid": 3929049,
+          "start_ticks": 28928206,
+          "sid": 3907454,
+          "pgid": 3929023
+        },
+        {
+          "pid": 3929588,
+          "start_ticks": 28929088,
+          "sid": 3907454,
+          "pgid": 3929588
+        },
+        {
+          "pid": 3929598,
+          "start_ticks": 28929099,
+          "sid": 3907454,
+          "pgid": 3929598
+        },
+        {
+          "pid": 3929611,
+          "start_ticks": 28929117,
+          "sid": 3907454,
+          "pgid": 3929611
+        },
+        {
+          "pid": 3929612,
+          "start_ticks": 28929117,
+          "sid": 3907454,
+          "pgid": 3929611
+        },
+        {
+          "pid": 3929613,
+          "start_ticks": 28929117,
+          "sid": 3907454,
+          "pgid": 3929611
+        },
+        {
+          "pid": 3929619,
+          "start_ticks": 28929121,
+          "sid": 3907454,
+          "pgid": 3929611
+        },
+        {
+          "pid": 3929670,
+          "start_ticks": 28929224,
+          "sid": 3907454,
+          "pgid": 3929611
+        },
+        {
+          "pid": 3929673,
+          "start_ticks": 28929236,
+          "sid": 3907454,
+          "pgid": 3929611
+        },
+        {
+          "pid": 3929716,
+          "start_ticks": 28929255,
+          "sid": 3907454,
+          "pgid": 3929611
+        },
+        {
+          "pid": 3929773,
+          "start_ticks": 28929355,
+          "sid": 3907454,
+          "pgid": 3929611
+        },
+        {
+          "pid": 3929912,
+          "start_ticks": 28929386,
+          "sid": 3907454,
+          "pgid": 3929611
+        },
+        {
+          "pid": 3930010,
+          "start_ticks": 28929449,
+          "sid": 3907454,
+          "pgid": 3929611
+        }
+      ],
+      "pid": 3907454,
+      "direct_identity": {
+        "pid": 3907454,
+        "state": "R",
+        "ppid": 3906643,
+        "pgid": 3907454,
+        "sid": 3907454,
+        "start_ticks": 28896979,
+        "rss_bytes": 303104
+      },
+      "peak_session_rss_bytes": 1330712576,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T02:33:36.490718+00:00",
+      "elapsed_seconds": 325.806541842001,
+      "logs": {
+        "build.stdout": {
+          "bytes": 4384800,
+          "sha256": "1b43670be33b0c912e0346306053977c45274256bd71a93a2344953ae42b92cc"
+        },
+        "build.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "direct-imports",
+      "argv": [
+        "/usr/bin/readelf",
+        "-d",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/build-sycl-gdn-factor-real-v1/gdn_gate_factor_parity"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T02:33:36.500203+00:00",
+      "wall_seconds": 30,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3930069,
+          "start_ticks": 28929561,
+          "sid": 3930069,
+          "pgid": 3930069
+        }
+      ],
+      "pid": 3930069,
+      "direct_identity": {
+        "pid": 3930069,
+        "state": "R",
+        "ppid": 3906643,
+        "pgid": 3930069,
+        "sid": 3930069,
+        "start_ticks": 28929561,
+        "rss_bytes": 892928
+      },
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T02:33:36.592193+00:00",
+      "elapsed_seconds": 0.08933695201994851,
+      "logs": {
+        "direct-imports.stdout": {
+          "bytes": 2662,
+          "sha256": "4a04686259373c5c921d02bf269a61cf7b980124765d7ef1b40b6c970b5cb797"
+        },
+        "direct-imports.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "target-commands",
+      "argv": [
+        "/usr/bin/ninja",
+        "-C",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/build-sycl-gdn-factor-real-v1",
+        "-t",
+        "commands",
+        "gdn_gate_factor_parity"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T02:33:36.596060+00:00",
+      "wall_seconds": 30,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3930071,
+          "start_ticks": 28929571,
+          "sid": 3930071,
+          "pgid": 3930071
+        }
+      ],
+      "pid": 3930071,
+      "direct_identity": {
+        "pid": 3930071,
+        "state": "R",
+        "ppid": 3906643,
+        "pgid": 3930071,
+        "sid": 3930071,
+        "start_ticks": 28929571,
+        "rss_bytes": 327680
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T02:33:36.774051+00:00",
+      "elapsed_seconds": 0.1747938150074333,
+      "logs": {
+        "target-commands.stdout": {
+          "bytes": 124714,
+          "sha256": "eef4f1a0475d9ab7f6a401646e6490755b3aad8401b4de544f92fb37408c3988"
+        },
+        "target-commands.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "started_utc": "2026-10-10T02:28:07.095241+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "environment": {
+    "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+    "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+    "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+    "ONEAPI_ROOT": "/opt/intel/oneapi",
+    "CMAKE_PREFIX_PATH": "/opt/intel/oneapi/tbb/2023.1/env/..:/opt/intel/oneapi/pti/1.1/lib/cmake/pti:/opt/intel/oneapi/mkl/2026.1/lib/cmake:/opt/intel/oneapi/ipp/2026.0/lib/cmake/ipp:/opt/intel/oneapi/dpl/2022.13/lib/cmake/oneDPL:/opt/intel/oneapi/dnnl/2026.0/lib/cmake:/opt/intel/oneapi/compiler/2026.1:/opt/intel/oneapi/ccl/2022.1/lib/cmake/oneCCL",
+    "PKG_CONFIG_PATH": "/opt/intel/oneapi/vtune/2026.4/include/pkgconfig/lib64:/opt/intel/oneapi/tbb/2023.1/env/../lib/pkgconfig:/opt/intel/oneapi/mpi/2021.18/lib/pkgconfig:/opt/intel/oneapi/mkl/2026.1/lib/pkgconfig:/opt/intel/oneapi/ippcp/2026.0/lib/pkgconfig:/opt/intel/oneapi/dpl/2022.13/lib/pkgconfig:/opt/intel/oneapi/dnnl/2026.0/lib/pkgconfig:/opt/intel/oneapi/compiler/2026.1/lib/pkgconfig:/opt/intel/oneapi/ccl/2022.1/lib/pkgconfig/",
+    "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+    "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+  },
+  "compiler_pins": {
+    "icx": {
+      "bytes": 2102696,
+      "sha256": "be7fa7c3c74c2ba2b8e1b50b0a61e37986441727899e25f3545636bde157c083"
+    },
+    "icpx": {
+      "bytes": 2102696,
+      "sha256": "be7fa7c3c74c2ba2b8e1b50b0a61e37986441727899e25f3545636bde157c083"
+    }
+  },
+  "binary": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/build-sycl-gdn-factor-real-v1/gdn_gate_factor_parity",
+    "bytes": 1342536,
+    "sha256": "4f317bcb1d74fc74afc065ee15e9002a132c1b5470c724cfb4e92600a6df0a16"
+  },
+  "compile_commands": {
+    "bytes": 148242,
+    "sha256": "b418423ea4cf65ba3da4c4846142c5eb8c38b24524a00f1f6bcbf388c56b9a38"
+  },
+  "selected_compile_commands": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl/src/prefill/kernels.dp.cpp": [
+      "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+      "-DSTRATA_GDN_PREFILL_GATE_FACTOR=1",
+      "-DSTRATA_NATIVE_EXPERTS=1",
+      "-DSTRATA_SYCL_SAMPLER_FP64=1",
+      "-DSTRATA_VERSION=\"0.1.41\"",
+      "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl/include",
+      "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl/../include",
+      "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include",
+      "-O3",
+      "-DNDEBUG",
+      "-std=c++20",
+      "-fsycl",
+      "-fsycl-default-sub-group-size=32",
+      "-fsycl-device-code-split=per_kernel",
+      "-fp-model=precise",
+      "-Wno-unused-parameter",
+      "-Wno-unused-variable",
+      "-Wno-deprecated-declarations",
+      "-qmkl=sequential",
+      "-Wall",
+      "-Wextra",
+      "-o",
+      "CMakeFiles/strata_prefill.dir/src/prefill/kernels.dp.cpp.o",
+      "-c",
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl/src/prefill/kernels.dp.cpp"
+    ],
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl/src/prefill/prefill.cpp": [
+      "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+      "-DSTRATA_GDN_PREFILL_GATE_FACTOR=1",
+      "-DSTRATA_NATIVE_EXPERTS=1",
+      "-DSTRATA_SYCL_SAMPLER_FP64=1",
+      "-DSTRATA_VERSION=\"0.1.41\"",
+      "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl/include",
+      "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl/../include",
+      "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include",
+      "-O3",
+      "-DNDEBUG",
+      "-std=c++20",
+      "-fsycl",
+      "-fsycl-default-sub-group-size=32",
+      "-fsycl-device-code-split=per_kernel",
+      "-fp-model=precise",
+      "-Wno-unused-parameter",
+      "-Wno-unused-variable",
+      "-Wno-deprecated-declarations",
+      "-qmkl=sequential",
+      "-Wall",
+      "-Wextra",
+      "-o",
+      "CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o",
+      "-c",
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl/src/prefill/prefill.cpp"
+    ],
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl/src/prefill/gdn_gate_factor_parity.cpp": [
+      "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+      "-DSTRATA_GDN_FACTOR_PARITY_ENABLED=1",
+      "-DSTRATA_NATIVE_EXPERTS=1",
+      "-DSTRATA_SYCL_SAMPLER_FP64=1",
+      "-DSTRATA_VERSION=\"0.1.41\"",
+      "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl/include",
+      "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl/../include",
+      "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include",
+      "-O3",
+      "-DNDEBUG",
+      "-std=c++20",
+      "-fsycl",
+      "-fsycl-default-sub-group-size=32",
+      "-fsycl-device-code-split=per_kernel",
+      "-fp-model=precise",
+      "-Wno-unused-parameter",
+      "-Wno-unused-variable",
+      "-Wno-deprecated-declarations",
+      "-qmkl=sequential",
+      "-Wall",
+      "-Wextra",
+      "-o",
+      "CMakeFiles/gdn_gate_factor_parity.dir/src/prefill/gdn_gate_factor_parity.cpp.o",
+      "-c",
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-prefill-gate-factor-20261010/sycl/src/prefill/gdn_gate_factor_parity.cpp"
+    ]
+  },
+  "target_commands": {
+    "bytes": 124714,
+    "sha256": "eef4f1a0475d9ab7f6a401646e6490755b3aad8401b4de544f92fb37408c3988"
+  },
+  "finished_utc": "2026-10-10T02:33:36.878986+00:00"
+}

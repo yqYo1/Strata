@@ -186,17 +186,21 @@ void host_contract() {
     std::array<uint16_t,8> half{1,2,3,4,5,6,7,8};
     const auto initial=state,initialOutput=output;const auto initialHalf=half;
     for(Encoding encoding:{Encoding::LogGate,Encoding::DecayFactor}) {
-        bool refused=false;
-        try {
-            strata::prefill::gdn_gates_encoded(encoding,nullptr,nullptr,nullptr,nullptr,nullptr,0,nullptr);
-            strata::prefill::gdn_recurrence_encoded(encoding,0,state.data(),nullptr,nullptr,nullptr,nullptr,nullptr,1e-6f,output.data(),half.data(),0,nullptr);
-        } catch(const std::invalid_argument&) { refused=true; }
+        // Each API must execute independently: a producer refusal must not skip
+        // the recurrence refusal assertion in a feature-OFF qualification build.
+        for(int api:{0,1}) {
+            bool refused=false;
+            try {
+                if(api==0) strata::prefill::gdn_gates_encoded(encoding,nullptr,nullptr,nullptr,nullptr,nullptr,0,nullptr);
+                else strata::prefill::gdn_recurrence_encoded(encoding,0,state.data(),nullptr,nullptr,nullptr,nullptr,nullptr,1e-6f,output.data(),half.data(),0,nullptr);
+            } catch(const std::invalid_argument&) { refused=true; }
 #if defined(STRATA_GDN_FACTOR_PARITY_ENABLED)
-        require(!refused,"enabled empty API refused");
+            require(!refused,"enabled empty API refused");
 #else
-        require(refused==(encoding==Encoding::DecayFactor),"build-OFF factor refusal");
+            require(refused==(encoding==Encoding::DecayFactor),"build-OFF factor refusal");
 #endif
-        require(state==initial&&output==initialOutput&&half==initialHalf,"empty API changed markers");
+            require(state==initial&&output==initialOutput&&half==initialHalf,"empty API changed markers");
+        }
     }
     for(int64_t length:{int64_t(-1),int64_t(262145)}) {
         bool refused=false;
@@ -212,7 +216,7 @@ void host_contract() {
     refused=false;
     try {strata::prefill::gdn_gates_encoded(static_cast<Encoding>(2),nullptr,nullptr,nullptr,nullptr,nullptr,0,nullptr);}
     catch(const std::invalid_argument&) {refused=true;}require(refused,"unknown encoding accepted");
-    std::puts("HOST_PASS,empty_markers,invalid_length_stride_variant_encoding,no_queue_construction,no_GPU_submission");
+    std::puts("HOST_PASS,empty_markers,independent_empty_API_calls,4,invalid_length_stride_variant_encoding,no_queue_construction,no_GPU_submission");
 }
 void selected_identity(sycl::queue& q) {
     require(q.get_backend()==sycl::backend::ext_oneapi_level_zero&&q.is_in_order(),"LevelZero in-order required");

@@ -1,6 +1,8 @@
 #pragma once
 #include <cstdint>
 // Private SYCL prefill representation experiment; public/decode APIs remain log-gate.
+// The environment selects the production prefill caller. Explicit typed test API
+// calls select their encoding directly, subject to build/shape validation.
 namespace strata::prefill {
 enum class GdnGateEncoding { LogGate, DecayFactor };
 bool gdn_prefill_gate_factor_enabled();
