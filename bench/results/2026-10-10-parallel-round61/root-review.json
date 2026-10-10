@@ -1,0 +1,57 @@
+{
+  "created_utc": "2026-10-10T09:30:09.576438+00:00",
+  "reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round227-native-capacity-v2-independent-admission.txt",
+      "bytes": 15202,
+      "sha256": "fdf1c678af8c2b3c82595e3529406908073433c03a7fb9df075d689a4ae9ff1b",
+      "agent": "/root/research_bottleneck_evidence_audit_v203",
+      "model": "gpt-6-luna",
+      "scope": "Frozen NT1–4 actual-payload numerical and hot/streaming fixture admission",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round228-real-gemm-returned-event-span-qualification.txt",
+      "bytes": 11142,
+      "sha256": "ae41a7a56cb3b13f54ea49885d5c5324b16dc4120f3286ac2e30cbb7f170aac3",
+      "agent": "/root/research_native_iq4nl_esimd_k640_v202",
+      "model": "gpt-6-luna",
+      "scope": "Post-small-device-qualification oneMKL internal-span contract",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    }
+  ],
+  "corrections": {
+    "R227_memory": "sizeof(ExpertPool) excludes dynamic scratch and thread stacks; separate blob/input/work bounds do not claim totalprocess memory. Owner measured peak RSS independently.",
+    "R227_hot": "Hot8/streaming192 have unequal jobcounts and differing expert subsets; compare normalized service perjob/activebyte, intended L3fit not proven cache residence.",
+    "R228": "Accepted smallwrapper completion/profilingfields vs completeinternalroutine distinction. New production-shaped PTI calibration plus actualroute joins still pending. Exact32K service/shape capture may be used for histogram before interpreting eventdurations."
+  },
+  "registry": {
+    "bytes": 236647,
+    "sha256": "fd025ce071bd30fdbef0cb547f06ed31397541d922be29bb2897d09aca33b922"
+  },
+  "controller_failure": "InitialCPUqualifier process normal0/fullmathPASS but controller expected timed finalmarker in correctness-only mode. Originalreceipt staysFAILED; controller2 uses correctstage marker, pins actualmanifest cohort_sha256, produces fresh records; no thresholds/source changed.",
+  "closed_qualifiers": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-capacity-v2-qualify-nt1-streaming-r1-controller2/record.json",
+      "bytes": 700940,
+      "sha256": "99297d64043b169d66f1a0e334835c47f1eee204e7ebc3220445070a91e23249"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-capacity-v2-qualify-nt2-streaming-r1-controller2/record.json",
+      "bytes": 1193838,
+      "sha256": "3aa736fc6a5286611aafdfe05f2c9eaba882bcb11b670d95e740d22481c816f8"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-capacity-v2-qualify-nt3-streaming-r1-controller2/record.json",
+      "bytes": 1565605,
+      "sha256": "b4848618ae7762fb56fbbb5aff209647e35f32b163a7403d6ddd89e5a345d111"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-capacity-v2-qualify-nt4-streaming-r1-controller2/record.json",
+      "bytes": 1937299,
+      "sha256": "2200aa4ef719eaa648d4efecddb669a0df5836978ce6c09dfcb1c56b3c2463a2"
+    }
+  ]
+}
