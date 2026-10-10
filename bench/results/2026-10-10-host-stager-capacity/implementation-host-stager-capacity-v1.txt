@@ -1,0 +1,212 @@
+Implementation: synthetic packed-RAM host ring-copy capacity control v1
+Date: 2026-10-10
+SOURCE ONLY. No source execution, builds, tests, timing, GPU, hardware/process
+queries, Git changes or cleanup were performed. Read-only source/report reads
+and SHA256 reads only. Exactly the two assigned files were created.
+
+Source:
+B=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007
+B/host_stager_capacity_v1.cpp
+SHA256 42d61ab146c2333cd9d2b85a9cf381f5d022fab695f0950a259a8c58c98cef2d
+Handoff:
+B/research-20261009/implementation-host-stager-capacity-v1.txt
+
+Read provenance:
+Frozen Stager in sycl/src/prefill/prefill.cpp, lines358 onward, worktree
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010
+Declared frozen commit495369cf4dc6e6da564095a1c26504dd3694e3f2.
+The prior source-only digest for this same frozen file is
+f6cbc4acb9f84b19480a25892a2e6864896a3e3ab0f68ace3c3f51a788591f69.
+Read R240 in full:
+research-20261009/round240-cpu-expert-stager-capacity-and-route-limits.txt
+Read completed round67/root-review.json in full, declared storagecommit
+5fbffea9acf33a6eb04e7c581a68c61ae4ea2eea.
+Root correction explicitly distinguishes selected384 expert fixture from
+production expert count, fixture1971200B from heterogeneous production blob
+sizes, and4workers from the resident-RAM default3 when hardware_concurrency12.
+No host topology was discovered by this implementation.
+
+Scope and design
+----------------
+The resident packed-pointer Stager arm performs memcpy, not CPU dequant.
+This standalone C++20 program measures ONLY a synthetic ordinary aligned-RAM
+source-to-host-ring memcpy control. No production source was changed.
+There is no shard read, ExpertSource::copy_blob, GGUF assembly, DMA, USM,
+pinning/mlock, device access, dequantization, numerical model math or inference.
+
+Explicit worker count1/3/4/6; no hardware-derived default. Ring16. Corpus192
+synthetic immutable packed blobs, each1971200B. These are selected-fixture
+control dimensions, not asserted production graph topology or universal blob
+size. Seed defaults1, or explicit uint64 decimal. Corpus generation is
+deterministic SplitMix64(seed XOR (blobindex<<32) XOR wordindex) expanded
+little-endian per8-byte word. FNV1a64 full-payload expected hashes are recorded
+for all192 blobs. Root can reproduce source data independently.
+
+A sample has12 batches, each16 distinct ring slots and16 corpus blobs.
+The fixed corpus order is0..191. One full warmup precedes seven measured
+samples. Qualification mode has one full warmup plus one qualification sample
+and suppresses capacity rates; timing_claim:false. All individual batch and
+job copy durations, per-job full hashes, worker assignment counts and
+correctness durations are retained even for warmup. No aggregate median
+hides individual samples; root derives medians/ranges from recorded samples.
+
+Threads are created and pass a startup ready barrier outside copy timings.
+An atomic index claims each of16 batch slots exactly once. A mutex/CV
+generation prevents stale workers claiming a later generation. Per-job tags
+contain exact generation and source job index. Each worker writes only its
+claimed slot and result record and its own assignment counter.
+
+Main waits for EVERY worker to depart a batch before touching its results or
+destination bytes. The completion mutex establishes the happens-before edge
+for source/result reads. Main verifies EACH job's entire1971200-byte payload
+with memcmp against its immutable source, checks both64-byte tail canaries,
+computes full destination FNV and checks the expected hash. Only after all16
+jobs pass does main acknowledge the generation. The next batch explicitly
+refuses an unacknowledged generation before resetting the atomic index or
+writing any ring slot. Every overwritten job has therefore been fully checked
+before reuse. This is a host acknowledgment surrogate, NOT a DMA event or
+actual live Stager scheduling.
+
+Worker errors cannot escape the worker entry point. Failure wakes the startup
+or batch waiter. Main rejects failures, stops/joins all started threads before
+arena destruction and emits nonzero/failure JSON. Constructor partial thread
+creation unwinds through the same stop/join path. A genuinely broken mutex
+cannot be recovered safely and aborts rather than reporting success.
+Batch and startup waits have a shared process_start+60s deadline. All normal
+work loops are finite; no unbounded job queue/replay or detached thread exists.
+Owned arena outlives all workers. Stop is safe when called again by destructor.
+
+Timing semantics
+----------------
+Each batch's main steady-clock interval begins before locking and publishing
+its generation, and ends after all workers report completion while main holds
+the completion lock. The sum of12 such intervals is reported per sample.
+It includes lock/issue/notify, worker wakeup, atomic claims, memcpy, worker
+clock calls, completion notification/barrier and main wait. It excludes final
+lock release, all preparation, full verification/hash/canary/ack, source-final
+checks, thread startup/join and JSON formatting.
+Each worker captures two steady-clock timestamps immediately around memcpy.
+Per-job spans and their SUM are reported separately. The sum is concurrent
+worker wall spans, NOT exclusive CPU service and NOT sample wall time.
+No subtraction of worker-summed spans from main wall is called overhead.
+The reported worker_clock_calls_per_job2 and batch_clock_calls2 refer to
+explicit captures; deadline/CV/verification clocks add other calls outside or
+inside the labeled synchronization implementation.
+
+Verification/ack duration is separate and untimed for the capacity numerator.
+All checks precede slot reuse; no copy/check race is introduced to obtain the
+rate. The full hashes/memcmp perturb source/destination cache state between
+batches and samples. The control is therefore12 barrier-separated16-slot
+bursts, NOT one uninterrupted192-job streaming window, actual consumer pacing,
+or live production throughput. A host immediate acknowledgment is not a
+substitute for DMA overlap or DMA completion. There is no claim of actual
+cache residency, physical DRAM traffic or memory-controller peak.
+
+Logical payload/source bytes per sample378470400.
+Logical destination payload bytes per sample378470400.
+Logical source-read+destination-write bytes per sample756940800.
+The two timed_batch_*GBps fields use sum-of-copy-batch-wall seconds:
+payload rate counts one payload; read+write rate counts twice that payload.
+Both use decimal1e9. They are logical rates, NOT controller transaction bytes.
+Successful normal run verifies1536 jobs (warmup+7 samples), every byte/job.
+Successful qualification verifies384 jobs (warmup+1 sample).
+Each sample checks384 tail canaries. Final source validation adds192 full
+source hashes and192 source canary checks after joined workers.
+
+CLI, allocation and bounds
+--------------------------
+PROBE WORKERS [SEED] [--qualify]
+WORKERS must be exactly1,3,4,6. No worker default.
+SEED is strict unsigned decimal uint64, default1. Unknown/duplicate options,
+overflow, sign/leading-zero forms and missing/excess arguments fail before
+allocation. There are no configurable corpus/ring/blob/sample sizes.
+No CPU affinity API or topology query is called. The process inherits root's
+chosen affinity, and JSON says so. Root should record and apply explicit
+known topology controls externally; this implementation does not assume them.
+
+One64-byte aligned arena contains192 sources and16 ring slots, each payload
+plus64-byte tail canary. Arena410022912B (<512MiB). Blob size is divisible64,
+so every source/destination slot and the aligned_alloc allocation size meet
+64-byte alignment. Immutable sources, destinations and guards cannot overlap.
+Job/result/sample arrays and vectors are bounded; eight normal sample records
+hold192 job times/hashes plus12 batch durations each. No allocation occurs
+inside timed copy batches. Source preparation and first-touch happen outside
+timing. Memory is ordinary allocator memory, explicitly NOT pinned.
+
+Owned work budget60s measured from before parsing/preparation; checks run
+during preparation, before every batch, and during final validation. Exceeding
+it invalidates the whole run; no partial averages. A timeout initiates safe
+join before arena release. OS scheduling or an external stall can delay join,
+so root must impose a hard external wall limit as well. The internal60s gate
+is not proof the requested matrix fits a particular host's runtime.
+JSON prints only after all validation/reconciliation and final source hashes.
+Exception JSON retains stage and escaped reason on stderr with nonzero exit.
+Root requires exit0 and valid complete success:true JSON, never partial stdout
+or counts from a failed process.
+
+Exact root validation recipes (NOT executed)
+--------------------------------------------
+Use the exact B path above. Build/run serially under root ownership.
+Suggested first compile:
+g++ -std=c++20 -O2 -Wall -Wextra -Wpedantic -pthread \
+  "$B/host_stager_capacity_v1.cpp" -o "$B/host_stager_capacity_v1"
+
+Qualification:
+"$B/host_stager_capacity_v1" 1 1 --qualify
+"$B/host_stager_capacity_v1" 3 1 --qualify
+"$B/host_stager_capacity_v1" 4 1 --qualify
+"$B/host_stager_capacity_v1" 6 1 --qualify
+Capture one process/cell with binary/source SHA, exact command, environment,
+known external affinity, exit/status, and complete one-line JSON.
+Initial root limits: RSS1GiB, CPU60s, wall75s. The program has its own60s work
+gate; qualify before normal runs. If preparation/checks exceed the gate,
+failure stays failure, and any budget change requires a separately reviewed
+source/version; do not silently shorten checks/sample counts.
+
+A separate root-owned ASan/UBSan build can qualify memory/parser behavior:
+g++ -std=c++20 -O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer \
+  -Wall -Wextra -Wpedantic -pthread "$B/host_stager_capacity_v1.cpp" \
+  -o "$B/host_stager_capacity_v1_asan"
+Use --qualify and an explicitly recorded larger sanitizer RSS budget if needed;
+do not use sanitizer timing as capacity evidence. TSan, if available, is a
+separate root-owned thread-safety qualification, never a capacity rate.
+
+Required gates before capacity interpretation:
+- Parser negatives: missing worker; worker0/2/5/7; UINT64 overflow seed;
+  negative seed; duplicate --qualify; extra options; malformed decimal.
+  Each must exit nonzero and have no successful capacity receipt.
+- All valid worker arms qualify: one warmup+one sample,384 checked jobs;
+  each sample192 jobs,384 canary checks,12 positive batch durations,
+ 192 copy durations/hashes, sum(worker_jobs)==192, all job hashes equal
+  independently retained expected source hashes; final192 source hashes pass.
+  Workers may legitimately claim zero jobs in a small batch; do not require
+  equal worker assignment or interpret configured workers as simultaneous use.
+- Root can independently reproduce seed1 corpus/FNV hashes for ALL192 blobs
+  and compare them with every sample's192 returned hashes.
+- Source audit or a root-owned extracted Pool contract driver should test
+  unacknowledged second batch rejection, stale/wrong generation/job identity,
+  payload corruption and canary corruption before acknowledgment. These are
+  suggestions, not tests this source-only agent ran. No hidden fault injection
+  options were added to the normal capacity CLI.
+- Normal cells1/3/4/6 (same declared seed and external controls) must each have
+  seven measured+one warmup records,1536 checked jobs, no invalid receipt,
+  positive wall sums and rates independently recalculated from logical bytes.
+  Capture every individual sample. Root may use multiple fresh processes,
+  alternate worker cells and report medians/ranges; no inference is implied.
+- Never compare sum of concurrent worker memcpy spans to sample wall as an
+  additive overhead decomposition. Never map logical read+write bytes directly
+  to hardware controller traffic.
+
+Evidence limitations / decision
+-------------------------------
+This harness does not execute frozen Stager code: it is a small independently
+reviewable host copy/synchronization control inspired by its resident memcpy
+arm. Batch16 retirement differs from the live issuer/DMA ring.
+Fixture192 blobs and1971200B come from the selected service fixture, while
+production has different expert counts and mixed layer blob sizes. Explicit
+3/4-worker arms prevent accidentally adopting R240's incorrect default4
+assumption. File-transient32-thread/ring128 operation is outside scope.
+It establishes no real GGUF read capacity, pinned-USM capacity, host-to-device
+service, GPU dequant/GEMM service, numerical model correctness, full-context
+qualification or production bottleneck/adoption. No measured result or
+optimization claim was made; all execution and evidence adoption remain root's.
