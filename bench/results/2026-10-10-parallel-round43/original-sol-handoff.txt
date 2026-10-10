@@ -1,0 +1,22 @@
+SOURCE DRAFT — NOT QUALIFIED; ROOT REVIEW REQUIRED
+No builds, tests, GPU queries, Git, service changes or cleanup performed.
+Prior R167/R170/registry unavailable at supplied path at task start; contracts supplied by parent were used.
+
+Shared helper completed_boundary delivers throw_asynchronous only after successful wait, translates std/nonstandard errors to concrete err/false. wait_boundary uses wait then same helper; wait exception prints explicit completion_unknown and _Exit(2), avoiding USM unwind.
+Production tracks actual successful private invocation in run_impl, gated existing compile+runtime IQ4NL opt-in. Compute waits in run_impl reuse existing waits via helper after first private invocation, including output callback, split handoff and debug compute-readback. No private-loop extra wait introduced. Post-wait boundary checks suppress callback/handoff. run_layer_major gets this via every run_impl, but subsequent layer-major-only compute queue operations remain unqualified.
+
+Fixture CLI accepts exactly --run before queue. Uses production dpct create_queue(true), LevelZero in-order root vendor8086 devicee20c PCI0000:05:00.0 fp16 admission before USM. Two fixed cases: control/fault; one private launch/case; ONE throwing host_task only in fault, persistent atomic marker lives through queue teardown. Helper false/concreteerror/callback0/retry0/private1/marker1 checked; control callback1. Later wait_and_throw must not throw again. All output words and canaries checked, input compared byte-for-byte. Device160+576=736 bytes/case; host two160-byte input arrays+576-byte output+atomic/string/runtime allocations (no large explicit storage). This is host-origin async qualification only; does not establish device-fault recovery, model speed, callback model correctness, full physical KV or adoption. CASE output counts and STAGE records flushed; terminal PASS only after both buffers and queues torn down. Queue handler invocation counted indirectly via concrete error consumption; no custom async handler replaces production handler.
+
+MANDATORY ROOT PENDING REVIEW/FIXES BEFORE TEST:
+- Unknown-completion early returns/exceptions following accepted private submission but before a wait still lack a complete pre-unwind guard. This is a material production safety gap; do not adopt.
+- No separate async-boundary production switch yet; current gate follows existing IQ4NL_DEQUANT compile/runtime switch. Decide whether separate default-OFF option required.
+- Default disabled source was preserved in preprocessor branches around changed waits, but extra parentheses around DPCT expressions mean token byte identity is NOT yet demonstrated. Parent must compare preprocessed/default object and resolve token differences.
+- run_layer_major post-run_impl queue output/teardown/error exits need explicit final audit.
+- Fixture exception after known completed validation failure leaves raw allocations/queue outstanding until process exit (no PASS); successful path frees and destroys. Root should review whether all fixture failure exits must fail-stop.
+- Concrete report evidence of dpct consumed-once handler path and compile API validity requires root builds/runtime only.
+
+ROOT PENDING: source review, default-OFF comparison, compile both enabled target and default, bounded diagnostic fixture through owned run controller, parser/count/bytes verification, model callback gates only later. No runtime result asserted.
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-prefill-iq4nl-async-boundary-20261010/sycl/src/prefill/prefill.cpp bytes=325200 SHA256=d1faec6a06d13bc727c7d894a2cee0a49452ee0bdb8612b45d50c603d8963a30
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-prefill-iq4nl-async-boundary-20261010/sycl/src/prefill/iq4nl_async_boundary.hpp bytes=1091 SHA256=f6fe6fe54aa0e9d34edc7a4a31537ca62cf3560a49b7004c11e825d9252e7506
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-prefill-iq4nl-async-boundary-20261010/sycl/src/kernels/prefill_iq4nl_async_parity.cpp bytes=4490 SHA256=c3837a22cb49422b435eba46f10634e849e2a7f0868d4d2272bc10fd658a0211
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-prefill-iq4nl-async-boundary-20261010/sycl/CMakeLists.txt bytes=28011 SHA256=4c384ede3f953f8d18559c3ef2b92d87907759662501be5d0d06244ea9455c1f
