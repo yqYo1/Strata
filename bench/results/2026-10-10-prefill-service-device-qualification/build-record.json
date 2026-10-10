@@ -1,0 +1,1119 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "gpu_tested": false,
+  "adopted": false,
+  "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-qualification-20261010",
+  "commit": "7c5ad75a45c7e188ecef7a947b49b829dc5c5710",
+  "compiled_engine_base_commit": "7d0105f2a942ac72ca20fef69d4c2e7960653de3",
+  "controller": {
+    "bytes": 7437,
+    "sha256": "38617480748d6c30608d723c5a6aa38156e64969df01904d17abb219e41b0985"
+  },
+  "sources": {
+    "include/strata/prefill/gemm.hpp": {
+      "bytes": 5391,
+      "sha256": "c10283413dfda1d7cee16fdb3ffa5bef9bcfd138f03297ea63cc5a3567d01450"
+    },
+    "sycl/include/dpct/blas_utils.hpp": {
+      "bytes": 119737,
+      "sha256": "c48890546a906f244a9eb48090944a034ebf30e042a61d51d9668e251ef3043a"
+    },
+    "sycl/include/dpct/detail/blas_utils_detail.hpp": {
+      "bytes": 27772,
+      "sha256": "cd97eb892479a654b76219c8764f58d8a674554df0636b5f67caef6158aff84b"
+    },
+    "sycl/include/strata/prefill_service_ledger.hpp": {
+      "bytes": 15431,
+      "sha256": "25a469910ac0e1a6f87bd38da8d89c2cbbe377299623394f1e9d49a526fe25e4"
+    },
+    "sycl/src/prefill/gemm.dp.cpp": {
+      "bytes": 42667,
+      "sha256": "ad863d0dc122c7e809ec584637820e1796230c1319f1300b2167d89cf3080f04"
+    },
+    "sycl/src/prefill/prefill.cpp": {
+      "bytes": 329171,
+      "sha256": "f6cbc4acb9f84b19480a25892a2e6864896a3e3ab0f68ace3c3f51a788591f69"
+    },
+    "sycl/tools/test_prefill_service_ledger.py": {
+      "bytes": 7697,
+      "sha256": "2aee7d9c23a7e6117e8708d4a24feb153f1c342d147eae1d82bfb5fc7ab80e94"
+    },
+    "sycl/tools/qualify_prefill_f16_event.cpp": {
+      "bytes": 4108,
+      "sha256": "32a52ab0db317ee63fa187dbaddaddbc51fe6620d63562e7f65ca16fc2064e9c"
+    }
+  },
+  "original_link": [
+    "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+    "-O3",
+    "-DNDEBUG",
+    "-fsycl",
+    "-Xsycl-target-backend=spir64",
+    "-cl-fp32-correctly-rounded-divide-sqrt",
+    "-fsycl-device-code-split=per_kernel",
+    "-qmkl=sequential",
+    "CMakeFiles/strata.dir/src/program/generate.cpp.o",
+    "-o",
+    "strata",
+    "libstrata_engine.a",
+    "libstrata_prefill.a",
+    "libstrata_spec.a",
+    "libstrata_engine.a",
+    "libstrata_kernels.a",
+    "libstrata_core.a",
+    "/usr/lib/x86_64-linux-gnu/libze_loader.so",
+    "libstrata_kernels_cpu.a",
+    "ggml/src/libggml-cpu.a",
+    "ggml/src/libggml-base.a"
+  ],
+  "changed_compile": {
+    "prefill.cpp.o": [
+      "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+      "-DSTRATA_NATIVE_EXPERTS=1",
+      "-DSTRATA_SYCL_SAMPLER_FP64=1",
+      "-DSTRATA_VERSION=\"0.1.41\"",
+      "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-qualification-20261010/sycl/include",
+      "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-qualification-20261010/sycl/../include",
+      "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include",
+      "-O3",
+      "-DNDEBUG",
+      "-std=c++20",
+      "-fsycl",
+      "-fsycl-default-sub-group-size=32",
+      "-fsycl-device-code-split=per_kernel",
+      "-fp-model=precise",
+      "-Wno-unused-parameter",
+      "-Wno-unused-variable",
+      "-Wno-deprecated-declarations",
+      "-qmkl=sequential",
+      "-Wall",
+      "-Wextra",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-service-qualification-cpu-build-v1/prefill.cpp.o",
+      "-c",
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-qualification-20261010/sycl/src/prefill/prefill.cpp"
+    ],
+    "gemm.dp.cpp.o": [
+      "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+      "-DSTRATA_NATIVE_EXPERTS=1",
+      "-DSTRATA_SYCL_SAMPLER_FP64=1",
+      "-DSTRATA_VERSION=\"0.1.41\"",
+      "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-qualification-20261010/sycl/include",
+      "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-qualification-20261010/sycl/../include",
+      "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include",
+      "-O3",
+      "-DNDEBUG",
+      "-std=c++20",
+      "-fsycl",
+      "-fsycl-default-sub-group-size=32",
+      "-fsycl-device-code-split=per_kernel",
+      "-fp-model=precise",
+      "-Wno-unused-parameter",
+      "-Wno-unused-variable",
+      "-Wno-deprecated-declarations",
+      "-qmkl=sequential",
+      "-Wall",
+      "-Wextra",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-service-qualification-cpu-build-v1/gemm.dp.cpp.o",
+      "-c",
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-qualification-20261010/sycl/src/prefill/gemm.dp.cpp"
+    ]
+  },
+  "qualification_compile": [
+    "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+    "-DSTRATA_NATIVE_EXPERTS=1",
+    "-DSTRATA_SYCL_SAMPLER_FP64=1",
+    "-DSTRATA_VERSION=\"0.1.41\"",
+    "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-qualification-20261010/sycl/include",
+    "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-qualification-20261010/sycl/../include",
+    "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include",
+    "-O3",
+    "-DNDEBUG",
+    "-std=c++20",
+    "-fsycl",
+    "-fsycl-default-sub-group-size=32",
+    "-fsycl-device-code-split=per_kernel",
+    "-fp-model=precise",
+    "-Wno-unused-parameter",
+    "-Wno-unused-variable",
+    "-Wno-deprecated-declarations",
+    "-qmkl=sequential",
+    "-Wall",
+    "-Wextra",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-service-qualification-cpu-build-v1/qualify_prefill_f16_event.cpp.o",
+    "-c",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-qualification-20261010/sycl/tools/qualify_prefill_f16_event.cpp"
+  ],
+  "changed_link": [
+    "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+    "-O3",
+    "-DNDEBUG",
+    "-fsycl",
+    "-Xsycl-target-backend=spir64",
+    "-cl-fp32-correctly-rounded-divide-sqrt",
+    "-fsycl-device-code-split=per_kernel",
+    "-qmkl=sequential",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/CMakeFiles/strata.dir/src/program/generate.cpp.o",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-service-qualification-cpu-build-v1/strata",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_engine.a",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-service-qualification-cpu-build-v1/libstrata_prefill.a",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_spec.a",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_engine.a",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_kernels.a",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_core.a",
+    "/usr/lib/x86_64-linux-gnu/libze_loader.so",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_kernels_cpu.a",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/ggml/src/libggml-cpu.a",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/ggml/src/libggml-base.a"
+  ],
+  "qualification_link": [
+    "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+    "-O3",
+    "-DNDEBUG",
+    "-fsycl",
+    "-Xsycl-target-backend=spir64",
+    "-cl-fp32-correctly-rounded-divide-sqrt",
+    "-fsycl-device-code-split=per_kernel",
+    "-qmkl=sequential",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-service-qualification-cpu-build-v1/qualify_prefill_f16_event.cpp.o",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-service-qualification-cpu-build-v1/qualify_prefill_f16_event",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_engine.a",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-service-qualification-cpu-build-v1/libstrata_prefill.a",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_spec.a",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_engine.a",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_kernels.a",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_core.a",
+    "/usr/lib/x86_64-linux-gnu/libze_loader.so",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_kernels_cpu.a",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/ggml/src/libggml-cpu.a",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/ggml/src/libggml-base.a"
+  ],
+  "cached_dependencies_before": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/CMakeFiles/strata.dir/src/program/generate.cpp.o": {
+      "bytes": 1573192,
+      "sha256": "292bbf76f97eaa7b91600e5fb96446313ff29a842472f8b311f5edf971e6ff72"
+    },
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_engine.a": {
+      "bytes": 3557588,
+      "sha256": "97c428e561b8017a9d4047d05c4b7898c2270245fb98c895eba6bdc852d2c2c0"
+    },
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_prefill.a": {
+      "bytes": 1372792,
+      "sha256": "09fa3fbb644211561f7d65b14e39207aad40c8f5dae3a22f28bb49d47c76779d"
+    },
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_spec.a": {
+      "bytes": 48488,
+      "sha256": "ff29f801c00b281aed711354818d5fd319a65751670c62fa100ce0fa752069c5"
+    },
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_kernels.a": {
+      "bytes": 17561132,
+      "sha256": "a94155e67789690d57d3057d73566adb3e137d12a6b78f3a1a1ec3b96eb6e03b"
+    },
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_core.a": {
+      "bytes": 562572,
+      "sha256": "a09684fa8006ae9afb72908d710b7aeefe5b8ea79fa72acc9ddbdc848cd75fac"
+    },
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_kernels_cpu.a": {
+      "bytes": 1215594,
+      "sha256": "92344deba4b933685ef6ecfa139108f99f909dd0f385ea12585dcfa683533a01"
+    },
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/ggml/src/libggml-cpu.a": {
+      "bytes": 2153006,
+      "sha256": "e3cefe0cf3c866aec7d9f06b9181ca4263304dd7307af462195a9b869be953f2"
+    },
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/ggml/src/libggml-base.a": {
+      "bytes": 1920346,
+      "sha256": "98059baeddf43574e613949b8382d67c088f3f62d1b84c3d47bef31581bcae1c"
+    }
+  },
+  "prior_build_receipt": {
+    "bytes": 13060,
+    "sha256": "3632b1514544ef2dd89046c112b823c75a27d0215aca2fce58c4b8df9e43d7f8"
+  },
+  "CPU_contract_receipt": {
+    "bytes": 4078,
+    "sha256": "3df6c94369da0ff9f9aac27e025b80eaf2e5ba7544bbfe71cc12816a8228b169"
+  },
+  "commands": [
+    {
+      "label": "toolchain-environment",
+      "argv": [
+        "/bin/bash",
+        "-c",
+        "source /opt/intel/oneapi/setvars.sh >/dev/null 2>&1 && env -0"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T09:04:11.013826+00:00",
+      "wall_seconds": 30,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1190048,
+          "start_ticks": 31273012,
+          "sid": 1190048,
+          "pgid": 1190048
+        },
+        {
+          "pid": 1190242,
+          "start_ticks": 31273036,
+          "sid": 1190048,
+          "pgid": 1190048
+        },
+        {
+          "pid": 1190521,
+          "start_ticks": 31273082,
+          "sid": 1190048,
+          "pgid": 1190048
+        },
+        {
+          "pid": 1190602,
+          "start_ticks": 31273098,
+          "sid": 1190048,
+          "pgid": 1190048
+        }
+      ],
+      "pid": 1190048,
+      "direct_identity": {
+        "pid": 1190048,
+        "state": "R",
+        "ppid": 1189996,
+        "pgid": 1190048,
+        "sid": 1190048,
+        "start_ticks": 31273012,
+        "rss_bytes": 401408
+      },
+      "peak_session_rss_bytes": 7258112,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T09:04:12.029516+00:00",
+      "elapsed_seconds": 1.0152502150158398,
+      "logs": {
+        "toolchain-environment.stdout": {
+          "bytes": 4514,
+          "sha256": "fc6ad91367c6a9f1b8ee41ea127eae28ab91bb09bfec022408ec1fb08d3ac36e"
+        },
+        "toolchain-environment.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "compile-prefill.cpp.o",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_NATIVE_EXPERTS=1",
+        "-DSTRATA_SYCL_SAMPLER_FP64=1",
+        "-DSTRATA_VERSION=\"0.1.41\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-qualification-20261010/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-qualification-20261010/sycl/../include",
+        "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-qmkl=sequential",
+        "-Wall",
+        "-Wextra",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-service-qualification-cpu-build-v1/prefill.cpp.o",
+        "-c",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-qualification-20261010/sycl/src/prefill/prefill.cpp"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+        "ONEAPI_ROOT": "/opt/intel/oneapi",
+        "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T09:04:12.030695+00:00",
+      "wall_seconds": 1200,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1190642,
+          "start_ticks": 31273114,
+          "sid": 1190642,
+          "pgid": 1190642
+        },
+        {
+          "pid": 1190644,
+          "start_ticks": 31273114,
+          "sid": 1190642,
+          "pgid": 1190642
+        },
+        {
+          "pid": 1190645,
+          "start_ticks": 31273115,
+          "sid": 1190642,
+          "pgid": 1190642
+        },
+        {
+          "pid": 1190975,
+          "start_ticks": 31273565,
+          "sid": 1190642,
+          "pgid": 1190642
+        }
+      ],
+      "pid": 1190642,
+      "direct_identity": {
+        "pid": 1190642,
+        "state": "R",
+        "ppid": 1189996,
+        "pgid": 1190642,
+        "sid": 1190642,
+        "start_ticks": 31273114,
+        "rss_bytes": 262144
+      },
+      "peak_session_rss_bytes": 546811904,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T09:04:26.606852+00:00",
+      "elapsed_seconds": 14.57578224298777,
+      "logs": {
+        "compile-prefill.cpp.o.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-prefill.cpp.o.stderr": {
+          "bytes": 55685,
+          "sha256": "0831dd98be34e97eefb446fe99f5afc0a93d923c4685031e51c1e73e7c1539a6"
+        }
+      }
+    },
+    {
+      "label": "compile-gemm.dp.cpp.o",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_NATIVE_EXPERTS=1",
+        "-DSTRATA_SYCL_SAMPLER_FP64=1",
+        "-DSTRATA_VERSION=\"0.1.41\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-qualification-20261010/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-qualification-20261010/sycl/../include",
+        "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-qmkl=sequential",
+        "-Wall",
+        "-Wextra",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-service-qualification-cpu-build-v1/gemm.dp.cpp.o",
+        "-c",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-qualification-20261010/sycl/src/prefill/gemm.dp.cpp"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+        "ONEAPI_ROOT": "/opt/intel/oneapi",
+        "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T09:04:26.607575+00:00",
+      "wall_seconds": 1200,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1191670,
+          "start_ticks": 31274572,
+          "sid": 1191670,
+          "pgid": 1191670
+        },
+        {
+          "pid": 1191671,
+          "start_ticks": 31274572,
+          "sid": 1191670,
+          "pgid": 1191670
+        },
+        {
+          "pid": 1191672,
+          "start_ticks": 31274573,
+          "sid": 1191670,
+          "pgid": 1191670
+        },
+        {
+          "pid": 1191880,
+          "start_ticks": 31274986,
+          "sid": 1191670,
+          "pgid": 1191670
+        }
+      ],
+      "pid": 1191670,
+      "direct_identity": {
+        "pid": 1191670,
+        "state": "R",
+        "ppid": 1189996,
+        "pgid": 1191670,
+        "sid": 1191670,
+        "start_ticks": 31274572,
+        "rss_bytes": 159744
+      },
+      "peak_session_rss_bytes": 574595072,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T09:04:35.403305+00:00",
+      "elapsed_seconds": 8.795290569018107,
+      "logs": {
+        "compile-gemm.dp.cpp.o.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-gemm.dp.cpp.o.stderr": {
+          "bytes": 36665,
+          "sha256": "19a3df8ec28543c8d73c8cf64d0773bb7785c23f85308f3b396737641ffeda2d"
+        }
+      }
+    },
+    {
+      "label": "compile-qualification",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DSTRATA_NATIVE_EXPERTS=1",
+        "-DSTRATA_SYCL_SAMPLER_FP64=1",
+        "-DSTRATA_VERSION=\"0.1.41\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-qualification-20261010/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-qualification-20261010/sycl/../include",
+        "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/../include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-fp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-qmkl=sequential",
+        "-Wall",
+        "-Wextra",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-service-qualification-cpu-build-v1/qualify_prefill_f16_event.cpp.o",
+        "-c",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-qualification-20261010/sycl/tools/qualify_prefill_f16_event.cpp"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+        "ONEAPI_ROOT": "/opt/intel/oneapi",
+        "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T09:04:35.404138+00:00",
+      "wall_seconds": 300,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1192186,
+          "start_ticks": 31275451,
+          "sid": 1192186,
+          "pgid": 1192186
+        },
+        {
+          "pid": 1192187,
+          "start_ticks": 31275452,
+          "sid": 1192186,
+          "pgid": 1192186
+        },
+        {
+          "pid": 1192188,
+          "start_ticks": 31275453,
+          "sid": 1192186,
+          "pgid": 1192186
+        },
+        {
+          "pid": 1192312,
+          "start_ticks": 31275734,
+          "sid": 1192186,
+          "pgid": 1192186
+        }
+      ],
+      "pid": 1192186,
+      "direct_identity": {
+        "pid": 1192186,
+        "state": "R",
+        "ppid": 1189996,
+        "pgid": 1192186,
+        "sid": 1192186,
+        "start_ticks": 31275451,
+        "rss_bytes": 274432
+      },
+      "peak_session_rss_bytes": 408137728,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T09:04:41.387220+00:00",
+      "elapsed_seconds": 5.982667138974648,
+      "logs": {
+        "compile-qualification.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-qualification.stderr": {
+          "bytes": 31261,
+          "sha256": "07e0ac1b129843b4a6626cedc52efb23992959e40b298fdf61bf9c070a5d8c1a"
+        }
+      }
+    },
+    {
+      "label": "copy-original-archive",
+      "argv": [
+        "/usr/bin/cp",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_prefill.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-service-qualification-cpu-build-v1/libstrata_prefill.a"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T09:04:41.388216+00:00",
+      "wall_seconds": 120,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1192459,
+          "start_ticks": 31276050,
+          "sid": 1192459,
+          "pgid": 1192459
+        }
+      ],
+      "pid": 1192459,
+      "direct_identity": {
+        "pid": 1192459,
+        "state": "R",
+        "ppid": 1189996,
+        "pgid": 1192459,
+        "sid": 1192459,
+        "start_ticks": 31276050,
+        "rss_bytes": 327680
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T09:04:41.540779+00:00",
+      "elapsed_seconds": 0.15210218698484823,
+      "logs": {
+        "copy-original-archive.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "copy-original-archive.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "replace-prefill.cpp.o",
+      "argv": [
+        "/usr/bin/ar",
+        "r",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-service-qualification-cpu-build-v1/libstrata_prefill.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-service-qualification-cpu-build-v1/prefill.cpp.o"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T09:04:41.541569+00:00",
+      "wall_seconds": 120,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1192464,
+          "start_ticks": 31276065,
+          "sid": 1192464,
+          "pgid": 1192464
+        }
+      ],
+      "pid": 1192464,
+      "direct_identity": {
+        "pid": 1192464,
+        "state": "R",
+        "ppid": 1189996,
+        "pgid": 1192464,
+        "sid": 1192464,
+        "start_ticks": 31276065,
+        "rss_bytes": 307200
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T09:04:41.705569+00:00",
+      "elapsed_seconds": 0.1634579210076481,
+      "logs": {
+        "replace-prefill.cpp.o.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "replace-prefill.cpp.o.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "replace-gemm.dp.cpp.o",
+      "argv": [
+        "/usr/bin/ar",
+        "r",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-service-qualification-cpu-build-v1/libstrata_prefill.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-service-qualification-cpu-build-v1/gemm.dp.cpp.o"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T09:04:41.706368+00:00",
+      "wall_seconds": 120,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1192470,
+          "start_ticks": 31276081,
+          "sid": 1192470,
+          "pgid": 1192470
+        }
+      ],
+      "pid": 1192470,
+      "direct_identity": {
+        "pid": 1192470,
+        "state": "R",
+        "ppid": 1189996,
+        "pgid": 1192470,
+        "sid": 1192470,
+        "start_ticks": 31276081,
+        "rss_bytes": 323584
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T09:04:41.864527+00:00",
+      "elapsed_seconds": 0.15768250997643918,
+      "logs": {
+        "replace-gemm.dp.cpp.o.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "replace-gemm.dp.cpp.o.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "link-strata",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-O3",
+        "-DNDEBUG",
+        "-fsycl",
+        "-Xsycl-target-backend=spir64",
+        "-cl-fp32-correctly-rounded-divide-sqrt",
+        "-fsycl-device-code-split=per_kernel",
+        "-qmkl=sequential",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/CMakeFiles/strata.dir/src/program/generate.cpp.o",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-service-qualification-cpu-build-v1/strata",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_engine.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-service-qualification-cpu-build-v1/libstrata_prefill.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_spec.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_engine.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_kernels.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_core.a",
+        "/usr/lib/x86_64-linux-gnu/libze_loader.so",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_kernels_cpu.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/ggml/src/libggml-cpu.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/ggml/src/libggml-base.a"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+        "ONEAPI_ROOT": "/opt/intel/oneapi",
+        "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T09:04:41.920918+00:00",
+      "wall_seconds": 300,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1192500,
+          "start_ticks": 31276103,
+          "sid": 1192500,
+          "pgid": 1192500
+        },
+        {
+          "pid": 1192501,
+          "start_ticks": 31276103,
+          "sid": 1192500,
+          "pgid": 1192500
+        },
+        {
+          "pid": 1192543,
+          "start_ticks": 31276122,
+          "sid": 1192500,
+          "pgid": 1192500
+        },
+        {
+          "pid": 1192779,
+          "start_ticks": 31276267,
+          "sid": 1192500,
+          "pgid": 1192500
+        },
+        {
+          "pid": 1192849,
+          "start_ticks": 31276336,
+          "sid": 1192500,
+          "pgid": 1192500
+        },
+        {
+          "pid": 1192868,
+          "start_ticks": 31276404,
+          "sid": 1192500,
+          "pgid": 1192500
+        },
+        {
+          "pid": 1193107,
+          "start_ticks": 31276737,
+          "sid": 1192500,
+          "pgid": 1192500
+        },
+        {
+          "pid": 1195600,
+          "start_ticks": 31278055,
+          "sid": 1192500,
+          "pgid": 1192500
+        },
+        {
+          "pid": 1195625,
+          "start_ticks": 31278092,
+          "sid": 1192500,
+          "pgid": 1192500
+        },
+        {
+          "pid": 1195632,
+          "start_ticks": 31278123,
+          "sid": 1192500,
+          "pgid": 1192500
+        }
+      ],
+      "pid": 1192500,
+      "direct_identity": {
+        "pid": 1192500,
+        "state": "R",
+        "ppid": 1189996,
+        "pgid": 1192500,
+        "sid": 1192500,
+        "start_ticks": 31276103,
+        "rss_bytes": 266240
+      },
+      "peak_session_rss_bytes": 282640384,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T09:05:03.618025+00:00",
+      "elapsed_seconds": 21.696320288989227,
+      "logs": {
+        "link-strata.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "link-strata.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "link-qualification",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-O3",
+        "-DNDEBUG",
+        "-fsycl",
+        "-Xsycl-target-backend=spir64",
+        "-cl-fp32-correctly-rounded-divide-sqrt",
+        "-fsycl-device-code-split=per_kernel",
+        "-qmkl=sequential",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-service-qualification-cpu-build-v1/qualify_prefill_f16_event.cpp.o",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-service-qualification-cpu-build-v1/qualify_prefill_f16_event",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_engine.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-service-qualification-cpu-build-v1/libstrata_prefill.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_spec.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_engine.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_kernels.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_core.a",
+        "/usr/lib/x86_64-linux-gnu/libze_loader.so",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/libstrata_kernels_cpu.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/ggml/src/libggml-cpu.a",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009/build-sycl-decode-pool-phase-timing-v0141-v1/ggml/src/libggml-base.a"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+        "ONEAPI_ROOT": "/opt/intel/oneapi",
+        "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T09:05:03.619020+00:00",
+      "wall_seconds": 300,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1195805,
+          "start_ticks": 31278273,
+          "sid": 1195805,
+          "pgid": 1195805
+        },
+        {
+          "pid": 1195806,
+          "start_ticks": 31278273,
+          "sid": 1195805,
+          "pgid": 1195805
+        },
+        {
+          "pid": 1195847,
+          "start_ticks": 31278290,
+          "sid": 1195805,
+          "pgid": 1195805
+        },
+        {
+          "pid": 1195901,
+          "start_ticks": 31278385,
+          "sid": 1195805,
+          "pgid": 1195805
+        },
+        {
+          "pid": 1195957,
+          "start_ticks": 31278397,
+          "sid": 1195805,
+          "pgid": 1195805
+        },
+        {
+          "pid": 1196052,
+          "start_ticks": 31278415,
+          "sid": 1195805,
+          "pgid": 1195805
+        },
+        {
+          "pid": 1196056,
+          "start_ticks": 31278430,
+          "sid": 1195805,
+          "pgid": 1195805
+        },
+        {
+          "pid": 1196064,
+          "start_ticks": 31278445,
+          "sid": 1195805,
+          "pgid": 1195805
+        },
+        {
+          "pid": 1196087,
+          "start_ticks": 31278473,
+          "sid": 1195805,
+          "pgid": 1195805
+        },
+        {
+          "pid": 1196577,
+          "start_ticks": 31278745,
+          "sid": 1195805,
+          "pgid": 1195805
+        },
+        {
+          "pid": 1196581,
+          "start_ticks": 31278755,
+          "sid": 1195805,
+          "pgid": 1195805
+        },
+        {
+          "pid": 1196584,
+          "start_ticks": 31278763,
+          "sid": 1195805,
+          "pgid": 1195805
+        }
+      ],
+      "pid": 1195805,
+      "direct_identity": {
+        "pid": 1195805,
+        "state": "R",
+        "ppid": 1189996,
+        "pgid": 1195805,
+        "sid": 1195805,
+        "start_ticks": 31278273,
+        "rss_bytes": 274432
+      },
+      "peak_session_rss_bytes": 221044736,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T09:05:09.743395+00:00",
+      "elapsed_seconds": 6.1237388090230525,
+      "logs": {
+        "link-qualification.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "link-qualification.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "scope": "Default-off diagnostic service path; prefill and Gemm TUs replaced in closed cached baseline archive. Other numerical libraries byte-pinned to base. Small qualification compiled with identical SYCL flags. No full fresh dependency rebuild or model/device/full-context result.",
+  "started_utc": "2026-10-10T09:04:11.013788+00:00",
+  "environment": {
+    "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+    "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+    "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+    "ONEAPI_ROOT": "/opt/intel/oneapi",
+    "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+    "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+  },
+  "archive_member_comparison": [
+    {
+      "member": "gemm.dp.cpp.o",
+      "byte_identical": false,
+      "before_sha256": "2b0a311eb015c87e844b5557eaecb81b98c609b630d7e373df5d9a51cdcc3c00",
+      "after_sha256": "ffe2997f403c187bacc22202d2ae056eb6d2057cca47caae505373b5f48f8bf0"
+    },
+    {
+      "member": "kernels.dp.cpp.o",
+      "byte_identical": true,
+      "before_sha256": "03282ef05f5caa65592909d4b6c1c104c28379fb079f843093bef473e1855dae",
+      "after_sha256": "03282ef05f5caa65592909d4b6c1c104c28379fb079f843093bef473e1855dae"
+    },
+    {
+      "member": "prefill.cpp.o",
+      "byte_identical": false,
+      "before_sha256": "e3d3df282ba36d8ad84390c0b43f38185984b973ce6eb6acce7877602c1e6475",
+      "after_sha256": "e55eb8c404f09e6dc9ddb8f3cd935063ec4944fba15306e4e5a3840ce6ebdc65"
+    },
+    {
+      "member": "moe_fused_stub.cpp.o",
+      "byte_identical": true,
+      "before_sha256": "0f4ccb811fe0b097b018eaa7c635aa95e10294f2271a899925f66673af2dbe87",
+      "after_sha256": "0f4ccb811fe0b097b018eaa7c635aa95e10294f2271a899925f66673af2dbe87"
+    }
+  ],
+  "binaries": {
+    "strata": {
+      "bytes": 37788056,
+      "sha256": "1cb39f8ef1dce676cb41d3e86ed161a1b39dc7fad471705b91765697d0fee82f"
+    },
+    "qualify_prefill_f16_event": {
+      "bytes": 8681352,
+      "sha256": "d2350d5ba47f83d12047019de5bc91fe5fbfabce237375ad1f51bb6c92305432"
+    }
+  },
+  "finished_utc": "2026-10-10T09:05:09.935049+00:00"
+}

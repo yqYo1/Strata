@@ -1,0 +1,63 @@
+{
+  "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-service-small-device-qualification-v1/qualification.stderr",
+  "bytes": 195750,
+  "sha256": "d8eee6cf62f9c5e41a462a46b0af85863edee9703c09b0066458aa8cb4baee8f",
+  "lines": 1446,
+  "UR_results": {
+    "UR_RESULT_SUCCESS": 210
+  },
+  "LevelZero_numeric_queries": [
+    [
+      "2013265955",
+      "zeCommandListIsGraphCaptureEnabledExt"
+    ],
+    [
+      "2013265955",
+      "zeCommandListIsGraphCaptureEnabledExt"
+    ]
+  ],
+  "local_header": {
+    "path": "/usr/include/level_zero/ze_api.h",
+    "bytes": 1160433,
+    "sha256": "095a0eb442ae21946f29147c209f270b93dd0eb5b12a2d0c67e5f4138b533712",
+    "enum_line": "    ZE_RESULT_QUERY_FALSE = 0x78000023,                                     ///< [Core, Extension] query API returned false"
+  },
+  "interpretation": "Both logger ERROR lines are ZE_RESULT_QUERY_FALSE graph-capture checks; each corresponding UR query returnsSUCCESS with result0. They are not failed submissions or a GPU fault. No unexpected UR return is present.",
+  "primary_enum_reference": "https://github.com/oneapi-src/level-zero/blob/master/include/ze_api.h",
+  "relevant_windows": [
+    {
+      "first_line": 838,
+      "lines": [
+        "   ---> urQueueIsGraphCaptureEnabledExp",
+        "[2026-10-10 18:05:33.541] [thread-id: 132670406091200] [trace] zeCommandListIsGraphCaptureEnabledExt(hCommandList)",
+        "[2026-10-10 18:05:33.541] [thread-id: 132670406091200] [trace] ERROR (2013265955) in zeCommandListIsGraphCaptureEnabledExt(hCommandList=0x357202e8)",
+        "   <--- urQueueIsGraphCaptureEnabledExp(.hQueue = 0x3571ff20, .pResult = 0x7fff87bdb427 (0)) -> UR_RESULT_SUCCESS;"
+      ]
+    },
+    {
+      "first_line": 886,
+      "lines": [
+        "   ---> urQueueIsGraphCaptureEnabledExp",
+        "[2026-10-10 18:05:33.543] [thread-id: 132670406091200] [trace] zeCommandListIsGraphCaptureEnabledExt(hCommandList)",
+        "[2026-10-10 18:05:33.543] [thread-id: 132670406091200] [trace] ERROR (2013265955) in zeCommandListIsGraphCaptureEnabledExt(hCommandList=0x357202e8)",
+        "   <--- urQueueIsGraphCaptureEnabledExp(.hQueue = 0x3571ff20, .pResult = 0x7fff87bd9c97 (0)) -> UR_RESULT_SUCCESS;"
+      ]
+    }
+  ],
+  "first_lines": [
+    "<LOADER>[DEBUG]: Logger loader initialized successfully!",
+    "<LOADER>[INFO]: loaded adapter 0x0x354d3080 (/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0) from /opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+    "   ---> urAdapterGet",
+    "<LEVEL_ZERO>[DEBUG]: zeInit with flags value of 1"
+  ],
+  "last_lines": [
+    "[2026-10-10 18:05:33.568] [thread-id: 132670406091200] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListDestroy(hCommandList=0x357202e8)",
+    "[2026-10-10 18:05:33.568] [thread-id: 132670406091200] [trace] zeContextDestroy(hContext)",
+    "[2026-10-10 18:05:33.568] [thread-id: 132670406091200] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeContextDestroy(hContext=0x356ce618)",
+    "   <--- urContextRelease(.hContext = 0x356d1420) -> UR_RESULT_SUCCESS;",
+    "   ---> urDeviceRelease",
+    "   <--- urDeviceRelease(.hDevice = 0x356ccc40) -> UR_RESULT_SUCCESS;",
+    "   ---> urAdapterRelease",
+    "   <--- urAdapterRelease(.hAdapter = 0x354d1df0) -> UR_RESULT_SUCCESS;"
+  ]
+}
