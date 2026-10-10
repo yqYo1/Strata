@@ -1,0 +1,72 @@
+# R116 — actual-linked IQ2_S NT1 dot audit and timing contract
+
+Date: 2026-10-10
+
+## Scope and identity
+
+Read-only review of the exact committed actual-cohort linked-symbol capture, frozen GGML/Strata source, R103 linked-codegen and R111 correctness reviews, the root linked `REVIEW.md`, R107 as requested context, and committed registry v52. No source or build-tree changes, Git operations, build/compiler/disassembler/test/run/inference/payload/device work, or active-output reads were made. The linked artifact is offline inspection only, not runtime correctness or timing evidence.
+
+- Actual-linked result archive commit: `508da185`; `archive-identity.json` identifies the captured files. Binary SHA-256 `3b09b5cf3df1e0bebc3607297d10117142fa53d680bf5230fed47f474ce4c7fe` (3,737,208 bytes). The capture record says binary source commit `1d35cb957f8abdb3ba1527a2abb6f53daffd409b` and marks complete/passed for exact symbol capture, but `performance_eligible=false`, `adopted=false`, no model opened and no GPU work.
+- Frozen source snapshot `iq2s-custom-quantizer-d68516f4`, manifest SHA-256 `c0214a91dbc8830a4c4788888161e76896729c628cb6d7c5a1d4936e8d08abde`, 45 files. The isolated dot TU `sycl/tools/native-service-calibration/iq2s_index_dot.cpp` SHA-256 `bb20df83d7f76429f7c65dd4f03868a2cc8e161680092e49aa31cf2e6cf93bfd`.
+- Registry v52 SHA-256 `2f573bc46f79e78c7fa231a786cdf9ab39fd7ed62781f7349e5b8f83f9dfb900`.
+
+## Linked functions and differences
+
+Three relevant captures are all selected from the pinned binary (the first two are standalone isolated helpers; the third is the linked GGML trait entry):
+
+- `isolated_iq2s::direct_control(int, const block_iq2_s*, const block_q8_K*)` — capture SHA-256 `e96fdf17ae51f300f24f2d784f9343018b1136a752a7ce44f060fdae94f7b678`.
+- `isolated_iq2s::index_candidate(int, const block_iq2_s*, const block_q8_K*)` — `f7d39dc4d87de9d065168eeec682f31b11cde6ec92a0db432be6026f4c1703ca`.
+- `ggml_vec_dot_iq2_s_q8_K` — `959379821f3478fe9102001c9ef37f6a66fdba78bdd5fc7fef5a8b1fec4a2b99`.
+
+All three have a block loop and the same in-order per-block scale/product reduction and final horizontal reduction. For each 256-value block they load the fp16 IQ2_S block scale and Q8_K activation scale, multiply those FP32 values with a separate `vmulss`, build integer partials, add `sumi1+sumi2`, convert the integer vector to FP32, and accumulate in ascending block order with an FMA. The standalone arms use `vfmadd231ps`; the trait uses `vfmadd213ps` with different register roles followed by an accumulator move. These encodings perform the same `acc + d*sum` step; they do not change the block order. All three end with the same tree: upper/lower 128-bit halves added, pair shuffle/add, duplicate-high/add, scalar multiply by `0.125`. The scale multiplication is not fused into the block FMA. A future candidate must preserve this order and MXCSR contract; reassociation, horizontal-reduction changes, or changing the two rounded floating operations is outside this candidate.
+
+The only intended arithmetic-path difference between direct and candidate is formation of each IQ2_S grid index. Direct computes the four 10-bit indexes per qh byte with scalar byte loads, shifts, masks, and ORs. Candidate uses `high[ qh ]` (a 256-entry `uint64_t` bit-spread table), interleaves its bytes with low q bytes via `vpunpcklbw`, extracts the eight 16-bit indexes via eight `vpextrw`, and performs the same eight scalar qword reads from `iq2s_grid` per two 32-value groups. The table mappings are equivalent: each qh byte contributes one 2-bit high field per index; the maximum index is `255 | (3<<8) = 1023`, the final valid entry of the 1,024-entry grid. Candidate adds a dependent 2-KiB high-table lookup and eight scalar extracts; it removes the direct arm’s per-index shift/mask/OR chain. Both still need eight scalar grid qword lookups. This is a codegen trade, not a throughput conclusion.
+
+For the captured loops the candidate’s 32-byte local allocation is sign scratch, versus 40 bytes for direct control. Those allocations exclude saved callee registers: candidate pushes five GPRs, direct six, so compare the whole prologue/epilogue as well as the local allocation. The candidate does not store/reload its index vector through stack memory, and no accumulator YMM spill is visible. The sign buffer is stored once and read by repeated `vpbroadcastd` operands; neither arm shows evidence that this sign scratch has disappeared. R103’s older 184-byte/index-array-stack failure is not present here and is not a current issue.
+
+## Arithmetic bounds for the represented format
+
+The frozen layout has `QK_K=256`:
+
+- `block_iq2_s`: 2-byte fp16 `d`, 64-byte `qs`, 8-byte `qh`, 8-byte `scales`, total 82 bytes (`0x52`).
+- `block_q8_K`: 4-byte FP32 `d`, 256 signed `qs` bytes, 32 bytes of `bsums`, total 292 bytes (`0x124`).
+
+In the IQ2_S grid table, each packed byte is one of 8, 25, or 43; its unsigned multiplier maximum is 43. Sign application makes Q8_K elements lie in `[-128,127]` (negating -128 wraps to -128 in the byte lane, retaining magnitude 128). Thus each pair accumulated by `vpmaddubsw` is bounded in magnitude by `2*43*128=11,008`, below signed int16 saturation/overflow. The scale-byte nibble decode produces `2*n+1`, range 1..31. Each dword produced by `vpmaddwd` is bounded by `2*11,008*31=682,496`. The four inner updates per accumulator vector in one 256-value superblock bound each corresponding `sumi` lane by 2,729,984; adding the two vectors stays below 5,459,968, well within int32. This is also below 2^24, so the block’s integer-to-FP32 conversion is exact. These are static worst-case bounds for valid format bytes, not measured values. They show why preserving the current signed-byte, saturating-pair, int16 and int32 stages is straightforward for this candidate; do not widen the claim to malformed blocks or altered packed-scale formats.
+
+## ABI, alignment, and read bounds
+
+The production trait has GGML’s wider ABI `ggml_vec_dot_iq2_s_q8_K(int n, float *s, size_t bs, const void *vx, size_t bx, const void *vy, size_t by, int nrc)`. It asserts `nrc==1`, ignores the byte strides and dispatch metadata after the trait has selected it, and interprets `vx`/`vy` as the above block arrays. The isolated helpers instead accept typed pointers and `n`; they are not drop-in trait replacements and bypass ABI dispatch and stride handling. A timing comparison must report that distinction and retain the real trait arm as the production reference. Never call the helper with arbitrary GGML rows/strides.
+
+For the actual selected width `n=2560`, the loop has ten blocks. Input extents must therefore contain at least 10 complete 82-byte IQ2_S rows (820 bytes) and 10 complete 292-byte Q8_K blocks (2,920 bytes), with a valid output float for the trait ABI. The block sizes are multiples of their natural type alignments (2 and 4), but successive starts are not 32-byte aligned (`82 mod 32 = 18`, `292 mod 32 = 4`). The linked SIMD data accesses use unaligned forms such as `vmovups`/`vmovq`; the candidate makes no 32-byte base-alignment promise. Do not replace them with aligned loads without a stronger caller contract.
+
+Read audit of the emitted offsets at K=2560:
+
+- IQ2_S block read is within offsets 0–81: `d` at 0–1, q bits at `qs` 2–65, qh at 66–73, scales at 74–81. The 32-byte sign scratch copy starts at row offset `0x22` (34), corresponding to `qs[32..63]`, fully inside the 64-byte `qs` member. Candidate’s low qword loads for the two 4-byte halves overlap by four bytes but stay inside `qs`; qh reads stay within all eight bytes. The biggest grid index is 1023, within the 1,024×8-byte table.
+- Q8_K `qs` begins at block offset 4. Four inner iterations each read two 32-byte vectors, covering bytes `qs[0..255]` exactly; the final vector ends at `qs[255]`, before `bsums`. `bsums` are not required by this dot body. Q8_K scale `d` is read from its first four bytes.
+
+The checked `n` range is 256..8192 and divisible by 256. This establishes valid loop geometry only if caller buffers really cover `n` elements and the correct block layout, which the GGML caller and actual-cohort extent validation must ensure. The isolated helper does not receive a buffer length and cannot independently prove pointer extent.
+
+## One bounded next codegen hypothesis
+
+The candidate has removed index stack traffic, but its retained 32-byte local sign scratch is now a visible, concrete codegen target. A bounded next experiment could load each four-byte sign pair from `x[i].qs + 32 + 8*k` using `memcpy` into a `uint32_t`, then form the two existing 32-bit patterns and broadcast them. This field range is within `qs[32..63]`, uses only unaligned-safe byte storage, and avoids aliasing through a wider typed pointer. On little-endian x86, it should permit the compiler to fold the load into the AVX2 `vpbroadcastd ymm, m32` form rather than materializing the 32-byte local sign array. Intel’s SDM documents the m32 source operand for `VPBROADCASTD`; the current linked code already uses that instruction from the local scratch. This is only a codegen hypothesis: memory dependence on the weight row could cost more than stack traffic, and the CPU manual establishes instruction semantics, not latency/throughput or a speedup. Keep direct control and candidate arithmetic, index mapping, FMA/reduction sequence, input buffers and caller ABI unchanged; inspect exact linked code and run the integer/bitwise gate before any timing. If the compiler does not remove local scratch or the generated body worsens, stop.
+
+Source for the instruction form: Intel 64 and IA-32 Architectures Software Developer’s Manual, Volume 2 (VPBROADCASTD memory operand): https://cdrdv2-public.intel.com/671110/325383-sdm-vol-2abcd.pdf
+
+## Actual-weight timing design if runtime correctness admits it
+
+The current cohort contains 384 selected IDs split 192 train / 192 holdout from the same dependent 32K routing rows, 640 paired Gate/Up rows per ID, H=2560 / ten IQ2_S superblocks per row, and 756,940,800 bytes of selected quantized weight extents. The activations are deterministic synthetic finite vectors, prequantized once per selected layer and shared among that layer’s experts. Thus it is actual selected weight data with a fixed synthetic activation, not prompt-sampled activation coverage, model inference, or the full 262,144-token lifecycle. A successful exactness run would establish only its stated domain.
+
+For a meaningful comparison, preserve three distinct arms: trait baseline through the real GGML signature/trait; direct copied schedule; index candidate. Bind validated pointers and precompute/reuse identical Q8_K activations before timers. Time only dot-call work in a single controlled caller, with output sink and call/row counts; place source checks, activation quantization, logging, allocation, file access, and correctness comparisons outside timed regions. Report the full timer boundary and sample distribution rather than subtracting an assumed dispatch cost. If service-worker dispatch is relevant, measure no-op and submitted-work queue overhead as separate arms; the present actual-cohort branch makes no pool and must not be described as worker performance.
+
+Use two predeclared working-set strata. A hot subset repeatedly reuses a fixed, representative subset selected from both splits after warm-up; this isolates low-working-set behavior but is not model bandwidth. A streaming stratum walks all 384 IDs / 756.94 MB in a fixed recorded permutation so weights exceed ordinary CPU cache capacity; do not call it “cold” unless a separate validated cache-state method exists. Run multiple independent, counterbalanced arm orders over equal work (e.g. cyclic permutations of trait/direct/candidate), with per-order warm-up and fresh-process replication; report arm position because the old quiet and R103/R111 reports show order can matter in this workstream. Keep each arm on identical IDs, rows and activation bytes; avoid sequential “all A then all B” as the only comparison. Record total useful rows, bytes traversed, CPU model/frequency policy as observed by root, compiler/flags, affinity, MXCSR, and timer. Do not compare one caller timing with worker-pool service time.
+
+The validity gate is strict: source/token identity for copied helper and table, exact selected-symbol/binary identity, actual runtime trait/AVX2 quantizer selection with `STRATA_NO_Q8K_AVX2` absent, activation byte parity under recorded round-to-nearest-even and FTZ/DAZ controls, sanitizer/extent checks, complete normal exit and flushed output. Keep FP scale multiply separately rounded and preserve the ordered FMA-per-block and hsum tree; require exact bitwise Gate/Up/output equivalence and the established int bound before timings are eligible. Root’s concurrent runtime qualification remains separate and was not read here. A timing win in this synthetic-activation cohort alone would be a candidate result, not actual-model speed or adoption evidence.
+
+## Source references
+
+- Pinned GGML `ggml-common.h` defines QK_K, `block_iq2_s`, `block_q8_K`, and `iq2s_grid`.
+- Pinned GGML `ggml-cpu/arch/x86/quants.c` defines the production AVX2 IQ2_S / Q8_K trait body and reduction order.
+- Frozen Strata `iq2s_index_dot.cpp` defines the isolated direct control and index candidate.
+- Closed exact linked captures and individual hashes are listed above; all use binary pin stated in the identity section.
+- Root linked capture review: `bench/results/2026-10-10-iq2s-actual-linked/REVIEW.md`; correctness scope and synthetic-activation limits: R111; earlier stack/index failure closure: R103; production custom-quantizer contract: R113.
+

@@ -1,0 +1,32 @@
+# R119 — actual-weight runtime numerical admission review
+
+Date: 2026-10-10. Read-only review of two closed CPU correctness receipts, their captured CSV output, and the pinned controller source. I did not execute the controller or binaries, access active run outputs, build, test, compile, disassemble, inspect model payload outside the recorded selected-extent hashes, or perform cleanup.
+
+## Finding
+
+I found **no concrete remaining numerical admission blocker for the scoped actual-weight cohort timing**. The Release and ASan+UBSan runs are closed, inactive, and passed; the selected 1,152 file extents (756,940,800 bytes) match the prior closed correctness receipt before and after. Each run covers 384 selected experts across 15 layers, 245,760 Gate/Up row pairs and 1,474,560 dot calls. The recorded baseline/control/register-index Gate/Up finish outputs are all bits equal, with zero non-finite values. Release and sanitizer CSVs have the same SHA-256, `59c9013d1b6392279f9aad3a4b07ab3e625fa9a6bad2d07879d50d8a0dca2f17`.
+
+The receipt records MXCSR entry 8064 (`0x1f80`) and prepared/final 8123 (`0x1fbb`); the controller checks all bits under `0xffc0`, so the control state is `0x1f80` throughout: round-to-nearest-even, FTZ off, DAZ off. The observed stdout lists all 16 relevant runtime tuning/ISA environment variables as unset. Four negative cases (wrong GU, NT, task count and batch) exit before opening the intentionally missing model/pack paths. The Release process exits zero; its scoped syscall/loader audit reports no GPU device or SYCL/oneAPI runtime. The sanitizer run exits zero with empty stderr and matching numerical CSV.
+
+This is sufficient numerical evidence to proceed with the *narrow cohort timing comparison* under the same selected rows and numerical contract. It is not timing evidence, adoption evidence, or a full runtime admission.
+
+## Scope boundary
+
+The inputs are **synthetic finite activation vectors**, not activations captured from live inference. The weight rows are actual selected Qwen3.8-Flash-Next IQ3_S expert extents, but only 1,152 selected extents across the 384-expert cohort are sampled; the full model files are identity-checked, not fully hashed or executed. No pool workers are started, no worker MXCSR is observed, and the record explicitly says no inference, timing, or full lifecycle. Thus no claim follows about live routing/activations, worker-thread FP state, complete model behavior, or end-to-end service correctness. Those are out of scope for a row-level cohort timing gate.
+
+R103’s 262,144 uniform-index comparisons (plus mixed active-index and decoded-vector checks) are a separate synthetic index/codegen qualification. They strengthen the decoder’s synthetic integer coverage but do not become actual-weight or live-activation validation. Conversely, the present actual-weight cohort is not a substitute for those broad table/index cases; the two evidence sets are complementary.
+
+## Validator and provenance review
+
+The Release controller is pinned at SHA-256 `9d2cb5b56d906c0ade6186291796b2e8b8b3c46f68f71691b4239a5f7cfb9df7`. Its validator checks the terminal no-timing result, exact cohort ID order/count, all 1,152 extents and identity fields, 384 per-expert results, activation-hash consistency by layer, 640-element finite-input class counts, all 27 output classes per expert, two 122,880-row split summaries, zero non-finite values, and absolute MXCSR control state. It pins the helper, build receipt, source, cohort manifest, cohort list and pack metadata; it rehashes selected extents and model shard identities around the run. The runtime audit is from pre-exec through exit. The sanitizer receipt independently confirms the same cohort summary and CSV hash.
+
+One narrow validator observation: its CSV `ENV` check asserts 16 entries and that every value is `<unset>`, rather than asserting the exact key set. The captured CSV itself contains the expected 16 keys, including all dispatch and tuning controls, so this is not a failure in these closed runs; the exact-key assertion would make the validator more resistant to future schema drift. I do not regard it as a present numerical admission blocker.
+
+## Receipts
+
+- Release record: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq2s-actual-cohort-correctness-v1/record.json`, 41,471 bytes, SHA-256 `a5e2ac74cda487aeb5e6ca4053041cb1a5f3ea8f06951b8083d51b47e622fcea`.
+- Release captured CSV: `.../correctness-observed/stdout.csv`, 293,418 bytes, SHA-256 `59c9013d1b6392279f9aad3a4b07ab3e625fa9a6bad2d07879d50d8a0dca2f17`.
+- ASan+UBSan record: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq2s-actual-cohort-asan-correctness-v1/record.json`, 11,212 bytes, SHA-256 `63af7b6d8f6f7bb2825777166acb52893dbe68c6c998a23757f5faf5bff52610`.
+- ASan+UBSan captured CSV: `.../asan-untraced-correctness/stdout.csv`, 293,418 bytes, the same SHA-256 as Release.
+
+The frozen GGML source hash correction remains `07143d7068936ae46b3c528b2d3bd4bbb666e74d88992165716174d243573965d` (64 hex characters), as verified independently by root. I do not copy the invalid R115/R117 transcriptions or treat them as evidence.

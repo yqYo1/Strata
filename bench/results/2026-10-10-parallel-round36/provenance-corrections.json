@@ -1,0 +1,26 @@
+{
+  "R113_R115_R117_R119_hash_transcriptions": {
+    "reason": "Original report hashes for ggml-quants.c are invalid/mistranscribed. Do not copy report text as an identity.",
+    "actual_path": "/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/ggml-quants.c",
+    "frozen_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-source-snapshots/iq2s-custom-quantizer-d68516f4/pinned-ggml/ggml/src/ggml-quants.c",
+    "identity": {
+      "bytes": 228250,
+      "sha256": "07143d7068936ae46b3c528b2f3d4bbb666e74d88992165716174d243573965d"
+    },
+    "method": "Root SHA256 directly from identical current and immutable file bytes"
+  },
+  "R122_expert_shuffle": {
+    "reason": "Expert order is fixed; seed rotates only arm offset. R122 sentence claiming expert shuffle is incorrect.",
+    "source": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-actual-cohort-timing-20261010/sycl/tools/native-service-calibration/native_service_calibration.cpp",
+    "source_identity": {
+      "bytes": 36400,
+      "sha256": "a69be85d36a56b34bcdcd21545ca155c204d28f388852eeae3eca321c87981db"
+    }
+  },
+  "R121_compile_blocker": {
+    "reason": "R121 independently found the vector-vs-array order_hash mismatch in immutable v1; root preserved the first failed build then fixed the private helper in 156bef6d. Fresh Release and ASan/UBSan builds pass on corrected immutable v2."
+  },
+  "Sol_timing_handoff": {
+    "reason": "Trait vec_dot has eight arguments; switch is inside the timed region. Original handoff preserved. Root source comments/readme corrected before the source commit."
+  }
+}

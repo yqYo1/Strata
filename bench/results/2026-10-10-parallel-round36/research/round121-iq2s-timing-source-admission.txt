@@ -1,0 +1,29 @@
+# R121 — IQ2_S cohort timing-source admission
+
+Date: 2026-10-10. Read-only source audit of the committed timing harness snapshot and its closed source-only handoff. I did not inspect the active build or runtime, execute code, build, test, compile, disassemble, access model payloads, query devices, or modify source. Snapshot manifest SHA-256 is `04bfca062fac7b80627a10ff42b3c2215b6c651e42bdd951bcd4350167dc1c2c`; it identifies five files from source commit `e98e1857`. The unchanged surrounding definitions were compared with the supplied frozen 45-file source snapshot. The closed source-only handoff is `implementation-iq2s-real-cohort-timing-v1.txt` (SHA-256 `440b3fca81c026454b4d94f8f24f7f4f6a1349825e95714787748fe328efc707`).
+
+## Concrete admission blocker
+
+The new harness as snapshotted does not compile: `orders[split][stratum]` is a `std::vector<size_t>`, but the only `order_hash` overload accepts `const Order&`, where `Order` is `std::array<size_t,192>`. The new `INDEX_WORKING_SET` call passes that vector at `native_service_calibration.cpp` line 293; the `INDEX_TIMING` call repeats the same mismatch at line 319. No implicit conversion exists between these container types. This blocks the source as written from producing a timing binary. Root’s concurrent build should confirm; this report makes no claim about its result and contains no fix.
+
+After resolving that compile issue, I found no additional static source-level correctness/UB/alias/bounds/oracle/guard/MXCSR blocker in the timing path. Timing admission remains pending a successfully built new binary and root’s planned linked-code, Release/sanitizer, default/correctness-mode, and fresh runtime checks.
+
+## Static review findings
+
+The timing flag is compiled only under the existing opt-in index-check macro; a build without it rejects either index mode. Existing ten-argument default and `--correctness-only` branches remain structurally unchanged in the source diff. Argument values are checked, and the private mode requires GU22/Down20/NT1/tasks0/batch1 before opening pack or model files. It rejects non-default absolute MXCSR control bits and any present `STRATA_NO_Q8K_AVX2` before payload open; later checks keep the control bits at nearest-even with FTZ/DAZ disabled before/after each timed arm. Existing environment diagnostics require dispatch forcing variables absent; timing also rejects loader-debug, preload and audit variables. The source starts no worker pool or profiler in this private branch.
+
+The unchanged all-row admission runs before timing. It compares the linked IQ2_S trait, direct control, and register-index candidate on the same actual selected weight rows and the same finite synthetic Q8_K inputs, including the complete Gate/Up/finish bit comparison. Per-row bounds are checked there before pointer binding; the timing path uses those validated blobs and `work[i].ap[0]` inputs. The new typed row records point to unique output slots `out[i].values[r*2+role]`; both Gate/Up roles and all 640 rows are enumerated. The pretiming expected array is filled only by the production trait and is not overwritten. Each arm’s source loop writes every prebound row result; after the clock it checks full output bits against that immutable oracle, checks the adjacent 64-byte guard, rechecks quantized input bytes, hashes outputs in an explicit byte order, and confirms no GPU release callback appeared. The dot helpers’ math is unchanged from the frozen source; the trait call uses the eight-argument function-pointer ABI.
+
+The timed interval begins before the arm switch and ends after the full row loop, so it includes branch/dispatch, iteration and result stores. It excludes the saved-output comparisons, hashes, input checks, logs, allocation and data preparation. This boundary is explicit in both code and metadata; it supports caller-side dot-loop comparison, not kernel-only latency. The fixed stream192 and overlapping hot8 strata are enumerated before timing; neither claims cold/DRAM traffic. The 18 recorded rounds balance all three arm positions, with three warmups per split/stratum. Guards and outputs are allocated before the clock. Source limits the result to selected actual IQ2_S weights with synthetic activations and does not claim live activation, service, full-model, worker or adoption correctness.
+
+One nonblocking oracle-hardening note: `out` is value-initialized, then reused across all arms/rounds. The present source has an explicit store for every row in all three arm loops, so I found no current skipped-write path; an explicit per-arm poison/reset outside the timer would make future incomplete-write regressions easier to detect. This is not a blocker for the current exact loops.
+
+## Snapshot identity
+
+All manifest entries matched their bytes and SHA-256 during this read-only review:
+
+- `native_service_calibration.cpp`: 36,175 bytes, `9e1881bb9b6fd4f26536b7b69934950e132531a806b5fc3c9404a6f574cd4720`.
+- `README.md`: 21,428 bytes, `047adb19ce5e34dec344f968d49e534aa76959ed279954ad8240a2b628cc36b3`.
+- `CMakeLists.txt`: 4,241 bytes, `b00f32668d59bea9d7e0380393046f44d1ad1616577f9c8611934f9d4d54a203`.
+- `iq2s_index_dot.cpp`: 12,095 bytes, `bb20df83d7f76429f7c65dd4f03868a2cc8e161680092e49aa31cf2e6cf93bfd`.
+- `iq2s_index_dot.hpp`: 190 bytes, `40497188e7079ad87c2f831b7556d5f1ce51d45b4582aec03583d5ee4f178720`.
