@@ -1,0 +1,60 @@
+R124 — same-buffer GDN prefill gate/exp qualification
+Date: 2026-10-10 (UTC)
+Scope: static source and contract audit only. No build, compiler, disassembly, test, profiler, inference, payload, or device query was run. This report qualifies the R108–R110 proposal; it does not claim speedup or adoption.
+
+Source identity
+----------------
+Audited immutable production snapshot: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-source-snapshots/gdn-gate-consumers-cd353f30`, 227-file manifest SHA-256 `1ac15ccad1b17ca2913f17abdf40a4989f567a39568cb27bf74721af9572dcfb`.
+Relevant pinned files (SHA-256):
+- `sycl/src/prefill/kernels.dp.cpp` `cc5254f688b9138fc71800884c853211771067c0f07a0a44a237fd45b59b4bfa`
+- `sycl/src/prefill/prefill.cpp` `f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77`
+- `sycl/src/core/layer.cpp` `6b443fc1df1c812ee4811b46ebde315cfe30356a448ac10f0e56332c763416a7`
+- `sycl/CMakeLists.txt` `5911b38ff78b7d185ffd92ee34d0360f272e003b558ae7a3fa0707a1e684f9b6`
+
+What the code does
+------------------
+`gdn_gates_kernel` (kernels.dp.cpp:456–469) computes `v = ab + dt`, writes `gate[i] = (v > 20 ? v : log1p(native::exp(v))) * ssm_a[h]`, and separately writes beta. Thus the stored gate is a log-decay quantity; it is not the recurrence multiplier. `gdn_gates` submits this producer. The prompt chain at prefill.cpp:3661–3665 submits gate generation, convolution, then recurrence to `m.cs` (same queue); convolution does not consume gate. Recurrence consumers exponentiate the stored value:
+- `gdn_rec_kernel`: `native::exp(gate[t*HV+head])` at 704.
+- `gdn_rec_cols_kernel`: same at 837.
+- pipelined columns: raw gate staged in `ng`, then `native::exp(cg)` at 962.
+- key-head variant: staged raw gate in local `sg[bb][i][j]`, then `native::exp(sg[bb][i][j])` at 1240 in `gdn_rec_kh_kernel`.
+- quad pipeline (SYCL guarded path): raw gate in `ng`, `native::exp(cg)` at 1049.
+- AMD-only quad kernels are in the same file but are not the SYCL target and must not be accidentally changed by a prompt-only SYCL experiment.
+`gdn_recurrence_variant` owns backend/variant selection. Existing recurrence APIs and tests accept a log-gate pointer; changing their interpretation globally would silently break callers supplying log-gate data. Core decoder/one-step GDN paths (`core/layer.cpp`) are separate and are outside this prompt optimization.
+
+The only plausible same-buffer transform is producer-side materialization: after forming the existing log gate, store its exponential into the existing `gate` scratch, and have the prompt recurrence consume that as `g` directly, removing all consumer `exp` calls. It requires an explicit private representation contract/entry point so public log-gate consumers and decoder paths retain current semantics. It adds no all-context VRAM allocation: `m.gate` is already an FP32 `T*HV` scratch slice, allocated per prefill chunk alongside beta (`prefill.cpp:1314`). Existing physical context limits (262,144) do not imply a full-context gate allocation; `T` is the current chunk size, and looped chunks reuse bounded scratch. Any design that retains both log-gate and decay for all tokens would consume another `4*T*HV` bytes and defeats the same-buffer premise.
+
+Hard numerical blocker
+----------------------
+Under current code, the consumer input is an FP32 log-gate written to global memory, later loaded and passed to `sycl::native::exp`. A producer rewrite that computes `exp(loggate)` and stores the multiplier changes both the operation context and rounding/materialization point. C++/SYCL source does not promise that native exp in the producer kernel is bit-identical to native exp in each consumer kernel, even when both expressions use the same input bits. Khronos describes native math as implementation-defined in accuracy/range (not a cross-kernel bit-reproducibility contract). Intel `-fp-model=precise` is the recorded CXX compile setting (`CMakeLists.txt:66`), but is not a promise that native math results remain identical across kernels; it also permits FP contraction by default. Therefore “precise” is not a sufficient proof for this transform. It must not add relaxed/fast flags or substitute a different exp/log implementation.
+
+A further implementation trap: if producer computes exp from its just-computed register value before storing, the consumer baseline exp sees the rounded FP32 value that was materialized to memory. To compare like-for-like, the experiment must ensure the transformed exp consumes exactly the FP32-rounded log-gate bits (not a higher-precision or compiler-forwarded expression). Forcing an actual store/reload in the same kernel may require an extra kernel boundary or an implementation-specific volatile/noinline construct, which changes cost and still does not establish native-exp equivalence. This is a qualification blocker, not a recommendation to add volatile or a second pass.
+
+Even equal decay bits alone are insufficient: recurrence applies decay repeatedly to state and uses it in the delta; the full state and output can diverge from one ULP. Require exact bitwise comparison of (a) materialized log-gate inputs in the baseline path, (b) baseline consumer decay bits versus producer-stored decay bits, (c) recurrent state after every token and final state, and (d) normalized output bits. Any mismatch under the existing compiler/device/flags rejects this exact-preservation candidate. Numerical tolerance or changed math policy would be a separate proposal.
+
+Ordering, lifetime, error handling
+----------------------------------
+`strata::q_of(stream)` returns the in-order queue (see `sycl/include/strata/sycl_queue.hpp`); sequential same-queue submissions order producer before convolution before recurrence. No explicit event handoff is needed for that current chain. Queue ordering is not asynchronous error reporting: `kernels.dp.cpp::check()` is a placeholder/no-op in this snapshot, and errors surface only at a later SYCL wait/throw/synchronization path or captured async handler. Do not infer that a successful submit or later numerical comparison establishes absence of earlier async faults. Test harness must use retained Level Zero diagnostics and explicitly surface queue/async errors, then synchronize before reading outputs.
+
+Scratch belongs to a `Prefill::Impl` chunk layout and persists/reuses storage across layers and calls; each GDN layer overwrites the active `T*HV` gate/beta prefix before its recurrence. Prompt loop increments chunk positions and reuses this same capacity; last and first chunks may be different lengths. The transform must not depend on stale tail values, overlap with another stage's borrowed scratch, or outlive the producer's chunk. Repeated prompts may reuse allocations and weights; test a fresh state and repeated same-instance prompts. On a multi-stage/layer split, process only the local GDN chunk on its owning stage/queue; no new event crossing the stage boundary is warranted by the current local chain, but asynchronous failure reporting and storage reuse still need validation.
+
+Minimum discrimination before timing
+------------------------------------
+1. Build an isolated deterministic CPU/source-level fixture of representative FP32 log-gate values including negative/near-zero, large positive (the producer's `v>20` branch), subnormal/underflow and infinities/NaNs where reachable; verify the baseline FP32 store/reload then native-exp reference and transformed materialized-decay bits. The CPU fixture can check layout/representation and exact input-rounding assumptions, but cannot qualify device native exp.
+2. On the target Level Zero device, run only an isolated opt-in test under the exact production compiler/flags and retained debug environment. Compare all bits listed above for every current SYCL recurrence dispatch: serial/default, columns no-pipeline, columns pipeline, key-head and tuned key-head where selectable, plus any production eligible path. Include zero/small T, odd/final partial chunk, chunk reuse, multiple consecutive GDN layers, repeated prompt/state reset, and a maximum-context prompt represented as bounded chunks. Catch and print async exceptions and call wait_and_throw at validation boundaries. The fixture must preserve the public log-gate API path and verify it remains unchanged.
+3. Only after exact correctness and async-fault checks pass, consider model-level timing. Root should serialize device execution; no concurrent GPU/build/test activity. Keep debug Level Zero variables/configuration captured. No model timing or adoption is justified by this static audit.
+
+Decision
+--------
+The transform is a credible *question* because all prompt consumers apply exp to the same per-chunk log-gate buffer and the buffer is already allocated. It is not yet qualified: current SYCL/native-exp plus precise-mode contracts do not guarantee bit-identical producer-vs-consumer results, and actual same-kernel materialization may not reproduce the baseline FP32 global-roundtrip input. Do not implement or time unless the isolated target-device discriminator proves exact decay, state, output bits and clean async completion. If exactness fails or compiler treatment cannot ensure the same rounded input, reject this candidate under the current numerical policy.
+
+Primary references
+------------------
+- Khronos SYCL native math contract: https://github.khronos.org/SYCL_Reference/iface/native-prec-math-func.html
+- Khronos queue ordering, in-order queues and wait APIs: https://github.khronos.org/SYCL_Reference/iface/queue.html
+- Khronos asynchronous error handler: https://github.khronos.org/SYCL_Reference/iface/async_handler.html
+- Intel oneAPI 2026 `-fp-model`: https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2026-0/fp-model-fp.html
+- Intel floating-point optimizations and contraction behavior: https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2026-0/floating-point-optimizations.html
+- Level Zero programming model, command queue/list execution and event dependencies: https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html
+- FlashInfer first-party GDN prefill implementation (uses its own formulation/layout; evidence of an independent implementation only, no performance/equivalence transfer): https://github.com/flashinfer-ai/flashinfer/blob/main/flashinfer/gdn_prefill.py
+- FlashInfer primary RFC showing scope-specific gate support status, not an optimization result: https://github.com/flashinfer-ai/flashinfer/issues/2687
