@@ -5,6 +5,11 @@
 #include "strata/core/progress.hpp"
 #include "ggml.h"
 #include "ggml-cpu.h"
+#ifdef STRATA_CALIBRATION_IQ2S_INDEX_CHECK
+#include "iq2s_index_dot.hpp"
+#include <bit>
+#include <immintrin.h>
+#endif
 #include <array>
 #include <algorithm>
 #include <cstdlib>
@@ -204,16 +209,78 @@ static void input_check(const c::NativeFmt& f,const LayerInput& input,int nt){
  auto tr=ggml_get_type_traits_cpu(static_cast<ggml_type>(f.gu_act));require(tr&&tr->from_float,"GU quantizer absent");
  for(int t=0;t<nt;++t){Bytes<c::kNativeActBytes> ref;ref.reset();tr->from_float(input.x[t].data(),ref.data.data(),c::H);ref.check(f.act_bytes);input.a[t].check(f.act_bytes);require(!std::memcmp(input.a[t].data.data(),ref.data.data(),f.act_bytes),"input quantization differs from ggml");}
 }
+
+#ifdef STRATA_CALIBRATION_IQ2S_INDEX_CHECK
+struct IndexTotals {
+ uint64_t ids=0,rows=0,mismatches=0,hash=14695981039346656037ULL;
+ uint64_t classes[3][3][3]{}; // arm, Gate/Up/finish, finite/Inf/NaN
+ void add(unsigned arm,unsigned value,float x){
+  uint32_t b=std::bit_cast<uint32_t>(x);unsigned cls=(b&0x7f800000U)!=0x7f800000U?0:((b&0x007fffffU)?2:1);
+  ++classes[arm][value][cls];for(unsigned k=0;k<4;++k){hash^=(b>>(k*8))&255U;hash*=1099511628211ULL;}
+ }
+ void counts()const{for(const auto& a:classes)for(const auto& v:a)for(auto n:v)std::cout<<','<<n;}
+};
+static int index_correctness(const std::vector<Case>& cases,std::vector<Buffers>& work,
+ const std::array<LayerInput,48>& inputs,size_t aggregate,int host,unsigned entry){
+ require(c::H==2560&&c::FF==640&&cases.size()==384&&work.size()==384&&aggregate==756940800ULL,"index frozen geometry/bytes");
+ const auto* tr=ggml_get_type_traits_cpu(GGML_TYPE_IQ2_S);
+ require(tr&&tr->vec_dot&&tr->vec_dot_type==GGML_TYPE_Q8_K,"index trait ABI");
+ Affinity affinity(host);const unsigned controls=_mm_getcsr()&0xffc0U;
+ require(controls==(entry&0xffc0U),"MXCSR controls changed in preparation");
+ std::cout<<"META,index_scope,actual_weights_synthetic_inputs_no_timing_no_pool_no_live_activation\nMETA,index_mxcsr_entry,"<<entry
+ <<"\nMETA,index_mxcsr_prepared,"<<_mm_getcsr()<<"\nMETA,index_worker_mxcsr,not_observed_workers_not_started\nMETA,index_host_cpu,"<<host_cpu()
+ <<"\nMETA,index_GU_Down_NT_tasks_batch,22_20_1_0_1\nMETA,index_owned_blob_bytes,756940800\nMETA,index_flags,IntelLLVM_precise_Q2AVXVNNI1_IQAVXVNNI0_IQ2SGCCoff\nMETA,index_counts_order,baseline_control_register_then_Gate_Up_finish_then_finite_Inf_NaN\n";
+ std::array<IndexTotals,2> totals{};bool first=true;
+ for(size_t i=0;i<cases.size();++i){
+  const auto& item=cases[i];const auto& f=item.fmt;auto& b=work[i];
+  require(f.gu_type==22&&f.d_type==20&&f.n_embd==2560&&f.n_ff==640&&f.gu_act==GGML_TYPE_Q8_K
+   &&f.gu_row==sizeof(block_iq2_s)*10&&f.act_bytes==sizeof(block_q8_K)*10,"index row geometry");
+  input_check(f,inputs[item.layer],1);require(b.ap[0]==inputs[item.layer].a[0].data.data(),"prepared activation identity");
+  IndexTotals id;id.ids=1;auto& sum=totals[i/192];++sum.ids;
+  for(int row=0;row<640;++row){
+   require((_mm_getcsr()&0xffc0U)==controls,"MXCSR controls changed between arms");float v[3][3]{};
+   for(int role=0;role<2;++role){
+    size_t off=size_t(role)*f.up_off+size_t(row)*f.gu_row;
+    require(off<=f.down_off&&f.gu_row<=f.down_off-off,"index row bounds");
+    auto* x=reinterpret_cast<const block_iq2_s*>(item.blob.data()+off);auto* y=static_cast<const block_q8_K*>(b.ap[0]);
+    tr->vec_dot(2560,&v[0][role],0,x,0,y,0,1);
+    v[1][role]=isolated_iq2s::direct_control(2560,x,y);v[2][role]=isolated_iq2s::index_candidate(2560,x,y);
+   }
+   for(unsigned a=0;a<3;++a)v[a][2]=(v[a][0]/(1.f+std::exp(-v[a][0])))*v[a][1];
+   for(unsigned a=0;a<3;++a)for(unsigned k=0;k<3;++k){id.add(a,k,v[a][k]);sum.add(a,k,v[a][k]);}
+   for(unsigned a=1;a<3;++a)for(unsigned k=0;k<3;++k)if(std::bit_cast<uint32_t>(v[0][k])!=std::bit_cast<uint32_t>(v[a][k])){
+    ++id.mismatches;++sum.mismatches;if(first){std::cout<<"INDEX_FIRST_MISMATCH,"<<i<<','<<item.layer<<','<<item.expert<<','<<row<<','<<a<<','<<k<<','<<std::bit_cast<uint32_t>(v[0][k])<<','<<std::bit_cast<uint32_t>(v[a][k])<<'\n';first=false;}
+   }
+   ++id.rows;++sum.rows;
+  }
+  require((_mm_getcsr()&0xffc0U)==controls,"MXCSR controls changed in dot/finish");input_check(f,inputs[item.layer],1);
+  std::cout<<"INDEX_ID,"<<i/192<<','<<i<<','<<item.layer<<','<<item.expert<<','<<id.rows<<','<<id.mismatches<<','<<id.hash<<','<<fnv(b.ap[0],f.act_bytes);id.counts();std::cout<<'\n';
+ }
+ for(unsigned split=0;split<2;++split){const auto& t=totals[split];require(t.ids==192&&t.rows==192*640,"incomplete index split");std::cout<<"INDEX_SPLIT,"<<split<<','<<t.ids<<','<<t.rows<<','<<t.mismatches<<','<<t.hash;t.counts();std::cout<<'\n';}
+ require(strata::core::release_gpu_fn().load()==nullptr,"GPU callback changed");
+ std::cout<<"META,index_mxcsr_final,"<<_mm_getcsr()<<"\nINDEX_COMPLETE,384,245760,491520,1474560\n";
+ require(totals[0].mismatches==0&&totals[1].mismatches==0,"three-arm bits differ");
+ std::cout<<"RESULT,iq2s_index_correctness_only_pass,no_timing_no_adoption\n";std::cout.flush();std::cerr.flush();require(bool(std::cout)&&bool(std::cerr),"output failure");return 0;
+}
+#endif
+
 int main(int argc,char** argv){try{
  require(argc==10||argc==11,"usage: native_service_calibration PACK PRIMARY TSV GU DOWN NT TASKS BATCH SEED [--correctness-only]");
- bool correctness_only=argc==11;
- if(correctness_only)require(std::string(argv[10])=="--correctness-only","unknown mode");
+ bool correctness_only=argc==11&&std::string(argv[10])=="--correctness-only";
+ bool index_only=argc==11&&std::string(argv[10])=="--iq2s-index-correctness-only";
+ require(argc==10||correctness_only||index_only,"unknown mode");
+#ifndef STRATA_CALIBRATION_IQ2S_INDEX_CHECK
+ require(!index_only,"IQ2S index mode disabled at build time");
+#else
+ const unsigned index_entry_mxcsr=index_only?_mm_getcsr():0;
+#endif
  uint64_t gu_type=decimal(argv[4]),down_type=decimal(argv[5]),nt_value=decimal(argv[6]),tasks_value=decimal(argv[7]),batch_value=decimal(argv[8]),seed=decimal(argv[9]);
  require(gu_type==18||gu_type==21||gu_type==22||gu_type==23,"GU cell type");require(down_type==20||down_type==42,"Down cell type");
  require(nt_value==1||nt_value==2,"NT cell");require(tasks_value==0||tasks_value==6,"tasks cell");require(batch_value==1||batch_value==6,"batch cell");
+ require(!index_only||(gu_type==22&&down_type==20&&nt_value==1&&tasks_value==0&&batch_value==1),"index mode requires GU22 Down20 NT1 tasks0 batch1");
  int nt=int(nt_value),tasks=int(tasks_value),batch=int(batch_value);require(sizeof(void*)==8&&c::cpu_avx2_ok(),"64-bit AVX2 host required");
  require(std::getenv("LD_PRELOAD")==nullptr&&std::getenv("LD_AUDIT")==nullptr,"preload/audit forbidden");
- if(correctness_only){const char* debug=std::getenv("LD_DEBUG");require(debug==nullptr||std::string(debug)=="libs","correctness loader observation accepts LD_DEBUG=libs only");}
+ if(correctness_only||index_only){const char* debug=std::getenv("LD_DEBUG");require(debug==nullptr||std::string(debug)=="libs","correctness loader observation accepts LD_DEBUG=libs only");}
  else require(std::getenv("LD_DEBUG")==nullptr,"loader debugging forbidden in timing process");
  require(HOST_Q2_AVXVNNI==1,"frozen Q2 compile probe must be1");environment_metadata();ggml_cpu_init();
  auto selected=read_cohort(argv[3]);std::string error;bool loaded=c::expert_layout_load(argv[1],48,512,error);result(loaded,error);
@@ -239,6 +306,10 @@ int main(int argc,char** argv){try{
   input_check(item.fmt,input,nt);initialized[item.layer]=true;
  }
  std::vector<Buffers> work(384);double gu_delta=0,down_delta=0;
+#ifdef STRATA_CALIBRATION_IQ2S_INDEX_CHECK
+ if(index_only){for(size_t i=0;i<cases.size();++i)work[i].bind(inputs[cases[i].layer],1);
+  return index_correctness(cases,work,inputs,aggregate,topology.host_core,index_entry_mxcsr);}
+#endif
  for(size_t i=0;i<cases.size();++i){auto& b=work[i];const auto& item=cases[i];b.bind(inputs[item.layer],nt);
   for(int t=0;t<nt;++t){b.ff[t].reset();b.hq[t].reset();b.q2[t].reset();b.out[t].reset();}
   full(item,b,nt);check_quant(item.fmt,b,nt);for(int t=0;t<nt;++t)b.out[t].check();auto delta=ggml_reference(item,b,nt);gu_delta=std::max(gu_delta,delta[0]);down_delta=std::max(down_delta,delta[1]);

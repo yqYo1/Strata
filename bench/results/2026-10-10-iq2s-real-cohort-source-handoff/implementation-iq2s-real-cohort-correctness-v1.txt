@@ -1,0 +1,109 @@
+IQ2S actual-cohort three-arm correctness implementation v1
+SOURCE ONLY / UNEXECUTED. No build, compiler, preprocessor, syntax check, imports,
+tests, executable, CPU/GPU query, payload read, inference, profiling, objdump,
+Git operation or cleanup was performed. Root owns all qualification under the
+shared lock. Existing standalone IQ fixture and production sources unchanged.
+
+Worktree (owner-supplied HEAD89c2d37d529475c07416392f9c2ec6aaa266d2b1):
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010
+Latest committed registry-v49 supplied SHA256:
+0c7d8f4bd959ba71ec9eb9b3748d8ec32b8a05ca1cc1f8567e6e25e3b492b0cc
+Read R98 actual-cohort reader contract, R97 precise/nonfinite contract, R100 actual
+linked Q8 quantizer review, R103 linked register codegen and R104 no-new-candidate
+review. No timing/adoption evidence is inferred from the qualified synthetic arm.
+
+Assigned changed files relative to worktree, bytes / SHA256:
+sycl/tools/native-service-calibration/CMakeLists.txt
+4241 b00f32668d59bea9d7e0380393046f44d1ad1616577f9c8611934f9d4d54a203
+sycl/tools/native-service-calibration/native_service_calibration.cpp
+30600 fda9a4972ef08d0350d5857ceedd8392fa2857a6906dc432bc8621342f469354
+sycl/tools/native-service-calibration/README.md
+17128 4c05f432e0b86180532ef1e0954b448d2425de2842e30d563517a3e78f5ed8d0
+sycl/tools/native-service-calibration/iq2s_index_dot.hpp (new)
+190 40497188e7079ad87c2f831b7556d5f1ce51d45b4582aec03583d5ee4f178720
+sycl/tools/native-service-calibration/iq2s_index_dot.cpp (new)
+12095 bb20df83d7f76429f7c65dd4f03868a2cc8e161680092e49aa31cf2e6cf93bfd
+
+CMake adds STRATA_CALIBRATION_IQ2S_INDEX_CHECK OFF by default. ON adds only the
+private macro and new test-only dot TU. Existing production TU ISA/precision,
+CPU closure, static pinned GGML/Threads, IQ=0/Q2=1 and all default arms remain.
+New TU has explicit AVX2/FMA/F16C/precise. It copies source tokens from the beginning
+of standalone iq2s_index_spread.cpp through the end of index_candidate, with a
+provenance comment and namespace closing. Standalone source SHA256 verified by
+source hashing only: c51f580bc72cb303e7fe30b1cfb6f7c09ad82332ffd60d441af0eac2dbe77b89.
+MIT copyright/license retained. Table/helper/direct-control/register-index bodies
+are copied unchanged. Unit fixtures and main are excluded. Old out-param helper
+remains unused; hot candidate still returns packed registers/extracts original
+scalar grid indices. No scale/gather/pairing/reduction/FMA/finish change.
+
+New argc11 optional --iq2s-index-correctness-only mode; OFF rejects before any
+layout/payload opening. Only GU22 Down20 NT1 tasks0 batch1 accepted. Existing
+optional --correctness-only and default calibration retain their behavior. New
+mode reuses read_cohort, NativeRolePlan assembly, Case.blob, LayerInput and work.ap.
+It branches before full FFN/reference checks, pool construction, schedule/warmup
+or timing. Host production pin is RAII-restored. No pool workers are created, so
+worker MXCSR is explicitly unobserved rather than invented. Entry/prepared/final
+caller MXCSR logged; control mask0xffc0 must remain unchanged. No modes are set.
+
+Geometry: existing16KiB TSV bound,192+192 global-disjoint IDs/ranges/frozen order,
+production format/extents and1GiB blob cap retained. New mode also requires
+H2560/FF640,384 IDs, selected total756940800B, IQ2S row sizeof(block_iq2_s)*10,
+Q8K meaningful bytes sizeof(block_q8_K)*10 and per-row Gate/Up bounds. Down20 K640
+is not an index target. GGUF mapping closes before prepared-input checks. No new
+payload parser, fixture, selection, or saved copy. Input bytes are production
+native_quant_act and rechecked with GGML from_float before and after each ID.
+
+All384*640 row pairs: Gate and Up each run trait baseline, direct control and
+register index. Finish uses original (g/(1.f+std::exp(-g)))*u. Every IEEE bit
+pattern enters equality, including nonfinite values and signed zero; finite/Inf/
+NaN classes use integer bit classification and are independent of mismatches.
+245760 row pairs /491520 role rows /1474560 dot calls;1474560 baseline comparisons
+(two other arms times Gate/Up/finish). No finite guard removes actual rows.
+
+Compact output: original EXTENT1152 and ID384 retained; INDEX_ID384 carries split,
+index/layer/expert,640 rows,mismatch count,FNV,activation FNV and27 class counts.
+Two INDEX_SPLIT rows require192 IDs/122880 row pairs each. At most one global
+INDEX_FIRST_MISMATCH reports coordinate and baseline/other bits. INDEX_COMPLETE
+coverage marker precedes zero-mismatch final RESULT; failure remains exit1.
+Owner must require normal exit0, successful stdout/stderr flush, complete unique
+ordered IDs/splits/extents and no cleanup/survivors. RESULT alone is insufficient.
+FNV is four little-endian bytes per FP32 word in row/arm/value order, not SHA.
+No per-row trace/weights/activation dump. Existing8MiB supervised text budget and
+1536MiB group RSS/root finite CPU/wall/address-space/FSize limits remain required.
+Source input caps do not guarantee RSS or exclude external tracing.
+
+Root reproduction, UNEXECUTED:
+Use README's existing standalone IntelLLVM2026.1 precise/pinned-GGML configure
+recipe in a new private build directory, add
+-DSTRATA_CALIBRATION_IQ2S_INDEX_CHECK=ON; build native_service_calibration.
+Then under the owned measurement lock and finite supervision:
+$CAL_BUILD/native_service_calibration $PACK $PRIMARY $COHORT_TSV 22 20 1 0 1 $FROZEN_SEED --iq2s-index-correctness-only
+stdout/private index-check.csv; stderr/private index-check.stderr. No previous
+receipt/output overwrite. No automatic timing, profiler or inference is started.
+
+Required root gates before any result interpretation:
+- Review complete diff and token-copy equivalence; fresh release and IntelLLVM
+  ASan/UBSan builds/tests; inspect compile command order and no leaked fast math.
+- OFF-mode rejection before model opens; unsupported cell/argument negatives;
+  malformed TSV/duplicate/order/geometry/byte limits; output incomplete/flush/
+  nonzero-exit failure classification. Verify default modes unchanged.
+- Exact frozen manifest6a5eac378b01531a7438fa512bb0829bc7e447028328cfa5aba9c64a02377304,
+  TSV49ab6545beda7a1d16cc02da07981b80d4fd36fc4fa9385f56039771fb4d21f1 and
+ 1152 extent identity568892bce458dbe96cd63c67e6c9cf89ba9b0dc54b93eac401b138c0c6fc7cc6.
+  Root must close copied role content against those SHA256 pins, hold immutable/
+  stable pack sources under lock, recheck source identity/hash after normal exit.
+  Printed FNV/stat/extents are not copied-content SHA proof. Existing reader is
+  trusted-stable-source, not adversarial concurrent-mutation safe.
+- Inspect actual linked baseline/direct/register instruction and FP ordering,
+  including production custom native_quant_act branch. R100 reference quantizer
+  assembly alone does not prove the custom AVX2 emitted order or worker FP mode.
+- Require all384 ID/two split/1152 extent records, all expected calls/classes,
+  zero mismatches, complete final marker, successful flush, child normal0 and
+  no-GPU imports/device observations in owner's separate correctness run.
+
+Limits: no actual payload has been read/tested by implementer; deterministic
+layer activations are synthetic and shared within layer. Expert-identity split
+is not independent-prompt generalization. Frozen route exposure remains owner's
+manifest join, not inferred from equal-per-ID counts. No worker-mode claim, live
+activation, model32K/full262144, DRAM/service/performance or adoption qualification.
+Existing failed receipts and all original statuses remain unchanged.

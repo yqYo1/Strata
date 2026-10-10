@@ -48,3 +48,10 @@ set_source_files_properties("${CPU}/q2_avx2.cpp" PROPERTIES COMPILE_DEFINITIONS 
 set_source_files_properties("${IQ_WRAPPER}" PROPERTIES COMPILE_DEFINITIONS "STRATA_AVXVNNI=0")
 # STRATA_IQ2S_GCC must remain undefined (the wrapper tests defined(), not its value).
 target_link_libraries(native_service_calibration PRIVATE ggml-cpu ggml-base Threads::Threads)
+
+option(STRATA_CALIBRATION_IQ2S_INDEX_CHECK "Enable test-only actual-cohort IQ2S comparison" OFF)
+if(STRATA_CALIBRATION_IQ2S_INDEX_CHECK)
+ target_sources(native_service_calibration PRIVATE iq2s_index_dot.cpp)
+ target_compile_definitions(native_service_calibration PRIVATE STRATA_CALIBRATION_IQ2S_INDEX_CHECK=1)
+ set_source_files_properties(iq2s_index_dot.cpp PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c;-fp-model=precise")
+endif()

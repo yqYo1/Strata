@@ -71,3 +71,74 @@ comparison. Construct the pool under original caller affinity, then pin the
 host. Root must require actual singleton thread CPU sets to match the declared
 host plus five distinct workers before interpreting any new timing. This fixes
 the standalone fixture only; production initialization order is a separate audit.
+
+## Opt-in actual-cohort IQ2S three-arm check (source-only, unexecuted)
+
+Configure a fresh private build with the recipe above plus
+`-DSTRATA_CALIBRATION_IQ2S_INDEX_CHECK=ON`. The default is OFF; an OFF
+binary rejects this mode before layout/model payload opening. Root-only invocation:
+
+```
+"$CAL_BUILD/native_service_calibration" "$PACK" "$PRIMARY" "$COHORT_TSV" \
+  22 20 1 0 1 "$FROZEN_SEED" --iq2s-index-correctness-only \
+  > "$PRIVATE_RUN/index-check.csv" 2> "$PRIVATE_RUN/index-check.stderr"
+```
+
+This mode preserves the existing bounded TSV, production layout/NativeRolePlan,
+frozen order, full owned blob assembly and production layer-input preparation.
+It requires exactly384 IDs, H2560/FF640, GU22/Down20, NT1/tasks0/batch1 and
+756940800 owned bytes. Down20 K640 is not sent to the index dot.
+It branches before full FFN correctness, pool creation, scheduling, warmups and
+timing. Default calibration and `--correctness-only` keep their original arms
+and finite/reference/partition requirements. The new mode is a separate dot
+check, not a substitute for those gates.
+
+Each of245760 Gate/Up row pairs uses identical prepared production Q8_K bytes,
+rechecked against the pinned GGML quantizer per ID. The three arms are the
+IQ2_S CPU trait, the copied noinline direct control and the copied noinline
+register-index candidate. Each computes Gate, Up and the existing scalar finish
+`(g/(1.f+std::exp(-g)))*u`. All IEEE bits, including signed zeros, Inf and NaN
+payloads, enter equality; finite/Inf/NaN counts are separate. No finite filter
+removes actual rows. There are491520 role rows,1474560 dot calls and1474560
+comparisons against the baseline (two other arms times three values).
+
+`INDEX_ID` records split, global index, layer, expert,640 row pairs, mismatch
+count, result FNV and activation FNV, followed by27 counts ordered
+arm(baseline/control/register), value(Gate/Up/finish), class(finite/Inf/NaN).
+`INDEX_SPLIT` contains split,192 IDs,122880 row pairs, mismatches, FNV and those
+counts. FNV consumes each FP32 word as four little-endian bytes in row/arm/value
+order. At most one `INDEX_FIRST_MISMATCH` records index/layer/expert/row/arm/value
+and both uint32 words. `INDEX_COMPLETE` is a coverage marker; only zero mismatches,
+successful flush and normal child exit0 support the final pass. Existing EXTENT/ID
+records remain; root must verify384 ID rows and1152 extents. No raw expert, Q8 or
+per-row result trace is written. Keep root's existing8MiB aggregate text budget,
+1536MiB group RSS and finite CPU/wall limits; source caps are not RSS guarantees.
+
+MXCSR is observed at entry, after preparation and completion; control bits
+(mask0xffc0) must remain unchanged, without setting modes. The host uses production
+affinity pin/RAII restore. Workers are never started, so worker MXCSR is explicitly
+not observed. This mode supplies no worker-mode evidence.
+
+`iq2s_index_dot.cpp` retains the MIT notice and copies the helper/table/dot source
+tokens from `native-iq2s-nt1-index-spread/iq2s_index_spread.cpp`, SHA256
+`c51f580bc72cb303e7fe30b1cfb6f7c09ad82332ffd60d441af0eac2dbe77b89`,
+through the end of `index_candidate`, excluding unit fixtures/main. The included
+GGML codebook remains pinned to commit3cf03257f219afbe7334045ff7c6a06ac68c627d.
+Only this new TU gets AVX2/FMA/F16C/precise; other production TU flags are unchanged.
+The retained old out-param helper is unused by the hot candidate; no index array,
+gather, scale table, pairing or accumulation change is introduced.
+
+Root must close copied-role identity with the existing frozen1152 per-extent
+SHA256 list (`568892bce458dbe96cd63c67e6c9cf89ba9b0dc54b93eac401b138c0c6fc7cc6`)
+and manifest/TSV pins before admitting actual-weight results, keep the source
+stable/read-only under the serial lock, and recheck source identity afterward.
+Printed FNV/paths/offsets do not replace that evidence. The existing mapped reader
+is a trusted-stable-source contract, not an adversarial concurrent-writer proof.
+Root must independently verify linked trait/control/candidate ISA/arithmetic and
+custom `native_quant_act` quantizer FP instruction ordering; the R100 reference
+quantizer capture does not establish that custom branch. Release and IntelLLVM
+ASan/UBSan, OFF rejection before opening payloads, wrong-mode/cell negatives,
+unchanged default correctness/timing behavior, normal exit/flush and no-GPU
+observations remain pending. No actual weights were read by the implementer.
+Synthetic layer activations are not live model activations. No timing,32K model
+parity, performance, adoption or full-context qualification follows from this mode.
