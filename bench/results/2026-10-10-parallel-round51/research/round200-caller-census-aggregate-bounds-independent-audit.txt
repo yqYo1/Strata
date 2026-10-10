@@ -1,0 +1,41 @@
+# R200 — independent audit of the IQ4NL caller census aggregate bounds
+
+Date: 2026-10-10 (Asia/Tokyo). Read-only source audit of the completed Sol diagnostic draft. The only implementation material inspected was the immutable snapshot at `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq4nl-caller-census-source-snapshot-v1`; it is a source snapshot, not a commit. No changing worktree, live run output, build, compiler, test, model, process/device, profiler, service, cleanup, or Git status was queried.
+
+## Pinned inputs
+
+The snapshot provenance names base `984fb5f7e7762ea66c3bbd023021c3c4bd3e7cec`. I recomputed these hashes directly from the snapshot and they match provenance:
+
+- `sycl/src/prefill/prefill.cpp`: 323776 bytes, SHA-256 `234489f9dc69a103e74c6d2a388a2271b7cf4a5073d682cf770d306db057c68f`.
+- `sycl/src/prefill/iq4nl_caller_census.hpp`: 7656 bytes, SHA-256 `a653161dabba83e6bd72157e2bcfbf504912c8bcc9d89f51a31aaa99b34903b3`.
+- `sycl/CMakeLists.txt`: 29970 bytes, SHA-256 `f4faafb3b6c1c566e581811822192cc915f2ae9ed046d33aaf8d87b40b4fd957`.
+
+I read R195, R199, the implementation handoff, and snapshot provenance. R195's old type-20 formula and record-size example are superseded. The draft uses the corrected packed-byte calculation `n / 32 * 18` and prints actual `sizeof(*this)`; no ABI size was measured here.
+
+## Findings
+
+**Default-off source preservation is supported at the source-text level only.** CMake declares `STRATA_SYCL_PREFILL_IQ4NL_CALLER_CENSUS` with default OFF and adds its definition only to the private `strata_prefill` target when enabled. Census code in `prefill.cpp` is inside that macro. Provenance says it stripped only census conditional blocks (including nested balanced conditions) and matched every remaining byte to the baseline `prefill.baseline.cpp`. That is useful exact-source evidence. I did not independently rerun the stripping comparator; it is not preprocessor-token, compiled-object, or binary identity proof. Runtime environment opt-in is exactly the string `1`; storage is allocated in init, and the ledger resets before the existing `run_impl` timer. No runtime behavior has been exercised.
+
+**Ordinary chunks and layer-major accounting reconcile structurally for their intended scopes.** Ordinary `run_impl` visits each layer and calls `chunk(l,c0,T)` for each chunk. Layer-major constrains `stage_lb_/stage_le_` to one layer and invokes `run_impl` once for each layer; each layer therefore starts at `c0=0`, accumulates contiguous chunks, and should finish with `positions == n`. Its `routed` and `expected_rows` are likewise layer-local. This does not sum positions across layers; the report checks each layer independently against the supplied `n`. The arithmetic guards prevent unsigned wrap in counter additions and products, and chunk extent checks avoid subtracting past the batch bound.
+
+The current aggregate schema does **not** independently establish one unique decision per positive expert per chunk. It sums decisions/rows by layer and expert and later checks total decision count equals total selected native Down calls, and expert rows equal the layer's routed total. The construction site currently appends each local `order` entry once, so source inspection supports intended one-per-entry behavior. But records contain no chunk ordinal or per-call identity, and the ledger cannot detect a duplicate decision paired with an omitted decision/call when aggregate totals and rows happen to match. A generated or mutated source bug in that class would evade these aggregate checks. This is an evidence limitation, not an observed current duplicate.
+
+**Wrapper selection and return counts are source-plausible but not an async-success gate.** For each local ordinary native expert, the source records one selected generic/private wrapper just before the unchanged Down dequant call and records returned just after it. A thrown/failed call skips returned; report marks selected/returned mismatch incomplete. The private wrapper can be selected only when the frozen private opt-in is enabled and `d_type == 20`. The wrapper's ordinary return means submission/immediate checking returned; it does not establish asynchronous GPU completion. The draft explicitly says `async_success=UNIMPLEMENTED`, `gate=UNQUALIFIED`, and `wrapper_return_is_gpu_completion=0`, correctly avoiding a pass claim.
+
+There is no call-count ledger for the two following GEMMs and no check that each GEMM was reached only after a returned direct dequant call. The current source ordering shows the two GEMM calls after the dequant branch; the draft cannot independently reconcile them. Likewise `returned` does not prove the kernel performed the intended work, only that the wrapper returned normally.
+
+**Unsupported routes fail closed as diagnostic scope, but do not get route-by-route accounting.** The source marks fused, MMQ, non-native, peer/multi-GPU, split pipeline, or partial-layer scope unsupported. These routes are not forced. Native direct Down decisions are counted from local `order`; peer decisions are excluded and the enclosing mode is marked unsupported. The summary does not turn unsupported into success, and route counts do not distinguish every unsupported reason. Fused routing cannot be reconciled per expert by this ledger. Those paths therefore remain outside any inference from the census.
+
+**Bytes are deliberately narrow and the physical staging question remains open.** For returned type-20 Down calls, the ledger adds `n/32*18` compressed payload bytes and `n*2` FP16 destination bytes, with checked multiplication. These are logical per-call payload/output extents, not measured memory transactions. The ledger does not measure staging transfers, cache residency, actual bytes copied, memory traffic, or timing. It correctly emits `staging_bytes=UNOBSERVED`. No measured `ledger_bytes` or log-byte sample was available in this read-only audit.
+
+## Concrete issues and remaining evidence
+
+1. The aggregate lacks chunk/expert identity, so unique per-chunk decision-to-call mapping and two-GEMM-per-return invariants are source-reviewed assumptions, not runtime-reconciled facts.
+2. A normal helper return and `drain_pipeline` result are not by themselves proof that every asynchronous operation completed successfully. Fault/queue completion evidence and failure injection remain absent; the draft's unqualified labels reflect this.
+3. The report validates only supplied `n` and chunk reconciliation. It does not prove the caller supplied at least 32,768 actual batched positions from an application prompt, nor does it identify model/tokenizer/input/build hashes.
+4. The reported byte totals are arithmetic extents for returned type-20 calls. Staging bytes, transfer outcomes, physical traffic, and correctness are unobserved.
+5. Although fixed arrays bound memory and checked counters fail closed on overflow, the actual object ABI size, compiler behavior, host qualification cases, maximum geometry, and emitted log size have not been measured. No evidence here establishes those tests ran.
+6. The generated source comparison supports default-off source token preservation only indirectly via provenance's exact byte-stripping claim. Preprocessing and binary identity remain unverified.
+7. No result here qualifies the diagnostic gate, caller eligibility on a real model, decode, a 262,144-position physical context, correctness, speed, or adoption.
+
+The draft is appropriately diagnostic-only: it does not print PASS and explicitly leaves asynchronous success, staging-byte observation, the census gate, decode, and full-context gate unqualified/unobserved. No concrete source-level counter underflow, array bounds escape, or unchecked ledger addition was found in the inspected accounting methods. The aggregate identity limitation above should remain visible in any interpretation; it does not justify treating the source draft or its normal helper return as GPU completion.

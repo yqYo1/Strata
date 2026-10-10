@@ -1,0 +1,33 @@
+{
+  "created_utc": "2026-10-10T06:42:42.142699+00:00",
+  "corrections": [
+    {
+      "report": "R200",
+      "note": "Aggregate counters lack perchunk expert identity and following GEMM ledger; caller return is not asynchronous GPU success. Root14hostcases and actual2360864B sizeof arrived after report. Full CPU SYCL build nowPASS; no model/physical262144 proof."
+    },
+    {
+      "report": "R201",
+      "note": "External llm-scaler pinned0bf3789b9b1548b5d5078a8deaba214b59f12f04 remains non-drop-in. K640 per-row fallback, normalized ABI, weight/output rounding differ. No external local speed claim."
+    },
+    {
+      "report": "R202",
+      "note": "Correct native payload:2560*640/32=51200blocks;51200*18=921600 compressedB, not3276800.3276800 is FP16 output bytes. For nativeqs[j], low nibble maps k=32*b+j and high k=32*b+16+j, not2*j/2*j+1. Correct before any implementation; preserve original."
+    },
+    {
+      "report": "R202",
+      "note": "Frozen xmx kernel already reuses each packedB slab across up to32 M tiles/512 rows (MAXT4*NSG8*16) within each M chunk. A claimed R-fold saving from consecutive16-row tiles must account for existing reuse. K640 whole-slab reuse across M chunks is separate design, not measured. Current model fused/XMX route is inactive."
+    },
+    {
+      "report": "R202 final message",
+      "note": "Final hyperlink had research-202609 typo; actual file is research-20261009 with verified digest. Original report filename and bytes are correct."
+    },
+    {
+      "report": "R203",
+      "note": "Restored decode interval crossing0 does not apply to first decode after fresh prefill. Same closed repeat summary reports nativeon-vsbaseline fresh firstdecode geometric-7.9851%,95%[-12.8063,-2.8972] over6independentpairedprocesses; on-vsoff-5.8660%,95%[-10.1665,-1.3596]. A fresh-phase regression is established in that workload; do not state no decode regression globally."
+    },
+    {
+      "report": "R203",
+      "note": "Existing firstdecode CPU-dispatch host counter baseline123.7767ms/window versus total165.3783 andGPUreach2.7633 is a concrete prioritization signal. Not exclusive CPU busy time; math/RAM/sync split missing. Input stage doublecounts PLE within enclosing stage, so stage increase is not an exclusive fraction."
+    }
+  ]
+}
