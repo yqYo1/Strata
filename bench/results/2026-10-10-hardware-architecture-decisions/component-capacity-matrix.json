@@ -1,0 +1,336 @@
+{
+  "created_utc": "2026-10-10T11:17:15.202682+00:00",
+  "hardware": "Ryzen5600X/ArcB570/128GBRAM, unchanged powersaveEPPpower and qualifiedGPUruntime safety settings",
+  "scope": "Attained operation-specific capacity reference. Every row summarizes3freshprocesses. Not absolute device maxima, actualmodelservice/dependencies/cycles/physicaltraffic ornewmodelperformance.",
+  "measurement_sources": {
+    "hardware": {
+      "path": "bench/results/2026-10-10-parallel-round54/hardware/validated-three-process-summary.json",
+      "bytes": 327788,
+      "sha256": "21a86b9324f0b28a08fc4790661fd9a44bac8f63d943e818b7586082e5b49a29",
+      "committed_snapshot": "0e55471bf4618e02d4ac3acfd91c72380a8d974b"
+    },
+    "CPU_FMA": {
+      "path": "bench/results/2026-10-10-cpu-capacity/fma-three-process-summary.json",
+      "bytes": 2785,
+      "sha256": "79457709f95bd93025a9a3828464a6e4299b17809152e735386780de9816e22c",
+      "committed_snapshot": "0e55471bf4618e02d4ac3acfd91c72380a8d974b"
+    },
+    "host_copy": {
+      "path": "bench/results/2026-10-10-host-stager-capacity/summary.json",
+      "bytes": 2086,
+      "sha256": "b9265dfa22465a7a92fb091008172282e4ba0691608b30153335007a5fab3d33",
+      "committed_snapshot": "0e55471bf4618e02d4ac3acfd91c72380a8d974b"
+    },
+    "storage": {
+      "path": "bench/results/2026-10-10-storage-capacity/three-process-summary.json",
+      "bytes": 27369,
+      "sha256": "77ed38e7edafb014a39061ea738f917eb8f57eb9e7fd9e29512660b0f966b94e",
+      "committed_snapshot": "0e55471bf4618e02d4ac3acfd91c72380a8d974b"
+    }
+  },
+  "rows": [
+    {
+      "source": "hardware",
+      "cell": [
+        "cpu",
+        "read",
+        6
+      ],
+      "value": 36.86969506718697,
+      "unit": "GB/s",
+      "process_median_range": [
+        36.741105791665646,
+        37.689211117473526
+      ],
+      "traffic_or_work_convention": "Logical bytes read"
+    },
+    {
+      "source": "hardware",
+      "cell": [
+        "cpu",
+        "copy_cached",
+        6
+      ],
+      "value": 22.94861856546158,
+      "unit": "GB/s",
+      "process_median_range": [
+        22.356330029373993,
+        23.44417943677296
+      ],
+      "traffic_or_work_convention": "Logical source read plus destination write"
+    },
+    {
+      "source": "hardware",
+      "cell": [
+        "cpu",
+        "copy_nontemporal",
+        6
+      ],
+      "value": 37.57505211008271,
+      "unit": "GB/s",
+      "process_median_range": [
+        36.81296432365464,
+        38.24110259438519
+      ],
+      "traffic_or_work_convention": "Logical source read plus destination write"
+    },
+    {
+      "source": "hardware",
+      "cell": [
+        "transfer",
+        "H2D_host_USM",
+        268435456
+      ],
+      "value": 6.446833643341082,
+      "unit": "GB/s",
+      "process_median_range": [
+        6.445987302878182,
+        6.44853295523913
+      ],
+      "traffic_or_work_convention": "One-way payload"
+    },
+    {
+      "source": "hardware",
+      "cell": [
+        "transfer",
+        "D2H_host_USM",
+        268435456
+      ],
+      "value": 5.642945848801954,
+      "unit": "GB/s",
+      "process_median_range": [
+        5.642837606647158,
+        5.64303760581479
+      ],
+      "traffic_or_work_convention": "One-way payload"
+    },
+    {
+      "source": "hardware",
+      "cell": [
+        "transfer",
+        "H2D_pageable",
+        268435456
+      ],
+      "value": 4.605214183505477,
+      "unit": "GB/s",
+      "process_median_range": [
+        4.590253708449856,
+        4.61159818882617
+      ],
+      "traffic_or_work_convention": "One-way payload"
+    },
+    {
+      "source": "hardware",
+      "cell": [
+        "transfer",
+        "D2H_pageable",
+        268435456
+      ],
+      "value": 5.273931067459783,
+      "unit": "GB/s",
+      "process_median_range": [
+        5.266811847839261,
+        5.2954932595094935
+      ],
+      "traffic_or_work_convention": "One-way payload"
+    },
+    {
+      "source": "hardware",
+      "cell": [
+        "vram",
+        "VRAM_queue_copy",
+        268435456
+      ],
+      "value": 330.07315122276316,
+      "unit": "GB/s",
+      "process_median_range": [
+        329.7640331116322,
+        330.119578446002
+      ],
+      "traffic_or_work_convention": "Logical source read plus destination write"
+    },
+    {
+      "source": "hardware",
+      "cell": [
+        "gemm",
+        "GU",
+        8192,
+        "hot"
+      ],
+      "value": 52.690932888722344,
+      "unit": "TFLOP/s",
+      "process_median_range": [
+        52.66626751994435,
+        52.78692565436468
+      ],
+      "traffic_or_work_convention": "Dense mathematical FP16-input/FP32-output FLOPs, M8192hot"
+    },
+    {
+      "source": "hardware",
+      "cell": [
+        "gemm",
+        "Down",
+        8192,
+        "hot"
+      ],
+      "value": 41.61421455502875,
+      "unit": "TFLOP/s",
+      "process_median_range": [
+        41.55786675604659,
+        41.768375584871116
+      ],
+      "traffic_or_work_convention": "Dense mathematical FP16-input/FP32-output FLOPs, M8192hot"
+    },
+    {
+      "source": "hardware",
+      "cell": [
+        "gemm",
+        "GU",
+        80,
+        "rotate8"
+      ],
+      "value": 13.159158113363235,
+      "unit": "TFLOP/s",
+      "process_median_range": [
+        13.11304964949208,
+        13.160515510295813
+      ],
+      "traffic_or_work_convention": "Dense mathematical FLOPs, M80rotating8, not production rowhistogram"
+    },
+    {
+      "source": "hardware",
+      "cell": [
+        "gemm",
+        "Down",
+        80,
+        "rotate8"
+      ],
+      "value": 10.080220143357547,
+      "unit": "TFLOP/s",
+      "process_median_range": [
+        10.044360574551343,
+        14.207360261228471
+      ],
+      "traffic_or_work_convention": "Dense mathematical FLOPs, M80rotating8, not production rowhistogram"
+    },
+    {
+      "source": "CPU_FMA",
+      "cell": [
+        "physical_cores",
+        1
+      ],
+      "value": 0.14684769517057153,
+      "unit": "TFLOP/s",
+      "process_median_range": [
+        0.1466518778368375,
+        0.14722874066049127
+      ],
+      "traffic_or_work_convention": "Register-only packed FP32 FMA; notquantized SIMDdot or decoderutilization"
+    },
+    {
+      "source": "CPU_FMA",
+      "cell": [
+        "physical_cores",
+        6
+      ],
+      "value": 0.8182151144667164,
+      "unit": "TFLOP/s",
+      "process_median_range": [
+        0.7925111650578421,
+        0.8190088615319154
+      ],
+      "traffic_or_work_convention": "Register-only packed FP32 FMA; notquantized SIMDdot or decoderutilization"
+    },
+    {
+      "source": "host_copy",
+      "cell": [
+        "synthetic_plain_host_ring_copy",
+        1
+      ],
+      "value": 11.637374779280004,
+      "unit": "GB/s",
+      "process_median_range": [
+        11.395411478187476,
+        11.979694396726783
+      ],
+      "traffic_or_work_convention": "Payload once; ordinary alignedRAM,16slotbursts with outside-timed everyjob verification/ACK, notliveUSM/DMA"
+    },
+    {
+      "source": "host_copy",
+      "cell": [
+        "synthetic_plain_host_ring_copy",
+        3
+      ],
+      "value": 13.743331330317625,
+      "unit": "GB/s",
+      "process_median_range": [
+        12.943454431185078,
+        13.94605560699602
+      ],
+      "traffic_or_work_convention": "Payload once; ordinary alignedRAM,16slotbursts with outside-timed everyjob verification/ACK, notliveUSM/DMA"
+    },
+    {
+      "source": "host_copy",
+      "cell": [
+        "synthetic_plain_host_ring_copy",
+        4
+      ],
+      "value": 13.667246610104277,
+      "unit": "GB/s",
+      "process_median_range": [
+        13.345310849115883,
+        14.079714005809256
+      ],
+      "traffic_or_work_convention": "Payload once; ordinary alignedRAM,16slotbursts with outside-timed everyjob verification/ACK, notliveUSM/DMA"
+    },
+    {
+      "source": "host_copy",
+      "cell": [
+        "synthetic_plain_host_ring_copy",
+        6
+      ],
+      "value": 13.710848661763608,
+      "unit": "GB/s",
+      "process_median_range": [
+        13.475827228591013,
+        14.280595077620255
+      ],
+      "traffic_or_work_convention": "Payload once; ordinary alignedRAM,16slotbursts with outside-timed everyjob verification/ACK, notliveUSM/DMA"
+    },
+    {
+      "source": "storage",
+      "cell": [
+        "sequential",
+        16
+      ],
+      "value": 2.2659742640904046,
+      "unit": "GB/s",
+      "process_median_range": [
+        2.1374565189296733,
+        2.2728237347966616
+      ],
+      "traffic_or_work_convention": "Application readpayload once,1MiB sequential or4KiB random samefileZFS; worker count notphysicalQD, notNAND"
+    },
+    {
+      "source": "storage",
+      "cell": [
+        "random",
+        16
+      ],
+      "value": 0.050993481070258084,
+      "unit": "GB/s",
+      "process_median_range": [
+        0.05055013234143778,
+        0.05127337111556995
+      ],
+      "traffic_or_work_convention": "Application readpayload once,1MiB sequential or4KiB random samefileZFS; worker count notphysicalQD, notNAND"
+    }
+  ],
+  "remaining_gaps": [
+    "Current clean32K route expertrow/format/source/cache/hit/copy/decodedoutput histograms",
+    "GPU IQdequant production-shape actualformat operationcapacity and bitwiseoutputs",
+    "Wholeproductionstager-USM/readiness-DMA and device eventinternalcoverage",
+    "Full262144physicalposition candidate lifecycle and numerical/state parity"
+  ],
+  "adopted": false
+}
