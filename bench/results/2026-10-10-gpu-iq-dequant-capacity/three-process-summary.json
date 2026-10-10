@@ -1,0 +1,622 @@
+{
+  "created_utc": "2026-10-10T12:27:03.342895+00:00",
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "scope": "Actual seven-pair device-resident generic IQ dequant; host submit+completion wall, no exclusive kernel time/current model critical path",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build/gpu_iq_dequant_capacity_v1",
+    "bytes": 15552584,
+    "sha256": "3582cb8318146538c69a1de7269c75c793fc9053287000b07af109fa4127dc5a"
+  },
+  "hardware": "Ryzen5 5600X,128GB RAM,ArcB570",
+  "unchanged_safety_settings": {
+    "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "EnableDirectSubmission": "0",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu"
+  },
+  "exact_source_receipts": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/qualify/record.json",
+      "bytes": 31304,
+      "sha256": "f55d46274391a03511ddc1cf713edb0573c49d420524d7356d62e13e85207853",
+      "archive": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-gpu-iq-dequant-capacity/qualify/record.json"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/timing1/record.json",
+      "bytes": 297295,
+      "sha256": "b2119217bc49cb6f1b59ee6dac0b2938c8e50f60354cf0848d3ca38e43a2726d",
+      "archive": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-gpu-iq-dequant-capacity/timing1/record.json"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/timing2/record.json",
+      "bytes": 297289,
+      "sha256": "e0e1fb2eb94c774e1d942707a0e175206f7aa08d90849391e17dfe5dc787cea7",
+      "archive": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-gpu-iq-dequant-capacity/timing2/record.json"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/timing3/record.json",
+      "bytes": 297297,
+      "sha256": "e7aec69267d4d08503b60480ee077b7182233f98bdacb156b1d77be7928f2bd1",
+      "archive": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-gpu-iq-dequant-capacity/timing3/record.json"
+    }
+  ],
+  "aggregate_cells": [
+    {
+      "pair": [
+        18,
+        20
+      ],
+      "fresh_processes": 3,
+      "samples_per_process": 7,
+      "wall_us_per_expert_median": 129.134375,
+      "wall_us_per_expert_process_median_range": [
+        121.16946875,
+        129.53678125
+      ],
+      "host_submit_us_per_expert_median": 25.66659375,
+      "logical_input_plus_output_GBps_median": 92.97601819809792,
+      "logical_GBps_process_median_range": [
+        92.6871880259878,
+        99.08766724703496
+      ]
+    },
+    {
+      "pair": [
+        18,
+        42
+      ],
+      "fresh_processes": 3,
+      "samples_per_process": 7,
+      "wall_us_per_expert_median": 99.68103125,
+      "wall_us_per_expert_process_median_range": [
+        96.8645,
+        102.5063125
+      ],
+      "host_submit_us_per_expert_median": 20.16525,
+      "logical_input_plus_output_GBps_median": 115.82544698041535,
+      "logical_GBps_process_median_range": [
+        112.63306345158011,
+        119.19330611317872
+      ]
+    },
+    {
+      "pair": [
+        21,
+        20
+      ],
+      "fresh_processes": 3,
+      "samples_per_process": 7,
+      "wall_us_per_expert_median": 115.1010625,
+      "wall_us_per_expert_process_median_range": [
+        114.924125,
+        115.74546875
+      ],
+      "host_submit_us_per_expert_median": 20.52121875,
+      "logical_input_plus_output_GBps_median": 105.64628801754111,
+      "logical_GBps_process_median_range": [
+        105.05810837627283,
+        105.80894133411935
+      ]
+    },
+    {
+      "pair": [
+        21,
+        42
+      ],
+      "fresh_processes": 3,
+      "samples_per_process": 7,
+      "wall_us_per_expert_median": 75.87578125,
+      "wall_us_per_expert_process_median_range": [
+        73.07896875,
+        79.3729375
+      ],
+      "host_submit_us_per_expert_median": 23.15090625,
+      "logical_input_plus_output_GBps_median": 154.18885719875206,
+      "logical_GBps_process_median_range": [
+        147.39532602028243,
+        160.08983432733513
+      ]
+    },
+    {
+      "pair": [
+        22,
+        20
+      ],
+      "fresh_processes": 3,
+      "samples_per_process": 7,
+      "wall_us_per_expert_median": 114.1564375,
+      "wall_us_per_expert_process_median_range": [
+        109.46353125,
+        114.4195
+      ],
+      "host_submit_us_per_expert_median": 20.41165625,
+      "logical_input_plus_output_GBps_median": 103.38094161356427,
+      "logical_GBps_process_median_range": [
+        103.14325792369307,
+        107.81307587315753
+      ]
+    },
+    {
+      "pair": [
+        22,
+        42
+      ],
+      "fresh_processes": 3,
+      "samples_per_process": 7,
+      "wall_us_per_expert_median": 76.03265625,
+      "wall_us_per_expert_process_median_range": [
+        73.66971875,
+        78.7079375
+      ],
+      "host_submit_us_per_expert_median": 20.2883125,
+      "logical_input_plus_output_GBps_median": 149.15696174957716,
+      "logical_GBps_process_median_range": [
+        144.08711954877487,
+        153.94113337781678
+      ]
+    },
+    {
+      "pair": [
+        23,
+        20
+      ],
+      "fresh_processes": 3,
+      "samples_per_process": 7,
+      "wall_us_per_expert_median": 207.699875,
+      "wall_us_per_expert_process_median_range": [
+        203.42096875,
+        210.4896875
+      ],
+      "host_submit_us_per_expert_median": 22.4154375,
+      "logical_input_plus_output_GBps_median": 60.14832700308558,
+      "logical_GBps_process_median_range": [
+        59.35112616859199,
+        61.413531145618435
+      ]
+    }
+  ],
+  "processes": [
+    {
+      "stage": "timing1",
+      "record": {
+        "bytes": 297295,
+        "sha256": "b2119217bc49cb6f1b59ee6dac0b2938c8e50f60354cf0848d3ca38e43a2726d"
+      },
+      "process_identity": {
+        "label": "probe",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build/gpu_iq_dequant_capacity_v1",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "timing",
+          "32",
+          "1",
+          "0"
+        ],
+        "environment": {
+          "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+          "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+          "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+          "ONEAPI_ROOT": "/opt/intel/oneapi",
+          "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+          "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+          "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "EnableDirectSubmission": "0",
+          "NEOReadDebugKeys": "1"
+        },
+        "started_utc": "2026-10-10T12:18:11.667305+00:00",
+        "wall_seconds": 600,
+        "normal_exit": true,
+        "session_empty": true,
+        "observation_complete": true,
+        "cleanup": [],
+        "errors": [],
+        "owners": [
+          {
+            "pid": 1920112,
+            "start_ticks": 32437078,
+            "sid": 1920112,
+            "pgid": 1920112
+          }
+        ],
+        "pid": 1920112,
+        "direct_identity": {
+          "pid": 1920112,
+          "state": "R",
+          "ppid": 1919970,
+          "pgid": 1920112,
+          "sid": 1920112,
+          "start_ticks": 32437078,
+          "rss_bytes": 131072
+        },
+        "peak_session_rss_bytes": 637497344,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "direct_child_reaped": true,
+        "finished_utc": "2026-10-10T12:18:37.566161+00:00",
+        "elapsed_seconds": 25.898570256016683,
+        "logs": {
+          "probe.stdout": {
+            "bytes": 180321,
+            "sha256": "dde974e62326493453afd30a7d06ac4b23b07d183086f66c83a20d69e4a74e9c"
+          },
+          "probe.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "pairs": [
+        {
+          "pair": [
+            18,
+            20
+          ],
+          "wall_us_per_expert_median": 121.16946875,
+          "submit_us_per_expert_median": 27.5100625,
+          "logical_input_plus_output_GBps_median": 99.08766724703496
+        },
+        {
+          "pair": [
+            18,
+            42
+          ],
+          "wall_us_per_expert_median": 96.8645,
+          "submit_us_per_expert_median": 19.30740625,
+          "logical_input_plus_output_GBps_median": 119.19330611317872
+        },
+        {
+          "pair": [
+            21,
+            20
+          ],
+          "wall_us_per_expert_median": 115.74546875,
+          "submit_us_per_expert_median": 20.63896875,
+          "logical_input_plus_output_GBps_median": 105.05810837627283
+        },
+        {
+          "pair": [
+            21,
+            42
+          ],
+          "wall_us_per_expert_median": 73.07896875,
+          "submit_us_per_expert_median": 23.15090625,
+          "logical_input_plus_output_GBps_median": 160.08983432733513
+        },
+        {
+          "pair": [
+            22,
+            20
+          ],
+          "wall_us_per_expert_median": 114.4195,
+          "submit_us_per_expert_median": 19.87378125,
+          "logical_input_plus_output_GBps_median": 103.14325792369307
+        },
+        {
+          "pair": [
+            22,
+            42
+          ],
+          "wall_us_per_expert_median": 76.03265625,
+          "submit_us_per_expert_median": 20.2883125,
+          "logical_input_plus_output_GBps_median": 149.15696174957716
+        },
+        {
+          "pair": [
+            23,
+            20
+          ],
+          "wall_us_per_expert_median": 210.4896875,
+          "submit_us_per_expert_median": 22.56353125,
+          "logical_input_plus_output_GBps_median": 59.35112616859199
+        }
+      ]
+    },
+    {
+      "stage": "timing2",
+      "record": {
+        "bytes": 297289,
+        "sha256": "e0e1fb2eb94c774e1d942707a0e175206f7aa08d90849391e17dfe5dc787cea7"
+      },
+      "process_identity": {
+        "label": "probe",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build/gpu_iq_dequant_capacity_v1",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "timing",
+          "32",
+          "1",
+          "0"
+        ],
+        "environment": {
+          "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+          "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+          "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+          "ONEAPI_ROOT": "/opt/intel/oneapi",
+          "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+          "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+          "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "EnableDirectSubmission": "0",
+          "NEOReadDebugKeys": "1"
+        },
+        "started_utc": "2026-10-10T12:19:21.442883+00:00",
+        "wall_seconds": 600,
+        "normal_exit": true,
+        "session_empty": true,
+        "observation_complete": true,
+        "cleanup": [],
+        "errors": [],
+        "owners": [
+          {
+            "pid": 1925448,
+            "start_ticks": 32444055,
+            "sid": 1925448,
+            "pgid": 1925448
+          }
+        ],
+        "pid": 1925448,
+        "direct_identity": {
+          "pid": 1925448,
+          "state": "R",
+          "ppid": 1925382,
+          "pgid": 1925448,
+          "sid": 1925448,
+          "start_ticks": 32444055,
+          "rss_bytes": 151552
+        },
+        "peak_session_rss_bytes": 638066688,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "direct_child_reaped": true,
+        "finished_utc": "2026-10-10T12:19:38.329505+00:00",
+        "elapsed_seconds": 16.886273970012553,
+        "logs": {
+          "probe.stdout": {
+            "bytes": 180315,
+            "sha256": "3c9a80dcab7e7bc6fc6a34e2f53ad4cffa9de6904c0457002a833627388d832a"
+          },
+          "probe.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "pairs": [
+        {
+          "pair": [
+            18,
+            20
+          ],
+          "wall_us_per_expert_median": 129.53678125,
+          "submit_us_per_expert_median": 25.66659375,
+          "logical_input_plus_output_GBps_median": 92.6871880259878
+        },
+        {
+          "pair": [
+            18,
+            42
+          ],
+          "wall_us_per_expert_median": 99.68103125,
+          "submit_us_per_expert_median": 23.19346875,
+          "logical_input_plus_output_GBps_median": 115.82544698041535
+        },
+        {
+          "pair": [
+            21,
+            20
+          ],
+          "wall_us_per_expert_median": 115.1010625,
+          "submit_us_per_expert_median": 20.123,
+          "logical_input_plus_output_GBps_median": 105.64628801754111
+        },
+        {
+          "pair": [
+            21,
+            42
+          ],
+          "wall_us_per_expert_median": 75.87578125,
+          "submit_us_per_expert_median": 23.20821875,
+          "logical_input_plus_output_GBps_median": 154.18885719875206
+        },
+        {
+          "pair": [
+            22,
+            20
+          ],
+          "wall_us_per_expert_median": 109.46353125,
+          "submit_us_per_expert_median": 20.70534375,
+          "logical_input_plus_output_GBps_median": 107.81307587315753
+        },
+        {
+          "pair": [
+            22,
+            42
+          ],
+          "wall_us_per_expert_median": 73.66971875,
+          "submit_us_per_expert_median": 20.33184375,
+          "logical_input_plus_output_GBps_median": 153.94113337781678
+        },
+        {
+          "pair": [
+            23,
+            20
+          ],
+          "wall_us_per_expert_median": 203.42096875,
+          "submit_us_per_expert_median": 22.4154375,
+          "logical_input_plus_output_GBps_median": 61.413531145618435
+        }
+      ]
+    },
+    {
+      "stage": "timing3",
+      "record": {
+        "bytes": 297297,
+        "sha256": "e7aec69267d4d08503b60480ee077b7182233f98bdacb156b1d77be7928f2bd1"
+      },
+      "process_identity": {
+        "label": "probe",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build/gpu_iq_dequant_capacity_v1",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "timing",
+          "32",
+          "1",
+          "0"
+        ],
+        "environment": {
+          "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+          "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+          "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+          "ONEAPI_ROOT": "/opt/intel/oneapi",
+          "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+          "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+          "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "EnableDirectSubmission": "0",
+          "NEOReadDebugKeys": "1"
+        },
+        "started_utc": "2026-10-10T12:20:54.404638+00:00",
+        "wall_seconds": 600,
+        "normal_exit": true,
+        "session_empty": true,
+        "observation_complete": true,
+        "cleanup": [],
+        "errors": [],
+        "owners": [
+          {
+            "pid": 1932120,
+            "start_ticks": 32453351,
+            "sid": 1932120,
+            "pgid": 1932120
+          }
+        ],
+        "pid": 1932120,
+        "direct_identity": {
+          "pid": 1932120,
+          "state": "R",
+          "ppid": 1932071,
+          "pgid": 1932120,
+          "sid": 1932120,
+          "start_ticks": 32453351,
+          "rss_bytes": 131072
+        },
+        "peak_session_rss_bytes": 640008192,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "direct_child_reaped": true,
+        "finished_utc": "2026-10-10T12:21:10.427842+00:00",
+        "elapsed_seconds": 16.022921063995454,
+        "logs": {
+          "probe.stdout": {
+            "bytes": 180323,
+            "sha256": "c66dd6b79ab4fd6e0d0e4190163bcdaec0084ac5bb0637d529404f5b56e9c966"
+          },
+          "probe.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "pairs": [
+        {
+          "pair": [
+            18,
+            20
+          ],
+          "wall_us_per_expert_median": 129.134375,
+          "submit_us_per_expert_median": 22.184375,
+          "logical_input_plus_output_GBps_median": 92.97601819809792
+        },
+        {
+          "pair": [
+            18,
+            42
+          ],
+          "wall_us_per_expert_median": 102.5063125,
+          "submit_us_per_expert_median": 20.16525,
+          "logical_input_plus_output_GBps_median": 112.63306345158011
+        },
+        {
+          "pair": [
+            21,
+            20
+          ],
+          "wall_us_per_expert_median": 114.924125,
+          "submit_us_per_expert_median": 20.52121875,
+          "logical_input_plus_output_GBps_median": 105.80894133411935
+        },
+        {
+          "pair": [
+            21,
+            42
+          ],
+          "wall_us_per_expert_median": 79.3729375,
+          "submit_us_per_expert_median": 19.6141875,
+          "logical_input_plus_output_GBps_median": 147.39532602028243
+        },
+        {
+          "pair": [
+            22,
+            20
+          ],
+          "wall_us_per_expert_median": 114.1564375,
+          "submit_us_per_expert_median": 20.41165625,
+          "logical_input_plus_output_GBps_median": 103.38094161356427
+        },
+        {
+          "pair": [
+            22,
+            42
+          ],
+          "wall_us_per_expert_median": 78.7079375,
+          "submit_us_per_expert_median": 19.3070625,
+          "logical_input_plus_output_GBps_median": 144.08711954877487
+        },
+        {
+          "pair": [
+            23,
+            20
+          ],
+          "wall_us_per_expert_median": 207.699875,
+          "submit_us_per_expert_median": 20.0700625,
+          "logical_input_plus_output_GBps_median": 60.14832700308558
+        }
+      ]
+    }
+  ],
+  "individual_sample_rows": 147,
+  "qualifier_output_halves_fully_compared": 34406400,
+  "timing_output_halves_fully_compared": 4748083200,
+  "logical_counts_not_controller_traffic": true,
+  "original_reference_failure_preserved": true,
+  "compiled_policy": "GPU original wrappers O2 precise defaultSG32/AOT bmg-g21; GGML reference exactsources O3 precise fp-contractoff",
+  "adopted": false,
+  "model_executed": false
+}
