@@ -17,6 +17,13 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+#if defined(_WIN32)
+#include <process.h>
+#else
+#include <unistd.h>
+#endif
+#endif
 namespace {
 constexpr size_t G=32, NS=128*48*128;
 constexpr float sentinel=-98765.f;
@@ -258,6 +265,127 @@ void timing_run(sycl::queue& q,const TimingOptions& o){
  }
  // Buffers destructor drains/releases before caller prints aggregate success.
 }
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+struct DiagnosticBinding {
+ strata::prefill::GdnEventDiagnosticCapture* previous;
+ bool active=true;
+ explicit DiagnosticBinding(strata::prefill::GdnEventDiagnosticCapture& capture):previous(strata::prefill::gdn_set_event_diagnostic_capture(&capture)){
+  if(previous){strata::prefill::gdn_set_event_diagnostic_capture(previous);active=false;require(false,"nested diagnostic capture forbidden");}
+ }
+ void restore() noexcept {if(active){strata::prefill::gdn_set_event_diagnostic_capture(previous);active=false;}}
+ ~DiagnosticBinding(){restore();}
+ DiagnosticBinding(const DiagnosticBinding&)=delete;
+};
+struct DiagnosticRow {
+ const char* phase=nullptr;size_t pair=0,position=0,offset=0,live=0;
+ bool quad_first=false,quad=false;double service=0;
+ uint64_t prevalidation=0,lookup=0,admission=0,recurrence_submit=0,norm_submit=0;
+ uint64_t recurrence_start=0,recurrence_end=0,norm_start=0,norm_end=0;
+};
+TimingResult diagnostic_pair(Buffers& d,const TimingOptions& o,bool quad_first,const char* phase,size_t pair,std::vector<DiagnosticRow>& rows){
+ initialize(d,false,false); // same nonzero finite state in separate device buffers
+ floats(d,d.as,d.bs,NS,NS,"timing identical initial states");
+ TimingResult result;result.initial_state=timing_hash_pair(d,d.as,d.bs,NS+2*G)[0];
+ result.fp32.fill(14695981039346656037ULL);result.fp16.fill(14695981039346656037ULL);
+ for(size_t offset=0;offset<o.total;){
+  const size_t live=std::min(o.chunk,o.total-offset);
+  prepare(d,live,offset,false); // input/guard fill/transfer + drain, all untimed
+  for(size_t position=0;position<2;++position){
+   const bool quad=quad_first?(position==0):(position==1);
+   bool selected=false;strata::prefill::GdnQuadReport report;
+   // Queue is idle after prepare or the preceding arm's successful wait.
+   // Includes wrapper overhead, candidate admission queries/bundle acquisition,
+   // host submit, recurrence+norm, check(), and completion wait. No event claim.
+   strata::prefill::GdnEventDiagnosticCapture capture;
+   DiagnosticBinding binding(capture); // bind before service timer, restore after completion
+   const auto start=Clock::now();
+   gpu_stage(quad?"timed quad call and drain":"timed legacy call and drain",[&]{
+    if(quad)selected=strata::prefill::gdn_recurrence_quad_variant(d.bs+G,d.h,d.g,d.b,d.z,d.gamma,1e-6f,d.by+G,d.bh+G,int64_t(live),&d.q,0,&report);
+    else strata::prefill::gdn_recurrence_pipeline_reference(d.as+G,d.h,d.g,d.b,d.z,d.gamma,1e-6f,d.ay+G,d.ah+G,int64_t(live),&d.q);
+    d.q.wait_and_throw();
+   });
+   const double elapsed=std::chrono::duration<double>(Clock::now()-start).count();
+   require(std::isfinite(elapsed)&&elapsed>0,"invalid service clock interval");
+   if(quad&&!selected)std::fprintf(stderr,"DIAGNOSTIC_DENIED reason=%s admission_observed=%d admission_ns=%llu no_fallback=true\n",report.reason,capture.admission_observed,(unsigned long long)capture.admission_ns);
+   if(quad){require(selected&&report.status==strata::prefill::GdnQuadReport::Status::Submitted&&report.compiled_subgroup==32,"timing requires actually admitted quad, no fallback");result.quad=report;}
+   result.seconds[quad?1:0]+=elapsed;
+   binding.restore();
+   DiagnosticRow row;row.phase=phase;row.pair=pair;row.quad_first=quad_first;row.position=position+1;row.quad=quad;row.offset=offset;row.live=live;row.service=elapsed;
+   row.prevalidation=capture.prevalidation_ns;row.lookup=capture.queue_lookup_ns;row.admission=capture.admission_ns;
+   row.recurrence_submit=capture.recurrence_submit_ns;row.norm_submit=capture.norm_submit_ns;
+   // Queue work has drained. A read-only profiling failure is separate from an
+   // unknown submission/completion; unwind through the normal final drain/free.
+   try {
+    require(capture.recurrence.has_value()&&capture.norm.has_value(),"missing captured command events");
+    require(quad?(capture.admission_observed&&capture.admitted):(!capture.admission_observed&&!capture.admitted),"admission capture status");
+    row.recurrence_start=capture.recurrence->get_profiling_info<sycl::info::event_profiling::command_start>();
+    row.recurrence_end=capture.recurrence->get_profiling_info<sycl::info::event_profiling::command_end>();
+    row.norm_start=capture.norm->get_profiling_info<sycl::info::event_profiling::command_start>();
+    row.norm_end=capture.norm->get_profiling_info<sycl::info::event_profiling::command_end>();
+    require(row.recurrence_end>=row.recurrence_start&&row.norm_end>=row.norm_start,"invalid command timestamp order");
+   } catch(const sycl::exception& e) {
+    std::fprintf(stderr,"PROFILE_QUERY_FAILED completion_drained=true category=%s code=%d detail=%s\n",e.code().category().name(),e.code().value(),e.what());throw;
+   } catch(const std::exception& e) {
+    std::fprintf(stderr,"PROFILE_QUERY_FAILED completion_drained=true detail=%s\n",e.what());throw;
+   } catch(...) {
+    std::fputs("PROFILE_QUERY_FAILED completion_drained=true detail=non-standard_exception\n",stderr);throw;
+   }
+   require(rows.size()<rows.capacity(),"diagnostic row budget");rows.push_back(row);
+
+  }
+  // Mandatory complete comparison after every corresponding carried chunk.
+  // Readback/hash work is intentionally outside both service clock intervals.
+  compare(d,live);
+  result.state=timing_hash_pair(d,d.as,d.bs,NS+2*G);
+  const auto y=timing_hash_pair(d,d.ay,d.by,d.capacity*6144+2*G);
+  const auto half=timing_hash_pair(d,d.ah,d.bh,d.capacity*6144+2*G);
+  for(size_t arm=0;arm<2;++arm){result.fp32[arm]=digest_join(result.fp32[arm],y[arm],offset,live);result.fp16[arm]=digest_join(result.fp16[arm],half[arm],offset,live);}
+  offset+=live;++result.calls;result.tokens+=live;
+ }
+ require(result.tokens==o.total&&result.calls==(o.total+o.chunk-1)/o.chunk,"timing carried prefix counters");
+ for(double v:result.seconds)require(std::isfinite(v)&&v>0,"invalid summed prefix service");
+ return result;
+}
+TimingOptions diagnostic_options(int argc,char** argv){
+ require(argc==9&&std::string(argv[1])=="--diagnostic-prefix"&&std::string(argv[3])=="--chunk"&&std::string(argv[5])=="--order"&&std::string(argv[7])=="--samples",
+ "timing usage: --diagnostic-prefix 32768..262144 --chunk 1024|2048 --order legacy-first|quad-first --samples 1..3");
+ for(int index:{2,4,8})require(std::strlen(argv[index])<=6,"timing decimal byte bound");
+ TimingOptions o{decimal(argv[2]),decimal(argv[4]),decimal(argv[8]),false};
+ require(o.total>=32768&&o.total<=262144&&(o.chunk==1024||o.chunk==2048)&&o.samples>=1&&o.samples<=3,"timing finite bounds");
+ const std::string order(argv[6]);require(order=="legacy-first"||order=="quad-first","timing order");o.quad_first=order=="quad-first";
+ quiet_environment();return o;
+}
+void diagnostic_run(sycl::queue& q,const TimingOptions& o){
+ require(q.has_property<sycl::property::queue::in_order>(),"diagnostic in-order queue");
+ if(!q.has_property<sycl::property::queue::enable_profiling>()){
+  std::fputs("DIAGNOSTIC_UNAVAILABLE queue_profiling=false; no substitute host measurement\n",stderr);require(false,"diagnostic requires existing profiling-enabled queue");
+ }
+ const size_t chunks=(o.total+o.chunk-1)/o.chunk;
+ std::vector<DiagnosticRow> rows;rows.reserve(2*(o.samples+2)*chunks);
+ std::vector<TimingResult> prefixes;prefixes.reserve(o.samples+2);
+ {
+  Buffers d(q,o.chunk);TimingResult reference;
+  for(size_t pair=0;pair<o.samples+2;++pair){const bool first=o.quad_first!=(pair%2!=0);const bool warm=pair<2;
+   const auto r=diagnostic_pair(d,o,first,warm?"warmup":"sample",warm?pair+1:pair-1,rows);
+   if(pair==0)reference=r;else require(r.initial_state==reference.initial_state&&r.state==reference.state&&r.fp32==reference.fp32&&r.fp16==reference.fp16,"diagnostic repeat digest");
+   prefixes.push_back(r);
+  }
+ } // final drain/release must succeed before diagnostic output, no live endpoints
+ require(rows.size()==2*(o.samples+2)*chunks,"diagnostic complete row count");
+#if defined(_WIN32)
+ const int pid=_getpid();
+#else
+ const long pid=long(getpid());
+#endif
+ std::printf("DIAGNOSTIC_META,pid=%ld,total=%zu,chunk=%zu,samples=%zu,warmup_pairs=2,capture_compiled=true,profile_available=true,norm_kernel=gdn_out_norm_keyhead_kernel_43e92c,host_device_not_additive=true,model=false,adopted=false\n",long(pid),o.total,o.chunk,o.samples);
+ std::puts("DIAGNOSTIC_HEADER,phase,pair,order,position,arm,kernel,offset,live,service_seconds,prevalidation_ns,queue_lookup_ns,admission_ns,recurrence_submit_host_ns,norm_submit_host_ns,recurrence_command_start_ns,recurrence_command_end_ns,recurrence_device_ns,norm_command_start_ns,norm_command_end_ns,norm_device_ns");
+ for(const auto& r:rows)std::printf("DIAGNOSTIC,%s,%zu,%s,%zu,%s,%s,%zu,%zu,%.9f,%llu,%llu,%llu,%llu,%llu,%llu,%llu,%llu,%llu,%llu,%llu\n",r.phase,r.pair,r.quad_first?"quad-first":"legacy-first",r.position,r.quad?"quad":"legacy",r.quad?"GdnRecQuadPipelineSG32":"GdnLegacyPipelineReference",r.offset,r.live,r.service,(unsigned long long)r.prevalidation,(unsigned long long)r.lookup,(unsigned long long)r.admission,(unsigned long long)r.recurrence_submit,(unsigned long long)r.norm_submit,(unsigned long long)r.recurrence_start,(unsigned long long)r.recurrence_end,(unsigned long long)(r.recurrence_end-r.recurrence_start),(unsigned long long)r.norm_start,(unsigned long long)r.norm_end,(unsigned long long)(r.norm_end-r.norm_start));
+ // Retain the same prefix service/digests/counters schema, after all timings.
+ std::puts("DIAGNOSTIC_PREFIX_HEADER,phase,pair,order,position,arm,total,chunk,chunks,service_seconds,tokens,recurrence_calls,admission_attempts,norm_calls,initial_state_fnv,final_state_fnv,guarded_fp32_chunk_chain_fnv,guarded_fp16_chunk_chain_fnv,compiled_sg,private_known,private,spill_known,spill,exact");
+ for(size_t pair=0;pair<prefixes.size();++pair)timing_emit(prefixes[pair],o,pair<2?"diagnostic_warmup":"diagnostic_sample",pair<2?pair+1:pair-1,o.quad_first!=(pair%2!=0));
+ std::printf("DIAGNOSTIC_SUMMARY,rows=%zu,recorded_pairs=%zu,exact_paired_chunks=true,profile_available=true,normal_buffers_released=true,host_device_not_additive=true,model=false,full_lifecycle=false,adopted=false,pass\n",rows.size(),o.samples);
+}
+#endif
 } // namespace
 int main(int argc,char** argv){try{
  if(argc==2&&std::string(argv[1])=="--host-fail-stop-probe"){
@@ -271,6 +399,15 @@ int main(int argc,char** argv){try{
   std::puts("PASS host-only empty/denial/negative/ordered-partial contracts; queue_lookup=false GPU_submission=false");
   require(std::fflush(stdout)==0&&std::ferror(stdout)==0&&std::fflush(stderr)==0&&std::ferror(stderr)==0,"final output failure");
   return 0;
+ }
+ if(argc>1&&std::string(argv[1])=="--diagnostic-prefix"){
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+  const auto options=diagnostic_options(argc,argv); // reject before queue lookup
+  auto& diagnostic_queue=*strata::q_of(nullptr);diagnostic_run(diagnostic_queue,options);
+  require(std::fflush(stdout)==0&&std::ferror(stdout)==0&&std::fflush(stderr)==0&&std::ferror(stderr)==0,"final diagnostic output failure");return 0;
+#else
+  require(false,"diagnostic capture not compiled; enable parity-only CMake option in a separate build");
+#endif
  }
  if(argc>1&&std::string(argv[1])=="--timing-prefix"){
   const auto options=timing_options(argc,argv); // reject args/env before queue lookup

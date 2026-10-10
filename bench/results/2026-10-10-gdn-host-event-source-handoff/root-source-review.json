@@ -1,0 +1,56 @@
+{
+  "time_utc": "2026-10-10T00:01:58.757716+00:00",
+  "parent_commit": "a581ebb05ff52530ba41107224a0308c4c7b9fd1",
+  "source_pins": {
+    "sycl/CMakeLists.txt": {
+      "sha256": "5911b38ff78b7d185ffd92ee34d0360f272e003b558ae7a3fa0707a1e684f9b6",
+      "bytes": 26331
+    },
+    "sycl/include/strata/prefill/gdn_variant.hpp": {
+      "sha256": "d9b0c169486205c636658c92db90351f5a9f091bb8e108c07ddce2ec56cd3ef0",
+      "bytes": 2819
+    },
+    "sycl/src/prefill/kernels.dp.cpp": {
+      "sha256": "cc5254f688b9138fc71800884c853211771067c0f07a0a44a237fd45b59b4bfa",
+      "bytes": 162594
+    },
+    "sycl/src/prefill/gdn_quad_parity.cpp": {
+      "sha256": "13b19226ec042d82dd51c7ae8fcde7fe2710a28c79cd6c6324958c82f205ddf6",
+      "bytes": 35455
+    },
+    "sycl/tools/gdn-quad-pipeline/README.md": {
+      "sha256": "5135966f4b527c2b6673d1d0a58189f6129dee06b73a3d094f994c80d630b231",
+      "bytes": 29323
+    }
+  },
+  "root_full_original_implementation_report_and_complete_changed_source_reviewed": true,
+  "root_full_R106_reviewed": true,
+  "root_correction": "Post-drain event-query error outside gpu_stage, records PROFILE_QUERY_FAILED completion_drained=true and category/code/message, unwinds through normal Buffers final drain/free. Submission/completion failures retain no-unwind fail-stop. Allow nondecreasing SYCL timestamps; zero duration is not proof of API unavailable. Original report preserved unmodified.",
+  "async_boundary_source_closure": {
+    "sycl/include/strata/sycl_queue.hpp": {
+      "sha256": "6a836d6d1cbbdd297135957aaed79e90c26c9e5fa1b615dcab33e669dd2cf390",
+      "bytes": 9925
+    },
+    "sycl/include/dpct/device.hpp": {
+      "sha256": "adbcbd0ac45995348e37ac3f5ca42d9f3d4b0555031aeb1781a1e2166a74ed52",
+      "bytes": 34564
+    },
+    "sycl/include/strata/sycl_error.hpp": {
+      "sha256": "4b64f82b0805e9a113077ea7abc57d18044bff7240d8fe956abe651eb4f90ce4",
+      "bytes": 1160
+    }
+  },
+  "async_boundary": "q_of(nullptr)->dpct get_in_order_queue->default queue init->create_queue_impl(true)->exception_handler->strata rethrow_sycl_errors; first non-null async exception rethrown after reporting. Fixture explicit wait errors therefore fail-stop, not silently consumed.",
+  "source_design": "Private compile-time diagnostic OFF default; no production signatures/math/kernel names/queue properties/launch ranges/selectors changed. OFF compile-out/device emission still require fresh build evidence. Actual returned recurrence and norm events captured; host clocks and device event timestamps not additive.",
+  "built": false,
+  "tested": false,
+  "profiled": false,
+  "adopted": false,
+  "original_quiet_candidate_still_rejected_slower": true,
+  "remaining_gates": [
+    "fresh sameflags OFF and ON builds, exact closure and normal compile-out/kernel-body identity",
+    "host prequeue invalidarg/dirtyenv/diagnostic-off gates and small first traced correctness",
+    "finite two fresh32768 diagnostic processes with full paired checks, profile availability, normal closure and fresh fault audit",
+    "interpret host admission and recurrence/norm event intervals separately; clean OFF timing remains separate evidence"
+  ]
+}

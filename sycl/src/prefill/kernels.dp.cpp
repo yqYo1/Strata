@@ -20,8 +20,24 @@
 #include <stdexcept>
 #include <cstring>
 #include <optional>
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+#include <chrono>
+#include <utility>
+#endif
 
 namespace strata::prefill {
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+namespace {
+thread_local GdnEventDiagnosticCapture* event_capture=nullptr;
+using DiagnosticClock=std::chrono::steady_clock;
+uint64_t diagnostic_ns(DiagnosticClock::time_point start) {
+    return uint64_t(std::chrono::duration_cast<std::chrono::nanoseconds>(DiagnosticClock::now()-start).count());
+}
+}
+GdnEventDiagnosticCapture* gdn_set_event_diagnostic_capture(GdnEventDiagnosticCapture* sink) noexcept {
+    auto* previous=event_capture; event_capture=sink; return previous;
+}
+#endif
 class GdnRecQuadPipelineSG32;
 class GdnLegacyPipelineReference;
 namespace {
@@ -2640,23 +2656,47 @@ void launch_gdn_out_norm(const float *z, const float *gamma, float eps, const fl
                          void *stream) {
     auto exp_props = sycl::ext::oneapi::experimental::properties{};
 
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+    auto* capture=event_capture;
+    const auto submit_start=capture?DiagnosticClock::now():DiagnosticClock::time_point{};
+    auto norm_event=
+#endif
     strata::q_of(stream)->parallel_for<dpct_kernel_name<class gdn_out_norm_keyhead_kernel_43e92c>>(
         sycl::nd_range<3>(sycl::range(1, HV, (unsigned)T) * sycl::range(1, 1, S), sycl::range(1, 1, S)), exp_props,
         [=](sycl::nd_item<3> item_ct1)
             [[sycl::reqd_sub_group_size(32)]] { gdn_out_norm_kernel(z, gamma, eps, y, y16, HV * S); });
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+    if(capture){capture->norm_submit_ns=diagnostic_ns(submit_start);capture->norm.emplace(std::move(norm_event));}
+#endif
 }
 } // namespace
 
 void gdn_recurrence_pipeline_reference(float *state, const float *h, const float *gate, const float *beta,
                                      const float *z, const float *gamma, float eps, float *y, uint16_t *y16,
                                      int64_t T, void *stream, int64_t ld16) {
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+    auto* capture=event_capture;
+    const auto entry=capture?DiagnosticClock::now():DiagnosticClock::time_point{};
+#endif
     if (T < 0) throw std::invalid_argument("GDN pipeline reference: negative T");
     if (T == 0) return;
     if (ld16 != 0 && ld16 != HV * S) throw std::invalid_argument("GDN pipeline reference: padded rows");
     auto props = sycl::ext::oneapi::experimental::properties{};
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+    if(capture)capture->prevalidation_ns=diagnostic_ns(entry);
+    const auto lookup_start=capture?DiagnosticClock::now():DiagnosticClock::time_point{};
+    auto& diagnostic_queue=*strata::q_of(stream);
+    if(capture)capture->queue_lookup_ns=diagnostic_ns(lookup_start);
+    const auto submit_start=capture?DiagnosticClock::now():DiagnosticClock::time_point{};
+    auto recurrence_event=diagnostic_queue.parallel_for<GdnLegacyPipelineReference>(
+#else
     strata::q_of(stream)->parallel_for<GdnLegacyPipelineReference>(
+#endif
         sycl::nd_range<3>(sycl::range(1, 1, HV * NCB) * sycl::range(1, RG, CB), sycl::range(1, RG, CB)), props,
         [=](sycl::nd_item<3>) { gdn_rec_cols_pipe_kernel(state, h, gate, beta, y, T); });
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+    if(capture){capture->recurrence_submit_ns=diagnostic_ns(submit_start);capture->recurrence.emplace(std::move(recurrence_event));}
+#endif
     launch_gdn_out_norm(z, gamma, eps, y, y16, T, stream);
     check("gdn_recurrence_pipeline_reference");
 }
@@ -2664,8 +2704,18 @@ void gdn_recurrence_pipeline_reference(float *state, const float *h, const float
 bool gdn_recurrence_quad_variant(float *state, const float *h, const float *gate, const float *beta, const float *z,
                                 const float *gamma, float eps, float *y, uint16_t *y16, int64_t T, void *stream,
                                 int64_t ld16, GdnQuadReport *report, bool diagnostic_deny) {
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+    auto* capture=event_capture;
+    const auto entry=capture?DiagnosticClock::now():DiagnosticClock::time_point{};
+    DiagnosticClock::time_point admission_start{};
+    bool admission_started=false;
+#endif
     GdnQuadReport result;
-    auto denied = [&](const char *why) { result.reason = why; if (report) *report = result; return false; };
+    auto denied = [&](const char *why) {
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+        if(capture&&admission_started){capture->admission_ns=diagnostic_ns(admission_start);capture->admission_observed=true;capture->admitted=false;}
+#endif
+        result.reason = why; if (report) *report = result; return false; };
     if (T < 0) throw std::invalid_argument("GDN quad: negative T");
     if (T == 0) {
         result.status = GdnQuadReport::Status::Empty; result.reason = "empty_no_submission";
@@ -2675,11 +2725,21 @@ bool gdn_recurrence_quad_variant(float *state, const float *h, const float *gate
     if (ld16 != 0 && ld16 != HV * S) throw std::invalid_argument("GDN quad: padded rows");
     if (diagnostic_deny) return denied("diagnostic_pre_submit_denial");
 #if !defined(__HIPCC__)
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+    if(capture)capture->prevalidation_ns=diagnostic_ns(entry);
+    const auto lookup_start=capture?DiagnosticClock::now():DiagnosticClock::time_point{};
+#endif
     auto &q = *strata::q_of(stream);
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+    if(capture)capture->queue_lookup_ns=diagnostic_ns(lookup_start);
+#endif
     if (!q.has_property<sycl::property::queue::in_order>()) return denied("queue_not_in_order");
     std::optional<sycl::kernel_bundle<sycl::bundle_state::executable>> executable;
     // Only this read-only pre-submit region may convert query exceptions into fallback.
     try {
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+        if(capture){admission_start=DiagnosticClock::now();admission_started=true;}
+#endif
         const auto device = q.get_device();
         const auto sizes = device.get_info<sycl::info::device::sub_group_sizes>();
         result.device_max_workgroup = device.get_info<sycl::info::device::max_work_group_size>();
@@ -2703,9 +2763,16 @@ bool gdn_recurrence_quad_variant(float *state, const float *h, const float *gate
         try { result.spill_bytes = kernel.get_info<sycl::ext::intel::info::kernel_device_specific::spill_memory_size>(device); result.spill_known = true; }
         catch (const std::exception &) {}
     } catch (const std::exception &) { return denied("pre_submit_query_exception"); }
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+    if(capture){capture->admission_ns=diagnostic_ns(admission_start);capture->admission_observed=true;capture->admitted=true;}
+#endif
     // No catch/fallback encloses either submission or check: mutation may be partial on error.
     result.status = GdnQuadReport::Status::Submitted; result.reason = "candidate_submission_attempted";
     if (report) *report = result;
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+    const auto submit_start=capture?DiagnosticClock::now():DiagnosticClock::time_point{};
+    auto recurrence_event=
+#endif
     q.submit([=](sycl::handler &handler) {
         handler.use_kernel_bundle(*executable); // Bind exactly the executable image admitted above.
         handler.parallel_for<GdnRecQuadPipelineSG32>(
@@ -2714,6 +2781,9 @@ bool gdn_recurrence_quad_variant(float *state, const float *h, const float *gate
                 gdn_rec_quad_pipeline_sg32_kernel(state, h, gate, beta, y, T);
             });
     });
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+    if(capture){capture->recurrence_submit_ns=diagnostic_ns(submit_start);capture->recurrence.emplace(std::move(recurrence_event));}
+#endif
     launch_gdn_out_norm(z, gamma, eps, y, y16, T, stream);
     check("gdn_recurrence_quad_variant");
     return true;

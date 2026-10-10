@@ -169,3 +169,128 @@ and finite RSS/AS/file/NOFILE supervision are owner bounds, not measured require
 Host scratch is still one-chunk bounded (largest additional hash pair ~96MiB, freed
 between components), existing device capacity unchanged. No model/lifecycle/
 prefill+conv/postprojection/decode/end-to-end performance/adoption is qualified.
+
+
+## Test-build host/event discriminator (source-only addition)
+
+R104's completed quiet synthetic service comparison is order-sensitive and includes
+candidate admission every chunk. It does not identify a spill, GPU-execution or
+admission cause. This separately gated diagnostic observes host sections and command
+events to help separate those hypotheses; no diagnosis or new run is claimed here.
+No new hardware counter/profiler, GRF/property/global FP flag or kernel arithmetic,
+name, launch geometry, selector/default change is introduced.
+
+`STRATA_GDN_QUAD_EVENT_DIAGNOSTIC` is a new CMake option, OFF by default and rejected
+unless `STRATA_GDN_QUAD_PARITY=ON`. Its macro applies privately to strata_prefill and
+the parity executable. Normal option-OFF builds compile out the capture struct,
+thread-local sink, event saving and host-section clocks. Existing public production
+signatures remain identical; extra binding API exists only in diagnostic builds.
+Use a separate diagnostic build, keeping the already qualified quiet build and its
+receipts intact. Existing --timing-prefix formatting and checks are unchanged and
+never bind a sink. In an option-ON build a null sink disables clock/event recording,
+but compiled branches/local returned-event lifetimes can still perturb host cost;
+clean uninstrumented service evidence must use the separate option-OFF build.
+
+Root-only recipe, unexecuted by the implementation agent:
+
+```sh
+# Add only these options to root's exact frozen same-flags configure recipe,
+# with a NEW build directory, not over the qualified quiet build:
+# -DSTRATA_GDN_QUAD_PARITY=ON -DSTRATA_GDN_QUAD_EVENT_DIAGNOSTIC=ON
+cmake --build build-sycl-gdn-quad-event-v1 --target gdn_quad_parity
+./build-sycl-gdn-quad-event-v1/gdn_quad_parity --diagnostic-prefix 32768 --chunk 2048 \
+  --order legacy-first --samples 1 > event-legacy-first.csv 2> event-legacy-first.stderr
+./build-sycl-gdn-quad-event-v1/gdn_quad_parity --diagnostic-prefix 32768 --chunk 2048 \
+  --order quad-first --samples 1 > event-quad-first.csv 2> event-quad-first.stderr
+```
+
+Args retain exact9position layout, total32768..262144, chunk1024or2048, samples1..3,
+strict decimals<=6bytes and existing known dirty-env rejection before queue lookup.
+Option-OFF --diagnostic-prefix rejects before queue lookup. Require pre-existing
+in_order AND enable_profiling; no queue property is changed. If property is missing,
+DIAGNOSTIC_UNAVAILABLE is emitted and diagnostic stops before allocations/submission.
+Missing captured events, unavailable get_profiling_info or decreasing timestamps
+report PROFILE_QUERY_FAILED after the known drain and stop with normal final
+drain/free; no substitute host data or accepted partial samples. Valid equal
+timestamps are retained as zero device duration, without inferring timer precision.
+Candidate admission denial emits DIAGNOSTIC_DENIED with original reason/observed
+admission duration and fails; it never runs legacy fallback on that state.
+
+Same full-prefix two-order warmup pairs, separately initialized matching state,
+matching directed input/chunks, alternating trial order, service timer and full
+state/FP32/FP16/guards/finite checks after every matching carried chunk are retained.
+No all-token arrays. Diagnostic rows pre-reserved and held in memory; all numerical
+checks and Buffers final drain/free finish before any success CSV rendering. At max
+5pairs*2arms*256chunks=2560rows, modest bounded host metadata; event objects remain
+only in the current arm's capture and are released after successful wait/query.
+No output formatting occurs between diagnostic service intervals (failure logs only).
+New diagnostic_pair duplicates the frozen fixture flow rather than changing the
+quiet-mode function; root should review both for drift whenever one is changed.
+
+Capture sink ownership: thread_local pointer, scoped bind to one fresh host capture
+for one explicit public legacy/quad call. Nested bindings refused and prior binding
+restored; null outside each diagnostic call. No workers/device code write the sink,
+no new event/queue/command is submitted by instrumentation. Existing same-call
+recurrence q.submit/parallel_for and anonymous launch_gdn_out_norm parallel_for
+return their actual sycl::event, saved after the unchanged submissions. Captured
+recurrence identities are GdnLegacyPipelineReference and GdnRecQuadPipelineSG32;
+norm identity is existing gdn_out_norm_keyhead_kernel_43e92c. The binding API is a
+test-only contract, not production interception of unrelated kernels. Do not use it
+around a different wrapper or nest/widen its lifetime to concurrent calls.
+
+Host steady nanoseconds: prevalidation from public function entry through existing
+T/ld16/diagnostic prechecks (legacy also its props construction); q_of lookup alone;
+quad admission from immediately before get_device through exact bundle/kernel/SG/WG/
+private/spill queries and their existing read-only catches, ending before recurrence
+submit; legacy admission0/not observed. Queue-property/optional construction gaps
+are other host work and are not silently classified. Recurrence enqueue host time
+from immediately before the existing submit/parallel_for through return, excluding
+event storage. Norm enqueue host time from immediately before existing q_of+parallel_for
+through return (includes that norm queue lookup; properties prepared beforehand).
+Event storage/clock overhead perturbs total service. Existing check() is a no-op;
+success/error boundary remains explicit q.wait_and_throw within gpu_stage.
+
+After each existing successful wait, read recurrence and norm command_start/end
+in a separate profiling-only scope outside gpu_stage. Preserve four raw device timestamp ns plus independent end-start
+command duration. Event query time is outside service clock, but can affect the next
+arm's cache/host scheduling context. Same queue profiling property is preserved.
+Command elapsed is runtime event observation of that submitted kernel, not an
+in-kernel barrier time or hardware-counter result. Do NOT add host subintervals and
+device intervals into a service decomposition, subtract them to infer wait time,
+or compare absolute host/device epochs. Host enqueue and device execution overlap.
+
+Endpoint/failure policy unchanged: all memcpy host vectors outside gpu_stage and
+live across their submission+successful wait. Timed wrapper and wait remain
+inside gpu_stage; submission/completion exceptions fail-stop without stack/static
+destruction or explicit USM release. Profiling-only errors happen after a successful
+drain, report a separate status and unwind through the normal final drain/free.
+Any failure of that final drain retains fail-stop behavior; no pass summary is emitted. No post-submit retry/reset/reuse. A numerical/hash mismatch
+is ordinary failed process only after known drains; final drain/free/output failures
+prevent authoritative normal0. Success lines alone never override process/fault/
+owner closure. No active receipt or model capture is queried by this helper.
+
+CSV: DIAGNOSTIC_META includes PID/length/config/norm identity; DIAGNOSTIC_HEADER
+identifies each perchunk row's phase/pair/order/position/arm/recurrence identity,
+offset/live, existing service seconds, five host ns fields, raw command timestamps
+and two independent command durations. After those rows DIAGNOSTIC_PREFIX_HEADER
+and existing TIMING-schema rows (diagnostic_warmup/diagnostic_sample phases) retain
+prefix summed service/digests/caller counts. Final DIAGNOSTIC_SUMMARY follows all
+checks and normal buffer release, then main flush checks. For32768/chunk2048/1sample:
+96event rows,6prefix arm rows,4metadata/header/summary lines =106lines. Owner must
+require exact expected counts, same prefix digests, fullpaired gates, profile
+availability and normalexit0/no forcedcleanup/survivors/newfaults. FNV retains its
+reproducibility-only status. Process PID is association, not PID/startticks ownership
+proof; root receipt retains that responsibility.
+
+Pending root gates: inspect source/compile-out and kernel-body identity; reject
+optionON without parity; fresh same-flags OFF and diagnosticON builds; normal host/
+short/quiet regressions; malformed args/dirtyenv OFF CLI rejection before queue;
+two separate clean initial-order32768 diagnostics first; event identity/availability/
+row/order/count consistency plus complete paired bits and owner health/closure.
+Preserve exact source/object/binary/compiler/runtime and device-image provenance.
+Bound initial wall<=1800s, text<=4MiB, finite RSS/AS/FSize/NOFILE and shared lock.
+No event availability or component cause is proven by source. Diagnostics may change
+quiet service; use only for attribution, then separately remeasure clean OFF service.
+No model/lifecycle/performance/adoption or GRF support conclusion follows.
+
+Root R106 review corrected the original source-only handoff: post-drain timestamp errors are distinct from unknown completion. The original implementation report remains unchanged. The reused default in-order queue installs dpct::exception_handler, which calls strata::rethrow_sycl_errors; it reports errors and rethrows the first, so the normal wait boundary does not silently consume async failures. No replacement queue or handler is installed. These are source findings; root build and runtime profiling remain pending.

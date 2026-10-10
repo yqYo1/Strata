@@ -400,3 +400,13 @@ if(STRATA_GDN_QUAD_PARITY)
   set_tests_properties(gdn_quad_parity PROPERTIES TIMEOUT 240
     ENVIRONMENT_MODIFICATION "STRATA_GDN_QUAD=set:0;STRATA_GDN_KEYHEAD_TUNED=set:0;STRATA_GDN_KEYHEAD=set:0;STRATA_GDN_PIPELINE=set:1;STRATA_GDN_REC_HEADS=unset:")
 endif()
+
+# Test-only host/event attribution. Normal production builds compile all capture out.
+option(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC "Enable parity-only GDN host/event attribution" OFF)
+if(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+  if(NOT STRATA_GDN_QUAD_PARITY)
+    message(FATAL_ERROR "STRATA_GDN_QUAD_EVENT_DIAGNOSTIC requires STRATA_GDN_QUAD_PARITY")
+  endif()
+  target_compile_definitions(strata_prefill PRIVATE STRATA_GDN_QUAD_EVENT_DIAGNOSTIC=1)
+  target_compile_definitions(gdn_quad_parity PRIVATE STRATA_GDN_QUAD_EVENT_DIAGNOSTIC=1)
+endif()

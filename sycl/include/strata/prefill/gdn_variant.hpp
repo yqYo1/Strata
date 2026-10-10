@@ -3,7 +3,23 @@
 #include <cstdint>
 #include <cstddef>
 
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+#include <sycl/sycl.hpp>
+#include <optional>
+#endif
+
 namespace strata::prefill {
+#if defined(STRATA_GDN_QUAD_EVENT_DIAGNOSTIC)
+// Test-build host-only sink. Same submissions/events; never captured by device code.
+// Bind for one explicit legacy/quad call on the current host thread, then restore.
+struct GdnEventDiagnosticCapture {
+    uint64_t prevalidation_ns=0, queue_lookup_ns=0, admission_ns=0;
+    uint64_t recurrence_submit_ns=0, norm_submit_ns=0;
+    bool admission_observed=false, admitted=false;
+    std::optional<sycl::event> recurrence, norm;
+};
+GdnEventDiagnosticCapture* gdn_set_event_diagnostic_capture(GdnEventDiagnosticCapture*) noexcept;
+#endif
 // Original key-head arithmetic with SG16 and 256 GRFs. Returns false without
 // launching for fewer than 256 tokens; the caller keeps the original recurrence.
 bool gdn_recurrence_keyhead_variant(float *state, const float *h, const float *gate, const float *beta, const float *z,
