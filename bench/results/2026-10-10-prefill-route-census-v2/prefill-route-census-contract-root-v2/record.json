@@ -1,0 +1,1429 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "adopted": false,
+  "gpu_tested": false,
+  "started_utc": "2026-10-10T12:50:38.889621+00:00",
+  "controller": {
+    "bytes": 3811,
+    "sha256": "bbadcdee13f833f92eab5d5ce6287133b28ce45ed79ea26d318beb6f9e55c337"
+  },
+  "parent_owner": {
+    "bytes": 24299,
+    "sha256": "7df012ee4d9bd047a6094ccedb37fddb3d56d4b054d9fdf468534b0fb6e94e1f"
+  },
+  "source": {
+    "bytes": 2013,
+    "sha256": "aa0cac1077b8975fb8d9e4528d40fa6c9ded115e65fc4ca5d856275f5031749f"
+  },
+  "header": {
+    "bytes": 17904,
+    "sha256": "3545e3d4ffdb8f0ff0e43f36854b56bd28fe5a4fd02b2e42afaca6cd50f4160a"
+  },
+  "commands": [
+    {
+      "label": "compile",
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++20",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-pthread",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-route-census-v2",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill_route_census_contract_v1.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-route-census-contract-root-v2/contract"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T12:50:38.890269+00:00",
+      "wall_seconds": 120,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2042540,
+          "start_ticks": 32631800,
+          "sid": 2042540,
+          "pgid": 2042540
+        },
+        {
+          "pid": 2042541,
+          "start_ticks": 32631800,
+          "sid": 2042540,
+          "pgid": 2042540
+        }
+      ],
+      "pid": 2042540,
+      "direct_identity": {
+        "pid": 2042540,
+        "state": "R",
+        "ppid": 2042507,
+        "pgid": 2042540,
+        "sid": 2042540,
+        "start_ticks": 32631800,
+        "rss_bytes": 454656
+      },
+      "peak_session_rss_bytes": 179707904,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T12:50:40.248802+00:00",
+      "elapsed_seconds": 1.3582764469902031,
+      "logs": {
+        "compile.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "off",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-route-census-contract-root-v2/contract",
+        "off"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T12:50:40.249250+00:00",
+      "wall_seconds": 15,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2042638,
+          "start_ticks": 32631936,
+          "sid": 2042638,
+          "pgid": 2042638
+        }
+      ],
+      "pid": 2042638,
+      "direct_identity": {
+        "pid": 2042638,
+        "state": "R",
+        "ppid": 2042507,
+        "pgid": 2042638,
+        "sid": 2042638,
+        "start_ticks": 32631936,
+        "rss_bytes": 491520
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T12:50:40.421738+00:00",
+      "elapsed_seconds": 0.17203231097664684,
+      "logs": {
+        "off.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "off.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "zero",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-route-census-contract-root-v2/contract",
+        "zero"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T12:50:40.422287+00:00",
+      "wall_seconds": 15,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2042642,
+          "start_ticks": 32631953,
+          "sid": 2042642,
+          "pgid": 2042642
+        }
+      ],
+      "pid": 2042642,
+      "direct_identity": {
+        "pid": 2042642,
+        "state": "R",
+        "ppid": 2042507,
+        "pgid": 2042642,
+        "sid": 2042642,
+        "start_ticks": 32631953,
+        "rss_bytes": 278528
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T12:50:40.590556+00:00",
+      "elapsed_seconds": 0.16800908301956952,
+      "logs": {
+        "zero.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "zero.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "bad-env",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-route-census-contract-root-v2/contract",
+        "bad-env"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T12:50:40.591129+00:00",
+      "wall_seconds": 15,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2042650,
+          "start_ticks": 32631970,
+          "sid": 2042650,
+          "pgid": 2042650
+        }
+      ],
+      "pid": 2042650,
+      "direct_identity": {
+        "pid": 2042650,
+        "state": "R",
+        "ppid": 2042507,
+        "pgid": 2042650,
+        "sid": 2042650,
+        "start_ticks": 32631970,
+        "rss_bytes": 278528
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T12:50:40.748404+00:00",
+      "elapsed_seconds": 0.15701757097849622,
+      "logs": {
+        "bad-env.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "bad-env.stderr": {
+          "bytes": 445,
+          "sha256": "8f86afc041280c2995dcd64c3a718b9ccd46783c64a9e040f9e6797d2d168748"
+        }
+      }
+    },
+    {
+      "label": "resident",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-route-census-contract-root-v2/contract",
+        "resident"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T12:50:40.749114+00:00",
+      "wall_seconds": 15,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2042657,
+          "start_ticks": 32631986,
+          "sid": 2042657,
+          "pgid": 2042657
+        }
+      ],
+      "pid": 2042657,
+      "direct_identity": {
+        "pid": 2042657,
+        "state": "R",
+        "ppid": 2042507,
+        "pgid": 2042657,
+        "sid": 2042657,
+        "start_ticks": 32631986,
+        "rss_bytes": 475136
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T12:50:40.906074+00:00",
+      "elapsed_seconds": 0.1566483989590779,
+      "logs": {
+        "resident.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "resident.stderr": {
+          "bytes": 3417,
+          "sha256": "1917b187d4dd524cedc5513d3011a45cd410d49a8ed2e177518bb73c5d79cf4d"
+        }
+      }
+    },
+    {
+      "label": "mixed-stream-all",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-route-census-contract-root-v2/contract",
+        "mixed-stream-all"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T12:50:40.907292+00:00",
+      "wall_seconds": 15,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2042682,
+          "start_ticks": 32632002,
+          "sid": 2042682,
+          "pgid": 2042682
+        }
+      ],
+      "pid": 2042682,
+      "direct_identity": {
+        "pid": 2042682,
+        "state": "R",
+        "ppid": 2042507,
+        "pgid": 2042682,
+        "sid": 2042682,
+        "start_ticks": 32632002,
+        "rss_bytes": 278528
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T12:50:41.092771+00:00",
+      "elapsed_seconds": 0.18501211499096826,
+      "logs": {
+        "mixed-stream-all.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "mixed-stream-all.stderr": {
+          "bytes": 3862,
+          "sha256": "351bf6407e56256403031473eec57073a5dca79dcb8b91a43e7f9da547cb755a"
+        }
+      }
+    },
+    {
+      "label": "mmq",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-route-census-contract-root-v2/contract",
+        "mmq"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T12:50:41.094257+00:00",
+      "wall_seconds": 15,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2042695,
+          "start_ticks": 32632020,
+          "sid": 2042695,
+          "pgid": 2042695
+        }
+      ],
+      "pid": 2042695,
+      "direct_identity": {
+        "pid": 2042695,
+        "state": "R",
+        "ppid": 2042507,
+        "pgid": 2042695,
+        "sid": 2042695,
+        "start_ticks": 32632020,
+        "rss_bytes": 278528
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T12:50:41.251303+00:00",
+      "elapsed_seconds": 0.15641963097732514,
+      "logs": {
+        "mmq.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "mmq.stderr": {
+          "bytes": 3401,
+          "sha256": "eada31ec9a94288ce12e8ba7cee79fbedb9a54ee192c6af9be128274cce422c4"
+        }
+      }
+    },
+    {
+      "label": "duplicate-call",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-route-census-contract-root-v2/contract",
+        "duplicate-call"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T12:50:41.252835+00:00",
+      "wall_seconds": 15,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2042701,
+          "start_ticks": 32632036,
+          "sid": 2042701,
+          "pgid": 2042701
+        }
+      ],
+      "pid": 2042701,
+      "direct_identity": {
+        "pid": 2042701,
+        "state": "R",
+        "ppid": 2042507,
+        "pgid": 2042701,
+        "sid": 2042701,
+        "start_ticks": 32632036,
+        "rss_bytes": 442368
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T12:50:41.420911+00:00",
+      "elapsed_seconds": 0.16735128097934648,
+      "logs": {
+        "duplicate-call.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "duplicate-call.stderr": {
+          "bytes": 460,
+          "sha256": "d426c89a3867e64cf644f9fc807d3c87f1916322cd8b6ea741f10b73200a4495"
+        }
+      }
+    },
+    {
+      "label": "resident-copy",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-route-census-contract-root-v2/contract",
+        "resident-copy"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T12:50:41.422063+00:00",
+      "wall_seconds": 15,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2042708,
+          "start_ticks": 32632053,
+          "sid": 2042708,
+          "pgid": 2042708
+        }
+      ],
+      "pid": 2042708,
+      "direct_identity": {
+        "pid": 2042708,
+        "state": "R",
+        "ppid": 2042507,
+        "pgid": 2042708,
+        "sid": 2042708,
+        "start_ticks": 32632053,
+        "rss_bytes": 430080
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T12:50:41.579959+00:00",
+      "elapsed_seconds": 0.15692005003802478,
+      "logs": {
+        "resident-copy.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "resident-copy.stderr": {
+          "bytes": 463,
+          "sha256": "277ac41a0b99617d1559f45c95b8b2343bc91da9bb10a781afcfbf9a8862215b"
+        }
+      }
+    },
+    {
+      "label": "outside-layer-copy",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-route-census-contract-root-v2/contract",
+        "outside-layer-copy"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T12:50:41.581144+00:00",
+      "wall_seconds": 15,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2042712,
+          "start_ticks": 32632069,
+          "sid": 2042712,
+          "pgid": 2042712
+        }
+      ],
+      "pid": 2042712,
+      "direct_identity": {
+        "pid": 2042712,
+        "state": "R",
+        "ppid": 2042507,
+        "pgid": 2042712,
+        "sid": 2042712,
+        "start_ticks": 32632069,
+        "rss_bytes": 442368
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T12:50:41.745649+00:00",
+      "elapsed_seconds": 0.163661539030727,
+      "logs": {
+        "outside-layer-copy.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "outside-layer-copy.stderr": {
+          "bytes": 445,
+          "sha256": "4e743489fe0dd7858cdda260743373695128961cefeda00889d0af132c0ed13e"
+        }
+      }
+    }
+  ],
+  "results": [
+    {
+      "mode": "off",
+      "expected_valid": null,
+      "contract_passed": true,
+      "observed_rows": []
+    },
+    {
+      "mode": "zero",
+      "expected_valid": null,
+      "contract_passed": true,
+      "observed_rows": []
+    },
+    {
+      "mode": "bad-env",
+      "expected_valid": false,
+      "contract_passed": true,
+      "observed_rows": [
+        {
+          "kind": "prefill_route_census_receipt",
+          "valid": false,
+          "reason": "env_must_be_exact_0_or_1",
+          "scope": "host_accounting_only_no_capacity_prediction",
+          "requested_tokens": 32768,
+          "pos0": 0,
+          "chunks": 0,
+          "layers": 0,
+          "calls": 0,
+          "routed_rows": 0,
+          "transfer_calls": 0,
+          "transfer_bytes": 0,
+          "routed_transfer_calls": 0,
+          "output_bytes": 0,
+          "histogram_fnv1a64": "0000000000000000",
+          "host_accumulation_ns": 0,
+          "host_serialization_ns": 0,
+          "device_commands_added": 0,
+          "capacity_join": false
+        }
+      ]
+    },
+    {
+      "mode": "resident",
+      "expected_valid": true,
+      "contract_passed": true,
+      "observed_rows": [
+        {
+          "kind": "prefill_route_layer",
+          "chunk_p0": 0,
+          "T": 8192,
+          "K": 10,
+          "layer": 0,
+          "n_expert": 512,
+          "native": true,
+          "gu_type": 22,
+          "down_type": 20,
+          "H": 2560,
+          "FF": 640,
+          "gu_row": 820,
+          "down_row": 360,
+          "up_off": 524800,
+          "down_off": 1049600,
+          "blob_bytes": 1971200,
+          "branch": 1,
+          "owner": "primary",
+          "stream_all": false,
+          "mmq_built": false,
+          "fused_built": false,
+          "calls": 10,
+          "rows": 81920,
+          "transfer_calls": 0,
+          "transfer_bytes": 0,
+          "routed_transfer_calls": 0,
+          "bins": [
+            {
+              "ne": 8192,
+              "source": 1,
+              "transfer_source": 0,
+              "calls": 10,
+              "routed_rows": 81920,
+              "logical_packed_bytes": 19712000
+            }
+          ],
+          "layout_version": 0,
+          "packed_layer_offset": 0,
+          "local_calls": 10,
+          "local_rows": 81920,
+          "peer_calls": 0,
+          "peer_rows": 0,
+          "generic_GU_calls": 10,
+          "generic_Down_calls": 10,
+          "use_mmq": false,
+          "fused_l": false,
+          "fused_nat": false,
+          "fused_only": false
+        },
+        {
+          "kind": "prefill_route_layer",
+          "chunk_p0": 8192,
+          "T": 8192,
+          "K": 10,
+          "layer": 0,
+          "n_expert": 512,
+          "native": true,
+          "gu_type": 22,
+          "down_type": 20,
+          "H": 2560,
+          "FF": 640,
+          "gu_row": 820,
+          "down_row": 360,
+          "up_off": 524800,
+          "down_off": 1049600,
+          "blob_bytes": 1971200,
+          "branch": 1,
+          "owner": "primary",
+          "stream_all": false,
+          "mmq_built": false,
+          "fused_built": false,
+          "calls": 10,
+          "rows": 81920,
+          "transfer_calls": 0,
+          "transfer_bytes": 0,
+          "routed_transfer_calls": 0,
+          "bins": [
+            {
+              "ne": 8192,
+              "source": 1,
+              "transfer_source": 0,
+              "calls": 10,
+              "routed_rows": 81920,
+              "logical_packed_bytes": 19712000
+            }
+          ],
+          "layout_version": 0,
+          "packed_layer_offset": 0,
+          "local_calls": 10,
+          "local_rows": 81920,
+          "peer_calls": 0,
+          "peer_rows": 0,
+          "generic_GU_calls": 10,
+          "generic_Down_calls": 10,
+          "use_mmq": false,
+          "fused_l": false,
+          "fused_nat": false,
+          "fused_only": false
+        },
+        {
+          "kind": "prefill_route_layer",
+          "chunk_p0": 16384,
+          "T": 8192,
+          "K": 10,
+          "layer": 0,
+          "n_expert": 512,
+          "native": true,
+          "gu_type": 22,
+          "down_type": 20,
+          "H": 2560,
+          "FF": 640,
+          "gu_row": 820,
+          "down_row": 360,
+          "up_off": 524800,
+          "down_off": 1049600,
+          "blob_bytes": 1971200,
+          "branch": 1,
+          "owner": "primary",
+          "stream_all": false,
+          "mmq_built": false,
+          "fused_built": false,
+          "calls": 10,
+          "rows": 81920,
+          "transfer_calls": 0,
+          "transfer_bytes": 0,
+          "routed_transfer_calls": 0,
+          "bins": [
+            {
+              "ne": 8192,
+              "source": 1,
+              "transfer_source": 0,
+              "calls": 10,
+              "routed_rows": 81920,
+              "logical_packed_bytes": 19712000
+            }
+          ],
+          "layout_version": 0,
+          "packed_layer_offset": 0,
+          "local_calls": 10,
+          "local_rows": 81920,
+          "peer_calls": 0,
+          "peer_rows": 0,
+          "generic_GU_calls": 10,
+          "generic_Down_calls": 10,
+          "use_mmq": false,
+          "fused_l": false,
+          "fused_nat": false,
+          "fused_only": false
+        },
+        {
+          "kind": "prefill_route_layer",
+          "chunk_p0": 24576,
+          "T": 8192,
+          "K": 10,
+          "layer": 0,
+          "n_expert": 512,
+          "native": true,
+          "gu_type": 22,
+          "down_type": 20,
+          "H": 2560,
+          "FF": 640,
+          "gu_row": 820,
+          "down_row": 360,
+          "up_off": 524800,
+          "down_off": 1049600,
+          "blob_bytes": 1971200,
+          "branch": 1,
+          "owner": "primary",
+          "stream_all": false,
+          "mmq_built": false,
+          "fused_built": false,
+          "calls": 10,
+          "rows": 81920,
+          "transfer_calls": 0,
+          "transfer_bytes": 0,
+          "routed_transfer_calls": 0,
+          "bins": [
+            {
+              "ne": 8192,
+              "source": 1,
+              "transfer_source": 0,
+              "calls": 10,
+              "routed_rows": 81920,
+              "logical_packed_bytes": 19712000
+            }
+          ],
+          "layout_version": 0,
+          "packed_layer_offset": 0,
+          "local_calls": 10,
+          "local_rows": 81920,
+          "peer_calls": 0,
+          "peer_rows": 0,
+          "generic_GU_calls": 10,
+          "generic_Down_calls": 10,
+          "use_mmq": false,
+          "fused_l": false,
+          "fused_nat": false,
+          "fused_only": false
+        },
+        {
+          "kind": "prefill_route_census_receipt",
+          "valid": true,
+          "reason": "none",
+          "scope": "host_accounting_only_no_capacity_prediction",
+          "requested_tokens": 32768,
+          "pos0": 0,
+          "chunks": 4,
+          "layers": 4,
+          "calls": 40,
+          "routed_rows": 327680,
+          "transfer_calls": 0,
+          "transfer_bytes": 0,
+          "routed_transfer_calls": 0,
+          "output_bytes": 2975,
+          "histogram_fnv1a64": "c88cb30f21eb0001",
+          "host_accumulation_ns": 119764,
+          "host_serialization_ns": 21351,
+          "device_commands_added": 0,
+          "capacity_join": false
+        }
+      ]
+    },
+    {
+      "mode": "mixed-stream-all",
+      "expected_valid": true,
+      "contract_passed": true,
+      "observed_rows": [
+        {
+          "kind": "prefill_route_layer",
+          "chunk_p0": 0,
+          "T": 8192,
+          "K": 10,
+          "layer": 0,
+          "n_expert": 512,
+          "native": true,
+          "gu_type": 22,
+          "down_type": 20,
+          "H": 2560,
+          "FF": 640,
+          "gu_row": 820,
+          "down_row": 360,
+          "up_off": 524800,
+          "down_off": 1049600,
+          "blob_bytes": 1971200,
+          "branch": 1,
+          "owner": "primary",
+          "stream_all": true,
+          "mmq_built": false,
+          "fused_built": false,
+          "calls": 10,
+          "rows": 81920,
+          "transfer_calls": 9,
+          "transfer_bytes": 17740800,
+          "routed_transfer_calls": 8,
+          "bins": [
+            {
+              "ne": 8192,
+              "source": 1,
+              "transfer_source": 0,
+              "calls": 2,
+              "routed_rows": 16384,
+              "logical_packed_bytes": 3942400
+            },
+            {
+              "ne": 8192,
+              "source": 3,
+              "transfer_source": 2,
+              "calls": 8,
+              "routed_rows": 65536,
+              "logical_packed_bytes": 15769600
+            }
+          ],
+          "layout_version": 0,
+          "packed_layer_offset": 0,
+          "local_calls": 10,
+          "local_rows": 81920,
+          "peer_calls": 0,
+          "peer_rows": 0,
+          "generic_GU_calls": 10,
+          "generic_Down_calls": 10,
+          "use_mmq": false,
+          "fused_l": false,
+          "fused_nat": false,
+          "fused_only": false
+        },
+        {
+          "kind": "prefill_route_layer",
+          "chunk_p0": 8192,
+          "T": 8192,
+          "K": 10,
+          "layer": 0,
+          "n_expert": 512,
+          "native": true,
+          "gu_type": 22,
+          "down_type": 20,
+          "H": 2560,
+          "FF": 640,
+          "gu_row": 820,
+          "down_row": 360,
+          "up_off": 524800,
+          "down_off": 1049600,
+          "blob_bytes": 1971200,
+          "branch": 1,
+          "owner": "primary",
+          "stream_all": true,
+          "mmq_built": false,
+          "fused_built": false,
+          "calls": 10,
+          "rows": 81920,
+          "transfer_calls": 9,
+          "transfer_bytes": 17740800,
+          "routed_transfer_calls": 8,
+          "bins": [
+            {
+              "ne": 8192,
+              "source": 1,
+              "transfer_source": 0,
+              "calls": 2,
+              "routed_rows": 16384,
+              "logical_packed_bytes": 3942400
+            },
+            {
+              "ne": 8192,
+              "source": 3,
+              "transfer_source": 2,
+              "calls": 8,
+              "routed_rows": 65536,
+              "logical_packed_bytes": 15769600
+            }
+          ],
+          "layout_version": 0,
+          "packed_layer_offset": 0,
+          "local_calls": 10,
+          "local_rows": 81920,
+          "peer_calls": 0,
+          "peer_rows": 0,
+          "generic_GU_calls": 10,
+          "generic_Down_calls": 10,
+          "use_mmq": false,
+          "fused_l": false,
+          "fused_nat": false,
+          "fused_only": false
+        },
+        {
+          "kind": "prefill_route_layer",
+          "chunk_p0": 16384,
+          "T": 8192,
+          "K": 10,
+          "layer": 0,
+          "n_expert": 512,
+          "native": true,
+          "gu_type": 22,
+          "down_type": 20,
+          "H": 2560,
+          "FF": 640,
+          "gu_row": 820,
+          "down_row": 360,
+          "up_off": 524800,
+          "down_off": 1049600,
+          "blob_bytes": 1971200,
+          "branch": 1,
+          "owner": "primary",
+          "stream_all": true,
+          "mmq_built": false,
+          "fused_built": false,
+          "calls": 10,
+          "rows": 81920,
+          "transfer_calls": 9,
+          "transfer_bytes": 17740800,
+          "routed_transfer_calls": 8,
+          "bins": [
+            {
+              "ne": 8192,
+              "source": 1,
+              "transfer_source": 0,
+              "calls": 2,
+              "routed_rows": 16384,
+              "logical_packed_bytes": 3942400
+            },
+            {
+              "ne": 8192,
+              "source": 3,
+              "transfer_source": 2,
+              "calls": 8,
+              "routed_rows": 65536,
+              "logical_packed_bytes": 15769600
+            }
+          ],
+          "layout_version": 0,
+          "packed_layer_offset": 0,
+          "local_calls": 10,
+          "local_rows": 81920,
+          "peer_calls": 0,
+          "peer_rows": 0,
+          "generic_GU_calls": 10,
+          "generic_Down_calls": 10,
+          "use_mmq": false,
+          "fused_l": false,
+          "fused_nat": false,
+          "fused_only": false
+        },
+        {
+          "kind": "prefill_route_layer",
+          "chunk_p0": 24576,
+          "T": 8192,
+          "K": 10,
+          "layer": 0,
+          "n_expert": 512,
+          "native": true,
+          "gu_type": 22,
+          "down_type": 20,
+          "H": 2560,
+          "FF": 640,
+          "gu_row": 820,
+          "down_row": 360,
+          "up_off": 524800,
+          "down_off": 1049600,
+          "blob_bytes": 1971200,
+          "branch": 1,
+          "owner": "primary",
+          "stream_all": true,
+          "mmq_built": false,
+          "fused_built": false,
+          "calls": 10,
+          "rows": 81920,
+          "transfer_calls": 9,
+          "transfer_bytes": 17740800,
+          "routed_transfer_calls": 8,
+          "bins": [
+            {
+              "ne": 8192,
+              "source": 1,
+              "transfer_source": 0,
+              "calls": 2,
+              "routed_rows": 16384,
+              "logical_packed_bytes": 3942400
+            },
+            {
+              "ne": 8192,
+              "source": 3,
+              "transfer_source": 2,
+              "calls": 8,
+              "routed_rows": 65536,
+              "logical_packed_bytes": 15769600
+            }
+          ],
+          "layout_version": 0,
+          "packed_layer_offset": 0,
+          "local_calls": 10,
+          "local_rows": 81920,
+          "peer_calls": 0,
+          "peer_rows": 0,
+          "generic_GU_calls": 10,
+          "generic_Down_calls": 10,
+          "use_mmq": false,
+          "fused_l": false,
+          "fused_nat": false,
+          "fused_only": false
+        },
+        {
+          "kind": "prefill_route_census_receipt",
+          "valid": true,
+          "reason": "none",
+          "scope": "host_accounting_only_no_capacity_prediction",
+          "requested_tokens": 32768,
+          "pos0": 0,
+          "chunks": 4,
+          "layers": 4,
+          "calls": 40,
+          "routed_rows": 327680,
+          "transfer_calls": 36,
+          "transfer_bytes": 70963200,
+          "routed_transfer_calls": 32,
+          "output_bytes": 3411,
+          "histogram_fnv1a64": "923d67fbe773cd67",
+          "host_accumulation_ns": 145084,
+          "host_serialization_ns": 15739,
+          "device_commands_added": 0,
+          "capacity_join": false
+        }
+      ]
+    },
+    {
+      "mode": "mmq",
+      "expected_valid": true,
+      "contract_passed": true,
+      "observed_rows": [
+        {
+          "kind": "prefill_route_layer",
+          "chunk_p0": 0,
+          "T": 8192,
+          "K": 10,
+          "layer": 0,
+          "n_expert": 512,
+          "native": true,
+          "gu_type": 22,
+          "down_type": 20,
+          "H": 2560,
+          "FF": 640,
+          "gu_row": 820,
+          "down_row": 360,
+          "up_off": 524800,
+          "down_off": 1049600,
+          "blob_bytes": 1971200,
+          "branch": 3,
+          "owner": "primary",
+          "stream_all": false,
+          "mmq_built": true,
+          "fused_built": false,
+          "calls": 10,
+          "rows": 81920,
+          "transfer_calls": 0,
+          "transfer_bytes": 0,
+          "routed_transfer_calls": 0,
+          "bins": [
+            {
+              "ne": 8192,
+              "source": 1,
+              "transfer_source": 0,
+              "calls": 10,
+              "routed_rows": 81920,
+              "logical_packed_bytes": 19712000
+            }
+          ],
+          "layout_version": 0,
+          "packed_layer_offset": 0,
+          "local_calls": 10,
+          "local_rows": 81920,
+          "peer_calls": 0,
+          "peer_rows": 0,
+          "generic_GU_calls": 0,
+          "generic_Down_calls": 0,
+          "use_mmq": true,
+          "fused_l": false,
+          "fused_nat": false,
+          "fused_only": false
+        },
+        {
+          "kind": "prefill_route_layer",
+          "chunk_p0": 8192,
+          "T": 8192,
+          "K": 10,
+          "layer": 0,
+          "n_expert": 512,
+          "native": true,
+          "gu_type": 22,
+          "down_type": 20,
+          "H": 2560,
+          "FF": 640,
+          "gu_row": 820,
+          "down_row": 360,
+          "up_off": 524800,
+          "down_off": 1049600,
+          "blob_bytes": 1971200,
+          "branch": 3,
+          "owner": "primary",
+          "stream_all": false,
+          "mmq_built": true,
+          "fused_built": false,
+          "calls": 10,
+          "rows": 81920,
+          "transfer_calls": 0,
+          "transfer_bytes": 0,
+          "routed_transfer_calls": 0,
+          "bins": [
+            {
+              "ne": 8192,
+              "source": 1,
+              "transfer_source": 0,
+              "calls": 10,
+              "routed_rows": 81920,
+              "logical_packed_bytes": 19712000
+            }
+          ],
+          "layout_version": 0,
+          "packed_layer_offset": 0,
+          "local_calls": 10,
+          "local_rows": 81920,
+          "peer_calls": 0,
+          "peer_rows": 0,
+          "generic_GU_calls": 0,
+          "generic_Down_calls": 0,
+          "use_mmq": true,
+          "fused_l": false,
+          "fused_nat": false,
+          "fused_only": false
+        },
+        {
+          "kind": "prefill_route_layer",
+          "chunk_p0": 16384,
+          "T": 8192,
+          "K": 10,
+          "layer": 0,
+          "n_expert": 512,
+          "native": true,
+          "gu_type": 22,
+          "down_type": 20,
+          "H": 2560,
+          "FF": 640,
+          "gu_row": 820,
+          "down_row": 360,
+          "up_off": 524800,
+          "down_off": 1049600,
+          "blob_bytes": 1971200,
+          "branch": 3,
+          "owner": "primary",
+          "stream_all": false,
+          "mmq_built": true,
+          "fused_built": false,
+          "calls": 10,
+          "rows": 81920,
+          "transfer_calls": 0,
+          "transfer_bytes": 0,
+          "routed_transfer_calls": 0,
+          "bins": [
+            {
+              "ne": 8192,
+              "source": 1,
+              "transfer_source": 0,
+              "calls": 10,
+              "routed_rows": 81920,
+              "logical_packed_bytes": 19712000
+            }
+          ],
+          "layout_version": 0,
+          "packed_layer_offset": 0,
+          "local_calls": 10,
+          "local_rows": 81920,
+          "peer_calls": 0,
+          "peer_rows": 0,
+          "generic_GU_calls": 0,
+          "generic_Down_calls": 0,
+          "use_mmq": true,
+          "fused_l": false,
+          "fused_nat": false,
+          "fused_only": false
+        },
+        {
+          "kind": "prefill_route_layer",
+          "chunk_p0": 24576,
+          "T": 8192,
+          "K": 10,
+          "layer": 0,
+          "n_expert": 512,
+          "native": true,
+          "gu_type": 22,
+          "down_type": 20,
+          "H": 2560,
+          "FF": 640,
+          "gu_row": 820,
+          "down_row": 360,
+          "up_off": 524800,
+          "down_off": 1049600,
+          "blob_bytes": 1971200,
+          "branch": 3,
+          "owner": "primary",
+          "stream_all": false,
+          "mmq_built": true,
+          "fused_built": false,
+          "calls": 10,
+          "rows": 81920,
+          "transfer_calls": 0,
+          "transfer_bytes": 0,
+          "routed_transfer_calls": 0,
+          "bins": [
+            {
+              "ne": 8192,
+              "source": 1,
+              "transfer_source": 0,
+              "calls": 10,
+              "routed_rows": 81920,
+              "logical_packed_bytes": 19712000
+            }
+          ],
+          "layout_version": 0,
+          "packed_layer_offset": 0,
+          "local_calls": 10,
+          "local_rows": 81920,
+          "peer_calls": 0,
+          "peer_rows": 0,
+          "generic_GU_calls": 0,
+          "generic_Down_calls": 0,
+          "use_mmq": true,
+          "fused_l": false,
+          "fused_nat": false,
+          "fused_only": false
+        },
+        {
+          "kind": "prefill_route_census_receipt",
+          "valid": true,
+          "reason": "none",
+          "scope": "host_accounting_only_no_capacity_prediction",
+          "requested_tokens": 32768,
+          "pos0": 0,
+          "chunks": 4,
+          "layers": 4,
+          "calls": 40,
+          "routed_rows": 327680,
+          "transfer_calls": 0,
+          "transfer_bytes": 0,
+          "routed_transfer_calls": 0,
+          "output_bytes": 2959,
+          "histogram_fnv1a64": "1b4c796ab27192e5",
+          "host_accumulation_ns": 116318,
+          "host_serialization_ns": 14487,
+          "device_commands_added": 0,
+          "capacity_join": false
+        }
+      ]
+    },
+    {
+      "mode": "duplicate-call",
+      "expected_valid": false,
+      "contract_passed": true,
+      "observed_rows": [
+        {
+          "kind": "prefill_route_census_receipt",
+          "valid": false,
+          "reason": "unexpected_or_duplicate_expert_call",
+          "scope": "host_accounting_only_no_capacity_prediction",
+          "requested_tokens": 32768,
+          "pos0": 0,
+          "chunks": 0,
+          "layers": 0,
+          "calls": 0,
+          "routed_rows": 0,
+          "transfer_calls": 0,
+          "transfer_bytes": 0,
+          "routed_transfer_calls": 0,
+          "output_bytes": 0,
+          "histogram_fnv1a64": "0000000000000000",
+          "host_accumulation_ns": 44423,
+          "host_serialization_ns": 0,
+          "device_commands_added": 0,
+          "capacity_join": false
+        }
+      ]
+    },
+    {
+      "mode": "resident-copy",
+      "expected_valid": false,
+      "contract_passed": true,
+      "observed_rows": [
+        {
+          "kind": "prefill_route_census_receipt",
+          "valid": false,
+          "reason": "call_pair_or_transfer_reconciliation",
+          "scope": "host_accounting_only_no_capacity_prediction",
+          "requested_tokens": 32768,
+          "pos0": 0,
+          "chunks": 1,
+          "layers": 0,
+          "calls": 0,
+          "routed_rows": 0,
+          "transfer_calls": 0,
+          "transfer_bytes": 0,
+          "routed_transfer_calls": 0,
+          "output_bytes": 0,
+          "histogram_fnv1a64": "0000000000000000",
+          "host_accumulation_ns": 35547,
+          "host_serialization_ns": 221,
+          "device_commands_added": 0,
+          "capacity_join": false
+        }
+      ]
+    },
+    {
+      "mode": "outside-layer-copy",
+      "expected_valid": false,
+      "contract_passed": true,
+      "observed_rows": [
+        {
+          "kind": "prefill_route_census_receipt",
+          "valid": false,
+          "reason": "source_plan_identity",
+          "scope": "host_accounting_only_no_capacity_prediction",
+          "requested_tokens": 32768,
+          "pos0": 0,
+          "chunks": 0,
+          "layers": 0,
+          "calls": 0,
+          "routed_rows": 0,
+          "transfer_calls": 0,
+          "transfer_bytes": 0,
+          "routed_transfer_calls": 0,
+          "output_bytes": 0,
+          "histogram_fnv1a64": "0000000000000000",
+          "host_accumulation_ns": 36017,
+          "host_serialization_ns": 0,
+          "device_commands_added": 0,
+          "capacity_join": false
+        }
+      ]
+    }
+  ],
+  "scope": "CPU contract against exact unmodified Sol header; admission requires every negative to suppress layer rows and emit one invalid receipt",
+  "binary": {
+    "bytes": 35400,
+    "sha256": "b43dd106034c8031c128dcfe87af4e730a1136d5f8442772c17b76c8ce6fcf10"
+  },
+  "finished_utc": "2026-10-10T12:50:41.746859+00:00"
+}

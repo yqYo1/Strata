@@ -1,0 +1,126 @@
+Private implementation handoff — PREFILL route census v2 correction
+2026-10-10. SOURCE ONLY. No builds, tests, source-program execution, GPU or
+process/hardware queries, Git operations, model payload reads or cleanup.
+Root owns all qualification and the later modified SYCL translation-unit build.
+The root-reported v1 CPU -O2 -Wall -Wextra -Werror compile FAILED normally on
+the enum/non-enum resident ternary. That historical failure is not a v2 PASS.
+No root run/receipt files were read or modified by this follow-up.
+
+Outputs:
+  B=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-route-census-v2
+  B/prefill.cpp SHA256
+    905f43162ae079b6785584da226d950cec14b13bd413ca51ab1a48f49de6ebaf
+  B/prefill_route_census.hpp SHA256
+    3545e3d4ffdb8f0ff0e43f36854b56bd28fe5a4fd02b2e42afaca6cd50f4160a
+  B/prefill.cpp.patch SHA256
+    c42320bcb2c74cbb16d6dcd4e7d4ab38c822159b6a4c84e08fcbbcff97abf850
+  B/prefill_route_census.hpp.patch SHA256
+    21cab27be0142e653c459e9cf3284209977d17812f8cf3965e53012ab49e7f1f
+  R/implementation-prefill-route-census-v2.txt (self SHA supplied in handoff).
+  R=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009
+
+Immutable inputs preserved:
+  v1 directory is B with final component prefill-route-census-v1; no v1 writes.
+  v1 prefill.cpp SHA905f43162ae079b6785584da226d950cec14b13bd413ca51ab1a48f49de6ebaf
+  v1 header SHAa533f6a78a53ae873de1e4da6bccb9de179d48591d41946f2e57d92cedbd8bed
+  v1 caller patch SHAc42320bcb2c74cbb16d6dcd4e7d4ab38c822159b6a4c84e08fcbbcff97abf850
+  v1 header patch SHAbd77b06520a33720cffc5b598bf62b9826387516edd092ebcf96e52cf4320ab0
+  v1 handoff SHA116e13c594d47d983ee33a921811f07963c5b1d618ebf20fee465757b7bd42bf
+  WNEW remains owner-pinned 495369cf4dc6e6da564095a1c26504dd3694e3f2:
+    /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010
+    original sycl/src/prefill/prefill.cpp SHA
+    f6cbc4acb9f84b19480a25892a2e6864896a3e3ab0f68ace3c3f51a788591f69
+  Registry v99 SHA878bec604ea0b200e2f911ce5c4aa3b0ced876436eab92665611c1b707dab42b
+  and storage545b5e7b are parent-supplied provenance, not new verification.
+
+Exact v2 differences
+  ONLY private header changes relative to v1. Caller and caller patch are
+  byte-identical to v1. Thus original model math, commands, ordering, event
+  dependencies, waits, rings, source jobs, queue flags and cleanup stay as in
+  the reviewed v1 caller diff; none is changed by this follow-up.
+  1. executed residence uses static_cast<uint32_t>(resident) : uint32_t{0},
+     removing the enumerated/non-enumerated ternary reported by root.
+  2. Constructor pins admitted_experts_ alongside admitted LB/LE. Meta.experts
+     must equal this population, not merely fit the global scratch allocation.
+     layer rejects a null cnt pointer before accessing it.
+  3. admitted_id checks [LB,LE) x [0,admitted_experts_) with negative checks
+     before unsigned casts. plan_source, stager_source, copied, executed and
+     product use it before indexing. IDs within64/512 but outside admission
+     cannot hide in scratch cells omitted by end_chunk's admitted scan.
+  4. Main source/call/product methods require an active chunk. The copy lane
+     rejects inactive-chunk calls too. It never reads or writes main valid_ or
+     reason_: rejection only sets copy_fault_. Bounds are pinned before worker
+     startup. active_chunk_ is set before existing thread startup and changed
+     only after its existing join, hence stable through issuer execution. This
+     existing startup/join ownership is necessary; concurrent external calls
+     while main resets/folds were never supported by the ledger contract.
+  5. copy_fault_ is REQUEST-STICKY; begin_chunk does not reset it. Both the next
+     begin_chunk and final finish inspect it after issuer ownership has ended.
+     Bad copies before a new chunk or after the final fold cannot disappear
+     when scratch resets or when finish formerly examined only main coverage.
+     No successful counters or histogram are emitted for these faults.
+  6. Metadata rejects generic_gguf on a native pack, generic_iq on non-native,
+     and fused_only on a non-native pack. Existing native H/FF/row/offset/byte/
+     pair checks remain. fused_only=true with valid native generic fallback is
+     accepted: it is source eligibility, not proof of selected fused execution.
+     No new requirement that fused_built=true or stream_all=true is invented
+     for that fallback. Actual selected fused remains unsupported as in v1.
+  7. Products require seen layer, selected nonzero ne, exactly one actual call
+     and no prior product of the same role before increment. Unexpected or
+     duplicate products now invalidate immediately instead of allowing repeated
+     increments to wrap before the final coverage check.
+  8. static_assert bounds sizeof(Scratch)<=2MiB and the fixed512 Bin array
+     <=16KiB. If an unusual ABI violates them, compile rejects the diagnostic;
+     memory-budget promises are not silently widened. Added heap remains
+     <=34MiB (32MiB output plus <=2MiB scratch), body/receipt log cap unchanged.
+
+Default-off reasoning
+  Constructor still returns before allocation, Clock, logging and admission
+  when env is absent or exact0. New fields/helper/assertions add no queue or
+  event interaction. Every changed recording method remains skipped by caller
+  on=false guards. No new clocks were added, even when enabled. V2 caller is
+  exactly v1's bytes. This is static source reasoning, not compiled machine-code
+  identity or a measured default-off correctness/performance result.
+
+Root qualification recommendations — NOT RUN
+  Apply the supplied full patches to a fresh isolated original WNEW base using
+  patch -p1, or copy caller/header into the same destination paths specified in
+  v1 handoff. Do not apply full caller patch a second time to a v1-modified TU.
+  The complete new-header patch targets sycl/include/strata/prefill_route_census.hpp.
+  Reuse root CPU contract driver against this ACTUAL header:
+    g++ -std=c++20 -O2 -Wall -Wextra -Werror -pthread -I"$B" \
+      /ROOT/OWNED/route_census_contract.cpp -o /ROOT/OWNED/route_census_contract_v2
+  Keep the original failed v1 compile receipt unchanged. Root should record
+  v2 compiler status/output as a new qualification, including any new warnings.
+  Repeat original positive/rejection/off/cap cells; add explicit population
+  NE=10 or16 and admitted range LB=2,LE=3 so global-cap versus admitted-bound
+  mistakes are exposed independently of the usual512-expert/full-layer case.
+  For EACH mutator plan_source/copied/executed/product test layer LB-1, LE,
+  negative, max64 and expert -1, NE, max512. Layer LB-1/LE and expert NE must
+  reject even while lying INSIDE the allocated global64/512 backing arrays.
+  For stager_source invalid identity returns0; feeding that into an actual copy
+  must reject. No invalid identity may be used to index storage.
+  Test Meta population smaller/larger than constructor admission, null cnt,
+  unknown branch and native-branch disagreement. Test native generic with
+  fused_only=true as a POSITIVE fallback control. Non-native fused_only invalid.
+  Test copy-only faults before first begin, between chunk folds and after final
+  end_chunk before finish; all must suppress every layer line and emit invalid
+  receipt. Exercise copies on a real CPU worker, then join before fold/finish;
+  verify no main validity access occurs in the worker. Do not race reset/join.
+  Product before call, duplicate same role, unselected product must invalidate.
+  Positive T8192/K10/NE10 can set each of10 experts ne8192 and retain the v1
+  four-chunk32K generic-resident expected40calls/327680rows arithmetic.
+  Follow successful CPU admission with root's actual modified SYCL TU compile
+  and serial model/off-path/census qualification. Existing clean runtime safety
+  flags and all originally required full-context gates remain root-controlled.
+
+Limitations unchanged from v1
+  Minimum current native seven-pair route accounting only; unsupported fused,
+  peer, pipeline/layer-major, non-native geometry invalidates the whole receipt.
+  MMQ exposure is separate from generic rates; no capacity prediction/adoption.
+  Runtime loaded manifest/input/build SHA and normal-exit/fault/completion gates
+  stay controller-owned. Missing/partial final receipt cannot qualify a run.
+  Host timing counters remain the documented method/fold subset and must not be
+  subtracted across device/request clocks. No GPU command/event/wait is added.
+  No actual262144 physical context, model correctness, throughput or v2 compile
+  PASS is claimed. Ready for root static review and serial qualification only.
